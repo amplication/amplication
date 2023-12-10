@@ -82,7 +82,7 @@ import {
 import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
 import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
 import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { ActionContext } from "../userAction/types";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ModuleService } from "../module/module.service";
@@ -384,6 +384,7 @@ export class EntityService {
           projectId: resourceWithProject.projectId,
           workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,
+          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.EntityCreate,
       });

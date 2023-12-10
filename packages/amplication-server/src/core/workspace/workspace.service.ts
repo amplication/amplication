@@ -24,7 +24,6 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { BillingService } from "../billing/billing.service";
-import { BillingPlan } from "../billing/billing.types";
 import { MailService } from "../mail/mail.service";
 import { ProjectService } from "../project/project.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
@@ -43,6 +42,7 @@ import {
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingPlan } from "@amplication/util-billing-types";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -730,7 +730,7 @@ export class WorkspaceService {
           entityVersion: {
             entityId: entity.id,
             versionNumber: 0,
-            deleted: false,
+            deleted: null,
           },
         },
       })) as EntityField[];

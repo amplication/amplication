@@ -3663,7 +3663,7 @@ const USER: any = {
 const SIGN_TOKEN = "SIGN_TOKEN";
 
 const authEntityService = {
-  findOne(args: { where: { username: string } }): any | null {
+  user(args: { where: { username: string } }): any | null {
     if (args.where.username === VALID_CREDENTIALS.username) {
       return USER;
     }
@@ -3927,7 +3927,7 @@ export class JwtStrategyBase
 
   async validate(payload: UserInfo): Promise<UserInfo> {
     const { username } = payload;
-    const user = await this.userService.findOne({
+    const user = await this.userService.user({
       where: { username },
     });
     if (!user) {
@@ -13764,11 +13764,11 @@ describe("Testing the jwtStrategyBase.validate()", () => {
   const userService = mock<UserService>();
   const jwtStrategy = new JwtStrategyBase("Secrete", userService);
   beforeEach(() => {
-    userService.findOne.mockClear();
+    userService.user.mockClear();
   });
   it("should throw UnauthorizedException where there is no user", async () => {
     //ARRANGE
-    userService.findOne
+    userService.user
       .calledWith({ where: { username: TEST_USER.username } })
       .mockReturnValue(Promise.resolve(null));
     //ACT

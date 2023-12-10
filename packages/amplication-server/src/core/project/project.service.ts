@@ -19,7 +19,7 @@ import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
 import { BillingService } from "../billing/billing.service";
 import { FeatureUsageReport } from "./FeatureUsageReport";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { GitProviderService } from "../git/git.provider.service";
 
 export const INVALID_PROJECT_ID = "Invalid projectId";
@@ -402,6 +402,7 @@ export class ProjectService {
         properties: {
           workspaceId: project.workspaceId,
           projectId: project.id,
+          $groups: { groupWorkspace: project.workspaceId },
         },
         event: EnumEventType.CommitCreate,
       });

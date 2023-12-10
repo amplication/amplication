@@ -1,5 +1,6 @@
 import {
   Breadcrumbs,
+  ButtonProgress,
   Dialog,
   Icon,
   SelectMenu,
@@ -17,7 +18,7 @@ import {
   PopoverNotificationCenter,
 } from "@novu/notification-center";
 import { useStiggContext } from "@stigg/react-sdk";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory } from "react-router-dom";
 import CommandPalette from "../../CommandPalette/CommandPalette";
@@ -31,7 +32,6 @@ import {
   NX_REACT_APP_AUTH_LOGOUT_URI,
   NX_REACT_APP_NOVU_IDENTIFIER,
 } from "../../env";
-import { BillingFeature } from "../../util/BillingFeature";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import {
@@ -43,6 +43,8 @@ import GitHubBanner from "./GitHubBanner";
 import styles from "./notificationStyle";
 import NoNotifications from "../../assets/images/no-notification.svg";
 import "./WorkspaceHeader.scss";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -75,6 +77,8 @@ const HELP_MENU_LIST: HelpMenuItem[] = [
 const WorkspaceHeader: React.FC = () => {
   const { currentWorkspace, currentProject, openHubSpotChat } =
     useContext(AppContext);
+  const upgradeButtonData = useUpgradeButtonData(currentWorkspace);
+
   const apolloClient = useApolloClient();
   const history = useHistory();
   const { stigg } = useStiggContext();
@@ -160,173 +164,189 @@ const WorkspaceHeader: React.FC = () => {
   );
 
   return (
-    <>
-      <Dialog
-        className="new-entity-dialog"
-        isOpen={showProfileFormDialog}
-        onDismiss={handleShowProfileForm}
-        title="User Profile"
-      >
-        <ProfileForm />
-      </Dialog>
-      <GitHubBanner />
-      <div className={CLASS_NAME}>
-        <div className={`${CLASS_NAME}__left`}>
-          <div className={`${CLASS_NAME}__logo`}>
-            <Link to={`/${currentWorkspace?.id}`}>
-              <Icon icon="logo" size="medium" />
+    upgradeButtonData.isCompleted && (
+      <>
+        <Dialog
+          className="new-entity-dialog"
+          isOpen={showProfileFormDialog}
+          onDismiss={handleShowProfileForm}
+          title="User Profile"
+        >
+          <ProfileForm />
+        </Dialog>
+        <GitHubBanner />
+        <div className={CLASS_NAME}>
+          <div className={`${CLASS_NAME}__left`}>
+            <div className={`${CLASS_NAME}__logo`}>
+              <Link to={`/${currentWorkspace?.id}`}>
+                <Icon icon="logo" size="medium" />
+              </Link>
+            </div>
+            <span>
+              <a
+                href="https://github.com/amplication/amplication/releases"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${CLASS_NAME}__version`}
+              >
+                v{version}
+              </a>
+            </span>
+            <Breadcrumbs>
+              {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
+                <Breadcrumbs.Item key={item.url} to={item.url}>
+                  {item.name}
+                </Breadcrumbs.Item>
+              ))}
+            </Breadcrumbs>
+          </div>
+          <div className={`${CLASS_NAME}__center`}></div>
+          <div className={`${CLASS_NAME}__right`}>
+            <div className={`${CLASS_NAME}__links`}>
+              {upgradeButtonData.showUpgradeTrialButton && (
+                <ButtonProgress
+                  className={`${CLASS_NAME}__upgrade__btn`}
+                  onClick={handleUpgradeClick}
+                  progress={upgradeButtonData.trialLeftProgress}
+                  leftValue={`${upgradeButtonData.trialDaysLeft} days free trial left`}
+                  yellowColorThreshold={50}
+                  redColorThreshold={0}
+                >
+                  Upgrade
+                </ButtonProgress>
+              )}
+              {upgradeButtonData.showUpgradeDefaultButton && (
+                <Button
+                  className={`${CLASS_NAME}__upgrade__btn`}
+                  buttonStyle={EnumButtonStyle.Outline}
+                  onClick={handleUpgradeClick}
+                >
+                  Upgrade
+                </Button>
+              )}
+            </div>
+            <hr className={`${CLASS_NAME}__vertical_border`} />
+
+            <CommandPalette
+              trigger={
+                <Tooltip
+                  className="amp-menu-item__tooltip"
+                  aria-label={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+K)`}
+                  direction="sw"
+                  noDelay
+                >
+                  <Button
+                    buttonStyle={EnumButtonStyle.Text}
+                    icon="search"
+                    iconSize="small"
+                  />
+                </Tooltip>
+              }
+            />
+            <hr className={`${CLASS_NAME}__vertical_border`} />
+            <div className={`${CLASS_NAME}__help_popover`}>
+              <SelectMenu
+                title="Help"
+                buttonStyle={EnumButtonStyle.Text}
+                icon="chevron_down"
+                openIcon="chevron_up"
+                className={`${CLASS_NAME}__help_popover__menu`}
+              >
+                <SelectMenuModal align="right">
+                  <SelectMenuList>
+                    {HELP_MENU_LIST.map((route: HelpMenuItem, index) => (
+                      <SelectMenuItem
+                        closeAfterSelectionChange
+                        onSelectionChange={() => {
+                          !route.url && handleItemDataClicked(route.itemData);
+                        }}
+                        key={index}
+                        {...(route.url
+                          ? {
+                              rel: "noopener noreferrer",
+                              href: route.url,
+                              target: "_blank",
+                            }
+                          : {})}
+                      >
+                        <div className={`${CLASS_NAME}__help_popover__name`}>
+                          {route.name}
+                        </div>
+                      </SelectMenuItem>
+                    ))}
+                  </SelectMenuList>
+                </SelectMenuModal>
+              </SelectMenu>
+            </div>
+            {canShowNotification && (
+              <>
+                <hr className={`${CLASS_NAME}__vertical_border`} />
+                <div className={`${CLASS_NAME}__notification_bell`}>
+                  <NovuProvider
+                    subscriberId={currentWorkspace.externalId}
+                    applicationIdentifier={NX_REACT_APP_NOVU_IDENTIFIER}
+                    styles={styles}
+                  >
+                    <PopoverNotificationCenter
+                      colorScheme={"dark"}
+                      position="left-start"
+                      offset={0}
+                      onNotificationClick={onNotificationClick}
+                      onActionClick={onBuildNotificationClick}
+                      footer={() => <Footer />}
+                      emptyState={<EmptyState />}
+                    >
+                      {({ unseenCount }) => (
+                        <NotificationBell unseenCount={unseenCount} />
+                      )}
+                    </PopoverNotificationCenter>
+                  </NovuProvider>
+                </div>
+              </>
+            )}
+            <hr className={`${CLASS_NAME}__vertical_border`} />
+            <div
+              className={`${CLASS_NAME}__user_badge_wrapper`}
+              onClick={handleShowProfileForm}
+            >
+              <UserBadge />
+            </div>
+
+            <hr className={`${CLASS_NAME}__vertical_border`} />
+
+            <CommandPalette
+              trigger={
+                <Tooltip
+                  className="amp-menu-item__tooltip"
+                  aria-label={`Logout`}
+                  direction="sw"
+                  noDelay
+                >
+                  <Button
+                    buttonStyle={EnumButtonStyle.Text}
+                    icon="log_out"
+                    onClick={handleSignOut}
+                  />
+                </Tooltip>
+              }
+            />
+          </div>
+        </div>
+
+        {currentProject?.useDemoRepo && (
+          <div className={`${CLASS_NAME}__highlight`}>
+            Notice: You're currently using a preview repository for your
+            generated code. For a full personalized experience, please&nbsp;
+            <Link
+              title={"Go to project settings"}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/git-sync`}
+            >
+              connect to your own repository
             </Link>
           </div>
-          <span>
-            <a
-              href="https://github.com/amplication/amplication/releases"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${CLASS_NAME}__version`}
-            >
-              v{version}
-            </a>
-          </span>
-          <Breadcrumbs>
-            {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
-              <Breadcrumbs.Item key={item.url} to={item.url}>
-                {item.name}
-              </Breadcrumbs.Item>
-            ))}
-          </Breadcrumbs>
-        </div>
-        <div className={`${CLASS_NAME}__center`}></div>
-        <div className={`${CLASS_NAME}__right`}>
-          <div className={`${CLASS_NAME}__links`}>
-            <Button
-              className={`${CLASS_NAME}__upgrade__btn`}
-              buttonStyle={EnumButtonStyle.Outline}
-              onClick={handleUpgradeClick}
-            >
-              Upgrade
-            </Button>
-          </div>
-          <hr className={`${CLASS_NAME}__vertical_border`} />
-
-          <CommandPalette
-            trigger={
-              <Tooltip
-                className="amp-menu-item__tooltip"
-                aria-label={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+K)`}
-                direction="sw"
-                noDelay
-              >
-                <Button
-                  buttonStyle={EnumButtonStyle.Text}
-                  icon="search"
-                  iconSize="small"
-                />
-              </Tooltip>
-            }
-          />
-          <hr className={`${CLASS_NAME}__vertical_border`} />
-          <div className={`${CLASS_NAME}__help_popover`}>
-            <SelectMenu
-              title="Help"
-              buttonStyle={EnumButtonStyle.Text}
-              icon="chevron_down"
-              openIcon="chevron_up"
-              className={`${CLASS_NAME}__help_popover__menu`}
-            >
-              <SelectMenuModal align="right">
-                <SelectMenuList>
-                  {HELP_MENU_LIST.map((route: HelpMenuItem, index) => (
-                    <SelectMenuItem
-                      closeAfterSelectionChange
-                      onSelectionChange={() => {
-                        !route.url && handleItemDataClicked(route.itemData);
-                      }}
-                      key={index}
-                      {...(route.url
-                        ? {
-                            rel: "noopener noreferrer",
-                            href: route.url,
-                            target: "_blank",
-                          }
-                        : {})}
-                    >
-                      <div className={`${CLASS_NAME}__help_popover__name`}>
-                        {route.name}
-                      </div>
-                    </SelectMenuItem>
-                  ))}
-                </SelectMenuList>
-              </SelectMenuModal>
-            </SelectMenu>
-          </div>
-          {canShowNotification && (
-            <>
-              <hr className={`${CLASS_NAME}__vertical_border`} />
-              <div className={`${CLASS_NAME}__notification_bell`}>
-                <NovuProvider
-                  subscriberId={currentWorkspace.externalId}
-                  applicationIdentifier={NX_REACT_APP_NOVU_IDENTIFIER}
-                  styles={styles}
-                >
-                  <PopoverNotificationCenter
-                    colorScheme={"dark"}
-                    position="left-start"
-                    offset={0}
-                    onNotificationClick={onNotificationClick}
-                    onActionClick={onBuildNotificationClick}
-                    footer={() => <Footer />}
-                    emptyState={<EmptyState />}
-                  >
-                    {({ unseenCount }) => (
-                      <NotificationBell unseenCount={unseenCount} />
-                    )}
-                  </PopoverNotificationCenter>
-                </NovuProvider>
-              </div>
-            </>
-          )}
-          <hr className={`${CLASS_NAME}__vertical_border`} />
-          <div
-            className={`${CLASS_NAME}__user_badge_wrapper`}
-            onClick={handleShowProfileForm}
-          >
-            <UserBadge />
-          </div>
-
-          <hr className={`${CLASS_NAME}__vertical_border`} />
-
-          <CommandPalette
-            trigger={
-              <Tooltip
-                className="amp-menu-item__tooltip"
-                aria-label={`Logout`}
-                direction="sw"
-                noDelay
-              >
-                <Button
-                  buttonStyle={EnumButtonStyle.Text}
-                  icon="log_out"
-                  onClick={handleSignOut}
-                />
-              </Tooltip>
-            }
-          />
-        </div>
-      </div>
-
-      {currentProject?.useDemoRepo && (
-        <div className={`${CLASS_NAME}__highlight`}>
-          Notice: You're currently using a preview repository for your generated
-          code. For a full personalized experience, please&nbsp;
-          <Link
-            title={"Go to project settings"}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/git-sync`}
-          >
-            connect to your own repository
-          </Link>
-        </div>
-      )}
-    </>
+        )}
+      </>
+    )
   );
 };
 

@@ -7,7 +7,7 @@ import { KAFKA_TOPICS, UserAction } from "@amplication/schema-registry";
 import { encryptString } from "../../util/encryptionUtil";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 @Injectable()
 export class UserService {
