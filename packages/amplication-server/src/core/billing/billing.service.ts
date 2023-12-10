@@ -215,6 +215,7 @@ export class BillingService {
       userId,
       properties: {
         workspaceId,
+        $groups: { groupWorkspace: workspaceId },
       },
       event:
         intentionType === "DOWNGRADE_PLAN"
@@ -310,6 +311,7 @@ export class BillingService {
             properties: {
               workspaceId,
               reason: message,
+              $groups: { groupWorkspace: workspaceId },
             },
             event: EnumEventType.SubscriptionLimitPassed,
           });
@@ -330,6 +332,7 @@ export class BillingService {
             properties: {
               workspaceId,
               reason: message,
+              $groups: { groupWorkspace: workspaceId },
             },
             event: EnumEventType.SubscriptionLimitPassed,
           });
@@ -358,6 +361,7 @@ export class BillingService {
             properties: {
               workspaceId,
               reason: message,
+              $groups: { groupWorkspace: workspaceId },
             },
             event: EnumEventType.SubscriptionLimitPassed,
           });

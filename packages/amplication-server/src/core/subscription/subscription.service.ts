@@ -97,6 +97,7 @@ export class SubscriptionService {
         userId: userId,
         properties: {
           workspaceId: workspaceId,
+          $groups: { groupWorkspace: workspaceId },
         },
         event: EnumEventType.WorkspacePlanUpgradeCompleted,
       });

@@ -290,6 +290,7 @@ export class WorkspaceService {
       event: EnumEventType.InvitationAcceptance,
       properties: {
         workspaceId: invitation.workspaceId,
+        $groups: { groupWorkspace: invitation.workspaceId },
       },
     });
 
@@ -419,6 +420,7 @@ export class WorkspaceService {
         workspaceId: currentUser.workspace.id,
         subscriptionPlan: coupon.subscriptionPlan,
         durationMonths: coupon.durationMonths,
+        $groups: { groupWorkspace: currentUser.workspace.id },
       },
     });
 

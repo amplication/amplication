@@ -484,6 +484,7 @@ export class GitProviderService {
         workspaceId: workspaceId,
         provider: gitProvider,
         gitOrgType: gitRemoteOrganization.type,
+        $groups: { groupWorkspace: workspaceId },
       },
       event: EnumEventType.GitHubAuthResourceComplete,
     });
@@ -655,6 +656,7 @@ export class GitProviderService {
         workspaceId: workspaceId,
         provider: gitProvider,
         gitOrgType: gitOrganization?.type,
+        $groups: { groupWorkspace: workspaceId },
       },
       event: EnumEventType.GitHubAuthResourceComplete,
     });
