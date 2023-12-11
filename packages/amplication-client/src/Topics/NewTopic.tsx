@@ -45,8 +45,9 @@ const prepareName = (displayName: string) => {
 
 const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
   const { trackEvent } = useTracking();
-  const { addEntity } = useContext(AppContext);
+  const { addEntity, currentResource } = useContext(AppContext);
 
+  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const [createTopic, { error, loading }] = useMutation(CREATE_TOPIC, {
     update(cache, { data }) {
       if (!data) {
@@ -125,7 +126,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
               required
               name="displayName"
               label="New Topic Name"
-              disabled={loading}
+              disabled={loading || isResourceUnderLimitation}
               inputRef={inputRef}
               placeholder="Add topic"
               autoComplete="off"
