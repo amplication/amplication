@@ -65,6 +65,15 @@ export class ProjectService {
     args: ProjectCreateArgs,
     userId: string
   ): Promise<Project> {
+    const projectEntitlement = await this.billingService.getMeteredEntitlement(
+      args.data.workspace.connect.id,
+      BillingFeature.Projects
+    );
+
+    if (projectEntitlement && !projectEntitlement.hasAccess) {
+      return null;
+    }
+
     const project = await this.prisma.project.create({
       data: {
         ...args.data,

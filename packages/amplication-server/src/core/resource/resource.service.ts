@@ -128,6 +128,15 @@ export class ResourceService {
       );
     }
 
+    const serviceEntitlement = await this.billingService.getBooleanEntitlement(
+      args.data.project.connect.id,
+      BillingFeature.Services
+    );
+
+    if (serviceEntitlement && !serviceEntitlement.hasAccess) {
+      return null;
+    }
+
     const projectId = args.data.project.connect.id;
 
     const projectConfiguration = await this.projectConfiguration(projectId);
