@@ -38,11 +38,11 @@ const ITEMS: CreateResourceButtonItemType[] = [
   },
 ];
 
-const CreateResourceButton = ({
-  resourcesLength,
-}: {
+type Props = {
   resourcesLength: number;
-}) => {
+};
+
+const CreateResourceButton: React.FC<Props> = ({ resourcesLength }) => {
   return (
     <div className={CLASS_NAME}>
       <FeatureControlContainer
