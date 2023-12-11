@@ -259,18 +259,18 @@ export class EntityService {
     });
   }
 
-  async isServiceFeatureUnderLimitation(
+  async checkServiceFeatureUnderLimitation(
     workspaceId: string,
     resourceId: string,
     serviceFeature: EnumServiceFeature
-  ): Promise<boolean> {
+  ): Promise<void> {
     const feature = await this.billingService.getMeteredEntitlement(
       workspaceId,
       BillingFeature.Services
     );
 
-    if (!feature.usageLimit) {
-      return false;
+    if (feature.hasAccess) {
+      return;
     }
 
     const featuredEntityOrderedByCreationDate =
@@ -294,7 +294,7 @@ export class EntityService {
       (featureEntity) => featureEntity.id === resourceId
     );
 
-    if (canCreate) {
+    if (!canCreate) {
       throw new AmplicationError(
         `You have reached the limit of services, so you cannot add new ${serviceFeature} on this service. Please upgrade your plan to add more services and entities`
       );
@@ -310,7 +310,7 @@ export class EntityService {
   ): Promise<Entity> {
     const workspaceId = user.workspace.id;
     const resourceId = args.data.resource.connect.id;
-    await this.isServiceFeatureUnderLimitation(
+    await this.checkServiceFeatureUnderLimitation(
       workspaceId,
       resourceId,
       EnumServiceFeature.Entities
@@ -1748,10 +1748,18 @@ export class EntityService {
     user: User
   ): Promise<EntityPermission> {
     const workspaceId = user.workspace.id;
-    const resourceId = args.data.entity.connect.id;
-    await this.isServiceFeatureUnderLimitation(
+    const entityWithResource = await this.prisma.entity.findUnique({
+      where: {
+        id: args.data.entity.connect.id,
+      },
+      include: {
+        resource: true,
+      },
+    });
+
+    await this.checkServiceFeatureUnderLimitation(
       workspaceId,
-      resourceId,
+      entityWithResource.resource.id,
       EnumServiceFeature.Roles
     );
 
@@ -2389,10 +2397,18 @@ export class EntityService {
     }
 
     const workspaceId = user.workspace.id;
-    const resourceId = args.data.entity.connect.id;
-    await this.isServiceFeatureUnderLimitation(
+    const entityWithResource = await this.prisma.entity.findUnique({
+      where: {
+        id: args.data.entity.connect.id,
+      },
+      include: {
+        resource: true,
+      },
+    });
+
+    await this.checkServiceFeatureUnderLimitation(
       workspaceId,
-      resourceId,
+      entityWithResource.resource.id,
       EnumServiceFeature.Fields
     );
 
