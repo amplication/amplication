@@ -73,7 +73,8 @@ export const FeatureControlContainer: FC<Props> = ({
       return !hasBooleanAccess;
     }
 
-    const usageExceeded = usageLimit && meteredFeatureLength >= usageLimit;
+    const usageExceeded =
+      usageLimit && meteredFeatureLength && meteredFeatureLength >= usageLimit;
 
     return usageExceeded ?? !hasMeteredAccess;
   }, [
