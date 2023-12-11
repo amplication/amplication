@@ -363,9 +363,28 @@ export class BillingService {
               workspaceId,
               BillingFeature.ChangeGitBaseBranch
             );
+          const projectWithCustomBaseBranch = repositories?.find((repo) => {
+            repo.baseBranchName;
           });
+          if (
+            projectWithCustomBaseBranch &&
+            !changeGitBaseBranchEntitlement.hasAccess
+          ) {
+            const message = `Custom Git base branch feature was enabled for your workspace but it's not part of your plan.`;
+            throw new BillingLimitationError(message);
+          }
 
-          throw new BillingLimitationError(message);
+          const servicesAboveEntitiesPerServiceLimitEntitlement =
+            await this.getMeteredEntitlement(
+              workspaceId,
+              BillingFeature.ServicesAboveEntitiesPerServiceLimit
+            );
+
+          if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
+            const message = `Your workspace exceeds its entities per service limitations.`;
+
+            throw new BillingLimitationError(message);
+          }
         } catch (error) {
           if (error instanceof BillingLimitationError) {
             await this.analytics.track({
