@@ -282,6 +282,7 @@ export class BillingService {
     currentProjectId,
     projects,
     repositories,
+    bypassLimitations = false,
   }: ValidateSubscriptionPlanLimitationsArgs): Promise<void> {
     if (this.isBillingEnabled) {
       const isIgnoreValidationCodeGeneration = await this.getBooleanEntitlement(
@@ -290,7 +291,7 @@ export class BillingService {
       );
 
       //check whether the workspace has entitlement to bypass code generation limitation
-      if (!isIgnoreValidationCodeGeneration.hasAccess) {
+      if (!isIgnoreValidationCodeGeneration.hasAccess || !bypassLimitations) {
         const projectsEntitlement = await this.getMeteredEntitlement(
           workspaceId,
           BillingFeature.Projects
