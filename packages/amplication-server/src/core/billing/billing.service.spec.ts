@@ -9,7 +9,6 @@ import Stigg, {
   BooleanEntitlement,
   FullSubscription,
   MeteredEntitlement,
-  NumericEntitlement,
   SubscriptionStatus,
 } from "@stigg/node-server-sdk";
 import { GitOrganization, GitRepository, Project, User } from "../../models";
