@@ -149,26 +149,22 @@ export class ProjectService {
     workspaceId: string,
     projectId: string
   ): Promise<boolean> {
-    const featureProjects = await this.billingService.getMeteredEntitlement(
+    return this.billingService.isUnderLimitation(
       workspaceId,
-      BillingFeature.Projects
+      BillingFeature.Projects,
+      projectId,
+      (usageLimit) =>
+        this.prisma.project.findMany({
+          where: {
+            workspaceId,
+            deletedAt: null,
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+          skip: usageLimit,
+        })
     );
-    if (!featureProjects.usageLimit) {
-      return false;
-    }
-
-    const projects = await this.prisma.project.findMany({
-      where: {
-        workspaceId,
-        deletedAt: null,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-      skip: featureProjects.usageLimit,
-    });
-
-    return projects.some((project) => project.id === projectId);
   }
 
   /**

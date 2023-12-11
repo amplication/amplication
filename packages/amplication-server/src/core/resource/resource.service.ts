@@ -802,33 +802,26 @@ export class ResourceService {
     workspaceId: string,
     resourceId: string
   ): Promise<boolean> {
-    const featureProjects = await this.billingService.getMeteredEntitlement(
+    return this.billingService.isUnderLimitation(
       workspaceId,
-      BillingFeature.Services
-    );
-
-    if (!featureProjects.usageLimit) {
-      return false;
-    }
-
-    const resourcesOrderedByCreationDate = await this.prisma.resource.findMany({
-      where: {
-        deletedAt: null,
-        archived: { not: true },
-        resourceType: EnumResourceType.Service,
-        project: {
-          workspaceId,
-          deletedAt: null,
-        },
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-      skip: featureProjects.usageLimit,
-    });
-
-    return resourcesOrderedByCreationDate.some(
-      (resource) => resource.id === resourceId
+      BillingFeature.Services,
+      resourceId,
+      (usageLimit) =>
+        this.prisma.resource.findMany({
+          where: {
+            deletedAt: null,
+            archived: { not: true },
+            resourceType: EnumResourceType.Service,
+            project: {
+              workspaceId,
+              deletedAt: null,
+            },
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+          skip: usageLimit,
+        })
     );
   }
 

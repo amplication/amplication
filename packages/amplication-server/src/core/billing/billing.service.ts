@@ -23,6 +23,10 @@ import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscripti
 import { Project, User } from "../../models";
 import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 
+interface FeaturedEntity {
+  id: string;
+}
+
 @Injectable()
 export class BillingService {
   private readonly stiggClient: Stigg;
@@ -183,6 +187,27 @@ export class BillingService {
     } catch (error) {
       this.logger.error(error.message, error);
     }
+  }
+
+  async isUnderLimitation<T extends FeaturedEntity>(
+    workspaceId: string,
+    featureId: BillingFeature,
+    featuredEntityId: string,
+    dataLoader: (usageLimit: number) => Promise<T[]>
+  ): Promise<boolean> {
+    const feature = await this.getMeteredEntitlement(workspaceId, featureId);
+
+    if (!feature.usageLimit) {
+      return false;
+    }
+
+    const featuredEntityOrderedByCreationDate = await dataLoader(
+      feature.usageLimit
+    );
+
+    return featuredEntityOrderedByCreationDate.some(
+      (featureEntity) => featureEntity.id === featuredEntityId
+    );
   }
 
   async provisionSubscription({
