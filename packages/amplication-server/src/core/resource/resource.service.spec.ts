@@ -61,6 +61,7 @@ import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segment
 import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
+import { AmplicationError } from "../../errors/AmplicationError";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -401,6 +402,7 @@ const prismaResourceFindOneMock = jest.fn(
 const billingServiceGetMeteredEntitlementMock = jest.fn(() => {
   return {
     usageLimit: undefined,
+    hasAccess: true,
   } as unknown as MeteredEntitlement;
 });
 const prismaResourceFindManyMock = jest.fn(() => {
@@ -674,6 +676,46 @@ describe("ResourceService", () => {
     expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID
     );
+  });
+
+  it("should throw an error while trying to create a service when the user exceeded the limit of services in his project", async () => {
+    const createResourceArgs = {
+      args: {
+        data: {
+          name: EXAMPLE_RESOURCE_NAME,
+          description: EXAMPLE_RESOURCE_DESCRIPTION,
+          color: DEFAULT_RESOURCE_COLORS.service,
+          resourceType: EnumResourceType.Service,
+          wizardType: "create resource",
+          project: {
+            connect: {
+              id: EXAMPLE_PROJECT_ID,
+            },
+          },
+          serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+          gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+        },
+      },
+      user: EXAMPLE_USER,
+    };
+    billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
+      usageLimit: 1,
+      hasAccess: false,
+    } as unknown as MeteredEntitlement);
+    await expect(
+      service.createService(
+        createResourceArgs.args,
+        createResourceArgs.user,
+        null,
+        true
+      )
+    ).rejects.toThrow(
+      new AmplicationError(
+        "Service limit reached. Please upgrade your plan to add new services."
+      )
+    );
+    expect(prismaResourceCreateMock).toBeCalledTimes(0);
+    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(0);
   });
 
   it("should fail to create resource with entities with a reserved name", async () => {
