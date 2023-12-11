@@ -554,6 +554,29 @@ export class GitProviderService {
     return await gitClientService.getGitInstallationUrl(workspaceId);
   }
 
+  async getProjectsConnectedGitRepositories(
+    projectIds: string[]
+  ): Promise<GitRepository[]> {
+    return this.prisma.gitRepository.findMany({
+      where: {
+        resources: {
+          some: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            AND: {
+              deletedAt: null,
+              projectId: {
+                in: projectIds,
+              },
+            },
+          },
+        },
+      },
+      include: {
+        gitOrganization: true,
+      },
+    });
+  }
+
   async getCurrentOAuthUser(oAuthUserName: string): Promise<GitOrganization> {
     return this.prisma.gitOrganization.findFirst({
       where: { name: oAuthUserName },

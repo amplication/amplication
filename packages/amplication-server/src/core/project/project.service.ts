@@ -303,12 +303,18 @@ export class ProjectService {
         },
       });
 
+      const repositories =
+        await this.gitProviderService.getProjectsConnectedGitRepositories(
+          projects.map((project) => project.id)
+        );
+
       await this.billingService.validateSubscriptionPlanLimitationsForWorkspace(
         {
           workspaceId: project.workspaceId,
           currentUser,
           currentProjectId: project.id,
           projects: projects,
+          repositories,
         }
       );
     }

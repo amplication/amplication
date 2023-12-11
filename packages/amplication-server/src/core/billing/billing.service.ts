@@ -20,9 +20,9 @@ import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscript
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
 import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
-import { Project, User } from "../../models";
 import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 import { ValidateSubscriptionPlanLimitationsArgs } from "./billing.service.types";
+import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
 
 @Injectable()
 export class BillingService {
@@ -281,6 +281,7 @@ export class BillingService {
     currentUser,
     currentProjectId,
     projects,
+    repositories,
   }: ValidateSubscriptionPlanLimitationsArgs): Promise<void> {
     if (this.isBillingEnabled) {
       const isIgnoreValidationCodeGeneration = await this.getBooleanEntitlement(
@@ -338,29 +339,30 @@ export class BillingService {
             throw new BillingLimitationError(message);
           }
 
-        const servicesAboveEntitiesPerServiceLimitEntitlement =
-          await this.getMeteredEntitlement(
-            workspaceId,
-            BillingFeature.ServicesAboveEntitiesPerServiceLimit
+          const enterpriseGitProviders = Object.keys(EnumGitProvider).filter(
+            (x) => x !== EnumGitProvider.Github
           );
 
-        if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
-          const entitiesPerServiceEntitlement =
-            await this.getNumericEntitlement(
+          for (const enterpriseGitProvider of enterpriseGitProviders) {
+            const enterpriseGitEntitlement = await this.getBooleanEntitlement(
               workspaceId,
-              BillingFeature.EntitiesPerService
+              enterpriseGitProvider as BillingFeature
             );
+            const provider = repositories?.find(
+              (repo) => repo.gitOrganization.provider === enterpriseGitProvider
+            )?.gitOrganization.provider;
 
-          const entitiesPerServiceLimit = entitiesPerServiceEntitlement.value;
-          const message = `Allowed entities per service: ${entitiesPerServiceLimit}`;
+            if (provider && !enterpriseGitEntitlement.hasAccess) {
+              const message = `Your ${enterpriseGitProvider} integration is not part of your plan.`;
+              throw new BillingLimitationError(message);
+            }
+          }
 
-          await this.analytics.track({
-            userId: currentUser.account.id,
-            properties: {
+          const changeGitBaseBranchEntitlement =
+            await this.getBooleanEntitlement(
               workspaceId,
-              reason: message,
-            },
-            event: EnumEventType.SubscriptionLimitPassed,
+              BillingFeature.ChangeGitBaseBranch
+            );
           });
 
           throw new BillingLimitationError(message);
