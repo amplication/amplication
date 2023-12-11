@@ -40,6 +40,7 @@ import {
   EntitlementType,
   FeatureControlContainer,
 } from "../Components/FeatureControlContainer";
+import { FeatureIndicator } from "../Components/FeatureIndicator";
 
 type TData = {
   entities: models.Entity[];
@@ -237,9 +238,13 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 buttonStyle={EnumButtonStyle.Primary}
                 onClick={handleNewEntityClick}
                 disabled={isResourceUnderLimitation}
-                icon={isResourceUnderLimitation ? "locked" : null}
               >
-                Add entity
+                <FlexItem itemsAlign={EnumItemsAlign.Center}>
+                  <span>Add entity</span>
+                  {isResourceUnderLimitation && (
+                    <FeatureIndicator featureName={BillingFeature.Services} />
+                  )}
+                </FlexItem>
               </Button>
             </FlexItem>
           </FlexItem.FlexEnd>

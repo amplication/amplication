@@ -1,4 +1,6 @@
 import {
+  EnumItemsAlign,
+  FlexItem,
   LimitationDialog,
   Snackbar,
   TextField,
@@ -18,6 +20,8 @@ import { formatError } from "../util/error";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { commitPath } from "../util/paths";
 import "./Commit.scss";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { FeatureIndicator } from "../Components/FeatureIndicator";
 
 type TCommit = {
   message: string;
@@ -159,9 +163,15 @@ const Commit = ({ projectId, noChanges }: Props) => {
                   eventName: AnalyticsEventNames.CommitClicked,
                 }}
                 disabled={loading || isProjectUnderLimitation}
-                icon={isProjectUnderLimitation ? "locked" : null}
               >
-                {noChanges ? "Rebuild" : "Commit changes & build "}
+                <FlexItem itemsAlign={EnumItemsAlign.Center}>
+                  <span>
+                    {noChanges ? "Rebuild" : "Commit changes & build "}
+                  </span>
+                  {isProjectUnderLimitation && (
+                    <FeatureIndicator featureName={BillingFeature.Projects} />
+                  )}
+                </FlexItem>
               </Button>
             </Form>
           );
