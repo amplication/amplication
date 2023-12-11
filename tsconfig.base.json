@@ -24,6 +24,9 @@
       ],
       "@amplication/code-gen-utils": ["libs/util/code-gen-utils/src/index.ts"],
       "@amplication/dsg-utils": ["libs/util/dsg-utils/src/index.ts"],
+      "@amplication/graphql-error-codes": [
+        "libs/util/graphql-error-codes/src/index.ts"
+      ],
       "@amplication/kafka/*": ["packages/amplication-kafka/src/*"],
       "@amplication/nest-logger-module/*": [
         "packages/amplication-nest-logger-module/src/*"

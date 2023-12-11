@@ -5,7 +5,7 @@ $split-icon-font-size: 20px;
 .amp-button {
   height: var(--default-button-height);
   min-width: 0;
-  border-radius: var(--default-button-radius) !important;
+  border-radius: var(--default-button-radius);
   border: $border-primary;
   box-sizing: border-box;
   font-size: var(--tag-font-size) !important;

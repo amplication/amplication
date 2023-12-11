@@ -11,14 +11,13 @@ import { useHistory, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
 import { type Commit as CommitType } from "../models";
+import { GraphQLErrorCode } from "@amplication/graphql-error-codes";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { commitPath } from "../util/paths";
 import "./Commit.scss";
-
-const LIMITATION_ERROR_PREFIX = "LimitationError: ";
 
 type TCommit = {
   message: string;
@@ -47,6 +46,8 @@ type RouteMatchProps = {
 };
 
 const formatLimitationError = (errorMessage: string) => {
+  const LIMITATION_ERROR_PREFIX = "LimitationError: ";
+
   const limitationError = errorMessage.split(LIMITATION_ERROR_PREFIX)[1];
   return limitationError;
 };
@@ -65,6 +66,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
     commitUtils,
   } = useContext(AppContext);
 
+  const isProjectUnderLimitation = currentProject?.isUnderLimitation ?? false;
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
     history.push(path, { from: { pathname: history.location.pathname } });
@@ -74,10 +76,14 @@ const Commit = ({ projectId, noChanges }: Props) => {
     onError: (error: ApolloError) => {
       setCommitRunning(false);
       setPendingChangesError(true);
-      const errorMessage = formatError(error);
-      const isLimitationError =
-        errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
-      setOpenLimitationDialog(isLimitationError);
+
+      setOpenLimitationDialog(
+        error?.graphQLErrors?.some(
+          (gqlError) =>
+            gqlError.extensions.code ===
+            GraphQLErrorCode.BILLING_LIMITATION_ERROR
+        ) ?? false
+      );
     },
     onCompleted: (response) => {
       setCommitRunning(false);
@@ -93,9 +99,14 @@ const Commit = ({ projectId, noChanges }: Props) => {
     },
   });
 
-  const errorMessage = formatError(error);
   const isLimitationError =
-    errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
+    error?.graphQLErrors?.some(
+      (gqlError) =>
+        gqlError.extensions.code === GraphQLErrorCode.BILLING_LIMITATION_ERROR
+    ) ?? false;
+
+  const errorMessage = formatError(error);
+
   const limitationErrorMessage =
     isLimitationError && formatLimitationError(errorMessage);
 
@@ -147,7 +158,8 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 eventData={{
                   eventName: AnalyticsEventNames.CommitClicked,
                 }}
-                disabled={loading}
+                disabled={loading || isProjectUnderLimitation}
+                icon={isProjectUnderLimitation ? "locked" : null}
               >
                 {noChanges ? "Rebuild" : "Commit changes & build "}
               </Button>

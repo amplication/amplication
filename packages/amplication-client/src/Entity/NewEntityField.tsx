@@ -1,4 +1,4 @@
-import { Snackbar, TextField } from "@amplication/ui/design-system";
+import { Icon, Snackbar, TextField } from "@amplication/ui/design-system";
 import { gql, Reference, useMutation } from "@apollo/client";
 import classNames from "classnames";
 import { Form, Formik } from "formik";
@@ -25,7 +25,8 @@ const INITIAL_VALUES = {
 const CLASS_NAME = "new-entity-field";
 
 const NewEntityField = ({ entity, onFieldAdd }: Props) => {
-  const { addEntity } = useContext(AppContext);
+  const { addEntity, currentResource } = useContext(AppContext);
+  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
 
   const [createEntityField, { error, loading }] = useMutation<TData>(
@@ -111,7 +112,7 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
               required
               name="displayName"
               label="New Field Name"
-              disabled={loading}
+              disabled={loading || isResourceUnderLimitation}
               placeholder="Add field"
               autoComplete="off"
               autoFocus={autoFocus}

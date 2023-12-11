@@ -45,7 +45,8 @@ const FORM_SCHEMA = {
 const CLASS_NAME = "new-role";
 
 const NewRole = ({ onRoleAdd, resourceId }: Props) => {
-  const { addEntity } = useContext(AppContext);
+  const { addEntity, currentResource } = useContext(AppContext);
+  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const [createRole, { error, loading }] = useMutation(CREATE_ROLE, {
     update(cache, { data }) {
       if (!data) return;
@@ -122,7 +123,7 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
               required
               name="displayName"
               label="New Role Name"
-              disabled={loading}
+              disabled={loading || isResourceUnderLimitation}
               inputRef={inputRef}
               placeholder="Add role"
               autoComplete="off"

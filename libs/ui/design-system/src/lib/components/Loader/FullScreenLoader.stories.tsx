@@ -1,5 +1,5 @@
 import type { StoryFn, Meta } from "@storybook/react";
-import { FullScreenLoader } from "./FullScreenLoader";
+import FullScreenLoader from "./FullScreenLoader";
 
 const Story: Meta<typeof FullScreenLoader> = {
   component: FullScreenLoader,

@@ -32,6 +32,7 @@ import { ConfigService } from "@nestjs/config";
 import { BillingService } from "../billing/billing.service";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { GitProviderService } from "../git/git.provider.service";
+import { MeteredEntitlement } from "@stigg/node-server-sdk";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -216,6 +217,11 @@ const EXAMPLE_PROJECT: Project = {
 const EXAMPLE_PROJECT_CONFIGURATION = {};
 
 /** methods mock */
+const billingServiceGetMeteredEntitlementMock = jest.fn(() => {
+  return {
+    usageLimit: undefined,
+  } as unknown as MeteredEntitlement;
+});
 const prismaProjectUpdateMock = jest.fn(() => {
   return EXAMPLE_PROJECT;
 });
@@ -259,8 +265,11 @@ const blockServiceReleaseLockMock = jest.fn(async () => EXAMPLE_BLOCK);
 describe("ProjectService", () => {
   let service: ProjectService;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProjectService,
@@ -271,9 +280,7 @@ describe("ProjectService", () => {
         {
           provide: BillingService,
           useValue: {
-            getMeteredEntitlement: jest.fn(() => {
-              return {};
-            }),
+            getMeteredEntitlement: billingServiceGetMeteredEntitlementMock,
             getNumericEntitlement: jest.fn(() => {
               return {};
             }),
@@ -474,6 +481,81 @@ describe("ProjectService", () => {
         deletedAt: dateSpy.mock.instances[0],
         name: prepareDeletedItemName(EXAMPLE_PROJECT.name, EXAMPLE_PROJECT.id),
       },
+    });
+  });
+
+  describe("isUnderLimitation", () => {
+    const oldestProjectId = "oldestProjectId";
+    const newestProjectId = "newestProjectId";
+    const usageLimit = 1;
+    it("should return false if there is no usage limit", async () => {
+      billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
+        usageLimit: undefined,
+      } as unknown as MeteredEntitlement);
+      expect(
+        await service.isUnderLimitation(
+          EXAMPLE_WORKSPACE_ID,
+          EXAMPLE_PROJECT_ID
+        )
+      ).toEqual(false);
+    });
+
+    it("should return true if the project is not the oldest project in the workspace", async () => {
+      billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
+        usageLimit,
+      } as unknown as MeteredEntitlement);
+
+      prismaProjectFindManyMock.mockReturnValueOnce([
+        { id: newestProjectId },
+      ] as unknown as Project[]);
+
+      const result = await service.isUnderLimitation(
+        EXAMPLE_WORKSPACE_ID,
+        newestProjectId
+      );
+
+      expect(prismaProjectFindManyMock).toBeCalledTimes(1);
+      expect(prismaProjectFindManyMock).toBeCalledWith({
+        where: {
+          workspaceId: EXAMPLE_WORKSPACE_ID,
+          deletedAt: null,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        skip: usageLimit,
+      });
+
+      expect(result).toEqual(true);
+    });
+
+    it("should return false if the project is the oldest project in the workspace", async () => {
+      billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
+        usageLimit,
+      } as unknown as MeteredEntitlement);
+
+      prismaProjectFindManyMock.mockReturnValueOnce([
+        { id: newestProjectId },
+      ] as unknown as Project[]);
+
+      const result = await service.isUnderLimitation(
+        EXAMPLE_WORKSPACE_ID,
+        oldestProjectId
+      );
+
+      expect(prismaProjectFindManyMock).toBeCalledTimes(1);
+      expect(prismaProjectFindManyMock).toBeCalledWith({
+        where: {
+          workspaceId: EXAMPLE_WORKSPACE_ID,
+          deletedAt: null,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        skip: usageLimit,
+      });
+
+      expect(result).toEqual(false);
     });
   });
 });

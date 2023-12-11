@@ -75,6 +75,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
+  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const isUserEntityMandatory =
     pluginInstallations?.filter(
       (x) =>
@@ -235,6 +236,8 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 className={`${CLASS_NAME}__add-button`}
                 buttonStyle={EnumButtonStyle.Primary}
                 onClick={handleNewEntityClick}
+                disabled={isResourceUnderLimitation}
+                icon={isResourceUnderLimitation ? "locked" : null}
               >
                 Add entity
               </Button>
