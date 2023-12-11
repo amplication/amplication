@@ -17,6 +17,7 @@ import {
   Commit,
   Resource,
   Account,
+  Workspace,
 } from "../../models";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { FindManyEntityArgs } from "./dto";
@@ -41,6 +42,7 @@ import { BillingService } from "../billing/billing.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { MeteredEntitlement } from "@stigg/node-server-sdk";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -100,6 +102,23 @@ const EXAMPLE_ENTITY: Entity = {
   description: "example entity",
   lockedByUserId: undefined,
   lockedAt: null,
+};
+
+const EXAMPLE_ENTITY_WITH_RESOURCE: Entity = {
+  id: EXAMPLE_ENTITY_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  resourceId: "exampleResource",
+  name: "exampleEntity",
+  displayName: "example entity",
+  pluralDisplayName: "exampleEntities",
+  customAttributes: "customAttributes",
+  description: "example entity",
+  lockedByUserId: undefined,
+  lockedAt: null,
+  resource: {
+    id: EXAMPLE_RESOURCE_ID,
+  } as unknown as Resource,
 };
 
 const EXAMPLE_LOCKED_ENTITY: Entity = {
@@ -295,6 +314,9 @@ const EXAMPLE_USER: User = {
   updatedAt: new Date(),
   isOwner: true,
   account: EXAMPLE_ACCOUNT,
+  workspace: {
+    id: "exampleWorkspaceId",
+  } as unknown as Workspace,
 };
 
 const RESERVED_NAME = "class";
@@ -306,9 +328,15 @@ const prismaResourceFindUniqueMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
 
-const prismaEntityFindFirstMock = jest.fn(() => {
-  return EXAMPLE_ENTITY;
-});
+const prismaEntityFindFirstMock = jest
+  .fn()
+  .mockImplementation((prismaFindUniqueArgs) => {
+    if (prismaFindUniqueArgs.include?.resource) {
+      return EXAMPLE_ENTITY_WITH_RESOURCE;
+    }
+
+    return EXAMPLE_ENTITY;
+  });
 
 const prismaEntityFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY];
@@ -406,6 +434,13 @@ const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
 const prismaEntityPermissionFieldFindManyMock = jest.fn(() => null);
 const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
 
+const billingServiceGetMeteredEntitlementMock = jest.fn(() => {
+  return {
+    usageLimit: undefined,
+    hasAccess: true,
+  } as unknown as MeteredEntitlement;
+});
+
 const areDifferentMock = jest.fn(() => true);
 
 describe("EntityService", () => {
@@ -429,11 +464,9 @@ describe("EntityService", () => {
         },
         {
           provide: BillingService,
-          useClass: jest.fn(() => ({
-            getMeteredEntitlement: jest.fn(() => {
-              return {};
-            }),
-          })),
+          useValue: {
+            getMeteredEntitlement: billingServiceGetMeteredEntitlementMock,
+          },
         },
         {
           provide: ServiceSettingsService,
@@ -494,6 +527,7 @@ describe("EntityService", () => {
               create: prismaEntityCreateMock,
               delete: prismaEntityDeleteMock,
               update: prismaEntityUpdateMock,
+              findUnique: prismaEntityFindFirstMock,
             },
             entityVersion: {
               findMany: prismaEntityVersionFindManyMock,
