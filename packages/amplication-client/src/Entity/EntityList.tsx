@@ -71,7 +71,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
-  const isResourceUnderLimitation = currentResource?.isUnderLimitation;
+  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const isUserEntityMandatory =
     pluginInstallations?.filter(
       (x) =>

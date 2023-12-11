@@ -46,7 +46,7 @@ const CLASS_NAME = "new-role";
 
 const NewRole = ({ onRoleAdd, resourceId }: Props) => {
   const { addEntity, currentResource } = useContext(AppContext);
-  const isResourceUnderLimitation = currentResource?.isUnderLimitation;
+  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const [createRole, { error, loading }] = useMutation(CREATE_ROLE, {
     update(cache, { data }) {
       if (!data) return;

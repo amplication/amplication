@@ -26,7 +26,7 @@ const CLASS_NAME = "new-entity-field";
 
 const NewEntityField = ({ entity, onFieldAdd }: Props) => {
   const { addEntity, currentResource } = useContext(AppContext);
-  const isResourceUnderLimitation = currentResource?.isUnderLimitation;
+  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
 
   const [createEntityField, { error, loading }] = useMutation<TData>(

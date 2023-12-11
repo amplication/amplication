@@ -66,7 +66,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
     commitUtils,
   } = useContext(AppContext);
 
-  const isProjectUnderLimitation = currentProject?.isUnderLimitation;
+  const isProjectUnderLimitation = currentProject?.isUnderLimitation ?? false;
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
     history.push(path, { from: { pathname: history.location.pathname } });
