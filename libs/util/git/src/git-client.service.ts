@@ -277,6 +277,9 @@ export class GitClientService {
       baseBranch,
     });
 
+    // creates temp branch for passed branch Name
+    let tempBranchName = await this.createTempBranchFor(branchName, gitCli);
+
     // calculate diff on everything *already existing* on the amplication branch since last amplication build
     const preCommitDiff = await this.calculateDiffAndResetBranch({
       branchName,
@@ -288,30 +291,9 @@ export class GitClientService {
     const sha = await gitCli.commit(branchName, commitMessage, preparedFiles);
     this.logger.debug("New commit added", { sha });
 
-    // now calculate the diff (only) between the previous amplication build and the new one
-    const postCommitDiff = await this.calculateDiffAndResetBranch({
-      branchName,
-      gitCli,
-      useBeforeLastCommit: true,
-    });
-
-    // On top of the previous amplication build, apply the patch for the already existing changes that have been in this branch
     if (preCommitDiff.diff) {
-      await this.applyPostCommit(
-        preCommitDiff.diff,
-        owner,
-        repositoryName,
-        gitCli
-      );
-    }
-    // on top of the already existing changes, apply the diff between the previous amplication build and the new one
-    if (postCommitDiff.diff) {
-      await this.applyPostCommit(
-        postCommitDiff.diff,
-        owner,
-        repositoryName,
-        gitCli
-      );
+      // merge and deletes temp branch
+      await gitCli.mergeAndDeleteBranch(tempBranchName, branchName);
     }
 
     const existingPullRequest = await this.provider.getPullRequest({
@@ -387,6 +369,14 @@ export class GitClientService {
     return gitCli.log(authors, maxCount);
   }
 
+  async createTempBranchFor(branchName, gitCli) {
+    let tempBranchName = `temp-${branchName}`;
+    await gitCli.checkout(branchName);
+    await gitCli.createBranch(tempBranchName);
+
+    return tempBranchName;
+  }
+
   /**
    * Return the git diff of the latest amplication commit in the branchName.
    * Return null when no amplication commits are found in the branch.
@@ -418,7 +408,7 @@ export class GitClientService {
         return { diff: null };
       }
 
-      // Reset the branch to the latest commit of the user / bot
+      // Reset the branch to the latest commit of the bot
       this.logger.debug("preCommit - resetting branch ", { branchName, hash });
       await gitCli.reset([hash]);
       await gitCli.push(["--force"]);

@@ -60,6 +60,33 @@ export class GitCli {
     await this.push();
   }
 
+  async mergeAndDeleteBranch(tempBranch: string, branchName: string) {
+    await this.checkout(branchName);
+
+    // accepting all incoming changes, while merge conflicts
+    let options = [tempBranch, "--strategy-option=theirs", "--no-commit"];
+
+    this.logger.debug(`Merging branch`, { options });
+    await this.git.merge(options);
+
+    this.logger.debug(`Committing Amplication merge conflicts auto-resolution`);
+    await this.git.commit(
+      "Amplication merge conflicts auto-resolution",
+      undefined,
+      {
+        "--author": this.gitConflictsResolverAuthor,
+      }
+    );
+    this.git.deleteLocalBranch(tempBranch);
+    this.logger.debug(`Pushing Amplication merge conflicts auto-resolution`);
+    this.commit;
+    await this.push();
+  }
+
+  async createBranch(branchName: string): Promise<void> {
+    await this.git.branch([branchName, "-f"]);
+  }
+
   /**
    * Checkout to branch if exists, otherwise create new branch
    * @param branchName name of the branch to checkout
