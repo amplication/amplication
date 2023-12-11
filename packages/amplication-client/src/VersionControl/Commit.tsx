@@ -157,30 +157,38 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 placeholder={noChanges ? "Build message" : "Commit message..."}
                 autoComplete="off"
               />
-              <Button
-                type="submit"
-                buttonStyle={EnumButtonStyle.Primary}
-                eventData={{
-                  eventName: AnalyticsEventNames.CommitClicked,
-                }}
-                disabled={loading || isProjectUnderLimitation}
-              >
-                <FlexItem
-                  itemsAlign={EnumItemsAlign.Center}
-                  contentAlign={EnumContentAlign.Center}
+
+              {isProjectUnderLimitation ? (
+                <FeatureIndicator
+                  featureName={BillingFeature.Projects}
+                  text="Your current plan permits only one project."
+                  linkText="Please contact us to upgrade."
+                  element={
+                    <Button
+                      type="submit"
+                      icon="locked"
+                      buttonStyle={EnumButtonStyle.Primary}
+                      eventData={{
+                        eventName: AnalyticsEventNames.CommitClicked,
+                      }}
+                      disabled={loading || isProjectUnderLimitation}
+                    >
+                      {noChanges ? "Rebuild" : "Commit changes & build "}
+                    </Button>
+                  }
+                />
+              ) : (
+                <Button
+                  type="submit"
+                  buttonStyle={EnumButtonStyle.Primary}
+                  eventData={{
+                    eventName: AnalyticsEventNames.CommitClicked,
+                  }}
+                  disabled={loading || isProjectUnderLimitation}
                 >
-                  <span>
-                    {noChanges ? "Rebuild" : "Commit changes & build "}
-                  </span>
-                  {isProjectUnderLimitation && (
-                    <FeatureIndicator
-                      featureName={BillingFeature.Projects}
-                      text="Your current plan permits only one project."
-                      linkText="Contact us to upgrade."
-                    />
-                  )}
-                </FlexItem>
-              </Button>
+                  {noChanges ? "Rebuild" : "Commit changes & build "}
+                </Button>
+              )}
             </Form>
           );
         }}
