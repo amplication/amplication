@@ -146,7 +146,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     const pluginCategoriesHash = {};
     const pluginsWithLatestVersion = pluginsVersionData.plugins.map(
       (plugin) => {
-        let categories = plugin.categories;
+        const categories = plugin.categories;
         categories.forEach((category) => {
           if (!categoriesMap.hasOwnProperty(category))
             categoriesMap[category] = 1;
