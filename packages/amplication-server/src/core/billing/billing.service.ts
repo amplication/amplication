@@ -328,7 +328,7 @@ export class BillingService {
         );
 
         if (!servicesEntitlement.hasAccess) {
-          const message = `Your workspace exceeds its services limitations.`;
+          const message = `Your workspace exceeds its resource limitation.`;
           throw new BillingLimitationError(message);
         }
 
@@ -338,7 +338,7 @@ export class BillingService {
         );
 
         if (!membersEntitlement.hasAccess) {
-          const message = `Your workspace exceeds its team member limitations.`;
+          const message = `Your workspace exceeds its team member limitation.`;
           throw new BillingLimitationError(message);
         }
 
@@ -356,7 +356,7 @@ export class BillingService {
           )?.gitOrganization.provider;
 
           if (provider && !enterpriseGitEntitlement.hasAccess) {
-            const message = `Your ${enterpriseGitProvider} integration is not part of your plan.`;
+            const message = `Your workspace uses ${enterpriseGitProvider} integration, while it is not part of your current plan.`;
             throw new BillingLimitationError(message);
           }
         }
@@ -372,7 +372,7 @@ export class BillingService {
           projectWithCustomBaseBranch &&
           !changeGitBaseBranchEntitlement.hasAccess
         ) {
-          const message = `Custom Git base branch feature was enabled for your workspace but it's not part of your plan.`;
+          const message = `Your workspace uses the custom Git base branch feature, while it is not part of your current plan.`;
           throw new BillingLimitationError(message);
         }
 
