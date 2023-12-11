@@ -128,7 +128,7 @@ export class ResourceService {
       );
     }
 
-    const serviceEntitlement = await this.billingService.getBooleanEntitlement(
+    const serviceEntitlement = await this.billingService.getMeteredEntitlement(
       args.data.project.connect.id,
       BillingFeature.Services
     );
@@ -333,6 +333,10 @@ export class ResourceService {
       gitRepository,
       wizardType
     );
+
+    if (!resource) {
+      throw new Error(INVALID_RESOURCE_ID);
+    }
 
     await this.prisma.resourceRole.create({
       data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
