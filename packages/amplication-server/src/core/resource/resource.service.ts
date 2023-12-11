@@ -118,6 +118,7 @@ export class ResourceService {
    * This function should be called from one of the other "Create[ResourceType] functions like CreateService, CreateMessageBroker etc."
    */
   private async createResource(
+    user: User,
     args: CreateOneResourceArgs,
     gitRepositoryToCreate: ConnectGitRepositoryInput = null,
     wizardType: string = null
@@ -129,12 +130,14 @@ export class ResourceService {
     }
 
     const serviceEntitlement = await this.billingService.getMeteredEntitlement(
-      args.data.project.connect.id,
+      user.workspace.id,
       BillingFeature.Services
     );
 
     if (serviceEntitlement && !serviceEntitlement.hasAccess) {
-      return null;
+      throw new AmplicationError(
+        "Service limit reached. Please upgrade your plan to add new services."
+      );
     }
 
     const projectId = args.data.project.connect.id;
@@ -301,7 +304,7 @@ export class ResourceService {
     args: CreateOneResourceArgs,
     user: User
   ): Promise<Resource> {
-    const resource = await this.createResource({
+    const resource = await this.createResource(user, {
       data: {
         ...args.data,
         resourceType: EnumResourceType.MessageBroker,
@@ -324,6 +327,7 @@ export class ResourceService {
     const { serviceSettings, gitRepository, ...rest } = args.data;
 
     const resource = await this.createResource(
+      user,
       {
         data: {
           ...rest,
@@ -333,10 +337,6 @@ export class ResourceService {
       gitRepository,
       wizardType
     );
-
-    if (!resource) {
-      throw new Error(INVALID_RESOURCE_ID);
-    }
 
     await this.prisma.resourceRole.create({
       data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },

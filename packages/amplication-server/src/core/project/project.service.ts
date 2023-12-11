@@ -71,7 +71,9 @@ export class ProjectService {
     );
 
     if (projectEntitlement && !projectEntitlement.hasAccess) {
-      return null;
+      throw new Error(
+        "Project limit reached. Please upgrade your plan to add new projects."
+      );
     }
 
     const project = await this.prisma.project.create({
