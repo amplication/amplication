@@ -136,6 +136,32 @@ export class ProjectService {
     });
   }
 
+  async isUnderLimitation(
+    workspaceId: string,
+    projectId: string
+  ): Promise<boolean> {
+    const featureProjects = await this.billingService.getMeteredEntitlement(
+      workspaceId,
+      BillingFeature.Projects
+    );
+    if (!featureProjects.usageLimit) {
+      return false;
+    }
+
+    const projects = await this.prisma.project.findMany({
+      where: {
+        workspaceId,
+        deletedAt: null,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+      skip: featureProjects.usageLimit,
+    });
+
+    return projects.some((project) => project.id === projectId);
+  }
+
   /**
    * Gets all the origins changed since the last commit in the resource
    */

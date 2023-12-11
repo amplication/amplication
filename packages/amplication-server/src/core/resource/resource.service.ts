@@ -789,6 +789,40 @@ export class ResourceService {
     return this.prisma.resource.update(args);
   }
 
+  async isUnderLimitation(
+    workspaceId: string,
+    resourceId: string
+  ): Promise<boolean> {
+    const featureProjects = await this.billingService.getMeteredEntitlement(
+      workspaceId,
+      BillingFeature.Services
+    );
+
+    if (!featureProjects.usageLimit) {
+      return false;
+    }
+
+    const resourcesOrderedByCreationDate = await this.prisma.resource.findMany({
+      where: {
+        deletedAt: null,
+        archived: { not: true },
+        resourceType: EnumResourceType.Service,
+        project: {
+          workspaceId,
+          deletedAt: null,
+        },
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+      skip: featureProjects.usageLimit,
+    });
+
+    return resourcesOrderedByCreationDate.some(
+      (resource) => resource.id === resourceId
+    );
+  }
+
   async reportSyncMessage(
     resourceId: string,
     message: string

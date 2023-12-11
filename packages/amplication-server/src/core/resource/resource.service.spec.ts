@@ -60,6 +60,7 @@ import { PluginInstallationService } from "../pluginInstallation/pluginInstallat
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
+import { MeteredEntitlement } from "@stigg/node-server-sdk";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -396,6 +397,12 @@ const prismaResourceFindOneMock = jest.fn(
     }
   }
 );
+
+const billingServiceGetMeteredEntitlementMock = jest.fn(() => {
+  return {
+    usageLimit: undefined,
+  } as unknown as MeteredEntitlement;
+});
 const prismaResourceFindManyMock = jest.fn(() => {
   return [EXAMPLE_RESOURCE];
 });
@@ -478,8 +485,11 @@ cuid.mockImplementation(() => EXAMPLE_CUID);
 describe("ResourceService", () => {
   let service: ResourceService;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ResourceService,
@@ -500,9 +510,7 @@ describe("ResourceService", () => {
         {
           provide: BillingService,
           useValue: {
-            getMeteredEntitlement: jest.fn(() => {
-              return {};
-            }),
+            getMeteredEntitlement: billingServiceGetMeteredEntitlementMock,
             getNumericEntitlement: jest.fn(() => {
               return {};
             }),
@@ -1000,6 +1008,91 @@ describe("ResourceService", () => {
       await expect(service.updateResource(args)).rejects.toThrow(
         new Error(INVALID_RESOURCE_ID)
       );
+    });
+  });
+
+  describe("isUnderLimitation", () => {
+    const oldestResourceId = "oldestProjectId";
+    const newestResourceId = "newestProjectId";
+    const usageLimit = 1;
+    it("should return false if there is no usage limit", async () => {
+      billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
+        usageLimit: undefined,
+      } as unknown as MeteredEntitlement);
+      expect(
+        await service.isUnderLimitation(
+          EXAMPLE_WORKSPACE_ID,
+          EXAMPLE_RESOURCE_ID
+        )
+      ).toEqual(false);
+    });
+
+    it("should return true if the service is not the oldest service in the project", async () => {
+      billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
+        usageLimit,
+      } as unknown as MeteredEntitlement);
+
+      prismaResourceFindManyMock.mockReturnValueOnce([
+        { id: newestResourceId },
+      ] as unknown as Resource[]);
+
+      const result = await service.isUnderLimitation(
+        EXAMPLE_WORKSPACE_ID,
+        newestResourceId
+      );
+
+      expect(prismaResourceFindManyMock).toBeCalledTimes(1);
+      expect(prismaResourceFindManyMock).toBeCalledWith({
+        where: {
+          deletedAt: null,
+          archived: { not: true },
+          resourceType: EnumResourceType.Service,
+          project: {
+            workspaceId: EXAMPLE_WORKSPACE_ID,
+            deletedAt: null,
+          },
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        skip: usageLimit,
+      });
+
+      expect(result).toEqual(true);
+    });
+
+    it("should return false if the resource is the oldest service in the project", async () => {
+      billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
+        usageLimit,
+      } as unknown as MeteredEntitlement);
+
+      prismaResourceFindManyMock.mockReturnValueOnce([
+        { id: newestResourceId },
+      ] as unknown as Resource[]);
+
+      const result = await service.isUnderLimitation(
+        EXAMPLE_WORKSPACE_ID,
+        oldestResourceId
+      );
+
+      expect(prismaResourceFindManyMock).toBeCalledTimes(1);
+      expect(prismaResourceFindManyMock).toBeCalledWith({
+        where: {
+          deletedAt: null,
+          archived: { not: true },
+          resourceType: EnumResourceType.Service,
+          project: {
+            workspaceId: EXAMPLE_WORKSPACE_ID,
+            deletedAt: null,
+          },
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        skip: usageLimit,
+      });
+
+      expect(result).toEqual(false);
     });
   });
 });

@@ -1277,6 +1277,7 @@ type Project {
   demoRepoName: String
   description: String
   id: String!
+  isUnderLimitation: Boolean
   name: String!
   resources: [Resource!]
   updatedAt: DateTime!
@@ -1450,6 +1451,7 @@ type Resource {
   githubLastMessage: String
   githubLastSync: DateTime
   id: String!
+  isUnderLimitation: Boolean
   name: String!
   project: Project
   projectId: String
