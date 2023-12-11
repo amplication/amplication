@@ -263,27 +263,35 @@ export class EntityService {
     workspaceId: string,
     resourceId: string,
     serviceFeature: EnumServiceFeature
-  ) {
-    const canCreate = await this.billingService.isUnderLimitation(
+  ): Promise<boolean> {
+    const feature = await this.billingService.getMeteredEntitlement(
       workspaceId,
-      BillingFeature.Services,
-      resourceId,
-      (usageLimit) =>
-        this.prisma.resource.findMany({
-          where: {
+      BillingFeature.Services
+    );
+
+    if (!feature.usageLimit) {
+      return false;
+    }
+
+    const featuredEntityOrderedByCreationDate =
+      await this.prisma.resource.findMany({
+        where: {
+          deletedAt: null,
+          archived: { not: true },
+          resourceType: EnumResourceType.Service,
+          project: {
+            workspaceId,
             deletedAt: null,
-            archived: { not: true },
-            resourceType: EnumResourceType.Service,
-            project: {
-              workspaceId,
-              deletedAt: null,
-            },
           },
-          orderBy: {
-            createdAt: "asc",
-          },
-          skip: usageLimit,
-        })
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        skip: feature.usageLimit,
+      });
+
+    const canCreate = featuredEntityOrderedByCreationDate.some(
+      (featureEntity) => featureEntity.id === resourceId
     );
 
     if (canCreate) {
