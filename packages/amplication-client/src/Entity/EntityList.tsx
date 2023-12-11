@@ -239,7 +239,10 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 onClick={handleNewEntityClick}
                 disabled={isResourceUnderLimitation}
               >
-                <FlexItem itemsAlign={EnumItemsAlign.Center}>
+                <FlexItem
+                  itemsAlign={EnumItemsAlign.Center}
+                  contentAlign={EnumContentAlign.Center}
+                >
                   <span>Add entity</span>
                   {isResourceUnderLimitation && (
                     <FeatureIndicator featureName={BillingFeature.Services} />

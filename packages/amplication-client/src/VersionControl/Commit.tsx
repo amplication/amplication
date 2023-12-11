@@ -1,4 +1,5 @@
 import {
+  EnumContentAlign,
   EnumItemsAlign,
   FlexItem,
   LimitationDialog,
@@ -164,12 +165,19 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 }}
                 disabled={loading || isProjectUnderLimitation}
               >
-                <FlexItem itemsAlign={EnumItemsAlign.Center}>
+                <FlexItem
+                  itemsAlign={EnumItemsAlign.Center}
+                  contentAlign={EnumContentAlign.Center}
+                >
                   <span>
                     {noChanges ? "Rebuild" : "Commit changes & build "}
                   </span>
                   {isProjectUnderLimitation && (
-                    <FeatureIndicator featureName={BillingFeature.Projects} />
+                    <FeatureIndicator
+                      featureName={BillingFeature.Projects}
+                      text="Your current plan permits only one project."
+                      linkText="Contact us to upgrade."
+                    />
                   )}
                 </FlexItem>
               </Button>
