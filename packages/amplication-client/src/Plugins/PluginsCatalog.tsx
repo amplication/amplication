@@ -1,7 +1,13 @@
 import { List, Snackbar, TabContentTitle } from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { keyBy } from "lodash";
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import { match } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import { USER_ENTITY } from "../Entity/constants";
@@ -19,6 +25,7 @@ import PluginsCatalogItem from "./PluginsCatalogItem";
 type Props = AppRouteProps & {
   match: match<{
     resource: string;
+    category?: string;
   }>;
 };
 
@@ -38,7 +45,7 @@ const SUB_TITLE =
   "Extend and customize your services by using plugins for various technologies and integrations.";
 
 const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
-  const { resource } = match.params;
+  const { resource, category } = match.params;
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
   const [isCreatePluginInstallation, setIsCreatePluginInstallation] =
     useState<boolean>(false);
@@ -57,6 +64,30 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
     },
   });
 
+  const {
+    pluginInstallations,
+    pluginCatalog,
+    createPluginInstallation,
+    createError,
+    updatePluginInstallation,
+    updateError,
+    // onPluginDropped,
+  } = usePlugins(resource);
+
+  const filteredCatalog = useMemo(() => {
+    if (category === "catalog") return Object.values(pluginCatalog);
+
+    return Object.values(pluginCatalog).reduce(
+      (pluginsCatalogArr: Plugin[], plugin: Plugin) => {
+        if (!plugin.categories.includes(category)) return pluginsCatalogArr;
+
+        pluginsCatalogArr.push(plugin);
+        return pluginsCatalogArr;
+      },
+      []
+    );
+  }, [category, pluginCatalog]);
+
   const { addEntity } = useContext(AppContext);
 
   const userEntity = useMemo(() => {
@@ -67,16 +98,6 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
       );
     } else return authEntity;
   }, [entities?.entities, resourceSettings?.serviceSettings]);
-
-  const {
-    pluginInstallations,
-    pluginCatalog,
-    createPluginInstallation,
-    createError,
-    updatePluginInstallation,
-    updateError,
-    // onPluginDropped,
-  } = usePlugins(resource);
 
   const handleInstall = useCallback(
     (plugin: Plugin, pluginVersion: PluginVersion) => {
@@ -243,9 +264,9 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
       ></PluginInstallConfirmationDialog>
       <TabContentTitle title={TITLE} subTitle={SUB_TITLE} />
       <List>
-        {Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
+        {filteredCatalog.map((plugin) => (
           <PluginsCatalogItem
-            key={pluginId}
+            key={plugin.pluginId}
             plugin={plugin}
             pluginInstallation={installedPlugins[plugin.pluginId]}
             onInstall={handleInstall}

@@ -1,4 +1,9 @@
-import { QueryOptions, useMutation, useQuery } from "@apollo/client";
+import {
+  ApolloError,
+  QueryOptions,
+  useMutation,
+  useQuery,
+} from "@apollo/client";
 import {
   GET_PLUGIN_INSTALLATIONS,
   CREATE_PLUGIN_INSTALLATION,
@@ -62,6 +67,10 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   const [pluginOrderObj, setPluginOrderObj] = useState<{
     [key: string]: number;
   }>();
+  const [pluginCategories, setPluginCategories] = useState<{
+    categories: string[];
+    pluginCategoriesMap: { [key: string]: string[] };
+  }>({ categories: [], pluginCategoriesMap: {} });
   const [pluginsVersion, setPluginsVersion] = useState<{
     [key: string]: Plugin;
   }>({});
@@ -133,8 +142,18 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   useEffect(() => {
     if (!pluginsVersionData || loadingPluginsVersionData) return;
 
+    const categoriesMap = {};
+    const pluginCategoriesHash = {};
     const pluginsWithLatestVersion = pluginsVersionData.plugins.map(
       (plugin) => {
+        let categories = plugin.categories;
+        categories.forEach((category) => {
+          if (!categoriesMap.hasOwnProperty(category))
+            categoriesMap[category] = 1;
+
+          return;
+        });
+        pluginCategoriesHash[plugin.pluginId] = categories;
         const latestVersion = plugin.versions.find(
           (pluginVersion) => pluginVersion.isLatest
         );
@@ -153,6 +172,11 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
         } else return plugin;
       }
     );
+
+    setPluginCategories({
+      categories: Object.keys(categoriesMap),
+      pluginCategoriesMap: pluginCategoriesHash,
+    });
 
     const sortedPlugins = keyBy(
       pluginsWithLatestVersion,
@@ -194,12 +218,18 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
       return undefined;
 
     const pluginOrderArr = [...(pluginOrder?.pluginOrder.order ?? [])];
-    console.log(pluginsVersionData, pluginInstallations);
+
     return pluginOrderArr.map((plugin: models.PluginOrderItem) => {
-      return pluginInstallations?.PluginInstallations.find(
+      const installedPlugin: models.PluginInstallation & {
+        categories?: string[];
+      } = pluginInstallations?.PluginInstallations.find(
         (installationPlugin: models.PluginInstallation) =>
           installationPlugin.pluginId === plugin.pluginId
       );
+      installedPlugin.categories =
+        pluginCategories.pluginCategoriesMap[installedPlugin.pluginId];
+
+      return installedPlugin;
     }) as unknown as models.PluginInstallation[];
   }, [pluginInstallations, pluginOrder, pluginsVersionData]);
 
@@ -296,6 +326,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     updateError,
     createPluginInstallation,
     createError,
+    categories: pluginCategories.categories,
     pluginCatalog: pluginsVersion,
     onPluginDropped,
     pluginOrderObj,
