@@ -317,26 +317,26 @@ export class BillingService {
 
           throw new BillingLimitationError(message);
         }
+        try {
+          const servicesEntitlement = await this.getMeteredEntitlement(
+            workspaceId,
+            BillingFeature.Services
+          );
 
-        const servicesEntitlement = await this.getMeteredEntitlement(
-          workspaceId,
-          BillingFeature.Services
-        );
+          if (!servicesEntitlement.hasAccess) {
+            const message = `Your workspace exceeds its services limitations.`;
+            throw new BillingLimitationError(message);
+          }
 
-        if (!servicesEntitlement.hasAccess) {
-          const message = `Allowed services per workspace: ${servicesEntitlement.usageLimit}`;
+          const membersEntitlement = await this.getMeteredEntitlement(
+            workspaceId,
+            BillingFeature.TeamMembers
+          );
 
-          await this.analytics.track({
-            userId: currentUser.account.id,
-            properties: {
-              workspaceId,
-              reason: message,
-            },
-            event: EnumEventType.SubscriptionLimitPassed,
-          });
-
-          throw new BillingLimitationError(message);
-        }
+          if (!membersEntitlement.hasAccess) {
+            const message = `Your workspace exceeds its team member limitations.`;
+            throw new BillingLimitationError(message);
+          }
 
         const servicesAboveEntitiesPerServiceLimitEntitlement =
           await this.getMeteredEntitlement(
@@ -364,6 +364,18 @@ export class BillingService {
           });
 
           throw new BillingLimitationError(message);
+        } catch (error) {
+          if (error instanceof BillingLimitationError) {
+            await this.analytics.track({
+              userId: currentUser.account.id,
+              properties: {
+                workspaceId,
+                reason: error.message,
+              },
+              event: EnumEventType.SubscriptionLimitPassed,
+            });
+          }
+          throw error;
         }
       }
     }
