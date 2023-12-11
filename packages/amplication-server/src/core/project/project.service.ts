@@ -315,6 +315,7 @@ export class ProjectService {
           currentProjectId: project.id,
           projects: projects,
           repositories,
+          bypassLimitations: args.data.bypassLimitations,
         }
       );
     }
