@@ -14,6 +14,7 @@ import {
   setResourceUrlLink,
 } from "./resourceMenuUtils";
 import { useStiggContext } from "@stigg/react-sdk";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 type Props = AppRouteProps & {
   match: match<{
