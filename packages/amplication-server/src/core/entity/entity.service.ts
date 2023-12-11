@@ -88,6 +88,7 @@ import { ServiceSettingsService } from "../serviceSettings/serviceSettings.servi
 import { ModuleService } from "../module/module.service";
 import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForEntityNotFoundError";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -178,6 +179,12 @@ const NON_COMPARABLE_PROPERTIES = [
   "resourceRoleId",
 ];
 
+enum EnumServiceFeature {
+  Entities = "entities",
+  Fields = "fields",
+  Roles = "roles",
+}
+
 @Injectable()
 export class EntityService {
   constructor(
@@ -252,6 +259,40 @@ export class EntityService {
     });
   }
 
+  async isServiceFeatureUnderLimitation(
+    workspaceId: string,
+    resourceId: string,
+    serviceFeature: EnumServiceFeature
+  ) {
+    const canCreate = await this.billingService.isUnderLimitation(
+      workspaceId,
+      BillingFeature.Services,
+      resourceId,
+      (usageLimit) =>
+        this.prisma.resource.findMany({
+          where: {
+            deletedAt: null,
+            archived: { not: true },
+            resourceType: EnumResourceType.Service,
+            project: {
+              workspaceId,
+              deletedAt: null,
+            },
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+          skip: usageLimit,
+        })
+    );
+
+    if (canCreate) {
+      throw new AmplicationError(
+        `You have reached the limit of services, so you cannot add new ${serviceFeature} on this service. Please upgrade your plan to add more services and entities`
+      );
+    }
+  }
+
   async createOneEntity(
     args: CreateOneEntityArgs,
     user: User,
@@ -259,7 +300,14 @@ export class EntityService {
     enforceValidation = true,
     trackEvent = true
   ): Promise<Entity> {
+    const workspaceId = user.workspace.id;
     const resourceId = args.data.resource.connect.id;
+    await this.isServiceFeatureUnderLimitation(
+      workspaceId,
+      resourceId,
+      EnumServiceFeature.Entities
+    );
+
     if (
       args.data?.name?.toLowerCase().trim() ===
       args.data?.pluralDisplayName?.toLowerCase().trim()
@@ -1691,6 +1739,14 @@ export class EntityService {
     args: UpdateEntityPermissionRolesArgs,
     user: User
   ): Promise<EntityPermission> {
+    const workspaceId = user.workspace.id;
+    const resourceId = args.data.entity.connect.id;
+    await this.isServiceFeatureUnderLimitation(
+      workspaceId,
+      resourceId,
+      EnumServiceFeature.Roles
+    );
+
     return await this.useLocking(
       args.data.entity.connect.id,
       user,
@@ -2323,6 +2379,14 @@ export class EntityService {
     ) {
       throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
     }
+
+    const workspaceId = user.workspace.id;
+    const resourceId = args.data.entity.connect.id;
+    await this.isServiceFeatureUnderLimitation(
+      workspaceId,
+      resourceId,
+      EnumServiceFeature.Fields
+    );
 
     // Omit entity from received data
     const data = omit(args.data, ["entity"]);
