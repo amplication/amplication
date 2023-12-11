@@ -100,8 +100,8 @@ export const FeatureIndicator = ({
       }
     >
       <div className={`${CLASS_NAME}__wrapper`}>
-        {icon ? (
-          <Icon icon={icon} size={"xsmall"} color={EnumTextColor.Black20} />
+        {icon && !element ? (
+          <Icon icon={icon} size="xsmall" color={EnumTextColor.Black20} />
         ) : (
           element
         )}

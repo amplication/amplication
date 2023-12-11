@@ -14,6 +14,7 @@ import React from "react";
 import { FeatureIndicator } from "./FeatureIndicator";
 import "./FeatureControlContainer.scss";
 import { omit } from "lodash";
+import { EnumTextColor, Icon } from "@amplication/ui/design-system";
 
 const CLASS_NAME = "with-feature-control";
 
@@ -27,9 +28,15 @@ export enum EntitlementType {
   Metered = "metered",
 }
 
+export enum FeatureIndicatorPlacement {
+  Inside = "inside",
+  Outside = "outside",
+}
+
 export type Props = {
   featureId: BillingFeature;
   entitlementType: EntitlementType;
+  featureIndicatorPlacement?: FeatureIndicatorPlacement;
   meteredFeatureLength?: number;
   disabled?: boolean;
   icon?: IconType | null;
@@ -41,6 +48,7 @@ export type Props = {
 export const FeatureControlContainer: FC<Props> = ({
   featureId,
   entitlementType,
+  featureIndicatorPlacement = FeatureIndicatorPlacement.Inside,
   meteredFeatureLength,
   disabled,
   children,
@@ -117,9 +125,26 @@ export const FeatureControlContainer: FC<Props> = ({
                 reversePosition ? "reverse-position" : ""
               }`}
             >
-              {React.cloneElement(child, omit(renderProps, "icon"))}
               {iconType && (
-                <FeatureIndicator featureName={featureId} icon={iconType} />
+                <FeatureIndicator
+                  featureName={featureId}
+                  icon={iconType}
+                  element={
+                    featureIndicatorPlacement ===
+                    FeatureIndicatorPlacement.Outside ? (
+                      <>
+                        {React.cloneElement(child, omit(renderProps, "icon"))}{" "}
+                        <Icon
+                          icon={iconType}
+                          color={EnumTextColor.Black20}
+                          size="xsmall"
+                        />
+                      </>
+                    ) : (
+                      React.cloneElement(child, renderProps)
+                    )
+                  }
+                />
               )}
             </div>
           ))}

@@ -1,9 +1,4 @@
-import {
-  Form,
-  Icon,
-  SelectField,
-  ToggleField,
-} from "@amplication/ui/design-system";
+import { Form, SelectField, ToggleField } from "@amplication/ui/design-system";
 import { useStiggContext } from "@stigg/react-sdk";
 import { Formik } from "formik";
 import { BillingFeature } from "@amplication/util-billing-types";
@@ -13,6 +8,7 @@ import "./CodeGeneratorVersionForm.scss";
 import {
   EntitlementType,
   FeatureControlContainer,
+  FeatureIndicatorPlacement,
 } from "../../Components/FeatureControlContainer";
 
 const CLASS_NAME = "code-generator-version-form";
@@ -74,6 +70,7 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
               <FeatureControlContainer
                 featureId={BillingFeature.CodeGeneratorVersion}
                 entitlementType={EntitlementType.Boolean}
+                featureIndicatorPlacement={FeatureIndicatorPlacement.Outside}
               >
                 <ToggleField
                   label="I want to select a specific version of the code generator"
