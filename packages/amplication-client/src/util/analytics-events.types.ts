@@ -86,6 +86,7 @@ export enum AnalyticsEventNames {
   LastCommitIdClick = "lastCommitIdClick",
   PendingChangesDiscard = "discardPendingChanges",
   LastBuildIdClick = "lastBuildIdClick",
+  PassedLimitsNotificationBypass = "passedLimitsNotificationBypass",
 
   // code view
   CodeViewTileClick = "viewCodeViewTileClick",

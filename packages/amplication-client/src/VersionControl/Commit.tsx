@@ -210,10 +210,10 @@ const Commit = ({ projectId, noChanges }: Props) => {
               resetForm: formikRef.current.resetForm,
             });
 
-            // trackEvent({
-            //   eventName: AnalyticsEventNames.PassedLimitsNotificationBypass,
-            //   reason: limitationErrorMessage,
-            // });
+            trackEvent({
+              eventName: AnalyticsEventNames.PassedLimitsNotificationBypass,
+              reason: limitationErrorMessage,
+            });
             setOpenLimitationDialog(false);
           }}
         />
