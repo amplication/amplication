@@ -811,7 +811,7 @@ export class ResourceService {
     workspaceId: string,
     resourceId: string
   ): Promise<boolean> {
-    // return hard coded false (for now), meaning that there are no limitation around resource expect from creation. We will implement this in the future
+    // return hard coded false (for now), meaning that there are no limitation around resource apart from creation. We will implement this in the future
     return false;
   }
 
