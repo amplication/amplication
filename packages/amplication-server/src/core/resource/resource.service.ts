@@ -819,38 +819,8 @@ export class ResourceService {
     workspaceId: string,
     resourceId: string
   ): Promise<boolean> {
-    if (!this.billingService.isBillingEnabled) {
-      return false;
-    }
-
-    const featureProjects = await this.billingService.getMeteredEntitlement(
-      workspaceId,
-      BillingFeature.Services
-    );
-
-    if (!featureProjects.usageLimit) {
-      return false;
-    }
-
-    const resourcesOrderedByCreationDate = await this.prisma.resource.findMany({
-      where: {
-        deletedAt: null,
-        archived: { not: true },
-        resourceType: EnumResourceType.Service,
-        project: {
-          workspaceId,
-          deletedAt: null,
-        },
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-      skip: featureProjects.usageLimit,
-    });
-
-    return resourcesOrderedByCreationDate.some(
-      (resource) => resource.id === resourceId
-    );
+    // return hard coded false (for now), meaning that there are no limitation around resource expect from creation. We will implement this in the future
+    return false;
   }
 
   async reportSyncMessage(
