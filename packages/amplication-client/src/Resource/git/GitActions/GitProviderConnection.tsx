@@ -11,6 +11,8 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import {
   EntitlementType,
   FeatureControlContainer,
+  FeatureIndicatorPlacement,
+  IconType,
 } from "../../../Components/FeatureControlContainer";
 
 type Props = {
@@ -54,6 +56,7 @@ export default function GitProviderConnection({
             featureId={billingFeature}
             entitlementType={EntitlementType.Boolean}
             reversePosition={true}
+            featureIndicatorPlacement={FeatureIndicatorPlacement.Outside}
           >
             <Button
               className={`${CLASS_NAME}__connect`}
@@ -70,6 +73,7 @@ export default function GitProviderConnection({
               comingSoon={true}
               text="for GitLab integration"
               linkText="Contact us"
+              icon={IconType.Lock}
             />
             <Button
               className={`${CLASS_NAME}__connect`}
