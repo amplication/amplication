@@ -4,7 +4,11 @@ import { BillingService } from "./billing.service";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
-import { BillingPlan, BillingFeature } from "@amplication/util-billing-types";
+import {
+  BillingPlan,
+  BillingFeature,
+  BillingAddon,
+} from "@amplication/util-billing-types";
 import Stigg, {
   BooleanEntitlement,
   FullSubscription,
@@ -164,6 +168,31 @@ describe("BillingService", () => {
         })
       );
     });
+  });
+
+  it("should provision customer with default plan: enterprise with custom actions addon", async () => {
+    const expectedWorkspaceId = "id";
+    const spyOnStiggProvisionCustomer = jest.spyOn(
+      Stigg.prototype,
+      "provisionCustomer"
+    );
+
+    await service.provisionCustomer(expectedWorkspaceId);
+
+    expect(spyOnStiggProvisionCustomer).toHaveBeenCalledTimes(1);
+    expect(spyOnStiggProvisionCustomer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customerId: expectedWorkspaceId,
+        subscriptionParams: {
+          planId: BillingPlan.Enterprise,
+          addons: [
+            {
+              addonId: BillingAddon.CustomActions,
+            },
+          ],
+        },
+      })
+    );
   });
 
   describe("validateSubscriptionPlanLimitationsForWorkspace", () => {

@@ -20,7 +20,11 @@ import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscript
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
 import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
-import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
+import {
+  BillingAddon,
+  BillingFeature,
+  BillingPlan,
+} from "@amplication/util-billing-types";
 import { ValidateSubscriptionPlanLimitationsArgs } from "./billing.service.types";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
 
@@ -32,6 +36,17 @@ export class BillingService {
 
   get isBillingEnabled(): boolean {
     return this.billingEnabled;
+  }
+
+  private get defaultSubscriptionPlan() {
+    return {
+      planId: BillingPlan.Enterprise,
+      addons: [
+        {
+          addonId: BillingAddon.CustomActions,
+        },
+      ],
+    };
   }
 
   constructor(
@@ -258,18 +273,12 @@ export class BillingService {
     }
   }
 
-  async provisionCustomer(
-    workspaceId: string,
-    plan: BillingPlan
-  ): Promise<null> {
+  async provisionCustomer(workspaceId: string): Promise<null> {
     if (this.isBillingEnabled) {
-      const stiggClient = await this.getStiggClient();
-      await stiggClient.provisionCustomer({
+      await this.stiggClient.provisionCustomer({
         customerId: workspaceId,
         shouldSyncFree: false,
-        subscriptionParams: {
-          planId: plan,
-        },
+        subscriptionParams: this.defaultSubscriptionPlan,
       });
     }
     return;
