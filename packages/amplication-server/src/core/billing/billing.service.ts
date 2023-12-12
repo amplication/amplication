@@ -364,18 +364,6 @@ export class BillingService {
           const message = `Your workspace uses the custom Git base branch feature, while it is not part of your current plan.`;
           throw new BillingLimitationError(message);
         }
-
-        const servicesAboveEntitiesPerServiceLimitEntitlement =
-          await this.getMeteredEntitlement(
-            workspaceId,
-            BillingFeature.ServicesAboveEntitiesPerServiceLimit
-          );
-
-        if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
-          const message = `Your workspace exceeds its entities per service limitations.`;
-
-          throw new BillingLimitationError(message);
-        }
       } catch (error) {
         if (error instanceof BillingLimitationError) {
           await this.analytics.track({
