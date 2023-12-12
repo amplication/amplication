@@ -164,96 +164,6 @@ describe("BillingService", () => {
     );
   });
 
-  it("should throw exceptions on number of projects if the workspace has no entitlement to bypass code generation limitation and the current project is out of the limitation based on the number of allowed projects and its creation date", async () => {
-    const workspaceId = "id";
-    const projectsPerWorkspaceLimit = 1;
-
-    const spyOnServiceGetBooleanEntitlement = jest
-      .spyOn(service, "getBooleanEntitlement")
-      .mockResolvedValue({
-        hasAccess: false,
-      } as BooleanEntitlement);
-
-    const spyOnServiceGetMeteredEntitlement = jest
-      .spyOn(service, "getMeteredEntitlement")
-      .mockResolvedValue({
-        hasAccess: false,
-        usageLimit: projectsPerWorkspaceLimit,
-      } as MeteredEntitlement);
-
-    const user: User = {
-      id: "user-id",
-      account: {
-        id: "account-id",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        email: "email",
-        firstName: "first-name",
-        lastName: "last-name",
-        password: "password",
-      },
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      isOwner: true,
-    };
-
-    const projects: Project[] = [
-      {
-        id: "project-id-1",
-        name: "project-1",
-        workspaceId: workspaceId,
-        useDemoRepo: false,
-        createdAt: new Date("2023-01-01"),
-        updatedAt: new Date(),
-      },
-      {
-        id: "project-id-2",
-        name: "project-2",
-        workspaceId: workspaceId,
-        useDemoRepo: false,
-        createdAt: new Date("2023-01-02"),
-        updatedAt: new Date(),
-      },
-    ];
-    const repositories: GitRepository[] = [
-      {
-        gitOrganizationId: "git-organization-id",
-        name: "git-repository-name",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        id: "git-repository-id",
-        gitOrganization: {
-          provider: EnumGitProvider.Github,
-          id: "git-organization-id",
-        } as unknown as GitOrganization,
-      },
-    ];
-
-    await expect(
-      service.validateSubscriptionPlanLimitationsForWorkspace({
-        workspaceId,
-        currentUser: user,
-        currentProjectId: "project-id-2",
-        projects,
-        repositories,
-      })
-    ).rejects.toThrow(
-      new BillingLimitationError("Allowed projects per workspace: 1")
-    );
-
-    expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
-    expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledWith(
-      workspaceId,
-      BillingFeature.IgnoreValidationCodeGeneration
-    );
-    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(1);
-    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
-      1,
-      workspaceId,
-      BillingFeature.Projects
-    );
-  });
-
   it("should throw exceptions on number of services if the workspace has no entitlement to bypass code generation limitation", async () => {
     const workspaceId = "id";
     const projectId = "project-id-1";
@@ -342,14 +252,8 @@ describe("BillingService", () => {
       })
     );
 
-    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(2);
     expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
       1,
-      workspaceId,
-      BillingFeature.Projects
-    );
-    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
-      2,
       workspaceId,
       BillingFeature.Services
     );
@@ -474,19 +378,15 @@ describe("BillingService", () => {
       })
     );
 
-    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(3);
+    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(2);
+
     expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
       1,
-      workspaceId,
-      BillingFeature.Projects
-    );
-    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
-      2,
       workspaceId,
       BillingFeature.Services
     );
     expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
-      3,
+      2,
       workspaceId,
       BillingFeature.TeamMembers
     );

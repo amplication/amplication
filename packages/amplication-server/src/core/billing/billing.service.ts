@@ -294,33 +294,6 @@ export class BillingService {
         return;
       }
 
-      const projectsEntitlement = await this.getMeteredEntitlement(
-        workspaceId,
-        BillingFeature.Projects
-      );
-
-      const projectsUnderLimitation = projects.slice(
-        0,
-        projectsEntitlement.usageLimit
-      );
-      const canCurrentProjectCommit = projectsUnderLimitation.some(
-        (project) => project.id === currentProjectId
-      );
-
-      if (!projectsEntitlement.hasAccess && !canCurrentProjectCommit) {
-        const message = `Allowed projects per workspace: ${projectsEntitlement.usageLimit}`;
-
-        await this.analytics.track({
-          userId: currentUser.account.id,
-          properties: {
-            workspaceId,
-            reason: message,
-          },
-          event: EnumEventType.SubscriptionLimitPassed,
-        });
-
-        throw new BillingLimitationError(message);
-      }
       try {
         const servicesEntitlement = await this.getMeteredEntitlement(
           workspaceId,
