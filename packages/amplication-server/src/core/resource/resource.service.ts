@@ -120,6 +120,7 @@ export class ResourceService {
    */
   private async createResource(
     args: CreateOneResourceArgs,
+    user: User,
     gitRepositoryToCreate: ConnectGitRepositoryInput = null,
     wizardType: string = null
   ): Promise<Resource> {
@@ -127,6 +128,19 @@ export class ResourceService {
       throw new AmplicationError(
         "Resource of type Project Configuration cannot be created manually"
       );
+    }
+
+    if (this.billingService.isBillingEnabled) {
+      const serviceEntitlement =
+        await this.billingService.getMeteredEntitlement(
+          user.workspace.id,
+          BillingFeature.Services
+        );
+
+      if (serviceEntitlement && !serviceEntitlement.hasAccess) {
+        const message = `Your project exceeds its services limitation.`;
+        throw new BillingLimitationError(message);
+      }
     }
 
     const projectId = args.data.project.connect.id;
@@ -293,25 +307,15 @@ export class ResourceService {
     args: CreateOneResourceArgs,
     user: User
   ): Promise<Resource> {
-    if (this.billingService.isBillingEnabled) {
-      const serviceEntitlement =
-        await this.billingService.getMeteredEntitlement(
-          user.workspace.id,
-          BillingFeature.Services
-        );
-
-      if (serviceEntitlement && !serviceEntitlement.hasAccess) {
-        const message = `Your project exceeds its services limitation.`;
-        throw new BillingLimitationError(message);
-      }
-    }
-
-    const resource = await this.createResource({
-      data: {
-        ...args.data,
-        resourceType: EnumResourceType.MessageBroker,
+    const resource = await this.createResource(
+      {
+        data: {
+          ...args.data,
+          resourceType: EnumResourceType.MessageBroker,
+        },
       },
-    });
+      user
+    );
     await this.topicService.createDefault(resource, user);
 
     return resource;
@@ -326,19 +330,6 @@ export class ResourceService {
     wizardType: string = null,
     requireAuthenticationEntity: boolean = null
   ): Promise<Resource> {
-    if (this.billingService.isBillingEnabled) {
-      const serviceEntitlement =
-        await this.billingService.getMeteredEntitlement(
-          user.workspace.id,
-          BillingFeature.Services
-        );
-
-      if (serviceEntitlement && !serviceEntitlement.hasAccess) {
-        const message = `Your project exceeds its services limitation.`;
-        throw new BillingLimitationError(message);
-      }
-    }
-
     const { serviceSettings, gitRepository, ...rest } = args.data;
     const resource = await this.createResource(
       {
@@ -347,6 +338,7 @@ export class ResourceService {
           resourceType: EnumResourceType.Service,
         },
       },
+      user,
       gitRepository,
       wizardType
     );
