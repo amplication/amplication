@@ -10,10 +10,10 @@ import { PROVIDERS_DISPLAY_NAME } from "../../constants";
 import { BillingFeature } from "@amplication/util-billing-types";
 import {
   EntitlementType,
-  FeatureControlContainer,
+  FeatureIndicatorContainer,
   FeatureIndicatorPlacement,
   IconType,
-} from "../../../Components/FeatureControlContainer";
+} from "../../../Components/FeatureIndicatorContainer";
 
 type Props = {
   onSyncNewGitOrganizationClick: (data: any) => any;
@@ -52,7 +52,7 @@ export default function GitProviderConnection({
       <div className={`${CLASS_NAME}__controls`}>
         {disabled && <FeatureIndicator featureName={featureName} />}
         {!comingSoon ? (
-          <FeatureControlContainer
+          <FeatureIndicatorContainer
             featureId={billingFeature}
             entitlementType={EntitlementType.Boolean}
             reversePosition={true}
@@ -65,7 +65,7 @@ export default function GitProviderConnection({
             >
               Connect
             </Button>
-          </FeatureControlContainer>
+          </FeatureIndicatorContainer>
         ) : (
           <div className={`${CLASS_NAME}__coming_soon`}>
             <FeatureIndicator

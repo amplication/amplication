@@ -17,8 +17,8 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import FormikAutoSave from "../../../../util/formikAutoSave";
 import {
   EntitlementType,
-  FeatureControlContainer,
-} from "../../../../Components/FeatureControlContainer";
+  FeatureIndicatorContainer,
+} from "../../../../Components/FeatureIndicatorContainer";
 import { FeatureIndicator } from "../../../../Components/FeatureIndicator";
 
 type Props = {
@@ -53,7 +53,7 @@ const RepositoryForm = ({ onSubmit, defaultValues }: Props) => {
   }, [defaultValues]);
 
   return (
-    <FeatureControlContainer
+    <FeatureIndicatorContainer
       featureId={BillingFeature.ChangeGitBaseBranch}
       entitlementType={EntitlementType.Boolean}
       render={({ disabled, icon }) => (

@@ -12,7 +12,7 @@ import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
 import React from "react";
 import { FeatureIndicator } from "./FeatureIndicator";
-import "./FeatureControlContainer.scss";
+import "./FeatureIndicatorContainer.scss";
 import { omit } from "lodash";
 import { EnumTextColor, Icon } from "@amplication/ui/design-system";
 
@@ -45,7 +45,7 @@ export type Props = {
   reversePosition?: boolean;
 };
 
-export const FeatureControlContainer: FC<Props> = ({
+export const FeatureIndicatorContainer: FC<Props> = ({
   featureId,
   entitlementType,
   featureIndicatorPlacement = FeatureIndicatorPlacement.Inside,

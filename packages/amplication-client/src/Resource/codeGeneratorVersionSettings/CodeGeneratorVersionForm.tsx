@@ -7,9 +7,9 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import "./CodeGeneratorVersionForm.scss";
 import {
   EntitlementType,
-  FeatureControlContainer,
+  FeatureIndicatorContainer,
   FeatureIndicatorPlacement,
-} from "../../Components/FeatureControlContainer";
+} from "../../Components/FeatureIndicatorContainer";
 
 const CLASS_NAME = "code-generator-version-form";
 
@@ -67,7 +67,7 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
           <Form>
             <FormikAutoSave debounceMS={200} />
             <div className={CLASS_NAME}>
-              <FeatureControlContainer
+              <FeatureIndicatorContainer
                 featureId={BillingFeature.CodeGeneratorVersion}
                 entitlementType={EntitlementType.Boolean}
                 featureIndicatorPlacement={FeatureIndicatorPlacement.Outside}
@@ -76,7 +76,7 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
                   label="I want to select a specific version of the code generator"
                   name="useSpecificVersion"
                 />
-              </FeatureControlContainer>
+              </FeatureIndicatorContainer>
 
               {formik.values.useSpecificVersion && (
                 <>

@@ -15,8 +15,8 @@ import "./ServiceConnectionsPage.scss";
 import { BillingFeature } from "@amplication/util-billing-types";
 import {
   EntitlementType,
-  FeatureControlContainer,
-} from "../Components/FeatureControlContainer";
+  FeatureIndicatorContainer,
+} from "../Components/FeatureIndicatorContainer";
 
 type MessageBrokerListItem = {
   resource: models.Resource;
@@ -85,7 +85,7 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
           message="There is no message broker to show."
           image={EnumImages.MessageBrokerEmptyState}
         >
-          <FeatureControlContainer
+          <FeatureIndicatorContainer
             featureId={BillingFeature.Services}
             entitlementType={EntitlementType.Metered}
           >
@@ -101,7 +101,7 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
             >
               <span className={"add-broker__label"}>Add Message Broker</span>
             </Button>
-          </FeatureControlContainer>
+          </FeatureIndicatorContainer>
         </EmptyState>
       )}
     </PageContent>

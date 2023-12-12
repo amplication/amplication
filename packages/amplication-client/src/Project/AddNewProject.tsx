@@ -4,8 +4,8 @@ import NewProject from "./NewProject";
 import { BillingFeature } from "@amplication/util-billing-types";
 import {
   EntitlementType,
-  FeatureControlContainer,
-} from "../Components/FeatureControlContainer";
+  FeatureIndicatorContainer,
+} from "../Components/FeatureIndicatorContainer";
 import { Button } from "../Components/Button";
 import { AppContext } from "../context/appContext";
 
@@ -34,7 +34,7 @@ const AddNewProject = () => {
       >
         <NewProject onProjectCreated={handleProjectCreated} />
       </Dialog>
-      <FeatureControlContainer
+      <FeatureIndicatorContainer
         featureId={BillingFeature.Projects}
         entitlementType={EntitlementType.Metered}
         meteredFeatureLength={projectsList.length}
@@ -47,7 +47,7 @@ const AddNewProject = () => {
         >
           <span className={`${CLASS_NAME}__label`}>Add New Project</span>
         </Button>
-      </FeatureControlContainer>
+      </FeatureIndicatorContainer>
     </>
   );
 };

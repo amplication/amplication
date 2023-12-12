@@ -16,8 +16,8 @@ import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { BillingFeature } from "@amplication/util-billing-types";
 import {
   EntitlementType,
-  FeatureControlContainer,
-} from "../Components/FeatureControlContainer";
+  FeatureIndicatorContainer,
+} from "../Components/FeatureIndicatorContainer";
 
 type Values = {
   email: string;
@@ -96,7 +96,7 @@ const InviteMember = ({ members }: { members: number }) => {
                 type="email"
                 disabled={loading}
               />
-              <FeatureControlContainer
+              <FeatureIndicatorContainer
                 featureId={BillingFeature.TeamMembers}
                 entitlementType={EntitlementType.Metered}
                 meteredFeatureLength={members}
@@ -108,7 +108,7 @@ const InviteMember = ({ members }: { members: number }) => {
                 >
                   Invite
                 </Button>
-              </FeatureControlContainer>
+              </FeatureIndicatorContainer>
 
               <Snackbar open={Boolean(error)} message={errorMessage} />
             </Form>

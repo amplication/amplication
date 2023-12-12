@@ -7,7 +7,7 @@ import { useTracking } from "react-tracking";
 import { AppContext } from "../context/appContext";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import "./FeatureIndicator.scss";
-import { IconType } from "./FeatureControlContainer";
+import { IconType } from "./FeatureIndicatorContainer";
 
 const WarningTooltip = styled(
   ({ className, placement, ...props }: TooltipProps) => (

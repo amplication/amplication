@@ -11,8 +11,8 @@ import CreateResourceButtonItem from "./CreateResourceButtonItem";
 import { BillingFeature } from "@amplication/util-billing-types";
 import {
   EntitlementType,
-  FeatureControlContainer,
-} from "./FeatureControlContainer";
+  FeatureIndicatorContainer,
+} from "./FeatureIndicatorContainer";
 
 const CLASS_NAME = "create-resource-button";
 
@@ -45,7 +45,7 @@ type Props = {
 const CreateResourceButton: React.FC<Props> = ({ resourcesLength }) => {
   return (
     <div className={CLASS_NAME}>
-      <FeatureControlContainer
+      <FeatureIndicatorContainer
         featureId={BillingFeature.Services}
         entitlementType={EntitlementType.Metered}
         meteredFeatureLength={resourcesLength}
@@ -59,7 +59,7 @@ const CreateResourceButton: React.FC<Props> = ({ resourcesLength }) => {
             </SelectMenuList>
           </SelectMenuModal>
         </SelectMenu>
-      </FeatureControlContainer>
+      </FeatureIndicatorContainer>
     </div>
   );
 };

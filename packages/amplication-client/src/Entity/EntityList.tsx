@@ -38,8 +38,8 @@ import EntitiesERD from "./EntityERD/EntitiesERD";
 import "./EntityList.scss";
 import {
   EntitlementType,
-  FeatureControlContainer,
-} from "../Components/FeatureControlContainer";
+  FeatureIndicatorContainer,
+} from "../Components/FeatureIndicatorContainer";
 import { FeatureIndicator } from "../Components/FeatureIndicator";
 
 type TData = {
@@ -217,7 +217,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               <Link
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
               >
-                <FeatureControlContainer
+                <FeatureIndicatorContainer
                   featureId={BillingFeature.ImportDBSchema}
                   entitlementType={EntitlementType.Boolean}
                   reversePosition={true}
@@ -231,7 +231,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                   >
                     Upload Prisma Schema
                   </Button>
-                </FeatureControlContainer>
+                </FeatureIndicatorContainer>
               </Link>
               {isResourceUnderLimitation ? (
                 <FeatureIndicator
