@@ -18,6 +18,7 @@ export const emptyPlugin: PluginData = {
     pluginId: "",
   },
   npm: {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     "dist-tags": {},
     time: {
       modified: "",
