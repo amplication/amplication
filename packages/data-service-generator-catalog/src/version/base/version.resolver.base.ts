@@ -19,13 +19,13 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { Public } from "../../decorators/public.decorator";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { CreateVersionArgs } from "./CreateVersionArgs";
-import { UpdateVersionArgs } from "./UpdateVersionArgs";
-import { DeleteVersionArgs } from "./DeleteVersionArgs";
+import { Version } from "./Version";
 import { VersionCountArgs } from "./VersionCountArgs";
 import { VersionFindManyArgs } from "./VersionFindManyArgs";
 import { VersionFindUniqueArgs } from "./VersionFindUniqueArgs";
-import { Version } from "./Version";
+import { CreateVersionArgs } from "./CreateVersionArgs";
+import { UpdateVersionArgs } from "./UpdateVersionArgs";
+import { DeleteVersionArgs } from "./DeleteVersionArgs";
 import { VersionService } from "../version.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Version)
@@ -51,7 +51,7 @@ export class VersionResolverBase {
   async versions(
     @graphql.Args() args: VersionFindManyArgs
   ): Promise<Version[]> {
-    return this.service.findMany(args);
+    return this.service.versions(args);
   }
 
   @Public()
@@ -59,7 +59,7 @@ export class VersionResolverBase {
   async version(
     @graphql.Args() args: VersionFindUniqueArgs
   ): Promise<Version | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.version(args);
     if (result === null) {
       return null;
     }
@@ -76,7 +76,7 @@ export class VersionResolverBase {
   async createVersion(
     @graphql.Args() args: CreateVersionArgs
   ): Promise<Version> {
-    return await this.service.create({
+    return await this.service.createVersion({
       ...args,
       data: args.data,
     });
@@ -93,7 +93,7 @@ export class VersionResolverBase {
     @graphql.Args() args: UpdateVersionArgs
   ): Promise<Version | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateVersion({
         ...args,
         data: args.data,
       });
@@ -117,7 +117,7 @@ export class VersionResolverBase {
     @graphql.Args() args: DeleteVersionArgs
   ): Promise<Version | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteVersion(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(

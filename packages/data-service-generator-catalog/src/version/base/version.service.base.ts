@@ -21,27 +21,27 @@ export class VersionServiceBase {
     return this.prisma.version.count(args);
   }
 
-  async findMany<T extends Prisma.VersionFindManyArgs>(
+  async versions<T extends Prisma.VersionFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.VersionFindManyArgs>
   ): Promise<Version[]> {
     return this.prisma.version.findMany(args);
   }
-  async findOne<T extends Prisma.VersionFindUniqueArgs>(
+  async version<T extends Prisma.VersionFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.VersionFindUniqueArgs>
   ): Promise<Version | null> {
     return this.prisma.version.findUnique(args);
   }
-  async create<T extends Prisma.VersionCreateArgs>(
+  async createVersion<T extends Prisma.VersionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.VersionCreateArgs>
   ): Promise<Version> {
     return this.prisma.version.create<T>(args);
   }
-  async update<T extends Prisma.VersionUpdateArgs>(
+  async updateVersion<T extends Prisma.VersionUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.VersionUpdateArgs>
   ): Promise<Version> {
     return this.prisma.version.update<T>(args);
   }
-  async delete<T extends Prisma.VersionDeleteArgs>(
+  async deleteVersion<T extends Prisma.VersionDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.VersionDeleteArgs>
   ): Promise<Version> {
     return this.prisma.version.delete(args);

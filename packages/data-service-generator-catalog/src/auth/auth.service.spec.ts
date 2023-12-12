@@ -27,7 +27,7 @@ const USER: any = {
 const SIGN_TOKEN = "SIGN_TOKEN";
 
 const authEntityService = {
-  findOne(args: { where: { username: string } }): any | null {
+  user(args: { where: { username: string } }): any | null {
     if (args.where.username === VALID_CREDENTIALS.username) {
       return USER;
     }

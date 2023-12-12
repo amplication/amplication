@@ -61,11 +61,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createVersion() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  versions: () => FIND_MANY_RESULT,
+  version: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
