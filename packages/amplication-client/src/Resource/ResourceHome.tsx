@@ -45,19 +45,25 @@ const ResourceHome = ({
             ? pendingChanges.length
             : undefined;
 
+        const isFeatureDisable = linksMap[menuItem].license
+          ? !stigg.getBooleanEntitlement({
+              featureId: linksMap[menuItem].license,
+            }).hasAccess
+          : false;
+
+        const toUrl = isFeatureDisable
+          ? linksMap[menuItem].toFreePlan
+          : linksMap[menuItem].to;
+
         return {
           name: linksMap[menuItem].title,
           to: setResourceUrlLink(
             currentWorkspace.id,
             currentProject.id,
             currentResource.id,
-            linksMap[menuItem].to
+            toUrl
           ),
-          disabled: linksMap[menuItem].license
-            ? !stigg.getBooleanEntitlement({
-                featureId: linksMap[menuItem].license,
-              }).hasAccess
-            : false,
+          disabled: isFeatureDisable,
           iconName: linksMap[menuItem].icon,
           exact: false,
           indicatorValue,

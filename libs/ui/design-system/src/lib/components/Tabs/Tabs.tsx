@@ -58,9 +58,6 @@ function Tab(props: TabProps) {
           {indicatorValue}
         </span>
       )}
-      {disabled && (
-        <span className="amp-tab__indicator">{lockedFeatureIndicator}</span>
-      )}
     </>
   );
 
@@ -70,7 +67,7 @@ function Tab(props: TabProps) {
       component={NavLink}
       classes={{ selected: "amp-tab--selected" }}
       // icon={iconName && <Icon size={"small"} icon={iconName} />}
-      to={!disabled ? to : {}}
+      to={to}
       label={label}
       disableRipple
       {...rest}

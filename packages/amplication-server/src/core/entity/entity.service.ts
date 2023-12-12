@@ -432,6 +432,7 @@ export class EntityService {
         projectId: resourceWithProject.projectId,
         workspaceId: resourceWithProject.project.workspaceId,
         fileName: fileName,
+        $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
       },
       event: EnumEventType.ImportPrismaSchemaStart,
     });
@@ -470,6 +471,9 @@ export class EntityService {
             workspaceId: resourceWithProject.project.workspaceId,
             fileName: fileName,
             error: "Duplicate entity names",
+            $groups: {
+              groupWorkspace: resourceWithProject.project.workspaceId,
+            },
           },
           event: EnumEventType.ImportPrismaSchemaError,
         });
@@ -522,6 +526,9 @@ export class EntityService {
               (acc, entity) => acc + (entity.fields?.length || 0),
               0
             ),
+            $groups: {
+              groupWorkspace: resourceWithProject.project.workspaceId,
+            },
           },
           event: EnumEventType.ImportPrismaSchemaCompleted,
         });
@@ -537,6 +544,7 @@ export class EntityService {
           workspaceId: resourceWithProject.project.workspaceId,
           fileName: fileName,
           error: error.message,
+          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.ImportPrismaSchemaError,
       });
@@ -978,6 +986,7 @@ export class EntityService {
           projectId: resourceWithProject.projectId,
           workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,
+          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.EntityUpdate,
       });
@@ -2381,6 +2390,9 @@ export class EntityService {
               workspaceId: resourceWithProject.project.workspaceId,
               entityFieldName: args.data.displayName,
               dataType: args.data.dataType,
+              $groups: {
+                groupWorkspace: resourceWithProject.project.workspaceId,
+              },
             },
             event: EnumEventType.EntityFieldCreate,
           });
@@ -2694,6 +2706,9 @@ export class EntityService {
             workspaceId: resourceWithProject.project.workspaceId,
             entityFieldName: args.data.displayName,
             dataType: args.data.dataType,
+            $groups: {
+              groupWorkspace: resourceWithProject.project.workspaceId,
+            },
           },
           event: EnumEventType.EntityFieldUpdate,
         });
