@@ -14,6 +14,8 @@ import {
 } from "../util/formikValidateJsonSchema";
 import "./NewRole.scss";
 import { AppContext } from "../context/appContext";
+import { FeatureIndicator } from "../Components/FeatureIndicator";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 const INITIAL_VALUES: Partial<models.ResourceRole> = {
   name: "",
@@ -123,7 +125,7 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
               required
               name="displayName"
               label="New Role Name"
-              disabled={loading || isResourceUnderLimitation}
+              disabled={loading}
               inputRef={inputRef}
               placeholder="Add role"
               autoComplete="off"
@@ -131,14 +133,35 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              className={classNames(`${CLASS_NAME}__add-field__button`, {
-                [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
-                  formik.values.displayName
-                ),
-              })}
-            />
+            {isResourceUnderLimitation ? (
+              <FeatureIndicator
+                featureName={BillingFeature.Services}
+                text="Your current plan permits only one active resource."
+                linkText="Please contact us to upgrade."
+                element={
+                  <Button
+                    buttonStyle={EnumButtonStyle.Text}
+                    disabled={isResourceUnderLimitation}
+                    icon="locked"
+                    className={classNames(`${CLASS_NAME}__add-field__button`, {
+                      [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
+                        formik.values.displayName
+                      ),
+                    })}
+                  />
+                }
+              />
+            ) : (
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                icon="plus"
+                className={classNames(`${CLASS_NAME}__add-field__button`, {
+                  [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
+                    formik.values.displayName
+                  ),
+                })}
+              />
+            )}
           </Form>
         )}
       </Formik>

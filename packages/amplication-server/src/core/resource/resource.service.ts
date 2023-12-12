@@ -806,7 +806,9 @@ export class ResourceService {
       where: {
         deletedAt: null,
         archived: { not: true },
-        resourceType: EnumResourceType.Service,
+        resourceType: {
+          in: [EnumResourceType.Service, EnumResourceType.MessageBroker],
+        },
         project: {
           workspaceId,
           deletedAt: null,

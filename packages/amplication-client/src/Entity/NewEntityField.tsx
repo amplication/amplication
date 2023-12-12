@@ -8,6 +8,8 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import "./NewEntityField.scss";
+import { FeatureIndicator } from "../Components/FeatureIndicator";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 type Props = {
   entity: models.Entity;
@@ -112,21 +114,40 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
               required
               name="displayName"
               label="New Field Name"
-              disabled={loading || isResourceUnderLimitation}
+              disabled={loading}
               placeholder="Add field"
               autoComplete="off"
               autoFocus={autoFocus}
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              icon="plus"
-              className={classNames(`${CLASS_NAME}__add-field__button`, {
-                [`${CLASS_NAME}__add-field__button--show`]:
-                  formik.values.displayName.length > 0,
-              })}
-            />
+            {isResourceUnderLimitation ? (
+              <FeatureIndicator
+                featureName={BillingFeature.Services}
+                text="Your current plan permits only one active resource."
+                linkText="Please contact us to upgrade."
+                element={
+                  <Button
+                    buttonStyle={EnumButtonStyle.Text}
+                    disabled={isResourceUnderLimitation}
+                    icon="locked"
+                    className={classNames(`${CLASS_NAME}__add-field__button`, {
+                      [`${CLASS_NAME}__add-field__button--show`]:
+                        formik.values.displayName.length > 0,
+                    })}
+                  />
+                }
+              />
+            ) : (
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                icon="plus"
+                className={classNames(`${CLASS_NAME}__add-field__button`, {
+                  [`${CLASS_NAME}__add-field__button--show`]:
+                    formik.values.displayName.length > 0,
+                })}
+              />
+            )}
           </Form>
         )}
       </Formik>

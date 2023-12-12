@@ -35,6 +35,7 @@ const CLASS_NAME = "amp-feature-indicator";
 type Props = {
   featureName: string;
   icon?: IconType;
+  element?: React.ReactNode;
   comingSoon?: boolean;
   placement?: TooltipProps["placement"];
   tooltipIcon?: string;
@@ -44,7 +45,8 @@ type Props = {
 
 export const FeatureIndicator = ({
   featureName,
-  icon = IconType.Lock,
+  icon,
+  element,
   comingSoon = false,
   tooltipIcon,
   placement = "top-start",
@@ -98,7 +100,11 @@ export const FeatureIndicator = ({
       }
     >
       <div className={`${CLASS_NAME}__wrapper`}>
-        <Icon icon={icon} size={"xsmall"} color={EnumTextColor.Black20} />
+        {icon && !element ? (
+          <Icon icon={icon} size="xsmall" color={EnumTextColor.Black20} />
+        ) : (
+          element
+        )}
       </div>
     </WarningTooltip>
   );

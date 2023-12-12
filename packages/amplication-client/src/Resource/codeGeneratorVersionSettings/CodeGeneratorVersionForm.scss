@@ -6,6 +6,10 @@
       @include regular-12();
     }
 
+    &--with-label {
+      margin-bottom: 0;
+    }
+
     .input-label {
       margin-right: var(--icon-spacing);
     }

@@ -1046,7 +1046,9 @@ describe("ResourceService", () => {
         where: {
           deletedAt: null,
           archived: { not: true },
-          resourceType: EnumResourceType.Service,
+          resourceType: {
+            in: [EnumResourceType.Service, EnumResourceType.MessageBroker],
+          },
           project: {
             workspaceId: EXAMPLE_WORKSPACE_ID,
             deletedAt: null,
@@ -1080,7 +1082,9 @@ describe("ResourceService", () => {
         where: {
           deletedAt: null,
           archived: { not: true },
-          resourceType: EnumResourceType.Service,
+          resourceType: {
+            in: [EnumResourceType.Service, EnumResourceType.MessageBroker],
+          },
           project: {
             workspaceId: EXAMPLE_WORKSPACE_ID,
             deletedAt: null,
