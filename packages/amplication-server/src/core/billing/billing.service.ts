@@ -320,9 +320,15 @@ export class BillingService {
         );
 
         for (const enterpriseGitProvider of enterpriseGitProviders) {
+          if (!BillingFeature[enterpriseGitProvider]) {
+            throw new Error(
+              `Unknown BillingFeature for git provider: ${enterpriseGitProvider}`
+            );
+          }
+
           const enterpriseGitEntitlement = await this.getBooleanEntitlement(
             workspaceId,
-            enterpriseGitProvider as BillingFeature
+            BillingFeature[enterpriseGitProvider]
           );
           const provider = repositories?.find(
             (repo) => repo.gitOrganization.provider === enterpriseGitProvider
