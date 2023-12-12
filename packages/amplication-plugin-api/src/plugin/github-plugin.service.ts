@@ -2,7 +2,13 @@ import { Inject, Injectable } from "@nestjs/common";
 import { Plugin } from "../../prisma/generated-prisma-client";
 import fetch from "node-fetch";
 import yaml from "js-yaml";
-import { PluginList, PluginYml } from "./plugin.types";
+import {
+  NpmDownloads,
+  NpmTags,
+  PluginData,
+  PluginList,
+  PluginYml,
+} from "./plugin.types";
 import { AMPLICATION_GITHUB_URL, emptyPlugin } from "./plugin.constants";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConfigService } from "@nestjs/config";
@@ -25,13 +31,56 @@ export class GitPluginService {
         { Authorization: `token ${githubToken}` }
       : {};
   }
+
+  async fetchNpmData(
+    npm: string,
+    pluginId: string
+  ): Promise<{
+    npm: NpmTags;
+    downloads: number;
+  }> {
+    const npmData = {
+      npm: {},
+      downloads: 0,
+    };
+
+    try {
+      const npmResponse = await Promise.allSettled([
+        this.npmService.fetchPackagePackument(npm),
+        this.npmService.fetchPackageDownloads(npm),
+      ]);
+
+      npmResponse.forEach((res, index) => {
+        if (res.status === "rejected") {
+          this.logger.error(
+            index === 0
+              ? `Plugin ${pluginId} doesn't have npm versions`
+              : `Plugin ${pluginId} failed to fetch downloads`,
+            null,
+            {
+              [index === 0 ? "npmVersions" : "npmDownloads"]: res.reason,
+            }
+          );
+          return;
+        }
+        if (index === 0) npmData.npm = res.value;
+
+        if (index === 1)
+          npmData.downloads = (res.value as NpmDownloads).downloads;
+      });
+      return npmData;
+    } catch (error) {
+      this.logger.error("Failed to get npm data (versions & downloads)", error);
+      return npmData;
+    }
+  }
   /**
    * generator function to fetch each plugin yml and convert it to DB plugin structure
    * @param pluginList
    */
   async *getPluginConfig(
     pluginList: PluginList[]
-  ): AsyncGenerator<PluginYml, void> {
+  ): AsyncGenerator<PluginData, void> {
     try {
       const pluginListLength = pluginList.length;
       let index = 0;
@@ -61,11 +110,17 @@ export class GitPluginService {
 
         const pluginId = pluginList[index]["name"].replace(".yml", "");
 
+        const npmData = await this.fetchNpmData(fileYml.npm, fileYml.pluginId);
+
         ++index;
 
         yield {
-          ...fileYml,
-          pluginId,
+          plugin: {
+            ...fileYml,
+            pluginId,
+          },
+          npm: npmData.npm,
+          downloads: npmData.downloads,
         };
       } while (pluginListLength > index);
     } catch (error) {
@@ -95,24 +150,22 @@ export class GitPluginService {
       const pluginsArr: Plugin[] = [];
 
       for await (const pluginConfig of this.getPluginConfig(pluginCatalog)) {
-        if (!(pluginConfig as PluginYml).pluginId) continue;
+        if (!(pluginConfig as PluginData).plugin.pluginId) continue;
 
-        const npmManifest = await this.npmService.getPackagePackument(
-          pluginConfig.npm
-        );
-
+        const { npm, plugin, downloads } = pluginConfig;
         pluginsArr.push({
           id: "",
-          createdAt: new Date(npmManifest.time.created),
-          description: pluginConfig.description,
-          github: pluginConfig.github,
-          icon: pluginConfig.icon,
-          name: pluginConfig.name,
-          npm: pluginConfig.npm,
-          pluginId: pluginConfig.pluginId,
-          taggedVersions: npmManifest["dist-tags"],
-          website: pluginConfig.website,
-          updatedAt: new Date(npmManifest.time.modified),
+          createdAt: npm.time ? new Date(npm.time.created) : new Date(),
+          description: plugin.description,
+          github: plugin.github,
+          icon: plugin.icon,
+          name: plugin.name,
+          npm: plugin.npm,
+          pluginId: plugin.pluginId,
+          taggedVersions: npm["dist-tags"],
+          website: plugin.website,
+          updatedAt: npm.time ? new Date(npm.time.modified) : new Date(),
+          downloads: downloads,
         });
       }
 

@@ -21,6 +21,7 @@ model Plugin {
   taggedVersions Json?
   updatedAt      DateTime @updatedAt
   website        String?
+  downloads      Int?
 }
 
 model PluginVersion {
