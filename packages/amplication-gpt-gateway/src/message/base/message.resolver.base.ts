@@ -19,13 +19,13 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { CreateMessageArgs } from "./CreateMessageArgs";
-import { UpdateMessageArgs } from "./UpdateMessageArgs";
-import { DeleteMessageArgs } from "./DeleteMessageArgs";
+import { Message } from "./Message";
 import { MessageCountArgs } from "./MessageCountArgs";
 import { MessageFindManyArgs } from "./MessageFindManyArgs";
 import { MessageFindUniqueArgs } from "./MessageFindUniqueArgs";
-import { Message } from "./Message";
+import { CreateMessageArgs } from "./CreateMessageArgs";
+import { UpdateMessageArgs } from "./UpdateMessageArgs";
+import { DeleteMessageArgs } from "./DeleteMessageArgs";
 import { Template } from "../../template/base/Template";
 import { MessageService } from "../message.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
@@ -61,7 +61,7 @@ export class MessageResolverBase {
   async messages(
     @graphql.Args() args: MessageFindManyArgs
   ): Promise<Message[]> {
-    return this.service.findMany(args);
+    return this.service.messages(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -74,7 +74,7 @@ export class MessageResolverBase {
   async message(
     @graphql.Args() args: MessageFindUniqueArgs
   ): Promise<Message | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.message(args);
     if (result === null) {
       return null;
     }
@@ -91,7 +91,7 @@ export class MessageResolverBase {
   async createMessage(
     @graphql.Args() args: CreateMessageArgs
   ): Promise<Message> {
-    return await this.service.create({
+    return await this.service.createMessage({
       ...args,
       data: {
         ...args.data,
@@ -116,7 +116,7 @@ export class MessageResolverBase {
     @graphql.Args() args: UpdateMessageArgs
   ): Promise<Message | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateMessage({
         ...args,
         data: {
           ...args.data,
@@ -148,7 +148,7 @@ export class MessageResolverBase {
     @graphql.Args() args: DeleteMessageArgs
   ): Promise<Message | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteMessage(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -169,7 +169,7 @@ export class MessageResolverBase {
     action: "read",
     possession: "any",
   })
-  async resolveFieldTemplate(
+  async getTemplate(
     @graphql.Parent() parent: Message
   ): Promise<Template | null> {
     const result = await this.service.getTemplate(parent.id);

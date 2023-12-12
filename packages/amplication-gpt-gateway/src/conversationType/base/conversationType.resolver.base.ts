@@ -19,13 +19,13 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { CreateConversationTypeArgs } from "./CreateConversationTypeArgs";
-import { UpdateConversationTypeArgs } from "./UpdateConversationTypeArgs";
-import { DeleteConversationTypeArgs } from "./DeleteConversationTypeArgs";
+import { ConversationType } from "./ConversationType";
 import { ConversationTypeCountArgs } from "./ConversationTypeCountArgs";
 import { ConversationTypeFindManyArgs } from "./ConversationTypeFindManyArgs";
 import { ConversationTypeFindUniqueArgs } from "./ConversationTypeFindUniqueArgs";
-import { ConversationType } from "./ConversationType";
+import { CreateConversationTypeArgs } from "./CreateConversationTypeArgs";
+import { UpdateConversationTypeArgs } from "./UpdateConversationTypeArgs";
+import { DeleteConversationTypeArgs } from "./DeleteConversationTypeArgs";
 import { Template } from "../../template/base/Template";
 import { ConversationTypeService } from "../conversationType.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
@@ -61,7 +61,7 @@ export class ConversationTypeResolverBase {
   async conversationTypes(
     @graphql.Args() args: ConversationTypeFindManyArgs
   ): Promise<ConversationType[]> {
-    return this.service.findMany(args);
+    return this.service.conversationTypes(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -74,7 +74,7 @@ export class ConversationTypeResolverBase {
   async conversationType(
     @graphql.Args() args: ConversationTypeFindUniqueArgs
   ): Promise<ConversationType | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.conversationType(args);
     if (result === null) {
       return null;
     }
@@ -91,7 +91,7 @@ export class ConversationTypeResolverBase {
   async createConversationType(
     @graphql.Args() args: CreateConversationTypeArgs
   ): Promise<ConversationType> {
-    return await this.service.create({
+    return await this.service.createConversationType({
       ...args,
       data: {
         ...args.data,
@@ -116,7 +116,7 @@ export class ConversationTypeResolverBase {
     @graphql.Args() args: UpdateConversationTypeArgs
   ): Promise<ConversationType | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateConversationType({
         ...args,
         data: {
           ...args.data,
@@ -148,7 +148,7 @@ export class ConversationTypeResolverBase {
     @graphql.Args() args: DeleteConversationTypeArgs
   ): Promise<ConversationType | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteConversationType(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -169,7 +169,7 @@ export class ConversationTypeResolverBase {
     action: "read",
     possession: "any",
   })
-  async resolveFieldTemplate(
+  async getTemplate(
     @graphql.Parent() parent: ConversationType
   ): Promise<Template | null> {
     const result = await this.service.getTemplate(parent.id);

@@ -10,7 +10,12 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Model, Template } from "@prisma/client";
+
+import {
+  Prisma,
+  Model, // @ts-ignore
+  Template,
+} from "@prisma/client";
 
 export class ModelServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -21,27 +26,27 @@ export class ModelServiceBase {
     return this.prisma.model.count(args);
   }
 
-  async findMany<T extends Prisma.ModelFindManyArgs>(
+  async models<T extends Prisma.ModelFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelFindManyArgs>
   ): Promise<Model[]> {
     return this.prisma.model.findMany(args);
   }
-  async findOne<T extends Prisma.ModelFindUniqueArgs>(
+  async model<T extends Prisma.ModelFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelFindUniqueArgs>
   ): Promise<Model | null> {
     return this.prisma.model.findUnique(args);
   }
-  async create<T extends Prisma.ModelCreateArgs>(
+  async createModel<T extends Prisma.ModelCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelCreateArgs>
   ): Promise<Model> {
     return this.prisma.model.create<T>(args);
   }
-  async update<T extends Prisma.ModelUpdateArgs>(
+  async updateModel<T extends Prisma.ModelUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelUpdateArgs>
   ): Promise<Model> {
     return this.prisma.model.update<T>(args);
   }
-  async delete<T extends Prisma.ModelDeleteArgs>(
+  async deleteModel<T extends Prisma.ModelDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelDeleteArgs>
   ): Promise<Model> {
     return this.prisma.model.delete(args);

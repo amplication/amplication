@@ -19,13 +19,13 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { CreateTemplateArgs } from "./CreateTemplateArgs";
-import { UpdateTemplateArgs } from "./UpdateTemplateArgs";
-import { DeleteTemplateArgs } from "./DeleteTemplateArgs";
+import { Template } from "./Template";
 import { TemplateCountArgs } from "./TemplateCountArgs";
 import { TemplateFindManyArgs } from "./TemplateFindManyArgs";
 import { TemplateFindUniqueArgs } from "./TemplateFindUniqueArgs";
-import { Template } from "./Template";
+import { CreateTemplateArgs } from "./CreateTemplateArgs";
+import { UpdateTemplateArgs } from "./UpdateTemplateArgs";
+import { DeleteTemplateArgs } from "./DeleteTemplateArgs";
 import { MessageFindManyArgs } from "../../message/base/MessageFindManyArgs";
 import { Message } from "../../message/base/Message";
 import { ConversationTypeFindManyArgs } from "../../conversationType/base/ConversationTypeFindManyArgs";
@@ -65,7 +65,7 @@ export class TemplateResolverBase {
   async templates(
     @graphql.Args() args: TemplateFindManyArgs
   ): Promise<Template[]> {
-    return this.service.findMany(args);
+    return this.service.templates(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -78,7 +78,7 @@ export class TemplateResolverBase {
   async template(
     @graphql.Args() args: TemplateFindUniqueArgs
   ): Promise<Template | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.template(args);
     if (result === null) {
       return null;
     }
@@ -95,7 +95,7 @@ export class TemplateResolverBase {
   async createTemplate(
     @graphql.Args() args: CreateTemplateArgs
   ): Promise<Template> {
-    return await this.service.create({
+    return await this.service.createTemplate({
       ...args,
       data: {
         ...args.data,
@@ -118,7 +118,7 @@ export class TemplateResolverBase {
     @graphql.Args() args: UpdateTemplateArgs
   ): Promise<Template | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateTemplate({
         ...args,
         data: {
           ...args.data,
@@ -148,7 +148,7 @@ export class TemplateResolverBase {
     @graphql.Args() args: DeleteTemplateArgs
   ): Promise<Template | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteTemplate(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -166,7 +166,7 @@ export class TemplateResolverBase {
     action: "read",
     possession: "any",
   })
-  async resolveFieldMessages(
+  async findMessages(
     @graphql.Parent() parent: Template,
     @graphql.Args() args: MessageFindManyArgs
   ): Promise<Message[]> {
@@ -186,7 +186,7 @@ export class TemplateResolverBase {
     action: "read",
     possession: "any",
   })
-  async resolveFieldMessageTypes(
+  async findMessageTypes(
     @graphql.Parent() parent: Template,
     @graphql.Args() args: ConversationTypeFindManyArgs
   ): Promise<ConversationType[]> {
@@ -209,9 +209,7 @@ export class TemplateResolverBase {
     action: "read",
     possession: "any",
   })
-  async resolveFieldModel(
-    @graphql.Parent() parent: Template
-  ): Promise<Model | null> {
+  async getModel(@graphql.Parent() parent: Template): Promise<Model | null> {
     const result = await this.service.getModel(parent.id);
 
     if (!result) {

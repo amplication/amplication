@@ -10,7 +10,12 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, ConversationType, Template } from "@prisma/client";
+
+import {
+  Prisma,
+  ConversationType, // @ts-ignore
+  Template,
+} from "@prisma/client";
 
 export class ConversationTypeServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -21,27 +26,27 @@ export class ConversationTypeServiceBase {
     return this.prisma.conversationType.count(args);
   }
 
-  async findMany<T extends Prisma.ConversationTypeFindManyArgs>(
+  async conversationTypes<T extends Prisma.ConversationTypeFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeFindManyArgs>
   ): Promise<ConversationType[]> {
     return this.prisma.conversationType.findMany(args);
   }
-  async findOne<T extends Prisma.ConversationTypeFindUniqueArgs>(
+  async conversationType<T extends Prisma.ConversationTypeFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeFindUniqueArgs>
   ): Promise<ConversationType | null> {
     return this.prisma.conversationType.findUnique(args);
   }
-  async create<T extends Prisma.ConversationTypeCreateArgs>(
+  async createConversationType<T extends Prisma.ConversationTypeCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeCreateArgs>
   ): Promise<ConversationType> {
     return this.prisma.conversationType.create<T>(args);
   }
-  async update<T extends Prisma.ConversationTypeUpdateArgs>(
+  async updateConversationType<T extends Prisma.ConversationTypeUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeUpdateArgs>
   ): Promise<ConversationType> {
     return this.prisma.conversationType.update<T>(args);
   }
-  async delete<T extends Prisma.ConversationTypeDeleteArgs>(
+  async deleteConversationType<T extends Prisma.ConversationTypeDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeDeleteArgs>
   ): Promise<ConversationType> {
     return this.prisma.conversationType.delete(args);
