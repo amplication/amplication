@@ -49,7 +49,6 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
   const { trackEvent } = useTracking();
   const { addEntity, currentResource } = useContext(AppContext);
 
-  const isServiceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const [createTopic, { error, loading }] = useMutation(CREATE_TOPIC, {
     update(cache, { data }) {
@@ -87,9 +86,6 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
 
   const handleSubmit = useCallback(
     (data, actions) => {
-      if (isServiceUnderLimitation) {
-        return;
-      }
       trackEvent({ eventName: AnalyticsEventNames.TopicCreate });
       setAutoFocus(true);
       createTopic({
