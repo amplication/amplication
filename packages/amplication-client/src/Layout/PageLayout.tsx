@@ -15,15 +15,7 @@ const CLASS_NAME = "amp-page-layout";
 
 function PageLayout({ children, className, tabs }: Props) {
   const tabsComponent = useCallback(() => {
-    return tabs.map((tab, index) => (
-      <Tabs.Tab
-        key={index}
-        {...tab}
-        lockedFeatureIndicator={
-          tab.disabled && <FeatureIndicator featureName={tab.name} />
-        }
-      />
-    ));
+    return tabs.map((tab, index) => <Tabs.Tab key={index} {...tab} />);
   }, [tabs]);
 
   return (
