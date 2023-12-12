@@ -29,6 +29,7 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import dockerNames from "docker-names";
 import { EntityPendingChange } from "../entity/entity.service";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 @Injectable()
 export class ProjectService {
@@ -65,6 +66,19 @@ export class ProjectService {
     args: ProjectCreateArgs,
     userId: string
   ): Promise<Project> {
+    if (this.billingService.isBillingEnabled) {
+      const projectEntitlement =
+        await this.billingService.getMeteredEntitlement(
+          args.data.workspace.connect.id,
+          BillingFeature.Projects
+        );
+
+      if (projectEntitlement && !projectEntitlement.hasAccess) {
+        const message = `Your workspace exceeds its project limitation.`;
+        throw new BillingLimitationError(message);
+      }
+    }
+
     const project = await this.prisma.project.create({
       data: {
         ...args.data,
@@ -140,6 +154,10 @@ export class ProjectService {
     workspaceId: string,
     projectId: string
   ): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
     const featureProjects = await this.billingService.getMeteredEntitlement(
       workspaceId,
       BillingFeature.Projects
