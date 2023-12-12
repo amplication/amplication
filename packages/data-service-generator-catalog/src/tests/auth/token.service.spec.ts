@@ -28,6 +28,7 @@ describe("Testing the TokenServiceBase", () => {
     it("should reject when username missing", () => {
       const result = tokenServiceBase.createToken({
         id: VALID_ID,
+        //@ts-ignore
         username: null,
         password: VALID_CREDENTIALS.password,
       });
@@ -37,6 +38,7 @@ describe("Testing the TokenServiceBase", () => {
       const result = tokenServiceBase.createToken({
         id: VALID_ID,
         username: VALID_CREDENTIALS.username,
+        //@ts-ignore
         password: null,
       });
       return expect(result).rejects.toBe(INVALID_PASSWORD_ERROR);
