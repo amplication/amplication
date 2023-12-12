@@ -9,12 +9,12 @@ import Stigg, {
   BooleanEntitlement,
   FullSubscription,
   MeteredEntitlement,
-  NumericEntitlement,
   SubscriptionStatus,
 } from "@stigg/node-server-sdk";
-import { Project, User } from "../../models";
+import { GitOrganization, GitRepository, Project, User } from "../../models";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../../prisma";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
 
 jest.mock("@stigg/node-server-sdk");
 Stigg.initialize = jest.fn().mockReturnValue(Stigg.prototype);
@@ -215,14 +215,28 @@ describe("BillingService", () => {
         updatedAt: new Date(),
       },
     ];
+    const repositories: GitRepository[] = [
+      {
+        gitOrganizationId: "git-organization-id",
+        name: "git-repository-name",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        id: "git-repository-id",
+        gitOrganization: {
+          provider: EnumGitProvider.Github,
+          id: "git-organization-id",
+        } as unknown as GitOrganization,
+      },
+    ];
 
     await expect(
-      service.validateSubscriptionPlanLimitationsForWorkspace(
+      service.validateSubscriptionPlanLimitationsForWorkspace({
         workspaceId,
-        user,
-        "project-id-2",
-        projects
-      )
+        currentUser: user,
+        currentProjectId: "project-id-2",
+        projects,
+        repositories,
+      })
     ).rejects.toThrow(
       new BillingLimitationError("Allowed projects per workspace: 1")
     );
@@ -284,16 +298,32 @@ describe("BillingService", () => {
         updatedAt: new Date(),
       },
     ];
+    const repositories: GitRepository[] = [
+      {
+        gitOrganizationId: "git-organization-id",
+        name: "git-repository-name",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        id: "git-repository-id",
+        gitOrganization: {
+          provider: EnumGitProvider.Github,
+          id: "git-organization-id",
+        } as unknown as GitOrganization,
+      },
+    ];
 
     await expect(
-      service.validateSubscriptionPlanLimitationsForWorkspace(
+      service.validateSubscriptionPlanLimitationsForWorkspace({
         workspaceId,
-        user,
-        projectId,
-        projects
-      )
+        currentUser: user,
+        currentProjectId: projectId,
+        projects,
+        repositories,
+      })
     ).rejects.toThrow(
-      new BillingLimitationError("Allowed services per workspace: 3")
+      new BillingLimitationError(
+        "Your workspace exceeds its services limitations."
+      )
     );
 
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
@@ -332,12 +362,13 @@ describe("BillingService", () => {
     );
   });
 
-  it("should throw exceptions on number of entities per service if the workspace has no entitlement to bypass code generation limitation", async () => {
+  it("should throw exceptions on number of team members if the workspace has no entitlement to bypass code generation limitation", async () => {
     const workspaceId = "id";
     const projectId = "project-id-1";
     const projectsPerWorkspaceLimit = 1;
     const entitiesPerServiceLimit = 5;
     const servicesPerWorkspaceLimit = 3;
+    const teamMembersPerWorkspaceLimit = 2;
 
     const spyOnServiceGetBooleanEntitlement = jest
       .spyOn(service, "getBooleanEntitlement")
@@ -347,24 +378,30 @@ describe("BillingService", () => {
 
     const spyOnServiceGetMeteredEntitlement = jest
       .spyOn(service, "getMeteredEntitlement")
-      .mockResolvedValueOnce({
-        hasAccess: true,
-        usageLimit: servicesPerWorkspaceLimit,
-      } as MeteredEntitlement)
-      .mockResolvedValueOnce({
-        hasAccess: true,
-        usageLimit: projectsPerWorkspaceLimit,
-      } as MeteredEntitlement)
-      .mockResolvedValueOnce({
-        hasAccess: false,
-        usageLimit: entitiesPerServiceLimit,
-      } as MeteredEntitlement);
-
-    const spyOnServiceGetNumericEntitlement = jest
-      .spyOn(service, "getNumericEntitlement")
-      .mockResolvedValue({
-        value: entitiesPerServiceLimit,
-      } as NumericEntitlement);
+      .mockImplementation(async (workspaceId, feature) => {
+        switch (feature) {
+          case BillingFeature.Projects:
+            return {
+              hasAccess: true,
+              usageLimit: projectsPerWorkspaceLimit,
+            } as MeteredEntitlement;
+          case BillingFeature.Services:
+            return {
+              hasAccess: true,
+              usageLimit: servicesPerWorkspaceLimit,
+            } as MeteredEntitlement;
+          case BillingFeature.ServicesAboveEntitiesPerServiceLimit:
+            return {
+              hasAccess: false,
+              usageLimit: entitiesPerServiceLimit,
+            } as MeteredEntitlement;
+          case BillingFeature.TeamMembers:
+            return {
+              hasAccess: false,
+              usageLimit: teamMembersPerWorkspaceLimit,
+            } as MeteredEntitlement;
+        }
+      });
 
     const user: User = {
       id: "user-id",
@@ -393,15 +430,32 @@ describe("BillingService", () => {
       },
     ];
 
+    const repositories: GitRepository[] = [
+      {
+        gitOrganizationId: "git-organization-id",
+        name: "git-repository-name",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        id: "git-repository-id",
+        gitOrganization: {
+          provider: EnumGitProvider.Github,
+          id: "git-organization-id",
+        } as unknown as GitOrganization,
+      },
+    ];
+
     await expect(
-      service.validateSubscriptionPlanLimitationsForWorkspace(
+      service.validateSubscriptionPlanLimitationsForWorkspace({
         workspaceId,
-        user,
-        projectId,
-        projects
-      )
+        currentUser: user,
+        currentProjectId: projectId,
+        projects,
+        repositories,
+      })
     ).rejects.toThrow(
-      new BillingLimitationError("Allowed entities per service: 5")
+      new BillingLimitationError(
+        "Your workspace exceeds its team member limitations."
+      )
     );
 
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
@@ -434,23 +488,7 @@ describe("BillingService", () => {
     expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
       3,
       workspaceId,
-      BillingFeature.ServicesAboveEntitiesPerServiceLimit
-    );
-
-    expect(spyOnServiceGetNumericEntitlement).toHaveBeenCalledTimes(1);
-    expect(spyOnServiceGetNumericEntitlement).toHaveBeenCalledWith(
-      workspaceId,
-      BillingFeature.EntitiesPerService
-    );
-    await expect(
-      service.getNumericEntitlement(
-        workspaceId,
-        BillingFeature.EntitiesPerService
-      )
-    ).resolves.toEqual(
-      expect.objectContaining({
-        value: 5,
-      })
+      BillingFeature.TeamMembers
     );
   });
 });
