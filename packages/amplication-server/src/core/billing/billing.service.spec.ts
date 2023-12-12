@@ -391,4 +391,196 @@ describe("BillingService", () => {
       BillingFeature.TeamMembers
     );
   });
+
+  it.each([
+    EnumGitProvider.AwsCodeCommit,
+    EnumGitProvider.Bitbucket,
+    EnumGitProvider.GitLab,
+  ])(
+    "should throw exception when using %s git provider if the workspace has no entitlement or bypass code generation limitation",
+    async (currentGitProvider) => {
+      const workspaceId = "id";
+      const projectId = "project-id-1";
+
+      const spyOnServiceGetBooleanEntitlement = jest
+        .spyOn(service, "getBooleanEntitlement")
+        .mockImplementation(async (workspaceId, feature) => {
+          switch (feature) {
+            case BillingFeature[
+              currentGitProvider as keyof typeof BillingFeature
+            ]:
+            case BillingFeature.IgnoreValidationCodeGeneration:
+              return {
+                hasAccess: false,
+              } as BooleanEntitlement;
+
+            default:
+              return {
+                hasAccess: true,
+              } as BooleanEntitlement;
+          }
+        });
+
+      jest.spyOn(service, "getMeteredEntitlement").mockResolvedValue({
+        hasAccess: true,
+        usageLimit: 1000,
+      } as MeteredEntitlement);
+
+      const user: User = {
+        id: "user-id",
+        account: {
+          id: "account-id",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          email: "email",
+          firstName: "first-name",
+          lastName: "last-name",
+          password: "password",
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isOwner: true,
+      };
+
+      const projects: Project[] = [
+        {
+          id: projectId,
+          name: "project-1",
+          workspaceId: workspaceId,
+          useDemoRepo: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      const repositories: GitRepository[] = [
+        {
+          gitOrganizationId: "git-organization-id",
+          name: "git-repository-name",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          id: "git-repository-id",
+          gitOrganization: {
+            provider: EnumGitProvider[currentGitProvider],
+            id: "git-organization-id",
+          } as unknown as GitOrganization,
+        },
+      ];
+
+      await expect(
+        service.validateSubscriptionPlanLimitationsForWorkspace({
+          workspaceId,
+          currentUser: user,
+          currentProjectId: projectId,
+          projects,
+          repositories,
+        })
+      ).rejects.toThrow(
+        new BillingLimitationError(
+          `Your workspace uses ${currentGitProvider} integration, while it is not part of your current plan.`
+        )
+      );
+
+      expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledWith(
+        workspaceId,
+        BillingFeature.IgnoreValidationCodeGeneration
+      );
+
+      expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledWith(
+        workspaceId,
+        BillingFeature[currentGitProvider as keyof typeof BillingFeature]
+      );
+    }
+  );
+
+  it.each([EnumGitProvider.Github])(
+    "should not throw exception when using %s git provider as it is the default provider and never checked for entitlements",
+    async (currentGitProvider) => {
+      const workspaceId = "id";
+      const projectId = "project-id-1";
+
+      const spyOnServiceGetBooleanEntitlement = jest
+        .spyOn(service, "getBooleanEntitlement")
+        .mockImplementation(async (workspaceId, feature) => {
+          switch (feature) {
+            case BillingFeature[
+              currentGitProvider as keyof typeof BillingFeature
+            ]:
+            case BillingFeature.IgnoreValidationCodeGeneration:
+              return {
+                hasAccess: false,
+              } as BooleanEntitlement;
+
+            default:
+              return {
+                hasAccess: true,
+              } as BooleanEntitlement;
+          }
+        });
+
+      jest.spyOn(service, "getMeteredEntitlement").mockResolvedValue({
+        hasAccess: true,
+        usageLimit: 1000,
+      } as MeteredEntitlement);
+
+      const user: User = {
+        id: "user-id",
+        account: {
+          id: "account-id",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          email: "email",
+          firstName: "first-name",
+          lastName: "last-name",
+          password: "password",
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isOwner: true,
+      };
+
+      const projects: Project[] = [
+        {
+          id: projectId,
+          name: "project-1",
+          workspaceId: workspaceId,
+          useDemoRepo: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      const repositories: GitRepository[] = [
+        {
+          gitOrganizationId: "git-organization-id",
+          name: "git-repository-name",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          id: "git-repository-id",
+          gitOrganization: {
+            provider: EnumGitProvider[currentGitProvider],
+            id: "git-organization-id",
+          } as unknown as GitOrganization,
+        },
+      ];
+
+      await service.validateSubscriptionPlanLimitationsForWorkspace({
+        workspaceId,
+        currentUser: user,
+        currentProjectId: projectId,
+        projects,
+        repositories,
+      });
+
+      expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledWith(
+        workspaceId,
+        BillingFeature.IgnoreValidationCodeGeneration
+      );
+
+      expect(spyOnServiceGetBooleanEntitlement).not.toHaveBeenCalledWith(
+        workspaceId,
+        BillingFeature[currentGitProvider as keyof typeof BillingFeature]
+      );
+    }
+  );
 });
