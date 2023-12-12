@@ -34,6 +34,7 @@ export const linksMap: {
     title: string;
     icon: string;
     to: string;
+    toFreePlan?: string;
     license?: BillingFeature;
   };
 } = {
@@ -86,6 +87,7 @@ export const linksMap: {
     title: "Modules",
     icon: "box",
     to: "/modules/all",
+    toFreePlan: "/freePlan",
     license: BillingFeature.CustomActions,
   },
 };
