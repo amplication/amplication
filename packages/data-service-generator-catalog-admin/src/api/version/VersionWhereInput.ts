@@ -10,5 +10,5 @@ export type VersionWhereInput = {
   id?: StringFilter;
   isActive?: BooleanFilter;
   isDeprecated?: BooleanNullableFilter;
-  name?: StringNullableFilter;
+  name?: StringFilter;
 };

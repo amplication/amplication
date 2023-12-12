@@ -4,9 +4,7 @@ datasource db {
 }
 
 generator client {
-  provider      = "prisma-client-js"
-  output        = "./generated-prisma-client"
-  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  provider = "prisma-client-js"
 }
 
 model User {
@@ -27,6 +25,6 @@ model Version {
   id           String    @id @default(cuid())
   isActive     Boolean
   isDeprecated Boolean?
-  name         String?
+  name         String    @unique
   updatedAt    DateTime  @updatedAt
 }

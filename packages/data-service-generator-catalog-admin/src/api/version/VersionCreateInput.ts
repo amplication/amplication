@@ -3,5 +3,5 @@ export type VersionCreateInput = {
   deletedAt?: Date | null;
   isActive: boolean;
   isDeprecated?: boolean | null;
-  name?: string | null;
+  name: string;
 };

@@ -5,6 +5,6 @@ export type Version = {
   id: string;
   isActive: boolean;
   isDeprecated: boolean | null;
-  name: string | null;
+  name: string;
   updatedAt: Date;
 };
