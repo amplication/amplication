@@ -116,7 +116,7 @@ export class WorkspaceService {
       },
     });
 
-    await this.billingService.provisionCustomer(workspace.id, BillingPlan.Free);
+    await this.billingService.provisionCustomer(workspace.id);
 
     const [user] = workspace.users;
     await this.projectService.createProject(
