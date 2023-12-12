@@ -61,6 +61,7 @@ import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segment
 import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -401,8 +402,10 @@ const prismaResourceFindOneMock = jest.fn(
 const billingServiceGetMeteredEntitlementMock = jest.fn(() => {
   return {
     usageLimit: undefined,
+    hasAccess: true,
   } as unknown as MeteredEntitlement;
 });
+const billingServiceIsBillingEnabledMock = jest.fn();
 const prismaResourceFindManyMock = jest.fn(() => {
   return [EXAMPLE_RESOURCE];
 });
@@ -510,6 +513,7 @@ describe("ResourceService", () => {
         {
           provide: BillingService,
           useValue: {
+            isBillingEnabled: billingServiceIsBillingEnabledMock,
             getMeteredEntitlement: billingServiceGetMeteredEntitlementMock,
             getNumericEntitlement: jest.fn(() => {
               return {};
@@ -674,6 +678,48 @@ describe("ResourceService", () => {
     expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID
     );
+  });
+
+  it("should throw an error while trying to create a service when the user exceeded the limit of services in his project", async () => {
+    const createResourceArgs = {
+      args: {
+        data: {
+          name: EXAMPLE_RESOURCE_NAME,
+          description: EXAMPLE_RESOURCE_DESCRIPTION,
+          color: DEFAULT_RESOURCE_COLORS.service,
+          resourceType: EnumResourceType.Service,
+          wizardType: "create resource",
+          project: {
+            connect: {
+              id: EXAMPLE_PROJECT_ID,
+            },
+          },
+          serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+          gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+        },
+      },
+      user: EXAMPLE_USER,
+    };
+    billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
+      usageLimit: 1,
+      hasAccess: false,
+    } as unknown as MeteredEntitlement);
+    billingServiceIsBillingEnabledMock.mockReturnValueOnce(true);
+
+    await expect(
+      service.createService(
+        createResourceArgs.args,
+        createResourceArgs.user,
+        null,
+        true
+      )
+    ).rejects.toThrow(
+      new BillingLimitationError(
+        "Your project exceeds its services limitation."
+      )
+    );
+    expect(prismaResourceCreateMock).toBeCalledTimes(0);
+    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(0);
   });
 
   it("should fail to create resource with entities with a reserved name", async () => {
@@ -1008,91 +1054,6 @@ describe("ResourceService", () => {
       await expect(service.updateResource(args)).rejects.toThrow(
         new Error(INVALID_RESOURCE_ID)
       );
-    });
-  });
-
-  describe("isUnderLimitation", () => {
-    const oldestResourceId = "oldestProjectId";
-    const newestResourceId = "newestProjectId";
-    const usageLimit = 1;
-    it("should return false if there is no usage limit", async () => {
-      billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
-        usageLimit: undefined,
-      } as unknown as MeteredEntitlement);
-      expect(
-        await service.isUnderLimitation(
-          EXAMPLE_WORKSPACE_ID,
-          EXAMPLE_RESOURCE_ID
-        )
-      ).toEqual(false);
-    });
-
-    it("should return true if the service is not the oldest service in the project", async () => {
-      billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
-        usageLimit,
-      } as unknown as MeteredEntitlement);
-
-      prismaResourceFindManyMock.mockReturnValueOnce([
-        { id: newestResourceId },
-      ] as unknown as Resource[]);
-
-      const result = await service.isUnderLimitation(
-        EXAMPLE_WORKSPACE_ID,
-        newestResourceId
-      );
-
-      expect(prismaResourceFindManyMock).toBeCalledTimes(1);
-      expect(prismaResourceFindManyMock).toBeCalledWith({
-        where: {
-          deletedAt: null,
-          archived: { not: true },
-          resourceType: EnumResourceType.Service,
-          project: {
-            workspaceId: EXAMPLE_WORKSPACE_ID,
-            deletedAt: null,
-          },
-        },
-        orderBy: {
-          createdAt: "asc",
-        },
-        skip: usageLimit,
-      });
-
-      expect(result).toEqual(true);
-    });
-
-    it("should return false if the resource is the oldest service in the project", async () => {
-      billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
-        usageLimit,
-      } as unknown as MeteredEntitlement);
-
-      prismaResourceFindManyMock.mockReturnValueOnce([
-        { id: newestResourceId },
-      ] as unknown as Resource[]);
-
-      const result = await service.isUnderLimitation(
-        EXAMPLE_WORKSPACE_ID,
-        oldestResourceId
-      );
-
-      expect(prismaResourceFindManyMock).toBeCalledTimes(1);
-      expect(prismaResourceFindManyMock).toBeCalledWith({
-        where: {
-          deletedAt: null,
-          archived: { not: true },
-          resourceType: EnumResourceType.Service,
-          project: {
-            workspaceId: EXAMPLE_WORKSPACE_ID,
-            deletedAt: null,
-          },
-        },
-        orderBy: {
-          createdAt: "asc",
-        },
-        skip: usageLimit,
-      });
-
-      expect(result).toEqual(false);
     });
   });
 });
