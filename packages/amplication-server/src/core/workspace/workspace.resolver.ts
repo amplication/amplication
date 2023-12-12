@@ -85,6 +85,7 @@ export class WorkspaceResolver {
       userId: currentUser.account.id,
       properties: {
         workspaceId: currentUser.workspace.id,
+        $groups: { groupWorkspace: currentUser.workspace.id },
       },
       event: EnumEventType.WorkspaceSelected,
     });

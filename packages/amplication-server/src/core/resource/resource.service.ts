@@ -285,6 +285,7 @@ export class ResourceService {
         resourceId: resource.id,
         projectId: resource.projectId,
         workspaceId: user.workspace.id,
+        $groups: { groupWorkspace: user.workspace.id },
       },
       event: EnumEventType.CodeGeneratorVersionUpdate,
     });
@@ -440,6 +441,7 @@ export class ResourceService {
         properties: {
           projectId: project.id,
           workspaceId: project.workspaceId,
+          $groups: { groupWorkspace: project.workspaceId },
         },
       });
     }
@@ -619,6 +621,7 @@ export class ResourceService {
         totalEntities,
         totalFields,
         gitOrgType: gitOrganization?.type,
+        $groups: { groupWorkspace: project.workspaceId },
       },
     });
 
