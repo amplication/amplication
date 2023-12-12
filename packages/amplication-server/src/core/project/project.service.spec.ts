@@ -217,11 +217,26 @@ const EXAMPLE_PROJECT: Project = {
 const EXAMPLE_PROJECT_CONFIGURATION = {};
 
 /** methods mock */
-const billingServiceGetMeteredEntitlementMock = jest.fn(() => {
-  return {
-    usageLimit: undefined,
-  } as unknown as MeteredEntitlement;
+const billingServiceIsBillingEnabledMock = jest.fn();
+
+const billingServiceMock = {
+  getMeteredEntitlement: jest.fn(() => {
+    return {
+      usageLimit: undefined,
+    } as unknown as MeteredEntitlement;
+  }),
+  getNumericEntitlement: jest.fn(() => {
+    return {};
+  }),
+  reportUsage: jest.fn(() => {
+    return {};
+  }),
+};
+// This is important to mock the getter!!!
+Object.defineProperty(billingServiceMock, "isBillingEnabled", {
+  get: billingServiceIsBillingEnabledMock,
 });
+
 const prismaProjectUpdateMock = jest.fn(() => {
   return EXAMPLE_PROJECT;
 });
@@ -279,15 +294,7 @@ describe("ProjectService", () => {
         },
         {
           provide: BillingService,
-          useValue: {
-            getMeteredEntitlement: billingServiceGetMeteredEntitlementMock,
-            getNumericEntitlement: jest.fn(() => {
-              return {};
-            }),
-            reportUsage: jest.fn(() => {
-              return {};
-            }),
-          },
+          useValue: billingServiceMock,
         },
         {
           provide: PrismaService,
@@ -356,206 +363,215 @@ describe("ProjectService", () => {
     service = module.get<ProjectService>(ProjectService);
   });
 
-  it("should be defined", () => {
-    expect(service).toBeDefined();
-  });
-  it("should commit", async () => {
-    const args = {
-      data: {
-        message: EXAMPLE_MESSAGE,
-        project: { connect: { id: EXAMPLE_PROJECT_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } },
-      },
-    };
-    const findManyArgs = {
-      where: {
-        deletedAt: null,
-        archived: {
-          not: true,
+  describe("when billing is disable", () => {
+    beforeEach(() => {
+      billingServiceIsBillingEnabledMock.mockReturnValue(false);
+    });
+
+    it("should be defined", () => {
+      expect(service).toBeDefined();
+    });
+    it("should commit", async () => {
+      const args = {
+        data: {
+          message: EXAMPLE_MESSAGE,
+          project: { connect: { id: EXAMPLE_PROJECT_ID } },
+          user: { connect: { id: EXAMPLE_USER_ID } },
         },
-        projectId: EXAMPLE_PROJECT_ID,
-        project: {
-          workspace: {
-            users: {
-              some: {
-                id: EXAMPLE_USER_ID,
+      };
+      const findManyArgs = {
+        where: {
+          deletedAt: null,
+          archived: {
+            not: true,
+          },
+          projectId: EXAMPLE_PROJECT_ID,
+          project: {
+            workspace: {
+              users: {
+                some: {
+                  id: EXAMPLE_USER_ID,
+                },
               },
             },
           },
         },
-      },
-    };
+      };
 
-    const createVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID,
+      const createVersionArgs = {
+        data: {
+          commit: {
+            connect: {
+              id: EXAMPLE_COMMIT_ID,
+            },
+          },
+          entity: {
+            connect: {
+              id: EXAMPLE_ENTITY_ID,
+            },
           },
         },
-        entity: {
-          connect: {
-            id: EXAMPLE_ENTITY_ID,
+      };
+      const blockCreateVersionArgs = {
+        data: {
+          commit: {
+            connect: {
+              id: EXAMPLE_COMMIT_ID,
+            },
+          },
+          block: {
+            connect: {
+              id: EXAMPLE_BLOCK_ID,
+            },
           },
         },
-      },
-    };
-    const blockCreateVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID,
+      };
+      const changesArgs = {
+        projectId: EXAMPLE_PROJECT_ID,
+        userId: EXAMPLE_USER_ID,
+      };
+      const buildCreateArgs = {
+        data: {
+          resource: {
+            connect: {
+              id: EXAMPLE_RESOURCE_ID,
+            },
           },
-        },
-        block: {
-          connect: {
-            id: EXAMPLE_BLOCK_ID,
+          commit: {
+            connect: {
+              id: EXAMPLE_COMMIT_ID,
+            },
           },
-        },
-      },
-    };
-    const changesArgs = {
-      projectId: EXAMPLE_PROJECT_ID,
-      userId: EXAMPLE_USER_ID,
-    };
-    const buildCreateArgs = {
-      data: {
-        resource: {
-          connect: {
-            id: EXAMPLE_RESOURCE_ID,
+          createdBy: {
+            connect: {
+              id: EXAMPLE_USER_ID,
+            },
           },
+          message: args.data.message,
         },
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID,
-          },
-        },
-        createdBy: {
-          connect: {
-            id: EXAMPLE_USER_ID,
-          },
-        },
-        message: args.data.message,
-      },
-    };
-    expect(await service.commit(args, EXAMPLE_USER)).toEqual(EXAMPLE_COMMIT);
-    expect(prismaResourceFindManyMock).toBeCalledTimes(1);
-    expect(prismaResourceFindManyMock).toBeCalledWith(findManyArgs);
+      };
+      expect(await service.commit(args, EXAMPLE_USER)).toEqual(EXAMPLE_COMMIT);
+      expect(prismaResourceFindManyMock).toBeCalledTimes(1);
+      expect(prismaResourceFindManyMock).toBeCalledWith(findManyArgs);
 
-    expect(prismaCommitCreateMock).toBeCalledTimes(1);
-    expect(prismaCommitCreateMock).toBeCalledWith(args);
-    expect(entityServiceCreateVersionMock).toBeCalledTimes(1);
-    expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
-    expect(blockServiceCreateVersionMock).toBeCalledTimes(1);
-    expect(blockServiceCreateVersionMock).toBeCalledWith(
-      blockCreateVersionArgs
-    );
-    expect(entityServiceReleaseLockMock).toBeCalledTimes(1);
-    expect(entityServiceReleaseLockMock).toBeCalledWith(EXAMPLE_ENTITY_ID);
+      expect(prismaCommitCreateMock).toBeCalledTimes(1);
+      expect(prismaCommitCreateMock).toBeCalledWith(args);
+      expect(entityServiceCreateVersionMock).toBeCalledTimes(1);
+      expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
+      expect(blockServiceCreateVersionMock).toBeCalledTimes(1);
+      expect(blockServiceCreateVersionMock).toBeCalledWith(
+        blockCreateVersionArgs
+      );
+      expect(entityServiceReleaseLockMock).toBeCalledTimes(1);
+      expect(entityServiceReleaseLockMock).toBeCalledWith(EXAMPLE_ENTITY_ID);
 
-    expect(blockServiceReleaseLockMock).toBeCalledTimes(1);
-    expect(blockServiceReleaseLockMock).toBeCalledWith(EXAMPLE_BLOCK_ID);
+      expect(blockServiceReleaseLockMock).toBeCalledTimes(1);
+      expect(blockServiceReleaseLockMock).toBeCalledWith(EXAMPLE_BLOCK_ID);
 
-    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
-    expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
-      changesArgs.projectId,
-      changesArgs.userId
-    );
-    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(1);
-    expect(blockServiceGetChangedBlocksMock).toBeCalledWith(
-      changesArgs.projectId,
-      changesArgs.userId
-    );
-    expect(buildServiceCreateMock).toBeCalledTimes(1);
-    expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs);
-  });
-
-  it("should delete a project", async () => {
-    const args = { where: { id: EXAMPLE_PROJECT_ID } };
-    const dateSpy = jest.spyOn(global, "Date");
-    expect(await service.deleteProject(args)).toEqual(EXAMPLE_PROJECT);
-    expect(prismaProjectUpdateMock).toBeCalledTimes(1);
-    expect(prismaProjectUpdateMock).toBeCalledWith({
-      ...args,
-      data: {
-        deletedAt: dateSpy.mock.instances[0],
-        name: prepareDeletedItemName(EXAMPLE_PROJECT.name, EXAMPLE_PROJECT.id),
-      },
+      expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
+      expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
+        changesArgs.projectId,
+        changesArgs.userId
+      );
+      expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(1);
+      expect(blockServiceGetChangedBlocksMock).toBeCalledWith(
+        changesArgs.projectId,
+        changesArgs.userId
+      );
+      expect(buildServiceCreateMock).toBeCalledTimes(1);
+      expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs);
     });
-  });
 
-  describe("isUnderLimitation", () => {
-    const oldestProjectId = "oldestProjectId";
-    const newestProjectId = "newestProjectId";
-    const usageLimit = 1;
-    it("should return false if there is no usage limit", async () => {
-      billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
-        usageLimit: undefined,
-      } as unknown as MeteredEntitlement);
-      expect(
-        await service.isUnderLimitation(
+    it("should delete a project", async () => {
+      const args = { where: { id: EXAMPLE_PROJECT_ID } };
+      const dateSpy = jest.spyOn(global, "Date");
+      expect(await service.deleteProject(args)).toEqual(EXAMPLE_PROJECT);
+      expect(prismaProjectUpdateMock).toBeCalledTimes(1);
+      expect(prismaProjectUpdateMock).toBeCalledWith({
+        ...args,
+        data: {
+          deletedAt: dateSpy.mock.instances[0],
+          name: prepareDeletedItemName(
+            EXAMPLE_PROJECT.name,
+            EXAMPLE_PROJECT.id
+          ),
+        },
+      });
+    });
+
+    describe("isUnderLimitation", () => {
+      const oldestProjectId = "oldestProjectId";
+      const newestProjectId = "newestProjectId";
+      const usageLimit = 1;
+      it("should return false if there is no usage limit", async () => {
+        billingServiceMock.getMeteredEntitlement.mockReturnValueOnce({
+          usageLimit: undefined,
+        } as unknown as MeteredEntitlement);
+        expect(
+          await service.isUnderLimitation(
+            EXAMPLE_WORKSPACE_ID,
+            EXAMPLE_PROJECT_ID
+          )
+        ).toEqual(false);
+      });
+
+      it("should return true if the project is not the oldest project in the workspace", async () => {
+        billingServiceMock.getMeteredEntitlement.mockReturnValueOnce({
+          usageLimit,
+        } as unknown as MeteredEntitlement);
+
+        prismaProjectFindManyMock.mockReturnValueOnce([
+          { id: newestProjectId },
+        ] as unknown as Project[]);
+
+        const result = await service.isUnderLimitation(
           EXAMPLE_WORKSPACE_ID,
-          EXAMPLE_PROJECT_ID
-        )
-      ).toEqual(false);
-    });
+          newestProjectId
+        );
 
-    it("should return true if the project is not the oldest project in the workspace", async () => {
-      billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
-        usageLimit,
-      } as unknown as MeteredEntitlement);
+        expect(prismaProjectFindManyMock).toBeCalledTimes(1);
+        expect(prismaProjectFindManyMock).toBeCalledWith({
+          where: {
+            workspaceId: EXAMPLE_WORKSPACE_ID,
+            deletedAt: null,
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+          skip: usageLimit,
+        });
 
-      prismaProjectFindManyMock.mockReturnValueOnce([
-        { id: newestProjectId },
-      ] as unknown as Project[]);
-
-      const result = await service.isUnderLimitation(
-        EXAMPLE_WORKSPACE_ID,
-        newestProjectId
-      );
-
-      expect(prismaProjectFindManyMock).toBeCalledTimes(1);
-      expect(prismaProjectFindManyMock).toBeCalledWith({
-        where: {
-          workspaceId: EXAMPLE_WORKSPACE_ID,
-          deletedAt: null,
-        },
-        orderBy: {
-          createdAt: "asc",
-        },
-        skip: usageLimit,
+        expect(result).toEqual(true);
       });
 
-      expect(result).toEqual(true);
-    });
+      it("should return false if the project is the oldest project in the workspace", async () => {
+        billingServiceMock.getMeteredEntitlement.mockReturnValueOnce({
+          usageLimit,
+        } as unknown as MeteredEntitlement);
 
-    it("should return false if the project is the oldest project in the workspace", async () => {
-      billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
-        usageLimit,
-      } as unknown as MeteredEntitlement);
+        prismaProjectFindManyMock.mockReturnValueOnce([
+          { id: newestProjectId },
+        ] as unknown as Project[]);
 
-      prismaProjectFindManyMock.mockReturnValueOnce([
-        { id: newestProjectId },
-      ] as unknown as Project[]);
+        const result = await service.isUnderLimitation(
+          EXAMPLE_WORKSPACE_ID,
+          oldestProjectId
+        );
 
-      const result = await service.isUnderLimitation(
-        EXAMPLE_WORKSPACE_ID,
-        oldestProjectId
-      );
+        expect(prismaProjectFindManyMock).toBeCalledTimes(1);
+        expect(prismaProjectFindManyMock).toBeCalledWith({
+          where: {
+            workspaceId: EXAMPLE_WORKSPACE_ID,
+            deletedAt: null,
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+          skip: usageLimit,
+        });
 
-      expect(prismaProjectFindManyMock).toBeCalledTimes(1);
-      expect(prismaProjectFindManyMock).toBeCalledWith({
-        where: {
-          workspaceId: EXAMPLE_WORKSPACE_ID,
-          deletedAt: null,
-        },
-        orderBy: {
-          createdAt: "asc",
-        },
-        skip: usageLimit,
+        expect(result).toEqual(false);
       });
-
-      expect(result).toEqual(false);
     });
   });
 });
