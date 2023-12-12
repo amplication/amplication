@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { PluginData } from "./plugin.types";
 
 export const AMPLICATION_GITHUB_URL =
   "https://api.github.com/repos/amplication/plugin-catalog/contents/plugins";
+
+export const NPM_DOWNLOADS_API = "https://api.npmjs.org/downloads/point/";
+
 export const emptyPlugin: PluginData = {
   plugin: {
     id: "",
@@ -18,7 +22,6 @@ export const emptyPlugin: PluginData = {
     pluginId: "",
   },
   npm: {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     "dist-tags": {},
     time: {
       modified: "",

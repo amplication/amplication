@@ -1,16 +1,9 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Injectable } from "@nestjs/common";
-import fetch, { Response } from "node-fetch";
+import fetch from "node-fetch";
 import { Packument, packument } from "pacote";
+import { NPM_DOWNLOADS_API } from "src/plugin/plugin.constants";
 import { NpmDownloads } from "src/plugin/plugin.types";
-
-const downloadsCountUrl = "https://api.npmjs.org/downloads/point/";
-
-interface Downloads {
-  downloads: number;
-  start: string;
-  end: string;
-  package: string;
-}
 
 enum Period {
   LAST_DAY = "last-day",
@@ -44,7 +37,7 @@ export class NpmService {
     period?: Period
   ): Promise<NpmDownloads> {
     return fetch(
-      `${downloadsCountUrl}${period || Period.LAST_WEEK}/${packageName}`,
+      `${NPM_DOWNLOADS_API}${period || Period.LAST_WEEK}/${packageName}`,
       { headers: { "content-type": "application/json" } }
     ).then((response) => response.json());
   }
