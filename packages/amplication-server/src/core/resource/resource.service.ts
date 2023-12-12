@@ -59,6 +59,7 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { JsonValue } from "type-fest";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -292,6 +293,19 @@ export class ResourceService {
     args: CreateOneResourceArgs,
     user: User
   ): Promise<Resource> {
+    if (this.billingService.isBillingEnabled) {
+      const serviceEntitlement =
+        await this.billingService.getMeteredEntitlement(
+          user.workspace.id,
+          BillingFeature.Services
+        );
+
+      if (serviceEntitlement && !serviceEntitlement.hasAccess) {
+        const message = `Your project exceeds its services limitation.`;
+        throw new BillingLimitationError(message);
+      }
+    }
+
     const resource = await this.createResource({
       data: {
         ...args.data,
@@ -312,8 +326,20 @@ export class ResourceService {
     wizardType: string = null,
     requireAuthenticationEntity: boolean = null
   ): Promise<Resource> {
-    const { serviceSettings, gitRepository, ...rest } = args.data;
+    if (this.billingService.isBillingEnabled) {
+      const serviceEntitlement =
+        await this.billingService.getMeteredEntitlement(
+          user.workspace.id,
+          BillingFeature.Services
+        );
 
+      if (serviceEntitlement && !serviceEntitlement.hasAccess) {
+        const message = `Your project exceeds its services limitation.`;
+        throw new BillingLimitationError(message);
+      }
+    }
+
+    const { serviceSettings, gitRepository, ...rest } = args.data;
     const resource = await this.createResource(
       {
         data: {
