@@ -17,7 +17,7 @@ const ModuleActionsFreePlan = React.memo(({ match }: Props) => {
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__feature`}>
         <span>Premium feature</span>
-        <Icon icon={"dimond"} size={"xsmall"} />
+        <Icon icon={"diamond"} size={"xsmall"} />
       </div>
 
       <h3 className={`${CLASS_NAME}__title`}>
@@ -26,15 +26,16 @@ const ModuleActionsFreePlan = React.memo(({ match }: Props) => {
       <div className={`${CLASS_NAME}__description`}>
         <p>
           Maximize the power of your APIs and Types through seamless management
-          and customization as a unified source of truth.
         </p>
+        <span>and customization as a unified source of truth. </span>
         <a
           className={`${CLASS_NAME}__contact-us`}
           href={"https://meetings-eu1.hubspot.com/liza-dymava/cta-link"}
           target="blank"
         >
-          <Text>{"Contact us for more information"}</Text>
+          <Text>{"Contact us "}</Text>
         </a>
+        <span>for more information</span>
       </div>
       <img
         className={`${CLASS_NAME}__image`}
