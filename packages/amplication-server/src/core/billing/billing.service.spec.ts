@@ -322,7 +322,7 @@ describe("BillingService", () => {
       })
     ).rejects.toThrow(
       new BillingLimitationError(
-        "Your workspace exceeds its services limitations."
+        "Your workspace exceeds its resource limitation."
       )
     );
 
@@ -454,7 +454,7 @@ describe("BillingService", () => {
       })
     ).rejects.toThrow(
       new BillingLimitationError(
-        "Your workspace exceeds its team member limitations."
+        "Your workspace exceeds its team member limitation."
       )
     );
 
