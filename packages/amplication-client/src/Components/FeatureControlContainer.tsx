@@ -120,33 +120,29 @@ export const FeatureControlContainer: FC<Props> = ({
       {render
         ? render(renderProps)
         : Children.map(children, (child) => (
-            <div
-              className={`${CLASS_NAME}__children ${
-                reversePosition ? "reverse-position" : ""
-              }`}
-            >
-              {iconType && (
-                <FeatureIndicator
-                  featureName={featureId}
-                  icon={iconType}
-                  element={
-                    featureIndicatorPlacement ===
-                    FeatureIndicatorPlacement.Outside ? (
-                      <>
-                        {React.cloneElement(child, omit(renderProps, "icon"))}{" "}
-                        <Icon
-                          icon={iconType}
-                          color={EnumTextColor.Black20}
-                          size="xsmall"
-                        />
-                      </>
-                    ) : (
-                      React.cloneElement(child, renderProps)
-                    )
-                  }
-                />
-              )}
-            </div>
+            <FeatureIndicator
+              featureName={featureId}
+              icon={iconType}
+              element={
+                featureIndicatorPlacement ===
+                FeatureIndicatorPlacement.Outside ? (
+                  <div
+                    className={`${CLASS_NAME}__children ${
+                      reversePosition ? "reverse-position" : ""
+                    }`}
+                  >
+                    {React.cloneElement(child, omit(renderProps, "icon"))}{" "}
+                    <Icon
+                      icon={iconType}
+                      color={EnumTextColor.Black20}
+                      size="xsmall"
+                    />
+                  </div>
+                ) : (
+                  React.cloneElement(child, renderProps)
+                )
+              }
+            />
           ))}
     </div>
   );
