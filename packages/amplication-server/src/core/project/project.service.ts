@@ -29,6 +29,7 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import dockerNames from "docker-names";
 import { EntityPendingChange } from "../entity/entity.service";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 @Injectable()
 export class ProjectService {
@@ -65,6 +66,19 @@ export class ProjectService {
     args: ProjectCreateArgs,
     userId: string
   ): Promise<Project> {
+    if (this.billingService.isBillingEnabled) {
+      const projectEntitlement =
+        await this.billingService.getMeteredEntitlement(
+          args.data.workspace.connect.id,
+          BillingFeature.Projects
+        );
+
+      if (projectEntitlement && !projectEntitlement.hasAccess) {
+        const message = `Your workspace exceeds its project limitation.`;
+        throw new BillingLimitationError(message);
+      }
+    }
+
     const project = await this.prisma.project.create({
       data: {
         ...args.data,
@@ -142,6 +156,10 @@ export class ProjectService {
     workspaceId: string,
     projectId: string
   ): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
     const featureProjects = await this.billingService.getMeteredEntitlement(
       workspaceId,
       BillingFeature.Projects
@@ -305,11 +323,20 @@ export class ProjectService {
         },
       });
 
+      const repositories =
+        await this.gitProviderService.getProjectsConnectedGitRepositories(
+          projects.map((project) => project.id)
+        );
+
       await this.billingService.validateSubscriptionPlanLimitationsForWorkspace(
-        project.workspaceId,
-        currentUser,
-        project.id,
-        projects
+        {
+          workspaceId: project.workspaceId,
+          currentUser,
+          currentProjectId: project.id,
+          projects: projects,
+          repositories,
+          bypassLimitations: args.data.bypassLimitations,
+        }
       );
     }
 
@@ -334,7 +361,21 @@ export class ProjectService {
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
-    const commit = await this.prisma.commit.create(args);
+    const commit = await this.prisma.commit.create({
+      data: {
+        message: args.data.message,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
 
     await this.billingService.reportUsage(
       project.workspaceId,
