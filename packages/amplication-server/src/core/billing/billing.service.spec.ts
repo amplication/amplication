@@ -148,20 +148,22 @@ describe("BillingService", () => {
     );
   });
 
-  it("should provision customer and not sync free plans to Stripe", async () => {
-    const spyOnStiggProvisionCustomer = jest.spyOn(
-      Stigg.prototype,
-      "provisionCustomer"
-    );
+  describe("provisionCustomer", () => {
+    it("should provision customer and not sync free plans to Stripe", async () => {
+      const spyOnStiggProvisionCustomer = jest.spyOn(
+        Stigg.prototype,
+        "provisionCustomer"
+      );
 
-    await service.provisionCustomer("id", BillingPlan.Free);
+      await service.provisionCustomer("id");
 
-    expect(spyOnStiggProvisionCustomer).toHaveBeenCalledTimes(1);
-    expect(spyOnStiggProvisionCustomer).toHaveBeenCalledWith(
-      expect.objectContaining({
-        shouldSyncFree: false,
-      })
-    );
+      expect(spyOnStiggProvisionCustomer).toHaveBeenCalledTimes(1);
+      expect(spyOnStiggProvisionCustomer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          shouldSyncFree: false,
+        })
+      );
+    });
   });
 
   describe("validateSubscriptionPlanLimitationsForWorkspace", () => {
