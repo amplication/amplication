@@ -4,7 +4,7 @@ import {
   TextField,
 } from "@amplication/ui/design-system";
 import { ApolloError, gql, useMutation } from "@apollo/client";
-import { Form, Formik, useFormikContext } from "formik";
+import { Form, Formik } from "formik";
 import { useCallback, useContext, useRef, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -179,10 +179,6 @@ const Commit = ({ projectId, noChanges }: Props) => {
         <LimitationDialog
           isOpen={isOpenLimitationDialog}
           message={limitationErrorMessage}
-          subscriptionPlan={
-            currentWorkspace?.subscription?.subscriptionPlan ??
-            EnumSubscriptionPlan.Free
-          }
           allowBypassLimitation={
             currentWorkspace?.subscription?.subscriptionPlan !==
             EnumSubscriptionPlan.Pro

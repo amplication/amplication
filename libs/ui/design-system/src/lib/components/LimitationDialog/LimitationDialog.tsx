@@ -1,5 +1,4 @@
 import React from "react";
-import { EnumSubscriptionPlan } from "@amplication/code-gen-types/models";
 import { EnumContentAlign, FlexItem } from "../FlexItem/FlexItem";
 import { Dialog, Props as DialogProps } from "../Dialog/Dialog";
 import { Button, EnumButtonStyle } from "../Button/Button";
@@ -12,7 +11,6 @@ const CLASS_NAME = "limitation-dialog";
 export type Props = DialogProps & {
   isOpen: boolean;
   message: string;
-  subscriptionPlan: EnumSubscriptionPlan;
   allowBypassLimitation?: boolean;
   onConfirm: () => void;
   onDismiss: () => void;
