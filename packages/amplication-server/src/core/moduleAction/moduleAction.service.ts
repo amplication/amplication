@@ -3,7 +3,7 @@ import {
   getDefaultActionsForEntity,
   getDefaultActionsForRelationField,
 } from "@amplication/dsg-utils";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { AmplicationError } from "../../errors/AmplicationError";
@@ -18,6 +18,7 @@ import { EnumModuleActionType } from "./dto/EnumModuleActionType";
 import { FindManyModuleActionArgs } from "./dto/FindManyModuleActionArgs";
 import { ModuleAction } from "./dto/ModuleAction";
 import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
@@ -31,7 +32,9 @@ export class ModuleActionService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    @Inject(AmplicationLogger)
+    private readonly logger: AmplicationLogger
   ) {
     super(blockService);
   }
@@ -203,28 +206,33 @@ export class ModuleActionService extends BlockTypeService<
     );
     return await Promise.all(
       Object.keys(defaultActions).map((action) => {
-        return (
-          defaultActions[action] &&
-          super.create(
-            {
-              data: {
-                fieldPermanentId: field.permanentId,
-                ...defaultActions[action],
-                parentBlock: {
-                  connect: {
-                    id: moduleId,
+        try {
+          return (
+            defaultActions[action] &&
+            super.create(
+              {
+                data: {
+                  fieldPermanentId: field.permanentId,
+                  ...defaultActions[action],
+                  parentBlock: {
+                    connect: {
+                      id: moduleId,
+                    },
                   },
-                },
-                resource: {
-                  connect: {
-                    id: entity.resourceId,
+                  resource: {
+                    connect: {
+                      id: entity.resourceId,
+                    },
                   },
                 },
               },
-            },
-            user
-          )
-        );
+              user
+            )
+          );
+        } catch (error) {
+          this.logger.error(`${error.message} entityId: ${entity.id}`);
+          return;
+        }
       })
     );
   }
