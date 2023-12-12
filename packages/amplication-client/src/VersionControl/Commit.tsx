@@ -230,7 +230,7 @@ export const COMMIT_CHANGES = gql`
   mutation commit(
     $message: String!
     $projectId: String!
-    $bypassLimitations: Boolean!
+    $bypassLimitations: Boolean
   ) {
     commit(
       data: {
