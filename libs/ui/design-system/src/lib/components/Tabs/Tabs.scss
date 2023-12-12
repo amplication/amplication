@@ -38,16 +38,6 @@ $tab-height: 26px;
       margin-left: var(--icon-spacing);
       font-weight: 500;
       color: var(--gray-full);
-
-      &::before {
-        content: "";
-        position: absolute;
-        height: 100%;
-        width: 1px;
-        bottom: 0;
-        right: calc(-1 * var(--double-spacing));
-        background-color: var(--gray-70);
-      }
     }
 
     &:not(:last-child):before {

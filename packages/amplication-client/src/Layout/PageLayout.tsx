@@ -1,48 +1,29 @@
-import { Tabs } from "@amplication/ui/design-system";
+import { TabItem, Tabs } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React, { useCallback } from "react";
-import "./PageLayout.scss";
-import { FeatureTabItem } from "../Resource/ResourceHome";
-import {
-  EntitlementType,
-  FeatureControlContainer,
-} from "../Components/FeatureControlContainer";
 import { FeatureIndicator } from "../Components/FeatureIndicator";
+import "./PageLayout.scss";
 
 type Props = {
   children: React.ReactNode;
   className?: string;
   pageTitle?: string;
-  tabs?: FeatureTabItem[];
+  tabs?: TabItem[];
 };
 
 const CLASS_NAME = "amp-page-layout";
 
 function PageLayout({ children, className, tabs }: Props) {
   const tabsComponent = useCallback(() => {
-    return tabs.map((tab, index) => {
-      return tab.license ? (
-        <FeatureControlContainer
-          key={index}
-          featureId={tab.license}
-          entitlementType={EntitlementType.Boolean}
-          reversePosition={true}
-          render={({ icon, disabled }) => (
-            <Tabs.Tab
-              key={index}
-              {...tab}
-              disabled={disabled}
-              featureTab={true}
-              featureIndicator={
-                <FeatureIndicator featureName={tab.license} icon={icon} />
-              }
-            />
-          )}
-        />
-      ) : (
-        <Tabs.Tab key={index} {...tab} />
-      );
-    });
+    return tabs.map((tab, index) => (
+      <Tabs.Tab
+        key={index}
+        {...tab}
+        lockedFeatureIndicator={
+          tab.disabled && <FeatureIndicator featureName={tab.name} />
+        }
+      />
+    ));
   }, [tabs]);
 
   return (

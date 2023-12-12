@@ -7,7 +7,6 @@ import {
 import { NavLink } from "react-router-dom";
 import "./Tabs.scss";
 import { EnumTextColor } from "../Text/Text";
-import React from "react";
 
 export type Props = MuiTabsProps;
 
@@ -25,12 +24,11 @@ export type TabItem = {
   name: string;
   to: string;
   exact: boolean;
-  featureTab?: boolean;
-  featureIndicator?: React.ReactNode;
   iconName?: string;
   indicatorValue?: string | number;
   indicatorColor?: EnumTextColor;
   disabled?: boolean;
+  lockedFeatureIndicator?: React.ReactNode;
 };
 
 export type TabProps = Omit<MuiTabProps, "label"> & TabItem;
@@ -40,12 +38,11 @@ function Tab(props: TabProps) {
     to,
     exact,
     iconName,
-    featureTab = false,
-    featureIndicator,
     name,
     indicatorColor,
     indicatorValue,
     disabled,
+    lockedFeatureIndicator,
     ...rest
   } = props;
 
@@ -61,8 +58,8 @@ function Tab(props: TabProps) {
           {indicatorValue}
         </span>
       )}
-      {featureTab && (
-        <span className="amp-tab__indicator">{featureIndicator}</span>
+      {disabled && (
+        <span className="amp-tab__indicator">{lockedFeatureIndicator}</span>
       )}
     </>
   );

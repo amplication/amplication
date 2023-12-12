@@ -14,7 +14,6 @@ import {
   setResourceUrlLink,
 } from "./resourceMenuUtils";
 import { useStiggContext } from "@stigg/react-sdk";
-import { BillingFeature } from "@amplication/util-billing-types";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -22,10 +21,6 @@ type Props = AppRouteProps & {
     project: string;
     resource: string;
   }>;
-};
-
-export type FeatureTabItem = TabItem & {
-  license?: BillingFeature;
 };
 
 const CLASS_NAME = "resource-home";
@@ -42,7 +37,7 @@ const ResourceHome = ({
 
   const { stigg } = useStiggContext();
 
-  const tabs: FeatureTabItem[] = useMemo(() => {
+  const tabs: TabItem[] = useMemo(() => {
     const fixedRoutes = resourceMenuLayout[currentResource?.resourceType]?.map(
       (menuItem: MenuItemLinks) => {
         const indicatorValue =
@@ -66,7 +61,6 @@ const ResourceHome = ({
           iconName: linksMap[menuItem].icon,
           exact: false,
           indicatorValue,
-          license: linksMap[menuItem].license,
         };
       }
     );
