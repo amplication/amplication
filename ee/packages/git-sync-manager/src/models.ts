@@ -269,6 +269,8 @@ export type CommitBuildsArgs = {
 };
 
 export type CommitCreateInput = {
+  /** It will bypass the limitations of the plan (if any). It will only work for limitation that support commit bypass. */
+  bypassLimitations?: InputMaybe<Scalars['Boolean']['input']>;
   message: Scalars['String']['input'];
   project: WhereParentIdInput;
 };

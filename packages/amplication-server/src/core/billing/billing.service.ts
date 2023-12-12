@@ -282,122 +282,102 @@ export class BillingService {
     currentProjectId,
     projects,
     repositories,
+    bypassLimitations = false,
   }: ValidateSubscriptionPlanLimitationsArgs): Promise<void> {
     if (this.isBillingEnabled) {
       const isIgnoreValidationCodeGeneration = await this.getBooleanEntitlement(
         workspaceId,
         BillingFeature.IgnoreValidationCodeGeneration
       );
-
       //check whether the workspace has entitlement to bypass code generation limitation
-      if (!isIgnoreValidationCodeGeneration.hasAccess) {
-        const projectsEntitlement = await this.getMeteredEntitlement(
+      if (bypassLimitations || isIgnoreValidationCodeGeneration.hasAccess) {
+        return;
+      }
+
+      try {
+        const servicesEntitlement = await this.getMeteredEntitlement(
           workspaceId,
-          BillingFeature.Projects
+          BillingFeature.Services
         );
 
-        const projectsUnderLimitation = projects.slice(
-          0,
-          projectsEntitlement.usageLimit
-        );
-        const canCurrentProjectCommit = projectsUnderLimitation.some(
-          (project) => project.id === currentProjectId
+        if (!servicesEntitlement.hasAccess) {
+          const message = `Your workspace exceeds its resource limitation.`;
+          throw new BillingLimitationError(message);
+        }
+
+        const membersEntitlement = await this.getMeteredEntitlement(
+          workspaceId,
+          BillingFeature.TeamMembers
         );
 
-        if (!projectsEntitlement.hasAccess && !canCurrentProjectCommit) {
-          const message = `Allowed projects per workspace: ${projectsEntitlement.usageLimit}`;
+        if (!membersEntitlement.hasAccess) {
+          const message = `Your workspace exceeds its team member limitation.`;
+          throw new BillingLimitationError(message);
+        }
 
+        const enterpriseGitProviders = Object.keys(EnumGitProvider).filter(
+          (x) => x !== EnumGitProvider.Github
+        );
+
+        for (const enterpriseGitProvider of enterpriseGitProviders) {
+          if (!BillingFeature[enterpriseGitProvider]) {
+            throw new Error(
+              `Unknown BillingFeature for git provider: ${enterpriseGitProvider}`
+            );
+          }
+
+          const enterpriseGitEntitlement = await this.getBooleanEntitlement(
+            workspaceId,
+            BillingFeature[enterpriseGitProvider]
+          );
+          const provider = repositories?.find(
+            (repo) => repo.gitOrganization.provider === enterpriseGitProvider
+          )?.gitOrganization.provider;
+
+          if (provider && !enterpriseGitEntitlement.hasAccess) {
+            const message = `Your workspace uses ${enterpriseGitProvider} integration, while it is not part of your current plan.`;
+            throw new BillingLimitationError(message);
+          }
+        }
+
+        const changeGitBaseBranchEntitlement = await this.getBooleanEntitlement(
+          workspaceId,
+          BillingFeature.ChangeGitBaseBranch
+        );
+        const projectWithCustomBaseBranch = repositories?.find((repo) => {
+          repo.baseBranchName;
+        });
+        if (
+          projectWithCustomBaseBranch &&
+          !changeGitBaseBranchEntitlement.hasAccess
+        ) {
+          const message = `Your workspace uses the custom Git base branch feature, while it is not part of your current plan.`;
+          throw new BillingLimitationError(message);
+        }
+
+        const servicesAboveEntitiesPerServiceLimitEntitlement =
+          await this.getMeteredEntitlement(
+            workspaceId,
+            BillingFeature.ServicesAboveEntitiesPerServiceLimit
+          );
+
+        if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
+          const message = `Your workspace exceeds its entities per service limitations.`;
+
+          throw new BillingLimitationError(message);
+        }
+      } catch (error) {
+        if (error instanceof BillingLimitationError) {
           await this.analytics.track({
             userId: currentUser.account.id,
             properties: {
               workspaceId,
-              reason: message,
+              reason: error.message,
             },
             event: EnumEventType.SubscriptionLimitPassed,
           });
-
-          throw new BillingLimitationError(message);
         }
-        try {
-          const servicesEntitlement = await this.getMeteredEntitlement(
-            workspaceId,
-            BillingFeature.Services
-          );
-
-          if (!servicesEntitlement.hasAccess) {
-            const message = `Your workspace exceeds its services limitations.`;
-            throw new BillingLimitationError(message);
-          }
-
-          const membersEntitlement = await this.getMeteredEntitlement(
-            workspaceId,
-            BillingFeature.TeamMembers
-          );
-
-          if (!membersEntitlement.hasAccess) {
-            const message = `Your workspace exceeds its team member limitations.`;
-            throw new BillingLimitationError(message);
-          }
-
-          const enterpriseGitProviders = Object.keys(EnumGitProvider).filter(
-            (x) => x !== EnumGitProvider.Github
-          );
-
-          for (const enterpriseGitProvider of enterpriseGitProviders) {
-            const enterpriseGitEntitlement = await this.getBooleanEntitlement(
-              workspaceId,
-              enterpriseGitProvider as BillingFeature
-            );
-            const provider = repositories?.find(
-              (repo) => repo.gitOrganization.provider === enterpriseGitProvider
-            )?.gitOrganization.provider;
-
-            if (provider && !enterpriseGitEntitlement.hasAccess) {
-              const message = `Your ${enterpriseGitProvider} integration is not part of your plan.`;
-              throw new BillingLimitationError(message);
-            }
-          }
-
-          const changeGitBaseBranchEntitlement =
-            await this.getBooleanEntitlement(
-              workspaceId,
-              BillingFeature.ChangeGitBaseBranch
-            );
-          const projectWithCustomBaseBranch = repositories?.find((repo) => {
-            repo.baseBranchName;
-          });
-          if (
-            projectWithCustomBaseBranch &&
-            !changeGitBaseBranchEntitlement.hasAccess
-          ) {
-            const message = `Custom Git base branch feature was enabled for your workspace but it's not part of your plan.`;
-            throw new BillingLimitationError(message);
-          }
-
-          const servicesAboveEntitiesPerServiceLimitEntitlement =
-            await this.getMeteredEntitlement(
-              workspaceId,
-              BillingFeature.ServicesAboveEntitiesPerServiceLimit
-            );
-
-          if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
-            const message = `Your workspace exceeds its entities per service limitations.`;
-
-            throw new BillingLimitationError(message);
-          }
-        } catch (error) {
-          if (error instanceof BillingLimitationError) {
-            await this.analytics.track({
-              userId: currentUser.account.id,
-              properties: {
-                workspaceId,
-                reason: error.message,
-              },
-              event: EnumEventType.SubscriptionLimitPassed,
-            });
-          }
-          throw error;
-        }
+        throw error;
       }
     }
   }

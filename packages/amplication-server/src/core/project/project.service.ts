@@ -315,6 +315,7 @@ export class ProjectService {
           currentProjectId: project.id,
           projects: projects,
           repositories,
+          bypassLimitations: args.data.bypassLimitations,
         }
       );
     }
@@ -340,7 +341,21 @@ export class ProjectService {
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
-    const commit = await this.prisma.commit.create(args);
+    const commit = await this.prisma.commit.create({
+      data: {
+        message: args.data.message,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
 
     await this.billingService.reportUsage(
       project.workspaceId,
