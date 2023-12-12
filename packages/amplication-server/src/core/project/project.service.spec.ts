@@ -445,6 +445,8 @@ describe("ProjectService", () => {
         message: args.data.message,
       },
     };
+    billingServiceIsBillingEnabledMock.mockReturnValueOnce(false);
+
     expect(await service.commit(args, EXAMPLE_USER)).toEqual(EXAMPLE_COMMIT);
     expect(prismaResourceFindManyMock).toBeCalledTimes(1);
     expect(prismaResourceFindManyMock).toBeCalledWith(findManyArgs);
@@ -476,6 +478,7 @@ describe("ProjectService", () => {
     expect(buildServiceCreateMock).toBeCalledTimes(1);
     expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs);
   });
+
   it("should create a project", async () => {
     // arrange
     const args = {
