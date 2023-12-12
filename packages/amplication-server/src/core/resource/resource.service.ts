@@ -793,6 +793,10 @@ export class ResourceService {
     workspaceId: string,
     resourceId: string
   ): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
     const featureProjects = await this.billingService.getMeteredEntitlement(
       workspaceId,
       BillingFeature.Services
