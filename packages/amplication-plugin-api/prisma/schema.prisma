@@ -10,7 +10,6 @@ generator client {
 }
 
 model Plugin {
-  categories     Json?
   createdAt      DateTime @default(now())
   description    String?
   downloads      Int?
@@ -21,6 +20,7 @@ model Plugin {
   npm            String?
   pluginId       String?  @unique
   taggedVersions Json?
+  categories     Json?    @default("[]")
   updatedAt      DateTime @updatedAt
   website        String?
 }

@@ -113,6 +113,7 @@ export class GitPluginService {
           taggedVersions: npmManifest["dist-tags"],
           website: pluginConfig.website,
           updatedAt: new Date(npmManifest.time.modified),
+          categories: pluginConfig.categories,
         });
       }
 

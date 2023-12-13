@@ -125,6 +125,13 @@ class PluginUpdateInput {
     nullable: true,
   })
   website?: string | null;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  categories?: InputJsonValue;
 }
 
 export { PluginUpdateInput as PluginUpdateInput };
