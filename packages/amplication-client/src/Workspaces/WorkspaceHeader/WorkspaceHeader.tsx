@@ -110,7 +110,7 @@ const WorkspaceHeader: React.FC = () => {
   const onNotificationClick = useCallback((message: IMessage) => {
     trackEvent({
       eventName: AnalyticsEventNames.ClickNotificationMessage,
-      messageType: "now-buildSucceeded",
+      messageType: message.templateIdentifier,
     });
 
     if (message?.cta?.data?.url) {
