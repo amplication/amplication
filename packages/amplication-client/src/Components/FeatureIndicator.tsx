@@ -62,8 +62,9 @@ export const FeatureIndicator = ({
       from: { pathname: window.location.pathname },
     });
     trackEvent({
-      eventName: AnalyticsEventNames.ProFeatureLockClick,
-      featureName,
+      eventName: AnalyticsEventNames.UpgradeClick,
+      eventOriginLocation: FeatureIndicator.name,
+      billingFeature: featureName,
     });
   }, [currentWorkspace, window.location.pathname]);
 
