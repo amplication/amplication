@@ -21,7 +21,7 @@ import { useStiggContext } from "@stigg/react-sdk";
 import React, {
   useCallback,
   useContext,
-  useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -90,6 +90,13 @@ const WorkspaceHeader: React.FC = () => {
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
   const novuBellRef = useRef(null);
+
+  const daysLeftText = useMemo(() => {
+    return `${upgradeButtonData.trialDaysLeft} day${
+      upgradeButtonData.trialDaysLeft !== 1 ? "s" : ""
+    } left for the free trial`;
+  }, [upgradeButtonData.trialDaysLeft]);
+
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   const [novuCenterState, setNovuCenterState] = useState(false);
@@ -132,7 +139,8 @@ const WorkspaceHeader: React.FC = () => {
       from: { pathname: window.location.pathname },
     });
     trackEvent({
-      eventName: AnalyticsEventNames.UpgradeOnTopBarClick,
+      eventName: AnalyticsEventNames.UpgradeClick,
+      eventOriginLocation: "workspace-header",
       workspace: currentWorkspace.id,
     });
   }, [currentWorkspace, window.location.pathname]);
@@ -143,8 +151,8 @@ const WorkspaceHeader: React.FC = () => {
     openHubSpotChat();
     trackEvent({
       eventName: AnalyticsEventNames.HelpMenuItemClick,
-      Action: "Contact Us",
-      workspaceId: currentWorkspace.id,
+      action: "Contact Us",
+      eventOriginLocation: "workspace-header-help-menu",
     });
   }, [openHubSpotChat]);
 
@@ -226,7 +234,7 @@ const WorkspaceHeader: React.FC = () => {
                   className={`${CLASS_NAME}__upgrade__btn`}
                   onClick={handleUpgradeClick}
                   progress={upgradeButtonData.trialLeftProgress}
-                  leftValue={`${upgradeButtonData.trialDaysLeft} days free trial left`}
+                  leftValue={daysLeftText}
                   yellowColorThreshold={50}
                   redColorThreshold={0}
                 >

@@ -64,7 +64,8 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   const handleAddProvider = useCallback(
     (provider: EnumGitProvider) => {
       trackEvent({
-        eventName: AnalyticsEventNames.AddGitProviderClick,
+        eventName: AnalyticsEventNames.GitProviderConnectClick,
+        eventOriginLocation: "git-provider-connection-list",
         provider: provider,
       });
       authWithGit({

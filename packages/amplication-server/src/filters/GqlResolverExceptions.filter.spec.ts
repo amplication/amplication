@@ -15,6 +15,7 @@ import { BillingLimitationError } from "../errors/BillingLimitationError";
 import { GraphQLBillingError } from "../errors/graphql/graphql-billing-limitation-error";
 import { GraphQLInternalServerError } from "../errors/graphql/graphql-internal-server-error";
 import { GraphQLUniqueKeyException } from "../errors/graphql/graphql-unique-key-error";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 const errorMock = jest.fn();
 const infoMock = jest.fn();
@@ -132,9 +133,13 @@ describe("GqlResolverExceptionsFilter", () => {
     ],
     [
       "BillingLimitationError",
-      new BillingLimitationError("Allowed services per workspace: 1"),
+      new BillingLimitationError(
+        "Allowed services per workspace: 1",
+        BillingFeature.Services
+      ),
       new GraphQLBillingError(
         "LimitationError: Allowed services per workspace: 1",
+        BillingFeature.Services,
         false
       ),
       null,
@@ -142,9 +147,14 @@ describe("GqlResolverExceptionsFilter", () => {
     ],
     [
       "BillingLimitationError bypassAllowed",
-      new BillingLimitationError("Allowed services per workspace: 1", true),
+      new BillingLimitationError(
+        "Allowed services per workspace: 1",
+        BillingFeature.Services,
+        true
+      ),
       new GraphQLBillingError(
         "LimitationError: Allowed services per workspace: 1",
+        BillingFeature.Services,
         true
       ),
       null,

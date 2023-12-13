@@ -11,7 +11,7 @@
     &:active,
     &:focus {
       color: var(--gray-base);
-      cursor: default;
+      cursor: pointer;
     }
 
     &.amp-button-progress--primary {
@@ -55,22 +55,23 @@
     border-radius: 0 var(--default-button-radius) var(--default-button-radius) 0;
 
     &.amp-button-progress--primary--right {
-      &:not(:hover, :active, :focus) {
-        border-color: var(--theme-turquoise);
-        background-color: var(--theme-turquoise);
-      }
+      border-color: var(--theme-turquoise);
+      background-color: var(--theme-turquoise);
     }
     &.amp-button-progress--warning--right {
-      &:not(:hover, :active, :focus) {
-        border-color: var(--theme-orange);
-        background-color: var(--theme-orange);
-      }
+      border-color: var(--theme-orange);
+      background-color: var(--theme-orange);
     }
     &.amp-button-progress--danger--right {
-      &:not(:hover, :active, :focus) {
-        border-color: var(--theme-red);
-        background-color: var(--theme-red);
-      }
+      border-color: var(--theme-red);
+      background-color: var(--theme-red);
+    }
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: var(--gray-base);
+      cursor: pointer;
     }
   }
 

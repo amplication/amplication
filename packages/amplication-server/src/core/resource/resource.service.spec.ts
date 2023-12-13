@@ -62,6 +62,7 @@ import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettin
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -715,7 +716,8 @@ describe("ResourceService", () => {
       )
     ).rejects.toThrow(
       new BillingLimitationError(
-        "Your project exceeds its services limitation."
+        "Your project exceeds its services limitation.",
+        BillingFeature.Services
       )
     );
     expect(prismaResourceCreateMock).toBeCalledTimes(0);

@@ -1,14 +1,11 @@
 import {
-  EnumContentAlign,
-  EnumItemsAlign,
-  FlexItem,
   LimitationDialog,
   Snackbar,
   TextField,
 } from "@amplication/ui/design-system";
 import { ApolloError, gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
-import { useCallback, useContext, useRef, useState } from "react";
+import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -109,16 +106,20 @@ const Commit = ({ projectId, noChanges }: Props) => {
     },
   });
 
-  const isLimitationError =
-    error?.graphQLErrors?.some(
+  const limitationError = useMemo(() => {
+    if (!error) return;
+    const limitation = error?.graphQLErrors?.find(
       (gqlError) =>
         gqlError.extensions.code === GraphQLErrorCode.BILLING_LIMITATION_ERROR
-    ) ?? false;
+    );
+
+    limitation.message = formatLimitationError(error.message);
+    return limitation;
+  }, [error]);
+
+  const isLimitationError = limitationError !== undefined ?? false;
 
   const errorMessage = formatError(error);
-
-  const limitationErrorMessage =
-    isLimitationError && formatLimitationError(errorMessage);
 
   const handleSubmit = useCallback(
     (data, { resetForm }) => {
@@ -204,7 +205,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
       {error && isLimitationError ? (
         <LimitationDialog
           isOpen={isOpenLimitationDialog}
-          message={limitationErrorMessage}
+          message={limitationError.message}
           allowBypassLimitation={
             currentWorkspace?.subscription?.subscriptionPlan !==
             EnumSubscriptionPlan.Pro
@@ -212,8 +213,10 @@ const Commit = ({ projectId, noChanges }: Props) => {
           onConfirm={() => {
             redirectToPurchase();
             trackEvent({
-              eventName: AnalyticsEventNames.UpgradeOnPassedLimitsClick,
-              reason: limitationErrorMessage,
+              eventName: AnalyticsEventNames.UpgradeClick,
+              reason: limitationError.message,
+              eventOriginLocation: "commit-limitation-dialog",
+              billingFeature: limitationError.extensions.billingFeature,
             });
             setOpenLimitationDialog(false);
           }}
@@ -221,20 +224,22 @@ const Commit = ({ projectId, noChanges }: Props) => {
             formikRef.current.values.bypassLimitations = false;
             trackEvent({
               eventName: AnalyticsEventNames.PassedLimitsNotificationClose,
-              reason: limitationErrorMessage,
+              reason: limitationError.message,
+              eventOriginLocation: "commit-limitation-dialog",
             });
             setOpenLimitationDialog(false);
           }}
           onBypass={() => {
             formikRef.current.values.bypassLimitations = true;
-
             formikRef.current.handleSubmit(formikRef.current.values, {
               resetForm: formikRef.current.resetForm,
             });
 
             trackEvent({
-              eventName: AnalyticsEventNames.PassedLimitsNotificationBypass,
-              reason: limitationErrorMessage,
+              eventName: AnalyticsEventNames.UpgradeLaterClick,
+              reason: limitationError.message,
+              eventOriginLocation: "commit-limitation-dialog",
+              billingFeature: limitationError.extensions.billingFeature,
             });
             setOpenLimitationDialog(false);
           }}

@@ -139,7 +139,7 @@ export class ResourceService {
 
       if (serviceEntitlement && !serviceEntitlement.hasAccess) {
         const message = `Your project exceeds its services limitation.`;
-        throw new BillingLimitationError(message);
+        throw new BillingLimitationError(message, BillingFeature.Services);
       }
     }
 

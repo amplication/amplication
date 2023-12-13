@@ -34,6 +34,7 @@ import { prepareDeletedItemName } from "../../util/softDelete";
 import { GitProviderService } from "../git/git.provider.service";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -395,7 +396,8 @@ describe("ProjectService", () => {
         service.createProject(args, EXAMPLE_USER_ID)
       ).rejects.toThrow(
         new BillingLimitationError(
-          "Your workspace exceeds its project limitation."
+          "Your workspace exceeds its project limitation.",
+          BillingFeature.Projects
         )
       );
 
