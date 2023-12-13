@@ -47,4 +47,7 @@ export class Project {
     nullable: true,
   })
   description?: string;
+
+  @Field(() => Boolean, { nullable: true, defaultValue: false })
+  isUnderLimitation?: boolean;
 }

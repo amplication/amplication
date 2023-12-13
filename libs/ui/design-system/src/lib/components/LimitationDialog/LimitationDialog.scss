@@ -29,12 +29,23 @@
       font-size: 24px;
       font-weight: 700;
       margin-bottom: 16px;
+
+      &.limitation-dialog-allow_bypass_limitation {
+        text-align: center;
+        padding: 0 24px 0 24px;
+        align-self: stretch;
+      }
     }
 
     &__passed_limits_description {
       font-size: 18px;
       font-weight: 600;
       margin-bottom: 4px;
+
+      &.limitation-dialog-allow_bypass_limitation {
+        font-weight: normal;
+        margin-bottom: 24px;
+      }
     }
 
     &__passed_limits_details {

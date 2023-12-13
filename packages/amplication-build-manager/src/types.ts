@@ -9,6 +9,6 @@ export enum EnumJobStatus {
   Failure = "failure",
 }
 
-export type JobBuildId<T extends string> = `${T}-${EnumDomainName}`;
+export type JobBuildId<T extends BuildId> = `${T}-${EnumDomainName}` | T;
 export type BuildId = string;
 export type RedisValue = Record<JobBuildId<BuildId>, EnumJobStatus>;

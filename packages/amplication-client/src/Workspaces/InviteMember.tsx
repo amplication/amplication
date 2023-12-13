@@ -13,6 +13,11 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { GET_WORKSPACE_MEMBERS } from "./MemberList";
 import "./InviteMember.scss";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { BillingFeature } from "@amplication/util-billing-types";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+} from "../Components/FeatureIndicatorContainer";
 
 type Values = {
   email: string;
@@ -42,7 +47,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const InviteMember = () => {
+const InviteMember = ({ members }: { members: number }) => {
   const { trackEvent } = useTracking();
 
   const [inviteUser, { loading, error }] = useMutation<TData>(INVITE_USER, {
@@ -91,13 +96,19 @@ const InviteMember = () => {
                 type="email"
                 disabled={loading}
               />
-              <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loading}
-                type="submit"
+              <FeatureIndicatorContainer
+                featureId={BillingFeature.TeamMembers}
+                entitlementType={EntitlementType.Metered}
+                meteredFeatureLength={members}
               >
-                Invite
-              </Button>
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  disabled={!formik.isValid || loading}
+                  type="submit"
+                >
+                  Invite
+                </Button>
+              </FeatureIndicatorContainer>
 
               <Snackbar open={Boolean(error)} message={errorMessage} />
             </Form>

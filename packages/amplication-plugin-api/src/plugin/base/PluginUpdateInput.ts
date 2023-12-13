@@ -11,13 +11,23 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional } from "class-validator";
-import { IsJSONValue } from "../../validators";
+import { IsJSONValue } from "@app/custom-validators";
+import { IsOptional, IsString, IsInt } from "class-validator";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
 
 @InputType()
 class PluginUpdateInput {
+  @ApiProperty({
+    required: false,
+  })
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  categories?: InputJsonValue;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -28,6 +38,17 @@ class PluginUpdateInput {
     nullable: true,
   })
   description?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  downloads?: number | null;
 
   @ApiProperty({
     required: false,

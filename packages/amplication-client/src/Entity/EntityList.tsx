@@ -32,10 +32,15 @@ import usePlugins from "../Plugins/hooks/usePlugins";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
-import { BillingFeature } from "../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { pluralize } from "../util/pluralize";
 import EntitiesERD from "./EntityERD/EntitiesERD";
 import "./EntityList.scss";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+} from "../Components/FeatureIndicatorContainer";
+import { FeatureIndicator } from "../Components/FeatureIndicator";
 
 type TData = {
   entities: models.Entity[];
@@ -71,6 +76,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
+  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const isUserEntityMandatory =
     pluginInstallations?.filter(
       (x) =>
@@ -211,23 +217,49 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               <Link
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
               >
-                <Button
-                  className={`${CLASS_NAME}__install`}
-                  buttonStyle={EnumButtonStyle.Outline}
-                  eventData={{
-                    eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                  }}
+                <FeatureIndicatorContainer
+                  featureId={BillingFeature.ImportDBSchema}
+                  entitlementType={EntitlementType.Boolean}
+                  reversePosition={true}
                 >
-                  Upload Prisma Schema
-                </Button>
+                  <Button
+                    className={`${CLASS_NAME}__install`}
+                    buttonStyle={EnumButtonStyle.Outline}
+                    eventData={{
+                      eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                    }}
+                  >
+                    Upload Prisma Schema
+                  </Button>
+                </FeatureIndicatorContainer>
               </Link>
-              <Button
-                className={`${CLASS_NAME}__add-button`}
-                buttonStyle={EnumButtonStyle.Primary}
-                onClick={handleNewEntityClick}
-              >
-                Add entity
-              </Button>
+              {isResourceUnderLimitation ? (
+                <FeatureIndicator
+                  featureName={BillingFeature.Services}
+                  text="Your current plan permits only one active resource"
+                  linkText="Please contact us to upgrade"
+                  element={
+                    <Button
+                      className={`${CLASS_NAME}__add-button`}
+                      buttonStyle={EnumButtonStyle.Primary}
+                      onClick={handleNewEntityClick}
+                      disabled={isResourceUnderLimitation}
+                      icon="locked"
+                    >
+                      Add entity
+                    </Button>
+                  }
+                ></FeatureIndicator>
+              ) : (
+                <Button
+                  className={`${CLASS_NAME}__add-button`}
+                  buttonStyle={EnumButtonStyle.Primary}
+                  onClick={handleNewEntityClick}
+                  disabled={isResourceUnderLimitation}
+                >
+                  Add entity
+                </Button>
+              )}
             </FlexItem>
           </FlexItem.FlexEnd>
         </FlexItem>

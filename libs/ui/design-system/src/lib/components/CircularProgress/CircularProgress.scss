@@ -3,7 +3,7 @@
 .amp-circular-progress {
   display: flex;
 
-  .MuiCircularProgress-root {
+  &--default-color {
     color: var(--primary);
   }
 

@@ -313,55 +313,6 @@ describe("BuildRunnerService", () => {
       });
     });
 
-    it("should NOT split the build into jobs when code generator version doesn't have support for the new split job functionality", async () => {
-      // Arrange
-      const resourceId = "resourceId";
-      const buildId = "buildId";
-      const expectedCodeGeneratorVersion = "v2.1.1";
-      const dsgResourceDataMock: DSGResourceData = {
-        resourceType: "Service",
-        buildId: buildId,
-        pluginInstallations: [],
-        resourceInfo: {
-          settings: {
-            serverSettings: {
-              generateServer: true,
-            },
-            adminUISettings: {
-              generateAdminUI: true,
-            },
-          },
-          codeGeneratorVersionOptions: {
-            version: expectedCodeGeneratorVersion,
-            selectionStrategy: CodeGeneratorVersionStrategy.Specific,
-          },
-        } as unknown as AppInfo,
-      };
-
-      jest
-        .spyOn(codeGeneratorService, "getCodeGeneratorVersion")
-        .mockResolvedValue(expectedCodeGeneratorVersion);
-
-      jest.spyOn(codeGeneratorService, "compareVersions").mockReturnValue(-1);
-
-      const spyOnAxiosPost = jest.spyOn(axios, "post").mockResolvedValue({
-        data: {
-          message: "Success",
-        },
-      });
-
-      // Act
-      await service.runBuild(resourceId, buildId, dsgResourceDataMock);
-
-      // Assert
-      expect(spyOnAxiosPost).toBeCalledTimes(1);
-      expect(spyOnAxiosPost).toHaveBeenCalledWith("http://runner.url/", {
-        resourceId,
-        buildId,
-        codeGeneratorVersion: expectedCodeGeneratorVersion,
-      });
-    });
-
     it("On code generation request, it should split the build into jobs, save the DSG resource data and send it to the runner", async () => {
       // Arrange
       const resourceId = "resourceId";
