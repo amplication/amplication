@@ -93,6 +93,7 @@ export enum AnalyticsEventNames {
 
   // git provider
   GitProviderConnectClick = "addGitProviderClick",
+  GitProviderCustomBaseBranch = "GitProviderCustomBaseBranch",
 
   // GitHub
   GitHubAuthResourceStart = "startAuthResourceWithGitHub",
