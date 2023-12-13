@@ -135,8 +135,8 @@ const WorkspaceHeader: React.FC = () => {
     openHubSpotChat();
     trackEvent({
       eventName: AnalyticsEventNames.HelpMenuItemClick,
-      Action: "Contact Us",
-      workspaceId: currentWorkspace.id,
+      action: "Contact Us",
+      eventOriginLocation: "workspace-header-help-menu",
     });
   }, [openHubSpotChat]);
 

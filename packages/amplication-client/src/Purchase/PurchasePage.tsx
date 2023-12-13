@@ -92,8 +92,8 @@ const PurchasePage = (props) => {
     window.open(data?.contactUsLink, "_blank");
     trackEvent({
       eventName: AnalyticsEventNames.ContactUsButtonClick,
-      Action: "Contact Us",
-      workspaceId: currentWorkspace.id,
+      action: "Contact Us",
+      eventOriginLocation: "pricing-page",
     });
   }, [currentWorkspace.id, data?.contactUsLink]);
 
