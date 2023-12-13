@@ -91,6 +91,9 @@ export enum AnalyticsEventNames {
   CodeViewTileClick = "viewCodeViewTileClick",
   GithubCodeViewClick = "openGithubCodeView",
 
+  // git provider
+  GitProviderConnectClick = "addGitProviderClick",
+
   // GitHub
   GitHubAuthResourceStart = "startAuthResourceWithGitHub",
   GitHubRepositoryCreate = "createGitRepository",
@@ -103,9 +106,6 @@ export enum AnalyticsEventNames {
   CreateProjectConfiguration = "CreateProjectConfiguration",
   StarUsBannerCTAClick = "StarUsBannerCTAClick",
   StarUsBannerClose = "StarUsBannerClose",
-
-  // new event for startAuthResourceWithGitHub
-  AddGitProviderClick = "addGitProviderClick",
 
   // Purchase Page
   PricingPageClose = "PricingPageClose",
