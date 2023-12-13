@@ -35,16 +35,7 @@ export const useUpgradeButtonData = (
       await stigg.setCustomerId(currentWorkspace.id);
       const [subscription] = await stigg.getActiveSubscriptions();
 
-      if (
-        subscription.status === SubscriptionStatus.Active &&
-        subscription.plan.pricingType !== PricingType.Free
-      ) {
-        setUpgradeButtonData({
-          showUpgradeTrialButton: false,
-          showUpgradeDefaultButton: false,
-          isCompleted: true,
-        });
-      } else if (subscription.plan.id === BillingPlan.Free) {
+      if (subscription.plan.id === BillingPlan.Free) {
         const daysSinceStartOfPlan = Math.abs(
           (Date.now() - new Date(subscription.startDate).getTime()) / ONE_DAY
         );
@@ -62,7 +53,10 @@ export const useUpgradeButtonData = (
           showUpgradeDefaultButton: false,
           isCompleted: true,
         });
-      } else {
+      } else if (
+        subscription.plan.id === BillingPlan.Enterprise &&
+        subscription.trialEndDate
+      ) {
         const trialDaysLeft = Math.round(
           Math.abs((subscription.trialEndDate.getTime() - Date.now()) / ONE_DAY)
         );
@@ -78,6 +72,21 @@ export const useUpgradeButtonData = (
           trialLeftProgress,
           showUpgradeTrialButton: true,
           showUpgradeDefaultButton: false,
+          isCompleted: true,
+        });
+      } else if (
+        subscription.plan.id === BillingPlan.Enterprise &&
+        !subscription.trialEndDate
+      ) {
+        setUpgradeButtonData({
+          showUpgradeTrialButton: false,
+          showUpgradeDefaultButton: false,
+          isCompleted: true,
+        });
+      } else {
+        setUpgradeButtonData({
+          showUpgradeTrialButton: false,
+          showUpgradeDefaultButton: true,
           isCompleted: true,
         });
       }
