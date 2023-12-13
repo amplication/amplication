@@ -269,6 +269,8 @@ export type CommitBuildsArgs = {
 };
 
 export type CommitCreateInput = {
+  /** It will bypass the limitations of the plan (if any). It will only work for limitation that support commit bypass. */
+  bypassLimitations?: InputMaybe<Scalars['Boolean']['input']>;
   message: Scalars['String']['input'];
   project: WhereParentIdInput;
 };
@@ -1709,6 +1711,7 @@ export type Project = {
   demoRepoName?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
+  isUnderLimitation?: Maybe<Scalars['Boolean']['output']>;
   name: Scalars['String']['output'];
   resources?: Maybe<Array<Resource>>;
   updatedAt: Scalars['DateTime']['output'];
@@ -2105,6 +2108,7 @@ export type Resource = {
   githubLastMessage?: Maybe<Scalars['String']['output']>;
   githubLastSync?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['String']['output'];
+  isUnderLimitation?: Maybe<Scalars['Boolean']['output']>;
   name: Scalars['String']['output'];
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;

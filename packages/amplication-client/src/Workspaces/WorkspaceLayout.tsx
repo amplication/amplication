@@ -111,6 +111,11 @@ const WorkspaceLayout: React.FC<Props> = ({
     workspaceId: currentWorkspace?.id,
     projectId: currentProject?.id,
     resourceId: currentResource?.id,
+    $groups: {
+      groupWorkspace: currentWorkspace?.id,
+      groupProject: currentProject?.id,
+      groupResource: currentResource?.id,
+    },
   });
 
   const openHubSpotChat = () => {

@@ -236,6 +236,10 @@ type Commit {
 }
 
 input CommitCreateInput {
+  """
+  It will bypass the limitations of the plan (if any). It will only work for limitation that support commit bypass.
+  """
+  bypassLimitations: Boolean = false
   message: String!
   project: WhereParentIdInput!
 }
@@ -1277,6 +1281,7 @@ type Project {
   demoRepoName: String
   description: String
   id: String!
+  isUnderLimitation: Boolean
   name: String!
   resources: [Resource!]
   updatedAt: DateTime!
@@ -1450,6 +1455,7 @@ type Resource {
   githubLastMessage: String
   githubLastSync: DateTime
   id: String!
+  isUnderLimitation: Boolean
   name: String!
   project: Project
   projectId: String

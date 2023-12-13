@@ -40,13 +40,13 @@ export const GitProviderConnectionList: React.FC<Props> = ({
 
   const showBitbucketConnect = stigg.getBooleanEntitlement({
     featureId: BillingFeature.Bitbucket,
-  });
+  }).hasAccess;
   const showAwsCodeCommitConnect = stigg.getBooleanEntitlement({
     featureId: BillingFeature.AwsCodeCommit,
-  });
+  }).hasAccess;
   const showGitLab = stigg.getBooleanEntitlement({
     featureId: BillingFeature.GitLab,
-  });
+  }).hasAccess;
 
   const [authWithGit] = useMutation<DType>(START_AUTH_APP_WITH_GITHUB, {
     onCompleted: (data) => {
@@ -86,23 +86,28 @@ export const GitProviderConnectionList: React.FC<Props> = ({
       <GitProviderConnection
         provider={EnumGitProvider.Github}
         onSyncNewGitOrganizationClick={handleAddProvider}
+        disabled={false}
       />
       <GitProviderConnection
         provider={EnumGitProvider.GitLab}
         onSyncNewGitOrganizationClick={handleAddProvider}
-        disabled={!showGitLab.hasAccess}
+        billingFeature={BillingFeature.GitLab}
+        disabled={!showGitLab}
+        comingSoon={true}
       />
       <GitProviderConnection
         provider={EnumGitProvider.Bitbucket}
         onSyncNewGitOrganizationClick={handleAddProvider}
-        disabled={!showBitbucketConnect.hasAccess}
+        billingFeature={BillingFeature.Bitbucket}
+        disabled={!showBitbucketConnect}
       />
       <GitProviderConnection
         provider={EnumGitProvider.AwsCodeCommit}
         onSyncNewGitOrganizationClick={() => {
           window.open("https://amplication.com/contact-us");
         }}
-        disabled={!showAwsCodeCommitConnect.hasAccess}
+        billingFeature={BillingFeature.AwsCodeCommit}
+        disabled={!showAwsCodeCommitConnect}
       />
     </div>
   );

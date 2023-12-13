@@ -1,16 +1,19 @@
 import {
+  EnumContentAlign,
+  EnumItemsAlign,
+  FlexItem,
   LimitationDialog,
   Snackbar,
   TextField,
 } from "@amplication/ui/design-system";
 import { ApolloError, gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useRef, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
-import { type Commit as CommitType } from "../models";
+import { EnumSubscriptionPlan, type Commit as CommitType } from "../models";
 import { GraphQLErrorCode } from "@amplication/graphql-error-codes";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -18,13 +21,17 @@ import { formatError } from "../util/error";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { commitPath } from "../util/paths";
 import "./Commit.scss";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { FeatureIndicator } from "../Components/FeatureIndicator";
 
 type TCommit = {
   message: string;
+  bypassLimitations: boolean;
 };
 
 const INITIAL_VALUES: TCommit = {
   message: "",
+  bypassLimitations: false,
 };
 
 type Props = {
@@ -57,6 +64,8 @@ const Commit = ({ projectId, noChanges }: Props) => {
   const { trackEvent } = useTracking();
   const match = useRouteMatch<RouteMatchProps>();
   const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
+  const formikRef = useRef(null);
+
   const {
     setCommitRunning,
     resetPendingChanges,
@@ -66,6 +75,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
     commitUtils,
   } = useContext(AppContext);
 
+  const isProjectUnderLimitation = currentProject?.isUnderLimitation ?? false;
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
     history.push(path, { from: { pathname: history.location.pathname } });
@@ -85,6 +95,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
       );
     },
     onCompleted: (response) => {
+      formikRef.current.values.bypassLimitations = false;
       setCommitRunning(false);
       setPendingChangesError(false);
       resetPendingChanges();
@@ -116,6 +127,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
         variables: {
           message: data.message,
           projectId,
+          bypassLimitations: data.bypassLimitations ?? false,
         },
       }).catch(console.error);
       resetForm(INITIAL_VALUES);
@@ -129,6 +141,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
         initialValues={INITIAL_VALUES}
         onSubmit={handleSubmit}
         validateOnMount
+        innerRef={formikRef}
       >
         {(formik) => {
           const handlers = {
@@ -151,16 +164,38 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 placeholder={noChanges ? "Build message" : "Commit message..."}
                 autoComplete="off"
               />
-              <Button
-                type="submit"
-                buttonStyle={EnumButtonStyle.Primary}
-                eventData={{
-                  eventName: AnalyticsEventNames.CommitClicked,
-                }}
-                disabled={loading}
-              >
-                {noChanges ? "Rebuild" : "Commit changes & build "}
-              </Button>
+
+              {isProjectUnderLimitation ? (
+                <FeatureIndicator
+                  featureName={BillingFeature.Projects}
+                  text="Your current plan permits only one project."
+                  linkText="Please contact us to upgrade."
+                  element={
+                    <Button
+                      type="submit"
+                      icon="locked"
+                      buttonStyle={EnumButtonStyle.Primary}
+                      eventData={{
+                        eventName: AnalyticsEventNames.CommitClicked,
+                      }}
+                      disabled={loading || isProjectUnderLimitation}
+                    >
+                      {noChanges ? "Rebuild" : "Commit changes & build "}
+                    </Button>
+                  }
+                />
+              ) : (
+                <Button
+                  type="submit"
+                  buttonStyle={EnumButtonStyle.Primary}
+                  eventData={{
+                    eventName: AnalyticsEventNames.CommitClicked,
+                  }}
+                  disabled={loading || isProjectUnderLimitation}
+                >
+                  {noChanges ? "Rebuild" : "Commit changes & build "}
+                </Button>
+              )}
             </Form>
           );
         }}
@@ -170,6 +205,10 @@ const Commit = ({ projectId, noChanges }: Props) => {
         <LimitationDialog
           isOpen={isOpenLimitationDialog}
           message={limitationErrorMessage}
+          allowBypassLimitation={
+            currentWorkspace?.subscription?.subscriptionPlan !==
+            EnumSubscriptionPlan.Pro
+          }
           onConfirm={() => {
             redirectToPurchase();
             trackEvent({
@@ -179,8 +218,22 @@ const Commit = ({ projectId, noChanges }: Props) => {
             setOpenLimitationDialog(false);
           }}
           onDismiss={() => {
+            formikRef.current.values.bypassLimitations = false;
             trackEvent({
               eventName: AnalyticsEventNames.PassedLimitsNotificationClose,
+              reason: limitationErrorMessage,
+            });
+            setOpenLimitationDialog(false);
+          }}
+          onBypass={() => {
+            formikRef.current.values.bypassLimitations = true;
+
+            formikRef.current.handleSubmit(formikRef.current.values, {
+              resetForm: formikRef.current.resetForm,
+            });
+
+            trackEvent({
+              eventName: AnalyticsEventNames.PassedLimitsNotificationBypass,
               reason: limitationErrorMessage,
             });
             setOpenLimitationDialog(false);
@@ -196,9 +249,17 @@ const Commit = ({ projectId, noChanges }: Props) => {
 export default Commit;
 
 export const COMMIT_CHANGES = gql`
-  mutation commit($message: String!, $projectId: String!) {
+  mutation commit(
+    $message: String!
+    $projectId: String!
+    $bypassLimitations: Boolean
+  ) {
     commit(
-      data: { message: $message, project: { connect: { id: $projectId } } }
+      data: {
+        message: $message
+        bypassLimitations: $bypassLimitations
+        project: { connect: { id: $projectId } }
+      }
     ) {
       id
       builds {

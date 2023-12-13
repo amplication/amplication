@@ -484,6 +484,7 @@ export class GitProviderService {
         workspaceId: workspaceId,
         provider: gitProvider,
         gitOrgType: gitRemoteOrganization.type,
+        $groups: { groupWorkspace: workspaceId },
       },
       event: EnumEventType.GitHubAuthResourceComplete,
     });
@@ -552,6 +553,29 @@ export class GitProviderService {
       gitProvider
     );
     return await gitClientService.getGitInstallationUrl(workspaceId);
+  }
+
+  async getProjectsConnectedGitRepositories(
+    projectIds: string[]
+  ): Promise<GitRepository[]> {
+    return this.prisma.gitRepository.findMany({
+      where: {
+        resources: {
+          some: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            AND: {
+              deletedAt: null,
+              projectId: {
+                in: projectIds,
+              },
+            },
+          },
+        },
+      },
+      include: {
+        gitOrganization: true,
+      },
+    });
   }
 
   async getCurrentOAuthUser(oAuthUserName: string): Promise<GitOrganization> {
@@ -655,6 +679,7 @@ export class GitProviderService {
         workspaceId: workspaceId,
         provider: gitProvider,
         gitOrgType: gitOrganization?.type,
+        $groups: { groupWorkspace: workspaceId },
       },
       event: EnumEventType.GitHubAuthResourceComplete,
     });
