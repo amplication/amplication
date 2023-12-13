@@ -8,7 +8,7 @@ generator client {
 }
 
 model Plugin {
-  categories     Json
+  categories     Json?    @default("[]")
   createdAt      DateTime @default(now())
   description    String?
   downloads      Int?

@@ -12,18 +12,21 @@ https://docs.amplication.com/how-to/custom-code
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsJSONValue } from "@app/custom-validators";
+import { IsOptional, IsDate, IsString, IsInt } from "class-validator";
 import { GraphQLJSON } from "graphql-type-json";
 import { JsonValue } from "type-fest";
-import { IsDate, IsString, IsOptional, IsInt } from "class-validator";
 import { Type } from "class-transformer";
 
 @ObjectType()
 class Plugin {
   @ApiProperty({
-    required: true,
+    required: false,
   })
   @IsJSONValue()
-  @Field(() => GraphQLJSON)
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
   categories!: JsonValue;
 
   @ApiProperty({
