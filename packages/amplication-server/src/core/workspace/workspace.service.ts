@@ -873,8 +873,9 @@ export class WorkspaceService {
             user
           );
         } catch (error) {
-          this.logger.error(`${error.message} entityId: ${entity.id}`);
-          return;
+          this.logger.warn(
+            `${error.message} from createEntityCustomActionsFix entityId: ${entity.id}, continue check`
+          );
         }
       }
       return true;
