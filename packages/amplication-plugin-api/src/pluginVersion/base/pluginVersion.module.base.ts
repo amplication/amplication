@@ -10,10 +10,9 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class PluginVersionModuleBase {}
