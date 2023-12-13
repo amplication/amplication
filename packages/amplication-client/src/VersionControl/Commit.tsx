@@ -1,7 +1,4 @@
 import {
-  EnumContentAlign,
-  EnumItemsAlign,
-  FlexItem,
   LimitationDialog,
   Snackbar,
   TextField,
@@ -119,6 +116,12 @@ const Commit = ({ projectId, noChanges }: Props) => {
 
   const limitationErrorMessage =
     isLimitationError && formatLimitationError(errorMessage);
+  const limitationBillingFeature =
+    isLimitationError &&
+    error?.graphQLErrors?.find(
+      (gqlError) =>
+        gqlError.extensions.code === GraphQLErrorCode.BILLING_LIMITATION_ERROR
+    ).extensions.billingFeature;
 
   const handleSubmit = useCallback(
     (data, { resetForm }) => {
@@ -212,8 +215,10 @@ const Commit = ({ projectId, noChanges }: Props) => {
           onConfirm={() => {
             redirectToPurchase();
             trackEvent({
-              eventName: AnalyticsEventNames.UpgradeOnPassedLimitsClick,
+              eventName: AnalyticsEventNames.UpgradeClick,
               reason: limitationErrorMessage,
+              eventOriginLocation: "commit-limitation-dialog",
+              billingFeature: limitationBillingFeature,
             });
             setOpenLimitationDialog(false);
           }}
@@ -222,19 +227,22 @@ const Commit = ({ projectId, noChanges }: Props) => {
             trackEvent({
               eventName: AnalyticsEventNames.PassedLimitsNotificationClose,
               reason: limitationErrorMessage,
+              eventOriginLocation: "commit-limitation-dialog",
+              billingFeature: limitationBillingFeature,
             });
             setOpenLimitationDialog(false);
           }}
           onBypass={() => {
             formikRef.current.values.bypassLimitations = true;
-
             formikRef.current.handleSubmit(formikRef.current.values, {
               resetForm: formikRef.current.resetForm,
             });
 
             trackEvent({
-              eventName: AnalyticsEventNames.PassedLimitsNotificationBypass,
+              eventName: AnalyticsEventNames.UpgradeLaterClick,
               reason: limitationErrorMessage,
+              eventOriginLocation: "commit-limitation-dialog",
+              billingFeature: limitationBillingFeature,
             });
             setOpenLimitationDialog(false);
           }}

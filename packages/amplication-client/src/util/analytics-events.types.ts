@@ -86,7 +86,6 @@ export enum AnalyticsEventNames {
   LastCommitIdClick = "lastCommitIdClick",
   PendingChangesDiscard = "discardPendingChanges",
   LastBuildIdClick = "lastBuildIdClick",
-  PassedLimitsNotificationBypass = "passedLimitsNotificationBypass",
 
   // code view
   CodeViewTileClick = "viewCodeViewTileClick",
@@ -122,6 +121,10 @@ export enum AnalyticsEventNames {
   ContactUsButtonClick = "ContactUsButtonClick",
   UpgradeOnSideBarClick = "UpgradeOnSideBarClick",
   ProFeatureLockClick = "ProFeatureLockClick",
+
+  // upgrade
+  UpgradeClick = "UpgradeClick", // With event props: { buttonLocation: string }
+  UpgradeLaterClick = "UpgradeLaterClick", // With event props: { buttonLocation: string, featureLimitation: string }
 
   // Chat widget
   HelpMenuItemClick = "HelpMenuItemClick",
