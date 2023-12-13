@@ -50,8 +50,16 @@ export default function GitProviderConnection({
       />
       <div className={`${CLASS_NAME}__name`}>{providerDisplayName}</div>
       <div className={`${CLASS_NAME}__controls`}>
-        {disabled && <FeatureIndicator featureName={featureName} />}
-        {!comingSoon ? (
+        {!billingFeature && (
+          <Button
+            className={`${CLASS_NAME}__connect`}
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleClick}
+          >
+            Connect
+          </Button>
+        )}
+        {!comingSoon && billingFeature && (
           <FeatureIndicatorContainer
             featureId={billingFeature}
             entitlementType={EntitlementType.Boolean}
@@ -66,7 +74,8 @@ export default function GitProviderConnection({
               Connect
             </Button>
           </FeatureIndicatorContainer>
-        ) : (
+        )}
+        {comingSoon && billingFeature && (
           <div className={`${CLASS_NAME}__coming_soon`}>
             <FeatureIndicator
               featureName={featureName}
