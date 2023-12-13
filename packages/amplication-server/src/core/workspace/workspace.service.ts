@@ -925,12 +925,11 @@ export class WorkspaceService {
       try {
         for (const entity of resource.entities) {
           hasChanges =
-            hasChanges ||
             (await this.createEntityCustomActionsFix(
               entity,
               resource.id,
               user
-            ));
+            )) || hasChanges;
         }
       } catch (error) {
         this.logger.error(
