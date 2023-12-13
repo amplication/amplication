@@ -23,7 +23,6 @@ model Plugin {
   categories     Json?    @default("[]")
   updatedAt      DateTime @updatedAt
   website        String?
-  downloads      Int?
 }
 
 model PluginVersion {
