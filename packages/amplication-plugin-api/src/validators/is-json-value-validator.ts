@@ -5,6 +5,7 @@ import {
 } from "class-validator";
 import isJSONValidator from "validator/lib/isJSON";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsJSONValue(validationOptions?: ValidationOptions) {
   return function (object: Record<string, any>, propertyName: string) {
     registerDecorator({

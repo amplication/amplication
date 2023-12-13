@@ -1,0 +1,20 @@
+query Workspaces {
+  Workspaces(first: 100) {
+    name
+    id
+    createdAt
+    updatedAt
+  }
+}
+
+mutation updateWorkspace {
+  updateWorkspace(
+    data: { name: "yuval", address: "walla" }
+    where: { id: "FA90A838-EBFE-4162-9746-22CC9FE49B62" }
+  ) {
+    name
+    id
+    createdAt
+    updatedAt
+  }
+}

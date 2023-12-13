@@ -1,0 +1,59 @@
+@import "../../style/index.scss";
+
+.text-input {
+  position: relative;
+
+  &__invalid {
+    color: var(--theme-red);
+    position: absolute;
+    right: 8px;
+    bottom: 10px;
+  }
+
+  label {
+    @include label;
+    position: relative;
+  }
+
+  input,
+  textarea {
+    @include textField;
+    max-width: var(--form-field-long);
+    display: block;
+
+    &:active:not(:disabled),
+    &:hover:not(:disabled),
+    &:focus:not(:disabled) {
+      @include textField--active;
+    }
+
+    &:disabled {
+      @include textField--disabled;
+    }
+
+    &::placeholder {
+      color: var(--gray-40);
+    }
+  }
+
+  textarea {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    height: var(--textarea-height);
+    resize: none;
+  }
+
+  &--has-error {
+    input,
+    textarea {
+      border-color: var(--theme-red);
+
+      &:active:not(:disabled),
+      &:hover:not(:disabled),
+      &:focus:not(:disabled) {
+        border-color: var(--theme-red);
+      }
+    }
+  }
+}

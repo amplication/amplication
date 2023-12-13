@@ -1,0 +1,19 @@
+@import "../../style/index.scss";
+
+.amp-page {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  flex-wrap: wrap;
+
+  main {
+    flex: 1;
+    padding: var(--default-page-padding);
+    position: relative;
+    max-width: $page-content-max-width;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    flex: 1;
+  }
+}
