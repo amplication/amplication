@@ -92,7 +92,6 @@ const WorkspaceHeader: React.FC = () => {
   const novuBellRef = useRef(null);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
-  // const [versionAlert, setVersionAlert] = useState(false);
   const [novuCenterState, setNovuCenterState] = useState(false);
   const canShowNotification = stigg.getBooleanEntitlement({
     featureId: BillingFeature.Notification,
@@ -115,7 +114,7 @@ const WorkspaceHeader: React.FC = () => {
     });
 
     if (message?.cta?.data?.url) {
-      window.location.href = message.cta.data.url;
+      // window.location.href = message.cta.data.url;
     }
   }, []);
 
