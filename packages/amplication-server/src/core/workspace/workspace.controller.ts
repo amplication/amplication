@@ -30,4 +30,20 @@ export class WorkspaceController {
     }
     return this.workspaceService.dataMigrateWorkspacesResourcesCustomActions();
   }
+
+  @Post(`createWorkspacesResourcesDefaultCustomActionsMigrationFix/:token`)
+  async createWorkspacesResourcesDefaultCustomActionsMigrationFix(
+    @Param("token") token: string
+  ): Promise<boolean> {
+    this.logger.info(
+      "createWorkspacesResourcesDefaultCustomActionsMigrationFix...."
+    );
+    if (
+      this.configService.get<string>("CUSTOM_ACTION_MIGRATION_TOKEN") !== token
+    ) {
+      this.logger.error("InvalidToken, process aborted");
+      return;
+    }
+    return this.workspaceService.dataMigrateWorkspacesResourcesCustomActionsFix();
+  }
 }

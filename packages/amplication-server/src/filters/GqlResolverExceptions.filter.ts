@@ -64,6 +64,7 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
     } else if (exception instanceof BillingLimitationError) {
       clientError = new GraphQLBillingError(
         exception.message,
+        exception.billingFeature,
         exception.bypassAllowed
       );
       this.logger.info(clientError.message, { exception });

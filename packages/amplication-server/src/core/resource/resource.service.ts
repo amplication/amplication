@@ -59,6 +59,7 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { JsonValue } from "type-fest";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -119,6 +120,7 @@ export class ResourceService {
    */
   private async createResource(
     args: CreateOneResourceArgs,
+    user: User,
     gitRepositoryToCreate: ConnectGitRepositoryInput = null,
     wizardType: string = null
   ): Promise<Resource> {
@@ -126,6 +128,19 @@ export class ResourceService {
       throw new AmplicationError(
         "Resource of type Project Configuration cannot be created manually"
       );
+    }
+
+    if (this.billingService.isBillingEnabled) {
+      const serviceEntitlement =
+        await this.billingService.getMeteredEntitlement(
+          user.workspace.id,
+          BillingFeature.Services
+        );
+
+      if (serviceEntitlement && !serviceEntitlement.hasAccess) {
+        const message = `Your project exceeds its services limitation.`;
+        throw new BillingLimitationError(message, BillingFeature.Services);
+      }
     }
 
     const projectId = args.data.project.connect.id;
@@ -270,6 +285,7 @@ export class ResourceService {
         resourceId: resource.id,
         projectId: resource.projectId,
         workspaceId: user.workspace.id,
+        $groups: { groupWorkspace: user.workspace.id },
       },
       event: EnumEventType.CodeGeneratorVersionUpdate,
     });
@@ -292,12 +308,15 @@ export class ResourceService {
     args: CreateOneResourceArgs,
     user: User
   ): Promise<Resource> {
-    const resource = await this.createResource({
-      data: {
-        ...args.data,
-        resourceType: EnumResourceType.MessageBroker,
+    const resource = await this.createResource(
+      {
+        data: {
+          ...args.data,
+          resourceType: EnumResourceType.MessageBroker,
+        },
       },
-    });
+      user
+    );
     await this.topicService.createDefault(resource, user);
 
     return resource;
@@ -313,7 +332,6 @@ export class ResourceService {
     requireAuthenticationEntity: boolean = null
   ): Promise<Resource> {
     const { serviceSettings, gitRepository, ...rest } = args.data;
-
     const resource = await this.createResource(
       {
         data: {
@@ -321,6 +339,7 @@ export class ResourceService {
           resourceType: EnumResourceType.Service,
         },
       },
+      user,
       gitRepository,
       wizardType
     );
@@ -422,6 +441,7 @@ export class ResourceService {
         properties: {
           projectId: project.id,
           workspaceId: project.workspaceId,
+          $groups: { groupWorkspace: project.workspaceId },
         },
       });
     }
@@ -601,6 +621,7 @@ export class ResourceService {
         totalEntities,
         totalFields,
         gitOrgType: gitOrganization?.type,
+        $groups: { groupWorkspace: project.workspaceId },
       },
     });
 
@@ -793,34 +814,8 @@ export class ResourceService {
     workspaceId: string,
     resourceId: string
   ): Promise<boolean> {
-    const featureProjects = await this.billingService.getMeteredEntitlement(
-      workspaceId,
-      BillingFeature.Services
-    );
-
-    if (!featureProjects.usageLimit) {
-      return false;
-    }
-
-    const resourcesOrderedByCreationDate = await this.prisma.resource.findMany({
-      where: {
-        deletedAt: null,
-        archived: { not: true },
-        resourceType: EnumResourceType.Service,
-        project: {
-          workspaceId,
-          deletedAt: null,
-        },
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-      skip: featureProjects.usageLimit,
-    });
-
-    return resourcesOrderedByCreationDate.some(
-      (resource) => resource.id === resourceId
-    );
+    // return hard coded false (for now), meaning that there are no limitation around resource apart from creation. We will implement this in the future
+    return false;
   }
 
   async reportSyncMessage(

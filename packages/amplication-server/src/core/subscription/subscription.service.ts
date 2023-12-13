@@ -1,5 +1,4 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { FindSubscriptionsArgs } from "./dto/FindSubscriptionsArgs";
 import { Subscription } from "./dto/Subscription";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "./dto";
 import {
@@ -25,14 +24,6 @@ export class SubscriptionService {
     private readonly billingService: BillingService,
     private readonly analyticsService: SegmentAnalyticsService
   ) {}
-
-  private async getSubscriptions(
-    args: FindSubscriptionsArgs
-  ): Promise<Subscription[] | null> {
-    const subs = await this.prisma.subscription.findMany(args);
-
-    return subs;
-  }
 
   async getSubscriptionById(id: string): Promise<Subscription | null> {
     const sub = await this.prisma.subscription.findUnique({
@@ -97,6 +88,7 @@ export class SubscriptionService {
         userId: userId,
         properties: {
           workspaceId: workspaceId,
+          $groups: { groupWorkspace: workspaceId },
         },
         event: EnumEventType.WorkspacePlanUpgradeCompleted,
       });

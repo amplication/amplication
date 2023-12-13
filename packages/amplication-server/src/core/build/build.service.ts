@@ -546,6 +546,7 @@ export class BuildService {
         projectId: build.resource.project.id,
         workspaceId: build.resource.project.workspaceId,
         message: response.errorMessage,
+        $groups: { groupWorkspace: build.resource.project.workspaceId },
       },
       event: EnumEventType.GitSyncError,
     });
@@ -577,6 +578,7 @@ export class BuildService {
           projectId: build.resource.project.id,
           workspaceId: build.resource.project.workspaceId,
           message: logEntry.message,
+          $groups: { groupWorkspace: build.resource.project.workspaceId },
         },
         event: EnumEventType.CodeGenerationError,
       });

@@ -10,12 +10,13 @@ import { AppRouteProps } from "../routes/routesUtil";
 import useServiceConnection from "./hooks/useServiceConnection";
 import { ServiceConnectionsList } from "./ServiceConnectionsList";
 import { isEmpty } from "lodash";
-import {
-  Button,
-  EnumButtonStyle,
-  EnumIconPosition,
-} from "@amplication/ui/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import "./ServiceConnectionsPage.scss";
+import { BillingFeature } from "@amplication/util-billing-types";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+} from "../Components/FeatureIndicatorContainer";
 
 type MessageBrokerListItem = {
   resource: models.Resource;
@@ -84,19 +85,23 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
           message="There is no message broker to show."
           image={EnumImages.MessageBrokerEmptyState}
         >
-          <Button
-            onClick={() =>
-              history.push(
-                `/${currentWorkspace?.id}/${currentProject?.id}/create-broker`
-              )
-            }
-            type="button"
-            buttonStyle={EnumButtonStyle.Outline}
-            iconPosition={EnumIconPosition.Left}
-            iconSize="xsmall"
+          <FeatureIndicatorContainer
+            featureId={BillingFeature.Services}
+            entitlementType={EntitlementType.Metered}
           >
-            <span className={"add-broker__label"}>Add Message Broker</span>
-          </Button>
+            <Button
+              onClick={() =>
+                history.push(
+                  `/${currentWorkspace?.id}/${currentProject?.id}/create-broker`
+                )
+              }
+              type="button"
+              buttonStyle={EnumButtonStyle.Outline}
+              iconSize="xsmall"
+            >
+              <span className={"add-broker__label"}>Add Message Broker</span>
+            </Button>
+          </FeatureIndicatorContainer>
         </EmptyState>
       )}
     </PageContent>
