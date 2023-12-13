@@ -168,6 +168,9 @@ describe("WorkspaceService", () => {
             provisionCustomer: jest.fn(() => {
               return {};
             }),
+            reportUsage: jest.fn(() => {
+              return {};
+            }),
           },
         },
         {
