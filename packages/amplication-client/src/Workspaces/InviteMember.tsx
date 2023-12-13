@@ -47,7 +47,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const InviteMember = ({ members }: { members: number }) => {
+const InviteMember = () => {
   const { trackEvent } = useTracking();
 
   const [inviteUser, { loading, error }] = useMutation<TData>(INVITE_USER, {
@@ -100,7 +100,6 @@ const InviteMember = ({ members }: { members: number }) => {
               <FeatureIndicatorContainer
                 featureId={BillingFeature.TeamMembers}
                 entitlementType={EntitlementType.Metered}
-                meteredFeatureLength={members}
               >
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}

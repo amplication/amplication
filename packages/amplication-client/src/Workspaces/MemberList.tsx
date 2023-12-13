@@ -9,7 +9,7 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import InviteMember from "./InviteMember";
@@ -18,6 +18,7 @@ import { pluralize } from "../util/pluralize";
 import PageContent from "../Layout/PageContent";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
+import { useStiggContext } from "@stigg/react-sdk";
 
 export type TData = {
   workspaceMembers: Array<models.WorkspaceMember>;
@@ -27,6 +28,7 @@ const CLASS_NAME = "member-list";
 const PAGE_TITLE = "Members";
 
 function MemberList() {
+  const { refreshData } = useStiggContext();
   const [error, setError] = useState<Error>();
   const {
     data,
@@ -41,9 +43,13 @@ function MemberList() {
     refetch();
   }, [refetch]);
 
+  useEffect(() => {
+    refreshData();
+  }, []);
+
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
-      <FlexItem end={<InviteMember members={data?.workspaceMembers.length} />}>
+      <FlexItem end={<InviteMember />}>
         <Text textStyle={EnumTextStyle.H4}>Workspace Members</Text>
       </FlexItem>
 

@@ -42,7 +42,8 @@ import {
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { BillingPlan } from "@amplication/util-billing-types";
+import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -129,6 +130,11 @@ export class WorkspaceService {
       user.id
     );
 
+    await this.billingService.reportUsage(
+      workspace.id,
+      BillingFeature.TeamMembers
+    );
+
     return workspace;
   }
 
@@ -136,6 +142,19 @@ export class WorkspaceService {
     currentUser: User,
     args: InviteUserArgs
   ): Promise<Invitation | null> {
+    if (this.billingService.isBillingEnabled) {
+      const projectEntitlement =
+        await this.billingService.getMeteredEntitlement(
+          currentUser.workspace.id,
+          BillingFeature.TeamMembers
+        );
+
+      if (projectEntitlement && !projectEntitlement.hasAccess) {
+        const message = `Your workspace exceeds its members limitation.`;
+        throw new BillingLimitationError(message, BillingFeature.Projects);
+      }
+    }
+
     const { workspace, id: currentUserId, account } = currentUser;
 
     if (isEmpty(args.data.email)) {
