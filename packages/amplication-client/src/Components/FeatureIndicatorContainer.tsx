@@ -80,7 +80,6 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
 
     if (entitlementType === EntitlementType.Metered) {
-      console.log({ usageLimit, currentUsage, hasMeteredAccess });
       const usageExceeded = usageLimit && currentUsage >= usageLimit;
       return usageExceeded ?? !hasMeteredAccess;
     }
