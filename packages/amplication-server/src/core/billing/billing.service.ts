@@ -312,7 +312,7 @@ export class BillingService {
 
         if (!servicesEntitlement.hasAccess) {
           const message = `Your workspace exceeds its resource limitation.`;
-          throw new BillingLimitationError(message);
+          throw new BillingLimitationError(message, BillingFeature.Services);
         }
 
         const membersEntitlement = await this.getMeteredEntitlement(
@@ -322,7 +322,7 @@ export class BillingService {
 
         if (!membersEntitlement.hasAccess) {
           const message = `Your workspace exceeds its team member limitation.`;
-          throw new BillingLimitationError(message);
+          throw new BillingLimitationError(message, BillingFeature.TeamMembers);
         }
 
         const enterpriseGitProviders = Object.keys(EnumGitProvider).filter(
@@ -346,7 +346,10 @@ export class BillingService {
 
           if (provider && !enterpriseGitEntitlement.hasAccess) {
             const message = `Your workspace uses ${enterpriseGitProvider} integration, while it is not part of your current plan.`;
-            throw new BillingLimitationError(message);
+            throw new BillingLimitationError(
+              message,
+              BillingFeature[enterpriseGitProvider]
+            );
           }
         }
 
@@ -362,7 +365,10 @@ export class BillingService {
           !changeGitBaseBranchEntitlement.hasAccess
         ) {
           const message = `Your workspace uses the custom Git base branch feature, while it is not part of your current plan.`;
-          throw new BillingLimitationError(message);
+          throw new BillingLimitationError(
+            message,
+            BillingFeature.ChangeGitBaseBranch
+          );
         }
       } catch (error) {
         if (error instanceof BillingLimitationError) {
