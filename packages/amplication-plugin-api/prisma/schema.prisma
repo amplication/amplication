@@ -11,6 +11,7 @@ model Plugin {
   categories     Json?
   createdAt      DateTime @default(now())
   description    String?
+  downloads      Int?
   github         String?
   icon           String?
   id             String   @id @default(cuid())
