@@ -9,7 +9,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { ObjectType, Field } from "@nestjs/graphql";
+import { ObjectType, Field, Int } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsJSONValue } from "@app/custom-validators";
 import { IsOptional, IsDate, IsString, IsInt } from "class-validator";
@@ -150,6 +150,15 @@ class Plugin {
     nullable: true,
   })
   website!: string | null;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsInt()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  downloads!: number | null;
 
   @ApiProperty({
     required: true,
