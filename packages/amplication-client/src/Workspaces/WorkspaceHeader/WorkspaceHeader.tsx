@@ -123,7 +123,8 @@ const WorkspaceHeader: React.FC = () => {
       from: { pathname: window.location.pathname },
     });
     trackEvent({
-      eventName: AnalyticsEventNames.UpgradeOnTopBarClick,
+      eventName: AnalyticsEventNames.UpgradeClick,
+      eventOriginLocation: "workspace-header",
       workspace: currentWorkspace.id,
     });
   }, [currentWorkspace, window.location.pathname]);

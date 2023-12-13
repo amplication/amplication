@@ -112,15 +112,9 @@ export enum AnalyticsEventNames {
   PricingPageCTAClick = "PricingPageCTAClick",
   PassedLimitsNotificationClose = "PassedLimitsNotificationClose",
   PricingPageChangeBillingCycle = "PricingPageChangeBillingCycle",
-  UpgradeOnResourceListClick = "UpgradeOnResourceListClick",
-  UpgradeOnEntityListClick = "UpgradeOnEntityListClick",
-  UpgradeOnPassedLimitsClick = "UpgradeOnPassedLimitsClick",
   PricingPageChangeWorkspace = "PricingPageChangeWorkspace",
-  UpgradeOnTopBarClick = "UpgradeOnTopBarClick",
-  UpgradeFromCodeGeneratorVersionClick = "UpgradeFromCodeGeneratorVersionClick",
-  ContactUsButtonClick = "ContactUsButtonClick",
-  UpgradeOnSideBarClick = "UpgradeOnSideBarClick",
   ProFeatureLockClick = "ProFeatureLockClick",
+  ContactUsButtonClick = "ContactUsButtonClick", // With event props: { buttonLocation: string }
 
   // upgrade
   UpgradeClick = "UpgradeClick", // With event props: { buttonLocation: string }
