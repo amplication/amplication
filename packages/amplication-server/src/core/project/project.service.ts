@@ -75,7 +75,7 @@ export class ProjectService {
 
       if (projectEntitlement && !projectEntitlement.hasAccess) {
         const message = `Your workspace exceeds its project limitation.`;
-        throw new BillingLimitationError(message);
+        throw new BillingLimitationError(message, BillingFeature.Projects);
       }
     }
 

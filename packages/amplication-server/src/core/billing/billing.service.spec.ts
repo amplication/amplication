@@ -29,9 +29,10 @@ Stigg.prototype.waitForInitialization = jest
 describe("BillingService", () => {
   let service: BillingService;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks();
-
+  });
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       providers: [
@@ -264,7 +265,8 @@ describe("BillingService", () => {
         })
       ).rejects.toThrow(
         new BillingLimitationError(
-          "Your workspace exceeds its resource limitation."
+          "Your workspace exceeds its resource limitation.",
+          BillingFeature.Services
         )
       );
 
@@ -390,7 +392,8 @@ describe("BillingService", () => {
         })
       ).rejects.toThrow(
         new BillingLimitationError(
-          "Your workspace exceeds its team member limitation."
+          "Your workspace exceeds its team member limitation.",
+          BillingFeature.TeamMembers
         )
       );
 
@@ -509,7 +512,8 @@ describe("BillingService", () => {
           })
         ).rejects.toThrow(
           new BillingLimitationError(
-            `Your workspace uses ${currentGitProvider} integration, while it is not part of your current plan.`
+            `Your workspace uses ${currentGitProvider} integration, while it is not part of your current plan.`,
+            BillingFeature[currentGitProvider as keyof typeof BillingFeature]
           )
         );
 
