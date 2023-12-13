@@ -125,7 +125,8 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
 
   const handleEntityClick = () => {
     trackEvent({
-      eventName: AnalyticsEventNames.UpgradeOnEntityListClick,
+      eventName: AnalyticsEventNames.UpgradeClick,
+      eventOriginLocation: "entity-list",
     });
   };
 

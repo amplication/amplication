@@ -55,6 +55,7 @@ const InviteMember = ({ members }: { members: number }) => {
       trackEvent({
         eventName: AnalyticsEventNames.WorkspaceMemberInvite,
         email: data.inviteUser.email,
+        eventOriginLocation: "workspace-members-page",
       });
     },
     refetchQueries: [{ query: GET_WORKSPACE_MEMBERS }],
