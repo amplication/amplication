@@ -17,7 +17,7 @@ export const emptyPlugin: PluginData = {
     github: "",
     website: "",
     type: "",
-    categories: "",
+    categories: "[]",
     resourceTypes: "",
     pluginId: "",
   },
