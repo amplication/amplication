@@ -105,6 +105,7 @@ export const FAQ = () => {
               Amplication offers a structured way to{" "}
               <a
                 target="_blank"
+                rel="noreferrer"
                 href="https://docs.amplication.com/custom-code/"
               >
                 add custom code
@@ -115,6 +116,7 @@ export const FAQ = () => {
               We also provide various{" "}
               <a
                 target="_blank"
+                rel="noreferrer"
                 href="https://docs.amplication.com/getting-started/plugins/"
               >
                 plugins
@@ -138,6 +140,7 @@ export const FAQ = () => {
               process like{" "}
               <a
                 target="_blank"
+                rel="noreferrer"
                 href="https://docs.amplication.com/how-to/import-prisma-schema/"
               >
                 DB Schema Import
@@ -145,6 +148,7 @@ export const FAQ = () => {
               ,{" "}
               <a
                 target="_blank"
+                rel="noreferrer"
                 href="https://docs.amplication.com/how-to/create-entity/"
               >
                 Data Modeling
@@ -152,6 +156,7 @@ export const FAQ = () => {
               &{" "}
               <a
                 target="_blank"
+                rel="noreferrer"
                 href="https://docs.amplication.com/plugins-list/#apache-kafka"
               >
                 Event Brokering
@@ -159,6 +164,7 @@ export const FAQ = () => {
               , and{" "}
               <a
                 target="_blank"
+                rel="noreferrer"
                 href="https://docs.amplication.com/custom-code/"
               >
                 Customizable Code Generation
@@ -175,6 +181,7 @@ export const FAQ = () => {
               deploy to services like{" "}
               <a
                 target="_blank"
+                rel="noreferrer"
                 href="https://docs.amplication.com/deploy/kubernetes/"
               >
                 Kubernetes
@@ -182,6 +189,7 @@ export const FAQ = () => {
               ,{" "}
               <a
                 target="_blank"
+                rel="noreferrer"
                 href="https://docs.amplication.com/deploy/docker-desktop/"
               >
                 Docker Desktop
@@ -189,6 +197,7 @@ export const FAQ = () => {
               ,{" "}
               <a
                 target="_blank"
+                rel="noreferrer"
                 href="https://docs.amplication.com/deploy/aws/ecs/"
               >
                 AWS's ECS
@@ -215,6 +224,7 @@ export const FAQ = () => {
               For more details on how this works, please refer to our{" "}
               <a
                 target="_blank"
+                rel="noreferrer"
                 href="https://docs.amplication.com/smart-git-sync/"
               >
                 documentation
@@ -232,6 +242,7 @@ export const FAQ = () => {
               includes support for{" "}
               <a
                 target="_blank"
+                rel="noreferrer"
                 href="https://docs.amplication.com/enterprise-sso/"
               >
                 Single Sign-On (SSO)
