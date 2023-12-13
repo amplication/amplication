@@ -1,0 +1,24 @@
+@import "../style/index.scss";
+
+$log-min-width: 360px;
+$icon-size: 20px;
+
+.build-page {
+  &__build-details {
+    display: flex;
+    direction: row;
+
+    .log-container {
+      flex: 1;
+      min-width: $log-min-width;
+    }
+  }
+
+  .build-steps__step {
+    margin-left: 0;
+    margin-right: 0;
+    i {
+      font-size: $icon-size;
+    }
+  }
+}

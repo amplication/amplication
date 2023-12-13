@@ -1,0 +1,13 @@
+{
+  "name": "@amplication/code-gen-utils",
+  "version": "0.0.7",
+  "dependencies": {
+    "@babel/parser": "7.23.0",
+    "@babel/types": "7.23.0",
+    "ast-types": "^0.14.2",
+    "lodash": "^4.17.21",
+    "prettier": "^2.7.1",
+    "recast": "^0.20.5",
+    "tslib": "2.6.2"
+  }
+}

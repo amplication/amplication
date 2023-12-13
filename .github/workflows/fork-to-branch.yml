@@ -1,0 +1,87 @@
+name: Fork to Branch
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  check-comment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request }}
+    outputs:
+      trigger-comment: ${{ steps.check.outputs.triggered }}
+    steps:
+      - uses: khan/pull-request-comment-trigger@v1.1.0
+        id: check
+        with:
+          trigger: "create branch from fork"
+          prefix_only: "true"
+
+  create_branch:
+    runs-on: ubuntu-latest
+    needs: [check-comment]
+    if: ${{ needs.check-comment.outputs.trigger-comment == 'true' }}
+    steps:
+      - uses: actions/github-script@v3
+        id: get-pr
+        with:
+          script: |
+            const request = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            }
+            core.info(`Getting PR #${request.pull_number} from ${request.owner}/${request.repo}`)
+            try {
+              const result = await github.pulls.get(request)
+              return result.data
+            } catch (err) {
+              core.setFailed(`Request failed with error ${err}`)
+            }
+
+      - name: checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
+          repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
+
+      - name: check if branch exists
+        env:
+          REF: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          existed_in_repo=$(git ls-remote --heads origin pr/${{ env.REF }}-${{ env.PR_NUMBER }})
+          if [[ -z ${existed_in_repo} ]]
+          then
+            echo "branch pr/${{ env.REF }}-${{ env.PR_NUMBER }} is not exists"
+          else
+           git push origin --delete pr/${{ env.REF }}-${{ env.PR_NUMBER }}
+           echo "branch pr/${{ env.REF }}-${{ env.PR_NUMBER }} deleted" 
+          fi
+
+      - name: git remote add upstream
+        env:
+          OWNER: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.owner.login }}
+          REF: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          git remote add upstream https://github.com/amplication/amplication.git
+          git fetch --all
+          git checkout ${{ env.REF }}
+          git checkout -b pr/${{ env.REF }}-${{ env.PR_NUMBER }}
+          git push -f --set-upstream upstream pr/${{ env.REF }}-${{ env.PR_NUMBER }}
+
+          echo "Forked branch ${{ env.OWNER }}:${{ env.REF }} has been pushed to branch pr/${{ env.REF }}-${{ env.PR_NUMBER }}"
+
+      - name: create comment
+        uses: peter-evans/create-or-update-comment@v2
+        env:
+          REF: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        with:
+          issue-number: ${{ env.PR_NUMBER }}
+          body: |
+            The branch 'pr/${{ env.REF }}-${{ env.PR_NUMBER }}' was created!
+          reactions: "+1"
