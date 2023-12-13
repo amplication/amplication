@@ -20,16 +20,6 @@ import { Type } from "class-transformer";
 @ObjectType()
 class Plugin {
   @ApiProperty({
-    required: false,
-  })
-  @IsJSONValue()
-  @IsOptional()
-  @Field(() => GraphQLJSON, {
-    nullable: true,
-  })
-  categories!: JsonValue;
-
-  @ApiProperty({
     required: true,
   })
   @IsDate()
@@ -47,17 +37,6 @@ class Plugin {
     nullable: true,
   })
   description!: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
-  @IsInt()
-  @IsOptional()
-  @Field(() => Number, {
-    nullable: true,
-  })
-  downloads!: number | null;
 
   @ApiProperty({
     required: false,
