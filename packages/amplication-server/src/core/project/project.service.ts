@@ -382,6 +382,11 @@ export class ProjectService {
       BillingFeature.CodeGenerationBuilds
     );
 
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.TeamMembers
+    );
+
     await Promise.all(
       changedEntities.flatMap((change) => {
         const versionPromise = this.entityService.createVersion({
