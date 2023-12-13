@@ -161,6 +161,14 @@ class PluginOrderByInput {
     nullable: true,
   })
   website?: SortOrder;
+
+  @ApiProperty({
+    required: true,
+    enum: ["asc", "desc"],
+  })
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder)
+  categories?: SortOrder;
 }
 
 export { PluginOrderByInput as PluginOrderByInput };

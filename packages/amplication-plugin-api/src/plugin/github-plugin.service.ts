@@ -166,6 +166,7 @@ export class GitPluginService {
           website: plugin.website,
           updatedAt: npm.time ? new Date(npm.time.modified) : new Date(),
           downloads: downloads,
+          categories: pluginConfig.categories,
         });
       }
 

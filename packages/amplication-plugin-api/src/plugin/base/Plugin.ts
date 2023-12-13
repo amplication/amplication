@@ -159,6 +159,13 @@ class Plugin {
     nullable: true,
   })
   downloads!: number | null;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  categories!: JsonValue;
 }
 
 export { Plugin as Plugin };
