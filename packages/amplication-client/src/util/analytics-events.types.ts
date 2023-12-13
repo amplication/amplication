@@ -114,11 +114,11 @@ export enum AnalyticsEventNames {
   PricingPageChangeBillingCycle = "PricingPageChangeBillingCycle",
   PricingPageChangeWorkspace = "PricingPageChangeWorkspace",
   ProFeatureLockClick = "ProFeatureLockClick",
-  ContactUsButtonClick = "ContactUsButtonClick", // With event props: { buttonLocation: string }
+  ContactUsButtonClick = "ContactUsButtonClick",
 
   // upgrade
-  UpgradeClick = "UpgradeClick", // With event props: { buttonLocation: string }
-  UpgradeLaterClick = "UpgradeLaterClick", // With event props: { buttonLocation: string, featureLimitation: string }
+  UpgradeClick = "UpgradeClick",
+  UpgradeLaterClick = "UpgradeLaterClick",
 
   // Chat widget
   HelpMenuItemClick = "HelpMenuItemClick",
