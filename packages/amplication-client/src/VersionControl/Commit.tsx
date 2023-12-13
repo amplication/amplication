@@ -228,7 +228,6 @@ const Commit = ({ projectId, noChanges }: Props) => {
               eventName: AnalyticsEventNames.PassedLimitsNotificationClose,
               reason: limitationErrorMessage,
               eventOriginLocation: "commit-limitation-dialog",
-              billingFeature: limitationBillingFeature,
             });
             setOpenLimitationDialog(false);
           }}
