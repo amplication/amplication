@@ -924,11 +924,13 @@ export class WorkspaceService {
     const promises = resources.map(async (resource) => {
       try {
         for (const entity of resource.entities) {
-          hasChanges = await this.createEntityCustomActionsFix(
-            entity,
-            resource.id,
-            user
-          );
+          hasChanges =
+            hasChanges ||
+            (await this.createEntityCustomActionsFix(
+              entity,
+              resource.id,
+              user
+            ));
         }
       } catch (error) {
         this.logger.error(
