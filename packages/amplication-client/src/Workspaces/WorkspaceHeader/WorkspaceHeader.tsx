@@ -85,9 +85,9 @@ const WorkspaceHeader: React.FC = () => {
   const { trackEvent } = useTracking();
 
   const daysLeftText = useMemo(() => {
-    return upgradeButtonData.trialDaysLeft === 1
-      ? `${upgradeButtonData.trialDaysLeft} day left for the free trial`
-      : `${upgradeButtonData.trialDaysLeft} days left for the free trial`;
+    return `${upgradeButtonData.trialDaysLeft} day${
+      upgradeButtonData.trialDaysLeft !== 1 ? "s" : ""
+    } left for the free trial`;
   }, [upgradeButtonData.trialDaysLeft]);
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
