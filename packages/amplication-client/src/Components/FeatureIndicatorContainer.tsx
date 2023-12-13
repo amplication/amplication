@@ -37,7 +37,6 @@ export type Props = {
   featureId: BillingFeature;
   entitlementType: EntitlementType;
   featureIndicatorPlacement?: FeatureIndicatorPlacement;
-  meteredFeatureLength?: number;
   disabled?: boolean;
   icon?: IconType | null;
   children?: React.ReactElement;
@@ -49,7 +48,6 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   featureId,
   entitlementType,
   featureIndicatorPlacement = FeatureIndicatorPlacement.Inside,
-  meteredFeatureLength,
   disabled,
   children,
   render,
@@ -81,18 +79,14 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       return !hasBooleanAccess;
     }
 
-    const usageExceeded =
-      usageLimit && meteredFeatureLength && meteredFeatureLength >= usageLimit;
+    if (entitlementType === EntitlementType.Metered) {
+      console.log({ usageLimit, currentUsage, hasMeteredAccess });
+      const usageExceeded = usageLimit && currentUsage >= usageLimit;
+      return usageExceeded ?? !hasMeteredAccess;
+    }
 
-    return usageExceeded ?? !hasMeteredAccess;
-  }, [
-    featureId,
-    usageLimit,
-    currentUsage,
-    hasMeteredAccess,
-    hasBooleanAccess,
-    meteredFeatureLength,
-  ]);
+    return false;
+  }, [featureId, usageLimit, currentUsage, hasMeteredAccess, hasBooleanAccess]);
 
   const iconType = useMemo(() => {
     if (!featureId) {
