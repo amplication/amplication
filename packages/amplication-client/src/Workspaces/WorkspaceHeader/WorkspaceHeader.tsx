@@ -18,7 +18,7 @@ import {
   PopoverNotificationCenter,
 } from "@novu/notification-center";
 import { useStiggContext } from "@stigg/react-sdk";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory } from "react-router-dom";
 import CommandPalette from "../../CommandPalette/CommandPalette";
@@ -83,6 +83,12 @@ const WorkspaceHeader: React.FC = () => {
   const history = useHistory();
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
+
+  const daysLeftText = useMemo(() => {
+    return upgradeButtonData.trialDaysLeft === 1
+      ? `${upgradeButtonData.trialDaysLeft} day left for the free trial`
+      : `${upgradeButtonData.trialDaysLeft} days left for the free trial`;
+  }, [upgradeButtonData.trialDaysLeft]);
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
@@ -208,7 +214,7 @@ const WorkspaceHeader: React.FC = () => {
                   className={`${CLASS_NAME}__upgrade__btn`}
                   onClick={handleUpgradeClick}
                   progress={upgradeButtonData.trialLeftProgress}
-                  leftValue={`${upgradeButtonData.trialDaysLeft} days free trial left`}
+                  leftValue={daysLeftText}
                   yellowColorThreshold={50}
                   redColorThreshold={0}
                 >
