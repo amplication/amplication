@@ -18,7 +18,13 @@ import {
   PopoverNotificationCenter,
 } from "@novu/notification-center";
 import { useStiggContext } from "@stigg/react-sdk";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory } from "react-router-dom";
 import CommandPalette from "../../CommandPalette/CommandPalette";
@@ -83,11 +89,11 @@ const WorkspaceHeader: React.FC = () => {
   const history = useHistory();
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
-
+  const novuBellRef = useRef(null);
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
-  const [versionAlert, setVersionAlert] = useState(false);
-
+  // const [versionAlert, setVersionAlert] = useState(false);
+  const [novuCenterState, setNovuCenterState] = useState(false);
   const canShowNotification = stigg.getBooleanEntitlement({
     featureId: BillingFeature.Notification,
   }).hasAccess;
@@ -103,7 +109,11 @@ const WorkspaceHeader: React.FC = () => {
   }, [history, apolloClient]);
 
   const onNotificationClick = useCallback((message: IMessage) => {
-    // your logic to handle the notification click
+    trackEvent({
+      eventName: AnalyticsEventNames.ClickNotificationMessage,
+      messageType: "now-buildSucceeded",
+    });
+
     if (message?.cta?.data?.url) {
       window.location.href = message.cta.data.url;
     }
@@ -151,6 +161,15 @@ const WorkspaceHeader: React.FC = () => {
   const handleShowProfileForm = useCallback(() => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
+
+  const handleBellClick = useCallback(() => {
+    if (!novuCenterState) {
+      trackEvent({
+        eventName: AnalyticsEventNames.OpenNotificationCenter,
+      });
+    }
+    setNovuCenterState(!novuCenterState);
+  }, [novuBellRef, novuCenterState]);
 
   const Footer = () => <div></div>;
 
@@ -298,7 +317,9 @@ const WorkspaceHeader: React.FC = () => {
                     emptyState={<EmptyState />}
                   >
                     {({ unseenCount }) => (
-                      <NotificationBell unseenCount={unseenCount} />
+                      <div onClick={handleBellClick}>
+                        <NotificationBell unseenCount={unseenCount} />
+                      </div>
                     )}
                   </PopoverNotificationCenter>
                 </NovuProvider>

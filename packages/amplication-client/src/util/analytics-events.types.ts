@@ -151,4 +151,8 @@ export enum AnalyticsEventNames {
   ViewServiceWizardError = "ViewServiceWizardError",
   ServiceWizardError_TryAgain = "ServiceWizardError_TryAgain",
   ServiceWizardError_Continue = "ServiceWizardError_Continue",
+
+  // notification
+  OpenNotificationCenter = "OpenNotificationCenter",
+  ClickNotificationMessage = "ClickNotificationMessage",
 }
