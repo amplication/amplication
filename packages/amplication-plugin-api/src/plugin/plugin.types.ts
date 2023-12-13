@@ -2,6 +2,7 @@ import { PluginVersion } from "../pluginVersion/base/PluginVersion";
 import { Plugin } from "./base/Plugin";
 
 export interface NpmTags {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   "dist-tags"?: { [key: string]: string };
   time?: { modified: string; created: string };
 }
