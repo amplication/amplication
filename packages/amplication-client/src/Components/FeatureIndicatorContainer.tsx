@@ -117,33 +117,35 @@ export const FeatureIndicatorContainer: FC<Props> = ({
 
   return (
     <div className={CLASS_NAME}>
-      {render
-        ? render(renderProps)
-        : Children.map(children, (child) => (
-            <FeatureIndicator
-              featureName={featureId}
-              icon={iconType}
-              element={
-                featureIndicatorPlacement ===
-                FeatureIndicatorPlacement.Outside ? (
-                  <div
-                    className={`${CLASS_NAME}__children ${
-                      reversePosition ? "reverse-position" : ""
-                    }`}
-                  >
-                    {React.cloneElement(child, omit(renderProps, "icon"))}{" "}
-                    <Icon
-                      icon={iconType}
-                      color={EnumTextColor.Black20}
-                      size="xsmall"
-                    />
-                  </div>
-                ) : (
-                  React.cloneElement(child, renderProps)
-                )
-              }
-            />
-          ))}
+      {render && render(renderProps)}
+      {!render &&
+        iconType &&
+        Children.map(children, (child) => (
+          <FeatureIndicator
+            featureName={featureId}
+            icon={iconType}
+            element={
+              featureIndicatorPlacement ===
+              FeatureIndicatorPlacement.Outside ? (
+                <div
+                  className={`${CLASS_NAME}__children ${
+                    reversePosition ? "reverse-position" : ""
+                  }`}
+                >
+                  {React.cloneElement(child, omit(renderProps, "icon"))}{" "}
+                  <Icon
+                    icon={iconType}
+                    color={EnumTextColor.Black20}
+                    size="xsmall"
+                  />
+                </div>
+              ) : (
+                React.cloneElement(child, renderProps)
+              )
+            }
+          />
+        ))}
+      {!render && !iconType && children}
     </div>
   );
 };
