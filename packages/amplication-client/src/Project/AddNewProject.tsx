@@ -35,6 +35,7 @@ const AddNewProject = () => {
       <FeatureIndicatorContainer
         featureId={BillingFeature.Projects}
         entitlementType={EntitlementType.Metered}
+        tooltipText="The workspace reached your plan's project limitation."
       >
         <Button
           onClick={handleNewProjectClick}

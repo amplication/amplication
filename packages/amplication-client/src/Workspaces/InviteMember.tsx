@@ -100,6 +100,7 @@ const InviteMember = () => {
               <FeatureIndicatorContainer
                 featureId={BillingFeature.TeamMembers}
                 entitlementType={EntitlementType.Metered}
+                tooltipText="The workspace reached your plan's team members limitation."
               >
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}

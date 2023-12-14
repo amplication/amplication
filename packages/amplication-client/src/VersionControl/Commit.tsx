@@ -169,8 +169,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
               {isProjectUnderLimitation ? (
                 <FeatureIndicator
                   featureName={BillingFeature.Projects}
-                  text="Your current plan permits only one project."
-                  linkText="Please contact us to upgrade."
+                  text="The workspace reached your plan's project limitation."
                   element={
                     <Button
                       type="submit"
