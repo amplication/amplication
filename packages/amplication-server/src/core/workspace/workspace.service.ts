@@ -304,6 +304,11 @@ export class WorkspaceService {
       },
     });
 
+    await this.billingService.reportUsage(
+      workspace.id,
+      BillingFeature.TeamMembers
+    );
+
     await this.analytics.track({
       userId: account.id,
       event: EnumEventType.InvitationAcceptance,
