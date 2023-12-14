@@ -152,7 +152,7 @@ function PluginsCatalogItem({
           </a>
         </FlexItem.FlexStart>
         <FlexItem.FlexEnd className={`${CLASS_NAME}__category`}>
-          category: {plugin.categories.join(",")}
+          Categories: {plugin.categories.join(", ")}
         </FlexItem.FlexEnd>
       </FlexItem>
     </ListItem>
