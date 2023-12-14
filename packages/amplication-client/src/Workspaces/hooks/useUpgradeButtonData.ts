@@ -50,7 +50,7 @@ export const useUpgradeButtonData = (
           trialDaysLeft: 0,
           trialLeftProgress: 0,
           showUpgradeTrialButton,
-          showUpgradeDefaultButton: false,
+          showUpgradeDefaultButton: !showUpgradeTrialButton,
           isCompleted: true,
         });
       } else if (
