@@ -14,6 +14,7 @@ import Stigg, {
   FullSubscription,
   MeteredEntitlement,
   SubscriptionStatus,
+  UsageUpdateBehavior,
 } from "@stigg/node-server-sdk";
 import { GitOrganization, GitRepository, Project, User } from "../../models";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../../prisma";
@@ -619,5 +620,33 @@ describe("BillingService", () => {
         );
       }
     );
+  });
+
+  it("should report usage as delta update by using the UsageUpdateBehavior.Delta", async () => {
+    const reportUsage = jest.spyOn(Stigg.prototype, "reportUsage");
+
+    await service.reportUsage("workspace-id", BillingFeature.Projects, 1);
+
+    expect(reportUsage).toHaveBeenCalledTimes(1);
+    expect(reportUsage).toHaveBeenCalledWith({
+      customerId: "workspace-id",
+      featureId: BillingFeature.Projects,
+      updateBehavior: UsageUpdateBehavior.Delta,
+      value: 1,
+    });
+  });
+
+  it("should set usage overriding current usage by using the UsageUpdateBehavior.Set", async () => {
+    const reportUsage = jest.spyOn(Stigg.prototype, "reportUsage");
+
+    await service.setUsage("workspace-id", BillingFeature.Projects, 100);
+
+    expect(reportUsage).toHaveBeenCalledTimes(1);
+    expect(reportUsage).toHaveBeenCalledWith({
+      customerId: "workspace-id",
+      featureId: BillingFeature.Projects,
+      updateBehavior: UsageUpdateBehavior.Set,
+      value: 100,
+    });
   });
 });

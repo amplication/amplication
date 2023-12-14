@@ -7,6 +7,7 @@ import Stigg, {
   NumericEntitlement,
   ReportUsageAck,
   SubscriptionStatus,
+  UsageUpdateBehavior,
 } from "@stigg/node-server-sdk";
 import { Env } from "../../env";
 import { EnumSubscriptionPlan } from "../subscription/dto";
@@ -104,6 +105,13 @@ export class BillingService {
     }
   }
 
+  /**
+   * Report usage for a specific feature.
+   * @param workspaceId Workspace to report usage for.
+   * @param feature Feature to report usage for.
+   * @param value Value to be added / removed from the current usage. Default is 1.
+   * @returns Report usage ack.
+   */
   async reportUsage(
     workspaceId: string,
     feature: BillingFeature,
@@ -116,13 +124,22 @@ export class BillingService {
           customerId: workspaceId,
           featureId: feature,
           value: value,
+          updateBehavior: UsageUpdateBehavior.Delta,
         });
       }
+      return { measurementId: null };
     } catch (error) {
       this.logger.error(error.message, error);
     }
   }
 
+  /**
+   * Set usage for a specific feature. Overwrites the current usage.
+   * @param workspaceId Workspace to report usage for.
+   * @param feature Feature to report usage for.
+   * @param value Value to be set as the current usage.
+   * @returns
+   */
   async setUsage(
     workspaceId: string,
     feature: BillingFeature,
@@ -132,19 +149,14 @@ export class BillingService {
       if (this.isBillingEnabled) {
         const stiggClient = await this.getStiggClient();
 
-        const entitlement = await stiggClient.getMeteredEntitlement({
-          customerId: workspaceId,
-          featureId: feature,
-        });
-
-        const result = value - entitlement.currentUsage;
-
         return await stiggClient.reportUsage({
           customerId: workspaceId,
           featureId: feature,
-          value: result,
+          value,
+          updateBehavior: UsageUpdateBehavior.Set,
         });
       }
+      return { measurementId: null };
     } catch (error) {
       this.logger.error(error.message, error);
     }
