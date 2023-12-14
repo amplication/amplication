@@ -36,7 +36,7 @@ import {
   EnumPullRequestMode,
   GitProviderProperties,
 } from "@amplication/util/git";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { ILogger } from "@amplication/util/logging";
 import {
   CanUserAccessBuild,

@@ -7,21 +7,27 @@ import Stigg, {
   NumericEntitlement,
   ReportUsageAck,
   SubscriptionStatus,
+  UsageUpdateBehavior,
 } from "@stigg/node-server-sdk";
 import { Env } from "../../env";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStatus";
 import { Subscription } from "../subscription/dto/Subscription";
-import { BillingFeature, BillingPlan } from "./billing.types";
 import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscriptionResult";
-import { ValidationError } from "../../errors/ValidationError";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
 import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
-import { Project, User } from "../../models";
+import {
+  BillingAddon,
+  BillingFeature,
+  BillingPlan,
+} from "@amplication/util-billing-types";
+import { ValidateSubscriptionPlanLimitationsArgs } from "./billing.service.types";
+import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
 
 @Injectable()
 export class BillingService {
@@ -31,6 +37,17 @@ export class BillingService {
 
   get isBillingEnabled(): boolean {
     return this.billingEnabled;
+  }
+
+  private get defaultSubscriptionPlan() {
+    return {
+      planId: BillingPlan.Enterprise,
+      addons: [
+        {
+          addonId: BillingAddon.CustomActions,
+        },
+      ],
+    };
   }
 
   constructor(
@@ -88,6 +105,13 @@ export class BillingService {
     }
   }
 
+  /**
+   * Report usage for a specific feature.
+   * @param workspaceId Workspace to report usage for.
+   * @param feature Feature to report usage for.
+   * @param value Value to be added / removed from the current usage. Default is 1.
+   * @returns Report usage ack.
+   */
   async reportUsage(
     workspaceId: string,
     feature: BillingFeature,
@@ -100,13 +124,22 @@ export class BillingService {
           customerId: workspaceId,
           featureId: feature,
           value: value,
+          updateBehavior: UsageUpdateBehavior.Delta,
         });
       }
+      return { measurementId: null };
     } catch (error) {
       this.logger.error(error.message, error);
     }
   }
 
+  /**
+   * Set usage for a specific feature. Overwrites the current usage.
+   * @param workspaceId Workspace to report usage for.
+   * @param feature Feature to report usage for.
+   * @param value Value to be set as the current usage.
+   * @returns
+   */
   async setUsage(
     workspaceId: string,
     feature: BillingFeature,
@@ -116,19 +149,14 @@ export class BillingService {
       if (this.isBillingEnabled) {
         const stiggClient = await this.getStiggClient();
 
-        const entitlement = await stiggClient.getMeteredEntitlement({
-          customerId: workspaceId,
-          featureId: feature,
-        });
-
-        const result = value - entitlement.currentUsage;
-
         return await stiggClient.reportUsage({
           customerId: workspaceId,
           featureId: feature,
-          value: result,
+          value,
+          updateBehavior: UsageUpdateBehavior.Set,
         });
       }
+      return { measurementId: null };
     } catch (error) {
       this.logger.error(error.message, error);
     }
@@ -258,116 +286,113 @@ export class BillingService {
     }
   }
 
-  async provisionCustomer(
-    workspaceId: string,
-    plan: BillingPlan
-  ): Promise<null> {
+  async provisionCustomer(workspaceId: string): Promise<null> {
     if (this.isBillingEnabled) {
-      const stiggClient = await this.getStiggClient();
-      await stiggClient.provisionCustomer({
+      await this.stiggClient.provisionCustomer({
         customerId: workspaceId,
         shouldSyncFree: false,
-        subscriptionParams: {
-          planId: plan,
-        },
+        subscriptionParams: this.defaultSubscriptionPlan,
       });
     }
     return;
   }
 
   //todo: wrap with a try catch and return an object with the details about the limitations
-  async validateSubscriptionPlanLimitationsForWorkspace(
-    workspaceId: string,
-    currentUser: User,
-    currentProjectId: string,
-    projects: Project[]
-  ): Promise<void> {
+  async validateSubscriptionPlanLimitationsForWorkspace({
+    workspaceId,
+    currentUser,
+    repositories,
+    bypassLimitations = false,
+  }: ValidateSubscriptionPlanLimitationsArgs): Promise<void> {
     if (this.isBillingEnabled) {
       const isIgnoreValidationCodeGeneration = await this.getBooleanEntitlement(
         workspaceId,
         BillingFeature.IgnoreValidationCodeGeneration
       );
-
       //check whether the workspace has entitlement to bypass code generation limitation
-      if (!isIgnoreValidationCodeGeneration.hasAccess) {
-        const projectsEntitlement = await this.getMeteredEntitlement(
-          workspaceId,
-          BillingFeature.Projects
-        );
+      if (bypassLimitations || isIgnoreValidationCodeGeneration.hasAccess) {
+        return;
+      }
 
-        const projectsUnderLimitation = projects.slice(
-          0,
-          projectsEntitlement.usageLimit
-        );
-        const canCurrentProjectCommit = projectsUnderLimitation.some(
-          (project) => project.id === currentProjectId
-        );
-
-        if (!projectsEntitlement.hasAccess && !canCurrentProjectCommit) {
-          const message = `Allowed projects per workspace: ${projectsEntitlement.usageLimit}`;
-
-          await this.analytics.track({
-            userId: currentUser.account.id,
-            properties: {
-              workspaceId,
-              reason: message,
-              $groups: { groupWorkspace: workspaceId },
-            },
-            event: EnumEventType.SubscriptionLimitPassed,
-          });
-
-          throw new ValidationError(`LimitationError: ${message}`);
-        }
-
+      try {
         const servicesEntitlement = await this.getMeteredEntitlement(
           workspaceId,
           BillingFeature.Services
         );
 
         if (!servicesEntitlement.hasAccess) {
-          const message = `Allowed services per workspace: ${servicesEntitlement.usageLimit}`;
-
-          await this.analytics.track({
-            userId: currentUser.account.id,
-            properties: {
-              workspaceId,
-              reason: message,
-              $groups: { groupWorkspace: workspaceId },
-            },
-            event: EnumEventType.SubscriptionLimitPassed,
-          });
-
-          throw new ValidationError(`LimitationError: ${message}`);
+          const message = `Your workspace exceeds its resource limitation.`;
+          throw new BillingLimitationError(message, BillingFeature.Services);
         }
 
-        const servicesAboveEntitiesPerServiceLimitEntitlement =
-          await this.getMeteredEntitlement(
-            workspaceId,
-            BillingFeature.ServicesAboveEntitiesPerServiceLimit
-          );
+        const membersEntitlement = await this.getMeteredEntitlement(
+          workspaceId,
+          BillingFeature.TeamMembers
+        );
 
-        if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
-          const entitiesPerServiceEntitlement =
-            await this.getNumericEntitlement(
-              workspaceId,
-              BillingFeature.EntitiesPerService
+        if (!membersEntitlement.hasAccess) {
+          const message = `Your workspace exceeds its team member limitation.`;
+          throw new BillingLimitationError(message, BillingFeature.TeamMembers);
+        }
+
+        const enterpriseGitProviders = Object.keys(EnumGitProvider).filter(
+          (x) => x !== EnumGitProvider.Github
+        );
+
+        for (const enterpriseGitProvider of enterpriseGitProviders) {
+          if (!BillingFeature[enterpriseGitProvider]) {
+            throw new Error(
+              `Unknown BillingFeature for git provider: ${enterpriseGitProvider}`
             );
+          }
 
-          const entitiesPerServiceLimit = entitiesPerServiceEntitlement.value;
-          const message = `Allowed entities per service: ${entitiesPerServiceLimit}`;
+          const enterpriseGitEntitlement = await this.getBooleanEntitlement(
+            workspaceId,
+            BillingFeature[enterpriseGitProvider]
+          );
+          const provider = repositories?.find(
+            (repo) => repo.gitOrganization.provider === enterpriseGitProvider
+          )?.gitOrganization.provider;
 
+          if (provider && !enterpriseGitEntitlement.hasAccess) {
+            const message = `Your workspace uses ${enterpriseGitProvider} integration, while it is not part of your current plan.`;
+            throw new BillingLimitationError(
+              message,
+              BillingFeature[enterpriseGitProvider]
+            );
+          }
+        }
+
+        const changeGitBaseBranchEntitlement = await this.getBooleanEntitlement(
+          workspaceId,
+          BillingFeature.ChangeGitBaseBranch
+        );
+        const projectWithCustomBaseBranch = repositories?.find(
+          (repo) => repo.baseBranchName
+        );
+        if (
+          projectWithCustomBaseBranch &&
+          !changeGitBaseBranchEntitlement.hasAccess
+        ) {
+          const message = `Your workspace uses the custom git base branch feature, while it is not part of your current plan.`;
+          throw new BillingLimitationError(
+            message,
+            BillingFeature.ChangeGitBaseBranch
+          );
+        }
+      } catch (error) {
+        if (error instanceof BillingLimitationError) {
           await this.analytics.track({
             userId: currentUser.account.id,
             properties: {
               workspaceId,
-              reason: message,
+              reason: error.message,
               $groups: { groupWorkspace: workspaceId },
             },
             event: EnumEventType.SubscriptionLimitPassed,
           });
-
-          throw new ValidationError(`LimitationError: ${message}`);
         }
+        throw error;
       }
     }
   }

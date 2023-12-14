@@ -1,4 +1,4 @@
-import { Snackbar, TextField } from "@amplication/ui/design-system";
+import { Icon, Snackbar, TextField } from "@amplication/ui/design-system";
 import { gql, Reference, useMutation } from "@apollo/client";
 import classNames from "classnames";
 import { Form, Formik } from "formik";
@@ -8,6 +8,8 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import "./NewEntityField.scss";
+import { FeatureIndicator } from "../Components/FeatureIndicator";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 type Props = {
   entity: models.Entity;
@@ -25,7 +27,8 @@ const INITIAL_VALUES = {
 const CLASS_NAME = "new-entity-field";
 
 const NewEntityField = ({ entity, onFieldAdd }: Props) => {
-  const { addEntity } = useContext(AppContext);
+  const { addEntity, currentResource } = useContext(AppContext);
+  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
 
   const [createEntityField, { error, loading }] = useMutation<TData>(
@@ -118,14 +121,33 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              icon="plus"
-              className={classNames(`${CLASS_NAME}__add-field__button`, {
-                [`${CLASS_NAME}__add-field__button--show`]:
-                  formik.values.displayName.length > 0,
-              })}
-            />
+            {isResourceUnderLimitation ? (
+              <FeatureIndicator
+                featureName={BillingFeature.Services}
+                text="Your current plan permits only one active resource."
+                linkText="Please contact us to upgrade."
+                element={
+                  <Button
+                    buttonStyle={EnumButtonStyle.Text}
+                    disabled={isResourceUnderLimitation}
+                    icon="locked"
+                    className={classNames(`${CLASS_NAME}__add-field__button`, {
+                      [`${CLASS_NAME}__add-field__button--show`]:
+                        formik.values.displayName.length > 0,
+                    })}
+                  />
+                }
+              />
+            ) : (
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                icon="plus"
+                className={classNames(`${CLASS_NAME}__add-field__button`, {
+                  [`${CLASS_NAME}__add-field__button--show`]:
+                    formik.values.displayName.length > 0,
+                })}
+              />
+            )}
           </Form>
         )}
       </Formik>

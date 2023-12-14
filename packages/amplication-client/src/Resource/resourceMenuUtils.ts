@@ -1,5 +1,5 @@
+import { BillingFeature } from "@amplication/util-billing-types";
 import { EnumResourceType } from "../models";
-import { BillingFeature } from "../util/BillingFeature";
 
 export type MenuItemLinks =
   | "entities"

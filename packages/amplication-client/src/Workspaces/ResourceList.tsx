@@ -9,7 +9,6 @@ import {
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
-  LimitationNotification,
   List,
   Panel,
   SearchField,
@@ -17,21 +16,20 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { Reference, gql, useMutation } from "@apollo/client";
-import { useStiggContext } from "@stigg/react-sdk";
 import { isEmpty } from "lodash";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 import PageContent from "../Layout/PageContent";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
-import { BillingFeature } from "../util/BillingFeature";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import ResourceListItem from "./ResourceListItem";
+import { useStiggContext } from "@stigg/react-sdk";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
@@ -42,7 +40,7 @@ const PAGE_TITLE = "Project Overview";
 
 function ResourceList() {
   const { trackEvent } = useTracking();
-
+  const { refreshData } = useStiggContext();
   const [error, setError] = useState<Error | null>(null);
 
   const {
@@ -52,18 +50,15 @@ function ResourceList() {
     loadingResources,
     errorResources,
     currentProject,
-    currentWorkspace,
   } = useContext(AppContext);
 
   const clearError = useCallback(() => {
     setError(null);
   }, [setError]);
 
-  const handleResourceClick = () => {
-    trackEvent({
-      eventName: AnalyticsEventNames.UpgradeOnResourceListClick,
-    });
-  };
+  useEffect(() => {
+    refreshData();
+  }, []);
 
   const [deleteResource] = useMutation<TDeleteResourceData>(DELETE_RESOURCE, {
     update(cache, { data }) {
@@ -80,6 +75,7 @@ function ResourceList() {
           },
         },
       });
+      refreshData();
     },
   });
 
@@ -100,11 +96,6 @@ function ResourceList() {
     [deleteResource, setError, trackEvent]
   );
 
-  const { stigg } = useStiggContext();
-  const hideNotifications = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.HideNotifications,
-  });
-
   const errorMessage =
     formatError(errorResources) || (error && formatError(error));
 
@@ -118,7 +109,7 @@ function ResourceList() {
             onChange={handleSearchChange}
           />
         }
-        end={<CreateResourceButton />}
+        end={<CreateResourceButton resourcesLength={resources.length} />}
       />
       <HorizontalRule doubleSpacing />
 
@@ -147,14 +138,6 @@ function ResourceList() {
         </Text>
       </FlexItem>
       {loadingResources && <CircularProgress centerToParent />}
-
-      {!hideNotifications.hasAccess && (
-        <LimitationNotification
-          description="With the current plan, you can use up to 3 services."
-          link={`/${currentWorkspace?.id}/purchase`}
-          handleClick={handleResourceClick}
-        />
-      )}
 
       {isEmpty(resources) && !loadingResources ? (
         <EmptyState

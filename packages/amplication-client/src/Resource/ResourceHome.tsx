@@ -1,5 +1,4 @@
 import { TabItem } from "@amplication/ui/design-system";
-import { gql } from "@apollo/client";
 import { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
@@ -99,18 +98,3 @@ const ResourceHome = ({
 };
 
 export default ResourceHome;
-
-export const GET_RESOURCE = gql`
-  query getResource($id: String!) {
-    resource(where: { id: $id }) {
-      id
-      createdAt
-      updatedAt
-      name
-      description
-      githubLastSync
-      githubLastMessage
-      resourceType
-    }
-  }
-`;
