@@ -39,6 +39,7 @@ export const GET_COMMITS = gql`
             id
             displayName
             updatedAt
+            blockType
           }
         }
         resource {

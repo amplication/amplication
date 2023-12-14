@@ -4,7 +4,7 @@ import { FindOneArgs } from "../../dto";
 import { Commit, Project, Resource, User } from "../../models";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { ResourceService, EntityService } from "../";
-import { BlockService } from "../block/block.service";
+import { BlockPendingChange, BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
 import {
   CreateCommitArgs,
@@ -19,7 +19,7 @@ import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
 import { BillingService } from "../billing/billing.service";
 import { FeatureUsageReport } from "./FeatureUsageReport";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { GitProviderService } from "../git/git.provider.service";
 
 export const INVALID_PROJECT_ID = "Invalid projectId";
@@ -28,6 +28,8 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import dockerNames from "docker-names";
+import { EntityPendingChange } from "../entity/entity.service";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 @Injectable()
 export class ProjectService {
@@ -64,6 +66,19 @@ export class ProjectService {
     args: ProjectCreateArgs,
     userId: string
   ): Promise<Project> {
+    if (this.billingService.isBillingEnabled) {
+      const projectEntitlement =
+        await this.billingService.getMeteredEntitlement(
+          args.data.workspace.connect.id,
+          BillingFeature.Projects
+        );
+
+      if (projectEntitlement && !projectEntitlement.hasAccess) {
+        const message = `Your workspace exceeds its project limitation.`;
+        throw new BillingLimitationError(message, BillingFeature.Projects);
+      }
+    }
+
     const project = await this.prisma.project.create({
       data: {
         ...args.data,
@@ -111,19 +126,21 @@ export class ProjectService {
       -archivedServiceCount
     );
 
-    await this.billingService.reportUsage(
-      project.workspaceId,
-      BillingFeature.Projects,
-      -1
-    );
-
-    return this.prisma.project.update({
+    const updatedProject = this.prisma.project.update({
       where: args.where,
       data: {
         name: prepareDeletedItemName(project.name, project.id),
         deletedAt: new Date(),
       },
     });
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.Projects,
+      -1
+    );
+
+    return updatedProject;
   }
 
   async updateProject(args: UpdateProjectArgs): Promise<Project> {
@@ -133,6 +150,36 @@ export class ProjectService {
         ...args.data,
       },
     });
+  }
+
+  async isUnderLimitation(
+    workspaceId: string,
+    projectId: string
+  ): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
+    const featureProjects = await this.billingService.getMeteredEntitlement(
+      workspaceId,
+      BillingFeature.Projects
+    );
+    if (!featureProjects.usageLimit) {
+      return false;
+    }
+
+    const projects = await this.prisma.project.findMany({
+      where: {
+        workspaceId,
+        deletedAt: null,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+      skip: featureProjects.usageLimit,
+    });
+
+    return projects.some((project) => project.id === projectId);
   }
 
   /**
@@ -237,7 +284,8 @@ export class ProjectService {
 
   async commit(
     args: CreateCommitArgs,
-    currentUser: User
+    currentUser: User,
+    skipBuild = false
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
@@ -261,7 +309,7 @@ export class ProjectService {
     const project = await this.findFirst({ where: { id: projectId } });
 
     //check if billing enabled first to skip calculation
-    if (this.billingService.isBillingEnabled) {
+    if (this.billingService.isBillingEnabled && !skipBuild) {
       const usageReport = await this.calculateMeteredUsage(project.workspaceId);
       await this.billingService.resetUsage(project.workspaceId, usageReport);
 
@@ -275,11 +323,20 @@ export class ProjectService {
         },
       });
 
+      const repositories =
+        await this.gitProviderService.getProjectsConnectedGitRepositories(
+          projects.map((project) => project.id)
+        );
+
       await this.billingService.validateSubscriptionPlanLimitationsForWorkspace(
-        project.workspaceId,
-        currentUser,
-        project.id,
-        projects
+        {
+          workspaceId: project.workspaceId,
+          currentUser,
+          currentProjectId: project.id,
+          projects: projects,
+          repositories,
+          bypassLimitations: args.data.bypassLimitations,
+        }
       );
     }
 
@@ -287,18 +344,47 @@ export class ProjectService {
       throw new Error(`Invalid userId or resourceId`);
     }
 
-    const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(projectId, userId),
-      this.blockService.getChangedBlocks(projectId, userId),
-    ]);
+    let changedEntities: EntityPendingChange[] = [];
+    let changedBlocks: BlockPendingChange[] = [];
+    if (skipBuild) {
+      changedBlocks =
+        await this.blockService.getChangedBlocksForCustomActionsMigration(
+          projectId,
+          userId
+        );
+    } else {
+      [changedEntities, changedBlocks] = await Promise.all([
+        this.entityService.getChangedEntities(projectId, userId),
+        this.blockService.getChangedBlocks(projectId, userId),
+      ]);
+    }
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
-    const commit = await this.prisma.commit.create(args);
+    const commit = await this.prisma.commit.create({
+      data: {
+        message: args.data.message,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
 
     await this.billingService.reportUsage(
       project.workspaceId,
       BillingFeature.CodeGenerationBuilds
+    );
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.TeamMembers
     );
 
     await Promise.all(
@@ -356,41 +442,45 @@ export class ProjectService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    const promises = resources
-      .filter(
-        (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
-      )
-      .map((resource: Resource) => {
-        return this.buildService.create({
-          data: {
-            resource: {
-              connect: { id: resource.id },
-            },
-            commit: {
-              connect: {
-                id: commit.id,
+    if (!skipBuild) {
+      const promises = resources
+        .filter(
+          (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
+        )
+        .map((resource: Resource) => {
+          return this.buildService.create({
+            data: {
+              resource: {
+                connect: { id: resource.id },
               },
-            },
-            createdBy: {
-              connect: {
-                id: userId,
+              commit: {
+                connect: {
+                  id: commit.id,
+                },
               },
+              createdBy: {
+                connect: {
+                  id: userId,
+                },
+              },
+              message: args.data.message,
             },
-            message: args.data.message,
-          },
+          });
         });
+
+      await Promise.all(promises);
+    }
+    if (!skipBuild) {
+      await this.analytics.track({
+        userId: currentUser.account.id,
+        properties: {
+          workspaceId: project.workspaceId,
+          projectId: project.id,
+          $groups: { groupWorkspace: project.workspaceId },
+        },
+        event: EnumEventType.CommitCreate,
       });
-
-    await Promise.all(promises);
-
-    await this.analytics.track({
-      userId: currentUser.account.id,
-      properties: {
-        workspaceId: project.workspaceId,
-        projectId: project.id,
-      },
-      event: EnumEventType.CommitCreate,
-    });
+    }
 
     return commit;
   }

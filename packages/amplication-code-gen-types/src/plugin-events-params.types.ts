@@ -8,6 +8,8 @@ import {
   EnumDataType,
   ModuleMap,
   NamedClassDeclaration,
+  entityActions,
+  ModuleContainer,
 } from "./code-gen-types";
 import { EventParams } from "./plugins.types";
 import type {
@@ -26,6 +28,8 @@ export interface CreateEntityServiceBaseParams extends EventParams {
   serviceBaseId: namedTypes.Identifier;
   delegateId: namedTypes.Identifier;
   template: namedTypes.File;
+  moduleContainers: ModuleContainer[];
+  entityActions: entityActions;
 }
 
 export interface CreateEntityServiceParams extends EventParams {
@@ -35,6 +39,7 @@ export interface CreateEntityServiceParams extends EventParams {
   serviceId: namedTypes.Identifier;
   serviceBaseId: namedTypes.Identifier;
   template: namedTypes.File;
+  entityActions: entityActions;
 }
 export interface CreateEntityControllerParams extends EventParams {
   template: namedTypes.File;
@@ -43,6 +48,7 @@ export interface CreateEntityControllerParams extends EventParams {
   templateMapping: { [key: string]: any };
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
+  entityActions: entityActions;
 }
 export interface CreateEntityControllerBaseParams extends EventParams {
   template: namedTypes.File;
@@ -53,6 +59,8 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   templateMapping: { [key: string]: any };
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
+  moduleContainers: ModuleContainer[];
+  entityActions: entityActions;
 }
 
 export interface CreateEntityGrpcControllerParams extends EventParams {
@@ -127,6 +135,8 @@ export interface CreateEntityControllerSpecParams extends EventParams {
   entityControllerBaseModulePath: string;
   controllerId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
+  moduleContainers: ModuleContainer[];
+  entityActions: entityActions;
 }
 
 export interface CreateServerAuthParams extends EventParams {}
@@ -252,6 +262,7 @@ export interface CreateEntityResolverParams extends EventParams {
   serviceId: namedTypes.Identifier;
   resolverBaseId: namedTypes.Identifier;
   templateMapping: { [key: string]: any };
+  entityActions: entityActions;
 }
 
 export interface CreateEntityResolverBaseParams extends EventParams {
@@ -267,6 +278,8 @@ export interface CreateEntityResolverBaseParams extends EventParams {
   createMutationId: namedTypes.Identifier;
   updateMutationId: namedTypes.Identifier;
   templateMapping: { [key: string]: any };
+  moduleContainers: ModuleContainer[];
+  entityActions: entityActions;
 }
 export interface CreateSwaggerParams extends EventParams {
   template: namedTypes.File;

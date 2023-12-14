@@ -11,7 +11,58 @@ const resourceTabRoutes = [
     exactPath: false,
     routes: resourceEntitiesRoutes,
   },
-
+  {
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/freePlan",
+    Component: lazy(() => import("../ModuleActions/ModuleActionsFreePlan")),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: true,
+    isAnalytics: true,
+  },
+  {
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules",
+    Component: lazy(() => import("../Modules/ModulesPage")),
+    moduleName: "",
+    displayName: "Modules",
+    routeTrackType: "",
+    exactPath: false,
+    routes: [
+      {
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/all",
+        Component: lazy(() => import("../ModuleActions/ModuleActions")),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        isAnalytics: true,
+      },
+      {
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})",
+        Component: lazy(() => import("../ModuleActions/ModuleActions")),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        isAnalytics: true,
+      },
+      {
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/actions/:moduleAction([A-Za-z0-9-]{20,})",
+        Component: lazy(() => import("../ModuleActions/ModuleAction")),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        routes: [],
+        isAnalytics: true,
+      },
+      {
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/types",
+        Component: lazy(() => import("../Modules/TypeList")),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        routes: [],
+        isAnalytics: true,
+      },
+    ],
+  },
   {
     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/roles",
     Component: lazy(() => import("../Roles/RolesPage")),
@@ -111,7 +162,7 @@ const resourceTabRoutes = [
     exactPath: false,
     routes: [
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins/catalog",
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins/:category",
         Component: lazy(() => import("../Plugins/PluginsCatalog")),
         moduleName: "",
         routeTrackType: "",

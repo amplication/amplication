@@ -50,6 +50,17 @@ class PluginOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  downloads?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   github?: SortOrder;
 
   @ApiProperty({
@@ -139,6 +150,14 @@ class PluginOrderByInput {
     nullable: true,
   })
   website?: SortOrder;
+
+  @ApiProperty({
+    required: true,
+    enum: ["asc", "desc"],
+  })
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder)
+  categories?: SortOrder;
 }
 
 export { PluginOrderByInput as PluginOrderByInput };

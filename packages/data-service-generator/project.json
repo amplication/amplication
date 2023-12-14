@@ -108,6 +108,17 @@
         "cwd": "packages/data-service-generator"
       }
     },
+    "update-one-snapshot": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/tests/__snapshots__"],
+      "options": {
+        "commands": [
+          "jest --collectCoverage=false -u src/tests/create-data-service.spec.ts "
+        ],
+        "parallel": false,
+        "cwd": "packages/data-service-generator"
+      }
+    },
     "package:container": {
       "executor": "nx:run-script",
       "dependsOn": ["build"],

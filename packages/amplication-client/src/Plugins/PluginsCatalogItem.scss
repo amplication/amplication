@@ -28,4 +28,11 @@ $button-padding: 5px 12px;
   .toggle-field {
     margin-bottom: 0px;
   }
+
+  &__category {
+    font-size: var(--tag-font-size);
+    font-style: normal;
+    font-weight: 400;
+    color: var(--gray-20);
+  }
 }

@@ -70,7 +70,7 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
         <Tooltip
           wrap
           direction={TOOLTIP_DIRECTION}
-          aria-label="The entity has been deleted"
+          aria-label="The item has been deleted"
           className={`${CLASS_NAME}__tooltip_deleted`}
         >
           <div className={classNames(`${CLASS_NAME}__deleted`)}>{content}</div>
@@ -97,7 +97,7 @@ const changeOriginMap = {
     change: models.PendingChangeOrigin
   ) => {
     const blockTypeMap: {
-      [key in models.EnumBlockType]?: entityLinkAndDisplayName;
+      [key in models.EnumBlockType]: entityLinkAndDisplayName;
     } = {
       [models.EnumBlockType.ServiceSettings]: {
         relativeUrl: `settings/general`,
@@ -124,6 +124,22 @@ const changeOriginMap = {
         relativeUrl: "plugins/installed",
         icon: "",
         displayName: change.displayName,
+      },
+      [models.EnumBlockType.Module]: {
+        relativeUrl: `modules/${change.id}`,
+        icon: "box",
+        displayName: change.displayName,
+      },
+      //@todo: update the url, icon and display name
+      [models.EnumBlockType.ModuleAction]: {
+        relativeUrl: `modules/${change.id}`,
+        icon: "box",
+        displayName: change.displayName,
+      },
+      [models.EnumBlockType.ServiceTopics]: {
+        relativeUrl: "not supported",
+        icon: "",
+        displayName: "not supported",
       },
     };
     return blockTypeMap[(change as models.Block).blockType];

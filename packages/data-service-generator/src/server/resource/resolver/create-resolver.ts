@@ -25,6 +25,7 @@ import {
   CreateEntityResolverToManyRelationMethodsParams,
   CreateEntityResolverToOneRelationMethodsParams,
   ModuleMap,
+  ModuleAction,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../utils/module";
 
@@ -39,6 +40,7 @@ import {
   getMethods,
   deleteClassMemberByKey,
   memberExpression,
+  removeClassMethodByName,
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,
@@ -50,6 +52,9 @@ import {
   createServiceId,
   createFieldFindManyFunctionId,
   createFieldFindOneFunctionId,
+  createCreateFunctionId,
+  createDeleteFunctionId,
+  createUpdateFunctionId,
 } from "../service/create-service";
 import { createDataMapping } from "../controller/create-data-mapping";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports";
@@ -70,10 +75,13 @@ export async function createResolverModules(
   entity: Entity
 ): Promise<ModuleMap> {
   const serviceId = createServiceId(entityType);
+  const createFunctionId = createCreateFunctionId(entityType);
+  const updateFunctionId = createUpdateFunctionId(entityType);
+  const deleteFunctionId = createDeleteFunctionId(entityType);
   const resolverId = createResolverId(entityType);
   const resolverBaseId = createResolverBaseId(entityType);
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { DTOs } = DsgContext.getInstance;
+  const { DTOs, entityActionsMap, moduleContainers } = DsgContext.getInstance;
   const entityDTOs = DTOs[entity.name];
   const {
     entity: entityDTO,
@@ -84,12 +92,28 @@ export async function createResolverModules(
     countArgs,
     findOneArgs,
   } = entityDTOs;
-  const createMutationId = builders.identifier(`create${entityType}`);
-  const updateMutationId = builders.identifier(`update${entityType}`);
-  const deleteMutationId = builders.identifier(`delete${entityType}`);
-  const entityQueryId = builders.identifier(camelCase(entityType));
-  const entitiesQueryId = builders.identifier(entity.pluralName);
-  const metaQueryId = builders.identifier(`_${entity.pluralName}Meta`);
+
+  const entityActions = entityActionsMap[entity.name];
+
+  const createMutationId = builders.identifier(
+    entityActions.entityDefaultActions.Create.name
+  );
+  const entitiesQueryId = builders.identifier(
+    entityActions.entityDefaultActions.Find.name
+  );
+  const entityQueryId = builders.identifier(
+    entityActions.entityDefaultActions.Read.name
+  );
+  const updateMutationId = builders.identifier(
+    entityActions.entityDefaultActions.Update.name
+  );
+  const deleteMutationId = builders.identifier(
+    entityActions.entityDefaultActions.Delete.name
+  );
+
+  const metaQueryId = builders.identifier(
+    entityActions.entityDefaultActions.Meta.name
+  );
 
   const template = await readFile(resolverTemplatePath);
   const templateBase = await readFile(resolverTemplateBasePath);
@@ -98,6 +122,11 @@ export async function createResolverModules(
     RESOLVER: resolverId,
     RESOLVER_BASE: resolverBaseId,
     SERVICE: serviceId,
+    CREATE_FUNCTION: createFunctionId,
+    FIND_MANY_FUNCTION: entitiesQueryId,
+    FIND_ONE_FUNCTION: builders.identifier(camelCase(entityType)),
+    UPDATE_FUNCTION: updateFunctionId,
+    DELETE_FUNCTION: deleteFunctionId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
     ENTITY_QUERY: entityQueryId,
@@ -134,6 +163,7 @@ export async function createResolverModules(
       serviceId,
       resolverBaseId,
       templateMapping,
+      entityActions,
     }),
     await pluginWrapper(
       createResolverBaseModule,
@@ -152,6 +182,8 @@ export async function createResolverModules(
         createMutationId,
         updateMutationId,
         templateMapping,
+        moduleContainers,
+        entityActions,
       }
     ),
   ]);
@@ -228,6 +260,8 @@ async function createResolverBaseModule({
   createMutationId,
   updateMutationId,
   templateMapping,
+  moduleContainers,
+  entityActions,
 }: CreateEntityResolverBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { serverDirectories, DTOs } = DsgContext.getInstance;
@@ -235,6 +269,10 @@ async function createResolverBaseModule({
   const entityDTOs = DTOs[entity.name];
   const { entity: entityDTO } = entityDTOs;
   interpolate(template, templateMapping);
+
+  const moduleContainer = moduleContainers?.find(
+    (moduleContainer) => moduleContainer.entityId === entity.id
+  );
 
   const classDeclaration = getClassDeclarationById(template, resolverBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
@@ -308,6 +346,55 @@ async function createResolverBaseModule({
     ...toOneRelationMethods
   );
 
+  toManyRelationFields.map((field) =>
+    Object.keys(entityActions.relatedFieldsDefaultActions[field.name]).forEach(
+      (key) => {
+        const action: ModuleAction =
+          entityActions.relatedFieldsDefaultActions[field.name][key];
+
+        if (
+          (moduleContainer && !moduleContainer?.enabled && action) ||
+          (action && !action.enabled)
+        ) {
+          removeClassMethodByName(classDeclaration, action.name);
+        }
+      }
+    )
+  );
+
+  toOneRelationFields.map((field) =>
+    Object.keys(entityActions.relatedFieldsDefaultActions[field.name]).forEach(
+      (key) => {
+        const action: ModuleAction =
+          entityActions.relatedFieldsDefaultActions[field.name][key];
+
+        if (
+          (moduleContainer && !moduleContainer?.enabled && action) ||
+          (action && !action.enabled)
+        ) {
+          removeClassMethodByName(classDeclaration, action.name);
+        }
+      }
+    )
+  );
+
+  Object.keys(entityActions.entityDefaultActions).forEach((key) => {
+    const action: ModuleAction = entityActions.entityDefaultActions[key];
+    if (
+      (moduleContainer && !moduleContainer?.enabled && action) ||
+      (action && !action.enabled)
+    ) {
+      removeClassMethodByName(classDeclaration, action.name);
+    }
+  });
+
+  removeTSIgnoreComments(template);
+  removeImportsTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
+  removeTSClassDeclares(template);
+
   if (!createArgs) {
     deleteClassMemberByKey(classDeclaration, createMutationId);
   }
@@ -332,12 +419,6 @@ async function createResolverBaseModule({
   );
 
   addImports(template, [serviceImport]);
-  removeTSIgnoreComments(template);
-  removeImportsTSIgnoreComments(template);
-  removeESLintComments(template);
-  removeTSVariableDeclares(template);
-  removeTSInterfaceDeclares(template);
-  removeTSClassDeclares(template);
   addAutoGenerationComment(template);
 
   const module: Module = {
@@ -369,7 +450,7 @@ async function createToOneRelationMethods(
   const toOneFile = await readFile(toOneTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
-  const findOneMethodName = `resolveField${pascalCase(field.name)}`;
+  const findOneMethodName = `get${pascalCase(field.name)}`;
 
   const toOneMapping = {
     SERVICE: serviceId,
@@ -433,8 +514,6 @@ async function createToManyRelationMethods(
   const toManyFile = await readFile(toManyTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
-  const findManyMethodName = `resolveField${pascalCase(field.name)}`;
-
   const toManyMapping = {
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
@@ -442,7 +521,7 @@ async function createToManyRelationMethods(
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
-    FIND_MANY: builders.identifier(findManyMethodName),
+    FIND_MANY: builders.identifier(camelCase(`find ${field.name}`)),
     FIND_MANY_FIELD_NAME: builders.stringLiteral(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findManyArgs.id,
   };

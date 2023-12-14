@@ -1,12 +1,15 @@
 import { Form, SelectField, ToggleField } from "@amplication/ui/design-system";
 import { useStiggContext } from "@stigg/react-sdk";
 import { Formik } from "formik";
-import { BillingFeature } from "../../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
 import "./CodeGeneratorVersionForm.scss";
-
-import { LockedFeatureIndicator } from "../../Components/LockedFeatureIndicator";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+  FeatureIndicatorPlacement,
+} from "../../Components/FeatureIndicatorContainer";
 
 const CLASS_NAME = "code-generator-version-form";
 
@@ -64,46 +67,43 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
           <Form>
             <FormikAutoSave debounceMS={200} />
             <div className={CLASS_NAME}>
-              <div>
+              <FeatureIndicatorContainer
+                featureId={BillingFeature.CodeGeneratorVersion}
+                entitlementType={EntitlementType.Boolean}
+                featureIndicatorPlacement={FeatureIndicatorPlacement.Outside}
+              >
+                <ToggleField
+                  label="I want to select a specific version of the code generator"
+                  name="useSpecificVersion"
+                />
+              </FeatureIndicatorContainer>
+
+              {formik.values.useSpecificVersion && (
                 <>
-                  <ToggleField
-                    label="I want to select a specific version of the code generator"
-                    name={"useSpecificVersion"}
-                    disabled={!canChooseCodeGeneratorVersion}
+                  <SelectField
+                    disabled={
+                      !canChooseCodeGeneratorVersion &&
+                      !formik.values.useSpecificVersion
+                    }
+                    label={"Select a version"}
+                    name={"version"}
+                    options={codeGeneratorVersionList.map((version) => ({
+                      label: version,
+                      value: version,
+                    }))}
                   />
-                  {!canChooseCodeGeneratorVersion && (
-                    <LockedFeatureIndicator
-                      featureName={BillingFeature.CodeGeneratorVersion}
-                    />
-                  )}
+                  <ToggleField
+                    disabled={
+                      !canChooseCodeGeneratorVersion ||
+                      !formik.values.useSpecificVersion ||
+                      (formik.values.useSpecificVersion &&
+                        !formik.values.version)
+                    }
+                    label="Automatically use new minor version when available"
+                    name={"autoUseLatestMinorVersion"}
+                  />
                 </>
-                {formik.values.useSpecificVersion && (
-                  <div>
-                    <SelectField
-                      disabled={
-                        !canChooseCodeGeneratorVersion &&
-                        !formik.values.useSpecificVersion
-                      }
-                      label={"Select a version"}
-                      name={"version"}
-                      options={codeGeneratorVersionList.map((version) => ({
-                        label: version,
-                        value: version,
-                      }))}
-                    />
-                    <ToggleField
-                      disabled={
-                        !canChooseCodeGeneratorVersion ||
-                        !formik.values.useSpecificVersion ||
-                        (formik.values.useSpecificVersion &&
-                          !formik.values.version)
-                      }
-                      label="Automatically use new minor version when available"
-                      name={"autoUseLatestMinorVersion"}
-                    />
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </Form>
         );

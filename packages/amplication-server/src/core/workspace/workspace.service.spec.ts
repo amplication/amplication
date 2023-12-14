@@ -14,6 +14,9 @@ import { SubscriptionService } from "../subscription/subscription.service";
 import { ProjectService } from "../project/project.service";
 import { BillingService } from "../billing/billing.service";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { ModuleService } from "../module/module.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
@@ -131,6 +134,29 @@ describe("WorkspaceService", () => {
         },
         ConfigService,
         {
+          provide: ModuleService,
+          useClass: jest.fn(() => {
+            return {};
+          }),
+        },
+        {
+          provide: ModuleActionService,
+          useClass: jest.fn(() => {
+            return {};
+          }),
+        },
+        {
+          provide: AmplicationLogger,
+          useClass: jest.fn().mockImplementation(() => ({
+            error: jest.fn(() => {
+              return {};
+            }),
+            info: jest.fn(() => {
+              return {};
+            }),
+          })),
+        },
+        {
           provide: BillingService,
           useValue: {
             getMeteredEntitlement: jest.fn(() => {
@@ -140,6 +166,9 @@ describe("WorkspaceService", () => {
               return {};
             }),
             provisionCustomer: jest.fn(() => {
+              return {};
+            }),
+            reportUsage: jest.fn(() => {
               return {};
             }),
           },
