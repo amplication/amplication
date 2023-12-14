@@ -19,6 +19,11 @@ export class ResourceCreateEntitiesInput {
   })
   targetResourceId!: string;
 
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  deleteOriginalResource?: boolean;
+
   @Field(() => [Entity], {
     nullable: false,
   })

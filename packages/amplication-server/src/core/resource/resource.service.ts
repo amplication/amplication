@@ -16,7 +16,7 @@ import pluralize from "pluralize";
 import { FindOneArgs } from "../../dto";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
-import { Project, Resource, User, GitOrganization } from "../../models";
+import { Project, Resource, User, GitOrganization, Entity } from "../../models";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { USER_ENTITY_NAME } from "../entity/constants";
@@ -58,8 +58,10 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { JsonValue } from "type-fest";
+import { JsonObject, JsonValue } from "type-fest";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { CreateResourceEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
+import { LookupResolvedProperties } from "@amplication/code-gen-types";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -369,6 +371,114 @@ export class ResourceService {
       project.workspaceId,
       BillingFeature.Services
     );
+
+    return resource;
+  }
+
+  async createServiceEntitiesFromExistingService(
+    args: CreateResourceEntitiesArgs,
+    user: User
+  ): Promise<Resource> {
+    const {
+      targetResourceId,
+      originalResourceId,
+      entities,
+      deleteOriginalResource,
+    } = args.data;
+    const resource = await this.prisma.resource.findUnique({
+      where: {
+        id: targetResourceId,
+      },
+    });
+
+    if (!resource) throw new AmplicationError("Resource doesn't exist");
+
+    const copiedEntities: Entity[] = [];
+    for (const entity of entities) {
+      const {
+        id,
+        name,
+        displayName,
+        pluralDisplayName,
+        description,
+        customAttributes,
+      } = entity;
+
+      try {
+        const copiedEntity = await this.entityService.createOneEntity(
+          {
+            data: {
+              resource: {
+                connect: {
+                  id: targetResourceId,
+                },
+              },
+              id,
+              name,
+              displayName,
+              pluralDisplayName,
+              description,
+              customAttributes,
+            },
+          },
+          user,
+          false,
+          false,
+          false
+        );
+        copiedEntities.push(copiedEntity);
+      } catch (error) {
+        this.logger.error(error.message, error, { entity: entity.name });
+        throw new Error(
+          `Failed to create entity "${entity.name}" due to ${error.message}`
+        );
+      }
+    }
+
+    //create entities fields
+
+    for (const copiedEntity of copiedEntities) {
+      const currentEntity = entities.find(
+        (entityWithFields) => copiedEntity.name === entityWithFields.name
+      );
+
+      for (const field of currentEntity.fields) {
+        const { permanentId, properties, ...rest } = field;
+        const { relatedEntity, relatedField, isOneToOneWithoutForeignKey } =
+          properties as unknown as LookupResolvedProperties;
+
+        try {
+          await this.entityService.createField(
+            {
+              data: {
+                properties: properties as unknown as JsonObject,
+                ...rest,
+                entity: {
+                  connect: {
+                    id: copiedEntity.id,
+                  },
+                },
+              },
+              relatedFieldName: relatedField.name,
+              relatedFieldDisplayName: relatedField.displayName,
+              relatedFieldAllowMultipleSelection:
+                relatedField.properties.allowMultipleSelection,
+            },
+            user,
+            permanentId, // here we want to use the permanentId that was created in the prisma parser service
+            false
+          );
+        } catch (error) {
+          this.logger.error(error.message, error, {
+            field: field.name,
+            entity: copiedEntity.name,
+          });
+          throw new Error(
+            `Failed to create entity field "${field.name}" on entity "${copiedEntity.name}" due to ${error.message}`
+          );
+        }
+      }
+    }
 
     return resource;
   }
