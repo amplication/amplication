@@ -119,7 +119,11 @@ export const FeatureIndicatorContainer: FC<Props> = ({
           <FeatureIndicator
             featureName={featureId}
             icon={iconType}
-            text={tooltipText}
+            text={
+              isFeatureDisabled()
+                ? tooltipText
+                : "Available as part of the Enterprise plan only."
+            }
             element={
               featureIndicatorPlacement ===
               FeatureIndicatorPlacement.Outside ? (
