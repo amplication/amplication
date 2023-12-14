@@ -34,13 +34,13 @@ const CLASS_NAME = "amp-feature-indicator";
 
 type Props = {
   featureName: string;
+  text: string;
+  linkText?: string;
   icon?: IconType;
   element?: React.ReactNode;
   comingSoon?: boolean;
   placement?: TooltipProps["placement"];
   tooltipIcon?: string;
-  text?: string;
-  linkText?: string;
 };
 
 export const FeatureIndicator = ({

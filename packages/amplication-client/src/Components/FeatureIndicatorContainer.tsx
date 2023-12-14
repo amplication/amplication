@@ -39,6 +39,7 @@ export type Props = {
   featureIndicatorPlacement?: FeatureIndicatorPlacement;
   disabled?: boolean;
   icon?: IconType | null;
+  tooltipText?: string;
   children?: React.ReactElement;
   render?: (props: { disabled: boolean; icon?: IconType }) => ReactElement;
   reversePosition?: boolean;
@@ -50,6 +51,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   featureIndicatorPlacement = FeatureIndicatorPlacement.Inside,
   disabled,
   children,
+  tooltipText,
   render,
   reversePosition,
 }) => {
@@ -117,6 +119,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
           <FeatureIndicator
             featureName={featureId}
             icon={iconType}
+            text={tooltipText}
             element={
               featureIndicatorPlacement ===
               FeatureIndicatorPlacement.Outside ? (
