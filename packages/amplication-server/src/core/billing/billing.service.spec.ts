@@ -649,4 +649,72 @@ describe("BillingService", () => {
       value: 100,
     });
   });
+
+  describe("resetUsage", () => {
+    let mockReportUsage: jest.SpyInstance;
+    beforeEach(() => {
+      mockReportUsage = jest.spyOn(Stigg.prototype, "reportUsage");
+    });
+    it("should call setUsage for each feature when billing is enabled", async () => {
+      // Arrange
+      const workspaceId = "testWorkspaceId";
+      const currentUsage = {
+        projects: 5,
+        services: 10,
+        servicesAboveEntityPerServiceLimit: 2,
+        teamMembers: 8,
+      };
+      jest.spyOn(service, "isBillingEnabled", "get").mockReturnValue(true);
+
+      // Act
+      await service.resetUsage(workspaceId, currentUsage);
+
+      // Assert
+      expect(mockReportUsage).toHaveBeenCalledTimes(4);
+
+      expect(mockReportUsage).toHaveBeenCalledWith({
+        customerId: workspaceId,
+        featureId: BillingFeature.Projects,
+        updateBehavior: UsageUpdateBehavior.Set,
+        value: currentUsage.projects,
+      });
+      expect(mockReportUsage).toHaveBeenCalledWith({
+        customerId: workspaceId,
+        featureId: BillingFeature.Services,
+        updateBehavior: UsageUpdateBehavior.Set,
+        value: currentUsage.services,
+      });
+      expect(mockReportUsage).toHaveBeenCalledWith({
+        customerId: workspaceId,
+        featureId: BillingFeature.ServicesAboveEntitiesPerServiceLimit,
+        updateBehavior: UsageUpdateBehavior.Set,
+        value: currentUsage.servicesAboveEntityPerServiceLimit,
+      });
+      expect(mockReportUsage).toHaveBeenCalledWith({
+        customerId: workspaceId,
+        featureId: BillingFeature.TeamMembers,
+        updateBehavior: UsageUpdateBehavior.Set,
+        value: currentUsage.teamMembers,
+      });
+    });
+
+    it("should not call setUsage when billing is disabled", async () => {
+      // Arrange
+      const workspaceId = "testWorkspaceId";
+      const currentUsage = {
+        projects: 5,
+        services: 10,
+        servicesAboveEntityPerServiceLimit: 2,
+        teamMembers: 8,
+      };
+
+      jest.spyOn(service, "isBillingEnabled", "get").mockReturnValue(false);
+
+      // Act
+      await service.resetUsage(workspaceId, currentUsage);
+
+      // Assert
+      expect(mockReportUsage).not.toHaveBeenCalled();
+    });
+  });
 });
