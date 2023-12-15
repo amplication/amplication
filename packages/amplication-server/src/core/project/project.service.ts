@@ -237,6 +237,11 @@ export class ProjectService {
       },
       include: {
         subscriptions: true,
+        users: {
+          where: {
+            deletedAt: null,
+          },
+        },
         projects: {
           include: {
             resources: {
@@ -279,6 +284,7 @@ export class ProjectService {
       services: workspaceServices.length,
       servicesAboveEntityPerServiceLimit:
         servicesAboveEntityPerServiceLimitCount,
+      teamMembers: workspace.users.length,
     };
   }
 
