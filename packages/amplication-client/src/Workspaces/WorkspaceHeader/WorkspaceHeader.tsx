@@ -29,8 +29,8 @@ import ProfileForm from "../../Profile/ProfileForm";
 import { unsetToken } from "../../authentication/authentication";
 import { AppContext } from "../../context/appContext";
 import {
-  NX_REACT_APP_AUTH_LOGOUT_URI,
-  NX_REACT_APP_NOVU_IDENTIFIER,
+  REACT_APP_AUTH_LOGOUT_URI,
+  REACT_APP_NOVU_IDENTIFIER,
 } from "../../env";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
@@ -105,7 +105,7 @@ const WorkspaceHeader: React.FC = () => {
     unsetToken();
     apolloClient.clearStore();
 
-    window.location.replace(NX_REACT_APP_AUTH_LOGOUT_URI);
+    window.location.replace(REACT_APP_AUTH_LOGOUT_URI);
   }, [history, apolloClient]);
 
   const onNotificationClick = useCallback((message: IMessage) => {
@@ -292,7 +292,7 @@ const WorkspaceHeader: React.FC = () => {
               <div className={`${CLASS_NAME}__notification_bell`}>
                 <NovuProvider
                   subscriberId={currentWorkspace.externalId}
-                  applicationIdentifier={NX_REACT_APP_NOVU_IDENTIFIER}
+                  applicationIdentifier={REACT_APP_NOVU_IDENTIFIER}
                   styles={styles}
                 >
                   <PopoverNotificationCenter
