@@ -119,8 +119,7 @@ export class BillingService {
   ): Promise<ReportUsageAck> {
     try {
       if (this.isBillingEnabled) {
-        const stiggClient = await this.getStiggClient();
-        return await stiggClient.reportUsage({
+        return await this.stiggClient.reportUsage({
           customerId: workspaceId,
           featureId: feature,
           value: value,
@@ -147,9 +146,7 @@ export class BillingService {
   ): Promise<ReportUsageAck> {
     try {
       if (this.isBillingEnabled) {
-        const stiggClient = await this.getStiggClient();
-
-        return await stiggClient.reportUsage({
+        return await this.stiggClient.reportUsage({
           customerId: workspaceId,
           featureId: feature,
           value,
@@ -399,23 +396,28 @@ export class BillingService {
 
   async resetUsage(workspaceId: string, currentUsage: FeatureUsageReport) {
     if (this.isBillingEnabled) {
-      await this.setUsage(
-        workspaceId,
-        BillingFeature.Projects,
-        currentUsage.projects
-      );
-
-      await this.setUsage(
-        workspaceId,
-        BillingFeature.Services,
-        currentUsage.services
-      );
-
-      await this.setUsage(
-        workspaceId,
-        BillingFeature.ServicesAboveEntitiesPerServiceLimit,
-        currentUsage.servicesAboveEntityPerServiceLimit
-      );
+      await Promise.all([
+        this.setUsage(
+          workspaceId,
+          BillingFeature.Projects,
+          currentUsage.projects
+        ),
+        this.setUsage(
+          workspaceId,
+          BillingFeature.Services,
+          currentUsage.services
+        ),
+        this.setUsage(
+          workspaceId,
+          BillingFeature.ServicesAboveEntitiesPerServiceLimit,
+          currentUsage.servicesAboveEntityPerServiceLimit
+        ),
+        this.setUsage(
+          workspaceId,
+          BillingFeature.TeamMembers,
+          currentUsage.teamMembers
+        ),
+      ]);
     }
   }
 
