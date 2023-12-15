@@ -258,14 +258,13 @@
     font-weight: 300;
   }
 
-  .stigg-plan-offering-container:nth-child(1)
+  .stigg-plan-amplication-free
     .stigg-entitlement-row-container:nth-child(-n + 8)
     .stigg-entitlement-row-icon {
     display: block;
   }
 
-  .stigg-plan-offering-container:nth-child(1)
-    .stigg-entitlement-row-container:nth-child(8) {
+  .stigg-plan-amplication-free .stigg-entitlement-row-container:nth-child(8) {
     border-bottom: 1px solid #373d57;
     margin: 0 -24px 12px -24px;
     padding: 0 24px 12px 24px;
@@ -284,7 +283,7 @@
     margin-right: 8px;
   }
 
-  .stigg-plan-offering-container:nth-child(1) .stigg-plan-entitlements-title {
+  .stigg-plan-amplication-free .stigg-plan-entitlements-title {
     font-size: 12px;
     line-height: 18px;
     font-weight: 400;
