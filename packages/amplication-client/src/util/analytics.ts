@@ -1,5 +1,8 @@
 import * as reactTracking from "react-tracking";
-import { REACT_APP_ANALYTICS_API_KEY } from "../env";
+import {
+  REACT_APP_ANALYTICS_API_DOMAIN,
+  REACT_APP_ANALYTICS_API_KEY,
+} from "../env";
 import { AnalyticsEventNames } from "./analytics-events.types";
 import { version } from "../util/version";
 
@@ -50,7 +53,11 @@ export function init() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     const analytics = window.analytics;
-    analytics.load(REACT_APP_ANALYTICS_API_KEY);
+    analytics.load(REACT_APP_ANALYTICS_API_KEY, {
+      integrations: {
+        "Segment.io": { apiHost: `${REACT_APP_ANALYTICS_API_DOMAIN}/v1` },
+      },
+    });
     dispatch({
       eventName: AnalyticsEventNames.AppSessionStart,
     });
