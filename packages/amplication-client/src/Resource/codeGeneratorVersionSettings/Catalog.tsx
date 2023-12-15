@@ -4,7 +4,7 @@ import { EnumTextStyle, ListItem, Text } from "@amplication/ui/design-system";
 
 type CatalogProps = {
   name: string;
-  changelog: string; 
+  changelog: string;
 };
 
 export const DSGCatalog: React.FC<CatalogProps> = ({ name, changelog }) => {
