@@ -10,6 +10,9 @@ import {
   TabContentTitle,
   Toggle,
   Text,
+  EnumTextStyle,
+  EnumTextColor,
+  EnumTextWeight,
 } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect, useState } from "react";
 
@@ -103,31 +106,49 @@ const ModuleActions = React.memo(({ match }: Props) => {
       render={({ disabled, icon }) => (
         <>
           {disabled && (
-            <div className={`${CLASS_NAME}__free-plan`}>
+            <FlexItem
+              direction={EnumFlexDirection.Column}
+              itemsAlign={EnumItemsAlign.Center}
+              className={`${CLASS_NAME}__addon-section`}
+            >
               <div className={`${CLASS_NAME}__feature-tag`}>
-                <span>Premium feature</span>
-                <Icon icon={icon} size={"xsmall"} />
+                <Text
+                  textStyle={EnumTextStyle.Tag}
+                  textColor={EnumTextColor.Black}
+                >
+                  Premium feature
+                </Text>
+                <Icon icon={icon} size={"xsmall"} color={EnumTextColor.Black} />
               </div>
-
-              <h3 className={`${CLASS_NAME}__free-plan__title`}>
+              <Text
+                textStyle={EnumTextStyle.H2}
+                textWeight={EnumTextWeight.Bold}
+                className={`${CLASS_NAME}__addon-section__title`}
+              >
                 Unlock your APIs Full Potential
-              </h3>
-              <div className={`${CLASS_NAME}__free-plan__description`}>
-                <p>
-                  Maximize the power of your APIs and Types through seamless
-                  management
-                </p>
-                <span>and customization as a unified source of truth. </span>
+              </Text>
+              <Text
+                textWeight={EnumTextWeight.Regular}
+                textColor={EnumTextColor.Black20}
+              >
+                Maximize the power of your APIs and Types through seamless
+                management
+              </Text>
+              <Text
+                textWeight={EnumTextWeight.Regular}
+                textColor={EnumTextColor.Black20}
+              >
+                and customization as a unified source of truth.{" "}
                 <a
-                  className={`${CLASS_NAME}__free-plan__contact-us`}
+                  className={`${CLASS_NAME}__addon-section__contact-us`}
                   href={"https://meetings-eu1.hubspot.com/liza-dymava/cta-link"}
                   target="blank"
                 >
-                  <Text>{"Contact us "}</Text>
+                  <Text>{"Contact us"}</Text>{" "}
                 </a>
-                <span>for more information</span>
-              </div>
-            </div>
+                for more information
+              </Text>
+            </FlexItem>
           )}
 
           {!disabled && (
@@ -156,8 +177,17 @@ const ModuleActions = React.memo(({ match }: Props) => {
                     icon={icon}
                     element={
                       <div className={`${CLASS_NAME}__feature-tag`}>
-                        <span>Premium feature</span>
-                        <Icon icon={icon} size={"xsmall"} />
+                        <Text
+                          textStyle={EnumTextStyle.Tag}
+                          textColor={EnumTextColor.Black}
+                        >
+                          Premium feature
+                        </Text>
+                        <Icon
+                          icon={icon}
+                          size={"xsmall"}
+                          color={EnumTextColor.Black}
+                        />
                       </div>
                     }
                   />
@@ -170,31 +200,38 @@ const ModuleActions = React.memo(({ match }: Props) => {
             <FlexItem
               direction={EnumFlexDirection.Row}
               className={`${CLASS_NAME}__api-toggle`}
+              margin={EnumFlexItemMargin.Top}
               contentAlign={
                 disabled ? EnumContentAlign.Center : EnumContentAlign.Start
               }
               itemsAlign={EnumItemsAlign.Normal}
             >
-              <span
-                className={`${CLASS_NAME} ${
-                  displayMode === EnumApiOperationTagStyle.GQL && "checked"
-                }`}
+              <Text
+                textStyle={EnumTextStyle.Tag}
+                textColor={
+                  displayMode === EnumApiOperationTagStyle.GQL
+                    ? EnumTextColor.White
+                    : EnumTextColor.Black20
+                }
               >
                 GraphQL API
-              </span>
+              </Text>
               <div className={`module-toggle-field__operation-toggle`}>
                 <Toggle
                   checked={displayMode === EnumApiOperationTagStyle.REST}
                   onValueChange={handleDisplayModeChange}
                 />
               </div>
-              <span
-                className={`${CLASS_NAME} ${
-                  displayMode === EnumApiOperationTagStyle.REST && "checked"
-                }`}
+              <Text
+                textStyle={EnumTextStyle.Tag}
+                textColor={
+                  displayMode === EnumApiOperationTagStyle.REST
+                    ? EnumTextColor.White
+                    : EnumTextColor.Black20
+                }
               >
                 REST API
-              </span>
+              </Text>
             </FlexItem>
           )}
 
@@ -205,7 +242,7 @@ const ModuleActions = React.memo(({ match }: Props) => {
                 resourceId={resourceId}
                 searchPhrase={searchPhrase}
                 displayMode={displayMode}
-                disabled={false}
+                disabled={disabled}
               />
             </FlexItem>
           ) : (
@@ -216,7 +253,7 @@ const ModuleActions = React.memo(({ match }: Props) => {
                   resourceId={resourceId}
                   searchPhrase={searchPhrase}
                   displayMode={displayMode}
-                  disabled={false}
+                  disabled={disabled}
                 />
               </FlexItem>
             ))
