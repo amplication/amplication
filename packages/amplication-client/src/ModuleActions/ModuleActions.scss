@@ -1,0 +1,67 @@
+@import "../style/index.scss";
+
+.module-actions {
+  &__search-field {
+    display: flex;
+    margin-bottom: var(--double-spacing);
+  }
+
+  &__feature-tag {
+    padding: 2px 12px;
+    border-radius: 32px;
+    gap: 4px;
+    background-color: #53dbee;
+    border-radius: 32px;
+    color: black;
+    font-size: 12px;
+    display: flex;
+    flex-direction: row;
+  }
+
+  &__api-toggle {
+    padding: var(--default-spacing) 0;
+    color: var(--gray-20);
+    font-size: 12px;
+  }
+
+  &.checked {
+    color: #fff;
+  }
+
+  &__free-plan {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 44px;
+
+    &__contact-us {
+      & span {
+        color: #53dbee;
+      }
+    }
+
+    &__title {
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 36px;
+      margin-bottom: 8px;
+    }
+
+    &__description {
+      font-size: 14px;
+      font-weight: 400;
+      text-align: center;
+
+      & p {
+        margin: 0px;
+        line-height: 22px;
+      }
+    }
+
+    &__image {
+      margin-top: 15px;
+    }
+  }
+}
