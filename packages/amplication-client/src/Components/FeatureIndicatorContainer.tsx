@@ -37,9 +37,9 @@ export type Props = {
   featureId: BillingFeature;
   entitlementType: EntitlementType;
   featureIndicatorPlacement?: FeatureIndicatorPlacement;
-  meteredFeatureLength?: number;
   disabled?: boolean;
   icon?: IconType | null;
+  tooltipText?: string;
   children?: React.ReactElement;
   render?: (props: { disabled: boolean; icon?: IconType }) => ReactElement;
   reversePosition?: boolean;
@@ -49,9 +49,9 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   featureId,
   entitlementType,
   featureIndicatorPlacement = FeatureIndicatorPlacement.Inside,
-  meteredFeatureLength,
   disabled,
   children,
+  tooltipText,
   render,
   reversePosition,
 }) => {
@@ -81,18 +81,13 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       return !hasBooleanAccess;
     }
 
-    const usageExceeded =
-      usageLimit && meteredFeatureLength && meteredFeatureLength >= usageLimit;
+    if (entitlementType === EntitlementType.Metered) {
+      const usageExceeded = usageLimit && currentUsage >= usageLimit;
+      return usageExceeded ?? !hasMeteredAccess;
+    }
 
-    return usageExceeded ?? !hasMeteredAccess;
-  }, [
-    featureId,
-    usageLimit,
-    currentUsage,
-    hasMeteredAccess,
-    hasBooleanAccess,
-    meteredFeatureLength,
-  ]);
+    return false;
+  }, [featureId, usageLimit, currentUsage, hasMeteredAccess, hasBooleanAccess]);
 
   const iconType = useMemo(() => {
     if (!featureId) {
@@ -117,33 +112,40 @@ export const FeatureIndicatorContainer: FC<Props> = ({
 
   return (
     <div className={CLASS_NAME}>
-      {render
-        ? render(renderProps)
-        : Children.map(children, (child) => (
-            <FeatureIndicator
-              featureName={featureId}
-              icon={iconType}
-              element={
-                featureIndicatorPlacement ===
-                FeatureIndicatorPlacement.Outside ? (
-                  <div
-                    className={`${CLASS_NAME}__children ${
-                      reversePosition ? "reverse-position" : ""
-                    }`}
-                  >
-                    {React.cloneElement(child, omit(renderProps, "icon"))}{" "}
-                    <Icon
-                      icon={iconType}
-                      color={EnumTextColor.Black20}
-                      size="xsmall"
-                    />
-                  </div>
-                ) : (
-                  React.cloneElement(child, renderProps)
-                )
-              }
-            />
-          ))}
+      {render && render(renderProps)}
+      {!render &&
+        iconType &&
+        Children.map(children, (child) => (
+          <FeatureIndicator
+            featureName={featureId}
+            icon={iconType}
+            text={
+              isFeatureDisabled()
+                ? tooltipText
+                : "Available as part of the Enterprise plan only."
+            }
+            element={
+              featureIndicatorPlacement ===
+              FeatureIndicatorPlacement.Outside ? (
+                <div
+                  className={`${CLASS_NAME}__children ${
+                    reversePosition ? "reverse-position" : ""
+                  }`}
+                >
+                  {React.cloneElement(child, omit(renderProps, "icon"))}{" "}
+                  <Icon
+                    icon={iconType}
+                    color={EnumTextColor.Black20}
+                    size="xsmall"
+                  />
+                </div>
+              ) : (
+                React.cloneElement(child, renderProps)
+              )
+            }
+          />
+        ))}
+      {!render && !iconType && children}
     </div>
   );
 };

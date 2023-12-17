@@ -47,7 +47,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const InviteMember = ({ members }: { members: number }) => {
+const InviteMember = () => {
   const { trackEvent } = useTracking();
 
   const [inviteUser, { loading, error }] = useMutation<TData>(INVITE_USER, {
@@ -55,6 +55,7 @@ const InviteMember = ({ members }: { members: number }) => {
       trackEvent({
         eventName: AnalyticsEventNames.WorkspaceMemberInvite,
         email: data.inviteUser.email,
+        eventOriginLocation: "workspace-members-page",
       });
     },
     refetchQueries: [{ query: GET_WORKSPACE_MEMBERS }],
@@ -99,7 +100,7 @@ const InviteMember = ({ members }: { members: number }) => {
               <FeatureIndicatorContainer
                 featureId={BillingFeature.TeamMembers}
                 entitlementType={EntitlementType.Metered}
-                meteredFeatureLength={members}
+                tooltipText="The workspace reached your plan's team members limitation."
               >
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}

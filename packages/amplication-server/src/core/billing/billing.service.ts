@@ -289,8 +289,6 @@ export class BillingService {
   async validateSubscriptionPlanLimitationsForWorkspace({
     workspaceId,
     currentUser,
-    currentProjectId,
-    projects,
     repositories,
     bypassLimitations = false,
   }: ValidateSubscriptionPlanLimitationsArgs): Promise<void> {
@@ -357,14 +355,14 @@ export class BillingService {
           workspaceId,
           BillingFeature.ChangeGitBaseBranch
         );
-        const projectWithCustomBaseBranch = repositories?.find((repo) => {
-          repo.baseBranchName;
-        });
+        const projectWithCustomBaseBranch = repositories?.find(
+          (repo) => repo.baseBranchName
+        );
         if (
           projectWithCustomBaseBranch &&
           !changeGitBaseBranchEntitlement.hasAccess
         ) {
-          const message = `Your workspace uses the custom Git base branch feature, while it is not part of your current plan.`;
+          const message = `Your workspace uses the custom git base branch feature, while it is not part of your current plan.`;
           throw new BillingLimitationError(
             message,
             BillingFeature.ChangeGitBaseBranch

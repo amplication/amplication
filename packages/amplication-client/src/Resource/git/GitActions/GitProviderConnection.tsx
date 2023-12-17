@@ -50,7 +50,6 @@ export default function GitProviderConnection({
       />
       <div className={`${CLASS_NAME}__name`}>{providerDisplayName}</div>
       <div className={`${CLASS_NAME}__controls`}>
-        {disabled && <FeatureIndicator featureName={featureName} />}
         {!comingSoon ? (
           <FeatureIndicatorContainer
             featureId={billingFeature}

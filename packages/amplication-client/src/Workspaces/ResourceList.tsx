@@ -17,7 +17,7 @@ import {
 } from "@amplication/ui/design-system";
 import { Reference, gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
@@ -29,6 +29,7 @@ import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import ResourceListItem from "./ResourceListItem";
+import { useStiggContext } from "@stigg/react-sdk";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
@@ -39,7 +40,7 @@ const PAGE_TITLE = "Project Overview";
 
 function ResourceList() {
   const { trackEvent } = useTracking();
-
+  const { refreshData } = useStiggContext();
   const [error, setError] = useState<Error | null>(null);
 
   const {
@@ -54,6 +55,10 @@ function ResourceList() {
   const clearError = useCallback(() => {
     setError(null);
   }, [setError]);
+
+  useEffect(() => {
+    refreshData();
+  }, []);
 
   const [deleteResource] = useMutation<TDeleteResourceData>(DELETE_RESOURCE, {
     update(cache, { data }) {
@@ -70,6 +75,7 @@ function ResourceList() {
           },
         },
       });
+      refreshData();
     },
   });
 

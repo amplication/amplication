@@ -5,6 +5,8 @@ import { version } from "../util/version";
 
 export interface Event {
   eventName: AnalyticsEventNames;
+  /** The location of a button / HTML element. i.e. WorkspaceHeader */
+  eventOriginLocation?: string;
   [key: string]: unknown;
 }
 

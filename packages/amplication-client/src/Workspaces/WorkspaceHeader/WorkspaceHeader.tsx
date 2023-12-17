@@ -18,7 +18,7 @@ import {
   PopoverNotificationCenter,
 } from "@novu/notification-center";
 import { useStiggContext } from "@stigg/react-sdk";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory } from "react-router-dom";
 import CommandPalette from "../../CommandPalette/CommandPalette";
@@ -84,6 +84,12 @@ const WorkspaceHeader: React.FC = () => {
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
 
+  const daysLeftText = useMemo(() => {
+    return `${upgradeButtonData.trialDaysLeft} day${
+      upgradeButtonData.trialDaysLeft !== 1 ? "s" : ""
+    } left for the free trial`;
+  }, [upgradeButtonData.trialDaysLeft]);
+
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   const [versionAlert, setVersionAlert] = useState(false);
@@ -123,7 +129,8 @@ const WorkspaceHeader: React.FC = () => {
       from: { pathname: window.location.pathname },
     });
     trackEvent({
-      eventName: AnalyticsEventNames.UpgradeOnTopBarClick,
+      eventName: AnalyticsEventNames.UpgradeClick,
+      eventOriginLocation: "workspace-header",
       workspace: currentWorkspace.id,
     });
   }, [currentWorkspace, window.location.pathname]);
@@ -134,8 +141,8 @@ const WorkspaceHeader: React.FC = () => {
     openHubSpotChat();
     trackEvent({
       eventName: AnalyticsEventNames.HelpMenuItemClick,
-      Action: "Contact Us",
-      workspaceId: currentWorkspace.id,
+      action: "Contact Us",
+      eventOriginLocation: "workspace-header-help-menu",
     });
   }, [openHubSpotChat]);
 
@@ -208,7 +215,7 @@ const WorkspaceHeader: React.FC = () => {
                   className={`${CLASS_NAME}__upgrade__btn`}
                   onClick={handleUpgradeClick}
                   progress={upgradeButtonData.trialLeftProgress}
-                  leftValue={`${upgradeButtonData.trialDaysLeft} days free trial left`}
+                  leftValue={daysLeftText}
                   yellowColorThreshold={50}
                   redColorThreshold={0}
                 >

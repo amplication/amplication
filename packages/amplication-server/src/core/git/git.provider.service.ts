@@ -565,6 +565,7 @@ export class GitProviderService {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             AND: {
               deletedAt: null,
+              archived: { not: true },
               projectId: {
                 in: projectIds,
               },

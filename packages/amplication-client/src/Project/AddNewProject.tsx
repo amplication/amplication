@@ -7,12 +7,10 @@ import {
   FeatureIndicatorContainer,
 } from "../Components/FeatureIndicatorContainer";
 import { Button } from "../Components/Button";
-import { AppContext } from "../context/appContext";
 
 const CLASS_NAME = "add-new-project";
 
 const AddNewProject = () => {
-  const { projectsList } = useContext(AppContext);
   const [projectDialogStatus, setProjectDialogStatus] =
     useState<boolean>(false);
 
@@ -37,7 +35,7 @@ const AddNewProject = () => {
       <FeatureIndicatorContainer
         featureId={BillingFeature.Projects}
         entitlementType={EntitlementType.Metered}
-        meteredFeatureLength={projectsList.length}
+        tooltipText="The workspace reached your plan's project limitation."
       >
         <Button
           onClick={handleNewProjectClick}

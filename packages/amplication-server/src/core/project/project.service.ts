@@ -324,9 +324,9 @@ export class ProjectService {
       });
 
       const repositories =
-        await this.gitProviderService.getProjectsConnectedGitRepositories(
-          projects.map((project) => project.id)
-        );
+        await this.gitProviderService.getProjectsConnectedGitRepositories([
+          project.id,
+        ]);
 
       await this.billingService.validateSubscriptionPlanLimitationsForWorkspace(
         {
