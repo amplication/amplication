@@ -106,6 +106,7 @@ const ModuleActionList = React.memo(
                     name={"enabled"}
                     onValueChange={onEnableChanged}
                     checked={enabledActions}
+                    disabled={disabled}
                   ></Toggle>
                 </div>
               }
@@ -128,7 +129,7 @@ const ModuleActionList = React.memo(
               module={moduleData?.Module}
               moduleAction={action}
               tagStyle={displayMode}
-              disabled={!enabledActions}
+              disabled={disabled || !enabledActions}
             />
           ))}
         </List>
