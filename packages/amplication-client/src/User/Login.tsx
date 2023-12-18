@@ -15,7 +15,7 @@ import { Button } from "../Components/Button";
 import { ErrorMessage } from "../Components/ErrorMessage";
 import { Form } from "../Components/Form";
 import {
-  NX_REACT_APP_AUTH_LOGIN_URI,
+  REACT_APP_AUTH_LOGIN_URI,
   REACT_APP_GITHUB_AUTH_ENABLED,
 } from "../env";
 import WelcomePage from "../Layout/WelcomePage";
@@ -115,7 +115,7 @@ const Login = () => {
               </div>
               <GitHubLoginButton />
               <a
-                href={NX_REACT_APP_AUTH_LOGIN_URI}
+                href={REACT_APP_AUTH_LOGIN_URI}
                 className={`${CLASS_NAME}__sso`}
                 onClick={handleContinueWithSsoClick}
               >
