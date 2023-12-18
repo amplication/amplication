@@ -31,7 +31,8 @@ import {
 } from "../Components/FeatureIndicatorContainer";
 import { BillingFeature } from "@amplication/util-billing-types";
 import "./ModuleActions.scss";
-import { FeatureIndicator } from "../Components/FeatureIndicator";
+import { ModuleActionsEnabled } from "./ModuleActionsEnabled";
+import { ModuleActionsDisabled } from "./ModuleActionsDisabled";
 
 const DATE_CREATED_FIELD = "createdAt";
 const CLASS_NAME = "module-actions";
@@ -105,95 +106,18 @@ const ModuleActions = React.memo(({ match }: Props) => {
       entitlementType={EntitlementType.Boolean}
       render={({ disabled, icon }) => (
         <>
-          {disabled && (
-            <FlexItem
-              direction={EnumFlexDirection.Column}
-              itemsAlign={EnumItemsAlign.Center}
-              className={`${CLASS_NAME}__addon-section`}
-            >
-              <div className={`${CLASS_NAME}__feature-tag`}>
-                <Text
-                  textStyle={EnumTextStyle.Tag}
-                  textColor={EnumTextColor.Black}
-                >
-                  Premium feature
-                </Text>
-                <Icon icon={icon} size={"xsmall"} color={EnumTextColor.Black} />
-              </div>
-              <Text
-                textStyle={EnumTextStyle.H2}
-                textWeight={EnumTextWeight.Bold}
-                className={`${CLASS_NAME}__addon-section__title`}
-              >
-                Unlock your APIs Full Potential
-              </Text>
-              <Text
-                textWeight={EnumTextWeight.Regular}
-                textColor={EnumTextColor.Black20}
-              >
-                Maximize the power of your APIs and Types through seamless
-                management
-              </Text>
-              <Text
-                textWeight={EnumTextWeight.Regular}
-                textColor={EnumTextColor.Black20}
-              >
-                and customization as a unified source of truth.{" "}
-                <a
-                  className={`${CLASS_NAME}__addon-section__contact-us`}
-                  href={"https://meetings-eu1.hubspot.com/liza-dymava/cta-link"}
-                  target="blank"
-                >
-                  <Text>{"Contact us"}</Text>{" "}
-                </a>
-                for more information
-              </Text>
-            </FlexItem>
-          )}
-
-          {!disabled && (
-            <>
-              <div className={`${CLASS_NAME}__search-field`}>
-                <SearchField
-                  label="search"
-                  placeholder="Search"
-                  onChange={handleSearchChange}
-                />
-              </div>
-              <FlexItem
-                itemsAlign={EnumItemsAlign.Start}
-                margin={EnumFlexItemMargin.Top}
-                start={
-                  <TabContentTitle
-                    title="Module Actions"
-                    subTitle="Actions are used to perform operations on resources, with or without API endpoints."
-                  />
-                }
-                end={
-                  <FeatureIndicator
-                    featureName={BillingFeature.CustomActions}
-                    placement="bottom-end"
-                    text="The Custom Actions feature is exclusive to the Enterprise plan."
-                    icon={icon}
-                    element={
-                      <div className={`${CLASS_NAME}__feature-tag`}>
-                        <Text
-                          textStyle={EnumTextStyle.Tag}
-                          textColor={EnumTextColor.Black}
-                        >
-                          Premium feature
-                        </Text>
-                        <Icon
-                          icon={icon}
-                          size={"xsmall"}
-                          color={EnumTextColor.Black}
-                        />
-                      </div>
-                    }
-                  />
-                }
-              ></FlexItem>
-            </>
+          {disabled ? (
+            <ModuleActionsDisabled
+              icon={icon}
+              handleSearchChange={handleSearchChange}
+              className={CLASS_NAME}
+            />
+          ) : (
+            <ModuleActionsEnabled
+              icon={icon}
+              handleSearchChange={handleSearchChange}
+              className={CLASS_NAME}
+            />
           )}
 
           {generateGraphQlAndRestApi && (
