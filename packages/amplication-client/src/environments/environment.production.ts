@@ -14,7 +14,9 @@ export const environment = {
   NX_REACT_APP_BILLING_ENABLED: true,
   NX_REACT_APP_BILLING_API_KEY:
     "client-d3f38201-ed3a-4aea-af1d-1db1ad976ec0:415fb9ff-a378-42d0-a849-dae7daf49646",
-  NX_REACT_APP_AMPLITUDE_API_KEY: "P5sO0VHJJlCrBz9bPYhFgN94VwyTyxPO",
+  NX_REACT_APP_ANALYTICS_API_KEY: "P5sO0VHJJlCrBz9bPYhFgN94VwyTyxPO",
+  NX_REACT_APP_ANALYTICS_API_DOMAIN: "sa.amplication.com",
+  NX_REACT_APP_ANALYTICS_DOMAIN: "sc.amplication.com",
   NX_REACT_APP_AUTH_LOGIN_URI: "https://server.amplication.com/auth/login",
   NX_REACT_APP_AUTH_LOGOUT_URI: "https://server.amplication.com/auth/logout",
   NX_REACT_APP_PLUGIN_VERSION_USE_LATEST: "true",
