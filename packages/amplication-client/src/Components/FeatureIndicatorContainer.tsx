@@ -58,7 +58,8 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   const { stigg } = useStiggContext();
   const { currentWorkspace } = useContext(AppContext);
   const { subscription } = currentWorkspace;
-  const { subscriptionPlan, status } = subscription;
+  const subscriptionPlan = subscription?.subscriptionPlan;
+  const status = subscription?.status;
 
   const {
     usageLimit,
@@ -73,7 +74,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   }).hasAccess;
 
   const isFeatureDisabled = useCallback(() => {
-    if (!featureId) {
+    if (!subscriptionPlan || !status || !featureId) {
       return false;
     }
 
@@ -90,7 +91,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   }, [featureId, usageLimit, currentUsage, hasMeteredAccess, hasBooleanAccess]);
 
   const iconType = useMemo(() => {
-    if (!featureId) {
+    if (!subscriptionPlan || !status || !featureId) {
       return null;
     }
     if (subscriptionPlan === EnumSubscriptionPlan.Free && isFeatureDisabled()) {
