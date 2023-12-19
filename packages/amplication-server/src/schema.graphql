@@ -1282,6 +1282,7 @@ type Project {
   description: String
   id: String!
   isUnderLimitation: Boolean
+  licensed: Boolean!
   name: String!
   resources: [Resource!]
   updatedAt: DateTime!
@@ -1456,6 +1457,7 @@ type Resource {
   githubLastSync: DateTime
   id: String!
   isUnderLimitation: Boolean
+  licensed: Boolean!
   name: String!
   project: Project
   projectId: String

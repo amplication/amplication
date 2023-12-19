@@ -93,6 +93,9 @@ export class Resource {
   })
   codeGeneratorStrategy?: keyof typeof CodeGeneratorVersionStrategy;
 
+  @Field(() => Boolean, { nullable: false, defaultValue: true })
+  licensed: boolean;
+
   @Field(() => Boolean, { nullable: true, defaultValue: false })
   isUnderLimitation?: boolean;
 

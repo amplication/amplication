@@ -48,6 +48,9 @@ export class Project {
   })
   description?: string;
 
+  @Field(() => Boolean, { nullable: false, defaultValue: true })
+  licensed: boolean;
+
   @Field(() => Boolean, { nullable: true, defaultValue: false })
   isUnderLimitation?: boolean;
 }
