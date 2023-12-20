@@ -279,6 +279,7 @@ describe("ProjectResolver", () => {
     expect(commitMock).toBeCalledWith(
       {
         data: {
+          bypassLimitations: false,
           message: EXAMPLE_MESSAGE,
           project: { connect: { id: EXAMPLE_PROJECT_ID } },
         },

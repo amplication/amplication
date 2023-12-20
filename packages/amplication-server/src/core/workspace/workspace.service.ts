@@ -24,7 +24,6 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { BillingService } from "../billing/billing.service";
-import { BillingPlan } from "../billing/billing.types";
 import { MailService } from "../mail/mail.service";
 import { ProjectService } from "../project/project.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
@@ -43,6 +42,8 @@ import {
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -116,7 +117,7 @@ export class WorkspaceService {
       },
     });
 
-    await this.billingService.provisionCustomer(workspace.id, BillingPlan.Free);
+    await this.billingService.provisionCustomer(workspace.id);
 
     const [user] = workspace.users;
     await this.projectService.createProject(
@@ -129,6 +130,11 @@ export class WorkspaceService {
       user.id
     );
 
+    await this.billingService.reportUsage(
+      workspace.id,
+      BillingFeature.TeamMembers
+    );
+
     return workspace;
   }
 
@@ -136,6 +142,19 @@ export class WorkspaceService {
     currentUser: User,
     args: InviteUserArgs
   ): Promise<Invitation | null> {
+    if (this.billingService.isBillingEnabled) {
+      const projectEntitlement =
+        await this.billingService.getMeteredEntitlement(
+          currentUser.workspace.id,
+          BillingFeature.TeamMembers
+        );
+
+      if (projectEntitlement && !projectEntitlement.hasAccess) {
+        const message = `Your workspace exceeds its members limitation.`;
+        throw new BillingLimitationError(message, BillingFeature.Projects);
+      }
+    }
+
     const { workspace, id: currentUserId, account } = currentUser;
 
     if (isEmpty(args.data.email)) {
@@ -285,11 +304,17 @@ export class WorkspaceService {
       },
     });
 
+    await this.billingService.reportUsage(
+      workspace.id,
+      BillingFeature.TeamMembers
+    );
+
     await this.analytics.track({
       userId: account.id,
       event: EnumEventType.InvitationAcceptance,
       properties: {
         workspaceId: invitation.workspaceId,
+        $groups: { groupWorkspace: invitation.workspaceId },
       },
     });
 
@@ -419,6 +444,7 @@ export class WorkspaceService {
         workspaceId: currentUser.workspace.id,
         subscriptionPlan: coupon.subscriptionPlan,
         durationMonths: coupon.durationMonths,
+        $groups: { groupWorkspace: currentUser.workspace.id },
       },
     });
 
@@ -555,7 +581,7 @@ export class WorkspaceService {
 
     for (const workspaceChunk of workspaceChunks) {
       this.logger.info(`chunk number ${index++}`);
-      await this.migrateWorkspaces(workspaceChunk);
+      await this.migrateWorkspaces(workspaceChunk, false);
     }
 
     await this.prisma.$disconnect();
@@ -563,17 +589,88 @@ export class WorkspaceService {
     return true;
   }
 
-  async migrateWorkspaces(workspaces: Workspace[]) {
+  async dataMigrateWorkspacesResourcesCustomActionsFix(): Promise<boolean> {
+    const workspaces = await this.prisma.workspace.findMany({
+      where: {
+        projects: {
+          some: {
+            deletedAt: null,
+            resources: {
+              some: {
+                deletedAt: null,
+                archived: { not: true },
+                resourceType: EnumResourceType.Service,
+                blocks: { some: { blockType: EnumBlockType.Module } },
+                entities: { some: { deletedAt: null } },
+              },
+            },
+          },
+        },
+      },
+      take: 1000,
+      include: {
+        users: {
+          orderBy: {
+            lastActive: Prisma.SortOrder.asc,
+          },
+        },
+        projects: {
+          where: {
+            deletedAt: null,
+          },
+          include: {
+            resources: {
+              include: {
+                entities: {
+                  where: {
+                    deletedAt: null,
+                  },
+                },
+              },
+              where: {
+                resourceType: EnumResourceType.Service,
+                deletedAt: null,
+                archived: { not: true },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    let index = 1;
+
+    const workspaceChunks = this.chunkArrayInGroups(workspaces, 200);
+
+    for (const workspaceChunk of workspaceChunks) {
+      this.logger.info(`chunk number ${index++}`);
+      await this.migrateWorkspaces(workspaceChunk, true);
+    }
+
+    await this.prisma.$disconnect();
+
+    return true;
+  }
+
+  async migrateWorkspaces(workspaces: Workspace[], fixMigration: boolean) {
     const promises = workspaces.map(async (workspace) => {
       const workspaceUser = workspace.users[0];
 
       for (const project of workspace.projects) {
         const resources = project.resources;
+        let hasChanges = false;
 
-        const hasChanges = await this.createResourceCustomActions(
-          resources,
-          workspaceUser
-        );
+        if (fixMigration) {
+          hasChanges = await this.createResourceCustomActionsFix(
+            resources,
+            workspaceUser
+          );
+        } else {
+          hasChanges = await this.createResourceCustomActions(
+            resources,
+            workspaceUser
+          );
+        }
 
         if (hasChanges) {
           try {
@@ -730,7 +827,7 @@ export class WorkspaceService {
           entityVersion: {
             entityId: entity.id,
             versionNumber: 0,
-            deleted: false,
+            deleted: null,
           },
         },
       })) as EntityField[];
@@ -759,6 +856,61 @@ export class WorkspaceService {
     }
   }
 
+  async createEntityCustomActionsFix(
+    entity: Entity,
+    resourceId: string,
+    user: User
+  ): Promise<boolean> {
+    try {
+      if (entity.name.trim() === "" || entity.name.trim() === null) return;
+
+      const entityModule = await this.prisma.block.findFirst({
+        where: {
+          blockType: EnumBlockType.Module,
+          resourceId: resourceId,
+          displayName: entity.name,
+        },
+      });
+
+      if (!entityModule) {
+        return false;
+      }
+
+      const fields = (await this.prisma.entityField.findMany({
+        where: {
+          entityVersion: {
+            entityId: entity.id,
+            versionNumber: 0,
+            deleted: null,
+          },
+        },
+      })) as EntityField[];
+
+      const relationFields = fields.filter(
+        (e) => e.dataType === EnumDataType.Lookup
+      );
+
+      for (const field of relationFields) {
+        try {
+          await this.moduleActionService.createDefaultActionsForRelationField(
+            entity,
+            field,
+            entityModule.id,
+            user
+          );
+        } catch (error) {
+          this.logger.warn(
+            `${error.message} from createEntityCustomActionsFix entityId: ${entity.id}, continue check`
+          );
+        }
+      }
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+      return false;
+    }
+  }
+
   async createResourceCustomActions(
     resources: Resource[],
     user: User
@@ -777,6 +929,33 @@ export class WorkspaceService {
 
         for (const entity of resource.entities) {
           await this.createEntityCustomActions(entity, user);
+        }
+      } catch (error) {
+        this.logger.error(
+          `Failed to run createResourceCustomActions, error: ${error} resource: ${resource.id}`
+        );
+
+        return hasChanges;
+      }
+    });
+    await Promise.allSettled(promises);
+    return hasChanges;
+  }
+
+  async createResourceCustomActionsFix(
+    resources: Resource[],
+    user: User
+  ): Promise<boolean> {
+    let hasChanges = false;
+    const promises = resources.map(async (resource) => {
+      try {
+        for (const entity of resource.entities) {
+          hasChanges =
+            (await this.createEntityCustomActionsFix(
+              entity,
+              resource.id,
+              user
+            )) || hasChanges;
         }
       } catch (error) {
         this.logger.error(

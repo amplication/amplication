@@ -120,7 +120,7 @@ const CreateServiceCodeGeneration: React.FC<
       ? EnumGitProvider.Github
       : resource?.gitRepository?.gitOrganization?.provider;
     const stepGithub = data.build.action.steps.find(
-      (step) => step.name === PUSH_TO_GIT_STEP_NAME(provider)
+      (step) => step.name === "PUSH_TO_GIT_PROVIDER"
     );
 
     const log = stepGithub?.logs?.find(

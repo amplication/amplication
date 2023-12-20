@@ -1,4 +1,6 @@
 import { Paywall, BillingPeriod, Price } from "@stigg/react-sdk";
+import { BillingPlan } from "@amplication/util-billing-types";
+
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { useHistory } from "react-router-dom";
@@ -90,8 +92,8 @@ const PurchasePage = (props) => {
     window.open(data?.contactUsLink, "_blank");
     trackEvent({
       eventName: AnalyticsEventNames.ContactUsButtonClick,
-      Action: "Contact Us",
-      workspaceId: currentWorkspace.id,
+      action: "Contact Us",
+      eventOriginLocation: "pricing-page",
     });
   }, [currentWorkspace.id, data?.contactUsLink]);
 
@@ -109,7 +111,7 @@ const PurchasePage = (props) => {
         variables: {
           data: {
             workspaceId: currentWorkspace.id,
-            planId: "plan-amplication-pro",
+            planId: BillingPlan.Pro,
             billingPeriod: selectedBillingPeriod,
             intentionType,
             successUrl: props.location.state?.from?.pathname,
@@ -139,14 +141,14 @@ const PurchasePage = (props) => {
         currency,
       });
       switch (plan.id) {
-        case "plan-amplication-enterprise":
+        case BillingPlan.Enterprise:
           handleContactUsClick();
           break;
-        case "plan-amplication-pro":
+        case BillingPlan.Pro:
           setLoading(true);
           await upgradeToPro(selectedBillingPeriod, intentionType);
           break;
-        case "plan-amplication-free":
+        case BillingPlan.Free:
           handleDowngradeClick();
           break;
       }
@@ -186,6 +188,7 @@ const PurchasePage = (props) => {
                 : `All core backend functionality:`;
             },
             planCTAButton: {
+              startTrial: () => "Contact us",
               startNew: provisionSubscriptionLoading
                 ? "...Loading"
                 : "Upgrade now",
