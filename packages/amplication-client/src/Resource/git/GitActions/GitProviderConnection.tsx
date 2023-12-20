@@ -70,7 +70,7 @@ export default function GitProviderConnection({
             <FeatureIndicator
               featureName={featureName}
               comingSoon={true}
-              text="for GitLab integration"
+              text={`for ${providerDisplayName} integration`}
               linkText="Contact us"
               icon={IconType.Lock}
             />
