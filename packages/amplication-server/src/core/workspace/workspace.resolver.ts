@@ -221,4 +221,13 @@ export class WorkspaceResolver {
   ): Promise<Coupon> {
     return this.workspaceService.redeemCoupon(user, args);
   }
+
+  @Mutation(() => Boolean)
+  async bulkUpdateWorkspaceProjectsAndResourcesLicensed(
+    useUserLastActive: boolean
+  ): Promise<boolean> {
+    return this.workspaceService.bulkUpdateWorkspaceProjectsAndResourcesLicensed(
+      useUserLastActive ?? true
+    );
+  }
 }

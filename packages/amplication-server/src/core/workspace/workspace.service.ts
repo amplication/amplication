@@ -798,6 +798,55 @@ export class WorkspaceService {
     }
   }
 
+  async bulkUpdateWorkspaceProjectsAndResourcesLicensed(
+    useUserLastActive: boolean
+  ): Promise<boolean> {
+    try {
+      const date = new Date();
+      const userLastActiveQuery = useUserLastActive
+        ? {
+            some: {
+              lastActive: {
+                gte: new Date(date.setDate(date.getDate() - 30)),
+              },
+            },
+          }
+        : {};
+
+      const workspaces = await this.prisma.workspace.findMany({
+        where: {
+          users: userLastActiveQuery,
+          projects: {
+            some: {
+              deletedAt: null,
+              resources: {
+                some: {
+                  deletedAt: null,
+                  archived: { not: true },
+                  resourceType: {
+                    in: [EnumResourceType.Service],
+                  },
+                },
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      for (const workspace of workspaces) {
+        await this.subscriptionService.updateProjectLicensed(workspace.id);
+        await this.subscriptionService.updateServiceLicensed(workspace.id);
+      }
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+      return false;
+    }
+  }
+
   async createEntityCustomActions(
     entity: Entity,
     user: User
