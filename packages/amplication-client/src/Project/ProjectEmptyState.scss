@@ -1,0 +1,14 @@
+@import "../style/index.scss";
+
+.project-empty-state {
+  padding: var(--large-spacing);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  span {
+    display: block;
+    width: 300px;
+    height: 300px;
+  }
+}

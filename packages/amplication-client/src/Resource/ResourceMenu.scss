@@ -1,0 +1,21 @@
+@import "../style/index.scss";
+
+.resource-menu {
+  border-right: $border-dark;
+  min-width: var(--menu-width);
+  display: flex;
+  flex-direction: column;
+
+  .menu-container {
+    flex: 1;
+    @include scrollbars(5px, var(--gray-30), transparent);
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow: visible;
+  }
+  .bottom-menu-container {
+    overflow: hidden;
+    overflow: visible;
+    padding-bottom: var(--default-spacing);
+  }
+}

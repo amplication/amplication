@@ -27,8 +27,6 @@ const CREATE_CHAT_COMPLETION_DEFAULT_SETTINGS: CreateChatCompletionRequestSettin
 
 @Injectable()
 export class OpenaiService {
-  constructor() {}
-
   async createChatCompletion(
     model: string,
     messages: ChatCompletionRequestMessage[],

@@ -1,0 +1,67 @@
+@import "../../style/index.scss";
+
+$expandable-bottom-max-height: 200px;
+$expandable-transition-duration: 0.1s;
+
+.amp-flex-item {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  flex: 1;
+  box-sizing: border-box;
+
+  margin-top: 0;
+  margin-bottom: 0;
+  min-width: 0;
+
+  &--gap-none {
+    gap: 0;
+  }
+
+  &--gap-default {
+    gap: var(--default-spacing);
+  }
+
+  &--gap-small {
+    gap: var(--icon-spacing);
+  }
+
+  &--gap-large {
+    gap: var(--large-spacing);
+  }
+
+  &__start,
+  &__end {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  &--row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  &--column {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  &__end {
+    margin-left: auto;
+  }
+
+  &--margin-bottom {
+    margin-bottom: var(--default-spacing);
+  }
+  &--margin-top {
+    margin-top: var(--default-spacing);
+  }
+  &--margin-both {
+    margin-bottom: var(--default-spacing);
+    margin-top: var(--default-spacing);
+  }
+}

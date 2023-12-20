@@ -1,8 +1,6 @@
 import { ExecutionContext } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import type { Request } from "express";
-// @ts-ignore
-// eslint-disable-next-line
 import { DefaultAuthGuard } from "./defaultAuth.guard";
 
 export class GqlDefaultAuthGuard extends DefaultAuthGuard {
