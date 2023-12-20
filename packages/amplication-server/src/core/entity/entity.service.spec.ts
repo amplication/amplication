@@ -156,6 +156,7 @@ const EXAMPLE_RESOURCE: Resource = {
   builds: [EXAMPLE_BUILD],
   environments: [EXAMPLE_ENVIRONMENT],
   gitRepositoryOverride: false,
+  licensed: true,
   project: {
     id: EXAMPLE_PROJECT_ID,
     workspaceId: "exampleWorkspaceId",
@@ -163,6 +164,7 @@ const EXAMPLE_RESOURCE: Resource = {
     createdAt: new Date(),
     updatedAt: new Date(),
     useDemoRepo: false,
+    licensed: true,
   },
 };
 
