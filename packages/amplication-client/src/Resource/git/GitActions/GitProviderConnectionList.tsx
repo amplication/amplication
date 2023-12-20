@@ -105,7 +105,7 @@ export const GitProviderConnectionList: React.FC<Props> = ({
       <GitProviderConnection
         provider={EnumGitProvider.AwsCodeCommit}
         onSyncNewGitOrganizationClick={() => {
-          window.open("https://amplication.com/contact-us");
+          // Manual work following Notion docs
         }}
         billingFeature={BillingFeature.AwsCodeCommit}
         disabled={!showAwsCodeCommitConnect}
