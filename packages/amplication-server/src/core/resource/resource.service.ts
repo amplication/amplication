@@ -60,6 +60,7 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { JsonValue } from "type-fest";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { SubscriptionService } from "../subscription/subscription.service";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -79,7 +80,8 @@ export class ResourceService {
     private readonly topicService: TopicService,
     private readonly billingService: BillingService,
     private readonly pluginInstallationService: PluginInstallationService,
-    private readonly analytics: SegmentAnalyticsService
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
@@ -762,6 +764,8 @@ export class ResourceService {
         BillingFeature.Services,
         -1
       );
+
+      await this.subscriptionService.updateServiceLicensed(project.workspaceId);
     }
 
     if (!resource.gitRepositoryOverride) {
