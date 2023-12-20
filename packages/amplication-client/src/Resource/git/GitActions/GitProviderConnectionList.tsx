@@ -109,6 +109,7 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         }}
         billingFeature={BillingFeature.AwsCodeCommit}
         disabled={!showAwsCodeCommitConnect}
+        comingSoon={true}
       />
     </div>
   );
