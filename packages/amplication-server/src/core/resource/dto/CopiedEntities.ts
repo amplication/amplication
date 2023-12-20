@@ -8,24 +8,9 @@ import { Entity } from "packages/amplication-server/src/models";
 @InputType({
   isAbstract: true,
 })
-export class ResourceCreateEntitiesInput {
-  @Field(() => String, {
-    nullable: false,
-  })
-  originalResourceId!: string;
-
-  @Field(() => String, {
-    nullable: false,
-  })
-  targetResourceId!: string;
-
+export class CopiedEntities extends Entity {
   @Field(() => Boolean, {
-    nullable: true,
-  })
-  deleteOriginalResource?: boolean;
-
-  @Field(() => [Entity], {
     nullable: false,
   })
-  entities!: Entity[];
+  shouldDeleteFromSource!: boolean;
 }

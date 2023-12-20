@@ -1,9 +1,9 @@
 import { ArgsType, Field } from "@nestjs/graphql";
-import { ResourceCreateEntitiesInput } from "./ResourceCreateEntitiesInput";
+import { ResourceCreateCopiedEntitiesInput } from "./ResourceCreateCopiedEntitiesInput";
 import { ResourceCreateInput } from "./ResourceCreateInput";
 
 @ArgsType()
 export class CreateResourceEntitiesArgs {
-  @Field(() => ResourceCreateEntitiesInput, { nullable: false })
-  data!: ResourceCreateEntitiesInput;
+  @Field(() => ResourceCreateCopiedEntitiesInput, { nullable: false })
+  data!: ResourceCreateCopiedEntitiesInput;
 }

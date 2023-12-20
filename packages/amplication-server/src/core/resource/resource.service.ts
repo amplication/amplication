@@ -19,7 +19,11 @@ import { QueryMode } from "../../enums/QueryMode";
 import { Project, Resource, User, GitOrganization, Entity } from "../../models";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { USER_ENTITY_NAME } from "../entity/constants";
+import {
+  CURRENT_VERSION_NUMBER,
+  INITIAL_ENTITY_FIELDS,
+  USER_ENTITY_NAME,
+} from "../entity/constants";
 import { EntityService } from "../entity/entity.service";
 import { EnvironmentService } from "../environment/environment.service";
 import {
@@ -379,24 +383,115 @@ export class ResourceService {
     args: CreateResourceEntitiesArgs,
     user: User
   ): Promise<Resource> {
-    const {
-      targetResourceId,
-      originalResourceId,
-      entities,
-      deleteOriginalResource,
-    } = args.data;
+    const { targetResourceId, entitiesToCopy } = args.data;
     const resource = await this.prisma.resource.findUnique({
       where: {
         id: targetResourceId,
       },
+      include: {
+        entities: {
+          where: {
+            deletedAt: null,
+          },
+        },
+      },
     });
 
-    if (!resource) throw new AmplicationError("Resource doesn't exist");
+    if (!resource) throw new AmplicationError("Target Resource doesn't exist");
 
+    entitiesToCopy.map((entity) => {
+      if (resource.entities.find((x) => x.name === entity.name)) {
+        throw new AmplicationError(
+          `Entity ${entity.name} is already exist in resourceId: ${resource.id}, process abort`
+        );
+      }
+    });
+
+    // 1.create resource entities
+
+    const copiedEntities: Entity[] = await this.createResourceCopiedEntities(
+      entitiesToCopy,
+      targetResourceId,
+      user
+    );
+
+    // 2.create entities fields
+
+    for (const copiedEntity of copiedEntities) {
+      const currentEntity = entitiesToCopy.find(
+        (entityWithFields) => copiedEntity.name === entityWithFields.name
+      );
+
+      currentEntity.fields = await this.prisma.entityField.findMany({
+        where: {
+          entityVersionId: currentEntity.versions[0].id,
+        },
+      });
+
+      for (const field of currentEntity.fields) {
+        const { dataType, properties } = field;
+        const { allowMultipleSelection, relatedEntityId } =
+          properties as unknown as LookupResolvedProperties;
+
+        if (dataType === EnumDataType.Id) {
+          await this.createCopiedEntityIdField(copiedEntity.id);
+          continue;
+        }
+        if (dataType === EnumDataType.Lookup) {
+          const isFieldExist = await this.isEntityFieldExist(
+            pascalCase(field.name),
+            copiedEntity.id
+          );
+
+          if (isFieldExist) continue;
+
+          const currentRelatedEntity = entitiesToCopy.find(
+            (entity) => entity.id === relatedEntityId
+          );
+
+          if (!currentRelatedEntity) {
+            if (allowMultipleSelection) continue;
+
+            //one to one relation or one to many relation
+            //create id field by the idType and field name
+
+            await this.entityService.updateFieldDataTypeIdByRelatedEntity(
+              field,
+              relatedEntityId
+            );
+          }
+        }
+
+        await this.entityService.createCopiedEntityFieldByDisplayName(
+          copiedEntity.id,
+          field,
+          user
+        );
+      }
+    }
+
+    // 3.delete entity from source service by flag
+    for (const entity of entitiesToCopy) {
+      if (entity.shouldDeleteFromSource) {
+        await this.entityService.deleteEntityFromSourceService(
+          { where: { id: entity.id } },
+          user
+        );
+      }
+    }
+
+    return resource;
+  }
+
+  async createResourceCopiedEntities(
+    entitiesToCopy: Entity[],
+    targetResourceId: string,
+    user: User
+  ): Promise<Entity[]> {
     const copiedEntities: Entity[] = [];
-    for (const entity of entities) {
+
+    for (const entity of entitiesToCopy) {
       const {
-        id,
         name,
         displayName,
         pluralDisplayName,
@@ -413,7 +508,6 @@ export class ResourceService {
                   id: targetResourceId,
                 },
               },
-              id,
               name,
               displayName,
               pluralDisplayName,
@@ -435,52 +529,40 @@ export class ResourceService {
       }
     }
 
-    //create entities fields
+    return copiedEntities;
+  }
 
-    for (const copiedEntity of copiedEntities) {
-      const currentEntity = entities.find(
-        (entityWithFields) => copiedEntity.name === entityWithFields.name
-      );
-
-      for (const field of currentEntity.fields) {
-        const { permanentId, properties, ...rest } = field;
-        const { relatedEntity, relatedField, isOneToOneWithoutForeignKey } =
-          properties as unknown as LookupResolvedProperties;
-
-        try {
-          await this.entityService.createField(
-            {
-              data: {
-                properties: properties as unknown as JsonObject,
-                ...rest,
-                entity: {
-                  connect: {
-                    id: copiedEntity.id,
-                  },
-                },
-              },
-              relatedFieldName: relatedField.name,
-              relatedFieldDisplayName: relatedField.displayName,
-              relatedFieldAllowMultipleSelection:
-                relatedField.properties.allowMultipleSelection,
+  async createCopiedEntityIdField(copiedEntityId: string): Promise<void> {
+    await this.prisma.entityField.create({
+      data: {
+        ...INITIAL_ENTITY_FIELDS[0],
+        entityVersion: {
+          connect: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId: copiedEntityId,
+              versionNumber: CURRENT_VERSION_NUMBER,
             },
-            user,
-            permanentId, // here we want to use the permanentId that was created in the prisma parser service
-            false
-          );
-        } catch (error) {
-          this.logger.error(error.message, error, {
-            field: field.name,
-            entity: copiedEntity.name,
-          });
-          throw new Error(
-            `Failed to create entity field "${field.name}" on entity "${copiedEntity.name}" due to ${error.message}`
-          );
-        }
-      }
-    }
+          },
+        },
+      },
+    });
+  }
 
-    return resource;
+  async isEntityFieldExist(
+    fieldDisplayName: string,
+    entityId: string
+  ): Promise<boolean> {
+    const field = await this.prisma.entityField.findFirst({
+      where: {
+        displayName: fieldDisplayName,
+        entityVersion: {
+          entityId: entityId,
+        },
+      },
+    });
+
+    return field ? true : false;
   }
 
   async userEntityValidation(
