@@ -33,7 +33,7 @@ export class MessageServiceBase {
   async message<T extends Prisma.MessageFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.MessageFindUniqueArgs>
   ): Promise<Message | null> {
-    return this.prisma.message.findUnique(args);
+    return await this.prisma.message.findUnique(args);
   }
   async createMessage<T extends Prisma.MessageCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.MessageCreateArgs>

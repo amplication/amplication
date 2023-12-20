@@ -33,7 +33,7 @@ export class ConversationTypeServiceBase {
   async conversationType<T extends Prisma.ConversationTypeFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeFindUniqueArgs>
   ): Promise<ConversationType | null> {
-    return this.prisma.conversationType.findUnique(args);
+    return await this.prisma.conversationType.findUnique(args);
   }
   async createConversationType<T extends Prisma.ConversationTypeCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeCreateArgs>
