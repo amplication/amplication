@@ -871,7 +871,7 @@ export class EntityService {
     });
   }
 
-  async deleteEntityFromSourceService(
+  async deleteEntityFromSourceResource(
     args: DeleteOneEntityArgs,
     user: User
   ): Promise<Entity | null> {

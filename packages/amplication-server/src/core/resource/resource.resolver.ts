@@ -171,21 +171,21 @@ export class ResourceResolver {
     return this.resourceService.updateResource(args);
   }
 
-  // @Mutation(() => Resource, { nullable: false })
-  // @Roles("ORGANIZATION_ADMIN")
-  // @AuthorizeContext(
-  //   AuthorizableOriginParameter.ProjectId,
-  //   "data.project.connect.id"
-  // )
-  // async createServiceEntitiesFromExistingService(
-  //   @Args() args: CreateResourceEntitiesArgs,
-  //   @UserEntity() user: User
-  // ): Promise<Resource> {
-  //   return this.resourceService.createServiceEntitiesFromExistingService(
-  //     args,
-  //     user
-  //   );
-  // }
+  @Mutation(() => Resource, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "data.project.connect.id"
+  )
+  async createResourceEntitiesFromExistingResource(
+    @Args() args: CreateResourceEntitiesArgs,
+    @UserEntity() user: User
+  ): Promise<Resource> {
+    return this.resourceService.createResourceEntitiesFromExistingResource(
+      args,
+      user
+    );
+  }
 
   @Mutation(() => Resource, {
     nullable: true,
