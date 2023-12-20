@@ -62,7 +62,7 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { JsonObject, JsonValue } from "type-fest";
+import { JsonValue } from "type-fest";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { CreateResourceEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
 import { LookupResolvedProperties } from "@amplication/code-gen-types";
