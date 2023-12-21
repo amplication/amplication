@@ -41,6 +41,8 @@ import { BillingService } from "../billing/billing.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -312,6 +314,13 @@ const prismaEntityFindFirstMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
 
+const prismaEntityFindUniqueMock = jest.fn(() => {
+  return {
+    ...EXAMPLE_ENTITY,
+    resource: EXAMPLE_RESOURCE,
+  };
+});
+
 const prismaEntityFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY];
 });
@@ -492,6 +501,7 @@ describe("EntityService", () => {
             },
             entity: {
               findFirst: prismaEntityFindFirstMock,
+              findUnique: prismaEntityFindUniqueMock,
               findMany: prismaEntityFindManyMock,
               create: prismaEntityCreateMock,
               delete: prismaEntityDeleteMock,
@@ -634,6 +644,40 @@ describe("EntityService", () => {
     expect(prismaEntityCreateMock).toBeCalledTimes(1);
     expect(prismaEntityCreateMock).toBeCalledWith(newEntityArgs);
     expect(prismaEntityFieldCreateMock).toBeCalledTimes(3);
+  });
+
+  it("should not create an entity when the service in not under license", async () => {
+    const createArgs = {
+      args: {
+        data: {
+          name: EXAMPLE_ENTITY.name,
+          displayName: EXAMPLE_ENTITY.displayName,
+          description: EXAMPLE_ENTITY.description,
+          pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
+          resource: { connect: { id: EXAMPLE_ENTITY.resourceId } },
+        },
+      },
+      user: EXAMPLE_USER,
+    };
+
+    prismaResourceFindUniqueMock.mockImplementation(() => {
+      return {
+        ...EXAMPLE_RESOURCE,
+        licensed: false,
+      };
+    });
+
+    await expect(
+      service.createOneEntity(createArgs.args, createArgs.user)
+    ).rejects.toThrow(
+      new BillingLimitationError(
+        "Your current plan permits only one active resource, therefore you cannot create a new entity on this service.",
+        BillingFeature.Services
+      )
+    );
+    expect(prismaEntityCreateMock).toBeCalledTimes(0);
+    expect(prismaEntityFieldCreateMock).toBeCalledTimes(0);
   });
 
   it("should delete one entity", async () => {
@@ -1127,6 +1171,35 @@ describe("EntityService", () => {
     expect(service.updateLock).toBeCalled();
   });
 
+  it("should not create an entity field when the service in not under license", async () => {
+    prismaEntityFindUniqueMock.mockImplementationOnce(() => {
+      return {
+        ...EXAMPLE_ENTITY,
+        resource: {
+          ...EXAMPLE_RESOURCE,
+          licensed: false,
+        },
+      };
+    });
+
+    await expect(
+      service.createField(
+        {
+          data: {
+            ...EXAMPLE_ENTITY_FIELD_DATA,
+            entity: { connect: { id: EXAMPLE_ENTITY_ID } },
+          },
+        },
+        EXAMPLE_USER
+      )
+    ).rejects.toThrow(
+      new BillingLimitationError(
+        "Your current plan permits only one active resource, therefore you cannot create a new entity field on this service.",
+        BillingFeature.Services
+      )
+    );
+  });
+
   it("should create entity field", async () => {
     expect(
       await service.createField(
@@ -1521,6 +1594,14 @@ describe("EntityService", () => {
       },
       user: EXAMPLE_USER,
     };
+
+    prismaResourceFindUniqueMock.mockImplementation(() => {
+      return {
+        ...EXAMPLE_RESOURCE,
+        licensed: true,
+      };
+    });
+
     await expect(
       service.createOneEntity(createArgs.args, createArgs.user)
     ).rejects.toThrow(new ReservedNameError(RESERVED_NAME));
