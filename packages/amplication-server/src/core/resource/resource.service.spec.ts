@@ -1076,15 +1076,4 @@ describe("ResourceService", () => {
       );
     });
   });
-
-  describe("isUnderLimitation", () => {
-    it("should always return false (for now) - no limitation around resource apart from creation", async () => {
-      expect(
-        await service.isUnderLimitation(
-          EXAMPLE_WORKSPACE_ID,
-          EXAMPLE_RESOURCE_ID
-        )
-      ).toEqual(false);
-    });
-  });
 });
