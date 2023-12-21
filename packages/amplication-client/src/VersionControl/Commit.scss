@@ -1,0 +1,25 @@
+@import "../style/index.scss";
+
+.commit {
+  padding-top: 0;
+
+  .amp-button {
+    margin: var(--large-spacing) 0;
+    width: 100%;
+  }
+
+  .text-input {
+    label {
+      margin-bottom: 0;
+    }
+
+    textarea {
+      height: var(--textarea-height);
+      background-color: var(--gray-80);
+
+      @media only screen and (max-width: $breakpoint-desktop) {
+        height: var(--textare-height-small);
+      }
+    }
+  }
+}

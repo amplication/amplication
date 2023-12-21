@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    target-branch: "next"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "@nrwl/**" # we need to use nx migrate instead
+      - dependency-name: "react**"
+    open-pull-requests-limit: 3
+  - package-ecosystem: "npm"
+    directory: "/packages/data-service-generator/src/"
+    target-branch: "next"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    target-branch: "next"
+    schedule:
+      interval: "daily"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          ["version-update:semver-major", "version-update:semver-minor"]

@@ -1,0 +1,88 @@
+@import "../../style/index.scss";
+
+.entities-erd {
+  width: 100%;
+  height: calc(
+    100% - (var(--double-spacing) * 3 + 2px)
+  ); //this is needed to prevent scrollbars
+
+  &__node_container {
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: var(--gray-full);
+    box-shadow: "box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05)";
+    border: $border-dark;
+    min-width: 235px;
+  }
+  &__display_name {
+    display: flex;
+    padding: var(--default-spacing-small) var(--default-spacing);
+    margin-left: 10px;
+    margin-right: 10px;
+    font-size: var(--title5-font-size);
+    line-height: 22px;
+    font-weight: 600;
+    border-bottom: $border-dark;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  &__display_icon {
+    margin-left: auto;
+    margin-right: 0;
+  }
+  &__column_container {
+    padding: var(--default-spacing-small) 0;
+  }
+  &__column_inner_container {
+    display: flex;
+    position: relative;
+  }
+  &__column_display_name {
+    padding-left: var(--default-spacing);
+    padding-right: var(--default-spacing);
+    align-items: center;
+    display: flex;
+    font-size: var(--normal-font-size);
+    gap: var(--default-spacing-small);
+    &_datatype {
+      color: var(--theme-blue);
+      font-weight: 200;
+      font-size: calc(var(--normal-font-size) - 2px);
+    }
+    &_custom_attributes {
+      color: var(--theme-turquoise);
+      font-weight: 200;
+      font-size: calc(var(--normal-font-size) - 2px);
+    }
+  }
+  &__handle {
+    &_left {
+      left: -2px !important;
+      border-radius: 0 !important;
+      border-width: 0 !important;
+      width: 0.5rem !important;
+      height: 100% !important;
+      background-color: transparent !important;
+    }
+
+    &_right {
+      right: -2px !important;
+      border-radius: 0 !important;
+      border-width: 0 !important;
+      width: 0.5rem !important;
+      height: 100% !important;
+      background-color: transparent !important;
+    }
+  }
+
+  .react-flow__node.selected {
+    div {
+      border-color: var(--gray-base) !important;
+    }
+  }
+  .react-flow__attribution {
+    font-size: calc(var(--normal-font-size) - 2px);
+    background: var(--gray-90) !important;
+    padding: 0 4px !important;
+  }
+}
