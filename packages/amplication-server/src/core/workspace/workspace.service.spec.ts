@@ -18,6 +18,7 @@ import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { Env } from "../../env";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
@@ -135,7 +136,19 @@ describe("WorkspaceService", () => {
             delete: userServiceDeleteMock,
           })),
         },
-        ConfigService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: (variable) => {
+              switch (variable) {
+                case Env.USER_LAST_ACTIVE_DAYS:
+                  return "30";
+                default:
+                  return "";
+              }
+            },
+          },
+        },
         {
           provide: ModuleService,
           useClass: jest.fn(() => {
