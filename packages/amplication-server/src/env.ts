@@ -30,4 +30,5 @@ export class Env {
   static readonly AUTH_ISSUER_CALLBACK_URL = "AUTH_ISSUER_CALLBACK_URL";
 
   static readonly USER_LAST_ACTIVE_DAYS = "USER_LAST_ACTIVE_DAYS";
+  static readonly CRON_SECRET_KEY = "CRON_SECRET_KEY";
 }
