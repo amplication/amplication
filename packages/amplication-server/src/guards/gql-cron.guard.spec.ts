@@ -49,4 +49,10 @@ describe("GqlCronGuard", () => {
       UnauthorizedException
     );
   });
+
+  it("should throw UnauthorizedException when the secret key is undefined", () => {
+    expect(() => guard.canActivate(mockedExecutionContext(undefined))).toThrow(
+      UnauthorizedException
+    );
+  });
 });
