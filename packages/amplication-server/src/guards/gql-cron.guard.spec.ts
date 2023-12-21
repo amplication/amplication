@@ -24,7 +24,7 @@ describe("GqlCronGuard", () => {
         {
           provide: ConfigService,
           useValue: {
-            getOrThrow: (variable) => {
+            get: (variable) => {
               switch (variable) {
                 case Env.CRON_SECRET_KEY:
                   return "open-sesame";

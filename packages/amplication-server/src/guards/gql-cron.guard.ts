@@ -14,9 +14,7 @@ export class GqlCronGuard implements CanActivate {
   private readonly cronSecretKey: string;
 
   constructor(private readonly configService: ConfigService) {
-    this.cronSecretKey = this.configService.getOrThrow<string>(
-      Env.CRON_SECRET_KEY
-    );
+    this.cronSecretKey = this.configService.get<string>(Env.CRON_SECRET_KEY);
   }
 
   canActivate(context: ExecutionContext): boolean {
