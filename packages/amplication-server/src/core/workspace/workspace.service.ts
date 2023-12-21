@@ -44,11 +44,14 @@ import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { Env } from "../../env";
+import { ConfigService } from "@nestjs/config";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
 @Injectable()
 export class WorkspaceService {
+  private userLastActiveDays: number;
   constructor(
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
@@ -59,9 +62,13 @@ export class WorkspaceService {
     private analytics: SegmentAnalyticsService,
     private readonly moduleService: ModuleService,
     private readonly moduleActionService: ModuleActionService,
+    private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
-  ) {}
+  ) {
+    this.userLastActiveDays =
+      Number(this.configService.get<string>(Env.USER_LAST_ACTIVE_DAYS)) ?? 30;
+  }
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
     return this.prisma.workspace.findUnique(args);
@@ -807,7 +814,9 @@ export class WorkspaceService {
         ? {
             some: {
               lastActive: {
-                gte: new Date(date.setDate(date.getDate() - 30)),
+                gte: new Date(
+                  date.setDate(date.getDate() - this.userLastActiveDays)
+                ),
               },
             },
           }
