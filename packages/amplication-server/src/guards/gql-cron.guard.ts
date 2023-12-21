@@ -21,7 +21,7 @@ export class GqlCronGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const secretKey = request.headers[HEADER_KEY];
 
-    if (secretKey !== this.cronSecretKey) {
+    if (!this.cronSecretKey || secretKey !== this.cronSecretKey) {
       throw new UnauthorizedException("Invalid cron secret key");
     }
 
