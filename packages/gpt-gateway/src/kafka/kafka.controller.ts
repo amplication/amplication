@@ -8,8 +8,8 @@ import { Controller } from "@nestjs/common";
 
 @Controller("kafka-controller")
 export class KafkaController {
-  @EventPattern("GptConversationStart")
-  async onGptConversationStart(
+  @EventPattern("ai.conversation.start.1")
+  async onAiConversationStart_1(
     @Payload()
     value: string | Record<string, any> | null,
     @Ctx()
