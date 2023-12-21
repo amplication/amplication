@@ -8,11 +8,12 @@ export const GET_PROJECTS = gql`
       description
       useDemoRepo
       demoRepoName
-      isUnderLimitation
+      licensed
       resources {
         id
         name
         resourceType
+        licensed
         gitRepository {
           id
           name
@@ -69,6 +70,7 @@ export const GET_PENDING_CHANGES_STATUS = gql`
         id
         name
         resourceType
+        licensed
       }
     }
   }

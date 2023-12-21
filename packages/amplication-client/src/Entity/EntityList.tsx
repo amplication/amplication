@@ -76,7 +76,8 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
-  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
+  const licensed = currentResource?.licensed ?? true;
+
   const isUserEntityMandatory =
     pluginInstallations?.filter(
       (x) =>
@@ -234,7 +235,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                   </Button>
                 </FeatureIndicatorContainer>
               </Link>
-              {isResourceUnderLimitation ? (
+              {!licensed ? (
                 <FeatureIndicator
                   featureName={BillingFeature.Services}
                   text="Your current plan permits only one active resource"
@@ -244,7 +245,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                       className={`${CLASS_NAME}__add-button`}
                       buttonStyle={EnumButtonStyle.Primary}
                       onClick={handleNewEntityClick}
-                      disabled={isResourceUnderLimitation}
+                      disabled={!licensed}
                       icon="locked"
                     >
                       Add entity
@@ -256,7 +257,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                   className={`${CLASS_NAME}__add-button`}
                   buttonStyle={EnumButtonStyle.Primary}
                   onClick={handleNewEntityClick}
-                  disabled={isResourceUnderLimitation}
+                  disabled={loading}
                 >
                   Add entity
                 </Button>
