@@ -814,14 +814,6 @@ export class ResourceService {
     return this.prisma.resource.update(args);
   }
 
-  async isUnderLimitation(
-    workspaceId: string,
-    resourceId: string
-  ): Promise<boolean> {
-    // return hard coded false (for now), meaning that there are no limitation around resource apart from creation. We will implement this in the future
-    return false;
-  }
-
   async reportSyncMessage(
     resourceId: string,
     message: string
