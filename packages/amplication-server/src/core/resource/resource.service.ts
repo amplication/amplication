@@ -60,6 +60,7 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { JsonValue } from "type-fest";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { SubscriptionService } from "../subscription/subscription.service";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -79,7 +80,8 @@ export class ResourceService {
     private readonly topicService: TopicService,
     private readonly billingService: BillingService,
     private readonly pluginInstallationService: PluginInstallationService,
-    private readonly analytics: SegmentAnalyticsService
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
@@ -762,6 +764,8 @@ export class ResourceService {
         BillingFeature.Services,
         -1
       );
+
+      await this.subscriptionService.updateServiceLicensed(project.workspaceId);
     }
 
     if (!resource.gitRepositoryOverride) {
@@ -808,14 +812,6 @@ export class ResourceService {
     }
 
     return this.prisma.resource.update(args);
-  }
-
-  async isUnderLimitation(
-    workspaceId: string,
-    resourceId: string
-  ): Promise<boolean> {
-    // return hard coded false (for now), meaning that there are no limitation around resource apart from creation. We will implement this in the future
-    return false;
   }
 
   async reportSyncMessage(

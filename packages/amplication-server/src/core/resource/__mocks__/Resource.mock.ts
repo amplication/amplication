@@ -10,6 +10,7 @@ export const TEST_SERVICE_RESOURCE_MOCK: Resource = {
   updatedAt: new Date(),
   resourceType: EnumResourceType.Service,
   gitRepositoryOverride: false,
+  licensed: true,
 };
 export const MOCK_SERVICE_RESOURCE_WITHOUT_GITHUB_TOKEN: Resource = {
   createdAt: new Date(),
@@ -19,4 +20,5 @@ export const MOCK_SERVICE_RESOURCE_WITHOUT_GITHUB_TOKEN: Resource = {
   updatedAt: new Date(),
   resourceType: EnumResourceType.Service,
   gitRepositoryOverride: false,
+  licensed: true,
 };

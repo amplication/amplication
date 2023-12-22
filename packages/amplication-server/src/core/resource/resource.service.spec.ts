@@ -63,6 +63,7 @@ import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositor
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { SubscriptionService } from "../subscription/subscription.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -132,7 +133,11 @@ const EXAMPLE_RESOURCE: Resource = {
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
+  licensed: true,
   gitRepositoryOverride: false,
+  project: {
+    workspaceId: EXAMPLE_WORKSPACE_ID,
+  } as unknown as Project,
   builds: [
     {
       id: EXAMPLE_BUILD_ID,
@@ -157,6 +162,7 @@ const EXAMPLE_RESOURCE_MESSAGE_BROKER: Resource = {
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
@@ -168,6 +174,7 @@ const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -178,6 +185,7 @@ const EXAMPLE_PROJECT: Project = {
   workspaceId: EXAMPLE_WORKSPACE_ID,
   useDemoRepo: false,
   demoRepoName: undefined,
+  licensed: true,
 };
 
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -462,6 +470,8 @@ const entityServiceBulkCreateEntities = jest.fn();
 const entityServiceBulkCreateFields = jest.fn();
 const analyticServiceTrack = jest.fn();
 
+const mockedUpdateServiceLicensed = jest.fn();
+
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
 const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
@@ -509,6 +519,12 @@ describe("ResourceService", () => {
           provide: SegmentAnalyticsService,
           useClass: jest.fn(() => ({
             track: analyticServiceTrack,
+          })),
+        },
+        {
+          provide: SubscriptionService,
+          useClass: jest.fn(() => ({
+            updateServiceLicensed: mockedUpdateServiceLicensed,
           })),
         },
         {
@@ -889,6 +905,8 @@ describe("ResourceService", () => {
     expect(await service.deleteResource(args, EXAMPLE_USER)).toEqual(
       EXAMPLE_RESOURCE
     );
+    expect(mockedUpdateServiceLicensed).toBeCalledTimes(1);
+    expect(mockedUpdateServiceLicensed).toBeCalledWith(EXAMPLE_WORKSPACE_ID);
     expect(prismaResourceUpdateMock).toBeCalledTimes(1);
     expect(prismaResourceUpdateMock).toBeCalledWith({
       ...args,
@@ -1056,17 +1074,6 @@ describe("ResourceService", () => {
       await expect(service.updateResource(args)).rejects.toThrow(
         new Error(INVALID_RESOURCE_ID)
       );
-    });
-  });
-
-  describe("isUnderLimitation", () => {
-    it("should always return false (for now) - no limitation around resource apart from creation", async () => {
-      expect(
-        await service.isUnderLimitation(
-          EXAMPLE_WORKSPACE_ID,
-          EXAMPLE_RESOURCE_ID
-        )
-      ).toEqual(false);
     });
   });
 });
