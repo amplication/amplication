@@ -11,7 +11,7 @@ import { AppContext } from "../context/appContext";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
 import React from "react";
-import { FeatureIndicator } from "./FeatureIndicator";
+import { FeatureIndicator, tooltipDefaultText } from "./FeatureIndicator";
 import "./FeatureIndicatorContainer.scss";
 import { omit } from "lodash";
 import { EnumTextColor, Icon } from "@amplication/ui/design-system";
@@ -120,11 +120,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
           <FeatureIndicator
             featureName={featureId}
             icon={iconType}
-            text={
-              isFeatureDisabled()
-                ? tooltipText
-                : "Available as part of the Enterprise plan only."
-            }
+            text={isFeatureDisabled() ? tooltipText : tooltipDefaultText}
             element={
               featureIndicatorPlacement ===
               FeatureIndicatorPlacement.Outside ? (

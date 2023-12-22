@@ -32,6 +32,11 @@ const WarningTooltip = styled(
 
 const CLASS_NAME = "amp-feature-indicator";
 
+const tooltipDefaultTextUpgrade = "Upgrade";
+
+export const tooltipDefaultText =
+  "Explore this feature, included in your 14-day Enterprise trial. Upgrade for continued access.";
+
 type Props = {
   featureName: string;
   icon?: IconType;
@@ -50,8 +55,8 @@ export const FeatureIndicator = ({
   comingSoon = false,
   tooltipIcon,
   placement = "top-start",
-  text = "Available as part of the Enterprise plan only.",
-  linkText = "Upgrade",
+  text = tooltipDefaultText,
+  linkText = tooltipDefaultTextUpgrade,
 }: Props) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
