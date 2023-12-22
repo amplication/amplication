@@ -42,7 +42,6 @@ import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 import { Coupon } from "./dto/Coupon";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
-import { GqlCronGuard } from "../../guards/gql-cron.guard";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -221,15 +220,5 @@ export class WorkspaceResolver {
     @Args() args: RedeemCouponArgs
   ): Promise<Coupon> {
     return this.workspaceService.redeemCoupon(user, args);
-  }
-
-  @Mutation(() => Boolean)
-  @UseGuards(GqlCronGuard)
-  async bulkUpdateWorkspaceProjectsAndResourcesLicensed(
-    useUserLastActive: boolean
-  ): Promise<boolean> {
-    return this.workspaceService.bulkUpdateWorkspaceProjectsAndResourcesLicensed(
-      useUserLastActive ?? true
-    );
   }
 }
