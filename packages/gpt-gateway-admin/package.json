@@ -20,6 +20,20 @@
       "@svgr/webpack": "6.5.1"
     }
   },
+  "nx": {
+    "targets": {
+      "build": {
+        "dependsOn": [
+          "install"
+        ]
+      },
+      "start": {
+        "dependsOn": [
+          "install"
+        ]
+      }
+    }
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
