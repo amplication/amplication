@@ -30,6 +30,7 @@ import {
 import dockerNames from "docker-names";
 import { EntityPendingChange } from "../entity/entity.service";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { SubscriptionService } from "../subscription/subscription.service";
 
 @Injectable()
 export class ProjectService {
@@ -41,7 +42,8 @@ export class ProjectService {
     private readonly entityService: EntityService,
     private readonly billingService: BillingService,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly gitProviderService: GitProviderService
+    private readonly gitProviderService: GitProviderService,
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -139,6 +141,9 @@ export class ProjectService {
       BillingFeature.Projects,
       -1
     );
+
+    await this.subscriptionService.updateProjectLicensed(project.workspaceId);
+    await this.subscriptionService.updateServiceLicensed(project.workspaceId);
 
     return updatedProject;
   }
