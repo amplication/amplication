@@ -1174,6 +1174,11 @@ export type MutationAddEntityPermissionFieldArgs = {
 };
 
 
+export type MutationBulkUpdateWorkspaceProjectsAndResourcesLicensedArgs = {
+  useUserLastActive?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type MutationChangePasswordArgs = {
   data: ChangePasswordInput;
 };
