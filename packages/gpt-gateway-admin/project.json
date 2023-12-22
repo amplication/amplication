@@ -21,7 +21,7 @@
       "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
-        "tags": ["amplication/data-service-generator-catalog:latest"],
+        "tags": ["amplication/gpt-gateway-admin:latest"],
         "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
       },
       "configurations": {
