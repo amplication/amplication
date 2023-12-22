@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import { Env } from "../env";
 import { ConfigService } from "@nestjs/config";
+import { GqlExecutionContext } from "@nestjs/graphql";
 
 const HEADER_KEY = "x-cron-secret";
 
@@ -18,7 +19,8 @@ export class GqlCronGuard implements CanActivate {
   }
 
   canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest();
+    const gqlCtx = GqlExecutionContext.create(context);
+    const request = gqlCtx.getContext().req;
     const secretKey = request.headers[HEADER_KEY];
 
     if (!this.cronSecretKey || secretKey !== this.cronSecretKey) {
