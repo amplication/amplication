@@ -672,7 +672,7 @@ describe("EntityService", () => {
       service.createOneEntity(createArgs.args, createArgs.user)
     ).rejects.toThrow(
       new BillingLimitationError(
-        "Your current plan permits only one active resource, therefore you cannot create a new entity on this service.",
+        "Your workspace reached its service limitation.",
         BillingFeature.Services
       )
     );
@@ -1194,7 +1194,7 @@ describe("EntityService", () => {
       )
     ).rejects.toThrow(
       new BillingLimitationError(
-        "Your current plan permits only one active resource, therefore you cannot create a new entity field on this service.",
+        "Your workspace reached its service limitation.",
         BillingFeature.Services
       )
     );

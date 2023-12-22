@@ -266,8 +266,7 @@ export class EntityService {
     });
 
     if (!resource.licensed) {
-      const message =
-        "Your current plan permits only one active resource, therefore you cannot create a new entity on this service.";
+      const message = "Your workspace reached its service limitation.";
       throw new BillingLimitationError(message, BillingFeature.Services);
     }
 
@@ -1745,8 +1744,7 @@ export class EntityService {
           }
 
           if (!entityWithResource.resource.licensed) {
-            const message =
-              "Your current plan permits only one active resource, therefore you cannot create a new role on this service.";
+            const message = "Your workspace reached its service limitation.";
             throw new BillingLimitationError(message, BillingFeature.Services);
           }
 
@@ -2372,8 +2370,7 @@ export class EntityService {
     }
 
     if (!entityWithResource.resource.licensed) {
-      const message =
-        "Your current plan permits only one active resource, therefore you cannot create a new entity field on this service.";
+      const message = "Your workspace reached its service limitation.";
       throw new BillingLimitationError(message, BillingFeature.Services);
     }
 
