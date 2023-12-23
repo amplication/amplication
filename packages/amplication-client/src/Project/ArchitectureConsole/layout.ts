@@ -7,6 +7,9 @@ import {
   Node,
   EntityNode,
   ResourceNode,
+  NODE_TYPE_MODEL,
+  NODE_TYPE_MODEL_SIMPLE,
+  NODE_TYPE_MODEL_GROUP,
 } from "./types";
 
 const FIELD_HEIGHT = 30;
@@ -81,13 +84,14 @@ export const getAutoLayout = async (
   const elkEdges: ElkExtendedEdge[] = [];
 
   const groups = nodes.filter(
-    (node) => node.type === "modelGroup"
+    (node) => node.type === NODE_TYPE_MODEL_GROUP
   ) as ResourceNode[];
 
   groups.forEach((group) => {
     const children = nodes.filter(
       (node) =>
-        (node.type === "model" || node.type === "modelSimple") &&
+        (node.type === NODE_TYPE_MODEL ||
+          node.type === NODE_TYPE_MODEL_SIMPLE) &&
         node.parentNode === group.id
     ) as EntityNode[];
 
@@ -157,7 +161,7 @@ export async function applyLayoutToNodes(
   layout: ElkNode
 ): Promise<Node[]> {
   const groups = nodes.filter(
-    (node) => node.type === "modelGroup"
+    (node) => node.type === NODE_TYPE_MODEL_GROUP
   ) as ResourceNode[];
 
   const groupCoords: groupContentCoords[] = [];

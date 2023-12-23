@@ -23,7 +23,12 @@ import { applyAutoLayout } from "./layout";
 import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
-import { Node } from "./types";
+import {
+  NODE_TYPE_MODEL,
+  NODE_TYPE_MODEL_GROUP,
+  NODE_TYPE_MODEL_SIMPLE,
+  Node,
+} from "./types";
 
 export const CLASS_NAME = "architecture-console";
 
@@ -66,11 +71,14 @@ export default function ModelOrganizer({ resources }: Props) {
     }
   }, [resources, setNodes, setEdges, showRelationDetails]);
 
-  const onInit = useCallback((instance: ReactFlowInstance) => {
-    setReactFlowInstance(instance);
-  }, []);
+  const onInit = useCallback(
+    (instance: ReactFlowInstance) => {
+      setReactFlowInstance(instance);
+    },
+    [setReactFlowInstance]
+  );
 
-  const handleNodeDrag = useCallback(
+  const onNodeDrag = useCallback(
     async (
       event: React.MouseEvent,
       draggedNode: Node,
@@ -78,7 +86,10 @@ export default function ModelOrganizer({ resources }: Props) {
     ) => {
       let targetGroup;
 
-      if (draggedNode.type === "model" || draggedNode.type === "modelSimple") {
+      if (
+        draggedNode.type === NODE_TYPE_MODEL ||
+        draggedNode.type === NODE_TYPE_MODEL_SIMPLE
+      ) {
         const dropPosition = reactFlowInstance.screenToFlowPosition({
           x: event.clientX,
           y: event.clientY,
@@ -106,13 +117,13 @@ export default function ModelOrganizer({ resources }: Props) {
     [setNodes, reactFlowInstance, nodes]
   );
 
-  const handleNodeDragStop = useCallback(
+  const onNodeDragStop = useCallback(
     async (
       event: React.MouseEvent,
       draggedNode: Node,
       draggedNodes: Node[]
     ) => {
-      if (draggedNode.type === "modelGroup") {
+      if (draggedNode.type === NODE_TYPE_MODEL_GROUP) {
         return;
       }
 
@@ -147,7 +158,7 @@ export default function ModelOrganizer({ resources }: Props) {
     [setNodes, edges, nodes, reactFlowInstance, showRelationDetails]
   );
 
-  const toggleDetails = useCallback(async () => {
+  const onToggleDetailsChange = useCallback(async () => {
     const { nodes, edges } = await entitiesToNodesAndEdges(
       resources,
       !showRelationDetails
@@ -164,7 +175,7 @@ export default function ModelOrganizer({ resources }: Props) {
     resources,
   ]);
 
-  const arrangeNodes = useCallback(async () => {
+  const onArrangeNodes = useCallback(async () => {
     const updatedNodes = await applyAutoLayout(
       nodes,
       edges,
@@ -183,8 +194,8 @@ export default function ModelOrganizer({ resources }: Props) {
         fitView
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
-        onNodeDrag={handleNodeDrag}
-        onNodeDragStop={handleNodeDragStop}
+        onNodeDrag={onNodeDrag}
+        onNodeDragStop={onNodeDragStop}
         onEdgesChange={onEdgesChange}
         connectionMode={ConnectionMode.Loose}
         proOptions={{ hideAttribution: true }}
@@ -192,10 +203,10 @@ export default function ModelOrganizer({ resources }: Props) {
       >
         <Background color="grey" />
         <Controls>
-          <ControlButton onClick={toggleDetails}>
+          <ControlButton onClick={onToggleDetailsChange}>
             <Icon icon="list" />
           </ControlButton>
-          <ControlButton onClick={arrangeNodes}>
+          <ControlButton onClick={onArrangeNodes}>
             <Icon icon="layers" />
           </ControlButton>
         </Controls>

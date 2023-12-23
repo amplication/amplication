@@ -4,6 +4,9 @@ import {
   EntityNode,
   DetailedRelation,
   SimpleRelation,
+  NODE_TYPE_MODEL,
+  NODE_TYPE_MODEL_SIMPLE,
+  NODE_TYPE_MODEL_GROUP,
 } from "./types";
 import { internalsSymbol, Position, XYPosition } from "reactflow";
 
@@ -98,7 +101,7 @@ function entitiesToNodes(
       groupColor: GROUP_COLORS[index % GROUP_COLORS.length],
     },
     id: resource.id,
-    type: "modelGroup",
+    type: NODE_TYPE_MODEL_GROUP,
     position: {
       x: 0,
       y: 0,
@@ -109,7 +112,7 @@ function entitiesToNodes(
     resource.entities.map((entity) => ({
       data: { payload: entity },
       id: entity.id,
-      type: showDetailedRelations ? "model" : "modelSimple",
+      type: showDetailedRelations ? NODE_TYPE_MODEL : NODE_TYPE_MODEL_SIMPLE,
       position: {
         x: 0,
         y: 0,
@@ -224,11 +227,9 @@ export async function entitiesToNodesAndEdges(
 }
 
 export function getGroupNodes(nodes: Node[]): ResourceNode[] {
-  return nodes.filter((node) => node.type === "modelGroup") as ResourceNode[];
-}
-
-export function getModelNodes(nodes: Node[]): EntityNode[] {
-  return nodes.filter((node) => node.type === "model") as EntityNode[];
+  return nodes.filter(
+    (node) => node.type === NODE_TYPE_MODEL_GROUP
+  ) as ResourceNode[];
 }
 
 export function findGroupByPosition(
@@ -237,7 +238,7 @@ export function findGroupByPosition(
 ): ResourceNode {
   return nodes.find(
     (node) =>
-      node.type === "modelGroup" &&
+      node.type === NODE_TYPE_MODEL_GROUP &&
       node.position.x < position.x &&
       node.position.x + node.data.width > position.x &&
       node.position.y < position.y &&
