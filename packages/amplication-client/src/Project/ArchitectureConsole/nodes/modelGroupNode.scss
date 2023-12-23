@@ -1,0 +1,11 @@
+@import "../../../style/index.scss";
+
+.model-group-node {
+  background-color: var(--gray-full);
+  width: 100%;
+  height: 100%;
+  border: $border-dark;
+  border-top: 6px solid var(--secondary);
+  border-radius: var(--default-button-radius);
+  padding: var(--default-spacing);
+}
