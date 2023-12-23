@@ -8,4 +8,9 @@
   border-top: 6px solid var(--secondary);
   border-radius: var(--default-button-radius);
   padding: var(--default-spacing);
+
+  &.drop-target {
+    border-width: 2px;
+    border-color: var(--theme-turquoise);
+  }
 }

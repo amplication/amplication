@@ -2,13 +2,14 @@ import { type Edge, type Node as ReactFlowNode } from "reactflow";
 import * as models from "../../models";
 import { type } from "os";
 
-export type NodeType = "model" | "modelGroup";
+export type NodeType = "model" | "modelGroup" | "modelSimple";
 
 export type NodePayload<T> = {
   payload: T;
-  //selected
-  //editable
+  width?: number;
+  height?: number;
   originalParentNode?: string;
+  isCurrentDropTarget?: boolean;
 };
 
 export type NodePayloadWithPayloadType = NodePayload<
@@ -18,9 +19,15 @@ export type NodePayloadWithPayloadType = NodePayload<
 type NodeWithType<T> = ReactFlowNode<T, NodeType>;
 
 export type EntityNode = NodeWithType<NodePayload<models.Entity>> & {
-  type: "model";
+  type: "model" | "modelSimple";
 };
-export type ResourceNode = NodeWithType<NodePayload<models.Resource>> & {
+
+export type ResourceNodePayload = NodePayload<models.Resource> & {
+  groupOrder: number;
+  groupColor: string;
+};
+
+export type ResourceNode = NodeWithType<ResourceNodePayload> & {
   type: "modelGroup";
 };
 
@@ -33,3 +40,17 @@ export type groupContentCoords = {
   maxX: number;
   maxY: number;
 };
+
+export type SimpleRelation = {
+  sourceEntity: string;
+  targetEntity: string;
+};
+
+export type DetailedRelation = SimpleRelation & {
+  sourceField: string;
+  targetField: string;
+  sourceFieldAllowsMultipleSelections: boolean;
+  targetFieldAllowsMultipleSelections?: boolean;
+};
+
+export type Relation = SimpleRelation | DetailedRelation;

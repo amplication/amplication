@@ -15,45 +15,68 @@ const MARGIN = 300;
 const GROUP_PADDING = 40;
 const GROUP_TOP_PADDING = 100;
 const GROUP_MARGIN = 40;
+const SIMPLE_MODEL_MIN_WIDTH = 200;
+const SIMPLE_MODEL_MIN_HEIGHT = 20;
+const GROUP_MIN_SIZE = 400;
 
 const elk = new Elk({
   defaultLayoutOptions: {
-    "elk.algorithm": "layered",
-    "elk.direction": "RIGHT",
-    "elk.spacing.nodeNode": "75",
-    "elk.layered.spacing.nodeNodeBetweenLayers": "75",
+    "elk.algorithm": "org.eclipse.elk.layered",
+    "elk.spacing.nodeNode": "50",
+    "elk.layered.spacing.nodeNodeBetweenLayers": "100",
     "org.eclipse.elk.padding": `[top=${GROUP_TOP_PADDING},left=${GROUP_PADDING},bottom=${GROUP_PADDING},right=${GROUP_PADDING}]`,
   },
 });
 
-const normalizeSize = (value: number) => Math.max(value, MARGIN);
+const normalizeSize = (value: number, minValue: number) =>
+  Math.max(value, minValue);
 
-const calculateEntityNodeHeight = (node: EntityNode) => {
-  const fieldsHeight = node.data.payload.fields.length * FIELD_HEIGHT;
+const calculateEntityNodeHeight = (
+  node: EntityNode,
+  showDetailedRelations: boolean
+) => {
+  const fieldsHeight = showDetailedRelations
+    ? node.data.payload.fields.length * FIELD_HEIGHT
+    : 0;
   const heightWithTitle = fieldsHeight + FIELD_HEIGHT;
 
-  return normalizeSize(heightWithTitle);
+  return normalizeSize(
+    heightWithTitle,
+    showDetailedRelations ? MARGIN : SIMPLE_MODEL_MIN_HEIGHT
+  );
 };
 
-const calculateEntityNodeWidth = (node: EntityNode) => {
+const calculateEntityNodeWidth = (
+  node: EntityNode,
+  showDetailedRelations: boolean
+) => {
   const headerLength = node.data.payload.displayName.length;
 
-  const columnsLength = node.data.payload.fields.reduce((acc, curr) => {
-    const length =
-      curr.displayName.length +
-      curr.dataType.length +
-      (curr.customAttributes?.length || 0);
+  const columnsLength = showDetailedRelations
+    ? node.data.payload.fields.reduce((acc, curr) => {
+        const length =
+          curr.displayName.length +
+          curr.dataType.length +
+          (curr.customAttributes?.length || 0);
 
-    return acc < length ? length : acc;
-  }, 0);
+        return acc < length ? length : acc;
+      }, 0)
+    : 0;
 
   const width =
     (headerLength > columnsLength ? headerLength : columnsLength) * CHAR_WIDTH;
 
-  return normalizeSize(width);
+  return normalizeSize(
+    width,
+    showDetailedRelations ? MARGIN : SIMPLE_MODEL_MIN_WIDTH
+  );
 };
 
-export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
+export const getAutoLayout = async (
+  nodes: Node[],
+  edges: Edge[],
+  showDetailedRelations: boolean
+) => {
   const elkNodes: ElkNode[] = [];
   const elkEdges: ElkExtendedEdge[] = [];
 
@@ -63,7 +86,9 @@ export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
 
   groups.forEach((group) => {
     const children = nodes.filter(
-      (node) => node.type === "model" && node.parentNode === group.id
+      (node) =>
+        (node.type === "model" || node.type === "modelSimple") &&
+        node.parentNode === group.id
     ) as EntityNode[];
 
     const childNodes: ElkNode[] = [];
@@ -71,8 +96,8 @@ export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
     children.forEach((node) => {
       childNodes.push({
         id: node.id,
-        width: calculateEntityNodeWidth(node),
-        height: calculateEntityNodeHeight(node),
+        width: calculateEntityNodeWidth(node, showDetailedRelations),
+        height: calculateEntityNodeHeight(node, showDetailedRelations),
       });
     });
 
@@ -99,14 +124,14 @@ export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
   return layout;
 };
 
-export const getGroupsAutoLayout = async (groups: groupContentCoords[]) => {
+export const getGroupsAutoLayout = async (groups: ResourceNode[]) => {
   const elkNodes: ElkNode[] = [];
 
   groups.forEach((group) => {
     elkNodes.push({
-      id: group.groupId,
-      width: group.maxX - group.minX,
-      height: group.maxY - group.minY,
+      id: group.id,
+      width: group.data.width,
+      height: group.data.height,
     });
   });
 
@@ -135,7 +160,7 @@ export async function applyLayoutToNodes(
     (node) => node.type === "modelGroup"
   ) as ResourceNode[];
 
-  const groupCords: groupContentCoords[] = [];
+  const groupCoords: groupContentCoords[] = [];
 
   const allEntityNodes = groups.flatMap((group) => {
     const groupElkNode = layout.children.find((n) => n.id === group.id);
@@ -158,21 +183,22 @@ export async function applyLayoutToNodes(
       return {
         ...node,
         position: { x: position.x, y: position.y },
+        style: { width: position.width, height: position.height },
+        data: {
+          ...node.data,
+          width: position.width,
+          height: position.height,
+        },
       };
     });
 
-    groupCords.push({
-      groupId: group.id,
-      minX,
-      minY,
-      maxX,
-      maxY,
-    });
+    group.data.width = normalizeSize(maxX - minX, GROUP_MIN_SIZE);
+    group.data.height = normalizeSize(maxY - minY, GROUP_MIN_SIZE);
 
     return groupEntityNodes;
   });
 
-  const groupsElkNode = await getGroupsAutoLayout(groupCords);
+  const groupsElkNode = await getGroupsAutoLayout(groups);
 
   const groupNodes: ResourceNode[] = groups.map((node) => {
     const position = groupsElkNode.children.find((n) => n.id === node.id);
@@ -180,6 +206,11 @@ export async function applyLayoutToNodes(
       ...node,
       style: { width: position.width, height: position.height, zIndex: -1 },
       position: { x: position.x, y: position.y },
+      data: {
+        ...node.data,
+        width: position.width,
+        height: position.height,
+      },
     };
   });
 
@@ -188,9 +219,10 @@ export async function applyLayoutToNodes(
 
 export async function applyAutoLayout(
   nodes: Node[],
-  edges: Edge[]
+  edges: Edge[],
+  showDetailedRelations: boolean
 ): Promise<Node[]> {
-  const layout = await getAutoLayout(nodes, edges);
+  const layout = await getAutoLayout(nodes, edges, showDetailedRelations);
 
   return applyLayoutToNodes(nodes, layout);
 }

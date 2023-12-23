@@ -1,8 +1,16 @@
-import { Node, ResourceNode, EntityNode } from "./types";
-import { internalsSymbol, Position } from "reactflow";
+import {
+  Node,
+  ResourceNode,
+  EntityNode,
+  DetailedRelation,
+  SimpleRelation,
+} from "./types";
+import { internalsSymbol, Position, XYPosition } from "reactflow";
 
 import * as models from "../../models";
 import { applyAutoLayout } from "./layout";
+
+const GROUP_COLORS = ["#A787FF", "#F85B6E", "#20A4F3", "#31C587", "F6AA50"];
 
 function getParams(
   nodeA: Node,
@@ -79,10 +87,15 @@ export function getEdgeParams(
   };
 }
 
-function entitiesToNodes(resources: models.Resource[]): Node[] {
-  const parents: ResourceNode[] = resources.map((resource) => ({
+function entitiesToNodes(
+  resources: models.Resource[],
+  showDetailedRelations: boolean
+): Node[] {
+  const parents: ResourceNode[] = resources.map((resource, index) => ({
     data: {
       payload: resource,
+      groupOrder: index,
+      groupColor: GROUP_COLORS[index % GROUP_COLORS.length],
     },
     id: resource.id,
     type: "modelGroup",
@@ -96,7 +109,7 @@ function entitiesToNodes(resources: models.Resource[]): Node[] {
     resource.entities.map((entity) => ({
       data: { payload: entity },
       id: entity.id,
-      type: "model",
+      type: showDetailedRelations ? "model" : "modelSimple",
       position: {
         x: 0,
         y: 0,
@@ -107,15 +120,8 @@ function entitiesToNodes(resources: models.Resource[]): Node[] {
   return [...parents, ...nodes];
 }
 
-function entitiesToEdges(resources: models.Resource[]) {
-  const relations: {
-    sourceEntity: string;
-    targetEntity: string;
-    sourceField: string;
-    targetField: string;
-    sourceFieldAllowsMultipleSelections: boolean;
-    targetFieldAllowsMultipleSelections?: boolean;
-  }[] = [];
+function entitiesToDetailedEdges(resources: models.Resource[]) {
+  const relations: DetailedRelation[] = [];
 
   resources?.forEach((resource) => {
     resource.entities?.forEach((entity) => {
@@ -164,9 +170,77 @@ function entitiesToEdges(resources: models.Resource[]) {
   return edges;
 }
 
-export async function entitiesToNodesAndEdges(resources: models.Resource[]) {
-  const nodes = entitiesToNodes(resources);
-  const edges = entitiesToEdges(resources);
+function entitiesToSimpleEdges(resources: models.Resource[]) {
+  const relations: SimpleRelation[] = [];
 
-  return { nodes: await applyAutoLayout(nodes, edges), edges };
+  resources?.forEach((resource) => {
+    resource.entities?.forEach((entity) => {
+      entity?.fields?.forEach((field) => {
+        if (field.properties.relatedEntityId) {
+          const { relatedEntityId } = field.properties;
+          const existingRelationIndex = relations.findIndex(
+            (relation) =>
+              (relation.targetEntity === entity.id &&
+                relation.sourceEntity === relatedEntityId) ||
+              (relation.sourceEntity === entity.id &&
+                relation.targetEntity === relatedEntityId)
+          );
+          if (existingRelationIndex === -1) {
+            relations.push({
+              sourceEntity: entity.id,
+              targetEntity: relatedEntityId,
+            });
+          }
+        }
+      });
+    });
+  });
+
+  const edges = relations.map((relation) => ({
+    source: relation.sourceEntity,
+    target: relation.targetEntity,
+    id: `${relation.sourceEntity}-${relation.targetEntity}`,
+    sourceHandle: relation.sourceEntity,
+    targetHandle: relation.targetEntity,
+    type: "relationSimple",
+  }));
+
+  return edges;
+}
+
+export async function entitiesToNodesAndEdges(
+  resources: models.Resource[],
+  showDetailedRelations: boolean
+) {
+  const nodes = entitiesToNodes(resources, showDetailedRelations);
+  const edges = showDetailedRelations
+    ? entitiesToDetailedEdges(resources)
+    : entitiesToSimpleEdges(resources);
+
+  return {
+    nodes: await applyAutoLayout(nodes, edges, showDetailedRelations),
+    edges,
+  };
+}
+
+export function getGroupNodes(nodes: Node[]): ResourceNode[] {
+  return nodes.filter((node) => node.type === "modelGroup") as ResourceNode[];
+}
+
+export function getModelNodes(nodes: Node[]): EntityNode[] {
+  return nodes.filter((node) => node.type === "model") as EntityNode[];
+}
+
+export function findGroupByPosition(
+  nodes: Node[],
+  position: XYPosition
+): ResourceNode {
+  return nodes.find(
+    (node) =>
+      node.type === "modelGroup" &&
+      node.position.x < position.x &&
+      node.position.x + node.data.width > position.x &&
+      node.position.y < position.y &&
+      node.position.y + node.data.height > position.y
+  ) as ResourceNode;
 }

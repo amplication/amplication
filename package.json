@@ -171,7 +171,7 @@
     "react-tracking": "^9.2.1",
     "react-use-localstorage": "^3.5.3",
     "react-xarrows": "^1.7.2",
-    "reactflow": "^11.7.4",
+    "reactflow": "^11.10.1",
     "recast": "0.20.5",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.11",
