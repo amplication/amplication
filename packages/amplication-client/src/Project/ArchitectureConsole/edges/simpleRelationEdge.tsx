@@ -32,7 +32,7 @@ const SimpleRelationEdge = ({
   );
 
   const offset = (x: number, position: Position) => {
-    const offsetMargin = 6;
+    const offsetMargin = -3; //no edge image so we need to move the edge a bit closer to the node
     if (position === Position.Right) return x + offsetMargin;
     else return x - offsetMargin;
   };

@@ -1,7 +1,6 @@
 import { memo, type FC, useCallback } from "react";
 import { useStore, type NodeProps } from "reactflow";
 
-import * as models from "../../../models";
 import "./modelGroupNode.scss";
 import {
   EnumTextStyle,

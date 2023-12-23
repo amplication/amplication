@@ -11,7 +11,7 @@ import {
 
 const FIELD_HEIGHT = 30;
 const CHAR_WIDTH = 10;
-const MARGIN = 300;
+const MARGIN = 100;
 const GROUP_PADDING = 40;
 const GROUP_TOP_PADDING = 100;
 const GROUP_MARGIN = 40;

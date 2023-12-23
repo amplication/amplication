@@ -148,7 +148,10 @@ export default function ArchitectureConsole() {
           y: event.clientY,
         });
 
-        node.position = dropPosition;
+        node.position = {
+          x: dropPosition.x - currentDropTarget.position.x,
+          y: dropPosition.y - currentDropTarget.position.y,
+        };
 
         if (node.data.originalParentNode === currentDropTarget.id) {
           node.data.originalParentNode = undefined;
@@ -157,12 +160,8 @@ export default function ArchitectureConsole() {
         }
 
         node.parentNode = currentDropTarget.id;
-        // const updatedNodes = await applyAutoLayout(
-        //   nodes,
-        //   edges,
-        //   showRelationDetails
-        // );
-        setNodes(nodes);
+
+        setNodes((nodes) => [...nodes]);
       }
       //}
       if (currentDropTarget) {
@@ -209,6 +208,16 @@ export default function ArchitectureConsole() {
     resources,
   ]);
 
+  const arrangeNodes = useCallback(async () => {
+    const updatedNodes = await applyAutoLayout(
+      nodes,
+      edges,
+      showRelationDetails
+    );
+    setNodes(updatedNodes);
+    reactFlowInstance.fitView();
+  }, [setNodes, showRelationDetails, nodes, edges]);
+
   const errorMessage = error && formatError(error);
 
   if (loading) return <CircularProgress centerToParent />;
@@ -235,6 +244,9 @@ export default function ArchitectureConsole() {
         <Controls>
           <ControlButton onClick={toggleDetails}>
             <Icon icon="close" />
+          </ControlButton>
+          <ControlButton onClick={arrangeNodes}>
+            <Icon icon="star" />
           </ControlButton>
         </Controls>
         <MiniMap pannable={true} zoomable={true} />

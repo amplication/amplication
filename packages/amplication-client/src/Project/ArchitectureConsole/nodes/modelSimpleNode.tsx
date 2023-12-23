@@ -1,17 +1,17 @@
-import { memo, type FC, useContext, useCallback } from "react";
-import { Handle, Position, type NodeProps, useStore } from "reactflow";
+import { memo, useCallback, useContext, type FC } from "react";
+import { Handle, Position, useStore, type NodeProps } from "reactflow";
+import "./modelNode.scss";
 
-import * as models from "../../../models";
-import { CLASS_NAME } from "../ArchitectureConsole";
-import { AppContext } from "../../../context/appContext";
-import { Link } from "react-router-dom";
-import { Icon } from "@amplication/ui/design-system";
+import { EnumTextStyle, Text } from "@amplication/ui/design-system";
 import classNames from "classnames";
+import { AppContext } from "../../../context/appContext";
+import * as models from "../../../models";
 import { EntityNode, NodePayload } from "../types";
 
 type ModelProps = Omit<NodeProps, "data"> & {
   data: NodePayload<models.Entity>;
 };
+const CLASS_NAME = "model-node";
 
 const ModelSimpleNode: FC<ModelProps> = memo(({ id }) => {
   const { currentWorkspace, currentProject, currentResource } =
@@ -24,13 +24,12 @@ const ModelSimpleNode: FC<ModelProps> = memo(({ id }) => {
 
   return (
     <div
-      className={classNames(`${CLASS_NAME}__node_container`, {
+      className={classNames(`${CLASS_NAME}`, `${CLASS_NAME}--simple`, {
         "model-with-pending-changes":
           data.originalParentNode &&
           data.originalParentNode !== sourceNode.parentNode,
       })}
       tabIndex={0}
-      style={{ borderSpacing: 0 }}
       title={data.payload.description}
     >
       <Handle
@@ -41,13 +40,7 @@ const ModelSimpleNode: FC<ModelProps> = memo(({ id }) => {
         isConnectable={false}
       />
       <div className={`${CLASS_NAME}__display_name`}>
-        {data.payload.displayName}
-        <Link
-          className={`${CLASS_NAME}__display_icon`}
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/${data.payload.id}`}
-        >
-          <Icon icon="edit_2" size="small" />
-        </Link>
+        <Text textStyle={EnumTextStyle.H4}>{data.payload.displayName}</Text>
       </div>
       <Handle
         className={`${CLASS_NAME}__handle_right`}
