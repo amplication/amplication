@@ -1,4 +1,5 @@
 import { memo, type FC, useContext } from "react";
+import { type NodeProps } from "reactflow";
 
 import * as models from "../../../models";
 import { AppContext } from "../../../context/appContext";
@@ -9,11 +10,11 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 
-interface ModelProps {
+type ModelProps = NodeProps & {
   data: {
     payload: models.Resource;
   };
-}
+};
 
 const CLASS_NAME = "model-group-node";
 

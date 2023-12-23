@@ -8,9 +8,16 @@ import {
   ReactFlow,
   useNodesState,
   useEdgesState,
+  Controls,
+  ControlButton,
+  MiniMap,
 } from "reactflow";
 import * as models from "../../models";
-import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
+import {
+  CircularProgress,
+  Icon,
+  Snackbar,
+} from "@amplication/ui/design-system";
 import { formatError } from "../../util/error";
 import ModelNode from "./nodes/modelNode";
 import modelGroupNode from "./nodes/modelGroupNode";
@@ -78,6 +85,14 @@ export default function ArchitectureConsole() {
         minZoom={0.1}
       >
         <Background color="grey" />
+        <Controls>
+          <ControlButton
+            onClick={() => alert("Something magical just happened. ✨")}
+          >
+            <Icon icon="close" />
+          </ControlButton>
+        </Controls>
+        <MiniMap pannable={true} zoomable={true} />
       </ReactFlow>
       <RelationMarkets />
     </div>

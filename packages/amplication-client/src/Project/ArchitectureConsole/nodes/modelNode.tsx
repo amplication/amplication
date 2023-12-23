@@ -1,17 +1,17 @@
 import { memo, type FC, useContext } from "react";
-import { Handle, Position } from "reactflow";
+import { Handle, Position, type NodeProps } from "reactflow";
 
 import * as models from "../../../models";
 import { CLASS_NAME } from "../ArchitectureConsole";
 import { AppContext } from "../../../context/appContext";
 import { Link } from "react-router-dom";
 import { Icon } from "@amplication/ui/design-system";
-import { EntityNode } from "../types";
-interface ModelProps {
+
+type ModelProps = NodeProps & {
   data: {
     payload: models.Entity;
   };
-}
+};
 
 const ModelNode: FC<ModelProps> = memo(({ data }) => {
   const { currentWorkspace, currentProject, currentResource } =
