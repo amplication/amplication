@@ -14,9 +14,10 @@
     border: $border-dark;
 
     min-width: 235px;
-  }
 
-  &__node_group_container {
+    &.pending-changes {
+      background-color: yellow;
+    }
   }
 
   &__display_name {

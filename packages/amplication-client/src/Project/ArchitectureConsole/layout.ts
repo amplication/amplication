@@ -113,11 +113,10 @@ export const getGroupsAutoLayout = async (groups: groupContentCoords[]) => {
   const layout = await elk.layout({
     id: "root",
     layoutOptions: {
-      "org.eclipse.elk.aspectRatio": "2.5",
-      "elk.algorithm": "org.eclipse.elk.box",
+      "elk.algorithm": "org.eclipse.elk.rectpacking",
+      "org.eclipse.elk.aspectRatio": "2.5", //this may be calculated based on screen size
       "elk.direction": "LEFT",
       "org.eclipse.elk.contentAlignment": "H_RIGHT",
-      "org.eclipse.elk.box.packingMode": "GROUP_DEC",
       "org.eclipse.elk.expandNodes": "true",
       "elk.spacing.nodeNode": GROUP_MARGIN.toString(),
     },
@@ -128,7 +127,10 @@ export const getGroupsAutoLayout = async (groups: groupContentCoords[]) => {
   return layout;
 };
 
-export async function applyLayoutToNodes(nodes: Node[], layout: ElkNode) {
+export async function applyLayoutToNodes(
+  nodes: Node[],
+  layout: ElkNode
+): Promise<Node[]> {
   const groups = nodes.filter(
     (node) => node.type === "modelGroup"
   ) as ResourceNode[];

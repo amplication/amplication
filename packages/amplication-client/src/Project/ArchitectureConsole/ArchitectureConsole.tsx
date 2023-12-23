@@ -1,32 +1,33 @@
-import "./ArchitectureConsole.scss";
 import "reactflow/dist/style.css";
+import "./ArchitectureConsole.scss";
 
-import { gql, useQuery } from "@apollo/client";
-import {
-  Background,
-  ConnectionMode,
-  ReactFlow,
-  useNodesState,
-  useEdgesState,
-  Controls,
-  ControlButton,
-  MiniMap,
-} from "reactflow";
-import * as models from "../../models";
 import {
   CircularProgress,
   Icon,
   Snackbar,
 } from "@amplication/ui/design-system";
-import { formatError } from "../../util/error";
-import ModelNode from "./nodes/modelNode";
-import modelGroupNode from "./nodes/modelGroupNode";
+import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
-import relationEdge from "./edges/relationEdge";
-import { entitiesToNodesAndEdges } from "./helpers";
-import RelationMarkets from "./edges/relationMarkets";
-import { useContext } from "react";
+import { useCallback, useContext, useState } from "react";
+import {
+  Background,
+  ConnectionMode,
+  ControlButton,
+  Controls,
+  MiniMap,
+  ReactFlow,
+  useEdgesState,
+} from "reactflow";
 import { AppContext } from "../../context/appContext";
+import * as models from "../../models";
+import { formatError } from "../../util/error";
+import relationEdge from "./edges/relationEdge";
+import RelationMarkets from "./edges/relationMarkets";
+import { entitiesToNodesAndEdges } from "./helpers";
+import { applyAutoLayout } from "./layout";
+import modelGroupNode from "./nodes/modelGroupNode";
+import ModelNode from "./nodes/modelNode";
+import { Node } from "./types";
 
 export const CLASS_NAME = "entities-erd";
 type TData = {
@@ -47,10 +48,78 @@ const DATE_CREATED_FIELD = "createdAt";
 export default function ArchitectureConsole() {
   const { currentProject } = useContext(AppContext);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const { loading, error } = useQuery<TData>(GET_RESOURCES, {
+  // const handleNodesChange = useCallback((changes: NodeChange[]) => {
+  //   if (changes[0].type === "position") {
+  //     const change = changes[0] as NodePositionChange;
+  //     console.log("handleNodesChange", { changes });
+
+  //     if (change.dragging) {
+  //       setNodes((nodes) => {
+  //         const node = nodes.find((node) => node.id === change.id);
+  //         if (node) {
+  //           node.position = change.position;
+  //         }
+  //         return [...nodes];
+  //       });
+  //     }
+  //   }
+  // }, []);
+
+  const handleNodeDrag = useCallback(
+    async (
+      event: React.MouseEvent,
+      draggedNode: Node,
+      draggedNodes: Node[]
+    ) => {
+      setNodes((nodes) => {
+        const node = nodes.find((node) => node.id === draggedNode.id);
+        if (node) {
+          node.position = draggedNode.position;
+        }
+        return [...nodes];
+      });
+    },
+    [setNodes]
+  );
+
+  const handleNodeDragStop = useCallback(
+    async (
+      event: React.MouseEvent,
+      draggedNode: Node,
+      draggedNodes: Node[]
+    ) => {
+      if (draggedNode.type === "modelGroup") {
+        return;
+      }
+
+      const node = nodes.find((node) => node.id === draggedNode.id);
+
+      //return to original parent
+      if (node.data.originalParentNode) {
+        console.log("return to original parent");
+        node.parentNode = draggedNode.data.originalParentNode;
+        node.data.originalParentNode = undefined;
+      } else {
+        console.log("move to new parent");
+        const targetGroup = nodes.find(
+          (n) => n.parentNode !== node.parentNode && n.type === "model"
+        )?.parentNode;
+
+        node.data.originalParentNode = node.parentNode;
+        node.parentNode = targetGroup;
+      }
+      console.log({ node });
+
+      const updatedNodes = await applyAutoLayout(nodes, edges);
+      setNodes(updatedNodes);
+    },
+    [setNodes, edges, nodes]
+  );
+
+  const { loading, error, data } = useQuery<TData>(GET_RESOURCES, {
     variables: {
       projectId: currentProject?.id,
       orderBy: {
@@ -78,7 +147,9 @@ export default function ArchitectureConsole() {
         fitView
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
-        onNodesChange={onNodesChange}
+        onNodeDrag={handleNodeDrag}
+        onNodeDragStop={handleNodeDragStop}
+        //onNodesChange={handleNodesChange}
         onEdgesChange={onEdgesChange}
         connectionMode={ConnectionMode.Loose}
         proOptions={{ hideAttribution: true }}

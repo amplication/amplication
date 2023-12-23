@@ -6,19 +6,22 @@ import { CLASS_NAME } from "../ArchitectureConsole";
 import { AppContext } from "../../../context/appContext";
 import { Link } from "react-router-dom";
 import { Icon } from "@amplication/ui/design-system";
+import classNames from "classnames";
+import { NodePayload } from "../types";
 
-type ModelProps = NodeProps & {
-  data: {
-    payload: models.Entity;
-  };
+type ModelProps = Omit<NodeProps, "data"> & {
+  data: NodePayload<models.Entity>;
 };
 
 const ModelNode: FC<ModelProps> = memo(({ data }) => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
+
   return (
     <div
-      className={`${CLASS_NAME}__node_container`}
+      className={classNames(`${CLASS_NAME}__node_container`, {
+        "pending-changes": data.originalParentNode,
+      })}
       tabIndex={0}
       style={{ borderSpacing: 0 }}
       title={data.payload.description}

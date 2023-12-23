@@ -8,8 +8,12 @@ export type NodePayload<T> = {
   payload: T;
   //selected
   //editable
-  //originalParentId
+  originalParentNode?: string;
 };
+
+export type NodePayloadWithPayloadType = NodePayload<
+  models.Entity | models.Resource
+>;
 
 type NodeWithType<T> = ReactFlowNode<T, NodeType>;
 
