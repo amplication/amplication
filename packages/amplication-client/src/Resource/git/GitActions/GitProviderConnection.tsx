@@ -56,6 +56,7 @@ export default function GitProviderConnection({
             entitlementType={EntitlementType.Boolean}
             reversePosition={true}
             featureIndicatorPlacement={FeatureIndicatorPlacement.Outside}
+            limitationText="Available in Enterprise plans only."
           >
             <Button
               className={`${CLASS_NAME}__connect`}
