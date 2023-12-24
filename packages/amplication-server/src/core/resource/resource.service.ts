@@ -422,12 +422,6 @@ export class ResourceService {
         (entityWithFields) => copiedEntity.name === entityWithFields.name
       );
 
-      currentEntity.fields = await this.prisma.entityField.findMany({
-        where: {
-          entityVersionId: currentEntity.versions[0].id,
-        },
-      });
-
       for (const field of currentEntity.fields) {
         const { dataType, properties } = field;
         const { allowMultipleSelection, relatedEntityId } =
