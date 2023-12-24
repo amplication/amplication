@@ -46,7 +46,16 @@ const RelationEdge = ({
     curvature: 0.5,
   });
 
+  const isPendingChange =
+    (sourceNode.data.originalParentNode &&
+      sourceNode.data.originalParentNode !== sourceNode.parentNode) ||
+    (targetNode.data.originalParentNode &&
+      targetNode.data.originalParentNode !== targetNode.parentNode);
+
   const isSelected = selected || sourceNode?.selected || targetNode.selected;
+  const strokeDasharray = isPendingChange ? "10 10" : undefined;
+  const stroke = isPendingChange ? "#53dbee" : isSelected ? "#fff" : "#5c7194";
+
   const {
     targetFieldAllowsMultipleSelections,
     sourceFieldAllowsMultipleSelections,
@@ -61,8 +70,6 @@ const RelationEdge = ({
     })`,
   ];
 
-  const stroke = isSelected ? "#fff" : "#5c7194";
-
   return (
     <path
       id={id}
@@ -73,6 +80,7 @@ const RelationEdge = ({
       style={{
         ...style,
         stroke,
+        strokeDasharray,
       }}
     />
   );

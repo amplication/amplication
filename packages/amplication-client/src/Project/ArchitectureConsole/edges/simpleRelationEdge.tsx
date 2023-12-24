@@ -47,9 +47,15 @@ const SimpleRelationEdge = ({
     curvature: 0.5,
   });
 
-  const isSelected = selected || sourceNode?.selected || targetNode.selected;
+  const isPendingChange =
+    (sourceNode.data.originalParentNode &&
+      sourceNode.data.originalParentNode !== sourceNode.parentNode) ||
+    (targetNode.data.originalParentNode &&
+      targetNode.data.originalParentNode !== targetNode.parentNode);
 
-  const stroke = isSelected ? "#fff" : "#5c7194";
+  const isSelected = selected || sourceNode?.selected || targetNode.selected;
+  const stroke = isPendingChange ? "#53dbee" : isSelected ? "#fff" : "#5c7194";
+  const strokeDasharray = isPendingChange ? "10 10" : undefined;
 
   return (
     <path
@@ -59,6 +65,7 @@ const SimpleRelationEdge = ({
       style={{
         ...style,
         stroke,
+        strokeDasharray,
       }}
     />
   );

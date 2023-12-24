@@ -32,7 +32,7 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
         style={{ borderTopColor: data.groupColor }}
         title={data.payload.description}
       >
-        <Text textStyle={EnumTextStyle.H3}>{data.payload.id}</Text>
+        <Text textStyle={EnumTextStyle.H3}>{data.payload.name}</Text>
 
         <HorizontalRule />
       </div>

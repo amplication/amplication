@@ -26,7 +26,7 @@ const elk = new Elk({
   defaultLayoutOptions: {
     "elk.algorithm": "org.eclipse.elk.layered",
     "elk.spacing.nodeNode": "50",
-    "elk.layered.spacing.nodeNodeBetweenLayers": "100",
+    "elk.layered.spacing.nodeNodeBetweenLayers": "150",
     "org.eclipse.elk.padding": `[top=${GROUP_TOP_PADDING},left=${GROUP_PADDING},bottom=${GROUP_PADDING},right=${GROUP_PADDING}]`,
   },
 });
