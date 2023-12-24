@@ -92,6 +92,7 @@ import { ServiceSettingsService } from "../serviceSettings/serviceSettings.servi
 import { ModuleService } from "../module/module.service";
 import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForEntityNotFoundError";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { pascalCase } from "pascal-case";
 
 type EntityInclude = Omit<
@@ -265,6 +266,15 @@ export class EntityService {
     trackEvent = true
   ): Promise<Entity> {
     const resourceId = args.data.resource.connect.id;
+    const resource = await this.prisma.resource.findUnique({
+      where: { id: resourceId },
+    });
+
+    if (!resource.licensed) {
+      const message = "Your workspace reached its service limitation.";
+      throw new BillingLimitationError(message, BillingFeature.Services);
+    }
+
     if (
       args.data?.name?.toLowerCase().trim() ===
       args.data?.pluralDisplayName?.toLowerCase().trim()
@@ -1881,6 +1891,25 @@ export class EntityService {
 
         //add new roles
         if (!isEmpty(args.data.addRoles)) {
+          const entityId = args.data.entity.connect.id;
+          const entityWithResource = await this.prisma.entity.findUnique({
+            where: {
+              id: entityId,
+            },
+            include: {
+              resource: true,
+            },
+          });
+
+          if (!entityWithResource || !entityWithResource.resource) {
+            throw new NotFoundException(`Entity ${entityId} not found`);
+          }
+
+          if (!entityWithResource.resource.licensed) {
+            const message = "Your workspace reached its service limitation.";
+            throw new BillingLimitationError(message, BillingFeature.Services);
+          }
+
           const createMany = args.data.addRoles.map((role) => {
             return {
               resourceRole: {
@@ -2488,6 +2517,25 @@ export class EntityService {
     enforceValidation = true,
     trackEvent = false
   ): Promise<EntityField> {
+    const entityId = args.data.entity.connect.id;
+    const entityWithResource = await this.prisma.entity.findUnique({
+      where: {
+        id: entityId,
+      },
+      include: {
+        resource: true,
+      },
+    });
+
+    if (!entityWithResource || !entityWithResource.resource) {
+      throw new NotFoundException(`Entity ${entityId} not found`);
+    }
+
+    if (!entityWithResource.resource.licensed) {
+      const message = "Your workspace reached its service limitation.";
+      throw new BillingLimitationError(message, BillingFeature.Services);
+    }
+
     if (
       enforceValidation &&
       isReservedName(args.data?.name?.toLowerCase().trim())

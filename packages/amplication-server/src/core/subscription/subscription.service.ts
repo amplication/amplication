@@ -14,6 +14,8 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 @Injectable()
 export class SubscriptionService {
@@ -95,6 +97,152 @@ export class SubscriptionService {
     }
   }
 
+  async updateProjectLicensed(workspaceId: string): Promise<void> {
+    if (!this.billingService.isBillingEnabled) {
+      return;
+    }
+
+    const featureProjects = await this.billingService.getMeteredEntitlement(
+      workspaceId,
+      BillingFeature.Projects
+    );
+
+    if (!featureProjects.usageLimit) {
+      await this.prisma.project.updateMany({
+        where: {
+          workspaceId,
+          deletedAt: null,
+        },
+        data: {
+          licensed: true,
+        },
+      });
+      return;
+    }
+
+    const projects = await this.prisma.project.findMany({
+      where: {
+        workspaceId,
+        deletedAt: null,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    const projectsWithinLimit = projects.slice(0, featureProjects.usageLimit);
+    const projectsBeyondLimit = projects.slice(featureProjects.usageLimit);
+
+    const projectIdsWithinLimit = projectsWithinLimit.map(
+      (project) => project.id
+    );
+    const projectIdsBeyondLimit = projectsBeyondLimit.map(
+      (project) => project.id
+    );
+
+    await this.prisma.$transaction([
+      this.prisma.project.updateMany({
+        where: {
+          id: {
+            in: projectIdsWithinLimit,
+          },
+        },
+        data: {
+          licensed: true,
+        },
+      }),
+      this.prisma.project.updateMany({
+        where: {
+          id: {
+            in: projectIdsBeyondLimit,
+          },
+        },
+        data: {
+          licensed: false,
+        },
+      }),
+    ]);
+  }
+
+  async updateServiceLicensed(workspaceId: string): Promise<void> {
+    if (!this.billingService.isBillingEnabled) {
+      return;
+    }
+
+    const featureServices = await this.billingService.getMeteredEntitlement(
+      workspaceId,
+      BillingFeature.Services
+    );
+
+    if (!featureServices.usageLimit) {
+      await this.prisma.resource.updateMany({
+        where: {
+          project: {
+            workspaceId,
+          },
+          deletedAt: null,
+          archived: { not: true },
+          resourceType: {
+            in: [EnumResourceType.Service],
+          },
+        },
+        data: {
+          licensed: true,
+        },
+      });
+      return;
+    }
+
+    const resources = await this.prisma.resource.findMany({
+      where: {
+        project: {
+          workspaceId,
+        },
+        deletedAt: null,
+        archived: { not: true },
+        resourceType: {
+          in: [EnumResourceType.Service],
+        },
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    const resourcesWithinLimit = resources.slice(0, featureServices.usageLimit);
+    const resourcesBeyondLimit = resources.slice(featureServices.usageLimit);
+
+    const resourceIdsWithinLimit = resourcesWithinLimit.map(
+      (project) => project.id
+    );
+    const resourceIdsBeyondLimit = resourcesBeyondLimit.map(
+      (project) => project.id
+    );
+
+    await this.prisma.$transaction([
+      this.prisma.resource.updateMany({
+        where: {
+          id: {
+            in: resourceIdsWithinLimit,
+          },
+        },
+        data: {
+          licensed: true,
+        },
+      }),
+      this.prisma.resource.updateMany({
+        where: {
+          id: {
+            in: resourceIdsBeyondLimit,
+          },
+        },
+        data: {
+          licensed: false,
+        },
+      }),
+    ]);
+  }
+
   async handleUpdateSubscriptionStatusEvent(
     updateStatusDto: UpdateStatusDto
   ): Promise<void> {
@@ -129,6 +277,14 @@ export class SubscriptionService {
         updateStatusDto.metadata?.userId,
         updateStatusDto.customer.id
       );
+    }
+
+    if (
+      updateStatusDto.type === "subscription.created" ||
+      updateStatusDto.type === "subscription.updated"
+    ) {
+      await this.updateProjectLicensed(updateStatusDto.customer.id);
+      await this.updateServiceLicensed(updateStatusDto.customer.id);
     }
   }
 

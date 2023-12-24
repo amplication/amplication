@@ -74,6 +74,7 @@ const EXAMPLE_RESOURCE: Resource = {
   description: "exampleDescription",
   builds: [EXAMPLE_BUILD],
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const userActionServiceFindOneMock = jest.fn(() => EXAMPLE_USER_ACTION);

@@ -10,7 +10,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
+import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import * as nestAccessControl from "nest-access-control";
@@ -19,13 +19,13 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { CreateModelArgs } from "./CreateModelArgs";
-import { UpdateModelArgs } from "./UpdateModelArgs";
-import { DeleteModelArgs } from "./DeleteModelArgs";
+import { Model } from "./Model";
 import { ModelCountArgs } from "./ModelCountArgs";
 import { ModelFindManyArgs } from "./ModelFindManyArgs";
 import { ModelFindUniqueArgs } from "./ModelFindUniqueArgs";
-import { Model } from "./Model";
+import { CreateModelArgs } from "./CreateModelArgs";
+import { UpdateModelArgs } from "./UpdateModelArgs";
+import { DeleteModelArgs } from "./DeleteModelArgs";
 import { TemplateFindManyArgs } from "../../template/base/TemplateFindManyArgs";
 import { Template } from "../../template/base/Template";
 import { ModelService } from "../model.service";
@@ -60,7 +60,7 @@ export class ModelResolverBase {
     possession: "any",
   })
   async models(@graphql.Args() args: ModelFindManyArgs): Promise<Model[]> {
-    return this.service.findMany(args);
+    return this.service.models(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -73,7 +73,7 @@ export class ModelResolverBase {
   async model(
     @graphql.Args() args: ModelFindUniqueArgs
   ): Promise<Model | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.model(args);
     if (result === null) {
       return null;
     }
@@ -88,7 +88,7 @@ export class ModelResolverBase {
     possession: "any",
   })
   async createModel(@graphql.Args() args: CreateModelArgs): Promise<Model> {
-    return await this.service.create({
+    return await this.service.createModel({
       ...args,
       data: args.data,
     });
@@ -105,13 +105,13 @@ export class ModelResolverBase {
     @graphql.Args() args: UpdateModelArgs
   ): Promise<Model | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateModel({
         ...args,
         data: args.data,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -129,10 +129,10 @@ export class ModelResolverBase {
     @graphql.Args() args: DeleteModelArgs
   ): Promise<Model | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteModel(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -147,7 +147,7 @@ export class ModelResolverBase {
     action: "read",
     possession: "any",
   })
-  async resolveFieldTemplates(
+  async findTemplates(
     @graphql.Parent() parent: Model,
     @graphql.Args() args: TemplateFindManyArgs
   ): Promise<Template[]> {

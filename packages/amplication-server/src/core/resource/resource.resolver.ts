@@ -71,17 +71,6 @@ export class ResourceResolver {
     return this.resourceService.messageBrokerConnectedServices(args);
   }
 
-  @ResolveField(() => Boolean)
-  async isUnderLimitation(
-    @UserEntity() user: User,
-    @Parent() resource: Resource
-  ): Promise<boolean> {
-    return this.resourceService.isUnderLimitation(
-      user.workspace.id,
-      resource.id
-    );
-  }
-
   @ResolveField(() => [Entity])
   async entities(
     @Parent() resource: Resource,

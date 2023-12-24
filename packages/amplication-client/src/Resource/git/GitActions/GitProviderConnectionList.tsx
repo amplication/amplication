@@ -41,9 +41,6 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   const showBitbucketConnect = stigg.getBooleanEntitlement({
     featureId: BillingFeature.Bitbucket,
   }).hasAccess;
-  const showAwsCodeCommitConnect = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.AwsCodeCommit,
-  }).hasAccess;
   const showGitLab = stigg.getBooleanEntitlement({
     featureId: BillingFeature.GitLab,
   }).hasAccess;
@@ -105,10 +102,11 @@ export const GitProviderConnectionList: React.FC<Props> = ({
       <GitProviderConnection
         provider={EnumGitProvider.AwsCodeCommit}
         onSyncNewGitOrganizationClick={() => {
-          window.open("https://amplication.com/contact-us");
+          // Manual work following Notion docs
         }}
         billingFeature={BillingFeature.AwsCodeCommit}
-        disabled={!showAwsCodeCommitConnect}
+        disabled={true}
+        comingSoon={true}
       />
     </div>
   );

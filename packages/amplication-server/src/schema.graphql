@@ -1066,6 +1066,7 @@ input ModuleWhereInput {
 
 type Mutation {
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
+  bulkUpdateWorkspaceProjectsAndResourcesLicensed(useUserLastActive: Boolean): Boolean!
   changePassword(data: ChangePasswordInput!): Account!
   commit(data: CommitCreateInput!): Commit
   completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
@@ -1286,7 +1287,7 @@ type Project {
   demoRepoName: String
   description: String
   id: String!
-  isUnderLimitation: Boolean
+  licensed: Boolean!
   name: String!
   resources: [Resource!]
   updatedAt: DateTime!
@@ -1460,7 +1461,7 @@ type Resource {
   githubLastMessage: String
   githubLastSync: DateTime
   id: String!
-  isUnderLimitation: Boolean
+  licensed: Boolean!
   name: String!
   project: Project
   projectId: String
