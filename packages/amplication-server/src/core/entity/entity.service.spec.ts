@@ -43,6 +43,7 @@ import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { MeteredEntitlement } from "@stigg/node-server-sdk";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -419,6 +420,27 @@ const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
 
 const areDifferentMock = jest.fn(() => true);
 
+/** methods mock */
+const billingServiceIsBillingEnabledMock = jest.fn();
+
+const billingServiceMock = {
+  getMeteredEntitlement: jest.fn(() => {
+    return {
+      usageLimit: undefined,
+    } as unknown as MeteredEntitlement;
+  }),
+  getNumericEntitlement: jest.fn(() => {
+    return {};
+  }),
+  reportUsage: jest.fn(() => {
+    return {};
+  }),
+};
+// This is important to mock the getter!!!
+Object.defineProperty(billingServiceMock, "isBillingEnabled", {
+  get: billingServiceIsBillingEnabledMock,
+});
+
 describe("EntityService", () => {
   let service: EntityService;
 
@@ -440,11 +462,7 @@ describe("EntityService", () => {
         },
         {
           provide: BillingService,
-          useClass: jest.fn(() => ({
-            getMeteredEntitlement: jest.fn(() => {
-              return {};
-            }),
-          })),
+          useValue: billingServiceMock,
         },
         {
           provide: ServiceSettingsService,
@@ -644,6 +662,54 @@ describe("EntityService", () => {
     expect(prismaEntityCreateMock).toBeCalledTimes(1);
     expect(prismaEntityCreateMock).toBeCalledWith(newEntityArgs);
     expect(prismaEntityFieldCreateMock).toBeCalledTimes(3);
+  });
+
+  describe("service license", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    describe("when billing is not enabled", () => {
+      beforeEach(() => {
+        billingServiceIsBillingEnabledMock.mockReturnValue(false);
+      });
+
+      it("should not throw an error even when the project or the service is not licensed", async () => {
+        const resource = {
+          ...EXAMPLE_RESOURCE,
+          licensed: false,
+          project: { ...EXAMPLE_RESOURCE.project, licensed: false },
+        };
+        await expect(
+          service.checkServiceLicense(resource)
+        ).resolves.not.toThrow(BillingLimitationError);
+      });
+    });
+
+    describe("when billing is enabled", () => {
+      beforeEach(() => {
+        billingServiceIsBillingEnabledMock.mockReturnValue(true);
+      });
+
+      it("should not throw an error when project or service is under license", async () => {
+        await expect(
+          service.checkServiceLicense(EXAMPLE_RESOURCE) // in the example resource the project and the service are licensed
+        ).resolves.not.toThrow(BillingLimitationError);
+      });
+
+      it("should throw an error when project or service is not under license", async () => {
+        const resource = {
+          ...EXAMPLE_RESOURCE,
+          licensed: false,
+          project: { ...EXAMPLE_RESOURCE.project, licensed: false },
+        };
+        await expect(service.checkServiceLicense(resource)).rejects.toThrow(
+          new BillingLimitationError(
+            "Your workspace reached its service limitation.",
+            BillingFeature.Services
+          )
+        );
+      });
+    });
   });
 
   it("should not create an entity when the service in not under license", async () => {
