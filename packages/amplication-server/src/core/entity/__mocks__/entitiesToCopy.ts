@@ -702,7 +702,7 @@ const ORDER: CopiedEntities = {
   createdAt: new Date(),
   updatedAt: new Date(),
   resourceId: EXAMPLE_RESOURCE_ID,
-  shouldDeleteFromSource: false,
+  shouldDeleteFromSource: true,
 
   permissions: [
     {
