@@ -673,7 +673,7 @@ describe("EntityService", () => {
         billingServiceIsBillingEnabledMock.mockReturnValue(false);
       });
 
-      it("should not throw an error even when the project or the service is not licensed", async () => {
+      it("should not throw billing limitation error even when the project or the service is not licensed", async () => {
         const resource = {
           ...EXAMPLE_RESOURCE,
           licensed: false,
@@ -690,16 +690,30 @@ describe("EntityService", () => {
         billingServiceIsBillingEnabledMock.mockReturnValue(true);
       });
 
-      it("should not throw an error when project or service is under license", async () => {
+      it("should not throw billing limitation error when the project and the service within the project is under license", async () => {
         await expect(
           service.checkServiceLicense(EXAMPLE_RESOURCE) // in the example resource the project and the service are licensed
         ).resolves.not.toThrow(BillingLimitationError);
       });
 
-      it("should throw an error when project or service is not under license", async () => {
+      it("should throw billing limitation error when project license is false and the service license is true", async () => {
         const resource = {
           ...EXAMPLE_RESOURCE,
           licensed: false,
+          project: { ...EXAMPLE_RESOURCE.project, licensed: true },
+        };
+        await expect(service.checkServiceLicense(resource)).rejects.toThrow(
+          new BillingLimitationError(
+            "Your workspace reached its service limitation.",
+            BillingFeature.Services
+          )
+        );
+      });
+
+      it("should throw billing limitation error when project license is true and the service license is false", async () => {
+        const resource = {
+          ...EXAMPLE_RESOURCE,
+          licensed: true,
           project: { ...EXAMPLE_RESOURCE.project, licensed: false },
         };
         await expect(service.checkServiceLicense(resource)).rejects.toThrow(
