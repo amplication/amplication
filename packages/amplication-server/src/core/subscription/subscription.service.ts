@@ -270,6 +270,14 @@ export class SubscriptionService {
         });
         break;
       }
+      case "promotionalEntitlement.granted":
+      case "promotionalEntitlement.updated":
+      case "promotionalEntitlement.revoked":
+      case "promotionalEntitlement.expired": {
+        await this.updateProjectLicensed(updateStatusDto.customer.id);
+        await this.updateServiceLicensed(updateStatusDto.customer.id);
+        break;
+      }
     }
     if (updateStatusDto.type === "subscription.created") {
       await this.trackUpgradeCompletedEvent(
