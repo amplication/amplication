@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 import cuid from "cuid";
@@ -627,17 +628,19 @@ export class EntityService {
       },
     });
 
+    const idTypeMap = {
+      CUID: EnumDataType.SingleLineText,
+      UUID: EnumDataType.SingleLineText,
+      AUTO_INCREMENT: EnumDataType.WholeNumber,
+      AUTO_INCREMENT_BIG_INT: EnumDataType.WholeNumber,
+    };
+
     const idProp = relatedIdField.properties as unknown as {
       [key: string]: JsonValue;
     };
 
     const idType = idProp["idType"];
-    if (idType === "CUID" || idType === "UUID") {
-      field.dataType = EnumDataType.SingleLineText;
-    }
-    if (idType === "AUTO_INCREMENT" || idType === "AUTO_INCREMENT_BIG_INT") {
-      field.dataType = EnumDataType.WholeNumber;
-    }
+    field.dataType = idTypeMap[idType.toString()];
 
     field.name = `${field.name}Id`;
 
