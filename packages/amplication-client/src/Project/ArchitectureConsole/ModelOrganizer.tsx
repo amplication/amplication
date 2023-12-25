@@ -29,8 +29,9 @@ import {
   NODE_TYPE_MODEL_SIMPLE,
   Node,
 } from "./types";
+import ModelOrganizerToolbar from "./ModelOrganizerToolbar";
 
-export const CLASS_NAME = "architecture-console";
+export const CLASS_NAME = "model-organizer";
 
 const nodeTypes = {
   model: ModelNode,
@@ -45,9 +46,10 @@ const edgeTypes = {
 
 type Props = {
   resources: models.Resource[];
+  onApplyPlan: () => void;
 };
 
-export default function ModelOrganizer({ resources }: Props) {
+export default function ModelOrganizer({ resources, onApplyPlan }: Props) {
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
 
@@ -55,6 +57,18 @@ export default function ModelOrganizer({ resources }: Props) {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
   const [showRelationDetails, setShowRelationDetails] = useState(false);
+
+  const [readOnly, setReadOnly] = useState(true);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  const onRedesignClick = useCallback(() => {
+    setReadOnly(false);
+  }, [setReadOnly]);
+
+  const onCancelChangesClick = useCallback(() => {
+    //todo: cancel changes
+    setReadOnly(false);
+  }, [setReadOnly]);
 
   useEffect(() => {
     const prepareNodes = async () => {
@@ -70,6 +84,12 @@ export default function ModelOrganizer({ resources }: Props) {
       prepareNodes().catch(console.error);
     }
   }, [resources, setNodes, setEdges, showRelationDetails]);
+
+  const onApplyPlanClick = useCallback(() => {
+    onApplyPlan(); //send the changes to the parent component
+    setReadOnly(true);
+    setHasChanges(false);
+  }, [onApplyPlan, setReadOnly]);
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
@@ -147,6 +167,7 @@ export default function ModelOrganizer({ resources }: Props) {
         }
 
         node.parentNode = currentDropTarget.id;
+        setHasChanges(true);
 
         setNodes((nodes) => [...nodes]);
       }
@@ -186,33 +207,43 @@ export default function ModelOrganizer({ resources }: Props) {
   }, [setNodes, showRelationDetails, nodes, edges]);
 
   return (
-    <div className={classNames(CLASS_NAME, "reactflow-wrapper")}>
-      <ReactFlow
-        onInit={onInit}
-        nodes={nodes}
-        edges={edges}
-        fitView
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        onNodeDrag={onNodeDrag}
-        onNodeDragStop={onNodeDragStop}
-        onEdgesChange={onEdgesChange}
-        connectionMode={ConnectionMode.Loose}
-        proOptions={{ hideAttribution: true }}
-        minZoom={0.1}
-      >
-        <Background color="grey" />
-        <Controls>
-          <ControlButton onClick={onToggleDetailsChange}>
-            <Icon icon="list" />
-          </ControlButton>
-          <ControlButton onClick={onArrangeNodes}>
-            <Icon icon="layers" />
-          </ControlButton>
-        </Controls>
-        <MiniMap pannable={true} zoomable={true} />
-      </ReactFlow>
-      <RelationMarkets />
+    <div className={CLASS_NAME}>
+      <ModelOrganizerToolbar
+        readOnly={readOnly}
+        hasChanges={hasChanges}
+        onApplyPlan={onApplyPlanClick}
+        onRedesign={onRedesignClick}
+        onCancelChanges={onCancelChangesClick}
+      />
+      <div className={"reactflow-wrapper"}>
+        <ReactFlow
+          onInit={onInit}
+          nodes={nodes}
+          edges={edges}
+          fitView
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          onNodeDrag={onNodeDrag}
+          onNodeDragStop={onNodeDragStop}
+          onEdgesChange={onEdgesChange}
+          connectionMode={ConnectionMode.Loose}
+          proOptions={{ hideAttribution: true }}
+          minZoom={0.1}
+          nodesDraggable={!readOnly}
+        >
+          <Background color="grey" />
+          <Controls>
+            <ControlButton onClick={onToggleDetailsChange}>
+              <Icon icon="list" />
+            </ControlButton>
+            <ControlButton onClick={onArrangeNodes}>
+              <Icon icon="layers" />
+            </ControlButton>
+          </Controls>
+          <MiniMap pannable={true} zoomable={true} />
+        </ReactFlow>
+        <RelationMarkets />
+      </div>
     </div>
   );
 }

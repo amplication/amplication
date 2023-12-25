@@ -1,8 +1,14 @@
 @import "../../style/index.scss";
 
-.architecture-console {
+.model-organizer {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .reactflow-wrapper {
+    flex: 1;
+  }
 
   .react-flow__node.selected {
     div {

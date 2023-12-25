@@ -102,6 +102,7 @@ function entitiesToNodes(
     },
     id: resource.id,
     type: NODE_TYPE_MODEL_GROUP,
+    dragHandle: ".group-drag-handle",
     position: {
       x: 0,
       y: 0,

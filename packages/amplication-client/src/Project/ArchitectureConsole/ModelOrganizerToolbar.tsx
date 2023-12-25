@@ -1,0 +1,99 @@
+import "./ModelOrganizerToolbar.scss";
+
+import {
+  EnumButtonStyle,
+  EnumContentAlign,
+  EnumFlexItemMargin,
+  EnumGapSize,
+  EnumItemsAlign,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+} from "@amplication/ui/design-system";
+import { Button } from "../../Components/Button";
+import { FlexEnd } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
+
+export const CLASS_NAME = "model-organizer-toolbar";
+
+type Props = {
+  readOnly: boolean;
+  hasChanges: boolean;
+  onApplyPlan: () => void;
+  onRedesign: () => void;
+  onCancelChanges: () => void;
+};
+
+export default function ModelOrganizerToolbar({
+  readOnly,
+  hasChanges,
+  onApplyPlan,
+  onCancelChanges,
+  onRedesign,
+}: Props) {
+  return (
+    <div className={CLASS_NAME}>
+      <FlexItem
+        itemsAlign={EnumItemsAlign.Center}
+        contentAlign={EnumContentAlign.Start}
+        gap={EnumGapSize.Large}
+        margin={EnumFlexItemMargin.Both}
+      >
+        <Text
+          textStyle={EnumTextStyle.Label}
+          textColor={EnumTextColor.ThemeRed}
+        >
+          {readOnly ? "Read Only" : "Edit Mode"}
+        </Text>
+
+        <FlexEnd>
+          <FlexItem>
+            <Button
+              buttonStyle={EnumButtonStyle.Outline}
+              // eventData={{
+              //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+              // }}
+            >
+              AI Helper
+            </Button>
+            {!readOnly && (
+              <>
+                <Button
+                  buttonStyle={EnumButtonStyle.Outline}
+                  onClick={onCancelChanges}
+                  // eventData={{
+                  //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                  // }}
+                  disabled={!hasChanges}
+                >
+                  Cancel Changes
+                </Button>
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  onClick={onApplyPlan}
+                  // eventData={{
+                  //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                  // }}
+                  disabled={!hasChanges}
+                >
+                  Apply Plan
+                </Button>
+              </>
+            )}
+            {readOnly && (
+              <Button
+                onClick={onRedesign}
+                buttonStyle={EnumButtonStyle.Primary}
+                // eventData={{
+                //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                // }}
+              >
+                Redesign
+              </Button>
+            )}
+          </FlexItem>
+        </FlexEnd>
+      </FlexItem>
+    </div>
+  );
+}

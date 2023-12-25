@@ -3,7 +3,7 @@ import "./ArchitectureConsole.scss";
 
 import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import { formatError } from "../../util/error";
@@ -30,12 +30,19 @@ export default function ArchitectureConsole() {
     fetchPolicy: "no-cache",
   });
 
+  const handleApplyPlan = useCallback(() => {
+    //todo: send data to the server
+    console.log("Apply Plan");
+  }, []);
+
   const errorMessage = error && formatError(error);
 
   if (loading) return <CircularProgress centerToParent />;
   if (error) return <Snackbar open={Boolean(error)} message={errorMessage} />;
 
-  return <ModelOrganizer resources={data.resources} />;
+  return (
+    <ModelOrganizer resources={data.resources} onApplyPlan={handleApplyPlan} />
+  );
 }
 
 export const GET_RESOURCES = gql`
