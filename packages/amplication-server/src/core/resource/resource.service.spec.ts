@@ -638,7 +638,7 @@ describe("ResourceService", () => {
             createCopiedEntityFieldByDisplayName: jest.fn(() => {
               return null;
             }),
-            deleteEntityFromSourceResource: jest.fn(() => {
+            deleteEntityFromSource: jest.fn(() => {
               return null;
             }),
             createVersion: entityServiceCreateVersionMock,

@@ -475,7 +475,7 @@ export class ResourceService {
     // 3.delete entity from source service by flag
     for (const entity of entitiesToCopy) {
       if (entity.shouldDeleteFromSource) {
-        await this.entityService.deleteEntityFromSourceResource(
+        await this.entityService.deleteEntityFromSource(
           { where: { id: entity.id } },
           user
         );
