@@ -24,7 +24,7 @@ import {
   EntityPermissionField,
   Resource,
 } from "../../models";
-import type { JsonObject, JsonValue } from "type-fest";
+import type { JsonObject } from "type-fest";
 import {
   getSchemaForDataType,
   LookupResolvedProperties,
@@ -635,12 +635,10 @@ export class EntityService {
       AUTO_INCREMENT_BIG_INT: EnumDataType.WholeNumber,
     };
 
-    const idProp = relatedIdField.properties as unknown as {
-      [key: string]: JsonValue;
-    };
+    const idTypeProp =
+      relatedIdField.properties as unknown as types.Id["idType"];
 
-    const idType = idProp["idType"];
-    field.dataType = idTypeMap[idType.toString()];
+    field.dataType = idTypeMap[idTypeProp];
 
     field.name = `${field.name}Id`;
 
@@ -884,7 +882,7 @@ export class EntityService {
     });
   }
 
-  async deleteEntityFromSourceResource(
+  async deleteEntityFromSource(
     args: DeleteOneEntityArgs,
     user: User
   ): Promise<Entity | null> {
