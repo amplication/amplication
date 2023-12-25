@@ -428,9 +428,9 @@ export class ResourceService {
     // 2.create entities fields
 
     for (const copiedEntity of copiedEntities) {
-      const currentEntity = entitiesWithFieldsMap[copiedEntity.name];
+      const currentEntity: Entity = entitiesWithFieldsMap[copiedEntity.name];
 
-      for (const field of currentEntity.fields) {
+      for (const field of currentEntity.versions[0].fields) {
         const { dataType, properties } = field;
         const { allowMultipleSelection, relatedEntityId } =
           properties as unknown as LookupResolvedProperties;
