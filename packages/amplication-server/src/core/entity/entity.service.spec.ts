@@ -699,8 +699,8 @@ describe("EntityService", () => {
       it("should throw billing limitation error when project license is false and the service license is true", async () => {
         const resource = {
           ...EXAMPLE_RESOURCE,
-          licensed: false,
-          project: { ...EXAMPLE_RESOURCE.project, licensed: true },
+          licensed: true,
+          project: { ...EXAMPLE_RESOURCE.project, licensed: false },
         };
         await expect(service.checkServiceLicense(resource)).rejects.toThrow(
           new BillingLimitationError(
@@ -713,8 +713,8 @@ describe("EntityService", () => {
       it("should throw billing limitation error when project license is true and the service license is false", async () => {
         const resource = {
           ...EXAMPLE_RESOURCE,
-          licensed: true,
-          project: { ...EXAMPLE_RESOURCE.project, licensed: false },
+          licensed: false,
+          project: { ...EXAMPLE_RESOURCE.project, licensed: true },
         };
         await expect(service.checkServiceLicense(resource)).rejects.toThrow(
           new BillingLimitationError(
