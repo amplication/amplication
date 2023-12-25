@@ -61,3 +61,14 @@ export type DetailedRelation = SimpleRelation & {
 };
 
 export type Relation = SimpleRelation | DetailedRelation;
+
+export type ModelChanges = {
+  newServices: {
+    id: string;
+    name: string;
+  }[];
+  movedEntities: {
+    entityId: string;
+    targetResourceId: string;
+  }[];
+};

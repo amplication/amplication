@@ -24,6 +24,7 @@ import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
 import {
+  ModelChanges,
   NODE_TYPE_MODEL,
   NODE_TYPE_MODEL_GROUP,
   NODE_TYPE_MODEL_SIMPLE,
@@ -46,7 +47,7 @@ const edgeTypes = {
 
 type Props = {
   resources: models.Resource[];
-  onApplyPlan: () => void;
+  onApplyPlan: (changes: ModelChanges) => void;
 };
 
 export default function ModelOrganizer({ resources, onApplyPlan }: Props) {
@@ -57,6 +58,7 @@ export default function ModelOrganizer({ resources, onApplyPlan }: Props) {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
   const [showRelationDetails, setShowRelationDetails] = useState(false);
+  const [changes, setChanges] = useState<ModelChanges>(null); // main data elements for save
 
   const [readOnly, setReadOnly] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
@@ -86,10 +88,10 @@ export default function ModelOrganizer({ resources, onApplyPlan }: Props) {
   }, [resources, setNodes, setEdges, showRelationDetails]);
 
   const onApplyPlanClick = useCallback(() => {
-    onApplyPlan(); //send the changes to the parent component
+    onApplyPlan(changes);
     setReadOnly(true);
     setHasChanges(false);
-  }, [onApplyPlan, setReadOnly]);
+  }, [onApplyPlan, setReadOnly, changes]);
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
