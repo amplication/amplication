@@ -417,12 +417,18 @@ export class ResourceService {
       user
     );
 
+    const entitiesWithFieldsMap = entitiesToCopy.reduce(
+      (entitiesObj, entity) => {
+        entitiesObj[entity.name] = entity;
+        return entitiesObj;
+      },
+      {}
+    );
+
     // 2.create entities fields
 
     for (const copiedEntity of copiedEntities) {
-      const currentEntity = entitiesToCopy.find(
-        (entityWithFields) => copiedEntity.name === entityWithFields.name
-      );
+      const currentEntity = entitiesWithFieldsMap[copiedEntity.name];
 
       for (const field of currentEntity.fields) {
         const { dataType, properties } = field;
