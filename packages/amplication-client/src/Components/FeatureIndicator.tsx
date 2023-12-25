@@ -77,14 +77,16 @@ export const FeatureIndicator = ({
     return (
       <>
         {textArray[0]}
-        <Link
-          onClick={handleViewPlansClick}
-          style={{ color: "#53dbee" }}
-          to={{}}
-        >
-          {tooltipDefaultTextUpgrade}
-        </Link>
-        {textArray[1]}
+        <div>
+          <Link
+            onClick={handleViewPlansClick}
+            style={{ color: "#53dbee" }}
+            to={{}}
+          >
+            {tooltipDefaultTextUpgrade}
+          </Link>
+          {textArray[1]}
+        </div>
       </>
     );
   }, [text, tooltipDefaultTextUpgrade, handleViewPlansClick]);
