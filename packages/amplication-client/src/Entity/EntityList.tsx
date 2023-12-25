@@ -239,8 +239,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               {!licensed ? (
                 <FeatureIndicator
                   featureName={BillingFeature.Services}
-                  text="Your current plan permits only one active resource"
-                  linkText="Please contact us to upgrade"
+                  text="Your current plan permits only one active Service. "
                   element={
                     <Button
                       className={`${CLASS_NAME}__add-button`}

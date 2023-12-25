@@ -125,8 +125,7 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
             {!licensed ? (
               <FeatureIndicator
                 featureName={BillingFeature.Services}
-                text="Your current plan permits only one active resource."
-                linkText="Please contact us to upgrade."
+                text="Your current plan permits only one active Service. "
                 element={
                   <Button
                     buttonStyle={EnumButtonStyle.Text}
