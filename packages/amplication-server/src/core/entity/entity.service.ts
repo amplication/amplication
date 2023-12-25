@@ -2538,7 +2538,11 @@ export class EntityService {
         id: entityId,
       },
       include: {
-        resource: true,
+        resource: {
+          include: {
+            project: true,
+          },
+        },
       },
     });
 
