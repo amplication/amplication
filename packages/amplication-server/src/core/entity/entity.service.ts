@@ -95,6 +95,7 @@ import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForE
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { pascalCase } from "pascal-case";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -259,6 +260,20 @@ export class EntityService {
     });
   }
 
+  async checkServiceLicense(resource: Resource) {
+    if (!this.billingService.isBillingEnabled) {
+      return;
+    }
+
+    if (
+      !resource.project?.licensed ||
+      (!resource.licensed && resource.resourceType === EnumResourceType.Service)
+    ) {
+      const message = "Your workspace reached its service limitation.";
+      throw new BillingLimitationError(message, BillingFeature.Services);
+    }
+  }
+
   async createOneEntity(
     args: CreateOneEntityArgs,
     user: User,
@@ -269,12 +284,10 @@ export class EntityService {
     const resourceId = args.data.resource.connect.id;
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },
+      include: { project: true },
     });
 
-    if (!resource.licensed) {
-      const message = "Your workspace reached its service limitation.";
-      throw new BillingLimitationError(message, BillingFeature.Services);
-    }
+    await this.checkServiceLicense(resource);
 
     if (
       args.data?.name?.toLowerCase().trim() ===
@@ -1898,7 +1911,11 @@ export class EntityService {
               id: entityId,
             },
             include: {
-              resource: true,
+              resource: {
+                include: {
+                  project: true,
+                },
+              },
             },
           });
 
@@ -1906,10 +1923,7 @@ export class EntityService {
             throw new NotFoundException(`Entity ${entityId} not found`);
           }
 
-          if (!entityWithResource.resource.licensed) {
-            const message = "Your workspace reached its service limitation.";
-            throw new BillingLimitationError(message, BillingFeature.Services);
-          }
+          await this.checkServiceLicense(entityWithResource.resource);
 
           const createMany = args.data.addRoles.map((role) => {
             return {
@@ -2524,7 +2538,11 @@ export class EntityService {
         id: entityId,
       },
       include: {
-        resource: true,
+        resource: {
+          include: {
+            project: true,
+          },
+        },
       },
     });
 
@@ -2532,10 +2550,7 @@ export class EntityService {
       throw new NotFoundException(`Entity ${entityId} not found`);
     }
 
-    if (!entityWithResource.resource.licensed) {
-      const message = "Your workspace reached its service limitation.";
-      throw new BillingLimitationError(message, BillingFeature.Services);
-    }
+    await this.checkServiceLicense(entityWithResource.resource);
 
     if (
       enforceValidation &&
