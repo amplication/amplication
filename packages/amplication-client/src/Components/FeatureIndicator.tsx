@@ -20,7 +20,7 @@ const WarningTooltip = styled(
   [`& .${tooltipClasses.tooltip}`]: {
     backgroundColor: "#15192C",
     color: "#ffffff",
-    maxWidth: 360,
+    maxWidth: 500,
     border: "1px solid #53dbee",
     borderRadius: "4px",
     padding: "6px 8px",
@@ -77,16 +77,14 @@ export const FeatureIndicator = ({
     return (
       <>
         {textArray[0]}
-        <div>
-          <Link
-            onClick={handleViewPlansClick}
-            style={{ color: "#53dbee" }}
-            to={{}}
-          >
-            {tooltipDefaultTextUpgrade}
-          </Link>
-          {textArray[1]}
-        </div>
+        <Link
+          onClick={handleViewPlansClick}
+          style={{ color: "#53dbee" }}
+          to={{}}
+        >
+          {tooltipDefaultTextUpgrade}
+        </Link>
+        {textArray[1]}
       </>
     );
   }, [text, tooltipDefaultTextUpgrade, handleViewPlansClick]);
