@@ -58,7 +58,10 @@ export default function ModelOrganizer({ resources, onApplyPlan }: Props) {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
   const [showRelationDetails, setShowRelationDetails] = useState(false);
-  const [changes, setChanges] = useState<ModelChanges>(null); // main data elements for save
+  const [changes, setChanges] = useState<ModelChanges>({
+    movedEntities: [],
+    newServices: [],
+  }); // main data elements for save
 
   const [readOnly, setReadOnly] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
@@ -162,14 +165,45 @@ export default function ModelOrganizer({ resources, onApplyPlan }: Props) {
           y: dropPosition.y - currentDropTarget.position.y,
         };
 
-        if (node.data.originalParentNode === currentDropTarget.id) {
-          node.data.originalParentNode = undefined;
-        } else {
-          node.data.originalParentNode = node.parentNode;
+        node.parentNode = currentDropTarget.id;
+
+        const currentEntityChanged = changes.movedEntities.find(
+          (x) => x.entityId === node.id
+        );
+
+        if (
+          !currentEntityChanged &&
+          node.data.originalParentNode !== node.parentNode
+        ) {
+          const newEntity = {
+            entityId: node.id,
+            targetResourceId: currentDropTarget.id,
+          };
+          changes.movedEntities.push(newEntity);
         }
 
-        node.parentNode = currentDropTarget.id;
-        setHasChanges(true);
+        if (
+          currentEntityChanged &&
+          node.data.originalParentNode !== node.parentNode
+        ) {
+          currentEntityChanged.targetResourceId = currentDropTarget.id;
+        }
+
+        if (
+          currentEntityChanged &&
+          node.data.originalParentNode === node.parentNode
+        ) {
+          changes.movedEntities = changes.movedEntities.filter(
+            (x) => x.entityId !== currentEntityChanged.entityId
+          );
+        }
+
+        setChanges((changes) => changes);
+        if (changes.movedEntities.length < 1) {
+          setHasChanges(false);
+        } else {
+          setHasChanges(true);
+        }
 
         setNodes((nodes) => [...nodes]);
       }
@@ -178,7 +212,7 @@ export default function ModelOrganizer({ resources, onApplyPlan }: Props) {
       }
       setCurrentDropTarget(null);
     },
-    [setNodes, edges, nodes, reactFlowInstance, showRelationDetails]
+    [setNodes, edges, nodes, reactFlowInstance, showRelationDetails, changes]
   );
 
   const onToggleDetailsChange = useCallback(async () => {
