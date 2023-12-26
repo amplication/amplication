@@ -71,6 +71,7 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
                 featureId={BillingFeature.CodeGeneratorVersion}
                 entitlementType={EntitlementType.Boolean}
                 featureIndicatorPlacement={FeatureIndicatorPlacement.Outside}
+                limitationText="Available in Enterprise plans only."
               >
                 <ToggleField
                   label="I want to select a specific version of the code generator"

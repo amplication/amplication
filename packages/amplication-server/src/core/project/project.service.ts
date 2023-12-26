@@ -30,6 +30,7 @@ import {
 import dockerNames from "docker-names";
 import { EntityPendingChange } from "../entity/entity.service";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { SubscriptionService } from "../subscription/subscription.service";
 
 @Injectable()
 export class ProjectService {
@@ -41,7 +42,8 @@ export class ProjectService {
     private readonly entityService: EntityService,
     private readonly billingService: BillingService,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly gitProviderService: GitProviderService
+    private readonly gitProviderService: GitProviderService,
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -140,6 +142,9 @@ export class ProjectService {
       -1
     );
 
+    await this.subscriptionService.updateProjectLicensed(project.workspaceId);
+    await this.subscriptionService.updateServiceLicensed(project.workspaceId);
+
     return updatedProject;
   }
 
@@ -150,36 +155,6 @@ export class ProjectService {
         ...args.data,
       },
     });
-  }
-
-  async isUnderLimitation(
-    workspaceId: string,
-    projectId: string
-  ): Promise<boolean> {
-    if (!this.billingService.isBillingEnabled) {
-      return false;
-    }
-
-    const featureProjects = await this.billingService.getMeteredEntitlement(
-      workspaceId,
-      BillingFeature.Projects
-    );
-    if (!featureProjects.usageLimit) {
-      return false;
-    }
-
-    const projects = await this.prisma.project.findMany({
-      where: {
-        workspaceId,
-        deletedAt: null,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-      skip: featureProjects.usageLimit,
-    });
-
-    return projects.some((project) => project.id === projectId);
   }
 
   /**

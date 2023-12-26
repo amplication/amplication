@@ -111,7 +111,7 @@ function entitiesToNodes(
 
   const nodes: EntityNode[] = resources.flatMap((resource) =>
     resource.entities.map((entity) => ({
-      data: { payload: entity },
+      data: { payload: entity, originalParentNode: entity.resourceId },
       id: entity.id,
       type: showDetailedRelations ? NODE_TYPE_MODEL : NODE_TYPE_MODEL_SIMPLE,
       position: {
