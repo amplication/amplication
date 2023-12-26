@@ -97,7 +97,10 @@ export class SubscriptionService {
     }
   }
 
-  async updateProjectLicensed(workspaceId: string): Promise<void> {
+  async updateProjectLicensed(
+    workspaceId: string,
+    stiggEventPayload?: UpdateStatusDto
+  ): Promise<void> {
     if (!this.billingService.isBillingEnabled) {
       return;
     }
@@ -106,6 +109,13 @@ export class SubscriptionService {
       workspaceId,
       BillingFeature.Projects
     );
+
+    this.logger.debug("featureProjects.usageLimit", {
+      workspaceId,
+      usageLimitFromPayload: stiggEventPayload?.usageLimit,
+      usageLimitFromStigg: featureProjects.usageLimit,
+      hasAccessFromStigg: featureProjects.hasAccess,
+    });
 
     if (!featureProjects.usageLimit) {
       await this.prisma.project.updateMany({
@@ -119,10 +129,6 @@ export class SubscriptionService {
       });
       return;
     }
-
-    this.logger.debug("featureProjects.usageLimit", {
-      usageLimit: featureProjects.usageLimit,
-    });
 
     const projects = await this.prisma.project.findMany({
       where: {
@@ -168,7 +174,10 @@ export class SubscriptionService {
     ]);
   }
 
-  async updateServiceLicensed(workspaceId: string): Promise<void> {
+  async updateServiceLicensed(
+    workspaceId: string,
+    stiggEventPayload?: UpdateStatusDto
+  ): Promise<void> {
     if (!this.billingService.isBillingEnabled) {
       return;
     }
@@ -177,6 +186,13 @@ export class SubscriptionService {
       workspaceId,
       BillingFeature.Services
     );
+
+    this.logger.debug("featureServices.usageLimit", {
+      workspaceId,
+      usageLimitFromPayload: stiggEventPayload?.usageLimit,
+      usageLimitFromStigg: featureServices.usageLimit,
+      hasAccessFromStigg: featureServices.hasAccess,
+    });
 
     if (!featureServices.usageLimit) {
       await this.prisma.resource.updateMany({
@@ -196,10 +212,6 @@ export class SubscriptionService {
       });
       return;
     }
-
-    this.logger.debug("featureServices.usageLimit", {
-      usageLimit: featureServices.usageLimit,
-    });
 
     const resources = await this.prisma.resource.findMany({
       where: {
@@ -263,6 +275,15 @@ export class SubscriptionService {
       case "subscription.canceled": {
         data =
           this.mapUpdateStatusDtoToUpsertSubscriptionInput(updateStatusDto);
+
+        this.logger.debug(
+          "subscription created/updated/expired/canceled event emitted",
+          {
+            workspaceId: updateStatusDto.customer.id,
+            data,
+          }
+        );
+
         await this.prisma.subscription.upsert({
           where: {
             id: updateStatusDto.id,
@@ -283,8 +304,19 @@ export class SubscriptionService {
       case "promotionalEntitlement.updated":
       case "promotionalEntitlement.revoked":
       case "promotionalEntitlement.expired": {
-        await this.updateProjectLicensed(updateStatusDto.customer.id);
-        await this.updateServiceLicensed(updateStatusDto.customer.id);
+        this.logger.debug("promotionalEntitlement event emitted", {
+          workspaceId: updateStatusDto.customer.id,
+          data: updateStatusDto,
+        });
+
+        await this.updateProjectLicensed(
+          updateStatusDto.customer.id,
+          updateStatusDto
+        );
+        await this.updateServiceLicensed(
+          updateStatusDto.customer.id,
+          updateStatusDto
+        );
         break;
       }
     }
@@ -300,6 +332,11 @@ export class SubscriptionService {
       updateStatusDto.type === "subscription.created" ||
       updateStatusDto.type === "subscription.updated"
     ) {
+      this.logger.debug("subscription created/updated event emitted", {
+        workspaceId: updateStatusDto.customer.id,
+        data: updateStatusDto,
+      });
+
       await this.updateProjectLicensed(updateStatusDto.customer.id);
       await this.updateServiceLicensed(updateStatusDto.customer.id);
     }
