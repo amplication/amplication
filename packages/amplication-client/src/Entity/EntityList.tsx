@@ -222,7 +222,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 <FeatureIndicatorContainer
                   featureId={BillingFeature.ImportDBSchema}
                   entitlementType={EntitlementType.Boolean}
-                  limitationText="Available in Enterprise plans only."
+                  limitationText="Available in Enterprise plans only. "
                   reversePosition={true}
                 >
                   <Button
