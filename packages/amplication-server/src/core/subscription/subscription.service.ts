@@ -105,19 +105,38 @@ export class SubscriptionService {
       return;
     }
 
+    let usageLimit: number;
+
+    if (stiggEventPayload) {
+      usageLimit = stiggEventPayload.packageEntitlements?.find(
+        (packageEntitlement) =>
+          packageEntitlement.feature.id === BillingFeature.Projects
+      )?.usageLimit;
+
+      this.logger.debug("Projects usageLimit from stiggEventPayload", {
+        workspaceId,
+        usageLimit,
+      });
+    }
+
     const featureProjects = await this.billingService.getMeteredEntitlement(
       workspaceId,
       BillingFeature.Projects
     );
 
-    this.logger.debug("featureProjects.usageLimit", {
+    this.logger.debug("usageLimit from getMeteredEntitlement", {
       workspaceId,
-      usageLimitFromPayload: stiggEventPayload?.usageLimit,
-      usageLimitFromStigg: featureProjects.usageLimit,
-      hasAccessFromStigg: featureProjects.hasAccess,
+      usageLimit: featureProjects.usageLimit,
     });
 
-    if (!featureProjects.usageLimit) {
+    usageLimit = usageLimit || featureProjects.usageLimit;
+
+    this.logger.debug("featureProjects.usageLimit", {
+      workspaceId,
+      usageLimit,
+    });
+
+    if (!usageLimit) {
       await this.prisma.project.updateMany({
         where: {
           workspaceId,
@@ -140,8 +159,8 @@ export class SubscriptionService {
       },
     });
 
-    const projectsWithinLimit = projects.slice(0, featureProjects.usageLimit);
-    const projectsBeyondLimit = projects.slice(featureProjects.usageLimit);
+    const projectsWithinLimit = projects.slice(0, usageLimit);
+    const projectsBeyondLimit = projects.slice(usageLimit);
 
     const projectIdsWithinLimit = projectsWithinLimit.map(
       (project) => project.id
@@ -182,19 +201,38 @@ export class SubscriptionService {
       return;
     }
 
+    let usageLimit: number;
+
+    if (stiggEventPayload) {
+      usageLimit = stiggEventPayload.packageEntitlements?.find(
+        (packageEntitlement) =>
+          packageEntitlement.feature.id === BillingFeature.Services
+      )?.usageLimit;
+
+      this.logger.debug("Services usageLimit from stiggEventPayload", {
+        workspaceId,
+        usageLimit,
+      });
+    }
+
     const featureServices = await this.billingService.getMeteredEntitlement(
       workspaceId,
       BillingFeature.Services
     );
 
-    this.logger.debug("featureServices.usageLimit", {
+    this.logger.debug("usageLimit from getMeteredEntitlement", {
       workspaceId,
-      usageLimitFromPayload: stiggEventPayload?.usageLimit,
-      usageLimitFromStigg: featureServices.usageLimit,
-      hasAccessFromStigg: featureServices.hasAccess,
+      usageLimit: featureServices.usageLimit,
     });
 
-    if (!featureServices.usageLimit) {
+    usageLimit = usageLimit || featureServices.usageLimit;
+
+    this.logger.debug("featureServices.usageLimit", {
+      workspaceId,
+      usageLimit,
+    });
+
+    if (!usageLimit) {
       await this.prisma.resource.updateMany({
         where: {
           project: {
@@ -229,8 +267,8 @@ export class SubscriptionService {
       },
     });
 
-    const resourcesWithinLimit = resources.slice(0, featureServices.usageLimit);
-    const resourcesBeyondLimit = resources.slice(featureServices.usageLimit);
+    const resourcesWithinLimit = resources.slice(0, usageLimit);
+    const resourcesBeyondLimit = resources.slice(usageLimit);
 
     const resourceIdsWithinLimit = resourcesWithinLimit.map(
       (project) => project.id
@@ -300,25 +338,6 @@ export class SubscriptionService {
         });
         break;
       }
-      case "promotionalEntitlement.granted":
-      case "promotionalEntitlement.updated":
-      case "promotionalEntitlement.revoked":
-      case "promotionalEntitlement.expired": {
-        this.logger.debug("promotionalEntitlement event emitted", {
-          workspaceId: updateStatusDto.customer.id,
-          data: updateStatusDto,
-        });
-
-        await this.updateProjectLicensed(
-          updateStatusDto.customer.id,
-          updateStatusDto
-        );
-        await this.updateServiceLicensed(
-          updateStatusDto.customer.id,
-          updateStatusDto
-        );
-        break;
-      }
     }
     if (updateStatusDto.type === "subscription.created") {
       await this.trackUpgradeCompletedEvent(
@@ -337,8 +356,14 @@ export class SubscriptionService {
         data: updateStatusDto,
       });
 
-      await this.updateProjectLicensed(updateStatusDto.customer.id);
-      await this.updateServiceLicensed(updateStatusDto.customer.id);
+      await this.updateProjectLicensed(
+        updateStatusDto.customer.id,
+        updateStatusDto
+      );
+      await this.updateServiceLicensed(
+        updateStatusDto.customer.id,
+        updateStatusDto
+      );
     }
   }
 

@@ -16,8 +16,6 @@ export interface UpdateStatusDto {
   addons: Addon[];
   metadata: Metadata;
   experimentInfo: ExperimentInfo;
-  feature: Feature;
-  usageLimit: number;
 }
 
 export interface Customer {
