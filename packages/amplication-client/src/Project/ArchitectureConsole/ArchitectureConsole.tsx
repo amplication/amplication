@@ -1,13 +1,13 @@
 import "reactflow/dist/style.css";
 import "./ArchitectureConsole.scss";
-
 import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useContext } from "react";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import { formatError } from "../../util/error";
 import ModelOrganizer from "./ModelOrganizer";
+import { ModelChanges } from "./types";
 
 export const CLASS_NAME = "architecture-console";
 type TData = {
@@ -19,7 +19,7 @@ const DATE_CREATED_FIELD = "createdAt";
 export default function ArchitectureConsole() {
   const { currentProject } = useContext(AppContext);
 
-  const { loading, error, data } = useQuery<TData>(GET_RESOURCES, {
+  const { loading, error, data, refetch } = useQuery<TData>(GET_RESOURCES, {
     variables: {
       projectId: currentProject?.id,
       orderBy: {
@@ -30,9 +30,27 @@ export default function ArchitectureConsole() {
     fetchPolicy: "no-cache",
   });
 
-  const handleApplyPlan = useCallback(() => {
-    //todo: send data to the server
-    console.log("Apply Plan");
+  const [createResourceEntities, { error: createEntitiesError }] =
+    useMutation<ModelChanges>(CREATE_RESOURCE_ENTITIES, {
+      onCompleted: (data) => {
+        refetch();
+      },
+    });
+
+  const handleApplyPlan = useCallback((data: ModelChanges) => {
+    data.newServices.forEach((service) => {
+      //todo: create new resource
+      //update target resourceId in moveEntities list
+    });
+
+    createResourceEntities({
+      variables: {
+        data: {
+          entitiesToCopy: data.movedEntities,
+          //...data,
+        },
+      },
+    }).catch(console.error);
   }, []);
 
   const errorMessage = error && formatError(error);
@@ -50,6 +68,30 @@ export const GET_RESOURCES = gql`
     resources(
       where: { project: { id: $projectId }, resourceType: { equals: Service } }
     ) {
+      id
+      name
+      entities {
+        id
+        displayName
+        resourceId
+        fields {
+          permanentId
+          displayName
+          description
+          properties
+          dataType
+          customAttributes
+          required
+          unique
+        }
+      }
+    }
+  }
+`;
+
+export const CREATE_RESOURCE_ENTITIES = gql`
+  mutation copiedEntities($data: ResourcesCreateCopiedEntitiesInput!) {
+    copiedEntities(data: $data) {
       id
       name
       entities {

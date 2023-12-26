@@ -64,7 +64,10 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { JsonValue } from "type-fest";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { CreateResourceEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
+import {
+  CreateResourceEntitiesArgs,
+  CreateResourcesEntitiesArgs,
+} from "./dto/CreateResourceEntitiesArgs";
 import { LookupResolvedProperties } from "@amplication/code-gen-types";
 import { SubscriptionService } from "../subscription/subscription.service";
 
@@ -485,6 +488,127 @@ export class ResourceService {
     return resource;
   }
 
+  async copiedEntities(
+    args: CreateResourcesEntitiesArgs,
+    user: User
+  ): Promise<Resource[]> {
+    const { entitiesToCopy } = args.data;
+
+    // 1.create resource entities
+
+    const copiedEntities: Entity[] = [];
+    const entitiesWithFields: Entity[] = [];
+    const resources: Resource[] = [];
+
+    for (const entityToCopy of entitiesToCopy) {
+      const currentEntityToCopy = await this.prisma.entity.findUnique({
+        where: {
+          id: entityToCopy.entityId,
+        },
+        include: {
+          versions: {
+            include: {
+              fields: true,
+            },
+          },
+        },
+      });
+
+      entitiesWithFields.push(currentEntityToCopy);
+
+      const entity = await this.createResourceCopiedEntity(
+        currentEntityToCopy,
+        entityToCopy.targetResourceId,
+        user
+      );
+
+      copiedEntities.push(entity);
+
+      const currentResource = await this.prisma.resource.findUnique({
+        where: {
+          id: entityToCopy.targetResourceId,
+        },
+        include: {
+          entities: {
+            include: {
+              versions: {
+                include: {
+                  fields: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      resources.push(currentResource);
+    }
+
+    const entitiesWithFieldsMap = entitiesWithFields.reduce(
+      (entitiesObj, entity) => {
+        entitiesObj[entity.name] = entity;
+        return entitiesObj;
+      },
+      {}
+    );
+
+    // 2.create entities fields
+
+    for (const copiedEntity of copiedEntities) {
+      const currentEntity: Entity = entitiesWithFieldsMap[copiedEntity.name];
+
+      for (const field of currentEntity.versions[0].fields) {
+        const { dataType, properties } = field;
+        const { allowMultipleSelection, relatedEntityId } =
+          properties as unknown as LookupResolvedProperties;
+
+        if (dataType === EnumDataType.Id) {
+          await this.createCopiedEntityIdField(copiedEntity.id);
+          continue;
+        }
+        if (dataType === EnumDataType.Lookup) {
+          const isFieldExist = await this.isEntityFieldExist(
+            pascalCase(field.name),
+            copiedEntity.id
+          );
+
+          if (isFieldExist) continue;
+
+          const currentRelatedEntity = entitiesToCopy.find(
+            (entity) => entity.entityId === relatedEntityId
+          );
+
+          if (!currentRelatedEntity) {
+            if (allowMultipleSelection) continue;
+
+            //one to one relation or one to many relation
+            //create id field by the idType and field name
+
+            await this.entityService.updateFieldDataTypeIdByRelatedEntity(
+              field,
+              relatedEntityId
+            );
+          }
+        }
+
+        await this.entityService.createCopiedEntityFieldByDisplayName(
+          copiedEntity.id,
+          field,
+          user
+        );
+      }
+    }
+
+    // 3.delete entities from source services
+    for (const entity of entitiesWithFields) {
+      await this.entityService.deleteEntityFromSource(
+        { where: { id: entity.id } },
+        user
+      );
+    }
+
+    return resources;
+  }
   async createResourceCopiedEntities(
     entitiesToCopy: Entity[],
     targetResourceId: string,
@@ -532,6 +656,52 @@ export class ResourceService {
     }
 
     return copiedEntities;
+  }
+
+  async createResourceCopiedEntity(
+    entityToCopy: Entity,
+    targetResourceId: string,
+    user: User
+  ): Promise<Entity> {
+    const {
+      name,
+      displayName,
+      pluralDisplayName,
+      description,
+      customAttributes,
+    } = entityToCopy;
+
+    let copiedEntity: Entity;
+
+    try {
+      copiedEntity = await this.entityService.createOneEntity(
+        {
+          data: {
+            resource: {
+              connect: {
+                id: targetResourceId,
+              },
+            },
+            name,
+            displayName,
+            pluralDisplayName,
+            description,
+            customAttributes,
+          },
+        },
+        user,
+        false,
+        false,
+        false
+      );
+    } catch (error) {
+      this.logger.error(error.message, error, { entity: entityToCopy.name });
+      throw new Error(
+        `Failed to create entity "${entityToCopy.name}" due to ${error.message}`
+      );
+    }
+
+    return copiedEntity;
   }
 
   async createCopiedEntityIdField(copiedEntityId: string): Promise<void> {
