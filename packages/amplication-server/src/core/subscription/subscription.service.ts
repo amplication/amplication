@@ -97,10 +97,7 @@ export class SubscriptionService {
     }
   }
 
-  async updateProjectLicensed(
-    workspaceId: string,
-    stiggEventPayload?: UpdateStatusDto
-  ): Promise<void> {
+  async updateProjectLicensed(workspaceId: string): Promise<void> {
     if (!this.billingService.isBillingEnabled) {
       return;
     }
@@ -110,11 +107,10 @@ export class SubscriptionService {
       BillingFeature.Projects
     );
 
-    this.logger.debug("featureProjects.usageLimit", {
+    this.logger.debug("feature projects", {
       workspaceId,
-      usageLimitFromPayload: stiggEventPayload?.usageLimit,
-      usageLimitFromStigg: featureProjects.usageLimit,
-      hasAccessFromStigg: featureProjects.hasAccess,
+      usageLimit: featureProjects.usageLimit,
+      hasAccess: featureProjects.hasAccess,
     });
 
     if (!featureProjects.usageLimit) {
@@ -174,10 +170,7 @@ export class SubscriptionService {
     ]);
   }
 
-  async updateServiceLicensed(
-    workspaceId: string,
-    stiggEventPayload?: UpdateStatusDto
-  ): Promise<void> {
+  async updateServiceLicensed(workspaceId: string): Promise<void> {
     if (!this.billingService.isBillingEnabled) {
       return;
     }
@@ -187,11 +180,10 @@ export class SubscriptionService {
       BillingFeature.Services
     );
 
-    this.logger.debug("featureServices.usageLimit", {
+    this.logger.debug("feature services", {
       workspaceId,
-      usageLimitFromPayload: stiggEventPayload?.usageLimit,
-      usageLimitFromStigg: featureServices.usageLimit,
-      hasAccessFromStigg: featureServices.hasAccess,
+      usageLimit: featureServices.usageLimit,
+      hasAccess: featureServices.hasAccess,
     });
 
     if (!featureServices.usageLimit) {
@@ -309,14 +301,8 @@ export class SubscriptionService {
           data: updateStatusDto,
         });
 
-        await this.updateProjectLicensed(
-          updateStatusDto.customer.id,
-          updateStatusDto
-        );
-        await this.updateServiceLicensed(
-          updateStatusDto.customer.id,
-          updateStatusDto
-        );
+        await this.updateProjectLicensed(updateStatusDto.customer.id);
+        await this.updateServiceLicensed(updateStatusDto.customer.id);
         break;
       }
     }
