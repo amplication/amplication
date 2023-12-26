@@ -6,6 +6,7 @@ import { BillingService } from "../billing/billing.service";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { Project, Resource, Workspace } from "../../models";
+import { UpdateStatusDto } from "./dto/UpdateStatusDto";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_PROJECT_ID_1 = "exampleProjectId_1";
@@ -157,33 +158,101 @@ describe("SubscriptionService", () => {
         expect(prismaProjectFindManyMock).toHaveBeenCalledTimes(0);
       });
 
-      it("should update the first project with licensed true and the the second and the third projects with licensed false when the usage limitation is 1", async () => {
-        billingServiceMock.getMeteredEntitlement.mockReturnValue({
-          usageLimit: 1,
-        } as unknown as MeteredEntitlement);
+      describe("when calling without stiggEventPayload", () => {
+        it("should update the project licensed based on usage limit from stigg getMeteredEntitlement: 1 - first project is licensed and the others not", async () => {
+          billingServiceMock.getMeteredEntitlement.mockReturnValue({
+            usageLimit: 1,
+          } as unknown as MeteredEntitlement);
 
-        await service.updateProjectLicensed(EXAMPLE_WORKSPACE_ID);
+          await service.updateProjectLicensed(EXAMPLE_WORKSPACE_ID);
 
-        expect(prismaProjectUpdateManyMock).toHaveBeenCalledTimes(2);
-        expect(prismaProjectUpdateManyMock).toHaveBeenNthCalledWith(1, {
-          where: {
-            id: {
-              in: [EXAMPLE_PROJECT_ID_1],
+          expect(prismaProjectUpdateManyMock).toHaveBeenCalledTimes(2);
+          expect(prismaProjectUpdateManyMock).toHaveBeenNthCalledWith(1, {
+            where: {
+              id: {
+                in: [EXAMPLE_PROJECT_ID_1],
+              },
             },
-          },
-          data: {
-            licensed: true,
-          },
+            data: {
+              licensed: true,
+            },
+          });
+          expect(prismaProjectUpdateManyMock).toHaveBeenNthCalledWith(2, {
+            where: {
+              id: {
+                in: [EXAMPLE_PROJECT_ID_2, EXAMPLE_PROJECT_ID_3],
+              },
+            },
+            data: {
+              licensed: false,
+            },
+          });
         });
-        expect(prismaProjectUpdateManyMock).toHaveBeenNthCalledWith(2, {
-          where: {
-            id: {
-              in: [EXAMPLE_PROJECT_ID_2, EXAMPLE_PROJECT_ID_3],
+      });
+
+      describe("when calling with stiggEventPayload", () => {
+        it("should update the projects licensed based on the usage limit in the payload: 2 - first two projects are licensed and the others not", async () => {
+          billingServiceMock.getMeteredEntitlement.mockReturnValue({
+            usageLimit: 1,
+          } as unknown as MeteredEntitlement);
+
+          const stiggEventPayloadMock = {
+            type: "subscription.updated",
+            entityId: "clqm4e3au0000q4sddshpchsn",
+            id: "clqm4e3au0000q4sddshpchsn",
+            status: "ACTIVE",
+            customer: {
+              entityId: "clqm4e3au0000q4sddshpchsn",
+              id: "clqm4e3au0000q4sddshpchsn",
             },
-          },
-          data: {
-            licensed: false,
-          },
+            resource: null,
+            plan: {
+              id: "plan-amplication-free",
+              name: "Free",
+            },
+            packageEntitlements: [
+              {
+                feature: {
+                  id: "feature-projects",
+                  name: "Projects",
+                  featureType: "METERED",
+                  meterType: "INCREMENTAL",
+                  status: "ACTIVE",
+                },
+                hasUnlimitedUsage: false,
+                usageLimit: 2,
+              },
+            ],
+            isDowngrade: true,
+            isUpgrade: false,
+          } as unknown as UpdateStatusDto;
+
+          await service.updateProjectLicensed(
+            EXAMPLE_WORKSPACE_ID,
+            stiggEventPayloadMock
+          );
+
+          expect(prismaProjectUpdateManyMock).toHaveBeenCalledTimes(2);
+          expect(prismaProjectUpdateManyMock).toHaveBeenNthCalledWith(1, {
+            where: {
+              id: {
+                in: [EXAMPLE_PROJECT_ID_1, EXAMPLE_PROJECT_ID_2],
+              },
+            },
+            data: {
+              licensed: true,
+            },
+          });
+          expect(prismaProjectUpdateManyMock).toHaveBeenNthCalledWith(2, {
+            where: {
+              id: {
+                in: [EXAMPLE_PROJECT_ID_3],
+              },
+            },
+            data: {
+              licensed: false,
+            },
+          });
         });
       });
     });
@@ -236,33 +305,101 @@ describe("SubscriptionService", () => {
         expect(prismaResourceFindManyMock).toHaveBeenCalledTimes(0);
       });
 
-      it("should update the first service with licensed true and the the second and the third services with licensed false when the usage limitation is 1", async () => {
-        billingServiceMock.getMeteredEntitlement.mockReturnValue({
-          usageLimit: 1,
-        } as unknown as MeteredEntitlement);
+      describe("when calling without stiggEventPayload", () => {
+        it("should update the service licensed based on usage limit from stigg getMeteredEntitlement: 1 - first service is licensed and the others not", async () => {
+          billingServiceMock.getMeteredEntitlement.mockReturnValue({
+            usageLimit: 1,
+          } as unknown as MeteredEntitlement);
 
-        await service.updateServiceLicensed(EXAMPLE_WORKSPACE_ID);
+          await service.updateServiceLicensed(EXAMPLE_WORKSPACE_ID);
 
-        expect(prismaResourceUpdateManyMock).toHaveBeenCalledTimes(2);
-        expect(prismaResourceUpdateManyMock).toHaveBeenNthCalledWith(1, {
-          where: {
-            id: {
-              in: [EXAMPLE_RESOURCE_ID_1],
+          expect(prismaResourceUpdateManyMock).toHaveBeenCalledTimes(2);
+          expect(prismaResourceUpdateManyMock).toHaveBeenNthCalledWith(1, {
+            where: {
+              id: {
+                in: [EXAMPLE_RESOURCE_ID_1],
+              },
             },
-          },
-          data: {
-            licensed: true,
-          },
+            data: {
+              licensed: true,
+            },
+          });
+          expect(prismaResourceUpdateManyMock).toHaveBeenNthCalledWith(2, {
+            where: {
+              id: {
+                in: [EXAMPLE_RESOURCE_ID_2, EXAMPLE_RESOURCE_ID_3],
+              },
+            },
+            data: {
+              licensed: false,
+            },
+          });
         });
-        expect(prismaResourceUpdateManyMock).toHaveBeenNthCalledWith(2, {
-          where: {
-            id: {
-              in: [EXAMPLE_RESOURCE_ID_2, EXAMPLE_RESOURCE_ID_3],
+      });
+
+      describe("when calling with stiggEventPayload", () => {
+        it("should update the services licensed based on the usage limit in the payload: 2 - first two services are licensed and the others not", async () => {
+          billingServiceMock.getMeteredEntitlement.mockReturnValue({
+            usageLimit: 1,
+          } as unknown as MeteredEntitlement);
+
+          const stiggEventPayloadMock = {
+            type: "subscription.updated",
+            entityId: "clqm4e3au0000q4sddshpchsn",
+            id: "clqm4e3au0000q4sddshpchsn",
+            status: "ACTIVE",
+            customer: {
+              entityId: "clqm4e3au0000q4sddshpchsn",
+              id: "clqm4e3au0000q4sddshpchsn",
             },
-          },
-          data: {
-            licensed: false,
-          },
+            resource: null,
+            plan: {
+              id: "plan-amplication-free",
+              name: "Free",
+            },
+            packageEntitlements: [
+              {
+                feature: {
+                  id: "feature-services",
+                  name: "Services",
+                  featureType: "METERED",
+                  meterType: "INCREMENTAL",
+                  status: "ACTIVE",
+                },
+                hasUnlimitedUsage: false,
+                usageLimit: 2,
+              },
+            ],
+            isDowngrade: true,
+            isUpgrade: false,
+          } as unknown as UpdateStatusDto;
+
+          await service.updateServiceLicensed(
+            EXAMPLE_WORKSPACE_ID,
+            stiggEventPayloadMock
+          );
+
+          expect(prismaResourceUpdateManyMock).toHaveBeenCalledTimes(2);
+          expect(prismaResourceUpdateManyMock).toHaveBeenNthCalledWith(1, {
+            where: {
+              id: {
+                in: [EXAMPLE_RESOURCE_ID_1, EXAMPLE_RESOURCE_ID_2],
+              },
+            },
+            data: {
+              licensed: true,
+            },
+          });
+          expect(prismaResourceUpdateManyMock).toHaveBeenNthCalledWith(2, {
+            where: {
+              id: {
+                in: [EXAMPLE_RESOURCE_ID_3],
+              },
+            },
+            data: {
+              licensed: false,
+            },
+          });
         });
       });
     });
