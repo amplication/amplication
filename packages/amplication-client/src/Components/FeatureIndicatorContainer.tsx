@@ -81,6 +81,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     if (!subscriptionPlan || !status || !featureId) {
       setDisabled(false);
       setIcon(null);
+      return;
     }
 
     if (entitlementType === EntitlementType.Boolean) {
@@ -105,6 +106,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   useEffect(() => {
     if (!subscriptionPlan || !status || !featureId) {
       setIcon(null);
+      return;
     }
     if (subscriptionPlan === EnumSubscriptionPlan.Free && disabled) {
       setIcon(IconType.Lock);
