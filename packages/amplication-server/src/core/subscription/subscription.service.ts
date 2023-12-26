@@ -120,6 +120,10 @@ export class SubscriptionService {
       return;
     }
 
+    this.logger.debug("featureProjects.usageLimit", {
+      usageLimit: featureProjects.usageLimit,
+    });
+
     const projects = await this.prisma.project.findMany({
       where: {
         workspaceId,
@@ -193,6 +197,10 @@ export class SubscriptionService {
       return;
     }
 
+    this.logger.debug("featureServices.usageLimit", {
+      usageLimit: featureServices.usageLimit,
+    });
+
     const resources = await this.prisma.resource.findMany({
       where: {
         project: {
@@ -246,14 +254,15 @@ export class SubscriptionService {
   async handleUpdateSubscriptionStatusEvent(
     updateStatusDto: UpdateStatusDto
   ): Promise<void> {
-    const data =
-      this.mapUpdateStatusDtoToUpsertSubscriptionInput(updateStatusDto);
+    let data: UpsertSubscriptionInput;
 
     switch (updateStatusDto.type) {
       case "subscription.created":
       case "subscription.updated":
       case "subscription.expired":
       case "subscription.canceled": {
+        data =
+          this.mapUpdateStatusDtoToUpsertSubscriptionInput(updateStatusDto);
         await this.prisma.subscription.upsert({
           where: {
             id: updateStatusDto.id,
