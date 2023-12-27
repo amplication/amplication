@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactMarkdown from 'react-markdown';
+import React from "react";
+import ReactMarkdown from "react-markdown";
 import { EnumTextStyle, ListItem, Text } from "@amplication/ui/design-system";
 
 type CatalogProps = {
