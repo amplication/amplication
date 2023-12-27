@@ -110,7 +110,7 @@ const tracedInstance = TraceWrapper.trace(instance);
 ## Run in production
 
 In order to send the collected tracing data, the application will need to pass the OTEL collector exporter URL i.e. `http://localhost:4318`
-As this library rely on the official OTEL SDK library, the exporter URL configuration can be defined as `OTEL_EXPORTER_OTLP_ENDPOINT` enviroment variable as described here
+As this library rely on the official OTEL SDK library, the exporter URL configuration can be defined as `OTEL_EXPORTER_OTLP_ENDPOINT` environment variable as described here
 https://opentelemetry.io/docs/concepts/sdk-configuration/otlp-exporter-configuration/
 
 

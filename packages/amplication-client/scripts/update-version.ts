@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 import { join } from "path";
-import fs from "fs";
+import * as fs from "fs";
 import * as prettier from "prettier";
 
 if (require.main === module) {
   const version = process.argv[2];
+
   if (!version || !version.match(/^\d+\.\d+\.\d+$/)) {
     console.error(
       "Version argument is invalid. Please provide a version like 1.0.0, 1.0.1, etc."

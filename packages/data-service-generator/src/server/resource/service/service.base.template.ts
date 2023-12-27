@@ -18,29 +18,29 @@ export class SERVICE_BASE {
     return this.prisma.DELEGATE.count(args);
   }
 
-  async findMany<T extends Prisma.FIND_MANY_ARGS>(
+  async FIND_MANY_ENTITY_FUNCTION<T extends Prisma.FIND_MANY_ARGS>(
     args: Prisma.SelectSubset<T, Prisma.FIND_MANY_ARGS>
   ): Promise<ENTITY[]> {
     return this.prisma.DELEGATE.findMany(args);
   }
-  async findOne<T extends Prisma.FIND_ONE_ARGS>(
+  async FIND_ONE_ENTITY_FUNCTION<T extends Prisma.FIND_ONE_ARGS>(
     args: Prisma.SelectSubset<T, Prisma.FIND_ONE_ARGS>
   ): Promise<ENTITY | null> {
     return this.prisma.DELEGATE.findUnique(args);
   }
-  async create<T extends Prisma.CREATE_ARGS>(
+  async CREATE_ENTITY_FUNCTION<T extends Prisma.CREATE_ARGS>(
     args: Prisma.SelectSubset<T, Prisma.CREATE_ARGS>
   ): Promise<ENTITY> {
     // @ts-ignore
     return this.prisma.DELEGATE.create<T>(CREATE_ARGS_MAPPING);
   }
-  async update<T extends Prisma.UPDATE_ARGS>(
+  async UPDATE_ENTITY_FUNCTION<T extends Prisma.UPDATE_ARGS>(
     args: Prisma.SelectSubset<T, Prisma.UPDATE_ARGS>
   ): Promise<ENTITY> {
     // @ts-ignore
     return this.prisma.DELEGATE.update<T>(UPDATE_ARGS_MAPPING);
   }
-  async delete<T extends Prisma.DELETE_ARGS>(
+  async DELETE_ENTITY_FUNCTION<T extends Prisma.DELETE_ARGS>(
     args: Prisma.SelectSubset<T, Prisma.DELETE_ARGS>
   ): Promise<ENTITY> {
     return this.prisma.DELEGATE.delete(args);

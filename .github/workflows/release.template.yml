@@ -41,7 +41,6 @@ on:
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   BRANCH: ${{ inputs.branch }}
-  CYPRESS_CACHE_FOLDER: node_modules/.cache/Cypress
 
 jobs:
   package:

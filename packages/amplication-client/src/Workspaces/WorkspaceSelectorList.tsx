@@ -73,6 +73,7 @@ const GET_WORKSPACES = gql`
       subscription {
         id
         subscriptionPlan
+        status
       }
     }
   }

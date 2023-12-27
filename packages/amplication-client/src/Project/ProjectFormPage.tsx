@@ -1,5 +1,6 @@
 import {
   EnumFlexItemMargin,
+  EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
   Panel,
@@ -22,7 +23,7 @@ function ProjectFormPage() {
       </FlexItem>
 
       <Panel>
-        <FlexItem>
+        <FlexItem itemsAlign={EnumItemsAlign.Center}>
           <FlexItem.FlexStart>
             <Text textStyle={EnumTextStyle.Description}>
               Once you delete a project, there is no going back. Please be

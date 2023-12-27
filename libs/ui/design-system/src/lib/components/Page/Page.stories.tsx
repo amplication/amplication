@@ -1,13 +1,13 @@
-import type { ComponentStory, ComponentMeta } from "@storybook/react";
+import type { StoryFn, Meta } from "@storybook/react";
 import { Page } from "./Page";
 
-const Story: ComponentMeta<typeof Page> = {
+const Story: Meta<typeof Page> = {
   component: Page,
   title: "Page",
 };
 export default Story;
 
-const Template: ComponentStory<typeof Page> = (args) => (
+const Template: StoryFn<typeof Page> = (args) => (
   <Page {...args}>
     <p>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
@@ -21,5 +21,7 @@ const Template: ComponentStory<typeof Page> = (args) => (
   </Page>
 );
 
-export const Primary = Template.bind({});
-Primary.args = {};
+export const Primary = {
+  render: Template,
+  args: {},
+};

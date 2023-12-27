@@ -5,14 +5,14 @@
   "projectType": "application",
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["packages/amplication-build-manager/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": [
         "{workspaceRoot}/coverage/packages/amplication-build-manager"
       ],
@@ -22,13 +22,16 @@
       }
     },
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/amplication-build-manager",
         "main": "packages/amplication-build-manager/src/main.ts",
         "tsConfig": "packages/amplication-build-manager/tsconfig.app.json",
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -39,11 +42,12 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "amplication-build-manager:build",
         "inspect": true,
-        "port": 7010
+        "port": 7010,
+        "watch": true
       },
       "configurations": {
         "production": {

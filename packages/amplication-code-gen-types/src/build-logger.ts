@@ -2,7 +2,7 @@ export interface BuildLogger {
   /**
    * Log an info message
    * @param message  Log message
-   * @param params Additional application internal log params. Not diplayed in the build log.
+   * @param params Additional application internal log params. Not displayed in the build log.
    * @param userFriendlyMessage  User facing log message. It will be displayed in the build log. Default: message
    * @returns
    */
@@ -14,7 +14,7 @@ export interface BuildLogger {
   /**
    * Log a warning message
    * @param message  Log message
-   * @param params Additional application internal log params. Not diplayed in the build log.
+   * @param params Additional application internal log params. Not displayed in the build log.
    * @param userFriendlyMessage  User facing log message. It will be displayed in the build log. Default: message
    * @returns
    */
@@ -26,7 +26,7 @@ export interface BuildLogger {
   /**
    * Log an error message
    * @param message  Log message
-   * @param params Additional application internal log params. Not diplayed in the build log.
+   * @param params Additional application internal log params. Not displayed in the build log.
    * @param userFriendlyMessage  User facing log message. It will be displayed in the build log. Default: message
    * @param error Error
    * @returns

@@ -9,7 +9,7 @@ export async function createMainFile() {
   const { logger, serverDirectories, hasBigIntFields } = DsgContext.getInstance;
   const moduleMap = new ModuleMap(logger);
 
-  await logger.info("Create main.ts file...");
+  await logger.info("Creating main.ts file...");
 
   const mainFilePath = path.resolve(__dirname, MAIN_TS_FILE_NAME);
   const mainWithBigintFilePath = path.resolve(
@@ -43,7 +43,7 @@ export async function createMainFile() {
 
   await logger.info("Formatting main.ts file...");
   await moduleMap.replaceModulesPath((path) => path.replace(".template", ""));
-  await moduleMap.replaceModulesCode((code) => formatCode(code));
+  await moduleMap.replaceModulesCode((path, code) => formatCode(path, code));
 
   return moduleMap;
 }

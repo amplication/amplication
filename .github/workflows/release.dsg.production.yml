@@ -47,8 +47,13 @@ jobs:
         id: check-tag
         run: |
           DSG_VERSION=v$(cat $DSG_PACKAGE_JSON  | jq -r '.version')
-          NEW_TAG=dsg/$DSG_VERSION
+          NEW_TAG=dsg/${{ inputs.version }}
           echo "🏷️ NEW_TAG=$NEW_TAG (based on $DSG_PACKAGE_JSON DSG_VERSION=$DSG_VERSION)"
+
+          if [[ "${{ inputs.version }}" == "$DSG_VERSION" ]]; then
+            echo -e  "$ECHO_RED 🚨 The chosen version '${{ inputs.version }}' already defined in data-service-generator package.json. 🚨"
+            exit 1
+          fi
 
           # If the tag already exists, it means that was already released. So we skip it. 
           if git tag --list | grep -q "^$NEW_TAG"; then
@@ -129,6 +134,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
+      - name: Cache global node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+
       - name: Configure AWS Credentials (operations account)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -149,6 +173,7 @@ jobs:
           # env variables substituted in the project.json docker target build-args
           GIT_REF_NAME: ${{ inputs.version }}
           GIT_SHA: ${{ steps.commit-changes.outputs.commit_hash }}
+          PRODUCTION_TAGS: true
 
       - name: Create data-service-generator git tag
         run: |

@@ -123,16 +123,16 @@ describe("prismaSchemaParser", () => {
               {
                 permanentId: expect.any(String),
                 name: "id",
-                displayName: "Id",
+                displayName: "ID",
                 dataType: EnumDataType.Id,
                 required: true,
-                unique: false,
+                unique: true,
                 searchable: true,
                 description: "",
                 properties: {
                   idType: "AUTO_INCREMENT",
                 },
-                customAttributes: "@id @default(autoincrement())",
+                customAttributes: "",
               },
               {
                 permanentId: expect.any(String),
@@ -159,6 +159,113 @@ describe("prismaSchemaParser", () => {
                   maxLength: 256,
                 },
                 customAttributes: "@db.VarChar(256)",
+              },
+              {
+                permanentId: expect.any(String),
+                name: "roles",
+                displayName: "Roles",
+                dataType: EnumDataType.Json,
+                required: false,
+                unique: false,
+                searchable: true,
+                description: "",
+                properties: {},
+                customAttributes: "",
+              },
+            ],
+          },
+        ];
+        expect(result).toEqual(expectedEntitiesWithFields);
+      });
+
+      it("should treat the @default(cuid()) attribute as a custom attribute for scalar type", async () => {
+        // arrange
+        const prismaSchema = `datasource db {
+          provider = "postgresql"
+          url      = env("DB_URL")
+        }
+        
+        generator client {
+          provider = "prisma-client-js"
+        }
+        
+        model Admin {
+          id         Int   @id @default(autoincrement())
+          createdAt  DateTime @default(now())
+          username   String   @unique @db.VarChar(256)
+          tag        String   @default(cuid())
+          roles      Json?
+        }`;
+        const existingEntities: ExistingEntitySelect[] = [];
+        // act
+        const result = await service.convertPrismaSchemaForImportObjects(
+          prismaSchema,
+          existingEntities,
+          actionContext
+        );
+        // assert
+        const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+          {
+            id: expect.any(String),
+            name: "Admin",
+            displayName: "Admin",
+            pluralDisplayName: "Admins",
+            description: "",
+            customAttributes: "",
+            fields: [
+              {
+                permanentId: expect.any(String),
+                name: "id",
+                displayName: "ID",
+                dataType: EnumDataType.Id,
+                required: true,
+                unique: true,
+                searchable: true,
+                description: "",
+                properties: {
+                  idType: "AUTO_INCREMENT",
+                },
+                customAttributes: "",
+              },
+              {
+                permanentId: expect.any(String),
+                name: "createdAt",
+                displayName: "Created At",
+                dataType: EnumDataType.CreatedAt,
+                required: true,
+                unique: false,
+                searchable: true,
+                description: "",
+                properties: {},
+                customAttributes: "",
+              },
+              {
+                permanentId: expect.any(String),
+                name: "username",
+                displayName: "Username",
+                dataType: EnumDataType.SingleLineText,
+                required: true,
+                unique: true,
+                searchable: true,
+                description: "",
+                properties: {
+                  maxLength: 256,
+                },
+                customAttributes: "@db.VarChar(256)",
+              },
+              {
+                permanentId: expect.any(String),
+                name: "tag",
+                displayName: "Tag",
+                dataType: EnumDataType.SingleLineText,
+                required: true,
+                unique: false,
+                searchable: true,
+                description: "",
+                properties: {
+                  maxLength: 256,
+                },
+                customAttributes: "@default(cuid())",
               },
               {
                 permanentId: expect.any(String),
@@ -215,16 +322,16 @@ describe("prismaSchemaParser", () => {
               {
                 permanentId: expect.any(String),
                 name: "id",
-                displayName: "Id",
+                displayName: "ID",
                 dataType: EnumDataType.Id,
                 required: true,
-                unique: false,
+                unique: true,
                 searchable: true,
                 description: "",
                 properties: {
                   idType: "AUTO_INCREMENT",
                 },
-                customAttributes: "@id @default(autoincrement())",
+                customAttributes: "",
               },
               {
                 permanentId: expect.any(String),
@@ -347,16 +454,16 @@ describe("prismaSchemaParser", () => {
               {
                 permanentId: expect.any(String),
                 name: "id",
-                displayName: "Id",
+                displayName: "ID",
                 dataType: EnumDataType.Id,
                 required: true,
-                unique: false,
+                unique: true,
                 searchable: true,
                 description: "",
                 properties: {
                   idType: "AUTO_INCREMENT",
                 },
-                customAttributes: "@id @default(autoincrement())",
+                customAttributes: "",
               },
               {
                 permanentId: expect.any(String),
@@ -465,16 +572,16 @@ describe("prismaSchemaParser", () => {
               {
                 permanentId: expect.any(String),
                 name: "id",
-                displayName: "Id",
+                displayName: "ID",
                 dataType: EnumDataType.Id,
                 required: true,
-                unique: false,
+                unique: true,
                 searchable: true,
                 description: "",
                 properties: {
                   idType: "AUTO_INCREMENT",
                 },
-                customAttributes: "@id @default(autoincrement())",
+                customAttributes: "",
               },
               {
                 permanentId: expect.any(String),
@@ -631,16 +738,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
               ],
             },
@@ -684,7 +791,7 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: true,
@@ -693,8 +800,7 @@ describe("prismaSchemaParser", () => {
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes:
-                    '@db.VarChar(256) @map("username") @id @default(cuid())',
+                  customAttributes: '@unique @db.VarChar(256) @map("username")',
                 },
                 {
                   permanentId: expect.any(String),
@@ -762,7 +868,7 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: true,
@@ -772,7 +878,7 @@ describe("prismaSchemaParser", () => {
                     idType: "CUID",
                   },
                   customAttributes:
-                    '@db.VarChar(256) @map("username_123") @id @default(cuid())',
+                    '@unique @db.VarChar(256) @map("username_123")',
                 },
                 {
                   permanentId: expect.any(String),
@@ -839,7 +945,7 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: true,
@@ -848,7 +954,7 @@ describe("prismaSchemaParser", () => {
                   properties: {
                     idType: "AUTO_INCREMENT",
                   },
-                  customAttributes: "@id @default(autoincrement())",
+                  customAttributes: "@unique",
                 },
                 {
                   permanentId: expect.any(String),
@@ -920,7 +1026,7 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: true,
@@ -929,7 +1035,7 @@ describe("prismaSchemaParser", () => {
                   properties: {
                     idType: "AUTO_INCREMENT",
                   },
-                  customAttributes: "@id @default(autoincrement())",
+                  customAttributes: "@unique",
                 },
                 {
                   permanentId: expect.any(String),
@@ -1019,16 +1125,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: '@id @default(cuid()) @map("something")',
+                  customAttributes: '@map("something")',
                 },
                 {
                   permanentId: expect.any(String),
@@ -1100,17 +1206,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT",
                   },
-                  customAttributes:
-                    '@id @default(autoincrement()) @map("something")',
+                  customAttributes: '@map("something")',
                 },
                 {
                   permanentId: expect.any(String),
@@ -1131,7 +1236,8 @@ describe("prismaSchemaParser", () => {
           ];
           expect(result).toEqual(expectedEntitiesWithFields);
         });
-        it("should create the id attributes correctly", async () => {
+
+        it("should create the id attributes correctly - use the @id and the @default attributes as custom attributes only if it is not in Amplication's form", async () => {
           // arrange
           const prismaSchema = `datasource db {
             provider = "postgresql"
@@ -1145,7 +1251,13 @@ describe("prismaSchemaParser", () => {
           model Test {
             id          String @id(map: "PK_123456789") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
             name        String @db.VarChar(255)
-        }`;
+          }
+        
+          model Admin {
+            id String @id @default(cuid())
+            username String
+          }`;
+
           const existingEntities: ExistingEntitySelect[] = [];
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
@@ -1166,17 +1278,17 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
                   customAttributes:
-                    '@id(map: "PK_123456789") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid',
+                    '@id(map: "PK_123456789") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid', // the @id and the @default attributes should be kept as custom attributes
                 },
                 {
                   permanentId: expect.any(String),
@@ -1191,6 +1303,44 @@ describe("prismaSchemaParser", () => {
                     maxLength: 256,
                   },
                   customAttributes: "@db.VarChar(255)",
+                },
+              ],
+            },
+            {
+              id: expect.any(String),
+              name: "Admin",
+              displayName: "Admin",
+              pluralDisplayName: "Admins",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "ID",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: true,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "", // the @id and the @default attributes should not be kept as custom attributes because they are in Amplication's form and the DSG generates them automatically
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "username",
+                  displayName: "Username",
+                  dataType: EnumDataType.SingleLineText,
+                  required: true,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    maxLength: 256,
+                  },
+                  customAttributes: "",
                 },
               ],
             },
@@ -1237,16 +1387,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: expect.any(String),
@@ -1321,16 +1471,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: expect.any(String),
@@ -1405,16 +1555,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: expect.any(String),
@@ -1488,16 +1638,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: expect.any(String),
@@ -1571,16 +1721,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
               ],
             },
@@ -1622,16 +1772,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "UUID",
                   },
-                  customAttributes: "@id @default(uuid())",
+                  customAttributes: "",
                 },
               ],
             },
@@ -1673,16 +1823,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT",
                   },
-                  customAttributes: "@id @default(autoincrement())",
+                  customAttributes: "",
                 },
               ],
             },
@@ -1724,16 +1874,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT_BIG_INT",
                   },
-                  customAttributes: "@id @default(autoincrement())",
+                  customAttributes: "",
                 },
               ],
             },
@@ -1742,89 +1892,207 @@ describe("prismaSchemaParser", () => {
         });
       });
       describe("when model has @@index/@@id/@@unique attributes", () => {
-        it("should convert @@id attribute to @@unique attribute", async () => {
-          // arrange
-          const prismaSchema = `datasource db {
-            provider = "postgresql"
-            url      = env("DB_URL")
-          }
-          
-          generator client {
-            provider = "prisma-client-js"
-          }
-          
-          model Doctor {
-            first_name   String    
-            license_id     Int
-          
-            @@id([first_name, license_id], map: "doctor_first_name_license_id_unique")
-          }`;
-          const existingEntities: ExistingEntitySelect[] = [];
-          // act
-          const result = await service.convertPrismaSchemaForImportObjects(
-            prismaSchema,
-            existingEntities,
-            actionContext
-          );
-          // assert
-          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
-            {
-              id: expect.any(String),
-              name: "Doctor",
-              displayName: "Doctor",
-              pluralDisplayName: "Doctors",
-              description: "",
-              customAttributes:
-                '@@unique([firstName, licenseId], map: "doctor_first_name_license_id_unique")',
-              fields: [
-                {
-                  permanentId: expect.any(String),
-                  name: "firstName",
-                  displayName: "First Name",
-                  dataType: EnumDataType.SingleLineText,
-                  required: true,
-                  unique: false,
-                  searchable: true,
-                  description: "",
-                  properties: {
-                    maxLength: 256,
+        describe("when the @@id attribute has more than one arg (composite id)", () => {
+          it("should throw an error", async () => {
+            // arrange
+            const prismaSchema = `datasource db {
+              provider = "postgresql"
+              url      = env("DB_URL")
+            }
+            
+            generator client {
+              provider = "prisma-client-js"
+            }
+            
+            model Doctor {
+              first_name   String    
+              license_id     Int
+            
+              @@id([first_name, license_id], map: "doctor_first_name_license_id_unique")
+            }`;
+            const existingEntities: ExistingEntitySelect[] = [];
+
+            await expect(
+              service.convertPrismaSchemaForImportObjects(
+                prismaSchema,
+                existingEntities,
+                actionContext
+              )
+            ).rejects.toThrowError(
+              'The model "Doctor" has a composite id which is not supported. Please fix this issue and import the schema again.'
+            );
+          });
+        });
+
+        describe("when the @@id attribute has one arg", () => {
+          it("should change the @@id attribute to @@unique attribute, convert the model id attribute to field attribute based on the argument of the @@id field, and finally change this argument to 'id'", async () => {
+            // arrange
+            const prismaSchema = `generator client {
+              provider = "prisma-client-js"
+            }
+            
+            datasource db {
+              provider = "postgresql"
+              url      = env("DATABASE_URL")
+            }
+            
+             model Doctor {
+              id          String     @default(cuid())
+              fullName    String    	
+              tagId       Int
+            
+              @@id([tagId])
+            }`;
+
+            const existingEntities: ExistingEntitySelect[] = [];
+            // act
+            const result = await service.convertPrismaSchemaForImportObjects(
+              prismaSchema,
+              existingEntities,
+              actionContext
+            );
+            // assert
+            const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+              {
+                id: expect.any(String),
+                name: "Doctor",
+                displayName: "Doctor",
+                pluralDisplayName: "Doctors",
+                description: "",
+                customAttributes: "@@unique([id])",
+                fields: [
+                  {
+                    permanentId: expect.any(String),
+                    name: "doctorId",
+                    displayName: "Doctor Id",
+                    dataType: EnumDataType.SingleLineText,
+                    required: true,
+                    unique: false,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      maxLength: 256,
+                    },
+                    customAttributes: '@default(cuid()) @map("id")',
                   },
-                  customAttributes: '@map("first_name")',
-                },
-                {
-                  permanentId: expect.any(String),
-                  name: "licenseId",
-                  displayName: "License Id",
-                  dataType: EnumDataType.WholeNumber,
-                  required: true,
-                  unique: false,
-                  searchable: true,
-                  description: "",
-                  properties: {
-                    databaseFieldType: "INT",
-                    maximumValue: 99999999999,
-                    minimumValue: 0,
+                  {
+                    permanentId: expect.any(String),
+                    name: "fullName",
+                    displayName: "Full Name",
+                    dataType: EnumDataType.SingleLineText,
+                    required: true,
+                    unique: false,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      maxLength: 256,
+                    },
+                    customAttributes: "",
                   },
-                  customAttributes: '@map("license_id")',
-                },
-                {
-                  permanentId: expect.any(String),
-                  name: "id",
-                  displayName: "Id",
-                  dataType: EnumDataType.Id,
-                  required: true,
-                  unique: false,
-                  searchable: true,
-                  description: "",
-                  properties: {
-                    idType: "CUID",
+                  {
+                    permanentId: expect.any(String),
+                    name: "id",
+                    displayName: "ID",
+                    dataType: EnumDataType.Id,
+                    required: true,
+                    unique: true,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      idType: "AUTO_INCREMENT",
+                    },
+                    customAttributes: '@map("tagId")',
                   },
-                  customAttributes: "@id @default(cuid())",
-                },
-              ],
-            },
-          ];
-          expect(result).toEqual(expectedEntitiesWithFields);
+                ],
+              },
+            ];
+            expect(result).toEqual(expectedEntitiesWithFields);
+          });
+
+          it("should change the @@id attribute to @@unique attribute, convert the model id attribute to field attribute based on the argument of the @@id field, treat the @default attribute as a custom attribute, and finally change this argument to 'id'", async () => {
+            // arrange
+            const prismaSchema = `generator client {
+              provider = "prisma-client-js"
+            }
+            
+            datasource db {
+              provider = "postgresql"
+              url      = env("DATABASE_URL")
+            }
+            
+             model Doctor {
+              id          String     @default(cuid())
+              fullName    String    	
+              tagId       String     @default(dbgenerated("uuid_generate_v4()"))
+            
+              @@id([tagId])
+            }`;
+
+            const existingEntities: ExistingEntitySelect[] = [];
+            // act
+            const result = await service.convertPrismaSchemaForImportObjects(
+              prismaSchema,
+              existingEntities,
+              actionContext
+            );
+            // assert
+            const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+              {
+                id: expect.any(String),
+                name: "Doctor",
+                displayName: "Doctor",
+                pluralDisplayName: "Doctors",
+                description: "",
+                customAttributes: "@@unique([id])",
+                fields: [
+                  {
+                    permanentId: expect.any(String),
+                    name: "doctorId",
+                    displayName: "Doctor Id",
+                    dataType: EnumDataType.SingleLineText,
+                    required: true,
+                    unique: false,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      maxLength: 256,
+                    },
+                    customAttributes: '@default(cuid()) @map("id")',
+                  },
+                  {
+                    permanentId: expect.any(String),
+                    name: "fullName",
+                    displayName: "Full Name",
+                    dataType: EnumDataType.SingleLineText,
+                    required: true,
+                    unique: false,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      maxLength: 256,
+                    },
+                    customAttributes: "",
+                  },
+                  {
+                    permanentId: expect.any(String),
+                    name: "id",
+                    displayName: "ID",
+                    dataType: EnumDataType.Id,
+                    required: true,
+                    unique: true,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      idType: "CUID",
+                    },
+                    customAttributes:
+                      '@default(dbgenerated("uuid_generate_v4()")) @map("tagId")',
+                  },
+                ],
+              },
+            ];
+            expect(result).toEqual(expectedEntitiesWithFields);
+          });
         });
 
         it("should format the args in the @@index attribute in the same way they were formatted in the model fields", async () => {
@@ -1866,16 +2134,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: expect.any(String),
@@ -1974,16 +2242,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT",
                   },
-                  customAttributes: "@id @default(autoincrement())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: expect.any(String),
@@ -2027,16 +2295,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: expect.any(String),
@@ -2088,16 +2356,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: expect.any(String),
@@ -2194,16 +2462,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: expect.any(String),
@@ -2255,16 +2523,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: expect.any(String),
@@ -2343,16 +2611,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT",
                   },
-                  customAttributes: "@id",
+                  customAttributes: "",
                 },
                 {
                   permanentId: expect.any(String),
@@ -2418,16 +2686,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: customerFieldPermanentId,
@@ -2462,16 +2730,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
               ],
             },
@@ -2551,16 +2819,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: customerFieldPermanentId,
@@ -2595,16 +2863,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
               ],
             },
@@ -2685,16 +2953,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: "@id @default(cuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: customerFieldPermanentId,
@@ -2771,16 +3039,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "UUID",
                   },
-                  customAttributes: "@id @default(uuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: customerFieldPermanentId,
@@ -2835,16 +3103,16 @@ describe("prismaSchemaParser", () => {
                 {
                   permanentId: expect.any(String),
                   name: "id",
-                  displayName: "Id",
+                  displayName: "ID",
                   dataType: EnumDataType.Id,
                   required: true,
-                  unique: false,
+                  unique: true,
                   searchable: true,
                   description: "",
                   properties: {
                     idType: "UUID",
                   },
-                  customAttributes: "@id @default(uuid())",
+                  customAttributes: "",
                 },
                 {
                   permanentId: customerFieldPermanentId,
@@ -2933,16 +3201,16 @@ describe("prismaSchemaParser", () => {
                   {
                     permanentId: expect.any(String),
                     name: "id",
-                    displayName: "Id",
+                    displayName: "ID",
                     dataType: EnumDataType.Id,
                     required: true,
-                    unique: false,
+                    unique: true,
                     searchable: true,
                     description: "",
                     properties: {
                       idType: "CUID",
                     },
-                    customAttributes: "@id @default(cuid())",
+                    customAttributes: "",
                   },
                   {
                     permanentId: expect.any(String),
@@ -2977,16 +3245,16 @@ describe("prismaSchemaParser", () => {
                   {
                     permanentId: expect.any(String),
                     name: "id",
-                    displayName: "Id",
+                    displayName: "ID",
                     dataType: EnumDataType.Id,
                     required: true,
-                    unique: false,
+                    unique: true,
                     searchable: true,
                     description: "",
                     properties: {
                       idType: "CUID",
                     },
-                    customAttributes: "@id @default(cuid())",
+                    customAttributes: "",
                   },
                 ],
               },
@@ -3034,16 +3302,16 @@ describe("prismaSchemaParser", () => {
                   {
                     permanentId: expect.any(String),
                     name: "id",
-                    displayName: "Id",
+                    displayName: "ID",
                     dataType: EnumDataType.Id,
                     required: true,
-                    unique: false,
+                    unique: true,
                     searchable: true,
                     description: "",
                     properties: {
                       idType: "CUID",
                     },
-                    customAttributes: "@id @default(cuid())",
+                    customAttributes: "",
                   },
                   {
                     permanentId: expect.any(String),
@@ -3078,16 +3346,16 @@ describe("prismaSchemaParser", () => {
                   {
                     permanentId: expect.any(String),
                     name: "id",
-                    displayName: "Id",
+                    displayName: "ID",
                     dataType: EnumDataType.Id,
                     required: true,
-                    unique: false,
+                    unique: true,
                     searchable: true,
                     description: "",
                     properties: {
                       idType: "CUID",
                     },
-                    customAttributes: "@id @default(cuid())",
+                    customAttributes: "",
                   },
                 ],
               },

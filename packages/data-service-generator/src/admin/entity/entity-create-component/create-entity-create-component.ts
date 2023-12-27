@@ -3,6 +3,7 @@ import { isEmpty } from "lodash";
 import * as path from "path";
 import {
   Entity,
+  EntityComponent,
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
@@ -14,7 +15,6 @@ import {
   interpolate,
 } from "../../../utils/ast";
 import { relativeImportPath } from "../../../utils/module";
-import { EntityComponent } from "../../types";
 import { jsxFragment } from "../../util";
 import { createFieldInput } from "../create-field-input";
 import {

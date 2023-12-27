@@ -6,7 +6,6 @@ import {
   EnumDataType,
   NamedClassDeclaration,
 } from "@amplication/code-gen-types";
-import { createEntityDTO } from "../dto/create-entity-dto";
 import { EXAMPLE_ID_FIELD } from "../util/test-data";
 import {
   createObjectSelectProperty,
@@ -16,6 +15,7 @@ import {
   SELECT_ID,
   TRUE_BOOLEAN_LITERAL,
 } from "./create-select";
+import { createEntityInputFiles } from "../create-dtos";
 
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
@@ -59,7 +59,7 @@ describe("createSelect", () => {
   > = [
     [
       "adds true property for scalar field",
-      createEntityDTO(EXAMPLE_ENTITY),
+      createEntityInputFiles(EXAMPLE_ENTITY).entity,
       EXAMPLE_ENTITY,
       builders.objectExpression([
         createSelectProperty(builders.identifier(EXAMPLE_ID_FIELD.name)),
@@ -67,7 +67,7 @@ describe("createSelect", () => {
     ],
     [
       "adds true property for lookup field",
-      createEntityDTO(EXAMPLE_LOOKUP_ENTITY),
+      createEntityInputFiles(EXAMPLE_LOOKUP_ENTITY).entity,
       EXAMPLE_LOOKUP_ENTITY,
       builders.objectExpression([
         createObjectSelectProperty(

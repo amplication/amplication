@@ -14,6 +14,11 @@ import { SubscriptionService } from "../subscription/subscription.service";
 import { ProjectService } from "../project/project.service";
 import { BillingService } from "../billing/billing.service";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { ModuleService } from "../module/module.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { Env } from "../../env";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
@@ -65,6 +70,7 @@ const EXAMPLE_PROJECT: Project = {
   deletedAt: undefined,
   useDemoRepo: false,
   demoRepoName: undefined,
+  licensed: true,
 };
 
 EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
@@ -113,7 +119,8 @@ const createProjectMock = jest.fn(() => {
 });
 
 const resourceCreateSampleResourceMock = jest.fn();
-
+const mockUpdateProjectLicensed = jest.fn();
+const mockUpdateServiceLicensed = jest.fn();
 describe("WorkspaceService", () => {
   let service: WorkspaceService;
 
@@ -129,7 +136,42 @@ describe("WorkspaceService", () => {
             delete: userServiceDeleteMock,
           })),
         },
-        ConfigService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: (variable) => {
+              switch (variable) {
+                case Env.USER_LAST_ACTIVE_DAYS:
+                  return "30";
+                default:
+                  return "";
+              }
+            },
+          },
+        },
+        {
+          provide: ModuleService,
+          useClass: jest.fn(() => {
+            return {};
+          }),
+        },
+        {
+          provide: ModuleActionService,
+          useClass: jest.fn(() => {
+            return {};
+          }),
+        },
+        {
+          provide: AmplicationLogger,
+          useClass: jest.fn().mockImplementation(() => ({
+            error: jest.fn(() => {
+              return {};
+            }),
+            info: jest.fn(() => {
+              return {};
+            }),
+          })),
+        },
         {
           provide: BillingService,
           useValue: {
@@ -140,6 +182,9 @@ describe("WorkspaceService", () => {
               return {};
             }),
             provisionCustomer: jest.fn(() => {
+              return {};
+            }),
+            reportUsage: jest.fn(() => {
               return {};
             }),
           },
@@ -186,7 +231,10 @@ describe("WorkspaceService", () => {
         },
         {
           provide: SubscriptionService,
-          useClass: jest.fn().mockImplementation(() => ({})),
+          useClass: jest.fn().mockImplementation(() => ({
+            updateProjectLicensed: mockUpdateProjectLicensed,
+            updateServiceLicensed: mockUpdateServiceLicensed,
+          })),
         },
         {
           provide: ProjectService,
@@ -349,5 +397,76 @@ describe("WorkspaceService", () => {
     expect(accountServiceCreateAccountMock).toBeCalledWith(createAccountArgs);
     expect(prismaUserCreateMock).toBeCalledTimes(1);
     expect(prismaUserCreateMock).toBeCalledWith(userCreateArgs);
+  });
+
+  describe("bulkUpdateWorkspaceProjectsAndResourcesLicensed", () => {
+    it("should update workspaces correctly when useUserLastActive is true", async () => {
+      const date = new Date();
+      const result =
+        await service.bulkUpdateWorkspaceProjectsAndResourcesLicensed(true);
+
+      expect(result).toBe(true);
+      expect(prismaWorkspaceFindManyMock).toHaveBeenCalledWith({
+        where: {
+          users: {
+            some: {
+              lastActive: {
+                gte: new Date(date.setDate(date.getDate() - 30)),
+              },
+            },
+          },
+          projects: {
+            some: {
+              deletedAt: null,
+              resources: {
+                some: {
+                  deletedAt: null,
+                  archived: { not: true },
+                  resourceType: {
+                    in: [EnumResourceType.Service],
+                  },
+                },
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+      expect(mockUpdateProjectLicensed).toHaveBeenCalledTimes(1);
+      expect(mockUpdateServiceLicensed).toHaveBeenCalledTimes(1);
+    });
+
+    it("should update workspaces correctly when useUserLastActive is false", async () => {
+      const result =
+        await service.bulkUpdateWorkspaceProjectsAndResourcesLicensed(false);
+
+      expect(result).toBe(true);
+      expect(prismaWorkspaceFindManyMock).toHaveBeenCalledWith({
+        where: {
+          users: {},
+          projects: {
+            some: {
+              deletedAt: null,
+              resources: {
+                some: {
+                  deletedAt: null,
+                  archived: { not: true },
+                  resourceType: {
+                    in: [EnumResourceType.Service],
+                  },
+                },
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+      expect(mockUpdateProjectLicensed).toHaveBeenCalledTimes(1);
+      expect(mockUpdateServiceLicensed).toHaveBeenCalledTimes(1);
+    });
   });
 });

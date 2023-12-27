@@ -1,5 +1,8 @@
-import { Entity } from "@amplication/code-gen-types";
-import { EntityComponent, EntityComponents } from "../types";
+import {
+  Entity,
+  EntityComponent,
+  EntityComponents,
+} from "@amplication/code-gen-types";
 import { createEntityComponents } from "./create-entity-components";
 
 export async function createEntitiesComponents(

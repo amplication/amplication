@@ -30,62 +30,66 @@ const OPTIONS: OptionItem[] = [
   },
 ];
 
-export const Default = (props: any) => {
-  return (
-    <Page>
-      <Formik
-        initialValues={{
-          name: "name",
-          lastName: "last name",
-          description: "description",
-          color: "Red",
-          required: false,
-          enabled: false,
-        }}
-        onSubmit={() => {}}
-      >
-        <Form formStyle={props.formStyle}>
-          <TextField name="name" label="Name" />
-          <TextField name="description" textarea label="Description" />
-          <SelectField label="Color" name="color" options={OPTIONS} />
-          <ToggleField name="required" label="Required Field" />
-          <TextField name="lastName" label="Last Name" />
-        </Form>
-      </Formik>
-    </Page>
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <Page>
+        <Formik
+          initialValues={{
+            name: "name",
+            lastName: "last name",
+            description: "description",
+            color: "Red",
+            required: false,
+            enabled: false,
+          }}
+          onSubmit={() => {}}
+        >
+          <Form formStyle={props.formStyle}>
+            <TextField name="name" label="Name" />
+            <TextField name="description" textarea label="Description" />
+            <SelectField label="Color" name="color" options={OPTIONS} />
+            <ToggleField name="required" label="Required Field" />
+            <TextField name="lastName" label="Last Name" />
+          </Form>
+        </Formik>
+      </Page>
+    );
+  },
 };
 
-export const WithHeader = (props: any) => {
-  return (
-    <Page>
-      <Formik
-        initialValues={{
-          name: "name",
-          lastName: "last name",
-          description: "description",
-          color: "Red",
-          required: false,
-          enabled: false,
-        }}
-        onSubmit={() => {}}
-      >
-        <Form
-          formHeaderContent={
-            <FormHeader title="Form Title">
-              <Button buttonStyle={EnumButtonStyle.Text}>Cancel</Button>
-              <Button type="submit">Save</Button>
-            </FormHeader>
-          }
-          formStyle={props.formStyle}
+export const WithHeader = {
+  render: (props: any) => {
+    return (
+      <Page>
+        <Formik
+          initialValues={{
+            name: "name",
+            lastName: "last name",
+            description: "description",
+            color: "Red",
+            required: false,
+            enabled: false,
+          }}
+          onSubmit={() => {}}
         >
-          <TextField name="name" label="Name" />
-          <TextField name="description" textarea label="Description" />
-          <SelectField label="Color" name="color" options={OPTIONS} />
-          <ToggleField name="required" label="Required Field" />
-          <TextField name="lastName" label="Last Name" />
-        </Form>
-      </Formik>
-    </Page>
-  );
+          <Form
+            formHeaderContent={
+              <FormHeader title="Form Title">
+                <Button buttonStyle={EnumButtonStyle.Text}>Cancel</Button>
+                <Button type="submit">Save</Button>
+              </FormHeader>
+            }
+            formStyle={props.formStyle}
+          >
+            <TextField name="name" label="Name" />
+            <TextField name="description" textarea label="Description" />
+            <SelectField label="Color" name="color" options={OPTIONS} />
+            <ToggleField name="required" label="Required Field" />
+            <TextField name="lastName" label="Last Name" />
+          </Form>
+        </Formik>
+      </Page>
+    );
+  },
 };

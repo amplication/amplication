@@ -1,16 +1,15 @@
 import { types } from "@amplication/code-gen-types";
-import { createDataService } from "../create-data-service";
-import { EnumDataType, EnumResourceType } from "../models";
-import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import entities from "./entities";
-import { installedPlugins } from "./pluginInstallation";
-import roles from "./roles";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
+import { createDataService } from "../create-data-service";
+import { EnumDataType } from "../models";
+import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
+import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import entities from "./entities";
+import { TEST_DATA } from "./test-data";
+import { rm } from "fs/promises";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 
 jest.setTimeout(100000);
-
-jest.mock("./build-logger");
 
 beforeAll(() => {
   const userEntity = entities.find((e) => e.name === USER_ENTITY_NAME);
@@ -25,33 +24,35 @@ beforeAll(() => {
   }
   (idField.properties as types.Id) = { idType: "AUTO_INCREMENT" };
 });
+const temporaryPluginInstallationPath =
+  getTemporaryPluginInstallationPath(__filename);
 
 describe("createDataService", () => {
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    await rm(temporaryPluginInstallationPath, {
+      recursive: true,
+      force: true,
+    });
   });
-  test("creates resource as expected", async () => {
-    const modules = await createDataService(
-      {
-        entities,
-        buildId: "example_build_id",
-        roles,
-        resourceInfo: appInfo,
-        resourceType: EnumResourceType.Service,
-        pluginInstallations: installedPlugins,
-      },
-      MockedLogger
-    );
-    const modulesToSnapshot = modules
-      .modules()
-      .filter((module) =>
-        MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
-          module.path.endsWith(extension)
-        )
+  describe("when using a numeric user id", () => {
+    test("creates resource as expected", async () => {
+      const modules = await createDataService(
+        TEST_DATA,
+        MockedLogger,
+        temporaryPluginInstallationPath
       );
-    const pathToCode = Object.fromEntries(
-      modulesToSnapshot.map((module) => [module.path, module.code])
-    );
-    expect(pathToCode).toMatchSnapshot();
+      const modulesToSnapshot = modules
+        .modules()
+        .filter((module) =>
+          MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
+            module.path.endsWith(extension)
+          )
+        );
+      const pathToCode = Object.fromEntries(
+        modulesToSnapshot.map((module) => [module.path, module.code])
+      );
+      expect(pathToCode).toMatchSnapshot();
+    });
   });
 });

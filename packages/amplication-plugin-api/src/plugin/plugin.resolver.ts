@@ -1,9 +1,6 @@
 import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
 import { groupBy } from "lodash";
-import * as nestAccessControl from "nest-access-control";
-import { GqlDefaultAuthGuard } from "../auth/gqlDefaultAuth.guard";
-import * as gqlACGuard from "../auth/gqlAC.guard";
 import { PluginResolverBase } from "./base/plugin.resolver.base";
 import { Plugin } from "./base/Plugin";
 import { PluginService } from "./plugin.service";
@@ -16,16 +13,13 @@ import { PluginVersionFindManyArgs } from "../pluginVersion/base/PluginVersionFi
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @graphql.Resolver(() => Plugin)
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class PluginResolver extends PluginResolverBase {
   constructor(
     protected readonly service: PluginService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     protected readonly pluginVersionService: PluginVersionService,
     @common.Inject(AmplicationLogger) readonly logger: AmplicationLogger
   ) {
-    super(service, rolesBuilder);
+    super(service);
   }
 
   @Public()

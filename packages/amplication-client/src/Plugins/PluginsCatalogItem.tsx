@@ -148,9 +148,12 @@ function PluginsCatalogItem({
       <FlexItem margin={EnumFlexItemMargin.Top}>
         <FlexItem.FlexStart>
           <a href={plugin?.github} target="github_plugin">
-            <Text textStyle={EnumTextStyle.Subtle}>View on GitHub</Text>
+            <Text textStyle={EnumTextStyle.Description}>View on GitHub</Text>
           </a>
         </FlexItem.FlexStart>
+        <FlexItem.FlexEnd className={`${CLASS_NAME}__category`}>
+          Categories: {plugin.categories.join(", ")}
+        </FlexItem.FlexEnd>
       </FlexItem>
     </ListItem>
   );

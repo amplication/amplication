@@ -52,7 +52,7 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
     result: string
   ): void {
     this.kafkaService
-      .emitMessage(MyMessageBrokerTopics.GptConversationComplete, {
+      .emitMessage(MyMessageBrokerTopics.AiConversationComplete_1, {
         key: requestUniqueId,
         value: {
           isGptConversionCompleted: isCompleted,

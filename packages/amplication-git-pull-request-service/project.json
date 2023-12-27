@@ -5,7 +5,7 @@
   "projectType": "application",
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
@@ -14,7 +14,7 @@
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": [
         "{workspaceRoot}/coverage/packages/amplication-git-pull-request-service"
       ],
@@ -23,13 +23,15 @@
       }
     },
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/amplication-git-pull-request-service",
         "main": "packages/amplication-git-pull-request-service/src/main.ts",
         "tsConfig": "packages/amplication-git-pull-request-service/tsconfig.app.json",
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node"
       },
       "configurations": {
         "production": {
@@ -40,7 +42,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "amplication-git-pull-request-service:build",
         "port": 7001

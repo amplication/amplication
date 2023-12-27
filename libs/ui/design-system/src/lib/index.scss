@@ -4,6 +4,7 @@ body {
   margin: 0;
   @include font-base;
   background: var(--surface);
+  color: var(--gray-base);
 }
 
 :root {

@@ -12,12 +12,13 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { getToken, setTokenFromCookie } from "./authentication/authentication";
 import "@amplication/ui/design-system/icons";
+import "@amplication/ui/design-system/style/variables";
 import "./index.scss";
 import App from "./App";
 import {
   REACT_APP_DATA_SOURCE,
   REACT_APP_PLUGIN_API_DATA_SOURCE,
-  CODE_GENERATOR_CATALOG_API_DATA_SOURCE,
+  REACT_APP_CODE_GENERATOR_CATALOG_API_DATA_SOURCE,
 } from "./env";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { createUploadLink } from "apollo-upload-client";
@@ -43,7 +44,7 @@ const pluginApiHttpLink = createHttpLink({
 });
 
 const codeGeneratorCatalogHttpLink = createHttpLink({
-  uri: CODE_GENERATOR_CATALOG_API_DATA_SOURCE,
+  uri: REACT_APP_CODE_GENERATOR_CATALOG_API_DATA_SOURCE,
 });
 
 const authLink = setContext((_, { headers }) => {

@@ -5,27 +5,30 @@
   "projectType": "application",
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["ee/packages/git-sync-manager/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/ee/packages/git-sync-manager"],
       "options": {
         "jestConfig": "ee/packages/git-sync-manager/jest.config.ts"
       }
     },
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/ee/packages/git-sync-manager",
         "main": "ee/packages/git-sync-manager/src/main.ts",
         "tsConfig": "ee/packages/git-sync-manager/tsconfig.app.json",
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -36,10 +39,11 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "git-sync-manager:build",
-        "port": 7001
+        "port": 7001,
+        "watch": true
       },
       "configurations": {
         "production": {

@@ -8,12 +8,14 @@ export default {
   component: ToggleField,
 } as Meta;
 
-export const Default = (props: any) => {
-  return (
-    <Formik initialValues={{ required: false }} onSubmit={() => {}}>
-      <Form>
-        <ToggleField name="required" label="Required Field" />
-      </Form>
-    </Formik>
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <Formik initialValues={{ required: false }} onSubmit={() => {}}>
+        <Form>
+          <ToggleField name="required" label="Required Field" />
+        </Form>
+      </Formik>
+    );
+  },
 };

@@ -77,12 +77,8 @@ export enum AnalyticsEventNames {
   BackToProjectsClick = "backToProjectsClick",
 
   // topic
-  TopicCreate = "topicCreate",
-  TopicCreateFailed = "topicCreateFailed",
-  TopicNameEdit = "topicNameEdit",
-  TopicDisplayNameEdit = "topicDisplayNameEdit",
-  TopicDescriptionEdit = "topicDescriptionEdit",
-  TopicsSearch = "topicsSearch",
+  TopicCreate = "createTopic",
+  TopicUpdate = "updateTopic",
 
   // commit & build & pending changes
   CommitClicked = "commitClicked",
@@ -94,6 +90,10 @@ export enum AnalyticsEventNames {
   // code view
   CodeViewTileClick = "viewCodeViewTileClick",
   GithubCodeViewClick = "openGithubCodeView",
+
+  // git provider
+  GitProviderConnectClick = "addGitProviderClick",
+  GitProviderCustomBaseBranch = "GitProviderCustomBaseBranch",
 
   // GitHub
   GitHubAuthResourceStart = "startAuthResourceWithGitHub",
@@ -108,23 +108,18 @@ export enum AnalyticsEventNames {
   StarUsBannerCTAClick = "StarUsBannerCTAClick",
   StarUsBannerClose = "StarUsBannerClose",
 
-  // new event for startAuthResourceWithGitHub
-  AddGitProviderClick = "addGitProviderClick",
-
   // Purchase Page
   PricingPageClose = "PricingPageClose",
   PricingPageCTAClick = "PricingPageCTAClick",
   PassedLimitsNotificationClose = "PassedLimitsNotificationClose",
   PricingPageChangeBillingCycle = "PricingPageChangeBillingCycle",
-  UpgradeOnResourceListClick = "UpgradeOnResourceListClick",
-  UpgradeOnEntityListClick = "UpgradeOnEntityListClick",
-  UpgradeOnPassedLimitsClick = "UpgradeOnPassedLimitsClick",
   PricingPageChangeWorkspace = "PricingPageChangeWorkspace",
-  UpgradeOnTopBarClick = "UpgradeOnTopBarClick",
-  UpgradeFromCodeGeneratorVersionClick = "UpgradeFromCodeGeneratorVersionClick",
-  ContactUsButtonClick = "ContactUsButtonClick",
-  UpgradeOnSideBarClick = "UpgradeOnSideBarClick",
   ProFeatureLockClick = "ProFeatureLockClick",
+  ContactUsButtonClick = "ContactUsButtonClick",
+
+  // upgrade
+  UpgradeClick = "UpgradeClick",
+  UpgradeLaterClick = "UpgradeLaterClick",
 
   // Chat widget
   HelpMenuItemClick = "HelpMenuItemClick",
@@ -154,4 +149,8 @@ export enum AnalyticsEventNames {
   ViewServiceWizardError = "ViewServiceWizardError",
   ServiceWizardError_TryAgain = "ServiceWizardError_TryAgain",
   ServiceWizardError_Continue = "ServiceWizardError_Continue",
+
+  // notification
+  OpenNotificationCenter = "OpenNotificationCenter",
+  ClickNotificationMessage = "ClickNotificationMessage",
 }

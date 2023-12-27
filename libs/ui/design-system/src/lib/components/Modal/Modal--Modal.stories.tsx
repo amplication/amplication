@@ -1,7 +1,7 @@
-import type { ComponentStory, ComponentMeta } from "@storybook/react";
+import type { StoryFn, Meta } from "@storybook/react";
 import { Modal } from "./Modal";
 
-const Story: ComponentMeta<typeof Modal> = {
+const Story: Meta<typeof Modal> = {
   component: Modal,
   title: "Modal",
   argTypes: {
@@ -12,11 +12,13 @@ const Story: ComponentMeta<typeof Modal> = {
 };
 export default Story;
 
-const Template: ComponentStory<typeof Modal> = (args) => (
+const Template: StoryFn<typeof Modal> = (args) => (
   <Modal {...args}>
     <p>Lorem ipsum</p>
   </Modal>
 );
 
-export const Primary = Template.bind({});
-Primary.args = {};
+export const Primary = {
+  render: Template,
+  args: {},
+};

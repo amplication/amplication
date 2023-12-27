@@ -1,7 +1,7 @@
 import * as os from "os";
 import * as fs from "fs";
 import * as path from "path";
-import * as compose from "docker-compose";
+import { v2 as compose } from "docker-compose";
 import getPort from "get-port";
 import sleep from "sleep-promise";
 import fetch from "cross-fetch";
@@ -30,6 +30,7 @@ const SERVER_START_TIMEOUT = 30000;
 
 const JSON_MIME = "application/json";
 const STATUS_OK = 200;
+const STATUS_NO_CONTENT = 204;
 const STATUS_CREATED = 201;
 const NOT_FOUND = 404;
 
@@ -106,6 +107,8 @@ describe("Data Service Generator", () => {
           buildId: "example_build_id",
           resourceType: EnumResourceType.Service,
           pluginInstallations: plugins,
+          moduleActions: [],
+          moduleContainers: [],
         };
 
         logger.info("Starting code generation", {
@@ -169,8 +172,6 @@ describe("Data Service Generator", () => {
             // // See: https://www.docker.com/blog/faster-builds-in-compose-thanks-to-buildkit-support/
             PORT: String(port),
             DB_PORT: String(dbPort),
-            COMPOSE_DOCKER_CLI_BUILD: "1",
-            DOCKER_BUILDKIT: "1",
           },
         };
         logger.debug("dockerComposeOptions", { dockerComposeDir });
@@ -178,7 +179,7 @@ describe("Data Service Generator", () => {
         // Cleanup Docker Compose before run
         await down(dockerComposeOptions);
 
-        logger.info("Running docker compose up...");
+        logger.info("Running Docker Compose up...");
         await compose.upAll({
           ...dockerComposeOptions,
           commandOptions: ["--build", "--force-recreate"],
@@ -193,8 +194,54 @@ describe("Data Service Generator", () => {
             logger.error(err.message, err);
           });
 
+        // Wait for the server to be ready and for database migration before running tests.
+        // TODO replace with a better docker-compose solution that waits for the migraton to be completd before starting the server
+        logger.info("Waiting for db migration to be completed...");
+        let migrationCompleted = false;
+        let startTime = Date.now();
+
+        do {
+          logger.info("...");
+          const containers = await compose.ps({
+            ...dockerComposeOptions,
+            commandOptions: ["--all"],
+          });
+          const migrateContainer = containers.data.services.find((s) =>
+            s.name.endsWith("migrate-1")
+          );
+          if (migrateContainer.state.indexOf("Exited (0)") !== -1) {
+            migrationCompleted = true;
+            logger.info("migration completed!");
+            break;
+          }
+          await sleep(1000);
+        } while (
+          !migrationCompleted ||
+          startTime + SERVER_START_TIMEOUT < Date.now()
+        );
+
         logger.info("Waiting for server to be ready...");
-        await sleep(SERVER_START_TIMEOUT);
+        let servicesNotReady = true;
+        startTime = Date.now();
+        do {
+          logger.info("...");
+          try {
+            const res = await fetch(`${host}/api/_health/live`, {
+              method: "GET",
+            });
+            if (res.status === STATUS_NO_CONTENT) {
+              servicesNotReady = false;
+              logger.info("server ready!");
+              break;
+            }
+          } catch (error) {
+            /**/
+          }
+          await sleep(1000);
+        } while (
+          servicesNotReady ||
+          startTime + SERVER_START_TIMEOUT < Date.now()
+        );
       });
 
       afterAll(async () => {
@@ -349,7 +396,6 @@ describe("Data Service Generator", () => {
           // TODO uncomment once issue is fixed https://github.com/amplication/amplication/issues/5437
           xit("creates GET /api/customers/:id endpoint", async () => {
             const customerId = 1;
-            logger.debug(`${host}/api/customers/${customerId}`);
             const res = await fetch(`${host}/api/customers/${customerId}`, {
               headers: {
                 Authorization: APP_BASIC_AUTHORIZATION,

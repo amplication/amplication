@@ -99,7 +99,7 @@ const getAllPlugins = async (
 };
 
 /**
- * main plugin manger function. it trigger plugin import and set the structure for plugin context
+ * main plugin manager function. it trigger plugin import and set the structure for plugin context
  */
 const registerPlugins = async (
   pluginList: PluginInstallation[],

@@ -101,6 +101,7 @@ export class PluginInstallationService extends BlockTypeService<
       properties: {
         pluginId: newPlugin.pluginId,
         pluginType: "official",
+        $groups: { groupWorkspace: user.workspace.id },
       },
     });
 
@@ -129,6 +130,7 @@ export class PluginInstallationService extends BlockTypeService<
         pluginId: updated.pluginId,
         pluginType: "official",
         enabled: updated.enabled,
+        $groups: { groupWorkspace: user.workspace.id },
       },
     });
 

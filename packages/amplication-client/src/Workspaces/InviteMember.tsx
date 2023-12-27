@@ -13,6 +13,11 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { GET_WORKSPACE_MEMBERS } from "./MemberList";
 import "./InviteMember.scss";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { BillingFeature } from "@amplication/util-billing-types";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+} from "../Components/FeatureIndicatorContainer";
 
 type Values = {
   email: string;
@@ -50,6 +55,7 @@ const InviteMember = () => {
       trackEvent({
         eventName: AnalyticsEventNames.WorkspaceMemberInvite,
         email: data.inviteUser.email,
+        eventOriginLocation: "workspace-members-page",
       });
     },
     refetchQueries: [{ query: GET_WORKSPACE_MEMBERS }],
@@ -91,13 +97,19 @@ const InviteMember = () => {
                 type="email"
                 disabled={loading}
               />
-              <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loading}
-                type="submit"
+              <FeatureIndicatorContainer
+                featureId={BillingFeature.TeamMembers}
+                entitlementType={EntitlementType.Metered}
+                limitationText="The workspace reached your plan's team members limitation."
               >
-                Invite
-              </Button>
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  disabled={!formik.isValid || loading}
+                  type="submit"
+                >
+                  Invite
+                </Button>
+              </FeatureIndicatorContainer>
 
               <Snackbar open={Boolean(error)} message={errorMessage} />
             </Form>

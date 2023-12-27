@@ -7,15 +7,17 @@ export default {
   component: List,
 } as Meta;
 
-export const Default = (props: any) => {
-  return (
-    <>
-      <List>
-        <ListItem>Item 1</ListItem>
-        <ListItem>Item 2</ListItem>
-        <ListItem>Item 3</ListItem>
-        <ListItem>Item 4</ListItem>
-      </List>
-    </>
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <>
+        <List>
+          <ListItem>Item 1</ListItem>
+          <ListItem>Item 2</ListItem>
+          <ListItem>Item 3</ListItem>
+          <ListItem>Item 4</ListItem>
+        </List>
+      </>
+    );
+  },
 };

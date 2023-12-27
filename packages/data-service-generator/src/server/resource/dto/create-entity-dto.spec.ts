@@ -3,9 +3,10 @@ import { print } from "@amplication/code-gen-utils";
 import { Entity } from "@amplication/code-gen-types";
 import { classDeclaration } from "../../../utils/ast";
 import { EXAMPLE_ID_FIELD } from "../util/test-data";
-import { createEntityDTO, OBJECT_TYPE_DECORATOR } from "./create-entity-dto";
+import { OBJECT_TYPE_DECORATOR } from "./create-entity-dto";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import { createEntityInputFiles } from "../create-dtos";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -22,7 +23,7 @@ const EXAMPLE_ENTITY: Entity = {
 
 describe("createEntityDTO", () => {
   test("creates entity DTO", () => {
-    expect(print(createEntityDTO(EXAMPLE_ENTITY)).code).toEqual(
+    expect(print(createEntityInputFiles(EXAMPLE_ENTITY).entity).code).toEqual(
       print(
         classDeclaration(
           builders.identifier(EXAMPLE_ENTITY_NAME),

@@ -41,7 +41,7 @@ const RelatedEntityFieldField = ({ entityDisplayName }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      {entityField && (
+      {entityField && data && (
         <>
           <HorizontalRule />
           <EntityRelationFieldsChart

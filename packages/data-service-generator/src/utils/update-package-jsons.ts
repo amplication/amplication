@@ -14,11 +14,20 @@ export async function updatePackageJSONs(
   baseDirectory: string,
   update: { [key: string]: any }[]
 ): Promise<ModuleMap> {
-  await modules.replaceModulesCode((code) =>
+  await modules.replaceModulesCode((path, code) =>
     preparePackageJsonFile(code, update)
   );
 
   return modules;
+}
+
+function sortObject(object: { [key: string]: any }): { [key: string]: any } {
+  return Object.keys(object)
+    .sort()
+    .reduce((obj, key) => {
+      obj[key] = object[key];
+      return obj;
+    }, {});
 }
 
 function preparePackageJsonFile(
@@ -33,6 +42,13 @@ function preparePackageJsonFile(
 
   if (!semver.valid(parsedPkg.version)) {
     delete parsedPkg.version;
+  }
+
+  if (parsedPkg.dependencies) {
+    parsedPkg.dependencies = sortObject(parsedPkg.dependencies);
+  }
+  if (parsedPkg.devDependencies) {
+    parsedPkg.devDependencies = sortObject(parsedPkg.devDependencies);
   }
 
   return JSON.stringify(parsedPkg, null, 2);

@@ -2,26 +2,28 @@
 export default {
   displayName: "amplication-code-gen-types",
   preset: "../../jest.preset.js",
-  globals: {
-    "ts-jest": {
-      tsconfig: "<rootDir>/tsconfig.spec.json",
-    },
-  },
+  globals: {},
   testEnvironment: "node",
   transform: {
-    "^.+\\.[tj]s$": "ts-jest",
+    "^.+\\.[tj]s$": [
+      "ts-jest",
+      {
+        tsconfig: "<rootDir>/tsconfig.spec.json",
+      },
+    ],
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../coverage/packages/amplication-code-gen-types",
   coverageThreshold: {
     global: {
-      branches: 87,
-      lines: 81,
+      branches: 92,
+      lines: 95,
     },
   },
   collectCoverageFrom: [
     "**/*.{ts,tsx}",
     "!**/*.types.{ts,tsx}",
+    "!**/scripts/**",
     "!**/*.spec.{ts,tsx}",
     "!**/*.e2e-spec.{ts,tsx}",
     "!**/types/**",

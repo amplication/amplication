@@ -1,17 +1,17 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nrwl/nx"],
+  "plugins": ["perfectionist", "@nx"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
         "no-console": "warn",
-        "@nrwl/nx/enforce-module-boundaries": [
+        "@nx/enforce-module-boundaries": [
           "error",
           {
             "enforceBuildableLibDependency": true,
-            "allow": [],
+            "allow": ["@amplication/ui/design-system"], //exclude @amplication/ui/design-system because we use a mix of Static imports and lazy loading
             "depConstraints": [
               {
                 "sourceTag": "*",
@@ -24,14 +24,14 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "extends": ["plugin:@nrwl/nx/typescript"],
+      "extends": ["plugin:@nx/typescript"],
       "rules": {
         "no-prototype-builtins": "off"
       }
     },
     {
       "files": ["*.js", "*.jsx"],
-      "extends": ["plugin:@nrwl/nx/javascript"],
+      "extends": ["plugin:@nx/javascript"],
       "rules": {}
     },
     {
@@ -40,6 +40,14 @@
         "jest": true
       },
       "rules": {}
+    },
+    {
+      "files": ["*.json"],
+      "parser": "jsonc-eslint-parser",
+      "rules": {
+        "@nx/dependency-checks": "error"
+      }
     }
-  ]
+  ],
+  "extends": ["plugin:storybook/recommended"]
 }

@@ -1,5 +1,6 @@
 import {
   Breadcrumbs,
+  ButtonProgress,
   Dialog,
   Icon,
   SelectMenu,
@@ -10,13 +11,20 @@ import {
 } from "@amplication/ui/design-system";
 import { useApolloClient } from "@apollo/client";
 import {
+  ButtonTypeEnum,
   IMessage,
   NotificationBell,
   NovuProvider,
   PopoverNotificationCenter,
 } from "@novu/notification-center";
 import { useStiggContext } from "@stigg/react-sdk";
-import React, { useCallback, useContext, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory } from "react-router-dom";
 import CommandPalette from "../../CommandPalette/CommandPalette";
@@ -26,8 +34,10 @@ import BreadcrumbsContext from "../../Layout/BreadcrumbsContext";
 import ProfileForm from "../../Profile/ProfileForm";
 import { unsetToken } from "../../authentication/authentication";
 import { AppContext } from "../../context/appContext";
-import { NX_REACT_APP_AUTH_LOGOUT_URI } from "../../env";
-import { BillingFeature } from "../../util/BillingFeature";
+import {
+  REACT_APP_AUTH_LOGOUT_URI,
+  REACT_APP_NOVU_IDENTIFIER,
+} from "../../env";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import {
@@ -36,7 +46,11 @@ import {
 } from "../../util/constants";
 import { version } from "../../util/version";
 import GitHubBanner from "./GitHubBanner";
+import styles from "./notificationStyle";
+import NoNotifications from "../../assets/images/no-notification.svg";
 import "./WorkspaceHeader.scss";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -69,15 +83,23 @@ const HELP_MENU_LIST: HelpMenuItem[] = [
 const WorkspaceHeader: React.FC = () => {
   const { currentWorkspace, currentProject, openHubSpotChat } =
     useContext(AppContext);
+  const upgradeButtonData = useUpgradeButtonData(currentWorkspace);
+
   const apolloClient = useApolloClient();
   const history = useHistory();
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
+  const novuBellRef = useRef(null);
+
+  const daysLeftText = useMemo(() => {
+    return `${upgradeButtonData.trialDaysLeft} day${
+      upgradeButtonData.trialDaysLeft !== 1 ? "s" : ""
+    } left for the free trial`;
+  }, [upgradeButtonData.trialDaysLeft]);
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
-  const [versionAlert, setVersionAlert] = useState(false);
-
+  const [novuCenterState, setNovuCenterState] = useState(false);
   const canShowNotification = stigg.getBooleanEntitlement({
     featureId: BillingFeature.Notification,
   }).hasAccess;
@@ -89,22 +111,36 @@ const WorkspaceHeader: React.FC = () => {
     unsetToken();
     apolloClient.clearStore();
 
-    window.location.replace(NX_REACT_APP_AUTH_LOGOUT_URI);
+    window.location.replace(REACT_APP_AUTH_LOGOUT_URI);
   }, [history, apolloClient]);
 
   const onNotificationClick = useCallback((message: IMessage) => {
-    // your logic to handle the notification click
+    trackEvent({
+      eventName: AnalyticsEventNames.ClickNotificationMessage,
+      messageType: message.templateIdentifier,
+    });
+
     if (message?.cta?.data?.url) {
-      window.location.href = message.cta.data.url;
+      // window.location.href = message.cta.data.url;
     }
   }, []);
+
+  const onBuildNotificationClick = useCallback(
+    (templateIdentifier: string, type: ButtonTypeEnum, message: IMessage) => {
+      if (templateIdentifier === "build-completed") {
+        window.location.href = message.cta.data.url;
+      }
+    },
+    []
+  );
 
   const handleUpgradeClick = useCallback(() => {
     history.push(`/${currentWorkspace.id}/purchase`, {
       from: { pathname: window.location.pathname },
     });
     trackEvent({
-      eventName: AnalyticsEventNames.UpgradeOnTopBarClick,
+      eventName: AnalyticsEventNames.UpgradeClick,
+      eventOriginLocation: "workspace-header",
       workspace: currentWorkspace.id,
     });
   }, [currentWorkspace, window.location.pathname]);
@@ -115,8 +151,8 @@ const WorkspaceHeader: React.FC = () => {
     openHubSpotChat();
     trackEvent({
       eventName: AnalyticsEventNames.HelpMenuItemClick,
-      Action: "Contact Us",
-      workspaceId: currentWorkspace.id,
+      action: "Contact Us",
+      eventOriginLocation: "workspace-header-help-menu",
     });
   }, [openHubSpotChat]);
 
@@ -132,6 +168,26 @@ const WorkspaceHeader: React.FC = () => {
   const handleShowProfileForm = useCallback(() => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
+
+  const handleBellClick = useCallback(() => {
+    if (!novuCenterState) {
+      trackEvent({
+        eventName: AnalyticsEventNames.OpenNotificationCenter,
+      });
+    }
+    setNovuCenterState(!novuCenterState);
+  }, [novuBellRef, novuCenterState]);
+
+  const Footer = () => <div></div>;
+
+  const EmptyState = () => (
+    <div className="notification_container">
+      <img src={NoNotifications} alt="" />
+      <div className="notification_text">
+        <span>All caught up! </span>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -151,26 +207,16 @@ const WorkspaceHeader: React.FC = () => {
               <Icon icon="logo" size="medium" />
             </Link>
           </div>
-          <Tooltip
-            aria-label="Version number copied successfully"
-            direction="e"
-            noDelay
-            show={versionAlert}
-          >
-            <Button
+          <span>
+            <a
+              href="https://github.com/amplication/amplication/releases"
+              target="_blank"
+              rel="noopener noreferrer"
               className={`${CLASS_NAME}__version`}
-              buttonStyle={EnumButtonStyle.Text}
-              onClick={async () => {
-                setVersionAlert(true);
-                await navigator.clipboard.writeText(version);
-              }}
-              onMouseLeave={() => {
-                setVersionAlert(false);
-              }}
             >
-              <span>v{version}</span>
-            </Button>
-          </Tooltip>
+              v{version}
+            </a>
+          </span>
           <Breadcrumbs>
             {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
               <Breadcrumbs.Item key={item.url} to={item.url}>
@@ -182,13 +228,29 @@ const WorkspaceHeader: React.FC = () => {
         <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>
           <div className={`${CLASS_NAME}__links`}>
-            <Button
-              className={`${CLASS_NAME}__upgrade__btn`}
-              buttonStyle={EnumButtonStyle.Outline}
-              onClick={handleUpgradeClick}
-            >
-              Upgrade
-            </Button>
+            {upgradeButtonData.isCompleted &&
+              upgradeButtonData.showUpgradeTrialButton && (
+                <ButtonProgress
+                  className={`${CLASS_NAME}__upgrade__btn`}
+                  onClick={handleUpgradeClick}
+                  progress={upgradeButtonData.trialLeftProgress}
+                  leftValue={daysLeftText}
+                  yellowColorThreshold={50}
+                  redColorThreshold={0}
+                >
+                  Upgrade
+                </ButtonProgress>
+              )}
+            {upgradeButtonData.isCompleted &&
+              upgradeButtonData.showUpgradeDefaultButton && (
+                <Button
+                  className={`${CLASS_NAME}__upgrade__btn`}
+                  buttonStyle={EnumButtonStyle.Outline}
+                  onClick={handleUpgradeClick}
+                >
+                  Upgrade
+                </Button>
+              )}
           </div>
           <hr className={`${CLASS_NAME}__vertical_border`} />
 
@@ -249,14 +311,22 @@ const WorkspaceHeader: React.FC = () => {
               <div className={`${CLASS_NAME}__notification_bell`}>
                 <NovuProvider
                   subscriberId={currentWorkspace.externalId}
-                  applicationIdentifier={"gY2CIIdnBCc1"}
+                  applicationIdentifier={REACT_APP_NOVU_IDENTIFIER}
+                  styles={styles}
                 >
                   <PopoverNotificationCenter
                     colorScheme={"dark"}
+                    position="left-start"
+                    offset={0}
                     onNotificationClick={onNotificationClick}
+                    onActionClick={onBuildNotificationClick}
+                    footer={() => <Footer />}
+                    emptyState={<EmptyState />}
                   >
                     {({ unseenCount }) => (
-                      <NotificationBell unseenCount={unseenCount} />
+                      <div onClick={handleBellClick}>
+                        <NotificationBell unseenCount={unseenCount} />
+                      </div>
                     )}
                   </PopoverNotificationCenter>
                 </NovuProvider>
@@ -273,10 +343,21 @@ const WorkspaceHeader: React.FC = () => {
 
           <hr className={`${CLASS_NAME}__vertical_border`} />
 
-          <Button
-            buttonStyle={EnumButtonStyle.Text}
-            icon="log_out"
-            onClick={handleSignOut}
+          <CommandPalette
+            trigger={
+              <Tooltip
+                className="amp-menu-item__tooltip"
+                aria-label={`Logout`}
+                direction="sw"
+                noDelay
+              >
+                <Button
+                  buttonStyle={EnumButtonStyle.Text}
+                  icon="log_out"
+                  onClick={handleSignOut}
+                />
+              </Tooltip>
+            }
           />
         </div>
       </div>

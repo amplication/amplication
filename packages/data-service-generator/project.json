@@ -5,7 +5,7 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "target": "node",
@@ -52,22 +52,25 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/data-service-generator/src/**/*"]
+        "lintFilePatterns": [
+          "packages/data-service-generator/src/**/*",
+          "packages/data-service-generator/package.json"
+        ]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/data-service-generator"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/data-service-generator"],
       "options": {
         "jestConfig": "packages/data-service-generator/jest.config.ts"
       }
     },
     "e2e": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/data-service-generator"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/data-service-generator"],
       "options": {
         "jestConfig": "packages/data-service-generator/jest.e2e.config.ts",
         "passWithNoTests": false
@@ -84,7 +87,11 @@
     "generate-local-code": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts",
+        "commands": [
+          "rimraf ../../.amplication/generate-local-code/generated",
+          "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts"
+        ],
+        "parallel": false,
         "cwd": "packages/data-service-generator",
         "envFile": "packages/data-service-generator/.env"
       }
@@ -96,6 +103,17 @@
         "commands": [
           "jest --collectCoverage=false -u src/tests/*.spec.ts ",
           "jest --collectCoverage=false -u src/tests/server"
+        ],
+        "parallel": false,
+        "cwd": "packages/data-service-generator"
+      }
+    },
+    "update-one-snapshot": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/tests/__snapshots__"],
+      "options": {
+        "commands": [
+          "jest --collectCoverage=false -u src/tests/create-data-service.spec.ts "
         ],
         "parallel": false,
         "cwd": "packages/data-service-generator"

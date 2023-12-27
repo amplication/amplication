@@ -1,12 +1,9 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "allowJs": true,
     "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2021", "es2017", "dom"],
-    "esModuleInterop": true,
+    "allowJs": false,
+    "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true
   },
@@ -19,5 +16,6 @@
     {
       "path": "./tsconfig.spec.json"
     }
-  ]
+  ],
+  "extends": "../../tsconfig.base.json"
 }

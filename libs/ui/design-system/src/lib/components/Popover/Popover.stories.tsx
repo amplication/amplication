@@ -39,33 +39,35 @@ function CaretSelector(props) {
   return <div>{choices}</div>;
 }
 
-export const Default = (props: any) => {
-  const [open, setOpen] = React.useState(true);
-  const [pos, setPos] = React.useState("top");
+export const Default = {
+  render: (props: any) => {
+    const [open, setOpen] = React.useState(true);
+    const [pos, setPos] = React.useState("top");
 
-  return (
-    <div>
-      <Button onClick={() => setOpen((open) => !open)}>Open</Button>
-      <div style={{ padding: 20 }}>
-        <CaretSelector current={pos} onChange={setPos} />
+    return (
+      <div>
+        <Button onClick={() => setOpen((open) => !open)}>Open</Button>
+        <div style={{ padding: 20 }}>
+          <CaretSelector current={pos} onChange={setPos} />
+        </div>
+        <Popover
+          content={
+            <div>
+              Popover Content
+              <br />
+              <br />
+              <br />
+              <br />
+              more content
+            </div>
+          }
+          caret={pos}
+          open={open}
+        >
+          hello
+        </Popover>
+        <div>another div below the popover</div>
       </div>
-      <Popover
-        content={
-          <div>
-            Popover Content
-            <br />
-            <br />
-            <br />
-            <br />
-            more content
-          </div>
-        }
-        caret={pos}
-        open={open}
-      >
-        hello
-      </Popover>
-      <div>another div below the popover</div>
-    </div>
-  );
+    );
+  },
 };

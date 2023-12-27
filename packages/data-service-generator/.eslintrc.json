@@ -10,12 +10,11 @@
     "src/**/static/**/*",
     // React Admin UI public files
     "src/admin/public-files",
-    "**/.npmrc",
-    "**/package.json"
+    "src/**/package-json/**/.npmrc",
+    "src/**/package-json/package.json"
   ],
   "parserOptions": {
-    "project": "packages/data-service-generator/tsconfig.*?.json",
-    "sourceType": "module"
+    "project": "packages/data-service-generator/tsconfig.*?.json"
   },
   "overrides": [
     {
@@ -69,62 +68,77 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "rules": {}
+      "rules": {
+        "no-case-declarations": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/interface-name-prefix": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "import/no-cycle": "off",
+        "@typescript-eslint/camelcase": "off",
+        "@typescript-eslint/naming-convention": [
+          "error",
+          {
+            "selector": "default",
+            "format": ["camelCase"]
+          },
+          {
+            "selector": "variable",
+            "modifiers": ["const"],
+            "format": ["camelCase", "UPPER_CASE"]
+          },
+          {
+            "selector": "property",
+            "format": ["camelCase", "UPPER_CASE"]
+          },
+          {
+            "selector": "variable",
+            "modifiers": ["const"],
+            "types": ["function"],
+            "format": ["camelCase", "PascalCase"]
+          },
+          {
+            "selector": "typeLike",
+            "format": ["PascalCase"]
+          },
+          {
+            "selector": "objectLiteralProperty",
+            "format": null
+          },
+          {
+            "selector": "enumMember",
+            "format": ["PascalCase"]
+          }
+        ],
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "args": "none"
+          }
+        ],
+        "@typescript-eslint/no-floating-promises": "error",
+        "@typescript-eslint/no-non-null-assertion": "off"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
       "rules": {}
+    },
+    {
+      "files": ["*.json"],
+      "parser": "jsonc-eslint-parser",
+      "rules": {
+        "@nx/dependency-checks": [
+          "error",
+          {
+            "ignoredDependencies": [
+              "@amplication/util/logging",
+              "@amplication/dsg-utils"
+            ],
+            "includeTransitiveDependencies": true
+          }
+        ]
+      }
     }
-  ],
-  "rules": {
-    "no-case-declarations": "off",
-    "@typescript-eslint/ban-ts-comment": "off",
-    "@typescript-eslint/interface-name-prefix": "off",
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-explicit-any": "off",
-    "import/no-cycle": "off",
-    "@typescript-eslint/camelcase": "off",
-    "@typescript-eslint/naming-convention": [
-      "error",
-      {
-        "selector": "default",
-        "format": ["camelCase"]
-      },
-      {
-        "selector": "variable",
-        "modifiers": ["const"],
-        "format": ["camelCase", "UPPER_CASE"]
-      },
-      {
-        "selector": "property",
-        "format": ["camelCase", "UPPER_CASE"]
-      },
-      {
-        "selector": "variable",
-        "modifiers": ["const"],
-        "types": ["function"],
-        "format": ["camelCase", "PascalCase"]
-      },
-      {
-        "selector": "typeLike",
-        "format": ["PascalCase"]
-      },
-      {
-        "selector": "objectLiteralProperty",
-        "format": null
-      },
-      {
-        "selector": "enumMember",
-        "format": ["PascalCase"]
-      }
-    ],
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      {
-        "args": "none"
-      }
-    ],
-    "@typescript-eslint/no-floating-promises": "error",
-    "@typescript-eslint/no-non-null-assertion": "off"
-  }
+  ]
 }

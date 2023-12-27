@@ -103,7 +103,7 @@ export class GitPullEventService {
     });
 
     this.logger.log(
-      "Git pull event has been recorded in the databsae",
+      "Git pull event has been recorded in the database",
       GitPullEventService.name,
       { newPullEventRecord }
     );

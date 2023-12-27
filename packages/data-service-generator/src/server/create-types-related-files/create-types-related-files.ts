@@ -16,17 +16,17 @@ export async function createTypesRelatedFiles(): Promise<ModuleMap> {
 
   const moduleMap = new ModuleMap(logger);
 
-  await logger.info("Create GraphqlBitIntFile file...");
+  await logger.info("Creating GraphqlBitInt file...");
   await createGraphQLBigInt(moduleMap);
 
-  await logger.info("Create BigIntFilters files...");
+  await logger.info("Creating BigIntFilters files...");
   await createBigIntFilters(moduleMap);
 
-  await logger.info("Create DecimalFilters files...");
+  await logger.info("Creating DecimalFilters files...");
   await createDecimalFilters(moduleMap);
 
   await logger.info("Formatting types related files code...");
-  await moduleMap.replaceModulesCode((code) => formatCode(code));
+  await moduleMap.replaceModulesCode((path, code) => formatCode(path, code));
 
   return moduleMap;
 }

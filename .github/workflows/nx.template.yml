@@ -46,7 +46,6 @@ env:
   BRANCH: ${{ github.event.workflow_run.head_branch }}
   NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
   NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache || false }}
-  CYPRESS_CACHE_FOLDER: node_modules/.cache/Cypress
 
 jobs:
   nx:
@@ -60,42 +59,41 @@ jobs:
       affected-deploy-static: ${{ steps.configure-nx.outputs.affected-deploy-static }}
       affected-deploy-container: ${{ steps.configure-nx.outputs.affected-deploy-container }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ inputs.nx-head }}
+          filter: blob:none
 
       - uses: nrwl/nx-set-shas@v3
         if: inputs.nx-force-all == false
         with:
           main-branch-name: ${{ inputs.nx-base }}
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: "package.json"
-          cache: "npm"
-          cache-dependency-path: "**/package-lock.json"
+      - name: Setup Bun Runtime
+        if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+        uses: oven-sh/setup-bun@v1
 
-      - name: Cache global node modules
-        id: cache-node-modules
+      - name: Cache
+        id: cache
         uses: actions/cache@v3
         env:
-          cache-name: cache-node-modules
+          cache-name: cache
         with:
-          path: node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          path: |
+            ~/.bun/install/cache
 
-      - name: Install dependencies
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
-        run: npm ci
+      - name: Install Dependencies
+        run: bun i --lockfile package-lock.json
 
       - name: Evaluate affected projects
         id: configure-nx
         run: |
-          echo affected-apps=$(npx nx print-affected --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-lib=$(npx nx print-affected --type=lib $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-e2e=$(npx nx print-affected --target=e2e $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-package-container=$(npx nx print-affected --target=package:container --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-deploy-static=$(npx nx print-affected --target=deploy:static --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-deploy-container=$(npx nx print-affected --target=deploy:container --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-apps=$(bunx nx print-affected --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-lib=$(bunx nx print-affected --type=lib $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-e2e=$(bunx nx print-affected --target=e2e $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-package-container=$(bunx nx print-affected --target=package:container --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-deploy-static=$(bunx nx print-affected --target=deploy:static --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-deploy-container=$(bunx nx print-affected --target=deploy:container --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT | grep affected

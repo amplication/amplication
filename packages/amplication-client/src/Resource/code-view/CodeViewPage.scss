@@ -13,7 +13,7 @@ $svg-img-height: 200px;
     border-radius: var(--default-border-radius);
     border: $border-dark;
     box-sizing: border-box;
-    overflow: auto;
+    overflow: hidden;
     height: 100%;
   }
 

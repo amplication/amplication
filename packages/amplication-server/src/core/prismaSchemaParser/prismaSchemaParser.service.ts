@@ -33,6 +33,7 @@ import {
   findOriginalFieldName,
   findOriginalModelName,
   isValidIdFieldType,
+  isUniqueField,
 } from "./helpers";
 import {
   handleModelNamesCollision,
@@ -45,10 +46,12 @@ import {
   convertUniqueFieldNamedIdToIdField,
   addIdFieldIfNotExists,
   handleIdFieldNotNamedId,
-  handleNotIdFieldNotUniqueNamedId,
   addMapAttributeToField,
   addMapAttributeToModel,
   findRelationAttributeName,
+  handleNotIdFieldNameId,
+  convertModelIdToFieldId,
+  getDatasourceProviderFromSchema,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -101,6 +104,7 @@ import { ActionContext } from "../userAction/types";
 
 @Injectable()
 export class PrismaSchemaParserService {
+  private datasourceProvider: string;
   private prepareOperations: PrepareOperation[] = [
     this.prepareModelNames,
     this.prepareFieldNames,
@@ -146,6 +150,9 @@ export class PrismaSchemaParserService {
         "Prisma Schema Validation completed successfully",
         EnumActionLogLevel.Info
       );
+
+      this.datasourceProvider = getDatasourceProviderFromSchema(schema);
+      this.logger.debug(`Datasource provider: ${this.datasourceProvider}`);
 
       void onEmitUserActionLog(
         "Prepare Prisma Schema for import",
@@ -609,23 +616,56 @@ export class PrismaSchemaParserService {
           prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
       ) as BlockAttribute[];
 
-      const modelIdAttribute = modelAttributes.find(
+      const modelIdAttribute = modelAttributes?.find(
         (attribute) => attribute.name === ID_ATTRIBUTE_NAME
       );
 
       if (!modelIdAttribute) return builder;
 
-      // rename the @@id attribute to @@unique
-      builder.model(model.name).then<Model>((model) => {
-        modelIdAttribute.name = UNIQUE_ATTRIBUTE_NAME;
-      });
+      const modelIdAttributeValueArgs = (
+        modelIdAttribute.args.find((arg) => arg.type === "attributeArgument")
+          ?.value as RelationArray
+      )?.args;
 
-      void actionContext.onEmitUserActionLog(
-        `Attribute "${ID_ATTRIBUTE_NAME}" was changed to "${UNIQUE_ATTRIBUTE_NAME}" on model "${model.name}"`,
-        EnumActionLogLevel.Warning
-      );
+      if (modelIdAttributeValueArgs.length > 1) {
+        void actionContext.onEmitUserActionLog(
+          `The model "${model.name}" has a composite id which is not supported. Please fix this issue and import the schema again.`,
+          EnumActionLogLevel.Error
+        );
 
-      // adding the id field to the model is done in the prepareIdField operation
+        throw new Error(
+          `The model "${model.name}" has a composite id which is not supported. Please fix this issue and import the schema again.`
+        );
+      }
+
+      if (modelIdAttributeValueArgs.length === 1) {
+        // rename the @@id attribute to @@unique
+        builder.model(model.name).then<Model>((model) => {
+          modelIdAttribute.name = UNIQUE_ATTRIBUTE_NAME;
+        });
+
+        void actionContext.onEmitUserActionLog(
+          `Attribute "${ID_ATTRIBUTE_NAME}" was changed to "${UNIQUE_ATTRIBUTE_NAME}" on model "${model.name}"`,
+          EnumActionLogLevel.Warning
+        );
+
+        const modelFields = model.properties.filter(
+          (property) => property.type === FIELD_TYPE_NAME
+        ) as Field[];
+
+        const pkField = modelFields.find(
+          (field) => field.name === modelIdAttributeValueArgs[0]
+        );
+
+        convertModelIdToFieldId(model, pkField, builder, actionContext);
+
+        // change the name of the unique attribute arg to id
+        builder.model(model.name).then<Model>((model) => {
+          modelIdAttributeValueArgs[0] = ID_FIELD_NAME;
+        });
+
+        // then, on prepareIdField, we will handle the id field (for example id field that is not named id and the other way around)
+      }
     });
 
     return {
@@ -759,11 +799,21 @@ export class PrismaSchemaParserService {
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
     models.forEach((model: Model) => {
-      let uniqueFieldAsIdField: Field;
-
       const modelFields = model.properties.filter(
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
+
+      const idFieldAsFK = modelFields.find(
+        (field) =>
+          field.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME) &&
+          this.isFkFieldOfARelation(schema, model, field)
+      );
+
+      if (idFieldAsFK) {
+        throw new Error(
+          `Using the foreign key field as the primary key is not supported. The field "${idFieldAsFK.name}" is a primary key on model "${model.name}" but also a foreign key on the related model. Please fix this issue and import the schema again.`
+        );
+      }
 
       const hasIdField = modelFields.some(
         (field) =>
@@ -771,84 +821,80 @@ export class PrismaSchemaParserService {
           false
       );
 
-      // find the first unique field that can become an id field and its name is id
-      const uniqueFieldNamedId = modelFields.find(
-        (field) =>
-          isValidIdFieldType(field.fieldType as string) &&
-          field.name === ID_FIELD_NAME &&
-          field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME)
-      );
+      const hasUniqueFields = modelFields.some((field) => isUniqueField(field));
 
-      if (!uniqueFieldNamedId) {
-        // find the first unique field that can become an id field and is not named id
-        uniqueFieldAsIdField = modelFields.find(
+      // the model has no id field, but it has unique field/s
+      if (!hasIdField && hasUniqueFields) {
+        const uniqueFieldAsIdFieldNamedId = modelFields.find(
           (field) =>
+            field.name === ID_FIELD_NAME &&
             isValidIdFieldType(field.fieldType as string) &&
-            field.name !== ID_FIELD_NAME &&
-            field.attributes?.some(
-              (attr) => attr.name === UNIQUE_ATTRIBUTE_NAME
-            )
+            isUniqueField(field)
         );
-      }
-
-      // if the model doesn't have any id or unique field that can be used as id filed, we add an id field
-      // The type is the default type for id field in Amplication - String
-      if (!hasIdField && !uniqueFieldNamedId && !uniqueFieldAsIdField) {
-        addIdFieldIfNotExists(builder, model, actionContext);
-      }
-
-      if (!hasIdField && uniqueFieldNamedId) {
-        convertUniqueFieldNamedIdToIdField(
-          builder,
-          model,
-          uniqueFieldNamedId,
-          actionContext
-        );
-      }
-
-      if (!hasIdField && uniqueFieldAsIdField) {
-        convertUniqueFieldNotNamedIdToIdField(
-          builder,
-          schema,
-          model,
-          uniqueFieldAsIdField,
-          mapper,
-          actionContext
-        );
-      }
-
-      modelFields.forEach((field: Field) => {
-        const isIdField = field.attributes?.some(
-          (attr) => attr.name === ID_ATTRIBUTE_NAME
-        );
-
-        if (isIdField && this.isFkFieldOfARelation(schema, model, field)) {
-          throw new Error(
-            `Using the foreign key field as the primary key is not supported. The field "${field.name}" is a primary key on model "${model.name}" but also a foreign key on the related model. Please fix this issue and import the schema again.`
+        // first, we check if there is a unique field named id that can be converted to id field. If so, we prefer to use this field as id field
+        if (uniqueFieldAsIdFieldNamedId) {
+          convertUniqueFieldNamedIdToIdField(
+            builder,
+            model,
+            uniqueFieldAsIdFieldNamedId,
+            actionContext
           );
+        } else {
+          // if there is no unique field named id, we check if there is another unique field that we can convert to id field
+          const uniqueFieldAsIdFieldNotNamedId = modelFields.find(
+            (field) =>
+              field.name !== ID_FIELD_NAME &&
+              isValidIdFieldType(field.fieldType as string) &&
+              isUniqueField(field)
+          );
+          if (uniqueFieldAsIdFieldNotNamedId) {
+            convertUniqueFieldNotNamedIdToIdField(
+              builder,
+              schema,
+              model,
+              uniqueFieldAsIdFieldNotNamedId,
+              mapper,
+              actionContext
+            );
+          }
         }
-
-        if (!isIdField && field.name === ID_FIELD_NAME) {
-          // if the field is named "id" but it is not decorated with id, nor with @unique - we rename it to ${modelName}Id
-          handleNotIdFieldNotUniqueNamedId(
+        // the model has no id field and no unique field/s
+      } else if (!hasIdField && !hasUniqueFields) {
+        addIdFieldIfNotExists(builder, model, actionContext);
+      } else {
+        // the model has an id field. There are two cases: field named id that is not an id field, or id field that is not named id
+        const notIdFieldNamedId = modelFields.find(
+          (field) =>
+            field.name === ID_FIELD_NAME &&
+            !field.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME)
+        );
+        if (notIdFieldNamedId) {
+          handleNotIdFieldNameId(
             builder,
             schema,
             model,
-            field,
+            notIdFieldNamedId,
             mapper,
             actionContext
           );
-        } else if (isIdField && field.name !== ID_FIELD_NAME) {
+        }
+
+        const idFieldNotNamedId = modelFields.find(
+          (field) =>
+            field.name !== ID_FIELD_NAME &&
+            field.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME)
+        );
+        if (idFieldNotNamedId) {
           handleIdFieldNotNamedId(
             builder,
             schema,
             model,
-            field,
+            idFieldNotNamedId,
             mapper,
             actionContext
           );
         }
-      });
+      }
     });
     return {
       builder,
@@ -1521,7 +1567,8 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.Id
+      EnumDataType.Id,
+      this.datasourceProvider
     );
 
     const defaultIdAttribute = field.attributes?.find(

@@ -9,18 +9,22 @@ export default {
   component: TextField,
 } as Meta;
 
-export const Default = (props: any) => {
-  return (
-    <Formik initialValues={{}} onSubmit={() => {}}>
-      <TextField name="name" onChange={props.onChange} />
-    </Formik>
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <Formik initialValues={{}} onSubmit={() => {}}>
+        <TextField name="name" onChange={props.onChange} />
+      </Formik>
+    );
+  },
 };
 
-export const Textarea = (props: any) => {
-  return (
-    <Formik initialValues={{}} onSubmit={() => {}}>
-      <TextField name="name" textarea onChange={props.onChange} />
-    </Formik>
-  );
+export const Textarea = {
+  render: (props: any) => {
+    return (
+      <Formik initialValues={{}} onSubmit={() => {}}>
+        <TextField name="name" textarea onChange={props.onChange} />
+      </Formik>
+    );
+  },
 };

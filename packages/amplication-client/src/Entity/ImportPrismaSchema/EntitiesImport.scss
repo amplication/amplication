@@ -63,4 +63,11 @@ $max-width: 700px;
     text-align: center;
     margin: var(--default-spacing);
   }
+
+  &__link-button {
+    @include body2;
+    a {
+      color: var(--theme-turquoise);
+    }
+  }
 }

@@ -4,29 +4,14 @@
   "sourceRoot": "libs/util/code-gen-utils/src",
   "projectType": "library",
   "targets": {
-    "install": {
-      "executor": "nx:run-commands",
-      "inputs": [
-        "{projectRoot}/package.json",
-        "{projectRoot}/package-lock.json"
-      ],
-      "outputs": ["{projectRoot}/node_modules"],
-      "options": {
-        "commands": ["npm ci"],
-        "parallel": false,
-        "cwd": "libs/util/code-gen-utils"
-      }
-    },
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/util/code-gen-utils",
         "main": "libs/util/code-gen-utils/src/index.ts",
         "tsConfig": "libs/util/code-gen-utils/tsconfig.lib.json",
-        "assets": ["libs/util/code-gen-utils/*.md"],
-        "buildableProjectDepsInPackageJsonType": "dependencies",
-        "updateBuildableProjectDepsInPackageJson": true
+        "assets": ["libs/util/code-gen-utils/*.md"]
       }
     },
     "publish": {
@@ -36,21 +21,23 @@
       },
       "dependsOn": [
         {
-          "projects": "self",
           "target": "build"
         }
       ]
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/util/code-gen-utils/**/*.ts"]
+        "lintFilePatterns": [
+          "libs/util/code-gen-utils/**/*.{ts,tsx,js,jsx}",
+          "libs/util/code-gen-utils/package.json"
+        ]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/util/code-gen-utils"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/util/code-gen-utils"],
       "options": {
         "jestConfig": "libs/util/code-gen-utils/jest.config.ts",
         "passWithNoTests": true

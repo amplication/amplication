@@ -57,7 +57,7 @@ export class DiffService {
     assert.notStrictEqual(
       oldBuildPath,
       newBuildPath,
-      "Cant get the same build id"
+      "Can't get the same build id"
     );
 
     DiffService.validateIfBuildExist(oldBuildPath, previousAmplicationBuildId);

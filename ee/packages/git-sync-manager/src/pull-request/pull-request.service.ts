@@ -111,7 +111,15 @@ export class PullRequestService {
         this.gitProvidersConfiguration,
         logger
       ),
-      { logger }
+      {
+        logger,
+        attributes: {
+          resourceId,
+          buildId: newBuildId,
+          gitProvider,
+          pullRequestMode,
+        },
+      }
     );
     const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
 

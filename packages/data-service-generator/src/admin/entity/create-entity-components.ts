@@ -1,5 +1,8 @@
-import { Entity } from "@amplication/code-gen-types";
-import { EntityComponent, EntityComponents } from "../types";
+import {
+  Entity,
+  EntityComponent,
+  EntityComponents,
+} from "@amplication/code-gen-types";
 import { createEntityCreateComponent } from "./entity-create-component/create-entity-create-component";
 import { createEntityListComponent } from "./entity-list-component/create-entity-list-component";
 import { createEditEntityComponent } from "./entity-edit-component/create-edit-entity-component";

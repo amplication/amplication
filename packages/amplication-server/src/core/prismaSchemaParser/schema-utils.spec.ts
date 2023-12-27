@@ -33,9 +33,15 @@ describe("schema-utils", () => {
         args: [
           {
             type: "attributeArgument",
-            value: '"mock_field"',
+            value: '"_id"',
           },
         ],
+      },
+      {
+        type: "attribute",
+        name: "ObjectId",
+        kind: "field",
+        group: "db",
       },
     ] as unknown as Attribute[];
 
@@ -63,7 +69,35 @@ describe("schema-utils", () => {
         searchable: true,
         description: "",
         properties: {},
-        customAttributes: '@map("mock_field")',
+        customAttributes: '@map("_id") @db.ObjectId',
+      });
+    });
+
+    it('should not treat @map("_id") as custom attribute when the data type is EnumDataType.Id and the provider is mongo', () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: mockAttributes,
+      } as unknown as Field;
+      const dataType = EnumDataType.Id;
+
+      const result = createOneEntityFieldCommonProperties(
+        field,
+        dataType,
+        "mongodb"
+      );
+
+      expect(result).toEqual({
+        permanentId: expect.any(String),
+        name: "testField",
+        displayName: "Test Field",
+        dataType: dataType,
+        required: true,
+        unique: true,
+        searchable: true,
+        description: "",
+        properties: {},
+        customAttributes: "",
       });
     });
 
@@ -116,7 +150,7 @@ describe("schema-utils", () => {
 
       const result = createOneEntityFieldCommonProperties(field, dataType);
 
-      expect(result.customAttributes).toEqual('@map("mock_field")');
+      expect(result.customAttributes).toEqual('@map("_id") @db.ObjectId');
     });
   });
 
@@ -360,7 +394,7 @@ describe("schema-utils", () => {
       expect(() => {
         findFkFieldNameOnAnnotatedField(field);
       }).toThrow(
-        `Missing fields attribute on relation attribute on field ${field.name}`
+        `The field "${field.name}" is missing the 'fields' attribute in the relation attribute`
       );
     });
 
@@ -385,7 +419,7 @@ describe("schema-utils", () => {
       expect(() => {
         findFkFieldNameOnAnnotatedField(field);
       }).toThrow(
-        `Relation attribute on field ${field.name} has more than one field, which is not supported`
+        `The relation attribute on field "${field.name}" contains multiple fields. Only one single field is supported`
       );
     });
 

@@ -7,6 +7,8 @@ export default {
   component: UserAvatar,
 } as Meta;
 
-export const Default = (props: any) => {
-  return <UserAvatar firstName="John" lastName="Bar" />;
+export const Default = {
+  render: (props: any) => {
+    return <UserAvatar firstName="John" lastName="Bar" />;
+  },
 };

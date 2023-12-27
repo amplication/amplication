@@ -11,7 +11,6 @@ import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
 import { Env } from "../env";
 import { PullRequestService } from "./pull-request.service";
-import { KafkaTopics } from "./pull-request.type";
 import {
   KafkaProducerService,
   KafkaPacemaker,
@@ -20,7 +19,10 @@ import {
   CreatePrFailure,
   CreatePrRequest,
   CreatePrSuccess,
+  KAFKA_TOPICS,
 } from "@amplication/schema-registry";
+import { LogLevel } from "@amplication/util/logging";
+import { NoChangesOnPullRequest } from "@amplication/util/git";
 
 @Controller()
 export class PullRequestController {
@@ -32,7 +34,24 @@ export class PullRequestController {
     private readonly logger: AmplicationLogger
   ) {}
 
-  @EventPattern(KafkaTopics.CreatePrRequest)
+  private async log(
+    buildId: string,
+    level: LogLevel,
+    message: string
+  ): Promise<void> {
+    await this.producerService.emitMessage(KAFKA_TOPICS.CREATE_PR_LOG_TOPIC, {
+      key: {
+        buildId,
+      },
+      value: {
+        buildId,
+        level,
+        message,
+      },
+    });
+  }
+
+  @EventPattern(KAFKA_TOPICS.CREATE_PR_REQUEST_TOPIC)
   async generatePullRequest(
     @Payload() message: CreatePrRequest.Value,
     @Ctx() context: KafkaContext
@@ -53,6 +72,11 @@ export class PullRequestController {
       buildId: validArgs.newBuildId,
     });
 
+    await this.log(
+      validArgs.newBuildId,
+      LogLevel.Info,
+      "Worker assigned. Starting pull request creation..."
+    );
     logger.info(`Got a new generate pull request item from queue.`, {
       topic,
       partition,
@@ -84,10 +108,30 @@ export class PullRequestController {
         },
       };
       await this.producerService.emitMessage(
-        KafkaTopics.CreatePrSuccess,
+        KAFKA_TOPICS.CREATE_PR_SUCCESS_TOPIC,
         successEvent
       );
     } catch (error) {
+      if (error instanceof NoChangesOnPullRequest) {
+        await this.log(
+          validArgs.newBuildId,
+          LogLevel.Warn,
+          "Hey there! Looks like your code hasn't changed since the last build. We skipped creating a new pull request to keep things tidy."
+        );
+        await this.producerService.emitMessage(
+          KAFKA_TOPICS.CREATE_PR_SUCCESS_TOPIC,
+          {
+            key: eventKey,
+            value: {
+              url: error.pullRequestUrl,
+              gitProvider: validArgs.gitProvider,
+              buildId: validArgs.newBuildId,
+            },
+          }
+        );
+        return;
+      }
+
       logger.error(error.message, error, {
         class: PullRequestController.name,
         offset,
@@ -105,7 +149,7 @@ export class PullRequestController {
       };
 
       await this.producerService.emitMessage(
-        KafkaTopics.CreatePrFailure,
+        KAFKA_TOPICS.CREATE_PR_FAILURE_TOPIC,
         failureEvent
       );
     }

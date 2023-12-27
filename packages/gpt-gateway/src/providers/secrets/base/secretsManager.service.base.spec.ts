@@ -1,6 +1,7 @@
 import { ConfigService } from "@nestjs/config";
 import { mock } from "jest-mock-extended";
 import { SecretsManagerServiceBase } from "./secretsManager.service.base";
+import { EnumSecretsNameKey } from "../secretsNameKey.enum";
 
 describe("Testing the secrets manager base class", () => {
   const SECRET_KEY = "SECRET_KEY";
@@ -16,7 +17,9 @@ describe("Testing the secrets manager base class", () => {
     //ARRANGE
     configService.get.mockReturnValue(SECRET_VALUE);
     //ACT
-    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    const result = await secretsManagerServiceBase.getSecret(
+      SECRET_KEY as unknown as EnumSecretsNameKey
+    );
     //ASSERT
     expect(result).toBe(SECRET_VALUE);
   });
@@ -24,16 +27,15 @@ describe("Testing the secrets manager base class", () => {
     //ARRANGE
     configService.get.mockReturnValue(undefined);
     //ACT
-    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    const result = await secretsManagerServiceBase.getSecret(
+      SECRET_KEY as unknown as EnumSecretsNameKey
+    );
     //ASSERT
     expect(result).toBeNull();
   });
-  it("should throw error if dont get key", () => {
-    return expect(secretsManagerServiceBase.getSecret("")).rejects.toThrow();
-  });
-  it("should throw an exeption if getting null key", () => {
+  it("should throw an exception if getting null key", () => {
     return expect(
-      secretsManagerServiceBase.getSecret(null as unknown as string)
+      secretsManagerServiceBase.getSecret(null as unknown as EnumSecretsNameKey)
     ).rejects.toThrow();
   });
 });

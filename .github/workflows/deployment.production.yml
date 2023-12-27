@@ -12,6 +12,7 @@ jobs:
     name: Preparation
     runs-on: ubuntu-20.04
     outputs:
+      previous-tag: ${{ steps.base.outputs.tag }}
       affected-apps: ${{ steps.configure-nx.outputs.affected-apps }}
       affected-lib: ${{ steps.configure-nx.outputs.affected-lib }}
       affected-e2e: ${{ steps.configure-nx.outputs.affected-e2e }}
@@ -166,7 +167,7 @@ jobs:
           body: |
             This pull request was generated as a result of the `deployment.production.yml` workflow on the source code repository which is triggered when a release is created. This subsequently checksout the components that have been changed between this release and the previous one. Based on the affected projects it changes the image.tag where applicable. After merging this pull request, navigate to our argocd and synchronize the changes that are pending (make sure these are "correct/expected").
 
-            Image to bump from `${{ needs.preparation.outputs.base_tag }}` to `${{ github.ref_name }}`
+            Image to bump from `${{ needs.preparation.outputs.previous-tag }}` to `${{ github.ref_name }}`
 
             Note: after merging you will still need to do a manual sync of the applications that are in the `argocd project` called `applications`. 
 

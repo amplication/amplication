@@ -351,7 +351,7 @@ export function createFieldValueTypeFromPrismaField(
   if (
     !prismaField.isRequired &&
     !isQuery &&
-    !(prismaField.type === ScalarType.Json) // json property cant be null
+    !(prismaField.type === ScalarType.Json) // json property can't be null
     //TODO add a ui update that make json required and remove this
   ) {
     const [type] = createFieldValueTypeFromPrismaField(

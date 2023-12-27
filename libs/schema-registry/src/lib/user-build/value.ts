@@ -1,4 +1,4 @@
-import { IsString } from "class-validator";
+import { IsNumber, IsString } from "class-validator";
 
 export class Value {
   @IsString()
@@ -20,5 +20,14 @@ export class Value {
   resourceId!: string;
 
   @IsString()
+  resourceName!: string;
+
+  @IsString()
   workspaceId!: string;
+
+  @IsString()
+  projectName!: string;
+
+  @IsNumber()
+  createdAt!: number;
 }

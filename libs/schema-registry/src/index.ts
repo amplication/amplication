@@ -5,6 +5,7 @@ export * as CodeGenerationSuccess from "./lib/code-generation-success";
 export * as CreatePrFailure from "./lib/create-pr-failure";
 export * as CreatePrRequest from "./lib/create-pr-request";
 export * as CreatePrSuccess from "./lib/create-pr-success";
+export * as CreatePrLog from "./lib/create-pr-log";
 export * as CanUserAccessBuild from "./lib/can-user-access-build";
 export * as DBSchemaImportRequest from "./lib/db-schema-import-request";
 export * as UserActionLog from "./lib/user-action-log";
@@ -22,6 +23,7 @@ export enum KAFKA_TOPICS {
   /// git-pull-request
   CREATE_PULL_REQUEST_COMPLETED_TOPIC = "git.internal.pull-request.completed.1",
   GENERATE_PULL_REQUEST_TOPIC = "git.internal.pull-request.request.1",
+  CREATE_PR_LOG_TOPIC = "git.internal.create-pr.log.1",
   CREATE_PR_SUCCESS_TOPIC = "git.internal.create-pr.success.1",
   CREATE_PR_FAILURE_TOPIC = "git.internal.create-pr.failure.1",
   KAFKA_REPOSITORY_PUSH_QUEUE = "git.external.push.event.0",

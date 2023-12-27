@@ -1,7 +1,7 @@
-import type { ComponentStory, ComponentMeta } from "@storybook/react";
+import type { StoryFn, Meta } from "@storybook/react";
 import { LimitationDialog } from "./LimitationDialog";
 
-const Story: ComponentMeta<typeof LimitationDialog> = {
+const Story: Meta<typeof LimitationDialog> = {
   component: LimitationDialog,
   title: "LimitationDialog",
   argTypes: {
@@ -12,9 +12,6 @@ const Story: ComponentMeta<typeof LimitationDialog> = {
 };
 export default Story;
 
-const Template: ComponentStory<typeof LimitationDialog> = (args) => (
-  <LimitationDialog {...args} />
-);
-
-export const Primary = Template.bind({});
-Primary.args = {};
+export const Primary = {
+  args: {},
+};

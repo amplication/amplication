@@ -5,14 +5,14 @@
   "projectType": "application",
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["ee/packages/amplication-git-pull-service/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": [
         "{workspaceRoot}/coverage/ee/packages/amplication-git-pull-service"
       ],
@@ -22,7 +22,7 @@
       }
     },
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "inputs": ["{projectRoot}/**/*"],
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -36,7 +36,10 @@
             "input": "ee/packages/amplication-git-pull-service",
             "output": "prisma"
           }
-        ]
+        ],
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -47,11 +50,12 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "amplication-git-pull-service:build",
         "inspect": true,
-        "port": 7020
+        "port": 7020,
+        "watch": true
       },
       "configurations": {
         "production": {
@@ -77,7 +81,7 @@
     "db:migrate:dev": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "prisma migrate dev",
+        "command": "prisma migrate dev --name $([[ {args.name} = undefined ]] && echo migration || echo {args.name})",
         "cwd": "ee/packages/amplication-git-pull-service"
       }
     },
@@ -117,7 +121,7 @@
     "db:clean": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node scripts/clean.ts",
+        "command": "prisma migrate reset --force",
         "cwd": "ee/packages/amplication-git-pull-service"
       }
     },

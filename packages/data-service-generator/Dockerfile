@@ -1,7 +1,7 @@
 ARG GIT_REF_NAME
 ARG GIT_SHA
 
-FROM node:19.1-alpine AS base
+FROM node:18-alpine AS base
 ARG GIT_REF_NAME
 ARG GIT_SHA
 
@@ -11,8 +11,9 @@ WORKDIR /workspace/packages/data-service-generator
 COPY ./dist/packages/data-service-generator .
 RUN npm i --omit-dev
 
-# Copy unpublished logging library
+# Copy unpublished amplication libraries
 COPY ./dist/libs/util/logging node_modules/@amplication/util/logging
+COPY ./dist/libs/util/dsg-utils node_modules/@amplication/dsg-utils
 
 ENV GIT_REF_NAME=${GIT_REF_NAME}
 ENV GIT_SHA=${GIT_SHA}

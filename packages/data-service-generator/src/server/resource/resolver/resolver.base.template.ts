@@ -1,5 +1,5 @@
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
+import { GraphQLError } from "graphql";
 // @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
@@ -38,15 +38,17 @@ declare const CREATE_DATA_MAPPING: CREATE_INPUT;
 declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
 
 declare interface SERVICE {
-  create(args: { data: CREATE_INPUT }): Promise<ENTITY>;
+  CREATE_FUNCTION(args: { data: CREATE_INPUT }): Promise<ENTITY>;
   count(args: COUNT_ARGS): Promise<number>;
-  findMany(args: FIND_MANY_ARGS): Promise<ENTITY[]>;
-  findOne(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY | null>;
-  update(args: {
+  FIND_MANY_FUNCTION(args: FIND_MANY_ARGS): Promise<ENTITY[]>;
+  FIND_ONE_FUNCTION(args: {
+    where: WHERE_UNIQUE_INPUT;
+  }): Promise<ENTITY | null>;
+  UPDATE_FUNCTION(args: {
     where: WHERE_UNIQUE_INPUT;
     data: UPDATE_INPUT;
   }): Promise<ENTITY>;
-  delete(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY>;
+  DELETE_FUNCTION(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY>;
 }
 
 declare const ENTITY_NAME: string;
@@ -67,14 +69,14 @@ export class RESOLVER_BASE {
   async ENTITIES_QUERY(
     @graphql.Args() args: FIND_MANY_ARGS
   ): Promise<ENTITY[]> {
-    return this.service.findMany(args);
+    return this.service.FIND_MANY_FUNCTION(args);
   }
 
   @graphql.Query(() => ENTITY, { nullable: true })
   async ENTITY_QUERY(
     @graphql.Args() args: FIND_ONE_ARGS
   ): Promise<ENTITY | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.FIND_ONE_FUNCTION(args);
     if (result === null) {
       return null;
     }
@@ -84,7 +86,7 @@ export class RESOLVER_BASE {
   @graphql.Mutation(() => ENTITY)
   async CREATE_MUTATION(@graphql.Args() args: CREATE_ARGS): Promise<ENTITY> {
     // @ts-ignore
-    return await this.service.create({
+    return await this.service.CREATE_FUNCTION({
       ...args,
       data: CREATE_DATA_MAPPING,
     });
@@ -96,13 +98,13 @@ export class RESOLVER_BASE {
   ): Promise<ENTITY | null> {
     try {
       // @ts-ignore
-      return await this.service.update({
+      return await this.service.UPDATE_FUNCTION({
         ...args,
         data: UPDATE_DATA_MAPPING,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -116,10 +118,10 @@ export class RESOLVER_BASE {
   ): Promise<ENTITY | null> {
     try {
       // @ts-ignore
-      return await this.service.delete(args);
+      return await this.service.DELETE_FUNCTION(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }

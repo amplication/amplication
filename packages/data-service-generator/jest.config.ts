@@ -1,15 +1,12 @@
 export default {
   displayName: "data-service-generator",
   preset: "../../jest.preset.js",
-  globals: {
-    "ts-jest": {
-      tsconfig: "<rootDir>/tsconfig.spec.json",
-    },
-  },
+  globals: {},
   fakeTimers: {
     doNotFake: ["fast-glob"],
   },
   testEnvironment: "node",
+  moduleFileExtensions: ["ts", "tsx", "js", "json"],
   modulePathIgnorePatterns: [
     "lint",
     "generated",

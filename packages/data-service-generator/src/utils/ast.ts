@@ -347,6 +347,40 @@ export function classProperty(
   return property as namedTypes.ClassProperty;
 }
 
+export function findContainedIdentifiers2(
+  node: ASTNode,
+  nameToIdentifier: { [key: string]: namedTypes.Identifier }
+): namedTypes.Identifier[] {
+  const contained: namedTypes.Identifier[] = [];
+  visit(node, {
+    visitIdentifier(path) {
+      if (nameToIdentifier.hasOwnProperty(path.node.name)) {
+        contained.push(path.node);
+      }
+      this.traverse(path);
+    },
+    // Recast has a bug of traversing class decorators
+    // This method fixes it
+    visitClassDeclaration(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      return this.traverse(path);
+    },
+    // Recast has a bug of traversing class property decorators
+    // This method fixes it
+    visitClassProperty(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      this.traverse(path);
+    },
+  });
+  return contained;
+}
+
 export function findContainedIdentifiers(
   node: ASTNode,
   identifiers: Iterable<namedTypes.Identifier>
@@ -431,6 +465,46 @@ export function deleteClassMemberByKey(
   }
 }
 
+export function importContainedIdentifiers2(
+  node: ASTNode,
+  moduleToIdentifiers: Record<string, namedTypes.Identifier[]>
+): namedTypes.ImportDeclaration[] {
+  const nameToId = {};
+  const nameToIdentifier = {};
+  const nameToIdMap = {}; // TODO: support name to many id
+
+  Object.getOwnPropertyNames(moduleToIdentifiers).forEach((key) => {
+    moduleToIdentifiers[key].forEach((identifier) => {
+      nameToId[`${identifier.name}%%${key}`] = identifier;
+      nameToIdentifier[identifier.name] = identifier;
+      nameToIdMap[identifier.name] = `${identifier.name}%%${key}`;
+    });
+  });
+
+  const containedIds = findContainedIdentifiers2(node, nameToIdentifier);
+  const identifierMap = {};
+  const moduleToContainedIds: { [key: string]: namedTypes.Identifier[] } =
+    containedIds.reduce((moduleToContainedIdsObj, containedId) => {
+      const identifierNameToModule = nameToIdMap[containedId.name].split("%%");
+      if (!moduleToContainedIdsObj.hasOwnProperty(identifierNameToModule[1]))
+        moduleToContainedIdsObj[identifierNameToModule[1]] = [];
+
+      if (identifierMap.hasOwnProperty(identifierNameToModule[0]))
+        return moduleToContainedIdsObj;
+
+      identifierMap[identifierNameToModule[0]] = identifierNameToModule[1];
+      moduleToContainedIdsObj[identifierNameToModule[1]].push(containedId);
+
+      return moduleToContainedIdsObj;
+    }, {});
+
+  const res = Object.entries(moduleToContainedIds).map(
+    ([module, containedIds]) => importNames(containedIds, module)
+  );
+
+  return res;
+}
+
 export function importContainedIdentifiers(
   node: ASTNode,
   moduleToIdentifiers: Record<string, namedTypes.Identifier[]>
@@ -443,15 +517,19 @@ export function importContainedIdentifiers(
   const nameToId = Object.fromEntries(
     Array.from(idToModule.keys(), (identifier) => [identifier.name, identifier])
   );
+
   const containedIds = findContainedIdentifiers(node, idToModule.keys());
+
   const moduleToContainedIds = groupBy(containedIds, (id) => {
     const knownId = nameToId[id.name];
     const module = idToModule.get(knownId);
     return module;
   });
-  return Object.entries(moduleToContainedIds).map(([module, containedIds]) =>
-    importNames(containedIds, module)
+  const res = Object.entries(moduleToContainedIds).map(
+    ([module, containedIds]) => importNames(containedIds, module)
   );
+
+  return res;
 }
 
 export function isConstructor(method: namedTypes.ClassMethod): boolean {
@@ -708,4 +786,32 @@ export function findFirstDecoratorByName(
   }
 
   return decorator as any;
+}
+
+export function removeClassMethodByName(
+  classDeclaration: namedTypes.ClassDeclaration,
+  methodId: string
+): boolean {
+  let method: namedTypes.ClassMethod | null = null;
+
+  visit(classDeclaration, {
+    visitClassMethod(path) {
+      const classMethodNode = path.node;
+      if (
+        "key" in classMethodNode &&
+        namedTypes.Identifier.check(classMethodNode.key) &&
+        classMethodNode.key.name === methodId
+      ) {
+        method = path.value;
+        path.prune();
+      }
+      return this.traverse(path);
+    },
+  });
+
+  if (!method) {
+    return false;
+  }
+
+  return true;
 }

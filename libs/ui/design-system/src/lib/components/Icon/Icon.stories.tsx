@@ -7,6 +7,8 @@ export default {
   component: Icon,
 } as Meta;
 
-export const Default = (props: any) => {
-  return <Icon icon="arrow_left" size={props.size} />;
+export const Default = {
+  render: (props: any) => {
+    return <Icon icon="arrow_left" size={props.size} />;
+  },
 };

@@ -14,7 +14,7 @@
       }
     },
     "build": {
-      "executor": "@nrwl/webpack:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "dependsOn": [
@@ -50,9 +50,9 @@
             "output": "/scripts"
           }
         ],
-        "styles": ["packages/amplication-client/src/index.scss"],
         "scripts": [],
-        "webpackConfig": "@nrwl/react/plugins/webpack"
+        "isolatedConfig": true,
+        "webpackConfig": "packages/amplication-client/webpack.config.js"
       },
       "configurations": {
         "development": {
@@ -62,12 +62,6 @@
           "vendorChunk": true
         },
         "sandbox": {
-          "fileReplacements": [
-            {
-              "replace": "packages/amplication-client/src/environments/environment.ts",
-              "with": "packages/amplication-client/src/environments/environment.sandbox.ts"
-            }
-          ],
           "optimization": true,
           "outputHashing": "all",
           "sourceMap": false,
@@ -76,12 +70,6 @@
           "vendorChunk": true
         },
         "staging": {
-          "fileReplacements": [
-            {
-              "replace": "packages/amplication-client/src/environments/environment.ts",
-              "with": "packages/amplication-client/src/environments/environment.staging.ts"
-            }
-          ],
           "optimization": true,
           "outputHashing": "all",
           "sourceMap": false,
@@ -90,12 +78,6 @@
           "vendorChunk": true
         },
         "production": {
-          "fileReplacements": [
-            {
-              "replace": "packages/amplication-client/src/environments/environment.ts",
-              "with": "packages/amplication-client/src/environments/environment.production.ts"
-            }
-          ],
           "optimization": true,
           "outputHashing": "all",
           "sourceMap": false,
@@ -106,7 +88,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/webpack:dev-server",
+      "executor": "@nx/webpack:dev-server",
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "amplication-client:build",
@@ -119,6 +101,9 @@
         "development": {
           "buildTarget": "amplication-client:build:development"
         },
+        "sandbox": {
+          "buildTarget": "amplication-client:build:sandbox"
+        },
         "production": {
           "buildTarget": "amplication-client:build:production",
           "hmr": false
@@ -126,14 +111,14 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["packages/amplication-client/**/*.{ts,tsx,js,jsx}"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/amplication-client"],
       "options": {
         "jestConfig": "packages/amplication-client/jest.config.ts",

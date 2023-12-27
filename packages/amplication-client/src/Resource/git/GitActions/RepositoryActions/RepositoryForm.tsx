@@ -13,10 +13,13 @@ import {
   FlexItem,
   Text,
 } from "@amplication/ui/design-system";
-import { useStiggContext } from "@stigg/react-sdk";
-import { LockedFeatureIndicator } from "../../../../Components/LockedFeatureIndicator";
-import { BillingFeature } from "../../../../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import FormikAutoSave from "../../../../util/formikAutoSave";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+} from "../../../../Components/FeatureIndicatorContainer";
+import { FeatureIndicator } from "../../../../Components/FeatureIndicator";
 
 type Props = {
   onSubmit: (values: models.GitRepository) => void;
@@ -49,61 +52,60 @@ const RepositoryForm = ({ onSubmit, defaultValues }: Props) => {
     } as models.GitRepository;
   }, [defaultValues]);
 
-  const { stigg } = useStiggContext();
-  const canChangeGitBaseBranch = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.ChangeGitBaseBranch,
-  });
-
   return (
-    <>
-      <FlexItem
-        margin={EnumFlexItemMargin.Both}
-        gap={EnumGapSize.Small}
-        direction={EnumFlexDirection.Column}
-      >
-        <FlexItem>
-          <Text textStyle={EnumTextStyle.H4}>Git Base Branch</Text>
-
-          {!canChangeGitBaseBranch.hasAccess && (
-            <LockedFeatureIndicator
-              featureName={BillingFeature.ChangeGitBaseBranch}
-            />
-          )}
-        </FlexItem>
-        <Text textStyle={EnumTextStyle.Description}>
-          Override the default base branch used for the Pull Request with the
-          generated code
-        </Text>
-      </FlexItem>
-
-      <Formik
-        initialValues={initialValues}
-        enableReinitialize
-        onSubmit={onSubmit}
-      >
-        <Form childrenAsBlocks>
-          <FormikAutoSave debounceMS={1000} />
-
-          <FlexItem>
-            <DisplayNameField
-              labelType="normal"
-              disabled={!canChangeGitBaseBranch.hasAccess}
-              name="baseBranchName"
-              label="Base Branch"
-              inputToolTip={{
-                content: (
-                  <span>
-                    Leave this field empty to use the default branch of the
-                    repository
-                  </span>
-                ),
-              }}
-              minLength={1}
-            />
+    <FeatureIndicatorContainer
+      featureId={BillingFeature.ChangeGitBaseBranch}
+      entitlementType={EntitlementType.Boolean}
+      render={({ disabled, icon }) => (
+        <>
+          <FlexItem
+            margin={EnumFlexItemMargin.Both}
+            gap={EnumGapSize.Small}
+            direction={EnumFlexDirection.Column}
+          >
+            <FlexItem>
+              <Text textStyle={EnumTextStyle.H4}>Git Base Branch</Text>
+              <FeatureIndicator
+                featureName={BillingFeature.ChangeGitBaseBranch}
+                icon={icon}
+              />
+            </FlexItem>
+            <Text textStyle={EnumTextStyle.Description}>
+              Override the default base branch used for the Pull Request with
+              the generated code
+            </Text>
           </FlexItem>
-        </Form>
-      </Formik>
-    </>
+
+          <Formik
+            initialValues={initialValues}
+            enableReinitialize
+            onSubmit={onSubmit}
+          >
+            <Form childrenAsBlocks>
+              <FormikAutoSave debounceMS={1000} />
+
+              <FlexItem>
+                <DisplayNameField
+                  labelType="normal"
+                  disabled={disabled}
+                  name="baseBranchName"
+                  label="Base Branch"
+                  inputToolTip={{
+                    content: (
+                      <span>
+                        Leave this field empty to use the default branch of the
+                        repository
+                      </span>
+                    ),
+                  }}
+                  minLength={1}
+                />
+              </FlexItem>
+            </Form>
+          </Formik>
+        </>
+      )}
+    />
   );
 };
 

@@ -36,7 +36,6 @@ env:
   NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
   NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache || false }}
   BASE: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
-  CYPRESS_CACHE_FOLDER: node_modules/.cache/Cypress
 
 jobs:
   nx:
@@ -48,7 +47,7 @@ jobs:
       nx-force-all: ${{ inputs.nx-force-all || false }}
 
   e2e:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: nx
     if: ${{ needs.nx.outputs.affected-e2e != '[]' && needs.nx.outputs.affected-e2e != ''}}
     strategy:
@@ -58,7 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - uses: actions/setup-node@v3
         with:
@@ -75,19 +74,8 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Cache other node modules
-        id: cache-other-node-modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-other-node-modules
-        with:
-          path: |
-            libs/util/code-gen-utils/node_modules
-            packages/amplication-cli/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./**/package-lock.json') }}
-
       - name: Install Dependencies
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' || steps.cache-other-node-modules.outputs.cache-hit != 'true' }}
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
 
       - name: e2e

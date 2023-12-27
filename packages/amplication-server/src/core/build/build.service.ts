@@ -25,6 +25,8 @@ import { previousBuild } from "./utils";
 import { TopicService } from "../topic/topic.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleService } from "../module/module.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -34,13 +36,14 @@ import {
   EnumPullRequestMode,
   GitProviderProperties,
 } from "@amplication/util/git";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { ILogger } from "@amplication/util/logging";
 import {
   CanUserAccessBuild,
   CodeGenerationLog,
   CodeGenerationRequest,
   CreatePrFailure,
+  CreatePrLog,
   CreatePrRequest,
   CreatePrSuccess,
   KAFKA_TOPICS,
@@ -59,6 +62,7 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
   [EnumGitProvider.Bitbucket]: "Bitbucket",
   [EnumGitProvider.Github]: "GitHub",
+  [EnumGitProvider.GitLab]: "GitLab",
 };
 import { encryptString } from "../../util/encryptionUtil";
 
@@ -76,12 +80,11 @@ export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
 export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
   "Starting to build Docker image. It should take a few minutes.";
 
-export const PUSH_TO_GIT_STEP_NAME = (gitProvider: EnumGitProvider) =>
-  gitProvider ? `PUSH_TO_${gitProvider.toUpperCase()}` : "PUSH_TO_GIT_PROVIDER";
+export const PUSH_TO_GIT_STEP_NAME = "PUSH_TO_GIT_PROVIDER";
 export const PUSH_TO_GIT_STEP_MESSAGE = (gitProvider: EnumGitProvider) =>
   `Push changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
-export const PUSH_TO_GIT_STEP_START_LOG = (gitProvider: EnumGitProvider) =>
-  `Starting to push changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
+export const PUSH_TO_GIT_STEP_START_LOG =
+  "Pull request creation job added to queue. Waiting for available worker...";
 export const PUSH_TO_GIT_STEP_FINISH_LOG = (gitProvider: EnumGitProvider) =>
   `Successfully pushed changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
 export const PUSH_TO_GIT_STEP_FAILED_LOG = (gitProvider: EnumGitProvider) =>
@@ -200,6 +203,8 @@ export class BuildService {
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
+    private readonly moduleActionService: ModuleActionService,
+    private readonly moduleService: ModuleService,
     private readonly billingService: BillingService,
     private readonly gitProviderService: GitProviderService,
     @Inject(AmplicationLogger)
@@ -363,6 +368,11 @@ export class BuildService {
     const commitWithAccount = await this.prisma.build.findUnique({
       where: { id: buildId },
       include: {
+        resource: {
+          select: {
+            name: true,
+          },
+        },
         commit: {
           include: {
             user: true,
@@ -380,10 +390,14 @@ export class BuildService {
             commitId: commitWithAccount.commit.id,
             commitMessage: commitWithAccount.commit.message,
             resourceId: commitWithAccount.resourceId,
+            resourceName: commitWithAccount.resource.name,
             workspaceId: commitWithAccount.commit.project.workspaceId,
             projectId: commitWithAccount.commit.projectId,
             buildId: buildId,
+            projectName: commitWithAccount.commit.project.name,
+            createdAt: Date.now(),
             externalId: encryptString(commitWithAccount.commit.user.id),
+            envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
           },
         })
         .catch((error) =>
@@ -461,9 +475,7 @@ export class BuildService {
   ): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
-    const step = steps.find(
-      (step) => step.name === PUSH_TO_GIT_STEP_NAME(response.gitProvider)
-    );
+    const step = steps.find((step) => step.name === PUSH_TO_GIT_STEP_NAME);
 
     try {
       await this.resourceService.reportSyncMessage(
@@ -515,9 +527,7 @@ export class BuildService {
     });
 
     const steps = await this.actionService.getSteps(build.actionId);
-    const step = steps.find(
-      (step) => step.name === PUSH_TO_GIT_STEP_NAME(response.gitProvider)
-    );
+    const step = steps.find((step) => step.name === PUSH_TO_GIT_STEP_NAME);
 
     await this.resourceService.reportSyncMessage(
       build.resourceId,
@@ -542,6 +552,7 @@ export class BuildService {
         projectId: build.resource.project.id,
         workspaceId: build.resource.project.workspaceId,
         message: response.errorMessage,
+        $groups: { groupWorkspace: build.resource.project.workspaceId },
       },
       event: EnumEventType.GitSyncError,
     });
@@ -573,6 +584,7 @@ export class BuildService {
           projectId: build.resource.project.id,
           workspaceId: build.resource.project.workspaceId,
           message: logEntry.message,
+          $groups: { groupWorkspace: build.resource.project.workspaceId },
         },
         event: EnumEventType.CodeGenerationError,
       });
@@ -718,14 +730,11 @@ export class BuildService {
 
     return this.actionService.run(
       build.actionId,
-      PUSH_TO_GIT_STEP_NAME(EnumGitProvider[gitSettings.gitProvider]),
+      PUSH_TO_GIT_STEP_NAME,
       PUSH_TO_GIT_STEP_MESSAGE(EnumGitProvider[gitSettings.gitProvider]),
       async (step) => {
         try {
-          await this.actionService.logInfo(
-            step,
-            PUSH_TO_GIT_STEP_START_LOG(EnumGitProvider[gitSettings.gitProvider])
-          );
+          await this.actionService.logInfo(step, PUSH_TO_GIT_STEP_START_LOG);
 
           const smartGitSyncEntitlement = this.billingService.isBillingEnabled
             ? await this.billingService.getBooleanEntitlement(
@@ -755,8 +764,9 @@ export class BuildService {
                 ? EnumPullRequestMode.Accumulative
                 : EnumPullRequestMode.Basic,
             isBranchPerResource:
-              branchPerResourceEntitlement &&
-              branchPerResourceEntitlement.hasAccess,
+              (branchPerResourceEntitlement &&
+                branchPerResourceEntitlement.hasAccess) ??
+              false,
           };
 
           const createPullRequestEvent: CreatePrRequest.KafkaEvent = {
@@ -833,6 +843,14 @@ export class BuildService {
     const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
+    const moduleActions = await this.moduleActionService.findMany({
+      where: { resource: { id: resourceId } },
+    });
+
+    const modules = await this.moduleService.findMany({
+      where: { resource: { id: resourceId } },
+    });
+
     const serviceSettings =
       resource.resourceType === EnumResourceType.Service
         ? await this.serviceSettingsService.getServiceSettingsValues(
@@ -863,6 +881,8 @@ export class BuildService {
       entities: await this.getOrderedEntities(buildId),
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: plugins,
+      moduleContainers: modules,
+      moduleActions: moduleActions,
       resourceType: resource.resourceType,
       topics: await this.topicService.findMany({
         where: { resource: { id: resourceId } },
@@ -887,5 +907,29 @@ export class BuildService {
       },
       otherResources,
     };
+  }
+
+  public async onCreatePullRequestLog(
+    logEntry: CreatePrLog.Value
+  ): Promise<void> {
+    const { buildId, level, message } = logEntry;
+    const [step] = await this.prisma.build
+      .findUnique({
+        where: {
+          id: buildId,
+        },
+      })
+      .action()
+      .steps({
+        where: {
+          name: PUSH_TO_GIT_STEP_NAME,
+        },
+      });
+
+    await this.actionService.logByStepId(
+      step.id,
+      ACTION_LOG_LEVEL[level],
+      message
+    );
   }
 }

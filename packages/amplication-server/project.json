@@ -10,14 +10,14 @@
   },
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["packages/amplication-server/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/amplication-server"],
       "dependsOn": ["graphql:schema:check"],
       "options": {
@@ -27,7 +27,7 @@
       }
     },
     "e2e": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/amplication-server"],
       "options": {
         "jestConfig": "packages/amplication-server/jest.e2e.config.ts",
@@ -45,7 +45,7 @@
       }
     },
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "dependsOn": [
         "^build",
@@ -74,7 +74,10 @@
             "output": "./"
           }
         ],
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -85,8 +88,9 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
+        "watch": true,
         "port": 7000,
         "buildTarget": "amplication-server:build"
       },
@@ -110,12 +114,12 @@
       "executor": "nx:run-commands",
       "inputs": ["{projectRoot}/src/schema.graphql"],
       "outputs": [
-        "packages/amplication-cli/src/models.ts",
-        "packages/amplication-client/src/models.ts",
-        "packages/amplication-code-gen-types/src/models.ts",
-        "ee/packages/git-sync-manager/src/models.ts",
-        "packages/amplication-git-pull-request-service/src/models.ts",
-        "packages/data-service-generator/src/models.ts"
+        "{workspaceRoot}/packages/amplication-cli/src/models.ts",
+        "{workspaceRoot}/packages/amplication-client/src/models.ts",
+        "{workspaceRoot}/packages/amplication-code-gen-types/src/models.ts",
+        "{workspaceRoot}/ee/packages/git-sync-manager/src/models.ts",
+        "{workspaceRoot}/packages/amplication-git-pull-request-service/src/models.ts",
+        "{workspaceRoot}/packages/data-service-generator/src/models.ts"
       ],
       "dependsOn": ["graphql:schema:generate"],
       "options": {
@@ -144,7 +148,9 @@
         }
       }
     },
-    "deploy:container": { "executor": "nx:run-commands" }
+    "deploy:container": {
+      "executor": "nx:run-commands"
+    }
   },
   "tags": []
 }

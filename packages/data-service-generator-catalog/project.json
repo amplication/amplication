@@ -5,7 +5,7 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/webpack:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "target": "node",
@@ -30,7 +30,8 @@
             "output": "./"
           }
         ],
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -41,10 +42,11 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/js:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "data-service-generator-catalog:build",
-        "inspect": true
+        "inspect": true,
+        "watch": true
       },
       "configurations": {
         "production": {
@@ -53,14 +55,14 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["packages/data-service-generator-catalog/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "packages/data-service-generator-catalog/jest.config.ts",
@@ -86,7 +88,7 @@
     "db:migrate:dev": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "prisma migrate dev",
+        "command": "prisma migrate dev --name $([[ {args.name} = undefined ]] && echo migration || echo {args.name})",
         "cwd": "packages/data-service-generator-catalog"
       }
     },
@@ -126,7 +128,7 @@
     "db:clean": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node scripts/clean.ts",
+        "command": "prisma migrate reset --force",
         "cwd": "packages/data-service-generator-catalog"
       }
     },
