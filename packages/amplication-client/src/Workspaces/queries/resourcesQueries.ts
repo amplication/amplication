@@ -1,5 +1,21 @@
 import { gql } from "@apollo/client";
 
+export const GET_RESOURCE = gql`
+  query getResource($id: String!) {
+    resource(where: { id: $id }) {
+      id
+      createdAt
+      updatedAt
+      name
+      description
+      githubLastSync
+      githubLastMessage
+      resourceType
+      licensed
+    }
+  }
+`;
+
 export const GET_RESOURCES = gql`
   query getResources($projectId: String!, $whereName: StringFilter) {
     resources(
@@ -16,6 +32,7 @@ export const GET_RESOURCES = gql`
       gitRepositoryOverride
       codeGeneratorStrategy
       codeGeneratorVersion
+      licensed
       gitRepository {
         id
         name

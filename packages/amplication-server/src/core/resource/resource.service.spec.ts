@@ -60,6 +60,11 @@ import { PluginInstallationService } from "../pluginInstallation/pluginInstallat
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
+import { MeteredEntitlement } from "@stigg/node-server-sdk";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { SubscriptionService } from "../subscription/subscription.service";
+import entitiesToCopy from "../entity/__mocks__/entitiesToCopy";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -116,7 +121,7 @@ const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   description: "Sample Service for task management",
   name: "My sample service",
   resourceType: EnumResourceType.Service,
-  project: { connect: { id: "exampleProjectId" } },
+  project: { connect: { id: EXAMPLE_PROJECT_ID } },
   serviceSettings: EXAMPLE_SERVICE_SETTINGS,
   gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
 };
@@ -129,7 +134,11 @@ const EXAMPLE_RESOURCE: Resource = {
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
+  licensed: true,
   gitRepositoryOverride: false,
+  project: {
+    workspaceId: EXAMPLE_WORKSPACE_ID,
+  } as unknown as Project,
   builds: [
     {
       id: EXAMPLE_BUILD_ID,
@@ -154,6 +163,7 @@ const EXAMPLE_RESOURCE_MESSAGE_BROKER: Resource = {
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
@@ -165,6 +175,7 @@ const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -175,6 +186,20 @@ const EXAMPLE_PROJECT: Project = {
   workspaceId: EXAMPLE_WORKSPACE_ID,
   useDemoRepo: false,
   demoRepoName: undefined,
+  licensed: true,
+};
+const EXAMPLE_TARGET_RESOURCE_ID = "exampleTargetResourceId";
+const EXAMPLE_TARGET_RESOURCE: Resource = {
+  id: EXAMPLE_TARGET_RESOURCE_ID,
+  resourceType: EnumResourceType.Service,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: EXAMPLE_RESOURCE_NAME,
+  description: EXAMPLE_RESOURCE_DESCRIPTION,
+  deletedAt: null,
+  gitRepositoryOverride: false,
+  entities: entitiesToCopy.filter((x) => x.name === "User"),
+  licensed: false,
 };
 
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -391,11 +416,21 @@ const prismaResourceFindOneMock = jest.fn(
   (args: Prisma.ResourceFindUniqueArgs) => {
     if (args.where.id === EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID) {
       return EXAMPLE_PROJECT_CONFIGURATION_RESOURCE;
-    } else {
-      return EXAMPLE_RESOURCE;
     }
+    if (args.where.id === EXAMPLE_TARGET_RESOURCE_ID) {
+      return EXAMPLE_TARGET_RESOURCE;
+    }
+    return EXAMPLE_RESOURCE;
   }
 );
+
+const billingServiceGetMeteredEntitlementMock = jest.fn(() => {
+  return {
+    usageLimit: undefined,
+    hasAccess: true,
+  } as unknown as MeteredEntitlement;
+});
+const billingServiceIsBillingEnabledMock = jest.fn();
 const prismaResourceFindManyMock = jest.fn(() => {
   return [EXAMPLE_RESOURCE];
 });
@@ -408,6 +443,14 @@ const prismaResourceUpdateMock = jest.fn(() => {
 const prismaEntityFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY];
 });
+
+const prismaEntityFieldFindManyMock = jest.fn(
+  (args: Prisma.EntityFieldFindManyArgs) => {
+    return entitiesToCopy.find((x) => x.versions[0].id === args.where.id)
+      .fields;
+  }
+);
+
 const prismaCommitCreateMock = jest.fn(() => {
   return EXAMPLE_COMMIT;
 });
@@ -422,7 +465,34 @@ const prismaGitRepositoryCreateMock = jest.fn(() => {
 const entityServiceCreateVersionMock = jest.fn(
   async () => EXAMPLE_ENTITY_VERSION
 );
-const entityServiceCreateOneEntityMock = jest.fn(async () => EXAMPLE_ENTITY);
+
+const entityFieldFindFirstMock = jest.fn(
+  async (args: Prisma.EntityFieldFindFirstArgs) => {
+    const { displayName, entityVersionId } = args.where;
+    const entityField = entitiesToCopy.find(
+      (x) =>
+        x.versions[0].id === entityVersionId &&
+        x.fields.find((f) => f.displayName === displayName)
+    );
+    return entityField;
+  }
+);
+
+const entityServiceCreateOneEntityMock = jest.fn(
+  async (args: Prisma.EntityCreateArgs) => {
+    if (args.data.resourceId === EXAMPLE_RESOURCE_ID) {
+      return EXAMPLE_ENTITY;
+    }
+    const entity = entitiesToCopy.find((x) => x.name === args.data.name);
+
+    if (entity) {
+      return entity;
+    } else {
+      return EXAMPLE_ENTITY;
+    }
+  }
+);
+
 const entityServiceCreateFieldByDisplayNameMock = jest.fn(
   async () => EXAMPLE_ENTITY_FIELD
 );
@@ -451,6 +521,8 @@ const entityServiceBulkCreateEntities = jest.fn();
 const entityServiceBulkCreateFields = jest.fn();
 const analyticServiceTrack = jest.fn();
 
+const mockedUpdateServiceLicensed = jest.fn();
+
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
 const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
@@ -478,8 +550,11 @@ cuid.mockImplementation(() => EXAMPLE_CUID);
 describe("ResourceService", () => {
   let service: ResourceService;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ResourceService,
@@ -498,11 +573,16 @@ describe("ResourceService", () => {
           })),
         },
         {
+          provide: SubscriptionService,
+          useClass: jest.fn(() => ({
+            updateServiceLicensed: mockedUpdateServiceLicensed,
+          })),
+        },
+        {
           provide: BillingService,
           useValue: {
-            getMeteredEntitlement: jest.fn(() => {
-              return {};
-            }),
+            isBillingEnabled: billingServiceIsBillingEnabledMock,
+            getMeteredEntitlement: billingServiceGetMeteredEntitlementMock,
             getNumericEntitlement: jest.fn(() => {
               return {};
             }),
@@ -531,6 +611,13 @@ describe("ResourceService", () => {
             entity: {
               findMany: prismaEntityFindManyMock,
             },
+            entityField: {
+              findMany: prismaEntityFieldFindManyMock,
+              findFirst: entityFieldFindFirstMock,
+              create: jest.fn(() => {
+                return null;
+              }),
+            },
             commit: {
               create: prismaCommitCreateMock,
             },
@@ -548,6 +635,12 @@ describe("ResourceService", () => {
         {
           provide: EntityService,
           useClass: jest.fn().mockImplementation(() => ({
+            createCopiedEntityFieldByDisplayName: jest.fn(() => {
+              return null;
+            }),
+            deleteEntityFromSource: jest.fn(() => {
+              return null;
+            }),
             createVersion: entityServiceCreateVersionMock,
             createFieldByDisplayName: entityServiceCreateFieldByDisplayNameMock,
             createOneEntity: entityServiceCreateOneEntityMock,
@@ -557,6 +650,9 @@ describe("ResourceService", () => {
             findFirst: entityServiceFindFirstMock,
             bulkCreateEntities: entityServiceBulkCreateEntities,
             bulkCreateFields: entityServiceBulkCreateFields,
+            updateFieldDataTypeIdByRelatedEntity: jest.fn(() => {
+              return null;
+            }),
           })),
         },
         {
@@ -666,6 +762,83 @@ describe("ResourceService", () => {
     expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID
     );
+  });
+
+  it("should create all entities from source resource to target resource", async () => {
+    const createResourceEntitiesArgs = {
+      data: {
+        targetResourceId: EXAMPLE_TARGET_RESOURCE_ID,
+        entitiesToCopy: entitiesToCopy.filter(
+          (x) => x.name.toLowerCase() !== "user"
+        ),
+      },
+    };
+    expect(
+      await service.createResourceEntitiesFromExistingResource(
+        createResourceEntitiesArgs,
+        EXAMPLE_USER
+      )
+    ).toEqual(EXAMPLE_TARGET_RESOURCE);
+  });
+
+  it("should create all entities except Order entity from source resource to target resource", async () => {
+    const createResourceEntitiesArgs = {
+      data: {
+        targetResourceId: EXAMPLE_TARGET_RESOURCE_ID,
+        entitiesToCopy: entitiesToCopy.filter(
+          (x) => x.name.toLowerCase() !== ("order" && "user")
+        ),
+      },
+    };
+    expect(
+      await service.createResourceEntitiesFromExistingResource(
+        createResourceEntitiesArgs,
+        EXAMPLE_USER
+      )
+    ).toEqual(EXAMPLE_TARGET_RESOURCE);
+  });
+
+  it("should throw an error while trying to create a service when the user exceeded the limit of services in his project", async () => {
+    const createResourceArgs = {
+      args: {
+        data: {
+          name: EXAMPLE_RESOURCE_NAME,
+          description: EXAMPLE_RESOURCE_DESCRIPTION,
+          color: DEFAULT_RESOURCE_COLORS.service,
+          resourceType: EnumResourceType.Service,
+          wizardType: "create resource",
+          project: {
+            connect: {
+              id: EXAMPLE_PROJECT_ID,
+            },
+          },
+          serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+          gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+        },
+      },
+      user: EXAMPLE_USER,
+    };
+    billingServiceGetMeteredEntitlementMock.mockReturnValueOnce({
+      usageLimit: 1,
+      hasAccess: false,
+    } as unknown as MeteredEntitlement);
+    billingServiceIsBillingEnabledMock.mockReturnValueOnce(true);
+
+    await expect(
+      service.createService(
+        createResourceArgs.args,
+        createResourceArgs.user,
+        null,
+        true
+      )
+    ).rejects.toThrow(
+      new BillingLimitationError(
+        "Your project exceeds its services limitation.",
+        BillingFeature.Services
+      )
+    );
+    expect(prismaResourceCreateMock).toBeCalledTimes(0);
+    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(0);
   });
 
   it("should fail to create resource with entities with a reserved name", async () => {
@@ -833,6 +1006,8 @@ describe("ResourceService", () => {
     expect(await service.deleteResource(args, EXAMPLE_USER)).toEqual(
       EXAMPLE_RESOURCE
     );
+    expect(mockedUpdateServiceLicensed).toBeCalledTimes(1);
+    expect(mockedUpdateServiceLicensed).toBeCalledWith(EXAMPLE_WORKSPACE_ID);
     expect(prismaResourceUpdateMock).toBeCalledTimes(1);
     expect(prismaResourceUpdateMock).toBeCalledWith({
       ...args,

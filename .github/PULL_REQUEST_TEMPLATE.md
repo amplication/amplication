@@ -19,8 +19,6 @@ Close: #[issue-number]
 
 <!-- Explain the details for making this change. What existing problem does the pull request solve? -->
 
-copilot:all
-
 ## PR Checklist
 
 - [ ] Tests for the changes have been added

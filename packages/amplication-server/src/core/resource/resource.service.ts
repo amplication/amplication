@@ -16,10 +16,14 @@ import pluralize from "pluralize";
 import { FindOneArgs } from "../../dto";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
-import { Project, Resource, User, GitOrganization } from "../../models";
+import { Project, Resource, User, GitOrganization, Entity } from "../../models";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { USER_ENTITY_NAME } from "../entity/constants";
+import {
+  CURRENT_VERSION_NUMBER,
+  INITIAL_ENTITY_FIELDS,
+  USER_ENTITY_NAME,
+} from "../entity/constants";
 import { EntityService } from "../entity/entity.service";
 import { EnvironmentService } from "../environment/environment.service";
 import {
@@ -50,7 +54,7 @@ import { ProjectService } from "../project/project.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { TopicService } from "../topic/topic.service";
 import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
@@ -59,6 +63,10 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { JsonValue } from "type-fest";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { CreateResourceEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
+import { LookupResolvedProperties } from "@amplication/code-gen-types";
+import { SubscriptionService } from "../subscription/subscription.service";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -78,7 +86,8 @@ export class ResourceService {
     private readonly topicService: TopicService,
     private readonly billingService: BillingService,
     private readonly pluginInstallationService: PluginInstallationService,
-    private readonly analytics: SegmentAnalyticsService
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
@@ -119,6 +128,7 @@ export class ResourceService {
    */
   private async createResource(
     args: CreateOneResourceArgs,
+    user: User,
     gitRepositoryToCreate: ConnectGitRepositoryInput = null,
     wizardType: string = null
   ): Promise<Resource> {
@@ -126,6 +136,19 @@ export class ResourceService {
       throw new AmplicationError(
         "Resource of type Project Configuration cannot be created manually"
       );
+    }
+
+    if (this.billingService.isBillingEnabled) {
+      const serviceEntitlement =
+        await this.billingService.getMeteredEntitlement(
+          user.workspace.id,
+          BillingFeature.Services
+        );
+
+      if (serviceEntitlement && !serviceEntitlement.hasAccess) {
+        const message = `Your project exceeds its services limitation.`;
+        throw new BillingLimitationError(message, BillingFeature.Services);
+      }
     }
 
     const projectId = args.data.project.connect.id;
@@ -270,6 +293,7 @@ export class ResourceService {
         resourceId: resource.id,
         projectId: resource.projectId,
         workspaceId: user.workspace.id,
+        $groups: { groupWorkspace: user.workspace.id },
       },
       event: EnumEventType.CodeGeneratorVersionUpdate,
     });
@@ -292,12 +316,15 @@ export class ResourceService {
     args: CreateOneResourceArgs,
     user: User
   ): Promise<Resource> {
-    const resource = await this.createResource({
-      data: {
-        ...args.data,
-        resourceType: EnumResourceType.MessageBroker,
+    const resource = await this.createResource(
+      {
+        data: {
+          ...args.data,
+          resourceType: EnumResourceType.MessageBroker,
+        },
       },
-    });
+      user
+    );
     await this.topicService.createDefault(resource, user);
 
     return resource;
@@ -313,7 +340,6 @@ export class ResourceService {
     requireAuthenticationEntity: boolean = null
   ): Promise<Resource> {
     const { serviceSettings, gitRepository, ...rest } = args.data;
-
     const resource = await this.createResource(
       {
         data: {
@@ -321,6 +347,7 @@ export class ResourceService {
           resourceType: EnumResourceType.Service,
         },
       },
+      user,
       gitRepository,
       wizardType
     );
@@ -352,6 +379,192 @@ export class ResourceService {
     );
 
     return resource;
+  }
+
+  async createResourceEntitiesFromExistingResource(
+    args: CreateResourceEntitiesArgs,
+    user: User
+  ): Promise<Resource> {
+    const { targetResourceId, entitiesToCopy } = args.data;
+    const resource = await this.prisma.resource.findUnique({
+      where: {
+        id: targetResourceId,
+      },
+      include: {
+        entities: {
+          where: {
+            deletedAt: null,
+          },
+        },
+      },
+    });
+
+    if (!resource) throw new AmplicationError("Target Resource doesn't exist");
+
+    entitiesToCopy.map((entity) => {
+      if (resource.entities.find((x) => x.name === entity.name)) {
+        throw new AmplicationError(
+          `Entity ${entity.name} is already exist in resourceId: ${resource.id}, process abort`
+        );
+      }
+    });
+
+    // 1.create resource entities
+
+    const copiedEntities: Entity[] = await this.createResourceCopiedEntities(
+      entitiesToCopy,
+      targetResourceId,
+      user
+    );
+
+    const entitiesWithFieldsMap = entitiesToCopy.reduce(
+      (entitiesObj, entity) => {
+        entitiesObj[entity.name] = entity;
+        return entitiesObj;
+      },
+      {}
+    );
+
+    // 2.create entities fields
+
+    for (const copiedEntity of copiedEntities) {
+      const currentEntity: Entity = entitiesWithFieldsMap[copiedEntity.name];
+
+      for (const field of currentEntity.versions[0].fields) {
+        const { dataType, properties } = field;
+        const { allowMultipleSelection, relatedEntityId } =
+          properties as unknown as LookupResolvedProperties;
+
+        if (dataType === EnumDataType.Id) {
+          await this.createCopiedEntityIdField(copiedEntity.id);
+          continue;
+        }
+        if (dataType === EnumDataType.Lookup) {
+          const isFieldExist = await this.isEntityFieldExist(
+            pascalCase(field.name),
+            copiedEntity.id
+          );
+
+          if (isFieldExist) continue;
+
+          const currentRelatedEntity = entitiesToCopy.find(
+            (entity) => entity.id === relatedEntityId
+          );
+
+          if (!currentRelatedEntity) {
+            if (allowMultipleSelection) continue;
+
+            //one to one relation or one to many relation
+            //create id field by the idType and field name
+
+            await this.entityService.updateFieldDataTypeIdByRelatedEntity(
+              field,
+              relatedEntityId
+            );
+          }
+        }
+
+        await this.entityService.createCopiedEntityFieldByDisplayName(
+          copiedEntity.id,
+          field,
+          user
+        );
+      }
+    }
+
+    // 3.delete entity from source service by flag
+    for (const entity of entitiesToCopy) {
+      if (entity.shouldDeleteFromSource) {
+        await this.entityService.deleteEntityFromSource(
+          { where: { id: entity.id } },
+          user
+        );
+      }
+    }
+
+    return resource;
+  }
+
+  async createResourceCopiedEntities(
+    entitiesToCopy: Entity[],
+    targetResourceId: string,
+    user: User
+  ): Promise<Entity[]> {
+    const copiedEntities: Entity[] = [];
+
+    for (const entity of entitiesToCopy) {
+      const {
+        name,
+        displayName,
+        pluralDisplayName,
+        description,
+        customAttributes,
+      } = entity;
+
+      try {
+        const copiedEntity = await this.entityService.createOneEntity(
+          {
+            data: {
+              resource: {
+                connect: {
+                  id: targetResourceId,
+                },
+              },
+              name,
+              displayName,
+              pluralDisplayName,
+              description,
+              customAttributes,
+            },
+          },
+          user,
+          false,
+          false,
+          false
+        );
+        copiedEntities.push(copiedEntity);
+      } catch (error) {
+        this.logger.error(error.message, error, { entity: entity.name });
+        throw new Error(
+          `Failed to create entity "${entity.name}" due to ${error.message}`
+        );
+      }
+    }
+
+    return copiedEntities;
+  }
+
+  async createCopiedEntityIdField(copiedEntityId: string): Promise<void> {
+    await this.prisma.entityField.create({
+      data: {
+        ...INITIAL_ENTITY_FIELDS[0],
+        entityVersion: {
+          connect: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId: copiedEntityId,
+              versionNumber: CURRENT_VERSION_NUMBER,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async isEntityFieldExist(
+    fieldDisplayName: string,
+    entityId: string
+  ): Promise<boolean> {
+    const field = await this.prisma.entityField.findFirst({
+      where: {
+        displayName: fieldDisplayName,
+        entityVersion: {
+          entityId: entityId,
+        },
+      },
+    });
+
+    return field ? true : false;
   }
 
   async userEntityValidation(
@@ -422,6 +635,7 @@ export class ResourceService {
         properties: {
           projectId: project.id,
           workspaceId: project.workspaceId,
+          $groups: { groupWorkspace: project.workspaceId },
         },
       });
     }
@@ -601,6 +815,7 @@ export class ResourceService {
         totalEntities,
         totalFields,
         gitOrgType: gitOrganization?.type,
+        $groups: { groupWorkspace: project.workspaceId },
       },
     });
 
@@ -741,6 +956,8 @@ export class ResourceService {
         BillingFeature.Services,
         -1
       );
+
+      await this.subscriptionService.updateServiceLicensed(project.workspaceId);
     }
 
     if (!resource.gitRepositoryOverride) {

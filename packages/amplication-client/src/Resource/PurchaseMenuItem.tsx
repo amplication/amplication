@@ -16,7 +16,8 @@ function PurchaseButton() {
 
   const handleClick = useCallback(() => {
     trackEvent({
-      eventName: AnalyticsEventNames.UpgradeOnSideBarClick,
+      eventName: AnalyticsEventNames.UpgradeClick,
+      eventOriginLocation: "purchase-page",
     });
   }, []);
 

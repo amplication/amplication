@@ -5,6 +5,7 @@ import {
   EnumListStyle,
   EnumTextColor,
   EnumTextStyle,
+  EnumTextWeight,
   FlexItem,
   List,
   Text,
@@ -25,9 +26,10 @@ type Props = {
   resourceId: string;
   displayMode: EnumApiOperationTagStyle;
   searchPhrase: string;
+  disabled?: boolean;
 };
 const ModuleActionList = React.memo(
-  ({ moduleId, resourceId, displayMode, searchPhrase }: Props) => {
+  ({ moduleId, resourceId, displayMode, searchPhrase, disabled }: Props) => {
     const [error, setError] = useState<Error>();
 
     const {
@@ -106,6 +108,7 @@ const ModuleActionList = React.memo(
                     name={"enabled"}
                     onValueChange={onEnableChanged}
                     checked={enabledActions}
+                    disabled={disabled}
                   ></Toggle>
                 </div>
               }
@@ -113,6 +116,7 @@ const ModuleActionList = React.memo(
               <Text
                 textStyle={EnumTextStyle.Normal}
                 textColor={EnumTextColor.White}
+                textWeight={EnumTextWeight.Bold}
               >
                 {moduleData?.Module.name}
               </Text>
@@ -128,7 +132,7 @@ const ModuleActionList = React.memo(
               module={moduleData?.Module}
               moduleAction={action}
               tagStyle={displayMode}
-              disabled={!enabledActions}
+              disabled={disabled || !enabledActions}
             />
           ))}
         </List>

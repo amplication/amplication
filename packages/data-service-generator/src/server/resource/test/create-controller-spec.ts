@@ -1,4 +1,4 @@
-import { namedTypes, builders } from "ast-types";
+import { namedTypes, builders, ASTNode } from "ast-types";
 import * as kinds from "ast-types/gen/kinds";
 import {
   print,
@@ -18,8 +18,10 @@ import {
   CreateEntityControllerSpecParams,
   Entity,
   EntityField,
+  EnumModuleActionType,
   EventNames,
   Module,
+  ModuleAction,
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { isOneToOneRelationField, isRelationField } from "../../../utils/field";
@@ -27,6 +29,7 @@ import { createServiceId } from "../service/create-service";
 import { createControllerId } from "../controller/create-controller";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
+import { visit } from "recast";
 
 const testTemplatePath = require.resolve("./controller.spec.template.ts");
 const TO_ISO_STRING_ID = builders.identifier("toISOString");
@@ -42,7 +45,7 @@ export async function createEntityControllerSpec(
   entityControllerModulePath: string,
   entityControllerBaseModulePath: string
 ): Promise<ModuleMap> {
-  const { entityActionsMap } = DsgContext.getInstance;
+  const { entityActionsMap, moduleContainers } = DsgContext.getInstance;
   const entityActions = entityActionsMap[entity.name];
   /** @todo make dynamic */
   const param = "id";
@@ -126,11 +129,14 @@ export async function createEntityControllerSpec(
       entityControllerBaseModulePath,
       controllerId,
       serviceId,
+      entityActions,
+      moduleContainers,
     }
   );
 }
 
 export async function createEntityControllerSpecInternal({
+  entity,
   template,
   templateMapping,
   entityServiceModulePath,
@@ -138,6 +144,8 @@ export async function createEntityControllerSpecInternal({
   entityControllerBaseModulePath,
   controllerId,
   serviceId,
+  entityActions,
+  moduleContainers,
 }: CreateEntityControllerSpecParams): Promise<ModuleMap> {
   const modulePath = replaceExt(entityControllerBaseModulePath, ".spec.ts");
 
@@ -150,7 +158,35 @@ export async function createEntityControllerSpecInternal({
     relativeImportPath(modulePath, entityServiceModulePath)
   );
 
+  const moduleContainer = moduleContainers?.find(
+    (moduleContainer) => moduleContainer.entityId === entity.id
+  );
+
   interpolate(template, templateMapping);
+
+  Object.keys(entityActions.entityDefaultActions).forEach((key) => {
+    const action: ModuleAction = entityActions.entityDefaultActions[key];
+    const isCreateAction = action?.actionType === EnumModuleActionType.Create;
+    const isReadOrFindManyAction =
+      action?.actionType === EnumModuleActionType.Read ||
+      action?.actionType === EnumModuleActionType.Find;
+
+    if (
+      action &&
+      moduleContainer &&
+      (!moduleContainer?.enabled || !action.enabled)
+    ) {
+      if (isCreateAction || isReadOrFindManyAction) {
+        removeCallExpressionStatementByName(template, action);
+      }
+      if (isCreateAction) {
+        removeObjectMethodByName(template, action.name);
+      }
+      if (isReadOrFindManyAction) {
+        removeObjectPropertyByName(template, action.name);
+      }
+    }
+  });
 
   addImports(template, [importResourceModule, importService]);
 
@@ -272,4 +308,70 @@ function createFieldTestValueFromPrisma(
       return null;
     }
   }
+}
+
+function removeCallExpressionStatementByName(
+  ast: ASTNode,
+  action: ModuleAction
+): void {
+  visit(ast, {
+    visitCallExpression(path) {
+      const expression = path.value as namedTypes.CallExpression;
+      const { actionType, name } = action;
+      const argument = expression.arguments.find(
+        (a) => a.type === "StringLiteral"
+      ) as namedTypes.StringLiteral;
+
+      if (!argument) return this.traverse(path);
+
+      if (
+        actionType === EnumModuleActionType.Create &&
+        argument.value.includes("POST")
+      ) {
+        path.prune();
+      }
+
+      if (
+        actionType === EnumModuleActionType.Find &&
+        argument.value === `GET /${name}`
+      ) {
+        path.prune();
+      }
+
+      if (
+        actionType === EnumModuleActionType.Read &&
+        argument.value.includes(":id")
+      ) {
+        path.prune();
+      }
+
+      this.traverse(path);
+    },
+  });
+}
+
+function removeObjectMethodByName(ast: ASTNode, actionName: string): void {
+  visit(ast, {
+    visitObjectMethod(path) {
+      const keyName = path.value.key.name;
+      if (keyName === actionName) {
+        path.prune();
+      }
+
+      this.traverse(path);
+    },
+  });
+}
+
+function removeObjectPropertyByName(ast: ASTNode, actionName: string): void {
+  visit(ast, {
+    visitObjectProperty(path) {
+      const keyName = path.value.key.name;
+      if (keyName === actionName) {
+        path.prune();
+      }
+
+      this.traverse(path);
+    },
+  });
 }

@@ -36,7 +36,7 @@ import {
   EnumPullRequestMode,
   GitProviderProperties,
 } from "@amplication/util/git";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { ILogger } from "@amplication/util/logging";
 import {
   CanUserAccessBuild,
@@ -368,6 +368,11 @@ export class BuildService {
     const commitWithAccount = await this.prisma.build.findUnique({
       where: { id: buildId },
       include: {
+        resource: {
+          select: {
+            name: true,
+          },
+        },
         commit: {
           include: {
             user: true,
@@ -385,6 +390,7 @@ export class BuildService {
             commitId: commitWithAccount.commit.id,
             commitMessage: commitWithAccount.commit.message,
             resourceId: commitWithAccount.resourceId,
+            resourceName: commitWithAccount.resource.name,
             workspaceId: commitWithAccount.commit.project.workspaceId,
             projectId: commitWithAccount.commit.projectId,
             buildId: buildId,
@@ -546,6 +552,7 @@ export class BuildService {
         projectId: build.resource.project.id,
         workspaceId: build.resource.project.workspaceId,
         message: response.errorMessage,
+        $groups: { groupWorkspace: build.resource.project.workspaceId },
       },
       event: EnumEventType.GitSyncError,
     });
@@ -577,6 +584,7 @@ export class BuildService {
           projectId: build.resource.project.id,
           workspaceId: build.resource.project.workspaceId,
           message: logEntry.message,
+          $groups: { groupWorkspace: build.resource.project.workspaceId },
         },
         event: EnumEventType.CodeGenerationError,
       });
