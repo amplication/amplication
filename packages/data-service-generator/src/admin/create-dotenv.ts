@@ -9,6 +9,7 @@ import { readCode } from "@amplication/code-gen-utils";
 import { replacePlaceholdersInCode } from "../utils/text-file-parser";
 import pluginWrapper from "../plugin-wrapper";
 import DsgContext from "../dsg-context";
+import { extractVariablesFromCode, sortAlphabetically } from "../utils/dotenv";
 
 const templatePath = require.resolve("./create-dotenv.template.env");
 
@@ -44,21 +45,13 @@ export async function createDotEnvModuleInternal({
     ...envVariablesWithoutDuplicateKeys,
   ];
   const envVariablesSorted = sortAlphabetically(allVariables);
-  const formattedAdditionalVariables =
-    convertToKeyValueString(envVariablesSorted);
-  const codeWithAdditionalVariables = appendAdditionalVariables(
-    "",
-    formattedAdditionalVariables
-  );
+  const codeWithEnvVariables = convertToKeyValueString(envVariablesSorted);
 
   const serviceSettingsDic: { [key: string]: any } = appInfo.settings;
 
   const dotEnvModule: Module = {
     path: MODULE_PATH,
-    code: replacePlaceholdersInCode(
-      codeWithAdditionalVariables,
-      serviceSettingsDic
-    ),
+    code: replacePlaceholdersInCode(codeWithEnvVariables, serviceSettingsDic),
   };
 
   const moduleMap = new ModuleMap(context.logger);
@@ -75,12 +68,6 @@ function convertToKeyValueString(arr: VariableDictionary): string {
     .join("\n");
 }
 
-function appendAdditionalVariables(file: string, variables: string): string {
-  if (!variables.trim()) return file;
-  if (!file.trim()) return file.concat(variables);
-  return file.concat(`\n${variables}`);
-}
-
 function removeDuplicateKeys(arr: VariableDictionary): VariableDictionary {
   const variablesMap = new Map();
   arr.forEach((item) => {
@@ -89,36 +76,4 @@ function removeDuplicateKeys(arr: VariableDictionary): VariableDictionary {
     variablesMap.set(currentKey, currentValue);
   });
   return Array.from(variablesMap, ([key, value]) => ({ [key]: value }));
-}
-
-function sortAlphabetically(arr: VariableDictionary): VariableDictionary {
-  const dict = {};
-  arr.forEach((item) => {
-    const [currentKey] = Object.keys(item);
-    const [currentValue] = Object.values(item);
-    dict[currentKey] = currentValue;
-  });
-
-  const sorted = Object.keys(dict)
-    .sort()
-    .reduce((arr, key) => {
-      arr.push({ [key]: dict[key] });
-      return arr;
-    }, []);
-
-  return sorted;
-}
-
-function extractVariablesFromCode(code: string): VariableDictionary {
-  const arr: VariableDictionary = [];
-  code.split("\n").forEach((line) => {
-    const content = line.split("=");
-    if (!content || content.length != 2) {
-      return;
-    }
-
-    const [key, value] = content;
-    arr.push({ [key]: value });
-  });
-  return arr;
 }

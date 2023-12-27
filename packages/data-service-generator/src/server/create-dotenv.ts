@@ -8,6 +8,7 @@ import {
 import DsgContext from "../dsg-context";
 import pluginWrapper from "../plugin-wrapper";
 import { replacePlaceholdersInCode } from "../utils/text-file-parser";
+import { sortAlphabetically } from "../utils/dotenv";
 
 export function createDotEnvModule(
   eventParams: CreateServerDotEnvParams
@@ -33,20 +34,13 @@ export async function createDotEnvModuleInternal({
   const envVariablesSorted = sortAlphabetically(
     envVariablesWithoutDuplicateKeys
   );
-  const formattedAdditionalVariables =
-    convertToKeyValueSting(envVariablesSorted);
-  const codeWithAdditionalVariables = appendAdditionalVariables(
-    "",
-    formattedAdditionalVariables
-  );
+  const codeWithEnvVariables = convertToKeyValueSting(envVariablesSorted);
+
   const serviceSettingsDic: { [key: string]: any } = appInfo.settings;
 
   const module: Module = {
     path: `${serverDirectories.baseDirectory}/.env`,
-    code: replacePlaceholdersInCode(
-      codeWithAdditionalVariables,
-      serviceSettingsDic
-    ),
+    code: replacePlaceholdersInCode(codeWithEnvVariables, serviceSettingsDic),
   };
   const moduleMap = new ModuleMap(context.logger);
   await moduleMap.set(module);
@@ -62,12 +56,6 @@ function convertToKeyValueSting(arr: VariableDictionary): string {
     .join("\n");
 }
 
-function appendAdditionalVariables(file: string, variables: string): string {
-  if (!variables.trim()) return file;
-  if (!file.trim()) return file.concat(variables);
-  return file.concat(`\n${variables}`);
-}
-
 function removeDuplicateKeys(arr: VariableDictionary): VariableDictionary {
   const variablesMap = new Map();
   arr.forEach((item) => {
@@ -76,22 +64,4 @@ function removeDuplicateKeys(arr: VariableDictionary): VariableDictionary {
     variablesMap.set(currentKey, currentValue);
   });
   return Array.from(variablesMap, ([key, value]) => ({ [key]: value }));
-}
-
-function sortAlphabetically(arr: VariableDictionary): VariableDictionary {
-  const dict = {};
-  arr.forEach((item) => {
-    const [currentKey] = Object.keys(item);
-    const [currentValue] = Object.values(item);
-    dict[currentKey] = currentValue;
-  });
-
-  const sorted = Object.keys(dict)
-    .sort()
-    .reduce((arr, key) => {
-      arr.push({ [key]: dict[key] });
-      return arr;
-    }, []);
-
-  return sorted;
 }
