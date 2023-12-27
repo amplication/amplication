@@ -278,6 +278,10 @@ input ConnectGitRepositoryInput {
   resourceId: String!
 }
 
+input CopiedEntities {
+  shouldDeleteFromSource: Boolean!
+}
+
 type Coupon {
   code: String!
   couponType: String
@@ -1062,6 +1066,7 @@ input ModuleWhereInput {
 
 type Mutation {
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
+  bulkUpdateWorkspaceProjectsAndResourcesLicensed(useUserLastActive: Boolean): Boolean!
   changePassword(data: ChangePasswordInput!): Account!
   commit(data: CommitCreateInput!): Commit
   completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
@@ -1083,6 +1088,7 @@ type Mutation {
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   createProject(data: ProjectCreateInput!): Project!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
+  createResourceEntitiesFromExistingResource(data: ResourceCreateCopiedEntitiesInput!): Resource!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createService(data: ResourceCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
@@ -1281,7 +1287,7 @@ type Project {
   demoRepoName: String
   description: String
   id: String!
-  isUnderLimitation: Boolean
+  licensed: Boolean!
   name: String!
   resources: [Resource!]
   updatedAt: DateTime!
@@ -1455,12 +1461,17 @@ type Resource {
   githubLastMessage: String
   githubLastSync: DateTime
   id: String!
-  isUnderLimitation: Boolean
+  licensed: Boolean!
   name: String!
   project: Project
   projectId: String
   resourceType: EnumResourceType!
   updatedAt: DateTime!
+}
+
+input ResourceCreateCopiedEntitiesInput {
+  entitiesToCopy: [CopiedEntities!]!
+  targetResourceId: String!
 }
 
 input ResourceCreateInput {
