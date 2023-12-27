@@ -56,6 +56,7 @@ export default function GitProviderConnection({
             entitlementType={EntitlementType.Boolean}
             reversePosition={true}
             featureIndicatorPlacement={FeatureIndicatorPlacement.Outside}
+            limitationText="Available in Enterprise plans only. "
           >
             <Button
               className={`${CLASS_NAME}__connect`}
@@ -70,7 +71,7 @@ export default function GitProviderConnection({
             <FeatureIndicator
               featureName={featureName}
               comingSoon={true}
-              text="for GitLab integration"
+              text={`for ${providerDisplayName} integration`}
               linkText="Contact us"
               icon={IconType.Lock}
             />

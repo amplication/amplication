@@ -72,7 +72,8 @@ const Commit = ({ projectId, noChanges }: Props) => {
     commitUtils,
   } = useContext(AppContext);
 
-  const isProjectUnderLimitation = currentProject?.isUnderLimitation ?? false;
+  const licensed = currentProject?.licensed ?? true;
+
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
     history.push(path, { from: { pathname: history.location.pathname } });
@@ -166,7 +167,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 autoComplete="off"
               />
 
-              {isProjectUnderLimitation ? (
+              {!licensed ? (
                 <FeatureIndicator
                   featureName={BillingFeature.Projects}
                   text="The workspace reached your plan's project limitation."
@@ -178,7 +179,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
                       eventData={{
                         eventName: AnalyticsEventNames.CommitClicked,
                       }}
-                      disabled={loading || isProjectUnderLimitation}
+                      disabled={loading || !licensed}
                     >
                       {noChanges ? "Rebuild" : "Commit changes & build "}
                     </Button>
@@ -191,7 +192,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
                   eventData={{
                     eventName: AnalyticsEventNames.CommitClicked,
                   }}
-                  disabled={loading || isProjectUnderLimitation}
+                  disabled={loading}
                 >
                   {noChanges ? "Rebuild" : "Commit changes & build "}
                 </Button>

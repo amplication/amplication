@@ -25,9 +25,11 @@ import { UserActionModule } from "./userAction/userActionModule";
 import { DBSchemaImportModule } from "./dbSchemaImport/dbSchemaImport.module";
 import { ModuleModule } from "./module/module.module";
 import { ModuleActionModule } from "./moduleAction/moduleAction.module";
+import { AdministratorModule } from "./administrator/administrator.module";
 
 @Module({
   imports: [
+    AdministratorModule,
     AccountModule,
     WorkspaceModule,
     ResourceModule,

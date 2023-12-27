@@ -84,14 +84,6 @@ export class ProjectResolver {
     return this.projectService.updateProject(args);
   }
 
-  @ResolveField(() => Boolean)
-  async isUnderLimitation(@Parent() project: Project): Promise<boolean> {
-    return this.projectService.isUnderLimitation(
-      project.workspaceId,
-      project.id
-    );
-  }
-
   @ResolveField(() => String)
   async description(@Parent() project: Project): Promise<string> {
     const [configuration] = await this.resourceService.resources({

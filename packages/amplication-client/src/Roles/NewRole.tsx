@@ -48,7 +48,8 @@ const CLASS_NAME = "new-role";
 
 const NewRole = ({ onRoleAdd, resourceId }: Props) => {
   const { addEntity, currentResource } = useContext(AppContext);
-  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
+  const licensed = currentResource?.licensed ?? true;
+
   const [createRole, { error, loading }] = useMutation(CREATE_ROLE, {
     update(cache, { data }) {
       if (!data) return;
@@ -133,15 +134,14 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            {isResourceUnderLimitation ? (
+            {!licensed ? (
               <FeatureIndicator
                 featureName={BillingFeature.Services}
-                text="Your current plan permits only one active resource."
-                linkText="Please contact us to upgrade."
+                text="Your current plan permits only one active Service. "
                 element={
                   <Button
                     buttonStyle={EnumButtonStyle.Text}
-                    disabled={isResourceUnderLimitation}
+                    disabled={!licensed}
                     icon="locked"
                     className={classNames(`${CLASS_NAME}__add-field__button`, {
                       [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(

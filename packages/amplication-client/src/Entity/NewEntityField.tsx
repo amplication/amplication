@@ -28,8 +28,9 @@ const CLASS_NAME = "new-entity-field";
 
 const NewEntityField = ({ entity, onFieldAdd }: Props) => {
   const { addEntity, currentResource } = useContext(AppContext);
-  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
+
+  const licensed = currentResource?.licensed ?? true;
 
   const [createEntityField, { error, loading }] = useMutation<TData>(
     CREATE_ENTITY_FIELD,
@@ -121,15 +122,14 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            {isResourceUnderLimitation ? (
+            {!licensed ? (
               <FeatureIndicator
                 featureName={BillingFeature.Services}
-                text="Your current plan permits only one active resource."
-                linkText="Please contact us to upgrade."
+                text="Your current plan permits only one active Service. "
                 element={
                   <Button
                     buttonStyle={EnumButtonStyle.Text}
-                    disabled={isResourceUnderLimitation}
+                    disabled={!licensed}
                     icon="locked"
                     className={classNames(`${CLASS_NAME}__add-field__button`, {
                       [`${CLASS_NAME}__add-field__button--show`]:

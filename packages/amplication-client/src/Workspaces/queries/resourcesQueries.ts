@@ -11,7 +11,7 @@ export const GET_RESOURCE = gql`
       githubLastSync
       githubLastMessage
       resourceType
-      isUnderLimitation
+      licensed
     }
   }
 `;
@@ -32,7 +32,7 @@ export const GET_RESOURCES = gql`
       gitRepositoryOverride
       codeGeneratorStrategy
       codeGeneratorVersion
-      isUnderLimitation
+      licensed
       gitRepository {
         id
         name
