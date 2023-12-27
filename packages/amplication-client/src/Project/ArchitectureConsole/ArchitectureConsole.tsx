@@ -5,28 +5,28 @@ import {
   EnumButtonStyle,
   SearchField,
 } from "@amplication/ui/design-system";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { formatError } from "../../util/error";
 import ModelOrganizer from "./ModelOrganizer";
 import { ModelChanges } from "./types";
 import useArchitectureConsole from "./hooks/useArchitectureConsole";
+import * as models from "../../models";
 
 export const CLASS_NAME = "architecture-console";
 
-type ResourceFilter = {
-  id: string;
+export type ResourceFilter = models.Resource & {
   isFilter: boolean;
 };
 
 export default function ArchitectureConsole() {
   const {
-    resourcesData,
     loadingResources,
     resourcesError,
     createResourceEntities,
     handleSearchChange,
+    filteredResources,
+    handleResourceFilterChanged,
   } = useArchitectureConsole();
-  const [resourcesFilter, setResourcesFilter] = useState<ResourceFilter[]>([]);
 
   const handleApplyPlan = useCallback((data: ModelChanges) => {
     data.newServices.forEach((service) => {
@@ -44,39 +44,13 @@ export default function ArchitectureConsole() {
     }).catch(console.error);
   }, []);
 
-  useEffect(() => {
-    if (!resourcesData) return;
-
-    if (resourcesFilter.length > 0) return;
-    const filterArray = [];
-    resourcesData.resources.forEach((x) => {
-      const resourceFilter: ResourceFilter = {
-        id: x.id,
-        isFilter: true,
-      };
-
-      filterArray.push(resourceFilter);
-    });
-    setResourcesFilter(filterArray);
-  }, [resourcesData, setResourcesFilter, resourcesFilter]);
-
-  const handleResourceFilterChanged = useCallback(
-    (event, resource: ResourceFilter) => {
-      const currentResource = resourcesFilter.find((x) => x.id === resource.id);
-      currentResource.isFilter = !currentResource.isFilter;
-
-      setResourcesFilter((resourcesFilter) => [...resourcesFilter]);
-    },
-    [resourcesFilter, setResourcesFilter]
-  );
-
   const errorMessage = resourcesError && formatError(resourcesError);
 
   return (
     <>
       <div className={`${CLASS_NAME}__resources`}>
         <span>Filtered</span>
-        {resourcesFilter?.map(
+        {filteredResources?.map(
           (resource) =>
             !resource.isFilter && (
               <div className={`${CLASS_NAME}__resource`}>
@@ -93,7 +67,7 @@ export default function ArchitectureConsole() {
             )
         )}
         <span>Filter</span>
-        {resourcesFilter?.map(
+        {filteredResources?.map(
           (resource) =>
             resource.isFilter && (
               <div className={`${CLASS_NAME}__resource`}>
@@ -116,7 +90,7 @@ export default function ArchitectureConsole() {
         onChange={handleSearchChange}
       />
       <ModelOrganizer
-        resources={resourcesData?.resources}
+        resources={filteredResources.filter((r) => r.isFilter)}
         onApplyPlan={handleApplyPlan}
         loadingResources={loadingResources}
         errorMessage={errorMessage}
