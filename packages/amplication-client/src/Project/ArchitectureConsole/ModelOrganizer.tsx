@@ -1,8 +1,11 @@
 import "reactflow/dist/style.css";
 import "./ModelOrganizer.scss";
 
-import { Icon } from "@amplication/ui/design-system";
-import classNames from "classnames";
+import {
+  CircularProgress,
+  Icon,
+  Snackbar,
+} from "@amplication/ui/design-system";
 import { useCallback, useEffect, useState } from "react";
 import {
   Background,
@@ -48,9 +51,16 @@ const edgeTypes = {
 type Props = {
   resources: models.Resource[];
   onApplyPlan: (changes: ModelChanges) => void;
+  loadingResources: boolean;
+  errorMessage: string;
 };
 
-export default function ModelOrganizer({ resources, onApplyPlan }: Props) {
+export default function ModelOrganizer({
+  resources,
+  onApplyPlan,
+  loadingResources,
+  errorMessage,
+}: Props) {
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
 
@@ -87,6 +97,9 @@ export default function ModelOrganizer({ resources, onApplyPlan }: Props) {
 
     if (resources && resources.length > 0) {
       prepareNodes().catch(console.error);
+    } else {
+      setNodes([]);
+      setEdges([]);
     }
   }, [resources, setNodes, setEdges, showRelationDetails]);
 
@@ -244,42 +257,49 @@ export default function ModelOrganizer({ resources, onApplyPlan }: Props) {
 
   return (
     <div className={CLASS_NAME}>
-      <ModelOrganizerToolbar
-        readOnly={readOnly}
-        hasChanges={hasChanges}
-        onApplyPlan={onApplyPlanClick}
-        onRedesign={onRedesignClick}
-        onCancelChanges={onCancelChangesClick}
-      />
-      <div className={"reactflow-wrapper"}>
-        <ReactFlow
-          onInit={onInit}
-          nodes={nodes}
-          edges={edges}
-          fitView
-          nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
-          onNodeDrag={onNodeDrag}
-          onNodeDragStop={onNodeDragStop}
-          onEdgesChange={onEdgesChange}
-          connectionMode={ConnectionMode.Loose}
-          proOptions={{ hideAttribution: true }}
-          minZoom={0.1}
-          nodesDraggable={!readOnly}
-        >
-          <Background color="grey" />
-          <Controls>
-            <ControlButton onClick={onToggleDetailsChange}>
-              <Icon icon="list" />
-            </ControlButton>
-            <ControlButton onClick={onArrangeNodes}>
-              <Icon icon="layers" />
-            </ControlButton>
-          </Controls>
-          <MiniMap pannable={true} zoomable={true} />
-        </ReactFlow>
-        <RelationMarkets />
-      </div>
+      {loadingResources ? (
+        <CircularProgress centerToParent />
+      ) : (
+        <>
+          <ModelOrganizerToolbar
+            readOnly={readOnly}
+            hasChanges={hasChanges}
+            onApplyPlan={onApplyPlanClick}
+            onRedesign={onRedesignClick}
+            onCancelChanges={onCancelChangesClick}
+          />
+          <div className={"reactflow-wrapper"}>
+            <ReactFlow
+              onInit={onInit}
+              nodes={nodes}
+              edges={edges}
+              fitView
+              nodeTypes={nodeTypes}
+              edgeTypes={edgeTypes}
+              onNodeDrag={onNodeDrag}
+              onNodeDragStop={onNodeDragStop}
+              onEdgesChange={onEdgesChange}
+              connectionMode={ConnectionMode.Loose}
+              proOptions={{ hideAttribution: true }}
+              minZoom={0.1}
+              nodesDraggable={!readOnly}
+            >
+              <Background color="grey" />
+              <Controls>
+                <ControlButton onClick={onToggleDetailsChange}>
+                  <Icon icon="list" />
+                </ControlButton>
+                <ControlButton onClick={onArrangeNodes}>
+                  <Icon icon="layers" />
+                </ControlButton>
+              </Controls>
+              <MiniMap pannable={true} zoomable={true} />
+            </ReactFlow>
+            <RelationMarkets />
+          </div>
+          <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
+        </>
+      )}
     </div>
   );
 }

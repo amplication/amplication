@@ -1,41 +1,32 @@
 import "reactflow/dist/style.css";
 import "./ArchitectureConsole.scss";
-import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { useCallback, useContext } from "react";
-import { AppContext } from "../../context/appContext";
-import * as models from "../../models";
+import {
+  Button,
+  EnumButtonStyle,
+  SearchField,
+} from "@amplication/ui/design-system";
+import { useCallback, useEffect, useState } from "react";
 import { formatError } from "../../util/error";
 import ModelOrganizer from "./ModelOrganizer";
 import { ModelChanges } from "./types";
+import useArchitectureConsole from "./hooks/useArchitectureConsole";
 
 export const CLASS_NAME = "architecture-console";
-type TData = {
-  resources: models.Resource[];
+
+type ResourceFilter = {
+  id: string;
+  isFilter: boolean;
 };
 
-const DATE_CREATED_FIELD = "createdAt";
-
 export default function ArchitectureConsole() {
-  const { currentProject } = useContext(AppContext);
-
-  const { loading, error, data, refetch } = useQuery<TData>(GET_RESOURCES, {
-    variables: {
-      projectId: currentProject?.id,
-      orderBy: {
-        [DATE_CREATED_FIELD]: models.SortOrder.Asc,
-      },
-    },
-
-    fetchPolicy: "no-cache",
-  });
-
-  const [createResourceEntities, { error: createEntitiesError }] =
-    useMutation<ModelChanges>(CREATE_RESOURCE_ENTITIES, {
-      onCompleted: (data) => {
-        refetch();
-      },
-    });
+  const {
+    resourcesData,
+    loadingResources,
+    resourcesError,
+    createResourceEntities,
+    handleSearchChange,
+  } = useArchitectureConsole();
+  const [resourcesFilter, setResourcesFilter] = useState<ResourceFilter[]>([]);
 
   const handleApplyPlan = useCallback((data: ModelChanges) => {
     data.newServices.forEach((service) => {
@@ -53,62 +44,83 @@ export default function ArchitectureConsole() {
     }).catch(console.error);
   }, []);
 
-  const errorMessage = error && formatError(error);
+  useEffect(() => {
+    if (!resourcesData) return;
 
-  if (loading) return <CircularProgress centerToParent />;
-  if (error) return <Snackbar open={Boolean(error)} message={errorMessage} />;
+    if (resourcesFilter.length > 0) return;
+    const filterArray = [];
+    resourcesData.resources.forEach((x) => {
+      const resourceFilter: ResourceFilter = {
+        id: x.id,
+        isFilter: true,
+      };
+
+      filterArray.push(resourceFilter);
+    });
+    setResourcesFilter(filterArray);
+  }, [resourcesData, setResourcesFilter, resourcesFilter]);
+
+  const handleResourceFilterChanged = useCallback(
+    (event, resource: ResourceFilter) => {
+      const currentResource = resourcesFilter.find((x) => x.id === resource.id);
+      currentResource.isFilter = !currentResource.isFilter;
+
+      setResourcesFilter((resourcesFilter) => [...resourcesFilter]);
+    },
+    [resourcesFilter, setResourcesFilter]
+  );
+
+  const errorMessage = resourcesError && formatError(resourcesError);
 
   return (
-    <ModelOrganizer resources={data.resources} onApplyPlan={handleApplyPlan} />
+    <>
+      <div className={`${CLASS_NAME}__resources`}>
+        <span>Filtered</span>
+        {resourcesFilter?.map(
+          (resource) =>
+            !resource.isFilter && (
+              <div className={`${CLASS_NAME}__resource`}>
+                <Button
+                  key={resource.id}
+                  icon="services"
+                  iconSize="xsmall"
+                  buttonStyle={EnumButtonStyle.Text}
+                  onClick={(event) =>
+                    handleResourceFilterChanged(event, resource)
+                  }
+                ></Button>
+              </div>
+            )
+        )}
+        <span>Filter</span>
+        {resourcesFilter?.map(
+          (resource) =>
+            resource.isFilter && (
+              <div className={`${CLASS_NAME}__resource`}>
+                <Button
+                  key={resource.id}
+                  icon="services"
+                  iconSize="xsmall"
+                  buttonStyle={EnumButtonStyle.Text}
+                  onClick={(event) =>
+                    handleResourceFilterChanged(event, resource)
+                  }
+                ></Button>
+              </div>
+            )
+        )}
+      </div>
+      <SearchField
+        label="search"
+        placeholder="search"
+        onChange={handleSearchChange}
+      />
+      <ModelOrganizer
+        resources={resourcesData?.resources}
+        onApplyPlan={handleApplyPlan}
+        loadingResources={loadingResources}
+        errorMessage={errorMessage}
+      />
+    </>
   );
 }
-
-export const GET_RESOURCES = gql`
-  query getResources($projectId: String!) {
-    resources(
-      where: { project: { id: $projectId }, resourceType: { equals: Service } }
-    ) {
-      id
-      name
-      entities {
-        id
-        displayName
-        resourceId
-        fields {
-          permanentId
-          displayName
-          description
-          properties
-          dataType
-          customAttributes
-          required
-          unique
-        }
-      }
-    }
-  }
-`;
-
-export const CREATE_RESOURCE_ENTITIES = gql`
-  mutation copiedEntities($data: ResourcesCreateCopiedEntitiesInput!) {
-    copiedEntities(data: $data) {
-      id
-      name
-      entities {
-        id
-        displayName
-        resourceId
-        fields {
-          permanentId
-          displayName
-          description
-          properties
-          dataType
-          customAttributes
-          required
-          unique
-        }
-      }
-    }
-  }
-`;
