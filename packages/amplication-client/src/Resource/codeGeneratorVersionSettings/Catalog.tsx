@@ -11,7 +11,7 @@ export const DSGCatalog: React.FC<CatalogProps> = ({ name, changelog }) => {
   return (
     <ListItem>
       <Text textStyle={EnumTextStyle.Normal}>{name}</Text>
-      <ReactMarkdown source={changelog} />
+      <ReactMarkdown className="amp-text--tag">{changelog}</ReactMarkdown>
     </ListItem>
   );
 };
