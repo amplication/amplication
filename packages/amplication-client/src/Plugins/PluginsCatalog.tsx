@@ -45,7 +45,8 @@ const SUB_TITLE =
   "Extend and customize your services by using plugins for various technologies and integrations.";
 
 const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
-  const { resource, category } = match.params;
+  const { resource, category: encodedCategory } = match.params;
+  const category = decodeURIComponent(encodedCategory);
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
   const [isCreatePluginInstallation, setIsCreatePluginInstallation] =
     useState<boolean>(false);

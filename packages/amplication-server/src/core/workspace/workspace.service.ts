@@ -44,11 +44,14 @@ import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { Env } from "../../env";
+import { ConfigService } from "@nestjs/config";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
 @Injectable()
 export class WorkspaceService {
+  private userLastActiveDays: number;
   constructor(
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
@@ -59,9 +62,13 @@ export class WorkspaceService {
     private analytics: SegmentAnalyticsService,
     private readonly moduleService: ModuleService,
     private readonly moduleActionService: ModuleActionService,
+    private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
-  ) {}
+  ) {
+    this.userLastActiveDays =
+      Number(this.configService.get<string>(Env.USER_LAST_ACTIVE_DAYS)) ?? 30;
+  }
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
     return this.prisma.workspace.findUnique(args);
@@ -303,6 +310,11 @@ export class WorkspaceService {
         },
       },
     });
+
+    await this.billingService.reportUsage(
+      workspace.id,
+      BillingFeature.TeamMembers
+    );
 
     await this.analytics.track({
       userId: account.id,
@@ -790,6 +802,57 @@ export class WorkspaceService {
           );
         }
       }
+    }
+  }
+
+  async bulkUpdateWorkspaceProjectsAndResourcesLicensed(
+    useUserLastActive: boolean
+  ): Promise<boolean> {
+    try {
+      const date = new Date();
+      const userLastActiveQuery = useUserLastActive
+        ? {
+            some: {
+              lastActive: {
+                gte: new Date(
+                  date.setDate(date.getDate() - this.userLastActiveDays)
+                ),
+              },
+            },
+          }
+        : {};
+
+      const workspaces = await this.prisma.workspace.findMany({
+        where: {
+          users: userLastActiveQuery,
+          projects: {
+            some: {
+              deletedAt: null,
+              resources: {
+                some: {
+                  deletedAt: null,
+                  archived: { not: true },
+                  resourceType: {
+                    in: [EnumResourceType.Service],
+                  },
+                },
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      for (const workspace of workspaces) {
+        await this.subscriptionService.updateProjectLicensed(workspace.id);
+        await this.subscriptionService.updateServiceLicensed(workspace.id);
+      }
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+      return false;
     }
   }
 

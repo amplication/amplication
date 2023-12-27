@@ -64,6 +64,7 @@ const EXAMPLE_RESOURCE: Resource = {
   createdAt: timeNow,
   updatedAt: timeNow,
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -73,6 +74,7 @@ const EXAMPLE_PROJECT: Project = {
   updatedAt: timeNow,
   useDemoRepo: false,
   demoRepoName: null,
+  licensed: true,
 };
 
 const GET_WORKSPACE_QUERY = gql`
@@ -96,6 +98,7 @@ const GET_PROJECT_QUERY = gql`
         updatedAt
         useDemoRepo
         demoRepoName
+        licensed
       }
     }
   }

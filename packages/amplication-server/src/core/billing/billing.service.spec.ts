@@ -14,6 +14,7 @@ import Stigg, {
   FullSubscription,
   MeteredEntitlement,
   SubscriptionStatus,
+  UsageUpdateBehavior,
 } from "@stigg/node-server-sdk";
 import { GitOrganization, GitRepository, Project, User } from "../../models";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../../prisma";
@@ -239,6 +240,7 @@ describe("BillingService", () => {
           useDemoRepo: false,
           createdAt: new Date(),
           updatedAt: new Date(),
+          licensed: true,
         },
       ];
       const repositories: GitRepository[] = [
@@ -365,6 +367,7 @@ describe("BillingService", () => {
           useDemoRepo: false,
           createdAt: new Date(),
           updatedAt: new Date(),
+          licensed: true,
         },
       ];
 
@@ -485,6 +488,7 @@ describe("BillingService", () => {
             useDemoRepo: false,
             createdAt: new Date(),
             updatedAt: new Date(),
+            licensed: true,
           },
         ];
 
@@ -583,6 +587,7 @@ describe("BillingService", () => {
             useDemoRepo: false,
             createdAt: new Date(),
             updatedAt: new Date(),
+            licensed: true,
           },
         ];
 
@@ -619,5 +624,101 @@ describe("BillingService", () => {
         );
       }
     );
+  });
+
+  it("should report usage as delta update by using the UsageUpdateBehavior.Delta", async () => {
+    const reportUsage = jest.spyOn(Stigg.prototype, "reportUsage");
+
+    await service.reportUsage("workspace-id", BillingFeature.Projects, 1);
+
+    expect(reportUsage).toHaveBeenCalledTimes(1);
+    expect(reportUsage).toHaveBeenCalledWith({
+      customerId: "workspace-id",
+      featureId: BillingFeature.Projects,
+      updateBehavior: UsageUpdateBehavior.Delta,
+      value: 1,
+    });
+  });
+
+  it("should set usage overriding current usage by using the UsageUpdateBehavior.Set", async () => {
+    const reportUsage = jest.spyOn(Stigg.prototype, "reportUsage");
+
+    await service.setUsage("workspace-id", BillingFeature.Projects, 100);
+
+    expect(reportUsage).toHaveBeenCalledTimes(1);
+    expect(reportUsage).toHaveBeenCalledWith({
+      customerId: "workspace-id",
+      featureId: BillingFeature.Projects,
+      updateBehavior: UsageUpdateBehavior.Set,
+      value: 100,
+    });
+  });
+
+  describe("resetUsage", () => {
+    let mockReportUsage: jest.SpyInstance;
+    beforeEach(() => {
+      mockReportUsage = jest.spyOn(Stigg.prototype, "reportUsage");
+    });
+    it("should call setUsage for each feature when billing is enabled", async () => {
+      // Arrange
+      const workspaceId = "testWorkspaceId";
+      const currentUsage = {
+        projects: 5,
+        services: 10,
+        servicesAboveEntityPerServiceLimit: 2,
+        teamMembers: 8,
+      };
+      jest.spyOn(service, "isBillingEnabled", "get").mockReturnValue(true);
+
+      // Act
+      await service.resetUsage(workspaceId, currentUsage);
+
+      // Assert
+      expect(mockReportUsage).toHaveBeenCalledTimes(4);
+
+      expect(mockReportUsage).toHaveBeenCalledWith({
+        customerId: workspaceId,
+        featureId: BillingFeature.Projects,
+        updateBehavior: UsageUpdateBehavior.Set,
+        value: currentUsage.projects,
+      });
+      expect(mockReportUsage).toHaveBeenCalledWith({
+        customerId: workspaceId,
+        featureId: BillingFeature.Services,
+        updateBehavior: UsageUpdateBehavior.Set,
+        value: currentUsage.services,
+      });
+      expect(mockReportUsage).toHaveBeenCalledWith({
+        customerId: workspaceId,
+        featureId: BillingFeature.ServicesAboveEntitiesPerServiceLimit,
+        updateBehavior: UsageUpdateBehavior.Set,
+        value: currentUsage.servicesAboveEntityPerServiceLimit,
+      });
+      expect(mockReportUsage).toHaveBeenCalledWith({
+        customerId: workspaceId,
+        featureId: BillingFeature.TeamMembers,
+        updateBehavior: UsageUpdateBehavior.Set,
+        value: currentUsage.teamMembers,
+      });
+    });
+
+    it("should not call setUsage when billing is disabled", async () => {
+      // Arrange
+      const workspaceId = "testWorkspaceId";
+      const currentUsage = {
+        projects: 5,
+        services: 10,
+        servicesAboveEntityPerServiceLimit: 2,
+        teamMembers: 8,
+      };
+
+      jest.spyOn(service, "isBillingEnabled", "get").mockReturnValue(false);
+
+      // Act
+      await service.resetUsage(workspaceId, currentUsage);
+
+      // Assert
+      expect(mockReportUsage).not.toHaveBeenCalled();
+    });
   });
 });
