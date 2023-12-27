@@ -45,7 +45,9 @@ export const PluginTree = React.memo(
         <InnerTabLink
           key={category}
           icon="plugins"
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/plugins/${category}`}
+          to={`/${currentWorkspace?.id}/${
+            currentProject?.id
+          }/${resourceId}/plugins/${encodeURIComponent(category)}`}
         >
           <span>{category}</span>
         </InnerTabLink>
