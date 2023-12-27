@@ -4,7 +4,7 @@ import {
   TextField,
 } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
-import { Formik } from "formik";
+import { Formik, useFormikContext } from "formik";
 import { Location } from "history";
 import queryString from "query-string";
 import { useCallback, useEffect, useMemo } from "react";
@@ -29,6 +29,7 @@ import { useTracking } from "../util/analytics";
 type Values = {
   email: string;
   password: string;
+  work_email: string;
 };
 
 interface LocationStateInterface {
@@ -41,6 +42,47 @@ const URL_SOURCE_PARAM = "utm_source";
 const INITIAL_VALUES: Values = {
   email: "",
   password: "",
+  work_email: "",
+};
+
+const AuthWithWorkEmail: React.FC<{}> = ({}) => {
+  const { values } = useFormikContext<Values>();
+  const { trackEvent } = useTracking();
+
+  const handleAuthWorkEmail = () => {
+    trackEvent({
+      eventName: AnalyticsEventNames.SignInWithEmailPassword,
+    });
+    window.location.assign(
+      `${REACT_APP_AUTH_LOGIN_URI}?work_email=${values.work_email}`
+    );
+  };
+
+  return (
+    <>
+      <div className={`${CLASS_NAME}__or`}>
+        <span>or</span>
+      </div>
+      <TextField
+        className={`${CLASS_NAME}__work_email`}
+        label="Work email"
+        name="work_email"
+        value={values.work_email}
+        type="email"
+      />
+      <Button
+        type="button"
+        className={`${CLASS_NAME}__work_email_btn`}
+        onClick={handleAuthWorkEmail}
+        eventData={{
+          eventName: AnalyticsEventNames.SignInWithUserName,
+        }}
+        disabled={!values.work_email.length}
+      >
+        Continue
+      </Button>
+    </>
+  );
 };
 
 const Login = () => {
@@ -105,8 +147,6 @@ const Login = () => {
       <span className={`${CLASS_NAME}__title`}>Hi There</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
-          {urlError && <ErrorMessage errorMessage={urlError} />}
-
           {REACT_APP_GITHUB_AUTH_ENABLED ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
@@ -121,6 +161,8 @@ const Login = () => {
               >
                 Continue with SSO
               </a>
+              <AuthWithWorkEmail />
+              {urlError && <ErrorMessage errorMessage={urlError} />}
             </>
           ) : (
             <>

@@ -87,7 +87,16 @@ export class AuthController {
   @UseInterceptors(MorganInterceptor("combined"))
   @Get(AUTH_LOGIN_PATH)
   async auth0Login(@Req() request: Request, @Res() response: Response) {
+    const screenHint = request.query.work_email
+      ? {
+          screen_hint: "signup",
+          login_hint: request.query.work_email as string,
+        }
+      : { screen_hint: "login-id" };
     await response.oidc.login({
+      authorizationParams: {
+        ...screenHint,
+      },
       returnTo: AUTH_AFTER_CALLBACK_PATH,
     });
     return;
