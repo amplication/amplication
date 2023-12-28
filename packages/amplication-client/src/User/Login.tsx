@@ -54,7 +54,7 @@ const AuthWithWorkEmail: React.FC = () => {
       eventName: AnalyticsEventNames.SignInWithEmailPassword,
     });
     window.location.assign(
-      `${REACT_APP_AUTH_LOGIN_URI}?work_email=${values.work_email}`
+      `${REACT_APP_AUTH_LOGIN_URI}?work_email=${encodeURI(values.work_email)}`
     );
   };
 
