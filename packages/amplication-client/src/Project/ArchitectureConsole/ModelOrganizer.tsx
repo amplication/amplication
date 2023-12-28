@@ -107,7 +107,11 @@ export default function ModelOrganizer({
     onApplyPlan(changes);
     setReadOnly(true);
     setHasChanges(false);
-  }, [onApplyPlan, setReadOnly, changes]);
+    setChanges({
+      movedEntities: [],
+      newServices: [],
+    });
+  }, [onApplyPlan, setReadOnly, setChanges, changes]);
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
