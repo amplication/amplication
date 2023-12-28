@@ -1,5 +1,5 @@
 import type { StoryFn, Meta } from "@storybook/react";
-import { PlanUpgradeConfirmation } from "./PlanUpgradeConfirmation";
+import PlanUpgradeConfirmation from "./PlanUpgradeConfirmation";
 
 const Story: Meta<typeof PlanUpgradeConfirmation> = {
   title: "PlanUpgradeConfirmation",

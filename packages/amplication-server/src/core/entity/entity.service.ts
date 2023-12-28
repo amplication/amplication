@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 import cuid from "cuid";
@@ -24,7 +25,11 @@ import {
   Resource,
 } from "../../models";
 import type { JsonObject } from "type-fest";
-import { getSchemaForDataType, types } from "@amplication/code-gen-types";
+import {
+  getSchemaForDataType,
+  LookupResolvedProperties,
+  types,
+} from "@amplication/code-gen-types";
 import { JsonSchemaValidationService } from "../../services/jsonSchemaValidation.service";
 import { DiffService } from "../../services/diff.service";
 import { SchemaValidationResult } from "../../dto/schemaValidationResult";
@@ -82,12 +87,15 @@ import {
 import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
 import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
 import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { ActionContext } from "../userAction/types";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ModuleService } from "../module/module.service";
 import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForEntityNotFoundError";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { pascalCase } from "pascal-case";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -252,6 +260,20 @@ export class EntityService {
     });
   }
 
+  async checkServiceLicense(resource: Resource) {
+    if (!this.billingService.isBillingEnabled) {
+      return;
+    }
+
+    if (
+      !resource.project?.licensed ||
+      (!resource.licensed && resource.resourceType === EnumResourceType.Service)
+    ) {
+      const message = "Your workspace reached its service limitation.";
+      throw new BillingLimitationError(message, BillingFeature.Services);
+    }
+  }
+
   async createOneEntity(
     args: CreateOneEntityArgs,
     user: User,
@@ -260,6 +282,13 @@ export class EntityService {
     trackEvent = true
   ): Promise<Entity> {
     const resourceId = args.data.resource.connect.id;
+    const resource = await this.prisma.resource.findUnique({
+      where: { id: resourceId },
+      include: { project: true },
+    });
+
+    await this.checkServiceLicense(resource);
+
     if (
       args.data?.name?.toLowerCase().trim() ===
       args.data?.pluralDisplayName?.toLowerCase().trim()
@@ -384,6 +413,7 @@ export class EntityService {
           projectId: resourceWithProject.projectId,
           workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,
+          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.EntityCreate,
       });
@@ -431,6 +461,7 @@ export class EntityService {
         projectId: resourceWithProject.projectId,
         workspaceId: resourceWithProject.project.workspaceId,
         fileName: fileName,
+        $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
       },
       event: EnumEventType.ImportPrismaSchemaStart,
     });
@@ -469,6 +500,9 @@ export class EntityService {
             workspaceId: resourceWithProject.project.workspaceId,
             fileName: fileName,
             error: "Duplicate entity names",
+            $groups: {
+              groupWorkspace: resourceWithProject.project.workspaceId,
+            },
           },
           event: EnumEventType.ImportPrismaSchemaError,
         });
@@ -521,6 +555,9 @@ export class EntityService {
               (acc, entity) => acc + (entity.fields?.length || 0),
               0
             ),
+            $groups: {
+              groupWorkspace: resourceWithProject.project.workspaceId,
+            },
           },
           event: EnumEventType.ImportPrismaSchemaCompleted,
         });
@@ -536,6 +573,7 @@ export class EntityService {
           workspaceId: resourceWithProject.project.workspaceId,
           fileName: fileName,
           error: error.message,
+          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.ImportPrismaSchemaError,
       });
@@ -588,6 +626,36 @@ export class EntityService {
       return false;
     }
     return true;
+  }
+
+  async updateFieldDataTypeIdByRelatedEntity(
+    field: EntityField,
+    relatedEntityId: string
+  ): Promise<EntityField> {
+    const relatedIdField = await this.prisma.entityField.findFirst({
+      where: {
+        dataType: EnumDataType.Id,
+        entityVersion: {
+          entityId: relatedEntityId,
+        },
+      },
+    });
+
+    const idTypeMap = {
+      CUID: EnumDataType.SingleLineText,
+      UUID: EnumDataType.SingleLineText,
+      AUTO_INCREMENT: EnumDataType.WholeNumber,
+      AUTO_INCREMENT_BIG_INT: EnumDataType.WholeNumber,
+    };
+
+    const idTypeProp =
+      relatedIdField.properties as unknown as types.Id["idType"];
+
+    field.dataType = idTypeMap[idTypeProp];
+
+    field.name = `${field.name}Id`;
+
+    return field;
   }
 
   async createBulkEntitiesAndFields(
@@ -827,6 +895,133 @@ export class EntityService {
     });
   }
 
+  async deleteEntityFromSource(
+    args: DeleteOneEntityArgs,
+    user: User
+  ): Promise<Entity | null> {
+    return await this.useLocking(args.where.id, user, async (entity) => {
+      const relatedEntityFields = await this.prisma.entityField.findMany({
+        where: {
+          dataType: EnumDataType.Lookup,
+          properties: { path: ["relatedEntityId"], equals: args.where.id },
+          entityVersion: { versionNumber: CURRENT_VERSION_NUMBER },
+        },
+        include: { entityVersion: true },
+      });
+
+      const serviceSettings =
+        await this.serviceSettingsService.getServiceSettingsValues(
+          {
+            where: { id: entity.resourceId },
+          },
+          user
+        );
+
+      if (serviceSettings.authEntityName === entity.name) {
+        throw new AmplicationError(
+          `cannot delete auth entity : ${entity.name}.`
+        );
+      }
+
+      for (const relatedEntityField of relatedEntityFields) {
+        const { properties, entityVersion } = relatedEntityField;
+        const { allowMultipleSelection, relatedEntityId } =
+          properties as unknown as LookupResolvedProperties;
+
+        //one to one relation or one to many relation
+        //update related field to the id field by the idType
+        if (!allowMultipleSelection) {
+          await this.updateFieldDataTypeIdByRelatedEntity(
+            relatedEntityField,
+            relatedEntityId
+          );
+
+          await this.createCopiedEntityFieldByDisplayName(
+            entityVersion.entityId,
+            relatedEntityField,
+            user
+          );
+        }
+
+        await this.deleteField({ where: { id: relatedEntityField.id } }, user);
+      }
+
+      try {
+        await this.moduleService.deleteDefaultModuleForEntity(
+          entity.resourceId,
+          entity.id,
+          user
+        );
+      } catch (error) {
+        //continue to delete the entity even if the deletion of the default module failed.
+        //This is done in order to allow the user to workaround issues in any case when a default module is missing
+        this.logger.error(
+          "Continue with EntityDelete even though the default entity could not be deleted or was not found ",
+          error
+        );
+      }
+
+      return this.prisma.entity.update({
+        where: args.where,
+        data: {
+          name: prepareDeletedItemName(entity.name, entity.id),
+          displayName: prepareDeletedItemName(entity.displayName, entity.id),
+          pluralDisplayName: prepareDeletedItemName(
+            entity.pluralDisplayName,
+            entity.id
+          ),
+          deletedAt: new Date(),
+          versions: {
+            update: {
+              where: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                entityId_versionNumber: {
+                  entityId: args.where.id,
+                  versionNumber: CURRENT_VERSION_NUMBER,
+                },
+              },
+              data: {
+                deleted: true,
+              },
+            },
+          },
+        },
+      });
+    });
+  }
+
+  async createCopiedEntityFieldByDisplayName(
+    copiedEntityId: string,
+    field: EntityField,
+    user: User
+  ): Promise<void> {
+    try {
+      await this.createFieldByDisplayName(
+        {
+          data: {
+            entity: {
+              connect: {
+                id: copiedEntityId,
+              },
+            },
+            displayName: pascalCase(field.name),
+            dataType: field.dataType,
+          },
+        },
+        user,
+        false
+      );
+    } catch (error) {
+      this.logger.error(error.message, error, {
+        field: field.name,
+        entityId: copiedEntityId,
+      });
+      throw new Error(
+        `Failed to create entity field "${field.name}" on entityId "${copiedEntityId}" due to ${error.message}`
+      );
+    }
+  }
+
   /**
    * Gets all the entities changed since the last resource commit
    * @param projectId the resource ID to find changes to
@@ -977,6 +1172,7 @@ export class EntityService {
           projectId: resourceWithProject.projectId,
           workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,
+          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.EntityUpdate,
       });
@@ -1709,6 +1905,26 @@ export class EntityService {
 
         //add new roles
         if (!isEmpty(args.data.addRoles)) {
+          const entityId = args.data.entity.connect.id;
+          const entityWithResource = await this.prisma.entity.findUnique({
+            where: {
+              id: entityId,
+            },
+            include: {
+              resource: {
+                include: {
+                  project: true,
+                },
+              },
+            },
+          });
+
+          if (!entityWithResource || !entityWithResource.resource) {
+            throw new NotFoundException(`Entity ${entityId} not found`);
+          }
+
+          await this.checkServiceLicense(entityWithResource.resource);
+
           const createMany = args.data.addRoles.map((role) => {
             return {
               resourceRole: {
@@ -2316,6 +2532,26 @@ export class EntityService {
     enforceValidation = true,
     trackEvent = false
   ): Promise<EntityField> {
+    const entityId = args.data.entity.connect.id;
+    const entityWithResource = await this.prisma.entity.findUnique({
+      where: {
+        id: entityId,
+      },
+      include: {
+        resource: {
+          include: {
+            project: true,
+          },
+        },
+      },
+    });
+
+    if (!entityWithResource || !entityWithResource.resource) {
+      throw new NotFoundException(`Entity ${entityId} not found`);
+    }
+
+    await this.checkServiceLicense(entityWithResource.resource);
+
     if (
       enforceValidation &&
       isReservedName(args.data?.name?.toLowerCase().trim())
@@ -2380,6 +2616,9 @@ export class EntityService {
               workspaceId: resourceWithProject.project.workspaceId,
               entityFieldName: args.data.displayName,
               dataType: args.data.dataType,
+              $groups: {
+                groupWorkspace: resourceWithProject.project.workspaceId,
+              },
             },
             event: EnumEventType.EntityFieldCreate,
           });
@@ -2693,6 +2932,9 @@ export class EntityService {
             workspaceId: resourceWithProject.project.workspaceId,
             entityFieldName: args.data.displayName,
             dataType: args.data.dataType,
+            $groups: {
+              groupWorkspace: resourceWithProject.project.workspaceId,
+            },
           },
           event: EnumEventType.EntityFieldUpdate,
         });

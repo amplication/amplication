@@ -12,6 +12,8 @@ import "./NewTopic.scss";
 import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { FeatureIndicator } from "../Components/FeatureIndicator";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 const INITIAL_VALUES: Partial<models.Topic> = {
   name: "",
@@ -136,6 +138,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
             <Button
               buttonStyle={EnumButtonStyle.Text}
               icon="plus"
+              disabled={loading}
               className={classNames(`${CLASS_NAME}__add-field__button`, {
                 [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
                   formik.values.displayName

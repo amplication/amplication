@@ -7,8 +7,10 @@ export {
   EnumButtonState,
   EnumIconPosition,
 } from "./components/Button/Button";
-
 export type { Props as ButtonProps } from "./components/Button/Button";
+
+export { ButtonProgress } from "./components/ButtonProgress/ButtonProgress";
+export type { Props as ButtonProgressProps } from "./components/ButtonProgress/ButtonProgress";
 
 export {
   default as CircleIcon,

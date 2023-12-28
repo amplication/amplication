@@ -7,7 +7,7 @@ import {
   PasswordInput,
   SelectArrayInput,
 } from "react-admin";
-import { ROLES_OPTIONS } from "./RolesOptions";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (

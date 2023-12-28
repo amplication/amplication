@@ -1,18 +1,5 @@
 import { gql } from "@apollo/client";
 
-export const GET_CURRENT_PROJECT = gql`
-  query findProject($projectId: String!) {
-    project(where: { id: $projectId }) {
-      id
-      name
-      resources {
-        id
-      }
-      createdAt
-    }
-  }
-`;
-
 export const GET_PROJECTS = gql`
   query findProjects {
     projects {
@@ -21,10 +8,12 @@ export const GET_PROJECTS = gql`
       description
       useDemoRepo
       demoRepoName
+      licensed
       resources {
         id
         name
         resourceType
+        licensed
         gitRepository {
           id
           name
@@ -81,6 +70,7 @@ export const GET_PENDING_CHANGES_STATUS = gql`
         id
         name
         resourceType
+        licensed
       }
     }
   }
