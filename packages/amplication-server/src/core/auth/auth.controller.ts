@@ -89,10 +89,13 @@ export class AuthController {
   async auth0Login(@Req() request: Request, @Res() response: Response) {
     const screenHint = request.query.work_email
       ? {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           screen_hint: "signup",
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           login_hint: request.query.work_email as string,
         }
-      : { screen_hint: "login-id" };
+      : // eslint-disable-next-line @typescript-eslint/naming-convention
+        { screen_hint: "login-id" };
     await response.oidc.login({
       authorizationParams: {
         ...screenHint,
