@@ -7290,7 +7290,7 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
   "server/src/grpc.client.options.ts": "import { ClientOptions, Transport } from "@nestjs/microservices";
 import { ConfigService } from "@nestjs/config";
 
-let configService: ConfigService = new ConfigService();
+const configService: ConfigService = new ConfigService();
 
 export const grpcClientOptions: ClientOptions = {
   transport: Transport.GRPC,
