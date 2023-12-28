@@ -27,13 +27,24 @@ export type TabItem = {
   iconName?: string;
   indicatorValue?: string | number;
   indicatorColor?: EnumTextColor;
+  disabled?: boolean;
+  lockedFeatureIndicator?: React.ReactNode;
 };
 
 export type TabProps = Omit<MuiTabProps, "label"> & TabItem;
 
 function Tab(props: TabProps) {
-  const { to, exact, iconName, name, indicatorColor, indicatorValue, ...rest } =
-    props;
+  const {
+    to,
+    exact,
+    iconName,
+    name,
+    indicatorColor,
+    indicatorValue,
+    disabled,
+    lockedFeatureIndicator,
+    ...rest
+  } = props;
 
   const colorStyle = indicatorColor && {
     backgroundColor: `var(--${indicatorColor})`,
@@ -41,7 +52,7 @@ function Tab(props: TabProps) {
 
   const label = (
     <>
-      {name}{" "}
+      {name}
       {indicatorValue && (
         <span style={colorStyle} className="amp-tab__indicator">
           {indicatorValue}

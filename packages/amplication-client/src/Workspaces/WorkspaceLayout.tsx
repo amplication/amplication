@@ -25,6 +25,7 @@ import useCommits from "../VersionControl/hooks/useCommits";
 import RedeemCoupon from "../User/RedeemCoupon";
 import PendingChanges from "../VersionControl/PendingChanges";
 import LastCommit from "../VersionControl/LastCommit";
+import { EnumSubscriptionStatus } from "../models";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -109,8 +110,18 @@ const WorkspaceLayout: React.FC<Props> = ({
 
   const { trackEvent, Track } = useTracking<{ [key: string]: any }>({
     workspaceId: currentWorkspace?.id,
+    subscriptionPlan: `${currentWorkspace?.subscription?.subscriptionPlan}${
+      currentWorkspace?.subscription?.status === EnumSubscriptionStatus.Trailing
+        ? "-trial"
+        : ""
+    }`,
     projectId: currentProject?.id,
     resourceId: currentResource?.id,
+    $groups: {
+      groupWorkspace: currentWorkspace?.id,
+      groupProject: currentProject?.id,
+      groupResource: currentResource?.id,
+    },
   });
 
   const openHubSpotChat = () => {

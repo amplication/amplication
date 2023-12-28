@@ -21,9 +21,12 @@ class DsgContext implements types.DsgContext {
   public buildId: string;
   public roles: types.Role[] = [];
   public modules: types.ModuleMap;
+  public generateGrpc: boolean;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   public DTOs: types.DTOs = {};
   public plugins: types.PluginMap = {};
+  public entityActionsMap: types.EntityActionsMap = {};
+
   public readonly logger: IBuildLogger;
   public utils: ContextUtil = {
     skipDefaultBehavior: false,
@@ -67,6 +70,9 @@ class DsgContext implements types.DsgContext {
 
   public resourceType!: EnumResourceType;
   public pluginInstallations: types.PluginInstallation[] = [];
+  public moduleActions: types.ModuleAction[] = [];
+  public moduleContainers: types.ModuleContainer[] = [];
+
   public otherResources?: types.DSGResourceData[] | undefined;
 }
 

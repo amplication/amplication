@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createDataService creates app as expected 1`] = `
+exports[`createDataService when server and admin are configured with custom path creates app as expected 1`] = `
 {
   "test-ui/.env": "PORT=3001
 REACT_APP_SERVER_URL=http://localhost:3000",
@@ -1025,12 +1025,14 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "test-ui/src/api/user/User.ts": "import { Organization } from "../organization/Organization";
-import { JsonValue } from "type-fest";
+  "test-ui/src/api/user/User.ts": "import { JsonValue } from "type-fest";
+import { Organization } from "../organization/Organization";
 import { Profile } from "../profile/Profile";
 
 export type User = {
   id: string;
+  username: string;
+  roles: JsonValue;
   name: string;
   bio: string;
   email: string;
@@ -1054,13 +1056,16 @@ export type UserCountArgs = {
   where?: UserWhereInput;
 };
 ",
-  "test-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+  "test-ui/src/api/user/UserCreateInput.ts": "import { InputJsonValue } from "../../types";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserCreateNestedManyWithoutUsersInput } from "./UserCreateNestedManyWithoutUsersInput";
 import { OrganizationCreateNestedManyWithoutUsersInput } from "./OrganizationCreateNestedManyWithoutUsersInput";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserCreateInput = {
+  username: string;
+  roles: InputJsonValue;
+  password: string;
   name: string;
   bio: string;
   email: string;
@@ -1112,6 +1117,9 @@ export type UserListRelationFilter = {
 
 export type UserOrderByInput = {
   id?: SortOrder;
+  username?: SortOrder;
+  roles?: SortOrder;
+  password?: SortOrder;
   name?: SortOrder;
   bio?: SortOrder;
   email?: SortOrder;
@@ -1127,13 +1135,16 @@ export type UserOrderByInput = {
   profileId?: SortOrder;
 };
 ",
-  "test-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+  "test-ui/src/api/user/UserUpdateInput.ts": "import { InputJsonValue } from "../../types";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateManyWithoutUsersInput } from "./UserUpdateManyWithoutUsersInput";
 import { OrganizationUpdateManyWithoutUsersInput } from "./OrganizationUpdateManyWithoutUsersInput";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserUpdateInput = {
+  username?: string;
+  roles?: InputJsonValue;
+  password?: string;
   name?: string;
   bio?: string;
   email?: string;
@@ -1170,6 +1181,7 @@ import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserWhereInput = {
   id?: StringFilter;
+  username?: StringFilter;
   name?: StringFilter;
   bio?: StringFilter;
   age?: IntFilter;
@@ -2508,23 +2520,33 @@ import {
   SimpleForm,
   CreateProps,
   TextInput,
+  SelectArrayInput,
+  PasswordInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
-  SelectArrayInput,
   BooleanInput,
 } from "react-admin";
 
 import { UserTitle } from "./UserTitle";
 import { OrganizationTitle } from "../organization/OrganizationTitle";
 import { ProfileTitle } from "../profile/ProfileTitle";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
+        <TextInput label="Username" source="username" />
+        <SelectArrayInput
+          source="roles"
+          choices={ROLES_OPTIONS}
+          optionText="label"
+          optionValue="value"
+        />
+        <PasswordInput label="Password" source="password" />
         <TextInput label="Name" source="name" />
         <TextInput label="Bio" multiline source="bio" />
         <TextInput label="Email" source="email" type="email" />
@@ -2589,23 +2611,33 @@ import {
   SimpleForm,
   EditProps,
   TextInput,
+  SelectArrayInput,
+  PasswordInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
-  SelectArrayInput,
   BooleanInput,
 } from "react-admin";
 
 import { UserTitle } from "./UserTitle";
 import { OrganizationTitle } from "../organization/OrganizationTitle";
 import { ProfileTitle } from "../profile/ProfileTitle";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
+        <TextInput label="Username" source="username" />
+        <SelectArrayInput
+          source="roles"
+          choices={ROLES_OPTIONS}
+          optionText="label"
+          optionValue="value"
+        />
+        <PasswordInput label="Password" source="password" />
         <TextInput label="Name" source="name" />
         <TextInput label="Bio" multiline source="bio" />
         <TextInput label="Email" source="email" type="email" />
@@ -2687,6 +2719,8 @@ export const UserList = (props: ListProps): React.ReactElement => {
     >
       <Datagrid rowClick="show">
         <TextField label="Id" source="id" />
+        <TextField label="Username" source="username" />
+        <TextField label="Roles" source="roles" />
         <TextField label="Name" source="name" />
         <TextField label="Bio" source="bio" />
         <TextField label="Email" source="email" />
@@ -2726,6 +2760,8 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
     <Show {...props}>
       <SimpleShowLayout>
         <TextField label="Id" source="id" />
+        <TextField label="Username" source="username" />
+        <TextField label="Roles" source="roles" />
         <TextField label="Name" source="name" />
         <TextField label="Bio" source="bio" />
         <TextField label="Email" source="email" />
@@ -2750,10 +2786,10 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 ",
   "test-ui/src/user/UserTitle.ts": "import { User as TUser } from "../api/user/User";
 
-export const USER_TITLE_FIELD = "name";
+export const USER_TITLE_FIELD = "username";
 
 export const UserTitle = (record: TUser): string => {
-  return record.name?.toString() || String(record.id);
+  return record.username?.toString() || String(record.id);
 };
 ",
   "test-ui/src/user/roles.ts": "export const ROLES = [
@@ -2974,7 +3010,12 @@ export class StringNullableFilter {
 ",
   "test/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
-PORT=3000",
+PORT=3000
+DB_URL=postgres://admin:admin@localhost:5432/my-db
+DB_USER=admin
+DB_PASSWORD=admin
+DB_PORT=5432
+DB_NAME=my-db",
   "test/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
@@ -2982,6 +3023,18 @@ PORT=3000",
 .DS_Store
 ",
   "test/docker-compose.dev.yml": "version: "3"
+services:
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  postgres: ~
 ",
   "test/docker-compose.yml": "version: "3"
 services:
@@ -2994,10 +3047,10 @@ services:
       - \${PORT}:3000
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
-      JWT_SECRET_KEY: \${JWT_SECRET_KEY}
-      JWT_EXPIRATION: \${JWT_EXPIRATION}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
     depends_on:
       - migrate
+    restart: on-failure
   migrate:
     build:
       context: .
@@ -3007,9 +3060,29 @@ services:
     working_dir: /app/server
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
     depends_on:
       db:
         condition: service_healthy
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+      POSTGRES_DB: \${DB_NAME}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $\${POSTGRES_DB} -U $\${POSTGRES_USER}
+      timeout: 45s
+      interval: 10s
+      retries: 10
+volumes:
+  postgres: ~
 ",
   "test/nest-cli.json": "{
   "sourceRoot": "src",
@@ -3040,47 +3113,52 @@ services:
     "compose:down": "docker-compose down --volumes"
   },
   "dependencies": {
-    "@nestjs/common": "8.4.7",
-    "@nestjs/config": "1.1.5",
-    "@nestjs/core": "8.4.7",
-    "@nestjs/graphql": "9.1.2",
-    "@nestjs/platform-express": "8.4.7",
-    "@nestjs/serve-static": "2.2.2",
-    "@nestjs/swagger": "5.1.5",
+    "@apollo/server": "^4.9.4",
+    "@nestjs/apollo": "12.0.9",
+    "@nestjs/common": "10.2.7",
+    "@nestjs/config": "3.1.1",
+    "@nestjs/core": "10.2.7",
+    "@nestjs/graphql": "12.0.9",
+    "@nestjs/jwt": "^10.1.1",
+    "@nestjs/passport": "^10.0.2",
+    "@nestjs/platform-express": "10.2.7",
+    "@nestjs/serve-static": "4.0.0",
+    "@nestjs/swagger": "7.1.13",
+    "@prisma/client": "^5.4.2",
     "@types/bcrypt": "5.0.0",
-    "@prisma/client": "4.6.1",
-    "apollo-server-express": "3.6.1",
-    "bcrypt": "5.0.1",
+    "bcrypt": "5.1.1",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
-    "dotenv": "^16.1.4",
-    "graphql": "15.7.2",
+    "decimal.js": "10.4.3",
+    "dotenv": "16.3.1",
+    "graphql": "^16.8.1",
     "graphql-type-json": "0.3.2",
-    "nest-access-control": "2.0.3",
-    "nest-morgan": "1.0.1",
     "npm-run-all": "4.1.5",
+    "passport": "0.6.0",
+    "passport-http": "0.3.0",
+    "passport-jwt": "4.0.1",
     "reflect-metadata": "0.1.13",
-    "swagger-ui-express": "4.3.0",
     "ts-node": "10.9.1",
-    "type-fest": "0.13.1",
-    "validator": "^13.9.0",
-    "decimal.js": "10.4.3"
+    "type-fest": "2.19.0",
+    "validator": "13.11.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "8.2.5",
-    "@nestjs/testing": "8.4.7",
-    "@types/express": "4.17.9",
-    "@types/graphql-type-json": "0.3.2",
-    "@types/jest": "26.0.19",
+    "@nestjs/cli": "^10.1.18",
+    "@nestjs/testing": "^10.2.7",
+    "@types/express": "^4.17.19",
+    "@types/graphql-type-json": "0.3.3",
+    "@types/jest": "^29.5.5",
     "@types/normalize-path": "3.0.0",
-    "@types/supertest": "2.0.11",
-    "@types/validator": "^13.7.15",
-    "jest": "27.0.6",
-    "jest-mock-extended": "^2.0.4",
-    "prisma": "4.6.1",
-    "supertest": "4.0.2",
-    "ts-jest": "27.0.3",
-    "typescript": "4.3.5"
+    "@types/passport-http": "0.3.9",
+    "@types/passport-jwt": "3.0.10",
+    "@types/supertest": "^2.0.14",
+    "@types/validator": "^13.11.2",
+    "jest": "^29.7.0",
+    "jest-mock-extended": "^3.0.5",
+    "prisma": "^5.4.2",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
   },
   "jest": {
     "preset": "ts-jest",
@@ -3089,7 +3167,7 @@ services:
   }
 }
 ",
-  "test/prisma/schema.prisma": "datasource postgres {
+  "test/prisma/schema.prisma": "datasource db {
   provider = "postgresql"
   url      = env("DB_URL")
 }
@@ -3100,6 +3178,9 @@ generator client {
 
 model User {
   id                 String              @id @default(cuid())
+  username           String              @unique
+  roles              Json
+  password           String
   name               String              @unique @map("name")
   bio                String
   email              String
@@ -3250,9 +3331,7 @@ async function seed() {
   console.info("Seeded database successfully");
 }
 ",
-  "test/src/app.module.ts": "import { Module, Scope } from "@nestjs/common";
-import { APP_INTERCEPTOR } from "@nestjs/core";
-import { MorganInterceptor, MorganModule } from "nest-morgan";
+  "test/src/app.module.ts": "import { Module } from "@nestjs/common";
 import { UserModule } from "./user/user.module";
 import { ProfileModule } from "./profile/profile.module";
 import { OrderModule } from "./order/order.module";
@@ -3266,6 +3345,7 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 
 @Module({
   controllers: [],
@@ -3279,13 +3359,13 @@ import { GraphQLModule } from "@nestjs/graphql";
     HealthModule,
     PrismaModule,
     SecretsManagerModule,
-    MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
     }),
-    GraphQLModule.forRootAsync({
-      useFactory: (configService) => {
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      useFactory: (configService: ConfigService) => {
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
         return {
@@ -3299,13 +3379,7 @@ import { GraphQLModule } from "@nestjs/graphql";
       imports: [ConfigModule],
     }),
   ],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      scope: Scope.REQUEST,
-      useClass: MorganInterceptor("combined"),
-    },
-  ],
+  providers: [],
 })
 export class AppModule {}
 ",
@@ -3315,9 +3389,6 @@ import { ConfigService } from "@nestjs/config";
 export async function connectMicroservices(app: INestApplication) {
   const configService = app.get(ConfigService);
 }
-",
-  "test/src/constants.ts": "export const JWT_SECRET_KEY = "JWT_SECRET_KEY";
-export const JWT_EXPIRATION = "JWT_EXPIRATION";
 ",
   "test/src/customer/base/CreateCustomerArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4777,7 +4848,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 import { ACLModule } from "../../auth/acl.module";
@@ -4849,11 +4919,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createCustomer() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  customers: () => FIND_MANY_RESULT,
+  customer: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -4907,7 +4977,7 @@ describe("Customer", () => {
         },
       ],
       controllers: [CustomerController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -5022,11 +5092,10 @@ import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { CustomerService } from "../customer.service";
 import { Public } from "../../decorators/public.decorator";
 import { CustomerCreateInput } from "./CustomerCreateInput";
-import { CustomerWhereInput } from "./CustomerWhereInput";
-import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
-import { CustomerFindManyArgs } from "./CustomerFindManyArgs";
-import { CustomerUpdateInput } from "./CustomerUpdateInput";
 import { Customer } from "./Customer";
+import { CustomerFindManyArgs } from "./CustomerFindManyArgs";
+import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
+import { CustomerUpdateInput } from "./CustomerUpdateInput";
 import { OrderFindManyArgs } from "../../order/base/OrderFindManyArgs";
 import { Order } from "../../order/base/Order";
 import { OrderWhereUniqueInput } from "../../order/base/OrderWhereUniqueInput";
@@ -5035,8 +5104,10 @@ export class CustomerControllerBase {
   constructor(protected readonly service: CustomerService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
-  async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
-    return await this.service.create({
+  async createCustomer(
+    @common.Body() data: CustomerCreateInput
+  ): Promise<Customer> {
+    return await this.service.createCustomer({
       data: {
         ...data,
 
@@ -5086,9 +5157,9 @@ export class CustomerControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
   @ApiNestedQuery(CustomerFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Customer[]> {
+  async customers(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.customers({
       ...args,
       select: {
         id: true,
@@ -5124,10 +5195,10 @@ export class CustomerControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async customer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.customer({
       where: params,
       select: {
         id: true,
@@ -5169,12 +5240,12 @@ export class CustomerControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateCustomer(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() data: CustomerUpdateInput
   ): Promise<Customer | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateCustomer({
         where: params,
         data: {
           ...data,
@@ -5233,11 +5304,11 @@ export class CustomerControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteCustomer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteCustomer({
         where: params,
         select: {
           id: true,
@@ -5281,7 +5352,7 @@ export class CustomerControllerBase {
   @Public()
   @common.Get("/:id/orders")
   @ApiNestedQuery(OrderFindManyArgs)
-  async findManyOrders(
+  async findOrders(
     @common.Req() request: Request,
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Order[]> {
@@ -5321,7 +5392,7 @@ export class CustomerControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5338,7 +5409,7 @@ export class CustomerControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5355,7 +5426,7 @@ export class CustomerControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5375,11 +5446,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class CustomerModuleBase {}
 ",
@@ -5395,17 +5465,17 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
+import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import { Public } from "../../decorators/public.decorator";
-import { CreateCustomerArgs } from "./CreateCustomerArgs";
-import { UpdateCustomerArgs } from "./UpdateCustomerArgs";
-import { DeleteCustomerArgs } from "./DeleteCustomerArgs";
+import { Customer } from "./Customer";
 import { CustomerCountArgs } from "./CustomerCountArgs";
 import { CustomerFindManyArgs } from "./CustomerFindManyArgs";
 import { CustomerFindUniqueArgs } from "./CustomerFindUniqueArgs";
-import { Customer } from "./Customer";
+import { CreateCustomerArgs } from "./CreateCustomerArgs";
+import { UpdateCustomerArgs } from "./UpdateCustomerArgs";
+import { DeleteCustomerArgs } from "./DeleteCustomerArgs";
 import { OrderFindManyArgs } from "../../order/base/OrderFindManyArgs";
 import { Order } from "../../order/base/Order";
 import { Organization } from "../../organization/base/Organization";
@@ -5427,14 +5497,14 @@ export class CustomerResolverBase {
   async customers(
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
-    return this.service.findMany(args);
+    return this.service.customers(args);
   }
 
   @graphql.Query(() => Customer, { nullable: true })
   async customer(
     @graphql.Args() args: CustomerFindUniqueArgs
   ): Promise<Customer | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.customer(args);
     if (result === null) {
       return null;
     }
@@ -5445,7 +5515,7 @@ export class CustomerResolverBase {
   async createCustomer(
     @graphql.Args() args: CreateCustomerArgs
   ): Promise<Customer> {
-    return await this.service.create({
+    return await this.service.createCustomer({
       ...args,
       data: {
         ...args.data,
@@ -5470,7 +5540,7 @@ export class CustomerResolverBase {
     @graphql.Args() args: UpdateCustomerArgs
   ): Promise<Customer | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateCustomer({
         ...args,
         data: {
           ...args.data,
@@ -5490,7 +5560,7 @@ export class CustomerResolverBase {
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -5503,10 +5573,10 @@ export class CustomerResolverBase {
     @graphql.Args() args: DeleteCustomerArgs
   ): Promise<Customer | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteCustomer(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -5516,7 +5586,7 @@ export class CustomerResolverBase {
 
   @Public()
   @graphql.ResolveField(() => [Order], { name: "orders" })
-  async resolveFieldOrders(
+  async findOrders(
     @graphql.Parent() parent: Customer,
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<Order[]> {
@@ -5533,7 +5603,7 @@ export class CustomerResolverBase {
     nullable: true,
     name: "organization",
   })
-  async resolveFieldOrganization(
+  async getOrganization(
     @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
     const result = await this.service.getOrganization(parent.id);
@@ -5548,7 +5618,7 @@ export class CustomerResolverBase {
     nullable: true,
     name: "vipOrganization",
   })
-  async resolveFieldVipOrganization(
+  async getVipOrganization(
     @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
     const result = await this.service.getVipOrganization(parent.id);
@@ -5572,7 +5642,13 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Customer, Order, Organization } from "@prisma/client";
+
+import {
+  Prisma,
+  Customer, // @ts-ignore
+  Order, // @ts-ignore
+  Organization,
+} from "@prisma/client";
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -5583,27 +5659,27 @@ export class CustomerServiceBase {
     return this.prisma.customer.count(args);
   }
 
-  async findMany<T extends Prisma.CustomerFindManyArgs>(
+  async customers<T extends Prisma.CustomerFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
   ): Promise<Customer[]> {
     return this.prisma.customer.findMany(args);
   }
-  async findOne<T extends Prisma.CustomerFindUniqueArgs>(
+  async customer<T extends Prisma.CustomerFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindUniqueArgs>
   ): Promise<Customer | null> {
     return this.prisma.customer.findUnique(args);
   }
-  async create<T extends Prisma.CustomerCreateArgs>(
+  async createCustomer<T extends Prisma.CustomerCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>
   ): Promise<Customer> {
     return this.prisma.customer.create<T>(args);
   }
-  async update<T extends Prisma.CustomerUpdateArgs>(
+  async updateCustomer<T extends Prisma.CustomerUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerUpdateArgs>
   ): Promise<Customer> {
     return this.prisma.customer.update<T>(args);
   }
-  async delete<T extends Prisma.CustomerDeleteArgs>(
+  async deleteCustomer<T extends Prisma.CustomerDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerDeleteArgs>
   ): Promise<Customer> {
     return this.prisma.customer.delete(args);
@@ -6212,7 +6288,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 import { ACLModule } from "../../auth/acl.module";
@@ -6248,11 +6323,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createEmpty() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  empties: () => FIND_MANY_RESULT,
+  empty: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -6306,7 +6381,7 @@ describe("Empty", () => {
         },
       ],
       controllers: [EmptyController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -6416,18 +6491,17 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { EmptyService } from "../empty.service";
 import { EmptyCreateInput } from "./EmptyCreateInput";
-import { EmptyWhereInput } from "./EmptyWhereInput";
-import { EmptyWhereUniqueInput } from "./EmptyWhereUniqueInput";
-import { EmptyFindManyArgs } from "./EmptyFindManyArgs";
-import { EmptyUpdateInput } from "./EmptyUpdateInput";
 import { Empty } from "./Empty";
+import { EmptyFindManyArgs } from "./EmptyFindManyArgs";
+import { EmptyWhereUniqueInput } from "./EmptyWhereUniqueInput";
+import { EmptyUpdateInput } from "./EmptyUpdateInput";
 
 export class EmptyControllerBase {
   constructor(protected readonly service: EmptyService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
-  async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
-    return await this.service.create({
+  async createEmpty(@common.Body() data: EmptyCreateInput): Promise<Empty> {
+    return await this.service.createEmpty({
       data: data,
       select: {
         id: true,
@@ -6440,9 +6514,9 @@ export class EmptyControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Empty] })
   @ApiNestedQuery(EmptyFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Empty[]> {
+  async empties(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.empties({
       ...args,
       select: {
         id: true,
@@ -6455,10 +6529,10 @@ export class EmptyControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async empty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.empty({
       where: params,
       select: {
         id: true,
@@ -6477,12 +6551,12 @@ export class EmptyControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateEmpty(
     @common.Param() params: EmptyWhereUniqueInput,
     @common.Body() data: EmptyUpdateInput
   ): Promise<Empty | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateEmpty({
         where: params,
         data: data,
         select: {
@@ -6504,11 +6578,11 @@ export class EmptyControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteEmpty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteEmpty({
         where: params,
         select: {
           id: true,
@@ -6539,11 +6613,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class EmptyModuleBase {}
 ",
@@ -6559,14 +6632,14 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
+import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { DeleteEmptyArgs } from "./DeleteEmptyArgs";
+import { Empty } from "./Empty";
 import { EmptyCountArgs } from "./EmptyCountArgs";
 import { EmptyFindManyArgs } from "./EmptyFindManyArgs";
 import { EmptyFindUniqueArgs } from "./EmptyFindUniqueArgs";
-import { Empty } from "./Empty";
+import { DeleteEmptyArgs } from "./DeleteEmptyArgs";
 import { EmptyService } from "../empty.service";
 @graphql.Resolver(() => Empty)
 export class EmptyResolverBase {
@@ -6583,14 +6656,14 @@ export class EmptyResolverBase {
 
   @graphql.Query(() => [Empty])
   async empties(@graphql.Args() args: EmptyFindManyArgs): Promise<Empty[]> {
-    return this.service.findMany(args);
+    return this.service.empties(args);
   }
 
   @graphql.Query(() => Empty, { nullable: true })
   async empty(
     @graphql.Args() args: EmptyFindUniqueArgs
   ): Promise<Empty | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.empty(args);
     if (result === null) {
       return null;
     }
@@ -6602,10 +6675,10 @@ export class EmptyResolverBase {
     @graphql.Args() args: DeleteEmptyArgs
   ): Promise<Empty | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteEmpty(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -6637,27 +6710,27 @@ export class EmptyServiceBase {
     return this.prisma.empty.count(args);
   }
 
-  async findMany<T extends Prisma.EmptyFindManyArgs>(
+  async empties<T extends Prisma.EmptyFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
   ): Promise<Empty[]> {
     return this.prisma.empty.findMany(args);
   }
-  async findOne<T extends Prisma.EmptyFindUniqueArgs>(
+  async empty<T extends Prisma.EmptyFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindUniqueArgs>
   ): Promise<Empty | null> {
     return this.prisma.empty.findUnique(args);
   }
-  async create<T extends Prisma.EmptyCreateArgs>(
+  async createEmpty<T extends Prisma.EmptyCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyCreateArgs>
   ): Promise<Empty> {
     return this.prisma.empty.create<T>(args);
   }
-  async update<T extends Prisma.EmptyUpdateArgs>(
+  async updateEmpty<T extends Prisma.EmptyUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyUpdateArgs>
   ): Promise<Empty> {
     return this.prisma.empty.update<T>(args);
   }
-  async delete<T extends Prisma.EmptyDeleteArgs>(
+  async deleteEmpty<T extends Prisma.EmptyDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyDeleteArgs>
   ): Promise<Empty> {
     return this.prisma.empty.delete(args);
@@ -7690,7 +7763,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 import { ACLModule } from "../../auth/acl.module";
@@ -7726,11 +7798,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createOrder() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  orders: () => FIND_MANY_RESULT,
+  order: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -7784,7 +7856,7 @@ describe("Order", () => {
         },
       ],
       controllers: [OrderController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -7895,19 +7967,18 @@ import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { OrderService } from "../order.service";
 import { Public } from "../../decorators/public.decorator";
 import { OrderCreateInput } from "./OrderCreateInput";
-import { OrderWhereInput } from "./OrderWhereInput";
-import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
-import { OrderFindManyArgs } from "./OrderFindManyArgs";
-import { OrderUpdateInput } from "./OrderUpdateInput";
 import { Order } from "./Order";
+import { OrderFindManyArgs } from "./OrderFindManyArgs";
+import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
+import { OrderUpdateInput } from "./OrderUpdateInput";
 
 export class OrderControllerBase {
   constructor(protected readonly service: OrderService) {}
   @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
-  async create(@common.Body() data: OrderCreateInput): Promise<Order> {
-    return await this.service.create({
+  async createOrder(@common.Body() data: OrderCreateInput): Promise<Order> {
+    return await this.service.createOrder({
       data: {
         ...data,
 
@@ -7936,9 +8007,9 @@ export class OrderControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
   @ApiNestedQuery(OrderFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Order[]> {
+  async orders(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.orders({
       ...args,
       select: {
         id: true,
@@ -7961,10 +8032,10 @@ export class OrderControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async order(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.order({
       where: params,
       select: {
         id: true,
@@ -7993,12 +8064,12 @@ export class OrderControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateOrder(
     @common.Param() params: OrderWhereUniqueInput,
     @common.Body() data: OrderUpdateInput
   ): Promise<Order | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrder({
         where: params,
         data: {
           ...data,
@@ -8036,11 +8107,11 @@ export class OrderControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteOrder(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteOrder({
         where: params,
         select: {
           id: true,
@@ -8080,11 +8151,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class OrderModuleBase {}
 ",
@@ -8100,17 +8170,17 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
+import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import { Public } from "../../decorators/public.decorator";
-import { CreateOrderArgs } from "./CreateOrderArgs";
-import { UpdateOrderArgs } from "./UpdateOrderArgs";
-import { DeleteOrderArgs } from "./DeleteOrderArgs";
+import { Order } from "./Order";
 import { OrderCountArgs } from "./OrderCountArgs";
 import { OrderFindManyArgs } from "./OrderFindManyArgs";
 import { OrderFindUniqueArgs } from "./OrderFindUniqueArgs";
-import { Order } from "./Order";
+import { CreateOrderArgs } from "./CreateOrderArgs";
+import { UpdateOrderArgs } from "./UpdateOrderArgs";
+import { DeleteOrderArgs } from "./DeleteOrderArgs";
 import { Customer } from "../../customer/base/Customer";
 import { OrderService } from "../order.service";
 @graphql.Resolver(() => Order)
@@ -8129,7 +8199,7 @@ export class OrderResolverBase {
   @Public()
   @graphql.Query(() => [Order])
   async orders(@graphql.Args() args: OrderFindManyArgs): Promise<Order[]> {
-    return this.service.findMany(args);
+    return this.service.orders(args);
   }
 
   @Public()
@@ -8137,7 +8207,7 @@ export class OrderResolverBase {
   async order(
     @graphql.Args() args: OrderFindUniqueArgs
   ): Promise<Order | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.order(args);
     if (result === null) {
       return null;
     }
@@ -8147,7 +8217,7 @@ export class OrderResolverBase {
   @Public()
   @graphql.Mutation(() => Order)
   async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
-    return await this.service.create({
+    return await this.service.createOrder({
       ...args,
       data: {
         ...args.data,
@@ -8165,7 +8235,7 @@ export class OrderResolverBase {
     @graphql.Args() args: UpdateOrderArgs
   ): Promise<Order | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrder({
         ...args,
         data: {
           ...args.data,
@@ -8177,7 +8247,7 @@ export class OrderResolverBase {
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -8191,10 +8261,10 @@ export class OrderResolverBase {
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteOrder(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -8206,9 +8276,7 @@ export class OrderResolverBase {
     nullable: true,
     name: "customer",
   })
-  async resolveFieldCustomer(
-    @graphql.Parent() parent: Order
-  ): Promise<Customer | null> {
+  async getCustomer(@graphql.Parent() parent: Order): Promise<Customer | null> {
     const result = await this.service.getCustomer(parent.id);
 
     if (!result) {
@@ -8230,7 +8298,12 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Order, Customer } from "@prisma/client";
+
+import {
+  Prisma,
+  Order, // @ts-ignore
+  Customer,
+} from "@prisma/client";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -8241,27 +8314,27 @@ export class OrderServiceBase {
     return this.prisma.order.count(args);
   }
 
-  async findMany<T extends Prisma.OrderFindManyArgs>(
+  async orders<T extends Prisma.OrderFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
   ): Promise<Order[]> {
     return this.prisma.order.findMany(args);
   }
-  async findOne<T extends Prisma.OrderFindUniqueArgs>(
+  async order<T extends Prisma.OrderFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindUniqueArgs>
   ): Promise<Order | null> {
     return this.prisma.order.findUnique(args);
   }
-  async create<T extends Prisma.OrderCreateArgs>(
+  async createOrder<T extends Prisma.OrderCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderCreateArgs>
   ): Promise<Order> {
     return this.prisma.order.create<T>(args);
   }
-  async update<T extends Prisma.OrderUpdateArgs>(
+  async updateOrder<T extends Prisma.OrderUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderUpdateArgs>
   ): Promise<Order> {
     return this.prisma.order.update<T>(args);
   }
-  async delete<T extends Prisma.OrderDeleteArgs>(
+  async deleteOrder<T extends Prisma.OrderDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderDeleteArgs>
   ): Promise<Order> {
     return this.prisma.order.delete(args);
@@ -9189,7 +9262,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 import { ACLModule } from "../../auth/acl.module";
@@ -9229,11 +9301,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createOrganization() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  organizations: () => FIND_MANY_RESULT,
+  organization: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -9287,7 +9359,7 @@ describe("Organization", () => {
         },
       ],
       controllers: [OrganizationController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -9397,11 +9469,10 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { OrganizationService } from "../organization.service";
 import { OrganizationCreateInput } from "./OrganizationCreateInput";
-import { OrganizationWhereInput } from "./OrganizationWhereInput";
-import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
-import { OrganizationFindManyArgs } from "./OrganizationFindManyArgs";
-import { OrganizationUpdateInput } from "./OrganizationUpdateInput";
 import { Organization } from "./Organization";
+import { OrganizationFindManyArgs } from "./OrganizationFindManyArgs";
+import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
+import { OrganizationUpdateInput } from "./OrganizationUpdateInput";
 import { UserFindManyArgs } from "../../user/base/UserFindManyArgs";
 import { User } from "../../user/base/User";
 import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
@@ -9413,10 +9484,10 @@ export class OrganizationControllerBase {
   constructor(protected readonly service: OrganizationService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Organization })
-  async create(
+  async createOrganization(
     @common.Body() data: OrganizationCreateInput
   ): Promise<Organization> {
-    return await this.service.create({
+    return await this.service.createOrganization({
       data: data,
       select: {
         id: true,
@@ -9430,9 +9501,9 @@ export class OrganizationControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Organization] })
   @ApiNestedQuery(OrganizationFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Organization[]> {
+  async organizations(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.organizations({
       ...args,
       select: {
         id: true,
@@ -9446,10 +9517,10 @@ export class OrganizationControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async organization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.organization({
       where: params,
       select: {
         id: true,
@@ -9469,12 +9540,12 @@ export class OrganizationControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateOrganization(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() data: OrganizationUpdateInput
   ): Promise<Organization | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrganization({
         where: params,
         data: data,
         select: {
@@ -9497,11 +9568,11 @@ export class OrganizationControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteOrganization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteOrganization({
         where: params,
         select: {
           id: true,
@@ -9522,7 +9593,7 @@ export class OrganizationControllerBase {
 
   @common.Get("/:id/users")
   @ApiNestedQuery(UserFindManyArgs)
-  async findManyUsers(
+  async findUsers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<User[]> {
@@ -9531,6 +9602,8 @@ export class OrganizationControllerBase {
       ...query,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -9575,7 +9648,7 @@ export class OrganizationControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9592,7 +9665,7 @@ export class OrganizationControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9609,7 +9682,7 @@ export class OrganizationControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9618,7 +9691,7 @@ export class OrganizationControllerBase {
 
   @common.Get("/:id/customers")
   @ApiNestedQuery(CustomerFindManyArgs)
-  async findManyCustomers(
+  async findCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Customer[]> {
@@ -9672,7 +9745,7 @@ export class OrganizationControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9689,7 +9762,7 @@ export class OrganizationControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9706,7 +9779,7 @@ export class OrganizationControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9715,7 +9788,7 @@ export class OrganizationControllerBase {
 
   @common.Get("/:id/vipCustomers")
   @ApiNestedQuery(CustomerFindManyArgs)
-  async findManyVipCustomers(
+  async findVipCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Customer[]> {
@@ -9769,7 +9842,7 @@ export class OrganizationControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9786,7 +9859,7 @@ export class OrganizationControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9803,7 +9876,7 @@ export class OrganizationControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9823,11 +9896,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class OrganizationModuleBase {}
 ",
@@ -9843,16 +9915,16 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
+import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { CreateOrganizationArgs } from "./CreateOrganizationArgs";
-import { UpdateOrganizationArgs } from "./UpdateOrganizationArgs";
-import { DeleteOrganizationArgs } from "./DeleteOrganizationArgs";
+import { Organization } from "./Organization";
 import { OrganizationCountArgs } from "./OrganizationCountArgs";
 import { OrganizationFindManyArgs } from "./OrganizationFindManyArgs";
 import { OrganizationFindUniqueArgs } from "./OrganizationFindUniqueArgs";
-import { Organization } from "./Organization";
+import { CreateOrganizationArgs } from "./CreateOrganizationArgs";
+import { UpdateOrganizationArgs } from "./UpdateOrganizationArgs";
+import { DeleteOrganizationArgs } from "./DeleteOrganizationArgs";
 import { UserFindManyArgs } from "../../user/base/UserFindManyArgs";
 import { User } from "../../user/base/User";
 import { CustomerFindManyArgs } from "../../customer/base/CustomerFindManyArgs";
@@ -9875,14 +9947,14 @@ export class OrganizationResolverBase {
   async organizations(
     @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<Organization[]> {
-    return this.service.findMany(args);
+    return this.service.organizations(args);
   }
 
   @graphql.Query(() => Organization, { nullable: true })
   async organization(
     @graphql.Args() args: OrganizationFindUniqueArgs
   ): Promise<Organization | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.organization(args);
     if (result === null) {
       return null;
     }
@@ -9893,7 +9965,7 @@ export class OrganizationResolverBase {
   async createOrganization(
     @graphql.Args() args: CreateOrganizationArgs
   ): Promise<Organization> {
-    return await this.service.create({
+    return await this.service.createOrganization({
       ...args,
       data: args.data,
     });
@@ -9904,13 +9976,13 @@ export class OrganizationResolverBase {
     @graphql.Args() args: UpdateOrganizationArgs
   ): Promise<Organization | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrganization({
         ...args,
         data: args.data,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -9923,10 +9995,10 @@ export class OrganizationResolverBase {
     @graphql.Args() args: DeleteOrganizationArgs
   ): Promise<Organization | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteOrganization(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -9935,7 +10007,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [User], { name: "users" })
-  async resolveFieldUsers(
+  async findUsers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: UserFindManyArgs
   ): Promise<User[]> {
@@ -9949,7 +10021,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [Customer], { name: "customers" })
-  async resolveFieldCustomers(
+  async findCustomers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
@@ -9963,7 +10035,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [Customer], { name: "vipCustomers" })
-  async resolveFieldVipCustomers(
+  async findVipCustomers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
@@ -9989,7 +10061,13 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Organization, User, Customer } from "@prisma/client";
+
+import {
+  Prisma,
+  Organization, // @ts-ignore
+  User, // @ts-ignore
+  Customer,
+} from "@prisma/client";
 
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -10000,27 +10078,27 @@ export class OrganizationServiceBase {
     return this.prisma.organization.count(args);
   }
 
-  async findMany<T extends Prisma.OrganizationFindManyArgs>(
+  async organizations<T extends Prisma.OrganizationFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
   ): Promise<Organization[]> {
     return this.prisma.organization.findMany(args);
   }
-  async findOne<T extends Prisma.OrganizationFindUniqueArgs>(
+  async organization<T extends Prisma.OrganizationFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindUniqueArgs>
   ): Promise<Organization | null> {
     return this.prisma.organization.findUnique(args);
   }
-  async create<T extends Prisma.OrganizationCreateArgs>(
+  async createOrganization<T extends Prisma.OrganizationCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationCreateArgs>
   ): Promise<Organization> {
     return this.prisma.organization.create<T>(args);
   }
-  async update<T extends Prisma.OrganizationUpdateArgs>(
+  async updateOrganization<T extends Prisma.OrganizationUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationUpdateArgs>
   ): Promise<Organization> {
     return this.prisma.organization.update<T>(args);
   }
-  async delete<T extends Prisma.OrganizationDeleteArgs>(
+  async deleteOrganization<T extends Prisma.OrganizationDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationDeleteArgs>
   ): Promise<Organization> {
     return this.prisma.organization.delete(args);
@@ -10137,10 +10215,9 @@ describe("isRecordNotFoundError", () => {
   "test/src/prisma.util.ts": "export const PRISMA_QUERY_INTERPRETATION_ERROR = "P2016";
 export const PRISMA_RECORD_NOT_FOUND = "RecordNotFound";
 
-export function isRecordNotFoundError(
-  error: Error & { code?: string }
-): boolean {
+export function isRecordNotFoundError(error: any): boolean {
   return (
+    error instanceof Error &&
     "code" in error &&
     error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
     error.message.includes(PRISMA_RECORD_NOT_FOUND)
@@ -10182,12 +10259,6 @@ import { PrismaClient } from "@prisma/client";
 export class PrismaService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
     await this.$connect();
-  }
-
-  async enableShutdownHooks(app: INestApplication) {
-    this.$on("beforeExit", async () => {
-      await app.close();
-    });
   }
 }
 ",
@@ -10928,7 +10999,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 import { ACLModule } from "../../auth/acl.module";
@@ -10976,11 +11046,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createProfile() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  profiles: () => FIND_MANY_RESULT,
+  profile: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -11034,7 +11104,7 @@ describe("Profile", () => {
         },
       ],
       controllers: [ProfileController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -11152,18 +11222,19 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { ProfileService } from "../profile.service";
 import { ProfileCreateInput } from "./ProfileCreateInput";
-import { ProfileWhereInput } from "./ProfileWhereInput";
-import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
-import { ProfileFindManyArgs } from "./ProfileFindManyArgs";
-import { ProfileUpdateInput } from "./ProfileUpdateInput";
 import { Profile } from "./Profile";
+import { ProfileFindManyArgs } from "./ProfileFindManyArgs";
+import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
+import { ProfileUpdateInput } from "./ProfileUpdateInput";
 
 export class ProfileControllerBase {
   constructor(protected readonly service: ProfileService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Profile })
-  async create(@common.Body() data: ProfileCreateInput): Promise<Profile> {
-    return await this.service.create({
+  async createProfile(
+    @common.Body() data: ProfileCreateInput
+  ): Promise<Profile> {
+    return await this.service.createProfile({
       data: {
         ...data,
 
@@ -11193,9 +11264,9 @@ export class ProfileControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Profile] })
   @ApiNestedQuery(ProfileFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Profile[]> {
+  async profiles(@common.Req() request: Request): Promise<Profile[]> {
     const args = plainToClass(ProfileFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.profiles({
       ...args,
       select: {
         id: true,
@@ -11217,10 +11288,10 @@ export class ProfileControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async profile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.profile({
       where: params,
       select: {
         id: true,
@@ -11248,12 +11319,12 @@ export class ProfileControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateProfile(
     @common.Param() params: ProfileWhereUniqueInput,
     @common.Body() data: ProfileUpdateInput
   ): Promise<Profile | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateProfile({
         where: params,
         data: {
           ...data,
@@ -11292,11 +11363,11 @@ export class ProfileControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteProfile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteProfile({
         where: params,
         select: {
           id: true,
@@ -11336,11 +11407,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class ProfileModuleBase {}
 ",
@@ -11356,16 +11426,16 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
+import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { CreateProfileArgs } from "./CreateProfileArgs";
-import { UpdateProfileArgs } from "./UpdateProfileArgs";
-import { DeleteProfileArgs } from "./DeleteProfileArgs";
+import { Profile } from "./Profile";
 import { ProfileCountArgs } from "./ProfileCountArgs";
 import { ProfileFindManyArgs } from "./ProfileFindManyArgs";
 import { ProfileFindUniqueArgs } from "./ProfileFindUniqueArgs";
-import { Profile } from "./Profile";
+import { CreateProfileArgs } from "./CreateProfileArgs";
+import { UpdateProfileArgs } from "./UpdateProfileArgs";
+import { DeleteProfileArgs } from "./DeleteProfileArgs";
 import { User } from "../../user/base/User";
 import { ProfileService } from "../profile.service";
 @graphql.Resolver(() => Profile)
@@ -11385,14 +11455,14 @@ export class ProfileResolverBase {
   async profiles(
     @graphql.Args() args: ProfileFindManyArgs
   ): Promise<Profile[]> {
-    return this.service.findMany(args);
+    return this.service.profiles(args);
   }
 
   @graphql.Query(() => Profile, { nullable: true })
   async profile(
     @graphql.Args() args: ProfileFindUniqueArgs
   ): Promise<Profile | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.profile(args);
     if (result === null) {
       return null;
     }
@@ -11403,7 +11473,7 @@ export class ProfileResolverBase {
   async createProfile(
     @graphql.Args() args: CreateProfileArgs
   ): Promise<Profile> {
-    return await this.service.create({
+    return await this.service.createProfile({
       ...args,
       data: {
         ...args.data,
@@ -11422,7 +11492,7 @@ export class ProfileResolverBase {
     @graphql.Args() args: UpdateProfileArgs
   ): Promise<Profile | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateProfile({
         ...args,
         data: {
           ...args.data,
@@ -11436,7 +11506,7 @@ export class ProfileResolverBase {
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -11449,10 +11519,10 @@ export class ProfileResolverBase {
     @graphql.Args() args: DeleteProfileArgs
   ): Promise<Profile | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteProfile(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -11464,9 +11534,7 @@ export class ProfileResolverBase {
     nullable: true,
     name: "user",
   })
-  async resolveFieldUser(
-    @graphql.Parent() parent: Profile
-  ): Promise<User | null> {
+  async getUser(@graphql.Parent() parent: Profile): Promise<User | null> {
     const result = await this.service.getUser(parent.id);
 
     if (!result) {
@@ -11488,7 +11556,12 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Profile, User } from "@prisma/client";
+
+import {
+  Prisma,
+  Profile, // @ts-ignore
+  User,
+} from "@prisma/client";
 
 export class ProfileServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -11499,27 +11572,27 @@ export class ProfileServiceBase {
     return this.prisma.profile.count(args);
   }
 
-  async findMany<T extends Prisma.ProfileFindManyArgs>(
+  async profiles<T extends Prisma.ProfileFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
   ): Promise<Profile[]> {
     return this.prisma.profile.findMany(args);
   }
-  async findOne<T extends Prisma.ProfileFindUniqueArgs>(
+  async profile<T extends Prisma.ProfileFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindUniqueArgs>
   ): Promise<Profile | null> {
     return this.prisma.profile.findUnique(args);
   }
-  async create<T extends Prisma.ProfileCreateArgs>(
+  async createProfile<T extends Prisma.ProfileCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileCreateArgs>
   ): Promise<Profile> {
     return this.prisma.profile.create<T>(args);
   }
-  async update<T extends Prisma.ProfileUpdateArgs>(
+  async updateProfile<T extends Prisma.ProfileUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileUpdateArgs>
   ): Promise<Profile> {
     return this.prisma.profile.update<T>(args);
   }
-  async delete<T extends Prisma.ProfileDeleteArgs>(
+  async deleteProfile<T extends Prisma.ProfileDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileDeleteArgs>
   ): Promise<Profile> {
     return this.prisma.profile.delete(args);
@@ -11587,6 +11660,7 @@ export class ProfileService extends ProfileServiceBase {
   "test/src/providers/secrets/base/secretsManager.service.base.spec.ts": "import { ConfigService } from "@nestjs/config";
 import { mock } from "jest-mock-extended";
 import { SecretsManagerServiceBase } from "./secretsManager.service.base";
+import { EnumSecretsNameKey } from "../secretsNameKey.enum";
 
 describe("Testing the secrets manager base class", () => {
   const SECRET_KEY = "SECRET_KEY";
@@ -11602,7 +11676,9 @@ describe("Testing the secrets manager base class", () => {
     //ARRANGE
     configService.get.mockReturnValue(SECRET_VALUE);
     //ACT
-    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    const result = await secretsManagerServiceBase.getSecret(
+      SECRET_KEY as unknown as EnumSecretsNameKey
+    );
     //ASSERT
     expect(result).toBe(SECRET_VALUE);
   });
@@ -11610,33 +11686,30 @@ describe("Testing the secrets manager base class", () => {
     //ARRANGE
     configService.get.mockReturnValue(undefined);
     //ACT
-    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    const result = await secretsManagerServiceBase.getSecret(
+      SECRET_KEY as unknown as EnumSecretsNameKey
+    );
     //ASSERT
     expect(result).toBeNull();
   });
-  it("should throw error if dont get key", () => {
-    return expect(secretsManagerServiceBase.getSecret("")).rejects.toThrow();
-  });
   it("should throw an exception if getting null key", () => {
     return expect(
-      secretsManagerServiceBase.getSecret(null as unknown as string)
+      secretsManagerServiceBase.getSecret(null as unknown as EnumSecretsNameKey)
     ).rejects.toThrow();
   });
 });
 ",
   "test/src/providers/secrets/base/secretsManager.service.base.ts": "import { ConfigService } from "@nestjs/config";
+import { EnumSecretsNameKey } from "../secretsNameKey.enum";
 
 export interface ISecretsManager {
-  getSecret: (key: string) => Promise<any | null>;
+  getSecret: (key: EnumSecretsNameKey) => Promise<any | null>;
 }
 
 export class SecretsManagerServiceBase implements ISecretsManager {
   constructor(protected readonly configService: ConfigService) {}
-  async getSecret<T>(key: string): Promise<T | null> {
-    if (!key) {
-      throw new Error("Didn't got the key");
-    }
-    const value = this.configService.get(key);
+  async getSecret<T>(key: EnumSecretsNameKey): Promise<T | null> {
+    const value = this.configService.get(key.toString());
     if (value) {
       return value;
     }
@@ -11664,6 +11737,7 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
   }
 }
 ",
+  "test/src/providers/secrets/secretsNameKey.enum.ts": "export enum EnumSecretsNameKey {}",
   "test/src/serveStaticOptions.service.ts": "import * as path from "path";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -12015,13 +12089,13 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "../../validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { JsonValue } from "type-fest";
 import { Type } from "class-transformer";
 import { Organization } from "../../organization/base/Organization";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { JsonValue } from "type-fest";
 import { Profile } from "../../profile/base/Profile";
 
 @ObjectType()
@@ -12033,6 +12107,21 @@ class User {
   @IsString()
   @Field(() => String)
   id!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  username!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  roles!: JsonValue;
 
   @ApiProperty({
     required: true,
@@ -12222,19 +12311,42 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "../../validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserCreateNestedManyWithoutUsersInput } from "./UserCreateNestedManyWithoutUsersInput";
 import { OrganizationCreateNestedManyWithoutUsersInput } from "./OrganizationCreateNestedManyWithoutUsersInput";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../../profile/base/ProfileWhereUniqueInput";
 
 @InputType()
 class UserCreateInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  username!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  roles!: InputJsonValue;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  password!: string;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -12600,6 +12712,39 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  username?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  roles?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  password?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   name?: SortOrder;
 
   @ApiProperty({
@@ -12762,19 +12907,51 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "../../validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateManyWithoutUsersInput } from "./UserUpdateManyWithoutUsersInput";
 import { OrganizationUpdateManyWithoutUsersInput } from "./OrganizationUpdateManyWithoutUsersInput";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../../profile/base/ProfileWhereUniqueInput";
 
 @InputType()
 class UserUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  username?: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  roles?: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  password?: string;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -13043,6 +13220,17 @@ class UserWhereInput {
   @Field(() => StringFilter, {
     nullable: true,
   })
+  username?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   name?: StringFilter;
 
   @ApiProperty({
@@ -13197,7 +13385,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 import { ACLModule } from "../../auth/acl.module";
@@ -13211,6 +13398,8 @@ const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
   id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
   name: "exampleName",
   bio: "exampleBio",
   email: "exampleEmail",
@@ -13222,6 +13411,8 @@ const CREATE_INPUT = {
 };
 const CREATE_RESULT = {
   id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
   name: "exampleName",
   bio: "exampleBio",
   email: "exampleEmail",
@@ -13234,6 +13425,8 @@ const CREATE_RESULT = {
 const FIND_MANY_RESULT = [
   {
     id: "exampleId",
+    username: "exampleUsername",
+    password: "examplePassword",
     name: "exampleName",
     bio: "exampleBio",
     email: "exampleEmail",
@@ -13246,6 +13439,8 @@ const FIND_MANY_RESULT = [
 ];
 const FIND_ONE_RESULT = {
   id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
   name: "exampleName",
   bio: "exampleBio",
   email: "exampleEmail",
@@ -13257,11 +13452,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createUser() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  users: () => FIND_MANY_RESULT,
+  user: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -13315,7 +13510,7 @@ describe("User", () => {
         },
       ],
       controllers: [UserController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -13421,11 +13616,10 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { UserService } from "../user.service";
 import { UserCreateInput } from "./UserCreateInput";
-import { UserWhereInput } from "./UserWhereInput";
-import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-import { UserFindManyArgs } from "./UserFindManyArgs";
-import { UserUpdateInput } from "./UserUpdateInput";
 import { User } from "./User";
+import { UserFindManyArgs } from "./UserFindManyArgs";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+import { UserUpdateInput } from "./UserUpdateInput";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { OrganizationWhereUniqueInput } from "../../organization/base/OrganizationWhereUniqueInput";
@@ -13434,8 +13628,8 @@ export class UserControllerBase {
   constructor(protected readonly service: UserService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
-  async create(@common.Body() data: UserCreateInput): Promise<User> {
-    return await this.service.create({
+  async createUser(@common.Body() data: UserCreateInput): Promise<User> {
+    return await this.service.createUser({
       data: {
         ...data,
 
@@ -13453,6 +13647,8 @@ export class UserControllerBase {
       },
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -13484,12 +13680,14 @@ export class UserControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
   @ApiNestedQuery(UserFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<User[]> {
+  async users(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.users({
       ...args,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -13521,13 +13719,15 @@ export class UserControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async user(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.user({
       where: params,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -13565,12 +13765,12 @@ export class UserControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateUser(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() data: UserUpdateInput
   ): Promise<User | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateUser({
         where: params,
         data: {
           ...data,
@@ -13589,6 +13789,8 @@ export class UserControllerBase {
         },
         select: {
           id: true,
+          username: true,
+          roles: true,
           name: true,
           bio: true,
           email: true,
@@ -13628,14 +13830,16 @@ export class UserControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteUser(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteUser({
         where: params,
         select: {
           id: true,
+          username: true,
+          roles: true,
           name: true,
           bio: true,
           email: true,
@@ -13674,7 +13878,7 @@ export class UserControllerBase {
 
   @common.Get("/:id/employees")
   @ApiNestedQuery(UserFindManyArgs)
-  async findManyEmployees(
+  async findEmployees(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User[]> {
@@ -13683,6 +13887,8 @@ export class UserControllerBase {
       ...query,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -13727,7 +13933,7 @@ export class UserControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13744,7 +13950,7 @@ export class UserControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13761,7 +13967,7 @@ export class UserControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13770,7 +13976,7 @@ export class UserControllerBase {
 
   @common.Get("/:id/organizations")
   @ApiNestedQuery(OrganizationFindManyArgs)
-  async findManyOrganizations(
+  async findOrganizations(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput
   ): Promise<Organization[]> {
@@ -13802,7 +14008,7 @@ export class UserControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13819,7 +14025,7 @@ export class UserControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13836,7 +14042,7 @@ export class UserControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13856,11 +14062,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class UserModuleBase {}
 ",
@@ -13876,16 +14081,16 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
+import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { CreateUserArgs } from "./CreateUserArgs";
-import { UpdateUserArgs } from "./UpdateUserArgs";
-import { DeleteUserArgs } from "./DeleteUserArgs";
+import { User } from "./User";
 import { UserCountArgs } from "./UserCountArgs";
 import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
-import { User } from "./User";
+import { CreateUserArgs } from "./CreateUserArgs";
+import { UpdateUserArgs } from "./UpdateUserArgs";
+import { DeleteUserArgs } from "./DeleteUserArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { Profile } from "../../profile/base/Profile";
@@ -13905,12 +14110,12 @@ export class UserResolverBase {
 
   @graphql.Query(() => [User])
   async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
-    return this.service.findMany(args);
+    return this.service.users(args);
   }
 
   @graphql.Query(() => User, { nullable: true })
   async user(@graphql.Args() args: UserFindUniqueArgs): Promise<User | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.user(args);
     if (result === null) {
       return null;
     }
@@ -13919,7 +14124,7 @@ export class UserResolverBase {
 
   @graphql.Mutation(() => User)
   async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
-    return await this.service.create({
+    return await this.service.createUser({
       ...args,
       data: {
         ...args.data,
@@ -13942,7 +14147,7 @@ export class UserResolverBase {
   @graphql.Mutation(() => User)
   async updateUser(@graphql.Args() args: UpdateUserArgs): Promise<User | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateUser({
         ...args,
         data: {
           ...args.data,
@@ -13962,7 +14167,7 @@ export class UserResolverBase {
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -13973,10 +14178,10 @@ export class UserResolverBase {
   @graphql.Mutation(() => User)
   async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteUser(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -13985,7 +14190,7 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => [User], { name: "employees" })
-  async resolveFieldEmployees(
+  async findEmployees(
     @graphql.Parent() parent: User,
     @graphql.Args() args: UserFindManyArgs
   ): Promise<User[]> {
@@ -13999,7 +14204,7 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => [Organization], { name: "organizations" })
-  async resolveFieldOrganizations(
+  async findOrganizations(
     @graphql.Parent() parent: User,
     @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<Organization[]> {
@@ -14016,9 +14221,7 @@ export class UserResolverBase {
     nullable: true,
     name: "manager",
   })
-  async resolveFieldManager(
-    @graphql.Parent() parent: User
-  ): Promise<User | null> {
+  async getManager(@graphql.Parent() parent: User): Promise<User | null> {
     const result = await this.service.getManager(parent.id);
 
     if (!result) {
@@ -14031,9 +14234,7 @@ export class UserResolverBase {
     nullable: true,
     name: "profile",
   })
-  async resolveFieldProfile(
-    @graphql.Parent() parent: User
-  ): Promise<Profile | null> {
+  async getProfile(@graphql.Parent() parent: User): Promise<Profile | null> {
     const result = await this.service.getProfile(parent.id);
 
     if (!result) {
@@ -14055,7 +14256,13 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, User, Organization, Profile } from "@prisma/client";
+
+import {
+  Prisma,
+  User, // @ts-ignore
+  Organization, // @ts-ignore
+  Profile,
+} from "@prisma/client";
 
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -14066,27 +14273,27 @@ export class UserServiceBase {
     return this.prisma.user.count(args);
   }
 
-  async findMany<T extends Prisma.UserFindManyArgs>(
+  async users<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
   ): Promise<User[]> {
     return this.prisma.user.findMany(args);
   }
-  async findOne<T extends Prisma.UserFindUniqueArgs>(
+  async user<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
   ): Promise<User | null> {
     return this.prisma.user.findUnique(args);
   }
-  async create<T extends Prisma.UserCreateArgs>(
+  async createUser<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
   ): Promise<User> {
     return this.prisma.user.create<T>(args);
   }
-  async update<T extends Prisma.UserUpdateArgs>(
+  async updateUser<T extends Prisma.UserUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
   ): Promise<User> {
     return this.prisma.user.update<T>(args);
   }
-  async delete<T extends Prisma.UserDeleteArgs>(
+  async deleteUser<T extends Prisma.UserDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
   ): Promise<User> {
     return this.prisma.user.delete(args);
@@ -15737,8 +15944,8 @@ export function IsJSONValue(validationOptions?: ValidationOptions) {
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es2017",
-    "lib": ["ES2020"],
+    "target": "es2022",
+    "lib": ["es2023"],
     "sourceMap": true,
     "outDir": "./dist",
     "incremental": true,
@@ -15746,10 +15953,7 @@ export function IsJSONValue(validationOptions?: ValidationOptions) {
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true,
-    "paths": {
-      "@app/custom-validators": ["src/validators"]
-    }
+    "strict": true
   },
   "include": ["src"]
 }

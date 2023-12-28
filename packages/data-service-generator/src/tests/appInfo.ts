@@ -10,6 +10,7 @@ export const MODULE_EXTENSIONS_TO_SNAPSHOT = [
   ".yml",
   ".json",
   ".gitignore",
+  ".proto",
 ];
 
 export const appInfo: AppInfo = {
@@ -23,6 +24,7 @@ export const appInfo: AppInfo = {
     serverSettings: {
       generateGraphQL: true,
       generateRestApi: true,
+      generateServer: true,
       serverPath: "",
     },
     adminUISettings: {

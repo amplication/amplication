@@ -120,6 +120,13 @@ const useGitHook: UseGitHook = ({
 
   const updateGitRepository = useCallback(
     (gitRepositoryId: string, data: models.GitRepositoryUpdateInput) => {
+      if (data.baseBranchName) {
+        trackEvent({
+          eventName: AnalyticsEventNames.GitProviderCustomBaseBranch,
+          eventOriginLocation: "git-provider-settings",
+        });
+      }
+
       updateGitRepositoryMutation({
         variables: {
           where: { id: gitRepositoryId },
@@ -137,6 +144,7 @@ const useGitHook: UseGitHook = ({
       gitRepositorySelected && setGitRepositorySelectedData(data);
       trackEvent({
         eventName: AnalyticsEventNames.GitHubRepositorySync,
+        eventOriginLocation: "git-provider-settings",
       });
     },
     [setSelectRepoOpen, setGitRepositorySelectedData]
@@ -168,6 +176,7 @@ const useGitHook: UseGitHook = ({
       }).catch((error) => {});
       trackEvent({
         eventName: AnalyticsEventNames.GitHubRepositoryCreate,
+        eventOriginLocation: "git-provider-settings",
       });
     },
     [

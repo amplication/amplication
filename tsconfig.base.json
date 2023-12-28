@@ -23,6 +23,10 @@
         "packages/amplication-code-gen-types/src/*"
       ],
       "@amplication/code-gen-utils": ["libs/util/code-gen-utils/src/index.ts"],
+      "@amplication/dsg-utils": ["libs/util/dsg-utils/src/index.ts"],
+      "@amplication/graphql-error-codes": [
+        "libs/util/graphql-error-codes/src/index.ts"
+      ],
       "@amplication/kafka/*": ["packages/amplication-kafka/src/*"],
       "@amplication/nest-logger-module/*": [
         "packages/amplication-nest-logger-module/src/*"
@@ -41,6 +45,9 @@
       ],
       "@amplication/ui/design-system/style/variables": [
         "libs/ui/design-system/src/lib/style/css-variables.scss"
+      ],
+      "@amplication/util-billing-types": [
+        "libs/util/billing-types/src/index.ts"
       ],
       "@amplication/util/git": ["libs/util/git/src/index.ts"],
       "@amplication/util/json": ["libs/util/json/src/index.ts"],

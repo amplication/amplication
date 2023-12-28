@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useRef, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { isEmpty } from "lodash";
@@ -12,6 +12,8 @@ import "./NewTopic.scss";
 import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { FeatureIndicator } from "../Components/FeatureIndicator";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 const INITIAL_VALUES: Partial<models.Topic> = {
   name: "",
@@ -45,8 +47,9 @@ const prepareName = (displayName: string) => {
 
 const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
   const { trackEvent } = useTracking();
-  const { addEntity } = useContext(AppContext);
+  const { addEntity, currentResource } = useContext(AppContext);
 
+  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const [createTopic, { error, loading }] = useMutation(CREATE_TOPIC, {
     update(cache, { data }) {
       if (!data) {
@@ -108,11 +111,6 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
   );
 
   const errorMessage = formatError(error);
-  useEffect(() => {
-    if (!error) return;
-
-    trackEvent({ eventName: AnalyticsEventNames.TopicCreateFailed });
-  }, [error]);
 
   return (
     <div className={CLASS_NAME}>
@@ -138,15 +136,35 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              icon="plus"
-              className={classNames(`${CLASS_NAME}__add-field__button`, {
-                [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
-                  formik.values.displayName
-                ),
-              })}
-            />
+            {isResourceUnderLimitation ? (
+              <FeatureIndicator
+                featureName={BillingFeature.Services}
+                text="Your current plan permits only one active resource."
+                linkText="Please contact us to upgrade."
+                element={
+                  <Button
+                    buttonStyle={EnumButtonStyle.Text}
+                    disabled={isResourceUnderLimitation}
+                    icon="locked"
+                    className={classNames(`${CLASS_NAME}__add-field__button`, {
+                      [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
+                        formik.values.displayName
+                      ),
+                    })}
+                  />
+                }
+              />
+            ) : (
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                icon="plus"
+                className={classNames(`${CLASS_NAME}__add-field__button`, {
+                  [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
+                    formik.values.displayName
+                  ),
+                })}
+              />
+            )}
           </Form>
         )}
       </Formik>

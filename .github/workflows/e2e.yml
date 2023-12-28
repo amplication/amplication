@@ -47,7 +47,7 @@ jobs:
       nx-force-all: ${{ inputs.nx-force-all || false }}
 
   e2e:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: nx
     if: ${{ needs.nx.outputs.affected-e2e != '[]' && needs.nx.outputs.affected-e2e != ''}}
     strategy:
@@ -57,7 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - uses: actions/setup-node@v3
         with:

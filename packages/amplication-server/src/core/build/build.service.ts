@@ -25,6 +25,8 @@ import { previousBuild } from "./utils";
 import { TopicService } from "../topic/topic.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleService } from "../module/module.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -34,7 +36,7 @@ import {
   EnumPullRequestMode,
   GitProviderProperties,
 } from "@amplication/util/git";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { ILogger } from "@amplication/util/logging";
 import {
   CanUserAccessBuild,
@@ -60,6 +62,7 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
   [EnumGitProvider.Bitbucket]: "Bitbucket",
   [EnumGitProvider.Github]: "GitHub",
+  [EnumGitProvider.GitLab]: "GitLab",
 };
 import { encryptString } from "../../util/encryptionUtil";
 
@@ -200,6 +203,8 @@ export class BuildService {
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
+    private readonly moduleActionService: ModuleActionService,
+    private readonly moduleService: ModuleService,
     private readonly billingService: BillingService,
     private readonly gitProviderService: GitProviderService,
     @Inject(AmplicationLogger)
@@ -383,6 +388,8 @@ export class BuildService {
             workspaceId: commitWithAccount.commit.project.workspaceId,
             projectId: commitWithAccount.commit.projectId,
             buildId: buildId,
+            projectName: commitWithAccount.commit.project.name,
+            createdAt: Date.now(),
             externalId: encryptString(commitWithAccount.commit.user.id),
             envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
           },
@@ -539,6 +546,7 @@ export class BuildService {
         projectId: build.resource.project.id,
         workspaceId: build.resource.project.workspaceId,
         message: response.errorMessage,
+        $groups: { groupWorkspace: build.resource.project.workspaceId },
       },
       event: EnumEventType.GitSyncError,
     });
@@ -570,6 +578,7 @@ export class BuildService {
           projectId: build.resource.project.id,
           workspaceId: build.resource.project.workspaceId,
           message: logEntry.message,
+          $groups: { groupWorkspace: build.resource.project.workspaceId },
         },
         event: EnumEventType.CodeGenerationError,
       });
@@ -828,6 +837,14 @@ export class BuildService {
     const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
+    const moduleActions = await this.moduleActionService.findMany({
+      where: { resource: { id: resourceId } },
+    });
+
+    const modules = await this.moduleService.findMany({
+      where: { resource: { id: resourceId } },
+    });
+
     const serviceSettings =
       resource.resourceType === EnumResourceType.Service
         ? await this.serviceSettingsService.getServiceSettingsValues(
@@ -858,6 +875,8 @@ export class BuildService {
       entities: await this.getOrderedEntities(buildId),
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: plugins,
+      moduleContainers: modules,
+      moduleActions: moduleActions,
       resourceType: resource.resourceType,
       topics: await this.topicService.findMany({
         where: { resource: { id: resourceId } },

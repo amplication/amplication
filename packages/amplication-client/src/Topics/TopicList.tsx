@@ -1,21 +1,19 @@
-import React, { useState, useCallback, useEffect, useContext } from "react";
-import { useHistory } from "react-router-dom";
-import { isEmpty } from "lodash";
-import { gql, useQuery } from "@apollo/client";
-import { formatError } from "../util/error";
-import * as models from "../models";
 import {
+  CircularProgress,
   SearchField,
   Snackbar,
-  CircularProgress,
 } from "@amplication/ui/design-system";
-import NewTopic from "./NewTopic";
+import { gql, useQuery } from "@apollo/client";
+import { isEmpty } from "lodash";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import InnerTabLink from "../Layout/InnerTabLink";
-import "./TopicList.scss";
 import { AppContext } from "../context/appContext";
+import * as models from "../models";
+import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
-import { useTracking } from "../util/analytics";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
+import NewTopic from "./NewTopic";
+import "./TopicList.scss";
 
 type TData = {
   Topics: models.Topic[];
@@ -31,16 +29,14 @@ type Props = {
 
 export const TopicList = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
-    const { trackEvent } = useTracking();
     const [searchPhrase, setSearchPhrase] = useState<string>("");
     const { currentWorkspace, currentProject } = useContext(AppContext);
 
     const handleSearchChange = useCallback(
       (value) => {
-        trackEvent({ eventName: AnalyticsEventNames.TopicsSearch });
         setSearchPhrase(value);
       },
-      [setSearchPhrase, trackEvent]
+      [setSearchPhrase]
     );
     const history = useHistory();
 

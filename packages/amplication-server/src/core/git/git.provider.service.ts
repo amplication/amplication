@@ -50,7 +50,7 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { GitRepository, User } from "../../models";
 import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { ProjectService } from "../project/project.service";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
 import { UpdateGitRepositoryArgs } from "./dto/args/UpdateGitRepositoryArgs";
@@ -484,6 +484,7 @@ export class GitProviderService {
         workspaceId: workspaceId,
         provider: gitProvider,
         gitOrgType: gitRemoteOrganization.type,
+        $groups: { groupWorkspace: workspaceId },
       },
       event: EnumEventType.GitHubAuthResourceComplete,
     });
@@ -552,6 +553,30 @@ export class GitProviderService {
       gitProvider
     );
     return await gitClientService.getGitInstallationUrl(workspaceId);
+  }
+
+  async getProjectsConnectedGitRepositories(
+    projectIds: string[]
+  ): Promise<GitRepository[]> {
+    return this.prisma.gitRepository.findMany({
+      where: {
+        resources: {
+          some: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            AND: {
+              deletedAt: null,
+              archived: { not: true },
+              projectId: {
+                in: projectIds,
+              },
+            },
+          },
+        },
+      },
+      include: {
+        gitOrganization: true,
+      },
+    });
   }
 
   async getCurrentOAuthUser(oAuthUserName: string): Promise<GitOrganization> {
@@ -655,6 +680,7 @@ export class GitProviderService {
         workspaceId: workspaceId,
         provider: gitProvider,
         gitOrgType: gitOrganization?.type,
+        $groups: { groupWorkspace: workspaceId },
       },
       event: EnumEventType.GitHubAuthResourceComplete,
     });
