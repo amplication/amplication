@@ -19,6 +19,9 @@ import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { FindOneArgs } from "../../dto";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { SignupPreviewAccountArgs } from "./dto/SignupPreviewAccountArgs";
+import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
+
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {
@@ -28,6 +31,15 @@ export class AuthResolver {
   @UseGuards(GqlAuthGuard)
   async me(@UserEntity() user: User): Promise<User> {
     return user;
+  }
+
+  @Mutation(() => AuthPreviewAccount)
+  async signupPreviewAccount(
+    @Args() args: SignupPreviewAccountArgs
+  ): Promise<AuthPreviewAccount> {
+    const { data } = args;
+    data.previewAccountEmail = data.previewAccountEmail.toLowerCase();
+    return this.authService.signupPreviewAccount(data);
   }
 
   @Mutation(() => Auth)

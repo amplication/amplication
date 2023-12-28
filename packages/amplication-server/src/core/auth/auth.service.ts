@@ -23,6 +23,13 @@ import { CompleteInvitationArgs } from "../workspace/dto";
 import { ProjectService } from "../project/project.service";
 import { AuthProfile } from "./types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { SignupPreviewAccountInput } from "./dto/SignupPreviewAccountInput";
+import * as crypto from "crypto";
+import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
+import { ResourceService } from "../resource/resource.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
+import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
 
 export type AuthUser = User & {
   account: Account;
@@ -30,11 +37,18 @@ export type AuthUser = User & {
   userRoles: UserRole[];
 };
 
+export type BootstrapPreviewUser = {
+  workspaceId: string;
+  projectId: string;
+  resourceId: string;
+};
+
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
 export const IDENTITY_PROVIDER_GITHUB = "GitHub";
 export const IDENTITY_PROVIDER_SSO = "SSO";
 export const IDENTITY_PROVIDER_MANUAL = "Manual";
+export const IDENTITY_PROVIDER_PREVIEW_ACCOUNT = "PreviewAccount";
 
 const AUTH_USER_INCLUDE = {
   account: true,
@@ -61,7 +75,9 @@ export class AuthService {
     @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService,
     @Inject(forwardRef(() => ProjectService))
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    @Inject(forwardRef(() => ResourceService))
+    private readonly resourceService: ResourceService
   ) {}
 
   async createGitHubUser(
@@ -156,6 +172,57 @@ export class AuthService {
     return this.prepareToken(user);
   }
 
+  async signupPreviewAccount(
+    payload: SignupPreviewAccountInput
+  ): Promise<AuthPreviewAccount> {
+    const { signupData, identityProvider } = this.generateDataForPreviewAccount(
+      payload.previewAccountEmail,
+      payload.previewAccountType
+    );
+
+    const account = await this.accountService.createAccount(
+      {
+        data: signupData,
+      },
+      identityProvider
+    );
+
+    const { workspaceId, projectId, resourceId } =
+      await this.bootstrapPreviewUser(account);
+
+    return {
+      cookie: this.generateRandomString(),
+      workspaceId,
+      projectId,
+      resourceId,
+    };
+  }
+
+  private generateDataForPreviewAccount(
+    previewAccountEmail: string,
+    previewAccountType: PreviewAccountType
+  ) {
+    return {
+      signupData: {
+        email: this.generateRandomEmail(),
+        firstName: "Amplication Preview Account",
+        lastName: previewAccountType,
+        password: this.generateRandomString(),
+        previewAccountType,
+        previewAccountEmail,
+      },
+      identityProvider: `${IDENTITY_PROVIDER_PREVIEW_ACCOUNT}_${previewAccountType}`,
+    };
+  }
+
+  private generateRandomString(): string {
+    return crypto.randomBytes(10).toString("hex");
+  }
+
+  private generateRandomEmail(): string {
+    return `fake-${this.generateRandomString()}@amplication.com`;
+  }
+
   private async bootstrapUser(
     account: Account,
     workspaceName: string
@@ -165,6 +232,21 @@ export class AuthService {
     await this.accountService.setCurrentUser(account.id, user.id);
 
     return user;
+  }
+
+  private async bootstrapPreviewUser(
+    account: Account
+  ): Promise<BootstrapPreviewUser> {
+    const { user, workspace, project, resource } =
+      await this.createPreviewWorkspaceWithProjectAndResource(account);
+
+    await this.accountService.setCurrentUser(account.id, user.id);
+
+    return {
+      workspaceId: workspace.id,
+      projectId: project.id,
+      resourceId: resource.id,
+    };
   }
 
   async login(email: string, password: string): Promise<string> {
@@ -421,6 +503,69 @@ export class AuthService {
     });
 
     return workspace as unknown as Workspace & { users: AuthUser[] };
+  }
+
+  private async createPreviewWorkspaceWithProjectAndResource(account: Account) {
+    const workspaceName = `Amplication-${this.generateRandomString()}`;
+    const workspace = (await this.workspaceService.createWorkspace(account.id, {
+      data: {
+        name: workspaceName,
+      },
+      include: WORKSPACE_INCLUDE,
+    })) as unknown as Workspace & { users: AuthUser[] };
+    const [user] = workspace.users as AuthUser[];
+
+    const project = await this.projectService.createProject(
+      {
+        data: {
+          name: account.previewAccountType,
+          workspace: {
+            connect: {
+              id: workspace.id,
+            },
+          },
+        },
+      },
+      user.id
+    );
+
+    const resource = await this.resourceService.createService(
+      {
+        data: {
+          name: "Resource",
+          description: "Resource",
+          resourceType: EnumResourceType.Service,
+          project: {
+            connect: {
+              id: project.id,
+            },
+          },
+          serviceSettings: {
+            authProvider: EnumAuthProviderType.Jwt,
+            authEntityName: "User",
+            adminUISettings: {
+              adminUIPath: "admin",
+              generateAdminUI: true,
+            },
+            serverSettings: {
+              generateGraphQL: true,
+              generateRestApi: true,
+              serverPath: "server",
+            },
+          },
+        },
+      },
+      user,
+      null,
+      true
+    );
+
+    return {
+      user,
+      workspace,
+      project,
+      resource,
+    };
   }
 
   async completeInvitation(
