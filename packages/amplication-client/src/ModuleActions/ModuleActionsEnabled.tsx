@@ -47,7 +47,6 @@ export const ModuleActionsEnabled: React.FC<Props> = ({
           <FeatureIndicator
             featureName={BillingFeature.CustomActions}
             placement="bottom-end"
-            text="The Custom Actions feature is exclusive to the Enterprise plan."
             icon={icon}
             element={
               <div className={`${className}__feature-tag`}>

@@ -76,7 +76,8 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
-  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
+  const licensed = currentResource?.licensed ?? true;
+
   const isUserEntityMandatory =
     pluginInstallations?.filter(
       (x) =>
@@ -221,6 +222,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 <FeatureIndicatorContainer
                   featureId={BillingFeature.ImportDBSchema}
                   entitlementType={EntitlementType.Boolean}
+                  limitationText="Available in Enterprise plans only. "
                   reversePosition={true}
                 >
                   <Button
@@ -234,17 +236,16 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                   </Button>
                 </FeatureIndicatorContainer>
               </Link>
-              {isResourceUnderLimitation ? (
+              {!licensed ? (
                 <FeatureIndicator
                   featureName={BillingFeature.Services}
-                  text="Your current plan permits only one active resource"
-                  linkText="Please contact us to upgrade"
+                  text="Your current plan permits only one active Service. "
                   element={
                     <Button
                       className={`${CLASS_NAME}__add-button`}
                       buttonStyle={EnumButtonStyle.Primary}
                       onClick={handleNewEntityClick}
-                      disabled={isResourceUnderLimitation}
+                      disabled={!licensed}
                       icon="locked"
                     >
                       Add entity
@@ -256,7 +257,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                   className={`${CLASS_NAME}__add-button`}
                   buttonStyle={EnumButtonStyle.Primary}
                   onClick={handleNewEntityClick}
-                  disabled={isResourceUnderLimitation}
+                  disabled={loading}
                 >
                   Add entity
                 </Button>
