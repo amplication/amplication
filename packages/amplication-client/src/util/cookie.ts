@@ -22,6 +22,12 @@ export const setCookie = (cname: string, value: string, days = 30) => {
   document.cookie = cname + "=" + (value || "") + expires + "; path=/";
 };
 
+export const setSessionCookie = (cname: string, value: string) => {
+  const cookieString = cname + "=" + (value || "") + "; path=/";
+
+  document.cookie = cookieString;
+};
+
 export const expireCookie = (cname: string, domain?: string): void => {
   const cookieDomain = domain ? `domain=${domain};` : "";
   document.cookie = `${cname}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;${cookieDomain}`;
