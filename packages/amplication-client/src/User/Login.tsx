@@ -45,7 +45,7 @@ const INITIAL_VALUES: Values = {
   work_email: "",
 };
 
-const AuthWithWorkEmail: React.FC<{}> = ({}) => {
+const AuthWithWorkEmail: React.FC = () => {
   const { values } = useFormikContext<Values>();
   const { trackEvent } = useTracking();
 
