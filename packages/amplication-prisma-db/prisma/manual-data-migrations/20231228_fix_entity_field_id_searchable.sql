@@ -7,12 +7,12 @@ BEGIN
 
     FOR i IN 0..ceil(total_rows / batch_size) - 1 LOOP
         UPDATE "public"."EntityField" 
-        SET searchable = 't', "updatedAt" = NOW()
+        SET searchable = TRUE, "updatedAt" = NOW()
         WHERE ctid IN (
             SELECT ctid
             FROM "public"."EntityField"
             WHERE "dataType" = 'Id'
-            AND searchable <> 't'
+            AND searchable <> TRUE
             LIMIT batch_size OFFSET i * batch_size
         );
 
