@@ -3467,6 +3467,7 @@ export class Credentials {
   "server/src/auth/IAuthStrategy.ts": "import { UserInfo } from "./UserInfo";
 
 export interface IAuthStrategy {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   validate: (...any: any) => Promise<UserInfo>;
 }
 ",
@@ -13769,7 +13770,9 @@ describe("Testing the jwtStrategyBase.validate()", () => {
   it("should throw UnauthorizedException where there is no user", async () => {
     //ARRANGE
     userService.user
-      .calledWith({ where: { username: TEST_USER.username } })
+      .calledWith({
+        where: { username: TEST_USER.username },
+      })
       .mockReturnValue(Promise.resolve(null));
     //ACT
     const result = jwtStrategy.validate({
