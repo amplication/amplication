@@ -529,15 +529,18 @@ export class AuthService {
 
   private async createPreviewWorkspaceWithProjectAndResource(account: Account) {
     const workspaceName = `Amplication-${this.generateRandomString()}`;
-    const workspace = (await this.workspaceService.createWorkspace(account.id, {
-      data: {
-        name: workspaceName,
+    const workspace = (await this.workspaceService.createPreviewWorkspace(
+      {
+        data: {
+          name: workspaceName,
+        },
+        include: WORKSPACE_INCLUDE,
       },
-      include: WORKSPACE_INCLUDE,
-    })) as unknown as Workspace & { users: AuthUser[] };
+      account.id
+    )) as unknown as Workspace & { users: AuthUser[] };
     const [user] = workspace.users as AuthUser[];
 
-    const project = await this.projectService.createProject(
+    const project = await this.projectService.createPreviewProject(
       {
         data: {
           name: account.previewAccountType,
@@ -551,11 +554,11 @@ export class AuthService {
       user.id
     );
 
-    const resource = await this.resourceService.createService(
+    const resource = await this.resourceService.createPreviewService(
       {
         data: {
-          name: "Resource",
-          description: "Resource",
+          name: "Monolith",
+          description: "Monolith Service",
           resourceType: EnumResourceType.Service,
           project: {
             connect: {
@@ -577,9 +580,7 @@ export class AuthService {
           },
         },
       },
-      user,
-      null,
-      true
+      user
     );
 
     return {

@@ -88,6 +88,38 @@ export class WorkspaceService {
     return this.prisma.workspace.update(args);
   }
 
+  async createPreviewWorkspace(
+    args: Prisma.WorkspaceCreateArgs,
+    accountId: string
+  ): Promise<Workspace> {
+    const workspace = await this.prisma.workspace.create({
+      ...args,
+      data: {
+        ...args.data,
+        users: {
+          create: {
+            account: { connect: { id: accountId } },
+            isOwner: true,
+            userRoles: {
+              create: {
+                role: Role.OrganizationAdmin,
+              },
+            },
+          },
+        },
+      },
+      include: {
+        ...args.include,
+        // Include users by default, allow to bypass it for including additional user links
+        users: args?.include?.users || true,
+      },
+    });
+
+    await this.billingService.provisionPreviewCustomer(workspace.id);
+
+    return workspace;
+  }
+
   /**
    * Creates a workspace and a user within it for the provided account with workspace admin role
    * @param accountId the account to create the user in the created workspace

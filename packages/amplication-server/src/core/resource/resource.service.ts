@@ -67,6 +67,7 @@ import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { CreateResourceEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
 import { LookupResolvedProperties } from "@amplication/code-gen-types";
 import { SubscriptionService } from "../subscription/subscription.service";
+import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -377,6 +378,87 @@ export class ResourceService {
       project.workspaceId,
       BillingFeature.Services
     );
+
+    return resource;
+  }
+
+  async createPreviewService(
+    args: CreateOneResourceArgs,
+    user: User,
+    requireAuthenticationEntity = true,
+    wizardType = "create resource"
+  ): Promise<Resource> {
+    const { serviceSettings, gitRepository, ...rest } = args.data;
+    const resource = await this.createResource(
+      {
+        data: {
+          ...rest,
+          resourceType: EnumResourceType.Service,
+        },
+      },
+      user,
+      gitRepository,
+      wizardType
+    );
+
+    await this.prisma.resourceRole.create({
+      data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
+    });
+
+    if (requireAuthenticationEntity) {
+      await this.entityService.createDefaultEntities(resource.id, user);
+      serviceSettings.authEntityName = USER_ENTITY_NAME;
+    }
+
+    await this.serviceSettingsService.createDefaultServiceSettings(
+      resource.id,
+      user,
+      serviceSettings
+    );
+
+    const defaultAuthPlugins: PluginInstallationCreateInput[] = [
+      {
+        displayName: "",
+        pluginId: "auth-core",
+        npm: "@amplication/plugin-auth-core",
+        version: "latest",
+        enabled: true,
+        resource: { connect: { id: resource.id } },
+      },
+      {
+        displayName: "",
+        pluginId: "auth-jwt",
+        npm: "@amplication/plugin-auth-jwt",
+        version: "latest",
+        enabled: true,
+        resource: { connect: { id: resource.id } },
+      },
+    ];
+
+    const defaultDBPlugin: PluginInstallationCreateInput = {
+      displayName: "",
+      pluginId: "db-postgres",
+      npm: "@amplication/plugin-db-postgres",
+      version: "latest",
+      enabled: true,
+      resource: { connect: { id: resource.id } },
+    };
+
+    const plugins = [
+      defaultDBPlugin,
+      ...(requireAuthenticationEntity ? defaultAuthPlugins : []),
+    ];
+
+    for (const plugin of plugins) {
+      await this.pluginInstallationService.create(
+        {
+          data: plugin,
+        },
+        user
+      );
+    }
+
+    await this.environmentService.createDefaultEnvironment(resource.id);
 
     return resource;
   }

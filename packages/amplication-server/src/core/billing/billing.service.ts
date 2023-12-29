@@ -294,6 +294,18 @@ export class BillingService {
     return;
   }
 
+  async provisionPreviewCustomer(workspaceId: string): Promise<null> {
+    if (!this.isBillingEnabled) {
+      return;
+    }
+
+    await this.stiggClient.provisionCustomer({
+      customerId: workspaceId,
+      shouldSyncFree: false,
+      subscriptionParams: { planId: BillingPlan.Enterprise }, // TODO: CHANGE IT TO PREVIEW PLAN
+    });
+  }
+
   //todo: wrap with a try catch and return an object with the details about the limitations
   async validateSubscriptionPlanLimitationsForWorkspace({
     workspaceId,
