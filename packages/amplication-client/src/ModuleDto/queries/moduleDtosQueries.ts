@@ -8,6 +8,7 @@ export const MODULE_DTO_FIELDS_FRAGMENT = gql`
     enabled
     lockedByUserId
     lockedAt
+    parentBlockId
     properties {
       id
       name

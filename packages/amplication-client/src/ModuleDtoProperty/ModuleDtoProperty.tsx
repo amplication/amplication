@@ -11,12 +11,9 @@ import { match, useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
-import { DeleteModuleDto } from "./DeleteModuleDto";
-import ModuleDtoForm from "./ModuleDtoForm";
-import useModuleDto from "./hooks/useModuleDto";
-import * as models from "../models";
-import ModuleDtoPropertyList from "../ModuleDtoProperty/ModuleDtoPropertyList";
-import NewModuleDtoProperty from "../ModuleDtoProperty/NewModuleDtoProperty";
+import { DeleteModuleDtoProperty } from "./DeleteModuleDtoProperty";
+import ModuleDtoPropertyForm from "./ModuleDtoPropertyForm";
+import useModuleDtoProperty from "./hooks/useModuleDtoProperty";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -24,17 +21,14 @@ type Props = AppRouteProps & {
     project: string;
     resource: string;
     module: string;
-    moduleDto: string;
+    moduleDtoProperty: string;
   }>;
 };
 
-const ModuleDto = ({ match }: Props) => {
-  const { moduleDto: moduleDtoId, module: moduleId } = match?.params ?? {};
+const ModuleDtoProperty = ({ match }: Props) => {
+  const { moduleDtoProperty: moduleDtoPropertyId } = match?.params ?? {};
 
   const {
-    currentWorkspace,
-    currentProject,
-    currentResource,
     addEntity,
     resetPendingChangesIndicator,
     setResetPendingChangesIndicator,
@@ -42,23 +36,23 @@ const ModuleDto = ({ match }: Props) => {
   const history = useHistory();
 
   const {
-    getModuleDto,
-    getModuleDtoData: data,
-    getModuleDtoError: error,
-    getModuleDtoLoading: loading,
-    getModuleDtoRefetch: refetch,
-    updateModuleDto,
-    updateModuleDtoError,
-  } = useModuleDto();
+    getModuleDtoProperty,
+    getModuleDtoPropertyData: data,
+    getModuleDtoPropertyError: error,
+    getModuleDtoPropertyLoading: loading,
+    getModuleDtoPropertyRefetch: refetch,
+    updateModuleDtoProperty,
+    updateModuleDtoPropertyError,
+  } = useModuleDtoProperty();
 
   useEffect(() => {
-    if (!moduleDtoId) return;
-    getModuleDto({
+    if (!moduleDtoPropertyId) return;
+    getModuleDtoProperty({
       variables: {
-        moduleDtoId,
+        moduleDtoPropertyId,
       },
     }).catch(console.error);
-  }, [moduleDtoId, getModuleDto]);
+  }, [moduleDtoPropertyId, getModuleDtoProperty]);
 
   useEffect(() => {
     if (!resetPendingChangesIndicator) return;
@@ -69,13 +63,13 @@ const ModuleDto = ({ match }: Props) => {
 
   const handleSubmit = useCallback(
     (data) => {
-      updateModuleDto({
+      updateModuleDtoProperty({
         onCompleted: () => {
-          addEntity(moduleDtoId);
+          addEntity(moduleDtoPropertyId);
         },
         variables: {
           where: {
-            id: moduleDtoId,
+            id: moduleDtoPropertyId,
           },
           data: {
             ...data,
@@ -83,12 +77,13 @@ const ModuleDto = ({ match }: Props) => {
         },
       }).catch(console.error);
     },
-    [updateModuleDto, moduleDtoId]
+    [updateModuleDtoProperty, moduleDtoPropertyId]
   );
 
-  const hasError = Boolean(error) || Boolean(updateModuleDtoError);
+  const hasError = Boolean(error) || Boolean(updateModuleDtoPropertyError);
 
-  const errorMessage = formatError(error) || formatError(updateModuleDtoError);
+  const errorMessage =
+    formatError(error) || formatError(updateModuleDtoPropertyError);
 
   const isCustomDto = false;
 
@@ -96,16 +91,18 @@ const ModuleDto = ({ match }: Props) => {
     <>
       <FlexItem>
         <TabContentTitle
-          title={data?.ModuleDto?.displayName}
-          subTitle={data?.ModuleDto?.description}
+          title={data?.ModuleDtoProperty?.name}
+          subTitle={data?.ModuleDtoProperty?.description}
         />
         <FlexItem.FlexEnd>
-          {data?.ModuleDto && isCustomDto && (
-            <DeleteModuleDto moduleDto={data?.ModuleDto} />
+          {data?.ModuleDtoProperty && isCustomDto && (
+            <DeleteModuleDtoProperty
+              moduleDtoProperty={data?.ModuleDtoProperty}
+            />
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
-      {data?.ModuleDto && !isCustomDto && (
+      {data?.ModuleDtoProperty && !isCustomDto && (
         <FlexItem margin={EnumFlexItemMargin.Bottom}>
           <Text textStyle={EnumTextStyle.Description}>
             This is a default dto that was created automatically with the
@@ -115,17 +112,15 @@ const ModuleDto = ({ match }: Props) => {
       )}
 
       {!loading && (
-        <ModuleDtoForm
+        <ModuleDtoPropertyForm
           isCustomDto={isCustomDto}
           onSubmit={handleSubmit}
-          defaultValues={data?.ModuleDto}
+          defaultValues={data?.ModuleDtoProperty}
         />
       )}
-      <ModuleDtoPropertyList moduleDtoId={moduleDtoId} moduleId={moduleId} />
-      <NewModuleDtoProperty moduleDto={data?.ModuleDto} />
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );
 };
 
-export default ModuleDto;
+export default ModuleDtoProperty;

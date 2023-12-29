@@ -10,6 +10,7 @@ export const MODULE_DTO_PROPERTY_FIELDS_FRAGMENT = gql`
     isArray
     lockedByUserId
     lockedAt
+    parentBlockId
     lockedByUser {
       account {
         firstName
@@ -29,8 +30,8 @@ export const DELETE_MODULE_DTO_PROPERTY = gql`
 
 export const GET_MODULE_DTO_PROPERTY = gql`
   ${MODULE_DTO_PROPERTY_FIELDS_FRAGMENT}
-  query ModuleDtoProperty($moduleDtoId: String!) {
-    ModuleDtoProperty(where: { id: $moduleDtoId }) {
+  query ModuleDtoProperty($moduleDtoPropertyId: String!) {
+    ModuleDtoProperty(where: { id: $moduleDtoPropertyId }) {
       ...ModuleDtoPropertyFields
     }
   }

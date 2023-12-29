@@ -11,6 +11,7 @@ import {
   MODULE_DTO_PROPERTY_FIELDS_FRAGMENT,
   UPDATE_MODULE_DTO_PROPERTY,
 } from "../queries/moduleDtoPropertiesQueries";
+import useModuleDto from "../../ModuleDto/hooks/useModuleDto";
 type TDeleteData = {
   deleteModuleDtoProperty: models.ModuleDtoProperty;
 };
@@ -39,6 +40,8 @@ const useModuleDtoProperty = () => {
     currentProject,
     currentResource,
   } = useContext(AppContext);
+
+  const { getModuleDtoRefetch } = useModuleDto();
 
   const history = useHistory();
 
@@ -92,6 +95,12 @@ const useModuleDtoProperty = () => {
       loading: createModuleDtoPropertyLoading,
     },
   ] = useMutation<TCreateData>(CREATE_MODULE_DTO_PROPERTY, {
+    onCompleted: (data) => {
+      addBlock(data.createModuleDtoProperty.id);
+      getModuleDtoRefetch({
+        moduleDtoId: data.createModuleDtoProperty.parentBlockId,
+      });
+    },
     update(cache, { data }) {
       if (!data) return;
 
