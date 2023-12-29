@@ -61,14 +61,12 @@ export class ModuleDtoService extends BlockTypeService<
     //todo: validate that only the enabled field can be updated for default actions
     this.validateModuleDtoName(args.data.name);
 
-    const existingAction = await super.findOne({
+    const existingDto = await super.findOne({
       where: { id: args.where.id },
     });
 
-    if (!existingAction) {
-      throw new AmplicationError(
-        `Module Action not found, ID: ${args.where.id}`
-      );
+    if (!existingDto) {
+      throw new AmplicationError(`Module DTO not found, ID: ${args.where.id}`);
     }
 
     return super.update(args, user);
