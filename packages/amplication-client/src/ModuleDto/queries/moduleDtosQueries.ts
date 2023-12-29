@@ -4,11 +4,26 @@ export const MODULE_DTO_FIELDS_FRAGMENT = gql`
   fragment ModuleDtoFields on ModuleDto {
     id
     name
-    displayName
     description
     enabled
     lockedByUserId
     lockedAt
+    properties {
+      id
+      name
+      description
+      propertyType
+      isOptional
+      isArray
+      lockedByUserId
+      lockedAt
+      lockedByUser {
+        account {
+          firstName
+          lastName
+        }
+      }
+    }
     lockedByUser {
       account {
         firstName

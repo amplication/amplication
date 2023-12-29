@@ -77,11 +77,6 @@ const ModuleDtoForm = ({
     >
       <Form childrenAsBlocks>
         {!disabled && <FormikAutoSave debounceMS={1000} />}
-        <DisplayNameField
-          name="displayName"
-          label="Display Name"
-          disabled={disabled}
-        />
         <NameField
           label="Name"
           name="name"

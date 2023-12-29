@@ -67,8 +67,7 @@ export const ModuleDtoLinkList = React.memo(
                   itemsAlign={EnumItemsAlign.Center}
                   end={<EnabledIndicator enabled={dto.enabled} />}
                 >
-                  {dto.displayName}
-                  {dto.parentBlockId}
+                  {dto.name}
                 </FlexItem>
               </VerticalNavigationItem>
             ))}
