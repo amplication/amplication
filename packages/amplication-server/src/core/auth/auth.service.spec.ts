@@ -24,6 +24,8 @@ import { ProjectService } from "../project/project.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { ConfigService } from "@nestjs/config";
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
+import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
+import { ResourceService } from "../resource/resource.service";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 
 const EXAMPLE_ACCOUNT: Account = {
@@ -36,6 +38,8 @@ const EXAMPLE_ACCOUNT: Account = {
   updatedAt: new Date(),
   currentUserId: null,
   githubId: null,
+  previewAccountType: PreviewAccountType.None,
+  previewAccountEmail: null,
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -223,6 +227,7 @@ describe("AuthService", () => {
           provide: WorkspaceService,
           useClass: jest.fn(() => ({
             createWorkspace: createWorkspaceMock,
+            createPreviewWorkspace: createWorkspaceMock,
           })),
         },
         MockedAmplicationLoggerProvider,
@@ -236,6 +241,13 @@ describe("AuthService", () => {
           provide: ProjectService,
           useClass: jest.fn(() => ({
             createProject: jest.fn(),
+            createPreviewProject: jest.fn(),
+          })),
+        },
+        {
+          provide: ResourceService,
+          useClass: jest.fn(() => ({
+            createPreviewService: jest.fn(),
           })),
         },
         {

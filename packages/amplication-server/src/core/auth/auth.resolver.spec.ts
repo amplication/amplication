@@ -15,6 +15,7 @@ import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ApolloServerBase } from "apollo-server-core";
+import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_TOKEN = "exampleToken";
@@ -34,6 +35,8 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
+  previewAccountType: PreviewAccountType.None,
+  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -97,6 +100,8 @@ const CHANGE_PASSWORD_MUTATION = gql`
       firstName
       lastName
       password
+      previewAccountType
+      previewAccountEmail
     }
   }
 `;
