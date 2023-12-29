@@ -3,14 +3,14 @@ import { useHistory } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import "./Signup.scss";
-import { setSessionCookie } from "../util/cookie";
+import { setToken } from "../authentication/authentication";
 
 const SignupPreviewAccount = () => {
   const history = useHistory();
 
   const [signupPreviewAccount, { loading, error }] = useMutation<{
     signupPreviewAccount: {
-      cookie: string;
+      token: string;
       workspaceId: string;
       resourceId: string;
       projectId: string;
@@ -33,10 +33,10 @@ const SignupPreviewAccount = () => {
         },
         onCompleted: ({ signupPreviewAccount }) => {
           console.log(signupPreviewAccount, "signupPreviewAccount");
-          const { cookie, workspaceId, projectId, resourceId } =
+          const { token, workspaceId, projectId, resourceId } =
             signupPreviewAccount;
 
-          setSessionCookie("previewAccount", cookie);
+          setToken(token);
           history.push(`/${workspaceId}/${projectId}/${resourceId}`);
         },
       }).catch(console.error);
@@ -55,7 +55,7 @@ export default SignupPreviewAccount;
 const SIGNUP_PREVIEW_ACCOUNT = gql`
   mutation SignupPreviewAccount($data: SignupPreviewAccountInput!) {
     signupPreviewAccount(data: $data) {
-      cookie
+      token
       workspaceId
       projectId
       resourceId
