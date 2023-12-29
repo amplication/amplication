@@ -1066,6 +1066,7 @@ type ModuleDto implements IBlock {
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
   parentBlockId: String
+  properties: [ModuleDtoProperty!]!
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
