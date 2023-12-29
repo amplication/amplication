@@ -309,6 +309,10 @@ export type ConnectGitRepositoryInput = {
   resourceId: Scalars['String']['input'];
 };
 
+export type CopiedEntities = {
+  shouldDeleteFromSource: Scalars['Boolean']['input'];
+};
+
 export type Coupon = {
   code: Scalars['String']['output'];
   couponType?: Maybe<Scalars['String']['output']>;
@@ -657,6 +661,7 @@ export enum EnumAuthProviderType {
 export enum EnumBlockType {
   Module = 'Module',
   ModuleAction = 'ModuleAction',
+  ModuleDto = 'ModuleDto',
   PluginInstallation = 'PluginInstallation',
   PluginOrder = 'PluginOrder',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
@@ -1065,6 +1070,62 @@ export type ModuleCreateInput = {
   resource: WhereParentIdInput;
 };
 
+export type ModuleDto = IBlock & {
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']['output']>;
+  lockedByUser?: Maybe<User>;
+  lockedByUserId?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  versionNumber: Scalars['Float']['output'];
+};
+
+export type ModuleDtoCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName: Scalars['String']['input'];
+  inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  parentBlock?: InputMaybe<WhereParentIdInput>;
+  resource: WhereParentIdInput;
+};
+
+export type ModuleDtoOrderByInput = {
+  blockType?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
+  displayName?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type ModuleDtoUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  enabled: Scalars['Boolean']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ModuleDtoWhereInput = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  displayName?: InputMaybe<StringFilter>;
+  id?: InputMaybe<StringFilter>;
+  parentBlock?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
 export type ModuleOrderByInput = {
   blockType?: InputMaybe<SortOrder>;
   createdAt?: InputMaybe<SortOrder>;
@@ -1110,11 +1171,13 @@ export type Mutation = {
   createMessageBroker: Resource;
   createModule: Module;
   createModuleAction: ModuleAction;
+  createModuleDto: ModuleDto;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
   createProject: Project;
   createRemoteGitRepository: RemoteGitRepository;
+  createResourceEntitiesFromExistingResource: Resource;
   createResourceRole: ResourceRole;
   createService: Resource;
   createServiceTopics: ServiceTopics;
@@ -1129,6 +1192,7 @@ export type Mutation = {
   deleteGitRepository: Resource;
   deleteModule: Module;
   deleteModuleAction: ModuleAction;
+  deleteModuleDto: ModuleDto;
   deletePluginInstallation: PluginInstallation;
   deleteProject?: Maybe<Project>;
   deleteResource?: Maybe<Resource>;
@@ -1160,6 +1224,7 @@ export type Mutation = {
   updateGitRepository: GitRepository;
   updateModule: Module;
   updateModuleAction: ModuleAction;
+  updateModuleDto: ModuleDto;
   updatePluginInstallation: PluginInstallation;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
@@ -1266,6 +1331,11 @@ export type MutationCreateModuleActionArgs = {
 };
 
 
+export type MutationCreateModuleDtoArgs = {
+  data: ModuleDtoCreateInput;
+};
+
+
 export type MutationCreateOneEntityArgs = {
   data: EntityCreateInput;
 };
@@ -1288,6 +1358,11 @@ export type MutationCreateProjectArgs = {
 
 export type MutationCreateRemoteGitRepositoryArgs = {
   data: CreateGitRepositoryBaseInput;
+};
+
+
+export type MutationCreateResourceEntitiesFromExistingResourceArgs = {
+  data: ResourceCreateCopiedEntitiesInput;
 };
 
 
@@ -1358,6 +1433,11 @@ export type MutationDeleteModuleArgs = {
 
 
 export type MutationDeleteModuleActionArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteModuleDtoArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1524,6 +1604,12 @@ export type MutationUpdateModuleArgs = {
 
 export type MutationUpdateModuleActionArgs = {
   data: ModuleActionUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateModuleDtoArgs = {
+  data: ModuleDtoUpdateInput;
   where: WhereUniqueInput;
 };
 
@@ -1801,6 +1887,8 @@ export type Query = {
   Module?: Maybe<Module>;
   ModuleAction?: Maybe<ModuleAction>;
   ModuleActions: Array<ModuleAction>;
+  ModuleDto?: Maybe<ModuleDto>;
+  ModuleDtos: Array<ModuleDto>;
   Modules: Array<Module>;
   PluginInstallation?: Maybe<PluginInstallation>;
   PluginInstallations: Array<PluginInstallation>;
@@ -1859,6 +1947,19 @@ export type QueryModuleActionsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ModuleActionWhereInput>;
+};
+
+
+export type QueryModuleDtoArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModuleDtosArgs = {
+  orderBy?: InputMaybe<ModuleDtoOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleDtoWhereInput>;
 };
 
 
@@ -2139,6 +2240,11 @@ export type ResourceEntitiesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<EntityWhereInput>;
+};
+
+export type ResourceCreateCopiedEntitiesInput = {
+  entitiesToCopy: Array<CopiedEntities>;
+  targetResourceId: Scalars['String']['input'];
 };
 
 export type ResourceCreateInput = {
