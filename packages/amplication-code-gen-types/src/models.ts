@@ -1094,6 +1094,7 @@ export type ModuleDto = IBlock & {
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['String']['output']>;
+  properties: Array<ModuleDtoProperty>;
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
