@@ -418,7 +418,7 @@ export class ResourceService {
 
     const defaultAuthPlugins: PluginInstallationCreateInput[] = [
       {
-        displayName: "",
+        displayName: "Auth-core",
         pluginId: "auth-core",
         npm: "@amplication/plugin-auth-core",
         version: "latest",
@@ -426,7 +426,7 @@ export class ResourceService {
         resource: { connect: { id: resource.id } },
       },
       {
-        displayName: "",
+        displayName: "Auth-jwt",
         pluginId: "auth-jwt",
         npm: "@amplication/plugin-auth-jwt",
         version: "latest",
@@ -436,7 +436,7 @@ export class ResourceService {
     ];
 
     const defaultDBPlugin: PluginInstallationCreateInput = {
-      displayName: "",
+      displayName: "postgres",
       pluginId: "db-postgres",
       npm: "@amplication/plugin-db-postgres",
       version: "latest",
