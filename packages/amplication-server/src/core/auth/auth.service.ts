@@ -1,5 +1,5 @@
 import { Injectable, forwardRef, Inject } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
+import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { subDays } from "date-fns";
 import { ConfigService } from "@nestjs/config";
 import cuid from "cuid";
@@ -38,6 +38,7 @@ export type AuthUser = User & {
 };
 
 export type BootstrapPreviewUser = {
+  user: AuthUser;
   workspaceId: string;
   projectId: string;
   resourceId: string;
@@ -187,11 +188,13 @@ export class AuthService {
       identityProvider
     );
 
-    const { workspaceId, projectId, resourceId } =
+    const { user, workspaceId, projectId, resourceId } =
       await this.bootstrapPreviewUser(account);
 
+    const token = await this.prepareTokenForPreviewAccount(user);
+
     return {
-      cookie: this.generateRandomString(),
+      token,
       workspaceId,
       projectId,
       resourceId,
@@ -243,6 +246,7 @@ export class AuthService {
     await this.accountService.setCurrentUser(account.id, user.id);
 
     return {
+      user,
       workspaceId: workspace.id,
       projectId: project.id,
       resourceId: resource.id,
@@ -452,6 +456,24 @@ export class AuthService {
       type: EnumTokenType.User,
     };
     return this.jwtService.sign(payload);
+  }
+
+  async prepareTokenForPreviewAccount(user: AuthUser): Promise<string> {
+    const roles = user.userRoles.map((role) => role.role);
+
+    const payload: JwtDto = {
+      accountId: user.account.id,
+      userId: user.id,
+      roles,
+      workspaceId: user.workspace.id,
+      type: EnumTokenType.User,
+    };
+
+    const signOptions: JwtSignOptions = {
+      expiresIn: "1h",
+    };
+
+    return this.jwtService.sign(payload, signOptions);
   }
 
   /**
