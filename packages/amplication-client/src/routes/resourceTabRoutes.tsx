@@ -36,6 +36,14 @@ const resourceTabRoutes = [
         isAnalytics: true,
       },
       {
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/actions",
+        Component: lazy(() => import("../ModuleActions/ModuleActions")),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        isAnalytics: true,
+      },
+      {
         path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/actions/:moduleAction([A-Za-z0-9-]{20,})",
         Component: lazy(() => import("../ModuleActions/ModuleAction")),
         moduleName: "",
@@ -45,8 +53,16 @@ const resourceTabRoutes = [
         isAnalytics: true,
       },
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/types",
-        Component: lazy(() => import("../Modules/TypeList")),
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/dtos",
+        Component: lazy(() => import("../ModuleDto/ModuleDtos")),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        isAnalytics: true,
+      },
+      {
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/dtos/:moduleDto([A-Za-z0-9-]{20,})",
+        Component: lazy(() => import("../ModuleDto/ModuleDto")),
         moduleName: "",
         routeTrackType: "",
         exactPath: true,

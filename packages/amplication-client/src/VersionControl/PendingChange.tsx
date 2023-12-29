@@ -136,6 +136,11 @@ const changeOriginMap = {
         icon: "box",
         displayName: change.displayName,
       },
+      [models.EnumBlockType.ModuleDto]: {
+        relativeUrl: `modules/${change.id}`,
+        icon: "box",
+        displayName: change.displayName,
+      },
       [models.EnumBlockType.ServiceTopics]: {
         relativeUrl: "not supported",
         icon: "",
