@@ -621,6 +621,7 @@ enum EnumBlockType {
   Module
   ModuleAction
   ModuleDto
+  ModuleDtoProperty
   PluginInstallation
   PluginOrder
   ProjectConfigurationSettings
@@ -733,6 +734,17 @@ enum EnumModuleActionType {
   ParentGet
   Read
   Update
+}
+
+enum EnumModuleDtoPropertyType {
+  Boolean
+  DTO
+  DateTime
+  Enum
+  Float
+  Int
+  Json
+  String
 }
 
 enum EnumPendingChangeAction {
@@ -1078,6 +1090,69 @@ input ModuleDtoOrderByInput {
   updatedAt: SortOrder
 }
 
+type ModuleDtoProperty implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  isArray: Boolean!
+  isOptional: Boolean!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  name: String!
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  propertyType: EnumModuleDtoPropertyType!
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input ModuleDtoPropertyCreateInput {
+  description: String
+  displayName: String!
+  inputParameters: [BlockInputOutputInput!]
+  isArray: Boolean!
+  isOptional: Boolean!
+  name: String
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  propertyType: EnumModuleDtoPropertyType!
+  resource: WhereParentIdInput!
+}
+
+input ModuleDtoPropertyOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input ModuleDtoPropertyUpdateInput {
+  description: String
+  displayName: String
+  isArray: Boolean!
+  isOptional: Boolean!
+  name: String
+  propertyType: EnumModuleDtoPropertyType!
+}
+
+input ModuleDtoPropertyWhereInput {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
+}
+
 input ModuleDtoUpdateInput {
   description: String
   displayName: String
@@ -1141,6 +1216,7 @@ type Mutation {
   createModule(data: ModuleCreateInput!): Module!
   createModuleAction(data: ModuleActionCreateInput!): ModuleAction!
   createModuleDto(data: ModuleDtoCreateInput!): ModuleDto!
+  createModuleDtoProperty(data: ModuleDtoPropertyCreateInput!): ModuleDtoProperty!
   createOneEntity(data: EntityCreateInput!): Entity!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
@@ -1162,6 +1238,7 @@ type Mutation {
   deleteModule(where: WhereUniqueInput!): Module!
   deleteModuleAction(where: WhereUniqueInput!): ModuleAction!
   deleteModuleDto(where: WhereUniqueInput!): ModuleDto!
+  deleteModuleDtoProperty(where: WhereUniqueInput!): ModuleDtoProperty!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   deleteProject(where: WhereUniqueInput!): Project
   deleteResource(where: WhereUniqueInput!): Resource
@@ -1194,6 +1271,7 @@ type Mutation {
   updateModule(data: ModuleUpdateInput!, where: WhereUniqueInput!): Module!
   updateModuleAction(data: ModuleActionUpdateInput!, where: WhereUniqueInput!): ModuleAction!
   updateModuleDto(data: ModuleDtoUpdateInput!, where: WhereUniqueInput!): ModuleDto!
+  updateModuleDtoProperty(data: ModuleDtoPropertyUpdateInput!, where: WhereUniqueInput!): ModuleDtoProperty!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
@@ -1429,6 +1507,8 @@ type Query {
   ModuleAction(where: WhereUniqueInput!): ModuleAction
   ModuleActions(orderBy: ModuleActionOrderByInput, skip: Int, take: Int, where: ModuleActionWhereInput): [ModuleAction!]!
   ModuleDto(where: WhereUniqueInput!): ModuleDto
+  ModuleDtoProperties(orderBy: ModuleDtoPropertyOrderByInput, skip: Int, take: Int, where: ModuleDtoPropertyWhereInput): [ModuleDtoProperty!]!
+  ModuleDtoProperty(where: WhereUniqueInput!): ModuleDtoProperty
   ModuleDtos(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
   Modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
   PluginInstallation(where: WhereUniqueInput!): PluginInstallation

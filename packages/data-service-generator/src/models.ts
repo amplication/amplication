@@ -659,6 +659,7 @@ export enum EnumBlockType {
   Module = 'Module',
   ModuleAction = 'ModuleAction',
   ModuleDto = 'ModuleDto',
+  ModuleDtoProperty = 'ModuleDtoProperty',
   PluginInstallation = 'PluginInstallation',
   PluginOrder = 'PluginOrder',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
@@ -771,6 +772,17 @@ export enum EnumModuleActionType {
   ParentGet = 'ParentGet',
   Read = 'Read',
   Update = 'Update'
+}
+
+export enum EnumModuleDtoPropertyType {
+  Boolean = 'Boolean',
+  Dto = 'DTO',
+  DateTime = 'DateTime',
+  Enum = 'Enum',
+  Float = 'Float',
+  Int = 'Int',
+  Json = 'Json',
+  String = 'String'
 }
 
 export enum EnumPendingChangeAction {
@@ -1106,6 +1118,69 @@ export type ModuleDtoOrderByInput = {
   updatedAt?: InputMaybe<SortOrder>;
 };
 
+export type ModuleDtoProperty = IBlock & {
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  inputParameters: Array<BlockInputOutput>;
+  isArray: Scalars['Boolean']['output'];
+  isOptional: Scalars['Boolean']['output'];
+  lockedAt?: Maybe<Scalars['DateTime']['output']>;
+  lockedByUser?: Maybe<User>;
+  lockedByUserId?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
+  propertyType: EnumModuleDtoPropertyType;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  versionNumber: Scalars['Float']['output'];
+};
+
+export type ModuleDtoPropertyCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName: Scalars['String']['input'];
+  inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  isArray: Scalars['Boolean']['input'];
+  isOptional: Scalars['Boolean']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  parentBlock?: InputMaybe<WhereParentIdInput>;
+  propertyType: EnumModuleDtoPropertyType;
+  resource: WhereParentIdInput;
+};
+
+export type ModuleDtoPropertyOrderByInput = {
+  blockType?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
+  displayName?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type ModuleDtoPropertyUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  isArray: Scalars['Boolean']['input'];
+  isOptional: Scalars['Boolean']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  propertyType: EnumModuleDtoPropertyType;
+};
+
+export type ModuleDtoPropertyWhereInput = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  displayName?: InputMaybe<StringFilter>;
+  id?: InputMaybe<StringFilter>;
+  parentBlock?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
 export type ModuleDtoUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
@@ -1169,6 +1244,7 @@ export type Mutation = {
   createModule: Module;
   createModuleAction: ModuleAction;
   createModuleDto: ModuleDto;
+  createModuleDtoProperty: ModuleDtoProperty;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
@@ -1190,6 +1266,7 @@ export type Mutation = {
   deleteModule: Module;
   deleteModuleAction: ModuleAction;
   deleteModuleDto: ModuleDto;
+  deleteModuleDtoProperty: ModuleDtoProperty;
   deletePluginInstallation: PluginInstallation;
   deleteProject?: Maybe<Project>;
   deleteResource?: Maybe<Resource>;
@@ -1222,6 +1299,7 @@ export type Mutation = {
   updateModule: Module;
   updateModuleAction: ModuleAction;
   updateModuleDto: ModuleDto;
+  updateModuleDtoProperty: ModuleDtoProperty;
   updatePluginInstallation: PluginInstallation;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
@@ -1333,6 +1411,11 @@ export type MutationCreateModuleDtoArgs = {
 };
 
 
+export type MutationCreateModuleDtoPropertyArgs = {
+  data: ModuleDtoPropertyCreateInput;
+};
+
+
 export type MutationCreateOneEntityArgs = {
   data: EntityCreateInput;
 };
@@ -1435,6 +1518,11 @@ export type MutationDeleteModuleActionArgs = {
 
 
 export type MutationDeleteModuleDtoArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteModuleDtoPropertyArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1607,6 +1695,12 @@ export type MutationUpdateModuleActionArgs = {
 
 export type MutationUpdateModuleDtoArgs = {
   data: ModuleDtoUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateModuleDtoPropertyArgs = {
+  data: ModuleDtoPropertyUpdateInput;
   where: WhereUniqueInput;
 };
 
@@ -1885,6 +1979,8 @@ export type Query = {
   ModuleAction?: Maybe<ModuleAction>;
   ModuleActions: Array<ModuleAction>;
   ModuleDto?: Maybe<ModuleDto>;
+  ModuleDtoProperties: Array<ModuleDtoProperty>;
+  ModuleDtoProperty?: Maybe<ModuleDtoProperty>;
   ModuleDtos: Array<ModuleDto>;
   Modules: Array<Module>;
   PluginInstallation?: Maybe<PluginInstallation>;
@@ -1948,6 +2044,19 @@ export type QueryModuleActionsArgs = {
 
 
 export type QueryModuleDtoArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModuleDtoPropertiesArgs = {
+  orderBy?: InputMaybe<ModuleDtoPropertyOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleDtoPropertyWhereInput>;
+};
+
+
+export type QueryModuleDtoPropertyArgs = {
   where: WhereUniqueInput;
 };
 
