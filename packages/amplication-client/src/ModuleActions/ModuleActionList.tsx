@@ -8,43 +8,51 @@ import {
   EnumTextWeight,
   FlexItem,
   List,
+  ListItem,
   Text,
   Toggle,
 } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect, useState } from "react";
-import useModule from "../Modules/hooks/useModule";
 import * as models from "../models";
 import { ModuleActionListItem } from "./ModuleActionListItem";
-import "./ToggleModule.scss";
+import NewModuleAction from "./NewModuleAction";
 import useModuleAction from "./hooks/useModuleAction";
+import useModule from "../Modules/hooks/useModule";
 
 const DATE_CREATED_FIELD = "createdAt";
 
 type Props = {
-  moduleId: string;
-  resourceId: string;
+  module: models.Module;
   displayMode: EnumApiOperationTagStyle;
   searchPhrase: string;
   disabled?: boolean;
 };
 const ModuleActionList = React.memo(
-  ({ moduleId, resourceId, displayMode, searchPhrase, disabled }: Props) => {
+  ({ module, displayMode, searchPhrase, disabled }: Props) => {
     const {
       findModuleActions,
       findModuleActionsData: data,
       findModuleActionsLoading: loading,
+      findModuleActionRefetch: refetch,
     } = useModuleAction();
 
-    const { getModuleData: moduleData, updateModule } = useModule(moduleId);
+    const moduleId = module.id;
+    const resourceId = module.resourceId;
+
+    const { updateModule } = useModule(moduleId);
 
     const [enabledActions, setEnabledActions] = useState<boolean>(
-      moduleData?.Module?.enabled || null
+      module?.enabled || null
     );
 
+    const onActionCreated = useCallback(() => {
+      refetch();
+    }, [refetch]);
+
     useEffect(() => {
-      if (!moduleData) return;
-      setEnabledActions(moduleData.Module.enabled);
-    }, [moduleData, moduleData?.Module?.enabled]);
+      if (!module) return;
+      setEnabledActions(module.enabled);
+    }, [module]);
 
     const onEnableChanged = useCallback(
       (value: boolean) => {
@@ -54,15 +62,12 @@ const ModuleActionList = React.memo(
               id: moduleId,
             },
             data: {
-              description: moduleData.Module.description,
-              displayName: moduleData.Module.description,
-              name: moduleData.Module.name,
               enabled: value,
             },
           },
         }).catch(console.error);
       },
-      [moduleId, moduleData, updateModule]
+      [moduleId, module, updateModule]
     );
 
     useEffect(() => {
@@ -105,29 +110,44 @@ const ModuleActionList = React.memo(
                   ></Toggle>
                 </div>
               }
+              end={
+                <NewModuleAction
+                  moduleId={moduleId}
+                  resourceId={resourceId}
+                  onActionCreated={onActionCreated}
+                />
+              }
             >
               <Text
                 textStyle={EnumTextStyle.Normal}
                 textColor={EnumTextColor.White}
                 textWeight={EnumTextWeight.Bold}
               >
-                {moduleData?.Module.name}
+                {module.name}
               </Text>
               <Text textStyle={EnumTextStyle.Description}>
-                {moduleData?.Module.description}
+                {module.description}
               </Text>
             </FlexItem>
           }
         >
-          {data?.ModuleActions?.map((action) => (
-            <ModuleActionListItem
-              key={action.id}
-              module={moduleData?.Module}
-              moduleAction={action}
-              tagStyle={displayMode}
-              disabled={disabled || !enabledActions}
-            />
-          ))}
+          {data?.ModuleActions?.length ? (
+            data?.ModuleActions?.map((action) => (
+              <ModuleActionListItem
+                key={action.id}
+                module={module}
+                moduleAction={action}
+                tagStyle={displayMode}
+                disabled={disabled || !enabledActions}
+              />
+            ))
+          ) : (
+            <ListItem>
+              <Text textStyle={EnumTextStyle.Description}>
+                No actions found
+              </Text>
+            </ListItem>
+          )}
         </List>
       </>
     );

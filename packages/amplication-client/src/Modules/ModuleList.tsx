@@ -1,6 +1,5 @@
 import {
   CircularProgress,
-  Dialog,
   EnumContentAlign,
   EnumFlexDirection,
   EnumFlexItemMargin,
@@ -29,7 +28,6 @@ type Props = {
 export const DATE_CREATED_FIELD = "createdAt";
 
 const ModuleList: React.FC<Props> = ({ resourceId }) => {
-  const [newModule, setNewModule] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
@@ -38,26 +36,19 @@ const ModuleList: React.FC<Props> = ({ resourceId }) => {
     findModulesData: data,
     findModulesError: errorLoading,
     findModulesLoading: loading,
+    findModuleRefetch: refetch,
   } = useModule();
-
-  const handleNewModuleClick = useCallback(() => {
-    setNewModule(!newModule);
-  }, [newModule, setNewModule]);
 
   const errorMessage =
     (errorLoading && formatError(errorLoading)) ||
     (error && formatError(error));
 
+  const handleModuleListChanged = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
   return (
     <>
-      <Dialog
-        isOpen={newModule}
-        onDismiss={handleNewModuleClick}
-        title="New Module"
-      >
-        <NewModule resourceId={resourceId} onSuccess={handleNewModuleClick} />
-      </Dialog>
-
       <FlexItem
         contentAlign={EnumContentAlign.Center}
         itemsAlign={EnumItemsAlign.Center}
@@ -73,13 +64,10 @@ const ModuleList: React.FC<Props> = ({ resourceId }) => {
 
         <FlexItem.FlexEnd>
           <FlexItem direction={EnumFlexDirection.Row}>
-            {/* <Button
-              buttonStyle={EnumButtonStyle.Primary}
-              onClick={handleNewModuleClick}
-              disabled={true}
-            >
-              Add Module
-            </Button> */}
+            <NewModule
+              resourceId={resourceId}
+              onModuleCreated={handleModuleListChanged}
+            />
           </FlexItem>
         </FlexItem.FlexEnd>
       </FlexItem>

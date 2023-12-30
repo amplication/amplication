@@ -7,7 +7,7 @@ import {
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
 import { pascalCase } from "pascal-case";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -22,6 +22,7 @@ import useModuleDto from "./hooks/useModuleDto";
 type Props = {
   resourceId: string;
   moduleId: string;
+  onDtoCreated?: (moduleAction: models.ModuleDto) => void;
 };
 
 const FORM_SCHEMA = {
@@ -44,7 +45,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const NewModuleDto = ({ resourceId, moduleId }: Props) => {
+const NewModuleDto = ({ resourceId, moduleId, onDtoCreated }: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -75,19 +76,22 @@ const NewModuleDto = ({ resourceId, moduleId }: Props) => {
             parentBlock: { connect: { id: moduleId } },
           },
         },
-      }).catch(console.error);
+      })
+        .catch(console.error)
+        .then((result) => {
+          if (result && result.data) {
+            if (onDtoCreated && result && result.data) {
+              onDtoCreated(result.data.createModuleDto);
+            }
+            history.push(
+              `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos/${result.data.createModuleDto.id}`
+            );
+          }
+        });
+      setDialogOpen(false);
     },
     [createModuleDto, resourceId, moduleId]
   );
-
-  useEffect(() => {
-    if (data) {
-      setDialogOpen(false);
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos`
-      );
-    }
-  }, [history, data, resourceId, currentWorkspace, currentProject, moduleId]);
 
   const errorMessage = formatError(error);
 

@@ -31,7 +31,7 @@ export const ModuleDtoListItem = ({ module, moduleDto }: Props) => {
       itemsAlign={EnumItemsAlign.Center}
       gap={EnumGapSize.Default}
     >
-      <Text textStyle={EnumTextStyle.Description}>{moduleDto.name}</Text>
+      <Text textStyle={EnumTextStyle.Normal}>{moduleDto.name}</Text>
     </ListItem>
   );
 };

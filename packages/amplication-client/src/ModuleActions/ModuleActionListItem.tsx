@@ -1,6 +1,8 @@
 import {
   ApiOperationTag,
+  Button,
   EnumApiOperationTagStyle,
+  EnumButtonStyle,
   EnumFlexDirection,
   EnumGapSize,
   EnumGqlApiOperationTagType,
@@ -14,6 +16,7 @@ import {
 } from "@amplication/ui/design-system";
 import { kebabCase } from "lodash";
 import { useCallback, useContext } from "react";
+import { NavLink } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import "./ToggleModule.scss";
@@ -85,11 +88,19 @@ export const ModuleActionListItem = ({
 
   return (
     <ListItem
-      to={actionUrl}
       showDefaultActionIcon={false}
       direction={EnumFlexDirection.Row}
       itemsAlign={EnumItemsAlign.Center}
       gap={EnumGapSize.Default}
+      end={
+        <NavLink to={actionUrl}>
+          <Button
+            type="button"
+            buttonStyle={EnumButtonStyle.Text}
+            icon="settings"
+          />
+        </NavLink>
+      }
       start={
         <div className="module-toggle-field">
           <Toggle

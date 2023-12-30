@@ -7,12 +7,14 @@ import {
   EnumTextWeight,
   FlexItem,
   List,
+  ListItem,
   Text,
 } from "@amplication/ui/design-system";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import useModule from "../Modules/hooks/useModule";
 import * as models from "../models";
 import { ModuleDtoListItem } from "./ModuleDtoListItem";
+import NewModuleDto from "./NewModuleDto";
 import useModuleDto from "./hooks/useModuleDto";
 
 const DATE_CREATED_FIELD = "createdAt";
@@ -26,6 +28,7 @@ const ModuleDtoList = React.memo(({ moduleId, resourceId }: Props) => {
     findModuleDtos,
     findModuleDtosData: data,
     findModuleDtosLoading: loading,
+    findModuleDtoRefetch: refetch,
   } = useModuleDto();
 
   const { getModuleData: moduleData } = useModule(moduleId);
@@ -44,6 +47,10 @@ const ModuleDtoList = React.memo(({ moduleId, resourceId }: Props) => {
     });
   }, [moduleId, findModuleDtos, resourceId]);
 
+  const onDtoCreated = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
   return (
     <>
       {loading && <CircularProgress centerToParent />}
@@ -51,7 +58,16 @@ const ModuleDtoList = React.memo(({ moduleId, resourceId }: Props) => {
         listStyle={EnumListStyle.Transparent}
         collapsible
         headerContent={
-          <FlexItem itemsAlign={EnumItemsAlign.Center}>
+          <FlexItem
+            itemsAlign={EnumItemsAlign.Center}
+            end={
+              <NewModuleDto
+                moduleId={moduleId}
+                resourceId={resourceId}
+                onDtoCreated={onDtoCreated}
+              />
+            }
+          >
             <Text
               textStyle={EnumTextStyle.Normal}
               textColor={EnumTextColor.White}
@@ -62,13 +78,19 @@ const ModuleDtoList = React.memo(({ moduleId, resourceId }: Props) => {
           </FlexItem>
         }
       >
-        {data?.ModuleDtos?.map((dto) => (
-          <ModuleDtoListItem
-            key={dto.id}
-            module={moduleData?.Module}
-            moduleDto={dto}
-          />
-        ))}
+        {data?.ModuleDtos?.length ? (
+          data?.ModuleDtos?.map((dto) => (
+            <ModuleDtoListItem
+              key={dto.id}
+              module={moduleData?.Module}
+              moduleDto={dto}
+            />
+          ))
+        ) : (
+          <ListItem>
+            <Text textStyle={EnumTextStyle.Description}>No DTOs found</Text>
+          </ListItem>
+        )}
       </List>
     </>
   );

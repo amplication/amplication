@@ -23,8 +23,8 @@ import useModule from "../Modules/hooks/useModule";
 import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
 import * as models from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
-import ModuleActionList from "./ModuleActionList";
 import "./ModuleActions.scss";
+import ModuleActionsAndTypes from "./ModuleActionsAndTypes";
 import { ModuleActionsDisabled } from "./ModuleActionsDisabled";
 import { ModuleActionsEnabled } from "./ModuleActionsEnabled";
 import "./ToggleModule.scss";
@@ -40,6 +40,8 @@ type Props = AppRouteProps & {
 const ModuleActions = React.memo(({ match }: Props) => {
   const { module: moduleId, resource: resourceId } = match.params;
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+
+  const { getModuleData: moduleData } = useModule(moduleId);
 
   const [displayMode, setDisplayMode] = useState<EnumApiOperationTagStyle>(
     EnumApiOperationTagStyle.REST
@@ -152,29 +154,24 @@ const ModuleActions = React.memo(({ match }: Props) => {
             </FlexItem>
           )}
 
-          {moduleId ? (
-            <FlexItem margin={EnumFlexItemMargin.Top}>
-              <ModuleActionList
-                moduleId={moduleId}
-                resourceId={resourceId}
-                searchPhrase={searchPhrase}
-                displayMode={displayMode}
-                disabled={disabled}
-              />
-            </FlexItem>
-          ) : (
-            moduleListData?.Modules.map((module) => (
-              <FlexItem key={module.id} margin={EnumFlexItemMargin.Top}>
-                <ModuleActionList
-                  moduleId={module.id}
-                  resourceId={resourceId}
+          {moduleId
+            ? moduleData && (
+                <ModuleActionsAndTypes
+                  module={moduleData?.Module}
                   searchPhrase={searchPhrase}
                   displayMode={displayMode}
                   disabled={disabled}
                 />
-              </FlexItem>
-            ))
-          )}
+              )
+            : moduleListData?.Modules.map((module) => (
+                <ModuleActionsAndTypes
+                  key={module.id}
+                  module={module}
+                  searchPhrase={searchPhrase}
+                  displayMode={displayMode}
+                  disabled={disabled}
+                />
+              ))}
         </>
       )}
     />
