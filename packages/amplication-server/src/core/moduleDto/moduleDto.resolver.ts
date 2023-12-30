@@ -11,6 +11,7 @@ import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { ModuleDtoProperty } from "../moduleDtoProperty/dto/ModuleDtoProperty";
 import { ModuleDtoPropertyService } from "../moduleDtoProperty/moduleDtoProperty.service";
+import { SortOrder } from "../../enums/SortOrder";
 
 @Resolver(() => ModuleDto)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -37,6 +38,7 @@ export class ModuleDtoResolver extends BlockTypeResolver(
   async properties(@Parent() moduleDto: ModuleDto) {
     return this.moduleDtoPropertyService.findMany({
       where: { parentBlock: { id: moduleDto.id } },
+      orderBy: { createdAt: SortOrder.Desc },
     });
   }
 }
