@@ -1,7 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { IBlock } from "../../../models";
-import { EnumModuleDtoPropertyType } from "./EnumModuleDtoPropertyType";
-
+import { PropertyTypeDef } from "./propertyTypes/PropertyTypeDef";
 @ObjectType({
   isAbstract: true,
   implements: [IBlock],
@@ -12,10 +11,10 @@ export class ModuleDtoProperty extends IBlock {
   })
   name!: string;
 
-  @Field(() => EnumModuleDtoPropertyType, {
+  @Field(() => [PropertyTypeDef], {
     nullable: false,
   })
-  propertyType!: keyof typeof EnumModuleDtoPropertyType;
+  propertyTypes!: PropertyTypeDef[];
 
   @Field(() => Boolean, {
     nullable: false,

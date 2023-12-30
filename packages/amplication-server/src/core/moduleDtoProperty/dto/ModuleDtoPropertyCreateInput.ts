@@ -1,6 +1,7 @@
 import { Field, InputType } from "@nestjs/graphql";
+import { JsonValue } from "type-fest";
 import { BlockCreateInput } from "../../block/dto/BlockCreateInput";
-import { EnumModuleDtoPropertyType } from "./EnumModuleDtoPropertyType";
+import { PropertyTypeDef } from "./propertyTypes/PropertyTypeDef";
 
 @InputType({
   isAbstract: true,
@@ -11,10 +12,10 @@ export class ModuleDtoPropertyCreateInput extends BlockCreateInput {
   })
   name!: string | null;
 
-  @Field(() => EnumModuleDtoPropertyType, {
+  @Field(() => [PropertyTypeDef], {
     nullable: false,
   })
-  propertyType!: keyof typeof EnumModuleDtoPropertyType;
+  propertyTypes!: PropertyTypeDef[] & JsonValue;
 
   @Field(() => Boolean, {
     nullable: false,

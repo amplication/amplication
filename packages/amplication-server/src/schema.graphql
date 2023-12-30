@@ -742,9 +742,11 @@ enum EnumModuleDtoPropertyType {
   DateTime
   Enum
   Float
-  Int
+  Integer
   Json
+  Null
   String
+  Undefined
 }
 
 enum EnumPendingChangeAction {
@@ -1107,7 +1109,7 @@ type ModuleDtoProperty implements IBlock {
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
   parentBlockId: String
-  propertyType: EnumModuleDtoPropertyType!
+  propertyTypes: [PropertyTypeDef!]!
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
@@ -1122,7 +1124,7 @@ input ModuleDtoPropertyCreateInput {
   name: String
   outputParameters: [BlockInputOutputInput!]
   parentBlock: WhereParentIdInput
-  propertyType: EnumModuleDtoPropertyType!
+  propertyTypes: [PropertyTypeDefInput!]!
   resource: WhereParentIdInput!
 }
 
@@ -1141,7 +1143,7 @@ input ModuleDtoPropertyUpdateInput {
   isArray: Boolean!
   isOptional: Boolean!
   name: String
-  propertyType: EnumModuleDtoPropertyType!
+  propertyTypes: [PropertyTypeDefInput!]!
 }
 
 input ModuleDtoPropertyWhereInput {
@@ -1487,6 +1489,18 @@ type PropertySelector {
 input PropertySelectorInput {
   include: Boolean!
   propertyName: String!
+}
+
+type PropertyTypeDef {
+  dtoId: String
+  isArray: Boolean!
+  type: EnumModuleDtoPropertyType!
+}
+
+input PropertyTypeDefInput {
+  dtoId: String
+  isArray: Boolean!
+  type: EnumModuleDtoPropertyType!
 }
 
 input ProvisionSubscriptionInput {
