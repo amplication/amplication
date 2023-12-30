@@ -19,7 +19,7 @@ const ModulesPage: React.FC<Props> = ({
 
   return (
     <PageContent
-      pageTitle={"Modules"}
+      pageTitle={"APIs"}
       sideContent={<ModuleList resourceId={resource} />}
     >
       {innerRoutes}

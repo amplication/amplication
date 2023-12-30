@@ -83,7 +83,7 @@ export const linksMap: {
     to: "/pending-changes",
   },
   modules: {
-    title: "Modules",
+    title: "APIs",
     icon: "box",
     to: "/modules/all",
     license: BillingFeature.CustomActions,
