@@ -1,0 +1,12 @@
+@import "../style/index.scss";
+
+.module-dto-property-form {
+  .toggle-field {
+    margin-bottom: 0;
+  }
+
+  .amp-name-field,
+  .select-field {
+    flex: 1;
+  }
+}

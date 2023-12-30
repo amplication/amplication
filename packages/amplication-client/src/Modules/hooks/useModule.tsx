@@ -44,7 +44,7 @@ const useModule = (moduleId?: string) => {
       const deletedModuleId = data.deleteModule.id;
       cache.modify({
         fields: {
-          Modules(existingModuleRefs, { readField }) {
+          modules(existingModuleRefs, { readField }) {
             return existingModuleRefs.filter(
               (moduleRef: Reference) =>
                 deletedModuleId !== readField("id", moduleRef)
@@ -74,7 +74,7 @@ const useModule = (moduleId?: string) => {
 
       cache.modify({
         fields: {
-          Modules(existingModuleRefs = [], { readField }) {
+          modules(existingModuleRefs = [], { readField }) {
             const newModuleRef = cache.writeFragment({
               data: newModule,
               fragment: MODULE_FIELDS_FRAGMENT,

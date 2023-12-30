@@ -24,6 +24,7 @@ export const DELETE_MODULE_DTO_PROPERTY = gql`
   mutation deleteModuleDtoProperty($where: WhereUniqueInput!) {
     deleteModuleDtoProperty(where: $where) {
       id
+      parentBlockId
     }
   }
 `;

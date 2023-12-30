@@ -1,6 +1,5 @@
 import { Reference, useLazyQuery, useMutation } from "@apollo/client";
 import { useContext } from "react";
-import { useHistory } from "react-router-dom";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import {
@@ -32,54 +31,16 @@ type TUpdateData = {
 };
 
 const useModuleAction = () => {
-  const {
-    addBlock,
-    addEntity,
-    currentWorkspace,
-    currentProject,
-    currentResource,
-  } = useContext(AppContext);
-
-  const history = useHistory();
+  const { addBlock, addEntity } = useContext(AppContext);
 
   const [
     deleteModuleAction,
     { error: deleteModuleActionError, loading: deleteModuleActionLoading },
   ] = useMutation<TDeleteData>(DELETE_MODULE_ACTION, {
-    update(cache, { data }) {
-      if (!data || data === undefined) return;
-      const deletedModuleActionId = data.deleteModuleAction.id;
-      cache.modify({
-        fields: {
-          ModuleActions(existingModuleActionRefs, { readField }) {
-            return existingModuleActionRefs.filter(
-              (moduleRef: Reference) =>
-                deletedModuleActionId !== readField("id", moduleRef)
-            );
-          },
-        },
-      });
-    },
     onCompleted: (data) => {
       addBlock(data.deleteModuleAction.id);
     },
   });
-
-  const deleteCurrentModuleAction = (data: models.ModuleAction) => {
-    deleteModuleAction({
-      variables: {
-        where: {
-          id: data.id,
-        },
-      },
-    })
-      .then((result) => {
-        history.push(
-          `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/all`
-        );
-      })
-      .catch(console.error);
-  };
 
   const [
     createModuleAction,
@@ -89,32 +50,8 @@ const useModuleAction = () => {
       loading: createModuleActionLoading,
     },
   ] = useMutation<TCreateData>(CREATE_MODULE_ACTION, {
-    update(cache, { data }) {
-      if (!data) return;
-
-      const newModuleAction = data.createModuleAction;
-
-      cache.modify({
-        fields: {
-          ModuleActions(existingModuleActionRefs = [], { readField }) {
-            const newModuleActionRef = cache.writeFragment({
-              data: newModuleAction,
-              fragment: MODULE_ACTION_FIELDS_FRAGMENT,
-            });
-
-            if (
-              existingModuleActionRefs.some(
-                (moduleRef: Reference) =>
-                  readField("id", moduleRef) === newModuleAction.id
-              )
-            ) {
-              return existingModuleActionRefs;
-            }
-
-            return [...existingModuleActionRefs, newModuleActionRef];
-          },
-        },
-      });
+    onCompleted: (data) => {
+      addBlock(data.createModuleAction.id);
     },
   });
 
@@ -149,7 +86,6 @@ const useModuleAction = () => {
 
   return {
     deleteModuleAction,
-    deleteCurrentModuleAction,
     deleteModuleActionError,
     deleteModuleActionLoading,
     createModuleAction,

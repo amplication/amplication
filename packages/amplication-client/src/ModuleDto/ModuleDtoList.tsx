@@ -32,7 +32,6 @@ const ModuleDtoList = React.memo(({ moduleId, resourceId }: Props) => {
   const { getModuleData: moduleData } = useModule(moduleId);
 
   useEffect(() => {
-    console.log("ModuleDtoList useEffect");
     findModuleDtos({
       variables: {
         where: {
@@ -50,7 +49,7 @@ const ModuleDtoList = React.memo(({ moduleId, resourceId }: Props) => {
     <>
       {loading && <CircularProgress centerToParent />}
       <List
-        listStyle={EnumListStyle.Dark}
+        listStyle={EnumListStyle.Transparent}
         collapsible
         headerContent={
           <FlexItem itemsAlign={EnumItemsAlign.Center}>
@@ -59,10 +58,7 @@ const ModuleDtoList = React.memo(({ moduleId, resourceId }: Props) => {
               textColor={EnumTextColor.White}
               textWeight={EnumTextWeight.Bold}
             >
-              {moduleData?.Module.name}
-            </Text>
-            <Text textStyle={EnumTextStyle.Description}>
-              {moduleData?.Module.description}
+              DTOs
             </Text>
           </FlexItem>
         }

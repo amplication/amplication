@@ -28,7 +28,7 @@ export const ModuleDtoPropertyListItem = ({
 
   if (!module) return null;
 
-  const dtoUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${moduleId}/dtos/${moduleDtoId}/property${moduleDtoProperty.id}`;
+  const dtoUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${moduleId}/dtos/${moduleDtoId}/properties/${moduleDtoProperty.id}`;
 
   return (
     <ListItem

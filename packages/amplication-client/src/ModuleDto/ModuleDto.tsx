@@ -86,17 +86,21 @@ const ModuleDto = ({ match }: Props) => {
     [updateModuleDto, moduleDtoId]
   );
 
+  const onPropertyListChanged = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
   const hasError = Boolean(error) || Boolean(updateModuleDtoError);
 
   const errorMessage = formatError(error) || formatError(updateModuleDtoError);
 
-  const isCustomDto = false;
+  const isCustomDto = true;
 
   return (
     <>
       <FlexItem>
         <TabContentTitle
-          title={data?.ModuleDto?.displayName}
+          title={data?.ModuleDto?.name}
           subTitle={data?.ModuleDto?.description}
         />
         <FlexItem.FlexEnd>
@@ -121,8 +125,17 @@ const ModuleDto = ({ match }: Props) => {
           defaultValues={data?.ModuleDto}
         />
       )}
-      <ModuleDtoPropertyList moduleDtoId={moduleDtoId} moduleId={moduleId} />
-      <NewModuleDtoProperty moduleDto={data?.ModuleDto} />
+
+      <TabContentTitle title="Properties" />
+      <NewModuleDtoProperty
+        moduleDto={data?.ModuleDto}
+        onPropertyAdd={onPropertyListChanged}
+      />
+      <ModuleDtoPropertyList
+        moduleDtoId={moduleDtoId}
+        onPropertyDelete={onPropertyListChanged}
+      />
+
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );

@@ -27,13 +27,13 @@ export const ModuleDtoListItem = ({ module, moduleDto }: Props) => {
 
   return (
     <ListItem
-      //to={dtoUrl} TODO: return in phase 2 (custom dtos implementation)
+      to={dtoUrl}
       showDefaultActionIcon={false}
       direction={EnumFlexDirection.Row}
       itemsAlign={EnumItemsAlign.Center}
       gap={EnumGapSize.Default}
     >
-      <Text textStyle={EnumTextStyle.Description}>{moduleDto.displayName}</Text>
+      <Text textStyle={EnumTextStyle.Description}>{moduleDto.name}</Text>
     </ListItem>
   );
 };

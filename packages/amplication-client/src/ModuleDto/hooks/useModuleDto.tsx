@@ -1,6 +1,5 @@
-import { Reference, useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { useContext } from "react";
-import { useHistory } from "react-router-dom";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import {
@@ -8,7 +7,6 @@ import {
   DELETE_MODULE_DTO,
   FIND_MODULE_DTOS,
   GET_MODULE_DTO,
-  MODULE_DTO_FIELDS_FRAGMENT,
   UPDATE_MODULE_DTO,
 } from "../queries/moduleDtosQueries";
 type TDeleteData = {
@@ -32,54 +30,16 @@ type TUpdateData = {
 };
 
 const useModuleDto = () => {
-  const {
-    addBlock,
-    addEntity,
-    currentWorkspace,
-    currentProject,
-    currentResource,
-  } = useContext(AppContext);
-
-  const history = useHistory();
+  const { addBlock, addEntity } = useContext(AppContext);
 
   const [
     deleteModuleDto,
     { error: deleteModuleDtoError, loading: deleteModuleDtoLoading },
   ] = useMutation<TDeleteData>(DELETE_MODULE_DTO, {
-    update(cache, { data }) {
-      if (!data || data === undefined) return;
-      const deletedModuleDtoId = data.deleteModuleDto.id;
-      cache.modify({
-        fields: {
-          ModuleDtos(existingModuleDtoRefs, { readField }) {
-            return existingModuleDtoRefs.filter(
-              (moduleRef: Reference) =>
-                deletedModuleDtoId !== readField("id", moduleRef)
-            );
-          },
-        },
-      });
-    },
     onCompleted: (data) => {
       addBlock(data.deleteModuleDto.id);
     },
   });
-
-  const deleteCurrentModuleDto = (data: models.ModuleDto) => {
-    deleteModuleDto({
-      variables: {
-        where: {
-          id: data.id,
-        },
-      },
-    })
-      .then((result) => {
-        history.push(
-          `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/all`
-        );
-      })
-      .catch(console.error);
-  };
 
   const [
     createModuleDto,
@@ -89,32 +49,8 @@ const useModuleDto = () => {
       loading: createModuleDtoLoading,
     },
   ] = useMutation<TCreateData>(CREATE_MODULE_DTO, {
-    update(cache, { data }) {
-      if (!data) return;
-
-      const newModuleDto = data.createModuleDto;
-
-      cache.modify({
-        fields: {
-          ModuleDtos(existingModuleDtoRefs = [], { readField }) {
-            const newModuleDtoRef = cache.writeFragment({
-              data: newModuleDto,
-              fragment: MODULE_DTO_FIELDS_FRAGMENT,
-            });
-
-            if (
-              existingModuleDtoRefs.some(
-                (moduleRef: Reference) =>
-                  readField("id", moduleRef) === newModuleDto.id
-              )
-            ) {
-              return existingModuleDtoRefs;
-            }
-
-            return [...existingModuleDtoRefs, newModuleDtoRef];
-          },
-        },
-      });
+    onCompleted: (data) => {
+      addBlock(data.createModuleDto.id);
     },
   });
 
@@ -149,7 +85,6 @@ const useModuleDto = () => {
 
   return {
     deleteModuleDto,
-    deleteCurrentModuleDto,
     deleteModuleDtoError,
     deleteModuleDtoLoading,
     createModuleDto,

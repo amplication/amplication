@@ -1,7 +1,7 @@
 import { Snackbar, TextField } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import { Form, Formik } from "formik";
-import { pascalCase } from "pascal-case";
+import { camelCase } from "camel-case";
 import { useCallback, useContext, useState } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
@@ -40,7 +40,7 @@ const NewModuleDtoProperty = ({ moduleDto, onPropertyAdd }: Props) => {
   const handleSubmit = useCallback(
     (data, actions) => {
       setAutoFocus(false);
-      const name = pascalCase(data.name.trim());
+      const name = camelCase(data.name.trim());
 
       createModuleDtoProperty({
         variables: {
@@ -52,7 +52,16 @@ const NewModuleDtoProperty = ({ moduleDto, onPropertyAdd }: Props) => {
             parentBlock: { connect: { id: moduleDto.id } },
           },
         },
-      }).catch(console.error);
+      })
+        .catch(console.error)
+        .then(() => {
+          actions.resetForm(INITIAL_VALUES);
+          setAutoFocus(true);
+
+          if (onPropertyAdd) {
+            onPropertyAdd(moduleDto);
+          }
+        });
     },
     [createModuleDtoProperty, moduleDto, onPropertyAdd]
   );

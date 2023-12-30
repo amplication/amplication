@@ -1,49 +1,46 @@
-import {
-  CircularProgress,
-  EnumListStyle,
-  List,
-} from "@amplication/ui/design-system";
+import { CircularProgress } from "@amplication/ui/design-system";
 import React, { useEffect } from "react";
 import useModuleDto from "../ModuleDto/hooks/useModuleDto";
-import { ModuleDtoPropertyListItem } from "./ModuleDtoPropertyListItem";
-
-const DATE_CREATED_FIELD = "createdAt";
+import * as models from "../models";
+import ModuleDtoProperty from "./ModuleDtoProperty";
 
 type Props = {
   moduleDtoId: string;
-  moduleId: string;
+  onPropertyDelete?: (property: models.ModuleDtoProperty) => void;
 };
-const ModuleDtoPropertyList = React.memo(({ moduleDtoId, moduleId }: Props) => {
-  const {
-    getModuleDto,
-    getModuleDtoData: data,
-    getModuleDtoError: errorLoading,
-    getModuleDtoLoading: loading,
-  } = useModuleDto();
+const ModuleDtoPropertyList = React.memo(
+  ({ moduleDtoId, onPropertyDelete }: Props) => {
+    const {
+      getModuleDto,
+      getModuleDtoData: data,
+      getModuleDtoError: errorLoading,
+      getModuleDtoLoading: loading,
+    } = useModuleDto();
 
-  useEffect(() => {
-    getModuleDto({
-      variables: {
-        moduleDtoId: moduleDtoId,
-      },
-    });
-  }, [moduleDtoId, getModuleDto]);
+    useEffect(() => {
+      if (!moduleDtoId) return;
 
-  return (
-    <>
-      {loading && <CircularProgress centerToParent />}
-      <List listStyle={EnumListStyle.Dark} collapsible>
+      getModuleDto({
+        variables: {
+          moduleDtoId: moduleDtoId,
+        },
+      });
+    }, [moduleDtoId, getModuleDto]);
+
+    return (
+      <>
+        {loading && <CircularProgress centerToParent />}
+
         {data?.ModuleDto?.properties.map((property) => (
-          <ModuleDtoPropertyListItem
+          <ModuleDtoProperty
             key={property.id}
-            moduleId={moduleId}
-            moduleDtoId={moduleDtoId}
             moduleDtoProperty={property}
+            onPropertyDelete={onPropertyDelete}
           />
         ))}
-      </List>
-    </>
-  );
-});
+      </>
+    );
+  }
+);
 
 export default ModuleDtoPropertyList;

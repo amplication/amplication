@@ -1,75 +1,33 @@
-import {
-  EnumFlexItemMargin,
-  EnumTextStyle,
-  FlexItem,
-  Snackbar,
-  TabContentTitle,
-  Text,
-} from "@amplication/ui/design-system";
-import { useCallback, useContext, useEffect } from "react";
-import { match, useHistory } from "react-router-dom";
+import { HorizontalRule, Snackbar } from "@amplication/ui/design-system";
+import { useCallback, useContext } from "react";
 import { AppContext } from "../context/appContext";
-import { AppRouteProps } from "../routes/routesUtil";
+import * as models from "../models";
 import { formatError } from "../util/error";
-import { DeleteModuleDtoProperty } from "./DeleteModuleDtoProperty";
 import ModuleDtoPropertyForm from "./ModuleDtoPropertyForm";
 import useModuleDtoProperty from "./hooks/useModuleDtoProperty";
 
-type Props = AppRouteProps & {
-  match: match<{
-    workspace: string;
-    project: string;
-    resource: string;
-    module: string;
-    moduleDtoProperty: string;
-  }>;
+type Props = {
+  moduleDtoProperty: models.ModuleDtoProperty;
+  onPropertyDelete?: (property: models.ModuleDtoProperty) => void;
 };
 
-const ModuleDtoProperty = ({ match }: Props) => {
-  const { moduleDtoProperty: moduleDtoPropertyId } = match?.params ?? {};
+const ModuleDtoProperty = ({ moduleDtoProperty, onPropertyDelete }: Props) => {
+  const { addEntity } = useContext(AppContext);
 
-  const {
-    addEntity,
-    resetPendingChangesIndicator,
-    setResetPendingChangesIndicator,
-  } = useContext(AppContext);
-  const history = useHistory();
+  const propertyId = moduleDtoProperty.id;
 
-  const {
-    getModuleDtoProperty,
-    getModuleDtoPropertyData: data,
-    getModuleDtoPropertyError: error,
-    getModuleDtoPropertyLoading: loading,
-    getModuleDtoPropertyRefetch: refetch,
-    updateModuleDtoProperty,
-    updateModuleDtoPropertyError,
-  } = useModuleDtoProperty();
-
-  useEffect(() => {
-    if (!moduleDtoPropertyId) return;
-    getModuleDtoProperty({
-      variables: {
-        moduleDtoPropertyId,
-      },
-    }).catch(console.error);
-  }, [moduleDtoPropertyId, getModuleDtoProperty]);
-
-  useEffect(() => {
-    if (!resetPendingChangesIndicator) return;
-
-    setResetPendingChangesIndicator(false);
-    refetch();
-  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator]);
+  const { updateModuleDtoProperty, updateModuleDtoPropertyError } =
+    useModuleDtoProperty();
 
   const handleSubmit = useCallback(
     (data) => {
       updateModuleDtoProperty({
         onCompleted: () => {
-          addEntity(moduleDtoPropertyId);
+          addEntity(propertyId);
         },
         variables: {
           where: {
-            id: moduleDtoPropertyId,
+            id: propertyId,
           },
           data: {
             ...data,
@@ -77,47 +35,25 @@ const ModuleDtoProperty = ({ match }: Props) => {
         },
       }).catch(console.error);
     },
-    [updateModuleDtoProperty, moduleDtoPropertyId]
+    [updateModuleDtoProperty, moduleDtoProperty]
   );
 
-  const hasError = Boolean(error) || Boolean(updateModuleDtoPropertyError);
+  const hasError = Boolean(updateModuleDtoPropertyError);
 
-  const errorMessage =
-    formatError(error) || formatError(updateModuleDtoPropertyError);
+  const errorMessage = formatError(updateModuleDtoPropertyError);
 
-  const isCustomDto = false;
+  const isCustomDto = true;
 
   return (
     <>
-      <FlexItem>
-        <TabContentTitle
-          title={data?.ModuleDtoProperty?.name}
-          subTitle={data?.ModuleDtoProperty?.description}
-        />
-        <FlexItem.FlexEnd>
-          {data?.ModuleDtoProperty && isCustomDto && (
-            <DeleteModuleDtoProperty
-              moduleDtoProperty={data?.ModuleDtoProperty}
-            />
-          )}
-        </FlexItem.FlexEnd>
-      </FlexItem>
-      {data?.ModuleDtoProperty && !isCustomDto && (
-        <FlexItem margin={EnumFlexItemMargin.Bottom}>
-          <Text textStyle={EnumTextStyle.Description}>
-            This is a default dto that was created automatically with the
-            entity. It cannot be deleted, and its name cannot be changed.
-          </Text>
-        </FlexItem>
-      )}
+      <ModuleDtoPropertyForm
+        isCustomDto={isCustomDto}
+        onSubmit={handleSubmit}
+        defaultValues={moduleDtoProperty}
+        onPropertyDelete={onPropertyDelete}
+      />
+      <HorizontalRule />
 
-      {!loading && (
-        <ModuleDtoPropertyForm
-          isCustomDto={isCustomDto}
-          onSubmit={handleSubmit}
-          defaultValues={data?.ModuleDtoProperty}
-        />
-      )}
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );
