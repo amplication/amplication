@@ -783,9 +783,11 @@ export enum EnumModuleDtoPropertyType {
   DateTime = 'DateTime',
   Enum = 'Enum',
   Float = 'Float',
-  Int = 'Int',
+  Integer = 'Integer',
   Json = 'Json',
-  String = 'String'
+  Null = 'Null',
+  String = 'String',
+  Undefined = 'Undefined'
 }
 
 export enum EnumPendingChangeAction {
@@ -1138,7 +1140,7 @@ export type ModuleDtoProperty = IBlock & {
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['String']['output']>;
-  propertyType: EnumModuleDtoPropertyType;
+  propertyTypes: Array<PropertyTypeDef>;
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
@@ -1153,7 +1155,7 @@ export type ModuleDtoPropertyCreateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  propertyType: EnumModuleDtoPropertyType;
+  propertyTypes: Array<PropertyTypeDefInput>;
   resource: WhereParentIdInput;
 };
 
@@ -1172,7 +1174,7 @@ export type ModuleDtoPropertyUpdateInput = {
   isArray: Scalars['Boolean']['input'];
   isOptional: Scalars['Boolean']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
-  propertyType: EnumModuleDtoPropertyType;
+  propertyTypes: Array<PropertyTypeDefInput>;
 };
 
 export type ModuleDtoPropertyWhereInput = {
@@ -1962,6 +1964,18 @@ export type PropertySelector = {
 export type PropertySelectorInput = {
   include: Scalars['Boolean']['input'];
   propertyName: Scalars['String']['input'];
+};
+
+export type PropertyTypeDef = {
+  dtoId?: Maybe<Scalars['String']['output']>;
+  isArray: Scalars['Boolean']['output'];
+  type: EnumModuleDtoPropertyType;
+};
+
+export type PropertyTypeDefInput = {
+  dtoId?: InputMaybe<Scalars['String']['input']>;
+  isArray: Scalars['Boolean']['input'];
+  type: EnumModuleDtoPropertyType;
 };
 
 export type ProvisionSubscriptionInput = {
