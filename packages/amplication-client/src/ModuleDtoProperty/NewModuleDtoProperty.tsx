@@ -26,11 +26,9 @@ const CLASS_NAME = "new-dto-property";
 
 const NewModuleDtoProperty = ({ moduleDto, onPropertyAdd }: Props) => {
   const { currentResource } = useContext(AppContext);
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
   const {
     createModuleDtoProperty,
-    createModuleDtoPropertyData: data,
     createModuleDtoPropertyError: error,
     createModuleDtoPropertyLoading: loading,
   } = useModuleDtoProperty();
@@ -63,7 +61,7 @@ const NewModuleDtoProperty = ({ moduleDto, onPropertyAdd }: Props) => {
           }
         });
     },
-    [createModuleDtoProperty, moduleDto, onPropertyAdd]
+    [createModuleDtoProperty, moduleDto, onPropertyAdd, currentResource?.id]
   );
 
   const errorMessage = formatError(error);

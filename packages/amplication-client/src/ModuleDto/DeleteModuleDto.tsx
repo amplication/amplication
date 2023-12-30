@@ -52,7 +52,14 @@ export const DeleteModuleDto = ({ moduleDto }: Props) => {
         );
       })
       .catch(console.error);
-  }, [deleteModuleDto, moduleDto]);
+  }, [
+    deleteModuleDto,
+    moduleDto,
+    currentProject,
+    currentResource,
+    currentWorkspace,
+    history,
+  ]);
 
   return (
     <>

@@ -52,7 +52,7 @@ export const DeleteModuleDtoProperty = ({
           onPropertyDelete(moduleDtoProperty);
         }
       });
-  }, [deleteModuleDtoProperty, moduleDtoProperty]);
+  }, [deleteModuleDtoProperty, moduleDtoProperty, onPropertyDelete]);
 
   return (
     <>

@@ -7,7 +7,6 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { useContext } from "react";
-import { useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 
@@ -17,7 +16,6 @@ type Props = {
 };
 
 export const ModuleDtoListItem = ({ module, moduleDto }: Props) => {
-  const history = useHistory();
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 

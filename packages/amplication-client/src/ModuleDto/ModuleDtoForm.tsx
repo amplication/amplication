@@ -3,14 +3,11 @@ import { Formik } from "formik";
 import { omit } from "lodash";
 import { useMemo } from "react";
 import { Form } from "../Components/Form";
-import * as models from "../models";
-import { validate } from "../util/formikValidateJsonSchema";
-import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
+import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
-import RestVerbSelectField from "../Components/RestVerbSelectField";
-import GqlOperationSelectField from "../Components/GqlOperationSelectField";
+import { validate } from "../util/formikValidateJsonSchema";
 
 type Props = {
   onSubmit: (values: models.ModuleDto) => void;

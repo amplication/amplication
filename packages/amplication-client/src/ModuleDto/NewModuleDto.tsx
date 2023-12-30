@@ -18,7 +18,6 @@ import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import useModuleDto from "./hooks/useModuleDto";
-import { kebabCase } from "lodash";
 
 type Props = {
   resourceId: string;
@@ -78,7 +77,7 @@ const NewModuleDto = ({ resourceId, moduleId }: Props) => {
         },
       }).catch(console.error);
     },
-    [createModuleDto, resourceId]
+    [createModuleDto, resourceId, moduleId]
   );
 
   useEffect(() => {
@@ -88,7 +87,7 @@ const NewModuleDto = ({ resourceId, moduleId }: Props) => {
         `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos`
       );
     }
-  }, [history, data, resourceId, currentWorkspace, currentProject]);
+  }, [history, data, resourceId, currentWorkspace, currentProject, moduleId]);
 
   const errorMessage = formatError(error);
 

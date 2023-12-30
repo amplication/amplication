@@ -35,7 +35,7 @@ const ModuleDtoProperty = ({ moduleDtoProperty, onPropertyDelete }: Props) => {
         },
       }).catch(console.error);
     },
-    [updateModuleDtoProperty, moduleDtoProperty]
+    [updateModuleDtoProperty, addEntity, propertyId]
   );
 
   const hasError = Boolean(updateModuleDtoPropertyError);

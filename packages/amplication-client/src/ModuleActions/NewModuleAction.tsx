@@ -81,7 +81,7 @@ const NewModuleAction = ({ resourceId, moduleId }: Props) => {
         },
       }).catch(console.error);
     },
-    [createModuleAction, resourceId]
+    [createModuleAction, resourceId, moduleId]
   );
 
   useEffect(() => {
@@ -90,7 +90,7 @@ const NewModuleAction = ({ resourceId, moduleId }: Props) => {
         `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/actions/${data.createModuleAction.id}`
       );
     }
-  }, [history, data, resourceId, currentWorkspace, currentProject]);
+  }, [history, data, resourceId, currentWorkspace, currentProject, moduleId]);
 
   const errorMessage = formatError(error);
 

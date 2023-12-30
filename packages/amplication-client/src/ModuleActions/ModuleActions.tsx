@@ -4,37 +4,31 @@ import {
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumItemsAlign,
-  FlexItem,
-  Icon,
-  SearchField,
-  TabContentTitle,
-  Toggle,
-  Text,
-  EnumTextStyle,
   EnumTextColor,
-  EnumTextWeight,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+  Toggle,
 } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect, useState } from "react";
 
-import { match } from "react-router-dom";
-import { AppRouteProps } from "../routes/routesUtil";
-import ModuleActionList from "./ModuleActionList";
-import NewModuleAction from "./NewModuleAction";
-import useModule from "../Modules/hooks/useModule";
-import * as models from "../models";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { useQuery } from "@apollo/client";
-import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
-import "./ToggleModule.scss";
+import { match } from "react-router-dom";
 import {
   EntitlementType,
   FeatureIndicatorContainer,
 } from "../Components/FeatureIndicatorContainer";
-import { BillingFeature } from "@amplication/util-billing-types";
+import useModule from "../Modules/hooks/useModule";
+import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
+import * as models from "../models";
+import { AppRouteProps } from "../routes/routesUtil";
+import ModuleActionList from "./ModuleActionList";
 import "./ModuleActions.scss";
-import { ModuleActionsEnabled } from "./ModuleActionsEnabled";
 import { ModuleActionsDisabled } from "./ModuleActionsDisabled";
+import { ModuleActionsEnabled } from "./ModuleActionsEnabled";
+import "./ToggleModule.scss";
 
-const DATE_CREATED_FIELD = "createdAt";
 const CLASS_NAME = "module-actions";
 
 type Props = AppRouteProps & {
@@ -46,13 +40,12 @@ type Props = AppRouteProps & {
 const ModuleActions = React.memo(({ match }: Props) => {
   const { module: moduleId, resource: resourceId } = match.params;
   const [searchPhrase, setSearchPhrase] = useState<string>("");
-  const [error, setError] = useState<Error>();
 
   const [displayMode, setDisplayMode] = useState<EnumApiOperationTagStyle>(
     EnumApiOperationTagStyle.REST
   );
 
-  const { data, error: serviceSettingsError } = useQuery<{
+  const { data } = useQuery<{
     serviceSettings: models.ServiceSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {

@@ -8,7 +8,6 @@ import {
   VerticalNavigationItem,
 } from "@amplication/ui/design-system";
 import React, { useContext, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
@@ -45,9 +44,7 @@ export const ModuleDtoLinkList = React.memo(
           },
         },
       });
-    }, [moduleId, findModuleDtos]);
-
-    const history = useHistory();
+    }, [moduleId, findModuleDtos, resourceId]);
 
     const errorMessage = formatError(errorLoading);
 

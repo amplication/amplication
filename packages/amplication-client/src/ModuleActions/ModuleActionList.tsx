@@ -14,10 +14,9 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import useModule from "../Modules/hooks/useModule";
 import * as models from "../models";
-import { formatError } from "../util/error";
 import { ModuleActionListItem } from "./ModuleActionListItem";
-import useModuleAction from "./hooks/useModuleAction";
 import "./ToggleModule.scss";
+import useModuleAction from "./hooks/useModuleAction";
 
 const DATE_CREATED_FIELD = "createdAt";
 
@@ -30,12 +29,9 @@ type Props = {
 };
 const ModuleActionList = React.memo(
   ({ moduleId, resourceId, displayMode, searchPhrase, disabled }: Props) => {
-    const [error, setError] = useState<Error>();
-
     const {
       findModuleActions,
       findModuleActionsData: data,
-      findModuleActionsError: errorLoading,
       findModuleActionsLoading: loading,
     } = useModuleAction();
 
@@ -88,10 +84,7 @@ const ModuleActionList = React.memo(
           },
         },
       });
-    }, [moduleId, searchPhrase, findModuleActions]);
-
-    const errorMessage =
-      formatError(errorLoading) || (error && formatError(error));
+    }, [moduleId, searchPhrase, findModuleActions, resourceId]);
 
     return (
       <>

@@ -18,10 +18,9 @@ import { formatError } from "../util/error";
 import { ModuleListItem } from "./ModuleListItem";
 import NewModule from "./NewModule";
 
-import { Button, EnumButtonStyle } from "../Components/Button";
+import { AppContext } from "../context/appContext";
 import { pluralize } from "../util/pluralize";
 import useModule from "./hooks/useModule";
-import { AppContext } from "../context/appContext";
 
 type Props = {
   resourceId: string;
@@ -30,7 +29,6 @@ type Props = {
 export const DATE_CREATED_FIELD = "createdAt";
 
 const ModuleList: React.FC<Props> = ({ resourceId }) => {
-  const pageTitle = "Modules";
   const [newModule, setNewModule] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
   const { currentWorkspace, currentProject, currentResource } =

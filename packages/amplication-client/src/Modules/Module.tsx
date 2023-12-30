@@ -47,7 +47,7 @@ const Module = () => {
 
     setResetPendingChangesIndicator(false);
     refetch();
-  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator]);
+  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator, refetch]);
 
   const handleSubmit = useCallback(
     (data) => {

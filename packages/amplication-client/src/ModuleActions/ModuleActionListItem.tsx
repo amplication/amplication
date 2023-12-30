@@ -14,11 +14,10 @@ import {
 } from "@amplication/ui/design-system";
 import { kebabCase } from "lodash";
 import { useCallback, useContext } from "react";
-import { useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
-import useModuleAction from "./hooks/useModuleAction";
 import "./ToggleModule.scss";
+import useModuleAction from "./hooks/useModuleAction";
 
 type Props = {
   module: models.Module;
@@ -55,7 +54,6 @@ export const ModuleActionListItem = ({
   tagStyle,
   disabled,
 }: Props) => {
-  const history = useHistory();
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
   const { updateModuleAction } = useModuleAction();
@@ -78,7 +76,7 @@ export const ModuleActionListItem = ({
         },
       }).catch(console.error);
     },
-    [updateModuleAction, moduleAction.id, moduleAction]
+    [updateModuleAction, moduleAction]
   );
 
   if (!module) return null;

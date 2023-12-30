@@ -13,7 +13,6 @@ const ModuleDtoPropertyList = React.memo(
     const {
       getModuleDto,
       getModuleDtoData: data,
-      getModuleDtoError: errorLoading,
       getModuleDtoLoading: loading,
     } = useModuleDto();
 

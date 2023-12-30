@@ -1,6 +1,5 @@
 import {
   EnumFlexDirection,
-  EnumFlexItemMargin,
   EnumItemsAlign,
   FlexItem,
   ToggleField,
@@ -8,13 +7,13 @@ import {
 import { Formik } from "formik";
 import { omit } from "lodash";
 import { useMemo } from "react";
+import DtoPropertyTypeSelectField from "../Components/DtoPropertyTypeSelectField";
 import { Form } from "../Components/Form";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
-import DtoPropertyTypeSelectField from "../Components/DtoPropertyTypeSelectField";
 import { DeleteModuleDtoProperty } from "./DeleteModuleDtoProperty";
 import "./ModuleDtoPropertyForm.scss";
 

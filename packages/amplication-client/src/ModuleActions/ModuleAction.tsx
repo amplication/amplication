@@ -7,14 +7,14 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { useCallback, useContext, useEffect } from "react";
-import { match, useHistory } from "react-router-dom";
+import { match } from "react-router-dom";
 import { AppContext } from "../context/appContext";
+import * as models from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import { DeleteModuleAction } from "./DeleteModuleAction";
 import ModuleActionForm from "./ModuleActionForm";
 import useModuleAction from "./hooks/useModuleAction";
-import * as models from "../models";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -30,14 +30,10 @@ const ModuleAction = ({ match }: Props) => {
   const { moduleAction: moduleActionId } = match?.params ?? {};
 
   const {
-    currentWorkspace,
-    currentProject,
-    currentResource,
     addEntity,
     resetPendingChangesIndicator,
     setResetPendingChangesIndicator,
   } = useContext(AppContext);
-  const history = useHistory();
 
   const {
     getModuleAction,
@@ -63,7 +59,7 @@ const ModuleAction = ({ match }: Props) => {
 
     setResetPendingChangesIndicator(false);
     refetch();
-  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator]);
+  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator, refetch]);
 
   const handleSubmit = useCallback(
     (data) => {
@@ -81,7 +77,7 @@ const ModuleAction = ({ match }: Props) => {
         },
       }).catch(console.error);
     },
-    [updateModuleAction, moduleActionId]
+    [updateModuleAction, moduleActionId, addEntity]
   );
 
   const hasError = Boolean(error) || Boolean(updateModuleActionError);

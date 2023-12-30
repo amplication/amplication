@@ -7,16 +7,15 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { useCallback, useContext, useEffect } from "react";
-import { match, useHistory } from "react-router-dom";
+import { match } from "react-router-dom";
+import ModuleDtoPropertyList from "../ModuleDtoProperty/ModuleDtoPropertyList";
+import NewModuleDtoProperty from "../ModuleDtoProperty/NewModuleDtoProperty";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import { DeleteModuleDto } from "./DeleteModuleDto";
 import ModuleDtoForm from "./ModuleDtoForm";
 import useModuleDto from "./hooks/useModuleDto";
-import * as models from "../models";
-import ModuleDtoPropertyList from "../ModuleDtoProperty/ModuleDtoPropertyList";
-import NewModuleDtoProperty from "../ModuleDtoProperty/NewModuleDtoProperty";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -29,17 +28,13 @@ type Props = AppRouteProps & {
 };
 
 const ModuleDto = ({ match }: Props) => {
-  const { moduleDto: moduleDtoId, module: moduleId } = match?.params ?? {};
+  const { moduleDto: moduleDtoId } = match?.params ?? {};
 
   const {
-    currentWorkspace,
-    currentProject,
-    currentResource,
     addEntity,
     resetPendingChangesIndicator,
     setResetPendingChangesIndicator,
   } = useContext(AppContext);
-  const history = useHistory();
 
   const {
     getModuleDto,
@@ -65,7 +60,7 @@ const ModuleDto = ({ match }: Props) => {
 
     setResetPendingChangesIndicator(false);
     refetch();
-  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator]);
+  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator, refetch]);
 
   const handleSubmit = useCallback(
     (data) => {
@@ -83,7 +78,7 @@ const ModuleDto = ({ match }: Props) => {
         },
       }).catch(console.error);
     },
-    [updateModuleDto, moduleDtoId]
+    [updateModuleDto, moduleDtoId, addEntity]
   );
 
   const onPropertyListChanged = useCallback(() => {

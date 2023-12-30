@@ -25,7 +25,6 @@ const ModuleDtoList = React.memo(({ moduleId, resourceId }: Props) => {
   const {
     findModuleDtos,
     findModuleDtosData: data,
-    findModuleDtosError: errorLoading,
     findModuleDtosLoading: loading,
   } = useModuleDto();
 
@@ -43,7 +42,7 @@ const ModuleDtoList = React.memo(({ moduleId, resourceId }: Props) => {
         },
       },
     });
-  }, [moduleId, findModuleDtos]);
+  }, [moduleId, findModuleDtos, resourceId]);
 
   return (
     <>

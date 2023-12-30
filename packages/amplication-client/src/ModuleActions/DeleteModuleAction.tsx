@@ -52,7 +52,14 @@ export const DeleteModuleAction = ({ moduleAction }: Props) => {
         );
       })
       .catch(console.error);
-  }, [deleteModuleAction, moduleAction]);
+  }, [
+    deleteModuleAction,
+    moduleAction,
+    currentProject,
+    currentResource,
+    currentWorkspace,
+    history,
+  ]);
 
   return (
     <>
