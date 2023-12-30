@@ -74,6 +74,8 @@ export class ModuleDtoPropertyService extends BlockTypeService<
     if (!existingDto) {
       throw new AmplicationError(`Module DTO not found, ID: ${args.where.id}`);
     }
+    //display name is not used, but we need to keep it unique - so we always use the value of the name field
+    args.data.displayName = args.data.name || undefined;
 
     return super.update(args, user);
   }
