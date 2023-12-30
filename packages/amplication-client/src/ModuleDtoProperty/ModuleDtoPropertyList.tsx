@@ -1,4 +1,10 @@
-import { CircularProgress } from "@amplication/ui/design-system";
+import {
+  CircularProgress,
+  EnumTextStyle,
+  List,
+  ListItem,
+  Text,
+} from "@amplication/ui/design-system";
 import React, { useEffect } from "react";
 import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 import * as models from "../models";
@@ -30,13 +36,18 @@ const ModuleDtoPropertyList = React.memo(
       <>
         {loading && <CircularProgress centerToParent />}
 
-        {data?.ModuleDto?.properties.map((property) => (
-          <ModuleDtoProperty
-            key={property.id}
-            moduleDtoProperty={property}
-            onPropertyDelete={onPropertyDelete}
-          />
-        ))}
+        <List
+          headerContent={<Text textStyle={EnumTextStyle.Tag}>Properties</Text>}
+        >
+          {data?.ModuleDto?.properties.map((property) => (
+            <ListItem key={property.id}>
+              <ModuleDtoProperty
+                moduleDtoProperty={property}
+                onPropertyDelete={onPropertyDelete}
+              />
+            </ListItem>
+          ))}
+        </List>
       </>
     );
   }
