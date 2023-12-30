@@ -13,7 +13,11 @@ export const MODULE_DTO_FIELDS_FRAGMENT = gql`
       id
       name
       description
-      propertyType
+      propertyTypes {
+        type
+        isArray
+        dtoId
+      }
       isOptional
       isArray
       lockedByUserId

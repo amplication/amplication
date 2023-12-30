@@ -1,38 +1,53 @@
 import { SelectField, SelectFieldProps } from "@amplication/ui/design-system";
 import { EnumModuleDtoPropertyType } from "../models";
+import * as models from "../models";
 
 type Props = Omit<SelectFieldProps, "options">;
 
-const restVerbsMapping = [
-  {
+export const typeMapping: {
+  [key in models.EnumModuleDtoPropertyType]: {
+    label: string;
+  };
+} = {
+  [EnumModuleDtoPropertyType.Boolean]: {
     label: "Boolean",
-    value: EnumModuleDtoPropertyType.Boolean,
   },
-  {
+  [EnumModuleDtoPropertyType.DateTime]: {
     label: "DateTime",
-    value: EnumModuleDtoPropertyType.DateTime,
   },
-
-  {
+  [EnumModuleDtoPropertyType.Float]: {
     label: "Float",
-    value: EnumModuleDtoPropertyType.Float,
   },
-  {
+  [EnumModuleDtoPropertyType.Integer]: {
     label: "Integer",
-    value: EnumModuleDtoPropertyType.Int,
   },
-  {
+  [EnumModuleDtoPropertyType.Json]: {
     label: "Json",
-    value: EnumModuleDtoPropertyType.Json,
   },
-  {
+  [EnumModuleDtoPropertyType.String]: {
     label: "String",
-    value: EnumModuleDtoPropertyType.String,
   },
-];
+  [EnumModuleDtoPropertyType.Dto]: {
+    label: "Dto",
+  },
+  [EnumModuleDtoPropertyType.Enum]: {
+    label: "Enum",
+  },
+  [EnumModuleDtoPropertyType.Null]: {
+    label: "Null",
+  },
+  [EnumModuleDtoPropertyType.Undefined]: {
+    label: "Undefined",
+  },
+};
+
+const options = Object.values(EnumModuleDtoPropertyType).map((value) => ({
+  label: typeMapping[value].label,
+  value,
+}));
 
 const DtoPropertyTypeSelectField = ({ ...props }: Props) => {
-  return <SelectField {...props} options={restVerbsMapping} />;
+  return <SelectField {...props} options={options} />;
 };
 
 export default DtoPropertyTypeSelectField;

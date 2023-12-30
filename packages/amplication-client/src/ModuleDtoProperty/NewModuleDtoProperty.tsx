@@ -15,11 +15,17 @@ type Props = {
   onPropertyAdd?: (property: models.ModuleDto) => void;
 };
 
-const INITIAL_VALUES = {
+const INITIAL_VALUES: Partial<models.ModuleDtoProperty> = {
   name: "",
   isArray: false,
   isOptional: false,
-  propertyType: models.EnumModuleDtoPropertyType.String,
+  propertyTypes: [
+    {
+      isArray: false,
+      dtoId: undefined,
+      type: models.EnumModuleDtoPropertyType.String,
+    },
+  ],
 };
 
 const CLASS_NAME = "new-dto-property";
