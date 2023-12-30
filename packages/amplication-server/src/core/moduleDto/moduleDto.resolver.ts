@@ -38,7 +38,7 @@ export class ModuleDtoResolver extends BlockTypeResolver(
   async properties(@Parent() moduleDto: ModuleDto) {
     return this.moduleDtoPropertyService.findMany({
       where: { parentBlock: { id: moduleDto.id } },
-      orderBy: { createdAt: SortOrder.Desc },
+      orderBy: { createdAt: SortOrder.Asc },
     });
   }
 }
