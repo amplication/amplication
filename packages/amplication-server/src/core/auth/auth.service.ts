@@ -554,8 +554,8 @@ export class AuthService {
       user.id
     );
 
-    const resource = await this.resourceService.createPreviewService(
-      {
+    const resource = await this.resourceService.createPreviewService({
+      args: {
         data: {
           name: "Monolith",
           description: "Monolith Service",
@@ -580,8 +580,10 @@ export class AuthService {
           },
         },
       },
-      user
-    );
+      user,
+      pluginsToInstall: [],
+      requireAuthenticationEntity: true,
+    });
 
     return {
       user,

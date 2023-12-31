@@ -72,6 +72,13 @@ import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginI
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
 
+export type CreatePreviewServiceArgs = {
+  args: CreateOneResourceArgs;
+  user: User;
+  pluginsToInstall: PluginInstallationCreateInput[];
+  requireAuthenticationEntity: boolean;
+};
+
 @Injectable()
 export class ResourceService {
   constructor(
@@ -382,12 +389,12 @@ export class ResourceService {
     return resource;
   }
 
-  async createPreviewService(
-    args: CreateOneResourceArgs,
-    user: User,
-    requireAuthenticationEntity = true,
-    wizardType = "create resource"
-  ): Promise<Resource> {
+  async createPreviewService({
+    args,
+    user,
+    pluginsToInstall,
+    requireAuthenticationEntity,
+  }: CreatePreviewServiceArgs): Promise<Resource> {
     const { serviceSettings, gitRepository, ...rest } = args.data;
     const resource = await this.createResource(
       {
@@ -398,7 +405,7 @@ export class ResourceService {
       },
       user,
       gitRepository,
-      wizardType
+      "create resource"
     );
 
     await this.prisma.resourceRole.create({
@@ -447,6 +454,7 @@ export class ResourceService {
     const plugins = [
       defaultDBPlugin,
       ...(requireAuthenticationEntity ? defaultAuthPlugins : []),
+      ...pluginsToInstall,
     ];
 
     for (const plugin of plugins) {
