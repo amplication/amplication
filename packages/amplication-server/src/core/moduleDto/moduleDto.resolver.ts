@@ -1,4 +1,4 @@
-import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
+import { Parent, ResolveField, Resolver, Query, Args } from "@nestjs/graphql";
 import { ModuleDtoService } from "./moduleDto.service";
 import { FindManyModuleDtoArgs } from "./dto/FindManyModuleDtoArgs";
 import { BlockTypeResolver } from "../block/blockType.resolver";
@@ -12,6 +12,8 @@ import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { ModuleDtoProperty } from "../moduleDtoProperty/dto/ModuleDtoProperty";
 import { ModuleDtoPropertyService } from "../moduleDtoProperty/moduleDtoProperty.service";
 import { SortOrder } from "../../enums/SortOrder";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 
 @Resolver(() => ModuleDto)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -32,6 +34,15 @@ export class ModuleDtoResolver extends BlockTypeResolver(
     private readonly moduleDtoPropertyService: ModuleDtoPropertyService
   ) {
     super();
+  }
+
+  @Query(() => [ModuleDto])
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.resource.id")
+  @UseGuards(GqlAuthGuard)
+  async availableDtosForResource(
+    @Args() args: FindManyModuleDtoArgs
+  ): Promise<ModuleDto[]> {
+    return this.service.availableDtosForResource(args);
   }
 
   @ResolveField(() => [ModuleDtoProperty])

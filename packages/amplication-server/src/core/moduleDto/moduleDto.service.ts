@@ -35,6 +35,14 @@ export class ModuleDtoService extends BlockTypeService<
     super(blockService);
   }
 
+  async availableDtosForResource(
+    args: FindManyModuleDtoArgs
+  ): Promise<ModuleDto[]> {
+    //todo: extend query to return shared dtos from other resources in the project
+
+    return super.findMany(args);
+  }
+
   validateModuleDtoName(moduleDtoName: string): void {
     const regex = /^[a-zA-Z0-9._-]{1,249}$/;
     if (!regex.test(moduleDtoName)) {

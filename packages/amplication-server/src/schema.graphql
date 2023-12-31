@@ -1534,6 +1534,7 @@ type Query {
   Topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
   account: Account!
   action(where: WhereUniqueInput!): Action!
+  availableDtosForResource(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
   block(where: WhereUniqueInput!): Block!
   blocks(orderBy: BlockOrderByInput, skip: Int, take: Int, where: BlockWhereInput): [Block!]!
   build(where: WhereUniqueInput!): Build!
