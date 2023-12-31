@@ -81,9 +81,19 @@ export default function ModelOrganizer({
     setReadOnly(false);
   }, [setReadOnly]);
 
-  const onCancelChangesClick = useCallback(() => {
-    //todo: cancel changes
-    setReadOnly(false);
+  const onCancelChangesClick = useCallback(async () => {
+    const { nodes, edges } = await entitiesToNodesAndEdges(
+      resources,
+      showRelationDetails
+    );
+
+    setChanges({
+      movedEntities: [],
+      newServices: [],
+    });
+    setEdges(edges);
+    setNodes(nodes);
+    setReadOnly(true);
   }, [setReadOnly]);
 
   useEffect(() => {
