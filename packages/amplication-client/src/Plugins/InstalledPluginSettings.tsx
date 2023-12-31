@@ -35,7 +35,7 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const generatedKey = () => Math.random().toString(36).slice(2, 7);
+export const generatedKey = () => Math.random().toString(36).slice(2, 7);
 
 const InstalledPluginSettings: React.FC<Props> = ({
   match,

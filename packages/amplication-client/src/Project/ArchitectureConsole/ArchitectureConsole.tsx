@@ -2,15 +2,17 @@ import "reactflow/dist/style.css";
 import "./ArchitectureConsole.scss";
 import {
   Button,
+  Dialog,
   EnumButtonStyle,
   SearchField,
 } from "@amplication/ui/design-system";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { formatError } from "../../util/error";
 import ModelOrganizer from "./ModelOrganizer";
 import { ModelChanges } from "./types";
 import useArchitectureConsole from "./hooks/useArchitectureConsole";
 import * as models from "../../models";
+import NewTempResource from "./NewTempResource";
 
 export const CLASS_NAME = "architecture-console";
 
@@ -19,30 +21,36 @@ export type ResourceFilter = models.Resource & {
 };
 
 export default function ArchitectureConsole() {
+  const [newService, setNewService] = useState<boolean>(false);
+
   const {
     loadingResources,
     resourcesError,
-    createResourceEntities,
     handleSearchChange,
     filteredResources,
     handleResourceFilterChanged,
+    loadingCreateService,
+    loadingCreateEntities,
+    handleNewServiceSuccess,
+    handleApplyPlanProcess,
   } = useArchitectureConsole();
 
-  const handleApplyPlan = useCallback((data: ModelChanges) => {
-    data.newServices.forEach((service) => {
-      //todo: create new resource
-      //update target resourceId in moveEntities list
-    });
+  const handleNewServiceClick = useCallback(() => {
+    setNewService(!newService);
+  }, [newService, setNewService]);
 
-    createResourceEntities({
-      variables: {
-        data: {
-          entitiesToCopy: data.movedEntities,
-          //...data,
-        },
-      },
-    }).catch(console.error);
+  const handleApplyPlan = useCallback((data: ModelChanges) => {
+    handleApplyPlanProcess(data);
   }, []);
+
+  const triggerNewServiceSuccess = useCallback(
+    (data: ResourceFilter) => {
+      handleNewServiceSuccess(data);
+
+      setNewService(false);
+    },
+    [newService, setNewService]
+  );
 
   const errorMessage = resourcesError && formatError(resourcesError);
 
@@ -50,7 +58,7 @@ export default function ArchitectureConsole() {
     <>
       <div className={`${CLASS_NAME}__resources`}>
         <span>Filtered</span>
-        {filteredResources?.map(
+        {filteredResources.map(
           (resource) =>
             !resource.isFilter && (
               <div className={`${CLASS_NAME}__resource`}>
@@ -67,7 +75,7 @@ export default function ArchitectureConsole() {
             )
         )}
         <span>Filter</span>
-        {filteredResources?.map(
+        {filteredResources.map(
           (resource) =>
             resource.isFilter && (
               <div className={`${CLASS_NAME}__resource`}>
@@ -89,10 +97,21 @@ export default function ArchitectureConsole() {
         placeholder="search"
         onChange={handleSearchChange}
       />
+      <Button onClick={handleNewServiceClick}>+</Button>
+      <Dialog
+        isOpen={newService}
+        onDismiss={handleNewServiceClick}
+        title="New Service"
+      >
+        <NewTempResource onSuccess={triggerNewServiceSuccess}></NewTempResource>
+      </Dialog>
+
       <ModelOrganizer
-        resources={filteredResources?.filter((r) => r.isFilter)}
+        resources={filteredResources.filter((r) => r.isFilter)}
         onApplyPlan={handleApplyPlan}
-        loadingResources={loadingResources}
+        loadingResources={
+          loadingResources || loadingCreateService || loadingCreateEntities
+        }
         errorMessage={errorMessage}
       />
     </>

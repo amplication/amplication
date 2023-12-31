@@ -282,6 +282,11 @@ input CopiedEntities {
   shouldDeleteFromSource: Boolean!
 }
 
+input CopiedEntityWithTargetResource {
+  entityId: String!
+  targetResourceId: String!
+}
+
 type Coupon {
   code: String!
   couponType: String
@@ -1074,6 +1079,7 @@ type Mutation {
   connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
+  copiedEntities(data: ResourcesCreateCopiedEntitiesInput!): [Resource!]!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
@@ -1093,6 +1099,7 @@ type Mutation {
   createService(data: ResourceCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
+  createTempService(data: ResourceCreateInput!): Resource!
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
@@ -1466,6 +1473,7 @@ type Resource {
   project: Project
   projectId: String
   resourceType: EnumResourceType!
+  tempId: String
   updatedAt: DateTime!
 }
 
@@ -1481,6 +1489,7 @@ input ResourceCreateInput {
   project: WhereParentIdInput!
   resourceType: EnumResourceType!
   serviceSettings: ServiceSettingsUpdateInput
+  tempId: String
 }
 
 input ResourceCreateWithEntitiesEntityInput {
@@ -1582,6 +1591,10 @@ input ResourceWhereInput {
   projectId: String
   resourceType: EnumResourceTypeFilter
   updatedAt: DateTimeFilter
+}
+
+input ResourcesCreateCopiedEntitiesInput {
+  entitiesToCopy: [CopiedEntityWithTargetResource!]!
 }
 
 enum Role {

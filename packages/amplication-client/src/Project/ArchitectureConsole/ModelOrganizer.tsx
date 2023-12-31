@@ -32,6 +32,7 @@ import {
   NODE_TYPE_MODEL_GROUP,
   NODE_TYPE_MODEL_SIMPLE,
   Node,
+  ResourceNode,
 } from "./types";
 import ModelOrganizerToolbar from "./ModelOrganizerToolbar";
 
@@ -91,6 +92,23 @@ export default function ModelOrganizer({
         resources,
         showRelationDetails
       );
+
+      const modelGroups = nodes.filter(
+        (x) => x.type === NODE_TYPE_MODEL_GROUP
+      ) as ResourceNode[];
+
+      modelGroups.forEach((modelGroup) => {
+        if (modelGroup.data.payload.tempId) {
+          const newTempService = {
+            id: modelGroup.data.payload.tempId,
+            name: modelGroup.data.payload.name,
+          };
+          changes.newServices.push(newTempService);
+          modelGroup.data.payload.tempId = null;
+        }
+        setChanges((changes) => changes);
+      });
+
       setNodes(nodes);
       setEdges(edges);
     };
@@ -101,7 +119,7 @@ export default function ModelOrganizer({
       setNodes([]);
       setEdges([]);
     }
-  }, [resources, setNodes, setEdges, showRelationDetails]);
+  }, [resources, setNodes, setEdges, showRelationDetails, setChanges, changes]);
 
   const onApplyPlanClick = useCallback(() => {
     onApplyPlan(changes);

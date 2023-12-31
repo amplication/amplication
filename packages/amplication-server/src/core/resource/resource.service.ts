@@ -384,6 +384,47 @@ export class ResourceService {
     return resource;
   }
 
+  async createTempService(
+    args: CreateOneResourceArgs,
+    user: User
+  ): Promise<Resource> {
+    const { serviceSettings, tempId, ...rest } = args.data;
+    const resource = await this.createResource(
+      {
+        data: {
+          ...rest,
+          resourceType: EnumResourceType.Service,
+        },
+      },
+      user
+    );
+
+    await this.prisma.resourceRole.create({
+      data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
+    });
+
+    await this.serviceSettingsService.createDefaultServiceSettings(
+      resource.id,
+      user,
+      serviceSettings
+    );
+
+    await this.environmentService.createDefaultEnvironment(resource.id);
+
+    const project = await this.projectService.findUnique({
+      where: { id: resource.projectId },
+    });
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.Services
+    );
+
+    resource.tempId = tempId;
+
+    return resource;
+  }
+
   async createResourceEntitiesFromExistingResource(
     args: CreateResourceEntitiesArgs,
     user: User
