@@ -1,5 +1,5 @@
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { useCallback, useContext, useEffect } from "react";
+import { Reference, useLazyQuery, useMutation } from "@apollo/client";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import {
@@ -33,10 +33,28 @@ type TUpdateData = {
 const useModuleDto = () => {
   const { addBlock, addEntity, currentResource } = useContext(AppContext);
 
+  const [availableDtosDictionary, setAvailableDtosDictionary] = useState<
+    Record<string, models.ModuleDto>
+  >({});
+
   const [
     deleteModuleDto,
     { error: deleteModuleDtoError, loading: deleteModuleDtoLoading },
   ] = useMutation<TDeleteData>(DELETE_MODULE_DTO, {
+    update(cache, { data }) {
+      if (!data) return;
+      const deletedDtoId = data.deleteModuleDto.id;
+
+      cache.modify({
+        fields: {
+          ModuleDtos(existingDtoRefs, { readField }) {
+            return existingDtoRefs.filter(
+              (dtoRef: Reference) => deletedDtoId !== readField("id", dtoRef)
+            );
+          },
+        },
+      });
+    },
     onCompleted: (data) => {
       addBlock(data.deleteModuleDto.id);
       getAvailableDtosForResourceRefetch();
@@ -86,8 +104,20 @@ const useModuleDto = () => {
           },
         },
       },
+    }).then((result) => {
+      if (result.data) {
+        const dictionary = result.data.ModuleDtos.reduce((acc, dto) => {
+          acc[dto.id] = dto;
+          return acc;
+        }, {} as Record<string, models.ModuleDto>);
+        setAvailableDtosDictionary(dictionary);
+      }
     });
-  }, [getAvailableDtosForResourceInternal, currentResource]);
+  }, [
+    getAvailableDtosForResourceInternal,
+    currentResource,
+    setAvailableDtosDictionary,
+  ]);
 
   const [
     getModuleDto,
@@ -137,6 +167,7 @@ const useModuleDto = () => {
     availableDtosForCurrentResource,
     availableDtosForCurrentResourceLoading,
     availableDtosForCurrentResourceError,
+    availableDtosDictionary,
   };
 };
 

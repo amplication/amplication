@@ -6,6 +6,7 @@ import {
 } from "@amplication/ui/design-system";
 import * as models from "../models";
 import "./ModuleDtoPropertyPreview.scss";
+import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 
 type Props = {
   onEdit: (values: models.ModuleDtoProperty) => void;
@@ -13,9 +14,12 @@ type Props = {
 };
 
 const CLASS_NAME = "module-dto-property-preview";
+const UNAVAILABLE_DTO = "(Unavailable DTO)";
 
 const ModuleDtoPropertyPreview = ({ onEdit, dtoProperty }: Props) => {
   const isUnion = dtoProperty?.propertyTypes.length > 1;
+
+  const { availableDtosDictionary } = useModuleDto();
 
   return (
     <FlexItem
@@ -34,7 +38,9 @@ const ModuleDtoPropertyPreview = ({ onEdit, dtoProperty }: Props) => {
       {isUnion && dtoProperty.isArray ? "(" : ""}
       {dtoProperty.propertyTypes.map((type, index) => (
         <div key={index}>
-          {type.type}
+          {type.type === models.EnumModuleDtoPropertyType.Dto
+            ? availableDtosDictionary[type.dtoId]?.name || UNAVAILABLE_DTO
+            : type.type}
           {type.isArray ? "[]" : ""}
           {isUnion && index < dtoProperty.propertyTypes.length - 1 ? " | " : ""}
         </div>

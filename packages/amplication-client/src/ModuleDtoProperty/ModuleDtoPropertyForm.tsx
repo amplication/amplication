@@ -11,7 +11,6 @@ import {
 import { Formik } from "formik";
 import { omit } from "lodash";
 import { useMemo } from "react";
-import DtoPropertyTypesField from "./DtoPropertyTypesField";
 import { Form } from "../Components/Form";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
@@ -19,6 +18,7 @@ import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import { DeleteModuleDtoProperty } from "./DeleteModuleDtoProperty";
+import DtoPropertyTypesField from "./DtoPropertyTypesField";
 import "./ModuleDtoPropertyForm.scss";
 
 type Props = {
