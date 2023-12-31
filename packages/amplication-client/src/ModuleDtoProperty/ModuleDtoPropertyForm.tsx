@@ -88,7 +88,6 @@ const ModuleDtoPropertyForm = ({
       },
       NON_INPUT_GRAPHQL_PROPERTIES
     );
-    console.log("sanitizedDefaultValues", sanitizedDefaultValues);
 
     return {
       ...INITIAL_VALUES,

@@ -33,7 +33,7 @@ const ModuleDtoPropertyPreview = ({ onEdit, dtoProperty }: Props) => {
       {dtoProperty.isOptional ? "?" : ""}:{" "}
       {isUnion && dtoProperty.isArray ? "(" : ""}
       {dtoProperty.propertyTypes.map((type, index) => (
-        <div>
+        <div key={index}>
           {type.type}
           {type.isArray ? "[]" : ""}
           {isUnion && index < dtoProperty.propertyTypes.length - 1 ? " | " : ""}

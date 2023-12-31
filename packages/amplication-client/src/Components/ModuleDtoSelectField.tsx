@@ -1,6 +1,7 @@
 import { SelectField, SelectFieldProps } from "@amplication/ui/design-system";
+import { useContext, useMemo } from "react";
 import useModuleDto from "../ModuleDto/hooks/useModuleDto";
-import { useMemo } from "react";
+import { AppContext } from "../context/appContext";
 
 type Props = Omit<SelectFieldProps, "options">;
 
@@ -11,10 +12,23 @@ const ModuleDtoSelectField = ({ ...props }: Props) => {
     availableDtosForCurrentResourceLoading: loading,
   } = useModuleDto();
 
+  const { resources } = useContext(AppContext);
+
+  const resourceNameDictionary = useMemo(() => {
+    if (!resources) return {};
+    return resources.reduce((acc, resource) => {
+      acc[resource.id] = resource.name;
+      return acc;
+    }, {});
+  }, [resources]);
+
   const options = useMemo(() => {
     if (data && data.ModuleDtos) {
       return data.ModuleDtos.map((dto) => ({
-        label: dto.name,
+        label: `${dto.name}`,
+        group: `${resourceNameDictionary[dto.resourceId] + "\\"}${
+          dto.parentBlock.displayName
+        }`,
         value: dto.id,
       }));
     }

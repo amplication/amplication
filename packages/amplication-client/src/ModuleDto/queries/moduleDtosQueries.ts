@@ -9,6 +9,7 @@ export const MODULE_DTO_FIELDS_FRAGMENT = gql`
     lockedByUserId
     lockedAt
     parentBlockId
+    resourceId
     properties {
       id
       name
@@ -96,6 +97,10 @@ export const GET_AVAILABLE_DTOS_FOR_RESOURCE = gql`
   ) {
     ModuleDtos(where: $where, orderBy: $orderBy) {
       ...ModuleDtoFields
+      parentBlock {
+        id
+        displayName
+      }
     }
   }
 `;
