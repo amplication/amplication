@@ -1,11 +1,12 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import {
   CREATE_MODULE_DTO,
   DELETE_MODULE_DTO,
   FIND_MODULE_DTOS,
+  GET_AVAILABLE_DTOS_FOR_RESOURCE,
   GET_MODULE_DTO,
   UPDATE_MODULE_DTO,
 } from "../queries/moduleDtosQueries";
@@ -30,7 +31,7 @@ type TUpdateData = {
 };
 
 const useModuleDto = () => {
-  const { addBlock, addEntity } = useContext(AppContext);
+  const { addBlock, addEntity, currentResource } = useContext(AppContext);
 
   const [
     deleteModuleDto,
@@ -38,6 +39,7 @@ const useModuleDto = () => {
   ] = useMutation<TDeleteData>(DELETE_MODULE_DTO, {
     onCompleted: (data) => {
       addBlock(data.deleteModuleDto.id);
+      getAvailableDtosForResourceRefetch();
     },
   });
 
@@ -51,6 +53,7 @@ const useModuleDto = () => {
   ] = useMutation<TCreateData>(CREATE_MODULE_DTO, {
     onCompleted: (data) => {
       addBlock(data.createModuleDto.id);
+      getAvailableDtosForResourceRefetch();
     },
   });
 
@@ -63,6 +66,28 @@ const useModuleDto = () => {
       refetch: findModuleDtoRefetch,
     },
   ] = useLazyQuery<TFindData>(FIND_MODULE_DTOS, {});
+
+  const [
+    getAvailableDtosForResourceInternal,
+    {
+      data: availableDtosForCurrentResource,
+      loading: availableDtosForCurrentResourceLoading,
+      error: availableDtosForCurrentResourceError,
+      refetch: getAvailableDtosForResourceRefetch,
+    },
+  ] = useLazyQuery<TFindData>(GET_AVAILABLE_DTOS_FOR_RESOURCE, {});
+
+  const getAvailableDtosForCurrentResource = useCallback(() => {
+    getAvailableDtosForResourceInternal({
+      variables: {
+        where: {
+          resource: {
+            id: currentResource?.id,
+          },
+        },
+      },
+    });
+  }, [getAvailableDtosForResourceInternal, currentResource]);
 
   const [
     getModuleDto,
@@ -82,6 +107,11 @@ const useModuleDto = () => {
       addEntity(data.updateModuleDto.id);
     },
   });
+
+  useEffect(() => {
+    if (!currentResource) return;
+    getAvailableDtosForCurrentResource();
+  }, [getAvailableDtosForCurrentResource, currentResource]);
 
   return {
     deleteModuleDto,
@@ -104,6 +134,9 @@ const useModuleDto = () => {
     updateModuleDto,
     updateModuleDtoError,
     updateModuleDtoLoading,
+    availableDtosForCurrentResource,
+    availableDtosForCurrentResourceLoading,
+    availableDtosForCurrentResourceError,
   };
 };
 

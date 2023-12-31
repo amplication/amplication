@@ -13,6 +13,7 @@ import * as models from "../models";
 import { FieldArray, FieldArrayRenderProps, getIn } from "formik";
 import { useCallback, useMemo } from "react";
 import { get } from "lodash";
+import ModuleDtoSelectField from "../Components/ModuleDtoSelectField";
 
 export const typeMapping: {
   [key in models.EnumModuleDtoPropertyType]: {
@@ -66,8 +67,6 @@ const DtoPropertyTypesField = ({ name }: Props) => {
   );
 };
 
-type typeFieldProps = Omit<SelectFieldProps, "options">;
-
 const PropertyTypes = ({
   form,
   name,
@@ -93,6 +92,7 @@ const PropertyTypes = ({
               index={index}
               onRemove={remove}
               name={name}
+              value={type}
             />
           ))
         : ""}
@@ -113,9 +113,10 @@ type PropertyTypeProps = {
   name: string;
   index: number;
   onRemove: (index: number) => void;
+  value?: models.PropertyTypeDef;
 };
 
-const PropertyType = ({ name, index, onRemove }: PropertyTypeProps) => {
+const PropertyType = ({ name, index, onRemove, value }: PropertyTypeProps) => {
   const handleRemoveOption = useCallback(() => {
     onRemove(index);
   }, [onRemove, index]);
@@ -127,6 +128,10 @@ const PropertyType = ({ name, index, onRemove }: PropertyTypeProps) => {
         label="Type"
         options={options}
       />
+
+      {value?.type === EnumModuleDtoPropertyType.Dto && (
+        <ModuleDtoSelectField name={`${name}.${index}.dtoId`} label="DTO" />
+      )}
       <ToggleField name={`${name}.${index}.isArray`} label="Array" />
 
       <Button

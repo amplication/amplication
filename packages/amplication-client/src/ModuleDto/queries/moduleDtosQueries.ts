@@ -87,3 +87,15 @@ export const FIND_MODULE_DTOS = gql`
     }
   }
 `;
+
+export const GET_AVAILABLE_DTOS_FOR_RESOURCE = gql`
+  ${MODULE_DTO_FIELDS_FRAGMENT}
+  query availableDtosForResource(
+    $where: ModuleDtoWhereInput
+    $orderBy: ModuleDtoOrderByInput
+  ) {
+    ModuleDtos(where: $where, orderBy: $orderBy) {
+      ...ModuleDtoFields
+    }
+  }
+`;
