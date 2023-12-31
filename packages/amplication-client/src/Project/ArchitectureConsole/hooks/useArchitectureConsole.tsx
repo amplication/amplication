@@ -44,7 +44,9 @@ const useArchitectureConsole = () => {
   useEffect(() => {
     if (!resourcesData) return;
 
-    if (filteredResources.length > 0) return;
+    if (filteredResources.length > 0) {
+      setFilteredResources([]);
+    }
     const filterArray = [];
     resourcesData.resources.forEach((resource) => {
       resource.isFilter = true;
@@ -57,15 +59,16 @@ const useArchitectureConsole = () => {
     setFilteredResources(filterArray);
   }, [resourcesData, setFilteredResources]);
 
+  let timeout;
+
   const handleSearchChange = useCallback(
     (value) => {
-      const searchResources = resourcesData.resources.filter((r) =>
-        r.name.includes(value)
-      );
-
-      setFilteredResources(searchResources);
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        setSearchPhrase(value);
+      }, 750);
     },
-    [resourcesData, setFilteredResources]
+    [setSearchPhrase, timeout]
   );
 
   const handleResourceFilterChanged = useCallback(

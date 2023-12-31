@@ -90,7 +90,7 @@ export default function ArchitectureConsole() {
         onChange={handleSearchChange}
       />
       <ModelOrganizer
-        resources={filteredResources.filter((r) => r.isFilter)}
+        resources={filteredResources?.filter((r) => r.isFilter)}
         onApplyPlan={handleApplyPlan}
         loadingResources={loadingResources}
         errorMessage={errorMessage}
