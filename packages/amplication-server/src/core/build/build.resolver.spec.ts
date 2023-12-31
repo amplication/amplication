@@ -69,6 +69,7 @@ const EXAMPLE_RESOURCE: Resource = {
   description: "exampleDescription",
   builds: [EXAMPLE_BUILD],
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const FIND_MANY_BUILDS_QUERY = gql`

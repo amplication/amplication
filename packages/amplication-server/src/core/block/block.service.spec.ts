@@ -28,6 +28,7 @@ const EXAMPLE_RESOURCE: Resource = {
   name: "Example Resource",
   description: "Example Resource Description",
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const EXAMPLE_USER: User = {

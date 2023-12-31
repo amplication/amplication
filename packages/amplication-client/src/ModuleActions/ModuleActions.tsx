@@ -5,9 +5,14 @@ import {
   EnumFlexItemMargin,
   EnumItemsAlign,
   FlexItem,
+  Icon,
   SearchField,
   TabContentTitle,
   Toggle,
+  Text,
+  EnumTextStyle,
+  EnumTextColor,
+  EnumTextWeight,
 } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect, useState } from "react";
 
@@ -20,8 +25,17 @@ import * as models from "../models";
 import { useQuery } from "@apollo/client";
 import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
 import "./ToggleModule.scss";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+} from "../Components/FeatureIndicatorContainer";
+import { BillingFeature } from "@amplication/util-billing-types";
+import "./ModuleActions.scss";
+import { ModuleActionsEnabled } from "./ModuleActionsEnabled";
+import { ModuleActionsDisabled } from "./ModuleActionsDisabled";
 
 const DATE_CREATED_FIELD = "createdAt";
+const CLASS_NAME = "module-actions";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -87,68 +101,90 @@ const ModuleActions = React.memo(({ match }: Props) => {
     data?.serviceSettings?.serverSettings?.generateGraphQL;
 
   return (
-    <>
-      <>
-        <div className="module-toggle-field__search-field">
-          <SearchField
-            label="search"
-            placeholder="Search"
-            onChange={handleSearchChange}
-          />
-        </div>
-
-        <FlexItem
-          itemsAlign={EnumItemsAlign.Center}
-          margin={EnumFlexItemMargin.Top}
-          start={
-            <TabContentTitle
-              title="Module Actions"
-              subTitle="Actions are used to perform operations on resources, with or without API endpoints."
+    <FeatureIndicatorContainer
+      featureId={BillingFeature.CustomActions}
+      entitlementType={EntitlementType.Boolean}
+      render={({ disabled, icon }) => (
+        <>
+          {disabled ? (
+            <ModuleActionsDisabled
+              icon={icon}
+              handleSearchChange={handleSearchChange}
+              className={CLASS_NAME}
             />
-          }
-          // end={<NewModuleAction resourceId={resourceId} moduleId={moduleId} />} todo: return in phase 2
-        ></FlexItem>
-
-        {generateGraphQlAndRestApi && (
-          <FlexItem
-            direction={EnumFlexDirection.Row}
-            contentAlign={EnumContentAlign.Start}
-            itemsAlign={EnumItemsAlign.Normal}
-          >
-            GraphQL API
-            <div className={`module-toggle-field__operation-toggle`}>
-              <Toggle
-                checked={displayMode === EnumApiOperationTagStyle.REST}
-                onValueChange={handleDisplayModeChange}
-              />
-            </div>
-            REST API
-          </FlexItem>
-        )}
-
-        {moduleId ? (
-          <FlexItem margin={EnumFlexItemMargin.Top}>
-            <ModuleActionList
-              moduleId={moduleId}
-              resourceId={resourceId}
-              searchPhrase={searchPhrase}
-              displayMode={displayMode}
+          ) : (
+            <ModuleActionsEnabled
+              icon={icon}
+              handleSearchChange={handleSearchChange}
+              className={CLASS_NAME}
             />
-          </FlexItem>
-        ) : (
-          moduleListData?.Modules.map((module) => (
-            <FlexItem key={module.id} margin={EnumFlexItemMargin.Top}>
+          )}
+
+          {generateGraphQlAndRestApi && (
+            <FlexItem
+              direction={EnumFlexDirection.Row}
+              className={`${CLASS_NAME}__api-toggle`}
+              margin={EnumFlexItemMargin.Top}
+              contentAlign={
+                disabled ? EnumContentAlign.Center : EnumContentAlign.Start
+              }
+              itemsAlign={EnumItemsAlign.Normal}
+            >
+              <Text
+                textStyle={EnumTextStyle.Tag}
+                textColor={
+                  displayMode === EnumApiOperationTagStyle.GQL
+                    ? EnumTextColor.White
+                    : EnumTextColor.Black20
+                }
+              >
+                GraphQL API
+              </Text>
+              <div className={`module-toggle-field__operation-toggle`}>
+                <Toggle
+                  checked={displayMode === EnumApiOperationTagStyle.REST}
+                  onValueChange={handleDisplayModeChange}
+                />
+              </div>
+              <Text
+                textStyle={EnumTextStyle.Tag}
+                textColor={
+                  displayMode === EnumApiOperationTagStyle.REST
+                    ? EnumTextColor.White
+                    : EnumTextColor.Black20
+                }
+              >
+                REST API
+              </Text>
+            </FlexItem>
+          )}
+
+          {moduleId ? (
+            <FlexItem margin={EnumFlexItemMargin.Top}>
               <ModuleActionList
-                moduleId={module.id}
+                moduleId={moduleId}
                 resourceId={resourceId}
                 searchPhrase={searchPhrase}
                 displayMode={displayMode}
+                disabled={disabled}
               />
             </FlexItem>
-          ))
-        )}
-      </>
-    </>
+          ) : (
+            moduleListData?.Modules.map((module) => (
+              <FlexItem key={module.id} margin={EnumFlexItemMargin.Top}>
+                <ModuleActionList
+                  moduleId={module.id}
+                  resourceId={resourceId}
+                  searchPhrase={searchPhrase}
+                  displayMode={displayMode}
+                  disabled={disabled}
+                />
+              </FlexItem>
+            ))
+          )}
+        </>
+      )}
+    />
   );
 });
 

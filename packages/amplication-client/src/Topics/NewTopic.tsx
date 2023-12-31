@@ -47,9 +47,8 @@ const prepareName = (displayName: string) => {
 
 const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
   const { trackEvent } = useTracking();
-  const { addEntity, currentResource } = useContext(AppContext);
+  const { addEntity } = useContext(AppContext);
 
-  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const [createTopic, { error, loading }] = useMutation(CREATE_TOPIC, {
     update(cache, { data }) {
       if (!data) {
@@ -136,35 +135,16 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            {isResourceUnderLimitation ? (
-              <FeatureIndicator
-                featureName={BillingFeature.Services}
-                text="Your current plan permits only one active resource."
-                linkText="Please contact us to upgrade."
-                element={
-                  <Button
-                    buttonStyle={EnumButtonStyle.Text}
-                    disabled={isResourceUnderLimitation}
-                    icon="locked"
-                    className={classNames(`${CLASS_NAME}__add-field__button`, {
-                      [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
-                        formik.values.displayName
-                      ),
-                    })}
-                  />
-                }
-              />
-            ) : (
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                icon="plus"
-                className={classNames(`${CLASS_NAME}__add-field__button`, {
-                  [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
-                    formik.values.displayName
-                  ),
-                })}
-              />
-            )}
+            <Button
+              buttonStyle={EnumButtonStyle.Text}
+              icon="plus"
+              disabled={loading}
+              className={classNames(`${CLASS_NAME}__add-field__button`, {
+                [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
+                  formik.values.displayName
+                ),
+              })}
+            />
           </Form>
         )}
       </Formik>

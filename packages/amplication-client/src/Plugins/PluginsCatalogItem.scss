@@ -30,9 +30,20 @@ $button-padding: 5px 12px;
   }
 
   &__category {
-    font-size: var(--tag-font-size);
-    font-style: normal;
-    font-weight: 400;
-    color: var(--gray-20);
+    display: flex;
+    flex-direction: row;
+  }
+  &__category_chip {
+    border-radius: 24px !important;
+    padding: 3px 0px !important;
+    background-color: var(--gray-60) !important;
+    height: auto !important;
+    margin-right: 4px !important;
+    cursor: pointer;
+    & span {
+      font-size: 10px;
+      color: var(--gray-base);
+      font-weight: 400;
+    }
   }
 }
