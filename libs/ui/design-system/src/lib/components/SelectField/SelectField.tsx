@@ -56,6 +56,31 @@ export const SelectField = ({
       : options.find((option) => option.value === values);
   }, [field, isMulti, options]);
 
+  const groupedOptions = useMemo(() => {
+    if (!options || options.length === 0) {
+      return [];
+    }
+    if (!options[0].group) {
+      return options;
+    }
+
+    options.sort((a, b) => a.label.localeCompare(b.label));
+
+    const optionsWithGroups = options.reduce((acc, option) => {
+      const group = option.group || "Other";
+      acc[group] = acc[group] || [];
+      acc[group].push(option);
+      return acc;
+    }, {} as { [key: string]: OptionItem[] });
+
+    return Object.entries(optionsWithGroups)
+      .map(([label, options]) => ({
+        label,
+        options,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [options]);
+
   return (
     <div
       className={classNames("select-field", {
@@ -73,7 +98,7 @@ export const SelectField = ({
           isClearable={isClearable}
           value={value}
           onChange={handleChange}
-          options={options}
+          options={groupedOptions}
           isDisabled={disabled}
         />
       </label>
