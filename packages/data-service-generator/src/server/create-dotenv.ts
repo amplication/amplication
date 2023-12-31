@@ -8,6 +8,7 @@ import {
 import DsgContext from "../dsg-context";
 import pluginWrapper from "../plugin-wrapper";
 import { replacePlaceholdersInCode } from "../utils/text-file-parser";
+import { sortAlphabetically } from "../utils/dotenv";
 
 export function createDotEnvModule(
   eventParams: CreateServerDotEnvParams
@@ -30,21 +31,16 @@ export async function createDotEnvModuleInternal({
   const context = DsgContext.getInstance;
   const { appInfo, serverDirectories } = context;
   const envVariablesWithoutDuplicateKeys = removeDuplicateKeys(envVariables);
-  const formattedAdditionalVariables = convertToKeyValueSting(
+  const envVariablesSorted = sortAlphabetically(
     envVariablesWithoutDuplicateKeys
   );
-  const codeWithAdditionalVariables = appendAdditionalVariables(
-    "",
-    formattedAdditionalVariables
-  );
+  const codeWithEnvVariables = convertToKeyValueSting(envVariablesSorted);
+
   const serviceSettingsDic: { [key: string]: any } = appInfo.settings;
 
   const module: Module = {
     path: `${serverDirectories.baseDirectory}/.env`,
-    code: replacePlaceholdersInCode(
-      codeWithAdditionalVariables,
-      serviceSettingsDic
-    ),
+    code: replacePlaceholdersInCode(codeWithEnvVariables, serviceSettingsDic),
   };
   const moduleMap = new ModuleMap(context.logger);
   await moduleMap.set(module);
@@ -58,12 +54,6 @@ function convertToKeyValueSting(arr: VariableDictionary): string {
       Object.entries(item).map(([key, value]) => `${key}=${value}`)
     )
     .join("\n");
-}
-
-function appendAdditionalVariables(file: string, variables: string): string {
-  if (!variables.trim()) return file;
-  if (!file.trim()) return file.concat(variables);
-  return file.concat(`\n${variables}`);
 }
 
 function removeDuplicateKeys(arr: VariableDictionary): VariableDictionary {
