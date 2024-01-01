@@ -126,7 +126,7 @@ const ModuleActionList = React.memo(
             </FlexItem>
           }
         >
-          {data?.ModuleActions?.map((action) => (
+          {data?.moduleActions?.map((action) => (
             <ModuleActionListItem
               key={action.id}
               module={moduleData?.module}
