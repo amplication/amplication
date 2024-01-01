@@ -77,9 +77,25 @@ export default function ModelOrganizer({
   const [readOnly, setReadOnly] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const onRedesignClick = useCallback(() => {
-    setReadOnly(false);
-  }, [setReadOnly]);
+  const onRedesignClick = useCallback(
+    (resource: models.Resource) => {
+      setNodes((nodes) => {
+        nodes.forEach((node) => {
+          if (node.data.originalParentNode === resource.id) {
+            node.draggable = true;
+          }
+          if (node.id === resource.id) {
+            node.selected = true;
+          }
+        });
+
+        return [...nodes];
+      });
+
+      setReadOnly(false);
+    },
+    [setReadOnly, nodes, setNodes]
+  );
 
   const onCancelChangesClick = useCallback(async () => {
     const { nodes, edges } = await entitiesToNodesAndEdges(
@@ -296,6 +312,7 @@ export default function ModelOrganizer({
           <ModelOrganizerToolbar
             readOnly={readOnly}
             hasChanges={hasChanges}
+            resources={resources}
             onApplyPlan={onApplyPlanClick}
             onRedesign={onRedesignClick}
             onCancelChanges={onCancelChangesClick}

@@ -114,6 +114,7 @@ function entitiesToNodes(
     resource.entities.map((entity) => ({
       data: { payload: entity, originalParentNode: entity.resourceId },
       id: entity.id,
+      draggable: false,
       type: showDetailedRelations ? NODE_TYPE_MODEL : NODE_TYPE_MODEL_SIMPLE,
       position: {
         x: 0,

@@ -9,10 +9,16 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
+  SelectMenu,
+  SelectMenuItem,
+  SelectMenuList,
+  SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
 import { Button } from "../../Components/Button";
 import { FlexEnd } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
+import * as models from "../../models";
+import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
@@ -20,13 +26,15 @@ type Props = {
   readOnly: boolean;
   hasChanges: boolean;
   onApplyPlan: () => void;
-  onRedesign: () => void;
+  onRedesign: (resource: models.Resource) => void;
   onCancelChanges: () => void;
+  resources: models.Resource[];
 };
 
 export default function ModelOrganizerToolbar({
   readOnly,
   hasChanges,
+  resources,
   onApplyPlan,
   onCancelChanges,
   onRedesign,
@@ -81,15 +89,29 @@ export default function ModelOrganizerToolbar({
               </>
             )}
             {readOnly && (
-              <Button
-                onClick={onRedesign}
+              <SelectMenu
+                title="Redesign"
                 buttonStyle={EnumButtonStyle.Primary}
-                // eventData={{
-                //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                // }}
               >
-                Redesign
-              </Button>
+                <SelectMenuModal align="left">
+                  <SelectMenuList>
+                    {resources.map((resource) => (
+                      <SelectMenuItem
+                        closeAfterSelectionChange
+                        itemData={resource}
+                        onSelectionChange={onRedesign}
+                        as="span"
+                      >
+                        <ResourceCircleBadge
+                          type={resource.resourceType}
+                          size="small"
+                        />
+                        <span>{resource.name}</span>
+                      </SelectMenuItem>
+                    ))}
+                  </SelectMenuList>
+                </SelectMenuModal>
+              </SelectMenu>
             )}
           </FlexItem>
         </FlexEnd>
