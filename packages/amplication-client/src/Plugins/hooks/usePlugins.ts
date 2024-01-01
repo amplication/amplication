@@ -242,6 +242,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     pluginInstallations,
     pluginOrder,
     pluginsVersionData,
+    pluginCategories,
   ]);
 
   const [updatePluginOrder, { error: UpdatePluginOrderError }] = useMutation<{

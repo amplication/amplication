@@ -150,7 +150,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
       const requireAuthenticationEntity = configurations
         ? configurations[REQUIRE_AUTH_ENTITY]
         : null;
-      console.log("onEnableStateChange", userEntity);
+
       if (requireAuthenticationEntity === "true" && !userEntity && !enabled) {
         setIsCreatePluginInstallation(false);
         setPluginInstallationUpdateData(pluginInstallation);
