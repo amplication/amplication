@@ -3010,14 +3010,14 @@ export class StringNullableFilter {
 ",
   "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
-PORT=3000
-DB_URL=postgres://admin:admin@localhost:5432/my-db
-DB_USER=admin
+DB_NAME=my-db
 DB_PASSWORD=admin
 DB_PORT=5432
-DB_NAME=my-db
+DB_URL=postgres://admin:admin@localhost:5432/my-db
+DB_USER=admin
+JWT_EXPIRATION=2d
 JWT_SECRET_KEY=Change_ME!!!
-JWT_EXPIRATION=2d",
+PORT=3000",
   "server/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
@@ -3467,6 +3467,7 @@ export class Credentials {
   "server/src/auth/IAuthStrategy.ts": "import { UserInfo } from "./UserInfo";
 
 export interface IAuthStrategy {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   validate: (...any: any) => Promise<UserInfo>;
 }
 ",
@@ -13769,7 +13770,9 @@ describe("Testing the jwtStrategyBase.validate()", () => {
   it("should throw UnauthorizedException where there is no user", async () => {
     //ARRANGE
     userService.user
-      .calledWith({ where: { username: TEST_USER.username } })
+      .calledWith({
+        where: { username: TEST_USER.username },
+      })
       .mockReturnValue(Promise.resolve(null));
     //ACT
     const result = jwtStrategy.validate({

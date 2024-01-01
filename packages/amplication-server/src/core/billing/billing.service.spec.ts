@@ -240,6 +240,7 @@ describe("BillingService", () => {
           useDemoRepo: false,
           createdAt: new Date(),
           updatedAt: new Date(),
+          licensed: true,
         },
       ];
       const repositories: GitRepository[] = [
@@ -366,6 +367,7 @@ describe("BillingService", () => {
           useDemoRepo: false,
           createdAt: new Date(),
           updatedAt: new Date(),
+          licensed: true,
         },
       ];
 
@@ -486,6 +488,7 @@ describe("BillingService", () => {
             useDemoRepo: false,
             createdAt: new Date(),
             updatedAt: new Date(),
+            licensed: true,
           },
         ];
 
@@ -584,6 +587,7 @@ describe("BillingService", () => {
             useDemoRepo: false,
             createdAt: new Date(),
             updatedAt: new Date(),
+            licensed: true,
           },
         ];
 

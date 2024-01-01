@@ -44,9 +44,10 @@ const EXAMPLE_PROJECT: Project = {
   workspaceId: "ExampleWorkspaceId",
   createdAt: new Date(),
   updatedAt: new Date(),
-  deletedAt: undefined,
+  deletedAt: null,
   useDemoRepo: false,
-  demoRepoName: undefined,
+  demoRepoName: null,
+  licensed: true,
 };
 
 const EXAMPLE_HASHED_PASSWORD = "HASHED PASSWORD";
