@@ -80,7 +80,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
         pluginVersion.version === pluginInstallation?.PluginInstallation.version
     );
     const mergedSettings = JSON.stringify({
-      ...(pluginInstalledVersion.settings as Object),
+      ...(pluginInstalledVersion.settings as unknown as { [key: string]: any }),
       ...pluginInstallation?.PluginInstallation.settings,
     });
     if (JSON.stringify(pluginInstalledVersion.settings))
@@ -121,7 +121,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
         pluginVersion.version && setIsValid(false);
 
       const mergedSettings = JSON.stringify({
-        ...(pluginVersion.settings as Object),
+        ...(pluginVersion.settings as unknown as { [key: string]: any }),
         ...(pluginInstallation?.PluginInstallation.version ===
         pluginVersion.version
           ? pluginInstallation.PluginInstallation.settings
