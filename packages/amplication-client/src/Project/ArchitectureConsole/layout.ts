@@ -8,7 +8,6 @@ import {
   EntityNode,
   ResourceNode,
   NODE_TYPE_MODEL,
-  NODE_TYPE_MODEL_SIMPLE,
   NODE_TYPE_MODEL_GROUP,
 } from "./types";
 
@@ -89,10 +88,7 @@ export const getAutoLayout = async (
 
   groups.forEach((group) => {
     const children = nodes.filter(
-      (node) =>
-        (node.type === NODE_TYPE_MODEL ||
-          node.type === NODE_TYPE_MODEL_SIMPLE) &&
-        node.parentNode === group.id
+      (node) => node.type === NODE_TYPE_MODEL && node.parentNode === group.id
     ) as EntityNode[];
 
     const childNodes: ElkNode[] = [];

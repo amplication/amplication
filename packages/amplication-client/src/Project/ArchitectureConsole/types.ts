@@ -4,12 +4,8 @@ import { type } from "os";
 
 export const NODE_TYPE_MODEL = "model";
 export const NODE_TYPE_MODEL_GROUP = "modelGroup";
-export const NODE_TYPE_MODEL_SIMPLE = "modelSimple";
 
-export type NodeType =
-  | typeof NODE_TYPE_MODEL
-  | typeof NODE_TYPE_MODEL_GROUP
-  | typeof NODE_TYPE_MODEL_SIMPLE;
+export type NodeType = typeof NODE_TYPE_MODEL | typeof NODE_TYPE_MODEL_GROUP;
 
 export type NodePayload<T> = {
   payload: T;
@@ -26,7 +22,7 @@ export type NodePayloadWithPayloadType = NodePayload<
 type NodeWithType<T> = ReactFlowNode<T, NodeType>;
 
 export type EntityNode = NodeWithType<NodePayload<models.Entity>> & {
-  type: typeof NODE_TYPE_MODEL | typeof NODE_TYPE_MODEL_SIMPLE;
+  type: typeof NODE_TYPE_MODEL;
 };
 
 export type ResourceNodePayload = NodePayload<models.Resource> & {

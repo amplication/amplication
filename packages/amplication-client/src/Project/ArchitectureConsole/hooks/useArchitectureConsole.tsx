@@ -193,6 +193,7 @@ const useArchitectureConsole = () => {
     errorCreateService,
     handleNewServiceSuccess,
     handleApplyPlanProcess,
+    setSearchPhrase,
   };
 };
 

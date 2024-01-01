@@ -95,8 +95,9 @@ export default function ModelOrganizerToolbar({
               >
                 <SelectMenuModal align="left">
                   <SelectMenuList>
-                    {resources.map((resource) => (
+                    {resources?.map((resource) => (
                       <SelectMenuItem
+                        key={resource.id}
                         closeAfterSelectionChange
                         itemData={resource}
                         onSelectionChange={onRedesign}

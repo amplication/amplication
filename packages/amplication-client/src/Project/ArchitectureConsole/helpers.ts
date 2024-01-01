@@ -5,7 +5,6 @@ import {
   DetailedRelation,
   SimpleRelation,
   NODE_TYPE_MODEL,
-  NODE_TYPE_MODEL_SIMPLE,
   NODE_TYPE_MODEL_GROUP,
 } from "./types";
 import { internalsSymbol, Position, XYPosition } from "reactflow";
@@ -115,7 +114,7 @@ function entitiesToNodes(
       data: { payload: entity, originalParentNode: entity.resourceId },
       id: entity.id,
       draggable: false,
-      type: showDetailedRelations ? NODE_TYPE_MODEL : NODE_TYPE_MODEL_SIMPLE,
+      type: NODE_TYPE_MODEL,
       position: {
         x: 0,
         y: 0,
@@ -219,13 +218,18 @@ export async function entitiesToNodesAndEdges(
   showDetailedRelations: boolean
 ) {
   const nodes = entitiesToNodes(resources, showDetailedRelations);
-  const edges = showDetailedRelations
-    ? entitiesToDetailedEdges(resources)
-    : entitiesToSimpleEdges(resources);
+  const detailedEdges = entitiesToDetailedEdges(resources);
+
+  const simpleEdges = entitiesToSimpleEdges(resources);
 
   return {
-    nodes: await applyAutoLayout(nodes, edges, showDetailedRelations),
-    edges,
+    nodes: await applyAutoLayout(
+      nodes,
+      showDetailedRelations ? detailedEdges : simpleEdges,
+      showDetailedRelations
+    ),
+    detailedEdges,
+    simpleEdges,
   };
 }
 
