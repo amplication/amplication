@@ -214,7 +214,12 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   }, [pluginOrderError]);
 
   const sortedPluginInstallation = useMemo(() => {
-    if (!pluginOrder || !pluginInstallations || !pluginsVersionData)
+    if (
+      !pluginOrder ||
+      !pluginInstallations ||
+      !pluginsVersionData ||
+      loadingPluginInstallations
+    )
       return undefined;
 
     const pluginOrderArr = [...(pluginOrder?.pluginOrder.order ?? [])];
@@ -226,12 +231,18 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
         (installationPlugin: models.PluginInstallation) =>
           installationPlugin.pluginId === plugin.pluginId
       );
+
       installedPlugin.categories =
         pluginCategories.pluginCategoriesMap[installedPlugin.pluginId];
 
       return installedPlugin;
     }) as unknown as models.PluginInstallation[];
-  }, [pluginInstallations, pluginOrder, pluginsVersionData]);
+  }, [
+    loadingPluginInstallations,
+    pluginInstallations,
+    pluginOrder,
+    pluginsVersionData,
+  ]);
 
   const [updatePluginOrder, { error: UpdatePluginOrderError }] = useMutation<{
     setPluginOrder: models.PluginOrder;
