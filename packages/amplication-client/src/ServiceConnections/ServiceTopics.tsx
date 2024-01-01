@@ -35,7 +35,7 @@ const ServiceTopics = () => {
   } = useServiceConnection(resource);
 
   const serviceTopics = useMemo(() => {
-    return data?.serviceTopics.find(
+    return data?.serviceTopicsList.find(
       (connection) => connection.messageBrokerId === connectedResourceId
     );
   }, [data, connectedResourceId]);

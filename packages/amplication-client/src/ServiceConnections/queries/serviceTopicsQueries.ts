@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_SERVICE_MESSAGE_BROKER_CONNECTIONS = gql`
-  query serviceTopics($resourceId: String!) {
-    serviceTopics(
+  query serviceTopicsList($resourceId: String!) {
+    serviceTopicsList(
       where: { resource: { id: $resourceId } }
       orderBy: { createdAt: Asc }
     ) {
