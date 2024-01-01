@@ -190,6 +190,9 @@ describe("WorkspaceService", () => {
             reportUsage: jest.fn(() => {
               return {};
             }),
+            provisionPreviewCustomer: jest.fn(() => {
+              return {};
+            }),
           },
         },
         {
@@ -303,7 +306,7 @@ describe("WorkspaceService", () => {
     );
   });
 
-  it("should create an workspace", async () => {
+  it("should create a workspace", async () => {
     const args = {
       accountId: EXAMPLE_ACCOUNT_ID,
       args: {
@@ -335,6 +338,42 @@ describe("WorkspaceService", () => {
     expect(await service.createWorkspace(args.accountId, args.args)).toEqual(
       EXAMPLE_WORKSPACE
     );
+    expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
+    expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
+  });
+
+  it("should create a preview workspace", async () => {
+    const args = {
+      accountId: EXAMPLE_ACCOUNT_ID,
+      args: {
+        data: {
+          name: EXAMPLE_WORKSPACE_NAME,
+        },
+      },
+    };
+    const prismaArgs = {
+      ...args.args,
+      data: {
+        ...args.args.data,
+        users: {
+          create: {
+            account: { connect: { id: args.accountId } },
+            userRoles: {
+              create: {
+                role: Role.OrganizationAdmin,
+              },
+            },
+            isOwner: true,
+          },
+        },
+      },
+      include: {
+        users: true,
+      },
+    };
+    expect(
+      await service.createPreviewWorkspace(args.args, args.accountId)
+    ).toEqual(EXAMPLE_WORKSPACE);
     expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
     expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
   });

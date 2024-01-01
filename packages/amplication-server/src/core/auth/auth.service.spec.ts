@@ -1,13 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import {
-  PrismaService,
-  Account,
-  Workspace,
-  User,
-  UserRole,
-  Project,
-} from "../../prisma";
-import { JwtService } from "@nestjs/jwt";
+import { PrismaService, User, UserRole } from "../../prisma";
+import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { Role } from "../../enums/Role";
 import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
@@ -26,20 +19,34 @@ import { ConfigService } from "@nestjs/config";
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
 import { ResourceService } from "../resource/resource.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { Workspace, Project, Resource, Account } from "../../models";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 
 const EXAMPLE_ACCOUNT: Account = {
   id: "alice",
-  email: "alice@example.com",
+  email: "example@amplication.com",
   password: "PASSWORD",
   firstName: "Alice",
   lastName: "Appleseed",
   createdAt: new Date(),
   updatedAt: new Date(),
-  currentUserId: null,
   githubId: null,
   previewAccountType: PreviewAccountType.None,
   previewAccountEmail: null,
+};
+
+const EXAMPLE_PREVIEW_ACCOUNT: Account = {
+  id: "alice",
+  email: "example@amplication.com",
+  password: "PASSWORD",
+  firstName: "Alice",
+  lastName: "Appleseed",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  githubId: null,
+  previewAccountType: PreviewAccountType.BreakingTheMonolith,
+  previewAccountEmail: "examplePreveiw@AmplicationError.com",
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -52,6 +59,17 @@ const EXAMPLE_PROJECT: Project = {
   useDemoRepo: false,
   demoRepoName: null,
   licensed: true,
+};
+const NOW = new Date();
+const EXAMPLE_RESOURCE: Resource = {
+  id: "exampleResourceId",
+  resourceType: EnumResourceType.Service,
+  name: "Example Resource",
+  description: null,
+  licensed: true,
+  createdAt: NOW,
+  updatedAt: NOW,
+  gitRepositoryOverride: false,
 };
 
 const EXAMPLE_HASHED_PASSWORD = "HASHED PASSWORD";
@@ -170,6 +188,10 @@ const createWorkspaceMock = jest.fn(() => ({
   users: [EXAMPLE_AUTH_USER],
 }));
 
+const mockedCreateProject = jest.fn(() => EXAMPLE_PROJECT);
+
+const mockedCreatePreviewService = jest.fn(() => EXAMPLE_RESOURCE);
+
 const prismaCreateProjectMock = jest.fn(() => EXAMPLE_PROJECT);
 
 describe("AuthService", () => {
@@ -240,14 +262,13 @@ describe("AuthService", () => {
         {
           provide: ProjectService,
           useClass: jest.fn(() => ({
-            createProject: jest.fn(),
-            createPreviewProject: jest.fn(),
+            createProject: mockedCreateProject,
           })),
         },
         {
           provide: ResourceService,
           useClass: jest.fn(() => ({
-            createPreviewService: jest.fn(),
+            createPreviewService: mockedCreatePreviewService,
           })),
         },
         {
@@ -331,6 +352,43 @@ describe("AuthService", () => {
       userId: EXAMPLE_USER.id,
       type: EnumTokenType.User,
     });
+  });
+
+  it("should signs up for correct data with preview account", async () => {
+    const result = await service.signupPreviewAccount({
+      previewAccountEmail: EXAMPLE_PREVIEW_ACCOUNT.previewAccountEmail,
+      previewAccountType:
+        PreviewAccountType[EXAMPLE_PREVIEW_ACCOUNT.previewAccountType],
+    });
+
+    expect(result).toEqual({
+      token: EXAMPLE_TOKEN,
+      workspaceId: EXAMPLE_WORKSPACE.id,
+      projectId: EXAMPLE_PROJECT.id,
+      resourceId: EXAMPLE_RESOURCE.id,
+    });
+
+    expect(createAccountMock).toHaveBeenCalledTimes(1);
+    expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
+    expect(setCurrentUserMock).toHaveBeenCalledWith(
+      EXAMPLE_ACCOUNT.id,
+      EXAMPLE_USER.id
+    );
+
+    const jwtPayload = {
+      accountId: EXAMPLE_ACCOUNT.id,
+      workspaceId: EXAMPLE_WORKSPACE.id,
+      roles: [EXAMPLE_USER_ROLE.role],
+      userId: EXAMPLE_USER.id,
+      type: EnumTokenType.User,
+    };
+
+    const signOptions: JwtSignOptions = {
+      expiresIn: "1h",
+    };
+
+    expect(signMock).toHaveBeenCalledTimes(1);
+    expect(signMock).toHaveBeenCalledWith(jwtPayload, signOptions);
   });
 
   it("login for existing user", async () => {
