@@ -1,6 +1,5 @@
 import { memo, type FC, useCallback } from "react";
 import { useStore, type NodeProps } from "reactflow";
-
 import "./modelGroupNode.scss";
 import {
   EnumButtonStyle,
@@ -13,7 +12,7 @@ import {
 } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import { ResourceNode, ResourceNodePayload } from "../types";
-import { Button } from "packages/amplication-client/src/Components/Button";
+import { Button } from "../../../Components/Button";
 
 type ModelProps = NodeProps & {
   data: ResourceNodePayload;

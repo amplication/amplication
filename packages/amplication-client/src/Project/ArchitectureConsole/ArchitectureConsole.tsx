@@ -1,11 +1,6 @@
 import "reactflow/dist/style.css";
 import "./ArchitectureConsole.scss";
-import {
-  Button,
-  Dialog,
-  EnumButtonStyle,
-  SearchField,
-} from "@amplication/ui/design-system";
+import { Button, Dialog, SearchField } from "@amplication/ui/design-system";
 import { useCallback, useState } from "react";
 import { formatError } from "../../util/error";
 import ModelOrganizer from "./ModelOrganizer";
@@ -13,6 +8,7 @@ import { ModelChanges } from "./types";
 import useArchitectureConsole from "./hooks/useArchitectureConsole";
 import * as models from "../../models";
 import NewTempResource from "./NewTempResource";
+import ModelsGroupsList from "./ModelsGroupsList";
 
 export const CLASS_NAME = "architecture-console";
 
@@ -56,42 +52,10 @@ export default function ArchitectureConsole() {
 
   return (
     <>
-      <div className={`${CLASS_NAME}__resources`}>
-        <span>Filtered</span>
-        {filteredResources.map(
-          (resource) =>
-            !resource.isFilter && (
-              <div className={`${CLASS_NAME}__resource`}>
-                <Button
-                  key={resource.id}
-                  icon="services"
-                  iconSize="xsmall"
-                  buttonStyle={EnumButtonStyle.Text}
-                  onClick={(event) =>
-                    handleResourceFilterChanged(event, resource)
-                  }
-                ></Button>
-              </div>
-            )
-        )}
-        <span>Filter</span>
-        {filteredResources.map(
-          (resource) =>
-            resource.isFilter && (
-              <div className={`${CLASS_NAME}__resource`}>
-                <Button
-                  key={resource.id}
-                  icon="services"
-                  iconSize="xsmall"
-                  buttonStyle={EnumButtonStyle.Text}
-                  onClick={(event) =>
-                    handleResourceFilterChanged(event, resource)
-                  }
-                ></Button>
-              </div>
-            )
-        )}
-      </div>
+      <ModelsGroupsList
+        resources={filteredResources}
+        handleResourceFilterChanged={handleResourceFilterChanged}
+      ></ModelsGroupsList>
       <SearchField
         label="search"
         placeholder="search"
