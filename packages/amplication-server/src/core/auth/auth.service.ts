@@ -540,7 +540,7 @@ export class AuthService {
     )) as unknown as Workspace & { users: AuthUser[] };
     const [user] = workspace.users as AuthUser[];
 
-    const project = await this.projectService.createPreviewProject(
+    const project = await this.projectService.createProject(
       {
         data: {
           name: account.previewAccountType,
@@ -581,7 +581,7 @@ export class AuthService {
         },
       },
       user,
-      pluginsToInstall: [],
+      nonDefaultPluginsToInstall: [],
       requireAuthenticationEntity: true,
     });
 

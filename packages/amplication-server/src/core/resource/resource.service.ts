@@ -75,7 +75,7 @@ const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
 export type CreatePreviewServiceArgs = {
   args: CreateOneResourceArgs;
   user: User;
-  pluginsToInstall: PluginInstallationCreateInput[];
+  nonDefaultPluginsToInstall: PluginInstallationCreateInput[];
   requireAuthenticationEntity: boolean;
 };
 
@@ -392,7 +392,7 @@ export class ResourceService {
   async createPreviewService({
     args,
     user,
-    pluginsToInstall,
+    nonDefaultPluginsToInstall,
     requireAuthenticationEntity,
   }: CreatePreviewServiceArgs): Promise<Resource> {
     const { serviceSettings, gitRepository, ...rest } = args.data;
@@ -454,7 +454,7 @@ export class ResourceService {
     const plugins = [
       defaultDBPlugin,
       ...(requireAuthenticationEntity ? defaultAuthPlugins : []),
-      ...pluginsToInstall,
+      ...nonDefaultPluginsToInstall,
     ];
 
     for (const plugin of plugins) {
@@ -467,6 +467,15 @@ export class ResourceService {
     }
 
     await this.environmentService.createDefaultEnvironment(resource.id);
+
+    const project = await this.projectService.findUnique({
+      where: { id: resource.projectId },
+    });
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.Services
+    );
 
     return resource;
   }

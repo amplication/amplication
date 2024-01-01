@@ -117,6 +117,11 @@ export class WorkspaceService {
 
     await this.billingService.provisionPreviewCustomer(workspace.id);
 
+    await this.billingService.reportUsage(
+      workspace.id,
+      BillingFeature.TeamMembers
+    );
+
     return workspace;
   }
 

@@ -106,30 +106,6 @@ export class ProjectService {
     return project;
   }
 
-  async createPreviewProject(
-    args: ProjectCreateArgs,
-    userId: string
-  ): Promise<Project> {
-    const project = await this.prisma.project.create({
-      data: {
-        ...args.data,
-        workspace: {
-          connect: {
-            id: args.data.workspace.connect.id,
-          },
-        },
-      },
-    });
-
-    await this.resourceService.createProjectConfiguration(
-      project.id,
-      project?.name,
-      userId
-    );
-
-    return project;
-  }
-
   async deleteProject(args: FindOneArgs): Promise<Project> {
     const project = await this.findFirst({
       where: { id: args.where.id, deletedAt: null },
