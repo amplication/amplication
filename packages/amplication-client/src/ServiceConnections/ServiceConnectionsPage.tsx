@@ -53,12 +53,12 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
       .map((resource): MessageBrokerListItem => {
         return {
           resource,
-          connection: data?.ServiceTopicsList.find(
+          connection: data?.serviceTopics.find(
             (connection) => connection.messageBrokerId === resource.id
           ),
         };
       });
-  }, [resources, data?.ServiceTopicsList]);
+  }, [resources, data?.serviceTopics]);
 
   const hasServiceTopicList = !isEmpty(messageBrokerList);
 

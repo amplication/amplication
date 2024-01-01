@@ -13,7 +13,7 @@ const useServiceConnection = (resourceId: string) => {
     error: errorServiceTopics,
     refetch,
   } = useQuery<{
-    ServiceTopicsList: models.ServiceTopics[];
+    serviceTopics: models.ServiceTopics[];
   }>(GET_SERVICE_MESSAGE_BROKER_CONNECTIONS, {
     variables: {
       resourceId: resourceId,
