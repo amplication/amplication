@@ -90,22 +90,22 @@ const ModuleAction = ({ match }: Props) => {
     formatError(error) || formatError(updateModuleActionError);
 
   const isCustomAction =
-    data?.ModuleAction?.actionType === models.EnumModuleActionType.Custom;
+    data?.moduleAction?.actionType === models.EnumModuleActionType.Custom;
 
   return (
     <>
       <FlexItem>
         <TabContentTitle
-          title={data?.ModuleAction?.displayName}
-          subTitle={data?.ModuleAction?.description}
+          title={data?.moduleAction?.displayName}
+          subTitle={data?.moduleAction?.description}
         />
         <FlexItem.FlexEnd>
-          {data?.ModuleAction && isCustomAction && (
-            <DeleteModuleAction moduleAction={data?.ModuleAction} />
+          {data?.moduleAction && isCustomAction && (
+            <DeleteModuleAction moduleAction={data?.moduleAction} />
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
-      {data?.ModuleAction && !isCustomAction && (
+      {data?.moduleAction && !isCustomAction && (
         <FlexItem margin={EnumFlexItemMargin.Bottom}>
           <Text textStyle={EnumTextStyle.Description}>
             This is a default action that was created automatically with the
@@ -118,7 +118,7 @@ const ModuleAction = ({ match }: Props) => {
         <ModuleActionForm
           isCustomAction={isCustomAction}
           onSubmit={handleSubmit}
-          defaultValues={data?.ModuleAction}
+          defaultValues={data?.moduleAction}
         />
       )}
       <Snackbar open={hasError} message={errorMessage} />
