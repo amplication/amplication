@@ -562,6 +562,7 @@ enum EnumSubscriptionPlan {
   Free
   Pro
   Enterprise
+  PreviewBreakTheMonolith
 }
 
 enum EnumSubscriptionStatus {

@@ -804,6 +804,7 @@ export type EnumResourceTypeFilter = {
 export enum EnumSubscriptionPlan {
   Enterprise = 'Enterprise',
   Free = 'Free',
+  PreviewBreakTheMonolith = 'PreviewBreakTheMonolith',
   Pro = 'Pro'
 }
 

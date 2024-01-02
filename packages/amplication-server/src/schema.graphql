@@ -770,6 +770,7 @@ input EnumResourceTypeFilter {
 enum EnumSubscriptionPlan {
   Enterprise
   Free
+  PreviewBreakTheMonolith
   Pro
 }
 
