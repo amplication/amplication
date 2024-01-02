@@ -76,8 +76,8 @@ const ModuleList: React.FC<Props> = ({ resourceId }) => {
       <>
         <FlexItem margin={EnumFlexItemMargin.Bottom}>
           <Text textStyle={EnumTextStyle.Tag}>
-            {data?.Modules.length}{" "}
-            {pluralize(data?.Modules.length, "Module", "Modules")}
+            {data?.modules.length}{" "}
+            {pluralize(data?.modules.length, "Module", "Modules")}
           </Text>
         </FlexItem>
         <VerticalNavigation>
@@ -87,7 +87,7 @@ const ModuleList: React.FC<Props> = ({ resourceId }) => {
           >
             All
           </VerticalNavigationItem>
-          {data?.Modules.map((module) => (
+          {data?.modules.map((module) => (
             <ModuleListItem
               key={module.id}
               module={module}

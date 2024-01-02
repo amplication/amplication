@@ -59,7 +59,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
 
       cache.modify({
         fields: {
-          Topics(existingTopicRefs = [], { readField }) {
+          topics(existingTopicRefs = [], { readField }) {
             const newTopicRef = cache.writeFragment({
               data: newTopic,
               fragment: NEW_TOPIC_FRAGMENT,

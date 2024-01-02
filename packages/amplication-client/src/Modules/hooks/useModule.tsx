@@ -16,11 +16,11 @@ type TDeleteData = {
 };
 
 type TFindData = {
-  Modules: models.Module[];
+  modules: models.Module[];
 };
 
 type TGetData = {
-  Module: models.Module;
+  module: models.Module;
 };
 
 type TCreateData = {

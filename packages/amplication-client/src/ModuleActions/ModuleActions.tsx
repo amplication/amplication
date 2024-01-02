@@ -157,13 +157,13 @@ const ModuleActions = React.memo(({ match }: Props) => {
           {moduleId
             ? moduleData && (
                 <ModuleActionsAndTypes
-                  module={moduleData?.Module}
+                  module={moduleData?.module}
                   searchPhrase={searchPhrase}
                   displayMode={displayMode}
                   disabled={disabled}
                 />
               )
-            : moduleListData?.Modules.map((module) => (
+            : moduleListData?.modules.map((module) => (
                 <ModuleActionsAndTypes
                   key={module.id}
                   module={module}

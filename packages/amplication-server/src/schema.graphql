@@ -1550,7 +1550,13 @@ type Query {
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!
   me: User!
   messageBrokerConnectedServices(where: WhereUniqueInput!): [Resource!]!
+  module(where: WhereUniqueInput!): Module
+  moduleAction(where: WhereUniqueInput!): ModuleAction
+  moduleActions(orderBy: ModuleActionOrderByInput, skip: Int, take: Int, where: ModuleActionWhereInput): [ModuleAction!]!
+  modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  pluginInstallation(where: WhereUniqueInput!): PluginInstallation
+  pluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
   project(where: WhereUniqueInput!): Project
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
@@ -1561,6 +1567,10 @@ type Query {
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
+  serviceTopics(where: WhereUniqueInput!): ServiceTopics
+  serviceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
+  topic(where: WhereUniqueInput!): Topic
+  topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
   userAction(where: WhereUniqueInput!): UserAction!
   userApiTokens: [ApiToken!]!
   workspace(where: WhereUniqueInput!): Workspace

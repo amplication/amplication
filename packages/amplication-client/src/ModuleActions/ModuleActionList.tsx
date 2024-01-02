@@ -131,8 +131,8 @@ const ModuleActionList = React.memo(
             </FlexItem>
           }
         >
-          {data?.ModuleActions?.length ? (
-            data?.ModuleActions?.map((action) => (
+          {data?.moduleActions?.length ? (
+            data?.moduleActions?.map((action) => (
               <ModuleActionListItem
                 key={action.id}
                 module={module}

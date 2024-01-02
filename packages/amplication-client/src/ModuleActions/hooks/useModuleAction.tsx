@@ -15,11 +15,11 @@ type TDeleteData = {
 };
 
 type TFindData = {
-  ModuleActions: models.ModuleAction[];
+  moduleActions: models.ModuleAction[];
 };
 
 type TGetData = {
-  ModuleAction: models.ModuleAction;
+  moduleAction: models.ModuleAction;
 };
 
 type TCreateData = {
@@ -37,6 +37,20 @@ const useModuleAction = () => {
     deleteModuleAction,
     { error: deleteModuleActionError, loading: deleteModuleActionLoading },
   ] = useMutation<TDeleteData>(DELETE_MODULE_ACTION, {
+    update(cache, { data }) {
+      if (!data || data === undefined) return;
+      const deletedModuleActionId = data.deleteModuleAction.id;
+      cache.modify({
+        fields: {
+          moduleActions(existingModuleActionRefs, { readField }) {
+            return existingModuleActionRefs.filter(
+              (moduleRef: Reference) =>
+                deletedModuleActionId !== readField("id", moduleRef)
+            );
+          },
+        },
+      });
+    },
     onCompleted: (data) => {
       addBlock(data.deleteModuleAction.id);
     },
@@ -50,8 +64,32 @@ const useModuleAction = () => {
       loading: createModuleActionLoading,
     },
   ] = useMutation<TCreateData>(CREATE_MODULE_ACTION, {
-    onCompleted: (data) => {
-      addBlock(data.createModuleAction.id);
+    update(cache, { data }) {
+      if (!data) return;
+
+      const newModuleAction = data.createModuleAction;
+
+      cache.modify({
+        fields: {
+          moduleActions(existingModuleActionRefs = [], { readField }) {
+            const newModuleActionRef = cache.writeFragment({
+              data: newModuleAction,
+              fragment: MODULE_ACTION_FIELDS_FRAGMENT,
+            });
+
+            if (
+              existingModuleActionRefs.some(
+                (moduleRef: Reference) =>
+                  readField("id", moduleRef) === newModuleAction.id
+              )
+            ) {
+              return existingModuleActionRefs;
+            }
+
+            return [...existingModuleActionRefs, newModuleActionRef];
+          },
+        },
+      });
     },
   });
 
