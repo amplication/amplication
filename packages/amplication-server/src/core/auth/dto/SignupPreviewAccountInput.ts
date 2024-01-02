@@ -5,13 +5,13 @@ import { IsWorkEmail } from "../IsWorkEmail";
 
 @InputType()
 export class SignupPreviewAccountInput {
-  @Field({ nullable: false })
-  @IsEmail()
+  @IsEmail({}, { message: "Invalid email" })
   @IsWorkEmail({
     message: "Email must be a work email, not a public domain email",
   })
-  previewAccountEmail: string;
+  @Field(() => String, { nullable: false })
+  previewAccountEmail!: string;
 
-  @Field((type) => PreviewAccountType, { nullable: false })
-  previewAccountType: PreviewAccountType;
+  @Field(() => PreviewAccountType, { nullable: false })
+  previewAccountType!: PreviewAccountType;
 }
