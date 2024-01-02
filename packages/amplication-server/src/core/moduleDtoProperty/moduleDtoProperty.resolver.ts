@@ -15,7 +15,7 @@ import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 @UseGuards(GqlAuthGuard)
 export class ModuleDtoPropertyResolver extends BlockTypeResolver(
   ModuleDtoProperty,
-  "ModuleDtoProperties",
+  "moduleDtoProperties",
   FindManyModuleDtoPropertyArgs,
   "createModuleDtoProperty",
   CreateModuleDtoPropertyArgs,

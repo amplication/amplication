@@ -20,7 +20,7 @@ import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParam
 @UseGuards(GqlAuthGuard)
 export class ModuleDtoResolver extends BlockTypeResolver(
   ModuleDto,
-  "ModuleDtos",
+  "moduleDtos",
   FindManyModuleDtoArgs,
   "createModuleDto",
   CreateModuleDtoArgs,
