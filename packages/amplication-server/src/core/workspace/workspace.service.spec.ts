@@ -48,6 +48,18 @@ const EXAMPLE_ACCOUNT: Account = {
   previewAccountEmail: null,
 };
 
+const EXAMPLE_PREVIEW_ACCOUNT: Account = {
+  id: EXAMPLE_ACCOUNT_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: EXAMPLE_EMAIL,
+  firstName: EXAMPLE_FIRST_NAME,
+  lastName: EXAMPLE_LAST_NAME,
+  password: EXAMPLE_PASSWORD,
+  previewAccountType: PreviewAccountType.BreakingTheMonolith,
+  previewAccountEmail: "example@amplicaion.com",
+};
+
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
@@ -78,6 +90,9 @@ const EXAMPLE_PROJECT: Project = {
 
 EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
 
+const prismaAccountFindUniqueMock = jest.fn(() => {
+  return EXAMPLE_PREVIEW_ACCOUNT;
+});
 const prismaWorkspaceFindOneMock = jest.fn(() => {
   return EXAMPLE_WORKSPACE;
 });
@@ -208,6 +223,9 @@ describe("WorkspaceService", () => {
             user: {
               findMany: prismaUserFindManyMock,
               create: prismaUserCreateMock,
+            },
+            account: {
+              findUnique: prismaAccountFindUniqueMock,
             },
           })),
         },
