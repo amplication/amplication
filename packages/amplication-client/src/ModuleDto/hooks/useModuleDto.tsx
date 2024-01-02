@@ -15,11 +15,11 @@ type TDeleteData = {
 };
 
 type TFindData = {
-  ModuleDtos: models.ModuleDto[];
+  moduleDtos: models.ModuleDto[];
 };
 
 type TGetData = {
-  ModuleDto: models.ModuleDto;
+  moduleDto: models.ModuleDto;
 };
 
 type TCreateData = {
@@ -106,7 +106,7 @@ const useModuleDto = () => {
       },
     }).then((result) => {
       if (result.data) {
-        const dictionary = result.data.ModuleDtos.reduce((acc, dto) => {
+        const dictionary = result.data.moduleDtos.reduce((acc, dto) => {
           acc[dto.id] = dto;
           return acc;
         }, {} as Record<string, models.ModuleDto>);

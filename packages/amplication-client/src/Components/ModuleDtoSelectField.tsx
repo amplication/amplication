@@ -23,8 +23,8 @@ const ModuleDtoSelectField = ({ ...props }: Props) => {
   }, [resources]);
 
   const options = useMemo(() => {
-    if (data && data.ModuleDtos) {
-      return data.ModuleDtos.map((dto) => ({
+    if (data && data.moduleDtos) {
+      return data.moduleDtos.map((dto) => ({
         label: `${dto.name}`,
         group: `${resourceNameDictionary[dto.resourceId] + "\\"}${
           dto.parentBlock.displayName

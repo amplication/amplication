@@ -39,7 +39,7 @@ const ModuleDtoPropertyList = React.memo(
         <List
           headerContent={<Text textStyle={EnumTextStyle.Tag}>Properties</Text>}
         >
-          {data?.ModuleDto?.properties.map((property) => (
+          {data?.moduleDto?.properties.map((property) => (
             <ListItem key={property.id}>
               <ModuleDtoProperty
                 moduleDtoProperty={property}

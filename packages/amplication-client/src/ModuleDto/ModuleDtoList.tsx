@@ -78,11 +78,11 @@ const ModuleDtoList = React.memo(({ moduleId, resourceId }: Props) => {
           </FlexItem>
         }
       >
-        {data?.ModuleDtos?.length ? (
-          data?.ModuleDtos?.map((dto) => (
+        {data?.moduleDtos?.length ? (
+          data?.moduleDtos?.map((dto) => (
             <ModuleDtoListItem
               key={dto.id}
-              module={moduleData?.Module}
+              module={moduleData?.module}
               moduleDto={dto}
             />
           ))

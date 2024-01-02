@@ -95,16 +95,16 @@ const ModuleDto = ({ match }: Props) => {
     <>
       <FlexItem>
         <TabContentTitle
-          title={data?.ModuleDto?.name}
-          subTitle={data?.ModuleDto?.description}
+          title={data?.moduleDto?.name}
+          subTitle={data?.moduleDto?.description}
         />
         <FlexItem.FlexEnd>
-          {data?.ModuleDto && isCustomDto && (
-            <DeleteModuleDto moduleDto={data?.ModuleDto} />
+          {data?.moduleDto && isCustomDto && (
+            <DeleteModuleDto moduleDto={data?.moduleDto} />
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
-      {data?.ModuleDto && !isCustomDto && (
+      {data?.moduleDto && !isCustomDto && (
         <FlexItem margin={EnumFlexItemMargin.Bottom}>
           <Text textStyle={EnumTextStyle.Description}>
             This is a default dto that was created automatically with the
@@ -117,13 +117,13 @@ const ModuleDto = ({ match }: Props) => {
         <ModuleDtoForm
           isCustomDto={isCustomDto}
           onSubmit={handleSubmit}
-          defaultValues={data?.ModuleDto}
+          defaultValues={data?.moduleDto}
         />
       )}
 
       <TabContentTitle title="Properties" />
       <NewModuleDtoProperty
-        moduleDto={data?.ModuleDto}
+        moduleDto={data?.moduleDto}
         onPropertyAdd={onPropertyListChanged}
       />
       <ModuleDtoPropertyList

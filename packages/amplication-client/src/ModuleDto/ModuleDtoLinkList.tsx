@@ -54,7 +54,7 @@ export const ModuleDtoLinkList = React.memo(
           <CircularProgress />
         ) : (
           <VerticalNavigation>
-            {data?.ModuleDtos.map((dto) => (
+            {data?.moduleDtos.map((dto) => (
               <VerticalNavigationItem
                 key={dto.id}
                 icon="git_commit"

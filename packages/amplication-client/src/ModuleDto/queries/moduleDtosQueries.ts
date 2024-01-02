@@ -49,8 +49,8 @@ export const DELETE_MODULE_DTO = gql`
 
 export const GET_MODULE_DTO = gql`
   ${MODULE_DTO_FIELDS_FRAGMENT}
-  query ModuleDto($moduleDtoId: String!) {
-    ModuleDto(where: { id: $moduleDtoId }) {
+  query moduleDto($moduleDtoId: String!) {
+    moduleDto(where: { id: $moduleDtoId }) {
       ...ModuleDtoFields
     }
   }
@@ -79,11 +79,11 @@ export const CREATE_MODULE_DTO = gql`
 
 export const FIND_MODULE_DTOS = gql`
   ${MODULE_DTO_FIELDS_FRAGMENT}
-  query ModuleDtos(
+  query moduleDtos(
     $where: ModuleDtoWhereInput
     $orderBy: ModuleDtoOrderByInput
   ) {
-    ModuleDtos(where: $where, orderBy: $orderBy) {
+    moduleDtos(where: $where, orderBy: $orderBy) {
       ...ModuleDtoFields
     }
   }
@@ -95,7 +95,7 @@ export const GET_AVAILABLE_DTOS_FOR_RESOURCE = gql`
     $where: ModuleDtoWhereInput
     $orderBy: ModuleDtoOrderByInput
   ) {
-    ModuleDtos(where: $where, orderBy: $orderBy) {
+    moduleDtos(where: $where, orderBy: $orderBy) {
       ...ModuleDtoFields
       parentBlock {
         id
