@@ -60,15 +60,33 @@ const InstalledPluginSettings: React.FC<Props> = ({
   const [selectedVersion, setSelectedVersion] = useState(
     pluginInstallation?.pluginInstallation.version
   );
+
+  const plugin = useMemo(() => {
+    return (
+      pluginInstallation &&
+      pluginCatalog[pluginInstallation?.pluginInstallation.pluginId]
+    );
+  }, [pluginInstallation, pluginCatalog]);
+
   const [value, setEditorValue] = useState<string>(
     JsonFormatting(pluginInstallation?.pluginInstallation.settings)
   );
 
   useEffect(() => {
-    editorRef.current = JSON.stringify(
-      pluginInstallation?.pluginInstallation.settings
+    if (!plugin || !pluginInstallation) return;
+
+    const pluginInstalledVersion = plugin.versions.find(
+      (pluginVersion: PluginVersion) =>
+        pluginVersion.version === pluginInstallation?.pluginInstallation.version
     );
-  }, [pluginInstallation?.pluginInstallation.settings]);
+    const mergedSettings = JSON.stringify({
+      ...(pluginInstalledVersion.settings as unknown as { [key: string]: any }),
+      ...pluginInstallation?.pluginInstallation.settings,
+    });
+    if (JSON.stringify(pluginInstalledVersion.settings))
+      editorRef.current = mergedSettings;
+    setEditorValue(mergedSettings);
+  }, [pluginInstallation?.pluginInstallation.settings, plugin]);
 
   useEffect(() => {
     setConfiguration(pluginInstallation?.pluginInstallation.configurations);
@@ -79,13 +97,6 @@ const InstalledPluginSettings: React.FC<Props> = ({
       setSelectedVersion(pluginInstallation.pluginInstallation.version);
     }
   }, [pluginInstallation?.pluginInstallation.version]);
-
-  const plugin = useMemo(() => {
-    return (
-      pluginInstallation &&
-      pluginCatalog[pluginInstallation?.pluginInstallation.pluginId]
-    );
-  }, [pluginInstallation, pluginCatalog]);
 
   const onEditorChange = (
     value: string | undefined,
@@ -108,7 +119,16 @@ const InstalledPluginSettings: React.FC<Props> = ({
       setSelectedVersion(pluginVersion.version);
       pluginInstallation?.pluginInstallation.version !==
         pluginVersion.version && setIsValid(false);
-      editorRef.current = JSON.stringify(pluginVersion.settings);
+
+      const mergedSettings = JSON.stringify({
+        ...(pluginVersion.settings as unknown as { [key: string]: any }),
+        ...(pluginInstallation?.pluginInstallation.version ===
+        pluginVersion.version
+          ? pluginInstallation.pluginInstallation.settings
+          : {}),
+      });
+      editorRef.current = mergedSettings;
+      setEditorValue(mergedSettings);
       setConfiguration(pluginVersion.configurations);
     },
     [setSelectedVersion, setIsValid, setConfiguration]
