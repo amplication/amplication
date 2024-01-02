@@ -305,10 +305,13 @@ export class BillingService {
 
     await this.stiggClient.provisionCustomer({
       customerId: workspaceId,
-      subscriptionParams: {
-        planId:
-          this.mapPreviewAccountTypeToSubscriptionPlan(previewAccountType),
-      },
+      subscriptionParams: null,
+    });
+
+    await this.stiggClient.provisionSubscription({
+      customerId: workspaceId,
+      planId: this.mapPreviewAccountTypeToSubscriptionPlan(previewAccountType),
+      skipTrial: true,
     });
   }
 
