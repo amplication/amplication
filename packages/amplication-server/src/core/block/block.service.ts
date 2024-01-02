@@ -468,7 +468,8 @@ export class BlockService {
    * */
   async update<T extends IBlock>(
     args: UpdateBlockArgs,
-    user: User
+    user: User,
+    notMergeSettings?: boolean
   ): Promise<T> {
     const { displayName, description, ...settings } = args.data;
 
@@ -485,7 +486,7 @@ export class BlockService {
     // merge the existing settings with the new settings. use deep merge but do not merge arrays
     const allSettings = mergeWith(
       {},
-      existingVersion.settings,
+      notMergeSettings ? {} : existingVersion.settings,
       settings,
       (oldValue, newValue) => (isArray(newValue) ? newValue : undefined)
     );
