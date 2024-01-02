@@ -46,6 +46,7 @@ import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { Env } from "../../env";
 import { ConfigService } from "@nestjs/config";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -115,7 +116,16 @@ export class WorkspaceService {
       },
     });
 
-    await this.billingService.provisionPreviewCustomer(workspace.id);
+    const account = await this.prisma.account.findUnique({
+      where: {
+        id: accountId,
+      },
+    });
+
+    await this.billingService.provisionPreviewCustomer(
+      workspace.id,
+      PreviewAccountType[account.previewAccountType]
+    );
 
     await this.billingService.reportUsage(
       workspace.id,
