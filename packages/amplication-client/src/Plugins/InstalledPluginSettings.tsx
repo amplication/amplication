@@ -58,18 +58,18 @@ const InstalledPluginSettings: React.FC<Props> = ({
     updateError,
   } = usePlugins(currentResource.id, pluginInstallationId);
   const [selectedVersion, setSelectedVersion] = useState(
-    pluginInstallation?.PluginInstallation.version
+    pluginInstallation?.pluginInstallation.version
   );
 
   const plugin = useMemo(() => {
     return (
       pluginInstallation &&
-      pluginCatalog[pluginInstallation?.PluginInstallation.pluginId]
+      pluginCatalog[pluginInstallation?.pluginInstallation.pluginId]
     );
   }, [pluginInstallation, pluginCatalog]);
 
   const [value, setEditorValue] = useState<string>(
-    JsonFormatting(pluginInstallation?.PluginInstallation.settings)
+    JsonFormatting(pluginInstallation?.pluginInstallation.settings)
   );
 
   useEffect(() => {
@@ -77,26 +77,26 @@ const InstalledPluginSettings: React.FC<Props> = ({
 
     const pluginInstalledVersion = plugin.versions.find(
       (pluginVersion: PluginVersion) =>
-        pluginVersion.version === pluginInstallation?.PluginInstallation.version
+        pluginVersion.version === pluginInstallation?.pluginInstallation.version
     );
     const mergedSettings = JSON.stringify({
       ...(pluginInstalledVersion.settings as unknown as { [key: string]: any }),
-      ...pluginInstallation?.PluginInstallation.settings,
+      ...pluginInstallation?.pluginInstallation.settings,
     });
     if (JSON.stringify(pluginInstalledVersion.settings))
       editorRef.current = mergedSettings;
     setEditorValue(mergedSettings);
-  }, [pluginInstallation?.PluginInstallation.settings, plugin]);
+  }, [pluginInstallation?.pluginInstallation.settings, plugin]);
 
   useEffect(() => {
-    setConfiguration(pluginInstallation?.PluginInstallation.configurations);
-  }, [pluginInstallation?.PluginInstallation.configurations]);
+    setConfiguration(pluginInstallation?.pluginInstallation.configurations);
+  }, [pluginInstallation?.pluginInstallation.configurations]);
 
   useEffect(() => {
     if (pluginInstallation && !selectedVersion) {
-      setSelectedVersion(pluginInstallation.PluginInstallation.version);
+      setSelectedVersion(pluginInstallation.pluginInstallation.version);
     }
-  }, [pluginInstallation?.PluginInstallation.version]);
+  }, [pluginInstallation?.pluginInstallation.version]);
 
   const onEditorChange = (
     value: string | undefined,
@@ -117,14 +117,14 @@ const InstalledPluginSettings: React.FC<Props> = ({
   const handleSelectVersion = useCallback(
     (pluginVersion: PluginVersion) => {
       setSelectedVersion(pluginVersion.version);
-      pluginInstallation?.PluginInstallation.version !==
+      pluginInstallation?.pluginInstallation.version !==
         pluginVersion.version && setIsValid(false);
 
       const mergedSettings = JSON.stringify({
         ...(pluginVersion.settings as unknown as { [key: string]: any }),
-        ...(pluginInstallation?.PluginInstallation.version ===
+        ...(pluginInstallation?.pluginInstallation.version ===
         pluginVersion.version
-          ? pluginInstallation.PluginInstallation.settings
+          ? pluginInstallation.pluginInstallation.settings
           : {}),
       });
       editorRef.current = mergedSettings;
@@ -136,7 +136,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
 
   const handlePluginInstalledSave = useCallback(() => {
     if (!pluginInstallation) return;
-    const { enabled, id } = pluginInstallation.PluginInstallation;
+    const { enabled, id } = pluginInstallation.pluginInstallation;
 
     updatePluginInstallation({
       variables: {
@@ -182,7 +182,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
               <SelectMenu
                 title={
                   selectedVersion ||
-                  pluginInstallation.PluginInstallation.version
+                  pluginInstallation.pluginInstallation.version
                 }
                 buttonStyle={EnumButtonStyle.Outline}
                 className={`${moduleClass}__menu`}
@@ -212,7 +212,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
           </div>
           <HorizontalRule />
           <CodeEditor
-            defaultValue={pluginInstallation?.PluginInstallation.settings}
+            defaultValue={pluginInstallation?.pluginInstallation.settings}
             value={value}
             resetKey={resetKey}
             onChange={onEditorChange}
