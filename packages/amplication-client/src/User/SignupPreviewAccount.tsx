@@ -7,12 +7,13 @@ import { PreviewAccountType } from "../models";
 const SignupPreviewAccount = () => {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const email = urlParams.get("email");
-  const previewAccountType = urlParams.get("previewAccountType");
+  const previewAccountTypeParam = urlParams.get("previewAccountType");
+  const emailParam = urlParams.get("email");
+  const email = emailParam.replace(/ /g, "+");
 
   const { loading, error } = useSignupPreviewAccount(
     email,
-    PreviewAccountType[previewAccountType]
+    PreviewAccountType[previewAccountTypeParam]
   );
 
   const errorMessage = formatError(error);
