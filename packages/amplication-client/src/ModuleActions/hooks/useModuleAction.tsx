@@ -16,11 +16,11 @@ type TDeleteData = {
 };
 
 type TFindData = {
-  ModuleActions: models.ModuleAction[];
+  moduleActions: models.ModuleAction[];
 };
 
 type TGetData = {
-  ModuleAction: models.ModuleAction;
+  moduleAction: models.ModuleAction;
 };
 
 type TCreateData = {
@@ -51,7 +51,7 @@ const useModuleAction = () => {
       const deletedModuleActionId = data.deleteModuleAction.id;
       cache.modify({
         fields: {
-          ModuleActions(existingModuleActionRefs, { readField }) {
+          moduleActions(existingModuleActionRefs, { readField }) {
             return existingModuleActionRefs.filter(
               (moduleRef: Reference) =>
                 deletedModuleActionId !== readField("id", moduleRef)
@@ -96,7 +96,7 @@ const useModuleAction = () => {
 
       cache.modify({
         fields: {
-          ModuleActions(existingModuleActionRefs = [], { readField }) {
+          moduleActions(existingModuleActionRefs = [], { readField }) {
             const newModuleActionRef = cache.writeFragment({
               data: newModuleAction,
               fragment: MODULE_ACTION_FIELDS_FRAGMENT,

@@ -58,32 +58,32 @@ const InstalledPluginSettings: React.FC<Props> = ({
     updateError,
   } = usePlugins(currentResource.id, pluginInstallationId);
   const [selectedVersion, setSelectedVersion] = useState(
-    pluginInstallation?.PluginInstallation.version
+    pluginInstallation?.pluginInstallation.version
   );
   const [value, setEditorValue] = useState<string>(
-    JsonFormatting(pluginInstallation?.PluginInstallation.settings)
+    JsonFormatting(pluginInstallation?.pluginInstallation.settings)
   );
 
   useEffect(() => {
     editorRef.current = JSON.stringify(
-      pluginInstallation?.PluginInstallation.settings
+      pluginInstallation?.pluginInstallation.settings
     );
-  }, [pluginInstallation?.PluginInstallation.settings]);
+  }, [pluginInstallation?.pluginInstallation.settings]);
 
   useEffect(() => {
-    setConfiguration(pluginInstallation?.PluginInstallation.configurations);
-  }, [pluginInstallation?.PluginInstallation.configurations]);
+    setConfiguration(pluginInstallation?.pluginInstallation.configurations);
+  }, [pluginInstallation?.pluginInstallation.configurations]);
 
   useEffect(() => {
     if (pluginInstallation && !selectedVersion) {
-      setSelectedVersion(pluginInstallation.PluginInstallation.version);
+      setSelectedVersion(pluginInstallation.pluginInstallation.version);
     }
-  }, [pluginInstallation?.PluginInstallation.version]);
+  }, [pluginInstallation?.pluginInstallation.version]);
 
   const plugin = useMemo(() => {
     return (
       pluginInstallation &&
-      pluginCatalog[pluginInstallation?.PluginInstallation.pluginId]
+      pluginCatalog[pluginInstallation?.pluginInstallation.pluginId]
     );
   }, [pluginInstallation, pluginCatalog]);
 
@@ -106,7 +106,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
   const handleSelectVersion = useCallback(
     (pluginVersion: PluginVersion) => {
       setSelectedVersion(pluginVersion.version);
-      pluginInstallation?.PluginInstallation.version !==
+      pluginInstallation?.pluginInstallation.version !==
         pluginVersion.version && setIsValid(false);
       editorRef.current = JSON.stringify(pluginVersion.settings);
       setConfiguration(pluginVersion.configurations);
@@ -116,7 +116,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
 
   const handlePluginInstalledSave = useCallback(() => {
     if (!pluginInstallation) return;
-    const { enabled, id } = pluginInstallation.PluginInstallation;
+    const { enabled, id } = pluginInstallation.pluginInstallation;
 
     updatePluginInstallation({
       variables: {
@@ -162,7 +162,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
               <SelectMenu
                 title={
                   selectedVersion ||
-                  pluginInstallation.PluginInstallation.version
+                  pluginInstallation.pluginInstallation.version
                 }
                 buttonStyle={EnumButtonStyle.Outline}
                 className={`${moduleClass}__menu`}
@@ -192,7 +192,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
           </div>
           <HorizontalRule />
           <CodeEditor
-            defaultValue={pluginInstallation?.PluginInstallation.settings}
+            defaultValue={pluginInstallation?.pluginInstallation.settings}
             value={value}
             resetKey={resetKey}
             onChange={onEditorChange}

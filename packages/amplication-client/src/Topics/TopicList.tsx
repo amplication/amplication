@@ -16,7 +16,7 @@ import NewTopic from "./NewTopic";
 import "./TopicList.scss";
 
 type TData = {
-  Topics: models.Topic[];
+  topics: models.Topic[];
 };
 
 const DATE_CREATED_FIELD = "createdAt";
@@ -69,8 +69,8 @@ export const TopicList = React.memo(
     );
 
     useEffect(() => {
-      if (selectFirst && data && !isEmpty(data.Topics)) {
-        const topic = data.Topics[0];
+      if (selectFirst && data && !isEmpty(data.topics)) {
+        const topic = data.topics[0];
         const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/topics/${topic.id}`;
         history.push(fieldUrl);
       }
@@ -91,12 +91,12 @@ export const TopicList = React.memo(
           onChange={handleSearchChange}
         />
         <div className={`${CLASS_NAME}__header`}>
-          {data?.Topics.length}{" "}
-          {pluralize(data?.Topics.length, "Topic", "Topics")}
+          {data?.topics.length}{" "}
+          {pluralize(data?.topics.length, "Topic", "Topics")}
         </div>
         {loading && <CircularProgress />}
         <div className={`${CLASS_NAME}__list`}>
-          {data?.Topics?.map((topic) => (
+          {data?.topics?.map((topic) => (
             <div key={topic.id} className={`${CLASS_NAME}__list__item`}>
               <InnerTabLink
                 icon="topics"
@@ -107,7 +107,7 @@ export const TopicList = React.memo(
             </div>
           ))}
         </div>
-        {data?.Topics && (
+        {data?.topics && (
           <NewTopic onTopicAdd={handleTopicChange} resourceId={resourceId} />
         )}
         <Snackbar open={Boolean(error)} message={errorMessage} />
@@ -117,8 +117,8 @@ export const TopicList = React.memo(
 );
 
 export const GET_TOPICS = gql`
-  query Topics($where: TopicWhereInput, $orderBy: TopicOrderByInput) {
-    Topics(where: $where, orderBy: $orderBy) {
+  query topics($where: TopicWhereInput, $orderBy: TopicOrderByInput) {
+    topics(where: $where, orderBy: $orderBy) {
       id
       name
       displayName
