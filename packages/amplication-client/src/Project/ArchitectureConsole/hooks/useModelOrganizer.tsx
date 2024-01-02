@@ -1,8 +1,11 @@
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../context/appContext";
 import * as models from "../../../models";
-import { GET_RESOURCES } from "../queries/modelsQueries";
+import {
+  CREATE_RESOURCE_ENTITIES,
+  GET_RESOURCES,
+} from "../queries/modelsQueries";
 import {
   ModelChanges,
   NODE_TYPE_MODEL,
@@ -19,6 +22,19 @@ import useLocalStorage from "react-use-localstorage";
 type TData = {
   resources: models.Resource[];
 };
+
+type modelChangesData = {
+  projectId: string;
+  modelGroupsResources: {
+    tempId: string;
+    name: string;
+  }[];
+  entitiesToCopy: {
+    targetResourceId: string;
+    entityId: string;
+  }[];
+};
+
 const LOCAL_STORAGE_KEY = "ModelOrganizerData";
 
 const useModelOrganization = () => {
@@ -147,9 +163,24 @@ const useModelOrganization = () => {
     [setNodes, changes, setChanges, nodes]
   );
 
+  const [
+    createResourceEntities,
+    { loading: loadingCreateEntities, error: createEntitiesError },
+  ] = useMutation<modelChangesData>(CREATE_RESOURCE_ENTITIES, {});
+
   const saveChanges = useCallback(() => {
-    //@todo: save to server
+    createResourceEntities({
+      variables: {
+        data: {
+          entitiesToCopy: changes.movedEntities,
+          modelGroupsResources: changes.newServices,
+          projectId: currentProject.id,
+        },
+      },
+    }).catch(console.error);
+
     resetChanges();
+    loadProjectResources();
   }, [resetChanges]);
 
   return {

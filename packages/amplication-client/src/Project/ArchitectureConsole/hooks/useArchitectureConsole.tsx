@@ -1,22 +1,12 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import {
-  CREATE_RESOURCE_ENTITIES,
-  GET_RESOURCES,
-} from "../queries/modelsQueries";
+import { GET_RESOURCES } from "../queries/modelsQueries";
 import * as models from "../../../models";
 import { AppContext } from "../../../context/appContext";
-import { ModelChanges } from "../types";
 import { ResourceFilter } from "../ArchitectureConsole";
-import { CREATE_SERVICE } from "../../../Workspaces/queries/resourcesQueries";
-import { EnumAuthProviderType, EnumResourceType } from "../../../models";
 
 type TData = {
   resources: ResourceFilter[];
-};
-
-type TCreateService = {
-  createTempService: models.Resource;
 };
 
 const useArchitectureConsole = () => {
@@ -46,11 +36,6 @@ const useArchitectureConsole = () => {
 
     fetchPolicy: "no-cache",
   });
-
-  const [
-    createService,
-    { loading: loadingCreateService, error: errorCreateService },
-  ] = useMutation<TCreateService>(CREATE_SERVICE, {});
 
   useEffect(() => {
     if (withTempResources.current?.length > 0 && !resourcesData) {
@@ -120,79 +105,15 @@ const useArchitectureConsole = () => {
     [filteredResources, resourcesData, setFilteredResources]
   );
 
-  const [
-    createResourceEntities,
-    { loading: loadingCreateEntities, error: createEntitiesError },
-  ] = useMutation<ModelChanges>(CREATE_RESOURCE_ENTITIES, {
-    onCompleted: (data) => {
-      withTempResources.current = [];
-      refetchResourcesData();
-    },
-  });
-
-  const handleApplyPlanProcess = useCallback(async (data: ModelChanges) => {
-    for (const service of data.newServices) {
-      await createService({
-        variables: {
-          data: {
-            name: service.name,
-            description: `create service: ${service.name} from architecture model`,
-            tempId: service.id,
-            resourceType: EnumResourceType.Service,
-            serviceSettings: {
-              adminUISettings: {
-                generateAdminUI: false,
-                adminUIPath: "",
-              },
-              serverSettings: {
-                generateGraphQL: true,
-                generateRestApi: true,
-                serverPath: "",
-              },
-              authProvider: EnumAuthProviderType.Jwt,
-            },
-            project: {
-              connect: {
-                id: currentProject.id,
-              },
-            },
-          },
-        },
-      })
-        .then((result) => {
-          //update target resourceId in moveEntities list
-          data.movedEntities.find(
-            (e) => e.targetResourceId === result.data.createTempService.tempId
-          ).targetResourceId = result.data.createTempService.id;
-        })
-        .catch(console.error);
-    }
-
-    await createResourceEntities({
-      variables: {
-        data: {
-          entitiesToCopy: data.movedEntities,
-        },
-      },
-    }).catch(console.error);
-  }, []);
-
   return {
     resourcesData,
     loadingResources,
     resourcesError,
     refetchResourcesData,
-    createResourceEntities,
-    createEntitiesError,
     handleSearchChange,
     filteredResources,
     handleResourceFilterChanged,
-    createService,
-    loadingCreateService,
-    loadingCreateEntities,
-    errorCreateService,
     handleNewServiceSuccess,
-    handleApplyPlanProcess,
     setSearchPhrase,
   };
 };

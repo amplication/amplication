@@ -278,11 +278,7 @@ input ConnectGitRepositoryInput {
   resourceId: String!
 }
 
-input CopiedEntities {
-  shouldDeleteFromSource: Boolean!
-}
-
-input CopiedEntityWithTargetResource {
+input CopiedEntity {
   entityId: String!
   targetResourceId: String!
 }
@@ -945,6 +941,11 @@ input MessagePatternCreateInput {
   type: EnumMessagePatternConnectionOptions!
 }
 
+input ModelGroupResource {
+  name: String!
+  tempId: String!
+}
+
 type Module implements IBlock {
   blockType: EnumBlockType!
   createdAt: DateTime!
@@ -1094,12 +1095,10 @@ type Mutation {
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   createProject(data: ProjectCreateInput!): Project!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
-  createResourceEntitiesFromExistingResource(data: ResourceCreateCopiedEntitiesInput!): Resource!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createService(data: ResourceCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
-  createTempService(data: ResourceCreateInput!): Resource!
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
@@ -1477,11 +1476,6 @@ type Resource {
   updatedAt: DateTime!
 }
 
-input ResourceCreateCopiedEntitiesInput {
-  entitiesToCopy: [CopiedEntities!]!
-  targetResourceId: String!
-}
-
 input ResourceCreateInput {
   description: String!
   gitRepository: ConnectGitRepositoryInput
@@ -1594,7 +1588,9 @@ input ResourceWhereInput {
 }
 
 input ResourcesCreateCopiedEntitiesInput {
-  entitiesToCopy: [CopiedEntityWithTargetResource!]!
+  entitiesToCopy: [CopiedEntity!]!
+  modelGroupsResources: [ModelGroupResource!]!
+  projectId: String!
 }
 
 enum Role {

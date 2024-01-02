@@ -309,11 +309,7 @@ export type ConnectGitRepositoryInput = {
   resourceId: Scalars['String']['input'];
 };
 
-export type CopiedEntities = {
-  shouldDeleteFromSource: Scalars['Boolean']['input'];
-};
-
-export type CopiedEntityWithTargetResource = {
+export type CopiedEntity = {
   entityId: Scalars['String']['input'];
   targetResourceId: Scalars['String']['input'];
 };
@@ -976,6 +972,11 @@ export type MessagePatternCreateInput = {
   type: EnumMessagePatternConnectionOptions;
 };
 
+export type ModelGroupResource = {
+  name: Scalars['String']['input'];
+  tempId: Scalars['String']['input'];
+};
+
 export type Module = IBlock & {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -1125,12 +1126,10 @@ export type Mutation = {
   createPluginInstallation: PluginInstallation;
   createProject: Project;
   createRemoteGitRepository: RemoteGitRepository;
-  createResourceEntitiesFromExistingResource: Resource;
   createResourceRole: ResourceRole;
   createService: Resource;
   createServiceTopics: ServiceTopics;
   createServiceWithEntities: ResourceCreateWithEntitiesResult;
-  createTempService: Resource;
   createTopic: Topic;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
@@ -1308,11 +1307,6 @@ export type MutationCreateRemoteGitRepositoryArgs = {
 };
 
 
-export type MutationCreateResourceEntitiesFromExistingResourceArgs = {
-  data: ResourceCreateCopiedEntitiesInput;
-};
-
-
 export type MutationCreateResourceRoleArgs = {
   data: ResourceRoleCreateInput;
 };
@@ -1330,11 +1324,6 @@ export type MutationCreateServiceTopicsArgs = {
 
 export type MutationCreateServiceWithEntitiesArgs = {
   data: ResourceCreateWithEntitiesInput;
-};
-
-
-export type MutationCreateTempServiceArgs = {
-  data: ResourceCreateInput;
 };
 
 
@@ -2169,11 +2158,6 @@ export type ResourceEntitiesArgs = {
   where?: InputMaybe<EntityWhereInput>;
 };
 
-export type ResourceCreateCopiedEntitiesInput = {
-  entitiesToCopy: Array<CopiedEntities>;
-  targetResourceId: Scalars['String']['input'];
-};
-
 export type ResourceCreateInput = {
   description: Scalars['String']['input'];
   gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
@@ -2286,7 +2270,9 @@ export type ResourceWhereInput = {
 };
 
 export type ResourcesCreateCopiedEntitiesInput = {
-  entitiesToCopy: Array<CopiedEntityWithTargetResource>;
+  entitiesToCopy: Array<CopiedEntity>;
+  modelGroupsResources: Array<ModelGroupResource>;
+  projectId: Scalars['String']['input'];
 };
 
 export enum Role {

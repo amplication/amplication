@@ -216,7 +216,7 @@ export default function ModelOrganizer({
         <>
           <ModelOrganizerToolbar
             readOnly={readOnly}
-            hasChanges={hasChanges}
+            hasChanges={changes?.movedEntities?.length > 0}
             resources={resourcesData?.resources}
             onApplyPlan={onApplyPlanClick}
             onRedesign={onRedesignClick}

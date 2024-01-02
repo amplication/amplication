@@ -1,35 +1,43 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { CopiedEntities } from "./CopiedEntities";
-
-@InputType({
-  isAbstract: true,
-})
-export class ResourceCreateCopiedEntitiesInput {
-  @Field(() => String, {
-    nullable: false,
-  })
-  targetResourceId!: string;
-
-  @Field(() => [CopiedEntities], {
-    nullable: false,
-  })
-  entitiesToCopy!: CopiedEntities[];
-}
 
 @InputType({
   isAbstract: true,
 })
 export class ResourcesCreateCopiedEntitiesInput {
-  @Field(() => [CopiedEntityWithTargetResource], {
+  @Field(() => String, {
     nullable: false,
   })
-  entitiesToCopy!: CopiedEntityWithTargetResource[];
+  projectId!: string;
+
+  @Field(() => [ModelGroupResource], {
+    nullable: false,
+  })
+  modelGroupsResources!: ModelGroupResource[];
+
+  @Field(() => [CopiedEntity], {
+    nullable: false,
+  })
+  entitiesToCopy!: CopiedEntity[];
 }
 
 @InputType({
   isAbstract: true,
 })
-export class CopiedEntityWithTargetResource {
+export class ModelGroupResource {
+  @Field(() => String, {
+    nullable: false,
+  })
+  tempId!: string;
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  name!: string;
+}
+@InputType({
+  isAbstract: true,
+})
+export class CopiedEntity {
   @Field(() => String, {
     nullable: false,
   })

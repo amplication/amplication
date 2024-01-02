@@ -140,17 +140,6 @@ export const CREATE_SERVICE_WITH_ENTITIES = gql`
   }
 `;
 
-export const CREATE_SERVICE = gql`
-  mutation createTempService($data: ResourceCreateInput!) {
-    createTempService(data: $data) {
-      id
-      name
-      description
-      tempId
-    }
-  }
-`;
-
 export const CREATE_MESSAGE_BROKER = gql`
   mutation createMessageBroker($data: ResourceCreateInput!) {
     createMessageBroker(data: $data) {

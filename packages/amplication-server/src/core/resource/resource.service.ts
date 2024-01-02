@@ -64,12 +64,10 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { JsonValue } from "type-fest";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import {
-  CreateResourceEntitiesArgs,
-  CreateResourcesEntitiesArgs,
-} from "./dto/CreateResourceEntitiesArgs";
+import { CreateResourcesEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
 import { LookupResolvedProperties } from "@amplication/code-gen-types";
 import { SubscriptionService } from "../subscription/subscription.service";
+import { ModelGroupResource } from "./dto/ResourceCreateCopiedEntitiesInput";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -384,16 +382,24 @@ export class ResourceService {
     return resource;
   }
 
-  async createTempService(
-    args: CreateOneResourceArgs,
+  async createModelGroupService(
+    projectId: string,
+    modelGroupResource: ModelGroupResource,
     user: User
   ): Promise<Resource> {
-    const { serviceSettings, tempId, ...rest } = args.data;
+    const { tempId, name } = modelGroupResource;
+
     const resource = await this.createResource(
       {
         data: {
-          ...rest,
           resourceType: EnumResourceType.Service,
+          name: name,
+          description: `create service: ${name} from architecture model`,
+          project: {
+            connect: {
+              id: projectId,
+            },
+          },
         },
       },
       user
@@ -405,8 +411,7 @@ export class ResourceService {
 
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
-      user,
-      serviceSettings
+      user
     );
 
     await this.environmentService.createDefaultEnvironment(resource.id);
@@ -425,117 +430,43 @@ export class ResourceService {
     return resource;
   }
 
-  async createResourceEntitiesFromExistingResource(
-    args: CreateResourceEntitiesArgs,
-    user: User
-  ): Promise<Resource> {
-    const { targetResourceId, entitiesToCopy } = args.data;
-    const resource = await this.prisma.resource.findUnique({
-      where: {
-        id: targetResourceId,
-      },
-      include: {
-        entities: {
-          where: {
-            deletedAt: null,
-          },
-        },
-      },
-    });
-
-    if (!resource) throw new AmplicationError("Target Resource doesn't exist");
-
-    entitiesToCopy.map((entity) => {
-      if (resource.entities.find((x) => x.name === entity.name)) {
-        throw new AmplicationError(
-          `Entity ${entity.name} is already exist in resourceId: ${resource.id}, process abort`
-        );
-      }
-    });
-
-    // 1.create resource entities
-
-    const copiedEntities: Entity[] = await this.createResourceCopiedEntities(
-      entitiesToCopy,
-      targetResourceId,
-      user
-    );
-
-    const entitiesWithFieldsMap = entitiesToCopy.reduce(
-      (entitiesObj, entity) => {
-        entitiesObj[entity.name] = entity;
-        return entitiesObj;
-      },
-      {}
-    );
-
-    // 2.create entities fields
-
-    for (const copiedEntity of copiedEntities) {
-      const currentEntity: Entity = entitiesWithFieldsMap[copiedEntity.name];
-
-      for (const field of currentEntity.versions[0].fields) {
-        const { dataType, properties } = field;
-        const { allowMultipleSelection, relatedEntityId } =
-          properties as unknown as LookupResolvedProperties;
-
-        if (dataType === EnumDataType.Id) {
-          await this.createCopiedEntityIdField(copiedEntity.id);
-          continue;
-        }
-        if (dataType === EnumDataType.Lookup) {
-          const isFieldExist = await this.isEntityFieldExist(
-            pascalCase(field.name),
-            copiedEntity.id
-          );
-
-          if (isFieldExist) continue;
-
-          const currentRelatedEntity = entitiesToCopy.find(
-            (entity) => entity.id === relatedEntityId
-          );
-
-          if (!currentRelatedEntity) {
-            if (allowMultipleSelection) continue;
-
-            //one to one relation or one to many relation
-            //create id field by the idType and field name
-
-            await this.entityService.updateFieldDataTypeIdByRelatedEntity(
-              field,
-              relatedEntityId
-            );
-          }
-        }
-
-        await this.entityService.createCopiedEntityFieldByDisplayName(
-          copiedEntity.id,
-          field,
-          user
-        );
-      }
-    }
-
-    // 3.delete entity from source service by flag
-    for (const entity of entitiesToCopy) {
-      if (entity.shouldDeleteFromSource) {
-        await this.entityService.deleteEntityFromSource(
-          { where: { id: entity.id } },
-          user
-        );
-      }
-    }
-
-    return resource;
-  }
-
   async copiedEntities(
     args: CreateResourcesEntitiesArgs,
     user: User
   ): Promise<Resource[]> {
-    const { entitiesToCopy } = args.data;
+    const { entitiesToCopy, modelGroupsResources, projectId } = args.data;
 
-    // 1.create resource entities
+    // 1. create new resources
+
+    const newResources: Resource[] = [];
+    for (const modelGroupResource of modelGroupsResources) {
+      const newResource = await this.createModelGroupService(
+        projectId,
+        modelGroupResource,
+        user
+      );
+      newResources.push(newResource);
+    }
+
+    // 2. update resourceId in copied entities list
+    if (newResources?.length > 0) {
+      const moduleGroupResourcesMap = newResources.reduce(
+        (resourcesObj, resource) => {
+          resourcesObj[resource.tempId] = resource;
+          return resourcesObj;
+        }
+      );
+
+      for (const entityToCopy of entitiesToCopy) {
+        const newResource: Resource =
+          moduleGroupResourcesMap[entityToCopy.targetResourceId];
+        if (newResource) {
+          entityToCopy.targetResourceId = newResource.id;
+        }
+      }
+    }
+
+    // 3.create resource entities
 
     const copiedEntities: Entity[] = [];
     const entitiesWithFields: Entity[] = [];
@@ -649,54 +580,6 @@ export class ResourceService {
     }
 
     return resources;
-  }
-  async createResourceCopiedEntities(
-    entitiesToCopy: Entity[],
-    targetResourceId: string,
-    user: User
-  ): Promise<Entity[]> {
-    const copiedEntities: Entity[] = [];
-
-    for (const entity of entitiesToCopy) {
-      const {
-        name,
-        displayName,
-        pluralDisplayName,
-        description,
-        customAttributes,
-      } = entity;
-
-      try {
-        const copiedEntity = await this.entityService.createOneEntity(
-          {
-            data: {
-              resource: {
-                connect: {
-                  id: targetResourceId,
-                },
-              },
-              name,
-              displayName,
-              pluralDisplayName,
-              description,
-              customAttributes,
-            },
-          },
-          user,
-          false,
-          false,
-          false
-        );
-        copiedEntities.push(copiedEntity);
-      } catch (error) {
-        this.logger.error(error.message, error, { entity: entity.name });
-        throw new Error(
-          `Failed to create entity "${entity.name}" due to ${error.message}`
-        );
-      }
-    }
-
-    return copiedEntities;
   }
 
   async createResourceCopiedEntity(
