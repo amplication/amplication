@@ -31,16 +31,6 @@ export default function ArchitectureConsole() {
 
   return (
     <>
-      {/* <ModelsGroupsList
-        resources={filteredResources}
-        handleResourceFilterChanged={handleResourceFilterChanged}
-      ></ModelsGroupsList> */}
-      {/* <SearchField
-        label="search"
-        placeholder="search"
-        onChange={handleSearchChange}
-      /> */}
-
       <ModelOrganizer
       // onApplyPlan={handleApplyPlan}
       // loadingResources={

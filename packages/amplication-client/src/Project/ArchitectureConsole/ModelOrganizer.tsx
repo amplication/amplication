@@ -6,6 +6,7 @@ import {
   CircularProgress,
   Dialog,
   Icon,
+  SearchField,
   Snackbar,
 } from "@amplication/ui/design-system";
 import { useCallback, useState } from "react";
@@ -36,6 +37,7 @@ import {
   Node,
 } from "./types";
 import NewTempResource from "./NewTempResource";
+import ModelsGroupsList from "./ModelsGroupsList";
 
 export const CLASS_NAME = "model-organizer";
 
@@ -84,6 +86,7 @@ export default function ModelOrganizer({
     saveChanges,
     moveNodeToParent,
     createNewTempService,
+    modelGroupFilterChanged,
   } = useModelOrganization();
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
@@ -237,6 +240,16 @@ export default function ModelOrganizer({
             onRedesign={onRedesignClick}
             onCancelChanges={onCancelChangesClick}
           />
+          <ModelsGroupsList
+            modelGroups={nodes?.filter((model) => model.type === "modelGroup")}
+            handleModelGroupFilterChanged={modelGroupFilterChanged}
+          ></ModelsGroupsList>
+          {/* <SearchField
+            label="search"
+            placeholder="search"
+            onChange={handleSearchChange}
+          /> */}
+
           <Button onClick={handleNewServiceClick}>+</Button>
           <Dialog
             isOpen={newService}

@@ -119,6 +119,23 @@ const useModelOrganization = () => {
     });
   }, [setChanges]);
 
+  const modelGroupFilterChanged = useCallback(
+    (event: any, modelGroup: Node) => {
+      const currentNode = nodes.find((node) => node.id === modelGroup.id);
+
+      currentNode.hidden = !currentNode.hidden;
+
+      const childrenNodes = nodes.filter(
+        (node) => node.data.originalParentNode === currentNode.id
+      );
+
+      childrenNodes.forEach((x) => (x.hidden = currentNode.hidden));
+
+      setNodes((nodes) => [...nodes]);
+    },
+    [setNodes, nodes]
+  );
+
   const createNewTempService = useCallback(
     async (newResource: models.Resource) => {
       const newService = {
@@ -224,6 +241,7 @@ const useModelOrganization = () => {
     saveChanges,
     moveNodeToParent,
     createNewTempService,
+    modelGroupFilterChanged,
   };
 };
 
