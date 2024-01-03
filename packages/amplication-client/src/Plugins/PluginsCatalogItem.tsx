@@ -164,15 +164,16 @@ function PluginsCatalogItem({
           </a>
         </FlexItem.FlexStart>
         <FlexItem.FlexEnd className={`${CLASS_NAME}__category`}>
-          {plugin.categories.map((category: string) => (
-            <Chip
-              className={`${CLASS_NAME}__category_chip`}
-              label={category}
-              key={category}
-              variant="filled"
-              onClick={() => handleChipClick(category)}
-            />
-          ))}
+          {plugin &&
+            plugin.categories.map((category: string) => (
+              <Chip
+                className={`${CLASS_NAME}__category_chip`}
+                label={category}
+                key={category}
+                variant="filled"
+                onClick={() => handleChipClick(category)}
+              />
+            ))}
         </FlexItem.FlexEnd>
       </FlexItem>
     </ListItem>
