@@ -159,7 +159,7 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_WORKSPACE: Account & {
 
 const signMock = jest.fn(() => EXAMPLE_TOKEN);
 
-const createAccountMock = jest.fn(() => EXAMPLE_ACCOUNT);
+const createAccountMock = jest.fn();
 
 const setCurrentUserMock = jest.fn(() => EXAMPLE_ACCOUNT_WITH_CURRENT_USER);
 
@@ -208,6 +208,8 @@ describe("AuthService", () => {
     findUsersMock.mockClear();
     createWorkspaceMock.mockClear();
     prismaCreateProjectMock.mockClear();
+    mockedCreateProject.mockClear();
+    mockedCreatePreviewService.mockClear();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -301,6 +303,7 @@ describe("AuthService", () => {
   });
 
   it("sign ups for correct data", async () => {
+    createAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
     const result = await service.signup({
       email: EXAMPLE_ACCOUNT.email,
       password: EXAMPLE_ACCOUNT.password,
@@ -355,6 +358,8 @@ describe("AuthService", () => {
   });
 
   it("should signs up for correct data with preview account", async () => {
+    createAccountMock.mockResolvedValueOnce(EXAMPLE_PREVIEW_ACCOUNT);
+
     const result = await service.signupPreviewAccount({
       previewAccountEmail: EXAMPLE_PREVIEW_ACCOUNT.previewAccountEmail,
       previewAccountType:
@@ -369,7 +374,7 @@ describe("AuthService", () => {
     });
 
     expect(createAccountMock).toHaveBeenCalledTimes(1);
-    expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
+    expect(createAccountMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT.id,
       EXAMPLE_USER.id
