@@ -5,7 +5,7 @@ import { ConfigService } from "@nestjs/config";
 import cuid from "cuid";
 import { Prisma, PrismaService } from "../../prisma";
 import { Profile as GitHubProfile } from "passport-github2";
-import { Account, User, UserRole, Workspace } from "../../models";
+import { Account, Resource, User, UserRole, Workspace } from "../../models";
 import { AccountService } from "../account/account.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { PasswordService } from "../account/password.service";
@@ -42,6 +42,18 @@ export type BootstrapPreviewUser = {
   workspaceId: string;
   projectId: string;
   resourceId: string;
+};
+
+export type CreatePreviewServiceArgs = {
+  projectId: string;
+  name: string;
+  description: string;
+  adminUIPath: string;
+  serverPath: string;
+  generateAdminUI: boolean;
+  generateGraphQL: boolean;
+  generateRestApi: boolean;
+  authEntityName?: string;
 };
 
 const TOKEN_PREVIEW_LENGTH = 8;
@@ -529,6 +541,8 @@ export class AuthService {
 
   private async createPreviewWorkspaceWithProjectAndResource(account: Account) {
     const workspaceName = `Amplication-${this.generateRandomString()}`;
+    const projectName = account.previewAccountType;
+
     const workspace = (await this.workspaceService.createPreviewWorkspace(
       {
         data: {
@@ -543,7 +557,7 @@ export class AuthService {
     const project = await this.projectService.createProject(
       {
         data: {
-          name: account.previewAccountType,
+          name: projectName,
           workspace: {
             connect: {
               id: workspace.id,
@@ -554,42 +568,93 @@ export class AuthService {
       user.id
     );
 
-    const resource = await this.resourceService.createPreviewService({
-      args: {
-        data: {
-          name: "Monolith",
-          description: "Monolith Service",
-          resourceType: EnumResourceType.Service,
-          project: {
-            connect: {
-              id: project.id,
-            },
-          },
-          serviceSettings: {
-            authProvider: EnumAuthProviderType.Jwt,
-            authEntityName: "User",
-            adminUISettings: {
-              adminUIPath: "admin",
-              generateAdminUI: true,
-            },
-            serverSettings: {
-              generateGraphQL: true,
-              generateRestApi: true,
-              serverPath: "server",
-            },
-          },
-        },
-      },
-      user,
-      nonDefaultPluginsToInstall: [],
-      requireAuthenticationEntity: false,
-    });
+    let resource: Resource;
+    switch (account.previewAccountType) {
+      case PreviewAccountType.BreakingTheMonolith:
+        resource = await this.createBreakingTheMonolithPreviewService(
+          project.id,
+          user
+        );
+        break;
+      case PreviewAccountType.None:
+        throw new AmplicationError(
+          `${PreviewAccountType.None} is not a preview account, but a regular account`
+        );
+      default:
+        throw new AmplicationError(
+          `Unsupported preview account type: ${account.previewAccountType}`
+        );
+    }
 
     return {
       user,
       workspace,
       project,
       resource,
+    };
+  }
+
+  private async createBreakingTheMonolithPreviewService(
+    projectId: string,
+    user: User
+  ): Promise<Resource> {
+    const serviceName = "Monolith";
+    const createPreviewServiceArgs = this.createPreviewServiceArgs({
+      projectId: projectId,
+      name: serviceName,
+      description: "Monolith Service",
+      adminUIPath: `./apps/${serviceName}-admin`,
+      serverPath: `./apps/${serviceName}`,
+      generateAdminUI: true,
+      generateGraphQL: true,
+      generateRestApi: true,
+    });
+
+    const resource = await this.resourceService.createPreviewService({
+      args: createPreviewServiceArgs,
+      user,
+      nonDefaultPluginsToInstall: [],
+      requireAuthenticationEntity: false,
+    });
+
+    return resource;
+  }
+
+  private createPreviewServiceArgs({
+    name,
+    description,
+    adminUIPath,
+    serverPath,
+    generateAdminUI,
+    generateGraphQL,
+    generateRestApi,
+    authEntityName = "User",
+    projectId,
+  }: CreatePreviewServiceArgs) {
+    return {
+      data: {
+        name,
+        description,
+        resourceType: EnumResourceType.Service,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        serviceSettings: {
+          authProvider: EnumAuthProviderType.Jwt,
+          authEntityName,
+          adminUISettings: {
+            adminUIPath,
+            generateAdminUI,
+          },
+          serverSettings: {
+            generateGraphQL,
+            generateRestApi,
+            serverPath,
+          },
+        },
+      },
     };
   }
 
