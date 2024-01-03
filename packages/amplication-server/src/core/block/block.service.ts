@@ -3,8 +3,8 @@ import {
   NotFoundException,
   ConflictException,
 } from "@nestjs/common";
-import type { JsonObject } from "type-fest";
-import { pick, head, last, mergeWith, isArray } from "lodash";
+import type { JsonObject, JsonValue } from "type-fest";
+import { pick, head, last } from "lodash";
 import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion,
@@ -469,7 +469,7 @@ export class BlockService {
   async update<T extends IBlock>(
     args: UpdateBlockArgs,
     user: User,
-    notMergeSettings?: boolean
+    excludeArr?: string[]
   ): Promise<T> {
     const { displayName, description, ...settings } = args.data;
 
@@ -483,12 +483,43 @@ export class BlockService {
       },
     });
 
+    const getType = (obj) =>
+      Object.prototype.toString.call(obj).slice(8, -1).toLowerCase();
+
+    const mergeAllSettings = (
+      oldSettings: JsonValue,
+      newSettings: { [key: string]: any },
+      excludeArr: string[]
+    ) => {
+      let mergedObj = {};
+
+      for (let [key, val] of Object.entries(oldSettings)) {
+        const valueType = getType(val);
+        if (excludeArr.includes(key)) {
+          mergedObj[key] = newSettings[key];
+          continue;
+        } else if (getType(newSettings[key]) === "array") {
+          mergedObj[key] = newSettings[key];
+          continue;
+        } else if (valueType === "object") {
+          mergedObj[key] = mergeAllSettings(val, newSettings[key], excludeArr);
+          continue;
+        } else {
+          mergedObj[key] = newSettings[key] || val;
+        }
+      }
+
+      return {
+        ...newSettings,
+        ...mergedObj,
+      };
+    };
+
     // merge the existing settings with the new settings. use deep merge but do not merge arrays
-    const allSettings = mergeWith(
-      {},
-      notMergeSettings ? {} : existingVersion.settings,
+    const allSettings = mergeAllSettings(
+      existingVersion.settings,
       settings,
-      (oldValue, newValue) => (isArray(newValue) ? newValue : undefined)
+      excludeArr || []
     );
 
     return await this.useLocking(args.where.id, user, async () => {

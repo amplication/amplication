@@ -121,7 +121,7 @@ export class PluginInstallationService extends BlockTypeService<
     args.data.pluginId = installation.pluginId;
     args.data.npm = installation.npm;
 
-    const updated = await super.update(args, user, true);
+    const updated = await super.update(args, user, ["settings"]);
 
     await this.analytics.track({
       userId: user.account.id,

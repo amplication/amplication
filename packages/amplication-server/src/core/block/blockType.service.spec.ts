@@ -162,15 +162,15 @@ describe("BlockTypeService", () => {
       data: {},
       where: { id: EXAMPLE_IBLOCK_ID },
     };
-    const notMergeSettings = false;
-    expect(await service.update(args, EXAMPLE_USER, notMergeSettings)).toEqual(
+    const excludeArr = [];
+    expect(await service.update(args, EXAMPLE_USER, excludeArr)).toEqual(
       EXAMPLE_IBLOCK
     );
     expect(blockServiceUpdateMock).toBeCalledTimes(1);
     expect(blockServiceUpdateMock).toBeCalledWith(
       args,
       EXAMPLE_USER,
-      notMergeSettings
+      excludeArr
     );
   });
 });
