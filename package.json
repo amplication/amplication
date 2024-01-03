@@ -91,6 +91,7 @@
     "apollo-upload-client": "^17.0.0",
     "assert": "^2.0.0",
     "ast-types": "^0.14.2",
+    "aws-rum-web": "^1.16.1",
     "auth0": "^4.2.0",
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
