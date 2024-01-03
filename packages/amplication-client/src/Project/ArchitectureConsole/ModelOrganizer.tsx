@@ -30,12 +30,7 @@ import { applyAutoLayout } from "./layout";
 import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
-import {
-  ModelChanges,
-  NODE_TYPE_MODEL,
-  NODE_TYPE_MODEL_GROUP,
-  Node,
-} from "./types";
+import { NODE_TYPE_MODEL, NODE_TYPE_MODEL_GROUP, Node } from "./types";
 import NewTempResource from "./NewTempResource";
 import ModelsGroupsList from "./ModelsGroupsList";
 
@@ -87,6 +82,7 @@ export default function ModelOrganizer({
     moveNodeToParent,
     createNewTempService,
     modelGroupFilterChanged,
+    searchPhraseChanged,
   } = useModelOrganization();
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
@@ -244,12 +240,11 @@ export default function ModelOrganizer({
             modelGroups={nodes?.filter((model) => model.type === "modelGroup")}
             handleModelGroupFilterChanged={modelGroupFilterChanged}
           ></ModelsGroupsList>
-          {/* <SearchField
+          <SearchField
             label="search"
             placeholder="search"
-            onChange={handleSearchChange}
-          /> */}
-
+            onChange={searchPhraseChanged}
+          />
           <Button onClick={handleNewServiceClick}>+</Button>
           <Dialog
             isOpen={newService}

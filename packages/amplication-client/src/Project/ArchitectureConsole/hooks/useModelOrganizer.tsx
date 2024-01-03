@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../context/appContext";
 import * as models from "../../../models";
@@ -6,13 +6,7 @@ import {
   CREATE_RESOURCE_ENTITIES,
   GET_RESOURCES,
 } from "../queries/modelsQueries";
-import {
-  ModelChanges,
-  NODE_TYPE_MODEL,
-  NODE_TYPE_MODEL_GROUP,
-  Node,
-  ResourceNode,
-} from "../types";
+import { ModelChanges, Node } from "../types";
 import { entitiesToNodesAndEdges, tempResourceToNode } from "../helpers";
 import { Edge, useEdgesState } from "reactflow";
 import { applyAutoLayout } from "../layout";
@@ -118,6 +112,32 @@ const useModelOrganization = () => {
       newServices: [],
     });
   }, [setChanges]);
+
+  const searchPhraseChanged = useCallback(
+    (searchPhrase: string) => {
+      if (searchPhrase === "") {
+        nodes.forEach((x) => (x.hidden = false));
+      } else {
+        const searchModelGroupNodes = nodes.filter(
+          (node) =>
+            node.type === "modelGroup" &&
+            !node.data.payload.name.includes(searchPhrase)
+        );
+
+        searchModelGroupNodes.forEach((x) => {
+          x.hidden = true;
+          const childrenNodes = nodes.filter(
+            (node) => node.data.originalParentNode === x.id
+          );
+
+          childrenNodes.forEach((x) => (x.hidden = true));
+        });
+      }
+
+      setNodes((nodes) => [...nodes]);
+    },
+    [nodes, setNodes]
+  );
 
   const modelGroupFilterChanged = useCallback(
     (event: any, modelGroup: Node) => {
@@ -242,6 +262,7 @@ const useModelOrganization = () => {
     moveNodeToParent,
     createNewTempService,
     modelGroupFilterChanged,
+    searchPhraseChanged,
   };
 };
 
