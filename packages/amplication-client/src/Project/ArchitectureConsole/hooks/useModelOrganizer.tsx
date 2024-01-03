@@ -13,10 +13,9 @@ import {
   Node,
   ResourceNode,
 } from "../types";
-import { entitiesToNodesAndEdges } from "../helpers";
+import { entitiesToNodesAndEdges, tempResourceToNode } from "../helpers";
 import { Edge, useEdgesState } from "reactflow";
 import { applyAutoLayout } from "../layout";
-import { set } from "lodash";
 import useLocalStorage from "react-use-localstorage";
 
 type TData = {
@@ -120,6 +119,30 @@ const useModelOrganization = () => {
     });
   }, [setChanges]);
 
+  const createNewTempService = useCallback(
+    async (newResource: models.Resource) => {
+      const newService = {
+        tempId: newResource.tempId,
+        name: newResource.name,
+      };
+
+      changes.newServices.push(newService);
+
+      const newResourceNode = tempResourceToNode(newResource, nodes.length + 1);
+      nodes.push(newResourceNode);
+
+      const updatedNodes = await applyAutoLayout(
+        nodes,
+        edges,
+        showRelationDetails
+      );
+
+      setChanges((changes) => changes);
+      setNodes(updatedNodes);
+    },
+    [setChanges, changes, nodes, setNodes, showRelationDetails]
+  );
+
   const resetToOriginalState = useCallback(() => {
     resetChanges();
     loadProjectResources();
@@ -168,8 +191,8 @@ const useModelOrganization = () => {
     { loading: loadingCreateEntities, error: createEntitiesError },
   ] = useMutation<modelChangesData>(CREATE_RESOURCE_ENTITIES, {});
 
-  const saveChanges = useCallback(() => {
-    createResourceEntities({
+  const saveChanges = useCallback(async () => {
+    await createResourceEntities({
       variables: {
         data: {
           entitiesToCopy: changes.movedEntities,
@@ -181,7 +204,7 @@ const useModelOrganization = () => {
 
     resetChanges();
     loadProjectResources();
-  }, [resetChanges]);
+  }, [resetChanges, changes]);
 
   return {
     nodes,
@@ -200,6 +223,7 @@ const useModelOrganization = () => {
     setChanges,
     saveChanges,
     moveNodeToParent,
+    createNewTempService,
   };
 };
 

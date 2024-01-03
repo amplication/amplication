@@ -6,12 +6,12 @@ import { Button, EnumButtonStyle } from "../../Components/Button";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import { validate } from "../../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../../util/hotkeys";
-import { ResourceFilter } from "./ArchitectureConsole";
 import { generatedKey } from "../../Plugins/InstalledPluginSettings";
+import * as models from "../../models";
 import { EnumResourceType } from "../../models";
 
 type Props = {
-  onSuccess: (newResource: ResourceFilter) => void;
+  onSuccess: (newResource: models.Resource) => void;
 };
 
 const INITIAL_VALUES = {
@@ -50,7 +50,6 @@ const NewTempResource = ({ onSuccess }: Props) => {
         name: data.name,
         resourceType: EnumResourceType.Service,
         updatedAt: new Date(),
-        isFilter: true,
       });
     },
     [onSuccess]

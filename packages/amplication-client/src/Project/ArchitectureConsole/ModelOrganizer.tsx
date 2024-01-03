@@ -2,7 +2,9 @@ import "reactflow/dist/style.css";
 import "./ModelOrganizer.scss";
 
 import {
+  Button,
   CircularProgress,
+  Dialog,
   Icon,
   Snackbar,
 } from "@amplication/ui/design-system";
@@ -33,6 +35,7 @@ import {
   NODE_TYPE_MODEL_GROUP,
   Node,
 } from "./types";
+import NewTempResource from "./NewTempResource";
 
 export const CLASS_NAME = "model-organizer";
 
@@ -52,18 +55,21 @@ const edgeTypes = {
 };
 
 type Props = {
-  onApplyPlan?: (changes: ModelChanges) => void;
   loadingResources?: boolean;
   errorMessage?: string;
 };
 
 export default function ModelOrganizer({
-  onApplyPlan,
   loadingResources,
   errorMessage,
 }: Props) {
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
+
+  const [newService, setNewService] = useState<boolean>(false);
+  const handleNewServiceClick = useCallback(() => {
+    setNewService(!newService);
+  }, [newService, setNewService]);
 
   const {
     nodes,
@@ -77,6 +83,7 @@ export default function ModelOrganizer({
     changes,
     saveChanges,
     moveNodeToParent,
+    createNewTempService,
   } = useModelOrganization();
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
@@ -121,6 +128,14 @@ export default function ModelOrganizer({
       setReactFlowInstance(instance);
     },
     [setReactFlowInstance]
+  );
+
+  const handleServiceCreated = useCallback(
+    (newResource: models.Resource) => {
+      setNewService(false);
+      createNewTempService(newResource);
+    },
+    [setNewService, nodes, setNodes]
   );
 
   const onNodeDrag = useCallback(
@@ -222,6 +237,15 @@ export default function ModelOrganizer({
             onRedesign={onRedesignClick}
             onCancelChanges={onCancelChangesClick}
           />
+          <Button onClick={handleNewServiceClick}>+</Button>
+          <Dialog
+            isOpen={newService}
+            onDismiss={handleNewServiceClick}
+            title="New Service"
+          >
+            <NewTempResource onSuccess={handleServiceCreated}></NewTempResource>
+          </Dialog>
+
           <div className={"reactflow-wrapper"}>
             <ReactFlow
               onInit={onInit}

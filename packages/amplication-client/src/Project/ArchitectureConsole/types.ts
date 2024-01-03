@@ -60,7 +60,7 @@ export type Relation = SimpleRelation | DetailedRelation;
 
 export type ModelChanges = {
   newServices: {
-    id: string;
+    tempId: string;
     name: string;
   }[];
   movedEntities: {

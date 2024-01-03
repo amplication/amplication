@@ -454,12 +454,14 @@ export class ResourceService {
         (resourcesObj, resource) => {
           resourcesObj[resource.tempId] = resource;
           return resourcesObj;
-        }
+        },
+        {}
       );
 
       for (const entityToCopy of entitiesToCopy) {
         const newResource: Resource =
           moduleGroupResourcesMap[entityToCopy.targetResourceId];
+
         if (newResource) {
           entityToCopy.targetResourceId = newResource.id;
         }

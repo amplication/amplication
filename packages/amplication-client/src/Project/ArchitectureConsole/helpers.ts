@@ -125,6 +125,28 @@ function entitiesToNodes(
   return [...parents, ...nodes];
 }
 
+export function tempResourceToNode(
+  resource: models.Resource,
+  index: number
+): ResourceNode {
+  const parent: ResourceNode = {
+    data: {
+      payload: resource,
+      groupOrder: index,
+      groupColor: GROUP_COLORS[index % GROUP_COLORS.length],
+    },
+    id: resource.id,
+    type: NODE_TYPE_MODEL_GROUP,
+    dragHandle: ".group-drag-handle",
+    position: {
+      x: 0,
+      y: 0,
+    },
+  };
+
+  return parent;
+}
+
 function entitiesToDetailedEdges(resources: models.Resource[]) {
   const relations: DetailedRelation[] = [];
 
