@@ -17,7 +17,7 @@ type Props = {
   className: string;
 };
 
-export const ModuleActionsDisabled: React.FC<Props> = ({ icon, className }) => {
+export const ModuleActionsDisabled: React.FC<Props> = ({ className }) => {
   return (
     <FlexItem
       direction={EnumFlexDirection.Column}
@@ -28,7 +28,11 @@ export const ModuleActionsDisabled: React.FC<Props> = ({ icon, className }) => {
         <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.Black}>
           Premium feature
         </Text>
-        <Icon icon={icon} size={"xsmall"} color={EnumTextColor.Black} />
+        <Icon
+          icon={IconType.Diamond}
+          size={"xsmall"}
+          color={EnumTextColor.Black}
+        />
       </div>
       <Text
         textStyle={EnumTextStyle.H2}

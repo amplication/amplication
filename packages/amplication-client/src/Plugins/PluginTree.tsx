@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useContext,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useState,
@@ -22,8 +23,8 @@ type Props = {
 
 export const PluginTree = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
-    const [chevronIcon, setChevronIcon] = useState("close");
     const location = useLocation();
+    const [chevronIcon, setChevronIcon] = useState("close");
     const history = useHistory();
     const { currentWorkspace, currentProject, currentResource } =
       useContext(AppContext);
@@ -39,6 +40,12 @@ export const PluginTree = React.memo(
     const handleCategoriesClick = useCallback(() => {
       setChevronIcon(chevronIcon === "close" ? "open" : "close");
     }, [chevronIcon]);
+
+    useEffect(() => {
+      setChevronIcon(
+        /catalog|installed/.test(location.pathname) ? "close" : "open"
+      );
+    }, [location.pathname]);
 
     const setCategoriesLinks = useMemo(() => {
       return categories.map((category) => (

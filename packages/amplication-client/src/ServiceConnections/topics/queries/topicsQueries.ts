@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
-export const topicsOfBroker = gql`
-  query Topics($messageBrokerId: String!) {
-    Topics(
+export const GET_TOPICS_OF_BROKER = gql`
+  query topics($messageBrokerId: String!) {
+    topics(
       where: { resource: { id: $messageBrokerId } }
       orderBy: { createdAt: Asc }
     ) {
