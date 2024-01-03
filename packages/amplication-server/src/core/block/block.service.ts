@@ -469,7 +469,7 @@ export class BlockService {
   async update<T extends IBlock>(
     args: UpdateBlockArgs,
     user: User,
-    excludeArr?: string[]
+    keysToNotMerge?: string[]
   ): Promise<T> {
     const { displayName, description, ...settings } = args.data;
 
@@ -489,23 +489,32 @@ export class BlockService {
     const mergeAllSettings = (
       oldSettings: JsonValue,
       newSettings: { [key: string]: any },
-      excludeArr: string[]
+      keysToNotMerge: string[]
     ) => {
       let mergedObj = {};
 
       for (let [key, val] of Object.entries(oldSettings)) {
         const valueType = getType(val);
-        if (excludeArr.includes(key)) {
+        if (keysToNotMerge.includes(key)) {
           mergedObj[key] = newSettings[key];
           continue;
         } else if (getType(newSettings[key]) === "array") {
           mergedObj[key] = newSettings[key];
           continue;
         } else if (valueType === "object") {
-          mergedObj[key] = mergeAllSettings(val, newSettings[key], excludeArr);
+          mergedObj[key] = mergeAllSettings(
+            val,
+            newSettings[key],
+            keysToNotMerge
+          );
           continue;
         } else {
-          mergedObj[key] = newSettings[key] || val;
+          mergedObj[key] = Object.prototype.hasOwnProperty.call(
+            newSettings,
+            key
+          )
+            ? newSettings[key]
+            : val;
         }
       }
 
@@ -519,7 +528,7 @@ export class BlockService {
     const allSettings = mergeAllSettings(
       existingVersion.settings,
       settings,
-      excludeArr || []
+      keysToNotMerge || []
     );
 
     return await this.useLocking(args.where.id, user, async () => {
