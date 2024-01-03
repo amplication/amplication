@@ -58,14 +58,14 @@ export abstract class BlockTypeService<
   async update(
     args: UpdateArgs,
     @UserEntity() user: User,
-    excludeArr?: string[]
+    keysToNotMerge?: string[]
   ): Promise<T> {
     return this.blockService.update<T>(
       {
         ...args,
       },
       user,
-      excludeArr
+      keysToNotMerge
     );
   }
 
