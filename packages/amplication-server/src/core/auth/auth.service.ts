@@ -582,7 +582,7 @@ export class AuthService {
       },
       user,
       nonDefaultPluginsToInstall: [],
-      requireAuthenticationEntity: true,
+      requireAuthenticationEntity: false,
     });
 
     return {
