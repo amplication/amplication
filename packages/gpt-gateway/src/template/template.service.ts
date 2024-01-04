@@ -33,9 +33,7 @@ export class TemplateService extends TemplateServiceBase {
     for (const key in paramsObj) {
       const placeholder = `{{${key}}}`;
       const value = paramsObj[key];
-      while (output.includes(placeholder)) {
-        output = output.replace(placeholder, value);
-      }
+      output = output.replaceAll(placeholder, value);
     }
     return output;
   }
