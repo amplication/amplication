@@ -12,6 +12,7 @@ import { UpdateModuleArgs } from "./dto/UpdateModuleArgs";
 import { ModuleUpdateInput } from "./dto/ModuleUpdateInput";
 import { DefaultModuleForEntityNotFoundError } from "./DefaultModuleForEntityNotFoundError";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { AmplicationError } from "../../errors/AmplicationError";
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
@@ -28,7 +29,8 @@ export class ModuleService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    private readonly moduleActionService: ModuleActionService
+    private readonly moduleActionService: ModuleActionService,
+    private readonly moduleDtoService: ModuleDtoService
   ) {
     super(blockService);
   }
@@ -107,6 +109,12 @@ export class ModuleService extends BlockTypeService<
       user
     );
 
+    await this.moduleDtoService.createDefaultDtosForEntityModule(
+      entity,
+      module,
+      user
+    );
+
     return module;
   }
 
@@ -156,6 +164,12 @@ export class ModuleService extends BlockTypeService<
     );
 
     await this.moduleActionService.updateDefaultActionsForEntityModule(
+      entity,
+      module,
+      user
+    );
+
+    await this.moduleDtoService.updateDefaultDtosForEntityModule(
       entity,
       module,
       user

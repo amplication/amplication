@@ -787,6 +787,26 @@ export enum EnumModuleDtoPropertyType {
   Undefined = 'Undefined'
 }
 
+export enum EnumModuleDtoType {
+  CountArgs = 'CountArgs',
+  CreateArgs = 'CreateArgs',
+  CreateInput = 'CreateInput',
+  CreateNestedManyInput = 'CreateNestedManyInput',
+  Custom = 'Custom',
+  DeleteArgs = 'DeleteArgs',
+  Entity = 'Entity',
+  Enum = 'Enum',
+  FindManyArgs = 'FindManyArgs',
+  FindOneArgs = 'FindOneArgs',
+  ListRelationFilter = 'ListRelationFilter',
+  OrderByInput = 'OrderByInput',
+  UpdateArgs = 'UpdateArgs',
+  UpdateInput = 'UpdateInput',
+  UpdateNestedManyInput = 'UpdateNestedManyInput',
+  WhereInput = 'WhereInput',
+  WhereUniqueInput = 'WhereUniqueInput'
+}
+
 export enum EnumPendingChangeAction {
   Create = 'Create',
   Delete = 'Delete',
@@ -1086,6 +1106,7 @@ export type ModuleDto = IBlock & {
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
+  dtoType: EnumModuleDtoType;
   enabled: Scalars['Boolean']['output'];
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
@@ -1990,22 +2011,9 @@ export type ProvisionSubscriptionResult = {
 };
 
 export type Query = {
-  Module?: Maybe<Module>;
-  ModuleAction?: Maybe<ModuleAction>;
-  ModuleActions: Array<ModuleAction>;
-  ModuleDto?: Maybe<ModuleDto>;
-  ModuleDtoProperties: Array<ModuleDtoProperty>;
-  ModuleDtoProperty?: Maybe<ModuleDtoProperty>;
-  ModuleDtos: Array<ModuleDto>;
-  Modules: Array<Module>;
-  PluginInstallation?: Maybe<PluginInstallation>;
-  PluginInstallations: Array<PluginInstallation>;
-  ServiceTopics?: Maybe<ServiceTopics>;
-  ServiceTopicsList: Array<ServiceTopics>;
-  Topic?: Maybe<Topic>;
-  Topics: Array<Topic>;
   account: Account;
   action: Action;
+  availableDtosForResource: Array<ModuleDto>;
   block: Block;
   blocks: Array<Block>;
   build: Build;
@@ -2021,7 +2029,17 @@ export type Query = {
   gitOrganizations: Array<GitOrganization>;
   me: User;
   messageBrokerConnectedServices: Array<Resource>;
+  module?: Maybe<Module>;
+  moduleAction?: Maybe<ModuleAction>;
+  moduleActions: Array<ModuleAction>;
+  moduleDto?: Maybe<ModuleDto>;
+  moduleDtoProperties: Array<ModuleDtoProperty>;
+  moduleDtoProperty?: Maybe<ModuleDtoProperty>;
+  moduleDtos: Array<ModuleDto>;
+  modules: Array<Module>;
   pendingChanges: Array<PendingChange>;
+  pluginInstallation?: Maybe<PluginInstallation>;
+  pluginInstallations: Array<PluginInstallation>;
   pluginOrder: PluginOrder;
   project?: Maybe<Project>;
   projectConfigurationSettings: ProjectConfigurationSettings;
@@ -2032,6 +2050,10 @@ export type Query = {
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
+  serviceTopics?: Maybe<ServiceTopics>;
+  serviceTopicsList: Array<ServiceTopics>;
+  topic?: Maybe<Topic>;
+  topics: Array<Topic>;
   userAction: UserAction;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
@@ -2040,99 +2062,16 @@ export type Query = {
 };
 
 
-export type QueryModuleArgs = {
+export type QueryActionArgs = {
   where: WhereUniqueInput;
 };
 
 
-export type QueryModuleActionArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryModuleActionsArgs = {
-  orderBy?: InputMaybe<ModuleActionOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ModuleActionWhereInput>;
-};
-
-
-export type QueryModuleDtoArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryModuleDtoPropertiesArgs = {
-  orderBy?: InputMaybe<ModuleDtoPropertyOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ModuleDtoPropertyWhereInput>;
-};
-
-
-export type QueryModuleDtoPropertyArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryModuleDtosArgs = {
+export type QueryAvailableDtosForResourceArgs = {
   orderBy?: InputMaybe<ModuleDtoOrderByInput>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ModuleDtoWhereInput>;
-};
-
-
-export type QueryModulesArgs = {
-  orderBy?: InputMaybe<ModuleOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ModuleWhereInput>;
-};
-
-
-export type QueryPluginInstallationArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryPluginInstallationsArgs = {
-  orderBy?: InputMaybe<PluginInstallationOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<PluginInstallationWhereInput>;
-};
-
-
-export type QueryServiceTopicsArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryServiceTopicsListArgs = {
-  orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ServiceTopicsWhereInput>;
-};
-
-
-export type QueryTopicArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryTopicsArgs = {
-  orderBy?: InputMaybe<TopicOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<TopicWhereInput>;
-};
-
-
-export type QueryActionArgs = {
-  where: WhereUniqueInput;
 };
 
 
@@ -2216,8 +2155,73 @@ export type QueryMessageBrokerConnectedServicesArgs = {
 };
 
 
+export type QueryModuleArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModuleActionArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModuleActionsArgs = {
+  orderBy?: InputMaybe<ModuleActionOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleActionWhereInput>;
+};
+
+
+export type QueryModuleDtoArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModuleDtoPropertiesArgs = {
+  orderBy?: InputMaybe<ModuleDtoPropertyOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleDtoPropertyWhereInput>;
+};
+
+
+export type QueryModuleDtoPropertyArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModuleDtosArgs = {
+  orderBy?: InputMaybe<ModuleDtoOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleDtoWhereInput>;
+};
+
+
+export type QueryModulesArgs = {
+  orderBy?: InputMaybe<ModuleOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleWhereInput>;
+};
+
+
 export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
+};
+
+
+export type QueryPluginInstallationArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryPluginInstallationsArgs = {
+  orderBy?: InputMaybe<PluginInstallationOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PluginInstallationWhereInput>;
 };
 
 
@@ -2278,6 +2282,32 @@ export type QueryResourcesArgs = {
 
 export type QueryServiceSettingsArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type QueryServiceTopicsArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryServiceTopicsListArgs = {
+  orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ServiceTopicsWhereInput>;
+};
+
+
+export type QueryTopicArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryTopicsArgs = {
+  orderBy?: InputMaybe<TopicOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TopicWhereInput>;
 };
 
 

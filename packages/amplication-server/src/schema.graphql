@@ -749,6 +749,26 @@ enum EnumModuleDtoPropertyType {
   Undefined
 }
 
+enum EnumModuleDtoType {
+  CountArgs
+  CreateArgs
+  CreateInput
+  CreateNestedManyInput
+  Custom
+  DeleteArgs
+  Entity
+  Enum
+  FindManyArgs
+  FindOneArgs
+  ListRelationFilter
+  OrderByInput
+  UpdateArgs
+  UpdateInput
+  UpdateNestedManyInput
+  WhereInput
+  WhereUniqueInput
+}
+
 enum EnumPendingChangeAction {
   Create
   Delete
@@ -1058,6 +1078,7 @@ type ModuleDto implements IBlock {
   createdAt: DateTime!
   description: String
   displayName: String!
+  dtoType: EnumModuleDtoType!
   enabled: Boolean!
   id: String!
   inputParameters: [BlockInputOutput!]!

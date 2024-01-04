@@ -1,6 +1,6 @@
 import * as CodeGenTypes from "@amplication/code-gen-types";
 import {
-  getDefaultActionsForEntity,
+  getDefaultDtosForEntity,
   getDefaultActionsForRelationField,
 } from "@amplication/dsg-utils";
 import { Injectable } from "@nestjs/common";
@@ -17,6 +17,7 @@ import { DeleteModuleDtoArgs } from "./dto/DeleteModuleDtoArgs";
 import { FindManyModuleDtoArgs } from "./dto/FindManyModuleDtoArgs";
 import { ModuleDto } from "./dto/ModuleDto";
 import { UpdateModuleDtoArgs } from "./dto/UpdateModuleDtoArgs";
+import { EnumModuleDtoType } from "./dto/EnumModuleDtoType";
 
 @Injectable()
 export class ModuleDtoService extends BlockTypeService<
@@ -87,5 +88,92 @@ export class ModuleDtoService extends BlockTypeService<
     const moduleDto = await super.findOne(args);
 
     return super.delete(args, user);
+  }
+
+  async createDefaultDtosForEntityModule(
+    entity: Entity,
+    module: Module,
+    user: User
+  ): Promise<ModuleDto[]> {
+    const defaultDtos = await getDefaultDtosForEntity(
+      entity as unknown as CodeGenTypes.Entity
+    );
+    return await Promise.all(
+      Object.keys(defaultDtos).map((dto) => {
+        return (
+          defaultDtos[dto] &&
+          super.create(
+            {
+              data: {
+                ...defaultDtos[dto],
+                displayName: defaultDtos[dto].name,
+                parentBlock: {
+                  connect: {
+                    id: module.id,
+                  },
+                },
+                resource: {
+                  connect: {
+                    id: entity.resourceId,
+                  },
+                },
+              },
+            },
+            user
+            //@todo: create properties
+          )
+        );
+      })
+    );
+  }
+
+  //call this function when the entity names changes, and we need to update the default dtos
+  async updateDefaultDtosForEntityModule(
+    entity: Entity,
+    module: Module,
+    user: User
+  ): Promise<ModuleDto[]> {
+    //get the updated default dtos (with updated names)
+    const defaultDtos = await getDefaultDtosForEntity(
+      entity as unknown as CodeGenTypes.Entity
+    );
+
+    //get the current default dtos
+    const existingDefaultDtos = await this.findManyBySettings(
+      {
+        where: {
+          parentBlock: {
+            id: module.id,
+          },
+        },
+      },
+      {
+        path: ["dtoType"],
+        not: EnumModuleDtoType.Custom,
+      }
+    );
+
+    return await Promise.all(
+      existingDefaultDtos.map((dto) => {
+        return (
+          defaultDtos[dto.dtoType] &&
+          super.update(
+            {
+              where: {
+                id: dto.id,
+              },
+              data: {
+                name: defaultDtos[dto.dtoType].name,
+                displayName: defaultDtos[dto.dtoType].name,
+                description: defaultDtos[dto.dtoType].description,
+                enabled: dto.enabled,
+                //@todo: update properties
+              },
+            },
+            user
+          )
+        );
+      })
+    );
   }
 }

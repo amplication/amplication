@@ -1,5 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { IBlock } from "../../../models";
+import { EnumModuleDtoType } from "./EnumModuleDtoType";
 
 @ObjectType({
   isAbstract: true,
@@ -10,6 +11,11 @@ export class ModuleDto extends IBlock {
     nullable: false,
   })
   name!: string;
+
+  @Field(() => EnumModuleDtoType, {
+    nullable: false,
+  })
+  dtoType!: keyof typeof EnumModuleDtoType;
 
   @Field(() => Boolean, {
     nullable: false,
