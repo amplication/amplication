@@ -6,7 +6,7 @@ import {
   ChatCompletionRequestMessageRoleEnum,
   CreateChatCompletionRequestSettings,
 } from "../../providers/openai/openai.service";
-import { MessageParam } from "../dto/MessageParam";
+import { AiConversationStart } from "@amplication/schema-registry";
 import { ProcessTemplateInput } from "./dto/ProcessTemplateInput";
 
 @Injectable()
@@ -20,7 +20,10 @@ export class TemplateService extends TemplateServiceBase {
 
   //replace all params in message based on placeholder in the form of {{param}}
   //e.g. {{name}} will be replaced with params.name
-  prepareMessage(message: string, params: MessageParam[]): string {
+  prepareMessage(
+    message: string,
+    params: AiConversationStart.Value["params"]
+  ): string {
     const paramsObj = params.reduce((acc, param) => {
       acc[param.name] = param.value;
       return acc;
@@ -36,6 +39,7 @@ export class TemplateService extends TemplateServiceBase {
     }
     return output;
   }
+
   async processTemplateMessage(
     args: ProcessTemplateInput
   ): Promise<string | null> {

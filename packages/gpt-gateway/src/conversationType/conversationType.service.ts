@@ -1,12 +1,14 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
-import { StartConversationInput } from "../dto/StartConversationInput";
 import { KafkaProducerService } from "../kafka/kafka.producer.service";
 import { MyMessageBrokerTopics } from "../kafka/topics";
 import { PrismaService } from "../prisma/prisma.service";
 import { TemplateService } from "../template/template.service";
 import { ConversationTypeServiceBase } from "./base/conversationType.service.base";
-import { AiConversationComplete } from "@amplication/schema-registry";
+import {
+  AiConversationComplete,
+  AiConversationStart,
+} from "@amplication/schema-registry";
 
 @Injectable()
 export class ConversationTypeService extends ConversationTypeServiceBase {
@@ -20,7 +22,7 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
     super(prisma);
   }
 
-  async startConversion(message: StartConversationInput): Promise<void> {
+  async startConversion(message: AiConversationStart.Value): Promise<void> {
     const { messageTypeKey, params, requestUniqueId } = message;
 
     try {
