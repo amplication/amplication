@@ -19,6 +19,7 @@ import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Env } from "../../env";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
@@ -43,6 +44,20 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
+  previewAccountType: PreviewAccountType.None,
+  previewAccountEmail: null,
+};
+
+const EXAMPLE_PREVIEW_ACCOUNT: Account = {
+  id: EXAMPLE_ACCOUNT_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: EXAMPLE_EMAIL,
+  firstName: EXAMPLE_FIRST_NAME,
+  lastName: EXAMPLE_LAST_NAME,
+  password: EXAMPLE_PASSWORD,
+  previewAccountType: PreviewAccountType.BreakingTheMonolith,
+  previewAccountEmail: "example@amplicaion.com",
 };
 
 const EXAMPLE_USER: User = {
@@ -75,6 +90,9 @@ const EXAMPLE_PROJECT: Project = {
 
 EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
 
+const prismaAccountFindUniqueMock = jest.fn(() => {
+  return EXAMPLE_PREVIEW_ACCOUNT;
+});
 const prismaWorkspaceFindOneMock = jest.fn(() => {
   return EXAMPLE_WORKSPACE;
 });
@@ -187,6 +205,9 @@ describe("WorkspaceService", () => {
             reportUsage: jest.fn(() => {
               return {};
             }),
+            provisionPreviewCustomer: jest.fn(() => {
+              return {};
+            }),
           },
         },
         {
@@ -202,6 +223,9 @@ describe("WorkspaceService", () => {
             user: {
               findMany: prismaUserFindManyMock,
               create: prismaUserCreateMock,
+            },
+            account: {
+              findUnique: prismaAccountFindUniqueMock,
             },
           })),
         },
@@ -300,7 +324,7 @@ describe("WorkspaceService", () => {
     );
   });
 
-  it("should create an workspace", async () => {
+  it("should create a workspace", async () => {
     const args = {
       accountId: EXAMPLE_ACCOUNT_ID,
       args: {
@@ -332,6 +356,42 @@ describe("WorkspaceService", () => {
     expect(await service.createWorkspace(args.accountId, args.args)).toEqual(
       EXAMPLE_WORKSPACE
     );
+    expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
+    expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
+  });
+
+  it("should create a preview workspace", async () => {
+    const args = {
+      accountId: EXAMPLE_ACCOUNT_ID,
+      args: {
+        data: {
+          name: EXAMPLE_WORKSPACE_NAME,
+        },
+      },
+    };
+    const prismaArgs = {
+      ...args.args,
+      data: {
+        ...args.args.data,
+        users: {
+          create: {
+            account: { connect: { id: args.accountId } },
+            userRoles: {
+              create: {
+                role: Role.OrganizationAdmin,
+              },
+            },
+            isOwner: true,
+          },
+        },
+      },
+      include: {
+        users: true,
+      },
+    };
+    expect(
+      await service.createPreviewWorkspace(args.args, args.accountId)
+    ).toEqual(EXAMPLE_WORKSPACE);
     expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
     expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
   });

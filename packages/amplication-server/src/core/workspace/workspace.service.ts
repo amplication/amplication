@@ -46,6 +46,7 @@ import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { Env } from "../../env";
 import { ConfigService } from "@nestjs/config";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -86,6 +87,52 @@ export class WorkspaceService {
     args: UpdateOneWorkspaceArgs
   ): Promise<Workspace | null> {
     return this.prisma.workspace.update(args);
+  }
+
+  async createPreviewWorkspace(
+    args: Prisma.WorkspaceCreateArgs,
+    accountId: string
+  ): Promise<Workspace> {
+    const workspace = await this.prisma.workspace.create({
+      ...args,
+      data: {
+        ...args.data,
+        users: {
+          create: {
+            account: { connect: { id: accountId } },
+            isOwner: true,
+            userRoles: {
+              create: {
+                role: Role.OrganizationAdmin,
+              },
+            },
+          },
+        },
+      },
+      include: {
+        ...args.include,
+        // Include users by default, allow to bypass it for including additional user links
+        users: args?.include?.users || true,
+      },
+    });
+
+    const account = await this.prisma.account.findUnique({
+      where: {
+        id: accountId,
+      },
+    });
+
+    await this.billingService.provisionPreviewCustomer(
+      workspace.id,
+      PreviewAccountType[account.previewAccountType]
+    );
+
+    await this.billingService.reportUsage(
+      workspace.id,
+      BillingFeature.TeamMembers
+    );
+
+    return workspace;
   }
 
   /**

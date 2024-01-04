@@ -24,6 +24,7 @@ import { GitHubStrategyConfigService } from "./githubStrategyConfig.service";
 import { ProjectModule } from "../project/project.module";
 import { GitHubAuthGuard } from "./github.guard";
 import { Auth0Middleware } from "./auth0.middleware";
+import { ResourceModule } from "../resource/resource.module";
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { Auth0Middleware } from "./auth0.middleware";
     WorkspaceModule,
     UserModule,
     ProjectModule,
+    ResourceModule,
   ],
   providers: [
     AuthService,
