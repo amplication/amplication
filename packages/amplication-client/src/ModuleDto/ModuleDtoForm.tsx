@@ -24,6 +24,9 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "lockedByUserId",
   "lockedAt",
   "lockedByUser",
+  "parentBlockId",
+  "resourceId",
+  "properties",
 ];
 
 export const INITIAL_VALUES: Partial<models.ModuleDto> = {
