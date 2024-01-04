@@ -9,7 +9,7 @@ import {
   SearchField,
   Snackbar,
 } from "@amplication/ui/design-system";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Background,
   ConnectionMode,
@@ -70,13 +70,13 @@ export default function ModelOrganizer({
 
   const {
     nodes,
+    currentResourcesData,
     setNodes,
     edges,
     onEdgesChange,
     showRelationDetails,
     toggleShowRelationDetails,
     resetToOriginalState,
-    resourcesData,
     changes,
     saveChanges,
     moveNodeToParent,
@@ -87,8 +87,14 @@ export default function ModelOrganizer({
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
 
-  const [readOnly, setReadOnly] = useState(true);
+  const [readOnly, setReadOnly] = useState<boolean>(true);
   const [hasChanges, setHasChanges] = useState(false);
+
+  useEffect(() => {
+    if (changes?.movedEntities?.length > 0) {
+      setReadOnly(false);
+    }
+  }, [changes, setReadOnly]);
 
   const onRedesignClick = useCallback(
     (resource: models.Resource) => {
@@ -231,7 +237,7 @@ export default function ModelOrganizer({
           <ModelOrganizerToolbar
             readOnly={readOnly}
             hasChanges={changes?.movedEntities?.length > 0}
-            resources={resourcesData?.resources}
+            resources={currentResourcesData}
             onApplyPlan={onApplyPlanClick}
             onRedesign={onRedesignClick}
             onCancelChanges={onCancelChangesClick}

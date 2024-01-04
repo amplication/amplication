@@ -28,27 +28,64 @@ type modelChangesData = {
   }[];
 };
 
-const LOCAL_STORAGE_KEY = "ModelOrganizerData";
+const LOCAL_NODES_STORAGE_KEY = "ModelOrganizerNodesData";
+const LOCAL_DETAILED_EDGES_STORAGE_KEY = "ModelOrganizerDetailedEdgesData";
+const LOCAL_SIMPLE_EDGES_STORAGE_KEY = "ModelOrganizerSimpleEdgesData";
 
 const useModelOrganization = () => {
   const { currentProject } = useContext(AppContext);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   // const [modelGroups, setModelGroups] = useState<ResourceNode[]>([]);
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
+  const [currentResourcesData, setCurrentResourcesData] = useState<
+    models.Resource[]
+  >([]);
+
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [simpleEdges, setSimpleEdges] = useState<Edge[]>([]);
+
   const [detailedEdges, setDetailedEdges] = useState<Edge[]>([]);
   const [showRelationDetails, setShowRelationDetails] = useState(false);
 
   const [currentTheme, setCurrentTheme] = useLocalStorage(
-    LOCAL_STORAGE_KEY,
+    LOCAL_NODES_STORAGE_KEY,
     ""
   );
+
+  const [currentDetailedEdges, setCurrentDetailedEdges] = useLocalStorage(
+    LOCAL_DETAILED_EDGES_STORAGE_KEY,
+    ""
+  );
+
+  const [currentSimpleEdges, setCurrentSimpleEdges] = useLocalStorage(
+    LOCAL_SIMPLE_EDGES_STORAGE_KEY,
+    ""
+  );
+
+  const [currentResourcesStorageData, setCurrentResourceStorageData] =
+    useLocalStorage("currentResourceData", "");
+
+  const [currentChangesStorageData, setCurrentChangesStorageData] =
+    useLocalStorage("currentChangesData", "");
 
   const [changes, setChanges] = useState<ModelChanges>({
     movedEntities: [],
     newServices: [],
   });
+
+  useEffect(() => {
+    if (currentResourcesStorageData !== "") {
+      const data: models.Resource[] = JSON.parse(currentResourcesStorageData);
+      setCurrentResourcesData(data);
+    }
+  }, [currentResourcesStorageData, setCurrentResourcesData]);
+
+  useEffect(() => {
+    if (currentChangesStorageData !== "") {
+      const data: ModelChanges = JSON.parse(currentChangesStorageData);
+      setChanges(data);
+    }
+  }, [currentChangesStorageData, setChanges]);
 
   const [
     loadProjectResourcesInternal,
@@ -60,26 +97,72 @@ const useModelOrganization = () => {
     fetchPolicy: "no-cache",
   });
 
-  const loadProjectResources = useCallback(() => {
-    loadProjectResourcesInternal({
-      variables: {
-        projectId: currentProject?.id,
-      },
-      onCompleted: async (data) => {
-        const { nodes, detailedEdges, simpleEdges } =
-          await entitiesToNodesAndEdges(data.resources, showRelationDetails);
+  const loadProjectResources = useCallback(
+    (forceGetResources = false) => {
+      if (currentTheme !== "" && !forceGetResources) {
+        const nodesFromStorage: Node[] = JSON.parse(currentTheme);
+        const edgesDetailedNodesFromStorage: Edge[] =
+          JSON.parse(currentDetailedEdges);
+        const edgesSimpleNodesFromStorage: Edge[] =
+          JSON.parse(currentSimpleEdges);
 
-        setNodes(nodes);
+        setNodes(nodesFromStorage);
+        setDetailedEdges(edgesDetailedNodesFromStorage);
+        setSimpleEdges(edgesSimpleNodesFromStorage);
+
         if (showRelationDetails) {
-          setEdges(detailedEdges);
+          setEdges(edgesDetailedNodesFromStorage);
         } else {
-          setEdges(simpleEdges);
+          setEdges(edgesSimpleNodesFromStorage);
         }
-        setDetailedEdges(detailedEdges);
-        setSimpleEdges(simpleEdges);
-      },
-    });
-  }, [loadProjectResourcesInternal, showRelationDetails, currentProject]);
+        return;
+      }
+      loadProjectResourcesInternal({
+        variables: {
+          projectId: currentProject?.id,
+        },
+        onCompleted: async (data) => {
+          const { nodes, detailedEdges, simpleEdges } =
+            await entitiesToNodesAndEdges(data.resources, showRelationDetails);
+
+          setNodes(nodes);
+
+          //set all nodes data in local storage
+          setCurrentTheme(JSON.stringify(nodes));
+          setCurrentDetailedEdges(JSON.stringify(detailedEdges));
+          setCurrentSimpleEdges(JSON.stringify(simpleEdges));
+          setCurrentResourceStorageData(JSON.stringify(data.resources));
+
+          if (showRelationDetails) {
+            setEdges(detailedEdges);
+          } else {
+            setEdges(simpleEdges);
+          }
+          setDetailedEdges(detailedEdges);
+          setSimpleEdges(simpleEdges);
+        },
+      });
+    },
+    [
+      loadProjectResourcesInternal,
+      setCurrentResourceStorageData,
+      showRelationDetails,
+      currentDetailedEdges,
+      currentSimpleEdges,
+      currentProject,
+      currentTheme,
+      edges,
+      simpleEdges,
+      detailedEdges,
+      setEdges,
+      setNodes,
+      setDetailedEdges,
+      setSimpleEdges,
+      setCurrentTheme,
+      setCurrentDetailedEdges,
+      setCurrentSimpleEdges,
+    ]
+  );
 
   const toggleShowRelationDetails = useCallback(async () => {
     const currentShowRelationDetails = !showRelationDetails;
@@ -111,7 +194,17 @@ const useModelOrganization = () => {
       movedEntities: [],
       newServices: [],
     });
-  }, [setChanges]);
+    setCurrentTheme("");
+    setCurrentDetailedEdges("");
+    setCurrentSimpleEdges("");
+    setCurrentChangesStorageData("");
+  }, [
+    setChanges,
+    setCurrentTheme,
+    setCurrentDetailedEdges,
+    setCurrentSimpleEdges,
+    setCurrentChangesStorageData,
+  ]);
 
   const searchPhraseChanged = useCallback(
     (searchPhrase: string) => {
@@ -176,8 +269,19 @@ const useModelOrganization = () => {
 
       setChanges((changes) => changes);
       setNodes(updatedNodes);
+      setCurrentTheme(JSON.stringify(updatedNodes));
+      setCurrentChangesStorageData(JSON.stringify(changes));
     },
-    [setChanges, changes, nodes, setNodes, showRelationDetails]
+    [
+      setChanges,
+      setCurrentChangesStorageData,
+      changes,
+      nodes,
+      setNodes,
+      currentTheme,
+      setCurrentTheme,
+      showRelationDetails,
+    ]
   );
 
   const resetToOriginalState = useCallback(() => {
@@ -187,20 +291,26 @@ const useModelOrganization = () => {
 
   useEffect(() => {
     if (currentProject?.id) {
-      loadProjectResources();
+      if (currentTheme !== "") {
+        loadProjectResources();
+      } else {
+        loadProjectResources(true);
+      }
     }
-  }, [currentProject]);
+  }, [currentProject, changes]);
 
   const moveNodeToParent = useCallback(
     (node: Node, targetParent: Node) => {
-      node.parentNode = targetParent.id;
+      const currentNode = nodes.find((n) => n.id === node.id);
+
+      currentNode.parentNode = targetParent.id;
 
       const currentEntityChanged = changes.movedEntities.find(
         (x) => x.entityId === node.id
       );
 
       if (currentEntityChanged) {
-        if (node.data.originalParentNode === node.parentNode) {
+        if (currentNode.data.originalParentNode === currentNode.parentNode) {
           //remove the change from the changes list
           changes.movedEntities = changes.movedEntities.filter(
             (x) => x.entityId !== currentEntityChanged.entityId
@@ -209,18 +319,29 @@ const useModelOrganization = () => {
           currentEntityChanged.targetResourceId = targetParent.id;
         }
       } else {
-        if (node.data.originalParentNode !== node.parentNode) {
+        if (currentNode.data.originalParentNode !== currentNode.parentNode) {
           changes.movedEntities.push({
-            entityId: node.id,
+            entityId: currentNode.id,
             targetResourceId: targetParent.id,
           });
         }
       }
 
+      const updatedNodes = [...nodes];
+      const updatedChanges = changes;
       setChanges((changes) => changes);
       setNodes((nodes) => [...nodes]);
+      setCurrentTheme(JSON.stringify(updatedNodes));
+      setCurrentChangesStorageData(JSON.stringify(updatedChanges));
     },
-    [setNodes, changes, setChanges, nodes]
+    [
+      setNodes,
+      changes,
+      setChanges,
+      nodes,
+      setCurrentTheme,
+      setCurrentChangesStorageData,
+    ]
   );
 
   const [
@@ -240,11 +361,12 @@ const useModelOrganization = () => {
     }).catch(console.error);
 
     resetChanges();
-    loadProjectResources();
+    loadProjectResources(true);
   }, [resetChanges, changes]);
 
   return {
     nodes,
+    currentResourcesData,
     setNodes,
     edges,
     setEdges,
