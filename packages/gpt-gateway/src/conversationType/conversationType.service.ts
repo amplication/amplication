@@ -6,6 +6,7 @@ import { MyMessageBrokerTopics } from "../kafka/topics";
 import { PrismaService } from "../prisma/prisma.service";
 import { TemplateService } from "../template/template.service";
 import { ConversationTypeServiceBase } from "./base/conversationType.service.base";
+import { AiConversationComplete } from "@amplication/schema-registry";
 
 @Injectable()
 export class ConversationTypeService extends ConversationTypeServiceBase {
@@ -46,19 +47,24 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
     }
   }
 
-  emitGptKafkaMessage(
+  private emitGptKafkaMessage(
     isCompleted: boolean,
     requestUniqueId: string,
     result: string
   ): void {
+    const key = <AiConversationComplete.Key>{
+      requestUniqueId,
+    };
+    const value = <AiConversationComplete.Value>{
+      isGptConversionCompleted: isCompleted,
+      ...(isCompleted ? { result } : { errorMessage: result }),
+      requestUniqueId,
+    };
+
     this.kafkaService
       .emitMessage(MyMessageBrokerTopics.AiConversationComplete_1, {
-        key: requestUniqueId,
-        value: {
-          isGptConversionCompleted: isCompleted,
-          ...(isCompleted ? { result } : { errorMessage: result }),
-          requestUniqueId,
-        },
+        key,
+        value,
       })
       .catch((error) => {
         this.logger.error(
