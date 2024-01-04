@@ -30,6 +30,7 @@ import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
 import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
+import { USER_ENTITY_NAME } from "../entity/constants";
 
 export type AuthUser = User & {
   account: Account;
@@ -53,7 +54,6 @@ export type CreatePreviewServiceArgs = {
   generateAdminUI: boolean;
   generateGraphQL: boolean;
   generateRestApi: boolean;
-  authEntityName?: string;
 };
 
 const TOKEN_PREVIEW_LENGTH = 8;
@@ -628,7 +628,6 @@ export class AuthService {
     generateAdminUI,
     generateGraphQL,
     generateRestApi,
-    authEntityName = "User",
     projectId,
   }: CreatePreviewServiceArgs) {
     return {
@@ -643,7 +642,7 @@ export class AuthService {
         },
         serviceSettings: {
           authProvider: EnumAuthProviderType.Jwt,
-          authEntityName,
+          authEntityName: USER_ENTITY_NAME,
           adminUISettings: {
             adminUIPath,
             generateAdminUI,
