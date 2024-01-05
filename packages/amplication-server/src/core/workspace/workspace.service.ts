@@ -215,26 +215,25 @@ export class WorkspaceService {
     return workspace;
   }
 
-  private async shouldBlockUserInvitation(
-    workspaceId: string
-  ): Promise<boolean> {
+  private async canInvite(workspaceId: string): Promise<boolean> {
     if (!this.billingService.isBillingEnabled) {
       return false;
     }
 
-    const blockUserInvitation = await this.billingService.getMeteredEntitlement(
+    const workspaceMembers = await this.billingService.getMeteredEntitlement(
       workspaceId,
       BillingFeature.TeamMembers
     );
 
-    return !blockUserInvitation.hasAccess;
+    return workspaceMembers.currentUsage < workspaceMembers.usageLimit;
   }
 
   async inviteUser(
     currentUser: User,
     args: InviteUserArgs
   ): Promise<Invitation | null> {
-    if (await this.shouldBlockUserInvitation(currentUser.workspace.id)) {
+    const canInvite = await this.canInvite(currentUser.workspace.id);
+    if (!canInvite) {
       const message = `Your workspace exceeds its members limitation.`;
       throw new BillingLimitationError(message, BillingFeature.Projects);
     }
