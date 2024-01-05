@@ -60,6 +60,7 @@ export class ModuleDtoService extends BlockTypeService<
         data: {
           ...args.data,
           enabled: true,
+          type: EnumModuleDtoType.Custom,
         },
       },
       user
@@ -78,6 +79,14 @@ export class ModuleDtoService extends BlockTypeService<
       throw new AmplicationError(`Module DTO not found, ID: ${args.where.id}`);
     }
 
+    if (existingDto.dtoType !== EnumModuleDtoType.Custom) {
+      if (existingDto.name !== args.data.name) {
+        throw new AmplicationError("Cannot update the name of a default DTO");
+      }
+    }
+
+    args.data.displayName = args.data.name;
+
     return super.update(args, user);
   }
 
@@ -86,6 +95,12 @@ export class ModuleDtoService extends BlockTypeService<
     @UserEntity() user: User
   ): Promise<ModuleDto> {
     const moduleDto = await super.findOne(args);
+
+    if (moduleDto?.dtoType !== EnumModuleDtoType.Custom) {
+      throw new AmplicationError(
+        "Cannot delete a default DTO. To delete it, you must delete the entity"
+      );
+    }
 
     return super.delete(args, user);
   }
