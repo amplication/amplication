@@ -13,6 +13,8 @@ export {
   EnumModuleDtoType,
   EnumModuleActionGqlOperation,
   EnumModuleActionRestVerb,
+  PropertyTypeDef,
+  ModuleDtoProperty,
 } from "./models";
 
 export type ServiceSettings = Omit<
