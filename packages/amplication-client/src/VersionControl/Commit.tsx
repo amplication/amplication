@@ -19,7 +19,7 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { commitPath } from "../util/paths";
 import "./Commit.scss";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { FeatureIndicator } from "../Components/FeatureIndicator";
+import { LicenseIndicatorContainer } from "../Components/LicenseIndicatorContainer";
 
 type TCommit = {
   message: string;
@@ -71,8 +71,6 @@ const Commit = ({ projectId, noChanges }: Props) => {
     currentProject,
     commitUtils,
   } = useContext(AppContext);
-
-  const licensed = currentProject?.licensed ?? true;
 
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
@@ -167,25 +165,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 autoComplete="off"
               />
 
-              {!licensed ? (
-                <FeatureIndicator
-                  featureName={BillingFeature.Projects}
-                  text="The workspace reached your plan's project limitation."
-                  element={
-                    <Button
-                      type="submit"
-                      icon="locked"
-                      buttonStyle={EnumButtonStyle.Primary}
-                      eventData={{
-                        eventName: AnalyticsEventNames.CommitClicked,
-                      }}
-                      disabled={loading || !licensed}
-                    >
-                      {noChanges ? "Rebuild" : "Commit changes & build "}
-                    </Button>
-                  }
-                />
-              ) : (
+              <LicenseIndicatorContainer featureId={BillingFeature.BlockBuild}>
                 <Button
                   type="submit"
                   buttonStyle={EnumButtonStyle.Primary}
@@ -196,7 +176,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 >
                   {noChanges ? "Rebuild" : "Commit changes & build "}
                 </Button>
-              )}
+              </LicenseIndicatorContainer>
             </Form>
           );
         }}
