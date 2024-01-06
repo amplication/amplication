@@ -29,6 +29,7 @@ type Props = {
   defaultValues?: models.ModuleDtoProperty;
   disabled?: boolean;
   isCustomDto: boolean;
+  moduleDto: models.ModuleDto;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -75,6 +76,7 @@ const ModuleDtoPropertyForm = ({
   defaultValues,
   disabled,
   isCustomDto,
+  moduleDto,
 }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
@@ -119,6 +121,7 @@ const ModuleDtoPropertyForm = ({
                   }}
                 ></Button>
                 <DeleteModuleDtoProperty
+                  moduleDto={moduleDto}
                   moduleDtoProperty={defaultValues}
                   onPropertyDelete={onPropertyDelete}
                 />

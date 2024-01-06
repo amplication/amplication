@@ -1,26 +1,28 @@
 import { ConfirmationDialog, Snackbar } from "@amplication/ui/design-system";
 import { useCallback, useState } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 import * as models from "../models";
 import { formatError } from "../util/error";
-import useModuleDtoProperty from "./hooks/useModuleDtoProperty";
 
 const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 type Props = {
+  moduleDto: models.ModuleDto;
   moduleDtoProperty: models.ModuleDtoProperty;
   onPropertyDelete?: (property: models.ModuleDtoProperty) => void;
 };
 
 export const DeleteModuleDtoProperty = ({
+  moduleDto,
   moduleDtoProperty,
   onPropertyDelete,
 }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
   const { deleteModuleDtoProperty, deleteModuleDtoPropertyError } =
-    useModuleDtoProperty();
+    useModuleDto();
 
   const hasError = Boolean(deleteModuleDtoPropertyError);
   const errorMessage = formatError(deleteModuleDtoPropertyError);
@@ -42,7 +44,10 @@ export const DeleteModuleDtoProperty = ({
     deleteModuleDtoProperty({
       variables: {
         where: {
-          id: moduleDtoProperty.name,
+          moduleDto: {
+            id: moduleDto.id,
+          },
+          propertyName: moduleDtoProperty.name,
         },
       },
     })
@@ -52,7 +57,7 @@ export const DeleteModuleDtoProperty = ({
           onPropertyDelete(moduleDtoProperty);
         }
       });
-  }, [deleteModuleDtoProperty, moduleDtoProperty, onPropertyDelete]);
+  }, [deleteModuleDtoProperty, moduleDtoProperty, onPropertyDelete, moduleDto]);
 
   return (
     <>

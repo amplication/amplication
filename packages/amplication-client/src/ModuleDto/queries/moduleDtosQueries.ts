@@ -122,3 +122,12 @@ export const UPDATE_MODULE_DTO_PROPERTY = gql`
     }
   }
 `;
+
+export const DELETE_MODULE_DTO_PROPERTY = gql`
+  ${MODULE_DTO_PROPERTY_FIELDS_FRAGMENT}
+  mutation deleteModuleDtoProperty($where: WherePropertyUniqueInput!) {
+    deleteModuleDtoProperty(where: $where) {
+      ...ModuleDtoPropertyFields
+    }
+  }
+`;

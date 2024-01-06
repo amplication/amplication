@@ -6,6 +6,7 @@ import {
   CREATE_MODULE_DTO,
   CREATE_MODULE_DTO_PROPERTY,
   DELETE_MODULE_DTO,
+  DELETE_MODULE_DTO_PROPERTY,
   FIND_MODULE_DTOS,
   GET_AVAILABLE_DTOS_FOR_RESOURCE,
   GET_MODULE_DTO,
@@ -72,6 +73,18 @@ const useModuleDto = () => {
     onCompleted: (data) => {
       addBlock(data.deleteModuleDto.id);
       getAvailableDtosForResourceRefetch();
+    },
+  });
+
+  const [
+    deleteModuleDtoProperty,
+    {
+      error: deleteModuleDtoPropertyError,
+      loading: deleteModuleDtoPropertyLoading,
+    },
+  ] = useMutation<TDeletePropertyData>(DELETE_MODULE_DTO_PROPERTY, {
+    onCompleted: (data) => {
+      addBlock(data.deleteModuleDtoProperty.name);
     },
   });
 
@@ -214,6 +227,9 @@ const useModuleDto = () => {
     updateModuleDtoProperty,
     updateModuleDtoPropertyError,
     updateModuleDtoPropertyLoading,
+    deleteModuleDtoProperty,
+    deleteModuleDtoPropertyError,
+    deleteModuleDtoPropertyLoading,
   };
 };
 
