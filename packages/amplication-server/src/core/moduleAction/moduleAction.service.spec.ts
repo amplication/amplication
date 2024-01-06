@@ -131,6 +131,16 @@ const blockServiceCreateMock = jest.fn(
 const blockServiceUpdateMock = jest.fn(() => {
   return EXAMPLE_ACTION;
 });
+
+const blockServiceFindManyByBlockTypeAndSettingsMock = jest.fn(() => {
+  return [
+    {
+      ...EXAMPLE_ACTION,
+      actionType: EnumModuleActionType.Create,
+    },
+  ];
+});
+
 describe("ModuleActionService", () => {
   let service: ModuleActionService;
 
@@ -147,6 +157,8 @@ describe("ModuleActionService", () => {
             findManyByBlockType: blockServiceFindManyByBlockTypeMock,
             create: blockServiceCreateMock,
             update: blockServiceUpdateMock,
+            findManyByBlockTypeAndSettings:
+              blockServiceFindManyByBlockTypeAndSettingsMock,
           })),
         },
         {
@@ -303,19 +315,6 @@ describe("ModuleActionService", () => {
   });
 
   it("should create default actions for entity", async () => {
-    const args: UpdateModuleActionArgs = {
-      where: {
-        id: EXAMPLE_ACTION_ID,
-      },
-      data: {
-        displayName: EXAMPLE_ACTION_DISPLAY_NAME,
-        name: EXAMPLE_ACTION_NAME,
-        enabled: true,
-        gqlOperation: EnumModuleActionGqlOperation.Mutation,
-        restVerb: EnumModuleActionRestVerb.Post,
-        path: ``,
-      },
-    };
     expect(
       await service.createDefaultActionsForEntityModule(
         EXAMPLE_ENTITY,
@@ -433,5 +432,14 @@ describe("ModuleActionService", () => {
       },
     ]);
     expect(blockServiceCreateMock).toBeCalledTimes(6);
+  });
+
+  it("should update default actions for entity", async () => {
+    await service.updateDefaultActionsForEntityModule(
+      EXAMPLE_ENTITY,
+      EXAMPLE_MODULE,
+      EXAMPLE_USER
+    );
+    expect(blockServiceUpdateMock).toBeCalledTimes(1);
   });
 });
