@@ -10,6 +10,8 @@ type Account {
   id: String!
   lastName: String!
   password: String!
+  previewAccountEmail: String
+  previewAccountType: PreviewAccountType!
   updatedAt: DateTime!
 }
 
@@ -65,6 +67,13 @@ input ApiTokenCreateInput {
 type Auth {
   """JWT Bearer token"""
   token: String!
+}
+
+type AuthPreviewAccount {
+  projectId: String!
+  resourceId: String!
+  token: String!
+  workspaceId: String!
 }
 
 type AuthorizeResourceWithGitResult {
@@ -776,6 +785,7 @@ input EnumResourceTypeFilter {
 enum EnumSubscriptionPlan {
   Enterprise
   Free
+  PreviewBreakTheMonolith
   Pro
 }
 
@@ -1263,6 +1273,7 @@ type Mutation {
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   signup(data: SignupInput!): Auth!
+  signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   updateAccount(data: UpdateAccountInput!): Account!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -1421,6 +1432,11 @@ type PluginOrderItem {
 
 input PluginSetOrderInput {
   order: Int!
+}
+
+enum PreviewAccountType {
+  BreakingTheMonolith
+  None
 }
 
 type Project {
@@ -1860,6 +1876,11 @@ input SignupInput {
   lastName: String!
   password: String!
   workspaceName: String!
+}
+
+input SignupPreviewAccountInput {
+  previewAccountEmail: String!
+  previewAccountType: PreviewAccountType!
 }
 
 enum SortOrder {

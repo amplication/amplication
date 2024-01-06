@@ -37,6 +37,7 @@ const SUBSCRIPTION_TO_CHIP_STYLE: {
   [EnumSubscriptionPlan.Free]: EnumChipStyle.ThemePurple,
   [EnumSubscriptionPlan.Pro]: EnumChipStyle.ThemeBlue,
   [EnumSubscriptionPlan.Enterprise]: EnumChipStyle.ThemeGreen,
+  [EnumSubscriptionPlan.PreviewBreakTheMonolith]: EnumChipStyle.ThemeOrange,
 };
 
 export const WorkspaceOverview = () => {
