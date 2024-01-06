@@ -11,9 +11,7 @@ export const MODULE_DTO_FIELDS_FRAGMENT = gql`
     parentBlockId
     resourceId
     properties {
-      id
       name
-      description
       propertyTypes {
         type
         isArray
@@ -21,14 +19,6 @@ export const MODULE_DTO_FIELDS_FRAGMENT = gql`
       }
       isOptional
       isArray
-      lockedByUserId
-      lockedAt
-      lockedByUser {
-        account {
-          firstName
-          lastName
-        }
-      }
     }
     lockedByUser {
       account {
