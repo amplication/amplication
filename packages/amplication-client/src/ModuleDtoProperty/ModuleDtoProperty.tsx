@@ -6,30 +6,46 @@ import { formatError } from "../util/error";
 import ModuleDtoPropertyForm from "./ModuleDtoPropertyForm";
 import useModuleDtoProperty from "./hooks/useModuleDtoProperty";
 import ModuleDtoPropertyPreview from "./ModuleDtoPropertyPreview";
+import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 
 type Props = {
+  moduleDto: models.ModuleDto;
   moduleDtoProperty: models.ModuleDtoProperty;
   onPropertyDelete?: (property: models.ModuleDtoProperty) => void;
+  onPropertyChanged?: (property: models.ModuleDtoProperty) => void;
 };
 
-const ModuleDtoProperty = ({ moduleDtoProperty, onPropertyDelete }: Props) => {
+const ModuleDtoProperty = ({
+  moduleDto,
+  moduleDtoProperty,
+  onPropertyDelete,
+  onPropertyChanged,
+}: Props) => {
   const { addEntity } = useContext(AppContext);
   const [editMode, setEditMode] = useState<boolean>(false);
+  const [originalName, setOriginalName] = useState<string>(
+    moduleDtoProperty.name
+  );
 
   const propertyId = moduleDtoProperty.name;
 
   const { updateModuleDtoProperty, updateModuleDtoPropertyError } =
-    useModuleDtoProperty();
+    useModuleDto();
 
   const handleSubmit = useCallback(
     (data) => {
       updateModuleDtoProperty({
         onCompleted: () => {
           addEntity(propertyId);
+          setOriginalName(data.name);
+          onPropertyChanged && onPropertyChanged(moduleDtoProperty);
         },
         variables: {
           where: {
-            id: propertyId,
+            propertyName: originalName,
+            moduleDto: {
+              id: moduleDto.id,
+            },
           },
           data: {
             ...data,
@@ -37,7 +53,16 @@ const ModuleDtoProperty = ({ moduleDtoProperty, onPropertyDelete }: Props) => {
         },
       }).catch(console.error);
     },
-    [updateModuleDtoProperty, addEntity, propertyId]
+    [
+      updateModuleDtoProperty,
+      addEntity,
+      propertyId,
+      originalName,
+      moduleDto,
+      onPropertyChanged,
+      moduleDtoProperty,
+      setOriginalName,
+    ]
   );
 
   const hasError = Boolean(updateModuleDtoPropertyError);

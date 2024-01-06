@@ -5,7 +5,7 @@ import {
   ListItem,
   Text,
 } from "@amplication/ui/design-system";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 import * as models from "../models";
 import ModuleDtoProperty from "./ModuleDtoProperty";
@@ -20,6 +20,7 @@ const ModuleDtoPropertyList = React.memo(
       getModuleDto,
       getModuleDtoData: data,
       getModuleDtoLoading: loading,
+      getModuleDtoRefetch: refetch,
     } = useModuleDto();
 
     useEffect(() => {
@@ -32,6 +33,10 @@ const ModuleDtoPropertyList = React.memo(
       });
     }, [moduleDtoId, getModuleDto]);
 
+    const onDtoPropertyChanged = useCallback(() => {
+      refetch();
+    }, [refetch]);
+
     return (
       <>
         {loading && <CircularProgress centerToParent />}
@@ -39,10 +44,12 @@ const ModuleDtoPropertyList = React.memo(
         <List
           headerContent={<Text textStyle={EnumTextStyle.Tag}>Properties</Text>}
         >
-          {data?.moduleDto?.properties.map((property) => (
-            <ListItem key={property.name}>
+          {data?.moduleDto?.properties.map((property, index) => (
+            <ListItem key={index}>
               <ModuleDtoProperty
+                moduleDto={data.moduleDto}
                 moduleDtoProperty={property}
+                onPropertyChanged={onDtoPropertyChanged}
                 onPropertyDelete={onPropertyDelete}
               />
             </ListItem>

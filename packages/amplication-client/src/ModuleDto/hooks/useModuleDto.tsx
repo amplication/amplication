@@ -10,6 +10,7 @@ import {
   GET_AVAILABLE_DTOS_FOR_RESOURCE,
   GET_MODULE_DTO,
   UPDATE_MODULE_DTO,
+  UPDATE_MODULE_DTO_PROPERTY,
 } from "../queries/moduleDtosQueries";
 type TDeleteData = {
   deleteModuleDto: models.ModuleDto;
@@ -37,6 +38,10 @@ type TCreatePropertyData = {
 
 type TUpdateData = {
   updateModuleDto: models.ModuleDto;
+};
+
+type TUpdatePropertyData = {
+  updateModuleDtoProperty: models.ModuleDtoProperty;
 };
 
 const useModuleDto = () => {
@@ -160,6 +165,18 @@ const useModuleDto = () => {
     },
   });
 
+  const [
+    updateModuleDtoProperty,
+    {
+      error: updateModuleDtoPropertyError,
+      loading: updateModuleDtoPropertyLoading,
+    },
+  ] = useMutation<TUpdatePropertyData>(UPDATE_MODULE_DTO_PROPERTY, {
+    onCompleted: (data) => {
+      addEntity(data.updateModuleDtoProperty.name);
+    },
+  });
+
   useEffect(() => {
     if (!currentResource) return;
     getAvailableDtosForCurrentResource();
@@ -194,6 +211,9 @@ const useModuleDto = () => {
     createModuleDtoPropertyData,
     createModuleDtoPropertyError,
     createModuleDtoPropertyLoading,
+    updateModuleDtoProperty,
+    updateModuleDtoPropertyError,
+    updateModuleDtoPropertyLoading,
   };
 };
 

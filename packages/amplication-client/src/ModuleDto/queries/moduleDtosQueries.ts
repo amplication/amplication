@@ -110,3 +110,15 @@ export const CREATE_MODULE_DTO_PROPERTY = gql`
     }
   }
 `;
+
+export const UPDATE_MODULE_DTO_PROPERTY = gql`
+  ${MODULE_DTO_PROPERTY_FIELDS_FRAGMENT}
+  mutation updateModuleDtoProperty(
+    $where: WherePropertyUniqueInput!
+    $data: ModuleDtoPropertyUpdateInput!
+  ) {
+    updateModuleDtoProperty(data: $data, where: $where) {
+      ...ModuleDtoPropertyFields
+    }
+  }
+`;
