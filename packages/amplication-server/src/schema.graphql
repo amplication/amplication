@@ -1090,6 +1090,7 @@ type ModuleDto implements IBlock {
   parentBlock: Block
   parentBlockId: String
   properties: [ModuleDtoProperty!]!
+  relatedEntityId: String
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
@@ -1114,67 +1115,11 @@ input ModuleDtoOrderByInput {
   updatedAt: SortOrder
 }
 
-type ModuleDtoProperty implements IBlock {
-  blockType: EnumBlockType!
-  createdAt: DateTime!
-  description: String
-  displayName: String!
-  id: String!
-  inputParameters: [BlockInputOutput!]!
+type ModuleDtoProperty {
   isArray: Boolean!
   isOptional: Boolean!
-  lockedAt: DateTime
-  lockedByUser: User
-  lockedByUserId: String
   name: String!
-  outputParameters: [BlockInputOutput!]!
-  parentBlock: Block
-  parentBlockId: String
   propertyTypes: [PropertyTypeDef!]!
-  resourceId: String
-  updatedAt: DateTime!
-  versionNumber: Float!
-}
-
-input ModuleDtoPropertyCreateInput {
-  description: String
-  displayName: String!
-  inputParameters: [BlockInputOutputInput!]
-  isArray: Boolean!
-  isOptional: Boolean!
-  name: String
-  outputParameters: [BlockInputOutputInput!]
-  parentBlock: WhereParentIdInput
-  propertyTypes: [PropertyTypeDefInput!]!
-  resource: WhereParentIdInput!
-}
-
-input ModuleDtoPropertyOrderByInput {
-  blockType: SortOrder
-  createdAt: SortOrder
-  description: SortOrder
-  displayName: SortOrder
-  id: SortOrder
-  updatedAt: SortOrder
-}
-
-input ModuleDtoPropertyUpdateInput {
-  description: String
-  displayName: String
-  isArray: Boolean!
-  isOptional: Boolean!
-  name: String
-  propertyTypes: [PropertyTypeDefInput!]!
-}
-
-input ModuleDtoPropertyWhereInput {
-  createdAt: DateTimeFilter
-  description: StringFilter
-  displayName: StringFilter
-  id: StringFilter
-  parentBlock: WhereUniqueInput
-  resource: ResourceWhereInput
-  updatedAt: DateTimeFilter
 }
 
 input ModuleDtoUpdateInput {
@@ -1240,7 +1185,6 @@ type Mutation {
   createModule(data: ModuleCreateInput!): Module!
   createModuleAction(data: ModuleActionCreateInput!): ModuleAction!
   createModuleDto(data: ModuleDtoCreateInput!): ModuleDto!
-  createModuleDtoProperty(data: ModuleDtoPropertyCreateInput!): ModuleDtoProperty!
   createOneEntity(data: EntityCreateInput!): Entity!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
@@ -1262,7 +1206,6 @@ type Mutation {
   deleteModule(where: WhereUniqueInput!): Module!
   deleteModuleAction(where: WhereUniqueInput!): ModuleAction!
   deleteModuleDto(where: WhereUniqueInput!): ModuleDto!
-  deleteModuleDtoProperty(where: WhereUniqueInput!): ModuleDtoProperty!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   deleteProject(where: WhereUniqueInput!): Project
   deleteResource(where: WhereUniqueInput!): Resource
@@ -1295,7 +1238,6 @@ type Mutation {
   updateModule(data: ModuleUpdateInput!, where: WhereUniqueInput!): Module!
   updateModuleAction(data: ModuleActionUpdateInput!, where: WhereUniqueInput!): ModuleAction!
   updateModuleDto(data: ModuleDtoUpdateInput!, where: WhereUniqueInput!): ModuleDto!
-  updateModuleDtoProperty(data: ModuleDtoPropertyUpdateInput!, where: WhereUniqueInput!): ModuleDtoProperty!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
@@ -1518,12 +1460,6 @@ type PropertyTypeDef {
   type: EnumModuleDtoPropertyType!
 }
 
-input PropertyTypeDefInput {
-  dtoId: String
-  isArray: Boolean!
-  type: EnumModuleDtoPropertyType!
-}
-
 input ProvisionSubscriptionInput {
   billingPeriod: String!
   cancelUrl: String
@@ -1561,8 +1497,6 @@ type Query {
   moduleAction(where: WhereUniqueInput!): ModuleAction
   moduleActions(orderBy: ModuleActionOrderByInput, skip: Int, take: Int, where: ModuleActionWhereInput): [ModuleAction!]!
   moduleDto(where: WhereUniqueInput!): ModuleDto
-  moduleDtoProperties(orderBy: ModuleDtoPropertyOrderByInput, skip: Int, take: Int, where: ModuleDtoPropertyWhereInput): [ModuleDtoProperty!]!
-  moduleDtoProperty(where: WhereUniqueInput!): ModuleDtoProperty
   moduleDtos(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
   modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!

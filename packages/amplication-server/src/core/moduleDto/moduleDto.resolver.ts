@@ -9,9 +9,6 @@ import { DeleteModuleDtoArgs } from "./dto/DeleteModuleDtoArgs";
 import { UseFilters, UseGuards } from "@nestjs/common";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { ModuleDtoProperty } from "../moduleDtoProperty/dto/ModuleDtoProperty";
-import { ModuleDtoPropertyService } from "../moduleDtoProperty/moduleDtoProperty.service";
-import { SortOrder } from "../../enums/SortOrder";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 
@@ -29,10 +26,7 @@ export class ModuleDtoResolver extends BlockTypeResolver(
   "deleteModuleDto",
   DeleteModuleDtoArgs
 ) {
-  constructor(
-    private readonly service: ModuleDtoService,
-    private readonly moduleDtoPropertyService: ModuleDtoPropertyService
-  ) {
+  constructor(private readonly service: ModuleDtoService) {
     super();
   }
 
@@ -43,13 +37,5 @@ export class ModuleDtoResolver extends BlockTypeResolver(
     @Args() args: FindManyModuleDtoArgs
   ): Promise<ModuleDto[]> {
     return this.service.availableDtosForResource(args);
-  }
-
-  @ResolveField(() => [ModuleDtoProperty])
-  async properties(@Parent() moduleDto: ModuleDto) {
-    return this.moduleDtoPropertyService.findMany({
-      where: { parentBlock: { id: moduleDto.id } },
-      orderBy: { createdAt: SortOrder.Asc },
-    });
   }
 }

@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { IBlock } from "../../../models";
 import { EnumModuleDtoType } from "./EnumModuleDtoType";
+import { ModuleDtoProperty } from "./ModuleDtoProperty";
 
 @ObjectType({
   isAbstract: true,
@@ -26,4 +27,9 @@ export class ModuleDto extends IBlock {
     nullable: true,
   })
   relatedEntityId?: string;
+
+  @Field(() => [ModuleDtoProperty], {
+    nullable: false,
+  })
+  properties!: ModuleDtoProperty[];
 }

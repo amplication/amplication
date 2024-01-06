@@ -88,7 +88,6 @@ export class BlockService {
     [EnumBlockType.Module]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ModuleAction]: new Set([EnumBlockType.Module]),
     [EnumBlockType.ModuleDto]: new Set([EnumBlockType.Module]),
-    [EnumBlockType.ModuleDtoProperty]: new Set([EnumBlockType.ModuleDto]),
   };
 
   private async resolveParentBlock(

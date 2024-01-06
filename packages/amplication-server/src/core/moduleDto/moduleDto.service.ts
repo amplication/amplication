@@ -115,12 +115,14 @@ export class ModuleDtoService extends BlockTypeService<
     );
     return await Promise.all(
       Object.keys(defaultDtos).map((dto) => {
+        const { properties, ...dtoData } = defaultDtos[dto];
+
         return (
           defaultDtos[dto] &&
           super.create(
             {
               data: {
-                ...defaultDtos[dto],
+                ...dtoData,
                 displayName: defaultDtos[dto].name,
                 parentBlock: {
                   connect: {

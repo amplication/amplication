@@ -26,7 +26,6 @@ import { DBSchemaImportModule } from "./dbSchemaImport/dbSchemaImport.module";
 import { ModuleModule } from "./module/module.module";
 import { ModuleActionModule } from "./moduleAction/moduleAction.module";
 import { ModuleDtoModule } from "./moduleDto/moduleDto.module";
-import { ModuleDtoPropertyModule } from "./moduleDtoProperty/moduleDtoProperty.module";
 import { AdministratorModule } from "./administrator/administrator.module";
 
 @Module({
@@ -60,7 +59,6 @@ import { AdministratorModule } from "./administrator/administrator.module";
     ModuleModule,
     ModuleActionModule,
     ModuleDtoModule,
-    ModuleDtoPropertyModule,
   ],
   exports: [
     AccountModule,
@@ -89,7 +87,6 @@ import { AdministratorModule } from "./administrator/administrator.module";
     ModuleModule,
     ModuleActionModule,
     ModuleDtoModule,
-    ModuleDtoPropertyModule,
   ],
 })
 export class CoreModule {}
