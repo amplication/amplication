@@ -129,6 +129,7 @@ const blockServiceDeleteMock = jest.fn(() => {
 
 const blockServiceCreateMock = jest.fn(
   (args: CreateModuleActionArgs): ModuleAction => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { resource, parentBlock, ...data } = args.data;
 
     return {
@@ -247,7 +248,7 @@ describe("ModuleActionService", () => {
         path: ``,
       },
     };
-    expect(service.create(args, EXAMPLE_USER)).rejects.toThrow(
+    await expect(service.create(args, EXAMPLE_USER)).rejects.toThrow(
       new AmplicationError("Invalid moduleAction name")
     );
   });
@@ -301,7 +302,7 @@ describe("ModuleActionService", () => {
         path: ``,
       },
     };
-    expect(service.update(args, EXAMPLE_USER)).rejects.toThrow(
+    await expect(service.update(args, EXAMPLE_USER)).rejects.toThrow(
       new AmplicationError("Invalid moduleAction name")
     );
   });
