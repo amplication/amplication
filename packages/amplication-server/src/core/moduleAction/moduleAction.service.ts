@@ -55,7 +55,7 @@ export class ModuleActionService extends BlockTypeService<
         data: {
           ...args.data,
           enabled: true,
-          type: EnumModuleActionType.Custom,
+          actionType: EnumModuleActionType.Custom,
         },
       },
       user
@@ -255,10 +255,79 @@ export class ModuleActionService extends BlockTypeService<
       }
     );
 
-    return await Promise.all(
+    const defaultActionKeysSet = new Set(Object.keys(defaultActions));
+    const existingDefaultActionKeysSet = new Set(
+      existingDefaultActions.map((action) => action.actionType) as string[]
+    );
+
+    const actionsToDelete: EnumModuleActionType[] = [];
+    const actionsToCreate: EnumModuleActionType[] = [];
+    const actionsToUpdate: EnumModuleActionType[] = [];
+
+    // Iterate through once and categorize actions
+    for (const action of defaultActionKeysSet) {
+      if (!existingDefaultActionKeysSet.has(action)) {
+        actionsToCreate.push(action as EnumModuleActionType);
+      } else {
+        actionsToUpdate.push(action as EnumModuleActionType);
+      }
+    }
+
+    for (const action of existingDefaultActionKeysSet) {
+      if (!defaultActionKeysSet.has(action)) {
+        actionsToDelete.push(action as EnumModuleActionType);
+      }
+    }
+
+    const created = Promise.all(
+      actionsToCreate.map((action) => {
+        return (
+          defaultActions[action] &&
+          super.create(
+            {
+              data: {
+                fieldPermanentId: field.permanentId,
+                ...defaultActions[action],
+                parentBlock: {
+                  connect: {
+                    id: moduleId,
+                  },
+                },
+                resource: {
+                  connect: {
+                    id: entity.resourceId,
+                  },
+                },
+              },
+            },
+            user
+          )
+        );
+      })
+    );
+
+    const deleted = Promise.all(
+      actionsToDelete.map((actionType) => {
+        const actionToDelete = existingDefaultActions.find(
+          (existing) => existing.actionType === actionType
+        );
+
+        return super.delete(
+          {
+            where: {
+              id: actionToDelete.id,
+            },
+          },
+          user,
+          true
+        );
+      })
+    );
+
+    const updated = Promise.all(
       existingDefaultActions.map((action) => {
         return (
-          defaultActions[action.actionType] &&
+          actionsToUpdate[action.actionType] &&
           super.update(
             {
               where: {
@@ -279,6 +348,10 @@ export class ModuleActionService extends BlockTypeService<
         );
       })
     );
+
+    await Promise.all([created, deleted, updated]);
+
+    return [...(await created), ...(await updated)];
   }
 
   async deleteDefaultActionsForRelationField(
