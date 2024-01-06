@@ -123,11 +123,13 @@ export class ModuleDtoService extends BlockTypeService<
 
   async createDefaultDtosForEntityModule(
     entity: Entity,
+    entityFields: EntityField[],
     module: Module,
     user: User
   ): Promise<ModuleDto[]> {
     const defaultDtos = await getDefaultDtosForEntity(
-      entity as unknown as CodeGenTypes.Entity
+      entity as unknown as CodeGenTypes.Entity,
+      entityFields as unknown as CodeGenTypes.EntityField[]
     );
     return await Promise.all(
       Object.keys(defaultDtos).map((dto) => {
@@ -163,12 +165,14 @@ export class ModuleDtoService extends BlockTypeService<
   //call this function when the entity names changes, and we need to update the default dtos
   async updateDefaultDtosForEntityModule(
     entity: Entity,
+    entityFields: EntityField[],
     module: Module,
     user: User
   ): Promise<ModuleDto[]> {
     //get the updated default dtos (with updated names)
     const defaultDtos = await getDefaultDtosForEntity(
-      entity as unknown as CodeGenTypes.Entity
+      entity as unknown as CodeGenTypes.Entity,
+      entityFields as unknown as CodeGenTypes.EntityField[]
     );
 
     //get the current default dtos

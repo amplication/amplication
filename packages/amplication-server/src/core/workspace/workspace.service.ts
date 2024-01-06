@@ -924,6 +924,7 @@ export class WorkspaceService {
       const module = await this.moduleService.createDefaultModuleForEntity(
         entityArgs,
         entity,
+        [],
         user
       );
 

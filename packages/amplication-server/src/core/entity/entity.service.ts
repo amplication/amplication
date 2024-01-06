@@ -395,6 +395,7 @@ export class EntityService {
         },
       },
       newEntity,
+      await this.getFields(newEntity.id, {}),
       user
     );
 
@@ -1211,6 +1212,7 @@ export class EntityService {
             displayName: args.data.name,
           },
           updatedEntity,
+          await this.getFields(updatedEntity.id, {}),
           user
         );
       } catch (error) {
@@ -1234,6 +1236,7 @@ export class EntityService {
               },
             },
             updatedEntity,
+            await this.getFields(updatedEntity.id, {}),
             user
           );
         } else {

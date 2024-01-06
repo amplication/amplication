@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
-import { Entity, User } from "../../models";
+import { Entity, EntityField, User } from "../../models";
 import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
 import { CreateModuleArgs } from "./dto/CreateModuleArgs";
@@ -89,6 +89,7 @@ export class ModuleService extends BlockTypeService<
   async createDefaultModuleForEntity(
     args: CreateModuleArgs,
     entity: Entity,
+    entityFields: EntityField[],
     user: User
   ): Promise<Module> {
     const module = await this.create(
@@ -111,6 +112,7 @@ export class ModuleService extends BlockTypeService<
 
     await this.moduleDtoService.createDefaultDtosForEntityModule(
       entity,
+      entityFields,
       module,
       user
     );
@@ -146,6 +148,7 @@ export class ModuleService extends BlockTypeService<
   async updateDefaultModuleForEntity(
     args: ModuleUpdateInput,
     entity: Entity,
+    entityFields: EntityField[],
     user: User
   ): Promise<Module> {
     const moduleId = await this.getDefaultModuleIdForEntity(
@@ -171,6 +174,7 @@ export class ModuleService extends BlockTypeService<
 
     await this.moduleDtoService.updateDefaultDtosForEntityModule(
       entity,
+      entityFields,
       module,
       user
     );
