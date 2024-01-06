@@ -14,6 +14,7 @@ import { FindManyModuleDtoArgs } from "./dto/FindManyModuleDtoArgs";
 import { ModuleDto } from "./dto/ModuleDto";
 import { ModuleDtoProperty } from "./dto/ModuleDtoProperty";
 import { UpdateModuleDtoArgs } from "./dto/UpdateModuleDtoArgs";
+import { UpdateModuleDtoPropertyArgs } from "./dto/UpdateModuleDtoPropertyArgs";
 import { ModuleDtoService } from "./moduleDto.service";
 
 @Resolver(() => ModuleDto)
@@ -55,5 +56,16 @@ export class ModuleDtoResolver extends BlockTypeResolver(
     @Args() args: CreateModuleDtoPropertyArgs
   ): Promise<ModuleDtoProperty> {
     return this.service.createDtoProperty(args, user);
+  }
+
+  @Mutation(() => ModuleDtoProperty, {
+    nullable: false,
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.moduleDto.id")
+  async updateModuleDtoProperty(
+    @UserEntity() user: User,
+    @Args() args: UpdateModuleDtoPropertyArgs
+  ): Promise<ModuleDtoProperty> {
+    return this.service.updateDtoProperty(args, user);
   }
 }

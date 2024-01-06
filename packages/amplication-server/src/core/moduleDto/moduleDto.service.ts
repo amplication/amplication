@@ -21,6 +21,7 @@ import { ModuleDto } from "./dto/ModuleDto";
 import { ModuleDtoProperty } from "./dto/ModuleDtoProperty";
 import { UpdateModuleDtoArgs } from "./dto/UpdateModuleDtoArgs";
 import { EnumModuleDtoPropertyType } from "./dto/propertyTypes/EnumModuleDtoPropertyType";
+import { UpdateModuleDtoPropertyArgs } from "./dto/UpdateModuleDtoPropertyArgs";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -403,6 +404,15 @@ export class ModuleDtoService extends BlockTypeService<
       );
     }
 
+    const existingProperty = dto.properties.find(
+      (property) => property.name === args.data.name
+    );
+    if (existingProperty) {
+      throw new AmplicationError(
+        `Property already exists, name: ${args.data.name}, DTO ID: ${args.data.moduleDto.connect.id}`
+      );
+    }
+
     const newProperty = {
       ...DEFAULT_DTO_PROPERTY,
       name: args.data.name,
@@ -415,6 +425,64 @@ export class ModuleDtoService extends BlockTypeService<
           name: dto.name,
           enabled: dto.enabled,
           properties: [...dto.properties, newProperty],
+        },
+      },
+      user
+    );
+
+    return newProperty;
+  }
+
+  async updateDtoProperty(
+    args: UpdateModuleDtoPropertyArgs,
+    user: User
+  ): Promise<ModuleDtoProperty> {
+    const dto = await super.findOne({
+      where: { id: args.where.moduleDto.id },
+    });
+    if (!dto) {
+      throw new AmplicationError(
+        `Module DTO not found, ID: ${args.where.moduleDto.id}`
+      );
+    }
+
+    const existingPropertyIndex = dto.properties.findIndex(
+      (property) => property.name === args.where.propertyName
+    );
+
+    if (existingPropertyIndex === -1) {
+      throw new AmplicationError(
+        `Property not found, name: ${args.where.propertyName}, DTO ID: ${args.where.moduleDto.id}`
+      );
+    }
+
+    if (args.data.name !== args.where.propertyName) {
+      const existingPropertyWithNewName = dto.properties.find(
+        (property) => property.name === args.data.name
+      );
+      if (existingPropertyWithNewName) {
+        throw new AmplicationError(
+          `Property already exists, name: ${args.data.name}, DTO ID: ${args.where.moduleDto.id}`
+        );
+      }
+    }
+
+    const existingProperty = dto.properties[existingPropertyIndex];
+
+    const newProperty = {
+      ...existingProperty,
+      ...args.data,
+    };
+
+    dto.properties[existingPropertyIndex] = newProperty;
+
+    await super.update(
+      {
+        where: { id: dto.id },
+        data: {
+          name: dto.name,
+          enabled: dto.enabled,
+          properties: dto.properties,
         },
       },
       user

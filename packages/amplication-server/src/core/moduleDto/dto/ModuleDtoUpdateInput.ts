@@ -16,8 +16,6 @@ export class ModuleDtoUpdateInput extends BlockUpdateInput {
   })
   enabled!: boolean;
 
-  @Field(() => [ModuleDtoProperty], {
-    nullable: false,
-  })
+  //properties cannot be updated directly, only through the ModuleDtoPropertyUpdateInput
   properties?: ModuleDtoProperty[];
 }
