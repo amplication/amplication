@@ -3,6 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { AccountService } from "./account.service";
 import { IDENTITY_PROVIDER_MANUAL } from "../auth/auth.service";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 const EXAMPLE_ACCOUNT_ID = "ExampleAccountId",
   EXAMPLE_EMAIL = "example@email.com",
@@ -21,6 +22,8 @@ const EXAMPLE_ACCOUNT: Account = {
   password: EXAMPLE_PASSWORD,
   currentUserId: EXAMPLE_CURRENT_USER_ID,
   githubId: null,
+  previewAccountType: PreviewAccountType.None,
+  previewAccountEmail: null,
 };
 
 const segmentAnalyticsIdentifyMock = jest.fn(() => {

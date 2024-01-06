@@ -28,6 +28,7 @@ import {
 } from "@amplication/util-billing-types";
 import { ValidateSubscriptionPlanLimitationsArgs } from "./billing.service.types";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 @Injectable()
 export class BillingService {
@@ -294,6 +295,26 @@ export class BillingService {
     return;
   }
 
+  async provisionPreviewCustomer(
+    workspaceId: string,
+    previewAccountType: PreviewAccountType
+  ): Promise<null> {
+    if (!this.isBillingEnabled) {
+      return;
+    }
+
+    await this.stiggClient.provisionCustomer({
+      customerId: workspaceId,
+      subscriptionParams: null,
+    });
+
+    await this.stiggClient.provisionSubscription({
+      customerId: workspaceId,
+      planId: this.mapPreviewAccountTypeToSubscriptionPlan(previewAccountType),
+      skipTrial: true,
+    });
+  }
+
   //todo: wrap with a try catch and return an object with the details about the limitations
   async validateSubscriptionPlanLimitationsForWorkspace({
     workspaceId,
@@ -450,8 +471,23 @@ export class BillingService {
         return EnumSubscriptionPlan.Pro;
       case BillingPlan.Enterprise:
         return EnumSubscriptionPlan.Enterprise;
+      case BillingPlan.PreviewBreakTheMonolith:
+        return EnumSubscriptionPlan.PreviewBreakTheMonolith;
       default:
         throw new Error(`Unknown plan id: ${planId}`);
+    }
+  }
+
+  mapPreviewAccountTypeToSubscriptionPlan(
+    previewAccountType: PreviewAccountType
+  ): BillingPlan {
+    switch (previewAccountType) {
+      case PreviewAccountType.BreakingTheMonolith:
+        return BillingPlan.PreviewBreakTheMonolith;
+      case PreviewAccountType.None:
+        throw new Error(`${previewAccountType} is not a preview account type`);
+      default:
+        throw new Error(`Unknown preview account type: ${previewAccountType}`);
     }
   }
 }

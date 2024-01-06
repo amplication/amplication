@@ -55,12 +55,17 @@ export abstract class BlockTypeService<
     );
   }
 
-  async update(args: UpdateArgs, @UserEntity() user: User): Promise<T> {
+  async update(
+    args: UpdateArgs,
+    @UserEntity() user: User,
+    keysToNotMerge?: string[]
+  ): Promise<T> {
     return this.blockService.update<T>(
       {
         ...args,
       },
-      user
+      user,
+      keysToNotMerge
     );
   }
 
