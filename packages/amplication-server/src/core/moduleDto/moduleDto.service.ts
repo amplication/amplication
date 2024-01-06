@@ -22,6 +22,7 @@ import { ModuleDtoProperty } from "./dto/ModuleDtoProperty";
 import { UpdateModuleDtoArgs } from "./dto/UpdateModuleDtoArgs";
 import { EnumModuleDtoPropertyType } from "./dto/propertyTypes/EnumModuleDtoPropertyType";
 import { UpdateModuleDtoPropertyArgs } from "./dto/UpdateModuleDtoPropertyArgs";
+import { DeleteModuleDtoPropertyArgs } from "./dto/DeleteModuleDtoPropertyArgs";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -489,5 +490,45 @@ export class ModuleDtoService extends BlockTypeService<
     );
 
     return newProperty;
+  }
+
+  async deleteDtoProperty(
+    args: DeleteModuleDtoPropertyArgs,
+    user: User
+  ): Promise<ModuleDtoProperty> {
+    const dto = await super.findOne({
+      where: { id: args.where.moduleDto.id },
+    });
+    if (!dto) {
+      throw new AmplicationError(
+        `Module DTO not found, ID: ${args.where.moduleDto.id}`
+      );
+    }
+
+    const existingPropertyIndex = dto.properties.findIndex(
+      (property) => property.name === args.where.propertyName
+    );
+
+    if (existingPropertyIndex === -1) {
+      throw new AmplicationError(
+        `Property not found, name: ${args.where.propertyName}, DTO ID: ${args.where.moduleDto.id}`
+      );
+    }
+
+    const [deleted] = dto.properties.splice(existingPropertyIndex, 1);
+
+    await super.update(
+      {
+        where: { id: dto.id },
+        data: {
+          name: dto.name,
+          enabled: dto.enabled,
+          properties: dto.properties,
+        },
+      },
+      user
+    );
+
+    return deleted;
   }
 }

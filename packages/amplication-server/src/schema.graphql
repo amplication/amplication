@@ -1136,7 +1136,7 @@ input ModuleDtoPropertyCreateInput {
   name: String
 }
 
-input ModuleDtoPropertyInput {
+input ModuleDtoPropertyUpdateInput {
   isArray: Boolean!
   isOptional: Boolean!
   name: String!
@@ -1148,7 +1148,6 @@ input ModuleDtoUpdateInput {
   displayName: String
   enabled: Boolean!
   name: String
-  properties: [ModuleDtoPropertyInput!]!
 }
 
 input ModuleDtoWhereInput {
@@ -1229,6 +1228,7 @@ type Mutation {
   deleteModule(where: WhereUniqueInput!): Module!
   deleteModuleAction(where: WhereUniqueInput!): ModuleAction!
   deleteModuleDto(where: WhereUniqueInput!): ModuleDto!
+  deleteModuleDtoProperty(where: WherePropertyUniqueInput!): ModuleDtoProperty!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   deleteProject(where: WhereUniqueInput!): Project
   deleteResource(where: WhereUniqueInput!): Resource
@@ -1262,6 +1262,7 @@ type Mutation {
   updateModule(data: ModuleUpdateInput!, where: WhereUniqueInput!): Module!
   updateModuleAction(data: ModuleActionUpdateInput!, where: WhereUniqueInput!): ModuleAction!
   updateModuleDto(data: ModuleDtoUpdateInput!, where: WhereUniqueInput!): ModuleDto!
+  updateModuleDtoProperty(data: ModuleDtoPropertyUpdateInput!, where: WherePropertyUniqueInput!): ModuleDtoProperty!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
@@ -1989,6 +1990,11 @@ type UserRole {
 
 input WhereParentIdInput {
   connect: WhereUniqueInput!
+}
+
+input WherePropertyUniqueInput {
+  moduleDto: WhereUniqueInput!
+  propertyName: String!
 }
 
 input WhereUniqueInput {

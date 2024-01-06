@@ -16,6 +16,7 @@ import { ModuleDtoProperty } from "./dto/ModuleDtoProperty";
 import { UpdateModuleDtoArgs } from "./dto/UpdateModuleDtoArgs";
 import { UpdateModuleDtoPropertyArgs } from "./dto/UpdateModuleDtoPropertyArgs";
 import { ModuleDtoService } from "./moduleDto.service";
+import { DeleteModuleDtoPropertyArgs } from "./dto/DeleteModuleDtoPropertyArgs";
 
 @Resolver(() => ModuleDto)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -67,5 +68,16 @@ export class ModuleDtoResolver extends BlockTypeResolver(
     @Args() args: UpdateModuleDtoPropertyArgs
   ): Promise<ModuleDtoProperty> {
     return this.service.updateDtoProperty(args, user);
+  }
+
+  @Mutation(() => ModuleDtoProperty, {
+    nullable: false,
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.moduleDto.id")
+  async deleteModuleDtoProperty(
+    @UserEntity() user: User,
+    @Args() args: DeleteModuleDtoPropertyArgs
+  ): Promise<ModuleDtoProperty> {
+    return this.service.deleteDtoProperty(args, user);
   }
 }

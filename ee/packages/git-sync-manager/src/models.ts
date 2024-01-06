@@ -1164,7 +1164,7 @@ export type ModuleDtoPropertyCreateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type ModuleDtoPropertyInput = {
+export type ModuleDtoPropertyUpdateInput = {
   isArray: Scalars['Boolean']['input'];
   isOptional: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
@@ -1176,7 +1176,6 @@ export type ModuleDtoUpdateInput = {
   displayName?: InputMaybe<Scalars['String']['input']>;
   enabled: Scalars['Boolean']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
-  properties: Array<ModuleDtoPropertyInput>;
 };
 
 export type ModuleDtoWhereInput = {
@@ -1257,6 +1256,7 @@ export type Mutation = {
   deleteModule: Module;
   deleteModuleAction: ModuleAction;
   deleteModuleDto: ModuleDto;
+  deleteModuleDtoProperty: ModuleDtoProperty;
   deletePluginInstallation: PluginInstallation;
   deleteProject?: Maybe<Project>;
   deleteResource?: Maybe<Resource>;
@@ -1290,6 +1290,7 @@ export type Mutation = {
   updateModule: Module;
   updateModuleAction: ModuleAction;
   updateModuleDto: ModuleDto;
+  updateModuleDtoProperty: ModuleDtoProperty;
   updatePluginInstallation: PluginInstallation;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
@@ -1512,6 +1513,11 @@ export type MutationDeleteModuleDtoArgs = {
 };
 
 
+export type MutationDeleteModuleDtoPropertyArgs = {
+  where: WherePropertyUniqueInput;
+};
+
+
 export type MutationDeletePluginInstallationArgs = {
   where: WhereUniqueInput;
 };
@@ -1686,6 +1692,12 @@ export type MutationUpdateModuleActionArgs = {
 export type MutationUpdateModuleDtoArgs = {
   data: ModuleDtoUpdateInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateModuleDtoPropertyArgs = {
+  data: ModuleDtoPropertyUpdateInput;
+  where: WherePropertyUniqueInput;
 };
 
 
@@ -2712,6 +2724,11 @@ export type UserRole = {
 
 export type WhereParentIdInput = {
   connect: WhereUniqueInput;
+};
+
+export type WherePropertyUniqueInput = {
+  moduleDto: WhereUniqueInput;
+  propertyName: Scalars['String']['input'];
 };
 
 export type WhereUniqueInput = {
