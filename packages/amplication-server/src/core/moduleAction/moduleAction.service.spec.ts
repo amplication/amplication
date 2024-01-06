@@ -1,21 +1,21 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { PrismaService } from "../../prisma/prisma.service";
-import { Account, Commit, Entity, User } from "../../models";
-import { ModuleActionService } from "./moduleAction.service";
-import { EntityService } from "../entity/entity.service";
-import { BlockService } from "../block/block.service";
-import { CreateModuleActionArgs } from "./dto/CreateModuleActionArgs";
 import { EnumModuleActionType } from "@amplication/code-gen-types";
+import { Test, TestingModule } from "@nestjs/testing";
+import { FindOneArgs } from "../../dto";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { Account, Entity, EntityField, User } from "../../models";
+import { PrismaService } from "../../prisma/prisma.service";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { BlockService } from "../block/block.service";
+import { EntityService } from "../entity/entity.service";
+import { Module } from "../module/dto/Module";
+import { CreateModuleActionArgs } from "./dto/CreateModuleActionArgs";
 import { EnumModuleActionGqlOperation } from "./dto/EnumModuleActionGqlOperation";
 import { EnumModuleActionRestVerb } from "./dto/EnumModuleActionRestVerb";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
-import { EnumBlockType } from "../../enums/EnumBlockType";
-import { FindOneArgs } from "../../dto";
-import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
-import { AmplicationError } from "../../errors/AmplicationError";
-import { Module } from "../module/dto/Module";
 import { ModuleAction } from "./dto/ModuleAction";
-import { omit } from "lodash";
+import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
+import { ModuleActionService } from "./moduleAction.service";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
@@ -99,12 +99,32 @@ const EXAMPLE_MODULE: Module = {
   versionNumber: 0,
 };
 
+const EXAMPLE_ENTITY_FIELD: EntityField = {
+  id: "exampleEntityFieldId",
+  permanentId: "examplePermanentId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: "exampleEntityFieldName",
+  displayName: "exampleEntityFieldDisplayName",
+  dataType: EnumDataType.Lookup,
+  required: false,
+  unique: false,
+  searchable: true,
+  description: "exampleDescription",
+  customAttributes: "ExampleCustomAttributes",
+  properties: {
+    relatedEntityId: "exampleRelatedEntityId",
+    allowMultipleSelection: true,
+    relatedFieldId: "relatedFieldId",
+  },
+};
+
 const blockServiceFindOneMock = jest.fn(() => {
   return EXAMPLE_ACTION;
 });
 
-const blockServiceFindManyByBlockTypeMock = jest.fn(() => {
-  return [EXAMPLE_ACTION];
+const blockServiceDeleteMock = jest.fn(() => {
+  return EXAMPLE_ACTION;
 });
 
 const blockServiceCreateMock = jest.fn(
@@ -154,8 +174,8 @@ describe("ModuleActionService", () => {
           provide: BlockService,
           useClass: jest.fn(() => ({
             findOne: blockServiceFindOneMock,
-            findManyByBlockType: blockServiceFindManyByBlockTypeMock,
             create: blockServiceCreateMock,
+            delete: blockServiceDeleteMock,
             update: blockServiceUpdateMock,
             findManyByBlockTypeAndSettings:
               blockServiceFindManyByBlockTypeAndSettingsMock,
@@ -441,5 +461,63 @@ describe("ModuleActionService", () => {
       EXAMPLE_USER
     );
     expect(blockServiceUpdateMock).toBeCalledTimes(1);
+  });
+
+  it("should update default actions for relation field", async () => {
+    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValue([
+      {
+        ...EXAMPLE_ACTION,
+        id: "shouldBeUpdated",
+        name: "shouldBeUpdated",
+        actionType: EnumModuleActionType.ChildrenFind,
+      },
+      {
+        ...EXAMPLE_ACTION,
+        id: "shouldBeDeleted",
+        name: "shouldBeDeleted",
+        actionType: EnumModuleActionType.ParentGet,
+      },
+    ]);
+
+    await service.updateDefaultActionsForRelationField(
+      EXAMPLE_ENTITY,
+      EXAMPLE_ENTITY_FIELD,
+      EXAMPLE_MODULE.id,
+      EXAMPLE_USER
+    );
+    expect(blockServiceUpdateMock).toBeCalledTimes(1);
+    expect(blockServiceUpdateMock).toBeCalledWith(
+      {
+        where: {
+          id: "shouldBeUpdated",
+        },
+        data: {
+          description:
+            "Find multiple exampleEntityFieldDisplayName records for Example entity",
+          displayName: "Example entity Find exampleEntityFieldDisplayName",
+          enabled: true,
+          gqlOperation: "Query",
+          name: "findExampleEntityFieldName",
+          path: "/:id/example-entity-field-name",
+          restVerb: "Get",
+        },
+      },
+      EXAMPLE_USER,
+      undefined
+    );
+
+    expect(blockServiceDeleteMock).toBeCalledTimes(1);
+    expect(blockServiceDeleteMock).toBeCalledWith(
+      {
+        where: {
+          id: "shouldBeDeleted",
+        },
+      },
+      EXAMPLE_USER,
+      true,
+      true
+    );
+
+    expect(blockServiceCreateMock).toBeCalledTimes(3);
   });
 });

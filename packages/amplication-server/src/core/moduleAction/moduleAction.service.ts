@@ -325,26 +325,27 @@ export class ModuleActionService extends BlockTypeService<
     );
 
     const updated = Promise.all(
-      existingDefaultActions.map((action) => {
-        return (
-          actionsToUpdate[action.actionType] &&
-          super.update(
-            {
-              where: {
-                id: action.id,
-              },
-              data: {
-                name: defaultActions[action.actionType].name,
-                displayName: defaultActions[action.actionType].displayName,
-                description: defaultActions[action.actionType].description,
-                enabled: action.enabled,
-                gqlOperation: defaultActions[action.actionType].gqlOperation,
-                restVerb: defaultActions[action.actionType].restVerb,
-                path: defaultActions[action.actionType].path,
-              },
+      actionsToUpdate.map((action) => {
+        const actionToUpdate = existingDefaultActions.find(
+          (existing) => existing.actionType === action
+        );
+
+        return super.update(
+          {
+            where: {
+              id: actionToUpdate.id,
             },
-            user
-          )
+            data: {
+              name: defaultActions[action].name,
+              displayName: defaultActions[action].displayName,
+              description: defaultActions[action].description,
+              enabled: actionToUpdate.enabled,
+              gqlOperation: defaultActions[action].gqlOperation,
+              restVerb: defaultActions[action].restVerb,
+              path: defaultActions[action].path,
+            },
+          },
+          user
         );
       })
     );
