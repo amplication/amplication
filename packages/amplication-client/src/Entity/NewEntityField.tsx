@@ -1,4 +1,4 @@
-import { Icon, Snackbar, TextField } from "@amplication/ui/design-system";
+import { Snackbar, TextField } from "@amplication/ui/design-system";
 import { gql, Reference, useMutation } from "@apollo/client";
 import classNames from "classnames";
 import { Form, Formik } from "formik";
@@ -8,8 +8,7 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import "./NewEntityField.scss";
-import { FeatureIndicator } from "../Components/FeatureIndicator";
-import { BillingFeature } from "@amplication/util-billing-types";
+import { LicenseIndicatorContainer } from "../Components/LicenseIndicatorContainer";
 
 type Props = {
   entity: models.Entity;
@@ -27,10 +26,8 @@ const INITIAL_VALUES = {
 const CLASS_NAME = "new-entity-field";
 
 const NewEntityField = ({ entity, onFieldAdd }: Props) => {
-  const { addEntity, currentResource } = useContext(AppContext);
+  const { addEntity } = useContext(AppContext);
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
-
-  const licensed = currentResource?.licensed ?? true;
 
   const [createEntityField, { error, loading }] = useMutation<TData>(
     CREATE_ENTITY_FIELD,
@@ -122,23 +119,7 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            {!licensed ? (
-              <FeatureIndicator
-                featureName={BillingFeature.Services}
-                text="Your current plan permits only one active Service. "
-                element={
-                  <Button
-                    buttonStyle={EnumButtonStyle.Text}
-                    disabled={!licensed}
-                    icon="locked"
-                    className={classNames(`${CLASS_NAME}__add-field__button`, {
-                      [`${CLASS_NAME}__add-field__button--show`]:
-                        formik.values.displayName.length > 0,
-                    })}
-                  />
-                }
-              />
-            ) : (
+            <LicenseIndicatorContainer>
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 icon="plus"
@@ -147,7 +128,7 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
                     formik.values.displayName.length > 0,
                 })}
               />
-            )}
+            </LicenseIndicatorContainer>
           </Form>
         )}
       </Formik>
