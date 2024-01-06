@@ -1,7 +1,7 @@
 import * as CodeGenTypes from "@amplication/code-gen-types";
 import {
   getDefaultDtosForEntity,
-  getDefaultActionsForRelationField,
+  getDefaultDtosForRelatedEntity,
 } from "@amplication/dsg-utils";
 import { Injectable } from "@nestjs/common";
 import { UserEntity } from "../../decorators/user.decorator";
@@ -189,6 +189,188 @@ export class ModuleDtoService extends BlockTypeService<
           )
         );
       })
+    );
+  }
+
+  async createDefaultDtosForRelatedEntity(
+    entity: Entity,
+    relatedField: EntityField,
+    relatedEntity: Entity,
+    moduleId: string,
+    user: User
+  ): Promise<ModuleDto[]> {
+    // Cast the field properties as Lookup properties
+    const properties =
+      relatedField.properties as unknown as CodeGenTypes.types.Lookup;
+
+    //We only need to create default DTOs for many-to-one relations
+    if (!properties.allowMultipleSelection) {
+      return null;
+    }
+
+    //Check if a default dto already exists for this relation
+    const existingDefaultDto = await this.findManyBySettings(
+      {
+        where: {
+          parentBlock: {
+            id: moduleId,
+          },
+        },
+      },
+      {
+        path: ["relatedEntityId"],
+        equals: relatedEntity.id,
+      }
+    );
+
+    if (existingDefaultDto.length > 0) {
+      return existingDefaultDto;
+    }
+
+    const defaultDtos = await getDefaultDtosForRelatedEntity(
+      entity as unknown as CodeGenTypes.Entity,
+      relatedEntity as unknown as CodeGenTypes.Entity
+    );
+    return await Promise.all(
+      Object.keys(defaultDtos).map((dto) => {
+        return (
+          defaultDtos[dto] &&
+          super.create(
+            {
+              data: {
+                ...defaultDtos[dto],
+                displayName: defaultDtos[dto].name,
+                relatedEntityId: relatedEntity.id,
+                parentBlock: {
+                  connect: {
+                    id: moduleId,
+                  },
+                },
+                resource: {
+                  connect: {
+                    id: entity.resourceId,
+                  },
+                },
+              },
+            },
+            user
+          )
+        );
+      })
+    );
+  }
+
+  async updateDefaultDtosForRelatedEntity(
+    entity: Entity,
+    relatedField: EntityField,
+    relatedEntity: Entity,
+    moduleId: string,
+    user: User
+  ): Promise<ModuleDto[]> {
+    const properties =
+      relatedField.properties as unknown as CodeGenTypes.types.Lookup;
+
+    //We only need to update default DTOs for many-to-one relations
+    if (!properties.allowMultipleSelection) {
+      return null;
+    }
+
+    const defaultDtos = await getDefaultDtosForRelatedEntity(
+      entity as unknown as CodeGenTypes.Entity,
+      relatedEntity as unknown as CodeGenTypes.Entity
+    );
+
+    //get the current default DTOs
+    const existingDefaultDtos = await this.findManyBySettings(
+      {
+        where: {
+          parentBlock: {
+            id: moduleId,
+          },
+        },
+      },
+      {
+        path: ["relatedEntityId"],
+        equals: relatedEntity.id,
+      }
+    );
+    //if the default dtos does not exist, it may happen if the relation type was changed to one-to-many
+    if (existingDefaultDtos.length === 0) {
+      this.createDefaultDtosForRelatedEntity(
+        entity,
+        relatedField,
+        relatedEntity,
+        moduleId,
+        user
+      );
+    }
+
+    return await Promise.all(
+      existingDefaultDtos.map((dto) => {
+        return (
+          defaultDtos[dto.dtoType] &&
+          super.update(
+            {
+              where: {
+                id: dto.id,
+              },
+              data: {
+                name: defaultDtos[dto.dtoType].name,
+                displayName: defaultDtos[dto.dtoType].name,
+                description: defaultDtos[dto.dtoType].description,
+                enabled: dto.enabled,
+                //@todo: update properties
+              },
+            },
+            user
+          )
+        );
+      })
+    );
+  }
+
+  async deleteDefaultDtosForRelatedEntity(
+    relatedField: EntityField,
+    relatedEntity: Entity,
+    moduleId: string,
+    user: User
+  ): Promise<Module[]> {
+    // Cast the field properties as Lookup properties
+    const properties =
+      relatedField.properties as unknown as CodeGenTypes.types.Lookup;
+
+    //We only need to delete default DTOs if the deleted field was many-to-one relations
+    if (!properties.allowMultipleSelection) {
+      return null;
+    }
+
+    //get the current default dtos
+    const existingDefaultDtos = await this.findManyBySettings(
+      {
+        where: {
+          parentBlock: {
+            id: moduleId,
+          },
+        },
+      },
+      {
+        path: ["relatedEntityId"],
+        equals: relatedEntity.id,
+      }
+    );
+
+    return await Promise.all(
+      existingDefaultDtos.map((dto) =>
+        super.delete(
+          {
+            where: {
+              id: dto.id,
+            },
+          },
+          user,
+          true
+        )
+      )
     );
   }
 }

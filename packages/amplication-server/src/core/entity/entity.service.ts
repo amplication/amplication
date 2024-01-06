@@ -93,6 +93,7 @@ import { ServiceSettingsService } from "../serviceSettings/serviceSettings.servi
 import { ModuleService } from "../module/module.service";
 import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForEntityNotFoundError";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { pascalCase } from "pascal-case";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
@@ -198,6 +199,7 @@ export class EntityService {
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly moduleService: ModuleService,
     private readonly moduleActionService: ModuleActionService,
+    private readonly moduleDtoService: ModuleDtoService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
@@ -2639,9 +2641,19 @@ export class EntityService {
               },
             },
           },
+          include: {
+            entityVersion: true,
+          },
         });
 
         if (args.data.dataType === EnumDataType.Lookup) {
+          // Cast the received properties to Lookup properties type
+          const properties = args.data.properties as unknown as types.Lookup;
+
+          const relatedEntity = await this.entity({
+            where: { id: properties.relatedEntityId },
+          });
+
           const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
             entity.resourceId,
             entity.id
@@ -2650,6 +2662,14 @@ export class EntityService {
           await this.moduleActionService.createDefaultActionsForRelationField(
             entity,
             newField,
+            moduleId,
+            user
+          );
+
+          await this.moduleDtoService.createDefaultDtosForRelatedEntity(
+            entity,
+            newField,
+            relatedEntity,
             moduleId,
             user
           );
@@ -2701,6 +2721,10 @@ export class EntityService {
 
       const entity = await this.entity({ where: { id: entityId } });
 
+      const relatedEntity = await this.entity({
+        where: { id: relatedEntityId },
+      });
+
       const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
         entity.resourceId,
         entityId
@@ -2709,6 +2733,14 @@ export class EntityService {
       await this.moduleActionService.createDefaultActionsForRelationField(
         entity,
         newField,
+        moduleId,
+        user
+      );
+
+      await this.moduleDtoService.createDefaultDtosForRelatedEntity(
+        entity,
+        newField,
+        relatedEntity,
         moduleId,
         user
       );
@@ -2739,6 +2771,13 @@ export class EntityService {
             entityVersionId: field.entityVersionId,
           },
         },
+        include: {
+          entityVersion: {
+            include: {
+              entity: true,
+            },
+          },
+        },
       });
 
       const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
@@ -2748,6 +2787,13 @@ export class EntityService {
 
       await this.moduleActionService.deleteDefaultActionsForRelationField(
         deletedField,
+        moduleId,
+        user
+      );
+
+      await this.moduleDtoService.deleteDefaultDtosForRelatedEntity(
+        deletedField,
+        deletedField.entityVersion.entity,
         moduleId,
         user
       );
@@ -2810,6 +2856,13 @@ export class EntityService {
       (field.name !== args.data.name ||
         field.displayName !== args.data.displayName);
 
+    const relationTypeChanged =
+      args.data.dataType === EnumDataType.Lookup &&
+      field.dataType === EnumDataType.Lookup &&
+      (args.data.properties as unknown as types.Lookup)
+        ?.allowMultipleSelection !==
+        (field.properties as unknown as types.Lookup)?.allowMultipleSelection;
+
     return await this.useLocking(
       field.entityVersion.entityId,
       user,
@@ -2869,7 +2922,7 @@ export class EntityService {
         );
 
         //update the names of the related field actions, in case the field name was changed
-        if (shouldUpdateRelatedFieldActions) {
+        if (shouldUpdateRelatedFieldActions || relationTypeChanged) {
           const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
             entity.resourceId,
             entity.id
@@ -2951,7 +3004,11 @@ export class EntityService {
     const field = await this.getField({
       ...args,
       include: {
-        entityVersion: true,
+        entityVersion: {
+          include: {
+            entity: true,
+          },
+        },
       },
     });
 
@@ -2997,6 +3054,13 @@ export class EntityService {
 
         await this.moduleActionService.deleteDefaultActionsForRelationField(
           deletedField,
+          moduleId,
+          user
+        );
+
+        await this.moduleDtoService.deleteDefaultDtosForRelatedEntity(
+          field,
+          field.entityVersion.entity,
           moduleId,
           user
         );

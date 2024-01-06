@@ -21,4 +21,9 @@ export class ModuleDto extends IBlock {
     nullable: false,
   })
   enabled!: boolean;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  relatedEntityId?: string;
 }
