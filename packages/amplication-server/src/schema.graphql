@@ -630,7 +630,6 @@ enum EnumBlockType {
   Module
   ModuleAction
   ModuleDto
-  ModuleDtoProperty
   PluginInstallation
   PluginOrder
   ProjectConfigurationSettings
@@ -1132,11 +1131,24 @@ type ModuleDtoProperty {
   propertyTypes: [PropertyTypeDef!]!
 }
 
+input ModuleDtoPropertyCreateInput {
+  moduleDto: WhereParentIdInput!
+  name: String
+}
+
+input ModuleDtoPropertyInput {
+  isArray: Boolean!
+  isOptional: Boolean!
+  name: String!
+  propertyTypes: [PropertyTypeDefInput!]!
+}
+
 input ModuleDtoUpdateInput {
   description: String
   displayName: String
   enabled: Boolean!
   name: String
+  properties: [ModuleDtoPropertyInput!]!
 }
 
 input ModuleDtoWhereInput {
@@ -1195,6 +1207,7 @@ type Mutation {
   createModule(data: ModuleCreateInput!): Module!
   createModuleAction(data: ModuleActionCreateInput!): ModuleAction!
   createModuleDto(data: ModuleDtoCreateInput!): ModuleDto!
+  createModuleDtoProperty(data: ModuleDtoPropertyCreateInput!): ModuleDtoProperty!
   createOneEntity(data: EntityCreateInput!): Entity!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
@@ -1471,6 +1484,12 @@ input PropertySelectorInput {
 }
 
 type PropertyTypeDef {
+  dtoId: String
+  isArray: Boolean!
+  type: EnumModuleDtoPropertyType!
+}
+
+input PropertyTypeDefInput {
   dtoId: String
   isArray: Boolean!
   type: EnumModuleDtoPropertyType!

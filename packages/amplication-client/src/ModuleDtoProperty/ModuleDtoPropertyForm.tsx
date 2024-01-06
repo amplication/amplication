@@ -47,8 +47,6 @@ const TYPES_NON_INPUT_GRAPHQL_PROPERTIES = ["__typename"];
 
 export const INITIAL_VALUES: Partial<models.ModuleDtoProperty> = {
   name: "",
-  displayName: "",
-  description: "",
   propertyTypes: [
     {
       type: models.EnumModuleDtoPropertyType.String,

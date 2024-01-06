@@ -145,14 +145,6 @@ const changeOriginMap = {
         icon: "box",
         displayName: change.displayName,
       },
-      [models.EnumBlockType.ModuleDtoProperty]: {
-        relativeUrl: `modules/${change.id}`, //todo: update the url - we need the module id from the server
-        icon: "box",
-        displayName:
-          (change as models.Block).parentBlock?.displayName +
-          "." +
-          change.displayName,
-      },
       [models.EnumBlockType.ServiceTopics]: {
         relativeUrl: "not supported",
         icon: "",

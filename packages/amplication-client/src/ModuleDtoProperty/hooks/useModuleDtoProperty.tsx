@@ -40,20 +40,7 @@ const useModuleDtoProperty = () => {
     },
   ] = useMutation<TDeleteData>(DELETE_MODULE_DTO_PROPERTY, {
     onCompleted: (data) => {
-      addBlock(data.deleteModuleDtoProperty.id);
-    },
-  });
-
-  const [
-    createModuleDtoProperty,
-    {
-      data: createModuleDtoPropertyData,
-      error: createModuleDtoPropertyError,
-      loading: createModuleDtoPropertyLoading,
-    },
-  ] = useMutation<TCreateData>(CREATE_MODULE_DTO_PROPERTY, {
-    onCompleted: (data) => {
-      addBlock(data.createModuleDtoProperty.id);
+      addBlock(data.deleteModuleDtoProperty.name);
     },
   });
 
@@ -85,7 +72,7 @@ const useModuleDtoProperty = () => {
     },
   ] = useMutation<TUpdateData>(UPDATE_MODULE_DTO_PROPERTY, {
     onCompleted: (data) => {
-      addEntity(data.updateModuleDtoProperty.id);
+      addEntity(data.updateModuleDtoProperty.name);
     },
   });
 
@@ -93,10 +80,7 @@ const useModuleDtoProperty = () => {
     deleteModuleDtoProperty,
     deleteModuleDtoPropertyError,
     deleteModuleDtoPropertyLoading,
-    createModuleDtoProperty,
-    createModuleDtoPropertyData,
-    createModuleDtoPropertyError,
-    createModuleDtoPropertyLoading,
+
     findModuleDtoProperties,
     findModuleDtoPropertiesData,
     findModuleDtoPropertiesLoading,

@@ -1,6 +1,20 @@
 import { gql } from "@apollo/client";
 
+export const MODULE_DTO_PROPERTY_FIELDS_FRAGMENT = gql`
+  fragment ModuleDtoPropertyFields on ModuleDtoProperty {
+    name
+    propertyTypes {
+      type
+      isArray
+      dtoId
+    }
+    isOptional
+    isArray
+  }
+`;
+
 export const MODULE_DTO_FIELDS_FRAGMENT = gql`
+  ${MODULE_DTO_PROPERTY_FIELDS_FRAGMENT}
   fragment ModuleDtoFields on ModuleDto {
     id
     name
@@ -11,14 +25,7 @@ export const MODULE_DTO_FIELDS_FRAGMENT = gql`
     parentBlockId
     resourceId
     properties {
-      name
-      propertyTypes {
-        type
-        isArray
-        dtoId
-      }
-      isOptional
-      isArray
+      ...ModuleDtoPropertyFields
     }
     lockedByUser {
       account {
@@ -91,6 +98,15 @@ export const GET_AVAILABLE_DTOS_FOR_RESOURCE = gql`
         id
         displayName
       }
+    }
+  }
+`;
+
+export const CREATE_MODULE_DTO_PROPERTY = gql`
+  ${MODULE_DTO_PROPERTY_FIELDS_FRAGMENT}
+  mutation createModuleDtoProperty($data: ModuleDtoPropertyCreateInput!) {
+    createModuleDtoProperty(data: $data) {
+      ...ModuleDtoPropertyFields
     }
   }
 `;

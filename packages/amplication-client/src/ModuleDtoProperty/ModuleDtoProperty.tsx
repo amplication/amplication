@@ -16,7 +16,7 @@ const ModuleDtoProperty = ({ moduleDtoProperty, onPropertyDelete }: Props) => {
   const { addEntity } = useContext(AppContext);
   const [editMode, setEditMode] = useState<boolean>(false);
 
-  const propertyId = moduleDtoProperty.id;
+  const propertyId = moduleDtoProperty.name;
 
   const { updateModuleDtoProperty, updateModuleDtoPropertyError } =
     useModuleDtoProperty();

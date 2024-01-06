@@ -42,7 +42,7 @@ export const DeleteModuleDtoProperty = ({
     deleteModuleDtoProperty({
       variables: {
         where: {
-          id: moduleDtoProperty.id,
+          id: moduleDtoProperty.name,
         },
       },
     })

@@ -4,6 +4,7 @@ import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import {
   CREATE_MODULE_DTO,
+  CREATE_MODULE_DTO_PROPERTY,
   DELETE_MODULE_DTO,
   FIND_MODULE_DTOS,
   GET_AVAILABLE_DTOS_FOR_RESOURCE,
@@ -12,6 +13,10 @@ import {
 } from "../queries/moduleDtosQueries";
 type TDeleteData = {
   deleteModuleDto: models.ModuleDto;
+};
+
+type TDeletePropertyData = {
+  deleteModuleDtoProperty: models.ModuleDtoProperty;
 };
 
 type TFindData = {
@@ -24,6 +29,10 @@ type TGetData = {
 
 type TCreateData = {
   createModuleDto: models.ModuleDto;
+};
+
+type TCreatePropertyData = {
+  createModuleDtoProperty: models.ModuleDtoProperty;
 };
 
 type TUpdateData = {
@@ -72,6 +81,19 @@ const useModuleDto = () => {
     onCompleted: (data) => {
       addBlock(data.createModuleDto.id);
       getAvailableDtosForResourceRefetch();
+    },
+  });
+
+  const [
+    createModuleDtoProperty,
+    {
+      data: createModuleDtoPropertyData,
+      error: createModuleDtoPropertyError,
+      loading: createModuleDtoPropertyLoading,
+    },
+  ] = useMutation<TCreatePropertyData>(CREATE_MODULE_DTO_PROPERTY, {
+    onCompleted: (data) => {
+      addBlock(data.createModuleDtoProperty.name);
     },
   });
 
@@ -168,6 +190,10 @@ const useModuleDto = () => {
     availableDtosForCurrentResourceLoading,
     availableDtosForCurrentResourceError,
     availableDtosDictionary,
+    createModuleDtoProperty,
+    createModuleDtoPropertyData,
+    createModuleDtoPropertyError,
+    createModuleDtoPropertyLoading,
   };
 };
 

@@ -8,7 +8,7 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import "./NewModuleDtoProperty.scss";
-import useModuleDtoProperty from "./hooks/useModuleDtoProperty";
+import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 
 type Props = {
   moduleDto: models.ModuleDto;
@@ -37,7 +37,7 @@ const NewModuleDtoProperty = ({ moduleDto, onPropertyAdd }: Props) => {
     createModuleDtoProperty,
     createModuleDtoPropertyError: error,
     createModuleDtoPropertyLoading: loading,
-  } = useModuleDtoProperty();
+  } = useModuleDto();
 
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
 
@@ -49,11 +49,8 @@ const NewModuleDtoProperty = ({ moduleDto, onPropertyAdd }: Props) => {
       createModuleDtoProperty({
         variables: {
           data: {
-            ...data,
-            displayName: name,
             name,
-            resource: { connect: { id: currentResource?.id } },
-            parentBlock: { connect: { id: moduleDto.id } },
+            moduleDto: { connect: { id: moduleDto.id } },
           },
         },
       })

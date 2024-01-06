@@ -40,7 +40,7 @@ const ModuleDtoPropertyList = React.memo(
           headerContent={<Text textStyle={EnumTextStyle.Tag}>Properties</Text>}
         >
           {data?.moduleDto?.properties.map((property) => (
-            <ListItem key={property.id}>
+            <ListItem key={property.name}>
               <ModuleDtoProperty
                 moduleDtoProperty={property}
                 onPropertyDelete={onPropertyDelete}
