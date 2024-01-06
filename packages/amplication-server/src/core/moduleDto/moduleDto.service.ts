@@ -13,11 +13,25 @@ import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
 import { Module } from "../module/dto/Module";
 import { CreateModuleDtoArgs } from "./dto/CreateModuleDtoArgs";
+import { CreateModuleDtoPropertyArgs } from "./dto/CreateModuleDtoPropertyArgs";
 import { DeleteModuleDtoArgs } from "./dto/DeleteModuleDtoArgs";
+import { EnumModuleDtoType } from "./dto/EnumModuleDtoType";
 import { FindManyModuleDtoArgs } from "./dto/FindManyModuleDtoArgs";
 import { ModuleDto } from "./dto/ModuleDto";
+import { ModuleDtoProperty } from "./dto/ModuleDtoProperty";
 import { UpdateModuleDtoArgs } from "./dto/UpdateModuleDtoArgs";
-import { EnumModuleDtoType } from "./dto/EnumModuleDtoType";
+import { EnumModuleDtoPropertyType } from "./dto/propertyTypes/EnumModuleDtoPropertyType";
+
+const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
+  isArray: false,
+  isOptional: false,
+  propertyTypes: [
+    {
+      type: EnumModuleDtoPropertyType.String,
+      isArray: false,
+    },
+  ],
+};
 
 @Injectable()
 export class ModuleDtoService extends BlockTypeService<
@@ -374,5 +388,38 @@ export class ModuleDtoService extends BlockTypeService<
         )
       )
     );
+  }
+
+  async createDtoProperty(
+    args: CreateModuleDtoPropertyArgs,
+    user: User
+  ): Promise<ModuleDtoProperty> {
+    const dto = await super.findOne({
+      where: { id: args.data.moduleDto.connect.id },
+    });
+    if (!dto) {
+      throw new AmplicationError(
+        `Module DTO not found, ID: ${args.data.moduleDto.connect.id}`
+      );
+    }
+
+    const newProperty = {
+      ...DEFAULT_DTO_PROPERTY,
+      name: args.data.name,
+    };
+
+    await super.update(
+      {
+        where: { id: dto.id },
+        data: {
+          name: dto.name,
+          enabled: dto.enabled,
+          properties: [...dto.properties, newProperty],
+        },
+      },
+      user
+    );
+
+    return newProperty;
   }
 }
