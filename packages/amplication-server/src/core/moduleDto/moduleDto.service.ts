@@ -131,7 +131,7 @@ export class ModuleDtoService extends BlockTypeService<
     );
     return await Promise.all(
       Object.keys(defaultDtos).map((dto) => {
-        const { properties, ...dtoData } = defaultDtos[dto];
+        const dtoData = defaultDtos[dto];
 
         return (
           defaultDtos[dto] &&
@@ -314,7 +314,7 @@ export class ModuleDtoService extends BlockTypeService<
     );
     //if the default dtos does not exist, it may happen if the relation type was changed to one-to-many
     if (existingDefaultDtos.length === 0) {
-      this.createDefaultDtosForRelatedEntity(
+      return await this.createDefaultDtosForRelatedEntity(
         entity,
         relatedField,
         relatedEntity,

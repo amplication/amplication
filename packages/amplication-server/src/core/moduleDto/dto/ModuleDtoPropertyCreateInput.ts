@@ -1,5 +1,4 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { BlockCreateInput } from "../../block/dto/BlockCreateInput";
 import { WhereParentIdInput } from "../../../dto";
 
 @InputType({
