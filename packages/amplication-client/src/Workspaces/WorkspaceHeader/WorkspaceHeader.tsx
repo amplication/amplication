@@ -263,6 +263,7 @@ const WorkspaceHeader: React.FC = () => {
                 </Button>
               )}
             {upgradeButtonData.isCompleted &&
+              upgradeButtonData.isPreviewPlan &&
               !upgradeButtonData.showUpgradeDefaultButton && (
                 <>
                   <Button

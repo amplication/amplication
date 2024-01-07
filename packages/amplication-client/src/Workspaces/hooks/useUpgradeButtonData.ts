@@ -13,6 +13,7 @@ interface UpgradeButtonData {
   showUpgradeTrialButton: boolean;
   showUpgradeDefaultButton: boolean;
   isCompleted?: boolean;
+  isPreviewPlan?: boolean;
 }
 
 export const useUpgradeButtonData = (
@@ -24,6 +25,7 @@ export const useUpgradeButtonData = (
     {
       showUpgradeTrialButton: false,
       showUpgradeDefaultButton: true,
+      isPreviewPlan: false,
     }
   );
 
@@ -46,6 +48,7 @@ export const useUpgradeButtonData = (
           showUpgradeTrialButton: false,
           showUpgradeDefaultButton: false,
           isCompleted: true,
+          isPreviewPlan: true,
         });
         return;
       }
