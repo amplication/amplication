@@ -1,8 +1,10 @@
 import { Injectable, forwardRef, Inject } from "@nestjs/common";
+import crypto from "crypto";
 import { JwtService } from "@nestjs/jwt";
 import { subDays } from "date-fns";
 import { ConfigService } from "@nestjs/config";
 import cuid from "cuid";
+import { Env } from "../../env";
 import { Prisma, PrismaService } from "../../prisma";
 import { Profile as GitHubProfile } from "passport-github2";
 import { Account, User, UserRole, Workspace } from "../../models";
@@ -23,6 +25,12 @@ import { CompleteInvitationArgs } from "../workspace/dto";
 import { ProjectService } from "../project/project.service";
 import { AuthProfile } from "./types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import {
+  AuthenticationClient,
+  JSONApiResponse,
+  SignUpResponse,
+  TextApiResponse,
+} from "auth0";
 
 export type AuthUser = User & {
   account: Account;
@@ -48,8 +56,18 @@ const WORKSPACE_INCLUDE = {
   },
 };
 
+const generatePassword = () => {
+  var buf = new Uint8Array(6);
+  crypto.getRandomValues(buf);
+  return Buffer.from(String.fromCharCode.apply(null, buf), "utf8").toString(
+    "base64"
+  );
+};
+
 @Injectable()
 export class AuthService {
+  private auth0: AuthenticationClient;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
@@ -62,7 +80,42 @@ export class AuthService {
     private readonly workspaceService: WorkspaceService,
     @Inject(forwardRef(() => ProjectService))
     private readonly projectService: ProjectService
-  ) {}
+  ) {
+    this.auth0 = new AuthenticationClient({
+      domain: this.configService.get<string>(Env.AUTH0_DOMAIN),
+      clientId: this.configService.get<string>(Env.AUTH0_CLIENT_ID),
+      clientSecret: this.configService.get<string>(Env.AUTH0_CLIENT_SECRET),
+    });
+    console.log("this.auth0", generatePassword());
+  }
+
+  async createAuth0User(
+    email: string
+  ): Promise<JSONApiResponse<SignUpResponse>> {
+    const data = {
+      email,
+      password: generatePassword(),
+      email_verified: true,
+      connection: "business-users",
+    };
+
+    const user = await this.auth0.database.signUp(data);
+
+    return user;
+  }
+
+  async resetAuth0UserPassword(email: string): Promise<TextApiResponse> {
+    const data = {
+      email,
+      connection: "business-users",
+    };
+
+    const changePasswordResponse = await this.auth0.database.changePassword(
+      data
+    );
+
+    return changePasswordResponse;
+  }
 
   async createGitHubUser(
     payload: GitHubProfile,
