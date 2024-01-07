@@ -63,11 +63,6 @@ export default function ModelOrganizer({
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
 
-  const [newService, setNewService] = useState<boolean>(false);
-  const handleNewServiceClick = useCallback(() => {
-    setNewService(!newService);
-  }, [newService, setNewService]);
-
   const {
     nodes,
     currentResourcesData,
@@ -89,6 +84,7 @@ export default function ModelOrganizer({
 
   const [readOnly, setReadOnly] = useState<boolean>(true);
   const [hasChanges, setHasChanges] = useState(false);
+  const [selectedNode, setSelectedNode] = useState<Node>(null);
 
   useEffect(() => {
     if (changes?.movedEntities?.length > 0) {
@@ -105,6 +101,7 @@ export default function ModelOrganizer({
           }
           if (node.id === resource.id) {
             node.selected = true;
+            setSelectedNode(node);
           }
         });
 
@@ -113,20 +110,22 @@ export default function ModelOrganizer({
 
       setReadOnly(false);
     },
-    [setReadOnly, nodes, setNodes]
+    [setReadOnly, nodes, setNodes, setSelectedNode]
   );
 
   const onCancelChangesClick = useCallback(() => {
     resetToOriginalState();
+    setSelectedNode(null);
 
     setReadOnly(true);
-  }, [setReadOnly]);
+  }, [setReadOnly, setSelectedNode]);
 
   const onApplyPlanClick = useCallback(() => {
     saveChanges();
     setReadOnly(true);
     setHasChanges(false);
-  }, [saveChanges, setReadOnly]);
+    setSelectedNode(null);
+  }, [saveChanges, setSelectedNode, setReadOnly]);
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
@@ -137,10 +136,9 @@ export default function ModelOrganizer({
 
   const handleServiceCreated = useCallback(
     (newResource: models.Resource) => {
-      setNewService(false);
       createNewTempService(newResource);
     },
-    [setNewService, nodes, setNodes]
+    [nodes, setNodes]
   );
 
   const onNodeDrag = useCallback(
@@ -245,21 +243,11 @@ export default function ModelOrganizer({
           <ModelsGroupsList
             modelGroups={nodes?.filter((model) => model.type === "modelGroup")}
             handleModelGroupFilterChanged={modelGroupFilterChanged}
+            selectedNode={selectedNode}
+            readOnly={readOnly}
+            searchPhraseChanged={searchPhraseChanged}
+            handleServiceCreated={handleServiceCreated}
           ></ModelsGroupsList>
-          <SearchField
-            label="search"
-            placeholder="search"
-            onChange={searchPhraseChanged}
-          />
-          <Button onClick={handleNewServiceClick}>+</Button>
-          <Dialog
-            isOpen={newService}
-            onDismiss={handleNewServiceClick}
-            title="New Service"
-          >
-            <NewTempResource onSuccess={handleServiceCreated}></NewTempResource>
-          </Dialog>
-
           <div className={"reactflow-wrapper"}>
             <ReactFlow
               onInit={onInit}
