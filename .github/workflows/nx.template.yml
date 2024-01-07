@@ -20,6 +20,11 @@ on:
         type: boolean
         description: Forces Nx to consider all projects (apps and libs) as affected.
         default: false
+      nx-reset-cache:
+        type: boolean
+        description: Resets Nx cache.
+        required: false
+        default: false
     outputs:
       affected-apps:
         description: Nx applications affected by the changes
@@ -73,6 +78,10 @@ jobs:
       - name: Setup Bun Runtime
         if: ${{ steps.cache.outputs.cache-hit != 'true' }}
         uses: oven-sh/setup-bun@v1
+
+      - name: NX Reset Cache
+        if: ${{ inputs.nx-reset-cache == 'true' }}
+        run: npx nx reset
 
       - name: Cache
         id: cache

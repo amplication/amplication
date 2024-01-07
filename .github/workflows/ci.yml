@@ -17,6 +17,11 @@ on:
         type: boolean
         description: Forces Nx to consider all projects (apps and libs) as affected.
         default: false
+      nx-reset-cache:
+        type: boolean
+        description: Resets Nx cache.
+        required: false
+        default: false
   pull_request:
     types: [opened, reopened, synchronize]
   push:
@@ -30,6 +35,7 @@ env:
   NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
   NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache || false }}
   BASE: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
+  NX_RESET_CACHE: ${{ inputs.nx-reset-cache || false }}
 
 jobs:
   ci:
@@ -63,6 +69,10 @@ jobs:
       - name: Install Dependencies
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
+
+      - name: NX Reset Cache
+        if: ${{ env.NX_RESET_CACHE == 'true' }}
+        run: npx nx reset
 
       - name: Nx Workspace Lint
         run: npx nx workspace-lint
