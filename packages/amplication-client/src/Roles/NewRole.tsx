@@ -14,7 +14,10 @@ import {
 } from "../util/formikValidateJsonSchema";
 import "./NewRole.scss";
 import { AppContext } from "../context/appContext";
-import { LicenseIndicatorContainer } from "../Components/LicenseIndicatorContainer";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 
 const INITIAL_VALUES: Partial<models.ResourceRole> = {
   name: "",
@@ -133,7 +136,9 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            <LicenseIndicatorContainer>
+            <LicenseIndicatorContainer
+              licensedResourceType={LicensedResourceType.Service}
+            >
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 icon="plus"

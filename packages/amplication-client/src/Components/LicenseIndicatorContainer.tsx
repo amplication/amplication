@@ -15,9 +15,17 @@ import { omit } from "lodash";
 
 const CLASS_NAME = "license-indicator-container";
 const defaultBlockedTooltipText = "Your plan does not include this feature. ";
+const serviceLicenseTooltipText =
+  "Your current plan permits only one active Service. ";
+
+export enum LicensedResourceType {
+  Project = "Project",
+  Service = "Service",
+}
 
 export type Props = {
   featureId?: BillingFeature;
+  licensedResourceType?: LicensedResourceType;
   licensedTooltipText?: string;
   blockedTooltipText?: string;
   featureIndicatorPlacement?: FeatureIndicatorPlacement;
@@ -27,6 +35,7 @@ export type Props = {
 
 export const LicenseIndicatorContainer: FC<Props> = ({
   featureId,
+  licensedResourceType,
   licensedTooltipText,
   blockedTooltipText = defaultBlockedTooltipText,
   featureIndicatorPlacement,
@@ -40,10 +49,11 @@ export const LicenseIndicatorContainer: FC<Props> = ({
   const subscriptionPlan = subscription?.subscriptionPlan;
   const status = subscription?.status;
   const currentProjectLicense = currentProject?.licensed ?? true;
-  const currentResourceLicense = currentResource?.licensed ?? true;
+  const currentServiceLicense = currentResource?.licensed ?? true;
 
   const icon = IconType.Lock;
   const entitlementType = EntitlementType.Boolean;
+
   const [disabled, setDisabled] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState<string>(null);
 
@@ -57,11 +67,24 @@ export const LicenseIndicatorContainer: FC<Props> = ({
       setDisabled(false);
       return;
     }
-    console.log({ currentProjectLicense, currentResourceLicense, disabled });
 
-    if (!currentProjectLicense || !currentResourceLicense) {
+    if (
+      licensedResourceType &&
+      licensedResourceType === LicensedResourceType.Project &&
+      !currentProjectLicense
+    ) {
       setDisabled(true);
       setTooltipText(licensedTooltipText);
+      return;
+    }
+
+    if (
+      licensedResourceType &&
+      licensedResourceType === LicensedResourceType.Service &&
+      !currentServiceLicense
+    ) {
+      setDisabled(true);
+      setTooltipText(licensedTooltipText ?? serviceLicenseTooltipText);
       return;
     }
 
@@ -79,7 +102,8 @@ export const LicenseIndicatorContainer: FC<Props> = ({
     featureId,
     hasBooleanAccessToBlockFeature,
     currentProjectLicense,
-    currentResourceLicense,
+    currentServiceLicense,
+    licensedResourceType,
   ]);
 
   const renderProps = {

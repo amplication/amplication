@@ -8,7 +8,10 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import "./NewEntityField.scss";
-import { LicenseIndicatorContainer } from "../Components/LicenseIndicatorContainer";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 
 type Props = {
   entity: models.Entity;
@@ -119,7 +122,9 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            <LicenseIndicatorContainer>
+            <LicenseIndicatorContainer
+              licensedResourceType={LicensedResourceType.Service}
+            >
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 icon="plus"

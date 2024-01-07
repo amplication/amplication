@@ -19,7 +19,10 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { commitPath } from "../util/paths";
 import "./Commit.scss";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { LicenseIndicatorContainer } from "../Components/LicenseIndicatorContainer";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 
 type TCommit = {
   message: string;
@@ -165,7 +168,11 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 autoComplete="off"
               />
 
-              <LicenseIndicatorContainer featureId={BillingFeature.BlockBuild}>
+              <LicenseIndicatorContainer
+                featureId={BillingFeature.BlockBuild}
+                licensedResourceType={LicensedResourceType.Project}
+                licensedTooltipText="The workspace reached your plan's project limitation. "
+              >
                 <Button
                   type="submit"
                   buttonStyle={EnumButtonStyle.Primary}

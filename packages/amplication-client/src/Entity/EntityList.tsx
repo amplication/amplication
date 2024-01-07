@@ -40,7 +40,10 @@ import {
   EntitlementType,
   FeatureIndicatorContainer,
 } from "../Components/FeatureIndicatorContainer";
-import { LicenseIndicatorContainer } from "../Components/LicenseIndicatorContainer";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 
 type TData = {
   entities: models.Entity[];
@@ -234,7 +237,9 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                   </Button>
                 </FeatureIndicatorContainer>
               </Link>
-              <LicenseIndicatorContainer>
+              <LicenseIndicatorContainer
+                licensedResourceType={LicensedResourceType.Service}
+              >
                 <Button
                   className={`${CLASS_NAME}__add-button`}
                   buttonStyle={EnumButtonStyle.Primary}
