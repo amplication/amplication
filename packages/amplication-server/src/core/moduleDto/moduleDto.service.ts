@@ -190,6 +190,8 @@ export class ModuleDtoService extends BlockTypeService<
       }
     );
 
+    //@todo: add missing dtos, remove unused dtos, update existing dtos
+
     return await Promise.all(
       existingDefaultDtos.map((dto) => {
         return (
@@ -200,11 +202,9 @@ export class ModuleDtoService extends BlockTypeService<
                 id: dto.id,
               },
               data: {
-                name: defaultDtos[dto.dtoType].name,
+                ...defaultDtos[dto.dtoType],
                 displayName: defaultDtos[dto.dtoType].name,
-                description: defaultDtos[dto.dtoType].description,
                 enabled: dto.enabled,
-                //@todo: update properties
               },
             },
             user
@@ -337,11 +337,9 @@ export class ModuleDtoService extends BlockTypeService<
                 id: dto.id,
               },
               data: {
-                name: defaultDtos[dto.dtoType].name,
+                ...defaultDtos[dto.dtoType],
                 displayName: defaultDtos[dto.dtoType].name,
-                description: defaultDtos[dto.dtoType].description,
                 enabled: dto.enabled,
-                //@todo: update properties
               },
             },
             user
