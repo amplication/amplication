@@ -12,7 +12,35 @@ import { internalsSymbol, Position, XYPosition } from "reactflow";
 import * as models from "../../models";
 import { applyAutoLayout } from "./layout";
 
-const GROUP_COLORS = ["#A787FF", "#F85B6E", "#20A4F3", "#31C587", "F6AA50"];
+const resourceColorMapping: { [key: number]: string } = {
+  0: "#FF6f00",
+  1: "#A787FF",
+  2: "#F85B6E",
+  3: "#20A4F3",
+  4: "#31C587",
+  5: "#F6AA50",
+  6: "#FF5118",
+  7: "#FF5a00",
+  8: "#FF2608",
+  9: "#FF8500",
+  10: "#FF1508",
+  11: "#FF5f00",
+  12: "#FF3400",
+  13: "#FF9600",
+  14: "#FF4200",
+  15: "#Fb6F07",
+  16: "#FF2C00",
+  17: "#FF1600",
+  18: "#FF4300",
+  19: "#FF1b0F",
+  20: "#FF5713",
+  21: "#FF1100",
+  22: "#FF8200",
+  23: "#FF7B00",
+  24: "#FF5200",
+  25: "#FF4B00",
+  26: "#FF7200",
+};
 
 function getParams(
   nodeA: Node,
@@ -97,7 +125,7 @@ function entitiesToNodes(
     data: {
       payload: resource,
       groupOrder: index,
-      groupColor: GROUP_COLORS[index % GROUP_COLORS.length],
+      groupColor: resourceColorMapping[index],
     },
     id: resource.id,
     tempId: resource.tempId,
@@ -133,7 +161,7 @@ export function tempResourceToNode(
     data: {
       payload: resource,
       groupOrder: index,
-      groupColor: GROUP_COLORS[index % GROUP_COLORS.length],
+      groupColor: resourceColorMapping[index],
     },
     id: resource.id,
     type: NODE_TYPE_MODEL_GROUP,

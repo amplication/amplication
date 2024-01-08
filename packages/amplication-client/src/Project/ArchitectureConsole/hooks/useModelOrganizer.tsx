@@ -153,6 +153,7 @@ const useModelOrganization = () => {
       currentProject,
       currentTheme,
       edges,
+      nodes,
       simpleEdges,
       detailedEdges,
       setEdges,
@@ -253,15 +254,17 @@ const useModelOrganization = () => {
 
   const createNewTempService = useCallback(
     async (newResource: models.Resource) => {
+      const currentIndex =
+        nodes.filter((x) => x.type === "modelGroup").length + 1;
+      const newResourceNode = tempResourceToNode(newResource, currentIndex);
+      nodes.push(newResourceNode);
+
       const newService = {
         tempId: newResource.tempId,
         name: newResource.name,
       };
 
       changes.newServices.push(newService);
-
-      const newResourceNode = tempResourceToNode(newResource, nodes.length + 1);
-      nodes.push(newResourceNode);
 
       const updatedNodes = await applyAutoLayout(
         nodes,

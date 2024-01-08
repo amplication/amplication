@@ -7,7 +7,7 @@ import {
   Tooltip,
   Text,
 } from "@amplication/ui/design-system";
-import { Node } from "./types";
+import { Node, ResourceNode } from "./types";
 import "./ModelGroupList.scss";
 import { Resource } from "../../models";
 import ModelsTool from "./ModelsTool";
@@ -50,12 +50,15 @@ export default function ModelsGroupsList({
           )}
           <Text textStyle={EnumTextStyle.Tag}>{"Filter"}</Text>
 
-          {modelGroups.map((model) => (
-            <div className={`${CLASS_NAME}__modelGroups`}>
+          {modelGroups.map((model: ResourceNode) => (
+            <div
+              className={`${CLASS_NAME}__modelGroups`}
+              style={{ borderColor: model.data.groupColor }}
+            >
               <Tooltip
                 className="amp-menu-item__tooltip"
                 aria-label={model.data.payload.name}
-                direction="e"
+                direction="nw"
                 noDelay
               >
                 <Button

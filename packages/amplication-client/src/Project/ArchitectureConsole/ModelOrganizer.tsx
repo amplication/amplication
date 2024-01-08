@@ -88,7 +88,10 @@ export default function ModelOrganizer({
   const [readOnly, setReadOnly] = useState<boolean>(true);
 
   useEffect(() => {
-    if (changes?.movedEntities?.length > 0) {
+    if (
+      changes?.movedEntities?.length > 0 ||
+      changes?.newServices?.length > 0
+    ) {
       setReadOnly(false);
     }
   }, [changes, setReadOnly]);
@@ -214,7 +217,7 @@ export default function ModelOrganizer({
     await toggleShowRelationDetails();
 
     reactFlowInstance.fitView();
-  }, [setNodes, showRelationDetails, nodes, edges]);
+  }, [setNodes, reactFlowInstance, showRelationDetails, nodes, edges]);
 
   const onArrangeNodes = useCallback(async () => {
     const updatedNodes = await applyAutoLayout(
@@ -224,7 +227,7 @@ export default function ModelOrganizer({
     );
     setNodes(updatedNodes);
     reactFlowInstance.fitView();
-  }, [setNodes, showRelationDetails, nodes, edges]);
+  }, [setNodes, showRelationDetails, reactFlowInstance, nodes, edges]);
 
   return (
     <div className={CLASS_NAME}>
@@ -249,7 +252,10 @@ export default function ModelOrganizer({
 
           <ModelOrganizerToolbar
             readOnly={readOnly}
-            hasChanges={changes?.movedEntities?.length > 0}
+            hasChanges={
+              changes?.movedEntities?.length > 0 ||
+              changes?.newServices?.length > 0
+            }
             resources={currentResourcesData}
             onApplyPlan={onApplyPlanClick}
             searchPhraseChanged={searchPhraseChanged}
