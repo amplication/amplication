@@ -21,6 +21,11 @@ import { FlexEnd } from "@amplication/ui/design-system/components/FlexItem/FlexI
 import * as models from "../../models";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { useCallback } from "react";
+import { BillingFeature } from "@amplication/util-billing-types";
+import {
+  FeatureIndicatorContainer,
+  EntitlementType,
+} from "../../Components/FeatureIndicatorContainer";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
@@ -65,51 +70,70 @@ export default function ModelOrganizerToolbar({
 
         <FlexEnd>
           <FlexItem>
-            <Button
-              buttonStyle={EnumButtonStyle.Outline}
-              // eventData={{
-              //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-              // }}
+            <FeatureIndicatorContainer
+              featureId={BillingFeature.RedesignArchitecture}
+              entitlementType={EntitlementType.Boolean}
+              limitationText="Available as part of the Enterprise plan only."
             >
-              AI Helper
-            </Button>
-            {!readOnly && (
               <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                onClick={onApplyPlan}
+                buttonStyle={EnumButtonStyle.Outline}
                 // eventData={{
                 //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
                 // }}
-                disabled={!hasChanges}
               >
-                Apply Plan
+                AI Helper
               </Button>
+            </FeatureIndicatorContainer>
+
+            {!readOnly && (
+              <FeatureIndicatorContainer
+                featureId={BillingFeature.RedesignArchitecture}
+                entitlementType={EntitlementType.Boolean}
+                limitationText="Available as part of the Enterprise plan only."
+              >
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  onClick={onApplyPlan}
+                  // eventData={{
+                  //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                  // }}
+                  disabled={!hasChanges}
+                >
+                  Apply Plan
+                </Button>
+              </FeatureIndicatorContainer>
             )}
             {readOnly && (
-              <SelectMenu
-                title="Redesign"
-                buttonStyle={EnumButtonStyle.Primary}
+              <FeatureIndicatorContainer
+                featureId={BillingFeature.RedesignArchitecture}
+                entitlementType={EntitlementType.Boolean}
+                limitationText="Available as part of the Enterprise plan only."
               >
-                <SelectMenuModal align="left">
-                  <SelectMenuList>
-                    {resources?.map((resource) => (
-                      <SelectMenuItem
-                        key={resource.id}
-                        closeAfterSelectionChange
-                        itemData={resource}
-                        onSelectionChange={onRedesign}
-                        as="span"
-                      >
-                        <ResourceCircleBadge
-                          type={resource.resourceType}
-                          size="small"
-                        />
-                        <span>{resource.name}</span>
-                      </SelectMenuItem>
-                    ))}
-                  </SelectMenuList>
-                </SelectMenuModal>
-              </SelectMenu>
+                <SelectMenu
+                  title="Redesign"
+                  buttonStyle={EnumButtonStyle.Primary}
+                >
+                  <SelectMenuModal align="left">
+                    <SelectMenuList>
+                      {resources?.map((resource) => (
+                        <SelectMenuItem
+                          key={resource.id}
+                          closeAfterSelectionChange
+                          itemData={resource}
+                          onSelectionChange={onRedesign}
+                          as="span"
+                        >
+                          <ResourceCircleBadge
+                            type={resource.resourceType}
+                            size="small"
+                          />
+                          <span>{resource.name}</span>
+                        </SelectMenuItem>
+                      ))}
+                    </SelectMenuList>
+                  </SelectMenuModal>
+                </SelectMenu>
+              </FeatureIndicatorContainer>
             )}
             <SearchField
               label="search"

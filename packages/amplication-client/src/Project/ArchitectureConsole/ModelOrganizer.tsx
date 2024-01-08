@@ -29,6 +29,12 @@ import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
 import { NODE_TYPE_MODEL, NODE_TYPE_MODEL_GROUP, Node } from "./types";
 import ModelsGroupsList from "./ModelsGroupsList";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+} from "../../Components/FeatureIndicatorContainer";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { ModuleOrganizerDisabled } from "./ModuleOrganizerDisabled";
 
 export const CLASS_NAME = "model-organizer";
 
@@ -227,6 +233,22 @@ export default function ModelOrganizer({
         <CircularProgress centerToParent />
       ) : (
         <>
+          <FeatureIndicatorContainer
+            featureId={BillingFeature.RedesignArchitecture}
+            entitlementType={EntitlementType.Boolean}
+            render={({ disabled, icon }) => (
+              <>
+                {disabled && (
+                  <ModuleOrganizerDisabled
+                    icon={icon}
+                    handleSearchChange={searchPhraseChanged}
+                    className={CLASS_NAME}
+                  />
+                )}
+              </>
+            )}
+          />
+
           <ModelOrganizerToolbar
             readOnly={readOnly}
             hasChanges={changes?.movedEntities?.length > 0}
@@ -235,6 +257,7 @@ export default function ModelOrganizer({
             searchPhraseChanged={searchPhraseChanged}
             onRedesign={onRedesignClick}
           />
+
           <div className={`${CLASS_NAME}__body`}>
             <ModelsGroupsList
               modelGroups={nodes?.filter(

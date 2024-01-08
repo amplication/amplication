@@ -14,6 +14,7 @@ export enum BillingFeature {
   ImportDBSchema = "feature-import-db-schema",
   Notification = "feature-notifications",
   Projects = "feature-projects",
+  RedesignArchitecture = "feature-redesign-architecture",
   Services = "feature-services",
   ServicesAboveEntitiesPerServiceLimit = "feature-services-above-entities-per-service-limit",
   ServicesWithManyEntities = "feature-services-wth-many-entities",
