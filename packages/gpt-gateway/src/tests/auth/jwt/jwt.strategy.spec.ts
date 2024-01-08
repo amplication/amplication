@@ -12,7 +12,9 @@ describe("Testing the jwtStrategyBase.validate()", () => {
   it("should throw UnauthorizedException where there is no user", async () => {
     //ARRANGE
     userService.user
-      .calledWith({ where: { username: TEST_USER.username } })
+      .calledWith({
+        where: { username: TEST_USER.username },
+      })
       .mockReturnValue(Promise.resolve(null));
     //ACT
     const result = jwtStrategy.validate({
