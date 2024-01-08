@@ -17,15 +17,20 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { Button } from "../../Components/Button";
-import { FlexEnd } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
+import {
+  EnumFlexDirection,
+  FlexEnd,
+} from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import * as models from "../../models";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import { BillingFeature } from "@amplication/util-billing-types";
 import {
   FeatureIndicatorContainer,
   EntitlementType,
 } from "../../Components/FeatureIndicatorContainer";
+import { BackNavigation } from "../../Components/BackNavigation";
+import { AppContext } from "../../context/appContext";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
@@ -46,6 +51,7 @@ export default function ModelOrganizerToolbar({
   searchPhraseChanged,
   onRedesign,
 }: Props) {
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   const handleSearchPhraseChanged = useCallback(
     (searchPhrase: string) => {
       searchPhraseChanged(searchPhrase);
@@ -61,12 +67,32 @@ export default function ModelOrganizerToolbar({
         gap={EnumGapSize.Large}
         margin={EnumFlexItemMargin.Both}
       >
-        <Text
-          textStyle={EnumTextStyle.Label}
-          textColor={EnumTextColor.ThemeRed}
+        <FlexItem
+          itemsAlign={EnumItemsAlign.Start}
+          contentAlign={EnumContentAlign.Start}
+          direction={EnumFlexDirection.Column}
+          margin={EnumFlexItemMargin.Both}
         >
-          {readOnly ? "Read Only" : "Edit Mode"}
-        </Text>
+          {readOnly ? (
+            <BackNavigation
+              className={`${CLASS_NAME}__backToBtn`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}`}
+              label="Back to service overview"
+            />
+          ) : (
+            <Text
+              textStyle={EnumTextStyle.Tag}
+              textColor={EnumTextColor.ThemeRed}
+            >
+              {"Cancel edit"}
+            </Text>
+          )}
+          <SearchField
+            label="search"
+            placeholder="search"
+            onChange={handleSearchPhraseChanged}
+          />
+        </FlexItem>
 
         <FlexEnd>
           <FlexItem>
@@ -135,11 +161,6 @@ export default function ModelOrganizerToolbar({
                 </SelectMenu>
               </FeatureIndicatorContainer>
             )}
-            <SearchField
-              label="search"
-              placeholder="search"
-              onChange={handleSearchPhraseChanged}
-            />
           </FlexItem>
         </FlexEnd>
       </FlexItem>

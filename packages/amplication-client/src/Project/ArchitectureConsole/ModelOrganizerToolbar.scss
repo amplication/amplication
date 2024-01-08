@@ -2,4 +2,12 @@
 
 .model-organizer-toolbar {
   margin-top: var(--large-spacing);
+
+  &__backToBtn {
+    color: var(--gray-20);
+  }
+
+  .search-field {
+    background: #15192c;
+  }
 }

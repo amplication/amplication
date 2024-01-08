@@ -1,6 +1,5 @@
 import "reactflow/dist/style.css";
 import "./ModelOrganizer.scss";
-
 import {
   CircularProgress,
   Icon,
@@ -242,7 +241,6 @@ export default function ModelOrganizer({
                   <ModuleOrganizerDisabled
                     icon={icon}
                     handleSearchChange={searchPhraseChanged}
-                    className={CLASS_NAME}
                   />
                 )}
               </>
