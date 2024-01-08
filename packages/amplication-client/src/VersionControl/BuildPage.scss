@@ -5,8 +5,8 @@ $icon-size: 20px;
 
 .build-page {
   &__header {
-    gap: 24px;
-    margin-bottom: 16px;
+    gap: var(--double-spacing);
+    margin-bottom: var(--large-spacing);
 
     &__title__service {
       .amp-icon {
