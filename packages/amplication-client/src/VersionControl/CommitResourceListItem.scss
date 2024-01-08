@@ -6,14 +6,14 @@
 
     &__resource-icon {
       .amp-icon {
-        font-size: 12px !important;
+        font-size: var(--tag-font-size) !important;
       }
     }
 
     &__title {
       @include regular-12;
       @include semiBold;
-      color: #ffffff;
+      color: var(--static-white);
     }
   }
 
@@ -21,8 +21,8 @@
     @include regular-10;
 
     .amp-text {
-      font-size: 10px;
-      line-height: 15px;
+      @include regular-10;
+      color: var(--gray-20);
     }
     .amp-icon {
       @include regular-12;
