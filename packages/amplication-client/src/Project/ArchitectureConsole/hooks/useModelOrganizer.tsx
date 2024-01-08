@@ -40,6 +40,7 @@ const useModelOrganization = () => {
   const [currentResourcesData, setCurrentResourcesData] = useState<
     models.Resource[]
   >([]);
+  const [selectedNode, setSelectedNode] = useState<Node>(null);
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [simpleEdges, setSimpleEdges] = useState<Edge[]>([]);
@@ -214,7 +215,8 @@ const useModelOrganization = () => {
         const searchModelGroupNodes = nodes.filter(
           (node) =>
             node.type === "modelGroup" &&
-            !node.data.payload.name.includes(searchPhrase)
+            !node.data.payload.name.includes(searchPhrase) &&
+            node.id !== selectedNode?.id
         );
 
         searchModelGroupNodes.forEach((x) => {
@@ -368,6 +370,8 @@ const useModelOrganization = () => {
     nodes,
     currentResourcesData,
     setNodes,
+    selectedNode,
+    setSelectedNode,
     edges,
     setEdges,
     onEdgesChange,

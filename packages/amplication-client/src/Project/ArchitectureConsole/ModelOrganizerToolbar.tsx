@@ -9,6 +9,7 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
+  SearchField,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
@@ -19,6 +20,7 @@ import { Button } from "../../Components/Button";
 import { FlexEnd } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import * as models from "../../models";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
+import { useCallback } from "react";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
@@ -26,8 +28,8 @@ type Props = {
   readOnly: boolean;
   hasChanges: boolean;
   onApplyPlan: () => void;
+  searchPhraseChanged: (searchPhrase: string) => void;
   onRedesign: (resource: models.Resource) => void;
-  onCancelChanges: () => void;
   resources: models.Resource[];
 };
 
@@ -36,9 +38,16 @@ export default function ModelOrganizerToolbar({
   hasChanges,
   resources,
   onApplyPlan,
-  onCancelChanges,
+  searchPhraseChanged,
   onRedesign,
 }: Props) {
+  const handleSearchPhraseChanged = useCallback(
+    (searchPhrase: string) => {
+      searchPhraseChanged(searchPhrase);
+    },
+    [searchPhraseChanged]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <FlexItem
@@ -65,28 +74,16 @@ export default function ModelOrganizerToolbar({
               AI Helper
             </Button>
             {!readOnly && (
-              <>
-                <Button
-                  buttonStyle={EnumButtonStyle.Outline}
-                  onClick={onCancelChanges}
-                  // eventData={{
-                  //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                  // }}
-                  disabled={!hasChanges}
-                >
-                  Cancel Changes
-                </Button>
-                <Button
-                  buttonStyle={EnumButtonStyle.Primary}
-                  onClick={onApplyPlan}
-                  // eventData={{
-                  //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                  // }}
-                  disabled={!hasChanges}
-                >
-                  Apply Plan
-                </Button>
-              </>
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                onClick={onApplyPlan}
+                // eventData={{
+                //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                // }}
+                disabled={!hasChanges}
+              >
+                Apply Plan
+              </Button>
             )}
             {readOnly && (
               <SelectMenu
@@ -114,6 +111,11 @@ export default function ModelOrganizerToolbar({
                 </SelectMenuModal>
               </SelectMenu>
             )}
+            <SearchField
+              label="search"
+              placeholder="search"
+              onChange={handleSearchPhraseChanged}
+            />
           </FlexItem>
         </FlexEnd>
       </FlexItem>

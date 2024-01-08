@@ -1,13 +1,9 @@
 @import "../../style/index.scss";
 
 .model-group-list {
-  width: 40px;
-  height: 330px;
-  gap: 8px;
-
   &__filter {
-    width: 40px;
-    height: 174px;
+    width: 44px;
+    height: 40%;
     margin-bottom: 4px;
     padding: 4px;
     border-radius: 4px;
@@ -15,6 +11,7 @@
     gap: 4px;
     color: #a3a8b8;
     background-color: #15192c;
+    overflow: scroll;
   }
 
   &__selectedNode {

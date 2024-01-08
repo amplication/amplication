@@ -2,11 +2,8 @@ import "reactflow/dist/style.css";
 import "./ModelOrganizer.scss";
 
 import {
-  Button,
   CircularProgress,
-  Dialog,
   Icon,
-  SearchField,
   Snackbar,
 } from "@amplication/ui/design-system";
 import { useCallback, useEffect, useState } from "react";
@@ -31,7 +28,6 @@ import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
 import { NODE_TYPE_MODEL, NODE_TYPE_MODEL_GROUP, Node } from "./types";
-import NewTempResource from "./NewTempResource";
 import ModelsGroupsList from "./ModelsGroupsList";
 
 export const CLASS_NAME = "model-organizer";
@@ -78,13 +74,13 @@ export default function ModelOrganizer({
     createNewTempService,
     modelGroupFilterChanged,
     searchPhraseChanged,
+    selectedNode,
+    setSelectedNode,
   } = useModelOrganization();
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
 
   const [readOnly, setReadOnly] = useState<boolean>(true);
-  const [hasChanges, setHasChanges] = useState(false);
-  const [selectedNode, setSelectedNode] = useState<Node>(null);
 
   useEffect(() => {
     if (changes?.movedEntities?.length > 0) {
@@ -123,7 +119,6 @@ export default function ModelOrganizer({
   const onApplyPlanClick = useCallback(() => {
     saveChanges();
     setReadOnly(true);
-    setHasChanges(false);
     setSelectedNode(null);
   }, [saveChanges, setSelectedNode, setReadOnly]);
 
@@ -237,46 +232,51 @@ export default function ModelOrganizer({
             hasChanges={changes?.movedEntities?.length > 0}
             resources={currentResourcesData}
             onApplyPlan={onApplyPlanClick}
-            onRedesign={onRedesignClick}
-            onCancelChanges={onCancelChangesClick}
-          />
-          <ModelsGroupsList
-            modelGroups={nodes?.filter((model) => model.type === "modelGroup")}
-            handleModelGroupFilterChanged={modelGroupFilterChanged}
-            selectedNode={selectedNode}
-            readOnly={readOnly}
             searchPhraseChanged={searchPhraseChanged}
-            handleServiceCreated={handleServiceCreated}
-          ></ModelsGroupsList>
-          <div className={"reactflow-wrapper"}>
-            <ReactFlow
-              onInit={onInit}
-              nodes={nodes}
-              edges={edges}
-              fitView
-              nodeTypes={showRelationDetails ? nodeTypes : simpleNodeTypes}
-              edgeTypes={edgeTypes}
-              onNodeDrag={onNodeDrag}
-              onNodeDragStop={onNodeDragStop}
-              onEdgesChange={onEdgesChange}
-              connectionMode={ConnectionMode.Loose}
-              proOptions={{ hideAttribution: true }}
-              minZoom={0.1}
-              nodesDraggable={!readOnly}
-            >
-              <Background color="grey" />
-              <Controls>
-                <ControlButton onClick={onToggleShowRelationDetails}>
-                  <Icon icon="list" />
-                </ControlButton>
-                <ControlButton onClick={onArrangeNodes}>
-                  <Icon icon="layers" />
-                </ControlButton>
-              </Controls>
-              <MiniMap pannable={true} zoomable={true} />
-            </ReactFlow>
-            <RelationMarkets />
+            onRedesign={onRedesignClick}
+          />
+          <div className={`${CLASS_NAME}__body`}>
+            <ModelsGroupsList
+              modelGroups={nodes?.filter(
+                (model) => model.type === "modelGroup"
+              )}
+              handleModelGroupFilterChanged={modelGroupFilterChanged}
+              selectedNode={selectedNode}
+              readOnly={readOnly}
+              handleServiceCreated={handleServiceCreated}
+              onCancelChanges={onCancelChangesClick}
+            ></ModelsGroupsList>
+            <div className={"reactflow-wrapper"}>
+              <ReactFlow
+                onInit={onInit}
+                nodes={nodes}
+                edges={edges}
+                fitView
+                nodeTypes={showRelationDetails ? nodeTypes : simpleNodeTypes}
+                edgeTypes={edgeTypes}
+                onNodeDrag={onNodeDrag}
+                onNodeDragStop={onNodeDragStop}
+                onEdgesChange={onEdgesChange}
+                connectionMode={ConnectionMode.Loose}
+                proOptions={{ hideAttribution: true }}
+                minZoom={0.1}
+                nodesDraggable={!readOnly}
+              >
+                <Background color="grey" />
+                <Controls className={`${CLASS_NAME}__modelGroups`}>
+                  <ControlButton onClick={onToggleShowRelationDetails}>
+                    <Icon icon="list" />
+                  </ControlButton>
+                  <ControlButton onClick={onArrangeNodes}>
+                    <Icon icon="layers" />
+                  </ControlButton>
+                </Controls>
+                <MiniMap pannable={true} zoomable={true} />
+              </ReactFlow>
+              <RelationMarkets />
+            </div>
           </div>
+
           <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
         </>
       )}
