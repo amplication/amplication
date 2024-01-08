@@ -4,6 +4,7 @@ import "./modelGroupNode.scss";
 import {
   EnumButtonStyle,
   EnumContentAlign,
+  EnumFlexDirection,
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
@@ -37,8 +38,9 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
         title={data.payload.description}
       >
         <FlexItem
-          itemsAlign={EnumItemsAlign.Center}
+          itemsAlign={EnumItemsAlign.Start}
           contentAlign={EnumContentAlign.Start}
+          direction={EnumFlexDirection.Column}
           end={
             <Button
               buttonStyle={EnumButtonStyle.Text}
@@ -47,7 +49,10 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
             />
           }
         >
-          <Text textStyle={EnumTextStyle.H3}>{data.payload.name}</Text>
+          <Text textStyle={EnumTextStyle.Normal}>{data.payload.name}</Text>
+          <Text textStyle={EnumTextStyle.Description}>
+            {data.payload.description}
+          </Text>
         </FlexItem>
 
         <HorizontalRule />

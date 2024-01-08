@@ -284,7 +284,7 @@ export default function ModelOrganizer({
                 nodesDraggable={!readOnly}
               >
                 <Background color="grey" />
-                <Controls className={`${CLASS_NAME}__modelGroups`}>
+                <Controls>
                   <ControlButton onClick={onToggleShowRelationDetails}>
                     <Icon icon="list" />
                   </ControlButton>
@@ -292,7 +292,8 @@ export default function ModelOrganizer({
                     <Icon icon="layers" />
                   </ControlButton>
                 </Controls>
-                <MiniMap pannable={true} zoomable={true} />
+
+                {/* <MiniMap pannable={true} zoomable={true} /> */}
               </ReactFlow>
               <RelationMarkets />
             </div>

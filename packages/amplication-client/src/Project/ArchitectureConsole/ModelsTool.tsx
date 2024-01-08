@@ -4,7 +4,9 @@ import {
   Button,
   Dialog,
   EnumButtonStyle,
+  EnumTextStyle,
   Icon,
+  Text,
 } from "@amplication/ui/design-system";
 import "./ModelGroupList.scss";
 import { useCallback, useState } from "react";
@@ -39,16 +41,21 @@ export default function ModelsTool({
     <>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__filter`}>
-          <p>Tools</p>
+          <Text textStyle={EnumTextStyle.Tag}>{"Tools"}</Text>
           <Button
+            className={`${CLASS_NAME}__modelToolBtn`}
             buttonStyle={EnumButtonStyle.Outline}
             onClick={onCancelChanges}
           >
             <Icon icon={"close"} size="xsmall"></Icon>
           </Button>
           <hr className="amp-horizontal-rule amp-horizontal-rule--black5" />
-          <Button onClick={handleNewServiceClick}>+</Button>
-
+          <Button
+            className={`${CLASS_NAME}__modelToolBtn`}
+            onClick={handleNewServiceClick}
+          >
+            <Icon icon={"pluse"} size="xsmall"></Icon>
+          </Button>
           <Dialog
             isOpen={newService}
             onDismiss={handleNewServiceClick}

@@ -12,10 +12,12 @@ export const GET_RESOURCES = gql`
     ) {
       id
       name
+      description
       resourceType
       entities {
         id
         displayName
+        description
         resourceId
         fields {
           permanentId

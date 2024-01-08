@@ -3,7 +3,9 @@ import "./ArchitectureConsole.scss";
 import {
   Button,
   EnumButtonStyle,
+  EnumTextStyle,
   Tooltip,
+  Text,
 } from "@amplication/ui/design-system";
 import { Node } from "./types";
 import "./ModelGroupList.scss";
@@ -46,7 +48,8 @@ export default function ModelsGroupsList({
               <hr className="amp-horizontal-rule amp-horizontal-rule--black5" />
             </>
           )}
-          <p>Filter</p>
+          <Text textStyle={EnumTextStyle.Tag}>{"Filter"}</Text>
+
           {modelGroups.map((model) => (
             <div className={`${CLASS_NAME}__modelGroups`}>
               <Tooltip
