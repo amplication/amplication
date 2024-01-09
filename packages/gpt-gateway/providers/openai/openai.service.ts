@@ -39,18 +39,15 @@ export class OpenaiService {
       messages: messages,
     });
 
-    try{
+    try {
+      const results = response.choices[0].message?.content || "";
 
-    
-    const results = response.choices[0].message?.content || "";
-
-    return results;
-
-  } catch (error) {
-    if (error instanceof OpenAI.APIError) {
-      // Add custom error handling here. Check codes: https://github.com/openai/openai-node?tab=readme-ov-file#handling-errors
+      return results;
+    } catch (error) {
+      if (error instanceof OpenAI.APIError) {
+        // Add custom error handling here. Check codes: https://github.com/openai/openai-node?tab=readme-ov-file#handling-errors
+      }
+      throw error;
     }
-    throw error;
-  }
   }
 }
