@@ -3,7 +3,6 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { Title } from "react-admin";
 import { useEffect, useState } from "react";
-import { width } from "@mui/system";
 
 const Dashboard = () => {
   const [token, setToken] = useState("");
