@@ -10,12 +10,11 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-
 import {
   Prisma,
-  Model, // @ts-ignore
+  Model,
   Template,
-} from "@prisma/client";
+} from "../../../prisma/generated-prisma-client";
 
 export class ModelServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -34,7 +33,7 @@ export class ModelServiceBase {
   async model<T extends Prisma.ModelFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelFindUniqueArgs>
   ): Promise<Model | null> {
-    return this.prisma.model.findUnique(args);
+    return await this.prisma.model.findUnique(args);
   }
   async createModel<T extends Prisma.ModelCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelCreateArgs>

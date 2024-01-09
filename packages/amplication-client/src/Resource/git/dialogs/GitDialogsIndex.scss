@@ -1,0 +1,8 @@
+$max-height: 80vh;
+
+h4 {
+  margin-top: 0;
+  margin-bottom: 0;
+  @include body2;
+  margin-right: auto;
+}

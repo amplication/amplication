@@ -1,0 +1,26 @@
+@import "../../style/index.scss";
+.amp-horizontal-rule {
+  border: none;
+  border-top: $border-dark;
+  margin-top: var(--default-spacing);
+  margin-bottom: var(--default-spacing);
+  width: 100%;
+
+  &--double-spacing {
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+
+  &--small-spacing {
+    margin-top: var(--icon-spacing);
+    margin-bottom: var(--icon-spacing);
+  }
+
+  &--gray-80 {
+    border-top: $border-dark;
+  }
+
+  &--gray-70 {
+    border-top: $border-dark;
+  }
+}

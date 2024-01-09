@@ -1,0 +1,106 @@
+@import "../style/index.scss";
+
+$tabs-width: 300px;
+
+.amp-page-content {
+  display: flex;
+  flex: 1;
+  background: var(--page-content-background);
+  box-sizing: border-box;
+  flex-direction: column;
+  min-height: 100%;
+  overflow: hidden;
+
+  &__header {
+    box-sizing: border-box;
+    max-width: var(--page-content-width-default);
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+
+  &__body {
+    display: flex;
+    box-sizing: border-box;
+    flex: 1;
+    max-width: var(--page-content-width-default);
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  &--width-default {
+    .amp-page-content__header {
+      max-width: 100%;
+    }
+    .amp-page-content__main {
+      max-width: var(--page-content-width-default);
+    }
+
+    .amp-page-content__body {
+      max-width: 100%;
+    }
+  }
+
+  &--width-wide {
+    .amp-page-content__header {
+      max-width: 100%;
+    }
+
+    .amp-page-content__body {
+      max-width: 100%;
+    }
+  }
+
+  &--width-full {
+    .amp-page-content__header {
+      max-width: 100%;
+    }
+
+    .amp-page-content__body {
+      max-width: 100%;
+    }
+  }
+
+  &__side {
+    width: $tabs-width;
+    border: $border-dark;
+    background-color: var(--gray-full);
+    border-radius: var(--default-border-radius);
+    padding: var(--default-spacing);
+    margin-right: var(--default-spacing);
+    box-sizing: border-box;
+    overflow-y: auto;
+    margin: var(--double-spacing);
+    margin-right: 0;
+    @include scrollbars(16px, var(--gray-30), transparent);
+
+    .sub-list {
+      margin-left: var(--triple-spacing);
+    }
+  }
+
+  //This element provides scroll experience without margin on the top of bottom,
+  //and also the bar is location on the right side on extremely large screens
+  &__main-scroll {
+    padding-right: var(--double-spacing);
+    padding-left: var(--double-spacing);
+    flex: 1;
+    position: relative;
+    box-sizing: border-box;
+    overflow-y: auto;
+    @include scrollbars(16px, var(--gray-30), transparent);
+  }
+
+  &__main {
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+    padding-top: var(--default-spacing);
+    min-height: calc(100% - (var(--double-spacing) * 2));
+    height: 1px; //this is needed to allow the main content to grow
+  }
+}

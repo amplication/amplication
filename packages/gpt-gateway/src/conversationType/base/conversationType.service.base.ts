@@ -10,12 +10,11 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-
 import {
   Prisma,
-  ConversationType, // @ts-ignore
+  ConversationType,
   Template,
-} from "@prisma/client";
+} from "../../../prisma/generated-prisma-client";
 
 export class ConversationTypeServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -34,7 +33,7 @@ export class ConversationTypeServiceBase {
   async conversationType<T extends Prisma.ConversationTypeFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeFindUniqueArgs>
   ): Promise<ConversationType | null> {
-    return this.prisma.conversationType.findUnique(args);
+    return await this.prisma.conversationType.findUnique(args);
   }
   async createConversationType<T extends Prisma.ConversationTypeCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeCreateArgs>

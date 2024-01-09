@@ -10,12 +10,11 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-
 import {
   Prisma,
-  Message, // @ts-ignore
+  Message,
   Template,
-} from "@prisma/client";
+} from "../../../prisma/generated-prisma-client";
 
 export class MessageServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -34,7 +33,7 @@ export class MessageServiceBase {
   async message<T extends Prisma.MessageFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.MessageFindUniqueArgs>
   ): Promise<Message | null> {
-    return this.prisma.message.findUnique(args);
+    return await this.prisma.message.findUnique(args);
   }
   async createMessage<T extends Prisma.MessageCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.MessageCreateArgs>

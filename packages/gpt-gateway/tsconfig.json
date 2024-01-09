@@ -1,21 +1,13 @@
 {
-  "compilerOptions": {
-    "baseUrl": "./",
-    "module": "commonjs",
-    "declaration": false,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "target": "es2022",
-    "lib": ["es2023"],
-    "sourceMap": true,
-    "outDir": "./dist",
-    "incremental": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true
-  },
-  "include": ["src"]
+  "extends": "../../tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
 }

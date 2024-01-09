@@ -1,0 +1,73 @@
+{
+  "name": "notification-service",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/notification-service/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/notification-service/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/notification-service"],
+      "options": {
+        "jestConfig": "packages/notification-service/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/notification-service",
+        "main": "packages/notification-service/src/main.ts",
+        "tsConfig": "packages/notification-service/tsconfig.app.json",
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "notification-service:build",
+        "inspect": true,
+        "watch": true
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "notification-service:build:production"
+        }
+      }
+    },
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/notification:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
+      }
+    },
+    "deploy:container": {
+      "executor": "nx:run-commands"
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,205 @@
+@mixin font-base {
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: var(--normal-font-size);
+}
+
+@mixin pageTitle {
+  font-weight: normal;
+  font-size: 24px;
+  line-height: 36px;
+  color: var(--gray-base);
+  margin: 0;
+}
+
+@mixin sectionTitle {
+  font-weight: normal;
+  font-size: 17px;
+  color: var(--gray-base);
+  margin-top: 0;
+  margin-bottom: var(--default-spacing);
+}
+
+@mixin title1 {
+  font-size: 15px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 18px;
+  color: var(--gray-base);
+}
+
+@mixin headline-description {
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 120%;
+  color: var(--gray-40);
+  margin-bottom: var(--default-spacing);
+}
+
+@mixin body1 {
+  font-size: 14px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 18px;
+  color: var(--gray-20);
+}
+
+@mixin body2 {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 18px;
+  color: var(--gray-20);
+}
+
+@mixin bold {
+  font-weight: 600;
+}
+
+@mixin semiBold {
+  font-weight: 500;
+}
+
+@mixin label {
+  display: block;
+  font-size: var(--text-field-label-font-size);
+  margin-bottom: var(--default-spacing-small);
+  color: var(--gray-30);
+}
+
+@mixin labelHorizontal {
+  display: block;
+  font-size: var(--text-field-label-horizontal-font-size);
+  color: var(--gray-20);
+}
+
+@mixin textField {
+  font: inherit;
+  font-size: var(--tag-font-size);
+  padding: calc(var(--default-spacing) / 2) var(--default-spacing);
+  background-color: var(--gray-full);
+  border: $border-dark;
+  border-radius: var(--form-elements-border-radius);
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--gray-20);
+  height: var(--field-height);
+}
+
+@mixin textField--active {
+  outline: none;
+  box-shadow: none;
+  border: $border-primary;
+  transition: border 0.2s ease-in, color 0.2s ease-in;
+  color: var(--gray-base);
+}
+
+@mixin textField--disabled {
+  background: var(--gray-80);
+  border: 1px solid var(--gray-70);
+}
+
+@mixin counterBadge {
+  font-weight: 500;
+  font-size: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  position: absolute;
+  top: -8px;
+  left: calc(100% - 14px);
+  height: 16px;
+  min-width: 16px;
+  background-color: var(--primary);
+  color: var(--gray-full);
+  border-radius: 8px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+@mixin flexFullRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin flexFullRowWithSpacing {
+  @include flexFullRow();
+  .spacer {
+    flex: 1;
+  }
+  > * {
+    margin-left: var(--default-spacing);
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+}
+
+@mixin tag {
+  background-color: var(--gray-70);
+  height: var(--medium-button-height);
+  border-radius: var(--medium-button-radius);
+  border: 1px solid var(--gray-70);
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--default-spacing-small) / 2) var(--default-spacing);
+  color: var(--gray-20);
+  box-sizing: border-box;
+  white-space: nowrap;
+  width: auto;
+  margin-right: var(--default-spacing-small);
+  margin-bottom: var(--default-spacing-small);
+  min-width: calc(var(--default-spacing) * 4);
+
+  i {
+    font-size: 20px;
+  }
+}
+
+@mixin scrollbars(
+  $size,
+  $foreground-color,
+  $background-color: mix($foreground-color, white, 50%)
+) {
+  // For Google Chrome
+  &::-webkit-scrollbar {
+    width: $size;
+    height: $size;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $foreground-color;
+    border-radius: $size * 0.5;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $background-color;
+    border-radius: $size * 0.5;
+    margin: 10px;
+  }
+
+  // For Internet Explorer
+  & {
+    scrollbar-face-color: $foreground-color;
+    scrollbar-track-color: $background-color;
+  }
+}
+
+@mixin stickRight($page-content-max-width) {
+  position: fixed;
+  right: calc(
+    (100vw - #{$page-content-max-width}) / 2 - var(--default-page-padding)
+  );
+
+  @media only screen and (max-width: #{$page-content-max-width}) {
+    right: calc(var(--default-page-padding) + var(--default-spacing-small));
+  }
+}
