@@ -1,20 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import {
-  Configuration,
-  OpenAIApi,
-  ChatCompletionRequestMessage,
-  CreateChatCompletionRequest,
-} from "openai";
+import OpenAI from "openai";
 
 export type CreateChatCompletionRequestSettings = Omit<
-  CreateChatCompletionRequest,
+  OpenAI.Chat.ChatCompletionCreateParamsNonStreaming,
   "model" | "messages"
 >;
 
-export {
-  ChatCompletionRequestMessage,
-  ChatCompletionRequestMessageRoleEnum,
-} from "openai";
+export type ChatCompletionMessageParam = OpenAI.Chat.ChatCompletionMessageParam;
 
 const CREATE_CHAT_COMPLETION_DEFAULT_SETTINGS: CreateChatCompletionRequestSettings =
   {
@@ -31,27 +23,36 @@ export class OpenaiService {
 
   async createChatCompletion(
     model: string,
-    messages: ChatCompletionRequestMessage[],
+    messages: OpenAI.Chat.ChatCompletionMessageParam[],
     requestSettings?: CreateChatCompletionRequestSettings
   ): Promise<string> {
-    const configuration = new Configuration({
+    const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
-    const openai = new OpenAIApi(configuration);
 
     const settings = {
       ...CREATE_CHAT_COMPLETION_DEFAULT_SETTINGS,
       ...requestSettings,
     };
 
-    const response = await openai.createChatCompletion({
+    const response = await openai.chat.completions.create({
       ...settings,
       model: model,
       messages: messages,
     });
 
-    const results = response.data.choices[0].message?.content || "";
+    try{
+
+    
+    const results = response.choices[0].message?.content || "";
 
     return results;
+
+  } catch (error) {
+    if (error instanceof OpenAI.APIError) {
+      // Add custom error handling here. Check codes: https://github.com/openai/openai-node?tab=readme-ov-file#handling-errors
+    }
+    throw error;
+  }
   }
 }
