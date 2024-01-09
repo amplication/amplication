@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import OpenAI from "openai";
+import { ContentLengthExceededError } from "../../src/errors/ContentLengthExceededError";
 
 export type CreateChatCompletionRequestSettings = Omit<
   OpenAI.Chat.ChatCompletionCreateParamsNonStreaming,
@@ -33,19 +34,20 @@ export class OpenaiService {
       ...requestSettings,
     };
 
-    const response = await openai.chat.completions.create({
-      ...settings,
-      model: model,
-      messages: messages,
-    });
-
     try {
+      const response = await openai.chat.completions.create({
+        ...settings,
+        model: model,
+        messages: messages,
+      });
       const results = response.choices[0].message?.content || "";
 
       return results;
     } catch (error) {
       if (error instanceof OpenAI.APIError) {
         // Add custom error handling here. Check codes: https://github.com/openai/openai-node?tab=readme-ov-file#handling-errors
+        if (error.status === 400 && error.code === "context_length_exceeded")
+          throw new ContentLengthExceededError(error.message);
       }
       throw error;
     }
