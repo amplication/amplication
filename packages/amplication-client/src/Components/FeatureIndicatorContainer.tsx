@@ -108,9 +108,13 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       setIcon(null);
       return;
     }
-    if (subscriptionPlan === EnumSubscriptionPlan.Free && disabled) {
+    if (
+      (subscriptionPlan === EnumSubscriptionPlan.Free && disabled) ||
+      (isPreviewPlan(subscriptionPlan) && disabled)
+    ) {
       setIcon(IconType.Lock);
     }
+
     if (
       subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
       status === EnumSubscriptionStatus.Trailing
@@ -160,3 +164,8 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     </div>
   );
 };
+
+function isPreviewPlan(plan: EnumSubscriptionPlan) {
+  const previewPlans = [EnumSubscriptionPlan.PreviewBreakTheMonolith];
+  return previewPlans.includes(plan);
+}
