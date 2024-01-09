@@ -40,7 +40,10 @@ import {
   EntitlementType,
   FeatureIndicatorContainer,
 } from "../Components/FeatureIndicatorContainer";
-import { FeatureIndicator } from "../Components/FeatureIndicator";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 
 type TData = {
   entities: models.Entity[];
@@ -75,8 +78,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
 
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
-
-  const licensed = currentResource?.licensed ?? true;
 
   const isUserEntityMandatory =
     pluginInstallations?.filter(
@@ -236,32 +237,17 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                   </Button>
                 </FeatureIndicatorContainer>
               </Link>
-              {!licensed ? (
-                <FeatureIndicator
-                  featureName={BillingFeature.Services}
-                  text="Your current plan permits only one active Service. "
-                  element={
-                    <Button
-                      className={`${CLASS_NAME}__add-button`}
-                      buttonStyle={EnumButtonStyle.Primary}
-                      onClick={handleNewEntityClick}
-                      disabled={!licensed}
-                      icon="locked"
-                    >
-                      Add entity
-                    </Button>
-                  }
-                ></FeatureIndicator>
-              ) : (
+              <LicenseIndicatorContainer
+                licensedResourceType={LicensedResourceType.Service}
+              >
                 <Button
                   className={`${CLASS_NAME}__add-button`}
                   buttonStyle={EnumButtonStyle.Primary}
                   onClick={handleNewEntityClick}
-                  disabled={loading}
                 >
                   Add entity
                 </Button>
-              )}
+              </LicenseIndicatorContainer>
             </FlexItem>
           </FlexItem.FlexEnd>
         </FlexItem>
