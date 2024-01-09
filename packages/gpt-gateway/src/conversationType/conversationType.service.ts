@@ -22,7 +22,11 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
     super(prisma);
   }
 
-  async startConversion(message: AiConversationStart.Value): Promise<void> {
+  async startConversionSync(message: AiConversationStart.Value): Promise<{
+    isCompleted: boolean;
+    requestUniqueId: string;
+    result: string;
+  }> {
     const { messageTypeKey, params, requestUniqueId } = message;
 
     try {
@@ -43,10 +47,28 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
         params,
       });
 
-      this.emitGptKafkaMessage(true, requestUniqueId, result);
+      return {
+        isCompleted: true,
+        requestUniqueId,
+        result,
+      };
     } catch (error) {
-      this.emitGptKafkaMessage(false, requestUniqueId, error.message);
+      this.logger.error(error.message, error);
+      return {
+        isCompleted: false,
+        requestUniqueId,
+        result: error.message,
+      };
     }
+  }
+
+  async startConversion(message: AiConversationStart.Value): Promise<void> {
+    const result = await this.startConversionSync(message);
+    this.emitGptKafkaMessage(
+      result.isCompleted,
+      result.requestUniqueId,
+      result.result
+    );
   }
 
   private emitGptKafkaMessage(
