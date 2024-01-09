@@ -21,7 +21,14 @@ export type ResourceDescriptorWithEntityDescriptors = ResourceDescriptor & {
   entities: EntityDescriptor[];
 };
 export type TData = {
-  resources: ResourceDescriptorWithEntityDescriptors[];
+  workspaceFilter: {
+    id: string;
+    projects: {
+      id: string;
+      name: string;
+      resources: ResourceDescriptorWithEntityDescriptors[];
+    }[];
+  };
 };
 
 export interface Command {
@@ -108,9 +115,9 @@ const CommandPalette = ({ trigger }: Props) => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
-  const projectBaseUrl = useMemo(
-    () => `/${currentWorkspace?.id}/${currentProject?.id}`,
-    [currentWorkspace, currentProject]
+  const workspaceBaseUrl = useMemo(
+    () => `/${currentWorkspace?.id}`,
+    [currentWorkspace]
   );
 
   const history = useHistory();
@@ -118,15 +125,34 @@ const CommandPalette = ({ trigger }: Props) => {
   const handleChange = (inputValue: string, userQuery: string) => {
     setQuery(userQuery);
   };
+
   const { data } = useQuery<TData>(SEARCH, {
-    variables: { query, projectId: currentProject?.id },
+    variables: {
+      workspaceId: currentWorkspace?.id,
+      projectId: currentProject?.id,
+      resourceId: currentResource?.id,
+    },
+    fetchPolicy: "no-cache",
   });
   const commands = useMemo(
     () =>
       data
-        ? getCommands(data, history, currentResource as any, projectBaseUrl)
+        ? getCommands(
+            data,
+            history,
+            currentResource?.id as any,
+            currentProject?.id,
+            workspaceBaseUrl
+          )
         : [],
-    [data, history, currentResource, projectBaseUrl]
+    [
+      data,
+      history,
+      currentProject,
+      currentWorkspace,
+      currentResource,
+      workspaceBaseUrl,
+    ]
   );
 
   return (
@@ -220,7 +246,9 @@ export function calcCommandScore(item: CommandScoreType): number {
 
 export function getStaticCommands(
   history: History,
-  projectBaseUrl: string
+  projectBaseUrl: string,
+  projectName: string,
+  isCurrentProject: boolean
 ): Command[] {
   return STATIC_COMMANDS.map(
     (command) =>
@@ -229,8 +257,10 @@ export function getStaticCommands(
         command.name,
         `${projectBaseUrl}${command.link}`,
         TYPE_RESOURCE,
-        false,
-        false
+        isCurrentProject,
+        true,
+        models.EnumResourceType.ProjectConfiguration,
+        projectName
       )
   );
 }
@@ -292,40 +322,71 @@ export function getCommands(
   data: TData,
   history: History,
   currentResourceId: string | undefined,
-  projectBaseUrl: string
+  currentProjectId: string | undefined,
+  workspaceBaseUrl: string
 ): Command[] {
-  const resourceCommands = data.resources.flatMap((resource) => {
-    const isCurrentResource = currentResourceId === resource.id;
-    const resourceCommands = getResourceCommands(
-      resource,
-      history,
-      isCurrentResource,
-      projectBaseUrl
-    );
-    const entityCommands = resource.entities.flatMap((entity) =>
-      getEntityCommands(
-        entity,
+  let commands: Command[] = [];
+
+  const { projects } = data.workspaceFilter;
+
+  for (let project of projects) {
+    let projectUrl = `${workspaceBaseUrl}/${project.id}`;
+    const isCurrentProject = currentProjectId === project.id;
+
+    const resourceCommands = project.resources.flatMap((resource) => {
+      const isCurrentResource = currentResourceId === resource.id;
+      const resourceCommands = getResourceCommands(
         resource,
         history,
-        isCurrentResource,
-        projectBaseUrl
-      )
+        isCurrentProject || isCurrentResource,
+        projectUrl
+      );
+      const entityCommands = resource.entities.flatMap((entity) =>
+        getEntityCommands(
+          entity,
+          resource,
+          history,
+          isCurrentProject || isCurrentResource,
+          projectUrl
+        )
+      );
+      return [...resourceCommands, ...entityCommands];
+    });
+
+    const staticCommands = getStaticCommands(
+      history,
+      projectUrl,
+      project.name,
+      isCurrentProject
     );
-    return [...resourceCommands, ...entityCommands];
-  });
-  const staticCommands = getStaticCommands(history, projectBaseUrl);
-  return [...staticCommands, ...resourceCommands];
+    commands.push(...staticCommands, ...resourceCommands);
+  }
+
+  return commands;
 }
 
 const SEARCH = gql`
-  query search($projectId: String!) {
-    resources(where: { project: { id: $projectId } }) {
+  query search($workspaceId: String, $projectId: String, $resourceId: String) {
+    workspaceFilter(
+      WorkspaceFilterInput: {
+        workspaceId: $workspaceId
+        projectId: $projectId
+        resourceId: $resourceId
+      }
+    ) {
       id
-      name
-      resourceType
-      entities {
+      projects {
         id
-        displayName
+        name
+        resources {
+          id
+          name
+          resourceType
+          entities {
+            id
+            displayName
+          }
+        }
       }
     }
   }

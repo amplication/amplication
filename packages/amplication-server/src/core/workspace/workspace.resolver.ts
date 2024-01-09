@@ -42,6 +42,7 @@ import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 import { Coupon } from "./dto/Coupon";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { WorkspaceFilterInput } from "./dto/WorkspaceFilterInput";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -78,6 +79,19 @@ export class WorkspaceResolver {
   @Query(() => Workspace, {
     nullable: true,
   })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.WorkspaceId,
+    "WorkspaceFilterInput.workspaceId"
+  )
+  async workspaceFilter(
+    @Args("WorkspaceFilterInput") args: WorkspaceFilterInput
+  ): Promise<Workspace | null> {
+    return await this.workspaceService.filterWorkspaces(args);
+  }
+
+  @Query(() => Workspace, {
+    nullable: true,
+  })
   async currentWorkspace(
     @UserEntity() currentUser: User
   ): Promise<Workspace | null> {
@@ -104,9 +118,12 @@ export class WorkspaceResolver {
 
   @ResolveField(() => [Project])
   async projects(@Parent() workspace: Workspace): Promise<Project[]> {
-    return this.projectService.findProjects({
-      where: { workspace: { id: workspace.id } },
-    });
+    return (
+      workspace.projects ||
+      this.projectService.findProjects({
+        where: { workspace: { id: workspace.id } },
+      })
+    );
   }
 
   @Mutation(() => Workspace, {

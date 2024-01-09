@@ -97,9 +97,12 @@ export class ProjectResolver {
 
   @ResolveField(() => [Resource])
   async resources(@Parent() project: Project): Promise<Resource[]> {
-    return this.resourceService.resources({
-      where: { project: { id: project.id } },
-    });
+    return (
+      project.resources ||
+      this.resourceService.resources({
+        where: { project: { id: project.id } },
+      })
+    );
   }
 
   /** pending changes and commit */

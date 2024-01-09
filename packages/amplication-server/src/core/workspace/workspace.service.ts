@@ -46,6 +46,7 @@ import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { Env } from "../../env";
 import { ConfigService } from "@nestjs/config";
+import { WorkspaceFilterInput } from "./dto/WorkspaceFilterInput";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -76,6 +77,45 @@ export class WorkspaceService {
 
   async getWorkspaces(args: FindManyWorkspaceArgs): Promise<Workspace[]> {
     return this.prisma.workspace.findMany(args);
+  }
+
+  async filterWorkspaces(
+    args: WorkspaceFilterInput
+  ): Promise<Workspace | null> {
+    const { workspaceId, projectId, resourceId } = args;
+    if (!workspaceId) {
+      return null;
+    }
+    return await this.prisma.workspace.findFirst({
+      where: {
+        id: workspaceId,
+      },
+      include: {
+        projects: {
+          where: {
+            id: projectId,
+            deletedAt: null,
+          },
+          include: {
+            resources: {
+              where: {
+                id: resourceId,
+                deletedAt: null,
+                resourceType: {
+                  in: [
+                    EnumResourceType.MessageBroker,
+                    EnumResourceType.Service,
+                  ],
+                },
+              },
+              include: {
+                entities: {},
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   async deleteWorkspace(args: FindOneArgs): Promise<Workspace | null> {

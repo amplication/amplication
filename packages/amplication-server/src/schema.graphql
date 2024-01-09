@@ -1406,6 +1406,7 @@ type Query {
   userAction(where: WhereUniqueInput!): UserAction!
   userApiTokens: [ApiToken!]!
   workspace(where: WhereUniqueInput!): Workspace
+  workspaceFilter(WorkspaceFilterInput: WorkspaceFilterInput!): Workspace
   workspaceMembers: [WorkspaceMember!]
   workspaces: [Workspace!]!
 }
@@ -1856,6 +1857,12 @@ type Workspace {
 
 input WorkspaceCreateInput {
   name: String!
+}
+
+input WorkspaceFilterInput {
+  projectId: String
+  resourceId: String
+  workspaceId: String
 }
 
 type WorkspaceMember {
