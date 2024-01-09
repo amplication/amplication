@@ -50,7 +50,7 @@ export const TemplateShow = (props: ShowProps): React.ReactElement => {
         <ReferenceManyField
           reference="ConversationType"
           target="templateId"
-          label="ConversationTypes"
+          label="Conversation Types"
         >
           <Datagrid rowClick="show">
             <DateField source="createdAt" label="Created At" />
