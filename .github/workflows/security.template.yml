@@ -1,0 +1,57 @@
+name: _Reusable Vulnerability Scanning template
+
+on:
+  workflow_call:
+    inputs:
+      scan-type:
+        required: true
+        type: string
+      format:
+        required: true
+        type: string
+        default: sarif
+      output:
+        required: false
+        type: string
+        default: scan-output.sarif
+      image-ref:
+        required: false
+        type: string
+        default: ""
+      severity:
+        required: false
+        type: string
+        default: "CRITICAL,HIGH,MEDIUM"
+      exit-code:
+        required: true
+        type: number
+        default: 0
+      publish:
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  trivy-scan:
+    name: Trivy - ${{ inputs.scan-type }} ${{ inputs.image-ref }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@0.8.0
+        with:
+          scan-type: ${{ inputs.scan-type }}
+          image-ref: ${{ inputs.image-ref }}
+          format: ${{ inputs.format }}
+          output: ${{ inputs.output }}
+          exit-code: ${{ inputs.exit-code }}
+          severity: ${{ inputs.severity }}
+          trivy-config: ./trivy.yaml
+
+      - name: Upload results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        if: ${{ inputs.publish }}
+        with:
+          sarif_file: ${{ inputs.output }}
