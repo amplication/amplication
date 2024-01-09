@@ -3,8 +3,8 @@ import { PrismaService } from "../prisma/prisma.service";
 import { TemplateServiceBase } from "./base/template.service.base";
 import {
   OpenaiService,
-  ChatCompletionRequestMessageRoleEnum,
   CreateChatCompletionRequestSettings,
+  ChatCompletionMessageParam,
 } from "../../providers/openai/openai.service";
 import { MessageParam } from "../dto/MessageParam";
 import { ProcessTemplateInput } from "./dto/ProcessTemplateInput";
@@ -58,9 +58,9 @@ export class TemplateService extends TemplateServiceBase {
     }
 
     const messages = template.messages.map((message) => ({
-      role: message.role.toLowerCase() as ChatCompletionRequestMessageRoleEnum,
+      role: message.role.toLowerCase(),
       content: this.prepareMessage(message.content, args.params),
-    }));
+    })) as ChatCompletionMessageParam[];
 
     return this.openaiService.createChatCompletion(
       template.model.name,
