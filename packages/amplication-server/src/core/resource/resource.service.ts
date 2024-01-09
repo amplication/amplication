@@ -16,10 +16,14 @@ import pluralize from "pluralize";
 import { FindOneArgs } from "../../dto";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
-import { Project, Resource, User, GitOrganization } from "../../models";
+import { Project, Resource, User, GitOrganization, Entity } from "../../models";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { USER_ENTITY_NAME } from "../entity/constants";
+import {
+  CURRENT_VERSION_NUMBER,
+  INITIAL_ENTITY_FIELDS,
+  USER_ENTITY_NAME,
+} from "../entity/constants";
 import { EntityService } from "../entity/entity.service";
 import { EnvironmentService } from "../environment/environment.service";
 import {
@@ -60,9 +64,20 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { JsonValue } from "type-fest";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { CreateResourceEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
+import { LookupResolvedProperties } from "@amplication/code-gen-types";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
+
+export type CreatePreviewServiceArgs = {
+  args: CreateOneResourceArgs;
+  user: User;
+  nonDefaultPluginsToInstall: PluginInstallationCreateInput[];
+  requireAuthenticationEntity: boolean;
+};
 
 @Injectable()
 export class ResourceService {
@@ -79,7 +94,8 @@ export class ResourceService {
     private readonly topicService: TopicService,
     private readonly billingService: BillingService,
     private readonly pluginInstallationService: PluginInstallationService,
-    private readonly analytics: SegmentAnalyticsService
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
@@ -371,6 +387,283 @@ export class ResourceService {
     );
 
     return resource;
+  }
+
+  async createPreviewService({
+    args,
+    user,
+    nonDefaultPluginsToInstall,
+    requireAuthenticationEntity,
+  }: CreatePreviewServiceArgs): Promise<Resource> {
+    const { serviceSettings, gitRepository, ...rest } = args.data;
+    const resource = await this.createResource(
+      {
+        data: {
+          ...rest,
+          resourceType: EnumResourceType.Service,
+        },
+      },
+      user,
+      gitRepository,
+      "create resource"
+    );
+
+    await this.prisma.resourceRole.create({
+      data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
+    });
+
+    if (requireAuthenticationEntity) {
+      await this.entityService.createDefaultEntities(resource.id, user);
+      serviceSettings.authEntityName = USER_ENTITY_NAME;
+    }
+
+    await this.serviceSettingsService.createDefaultServiceSettings(
+      resource.id,
+      user,
+      serviceSettings
+    );
+
+    const defaultAuthPlugins: PluginInstallationCreateInput[] = [
+      {
+        displayName: "Auth-core",
+        pluginId: "auth-core",
+        npm: "@amplication/plugin-auth-core",
+        version: "latest",
+        enabled: true,
+        resource: { connect: { id: resource.id } },
+      },
+      {
+        displayName: "Auth-jwt",
+        pluginId: "auth-jwt",
+        npm: "@amplication/plugin-auth-jwt",
+        version: "latest",
+        enabled: true,
+        resource: { connect: { id: resource.id } },
+      },
+    ];
+
+    const defaultDBPlugin: PluginInstallationCreateInput = {
+      displayName: "postgres",
+      pluginId: "db-postgres",
+      npm: "@amplication/plugin-db-postgres",
+      version: "latest",
+      enabled: true,
+      resource: { connect: { id: resource.id } },
+    };
+
+    const plugins = [
+      defaultDBPlugin,
+      ...(requireAuthenticationEntity ? defaultAuthPlugins : []),
+      ...nonDefaultPluginsToInstall,
+    ];
+
+    for (const plugin of plugins) {
+      await this.pluginInstallationService.create(
+        {
+          data: plugin,
+        },
+        user
+      );
+    }
+
+    await this.environmentService.createDefaultEnvironment(resource.id);
+
+    const project = await this.projectService.findUnique({
+      where: { id: resource.projectId },
+    });
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.Services
+    );
+
+    return resource;
+  }
+
+  async createResourceEntitiesFromExistingResource(
+    args: CreateResourceEntitiesArgs,
+    user: User
+  ): Promise<Resource> {
+    const { targetResourceId, entitiesToCopy } = args.data;
+    const resource = await this.prisma.resource.findUnique({
+      where: {
+        id: targetResourceId,
+      },
+      include: {
+        entities: {
+          where: {
+            deletedAt: null,
+          },
+        },
+      },
+    });
+
+    if (!resource) throw new AmplicationError("Target Resource doesn't exist");
+
+    entitiesToCopy.map((entity) => {
+      if (resource.entities.find((x) => x.name === entity.name)) {
+        throw new AmplicationError(
+          `Entity ${entity.name} is already exist in resourceId: ${resource.id}, process abort`
+        );
+      }
+    });
+
+    // 1.create resource entities
+
+    const copiedEntities: Entity[] = await this.createResourceCopiedEntities(
+      entitiesToCopy,
+      targetResourceId,
+      user
+    );
+
+    const entitiesWithFieldsMap = entitiesToCopy.reduce(
+      (entitiesObj, entity) => {
+        entitiesObj[entity.name] = entity;
+        return entitiesObj;
+      },
+      {}
+    );
+
+    // 2.create entities fields
+
+    for (const copiedEntity of copiedEntities) {
+      const currentEntity: Entity = entitiesWithFieldsMap[copiedEntity.name];
+
+      for (const field of currentEntity.versions[0].fields) {
+        const { dataType, properties } = field;
+        const { allowMultipleSelection, relatedEntityId } =
+          properties as unknown as LookupResolvedProperties;
+
+        if (dataType === EnumDataType.Id) {
+          await this.createCopiedEntityIdField(copiedEntity.id);
+          continue;
+        }
+        if (dataType === EnumDataType.Lookup) {
+          const isFieldExist = await this.isEntityFieldExist(
+            pascalCase(field.name),
+            copiedEntity.id
+          );
+
+          if (isFieldExist) continue;
+
+          const currentRelatedEntity = entitiesToCopy.find(
+            (entity) => entity.id === relatedEntityId
+          );
+
+          if (!currentRelatedEntity) {
+            if (allowMultipleSelection) continue;
+
+            //one to one relation or one to many relation
+            //create id field by the idType and field name
+
+            await this.entityService.updateFieldDataTypeIdByRelatedEntity(
+              field,
+              relatedEntityId
+            );
+          }
+        }
+
+        await this.entityService.createCopiedEntityFieldByDisplayName(
+          copiedEntity.id,
+          field,
+          user
+        );
+      }
+    }
+
+    // 3.delete entity from source service by flag
+    for (const entity of entitiesToCopy) {
+      if (entity.shouldDeleteFromSource) {
+        await this.entityService.deleteEntityFromSource(
+          { where: { id: entity.id } },
+          user
+        );
+      }
+    }
+
+    return resource;
+  }
+
+  async createResourceCopiedEntities(
+    entitiesToCopy: Entity[],
+    targetResourceId: string,
+    user: User
+  ): Promise<Entity[]> {
+    const copiedEntities: Entity[] = [];
+
+    for (const entity of entitiesToCopy) {
+      const {
+        name,
+        displayName,
+        pluralDisplayName,
+        description,
+        customAttributes,
+      } = entity;
+
+      try {
+        const copiedEntity = await this.entityService.createOneEntity(
+          {
+            data: {
+              resource: {
+                connect: {
+                  id: targetResourceId,
+                },
+              },
+              name,
+              displayName,
+              pluralDisplayName,
+              description,
+              customAttributes,
+            },
+          },
+          user,
+          false,
+          false,
+          false
+        );
+        copiedEntities.push(copiedEntity);
+      } catch (error) {
+        this.logger.error(error.message, error, { entity: entity.name });
+        throw new Error(
+          `Failed to create entity "${entity.name}" due to ${error.message}`
+        );
+      }
+    }
+
+    return copiedEntities;
+  }
+
+  async createCopiedEntityIdField(copiedEntityId: string): Promise<void> {
+    await this.prisma.entityField.create({
+      data: {
+        ...INITIAL_ENTITY_FIELDS[0],
+        entityVersion: {
+          connect: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId: copiedEntityId,
+              versionNumber: CURRENT_VERSION_NUMBER,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async isEntityFieldExist(
+    fieldDisplayName: string,
+    entityId: string
+  ): Promise<boolean> {
+    const field = await this.prisma.entityField.findFirst({
+      where: {
+        displayName: fieldDisplayName,
+        entityVersion: {
+          entityId: entityId,
+        },
+      },
+    });
+
+    return field ? true : false;
   }
 
   async userEntityValidation(
@@ -762,6 +1055,8 @@ export class ResourceService {
         BillingFeature.Services,
         -1
       );
+
+      await this.subscriptionService.updateServiceLicensed(project.workspaceId);
     }
 
     if (!resource.gitRepositoryOverride) {
@@ -808,14 +1103,6 @@ export class ResourceService {
     }
 
     return this.prisma.resource.update(args);
-  }
-
-  async isUnderLimitation(
-    workspaceId: string,
-    resourceId: string
-  ): Promise<boolean> {
-    // return hard coded false (for now), meaning that there are no limitation around resource apart from creation. We will implement this in the future
-    return false;
   }
 
   async reportSyncMessage(

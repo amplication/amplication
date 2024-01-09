@@ -30,7 +30,7 @@ import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 @UseGuards(GqlAuthGuard)
 export class PluginInstallationResolver extends BlockTypeResolver(
   PluginInstallation,
-  "PluginInstallations",
+  "pluginInstallations",
   FindManyPluginInstallationArgs,
   "createPluginInstallation",
   CreatePluginInstallationArgs,

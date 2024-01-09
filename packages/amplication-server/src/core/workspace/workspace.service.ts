@@ -44,11 +44,15 @@ import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { Env } from "../../env";
+import { ConfigService } from "@nestjs/config";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
 @Injectable()
 export class WorkspaceService {
+  private userLastActiveDays: number;
   constructor(
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
@@ -59,9 +63,13 @@ export class WorkspaceService {
     private analytics: SegmentAnalyticsService,
     private readonly moduleService: ModuleService,
     private readonly moduleActionService: ModuleActionService,
+    private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
-  ) {}
+  ) {
+    this.userLastActiveDays =
+      Number(this.configService.get<string>(Env.USER_LAST_ACTIVE_DAYS)) ?? 30;
+  }
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
     return this.prisma.workspace.findUnique(args);
@@ -81,6 +89,68 @@ export class WorkspaceService {
     return this.prisma.workspace.update(args);
   }
 
+  async createPreviewWorkspace(
+    args: Prisma.WorkspaceCreateArgs,
+    accountId: string
+  ): Promise<Workspace> {
+    const workspace = await this.prisma.workspace.create({
+      ...args,
+      data: {
+        ...args.data,
+        users: {
+          create: {
+            account: { connect: { id: accountId } },
+            isOwner: true,
+            userRoles: {
+              create: {
+                role: Role.OrganizationAdmin,
+              },
+            },
+          },
+        },
+      },
+      include: {
+        ...args.include,
+        // Include users by default, allow to bypass it for including additional user links
+        users: args?.include?.users || true,
+      },
+    });
+
+    const account = await this.prisma.account.findUnique({
+      where: {
+        id: accountId,
+      },
+    });
+
+    await this.billingService.provisionPreviewCustomer(
+      workspace.id,
+      PreviewAccountType[account.previewAccountType]
+    );
+
+    await this.billingService.reportUsage(
+      workspace.id,
+      BillingFeature.TeamMembers
+    );
+
+    return workspace;
+  }
+
+  private async shouldBlockWorkspaceCreation(
+    workspaceId: string
+  ): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
+    const blockWorkspaceCreation =
+      await this.billingService.getBooleanEntitlement(
+        workspaceId,
+        BillingFeature.BlockWorkspaceCreation
+      );
+
+    return blockWorkspaceCreation.hasAccess;
+  }
+
   /**
    * Creates a workspace and a user within it for the provided account with workspace admin role
    * @param accountId the account to create the user in the created workspace
@@ -89,9 +159,16 @@ export class WorkspaceService {
    */
   async createWorkspace(
     accountId: string,
-    args: Prisma.WorkspaceCreateArgs
+    args: Prisma.WorkspaceCreateArgs,
+    currentWorkspaceId?: string
   ): Promise<Workspace> {
-    // Create workspace
+    if (await this.shouldBlockWorkspaceCreation(currentWorkspaceId)) {
+      const message = "Your current plan does not allow creating workspaces";
+      throw new BillingLimitationError(
+        message,
+        BillingFeature.BlockWorkspaceCreation
+      );
+    }
     // Create a new user and link it to the account
     // Assign the user an "ORGANIZATION_ADMIN" role
     const workspace = await this.prisma.workspace.create({
@@ -138,21 +215,27 @@ export class WorkspaceService {
     return workspace;
   }
 
+  private async canInvite(workspaceId: string): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
+    const workspaceMembers = await this.billingService.getMeteredEntitlement(
+      workspaceId,
+      BillingFeature.TeamMembers
+    );
+
+    return workspaceMembers.currentUsage < workspaceMembers.usageLimit;
+  }
+
   async inviteUser(
     currentUser: User,
     args: InviteUserArgs
   ): Promise<Invitation | null> {
-    if (this.billingService.isBillingEnabled) {
-      const projectEntitlement =
-        await this.billingService.getMeteredEntitlement(
-          currentUser.workspace.id,
-          BillingFeature.TeamMembers
-        );
-
-      if (projectEntitlement && !projectEntitlement.hasAccess) {
-        const message = `Your workspace exceeds its members limitation.`;
-        throw new BillingLimitationError(message, BillingFeature.Projects);
-      }
+    const canInvite = await this.canInvite(currentUser.workspace.id);
+    if (!canInvite) {
+      const message = `Your workspace exceeds its members limitation.`;
+      throw new BillingLimitationError(message, BillingFeature.Projects);
     }
 
     const { workspace, id: currentUserId, account } = currentUser;
@@ -795,6 +878,57 @@ export class WorkspaceService {
           );
         }
       }
+    }
+  }
+
+  async bulkUpdateWorkspaceProjectsAndResourcesLicensed(
+    useUserLastActive: boolean
+  ): Promise<boolean> {
+    try {
+      const date = new Date();
+      const userLastActiveQuery = useUserLastActive
+        ? {
+            some: {
+              lastActive: {
+                gte: new Date(
+                  date.setDate(date.getDate() - this.userLastActiveDays)
+                ),
+              },
+            },
+          }
+        : {};
+
+      const workspaces = await this.prisma.workspace.findMany({
+        where: {
+          users: userLastActiveQuery,
+          projects: {
+            some: {
+              deletedAt: null,
+              resources: {
+                some: {
+                  deletedAt: null,
+                  archived: { not: true },
+                  resourceType: {
+                    in: [EnumResourceType.Service],
+                  },
+                },
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      for (const workspace of workspaces) {
+        await this.subscriptionService.updateProjectLicensed(workspace.id);
+        await this.subscriptionService.updateServiceLicensed(workspace.id);
+      }
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+      return false;
     }
   }
 

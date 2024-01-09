@@ -40,7 +40,10 @@ import {
   EntitlementType,
   FeatureIndicatorContainer,
 } from "../Components/FeatureIndicatorContainer";
-import { FeatureIndicator } from "../Components/FeatureIndicator";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 
 type TData = {
   entities: models.Entity[];
@@ -76,7 +79,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
-  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const isUserEntityMandatory =
     pluginInstallations?.filter(
       (x) =>
@@ -221,6 +223,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 <FeatureIndicatorContainer
                   featureId={BillingFeature.ImportDBSchema}
                   entitlementType={EntitlementType.Boolean}
+                  limitationText="Available in Enterprise plans only. "
                   reversePosition={true}
                 >
                   <Button
@@ -234,33 +237,17 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                   </Button>
                 </FeatureIndicatorContainer>
               </Link>
-              {isResourceUnderLimitation ? (
-                <FeatureIndicator
-                  featureName={BillingFeature.Services}
-                  text="Your current plan permits only one active resource"
-                  linkText="Please contact us to upgrade"
-                  element={
-                    <Button
-                      className={`${CLASS_NAME}__add-button`}
-                      buttonStyle={EnumButtonStyle.Primary}
-                      onClick={handleNewEntityClick}
-                      disabled={isResourceUnderLimitation}
-                      icon="locked"
-                    >
-                      Add entity
-                    </Button>
-                  }
-                ></FeatureIndicator>
-              ) : (
+              <LicenseIndicatorContainer
+                licensedResourceType={LicensedResourceType.Service}
+              >
                 <Button
                   className={`${CLASS_NAME}__add-button`}
                   buttonStyle={EnumButtonStyle.Primary}
                   onClick={handleNewEntityClick}
-                  disabled={isResourceUnderLimitation}
                 >
                   Add entity
                 </Button>
-              )}
+              </LicenseIndicatorContainer>
             </FlexItem>
           </FlexItem.FlexEnd>
         </FlexItem>

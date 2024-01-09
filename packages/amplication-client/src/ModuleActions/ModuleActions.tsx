@@ -170,7 +170,7 @@ const ModuleActions = React.memo(({ match }: Props) => {
               />
             </FlexItem>
           ) : (
-            moduleListData?.Modules.map((module) => (
+            moduleListData?.modules.map((module) => (
               <FlexItem key={module.id} margin={EnumFlexItemMargin.Top}>
                 <ModuleActionList
                   moduleId={module.id}

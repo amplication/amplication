@@ -101,6 +101,9 @@
         "development": {
           "buildTarget": "amplication-client:build:development"
         },
+        "sandbox": {
+          "buildTarget": "amplication-client:build:sandbox"
+        },
         "production": {
           "buildTarget": "amplication-client:build:production",
           "hmr": false
