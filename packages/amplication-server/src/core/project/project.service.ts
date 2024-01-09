@@ -276,10 +276,6 @@ export class ProjectService {
       })
       .workspace();
 
-    if (!workspace) {
-      throw new Error("workspace not found");
-    }
-
     const blockBuildEntitlement =
       await this.billingService.getBooleanEntitlement(
         workspace.id,
