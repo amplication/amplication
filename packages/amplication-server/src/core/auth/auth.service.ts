@@ -69,6 +69,7 @@ export const IDENTITY_PROVIDER_GITHUB = "GitHub";
 export const IDENTITY_PROVIDER_SSO = "SSO";
 export const IDENTITY_PROVIDER_MANUAL = "Manual";
 export const IDENTITY_PROVIDER_PREVIEW_ACCOUNT = "PreviewAccount";
+export const IDENTITY_PROVIDER_AUTH0 = "Auth0";
 
 const AUTH_USER_INCLUDE = {
   account: true,
@@ -114,7 +115,54 @@ export class AuthService {
       clientId: this.configService.get<string>(Env.AUTH0_CLIENT_ID),
       clientSecret: this.configService.get<string>(Env.AUTH0_CLIENT_SECRET),
     });
-    console.log("this.auth0", generatePassword());
+  }
+
+  async signupAuth0User({
+    previewAccountType,
+    previewAccountEmail,
+  }): Promise<{ message: string }> {
+    try {
+      const existedAccount = await this.accountService.findAccount({
+        where: {
+          email: previewAccountEmail,
+        },
+      });
+      // if (existedAccount) what to do ?
+      const auth0User = await this.createAuth0User(previewAccountEmail);
+      if (!auth0User.data.email) throw Error("Failed to create new Auth0 user");
+
+      const resetPassword = await this.resetAuth0UserPassword(
+        auth0User.data.email
+      );
+      if (!resetPassword.data)
+        throw Error("Failed to send reset message to new Auth0 user");
+
+      const account = await this.accountService.createAccount(
+        {
+          data: {
+            email: previewAccountEmail,
+            firstName: "",
+            lastName: "",
+            password: "",
+            previewAccountType,
+          },
+        },
+        IDENTITY_PROVIDER_AUTH0
+      );
+      const workspaceName = previewAccountEmail.split("@")[0];
+      await this.bootstrapUser(account, workspaceName);
+
+      return {
+        message: resetPassword.data,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error);
+      return {
+        message:
+          error?.body?.friendly_message ||
+          "Please enter a valid work email address",
+      };
+    }
   }
 
   async createAuth0User(
@@ -237,12 +285,13 @@ export class AuthService {
     return this.prepareToken(user);
   }
 
-  async signupPreviewAccount(
-    payload: SignupPreviewAccountInput
-  ): Promise<AuthPreviewAccount> {
+  async signupPreviewAccount({
+    previewAccountEmail,
+    previewAccountType,
+  }: SignupPreviewAccountInput): Promise<AuthPreviewAccount> {
     const { signupData, identityProvider } = this.generateDataForPreviewAccount(
-      payload.previewAccountEmail,
-      payload.previewAccountType
+      previewAccountEmail,
+      previewAccountType
     );
 
     const account = await this.accountService.createAccount(

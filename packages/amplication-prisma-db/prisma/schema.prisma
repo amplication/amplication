@@ -615,4 +615,5 @@ enum CodeGeneratorVersionStrategy {
 enum PreviewAccountType {
   None
   BreakingTheMonolith
+  Auth0Signup
 }

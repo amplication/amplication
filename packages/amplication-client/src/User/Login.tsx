@@ -25,6 +25,8 @@ import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import "./Login.scss";
 import { useTracking } from "../util/analytics";
+import { SIGNUP_WITH_BUSINESS_EMAIL } from "./UserQueries";
+import { PreviewAccountType } from "../models";
 
 type Values = {
   email: string;
@@ -34,6 +36,12 @@ type Values = {
 
 interface LocationStateInterface {
   from?: Location;
+}
+
+interface SignUpWithBusinessEmail {
+  signUpWithBusinessEmail: {
+    message: string;
+  };
 }
 
 const CLASS_NAME = "login-page";
@@ -48,14 +56,21 @@ const INITIAL_VALUES: Values = {
 const AuthWithWorkEmail: React.FC = () => {
   const { values } = useFormikContext<Values>();
   const { trackEvent } = useTracking();
+  const [signUpWithBusinessEmail, { data, loading, error }] =
+    useMutation<SignUpWithBusinessEmail>(SIGNUP_WITH_BUSINESS_EMAIL);
 
   const handleAuthWorkEmail = () => {
     trackEvent({
       eventName: AnalyticsEventNames.SignInWithEmailPassword,
     });
-    window.location.assign(
-      `${REACT_APP_AUTH_LOGIN_URI}?work_email=${encodeURI(values.work_email)}`
-    );
+    signUpWithBusinessEmail({
+      variables: {
+        data: {
+          previewAccountEmail: values.work_email,
+          previewAccountType: PreviewAccountType.Auth0Signup,
+        },
+      },
+    });
   };
 
   return (
@@ -70,6 +85,11 @@ const AuthWithWorkEmail: React.FC = () => {
         value={values.work_email}
         type="email"
       />
+      {(data || error) && (
+        <ErrorMessage
+          errorMessage={error?.message || data.signUpWithBusinessEmail.message}
+        />
+      )}
       <Button
         type="button"
         className={`${CLASS_NAME}__work_email_btn`}
@@ -77,9 +97,9 @@ const AuthWithWorkEmail: React.FC = () => {
         eventData={{
           eventName: AnalyticsEventNames.SignInWithUserName,
         }}
-        disabled={!values.work_email.length}
+        disabled={!values.work_email.length || !!data || !!error}
       >
-        Continue
+        {loading ? <CircularProgress centerToParent /> : "Continue"}
       </Button>
     </>
   );
