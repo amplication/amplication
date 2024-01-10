@@ -24,6 +24,13 @@ export class KafkaProducerService {
     message: DecodedKafkaMessage,
     schemaIds?: SchemaIds
   ): Promise<void> {
+   if (!schemaIds) {
+    throw new Error('Missing schema IDs');
+  }
+    const validationResult = await this.kafkaClient.validate(topic, message, schemaIds);
+   if (validationResult.errors) {
+    throw new Error('Message does not conform to the specified schema');
+  }
     const kafkaMessage = await this.serializer.serialize(message, schemaIds);
     return await new Promise((resolve, reject) => {
       this.kafkaClient.emit(topic, kafkaMessage).subscribe({
