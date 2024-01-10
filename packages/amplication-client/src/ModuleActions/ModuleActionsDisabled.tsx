@@ -54,7 +54,7 @@ export const ModuleActionsDisabled: React.FC<Props> = ({ className }) => {
         and customization as a unified source of truth.{" "}
         <a
           className={`${className}__addon-section__contact-us`}
-          href={"https://meetings-eu1.hubspot.com/liza-dymava/cta-link"}
+          href={"https://meetings-eu1.hubspot.com/oalaluf/meeting-with-oren-30"}
           target="blank"
         >
           <Text>{"Contact us"}</Text>{" "}
