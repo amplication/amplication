@@ -11,7 +11,7 @@ const Dashboard = () => {
     if (token) {
       setToken(token);
     }
-  }, []);
+  }, [setToken]);
   return (
     <Card>
       <Title title="Welcome to the administration" />
