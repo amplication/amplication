@@ -8,8 +8,11 @@ import {
   Icon,
   Text,
 } from "@amplication/ui/design-system";
-import React from "react";
+import React, { useContext } from "react";
 import { IconType } from "../Components/FeatureIndicatorContainer";
+import { AppContext } from "../context/appContext";
+import { useQuery } from "@apollo/client";
+import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
 
 type Props = {
   icon: IconType;
@@ -18,6 +21,12 @@ type Props = {
 };
 
 export const ModuleActionsDisabled: React.FC<Props> = ({ className }) => {
+  const { currentWorkspace } = useContext(AppContext);
+
+  const { data } = useQuery(GET_CONTACT_US_LINK, {
+    variables: { id: currentWorkspace.id },
+  });
+
   return (
     <FlexItem
       direction={EnumFlexDirection.Column}
@@ -52,13 +61,15 @@ export const ModuleActionsDisabled: React.FC<Props> = ({ className }) => {
         textColor={EnumTextColor.Black20}
       >
         and customization as a unified source of truth.{" "}
-        <a
-          className={`${className}__addon-section__contact-us`}
-          href={"https://meetings-eu1.hubspot.com/oalaluf/meeting-with-oren-30"}
-          target="blank"
-        >
-          <Text>{"Contact us"}</Text>{" "}
-        </a>
+        {data && (
+          <a
+            className={`${className}__addon-section__contact-us`}
+            href={data.contactUsLink}
+            target="blank"
+          >
+            <Text>{"Contact us"}</Text>{" "}
+          </a>
+        )}
         for more information
       </Text>
     </FlexItem>
