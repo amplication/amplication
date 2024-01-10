@@ -1,15 +1,9 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { MessageParam } from "../../dto/MessageParam";
+import { AiConversationStart } from "@amplication/schema-registry";
 
-@InputType()
 class ProcessTemplateInput {
-  @Field(() => String, {
-    nullable: true,
-  })
   templateId!: string;
 
-  @Field(() => [MessageParam])
-  params!: MessageParam[];
+  params!: AiConversationStart.Value["params"];
 }
 
 export { ProcessTemplateInput };
