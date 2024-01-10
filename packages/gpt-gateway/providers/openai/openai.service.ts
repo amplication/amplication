@@ -1,4 +1,3 @@
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Injectable } from "@nestjs/common";
 import OpenAI from "openai";
 import { ContentLengthExceededError } from "../../src/errors/ContentLengthExceededError";
@@ -21,8 +20,6 @@ const CREATE_CHAT_COMPLETION_DEFAULT_SETTINGS: CreateChatCompletionRequestSettin
 
 @Injectable()
 export class OpenaiService {
-  constructor(private readonly logger: AmplicationLogger) {}
-
   async createChatCompletion(
     model: string,
     messages: OpenAI.Chat.ChatCompletionMessageParam[],
