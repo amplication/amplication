@@ -6,6 +6,9 @@ import * as common from "@nestjs/common";
 import { ConversationTypeResolverBase } from "./base/conversationType.resolver.base";
 import { ConversationType } from "./base/ConversationType";
 import { ConversationTypeService } from "./conversationType.service";
+import { AclValidateRequestInterceptor } from "../interceptors/aclValidateRequest.interceptor";
+import { CreateConversationInput } from "./dto/GetConversationInput.dto";
+import { CreateConversation } from "./dto/GetConversation.dto";
 
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => ConversationType)
@@ -16,5 +19,25 @@ export class ConversationTypeResolver extends ConversationTypeResolverBase {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {
     super(service, rolesBuilder);
+  }
+
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => CreateConversation)
+  @nestAccessControl.UseRoles({
+    resource: "ConversationType",
+    action: "create",
+    possession: "any",
+  })
+  async createConversation(
+    @graphql.Args("data")
+    args: CreateConversationInput
+  ): Promise<CreateConversation> {
+    const conversation = await this.service.startConversionSync(args);
+    return {
+      isGptConversionCompleted: conversation.isCompleted,
+      requestUniqueId: conversation.requestUniqueId,
+      result: conversation.isCompleted ? conversation.result : null,
+      errorMessage: conversation.isCompleted ? null : conversation.result,
+    };
   }
 }
