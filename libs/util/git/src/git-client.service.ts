@@ -228,6 +228,7 @@ export class GitClientService {
             preparedFiles,
             baseBranch,
             repositoryGroupName,
+            pullRequestTitle,
           });
           break;
         default:
@@ -254,6 +255,7 @@ export class GitClientService {
     preparedFiles: UpdateFile[];
     baseBranch: string;
     repositoryGroupName?: string;
+    pullRequestTitle?: string;
   }): Promise<string> {
     const {
       gitCli,
@@ -265,6 +267,7 @@ export class GitClientService {
       preparedFiles,
       baseBranch,
       repositoryGroupName,
+      pullRequestTitle,
     } = options;
 
     await gitCli.clone();
@@ -328,14 +331,14 @@ export class GitClientService {
         owner,
         repositoryName,
         repositoryGroupName,
-        pullRequestTitle: accumulativePullRequestTitle,
+        pullRequestTitle: `${accumulativePullRequestTitle} ${pullRequestTitle}`,
         pullRequestBody: accumulativePullRequestBody,
         branchName,
         baseBranchName: baseBranch,
       });
     }
 
-    if (sha) {
+    if (sha && pullRequest) {
       await this.provider.createPullRequestComment({
         where: {
           issueNumber: pullRequest.number,
@@ -347,7 +350,7 @@ export class GitClientService {
       });
     }
 
-    return pullRequest.url;
+    return pullRequest?.url || "";
   }
 
   private async applyPostCommit(diff, owner, repositoryName, gitCli) {
