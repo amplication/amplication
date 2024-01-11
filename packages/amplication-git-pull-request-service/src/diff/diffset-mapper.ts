@@ -1,6 +1,6 @@
+import { DiffVisitorFn } from "./diff.types";
 import { File } from "@amplication/util/git";
 import { DiffSet } from "dir-compare";
-import { DiffVisitorFn } from "./diff.types";
 
 /**
  * This method takes the diffSets and visitor functions and returns an array of modules.

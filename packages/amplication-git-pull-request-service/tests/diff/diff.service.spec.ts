@@ -1,6 +1,6 @@
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { DiffService } from "../../src/diff/diff.service";
 import { MOCK_BUILD_PATH_FACTORY } from "./mocks";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const resourceId = "resourceId";
 

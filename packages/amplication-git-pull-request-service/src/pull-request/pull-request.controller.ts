@@ -1,3 +1,15 @@
+import { Env } from "../env";
+import { PullRequestService } from "./pull-request.service";
+import { KafkaTopics } from "./pull-request.type";
+import {
+  CreatePrFailure,
+  CreatePrRequest,
+  CreatePrSuccess,
+} from "@amplication/schema-registry";
+import {
+  KafkaProducerService,
+  KafkaPacemaker,
+} from "@amplication/util/nestjs/kafka";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Controller, Inject } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -9,18 +21,6 @@ import {
 } from "@nestjs/microservices";
 import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
-import { Env } from "../env";
-import { PullRequestService } from "./pull-request.service";
-import { KafkaTopics } from "./pull-request.type";
-import {
-  KafkaProducerService,
-  KafkaPacemaker,
-} from "@amplication/util/nestjs/kafka";
-import {
-  CreatePrFailure,
-  CreatePrRequest,
-  CreatePrSuccess,
-} from "@amplication/schema-registry";
 
 @Controller()
 export class PullRequestController {

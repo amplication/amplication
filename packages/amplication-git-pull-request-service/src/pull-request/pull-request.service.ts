@@ -1,16 +1,16 @@
+import { DiffService } from "../diff/diff.service";
+import { Env } from "../env";
+import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
+import { CreatePrRequest } from "@amplication/schema-registry";
 import {
   EnumPullRequestMode,
   GitClientService,
   File,
   GitProvidersConfiguration,
 } from "@amplication/util/git";
-import { Env } from "../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { DiffService } from "../diff/diff.service";
-import { CreatePrRequest } from "@amplication/schema-registry";
-import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
 
 @Traceable()
 @Injectable()

@@ -1,10 +1,10 @@
+import { DiffModule } from "./diff/diff.module";
+import { Env } from "./env";
+import { PullRequestModule } from "./pull-request/pull-request.module";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { DiffModule } from "./diff/diff.module";
-import { PullRequestModule } from "./pull-request/pull-request.module";
-import { TracingModule } from "@amplication/util/nestjs/tracing";
-import { Env } from "./env";
 
 @Module({
   imports: [
