@@ -350,7 +350,7 @@ export class GitClientService {
       });
     }
 
-    return pullRequest?.url || "";
+    return pullRequest?.url ?? "";
   }
 
   private async applyPostCommit(diff, owner, repositoryName, gitCli) {
