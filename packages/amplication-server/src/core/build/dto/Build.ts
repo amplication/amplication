@@ -1,10 +1,10 @@
-import { Field, ObjectType } from "@nestjs/graphql";
 import { Commit, Resource } from "../../../models";
 import { BlockVersion } from "../../../models/BlockVersion";
 import { EntityVersion } from "../../../models/EntityVersion";
 import { User } from "../../../models/User";
 import { Action } from "../../action/dto/Action";
 import { EnumBuildStatus } from "./EnumBuildStatus";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

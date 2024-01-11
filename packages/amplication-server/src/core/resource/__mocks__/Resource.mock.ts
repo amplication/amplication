@@ -1,5 +1,5 @@
-import { EnumResourceType } from "../../../prisma";
 import { Resource } from "../../../models";
+import { EnumResourceType } from "../../../prisma";
 import { TEST_RESOURCE_ID } from "./resourceId.mock";
 
 export const TEST_SERVICE_RESOURCE_MOCK: Resource = {

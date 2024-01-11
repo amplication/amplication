@@ -1,6 +1,6 @@
-import { Field, ObjectType } from "@nestjs/graphql";
 import { IBlock } from "../../../models";
 import { MessagePattern } from "./messagePattern/MessagePattern";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

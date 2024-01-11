@@ -1,4 +1,3 @@
-import { Injectable } from "@nestjs/common";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { Resource, User } from "../../models";
@@ -10,6 +9,7 @@ import { DeleteTopicArgs } from "./dto/DeleteTopicArgs";
 import { FindManyTopicArgs } from "./dto/FindManyTopicArgs";
 import { Topic } from "./dto/Topic";
 import { UpdateTopicArgs } from "./dto/UpdateTopicArgs";
+import { Injectable } from "@nestjs/common";
 
 const DEFAULT_TOPIC_NAME = "topic.sample.v1";
 const DEFAULT_TOPIC_DISPLAY_NAME = "Topic Sample 1";

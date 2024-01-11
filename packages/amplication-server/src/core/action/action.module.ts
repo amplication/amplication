@@ -1,12 +1,12 @@
-import { Module } from "@nestjs/common";
 import { ExceptionFiltersModule } from "../../filters/exceptionFilters.module";
-import { PrismaModule } from "../../prisma/prisma.module";
 import { GqlAuthModule } from "../../guards/gql-auth.module";
+import { PrismaModule } from "../../prisma/prisma.module";
 import { PermissionsModule } from "../permissions/permissions.module";
-import { ActionService } from "./action.service";
-import { ActionResolver } from "./action.resolver";
-import { KafkaModule } from "@amplication/util/nestjs/kafka";
 import { UserActionController } from "./action.controller";
+import { ActionResolver } from "./action.resolver";
+import { ActionService } from "./action.service";
+import { KafkaModule } from "@amplication/util/nestjs/kafka";
+import { Module } from "@nestjs/common";
 
 @Module({
   imports: [

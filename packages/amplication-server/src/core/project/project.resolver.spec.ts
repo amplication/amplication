@@ -1,3 +1,12 @@
+import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Commit, Entity, Resource, User } from "../../models";
+import { Build } from "../build/dto/Build";
+import { Environment } from "../environment/dto";
+import { PendingChange } from "../resource/dto/PendingChange";
+import { ResourceService } from "../resource/resource.service";
+import { ProjectResolver } from "./project.resolver";
+import { ProjectService } from "./project.service";
 import {
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
@@ -15,15 +24,6 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ApolloServerBase } from "apollo-server-core";
 import { gql } from "apollo-server-express";
-import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Commit, Entity, Resource, User } from "../../models";
-import { Build } from "../build/dto/Build";
-import { Environment } from "../environment/dto";
-import { PendingChange } from "../resource/dto/PendingChange";
-import { ResourceService } from "../resource/resource.service";
-import { ProjectResolver } from "./project.resolver";
-import { ProjectService } from "./project.service";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";

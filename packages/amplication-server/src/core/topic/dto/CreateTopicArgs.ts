@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
 import { TopicCreateInput } from "./TopicCreateInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class CreateTopicArgs {

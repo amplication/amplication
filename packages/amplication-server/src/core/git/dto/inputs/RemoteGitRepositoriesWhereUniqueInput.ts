@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { EnumGitProvider } from "../enums/EnumGitProvider";
+import { Field, InputType } from "@nestjs/graphql";
 import { Min, Max, IsInt } from "class-validator";
 
 @InputType()

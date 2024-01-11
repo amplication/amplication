@@ -1,7 +1,7 @@
-import { mock } from "jest-mock-extended";
 import { BuildFilesSaver } from "./BuildFilesSaver";
 import { ConfigService } from "@nestjs/config";
 import fsExtra from "fs-extra";
+import { mock } from "jest-mock-extended";
 import { tmpdir } from "os";
 import { join } from "path";
 

@@ -1,8 +1,8 @@
+import { Commit } from "../models/Commit";
+import { Block } from "./Block";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-type-json";
 import type { JsonValue } from "type-fest";
-import { Commit } from "../models/Commit";
-import { Block } from "./Block";
 @ObjectType({
   isAbstract: true,
 })

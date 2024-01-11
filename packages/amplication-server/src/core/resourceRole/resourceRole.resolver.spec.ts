@@ -1,20 +1,20 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { ResourceRole } from "../../models";
+import { PrismaService } from "../../prisma/prisma.service";
+import { ResourceRoleResolver } from "./resourceRole.resolver";
+import { ResourceRoleService } from "./resourceRole.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   ApolloDriver,
   ApolloDriverConfig,
   getApolloServer,
 } from "@nestjs/apollo";
-import { PrismaService } from "../../prisma/prisma.service";
-import { gql } from "apollo-server-express";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
-import { GraphQLModule } from "@nestjs/graphql";
 import { ConfigService } from "@nestjs/config";
-import { ResourceRoleService } from "./resourceRole.service";
-import { ResourceRoleResolver } from "./resourceRole.resolver";
-import { ResourceRole } from "../../models";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { GraphQLModule } from "@nestjs/graphql";
+import { Test, TestingModule } from "@nestjs/testing";
 import { ApolloServerBase } from "apollo-server-core";
+import { gql } from "apollo-server-express";
 
 const EXAMPLE_RESOURCE_ROLE_ID = "EXAMPLE_APP_ROLE_ID";
 const EXAMPLE_NAME = "EXAMPLE_NAME";

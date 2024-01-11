@@ -1,11 +1,11 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { BlockTypeService } from "./blockType.service";
-import { BlockService } from "./block.service";
+import { FindOneArgs } from "../../dto";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { IBlock, BlockInputOutput, Block, User } from "../../models";
-import { FindManyBlockTypeArgs, CreateBlockArgs, UpdateBlockArgs } from "./dto";
-import { FindOneArgs } from "../../dto";
 import { DeleteUserArgs } from "../workspace/dto";
+import { BlockService } from "./block.service";
+import { BlockTypeService } from "./blockType.service";
+import { FindManyBlockTypeArgs, CreateBlockArgs, UpdateBlockArgs } from "./dto";
+import { Test, TestingModule } from "@nestjs/testing";
 
 const EXAMPLE_IBLOCK_ID = "exampleIblockId";
 const EXAMPLE_DISPLAY_NAME = "exampleDisplayName";

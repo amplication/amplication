@@ -1,14 +1,7 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import cuid from "cuid";
-import {
-  INVALID_RESOURCE_ID,
-  INVALID_DELETE_PROJECT_CONFIGURATION,
-  ResourceService,
-} from "./resource.service";
-import { PrismaService, EnumResourceType, Prisma } from "../../prisma";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import {
   Account,
   BlockVersion,
@@ -23,10 +16,15 @@ import { Entity } from "../../models/Entity";
 import { EntityField } from "../../models/EntityField";
 import { Resource } from "../../models/Resource";
 import { User } from "../../models/User";
+import { PrismaService, EnumResourceType, Prisma } from "../../prisma";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { prepareDeletedItemName } from "../../util/softDelete";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { BillingService } from "../billing/billing.service";
 import { BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
 import { Build } from "../build/dto/Build";
+import entitiesToCopy from "../entity/__mocks__/entitiesToCopy";
 import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from "../entity/constants";
 import { EntityService } from "../entity/entity.service";
 import { Environment } from "../environment/dto/Environment";
@@ -34,6 +32,22 @@ import {
   DEFAULT_ENVIRONMENT_NAME,
   EnvironmentService,
 } from "../environment/environment.service";
+import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ProjectService } from "../project/project.service";
+import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
+import { ServiceSettings } from "../serviceSettings/dto";
+import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
+import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
+import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
+import { Topic } from "../topic/dto/Topic";
+import { TopicService } from "../topic/topic.service";
+import { ReservedEntityNameError } from "./ReservedEntityNameError";
+import { DEFAULT_RESOURCE_COLORS } from "./constants";
 import {
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
@@ -41,31 +55,17 @@ import {
   ResourceCreateWithEntitiesResult,
 } from "./dto";
 import { PendingChange } from "./dto/PendingChange";
-import { ReservedEntityNameError } from "./ReservedEntityNameError";
-import { ServiceSettings } from "../serviceSettings/dto";
-import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
-import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { DEFAULT_RESOURCE_COLORS } from "./constants";
-import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
-import { ProjectService } from "../project/project.service";
-import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
-import { TopicService } from "../topic/topic.service";
-import { Topic } from "../topic/dto/Topic";
-import { ConfigService } from "@nestjs/config";
-import { BillingService } from "../billing/billing.service";
+import {
+  INVALID_RESOURCE_ID,
+  INVALID_DELETE_PROJECT_CONFIGURATION,
+  ResourceService,
+} from "./resource.service";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
-import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
-import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
-import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
-import { MeteredEntitlement } from "@stigg/node-server-sdk";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { SubscriptionService } from "../subscription/subscription.service";
-import entitiesToCopy from "../entity/__mocks__/entitiesToCopy";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { ConfigService } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
+import { MeteredEntitlement } from "@stigg/node-server-sdk";
+import cuid from "cuid";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";

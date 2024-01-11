@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
 import { CommitCreateInput } from "./CommitCreateInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class CreateCommitArgs {

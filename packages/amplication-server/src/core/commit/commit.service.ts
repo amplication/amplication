@@ -1,11 +1,11 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../prisma/prisma.service";
-import { FindOneCommitArgs } from "./dto/FindOneCommitArgs";
-import { FindManyCommitArgs } from "./dto/FindManyCommitArgs";
 import { Commit } from "../../models";
-import { PendingChange } from "../resource/dto";
-import { EntityService } from "../entity/entity.service";
+import { PrismaService } from "../../prisma/prisma.service";
 import { BlockService } from "../block/block.service";
+import { EntityService } from "../entity/entity.service";
+import { PendingChange } from "../resource/dto";
+import { FindManyCommitArgs } from "./dto/FindManyCommitArgs";
+import { FindOneCommitArgs } from "./dto/FindOneCommitArgs";
+import { Injectable } from "@nestjs/common";
 @Injectable()
 export class CommitService {
   constructor(

@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
 import { SignupInput } from "./signup.input";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class SignupArgs {

@@ -1,8 +1,8 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { User } from "./User";
 import { Build } from "../core/build/dto/Build";
 import { PendingChange } from "../core/resource/dto/PendingChange";
 import { Project } from "./Project";
+import { User } from "./User";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

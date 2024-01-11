@@ -1,37 +1,37 @@
-import { UseFilters, UseGuards } from "@nestjs/common";
-import { Args, Mutation, Query } from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
+import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
-import { Resource } from "../../models/Resource";
-import { GitOrganization } from "../../models/GitOrganization";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { GitRepository, User } from "../../models";
+import { GitOrganization } from "../../models/GitOrganization";
+import { Resource } from "../../models/Resource";
 import { AuthorizeResourceWithGitResult } from "../resource/dto/AuthorizeResourceWithGitResult";
+import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
 import { ConnectGitRepositoryArgs } from "./dto/args/ConnectGitRepositoryArgs";
+import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGitRepositoryArgs";
 import { CreateGitOrganizationArgs } from "./dto/args/CreateGitOrganizationArgs";
 import { CreateGitRepositoryArgs } from "./dto/args/CreateGitRepositoryArgs";
+import { CreateGitRepositoryBaseArgs } from "./dto/args/CreateGitRepositoryBaseArgs";
 import { DeleteGitOrganizationArgs } from "./dto/args/DeleteGitOrganizationArgs";
 import { DeleteGitRepositoryArgs } from "./dto/args/DeleteGitRepositoryArgs";
+import { DisconnectGitRepositoryArgs } from "./dto/args/DisconnectGitRepositoryArgs";
 import { GetGitInstallationUrlArgs } from "./dto/args/GetGitInstallationUrlArgs";
-import { RemoteGitRepositoriesFindManyArgs } from "./dto/args/RemoteGitRepositoriesFindManyArgs";
+import { GitGroupArgs } from "./dto/args/GitGroupArgs";
 import { GitOrganizationFindManyArgs } from "./dto/args/GitOrganizationFindManyArgs";
+import { RemoteGitRepositoriesFindManyArgs } from "./dto/args/RemoteGitRepositoriesFindManyArgs";
+import { UpdateGitRepositoryArgs } from "./dto/args/UpdateGitRepositoryArgs";
+import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
 import {
   RemoteGitRepos,
   RemoteGitRepository,
 } from "./dto/objects/RemoteGitRepository";
 import { GitProviderService } from "./git.provider.service";
-import { DisconnectGitRepositoryArgs } from "./dto/args/DisconnectGitRepositoryArgs";
-import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGitRepositoryArgs";
-import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
-import { CreateGitRepositoryBaseArgs } from "./dto/args/CreateGitRepositoryBaseArgs";
-import { GitGroupArgs } from "./dto/args/GitGroupArgs";
-import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
-import { GitRepository, User } from "../../models";
-import { UserEntity } from "../../decorators/user.decorator";
-import { UpdateGitRepositoryArgs } from "./dto/args/UpdateGitRepositoryArgs";
+import { UseFilters, UseGuards } from "@nestjs/common";
+import { Args, Mutation, Query } from "@nestjs/graphql";
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)

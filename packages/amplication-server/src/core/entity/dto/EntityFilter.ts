@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { EntityWhereInput } from "./EntityWhereInput";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

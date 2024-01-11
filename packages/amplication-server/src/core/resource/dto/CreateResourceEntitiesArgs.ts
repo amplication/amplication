@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
 import { ResourceCreateCopiedEntitiesInput } from "./ResourceCreateCopiedEntitiesInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class CreateResourceEntitiesArgs {

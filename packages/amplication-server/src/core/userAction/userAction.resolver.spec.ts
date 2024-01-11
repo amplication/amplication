@@ -1,28 +1,28 @@
-import { INestApplication } from "@nestjs/common";
-import { ApolloServerBase } from "apollo-server-core";
-import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Test } from "@nestjs/testing";
+import { Resource, User } from "../../models";
+import { EnumUserActionType } from "../../prisma";
+import { ActionService } from "../action/action.service";
+import { Action } from "../action/dto";
+import { Build } from "../build/dto/Build";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { ResourceService } from "../resource/resource.service";
+import { UserService } from "../user/user.service";
+import { UserAction } from "./dto";
+import { EnumUserActionStatus } from "./types";
 import { UserActionResolver } from "./userAction.resolver";
 import { UserActionService } from "./userAction.service";
-import { ActionService } from "../action/action.service";
-import { Resource, User } from "../../models";
-import { Action } from "../action/dto";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { Build } from "../build/dto/Build";
-import { UserService } from "../user/user.service";
-import { ResourceService } from "../resource/resource.service";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import {
   ApolloDriver,
   ApolloDriverConfig,
   getApolloServer,
 } from "@nestjs/apollo";
-import { gql } from "apollo-server-express";
-import { UserAction } from "./dto";
-import { EnumUserActionType } from "../../prisma";
+import { INestApplication } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
-import { EnumUserActionStatus } from "./types";
+import { Test } from "@nestjs/testing";
+import { ApolloServerBase } from "apollo-server-core";
+import { gql } from "apollo-server-express";
 
 const EXAMPLE_USER_ACTION_ID = "exampleUserActionId";
 const EXAMPLE_BUILD_ID = "exampleBuildId";

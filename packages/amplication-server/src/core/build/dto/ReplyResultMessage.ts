@@ -1,5 +1,5 @@
-import { IsNumber, ValidateNested } from "class-validator";
 import { ReplyStatusEnum } from "./ReplyStatusEnum";
+import { IsNumber, ValidateNested } from "class-validator";
 
 export class ReplyResultMessage<Dto> {
   @ValidateNested()

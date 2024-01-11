@@ -1,43 +1,38 @@
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { Prisma, PrismaService } from "../../prisma";
-import { orderBy } from "lodash";
-import * as CodeGenTypes from "@amplication/code-gen-types";
+import { Env } from "../../env";
 import { ResourceRole, User } from "../../models";
-import { Build } from "./dto/Build";
-import { CreateBuildArgs } from "./dto/CreateBuildArgs";
-import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
-import { EnumBuildStatus } from "./dto/EnumBuildStatus";
-import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
-import { EntityService } from "../entity/entity.service";
-import { ResourceRoleService } from "../resourceRole/resourceRole.service";
-import { ResourceService } from "../resource/resource.service";
+import { Prisma, PrismaService } from "../../prisma";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { ActionService } from "../action/action.service";
 import {
   EnumActionStepStatus,
   EnumActionLogLevel,
   ActionStep,
 } from "../action/dto";
-import { UserService } from "../user/user.service";
-import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { ActionService } from "../action/action.service";
-import { CommitService } from "../commit/commit.service";
-import { previousBuild } from "./utils";
-import { TopicService } from "../topic/topic.service";
-import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
-import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import { ModuleActionService } from "../moduleAction/moduleAction.service";
-import { ModuleService } from "../module/module.service";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { Env } from "../../env";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
-import {
-  EnumGitProvider,
-  EnumPullRequestMode,
-  GitProviderProperties,
-} from "@amplication/util/git";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { ILogger } from "@amplication/util/logging";
+import { CommitService } from "../commit/commit.service";
+import { EntityService } from "../entity/entity.service";
+import { GitProviderService } from "../git/git.provider.service";
+import { ModuleService } from "../module/module.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { CodeGeneratorVersionStrategy } from "../resource/dto";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { ResourceService } from "../resource/resource.service";
+import { ResourceRoleService } from "../resourceRole/resourceRole.service";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
+import { TopicService } from "../topic/topic.service";
+import { UserService } from "../user/user.service";
+import { Build } from "./dto/Build";
+import { CreateBuildArgs } from "./dto/CreateBuildArgs";
+import { EnumBuildStatus } from "./dto/EnumBuildStatus";
+import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
+import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
+import { previousBuild } from "./utils";
+import * as CodeGenTypes from "@amplication/code-gen-types";
 import {
   CanUserAccessBuild,
   CodeGenerationLog,
@@ -49,14 +44,19 @@ import {
   KAFKA_TOPICS,
   UserBuild,
 } from "@amplication/schema-registry";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { GitProviderService } from "../git/git.provider.service";
 import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+  EnumGitProvider,
+  EnumPullRequestMode,
+  GitProviderProperties,
+} from "@amplication/util/git";
+import { ILogger } from "@amplication/util/logging";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { orderBy } from "lodash";
 import { kebabCase } from "lodash";
-import { CodeGeneratorVersionStrategy } from "../resource/dto";
 
 const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",

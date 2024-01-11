@@ -1,12 +1,12 @@
-import { TestingModule, Test } from "@nestjs/testing";
-import * as NestJsGraphQL from "@nestjs/graphql";
+import { InjectableOriginParameter } from "../enums/InjectableOriginParameter";
 import {
   InjectContextInterceptor,
   InjectContextValueParameters,
   INJECT_CONTEXT_VALUE,
 } from "./inject-context.interceptor";
 import { Reflector } from "@nestjs/core";
-import { InjectableOriginParameter } from "../enums/InjectableOriginParameter";
+import * as NestJsGraphQL from "@nestjs/graphql";
+import { TestingModule, Test } from "@nestjs/testing";
 
 const EXAMPLE_HANDLER = () => null;
 const EXAMPLE_INJECT_CONTEXT_VALUE_PARAMETERS: InjectContextValueParameters = {

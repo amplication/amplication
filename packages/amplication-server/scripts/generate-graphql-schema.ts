@@ -2,10 +2,10 @@
  * Generates a GraphQL schema according to server code
  */
 
-import { NestFactory } from "@nestjs/core";
-import { PrismaClient } from "../src/prisma";
 import { AppModule } from "../src/app.module";
+import { PrismaClient } from "../src/prisma";
 import { Logger } from "@amplication/util/logging";
+import { NestFactory } from "@nestjs/core";
 const logger = new Logger({
   isProduction: false,
   component: "generate-graphql-schema",

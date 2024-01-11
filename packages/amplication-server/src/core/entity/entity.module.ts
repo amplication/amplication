@@ -1,17 +1,17 @@
-import { Module } from "@nestjs/common";
-import { JsonSchemaValidationModule } from "../../services/jsonSchemaValidation.module";
-import { DiffModule } from "../../services/diff.module";
-import { EntityService } from "./entity.service";
-import { EntityResolver } from "./entity.resolver";
-import { EntityVersionResolver } from "./entityVersion.resolver";
-import { PermissionsModule } from "../permissions/permissions.module";
-import { UserModule } from "../user/user.module";
 import { PrismaModule } from "../../prisma";
-import { PrismaSchemaParserModule } from "../prismaSchemaParser/prismaSchemaParser.module";
+import { DiffModule } from "../../services/diff.module";
+import { JsonSchemaValidationModule } from "../../services/jsonSchemaValidation.module";
 import { BillingModule } from "../billing/billing.module";
-import { ServiceSettingsModule } from "../serviceSettings/serviceSettings.module";
 import { ModuleModule } from "../module/module.module";
 import { ModuleActionModule } from "../moduleAction/moduleAction.module";
+import { PermissionsModule } from "../permissions/permissions.module";
+import { PrismaSchemaParserModule } from "../prismaSchemaParser/prismaSchemaParser.module";
+import { ServiceSettingsModule } from "../serviceSettings/serviceSettings.module";
+import { UserModule } from "../user/user.module";
+import { EntityResolver } from "./entity.resolver";
+import { EntityService } from "./entity.service";
+import { EntityVersionResolver } from "./entityVersion.resolver";
+import { Module } from "@nestjs/common";
 
 @Module({
   imports: [

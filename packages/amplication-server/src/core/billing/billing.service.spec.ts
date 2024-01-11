@@ -1,14 +1,19 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { BillingService } from "./billing.service";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { GitOrganization, GitRepository, Project, User } from "../../models";
+import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../../prisma";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
+import { BillingService } from "./billing.service";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import {
   BillingPlan,
   BillingFeature,
   BillingAddon,
 } from "@amplication/util-billing-types";
+import { ConfigService } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
 import Stigg, {
   BooleanEntitlement,
   FullSubscription,
@@ -16,11 +21,6 @@ import Stigg, {
   SubscriptionStatus,
   UsageUpdateBehavior,
 } from "@stigg/node-server-sdk";
-import { GitOrganization, GitRepository, Project, User } from "../../models";
-import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../../prisma";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 jest.mock("@stigg/node-server-sdk");
 Stigg.initialize = jest.fn().mockReturnValue(Stigg.prototype);

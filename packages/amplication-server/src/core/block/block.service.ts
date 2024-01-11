@@ -1,17 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from "@nestjs/common";
-import type { JsonObject, JsonValue } from "type-fest";
-import { pick, head, last } from "lodash";
-import {
-  Block as PrismaBlock,
-  BlockVersion as PrismaBlockVersion,
-  Prisma,
-  PrismaService,
-} from "../../prisma";
-import { DiffService } from "../../services/diff.service";
+import { FindOneArgs } from "../../dto";
+import { JsonFilter } from "../../dto/JsonFilter";
+import { EnumBlockType } from "../../enums/EnumBlockType";
 import {
   Block,
   BlockVersion,
@@ -21,9 +10,21 @@ import {
   Resource,
 } from "../../models";
 import {
+  Block as PrismaBlock,
+  BlockVersion as PrismaBlockVersion,
+  Prisma,
+  PrismaService,
+} from "../../prisma";
+import { DiffService } from "../../services/diff.service";
+import {
   prepareDeletedItemName,
   revertDeletedItemName,
 } from "../../util/softDelete";
+import {
+  EnumPendingChangeOriginType,
+  EnumPendingChangeAction,
+  PendingChange,
+} from "../resource/dto";
 import {
   CreateBlockArgs,
   UpdateBlockArgs,
@@ -33,15 +34,14 @@ import {
   FindManyBlockVersionArgs,
   LockBlockArgs,
 } from "./dto";
-import { FindOneArgs } from "../../dto";
-import { EnumBlockType } from "../../enums/EnumBlockType";
-import {
-  EnumPendingChangeOriginType,
-  EnumPendingChangeAction,
-  PendingChange,
-} from "../resource/dto";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
-import { JsonFilter } from "../../dto/JsonFilter";
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from "@nestjs/common";
+import { pick, head, last } from "lodash";
+import type { JsonObject, JsonValue } from "type-fest";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);

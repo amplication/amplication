@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { PasswordService } from "./password.service";
 import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
-import { PasswordService } from "./password.service";
 import * as bcrypt from "bcrypt";
 
 const EXAMPLE_PASSWORD = "examplePassword";

@@ -1,12 +1,12 @@
-import { Prisma, PrismaService } from "../../prisma";
-import { Test, TestingModule } from "@nestjs/testing";
 import { Role } from "../../enums/Role";
 import { Account, User, UserRole } from "../../models";
-import { UserService } from "./user.service";
+import { Prisma, PrismaService } from "../../prisma";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { BillingService } from "../billing/billing.service";
+import { UserService } from "./user.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { Test, TestingModule } from "@nestjs/testing";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_ROLE_ID = "exampleRoleId";

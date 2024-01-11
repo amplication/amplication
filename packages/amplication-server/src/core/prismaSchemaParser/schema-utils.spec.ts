@@ -1,3 +1,7 @@
+import { EnumDataType } from "../../enums/EnumDataType";
+import { EnumActionLogLevel } from "../action/dto";
+import { ActionContext } from "../userAction/types";
+import { ARG_KEY_FIELD_NAME, RELATION_ATTRIBUTE_NAME } from "./constants";
 import {
   findFkFieldNameOnAnnotatedField,
   handleModelNamesCollision,
@@ -6,7 +10,7 @@ import {
   prepareFieldAttributes,
   handleEnumMapAttribute,
 } from "./schema-utils";
-import { ARG_KEY_FIELD_NAME, RELATION_ATTRIBUTE_NAME } from "./constants";
+import { Mapper } from "./types";
 import {
   Attribute,
   BlockAttribute,
@@ -14,10 +18,6 @@ import {
   Field,
   Model,
 } from "@mrleebo/prisma-ast";
-import { Mapper } from "./types";
-import { EnumDataType } from "../../enums/EnumDataType";
-import { EnumActionLogLevel } from "../action/dto";
-import { ActionContext } from "../userAction/types";
 
 describe("schema-utils", () => {
   beforeEach(() => {

@@ -1,12 +1,12 @@
-import { Test } from "@nestjs/testing";
-import { PrismaSchemaParserService } from "./prismaSchemaParser.service";
-import { ExistingEntitySelect } from "./types";
-import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { EnumActionLogLevel } from "../action/dto";
+import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { ActionContext } from "../userAction/types";
+import { PrismaSchemaParserService } from "./prismaSchemaParser.service";
+import { ExistingEntitySelect } from "./types";
 import * as validators from "./validators";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { Test } from "@nestjs/testing";
 
 describe("prismaSchemaParser", () => {
   let service: PrismaSchemaParserService;

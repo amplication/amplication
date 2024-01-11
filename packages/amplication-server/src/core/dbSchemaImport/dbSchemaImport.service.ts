@@ -1,24 +1,24 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { EntityService, UserService } from "..";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { User } from "../../models";
+import { PrismaService } from "../../prisma";
+import { ActionService } from "../action/action.service";
+import { ActionStep } from "../action/dto";
+import { UserAction } from "../userAction/dto";
+import { EnumUserActionType } from "../userAction/types";
+import { UserActionService } from "../userAction/userAction.service";
+import { PROCESSING_PRISMA_SCHEMA, initialStepData } from "./constants";
+import { CreateDBSchemaImportArgs } from "./dto/CreateDBSchemaImportArgs";
+import { DBSchemaImportMetadata } from "./types";
+import { isDBImportMetadata } from "./utils/type-guards";
 import {
   DBSchemaImportRequest,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
-import { User } from "../../models";
-import { PrismaService } from "../../prisma";
-import { ConfigService } from "@nestjs/config";
-import { EntityService, UserService } from "..";
-import { EnumUserActionType } from "../userAction/types";
-import { AmplicationError } from "../../errors/AmplicationError";
-import { isDBImportMetadata } from "./utils/type-guards";
-import { UserAction } from "../userAction/dto";
-import { PROCESSING_PRISMA_SCHEMA, initialStepData } from "./constants";
-import { ActionStep } from "../action/dto";
-import { ActionService } from "../action/action.service";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { UserActionService } from "../userAction/userAction.service";
-import { DBSchemaImportMetadata } from "./types";
-import { CreateDBSchemaImportArgs } from "./dto/CreateDBSchemaImportArgs";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class DBSchemaImportService {

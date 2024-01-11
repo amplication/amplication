@@ -1,12 +1,12 @@
-import { Test } from "@nestjs/testing";
-import { Response } from "express";
+import { AuthService } from "..";
+import { Env } from "../../env";
 import { AuthController } from "./auth.controller";
 import { GitHubRequest } from "./types";
-import { ModuleMocker, MockFunctionMetadata } from "jest-mock";
-import { AuthService } from "..";
-import { ConfigService } from "@nestjs/config";
-import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ConfigService } from "@nestjs/config";
+import { Test } from "@nestjs/testing";
+import { Response } from "express";
+import { ModuleMocker, MockFunctionMetadata } from "jest-mock";
 
 const moduleMocker = new ModuleMocker(global);
 

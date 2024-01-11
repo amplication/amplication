@@ -1,27 +1,27 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Commit, Resource, User } from "../../models";
+import { ActionService } from "../action/action.service";
+import { Action } from "../action/dto";
+import { CommitService } from "../commit/commit.service";
+import { ResourceService } from "../resource/resource.service";
+import { UserService } from "../user/user.service";
+import { BuildResolver } from "./build.resolver";
+import { BuildService } from "./build.service";
+import { Build } from "./dto/Build";
+import { EnumBuildStatus } from "./dto/EnumBuildStatus";
+import { EnumResourceType } from "@amplication/code-gen-types/models";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   ApolloDriver,
   ApolloDriverConfig,
   getApolloServer,
 } from "@nestjs/apollo";
-import { gql } from "apollo-server-express";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
-import { GraphQLModule } from "@nestjs/graphql";
 import { ConfigService } from "@nestjs/config";
-import { BuildResolver } from "./build.resolver";
-import { BuildService } from "./build.service";
-import { ActionService } from "../action/action.service";
-import { UserService } from "../user/user.service";
-import { Build } from "./dto/Build";
-import { Commit, Resource, User } from "../../models";
-import { Action } from "../action/dto";
-import { EnumBuildStatus } from "./dto/EnumBuildStatus";
-import { CommitService } from "../commit/commit.service";
-import { EnumResourceType } from "@amplication/code-gen-types/models";
-import { ResourceService } from "../resource/resource.service";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { GraphQLModule } from "@nestjs/graphql";
+import { Test, TestingModule } from "@nestjs/testing";
 import { ApolloServerBase } from "apollo-server-core";
+import { gql } from "apollo-server-express";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";

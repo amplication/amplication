@@ -1,7 +1,7 @@
+import { EnumActionLogLevel } from "./EnumActionLogLevel";
+import { ObjectType, Field } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-type-json";
 import type { JsonValue } from "type-fest";
-import { ObjectType, Field } from "@nestjs/graphql";
-import { EnumActionLogLevel } from "./EnumActionLogLevel";
 
 const DEFAULT_VALUES: ActionLog = {
   id: "",

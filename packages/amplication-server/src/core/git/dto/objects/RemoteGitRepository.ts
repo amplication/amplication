@@ -1,5 +1,5 @@
-import { ObjectType, Field } from "@nestjs/graphql";
 import { Pagination } from "./Pagination";
+import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

@@ -1,6 +1,6 @@
-import { ArgsType, Field } from "@nestjs/graphql";
-import { WorkspaceUpdateInput } from "./WorkspaceUpdateInput";
 import { WhereUniqueInput } from "../../../dto";
+import { WorkspaceUpdateInput } from "./WorkspaceUpdateInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class UpdateOneWorkspaceArgs {

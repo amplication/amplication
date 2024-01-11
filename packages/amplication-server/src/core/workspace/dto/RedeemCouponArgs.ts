@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
 import { RedeemCouponInput } from "./RedeemCouponInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class RedeemCouponArgs {

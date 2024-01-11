@@ -1,11 +1,11 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { Project, Resource, Workspace } from "../../models";
+import { EnumResourceType, PrismaService } from "../../prisma";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { BillingService } from "../billing/billing.service";
 import { SubscriptionService } from "./subscription.service";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { EnumResourceType, PrismaService } from "../../prisma";
-import { BillingService } from "../billing/billing.service";
+import { Test, TestingModule } from "@nestjs/testing";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { Project, Resource, Workspace } from "../../models";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_PROJECT_ID_1 = "exampleProjectId_1";

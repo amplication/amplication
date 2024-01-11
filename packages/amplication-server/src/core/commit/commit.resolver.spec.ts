@@ -1,21 +1,21 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Commit, User } from "../../models";
+import { BuildService } from "../build/build.service";
+import { UserService } from "../user/user.service";
+import { CommitResolver } from "./commit.resolver";
+import { CommitService } from "./commit.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   ApolloDriver,
   ApolloDriverConfig,
   getApolloServer,
 } from "@nestjs/apollo";
-import { gql } from "apollo-server-express";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
-import { GraphQLModule } from "@nestjs/graphql";
 import { ConfigService } from "@nestjs/config";
-import { CommitService } from "./commit.service";
-import { Commit, User } from "../../models";
-import { UserService } from "../user/user.service";
-import { BuildService } from "../build/build.service";
-import { CommitResolver } from "./commit.resolver";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { GraphQLModule } from "@nestjs/graphql";
+import { Test, TestingModule } from "@nestjs/testing";
 import { ApolloServerBase } from "apollo-server-core";
+import { gql } from "apollo-server-express";
 
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
 const EXAMPLE_USER_ID = "exampleUserId";

@@ -1,5 +1,5 @@
-import { Field, ObjectType } from "@nestjs/graphql";
 import { EnumMessagePatternConnectionOptions } from "./EnumMessagePatternConnectionOptions";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 export class MessagePattern {

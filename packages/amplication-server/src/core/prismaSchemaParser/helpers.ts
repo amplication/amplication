@@ -1,6 +1,4 @@
-import { Enum, Field, Func, Model, Schema } from "@mrleebo/prisma-ast";
-import pluralize from "pluralize";
-import { sentenceCase } from "sentence-case";
+import { EnumDataType } from "../../prisma";
 import { isReservedName } from "../entity/reservedNames";
 import {
   DEFAULT_ATTRIBUTE_NAME,
@@ -12,10 +10,12 @@ import {
   UPDATED_AT_ATTRIBUTE_NAME,
   idTypePropertyMapByPrismaFieldType,
 } from "./constants";
-import { EnumDataType } from "../../prisma";
-import { ScalarType } from "prisma-schema-dsl-types";
-import { camelCase, upperFirst } from "lodash";
 import { Mapper } from "./types";
+import { Enum, Field, Func, Model, Schema } from "@mrleebo/prisma-ast";
+import { camelCase, upperFirst } from "lodash";
+import pluralize from "pluralize";
+import { ScalarType } from "prisma-schema-dsl-types";
+import { sentenceCase } from "sentence-case";
 
 export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);

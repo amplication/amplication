@@ -1,5 +1,3 @@
-import { ConfigService } from "@nestjs/config";
-import { Test, TestingModule } from "@nestjs/testing";
 import {
   GitHubStrategyConfigService,
   GITHUB_CLIENT_ID_VAR,
@@ -8,6 +6,8 @@ import {
   GITHUB_SCOPE_VAR,
   MISSING_CLIENT_SECRET_ERROR,
 } from "./githubStrategyConfig.service";
+import { ConfigService } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
 
 const EXAMPLE_GITHUB_CLIENT_ID = "EXAMPLE_GITHUB_CLIENT_ID";
 const EXAMPLE_GITHUB_CLIENT_SECRET = "EXAMPLE_GITHUB_CLIENT_SECRET";

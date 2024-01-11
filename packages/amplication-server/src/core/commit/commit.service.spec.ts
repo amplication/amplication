@@ -1,9 +1,9 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { PrismaService } from "../../prisma/prisma.service";
 import { Commit } from "../../models";
-import { CommitService } from "./commit.service";
-import { EntityService } from "../entity/entity.service";
+import { PrismaService } from "../../prisma/prisma.service";
 import { BlockService } from "../block/block.service";
+import { EntityService } from "../entity/entity.service";
+import { CommitService } from "./commit.service";
+import { Test, TestingModule } from "@nestjs/testing";
 
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
 const EXAMPLE_USER_ID = "exampleUserId";

@@ -1,16 +1,16 @@
-import { Injectable } from "@nestjs/common";
+import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
-import { IBlock, User } from "../../models";
+import { JsonFilter } from "../../dto/JsonFilter";
 import { EnumBlockType } from "../../enums/EnumBlockType";
+import { IBlock, User } from "../../models";
 import { BlockService } from "../block/block.service";
 import {
   CreateBlockArgs,
   FindManyBlockTypeArgs,
   UpdateBlockArgs,
 } from "../block/dto";
-import { UserEntity } from "../../decorators/user.decorator";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
-import { JsonFilter } from "../../dto/JsonFilter";
+import { Injectable } from "@nestjs/common";
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,

@@ -1,21 +1,21 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { Subscription } from "./dto/Subscription";
-import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "./dto";
 import {
   PrismaService,
   Prisma,
   EnumSubscriptionStatus as PrismaEnumSubscriptionStatus,
 } from "../../prisma";
-import { UpsertSubscriptionInput } from "./dto/UpsertSubscriptionInput";
-import { BillingService } from "../billing/billing.service";
-import { UpdateStatusDto } from "./dto/UpdateStatusDto";
 import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { BillingService } from "../billing/billing.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "./dto";
+import { Subscription } from "./dto/Subscription";
+import { UpdateStatusDto } from "./dto/UpdateStatusDto";
+import { UpsertSubscriptionInput } from "./dto/UpsertSubscriptionInput";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { Inject, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class SubscriptionService {

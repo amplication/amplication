@@ -1,19 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-import cuid from "cuid";
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  BadRequestException,
-  Inject,
-} from "@nestjs/common";
-import { DataConflictError } from "../../errors/DataConflictError";
-import { Prisma, PrismaService } from "../../prisma";
+import { SchemaValidationResult } from "../../dto/schemaValidationResult";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { EnumEntityAction } from "../../enums/EnumEntityAction";
 import { AmplicationError } from "../../errors/AmplicationError";
-import { camelCase } from "camel-case";
-import { isEmpty, pick, last, head, omit, isEqual } from "lodash";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { DataConflictError } from "../../errors/DataConflictError";
 import {
   Entity,
   EntityField,
@@ -24,18 +17,32 @@ import {
   EntityPermissionField,
   Resource,
 } from "../../models";
-import type { JsonObject } from "type-fest";
-import {
-  getSchemaForDataType,
-  LookupResolvedProperties,
-  types,
-} from "@amplication/code-gen-types";
-import { JsonSchemaValidationService } from "../../services/jsonSchemaValidation.service";
+import { Prisma, PrismaService } from "../../prisma";
 import { DiffService } from "../../services/diff.service";
-import { SchemaValidationResult } from "../../dto/schemaValidationResult";
-import { EnumDataType } from "../../enums/EnumDataType";
-import { EnumEntityAction } from "../../enums/EnumEntityAction";
-import { isReservedName } from "./reservedNames";
+import { JsonSchemaValidationService } from "../../services/jsonSchemaValidation.service";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import {
+  prepareDeletedItemName,
+  revertDeletedItemName,
+} from "../../util/softDelete";
+import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
+import { BillingService } from "../billing/billing.service";
+import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForEntityNotFoundError";
+import { ModuleService } from "../module/module.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
+import { ReservedNameError } from "../resource/ReservedNameError";
+import {
+  EnumPendingChangeOriginType,
+  EnumPendingChangeAction,
+  PendingChange,
+} from "../resource/dto";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ActionContext } from "../userAction/types";
 import {
   CURRENT_VERSION_NUMBER,
   INITIAL_ENTITY_FIELDS,
@@ -46,17 +53,6 @@ import {
   DATA_TYPE_TO_DEFAULT_PROPERTIES,
   INITIAL_ID_TYPE_FIELDS,
 } from "./constants";
-import {
-  prepareDeletedItemName,
-  revertDeletedItemName,
-} from "../../util/softDelete";
-
-import {
-  EnumPendingChangeOriginType,
-  EnumPendingChangeAction,
-  PendingChange,
-} from "../resource/dto";
-
 import {
   CreateOneEntityFieldArgs,
   CreateOneEntityFieldByDisplayNameArgs,
@@ -78,24 +74,26 @@ import {
   DeleteEntityPermissionFieldArgs,
   EntityCreateInput,
 } from "./dto";
-import { ReservedNameError } from "../resource/ReservedNameError";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { isReservedName } from "./reservedNames";
 import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
-import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
-import { BillingService } from "../billing/billing.service";
+  getSchemaForDataType,
+  LookupResolvedProperties,
+  types,
+} from "@amplication/code-gen-types";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { ActionContext } from "../userAction/types";
-import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { ModuleService } from "../module/module.service";
-import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForEntityNotFoundError";
-import { ModuleActionService } from "../moduleAction/moduleAction.service";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+  Inject,
+} from "@nestjs/common";
+import { camelCase } from "camel-case";
+import cuid from "cuid";
+import { isEmpty, pick, last, head, omit, isEqual } from "lodash";
 import { pascalCase } from "pascal-case";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import type { JsonObject } from "type-fest";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,

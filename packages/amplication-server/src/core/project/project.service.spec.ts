@@ -1,7 +1,5 @@
-import { PrismaService } from "../../prisma/prisma.service";
-import { Test, TestingModule } from "@nestjs/testing";
-import { ProjectService } from "./project.service";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import {
   Account,
   Block,
@@ -14,29 +12,31 @@ import {
   User,
   Workspace,
 } from "../../models";
-import { Environment } from "../environment/dto";
+import { PrismaService } from "../../prisma/prisma.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { prepareDeletedItemName } from "../../util/softDelete";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { BillingService } from "../billing/billing.service";
+import { BlockService } from "../block/block.service";
+import { BuildService } from "../build/build.service";
 import { Build } from "../build/dto/Build";
+import { CURRENT_VERSION_NUMBER } from "../entity/constants";
+import { EntityService } from "../entity/entity.service";
+import { Environment } from "../environment/dto";
+import { GitProviderService } from "../git/git.provider.service";
+import { PendingChange } from "../resource/dto/PendingChange";
+import { ResourceService } from "../resource/resource.service";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { ProjectService } from "./project.service";
 import {
   EnumResourceType,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
 } from "@amplication/code-gen-types/models";
-import { PendingChange } from "../resource/dto/PendingChange";
-import { ResourceService } from "../resource/resource.service";
-import { BuildService } from "../build/build.service";
-import { EntityService } from "../entity/entity.service";
-import { EnumBlockType } from "../../enums/EnumBlockType";
-import { CURRENT_VERSION_NUMBER } from "../entity/constants";
-import { BlockService } from "../block/block.service";
-import { ConfigService } from "@nestjs/config";
-import { BillingService } from "../billing/billing.service";
-import { prepareDeletedItemName } from "../../util/softDelete";
-import { GitProviderService } from "../git/git.provider.service";
-import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { SubscriptionService } from "../subscription/subscription.service";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { ConfigService } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
+import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";

@@ -1,15 +1,3 @@
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import {
-  ApolloDriver,
-  ApolloDriverConfig,
-  getApolloServer,
-} from "@nestjs/apollo";
-import { INestApplication } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { GraphQLModule } from "@nestjs/graphql";
-import { Test, TestingModule } from "@nestjs/testing";
-import { ApolloServerBase } from "apollo-server-core";
-import { gql } from "apollo-server-express";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Entity } from "../../models/Entity";
@@ -25,6 +13,18 @@ import { UserService } from "../user/user.service";
 import { ResourceCreateInput } from "./dto";
 import { ResourceResolver } from "./resource.resolver";
 import { ResourceService } from "./resource.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import {
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
+import { INestApplication } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { GraphQLModule } from "@nestjs/graphql";
+import { Test, TestingModule } from "@nestjs/testing";
+import { ApolloServerBase } from "apollo-server-core";
+import { gql } from "apollo-server-express";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";

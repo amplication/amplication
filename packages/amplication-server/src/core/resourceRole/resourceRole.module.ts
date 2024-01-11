@@ -1,9 +1,9 @@
-import { Module } from "@nestjs/common";
 import { PrismaModule } from "../../prisma/prisma.module";
-import { PermissionsModule } from "../permissions/permissions.module";
 import { EntityModule } from "../entity/entity.module";
-import { ResourceRoleService } from "./resourceRole.service";
+import { PermissionsModule } from "../permissions/permissions.module";
 import { ResourceRoleResolver } from "./resourceRole.resolver";
+import { ResourceRoleService } from "./resourceRole.service";
+import { Module } from "@nestjs/common";
 
 @Module({
   imports: [PrismaModule, PermissionsModule, EntityModule],

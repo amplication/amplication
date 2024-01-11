@@ -1,36 +1,36 @@
-import { PrismaService, EnumResourceType } from "../../prisma";
-import { Injectable } from "@nestjs/common";
+import { ResourceService, EntityService } from "../";
 import { FindOneArgs } from "../../dto";
 import { Commit, Project, Resource, User } from "../../models";
+import { PrismaService, EnumResourceType } from "../../prisma";
 import { prepareDeletedItemName } from "../../util/softDelete";
-import { ResourceService, EntityService } from "../";
+import { BillingService } from "../billing/billing.service";
 import { BlockPendingChange, BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
+import { GitProviderService } from "../git/git.provider.service";
 import {
   CreateCommitArgs,
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
   PendingChange,
 } from "../resource/dto";
+import { FeatureUsageReport } from "./FeatureUsageReport";
 import { ProjectCreateArgs } from "./dto/ProjectCreateArgs";
 import { ProjectFindFirstArgs } from "./dto/ProjectFindFirstArgs";
 import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
-import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
-import { BillingService } from "../billing/billing.service";
-import { FeatureUsageReport } from "./FeatureUsageReport";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { GitProviderService } from "../git/git.provider.service";
+import { Injectable } from "@nestjs/common";
+import { isEmpty } from "lodash";
 
 export const INVALID_PROJECT_ID = "Invalid projectId";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import dockerNames from "docker-names";
 import { EntityPendingChange } from "../entity/entity.service";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { SubscriptionService } from "../subscription/subscription.service";
+import dockerNames from "docker-names";
 
 @Injectable()
 export class ProjectService {

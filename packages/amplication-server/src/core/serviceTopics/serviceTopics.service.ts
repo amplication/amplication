@@ -1,21 +1,21 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { EnumBlockType } from "../../enums/EnumBlockType";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { User } from "../../models";
+import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { ResourceService } from "../resource/resource.service";
 import { CreateServiceTopicsArgs } from "./dto/CreateServiceTopicsArgs";
+import { DeleteServiceTopicsArgs } from "./dto/DeleteServiceTopicsArgs";
 import { FindManyServiceTopicsArgs } from "./dto/FindManyServiceTopicsArgs";
 import { ServiceTopics } from "./dto/ServiceTopics";
 import { UpdateServiceTopicsArgs } from "./dto/UpdateServiceTopicsArgs";
-import { User } from "../../models";
-import { ResourceService } from "../resource/resource.service";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { AmplicationError } from "../../errors/AmplicationError";
-import { BlockService } from "../block/block.service";
-import { DeleteServiceTopicsArgs } from "./dto/DeleteServiceTopicsArgs";
 import {
   EnumMessagePatternConnectionOptions,
   MessagePatternCreateInput,
 } from "@amplication/code-gen-types/models";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class ServiceTopicsService extends BlockTypeService<

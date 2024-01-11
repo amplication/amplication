@@ -1,8 +1,8 @@
-import { Body, Controller, Post, Headers } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
 import { UpdateStatusDto } from "./dto/UpdateStatusDto";
 import { SubscriptionService } from "./subscription.service";
+import { Body, Controller, Post, Headers } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 @Controller("subscriptions")
 export class SubscriptionController {

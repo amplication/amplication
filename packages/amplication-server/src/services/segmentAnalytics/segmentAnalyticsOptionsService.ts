@@ -1,10 +1,10 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import {
   SegmentAnalyticsOptionsFactory,
   SegmentAnalyticsOptions,
 } from "./segmentAnalytics.interfaces";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 export const SEGMENT_WRITE_KEY_SECRET_VAR = "SEGMENT_WRITE_KEY_SECRET";
 export const MISSING_SEGMENT_WRITE_KEY_SECRET_ERROR = `Must provide ${SEGMENT_WRITE_KEY_SECRET_VAR}`;

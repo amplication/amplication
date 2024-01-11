@@ -1,7 +1,7 @@
+import { EnumDataType } from "../../../enums/EnumDataType";
 import { Field, InputType, Int } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-type-json";
 import type { JsonObject } from "type-fest";
-import { EnumDataType } from "../../../enums/EnumDataType";
 
 @InputType({
   isAbstract: true,

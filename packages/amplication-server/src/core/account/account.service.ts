@@ -1,12 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { Workspace } from "../../models";
 import { Account, Prisma } from "../../prisma";
 import { PrismaService } from "../../prisma/prisma.service";
-import { Workspace } from "../../models";
 import {
   SegmentAnalyticsService,
   EnumEventType,
   IdentifyData,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class AccountService {

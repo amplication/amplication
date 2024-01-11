@@ -1,15 +1,3 @@
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import {
-  ApolloDriver,
-  ApolloDriverConfig,
-  getApolloServer,
-} from "@nestjs/apollo";
-import { INestApplication } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { GraphQLModule } from "@nestjs/graphql";
-import { Test, TestingModule } from "@nestjs/testing";
-import { ApolloServerBase } from "apollo-server-core";
-import { gql } from "apollo-server-express";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Commit, EntityPermissionField } from "../../models";
@@ -27,6 +15,18 @@ import { UserService } from "../user/user.service";
 import { EntityResolver } from "./entity.resolver";
 import { EntityService } from "./entity.service";
 import { EntityVersionResolver } from "./entityVersion.resolver";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import {
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
+import { INestApplication } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { GraphQLModule } from "@nestjs/graphql";
+import { Test, TestingModule } from "@nestjs/testing";
+import { ApolloServerBase } from "apollo-server-core";
+import { gql } from "apollo-server-express";
 
 const EXAMPLE_ID = "exampleId";
 const EXAMPLE_USER_ID = "exampleUserId";

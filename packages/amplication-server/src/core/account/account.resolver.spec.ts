@@ -1,22 +1,22 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { gql } from "apollo-server-express";
-import { INestApplication } from "@nestjs/common";
-import { GraphQLModule } from "@nestjs/graphql";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { ConfigService } from "@nestjs/config";
-import { User, Account } from "../../models";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
-import { AccountResolver } from "./account.resolver";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { User, Account } from "../../models";
 import { PrismaService } from "../../prisma/prisma.service";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { AccountResolver } from "./account.resolver";
 import { AccountService } from "./account.service";
-import { ApolloServerBase } from "apollo-server-core";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   ApolloDriver,
   ApolloDriverConfig,
   getApolloServer,
 } from "@nestjs/apollo";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { INestApplication } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { GraphQLModule } from "@nestjs/graphql";
+import { Test, TestingModule } from "@nestjs/testing";
+import { ApolloServerBase } from "apollo-server-core";
+import { gql } from "apollo-server-express";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 

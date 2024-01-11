@@ -1,7 +1,7 @@
-import { Field, InputType } from "@nestjs/graphql";
-import type { JsonValue } from "type-fest";
 import { BlockUpdateInput } from "../../block/dto/BlockUpdateInput";
 import { MessagePatternCreateInput } from "./messagePattern/MessagePatternCreateInput";
+import { Field, InputType } from "@nestjs/graphql";
+import type { JsonValue } from "type-fest";
 
 @InputType({
   isAbstract: true,

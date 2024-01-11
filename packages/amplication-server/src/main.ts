@@ -1,19 +1,19 @@
-import { NestFactory } from "@nestjs/core";
-import { ValidationPipe } from "@nestjs/common";
-import { graphqlUploadExpress } from "graphql-upload";
 import { AppModule } from "./app.module";
-import { sendServerLoadEvent } from "./util/sendServerLoadEvent";
-import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
-import { MicroserviceOptions } from "@nestjs/microservices";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { SERVICE_NAME } from "./constants";
-import { Logger } from "@amplication/util/logging";
-import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 import {
   swaggerDocumentOptions,
   swaggerPath,
   swaggerSetupOptions,
 } from "./swagger";
+import { sendServerLoadEvent } from "./util/sendServerLoadEvent";
+import { Logger } from "@amplication/util/logging";
+import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ValidationPipe } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import { MicroserviceOptions } from "@nestjs/microservices";
+import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
+import { graphqlUploadExpress } from "graphql-upload";
 
 async function bootstrap() {
   /**

@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { CreateGitRepositoryBaseInput } from "./CreateGitRepositoryBaseInput";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

@@ -1,5 +1,5 @@
-import { Workspace } from "./Workspace";
 import { Resource } from "./Resource";
+import { Workspace } from "./Workspace";
 import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({

@@ -1,7 +1,7 @@
-import { ServiceSettings } from "./dto";
 import { EnumBlockType } from "../../enums/EnumBlockType";
-import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
 import { BlockValues, BlockValuesExtended } from "../block/types";
+import { ServiceSettings } from "./dto";
+import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
 
 export type ServiceSettingsValues = BlockValues<ServiceSettingsValuesExtended>;
 

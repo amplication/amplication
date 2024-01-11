@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
 import { CompleteInvitationInput } from "./CompleteInvitationInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class CompleteInvitationArgs {

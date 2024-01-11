@@ -1,6 +1,6 @@
-import { ArgsType, Field, Int } from "@nestjs/graphql";
 import { ResourceRoleOrderByInput } from "./ResourceRoleOrderByInput";
 import { ResourceRoleWhereInput } from "./ResourceRoleWhereInput";
+import { ArgsType, Field, Int } from "@nestjs/graphql";
 
 @ArgsType()
 export class FindManyResourceRoleArgs {

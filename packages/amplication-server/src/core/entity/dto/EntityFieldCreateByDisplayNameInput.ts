@@ -1,6 +1,6 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { WhereParentIdInput } from "../../../dto";
 import { EnumDataType } from "../../../enums/EnumDataType";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

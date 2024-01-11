@@ -1,7 +1,7 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { EnumEntityAction } from "../enums/EnumEntityAction";
 import { EntityPermission } from "./EntityPermission";
 import { ResourceRole } from "./ResourceRole";
-import { EnumEntityAction } from "../enums/EnumEntityAction";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 /**
  * Connecting {@codelink EntityPermission} to {@codelink ResourceRole}.

@@ -1,14 +1,14 @@
-import { Resolver } from "@nestjs/graphql";
-import { ModuleActionService } from "./moduleAction.service";
-import { FindManyModuleActionArgs } from "./dto/FindManyModuleActionArgs";
-import { BlockTypeResolver } from "../block/blockType.resolver";
-import { ModuleAction } from "./dto/ModuleAction";
-import { CreateModuleActionArgs } from "./dto/CreateModuleActionArgs";
-import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
-import { DeleteModuleActionArgs } from "./dto/DeleteModuleActionArgs";
-import { UseFilters, UseGuards } from "@nestjs/common";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { BlockTypeResolver } from "../block/blockType.resolver";
+import { CreateModuleActionArgs } from "./dto/CreateModuleActionArgs";
+import { DeleteModuleActionArgs } from "./dto/DeleteModuleActionArgs";
+import { FindManyModuleActionArgs } from "./dto/FindManyModuleActionArgs";
+import { ModuleAction } from "./dto/ModuleAction";
+import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
+import { ModuleActionService } from "./moduleAction.service";
+import { UseFilters, UseGuards } from "@nestjs/common";
+import { Resolver } from "@nestjs/graphql";
 
 @Resolver(() => ModuleAction)
 @UseFilters(GqlResolverExceptionsFilter)

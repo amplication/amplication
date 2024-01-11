@@ -1,6 +1,6 @@
-import { ObjectType, Field } from "@nestjs/graphql";
-import { EnumActionStepStatus } from "./EnumActionStepStatus";
 import { ActionLog } from "./ActionLog";
+import { EnumActionStepStatus } from "./EnumActionStepStatus";
+import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

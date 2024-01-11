@@ -1,5 +1,5 @@
-import { Module } from "@nestjs/common";
 import { JsonSchemaValidationService } from "./jsonSchemaValidation.service";
+import { Module } from "@nestjs/common";
 
 @Module({
   providers: [JsonSchemaValidationService],

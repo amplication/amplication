@@ -1,15 +1,18 @@
-import { Injectable, forwardRef, Inject } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { subDays } from "date-fns";
-import { ConfigService } from "@nestjs/config";
-import cuid from "cuid";
-import { Prisma, PrismaService } from "../../prisma";
-import { Profile as GitHubProfile } from "passport-github2";
+import { FindOneArgs } from "../../dto";
+import { AmplicationError } from "../../errors/AmplicationError";
 import { Account, Resource, User, UserRole, Workspace } from "../../models";
+import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
+import { Prisma, PrismaService } from "../../prisma";
 import { AccountService } from "../account/account.service";
-import { WorkspaceService } from "../workspace/workspace.service";
 import { PasswordService } from "../account/password.service";
+import { USER_ENTITY_NAME } from "../entity/constants";
+import { ProjectService } from "../project/project.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { ResourceService } from "../resource/resource.service";
+import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
 import { UserService } from "../user/user.service";
+import { CompleteInvitationArgs } from "../workspace/dto";
+import { WorkspaceService } from "../workspace/workspace.service";
 import {
   SignupInput,
   ApiToken,
@@ -17,20 +20,17 @@ import {
   JwtDto,
   EnumTokenType,
 } from "./dto";
-import { AmplicationError } from "../../errors/AmplicationError";
-import { FindOneArgs } from "../../dto";
-import { CompleteInvitationArgs } from "../workspace/dto";
-import { ProjectService } from "../project/project.service";
+import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
+import { SignupPreviewAccountInput } from "./dto/SignupPreviewAccountInput";
 import { AuthProfile } from "./types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { SignupPreviewAccountInput } from "./dto/SignupPreviewAccountInput";
+import { Injectable, forwardRef, Inject } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
 import * as crypto from "crypto";
-import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
-import { ResourceService } from "../resource/resource.service";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
-import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
-import { USER_ENTITY_NAME } from "../entity/constants";
+import cuid from "cuid";
+import { subDays } from "date-fns";
+import { Profile as GitHubProfile } from "passport-github2";
 
 export type AuthUser = User & {
   account: Account;

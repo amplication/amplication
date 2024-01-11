@@ -1,7 +1,7 @@
+import { IBlock } from "../../../models";
 import { Field, ObjectType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-type-json";
 import type { JsonValue } from "type-fest";
-import { IBlock } from "../../../models";
 
 @ObjectType({
   isAbstract: true,

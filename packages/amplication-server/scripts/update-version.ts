@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import { join } from "path";
 import * as fs from "fs";
+import { join } from "path";
 import * as prettier from "prettier";
 
 if (require.main === module) {

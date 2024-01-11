@@ -1,24 +1,24 @@
-import { Module, OnApplicationShutdown } from "@nestjs/common";
-import { APP_INTERCEPTOR } from "@nestjs/core";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { GraphQLModule } from "@nestjs/graphql";
-import { MorganModule } from "nest-morgan";
-import { Request } from "express";
+import { SERVICE_NAME } from "./constants";
 import { CoreModule } from "./core/core.module";
+import { HealthModule } from "./core/health/health.module";
+import { AnalyticsSessionIdInterceptor } from "./interceptors/analytics-session-id.interceptor";
 import { InjectContextInterceptor } from "./interceptors/inject-context.interceptor";
 import { SegmentAnalyticsModule } from "./services/segmentAnalytics/segmentAnalytics.module";
 import { SegmentAnalyticsOptionsService } from "./services/segmentAnalytics/segmentAnalyticsOptionsService";
-import { SendGridModule } from "@ntegral/nestjs-sendgrid";
 import { SendgridConfigService } from "./services/sendgridConfig.service";
-import { HealthModule } from "./core/health/health.module";
-import { join } from "path";
-import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
-import { SERVICE_NAME } from "./constants";
 import { Logger } from "@amplication/util/logging";
+import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { TracingModule } from "@amplication/util/nestjs/tracing";
-import { AnalyticsSessionIdInterceptor } from "./interceptors/analytics-session-id.interceptor";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
+import { Module, OnApplicationShutdown } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { APP_INTERCEPTOR } from "@nestjs/core";
+import { GraphQLModule } from "@nestjs/graphql";
+import { SendGridModule } from "@ntegral/nestjs-sendgrid";
+import { Request } from "express";
+import { MorganModule } from "nest-morgan";
 import { RequestContextModule } from "nestjs-request-context";
+import { join } from "path";
 
 @Module({
   imports: [

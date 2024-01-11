@@ -1,6 +1,6 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { Workspace } from "../../../models/Workspace";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from ".";
+import { Workspace } from "../../../models/Workspace";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

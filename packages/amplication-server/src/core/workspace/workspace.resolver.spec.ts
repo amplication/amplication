@@ -1,28 +1,28 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Resource, Workspace, User, Project } from "../../models";
+import { EnumResourceType } from "../../prisma";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { BillingService } from "../billing/billing.service";
+import { ProjectService } from "../project/project.service";
+import { ResourceService } from "../resource/resource.service";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { UserService } from "../user/user.service";
+import { Invitation } from "./dto/Invitation";
+import { WorkspaceResolver } from "./workspace.resolver";
+import { WorkspaceService } from "./workspace.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   ApolloDriver,
   ApolloDriverConfig,
   getApolloServer,
 } from "@nestjs/apollo";
-import { gql } from "apollo-server-express";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
-import { GraphQLModule } from "@nestjs/graphql";
 import { ConfigService } from "@nestjs/config";
-import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
-import { WorkspaceService } from "./workspace.service";
-import { WorkspaceResolver } from "./workspace.resolver";
-import { Resource, Workspace, User, Project } from "../../models";
-import { Invitation } from "./dto/Invitation";
-import { ResourceService } from "../resource/resource.service";
-import { EnumResourceType } from "../../prisma";
-import { ProjectService } from "../project/project.service";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { BillingService } from "../billing/billing.service";
-import { SubscriptionService } from "../subscription/subscription.service";
+import { GraphQLModule } from "@nestjs/graphql";
+import { Test, TestingModule } from "@nestjs/testing";
 import { ApolloServerBase } from "apollo-server-core";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { UserService } from "../user/user.service";
+import { gql } from "apollo-server-express";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";

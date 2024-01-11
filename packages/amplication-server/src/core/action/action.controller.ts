@@ -1,9 +1,9 @@
-import { Controller, Inject } from "@nestjs/common";
-import { EventPattern, Payload } from "@nestjs/microservices";
-import { plainToInstance } from "class-transformer";
 import { ActionService } from "../action/action.service";
 import { KAFKA_TOPICS, UserActionLog } from "@amplication/schema-registry";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Controller, Inject } from "@nestjs/common";
+import { EventPattern, Payload } from "@nestjs/microservices";
+import { plainToInstance } from "class-transformer";
 
 @Controller("action")
 export class UserActionController {

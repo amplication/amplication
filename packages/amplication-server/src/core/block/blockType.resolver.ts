@@ -1,3 +1,19 @@
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { UserEntity } from "../../decorators/user.decorator";
+import { FindOneArgs } from "../../dto";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { IBlock, User } from "../../models";
+import {
+  FindManyBlockArgs,
+  CreateBlockArgs,
+  UpdateBlockArgs,
+} from "../block/dto";
+import { UserService } from "../user/user.service";
+import { BlockTypeService } from "./blockType.service";
+import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
+import { Inject, UseFilters, UseGuards } from "@nestjs/common";
 import {
   Args,
   Mutation,
@@ -6,22 +22,6 @@ import {
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
-import { IBlock, User } from "../../models";
-import { FindOneArgs } from "../../dto";
-import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
-import { BlockTypeService } from "./blockType.service";
-import {
-  FindManyBlockArgs,
-  CreateBlockArgs,
-  UpdateBlockArgs,
-} from "../block/dto";
-import { UserEntity } from "../../decorators/user.decorator";
-import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Inject, UseFilters, UseGuards } from "@nestjs/common";
-import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
-import { UserService } from "../user/user.service";
 import { camelCase } from "camel-case";
 
 type Constructor<T> = {

@@ -1,14 +1,5 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { PrismaService, Prisma, EnumEntityAction } from "../../prisma";
-import { camelCase } from "camel-case";
-import { pick, omit } from "lodash";
-import {
-  createEntityNamesWhereInput,
-  EntityPendingChange,
-  EntityService,
-  NAME_VALIDATION_ERROR_MESSAGE,
-  NUMBER_WITH_INVALID_MINIMUM_VALUE,
-} from "./entity.service";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import {
   Entity,
   EntityVersion,
@@ -18,33 +9,42 @@ import {
   Resource,
   Account,
 } from "../../models";
-import { EnumDataType } from "../../enums/EnumDataType";
-import { FindManyEntityArgs } from "./dto";
-import { CURRENT_VERSION_NUMBER, DEFAULT_PERMISSIONS } from "./constants";
-import { JsonSchemaValidationModule } from "../../services/jsonSchemaValidation.module";
+import { PrismaService, Prisma, EnumEntityAction } from "../../prisma";
 import { DiffModule } from "../../services/diff.module";
+import { DiffService } from "../../services/diff.service";
+import { JsonSchemaValidationModule } from "../../services/jsonSchemaValidation.module";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { prepareDeletedItemName } from "../../util/softDelete";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { BillingService } from "../billing/billing.service";
+import { Build } from "../build/dto/Build";
+import { Environment } from "../environment/dto";
+import { ModuleService } from "../module/module.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
+import { ReservedNameError } from "../resource/ReservedNameError";
 import {
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
 } from "../resource/dto";
-import { DiffService } from "../../services/diff.service";
-import { isReservedName } from "./reservedNames";
-import { ReservedNameError } from "../resource/ReservedNameError";
-import { EnumResourceType } from "@amplication/code-gen-types/models";
-import { Build } from "../build/dto/Build";
-import { Environment } from "../environment/dto";
-import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
-import { BillingService } from "../billing/billing.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { ModuleService } from "../module/module.service";
-import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { CURRENT_VERSION_NUMBER, DEFAULT_PERMISSIONS } from "./constants";
+import { FindManyEntityArgs } from "./dto";
+import {
+  createEntityNamesWhereInput,
+  EntityPendingChange,
+  EntityService,
+  NAME_VALIDATION_ERROR_MESSAGE,
+  NUMBER_WITH_INVALID_MINIMUM_VALUE,
+} from "./entity.service";
+import { isReservedName } from "./reservedNames";
+import { EnumResourceType } from "@amplication/code-gen-types/models";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { Test, TestingModule } from "@nestjs/testing";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { camelCase } from "camel-case";
+import { pick, omit } from "lodash";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";

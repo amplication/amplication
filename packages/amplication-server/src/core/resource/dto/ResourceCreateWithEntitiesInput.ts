@@ -1,7 +1,7 @@
-import { Field, InputType, Int } from "@nestjs/graphql";
-import { ResourceCreateInput } from "./ResourceCreateInput";
 import { EnumDataType } from "../../../enums/EnumDataType";
 import { PluginInstallationsCreateInput } from "../../pluginInstallation/dto/PluginInstallationsCreateInput";
+import { ResourceCreateInput } from "./ResourceCreateInput";
+import { Field, InputType, Int } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

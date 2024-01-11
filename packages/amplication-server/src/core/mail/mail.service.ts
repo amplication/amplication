@@ -1,9 +1,9 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { InjectSendGrid, SendGridService } from "@ntegral/nestjs-sendgrid";
-import { ConfigService } from "@nestjs/config";
-import { SendInvitationArgs } from "./dto/SendInvitationArgs";
 import { SendDeploymentArgs } from "./dto/SendDeploymentArgs";
+import { SendInvitationArgs } from "./dto/SendInvitationArgs";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { InjectSendGrid, SendGridService } from "@ntegral/nestjs-sendgrid";
 
 const SENDGRID_FROM_ADDRESS_VAR = "SENDGRID_FROM_ADDRESS";
 const SENDGRID_INVITATION_TEMPLATE_ID_VAR = "SENDGRID_INVITATION_TEMPLATE_ID";

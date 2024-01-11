@@ -1,13 +1,13 @@
-import { Prisma, PrismaService } from "../../prisma";
-import { ConflictException, Injectable } from "@nestjs/common";
 import { Account, User, UserRole } from "../../models";
-import { UserRoleArgs } from "./dto";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { KAFKA_TOPICS, UserAction } from "@amplication/schema-registry";
+import { Prisma, PrismaService } from "../../prisma";
 import { encryptString } from "../../util/encryptionUtil";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
+import { UserRoleArgs } from "./dto";
+import { KAFKA_TOPICS, UserAction } from "@amplication/schema-registry";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { ConflictException, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class UserService {

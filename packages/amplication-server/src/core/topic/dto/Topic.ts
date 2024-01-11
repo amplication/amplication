@@ -1,5 +1,5 @@
-import { Field, ObjectType } from "@nestjs/graphql";
 import { IBlock } from "../../../models";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

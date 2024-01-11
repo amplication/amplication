@@ -1,6 +1,6 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { EnumGitOrganizationType } from "../enums/EnumGitOrganizationType";
 import { EnumGitProvider } from "../enums/EnumGitProvider";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

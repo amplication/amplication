@@ -1,5 +1,5 @@
-import { ObjectType, Field } from "@nestjs/graphql";
 import { ActionStep } from "./ActionStep";
+import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

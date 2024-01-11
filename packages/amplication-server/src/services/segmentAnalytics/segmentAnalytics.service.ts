@@ -1,6 +1,6 @@
+import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 import { Injectable, Inject } from "@nestjs/common";
 import Analytics from "analytics-node";
-import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 import { RequestContext } from "nestjs-request-context";
 
 export enum EnumEventType {

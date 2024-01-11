@@ -1,5 +1,5 @@
-import { Field, ObjectType } from "@nestjs/graphql";
 import { User, Workspace } from "../../../models";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

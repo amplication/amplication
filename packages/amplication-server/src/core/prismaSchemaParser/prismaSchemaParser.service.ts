@@ -1,19 +1,41 @@
-import { Inject, Injectable } from "@nestjs/common";
-import cuid from "cuid";
-import { types } from "@amplication/code-gen-types";
-import { JsonValue } from "type-fest";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { EnumActionLogLevel } from "../action/dto";
+import { CreateBulkEntitiesInput } from "../entity/entity.service";
+import { ActionContext } from "../userAction/types";
 import {
-  Model,
-  Field,
-  createPrismaSchemaBuilder,
-  Schema,
-  Enum,
-  KeyValue,
-  RelationArray,
-  Func,
-  ConcretePrismaSchemaBuilder,
-  BlockAttribute,
-} from "@mrleebo/prisma-ast";
+  ARG_KEY_FIELD_NAME,
+  ARRAY_ARG_TYPE_NAME,
+  ATTRIBUTE_TYPE_NAME,
+  DEFAULT_ATTRIBUTE_NAME,
+  ENUM_TYPE_NAME,
+  FIELD_TYPE_NAME,
+  FUNCTION_ARG_TYPE_NAME,
+  ID_ATTRIBUTE_NAME,
+  ID_DEFAULT_VALUE_AUTO_INCREMENT,
+  ID_DEFAULT_VALUE_CUID,
+  ID_DEFAULT_VALUE_UUID,
+  ID_FIELD_NAME,
+  ID_TYPE_AUTO_INCREMENT,
+  ID_TYPE_AUTO_INCREMENT_BIG_INT,
+  ID_TYPE_CUID,
+  ID_TYPE_UUID,
+  INDEX_ATTRIBUTE_NAME,
+  MODEL_TYPE_NAME,
+  OBJECT_KIND_NAME,
+  PRISMA_TYPE_BIG_INT,
+  PRISMA_TYPE_INT,
+  PRISMA_TYPE_STRING,
+  RELATION_ATTRIBUTE_NAME,
+  UNIQUE_ATTRIBUTE_NAME,
+  WholeNumberType,
+  DecimalNumberType,
+  idTypePropertyMapByPrismaFieldType,
+  MAP_ATTRIBUTE_NAME,
+  ID_DEFAULT_VALUE_CUID_FUNCTION,
+  ID_DEFAULT_VALUE_UUID_FUNCTION,
+  ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION,
+  prismaIdTypeToDefaultIdType,
+} from "./constants";
 import {
   booleanField,
   createAtField,
@@ -53,8 +75,6 @@ import {
   convertModelIdToFieldId,
   getDatasourceProviderFromSchema,
 } from "./schema-utils";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import pluralize from "pluralize";
 import {
   ExistingEntitySelect,
   Mapper,
@@ -62,45 +82,25 @@ import {
   PrepareOperationIO,
   PrepareOperationInput,
 } from "./types";
-import {
-  ARG_KEY_FIELD_NAME,
-  ARRAY_ARG_TYPE_NAME,
-  ATTRIBUTE_TYPE_NAME,
-  DEFAULT_ATTRIBUTE_NAME,
-  ENUM_TYPE_NAME,
-  FIELD_TYPE_NAME,
-  FUNCTION_ARG_TYPE_NAME,
-  ID_ATTRIBUTE_NAME,
-  ID_DEFAULT_VALUE_AUTO_INCREMENT,
-  ID_DEFAULT_VALUE_CUID,
-  ID_DEFAULT_VALUE_UUID,
-  ID_FIELD_NAME,
-  ID_TYPE_AUTO_INCREMENT,
-  ID_TYPE_AUTO_INCREMENT_BIG_INT,
-  ID_TYPE_CUID,
-  ID_TYPE_UUID,
-  INDEX_ATTRIBUTE_NAME,
-  MODEL_TYPE_NAME,
-  OBJECT_KIND_NAME,
-  PRISMA_TYPE_BIG_INT,
-  PRISMA_TYPE_INT,
-  PRISMA_TYPE_STRING,
-  RELATION_ATTRIBUTE_NAME,
-  UNIQUE_ATTRIBUTE_NAME,
-  WholeNumberType,
-  DecimalNumberType,
-  idTypePropertyMapByPrismaFieldType,
-  MAP_ATTRIBUTE_NAME,
-  ID_DEFAULT_VALUE_CUID_FUNCTION,
-  ID_DEFAULT_VALUE_UUID_FUNCTION,
-  ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION,
-  prismaIdTypeToDefaultIdType,
-} from "./constants";
 import { isValidSchema } from "./validators";
-import { EnumDataType } from "../../enums/EnumDataType";
-import { CreateBulkEntitiesInput } from "../entity/entity.service";
-import { EnumActionLogLevel } from "../action/dto";
-import { ActionContext } from "../userAction/types";
+import { types } from "@amplication/code-gen-types";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import {
+  Model,
+  Field,
+  createPrismaSchemaBuilder,
+  Schema,
+  Enum,
+  KeyValue,
+  RelationArray,
+  Func,
+  ConcretePrismaSchemaBuilder,
+  BlockAttribute,
+} from "@mrleebo/prisma-ast";
+import { Inject, Injectable } from "@nestjs/common";
+import cuid from "cuid";
+import pluralize from "pluralize";
+import { JsonValue } from "type-fest";
 
 @Injectable()
 export class PrismaSchemaParserService {

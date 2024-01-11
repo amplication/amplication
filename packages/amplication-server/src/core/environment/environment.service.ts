@@ -1,13 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { FindOneArgs } from "../../dto";
 import { PrismaService } from "../../prisma/prisma.service";
-import cuid from "cuid";
-
 import {
   Environment,
   CreateEnvironmentArgs,
   FindManyEnvironmentArgs,
 } from "./dto";
-import { FindOneArgs } from "../../dto";
+import { Injectable } from "@nestjs/common";
+import cuid from "cuid";
 
 export const DEFAULT_ENVIRONMENT_NAME = "Sandbox environment";
 

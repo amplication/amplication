@@ -1,3 +1,4 @@
+import { PUBLIC_DOMAINS } from "./publicDomains";
 import {
   registerDecorator,
   ValidationOptions,
@@ -5,7 +6,6 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from "class-validator";
-import { PUBLIC_DOMAINS } from "./publicDomains";
 
 @ValidatorConstraint({ async: true })
 export class IsWorkEmailConstraint implements ValidatorConstraintInterface {

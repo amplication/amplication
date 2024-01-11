@@ -1,6 +1,6 @@
-import { ArgsType, Field, Int } from "@nestjs/graphql";
 import { CommitOrderByInput } from "../../commit/dto/CommitOrderByInput";
 import { CommitWhereInput } from "../../commit/dto/CommitWhereInput";
+import { ArgsType, Field, Int } from "@nestjs/graphql";
 
 @ArgsType()
 export class FindManyCommitsArgs {

@@ -1,9 +1,34 @@
+import { FindOneArgs } from "../../dto";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { QueryMode } from "../../enums/QueryMode";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { Project, Resource, User, GitOrganization, Entity } from "../../models";
 import {
   PrismaService,
   GitRepository,
   Prisma,
   EnumResourceType,
 } from "../../prisma";
+import { prepareDeletedItemName } from "../../util/softDelete";
+import {
+  CURRENT_VERSION_NUMBER,
+  INITIAL_ENTITY_FIELDS,
+  USER_ENTITY_NAME,
+} from "../entity/constants";
+import { EntityService } from "../entity/entity.service";
+import { EnvironmentService } from "../environment/environment.service";
+import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ReservedEntityNameError } from "./ReservedEntityNameError";
+import {
+  CreateOneResourceArgs,
+  FindManyResourceArgs,
+  ResourceCreateWithEntitiesInput,
+  UpdateOneResourceArgs,
+  ResourceCreateWithEntitiesResult,
+  UpdateCodeGeneratorVersionArgs,
+} from "./dto";
+import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
 import {
   ConflictException,
   forwardRef,
@@ -13,31 +38,6 @@ import {
 import { isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
 import pluralize from "pluralize";
-import { FindOneArgs } from "../../dto";
-import { EnumDataType } from "../../enums/EnumDataType";
-import { QueryMode } from "../../enums/QueryMode";
-import { Project, Resource, User, GitOrganization, Entity } from "../../models";
-import { prepareDeletedItemName } from "../../util/softDelete";
-import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import {
-  CURRENT_VERSION_NUMBER,
-  INITIAL_ENTITY_FIELDS,
-  USER_ENTITY_NAME,
-} from "../entity/constants";
-import { EntityService } from "../entity/entity.service";
-import { EnvironmentService } from "../environment/environment.service";
-import {
-  CreateOneResourceArgs,
-  FindManyResourceArgs,
-  ResourceCreateWithEntitiesInput,
-  UpdateOneResourceArgs,
-  ResourceCreateWithEntitiesResult,
-  UpdateCodeGeneratorVersionArgs,
-} from "./dto";
-import { ReservedEntityNameError } from "./ReservedEntityNameError";
-import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
-import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
-import { AmplicationError } from "../../errors/AmplicationError";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -50,24 +50,24 @@ export const INITIAL_COMMIT_MESSAGE = "Initial Commit";
 export const INVALID_RESOURCE_ID = "Invalid resourceId";
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
   "The resource of type `ProjectConfiguration` cannot be deleted";
-import { ProjectService } from "../project/project.service";
-import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
-import { TopicService } from "../topic/topic.service";
-import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
-import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { JsonValue } from "type-fest";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { BillingService } from "../billing/billing.service";
+import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
+import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ProjectService } from "../project/project.service";
+import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { TopicService } from "../topic/topic.service";
 import { CreateResourceEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
 import { LookupResolvedProperties } from "@amplication/code-gen-types";
-import { SubscriptionService } from "../subscription/subscription.service";
-import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { JsonValue } from "type-fest";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";

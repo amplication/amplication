@@ -1,5 +1,5 @@
-import { ObjectType, Field } from "@nestjs/graphql";
 import { EnumGitOrganizationType } from "../enums/EnumGitOrganizationType";
+import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

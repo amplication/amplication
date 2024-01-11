@@ -1,8 +1,8 @@
-import { Field, ObjectType } from "@nestjs/graphql";
 import { IBlock } from "../../../models";
-import { EnumModuleActionType } from "./EnumModuleActionType";
 import { EnumModuleActionGqlOperation } from "./EnumModuleActionGqlOperation";
 import { EnumModuleActionRestVerb } from "./EnumModuleActionRestVerb";
+import { EnumModuleActionType } from "./EnumModuleActionType";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

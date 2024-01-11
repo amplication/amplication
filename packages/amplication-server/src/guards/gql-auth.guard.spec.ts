@@ -1,15 +1,15 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { Reflector } from "@nestjs/core";
 import { PermissionsService } from "../core/permissions/permissions.service";
+import { AuthorizableOriginParameter } from "../enums/AuthorizableOriginParameter";
+import { User } from "../models/User";
+import { UserRole } from "../models/UserRole";
+import { Workspace } from "../models/Workspace";
 import {
   GqlAuthGuard,
   AUTHORIZE_CONTEXT,
   AuthorizeContextParameters,
 } from "./gql-auth.guard";
-import { AuthorizableOriginParameter } from "../enums/AuthorizableOriginParameter";
-import { User } from "../models/User";
-import { UserRole } from "../models/UserRole";
-import { Workspace } from "../models/Workspace";
+import { Reflector } from "@nestjs/core";
+import { Test, TestingModule } from "@nestjs/testing";
 
 const EXAMPLE_WORKSPACE_ID = "Example Workspace Id";
 const EXAMPLE_ROLE = "Example Role";

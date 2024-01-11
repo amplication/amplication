@@ -1,12 +1,12 @@
-import { Controller, Inject } from "@nestjs/common";
-import { EventPattern, Payload } from "@nestjs/microservices";
+import { DBSchemaImportService } from "./dbSchemaImport.service";
 import {
   DBSchemaImportRequest,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
-import { plainToInstance } from "class-transformer";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { DBSchemaImportService } from "./dbSchemaImport.service";
+import { Controller, Inject } from "@nestjs/common";
+import { EventPattern, Payload } from "@nestjs/microservices";
+import { plainToInstance } from "class-transformer";
 
 @Controller("db-schema-import")
 export class DBSchemaImportController {

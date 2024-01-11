@@ -1,22 +1,22 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { User } from "../../models";
-import { BlockTypeService } from "../block/blockType.service";
-import { CreatePluginInstallationArgs } from "./dto/CreatePluginInstallationArgs";
-import { FindManyPluginInstallationArgs } from "./dto/FindManyPluginInstallationArgs";
-import { PluginInstallation } from "./dto/PluginInstallation";
-import { UpdatePluginInstallationArgs } from "./dto/UpdatePluginInstallationArgs";
-import { BlockService } from "../block/block.service";
-import { PluginOrderService } from "./pluginOrder.service";
-import { PluginOrder } from "./dto/PluginOrder";
-import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
-import { PluginOrderItem } from "./dto/PluginOrderItem";
-import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { BlockService } from "../block/block.service";
+import { BlockTypeService } from "../block/blockType.service";
 import { ResourceService } from "../resource/resource.service";
+import { CreatePluginInstallationArgs } from "./dto/CreatePluginInstallationArgs";
+import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
+import { FindManyPluginInstallationArgs } from "./dto/FindManyPluginInstallationArgs";
+import { PluginInstallation } from "./dto/PluginInstallation";
+import { PluginOrder } from "./dto/PluginOrder";
+import { PluginOrderItem } from "./dto/PluginOrderItem";
+import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
+import { UpdatePluginInstallationArgs } from "./dto/UpdatePluginInstallationArgs";
+import { PluginOrderService } from "./pluginOrder.service";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
 const reOrderPlugins = (
   argsData: PluginOrderItem,

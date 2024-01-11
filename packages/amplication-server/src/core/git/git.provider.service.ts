@@ -1,18 +1,27 @@
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { isEmpty } from "lodash";
-import { PrismaService, Prisma, EnumResourceType } from "../../prisma";
 import { FindOneArgs } from "../../dto";
+import { Env } from "../../env";
 import { AmplicationError } from "../../errors/AmplicationError";
-import { Resource } from "../../models/Resource";
+import { ValidationError } from "../../errors/ValidationError";
 import { GitOrganization } from "../../models/GitOrganization";
+import { Resource } from "../../models/Resource";
+import { PrismaService, Prisma, EnumResourceType } from "../../prisma";
+import {
+  INVALID_RESOURCE_ID,
+  ResourceService,
+} from "../resource/resource.service";
+import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
 import { CreateGitOrganizationArgs } from "./dto/args/CreateGitOrganizationArgs";
 import { DeleteGitOrganizationArgs } from "./dto/args/DeleteGitOrganizationArgs";
 import { DeleteGitRepositoryArgs } from "./dto/args/DeleteGitRepositoryArgs";
 import { GetGitInstallationUrlArgs } from "./dto/args/GetGitInstallationUrlArgs";
+import { GitGroupArgs } from "./dto/args/GitGroupArgs";
 import { GitOrganizationFindManyArgs } from "./dto/args/GitOrganizationFindManyArgs";
+import { EnumGitOrganizationType } from "./dto/enums/EnumGitOrganizationType";
+import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
 import { ConnectGitRepositoryInput } from "./dto/inputs/ConnectGitRepositoryInput";
 import { CreateGitRepositoryInput } from "./dto/inputs/CreateGitRepositoryInput";
 import { RemoteGitRepositoriesWhereUniqueInput } from "./dto/inputs/RemoteGitRepositoriesWhereUniqueInput";
+import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
 import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
 import {
   OAuthProviderOrganizationProperties,
@@ -27,33 +36,24 @@ import {
   AwsCodeCommitProviderOrganizationProperties,
   isValidGitProviderProperties,
 } from "@amplication/util/git";
-import {
-  INVALID_RESOURCE_ID,
-  ResourceService,
-} from "../resource/resource.service";
-import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
-import { EnumGitOrganizationType } from "./dto/enums/EnumGitOrganizationType";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Env } from "../../env";
-import { GitGroupArgs } from "./dto/args/GitGroupArgs";
-import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
-import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
-import { ValidationError } from "../../errors/ValidationError";
+import { isEmpty } from "lodash";
 
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
 const INVALID_GIT_REPOSITORY_ID = "Git Repository does not exist";
+import { GitRepository, User } from "../../models";
 import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { GitRepository, User } from "../../models";
 import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "@amplication/util-billing-types";
 import { ProjectService } from "../project/project.service";
-import { Traceable } from "@amplication/opentelemetry-nestjs";
 import { UpdateGitRepositoryArgs } from "./dto/args/UpdateGitRepositoryArgs";
+import { Traceable } from "@amplication/opentelemetry-nestjs";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 @Traceable()
 @Injectable()

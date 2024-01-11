@@ -1,6 +1,6 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { User } from "./User";
 import { PreviewAccountType } from "../core/auth/dto/EnumPreviewAccountType";
+import { User } from "./User";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

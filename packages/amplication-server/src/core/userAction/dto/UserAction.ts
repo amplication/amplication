@@ -1,9 +1,9 @@
+import { Resource, User } from "../../../models";
+import { Action } from "../../action/dto/Action";
+import { EnumUserActionStatus, EnumUserActionType } from "../types";
 import { Field, ObjectType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-type-json";
 import type { JsonValue } from "type-fest";
-import { Action } from "../../action/dto/Action";
-import { Resource, User } from "../../../models";
-import { EnumUserActionStatus, EnumUserActionType } from "../types";
 
 @ObjectType({
   isAbstract: true,

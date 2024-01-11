@@ -1,7 +1,7 @@
-import { Test } from "@nestjs/testing";
 import { HealthController } from "../src/core/health/health.controller";
-import request from "supertest";
 import { INestApplication } from "@nestjs/common";
+import { Test } from "@nestjs/testing";
+import request from "supertest";
 
 describe("HealthController", () => {
   let app: INestApplication;

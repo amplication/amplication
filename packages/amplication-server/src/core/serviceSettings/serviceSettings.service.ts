@@ -1,16 +1,16 @@
-import { Injectable, Inject } from "@nestjs/common";
-import { ServiceSettings, UpdateServiceSettingsArgs } from "./dto";
 import { FindOneArgs } from "../../dto";
-import { BlockService } from "../block/block.service";
 import { EnumBlockType } from "../../enums/EnumBlockType";
+import { User } from "../../models";
+import { BlockService } from "../block/block.service";
 import {
   DEFAULT_SERVICE_SETTINGS,
   ServiceSettingsValues,
   ServiceSettingsValuesExtended,
 } from "./constants";
-import { User } from "../../models";
+import { ServiceSettings, UpdateServiceSettingsArgs } from "./dto";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
 import { ServiceSettingsUpdateInput } from "./dto/ServiceSettingsUpdateInput";
+import { Injectable, Inject } from "@nestjs/common";
 
 export const isStringBool = (val: string | boolean): boolean =>
   typeof val === "boolean" || typeof val === "string";

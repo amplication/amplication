@@ -1,11 +1,8 @@
-import { Controller, Inject } from "@nestjs/common";
-import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
-import { plainToInstance } from "class-transformer";
 import { ActionService } from "../action/action.service";
 import { EnumActionStepStatus } from "../action/dto";
+import { BuildService } from "./build.service";
 import { ReplyResultMessage } from "./dto/ReplyResultMessage";
 import { ReplyStatusEnum } from "./dto/ReplyStatusEnum";
-import { BuildService } from "./build.service";
 import {
   CanUserAccessBuild,
   CodeGenerationFailure,
@@ -16,9 +13,11 @@ import {
   CreatePrSuccess,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
-
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Controller, Inject } from "@nestjs/common";
+import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
+import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 
 @Controller("generated-apps")

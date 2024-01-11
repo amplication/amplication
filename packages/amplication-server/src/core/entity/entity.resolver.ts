@@ -1,12 +1,11 @@
-import {
-  Args,
-  Mutation,
-  Query,
-  Resolver,
-  Parent,
-  ResolveField,
-} from "@nestjs/graphql";
-import { UseFilters, UseGuards } from "@nestjs/common";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
+import { UserEntity } from "../../decorators/user.decorator";
+import { FindOneArgs } from "../../dto";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import {
   Entity,
   EntityField,
@@ -15,14 +14,6 @@ import {
   EntityPermissionField,
   User,
 } from "../../models";
-import { FindOneArgs } from "../../dto";
-import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { UserEntity } from "../../decorators/user.decorator";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
-import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { UserService } from "../user/user.service";
 import {
   CreateOneEntityArgs,
@@ -44,6 +35,15 @@ import {
   CreateDefaultEntitiesArgs,
 } from "./dto";
 import { EntityService } from "./entity.service";
+import { UseFilters, UseGuards } from "@nestjs/common";
+import {
+  Args,
+  Mutation,
+  Query,
+  Resolver,
+  Parent,
+  ResolveField,
+} from "@nestjs/graphql";
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)

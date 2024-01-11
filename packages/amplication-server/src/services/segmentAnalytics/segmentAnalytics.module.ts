@@ -1,9 +1,9 @@
-import { Module, Global, DynamicModule, Provider } from "@nestjs/common";
-import { SegmentAnalyticsService } from "./segmentAnalytics.service";
 import {
   SegmentAnalyticsAsyncOptions,
   SegmentAnalyticsOptionsFactory,
 } from "./segmentAnalytics.interfaces";
+import { SegmentAnalyticsService } from "./segmentAnalytics.service";
+import { Module, Global, DynamicModule, Provider } from "@nestjs/common";
 
 @Global()
 @Module({})

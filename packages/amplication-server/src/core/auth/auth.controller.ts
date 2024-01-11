@@ -1,3 +1,10 @@
+import { Env } from "../../env";
+import { AuthExceptionFilter } from "../../filters/auth-exception.filter";
+import { GithubAuthExceptionFilter } from "../../filters/github-auth-exception.filter";
+import { AuthService, AuthUser } from "./auth.service";
+import { GitHubAuthGuard } from "./github.guard";
+import { AuthProfile, GitHubRequest } from "./types";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   Controller,
   UseInterceptors,
@@ -11,17 +18,10 @@ import {
   Query,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { MorganInterceptor } from "nest-morgan";
 import { Request, Response } from "express";
-import { AuthService, AuthUser } from "./auth.service";
-import { GithubAuthExceptionFilter } from "../../filters/github-auth-exception.filter";
-import { GitHubAuthGuard } from "./github.guard";
-import { AuthProfile, GitHubRequest } from "./types";
-import { stringifyUrl } from "query-string";
-import { Env } from "../../env";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { AuthExceptionFilter } from "../../filters/auth-exception.filter";
 import { requiresAuth } from "express-openid-connect";
+import { MorganInterceptor } from "nest-morgan";
+import { stringifyUrl } from "query-string";
 export const AUTH_LOGIN_PATH = "/auth/login";
 export const AUTH_LOGOUT_PATH = "/auth/logout";
 export const AUTH_CALLBACK_PATH = "/auth/callback";

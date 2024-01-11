@@ -1,16 +1,12 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
-import { JwtModule } from "@nestjs/jwt";
-import { PassportModule } from "@nestjs/passport";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { AccountModule } from "../account/account.module";
-import { PrismaModule } from "../../prisma/prisma.module";
-import { UserModule } from "../user/user.module";
-import { WorkspaceModule } from "../workspace/workspace.module";
-import { PermissionsModule } from "../permissions/permissions.module";
 import { ExceptionFiltersModule } from "../../filters/exceptionFilters.module";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { AuthService } from "./auth.service";
-import { AuthResolver } from "./auth.resolver";
+import { PrismaModule } from "../../prisma/prisma.module";
+import { AccountModule } from "../account/account.module";
+import { PermissionsModule } from "../permissions/permissions.module";
+import { ProjectModule } from "../project/project.module";
+import { ResourceModule } from "../resource/resource.module";
+import { UserModule } from "../user/user.module";
+import { WorkspaceModule } from "../workspace/workspace.module";
 import {
   AUTH_AFTER_CALLBACK_PATH,
   AUTH_CALLBACK_PATH,
@@ -18,13 +14,17 @@ import {
   AUTH_LOGOUT_PATH,
   AuthController,
 } from "./auth.controller";
-import { JwtStrategy } from "./jwt.strategy";
+import { AuthResolver } from "./auth.resolver";
+import { AuthService } from "./auth.service";
+import { Auth0Middleware } from "./auth0.middleware";
+import { GitHubAuthGuard } from "./github.guard";
 import { GitHubStrategy } from "./github.strategy";
 import { GitHubStrategyConfigService } from "./githubStrategyConfig.service";
-import { ProjectModule } from "../project/project.module";
-import { GitHubAuthGuard } from "./github.guard";
-import { Auth0Middleware } from "./auth0.middleware";
-import { ResourceModule } from "../resource/resource.module";
+import { JwtStrategy } from "./jwt.strategy";
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { JwtModule } from "@nestjs/jwt";
+import { PassportModule } from "@nestjs/passport";
 
 @Module({
   imports: [

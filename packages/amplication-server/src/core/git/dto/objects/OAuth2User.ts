@@ -1,5 +1,5 @@
-import { ObjectType, Field } from "@nestjs/graphql";
 import { GitUserLinks } from "./GitLinks";
+import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

@@ -1,7 +1,7 @@
-import { Field, InputType } from "@nestjs/graphql";
-import type { JsonObject, JsonArray, JsonValue } from "type-fest";
 import { WhereParentIdInput } from "../../../dto";
 import { BlockInputOutput } from "../../../models";
+import { Field, InputType } from "@nestjs/graphql";
+import type { JsonObject, JsonArray, JsonValue } from "type-fest";
 
 @InputType({
   isAbstract: true,

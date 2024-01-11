@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { EnumMessagePatternConnectionOptions } from "./EnumMessagePatternConnectionOptions";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType()
 export class MessagePatternCreateInput {

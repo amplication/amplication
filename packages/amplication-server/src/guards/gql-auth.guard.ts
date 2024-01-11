@@ -1,11 +1,11 @@
-import { Injectable, ExecutionContext } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { AuthGuard } from "@nestjs/passport";
-import { GqlExecutionContext } from "@nestjs/graphql";
-import { get } from "lodash";
-import { User } from "../models";
 import { PermissionsService } from "../core/permissions/permissions.service";
 import { AuthorizableOriginParameter } from "../enums/AuthorizableOriginParameter";
+import { User } from "../models";
+import { Injectable, ExecutionContext } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { GqlExecutionContext } from "@nestjs/graphql";
+import { AuthGuard } from "@nestjs/passport";
+import { get } from "lodash";
 
 export const AUTHORIZE_CONTEXT = "authorizeContext";
 

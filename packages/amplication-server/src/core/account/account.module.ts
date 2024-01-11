@@ -1,11 +1,11 @@
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { PrismaModule } from "../../prisma/prisma.module";
+import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
+import { PermissionsModule } from "../permissions/permissions.module";
+import { AccountResolver } from "./account.resolver";
 import { AccountService } from "./account.service";
 import { PasswordService } from "./password.service";
-import { PrismaModule } from "../../prisma/prisma.module";
-import { AccountResolver } from "./account.resolver";
-import { PermissionsModule } from "../permissions/permissions.module";
-import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
   imports: [

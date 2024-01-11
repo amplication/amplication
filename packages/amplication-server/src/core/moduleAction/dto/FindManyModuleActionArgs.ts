@@ -1,6 +1,6 @@
-import { ArgsType, Field, Int } from "@nestjs/graphql";
 import { ModuleActionOrderByInput } from "./ModuleActionOrderByInput";
 import { ModuleActionWhereInput } from "./ModuleActionWhereInput";
+import { ArgsType, Field, Int } from "@nestjs/graphql";
 
 @ArgsType()
 export class FindManyModuleActionArgs {

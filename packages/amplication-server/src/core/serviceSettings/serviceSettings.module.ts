@@ -1,8 +1,8 @@
-import { Module } from "@nestjs/common";
-import { ServiceSettingsService } from "./serviceSettings.service";
-import { ServiceSettingsResolver } from "./serviceSettings.resolver";
 import { BlockModule } from "../block/block.module";
 import { PermissionsModule } from "../permissions/permissions.module";
+import { ServiceSettingsResolver } from "./serviceSettings.resolver";
+import { ServiceSettingsService } from "./serviceSettings.service";
+import { Module } from "@nestjs/common";
 
 @Module({
   imports: [BlockModule, PermissionsModule],

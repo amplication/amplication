@@ -1,6 +1,6 @@
-import { ArgsType, Field, Int } from "@nestjs/graphql";
 import { PluginOrderOrderByInput } from "./PluginOrderOrderByInput";
 import { PluginOrderWhereInput } from "./PluginOrderWhereInput";
+import { ArgsType, Field, Int } from "@nestjs/graphql";
 
 @ArgsType()
 export class FindManyPluginOrderArgs {

@@ -1,6 +1,6 @@
-import { ArgsType, Field } from "@nestjs/graphql";
 import { WhereUniqueInput } from "../../../../dto";
 import { GitRepositoryUpdateInput } from "../inputs/GitRepositoryUpdateInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 class UpdateGitRepositoryArgs {

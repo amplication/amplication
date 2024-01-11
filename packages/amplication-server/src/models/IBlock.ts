@@ -1,7 +1,7 @@
-import { InterfaceType, Field } from "@nestjs/graphql";
 import { EnumBlockType } from "../enums/EnumBlockType";
 import { Block } from "./Block";
 import { BlockInputOutput } from "./BlockInputOutput";
+import { InterfaceType, Field } from "@nestjs/graphql";
 
 @InterfaceType()
 export abstract class IBlock {

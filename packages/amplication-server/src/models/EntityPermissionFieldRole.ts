@@ -1,6 +1,6 @@
-import { Field, ObjectType } from "@nestjs/graphql";
 import { EntityPermissionField } from "./EntityPermissionField";
 import { EntityPermissionRole } from "./EntityPermissionRole";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

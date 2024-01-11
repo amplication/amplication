@@ -1,9 +1,4 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { JsonArray, JsonObject } from "type-fest";
-import { BlockService } from "./block.service";
-import { PrismaService, Prisma, EnumResourceType } from "../../prisma";
 import { EnumBlockType } from "../../enums/EnumBlockType";
-import { DiffModule } from "../../services/diff.module";
 import {
   Resource,
   Block,
@@ -12,7 +7,12 @@ import {
   BlockInputOutput,
   User,
 } from "../../models";
+import { PrismaService, Prisma, EnumResourceType } from "../../prisma";
+import { DiffModule } from "../../services/diff.module";
 import { DiffService } from "../../services/diff.service";
+import { BlockService } from "./block.service";
+import { Test, TestingModule } from "@nestjs/testing";
+import { JsonArray, JsonObject } from "type-fest";
 
 const INITIAL_VERSION_NUMBER = 0;
 const NOW = new Date();

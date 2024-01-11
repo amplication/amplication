@@ -1,6 +1,6 @@
-import { Module } from "@nestjs/common";
-import { AdministratorResolver } from "./administrator.resolver";
 import { WorkspaceModule } from "../workspace/workspace.module";
+import { AdministratorResolver } from "./administrator.resolver";
+import { Module } from "@nestjs/common";
 
 @Module({
   imports: [WorkspaceModule],

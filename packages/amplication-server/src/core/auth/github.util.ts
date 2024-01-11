@@ -1,6 +1,6 @@
+import { PUBLIC_DOMAINS } from "./publicDomains";
 import { Octokit } from "@octokit/rest";
 import { orderBy } from "lodash";
-import { PUBLIC_DOMAINS } from "./publicDomains";
 
 export const GITHUB_USER_EMAILS_ROUTE = "GET /user/emails";
 const GITHUB_NO_REPLY_DOMAIN = "@users.noreply.github.com";

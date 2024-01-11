@@ -1,6 +1,6 @@
+import { BlockCreateInput } from "../../block/dto/BlockCreateInput";
 import { Field, InputType } from "@nestjs/graphql";
 import { Matches } from "class-validator";
-import { BlockCreateInput } from "../../block/dto/BlockCreateInput";
 
 @InputType({
   isAbstract: true,

@@ -1,11 +1,21 @@
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { UserEntity } from "../../decorators/user.decorator";
+import { FindOneArgs } from "../../dto";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { Env } from "../../env";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Workspace, User, Project } from "../../models";
+import { GitOrganization } from "../../models/GitOrganization";
 import {
-  Args,
-  Mutation,
-  Query,
-  Resolver,
-  Parent,
-  ResolveField,
-} from "@nestjs/graphql";
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { BillingService } from "../billing/billing.service";
+import { ProjectService } from "../project/project.service";
+import { Subscription } from "../subscription/dto/Subscription";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { UserService } from "../user/user.service";
 import {
   UpdateOneWorkspaceArgs,
   InviteUserArgs,
@@ -16,32 +26,21 @@ import {
   RevokeInvitationArgs,
   ResendInvitationArgs,
 } from "./dto";
-import { FindOneArgs } from "../../dto";
-
-import { Workspace, User, Project } from "../../models";
-import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
-import { UseFilters, UseGuards } from "@nestjs/common";
-import { UserEntity } from "../../decorators/user.decorator";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { WorkspaceService } from "./workspace.service";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
-import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { GitOrganization } from "../../models/GitOrganization";
-import { Subscription } from "../subscription/dto/Subscription";
-import { ProjectService } from "../project/project.service";
-import { BillingService } from "../billing/billing.service";
+import { Coupon } from "./dto/Coupon";
 import { ProvisionSubscriptionArgs } from "./dto/ProvisionSubscriptionArgs";
 import { ProvisionSubscriptionResult } from "./dto/ProvisionSubscriptionResult";
-import { SubscriptionService } from "../subscription/subscription.service";
-import { UserService } from "../user/user.service";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
-import { Coupon } from "./dto/Coupon";
+import { WorkspaceService } from "./workspace.service";
+import { UseFilters, UseGuards } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Env } from "../../env";
+import {
+  Args,
+  Mutation,
+  Query,
+  Resolver,
+  Parent,
+  ResolveField,
+} from "@nestjs/graphql";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)

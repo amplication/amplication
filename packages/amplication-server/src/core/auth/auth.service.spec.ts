@@ -1,26 +1,26 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { PrismaService, User, UserRole } from "../../prisma";
-import { JwtService } from "@nestjs/jwt";
 import { Role } from "../../enums/Role";
+import { Workspace, Project, Resource, Account } from "../../models";
+import { PrismaService, User, UserRole } from "../../prisma";
 import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
+import { ProjectService } from "../project/project.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { ResourceService } from "../resource/resource.service";
 import { UserService } from "../user/user.service";
-import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { WorkspaceService } from "../workspace/workspace.service";
 import {
   AuthService,
   AuthUser,
   IDENTITY_PROVIDER_MANUAL,
 } from "./auth.service";
-import { WorkspaceService } from "../workspace/workspace.service";
 import { EnumTokenType } from "./dto";
-import { ProjectService } from "../project/project.service";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { ConfigService } from "@nestjs/config";
-import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
-import { ResourceService } from "../resource/resource.service";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { Workspace, Project, Resource, Account } from "../../models";
+import { KAFKA_TOPICS } from "@amplication/schema-registry";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { Test, TestingModule } from "@nestjs/testing";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 
 const EXAMPLE_ACCOUNT: Account = {

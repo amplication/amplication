@@ -5,18 +5,18 @@
 // It logs the exception with context information like IP, Host, UserId
 // It uses nest logger module to log
 
+import { AmplicationError } from "../errors/AmplicationError";
+import { BillingLimitationError } from "../errors/BillingLimitationError";
+import { GraphQLBillingError } from "../errors/graphql/graphql-billing-limitation-error";
+import { GraphQLInternalServerError } from "../errors/graphql/graphql-internal-server-error";
+import { GraphQLUniqueKeyException } from "../errors/graphql/graphql-unique-key-error";
+import { Prisma } from "../prisma";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Catch, ArgumentsHost, Inject, HttpException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GqlExceptionFilter, GqlArgumentsHost } from "@nestjs/graphql";
-import { Prisma } from "../prisma";
 import { ApolloError } from "apollo-server-express";
 import { Request } from "express";
-import { AmplicationError } from "../errors/AmplicationError";
-import { BillingLimitationError } from "../errors/BillingLimitationError";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { GraphQLUniqueKeyException } from "../errors/graphql/graphql-unique-key-error";
-import { GraphQLInternalServerError } from "../errors/graphql/graphql-internal-server-error";
-import { GraphQLBillingError } from "../errors/graphql/graphql-billing-limitation-error";
 
 export type RequestData = {
   query: string;

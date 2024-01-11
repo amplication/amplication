@@ -1,7 +1,7 @@
-import { Octokit } from "@octokit/rest";
+import { AuthService, AuthUser } from "./auth.service";
 import { GitHubStrategy } from "./github.strategy";
 import { GITHUB_USER_EMAILS_ROUTE } from "./github.util";
-import { AuthService, AuthUser } from "./auth.service";
+import { Octokit } from "@octokit/rest";
 import { StrategyOptions, Profile } from "passport-github2";
 
 const EXAMPLE_ACCESS_TOKEN = "EXAMPLE_ACCESS_TOKEN";

@@ -1,10 +1,10 @@
+import { Env } from "../../env";
+import { AuthService } from "./auth.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable, NestMiddleware } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { auth } from "express-openid-connect";
-import { Env } from "../../env";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { AuthService } from "./auth.service";
 
 @Injectable()
 export class Auth0Middleware implements NestMiddleware {

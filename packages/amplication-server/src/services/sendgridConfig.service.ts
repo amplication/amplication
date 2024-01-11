@@ -1,10 +1,10 @@
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import {
   SendGridOptionsFactory,
   SendGridModuleOptions,
 } from "@ntegral/nestjs-sendgrid";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 export const SENDGRID_API_KEY_SECRET_VAR = "SENDGRID_API_KEY_SECRET";
 

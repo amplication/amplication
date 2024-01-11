@@ -1,14 +1,14 @@
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { ServiceSettingsService } from "./serviceSettings.service";
-import { ServiceSettings, UpdateServiceSettingsArgs } from "./dto";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
-import { FindOneArgs } from "../../dto";
 import { UserEntity } from "../../decorators/user.decorator";
-import { User } from "../../models";
-import { UseFilters, UseGuards } from "@nestjs/common";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { FindOneArgs } from "../../dto";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { User } from "../../models";
+import { ServiceSettings, UpdateServiceSettingsArgs } from "./dto";
+import { ServiceSettingsService } from "./serviceSettings.service";
+import { UseFilters, UseGuards } from "@nestjs/common";
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 
 @Resolver(() => ServiceSettings)
 @UseFilters(GqlResolverExceptionsFilter)

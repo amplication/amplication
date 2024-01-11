@@ -1,5 +1,5 @@
-import { ObjectType, Field } from "@nestjs/graphql";
 import { OAuth2User } from "./OAuth2User";
+import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

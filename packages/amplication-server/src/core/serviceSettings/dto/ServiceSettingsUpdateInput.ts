@@ -1,8 +1,8 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { BlockUpdateInput } from "../../block/dto/BlockUpdateInput";
 import { AdminUISettingsUpdateInput } from "./AdminUISettingsUpdateInput";
 import { EnumAuthProviderType } from "./EnumAuthenticationProviderType";
 import { ServerSettingsUpdateInput } from "./ServerSettingsUpdateInput";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

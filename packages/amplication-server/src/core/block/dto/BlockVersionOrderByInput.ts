@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { SortOrder } from "../../../enums/SortOrder";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

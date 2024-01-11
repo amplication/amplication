@@ -1,16 +1,15 @@
-import { Args, Resolver, Parent, ResolveField } from "@nestjs/graphql";
-import { UseFilters, UseGuards } from "@nestjs/common";
-import { FindManyEntityFieldArgs } from "./dto";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import {
   EntityVersion,
   Commit,
   EntityField,
   EntityPermission,
 } from "../../models";
-import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { FindManyEntityFieldArgs } from "./dto";
 import { EntityService } from "./entity.service";
-
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { UseFilters, UseGuards } from "@nestjs/common";
+import { Args, Resolver, Parent, ResolveField } from "@nestjs/graphql";
 
 @Resolver(() => EntityVersion)
 @UseFilters(GqlResolverExceptionsFilter)

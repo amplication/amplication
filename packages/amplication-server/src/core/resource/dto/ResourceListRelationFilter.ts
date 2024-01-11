@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { ResourceWhereInput } from "./ResourceWhereInput";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

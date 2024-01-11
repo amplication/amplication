@@ -1,6 +1,6 @@
-import { ArgsType, Field } from "@nestjs/graphql";
 import { WhereUniqueInput } from "../../../dto";
 import { CodeGeneratorVersionUpdateInput } from "./CodeGeneratorVersionUpdateInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class UpdateCodeGeneratorVersionArgs {

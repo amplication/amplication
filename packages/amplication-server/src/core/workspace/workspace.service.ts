@@ -1,6 +1,25 @@
-import { ConflictException, Inject, Injectable } from "@nestjs/common";
+import { FindOneArgs } from "../../dto";
+import { Role } from "../../enums/Role";
+import { Env } from "../../env";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { Entity, EntityField, Resource, User, Workspace } from "../../models";
+import { GitOrganization } from "../../models/GitOrganization";
 import { Prisma, PrismaService } from "../../prisma";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { BillingService } from "../billing/billing.service";
+import { MailService } from "../mail/mail.service";
+import { ModuleService } from "../module/module.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ProjectService } from "../project/project.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { EnumSubscriptionPlan } from "../subscription/dto";
+import { Subscription } from "../subscription/dto/Subscription";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { UserService } from "../user/user.service";
 import {
   CompleteInvitationArgs,
   DeleteUserArgs,
@@ -11,42 +30,22 @@ import {
   UpdateOneWorkspaceArgs,
   WorkspaceMember,
 } from "./dto";
-import { Invitation } from "./dto/Invitation";
-
-import cuid from "cuid";
-import { addDays } from "date-fns";
-import { isEmpty } from "lodash";
-import { FindOneArgs } from "../../dto";
-import { Role } from "../../enums/Role";
-import { GitOrganization } from "../../models/GitOrganization";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { BillingService } from "../billing/billing.service";
-import { MailService } from "../mail/mail.service";
-import { ProjectService } from "../project/project.service";
-import { EnumSubscriptionPlan } from "../subscription/dto";
-import { Subscription } from "../subscription/dto/Subscription";
-import { SubscriptionService } from "../subscription/subscription.service";
-import { UserService } from "../user/user.service";
-import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
-import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
-import { BillingPeriod } from "@stigg/node-server-sdk";
 import { Coupon } from "./dto/Coupon";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
+import { Invitation } from "./dto/Invitation";
+import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 import {
   EnumBlockType,
   EnumDataType,
 } from "@amplication/code-gen-types/models";
-import { ModuleService } from "../module/module.service";
-import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { Env } from "../../env";
+import { ConflictException, Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { BillingPeriod } from "@stigg/node-server-sdk";
+import cuid from "cuid";
+import { addDays } from "date-fns";
+import { isEmpty } from "lodash";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 

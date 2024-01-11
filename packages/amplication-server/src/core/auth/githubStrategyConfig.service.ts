@@ -1,6 +1,6 @@
+import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { StrategyOptions } from "passport-github2";
-import { Injectable } from "@nestjs/common";
 
 export const GITHUB_CLIENT_ID_VAR = "GITHUB_CLIENT_ID";
 export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";

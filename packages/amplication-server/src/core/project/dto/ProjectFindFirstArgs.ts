@@ -1,5 +1,5 @@
-import { InputType } from "@nestjs/graphql";
 import { ProjectWhereInput } from "./ProjectWhereInput";
+import { InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

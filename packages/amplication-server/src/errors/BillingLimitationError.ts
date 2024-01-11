@@ -1,5 +1,5 @@
-import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationError } from "./AmplicationError";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 export class BillingLimitationError extends AmplicationError {
   constructor(

@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
 import { GitOAuth2FlowInput } from "../inputs/GitOAuth2FlowInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class CompleteGitOAuth2FlowArgs {

@@ -1,5 +1,3 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { User } from "../../models";
@@ -8,6 +6,8 @@ import { BlockValuesExtended } from "../block/types";
 import { ProjectConfigurationSettings } from "./dto/ProjectConfigurationSettings";
 import { UpdateProjectConfigurationSettingsArgs } from "./dto/UpdateProjectConfigurationSettingsArgs";
 import { ProjectConfigurationSettingsExistError } from "./errors/ProjectConfigurationSettingsExistError";
+import { Inject, Injectable } from "@nestjs/common";
+import { isEmpty } from "lodash";
 
 const DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME =
   "Project Configuration Settings";

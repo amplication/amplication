@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { QueryMode } from "../enums/QueryMode";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

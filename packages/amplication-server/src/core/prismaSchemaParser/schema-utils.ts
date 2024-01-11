@@ -1,20 +1,7 @@
-import {
-  Field,
-  KeyValue,
-  Model,
-  RelationArray,
-  AttributeArgument,
-  BlockAttribute,
-  Attribute,
-  Schema,
-  Func,
-  Enum,
-  Enumerator,
-  ConcretePrismaSchemaBuilder,
-  getSchema,
-  Datasource,
-  Assignment,
-} from "@mrleebo/prisma-ast";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { EnumActionLogLevel } from "../action/dto";
+import { CreateBulkFieldsInput } from "../entity/entity.service";
+import { ActionContext } from "../userAction/types";
 import {
   ARG_KEY_FIELD_NAME,
   RELATION_ATTRIBUTE_NAME,
@@ -42,10 +29,23 @@ import {
   lookupField,
 } from "./helpers";
 import { ExistingEntitySelect, Mapper } from "./types";
-import { CreateBulkFieldsInput } from "../entity/entity.service";
-import { EnumDataType } from "../../enums/EnumDataType";
-import { EnumActionLogLevel } from "../action/dto";
-import { ActionContext } from "../userAction/types";
+import {
+  Field,
+  KeyValue,
+  Model,
+  RelationArray,
+  AttributeArgument,
+  BlockAttribute,
+  Attribute,
+  Schema,
+  Func,
+  Enum,
+  Enumerator,
+  ConcretePrismaSchemaBuilder,
+  getSchema,
+  Datasource,
+  Assignment,
+} from "@mrleebo/prisma-ast";
 import cuid from "cuid";
 import { camelCase } from "lodash";
 

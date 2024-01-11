@@ -1,3 +1,21 @@
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Commit, Resource, User } from "../../models";
+import { ActionService } from "../action/action.service";
+import { Action } from "../action/dto";
+import { CommitService } from "../commit/commit.service";
+import { ResourceService } from "../resource/resource.service";
+import { UserService } from "../user/user.service";
+import { BuildService } from "./build.service";
+import { Build } from "./dto/Build";
+import { CreateBuildArgs } from "./dto/CreateBuildArgs";
+import { EnumBuildStatus } from "./dto/EnumBuildStatus";
+import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
+import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
 import { UseGuards, UseFilters } from "@nestjs/common";
 import {
   Args,
@@ -7,24 +25,6 @@ import {
   Parent,
   ResolveField,
 } from "@nestjs/graphql";
-import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Build } from "./dto/Build";
-import { CreateBuildArgs } from "./dto/CreateBuildArgs";
-import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
-import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
-import { BuildService } from "./build.service";
-import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
-import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
-import { Commit, Resource, User } from "../../models";
-import { UserService } from "../user/user.service";
-import { Action } from "../action/dto";
-import { ActionService } from "../action/action.service";
-import { EnumBuildStatus } from "./dto/EnumBuildStatus";
-import { CommitService } from "../commit/commit.service";
-import { ResourceService } from "../resource/resource.service";
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)

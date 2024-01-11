@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { CopiedEntities } from "./CopiedEntities";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

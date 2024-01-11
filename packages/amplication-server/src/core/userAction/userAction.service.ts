@@ -1,9 +1,9 @@
-import { Injectable } from "@nestjs/common";
 import { Prisma, PrismaService } from "../../prisma";
-import { FindOneUserActionArgs } from "./dto/FindOneUserActionArgs";
-import { UserAction } from "./dto";
 import { EnumActionStepStatus } from "../action/dto";
+import { UserAction } from "./dto";
+import { FindOneUserActionArgs } from "./dto/FindOneUserActionArgs";
 import { EnumUserActionStatus, EnumUserActionType } from "./types";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class UserActionService {

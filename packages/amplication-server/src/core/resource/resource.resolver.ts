@@ -1,12 +1,4 @@
-import { UseFilters, UseGuards } from "@nestjs/common";
-import {
-  Args,
-  Mutation,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-} from "@nestjs/graphql";
+import { ResourceService, EntityService } from "..";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { Roles } from "../../decorators/roles.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
@@ -16,7 +8,6 @@ import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Resource, Entity, User, Project } from "../../models";
 import { GitRepository } from "../../models/GitRepository";
-import { ResourceService, EntityService } from "..";
 import { BuildService } from "../build/build.service";
 import { Build } from "../build/dto/Build";
 import { FindManyBuildArgs } from "../build/dto/FindManyBuildArgs";
@@ -32,6 +23,15 @@ import {
   UpdateCodeGeneratorVersionArgs,
 } from "./dto";
 import { CreateResourceEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
+import { UseFilters, UseGuards } from "@nestjs/common";
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from "@nestjs/graphql";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)

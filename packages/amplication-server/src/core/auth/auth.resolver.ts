@@ -1,6 +1,13 @@
-import { Resolver, Mutation, Query, Args } from "@nestjs/graphql";
-import { UseGuards, UseFilters } from "@nestjs/common";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { UserEntity } from "../../decorators/user.decorator";
+import { FindOneArgs } from "../../dto";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Auth, User, Account } from "../../models";
+import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
+import { CompleteInvitationArgs } from "../workspace/dto";
+import { AuthService } from "./auth.service";
 import {
   LoginArgs,
   SignupArgs,
@@ -9,18 +16,9 @@ import {
   CreateApiTokenArgs,
   ApiToken,
 } from "./dto";
-
-import { CompleteInvitationArgs } from "../workspace/dto";
-
-import { AuthService } from "./auth.service";
-import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
-import { UserEntity } from "../../decorators/user.decorator";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { FindOneArgs } from "../../dto";
-import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { SignupPreviewAccountArgs } from "./dto/SignupPreviewAccountArgs";
-import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
+import { UseGuards, UseFilters } from "@nestjs/common";
+import { Resolver, Mutation, Query, Args } from "@nestjs/graphql";
 
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)

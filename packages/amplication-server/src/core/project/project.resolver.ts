@@ -1,3 +1,27 @@
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
+import { Roles } from "../../decorators/roles.decorator";
+import { UserEntity } from "../../decorators/user.decorator";
+import { FindOneArgs } from "../../dto";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Commit, Project, Resource, User } from "../../models";
+import {
+  CreateCommitArgs,
+  DiscardPendingChangesArgs,
+  FindPendingChangesArgs,
+  PendingChange,
+} from "../resource/dto";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { ResourceService } from "../resource/resource.service";
+import { ProjectCreateArgs } from "./dto/ProjectCreateArgs";
+import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
+import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
+import { ProjectService } from "./project.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, UseFilters, UseGuards } from "@nestjs/common";
 import {
   Args,
   Mutation,
@@ -6,30 +30,6 @@ import {
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
-import { FindOneArgs } from "../../dto";
-import { Commit, Project, Resource, User } from "../../models";
-import { ProjectCreateArgs } from "./dto/ProjectCreateArgs";
-import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
-import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
-import { ProjectService } from "./project.service";
-import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
-import { Roles } from "../../decorators/roles.decorator";
-import { Inject, UseFilters, UseGuards } from "@nestjs/common";
-import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
-import { UserEntity } from "../../decorators/user.decorator";
-import { ResourceService } from "../resource/resource.service";
-import {
-  CreateCommitArgs,
-  DiscardPendingChangesArgs,
-  FindPendingChangesArgs,
-  PendingChange,
-} from "../resource/dto";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 @Resolver(() => Project)
 @UseFilters(GqlResolverExceptionsFilter)

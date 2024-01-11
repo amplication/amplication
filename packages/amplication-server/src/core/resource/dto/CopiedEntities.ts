@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { Entity } from "../../../models";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

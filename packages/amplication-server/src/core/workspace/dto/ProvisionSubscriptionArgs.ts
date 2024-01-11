@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
 import { ProvisionSubscriptionInput } from "./ProvisionSubscriptionInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class ProvisionSubscriptionArgs {

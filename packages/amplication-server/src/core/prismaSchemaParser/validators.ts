@@ -1,7 +1,7 @@
-import { validate } from "@prisma/internals";
-import { Model, getSchema } from "@mrleebo/prisma-ast";
-import { MODEL_TYPE_NAME } from "./constants";
 import { ActionLog, EnumActionLogLevel } from "../action/dto";
+import { MODEL_TYPE_NAME } from "./constants";
+import { Model, getSchema } from "@mrleebo/prisma-ast";
+import { validate } from "@prisma/internals";
 
 /**
  * This function is a wrapper around the validate function of the Prisma and our custom validation logic

@@ -1,7 +1,7 @@
-import { ExceptionFilter, Catch, ArgumentsHost, Inject } from "@nestjs/common";
-import { Request, Response } from "express";
-import { ConfigService } from "@nestjs/config";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ExceptionFilter, Catch, ArgumentsHost, Inject } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { Request, Response } from "express";
 
 @Catch(Error)
 export class GithubAuthExceptionFilter implements ExceptionFilter {

@@ -1,11 +1,11 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import cuid from "cuid";
+import { PrismaService } from "../../prisma/prisma.service";
+import { Environment } from "./dto";
 import {
   EnvironmentService,
   DEFAULT_ENVIRONMENT_NAME,
 } from "./environment.service";
-import { PrismaService } from "../../prisma/prisma.service";
-import { Environment } from "./dto";
+import { Test, TestingModule } from "@nestjs/testing";
+import cuid from "cuid";
 
 const EXAMPLE_ENVIRONMENT_ID = "exampleEnvironmentId";
 const EXAMPLE_ENVIRONMENT_NAME = "exampleEnvironmentName";

@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { PluginInstallationCreateInput } from "./PluginInstallationCreateInput";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

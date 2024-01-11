@@ -1,5 +1,3 @@
-import { EnumModuleActionType } from "@amplication/code-gen-types";
-import { Test, TestingModule } from "@nestjs/testing";
 import { FindOneArgs } from "../../dto";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -16,6 +14,8 @@ import { EnumModuleActionRestVerb } from "./dto/EnumModuleActionRestVerb";
 import { ModuleAction } from "./dto/ModuleAction";
 import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
 import { ModuleActionService } from "./moduleAction.service";
+import { EnumModuleActionType } from "@amplication/code-gen-types";
+import { Test, TestingModule } from "@nestjs/testing";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";

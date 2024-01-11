@@ -1,10 +1,10 @@
+import { Env } from "../env";
 import {
   CanActivate,
   ExecutionContext,
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
-import { Env } from "../env";
 import { ConfigService } from "@nestjs/config";
 import { GqlExecutionContext } from "@nestjs/graphql";
 

@@ -1,11 +1,11 @@
-import { Module } from "@nestjs/common";
-import { ModuleService } from "./module.service";
-import { ModuleResolver } from "./module.resolver";
-import { BlockModule } from "../block/block.module";
-import { PermissionsModule } from "../permissions/permissions.module";
 import { PrismaModule } from "../../prisma";
-import { UserModule } from "../user/user.module";
+import { BlockModule } from "../block/block.module";
 import { ModuleActionModule } from "../moduleAction/moduleAction.module";
+import { PermissionsModule } from "../permissions/permissions.module";
+import { UserModule } from "../user/user.module";
+import { ModuleResolver } from "./module.resolver";
+import { ModuleService } from "./module.service";
+import { Module } from "@nestjs/common";
 @Module({
   imports: [
     UserModule,

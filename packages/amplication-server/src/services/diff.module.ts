@@ -1,5 +1,5 @@
-import { Module } from "@nestjs/common";
 import { DiffService } from "./diff.service";
+import { Module } from "@nestjs/common";
 
 @Module({
   providers: [DiffService],

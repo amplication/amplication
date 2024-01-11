@@ -1,9 +1,9 @@
-import { Resolver, Parent, ResolveField } from "@nestjs/graphql";
-import { User, UserRole, Account } from "../../models";
 import { UserService } from "../";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
-import { UseGuards, UseFilters } from "@nestjs/common";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { User, UserRole, Account } from "../../models";
+import { UseGuards, UseFilters } from "@nestjs/common";
+import { Resolver, Parent, ResolveField } from "@nestjs/graphql";
 
 @Resolver(() => User)
 @UseFilters(GqlResolverExceptionsFilter)

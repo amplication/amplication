@@ -1,9 +1,3 @@
-import * as CodeGenTypes from "@amplication/code-gen-types";
-import {
-  getDefaultActionsForEntity,
-  getDefaultActionsForRelationField,
-} from "@amplication/dsg-utils";
-import { Injectable } from "@nestjs/common";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { AmplicationError } from "../../errors/AmplicationError";
@@ -18,6 +12,12 @@ import { EnumModuleActionType } from "./dto/EnumModuleActionType";
 import { FindManyModuleActionArgs } from "./dto/FindManyModuleActionArgs";
 import { ModuleAction } from "./dto/ModuleAction";
 import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
+import * as CodeGenTypes from "@amplication/code-gen-types";
+import {
+  getDefaultActionsForEntity,
+  getDefaultActionsForRelationField,
+} from "@amplication/dsg-utils";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<

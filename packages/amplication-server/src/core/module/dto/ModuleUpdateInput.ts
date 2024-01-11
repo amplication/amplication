@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { BlockUpdateInput } from "../../block/dto/BlockUpdateInput";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

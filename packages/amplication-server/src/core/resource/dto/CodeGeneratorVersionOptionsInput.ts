@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { CodeGeneratorVersionStrategy } from "./EnumCodeGeneratorVersionStrategy";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,

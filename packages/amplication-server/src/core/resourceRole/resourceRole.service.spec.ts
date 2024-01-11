@@ -1,7 +1,7 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { ResourceRoleService } from "./resourceRole.service";
-import { PrismaService } from "../../prisma/prisma.service";
 import { ResourceRole } from "../../models";
+import { PrismaService } from "../../prisma/prisma.service";
+import { ResourceRoleService } from "./resourceRole.service";
+import { Test, TestingModule } from "@nestjs/testing";
 
 const EXAMPLE_APP_ROLE_ID = "exampleAppRoleId";
 const EXAMPLE_APP_ROLE_NAME = "exampleAppRoleName";

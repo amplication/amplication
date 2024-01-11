@@ -1,7 +1,7 @@
-import { Field, ObjectType } from "@nestjs/graphql";
 import { IBlock } from "../../../models";
-import type { JsonValue } from "type-fest";
 import { PluginOrderItem } from "./PluginOrderItem";
+import { Field, ObjectType } from "@nestjs/graphql";
+import type { JsonValue } from "type-fest";
 
 @ObjectType({
   isAbstract: true,

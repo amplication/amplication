@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
 import { PendingChangesDiscardInput } from "./PendingChangesDiscardInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class DiscardPendingChangesArgs {

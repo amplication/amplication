@@ -1,8 +1,8 @@
-import * as fs from "fs";
-import * as path from "path";
-import { diff } from "jest-diff";
 import generateGraphQLSchema from "./generate-graphql-schema";
 import { Logger } from "@amplication/util/logging";
+import * as fs from "fs";
+import { diff } from "jest-diff";
+import * as path from "path";
 
 const SCHEMA_PATH = path.join(__dirname, "..", "src", "schema.graphql");
 const logger = new Logger({

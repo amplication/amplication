@@ -1,4 +1,3 @@
-import { Matcher, mock } from "jest-mock-extended";
 import { ResourceService } from "../..";
 import { FindOneArgs } from "../../../dto";
 import {
@@ -6,6 +5,7 @@ import {
   TEST_SERVICE_RESOURCE_MOCK,
 } from "./Resource.mock";
 import { TEST_RESOURCE_ID } from "./resourceId.mock";
+import { Matcher, mock } from "jest-mock-extended";
 
 export const mockResourceService = mock<ResourceService>();
 mockResourceService.resource

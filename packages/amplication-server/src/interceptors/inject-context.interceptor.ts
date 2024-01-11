@@ -1,14 +1,14 @@
+import { InjectableOriginParameter } from "../enums/InjectableOriginParameter";
+import { User } from "../models";
 import {
   Injectable,
   CallHandler,
   ExecutionContext,
   NestInterceptor,
 } from "@nestjs/common";
-import { set } from "lodash";
-import { InjectableOriginParameter } from "../enums/InjectableOriginParameter";
-import { User } from "../models";
 import { Reflector } from "@nestjs/core";
 import { GqlExecutionContext } from "@nestjs/graphql";
+import { set } from "lodash";
 
 export const INJECT_CONTEXT_VALUE = "injectContextValue";
 

@@ -1,8 +1,8 @@
-import { Controller, Inject, Param, Post } from "@nestjs/common";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { WorkspaceService } from "./workspace.service";
-import { ApiTags } from "@nestjs/swagger";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Controller, Inject, Param, Post } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { ApiTags } from "@nestjs/swagger";
 
 @ApiTags("workspace")
 @Controller("migrate-custom-actions")

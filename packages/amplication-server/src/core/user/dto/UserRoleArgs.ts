@@ -1,6 +1,6 @@
-import { ArgsType, Field } from "@nestjs/graphql";
-import { UserRoleInput } from "./UserRoleInput";
 import { WhereUniqueInput } from "../../../dto";
+import { UserRoleInput } from "./UserRoleInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class UserRoleArgs {

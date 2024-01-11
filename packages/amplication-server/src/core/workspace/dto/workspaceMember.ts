@@ -1,8 +1,8 @@
-import { Field, ObjectType } from "@nestjs/graphql";
 import { User } from "../../../models";
-import { Invitation } from "./Invitation";
 import { EnumWorkspaceMemberType } from "./EnumWorkspaceMemberType";
+import { Invitation } from "./Invitation";
 import { WorkspaceMemberType } from "./WorkspaceMemberType";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

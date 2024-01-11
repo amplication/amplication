@@ -1,18 +1,18 @@
-import { Injectable } from "@nestjs/common";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
+import { AmplicationError } from "../../errors/AmplicationError";
 import { Entity, User } from "../../models";
 import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { DefaultModuleForEntityNotFoundError } from "./DefaultModuleForEntityNotFoundError";
 import { CreateModuleArgs } from "./dto/CreateModuleArgs";
 import { DeleteModuleArgs } from "./dto/DeleteModuleArgs";
 import { FindManyModuleArgs } from "./dto/FindManyModuleArgs";
 import { Module } from "./dto/Module";
-import { UpdateModuleArgs } from "./dto/UpdateModuleArgs";
 import { ModuleUpdateInput } from "./dto/ModuleUpdateInput";
-import { DefaultModuleForEntityNotFoundError } from "./DefaultModuleForEntityNotFoundError";
-import { ModuleActionService } from "../moduleAction/moduleAction.service";
-import { AmplicationError } from "../../errors/AmplicationError";
+import { UpdateModuleArgs } from "./dto/UpdateModuleArgs";
+import { Injectable } from "@nestjs/common";
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
 

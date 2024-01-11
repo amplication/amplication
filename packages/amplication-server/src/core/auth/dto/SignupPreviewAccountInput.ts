@@ -1,7 +1,7 @@
-import { IsEmail } from "class-validator";
-import { InputType, Field } from "@nestjs/graphql";
-import { PreviewAccountType } from "./EnumPreviewAccountType";
 import { IsWorkEmail } from "../IsWorkEmail";
+import { PreviewAccountType } from "./EnumPreviewAccountType";
+import { InputType, Field } from "@nestjs/graphql";
+import { IsEmail } from "class-validator";
 
 @InputType()
 export class SignupPreviewAccountInput {

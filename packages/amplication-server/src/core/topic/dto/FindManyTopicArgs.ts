@@ -1,6 +1,6 @@
-import { ArgsType, Field, Int } from "@nestjs/graphql";
 import { TopicOrderByInput } from "./TopicOrderByInput";
 import { TopicWhereInput } from "./TopicWhereInput";
+import { ArgsType, Field, Int } from "@nestjs/graphql";
 
 @ArgsType()
 export class FindManyTopicArgs {

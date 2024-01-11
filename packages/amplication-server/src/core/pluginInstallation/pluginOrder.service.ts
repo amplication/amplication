@@ -1,4 +1,3 @@
-import { Injectable } from "@nestjs/common";
 import { FindOneArgs } from "../../dto";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { BlockService } from "../block/block.service";
@@ -8,6 +7,7 @@ import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 import { FindManyPluginOrderArgs } from "./dto/FindManyPluginOrderArgs";
 import { PluginOrder } from "./dto/PluginOrder";
 import { UpdatePluginOrderArgs } from "./dto/UpdatePluginOrderArgs";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class PluginOrderService extends BlockTypeService<

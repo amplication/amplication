@@ -1,6 +1,6 @@
-import { ArgsType, Field } from "@nestjs/graphql";
 import { UpdateBlockArgs } from "../../block/dto/UpdateBlockArgs";
 import { TopicUpdateInput } from "./TopicUpdateInput";
+import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
 export class UpdateTopicArgs extends UpdateBlockArgs {

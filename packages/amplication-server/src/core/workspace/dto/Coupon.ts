@@ -1,5 +1,5 @@
-import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { EnumSubscriptionPlan } from "../../subscription/dto";
+import { Field, Int, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({
   isAbstract: true,

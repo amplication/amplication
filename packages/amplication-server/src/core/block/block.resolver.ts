@@ -1,5 +1,3 @@
-import { UseFilters, UseGuards } from "@nestjs/common";
-import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
@@ -9,6 +7,8 @@ import { Block, BlockVersion, User } from "../../models";
 import { UserService } from "../user/user.service";
 import { BlockService } from "./block.service";
 import { FindManyBlockArgs, FindManyBlockVersionArgs } from "./dto";
+import { UseFilters, UseGuards } from "@nestjs/common";
+import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
 /** @todo add FieldResolver to return the settings, inputs, and outputs from the current version */
 

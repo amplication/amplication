@@ -1,5 +1,5 @@
-import type { JsonObject, JsonValue } from "type-fest";
 import { readFile, writeFile } from "fs";
+import type { JsonObject, JsonValue } from "type-fest";
 
 export class JsonHelper {
   private static instance: JsonHelper;

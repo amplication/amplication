@@ -1,7 +1,7 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { BlockCreateInput } from "../../block/dto/BlockCreateInput";
 import { EnumModuleActionGqlOperation } from "./EnumModuleActionGqlOperation";
 import { EnumModuleActionRestVerb } from "./EnumModuleActionRestVerb";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,
