@@ -11,7 +11,6 @@ import {
   ConnectionMode,
   ControlButton,
   Controls,
-  MiniMap,
   ReactFlow,
   ReactFlowInstance,
 } from "reactflow";
@@ -81,6 +80,7 @@ export default function ModelOrganizer({
     searchPhraseChanged,
     selectedNode,
     setSelectedNode,
+    mergeNewResourcesChanges,
   } = useModelOrganization();
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
@@ -272,6 +272,7 @@ export default function ModelOrganizer({
               readOnly={readOnly}
               handleServiceCreated={handleServiceCreated}
               onCancelChanges={onCancelChangesClick}
+              mergeNewResourcesChanges={mergeNewResourcesChanges}
             ></ModelsGroupsList>
             <div className={"reactflow-wrapper"}>
               <ReactFlow

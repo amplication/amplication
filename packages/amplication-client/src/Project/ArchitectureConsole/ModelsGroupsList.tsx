@@ -21,6 +21,7 @@ type Props = {
   handleModelGroupFilterChanged: (event: any, modelGroup: Node) => void;
   handleServiceCreated: (newResource: Resource) => void;
   onCancelChanges: () => void;
+  mergeNewResourcesChanges: () => void;
 };
 
 export default function ModelsGroupsList({
@@ -30,6 +31,7 @@ export default function ModelsGroupsList({
   handleModelGroupFilterChanged,
   handleServiceCreated,
   onCancelChanges,
+  mergeNewResourcesChanges,
 }: Props) {
   return (
     <>
@@ -78,6 +80,7 @@ export default function ModelsGroupsList({
           <ModelsTool
             handleServiceCreated={handleServiceCreated}
             onCancelChanges={onCancelChanges}
+            mergeNewResourcesChanges={mergeNewResourcesChanges}
           ></ModelsTool>
         )}
       </div>
