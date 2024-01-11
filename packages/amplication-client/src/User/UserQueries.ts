@@ -11,3 +11,9 @@ export const SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW = gql`
     }
   }
 `;
+
+export const COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL = gql`
+  mutation CompleteSignupWithBusinessEmail {
+    completeSignupWithBusinessEmail
+  }
+`;
