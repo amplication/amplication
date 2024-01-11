@@ -1,7 +1,6 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Plugin } from "../../prisma/generated-prisma-client";
-import fetch from "node-fetch";
-import yaml from "js-yaml";
+import { NpmService } from "../npm/npm.service";
+import { AMPLICATION_GITHUB_URL, emptyPlugin } from "./plugin.constants";
 import {
   NpmDownloads,
   NpmTags,
@@ -9,10 +8,11 @@ import {
   PluginList,
   PluginYml,
 } from "./plugin.types";
-import { AMPLICATION_GITHUB_URL, emptyPlugin } from "./plugin.constants";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { NpmService } from "../npm/npm.service";
+import yaml from "js-yaml";
+import fetch from "node-fetch";
 
 @Injectable()
 export class GitPluginService {

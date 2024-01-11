@@ -1,17 +1,17 @@
-import { forwardRef, Module } from "@nestjs/common";
+import { SERVICE_NAME } from "./constants";
+import { HealthModule } from "./health/health.module";
 import { PluginModule } from "./plugin/plugin.module";
 import { PluginVersionModule } from "./pluginVersion/pluginVersion.module";
-import { HealthModule } from "./health/health.module";
+import { PrismaModule } from "./prisma/prisma.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
-import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
+import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
+import { forwardRef, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
-import { PrismaModule } from "./prisma/prisma.module";
-import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { TracingModule } from "@amplication/util/nestjs/tracing";
-import { SERVICE_NAME } from "./constants";
+import { ServeStaticModule } from "@nestjs/serve-static";
 @Module({
   controllers: [],
   imports: [

@@ -1,16 +1,16 @@
+import { Public } from "../decorators/public.decorator";
+import { PluginVersion } from "../pluginVersion/base/PluginVersion";
+import { PluginVersionFindManyArgs } from "../pluginVersion/base/PluginVersionFindManyArgs";
+import { PluginVersionService } from "../pluginVersion/pluginVersion.service";
+import { Plugin } from "./base/Plugin";
+import { PluginResolverBase } from "./base/plugin.resolver.base";
+import { PluginService } from "./plugin.service";
+import { ProcessedPluginVersions } from "./plugin.types";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
-import { groupBy } from "lodash";
-import { PluginResolverBase } from "./base/plugin.resolver.base";
-import { Plugin } from "./base/Plugin";
-import { PluginService } from "./plugin.service";
-import { Public } from "../decorators/public.decorator";
 import { GraphQLError } from "graphql";
-import { PluginVersion } from "../pluginVersion/base/PluginVersion";
-import { PluginVersionService } from "../pluginVersion/pluginVersion.service";
-import { ProcessedPluginVersions } from "./plugin.types";
-import { PluginVersionFindManyArgs } from "../pluginVersion/base/PluginVersionFindManyArgs";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { groupBy } from "lodash";
 
 @graphql.Resolver(() => Plugin)
 export class PluginResolver extends PluginResolverBase {

@@ -9,11 +9,11 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { PluginVersionWhereInput } from "./PluginVersionWhereInput";
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { PluginVersionWhereInput } from "./PluginVersionWhereInput";
-import { ValidateNested, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
+import { ValidateNested, IsOptional } from "class-validator";
 
 @InputType()
 class PluginVersionListRelationFilter {

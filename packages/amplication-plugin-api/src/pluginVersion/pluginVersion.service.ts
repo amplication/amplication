@@ -1,17 +1,17 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import {
   Plugin,
   PluginVersion,
   Prisma,
 } from "../../prisma/generated-prisma-client";
-import fetch from "node-fetch";
-import zlib from "zlib";
-import tar from "tar-stream";
+import { PluginService } from "../plugin/plugin.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { PluginVersionServiceBase } from "./base/pluginVersion.service.base";
-import { PluginService } from "../plugin/plugin.service";
 import { NpmPluginVersionService } from "./npm-plugin-version.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import fetch from "node-fetch";
+import tar from "tar-stream";
+import zlib from "zlib";
 
 const SETTINGS_FILE = "package/.amplicationrc.json";
 

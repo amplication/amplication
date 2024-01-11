@@ -1,5 +1,5 @@
-import { ConfigService } from "@nestjs/config";
 import { EnumSecretsNameKey } from "../secretsNameKey.enum";
+import { ConfigService } from "@nestjs/config";
 
 export interface ISecretsManager {
   getSecret: (key: EnumSecretsNameKey) => Promise<any | null>;

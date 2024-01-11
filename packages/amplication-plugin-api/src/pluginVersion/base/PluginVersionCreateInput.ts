@@ -9,12 +9,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { InputJsonValue } from "../../types";
+import { IsJSONValue } from "@app/custom-validators";
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsJSONValue } from "@app/custom-validators";
 import { IsOptional, IsString, IsBoolean } from "class-validator";
 import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
 
 @InputType()
 class PluginVersionCreateInput {

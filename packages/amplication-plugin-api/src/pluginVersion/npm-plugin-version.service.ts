@@ -1,9 +1,9 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Plugin, PluginVersion } from "../../prisma/generated-prisma-client";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Packument } from "pacote";
 import { NpmService } from "../npm/npm.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { Packument } from "pacote";
 
 @Injectable()
 export class NpmPluginVersionService {

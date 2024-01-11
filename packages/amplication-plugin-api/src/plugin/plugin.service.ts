@@ -1,9 +1,9 @@
-import { Inject, Injectable } from "@nestjs/common";
 import { Plugin } from "../../prisma/generated-prisma-client";
 import { PrismaService } from "../prisma/prisma.service";
 import { PluginServiceBase } from "./base/plugin.service.base";
 import { GitPluginService } from "./github-plugin.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class PluginService extends PluginServiceBase {

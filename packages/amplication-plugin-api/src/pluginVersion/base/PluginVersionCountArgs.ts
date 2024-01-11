@@ -9,9 +9,9 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { PluginVersionWhereInput } from "./PluginVersionWhereInput";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { PluginVersionWhereInput } from "./PluginVersionWhereInput";
 import { Type } from "class-transformer";
 
 @ArgsType()

@@ -9,19 +9,19 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as graphql from "@nestjs/graphql";
-import { GraphQLError } from "graphql";
+import { Public } from "../../decorators/public.decorator";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { Public } from "../../decorators/public.decorator";
+import { PluginVersionService } from "../pluginVersion.service";
 import { CreatePluginVersionArgs } from "./CreatePluginVersionArgs";
-import { UpdatePluginVersionArgs } from "./UpdatePluginVersionArgs";
 import { DeletePluginVersionArgs } from "./DeletePluginVersionArgs";
+import { PluginVersion } from "./PluginVersion";
 import { PluginVersionCountArgs } from "./PluginVersionCountArgs";
 import { PluginVersionFindManyArgs } from "./PluginVersionFindManyArgs";
 import { PluginVersionFindUniqueArgs } from "./PluginVersionFindUniqueArgs";
-import { PluginVersion } from "./PluginVersion";
-import { PluginVersionService } from "../pluginVersion.service";
+import { UpdatePluginVersionArgs } from "./UpdatePluginVersionArgs";
+import * as graphql from "@nestjs/graphql";
+import { GraphQLError } from "graphql";
 @graphql.Resolver(() => PluginVersion)
 export class PluginVersionResolverBase {
   constructor(protected readonly service: PluginVersionService) {}
