@@ -207,6 +207,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
             <a
               href="https://docs.amplication.com/how-to/import-prisma-schema/"
               target="_blank"
+              rel="noreferrer"
             >
               &nbsp;documentation
             </a>
