@@ -1,8 +1,8 @@
-import { Injectable, Inject } from "@nestjs/common";
-import { HealthServiceBase } from "./base/health.service.base";
 import { QueueService } from "../queue/queue.service";
 import { StorageService } from "../storage/storage.service";
+import { HealthServiceBase } from "./base/health.service.base";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Injectable, Inject } from "@nestjs/common";
 import os from "os";
 
 @Injectable()

@@ -1,9 +1,9 @@
+import { CHECK_USER_ACCESS_TOPIC } from "../constants";
+import { CanUserAccessBuild } from "@amplication/schema-registry";
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientKafka } from "@nestjs/microservices";
 import assert from "assert";
-import { CHECK_USER_ACCESS_TOPIC } from "../constants";
-import { CanUserAccessBuild } from "@amplication/schema-registry";
 
 export const QUEUE_SERVICE_NAME = "QUEUE_SERVICE";
 

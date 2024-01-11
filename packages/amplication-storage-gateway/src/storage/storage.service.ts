@@ -1,12 +1,12 @@
+import { BUILD_ARTIFACTS_BASE_FOLDER } from "../constants";
+import { FileMeta } from "./dto/FileMeta";
+import { NodeTypeEnum } from "./dto/NodeTypeEnum";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { readFileSync } from "fs";
 import { utimes, open } from "fs/promises";
 import { sync } from "glob";
 import { join } from "path";
-import { BUILD_ARTIFACTS_BASE_FOLDER } from "../constants";
-import { FileMeta } from "./dto/FileMeta";
-import { NodeTypeEnum } from "./dto/NodeTypeEnum";
 
 type FilesDictionary = { [name: string]: FileMeta };
 

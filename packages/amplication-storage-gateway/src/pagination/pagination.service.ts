@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from "./constants";
 import { PaginationQuery, PaginationResult } from "./dto";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class PaginationService {

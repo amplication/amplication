@@ -1,18 +1,18 @@
-import { Module, Scope } from "@nestjs/common";
-import { APP_INTERCEPTOR } from "@nestjs/core";
-import { MorganInterceptor, MorganModule } from "nest-morgan";
+import { AuthModule } from "./auth/auth.module";
 import { HealthModule } from "./health/health.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
-import { ConfigModule } from "@nestjs/config";
-import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 import { StorageModule } from "./storage/storage.module";
-import { AuthModule } from "./auth/auth.module";
-import { TracingModule } from "@amplication/util/nestjs/tracing";
 import {
   ControllerInjector,
   GuardInjector,
 } from "@amplication/opentelemetry-nestjs";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
+import { Module, Scope } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { APP_INTERCEPTOR } from "@nestjs/core";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { MorganInterceptor, MorganModule } from "nest-morgan";
 
 @Module({
   controllers: [],

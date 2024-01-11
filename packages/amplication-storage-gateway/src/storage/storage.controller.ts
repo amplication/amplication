@@ -1,3 +1,9 @@
+import { CodeAccessGuard } from "../auth/codeAccessGuard.guard";
+import { DefaultAuthGuard } from "../auth/defaultAuth.guard";
+import { PaginationQuery, PaginationResult } from "../pagination";
+import { PaginationService } from "../pagination/pagination.service";
+import { FileMeta } from "./dto/FileMeta";
+import { StorageService } from "./storage.service";
 import {
   Controller,
   Get,
@@ -6,12 +12,6 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { CodeAccessGuard } from "../auth/codeAccessGuard.guard";
-import { DefaultAuthGuard } from "../auth/defaultAuth.guard";
-import { PaginationQuery, PaginationResult } from "../pagination";
-import { PaginationService } from "../pagination/pagination.service";
-import { FileMeta } from "./dto/FileMeta";
-import { StorageService } from "./storage.service";
 
 const RESOURCE_ID_PARAM_KEY = "resourceId";
 const BUILD_ID_PARAM_KEY = "buildId";

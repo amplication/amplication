@@ -1,7 +1,7 @@
+import { QueueService } from "../queue/queue.service";
 import { ExecutionContext, Injectable } from "@nestjs/common";
 import { decode } from "jsonwebtoken";
 import { ExtractJwt } from "passport-jwt";
-import { QueueService } from "../queue/queue.service";
 @Injectable()
 export class CodeAccessGuard {
   constructor(protected readonly queueService: QueueService) {}

@@ -1,13 +1,13 @@
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { ValidationPipe } from "@nestjs/common";
-import { NestFactory } from "@nestjs/core";
-import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import {
   swaggerDocumentOptions,
   swaggerPath,
   swaggerSetupOptions,
 } from "./swagger";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ValidationPipe } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 
 const { PORT = 3000 } = process.env;
 
