@@ -19,6 +19,14 @@
               }
             ]
           }
+        ],
+        "perfectionist/sort-imports": [
+          "error",
+          {
+            "type": "natural",
+            "order": "asc",
+            "internal-pattern": ["@amplication/**"]
+          }
         ]
       }
     },

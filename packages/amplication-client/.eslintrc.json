@@ -10,7 +10,8 @@
         "@typescript-eslint/no-explicit-any": "off",
         "react-hooks/exhaustive-deps": "off",
         "react/jsx-no-useless-fragment": "off",
-        "no-console": "off"
+        "no-console": "off",
+        "perfectionist/sort-imports": "off"
       }
     }
   ]

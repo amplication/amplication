@@ -11,8 +11,10 @@
       "rules": {}
     },
     {
-      "files": ["*.js", "*.jsx"],
-      "rules": {}
+      "files": ["*"],
+      "rules": {
+        "perfectionist/sort-imports": "off"
+      }
     }
   ]
 }
