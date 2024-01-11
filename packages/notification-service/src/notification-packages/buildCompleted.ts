@@ -1,6 +1,6 @@
+import { NotificationContext } from "../util/novuTypes";
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { format } from "date-fns";
-import { NotificationContext } from "../util/novuTypes";
 
 export const buildCompleted = async (notificationCtx: NotificationContext) => {
   try {

@@ -1,12 +1,12 @@
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { HealthModule } from "./health/health.module";
-import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
-import { Env } from "./env";
-import { TracingModule } from "@amplication/util/nestjs/tracing";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { Env } from "./env";
+import { HealthModule } from "./health/health.module";
 import { NovuService } from "./util/novuService";
+import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
   imports: [

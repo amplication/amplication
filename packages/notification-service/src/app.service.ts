@@ -1,10 +1,10 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { NovuService } from "./util/novuService";
-import { novuPackage } from "./util/novuPackage";
-import { subscribeUser } from "./notification-packages/subscribeUser";
 import { buildCompleted } from "./notification-packages/buildCompleted";
+import { subscribeUser } from "./notification-packages/subscribeUser";
+import { novuPackage } from "./util/novuPackage";
+import { NovuService } from "./util/novuService";
 import { NotificationContext } from "./util/novuTypes";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable } from "@nestjs/common";
 
 type NotificationPackageFunc = (
   ctx: NotificationContext

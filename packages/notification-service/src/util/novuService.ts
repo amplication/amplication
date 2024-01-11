@@ -1,6 +1,6 @@
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Injectable } from "@nestjs/common";
 import { ISubscriberPayload, Novu } from "@novu/node";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class NovuService {

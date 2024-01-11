@@ -1,5 +1,5 @@
-import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { NotificationContext } from "../util/novuTypes";
+import { KAFKA_TOPICS } from "@amplication/schema-registry";
 
 export const subscribeUser = async (notificationCtx: NotificationContext) => {
   try {
