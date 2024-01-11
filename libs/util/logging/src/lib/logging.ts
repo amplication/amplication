@@ -1,12 +1,12 @@
+import { customFormat } from "./cli-format";
+import { ILogger, LoggerOptions, LogLevel } from "./types";
+import { Format } from "logform";
 import {
   createLogger,
   format,
   Logger as WindstonLogger,
   transports,
 } from "winston";
-import { ILogger, LoggerOptions, LogLevel } from "./types";
-import { Format } from "logform";
-import { customFormat } from "./cli-format";
 const logTransports = [new transports.Console()];
 
 export class Logger implements ILogger {

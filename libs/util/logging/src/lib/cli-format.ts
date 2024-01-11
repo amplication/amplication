@@ -1,7 +1,7 @@
-import { format } from "winston";
 import { Format } from "logform";
-import { inspect } from "util";
 import { LEVEL, MESSAGE, SPLAT } from "triple-beam";
+import { inspect } from "util";
+import { format } from "winston";
 const clc = {
   green: (text: string) => `\x1B[32m${text}\x1B[39m`,
   yellow: (text: string) => `\x1B[33m${text}\x1B[39m`,

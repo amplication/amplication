@@ -1,7 +1,7 @@
 import { Logger } from "./logging";
 import { LoggerOptions, LogLevel } from "./types";
-import { format } from "winston";
 import { Format } from "logform";
+import { format } from "winston";
 
 const FORMAT_ERRORS = "errors";
 const FORMAT_SPLAT = "splat";

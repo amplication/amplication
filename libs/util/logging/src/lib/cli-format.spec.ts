@@ -1,7 +1,7 @@
-import { MESSAGE } from "triple-beam";
 import { customFormat } from "./cli-format";
-import { inspect } from "util";
+import { MESSAGE } from "triple-beam";
 import { SPLAT } from "triple-beam";
+import { inspect } from "util";
 
 const clc = {
   green: (text: string) => `\x1B[32m${text}\x1B[39m`,
