@@ -9,8 +9,11 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { Template } from "../../template/base/Template";
+import { EnumMessageRole } from "./EnumMessageRole";
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 import {
   IsString,
   IsDate,
@@ -19,9 +22,6 @@ import {
   IsEnum,
   ValidateNested,
 } from "class-validator";
-import { Type } from "class-transformer";
-import { EnumMessageRole } from "./EnumMessageRole";
-import { Template } from "../../template/base/Template";
 
 @ObjectType()
 class Message {

@@ -1,10 +1,10 @@
-import * as path from "path";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import {
   ServeStaticModuleOptions,
   ServeStaticModuleOptionsFactory,
 } from "@nestjs/serve-static";
+import * as path from "path";
 
 const SERVE_STATIC_ROOT_PATH_VAR = "SERVE_STATIC_ROOT_PATH";
 const DEFAULT_STATIC_MODULE_OPTIONS_LIST: ServeStaticModuleOptions[] = [

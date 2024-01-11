@@ -1,22 +1,21 @@
-import { Module } from "@nestjs/common";
-import { UserModule } from "./user/user.module";
-import { ModelModule } from "./model/model.module";
-import { ConversationTypeModule } from "./conversationType/conversationType.module";
-import { TemplateModule } from "./template/template.module";
-import { MessageModule } from "./message/message.module";
-import { HealthModule } from "./health/health.module";
-import { PrismaModule } from "./prisma/prisma.module";
-import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
-import { KafkaModule } from "./kafka/kafka.module";
-import { ServeStaticModule } from "@nestjs/serve-static";
-import { ServeStaticOptionsService } from "./serveStaticOptions.service";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { GraphQLModule } from "@nestjs/graphql";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-
 import { ACLModule } from "./auth/acl.module";
 import { AuthModule } from "./auth/auth.module";
+import { ConversationTypeModule } from "./conversationType/conversationType.module";
+import { HealthModule } from "./health/health.module";
+import { KafkaModule } from "./kafka/kafka.module";
+import { MessageModule } from "./message/message.module";
+import { ModelModule } from "./model/model.module";
+import { PrismaModule } from "./prisma/prisma.module";
+import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
+import { ServeStaticOptionsService } from "./serveStaticOptions.service";
+import { TemplateModule } from "./template/template.module";
+import { UserModule } from "./user/user.module";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { GraphQLModule } from "@nestjs/graphql";
+import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 
 @Module({

@@ -9,26 +9,26 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as graphql from "@nestjs/graphql";
-import { GraphQLError } from "graphql";
-import { isRecordNotFoundError } from "../../prisma.util";
-import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import * as nestAccessControl from "nest-access-control";
 import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { isRecordNotFoundError } from "../../prisma.util";
+import { Template } from "../../template/base/Template";
+import { TemplateFindManyArgs } from "../../template/base/TemplateFindManyArgs";
+import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import { ModelService } from "../model.service";
+import { CreateModelArgs } from "./CreateModelArgs";
+import { DeleteModelArgs } from "./DeleteModelArgs";
 import { Model } from "./Model";
 import { ModelCountArgs } from "./ModelCountArgs";
 import { ModelFindManyArgs } from "./ModelFindManyArgs";
 import { ModelFindUniqueArgs } from "./ModelFindUniqueArgs";
-import { CreateModelArgs } from "./CreateModelArgs";
 import { UpdateModelArgs } from "./UpdateModelArgs";
-import { DeleteModelArgs } from "./DeleteModelArgs";
-import { TemplateFindManyArgs } from "../../template/base/TemplateFindManyArgs";
-import { Template } from "../../template/base/Template";
-import { ModelService } from "../model.service";
+import * as common from "@nestjs/common";
+import * as graphql from "@nestjs/graphql";
+import { GraphQLError } from "graphql";
+import * as nestAccessControl from "nest-access-control";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Model)
 export class ModelResolverBase {

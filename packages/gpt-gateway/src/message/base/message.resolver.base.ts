@@ -9,25 +9,25 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as graphql from "@nestjs/graphql";
-import { GraphQLError } from "graphql";
-import { isRecordNotFoundError } from "../../prisma.util";
-import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import * as nestAccessControl from "nest-access-control";
 import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { isRecordNotFoundError } from "../../prisma.util";
+import { Template } from "../../template/base/Template";
+import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import { MessageService } from "../message.service";
+import { CreateMessageArgs } from "./CreateMessageArgs";
+import { DeleteMessageArgs } from "./DeleteMessageArgs";
 import { Message } from "./Message";
 import { MessageCountArgs } from "./MessageCountArgs";
 import { MessageFindManyArgs } from "./MessageFindManyArgs";
 import { MessageFindUniqueArgs } from "./MessageFindUniqueArgs";
-import { CreateMessageArgs } from "./CreateMessageArgs";
 import { UpdateMessageArgs } from "./UpdateMessageArgs";
-import { DeleteMessageArgs } from "./DeleteMessageArgs";
-import { Template } from "../../template/base/Template";
-import { MessageService } from "../message.service";
+import * as common from "@nestjs/common";
+import * as graphql from "@nestjs/graphql";
+import { GraphQLError } from "graphql";
+import * as nestAccessControl from "nest-access-control";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Message)
 export class MessageResolverBase {

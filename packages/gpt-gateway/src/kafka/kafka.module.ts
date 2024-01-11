@@ -1,10 +1,10 @@
-import { Global, Module } from "@nestjs/common";
-import { ClientProxyFactory } from "@nestjs/microservices";
-import { generateKafkaClientOptions } from "./generateKafkaClientOptions";
-import { KafkaProducerService } from "./kafka.producer.service";
-import { KafkaController } from "./kafka.controller";
-import { ConfigService } from "@nestjs/config";
 import { ConversationTypeModule } from "../conversationType/conversationType.module";
+import { generateKafkaClientOptions } from "./generateKafkaClientOptions";
+import { KafkaController } from "./kafka.controller";
+import { KafkaProducerService } from "./kafka.producer.service";
+import { Global, Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { ClientProxyFactory } from "@nestjs/microservices";
 
 @Global()
 @Module({

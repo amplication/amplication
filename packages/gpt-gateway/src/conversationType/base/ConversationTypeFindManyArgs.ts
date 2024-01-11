@@ -9,12 +9,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { ConversationTypeOrderByInput } from "./ConversationTypeOrderByInput";
+import { ConversationTypeWhereInput } from "./ConversationTypeWhereInput";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { ConversationTypeWhereInput } from "./ConversationTypeWhereInput";
-import { IsOptional, ValidateNested, IsInt } from "class-validator";
 import { Type } from "class-transformer";
-import { ConversationTypeOrderByInput } from "./ConversationTypeOrderByInput";
+import { IsOptional, ValidateNested, IsInt } from "class-validator";
 
 @ArgsType()
 class ConversationTypeFindManyArgs {

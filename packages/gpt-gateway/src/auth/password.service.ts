@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { hash, compare } from "bcrypt";
 import { ConfigService } from "@nestjs/config";
+import { hash, compare } from "bcrypt";
 
 /** Salt or number of rounds to generate a salt */
 export type Salt = string | number;

@@ -1,8 +1,8 @@
-import { Body, Controller, Post } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
-import { AuthService } from "./auth.service";
 import { Credentials } from "../auth/Credentials";
 import { UserInfo } from "./UserInfo";
+import { AuthService } from "./auth.service";
+import { Body, Controller, Post } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 
 @ApiTags("auth")
 @Controller()

@@ -1,9 +1,9 @@
+import { UserService } from "../../../user/user.service";
+import { IAuthStrategy } from "../../IAuthStrategy";
+import { UserInfo } from "../../UserInfo";
 import { UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { IAuthStrategy } from "../../IAuthStrategy";
-import { UserInfo } from "../../UserInfo";
-import { UserService } from "../../../user/user.service";
 
 export class JwtStrategyBase
   extends PassportStrategy(Strategy)

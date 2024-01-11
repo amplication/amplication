@@ -9,9 +9,9 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { ConversationTypeWhereInput } from "./ConversationTypeWhereInput";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { ConversationTypeWhereInput } from "./ConversationTypeWhereInput";
 import { Type } from "class-transformer";
 
 @ArgsType()

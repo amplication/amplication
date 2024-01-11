@@ -9,12 +9,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { UserOrderByInput } from "./UserOrderByInput";
+import { UserWhereInput } from "./UserWhereInput";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { UserWhereInput } from "./UserWhereInput";
-import { IsOptional, ValidateNested, IsInt } from "class-validator";
 import { Type } from "class-transformer";
-import { UserOrderByInput } from "./UserOrderByInput";
+import { IsOptional, ValidateNested, IsInt } from "class-validator";
 
 @ArgsType()
 class UserFindManyArgs {

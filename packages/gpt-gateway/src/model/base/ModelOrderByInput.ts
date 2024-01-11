@@ -9,10 +9,10 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { SortOrder } from "../../util/SortOrder";
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional, IsEnum } from "class-validator";
-import { SortOrder } from "../../util/SortOrder";
 
 @InputType({
   isAbstract: true,

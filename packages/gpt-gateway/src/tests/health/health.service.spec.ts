@@ -1,6 +1,6 @@
-import { mock } from "jest-mock-extended";
-import { PrismaService } from "../../prisma/prisma.service";
 import { HealthServiceBase } from "../../health/base/health.service.base";
+import { PrismaService } from "../../prisma/prisma.service";
+import { mock } from "jest-mock-extended";
 
 describe("Testing the HealthServiceBase", () => {
   //ARRANGE

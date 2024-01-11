@@ -1,11 +1,11 @@
-import * as graphql from "@nestjs/graphql";
-import * as nestAccessControl from "nest-access-control";
 import * as gqlACGuard from "../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../auth/gqlDefaultAuth.guard";
-import * as common from "@nestjs/common";
-import { ModelResolverBase } from "./base/model.resolver.base";
 import { Model } from "./base/Model";
+import { ModelResolverBase } from "./base/model.resolver.base";
 import { ModelService } from "./model.service";
+import * as common from "@nestjs/common";
+import * as graphql from "@nestjs/graphql";
+import * as nestAccessControl from "nest-access-control";
 
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Model)

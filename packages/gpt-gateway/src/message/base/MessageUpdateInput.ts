@@ -9,8 +9,11 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { TemplateWhereUniqueInput } from "../../template/base/TemplateWhereUniqueInput";
+import { EnumMessageRole } from "./EnumMessageRole";
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 import {
   IsString,
   IsOptional,
@@ -18,9 +21,6 @@ import {
   IsEnum,
   ValidateNested,
 } from "class-validator";
-import { EnumMessageRole } from "./EnumMessageRole";
-import { TemplateWhereUniqueInput } from "../../template/base/TemplateWhereUniqueInput";
-import { Type } from "class-transformer";
 
 @InputType()
 class MessageUpdateInput {

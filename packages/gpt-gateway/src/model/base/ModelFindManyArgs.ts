@@ -9,12 +9,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { ModelOrderByInput } from "./ModelOrderByInput";
+import { ModelWhereInput } from "./ModelWhereInput";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { ModelWhereInput } from "./ModelWhereInput";
-import { IsOptional, ValidateNested, IsInt } from "class-validator";
 import { Type } from "class-transformer";
-import { ModelOrderByInput } from "./ModelOrderByInput";
+import { IsOptional, ValidateNested, IsInt } from "class-validator";
 
 @ArgsType()
 class ModelFindManyArgs {

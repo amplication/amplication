@@ -1,7 +1,7 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { TemplateService } from "./template.service";
-import { PrismaService } from "../prisma/prisma.service";
 import { OpenaiService } from "../../providers/openai/openai.service";
+import { PrismaService } from "../prisma/prisma.service";
+import { TemplateService } from "./template.service";
+import { Test, TestingModule } from "@nestjs/testing";
 
 describe("TemplateService", () => {
   let service: TemplateService;

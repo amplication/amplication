@@ -9,14 +9,14 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { ConversationTypeListRelationFilter } from "../../conversationType/base/ConversationTypeListRelationFilter";
+import { MessageListRelationFilter } from "../../message/base/MessageListRelationFilter";
+import { ModelWhereUniqueInput } from "../../model/base/ModelWhereUniqueInput";
+import { StringFilter } from "../../util/StringFilter";
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringFilter } from "../../util/StringFilter";
 import { Type } from "class-transformer";
 import { IsOptional, ValidateNested } from "class-validator";
-import { MessageListRelationFilter } from "../../message/base/MessageListRelationFilter";
-import { ConversationTypeListRelationFilter } from "../../conversationType/base/ConversationTypeListRelationFilter";
-import { ModelWhereUniqueInput } from "../../model/base/ModelWhereUniqueInput";
 
 @InputType()
 class TemplateWhereInput {

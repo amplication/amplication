@@ -9,11 +9,11 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { TemplateWhereUniqueInput } from "../../template/base/TemplateWhereUniqueInput";
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional, ValidateNested } from "class-validator";
-import { TemplateWhereUniqueInput } from "../../template/base/TemplateWhereUniqueInput";
 import { Type } from "class-transformer";
+import { IsString, IsOptional, ValidateNested } from "class-validator";
 
 @InputType()
 class ConversationTypeUpdateInput {

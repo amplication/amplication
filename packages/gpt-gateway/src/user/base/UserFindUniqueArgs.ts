@@ -9,11 +9,11 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-import { ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
+import { ValidateNested } from "class-validator";
 
 @ArgsType()
 class UserFindUniqueArgs {

@@ -1,5 +1,3 @@
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Inject, Injectable } from "@nestjs/common";
 import { KafkaProducerService } from "../kafka/kafka.producer.service";
 import { MyMessageBrokerTopics } from "../kafka/topics";
 import { PrismaService } from "../prisma/prisma.service";
@@ -9,6 +7,8 @@ import {
   AiConversationComplete,
   AiConversationStart,
 } from "@amplication/schema-registry";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class ConversationTypeService extends ConversationTypeServiceBase {

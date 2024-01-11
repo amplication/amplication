@@ -9,11 +9,11 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { Template } from "../../template/base/Template";
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString, ValidateNested, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
-import { Template } from "../../template/base/Template";
+import { IsDate, IsString, ValidateNested, IsOptional } from "class-validator";
 
 @ObjectType()
 class Model {

@@ -9,12 +9,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { MessageOrderByInput } from "./MessageOrderByInput";
+import { MessageWhereInput } from "./MessageWhereInput";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { MessageWhereInput } from "./MessageWhereInput";
-import { IsOptional, ValidateNested, IsInt } from "class-validator";
 import { Type } from "class-transformer";
-import { MessageOrderByInput } from "./MessageOrderByInput";
+import { IsOptional, ValidateNested, IsInt } from "class-validator";
 
 @ArgsType()
 class MessageFindManyArgs {

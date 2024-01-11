@@ -9,12 +9,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { ModelUpdateInput } from "./ModelUpdateInput";
+import { ModelWhereUniqueInput } from "./ModelWhereUniqueInput";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { ModelWhereUniqueInput } from "./ModelWhereUniqueInput";
-import { ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-import { ModelUpdateInput } from "./ModelUpdateInput";
+import { ValidateNested } from "class-validator";
 
 @ArgsType()
 class UpdateModelArgs {

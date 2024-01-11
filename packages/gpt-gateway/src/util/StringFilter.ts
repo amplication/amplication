@@ -1,8 +1,8 @@
-import { Field, InputType } from "@nestjs/graphql";
 import { QueryMode } from "./QueryMode";
+import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
+import { IsOptional } from "class-validator";
 
 @InputType({
   isAbstract: true,

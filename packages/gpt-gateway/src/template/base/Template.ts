@@ -9,13 +9,13 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { ConversationType } from "../../conversationType/base/ConversationType";
+import { Message } from "../../message/base/Message";
+import { Model } from "../../model/base/Model";
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString, ValidateNested, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
-import { Message } from "../../message/base/Message";
-import { ConversationType } from "../../conversationType/base/ConversationType";
-import { Model } from "../../model/base/Model";
+import { IsDate, IsString, ValidateNested, IsOptional } from "class-validator";
 
 @ObjectType()
 class Template {

@@ -9,29 +9,29 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as graphql from "@nestjs/graphql";
-import { GraphQLError } from "graphql";
-import { isRecordNotFoundError } from "../../prisma.util";
-import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import * as nestAccessControl from "nest-access-control";
 import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as common from "@nestjs/common";
+import { ConversationType } from "../../conversationType/base/ConversationType";
+import { ConversationTypeFindManyArgs } from "../../conversationType/base/ConversationTypeFindManyArgs";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { Message } from "../../message/base/Message";
+import { MessageFindManyArgs } from "../../message/base/MessageFindManyArgs";
+import { Model } from "../../model/base/Model";
+import { isRecordNotFoundError } from "../../prisma.util";
+import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import { TemplateService } from "../template.service";
+import { CreateTemplateArgs } from "./CreateTemplateArgs";
+import { DeleteTemplateArgs } from "./DeleteTemplateArgs";
 import { Template } from "./Template";
 import { TemplateCountArgs } from "./TemplateCountArgs";
 import { TemplateFindManyArgs } from "./TemplateFindManyArgs";
 import { TemplateFindUniqueArgs } from "./TemplateFindUniqueArgs";
-import { CreateTemplateArgs } from "./CreateTemplateArgs";
 import { UpdateTemplateArgs } from "./UpdateTemplateArgs";
-import { DeleteTemplateArgs } from "./DeleteTemplateArgs";
-import { MessageFindManyArgs } from "../../message/base/MessageFindManyArgs";
-import { Message } from "../../message/base/Message";
-import { ConversationTypeFindManyArgs } from "../../conversationType/base/ConversationTypeFindManyArgs";
-import { ConversationType } from "../../conversationType/base/ConversationType";
-import { Model } from "../../model/base/Model";
-import { TemplateService } from "../template.service";
+import * as common from "@nestjs/common";
+import * as graphql from "@nestjs/graphql";
+import { GraphQLError } from "graphql";
+import * as nestAccessControl from "nest-access-control";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Template)
 export class TemplateResolverBase {

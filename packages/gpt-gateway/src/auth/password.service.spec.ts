@@ -1,6 +1,6 @@
+import { PasswordService } from "./password.service";
 import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
-import { PasswordService } from "./password.service";
 
 const EXAMPLE_PASSWORD = "examplePassword";
 const EXAMPLE_HASHED_PASSWORD = "exampleHashedPassword";

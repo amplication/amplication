@@ -9,11 +9,11 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { IsJSONValue } from "../../validators/";
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
-import { IsJSONValue } from "../../validators/";
+import { IsDate, IsString, IsOptional } from "class-validator";
 import { GraphQLJSON } from "graphql-type-json";
 import type { JsonValue } from "type-fest";
 

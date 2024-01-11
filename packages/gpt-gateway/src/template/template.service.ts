@@ -1,13 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { TemplateServiceBase } from "./base/template.service.base";
 import {
   OpenaiService,
   CreateChatCompletionRequestSettings,
   ChatCompletionMessageParam,
 } from "../../providers/openai/openai.service";
-import { AiConversationStart } from "@amplication/schema-registry";
+import { PrismaService } from "../prisma/prisma.service";
+import { TemplateServiceBase } from "./base/template.service.base";
 import { ProcessTemplateInput } from "./dto/ProcessTemplateInput";
+import { AiConversationStart } from "@amplication/schema-registry";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class TemplateService extends TemplateServiceBase {

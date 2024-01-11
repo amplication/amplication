@@ -1,7 +1,7 @@
+import { EnumSecretsNameKey } from "../secretsNameKey.enum";
+import { SecretsManagerServiceBase } from "./secretsManager.service.base";
 import { ConfigService } from "@nestjs/config";
 import { mock } from "jest-mock-extended";
-import { SecretsManagerServiceBase } from "./secretsManager.service.base";
-import { EnumSecretsNameKey } from "../secretsNameKey.enum";
 
 describe("Testing the secrets manager base class", () => {
   const SECRET_KEY = "SECRET_KEY";

@@ -1,6 +1,7 @@
-import { Controller, Inject } from "@nestjs/common";
 import { ConversationTypeService } from "../conversationType/conversationType.service";
+import { AiConversationStart } from "@amplication/schema-registry";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Controller, Inject } from "@nestjs/common";
 import {
   Ctx,
   EventPattern,
@@ -8,7 +9,6 @@ import {
   Payload,
 } from "@nestjs/microservices";
 import { plainToInstance } from "class-transformer";
-import { AiConversationStart } from "@amplication/schema-registry";
 
 @Controller("kafka-controller")
 export class KafkaController {

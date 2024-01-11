@@ -9,13 +9,13 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { ModelWhereUniqueInput } from "../../model/base/ModelWhereUniqueInput";
+import { ConversationTypeCreateNestedManyWithoutTemplatesInput } from "./ConversationTypeCreateNestedManyWithoutTemplatesInput";
+import { MessageCreateNestedManyWithoutTemplatesInput } from "./MessageCreateNestedManyWithoutTemplatesInput";
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { MessageCreateNestedManyWithoutTemplatesInput } from "./MessageCreateNestedManyWithoutTemplatesInput";
-import { ValidateNested, IsOptional, IsString } from "class-validator";
 import { Type } from "class-transformer";
-import { ConversationTypeCreateNestedManyWithoutTemplatesInput } from "./ConversationTypeCreateNestedManyWithoutTemplatesInput";
-import { ModelWhereUniqueInput } from "../../model/base/ModelWhereUniqueInput";
+import { ValidateNested, IsOptional, IsString } from "class-validator";
 
 @InputType()
 class TemplateCreateInput {

@@ -1,6 +1,6 @@
+import { ContentLengthExceededError } from "../../src/errors/ContentLengthExceededError";
 import { Injectable } from "@nestjs/common";
 import OpenAI from "openai";
-import { ContentLengthExceededError } from "../../src/errors/ContentLengthExceededError";
 
 export type CreateChatCompletionRequestSettings = Omit<
   OpenAI.Chat.ChatCompletionCreateParamsNonStreaming,

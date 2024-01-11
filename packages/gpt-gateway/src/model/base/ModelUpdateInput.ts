@@ -9,11 +9,11 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { TemplateUpdateManyWithoutModelsInput } from "./TemplateUpdateManyWithoutModelsInput";
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional, ValidateNested } from "class-validator";
-import { TemplateUpdateManyWithoutModelsInput } from "./TemplateUpdateManyWithoutModelsInput";
 import { Type } from "class-transformer";
+import { IsString, IsOptional, ValidateNested } from "class-validator";
 
 @InputType()
 class ModelUpdateInput {

@@ -1,8 +1,8 @@
+import { JwtStrategyBase } from "../../../auth/jwt/base/jwt.strategy.base";
+import { UserService } from "../../../user/user.service";
+import { TEST_USER } from "../constants";
 import { UnauthorizedException } from "@nestjs/common";
 import { mock } from "jest-mock-extended";
-import { JwtStrategyBase } from "../../../auth/jwt/base/jwt.strategy.base";
-import { TEST_USER } from "../constants";
-import { UserService } from "../../../user/user.service";
 describe("Testing the jwtStrategyBase.validate()", () => {
   const userService = mock<UserService>();
   const jwtStrategy = new JwtStrategyBase("Secrete", userService);

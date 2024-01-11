@@ -9,12 +9,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { ConversationTypeUpdateInput } from "./ConversationTypeUpdateInput";
+import { ConversationTypeWhereUniqueInput } from "./ConversationTypeWhereUniqueInput";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { ConversationTypeWhereUniqueInput } from "./ConversationTypeWhereUniqueInput";
-import { ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-import { ConversationTypeUpdateInput } from "./ConversationTypeUpdateInput";
+import { ValidateNested } from "class-validator";
 
 @ArgsType()
 class UpdateConversationTypeArgs {
