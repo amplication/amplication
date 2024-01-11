@@ -54,6 +54,14 @@ export class AuthResolver {
         });
   }
 
+  @Mutation(() => String)
+  @UseGuards(GqlAuthGuard)
+  async completeSignupWithBusinessEmail(
+    @UserEntity() user: User
+  ): Promise<string> {
+    return this.authService.completeSignupPreviewAccount(user.account);
+  }
+
   @Mutation(() => Auth)
   async signup(@Args() args: SignupArgs): Promise<Auth> {
     const { data } = args;

@@ -286,6 +286,57 @@ export class AuthService {
     return this.prepareToken(user);
   }
 
+  async completeSignupPreviewAccount(account: Account): Promise<string> {
+    const currentAccount = await this.accountService.findAccount({
+      where: {
+        id: account.id,
+      },
+      select: {
+        users: {
+          select: {
+            workspace: true,
+          },
+        },
+      },
+    });
+
+    if (!account) {
+      throw new AmplicationError(`No account found for id: ${account.id}`);
+    }
+
+    if (currentAccount.email === account.previewAccountEmail) {
+      throw new AmplicationError(
+        `To generate production-ready code tailored to your chosen architecture, follow the signup process outlined in the email you just received to set your password. 
+        If you're already an Amplication user, you can simply sign in using your existing credentials.`
+      );
+    }
+
+    const auth0User = await this.createAuth0User(account.previewAccountEmail);
+    if (!auth0User.data.email) throw Error("Failed to create new Auth0 user");
+
+    const resetPassword = await this.resetAuth0UserPassword(
+      auth0User.data.email
+    );
+
+    if (!resetPassword.data)
+      throw Error("Failed to send reset message to new Auth0 user");
+
+    await this.accountService.updateAccount({
+      where: { id: account.id },
+      data: {
+        email: auth0User.data.email,
+        previewAccountEmail: null,
+        previewAccountType: PreviewAccountType.None,
+      },
+    });
+
+    await this.workspaceService.convertPreviewSubscriptionToFreeWithTrial(
+      account.users[0].workspace.id
+    );
+
+    return resetPassword.data;
+  }
+
   async signupPreviewAccount({
     previewAccountEmail,
     previewAccountType,
