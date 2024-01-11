@@ -599,9 +599,9 @@ export class AuthService {
       projectId: projectId,
       name: serviceName,
       description: "Monolith Service",
-      adminUIPath: `./apps/${serviceName}-admin`,
+      adminUIPath: "",
       serverPath: `./apps/${serviceName}`,
-      generateAdminUI: true,
+      generateAdminUI: false,
       generateGraphQL: true,
       generateRestApi: true,
     });
