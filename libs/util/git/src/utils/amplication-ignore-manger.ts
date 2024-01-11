@@ -1,5 +1,5 @@
-import { minimatch } from "minimatch";
 import { ok } from "assert";
+import { minimatch } from "minimatch";
 
 export class AmplicationIgnoreManger {
   static AmplicationIgnoreFileName = ".amplicationignore";

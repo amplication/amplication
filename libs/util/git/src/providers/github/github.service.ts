@@ -1,12 +1,5 @@
-import { ILogger } from "@amplication/util/logging";
-import { createAppAuth } from "@octokit/auth-app";
-import { components } from "@octokit/openapi-types";
-import { App, Octokit } from "octokit";
-import { createPullRequest } from "octokit-plugin-create-pull-request";
-import {
-  Changes,
-  UpdateFunction,
-} from "octokit-plugin-create-pull-request/dist-types/types";
+import { NoChangesOnPullRequest } from "../../errors/NoChangesOnPullRequest";
+import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "../../git.constants";
 import { GitProvider } from "../../git-provider.interface";
 import {
   Branch,
@@ -39,8 +32,15 @@ import {
 } from "../../types";
 import { ConverterUtil } from "../../utils/convert-to-number";
 import { NotImplementedError } from "../../utils/custom-error";
-import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "../../git.constants";
-import { NoChangesOnPullRequest } from "../../errors/NoChangesOnPullRequest";
+import { ILogger } from "@amplication/util/logging";
+import { createAppAuth } from "@octokit/auth-app";
+import { components } from "@octokit/openapi-types";
+import { App, Octokit } from "octokit";
+import { createPullRequest } from "octokit-plugin-create-pull-request";
+import {
+  Changes,
+  UpdateFunction,
+} from "octokit-plugin-create-pull-request/dist-types/types";
 
 const GITHUB_FILE_TYPE = "file";
 

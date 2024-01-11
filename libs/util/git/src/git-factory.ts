@@ -1,12 +1,12 @@
-import { ILogger } from "@amplication/util/logging";
-import { GitProvider } from "./git-provider.interface";
-import { EnumGitProvider } from "./types";
 import { INVALID_SOURCE_CONTROL_ERROR_MESSAGE } from "./git.constants";
-import { GithubService } from "./providers/github/github.service";
-import { BitBucketService } from "./providers/bitbucket/bitbucket.service";
-import { GitProviderArgs, GitProvidersConfiguration } from "./types";
-import { AwsCodeCommitService } from "./providers/aws/aws-code-commit.service";
+import { GitProvider } from "./git-provider.interface";
 import { isValidGitProviderProperties } from "./git-provider-properties.map";
+import { AwsCodeCommitService } from "./providers/aws/aws-code-commit.service";
+import { BitBucketService } from "./providers/bitbucket/bitbucket.service";
+import { GithubService } from "./providers/github/github.service";
+import { EnumGitProvider } from "./types";
+import { GitProviderArgs, GitProvidersConfiguration } from "./types";
+import { ILogger } from "@amplication/util/logging";
 
 export class GitFactory {
   public static async getProvider(

@@ -1,7 +1,6 @@
-import { EnumGitProvider } from "../../src/types";
 import { GitFactory } from "../../src/git-factory";
-import { mock } from "jest-mock-extended";
-
+import { GithubService } from "../../src/providers/github/github.service";
+import { EnumGitProvider } from "../../src/types";
 import {
   GIT_HUB_FILE,
   INSTALLATION_URL,
@@ -10,7 +9,7 @@ import {
   TEST_GIT_REPO,
   TEST_GIT_REPOS,
 } from "./git.constants";
-import { GithubService } from "../../src/providers/github/github.service";
+import { mock } from "jest-mock-extended";
 
 export const MOCK_GIT_SERVICE_FACTORY = mock<GitFactory>();
 

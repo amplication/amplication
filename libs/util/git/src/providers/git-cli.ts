@@ -1,3 +1,9 @@
+import { Commit, UpdateFile } from "../types";
+import { GitCliOptions } from "./git-cli.types";
+import { ILogger } from "@amplication/util/logging";
+import { existsSync } from "node:fs";
+import { mkdir, writeFile, rm } from "node:fs/promises";
+import { dirname, join } from "node:path";
 import {
   CleanOptions,
   LogResult,
@@ -5,12 +11,6 @@ import {
   simpleGit,
   SimpleGit,
 } from "simple-git";
-import { Commit, UpdateFile } from "../types";
-import { mkdir, writeFile, rm } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { existsSync } from "node:fs";
-import { ILogger } from "@amplication/util/logging";
-import { GitCliOptions } from "./git-cli.types";
 
 export class GitCli {
   private git: SimpleGit;

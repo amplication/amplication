@@ -1,11 +1,11 @@
+import { GitFactory } from "../../src/git-factory";
+import { GithubService } from "../../src/providers/github/github.service";
 import {
   BitBucketConfiguration,
   EnumGitProvider,
   GitHubConfiguration,
   GitHubProviderOrganizationProperties,
 } from "../../src/types";
-import { GithubService } from "../../src/providers/github/github.service";
-import { GitFactory } from "../../src/git-factory";
 import { mock } from "jest-mock-extended";
 
 describe.skip("GitFactory", () => {

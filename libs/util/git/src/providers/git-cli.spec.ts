@@ -1,8 +1,7 @@
-import * as simpleGit from "simple-git";
-
+import { UpdateFile } from "../types";
 import { GitCli } from "./git-cli";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
-import { UpdateFile } from "../types";
+import * as simpleGit from "simple-git";
 
 const gitFetchMock = jest.fn();
 const gitBranchMock = jest.fn();

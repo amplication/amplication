@@ -1,7 +1,5 @@
-import { parse } from "path";
+import { OAuthProviderOrganizationProperties } from "../../types";
 import { BitBucketService } from "./bitbucket.service";
-import { ILogger } from "@amplication/util/logging";
-import * as requests from "./requests";
 import {
   TreeEntry,
   PaginatedTreeEntry,
@@ -11,7 +9,9 @@ import {
   PullRequest,
   PaginatedPullRequest,
 } from "./bitbucket.types";
-import { OAuthProviderOrganizationProperties } from "../../types";
+import * as requests from "./requests";
+import { ILogger } from "@amplication/util/logging";
+import { parse } from "path";
 
 jest.mock("fs");
 

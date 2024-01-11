@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import {
   Account,
   OAuth2,
@@ -15,6 +14,7 @@ import {
   CreatePullRequestData,
 } from "./bitbucket.types";
 import { BitbucketGenericError, BitbucketNotFoundError } from "./errors";
+import fetch from "node-fetch";
 
 enum GrantType {
   RefreshToken = "refresh_token",

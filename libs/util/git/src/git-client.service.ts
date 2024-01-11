@@ -1,15 +1,14 @@
-import { ILogger } from "@amplication/util/logging";
-import { mkdir, rm, writeFile } from "fs/promises";
-import { join, normalize, resolve } from "path";
-import { v4 } from "uuid";
 import {
   accumulativePullRequestBody,
   accumulativePullRequestTitle,
   getDefaultREADMEFile,
 } from "./constants";
+import { InvalidBaseBranch } from "./errors/InvalidBaseBranch";
 import { InvalidPullRequestMode } from "./errors/InvalidPullRequestMode";
 import { NoCommitOnBranch } from "./errors/NoCommitOnBranch";
+import { GitFactory } from "./git-factory";
 import { GitProvider } from "./git-provider.interface";
+import { GitCli } from "./providers/git-cli";
 import {
   Branch,
   CreateBranchIfNotExistsArgs,
@@ -34,12 +33,13 @@ import {
 import { AmplicationIgnoreManger } from "./utils/amplication-ignore-manger";
 import { isFolderEmpty } from "./utils/is-folder-empty";
 import { prepareFilesForPullRequest } from "./utils/prepare-files-for-pull-request";
-import { GitCli } from "./providers/git-cli";
-import { GitFactory } from "./git-factory";
-import { LogResult } from "simple-git";
 import { TraceWrapper } from "@amplication/opentelemetry-nestjs";
+import { ILogger } from "@amplication/util/logging";
+import { mkdir, rm, writeFile } from "fs/promises";
 import { isEmpty } from "lodash";
-import { InvalidBaseBranch } from "./errors/InvalidBaseBranch";
+import { join, normalize, resolve } from "path";
+import { LogResult } from "simple-git";
+import { v4 } from "uuid";
 
 export class GitClientService {
   private provider: GitProvider;

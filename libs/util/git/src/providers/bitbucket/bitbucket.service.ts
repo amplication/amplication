@@ -1,4 +1,3 @@
-import { parse } from "path";
 import { GitProvider } from "../../git-provider.interface";
 import {
   OAuthTokens,
@@ -28,6 +27,8 @@ import {
   OAuthProviderOrganizationProperties,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
+import { PaginatedTreeEntry, TreeEntry } from "./bitbucket.types";
+import { BitbucketNotFoundError } from "./errors";
 import {
   authDataRequest,
   authorizeRequest,
@@ -47,8 +48,7 @@ import {
   createPullRequestFromRequest,
 } from "./requests";
 import { ILogger } from "@amplication/util/logging";
-import { PaginatedTreeEntry, TreeEntry } from "./bitbucket.types";
-import { BitbucketNotFoundError } from "./errors";
+import { parse } from "path";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;

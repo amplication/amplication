@@ -1,4 +1,3 @@
-import { ILogger } from "@amplication/util/logging";
 import { GitProvider } from "../../git-provider.interface";
 import {
   EnumGitProvider,
@@ -25,6 +24,8 @@ import {
   AwsCodeCommitProviderOrganizationProperties,
   EnumGitOrganizationType,
 } from "../../types";
+import { NotImplementedError } from "../../utils/custom-error";
+import { ILogger } from "@amplication/util/logging";
 import {
   CodeCommitClient,
   CreatePullRequestCommand,
@@ -40,7 +41,6 @@ import {
   GetPullRequestCommandOutput,
   GetPullRequestCommand,
 } from "@aws-sdk/client-codecommit";
-import { NotImplementedError } from "../../utils/custom-error";
 import { parse } from "node:path";
 
 export class AwsCodeCommitService implements GitProvider {

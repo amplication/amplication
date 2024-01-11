@@ -1,7 +1,7 @@
+import { isFolderEmpty } from "./is-folder-empty";
 import { mkdir, rm } from "fs/promises";
 import { tmpdir } from "os";
 import { join } from "path";
-import { isFolderEmpty } from "./is-folder-empty";
 
 describe("Testing the is folder empty function", () => {
   it("should return true if the folder is empty", async () => {

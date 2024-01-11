@@ -1,7 +1,7 @@
-import { join } from "path";
 import { AMPLICATION_IGNORED_FOLDER } from "../git.constants";
 import { File, GitResourceMeta, UpdateFile } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
+import { join } from "path";
 
 export async function prepareFilesForPullRequest(
   gitResourceMeta: GitResourceMeta,
