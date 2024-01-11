@@ -1,6 +1,6 @@
-import { print } from "recast";
 import { parse } from "../../parse/main";
 import { removeTSInterfaceDeclares } from "./main";
+import { print } from "recast";
 
 describe("removeTSInterfaceDeclares", () => {
   test("removes interface declares", () => {

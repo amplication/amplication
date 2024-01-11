@@ -1,6 +1,6 @@
 // Import the formatCode function from your code
-import { format } from "prettier";
-import { formatCode } from "./files"; // Replace './your-module' with the actual path
+import { formatCode } from "./files";
+import { format } from "prettier"; // Replace './your-module' with the actual path
 
 describe("formatCode", () => {
   it("should format TypeScript and TypeScriptX files", () => {

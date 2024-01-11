@@ -1,6 +1,6 @@
-import { print } from "recast";
 import { parse } from "../../parse/main";
 import { removeTSIgnoreComments } from "./main";
+import { print } from "recast";
 
 describe("removeTSIgnoreComments", () => {
   test("removes //@ts-ignore comments", () => {

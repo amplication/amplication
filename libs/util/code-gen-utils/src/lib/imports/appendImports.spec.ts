@@ -1,7 +1,7 @@
-import { appendImports } from "./appendImports";
-import { types } from "recast";
-import { namedTypes } from "ast-types/gen/namedTypes";
 import { print } from "../files";
+import { appendImports } from "./appendImports";
+import { namedTypes } from "ast-types/gen/namedTypes";
+import { types } from "recast";
 const { builders } = types;
 const {
   importDeclaration,

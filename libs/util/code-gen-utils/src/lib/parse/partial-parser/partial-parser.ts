@@ -1,11 +1,11 @@
+import { ParseError } from "../errors/ParseError";
+import { getOptions as parserGetOptions, Options } from "../main";
 import { ParserOptions } from "@babel/parser";
 import type { File } from "@babel/types";
 import { namedTypes } from "ast-types";
 import { parse as recastParse } from "recast";
-import * as recastBabelParser from "recast/parsers/babel";
 import { Overrides } from "recast/parsers/_babel_options";
-import { ParseError } from "../errors/ParseError";
-import { getOptions as parserGetOptions, Options } from "../main";
+import * as recastBabelParser from "recast/parsers/babel";
 
 type PartialParseOptions = Omit<ParserOptions, "tolerant">;
 

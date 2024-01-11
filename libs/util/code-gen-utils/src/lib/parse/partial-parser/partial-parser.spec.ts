@@ -1,6 +1,6 @@
+import { partialParse } from "./partial-parser";
 import { namedTypes } from "ast-types";
 import * as recast from "recast";
-import { partialParse } from "./partial-parser";
 
 describe("partialParser", () => {
   test("parses await expression", () => {

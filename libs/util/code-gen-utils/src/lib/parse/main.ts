@@ -1,9 +1,9 @@
+import { ParseError } from "./errors/ParseError";
 import type { File } from "@babel/types";
 import { namedTypes } from "ast-types";
 import * as recast from "recast";
-import * as recastBabelParser from "recast/parsers/babel";
 import getBabelOptions, { Overrides } from "recast/parsers/_babel_options";
-import { ParseError } from "./errors/ParseError";
+import * as recastBabelParser from "recast/parsers/babel";
 
 export function getOptions(options?: Overrides): Options {
   const babelOptions = getBabelOptions(options);

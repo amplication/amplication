@@ -1,6 +1,6 @@
-import { print } from "recast";
 import { parse } from "../../parse/main";
 import { removeTSVariableDeclares } from "./main";
+import { print } from "recast";
 
 describe("removeTSVariableDeclares", () => {
   it("should not remove typescript variables", () => {

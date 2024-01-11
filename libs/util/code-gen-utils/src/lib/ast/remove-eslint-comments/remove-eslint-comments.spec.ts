@@ -1,6 +1,6 @@
-import { print } from "recast";
 import { parse } from "../../parse/main";
 import { removeESLintComments } from "./main";
+import { print } from "recast";
 
 describe("removeESLintComments", () => {
   test("removes ESLint block comments", () => {

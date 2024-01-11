@@ -1,8 +1,8 @@
+import { parse } from "./parse/main";
 import { namedTypes } from "ast-types";
 import { readFile as fsReadFile } from "fs/promises";
 import { memoize } from "lodash";
 import { format } from "prettier";
-import { parse } from "./parse/main";
 
 export const formatCode = (path: string, code: string): string => {
   if (path.endsWith(".ts") || path.endsWith(".tsx")) {
