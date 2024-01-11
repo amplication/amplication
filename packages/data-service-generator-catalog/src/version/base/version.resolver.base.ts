@@ -9,24 +9,24 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
-import { isRecordNotFoundError } from "../../prisma.util";
-import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import * as nestAccessControl from "nest-access-control";
 import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as common from "@nestjs/common";
 import { Public } from "../../decorators/public.decorator";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { isRecordNotFoundError } from "../../prisma.util";
+import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import { VersionService } from "../version.service";
 import { CreateVersionArgs } from "./CreateVersionArgs";
-import { UpdateVersionArgs } from "./UpdateVersionArgs";
 import { DeleteVersionArgs } from "./DeleteVersionArgs";
+import { UpdateVersionArgs } from "./UpdateVersionArgs";
+import { Version } from "./Version";
 import { VersionCountArgs } from "./VersionCountArgs";
 import { VersionFindManyArgs } from "./VersionFindManyArgs";
 import { VersionFindUniqueArgs } from "./VersionFindUniqueArgs";
-import { Version } from "./Version";
-import { VersionService } from "../version.service";
+import * as common from "@nestjs/common";
+import * as graphql from "@nestjs/graphql";
+import * as apollo from "apollo-server-express";
+import * as nestAccessControl from "nest-access-control";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Version)
 export class VersionResolverBase {

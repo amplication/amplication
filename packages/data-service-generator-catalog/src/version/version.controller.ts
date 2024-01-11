@@ -1,11 +1,11 @@
+import { Public } from "../decorators/public.decorator";
+import { Version } from "./base/Version";
+import { VersionControllerBase } from "./base/version.controller.base";
+import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
+import { VersionService } from "./version.service";
 import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
 import * as nestAccessControl from "nest-access-control";
-import { VersionService } from "./version.service";
-import { VersionControllerBase } from "./base/version.controller.base";
-import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
-import { Public } from "../decorators/public.decorator";
-import { Version } from "./base/Version";
 
 @swagger.ApiTags("versions")
 @common.Controller("versions")

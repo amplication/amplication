@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
 import { InputType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
 import { IsString } from "class-validator";
 
 @InputType()

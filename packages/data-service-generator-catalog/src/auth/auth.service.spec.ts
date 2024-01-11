@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Test, TestingModule } from "@nestjs/testing";
-import { AuthService } from "./auth.service";
-import { Credentials } from "./Credentials";
-import { PasswordService } from "./password.service";
-import { TokenService } from "./token.service";
 import { VALID_ID } from "../tests/auth/constants";
 import { UserService } from "../user/user.service";
+import { Credentials } from "./Credentials";
+import { AuthService } from "./auth.service";
+import { PasswordService } from "./password.service";
+import { TokenService } from "./token.service";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Test, TestingModule } from "@nestjs/testing";
 
 const VALID_CREDENTIALS: Credentials = {
   username: "Valid User",

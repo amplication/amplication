@@ -1,14 +1,14 @@
-import * as graphql from "@nestjs/graphql";
-import * as nestAccessControl from "nest-access-control";
 import * as gqlACGuard from "../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../auth/gqlDefaultAuth.guard";
-import * as common from "@nestjs/common";
-import { VersionResolverBase } from "./base/version.resolver.base";
-import { Version } from "./base/Version";
-import { VersionService } from "./version.service";
 import { Public } from "../decorators/public.decorator";
+import { Version } from "./base/Version";
+import { VersionResolverBase } from "./base/version.resolver.base";
 import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
+import { VersionService } from "./version.service";
 import { boolean } from "@amplication/code-gen-types/schemas";
+import * as common from "@nestjs/common";
+import * as graphql from "@nestjs/graphql";
+import * as nestAccessControl from "nest-access-control";
 
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Version)

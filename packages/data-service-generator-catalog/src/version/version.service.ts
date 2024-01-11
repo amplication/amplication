@@ -1,13 +1,13 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { VersionServiceBase } from "./base/version.service.base";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
-import { Version } from "./base/Version";
-import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
-import { ConfigService } from "@nestjs/config";
 import { Prisma } from "../../prisma/generated-prisma-client";
 import { AwsEcrService } from "../aws/aws-ecr.service";
+import { PrismaService } from "../prisma/prisma.service";
+import { Version } from "./base/Version";
+import { VersionServiceBase } from "./base/version.service.base";
+import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class VersionService extends VersionServiceBase {

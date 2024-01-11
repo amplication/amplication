@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
-import * as dotenv from "dotenv";
 import { PrismaClient } from "../prisma/generated-prisma-client";
-import { customSeed } from "./customSeed";
 import { Salt, parseSalt } from "../src/auth/password.service";
+import { customSeed } from "./customSeed";
 import { hash } from "bcrypt";
+import * as dotenv from "dotenv";
 
 if (require.main === module) {
   dotenv.config();

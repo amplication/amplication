@@ -1,5 +1,5 @@
-import { Module } from "@nestjs/common";
 import { AwsEcrService } from "./aws-ecr.service";
+import { Module } from "@nestjs/common";
 
 @Module({
   imports: [],

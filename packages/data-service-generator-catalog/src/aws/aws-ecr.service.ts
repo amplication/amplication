@@ -1,11 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { Traceable } from "@amplication/opentelemetry-nestjs";
 import {
   ECRClient,
   DescribeImagesCommand,
   DescribeImagesCommandInput,
   ImageDetail,
 } from "@aws-sdk/client-ecr";
-import { Traceable } from "@amplication/opentelemetry-nestjs";
+import { Injectable } from "@nestjs/common";
 
 @Traceable()
 @Injectable()

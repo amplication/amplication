@@ -9,24 +9,24 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as common from "@nestjs/common";
-import * as swagger from "@nestjs/swagger";
-import { isRecordNotFoundError } from "../../prisma.util";
-import * as errors from "../../errors";
-import { Request } from "express";
-import { plainToClass } from "class-transformer";
-import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
-import * as nestAccessControl from "nest-access-control";
 import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
-import { VersionService } from "../version.service";
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { Public } from "../../decorators/public.decorator";
+import * as errors from "../../errors";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { isRecordNotFoundError } from "../../prisma.util";
+import { VersionService } from "../version.service";
+import { Version } from "./Version";
 import { VersionCreateInput } from "./VersionCreateInput";
-import { VersionWhereInput } from "./VersionWhereInput";
-import { VersionWhereUniqueInput } from "./VersionWhereUniqueInput";
 import { VersionFindManyArgs } from "./VersionFindManyArgs";
 import { VersionUpdateInput } from "./VersionUpdateInput";
-import { Version } from "./Version";
+import { VersionWhereInput } from "./VersionWhereInput";
+import { VersionWhereUniqueInput } from "./VersionWhereUniqueInput";
+import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { plainToClass } from "class-transformer";
+import { Request } from "express";
+import * as nestAccessControl from "nest-access-control";
 
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)

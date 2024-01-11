@@ -1,5 +1,5 @@
-import { Field, ObjectType } from "@nestjs/graphql";
 import { User } from "../user/base/User";
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {

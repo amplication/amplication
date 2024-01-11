@@ -1,14 +1,14 @@
-import { ValidationPipe } from "@nestjs/common";
-import { HttpAdapterHost, NestFactory } from "@nestjs/core";
-import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
-import { HttpExceptionFilter } from "./filters/HttpExceptions.filter";
 import { AppModule } from "./app.module";
 import { connectMicroservices } from "./connectMicroservices";
+import { HttpExceptionFilter } from "./filters/HttpExceptions.filter";
 import {
   swaggerPath,
   swaggerDocumentOptions,
   swaggerSetupOptions,
 } from "./swagger";
+import { ValidationPipe } from "@nestjs/common";
+import { HttpAdapterHost, NestFactory } from "@nestjs/core";
+import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 
 const { PORT = 3000 } = process.env;
 

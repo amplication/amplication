@@ -1,7 +1,7 @@
+import { DefaultAuthGuard } from "./defaultAuth.guard";
 import { ExecutionContext } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import type { Request } from "express";
-import { DefaultAuthGuard } from "./defaultAuth.guard";
 
 export class GqlDefaultAuthGuard extends DefaultAuthGuard {
   // This method is required for the interface - do not delete it.

@@ -9,12 +9,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { VersionOrderByInput } from "./VersionOrderByInput";
+import { VersionWhereInput } from "./VersionWhereInput";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { VersionWhereInput } from "./VersionWhereInput";
-import { IsOptional, ValidateNested, IsInt } from "class-validator";
 import { Type } from "class-transformer";
-import { VersionOrderByInput } from "./VersionOrderByInput";
+import { IsOptional, ValidateNested, IsInt } from "class-validator";
 
 @ArgsType()
 class VersionFindManyArgs {

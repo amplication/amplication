@@ -1,11 +1,11 @@
+import { AwsEcrModule } from "../aws/aws-ecr.module";
+import { AwsEcrService } from "../aws/aws-ecr.service";
+import { PrismaService } from "../prisma/prisma.service";
+import { VersionService } from "./version.service";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
-import { VersionService } from "./version.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { AwsEcrService } from "../aws/aws-ecr.service";
-import { AwsEcrModule } from "../aws/aws-ecr.module";
-import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
 describe("VersionService", () => {
   let service: VersionService;

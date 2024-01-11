@@ -1,20 +1,20 @@
-import { Test } from "@nestjs/testing";
+import { ACLModule } from "../../auth/acl.module";
+import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { VersionController } from "../version.controller";
+import { VersionService } from "../version.service";
 import {
   INestApplication,
   HttpStatus,
   ExecutionContext,
   CallHandler,
 } from "@nestjs/common";
-import request from "supertest";
-import { MorganModule } from "nest-morgan";
+import { Test } from "@nestjs/testing";
 import { ACGuard } from "nest-access-control";
-import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
-import { ACLModule } from "../../auth/acl.module";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { MorganModule } from "nest-morgan";
 import { map } from "rxjs";
-import { VersionController } from "../version.controller";
-import { VersionService } from "../version.service";
+import request from "supertest";
 
 const nonExistingId = "nonExistingId";
 const existingId = "existingId";

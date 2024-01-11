@@ -9,12 +9,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { VersionUpdateInput } from "./VersionUpdateInput";
+import { VersionWhereUniqueInput } from "./VersionWhereUniqueInput";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { VersionWhereUniqueInput } from "./VersionWhereUniqueInput";
-import { ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-import { VersionUpdateInput } from "./VersionUpdateInput";
+import { ValidateNested } from "class-validator";
 
 @ArgsType()
 class UpdateVersionArgs {
