@@ -1,5 +1,5 @@
-import * as models from "./models";
 import { getSchemaForDataType } from "./get-schema-for-data-type";
+import * as models from "./models";
 
 const DATA_TYPES = Object.keys(models.EnumDataType) as Array<
   keyof typeof models.EnumDataType

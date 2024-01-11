@@ -1,4 +1,3 @@
-import type { Promisable } from "type-fest";
 import { BuildLogger } from "./build-logger";
 import {
   clientDirectories,
@@ -8,6 +7,7 @@ import {
 } from "./code-gen-types";
 import { DSGResourceData } from "./dsg-resource-data";
 import { Events } from "./plugin-events.types";
+import type { Promisable } from "type-fest";
 
 export interface EventParams {}
 

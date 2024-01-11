@@ -1,4 +1,3 @@
-import type { namedTypes } from "ast-types";
 import {
   DTOs,
   Entity,
@@ -12,6 +11,7 @@ import {
   ModuleContainer,
 } from "./code-gen-types";
 import { EventParams } from "./plugins.types";
+import type { namedTypes } from "ast-types";
 import type {
   Generator,
   DataSource,

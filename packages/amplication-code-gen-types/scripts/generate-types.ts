@@ -1,8 +1,8 @@
-import fs from "fs";
-import * as path from "path";
 import fg from "fast-glob";
+import fs from "fs";
 import { compileFromFile } from "json-schema-to-typescript";
 import normalize from "normalize-path";
+import * as path from "path";
 
 const SRC_DIRECTORY = path.join(__dirname, "..", "src");
 const SCHEMAS_DIRECTORY = path.join(SRC_DIRECTORY, "schemas");

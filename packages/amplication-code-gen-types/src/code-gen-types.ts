@@ -1,8 +1,8 @@
-import type { namedTypes } from "ast-types";
+import { BuildLogger } from "./build-logger";
+import { DSGResourceData } from "./dsg-resource-data";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
-import { DSGResourceData } from "./dsg-resource-data";
-import { BuildLogger } from "./build-logger";
+import type { namedTypes } from "ast-types";
 
 export {
   EnumDataType,
