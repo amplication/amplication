@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import * as fse from "fs-extra";
 import { promises as fs } from "fs";
+import * as fse from "fs-extra";
 
 @Injectable()
 export class StorageService {

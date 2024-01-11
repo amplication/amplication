@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { App } from "octokit";
 import { convertToNumber } from "../utils/convert-to-number";
-import { ConfigService } from "@nestjs/config";
 import { ErrorMessages } from "./git-pull-event.types";
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { App } from "octokit";
 
 const GITHUB_APP_APP_ID_VAR = "GITHUB_APP_APP_ID";
 const GITHUB_APP_PRIVATE_KEY_VAR = "GITHUB_APP_PRIVATE_KEY";

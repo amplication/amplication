@@ -1,18 +1,18 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { convertToNumber } from "../utils/convert-to-number";
-import { DEFAULT_GITHUB_PULL_FOLDER } from "./git-pull-event.constants";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { GitHostProviderFactory } from "./git-host-provider-factory";
-import { GitPullEventRepository } from "./git-pull-event.repository";
 import { GitClientService } from "./git-client.service";
-import { StorageService } from "./storage.service";
+import { GitHostProviderFactory } from "./git-host-provider-factory";
+import { DEFAULT_GITHUB_PULL_FOLDER } from "./git-pull-event.constants";
+import { GitPullEventRepository } from "./git-pull-event.repository";
 import {
   EventData,
   GitProviderEnum,
   GitPullEventStatusEnum,
   PushEventMessage,
 } from "./git-pull-event.types";
+import { StorageService } from "./storage.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 const ROOT_STORAGE_DIR = "STORAGE_PATH";
 const PRISMA_SKIP_VALUE = "MAX_SNAPSHOTS";
 

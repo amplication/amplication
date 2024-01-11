@@ -1,7 +1,7 @@
-import { GitProvider, GitProviderEnum } from "./git-pull-event.types";
-import { Injectable } from "@nestjs/common";
 import { GitHostProviderService } from "./git-host-provider.service";
+import { GitProvider, GitProviderEnum } from "./git-pull-event.types";
 import { ErrorMessages } from "./git-pull-event.types";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class GitHostProviderFactory {

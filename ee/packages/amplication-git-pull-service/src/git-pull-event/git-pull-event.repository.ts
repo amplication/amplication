@@ -1,10 +1,10 @@
-import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import {
   EventData,
   GitPullEventStatusEnum,
   GitProviderEnum,
 } from "./git-pull-event.types";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class GitPullEventRepository {

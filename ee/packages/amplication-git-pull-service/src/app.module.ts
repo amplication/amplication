@@ -1,8 +1,8 @@
-import { Module } from "@nestjs/common";
 import { GitPullEventModule } from "./git-pull-event/git-pull-event.module";
 import { HealthModule } from "./health/health.module";
-import { ConfigModule } from "@nestjs/config";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
   controllers: [],

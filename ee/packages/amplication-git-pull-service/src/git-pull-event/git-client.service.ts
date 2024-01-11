@@ -1,12 +1,12 @@
-import * as fs from "fs";
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import simpleGit, { SimpleGit, SimpleGitOptions } from "simple-git";
 import {
   PushEventMessage,
   GitProviderEnum,
   ErrorMessages,
 } from "./git-pull-event.types";
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import * as fs from "fs";
+import simpleGit, { SimpleGit, SimpleGitOptions } from "simple-git";
 
 const REMOTE_ORIGIN = "ENV_REMOTE_ORIGIN";
 
