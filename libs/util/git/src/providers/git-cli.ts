@@ -60,7 +60,11 @@ export class GitCli {
     await this.push();
   }
 
-  async mergeAndDeleteBranch(tempBranch: string, branchName: string) {
+  async mergeAndDeleteBranch(
+    tempBranch: string,
+    branchName: string,
+    userCommits: string
+  ) {
     await this.checkout(branchName);
 
     // accepting all incoming changes, while merge conflicts
@@ -71,7 +75,7 @@ export class GitCli {
 
     this.logger.debug(`Committing Amplication merge conflicts auto-resolution`);
     await this.git.commit(
-      "Amplication merge conflicts auto-resolution",
+      "Amplication merge conflicts auto-resolution" + userCommits,
       undefined,
       {
         "--author": this.gitConflictsResolverAuthor,
@@ -91,11 +95,11 @@ export class GitCli {
    * Checkout to branch if exists, otherwise create new branch
    * @param branchName name of the branch to checkout
    */
-  async checkout(branchName: string): Promise<void> {
+  async checkout(branchName: string, isPresent?: boolean): Promise<void> {
     await this.git.fetch();
     const remoteBranches = await this.git.branch(["--remotes"]);
     const remoteOriginBranchName = `origin/${branchName}`;
-    if (!remoteBranches.all.includes(remoteOriginBranchName)) {
+    if (!remoteBranches.all.includes(remoteOriginBranchName) && !isPresent) {
       await this.git.checkoutLocalBranch(branchName);
     } else {
       await this.git.checkout(branchName);
@@ -266,6 +270,11 @@ export class GitCli {
 
   async push(options?: string[]) {
     return this.git.push(options);
+  }
+
+  async logBranch(branchName: string, maxCount?: number): Promise<LogResult> {
+    maxCount = maxCount ?? -1;
+    return this.git.log([branchName, `--max-count=${maxCount}`]);
   }
 
   async reset(options: string[], mode: ResetMode = ResetMode.HARD) {

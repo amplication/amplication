@@ -292,8 +292,13 @@ export class GitClientService {
     this.logger.debug("New commit added", { sha });
 
     if (preCommitDiff.diff) {
+      const userCommits = await this.getUserCommits(tempBranchName, gitCli);
       // merge and deletes temp branch
-      await gitCli.mergeAndDeleteBranch(tempBranchName, branchName);
+      await gitCli.mergeAndDeleteBranch(
+        tempBranchName,
+        branchName,
+        userCommits
+      );
     }
 
     const existingPullRequest = await this.provider.getPullRequest({
@@ -349,6 +354,53 @@ export class GitClientService {
         gitCli,
       });
     }
+  }
+
+  private async getUserCommits(
+    tempBranchName: string,
+    gitCli: GitCli
+  ): Promise<string> {
+    await gitCli.checkout(tempBranchName, true);
+
+    let prevBuildHash = "";
+    const gitLogs = await this.gitLog(gitCli, 1);
+    if (gitLogs.total > 0 && gitLogs.latest) {
+      prevBuildHash = gitLogs.latest.hash;
+    }
+
+    if (prevBuildHash == "") {
+      return "";
+    }
+
+    const MAX_USER_COMMIT = 10;
+    const conflictMessage = "Amplication merge conflicts auto-resolution";
+
+    const userCommits = await gitCli.logBranch(tempBranchName, MAX_USER_COMMIT);
+
+    let userCommitMessages: string[] = [];
+    for (let userCommit of userCommits.all) {
+      if (
+        userCommit.hash == prevBuildHash ||
+        userCommitMessages.length >= MAX_USER_COMMIT
+      ) {
+        break;
+      }
+
+      if (userCommit.message.startsWith(conflictMessage)) {
+        let commitMessagesInConflict = userCommit.message
+          .replace(conflictMessage, "")
+          .split("*")
+          .map((s) => s.trim())
+          .filter((s) => !!s);
+        let diff = MAX_USER_COMMIT - userCommitMessages.length;
+        userCommitMessages.push(...commitMessagesInConflict.slice(0, diff));
+        continue;
+      }
+
+      userCommitMessages.push(userCommit.message);
+    }
+
+    return " \n * " + userCommitMessages.join(" \n * ");
   }
 
   /**
