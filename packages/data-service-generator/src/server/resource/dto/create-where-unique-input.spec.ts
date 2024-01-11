@@ -1,11 +1,11 @@
-import { builders } from "ast-types";
-import { print } from "@amplication/code-gen-utils";
-import { Entity } from "@amplication/code-gen-types";
+import { createEntityInputFiles } from "../create-dtos";
 import { EXAMPLE_ID_FIELD } from "../util/test-data";
 import { createInput } from "./create-input";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
-import { createEntityInputFiles } from "../create-dtos";
+import { Entity } from "@amplication/code-gen-types";
+import { print } from "@amplication/code-gen-utils";
+import { builders } from "ast-types";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";

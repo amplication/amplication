@@ -1,10 +1,10 @@
-import { builders } from "ast-types";
-import { NamedClassDeclaration } from "@amplication/code-gen-types";
 import { classDeclaration } from "../../../utils/ast";
 import { isPasswordField } from "../../../utils/field";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import { OBJECT_TYPE_ID } from "./nestjs-graphql.util";
+import { NamedClassDeclaration } from "@amplication/code-gen-types";
+import { builders } from "ast-types";
 
 export const OBJECT_TYPE_DECORATOR = builders.decorator(
   builders.callExpression(OBJECT_TYPE_ID, [])

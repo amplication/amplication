@@ -1,7 +1,7 @@
-import { builders, namedTypes } from "ast-types";
+import { interpolate, getClassDeclarationById } from "../../../../../utils/ast";
 import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
 import { readFile, removeTSClassDeclares } from "@amplication/code-gen-utils";
-import { interpolate, getClassDeclarationById } from "../../../../../utils/ast";
+import { builders, namedTypes } from "ast-types";
 
 const templatePath = require.resolve("./count-args.template.ts");
 

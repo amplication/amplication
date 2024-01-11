@@ -1,13 +1,13 @@
-import { builders, namedTypes } from "ast-types";
+import { classDeclaration } from "../../../utils/ast";
+import { isScalarListField, isPasswordField } from "../../../utils/field";
+import { createFieldClassProperty } from "./create-field-class-property";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
 import {
   EntityField,
   NamedClassDeclaration,
 } from "@amplication/code-gen-types";
-import { isScalarListField, isPasswordField } from "../../../utils/field";
-import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
-import { createFieldClassProperty } from "./create-field-class-property";
-import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
-import { classDeclaration } from "../../../utils/ast";
+import { builders, namedTypes } from "ast-types";
 
 export const createWhereInput = (entityDTOsFilesObj) => {
   if (isQueryableField(entityDTOsFilesObj.field)) {

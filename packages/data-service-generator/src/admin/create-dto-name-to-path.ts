@@ -1,6 +1,6 @@
-import { camelCase } from "camel-case";
-import { DTOs } from "@amplication/code-gen-types";
 import DsgContext from "../dsg-context";
+import { DTOs } from "@amplication/code-gen-types";
+import { camelCase } from "camel-case";
 
 export function createDTONameToPath(dtos: DTOs): Record<string, string> {
   const { clientDirectories } = DsgContext.getInstance;

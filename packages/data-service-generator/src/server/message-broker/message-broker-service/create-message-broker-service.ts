@@ -1,6 +1,6 @@
-import { EventNames, ModuleMap } from "@amplication/code-gen-types";
-import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
+import pluginWrapper from "../../../plugin-wrapper";
+import { EventNames, ModuleMap } from "@amplication/code-gen-types";
 
 export async function createMessageBrokerServiceModules(): Promise<ModuleMap> {
   const moduleMap = new ModuleMap(DsgContext.getInstance.logger);

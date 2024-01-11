@@ -1,13 +1,13 @@
-import { print } from "@amplication/code-gen-utils";
-import { builders, namedTypes } from "ast-types";
+import DsgContext from "../dsg-context";
+import { createDTOFile } from "../server/resource/dto/create-dto-module";
+import { getNamedProperties } from "../utils/ast";
 import {
   NamedClassDeclaration,
   DTOs,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { createDTOFile } from "../server/resource/dto/create-dto-module";
-import { getNamedProperties } from "../utils/ast";
-import DsgContext from "../dsg-context";
+import { print } from "@amplication/code-gen-utils";
+import { builders, namedTypes } from "ast-types";
 
 export async function createDTOModules(
   dtos: DTOs,

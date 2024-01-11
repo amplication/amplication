@@ -1,10 +1,10 @@
-import { namedTypes } from "ast-types";
+import { jsxElement } from "../util";
 import {
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
 } from "@amplication/code-gen-types";
-import { jsxElement } from "../util";
+import { namedTypes } from "ast-types";
 /**
  * Creates a node for displaying given entity field value
  * @param field the entity field to create value view for

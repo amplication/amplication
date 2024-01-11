@@ -1,19 +1,19 @@
-import { plural } from "pluralize";
-import { camelCase } from "camel-case";
-import { Entity, ModuleMap } from "@amplication/code-gen-types";
+import DsgContext from "../../dsg-context";
 import { validateEntityName } from "../../utils/entity";
+import { createControllerModules } from "./controller/create-controller";
+import { createGrpcControllerModules } from "./grpc-controller/create-grpc-controller";
+import { createModules } from "./module/create-module";
+import { createResolverModules } from "./resolver/create-resolver";
 import {
   createServiceBaseId,
   createServiceId,
   createServiceModules,
 } from "./service/create-service";
-import { createControllerModules } from "./controller/create-controller";
-import { createModules } from "./module/create-module";
 import { createEntityControllerSpec } from "./test/create-controller-spec";
-import { createResolverModules } from "./resolver/create-resolver";
+import { Entity, ModuleMap } from "@amplication/code-gen-types";
 import { builders } from "ast-types";
-import DsgContext from "../../dsg-context";
-import { createGrpcControllerModules } from "./grpc-controller/create-grpc-controller";
+import { camelCase } from "camel-case";
+import { plural } from "pluralize";
 
 export async function createResourcesModules(
   entities: Entity[]

@@ -1,5 +1,5 @@
-import { AppInfo } from "@amplication/code-gen-types";
 import { EnumAuthProviderType } from "../models";
+import { AppInfo } from "@amplication/code-gen-types";
 import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
 
 export const MODULE_EXTENSIONS_TO_SNAPSHOT = [

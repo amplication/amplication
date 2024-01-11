@@ -1,9 +1,9 @@
-import { Entity } from "@amplication/code-gen-types";
-import { namedTypes } from "ast-types";
 import { EnumEntityAction, EnumEntityPermissionType } from "../models";
 import { getClassMethodById, removeDecoratorByName } from "./ast";
 import { createPublicDecorator } from "./create-public-decorator";
 import { removeIdentifierFromUseInterceptorDecorator } from "./nestjs-code-generation";
+import { Entity } from "@amplication/code-gen-types";
+import { namedTypes } from "ast-types";
 
 export const USE_ROLES_DECORATOR_NAME = "UseRoles";
 export const USE_INTERCEPTORS_DECORATOR_NAME = "UseInterceptors";

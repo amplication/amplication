@@ -1,4 +1,5 @@
-import { namedTypes } from "ast-types";
+import { isToManyRelationField } from "../../utils/field";
+import { jsxElement } from "../util";
 import {
   EnumDataType,
   EntityField,
@@ -6,8 +7,7 @@ import {
   EntityMultiSelectOptionSetField,
   LookupResolvedProperties,
 } from "@amplication/code-gen-types";
-import { jsxElement } from "../util";
-import { isToManyRelationField } from "../../utils/field";
+import { namedTypes } from "ast-types";
 
 /**
  * Creates an input element to be placed inside a Formik form for editing the given entity field

@@ -1,14 +1,31 @@
+import DsgContext from "../../../dsg-context";
+import pluginWrapper from "../../../plugin-wrapper";
 import {
-  print,
-  readFile,
-  removeESLintComments,
-  removeTSVariableDeclares,
-  removeTSClassDeclares,
-  removeTSInterfaceDeclares,
-  removeTSIgnoreComments,
-} from "@amplication/code-gen-utils";
-import { builders, namedTypes } from "ast-types";
-import { camelCase } from "camel-case";
+  interpolate,
+  importNames,
+  addAutoGenerationComment,
+  addImports,
+  getClassDeclarationById,
+  importContainedIdentifiers,
+  getMethods,
+  removeClassMethodByName,
+} from "../../../utils/ast";
+import { isToManyRelationField } from "../../../utils/field";
+import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports";
+import { relativeImportPath } from "../../../utils/module";
+import { setEndpointPermissions } from "../../../utils/set-endpoint-permission";
+import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
+import { getDTONameToPath } from "../create-dtos";
+import { getImportableDTOs } from "../dto/create-dto-module";
+import {
+  createCreateFunctionId,
+  createDeleteFunctionId,
+  createFieldFindManyFunctionId,
+  createServiceId,
+  createUpdateFunctionId,
+} from "../service/create-service";
+import { createDataMapping } from "./create-data-mapping";
+import { createSelect } from "./create-select";
 import {
   Entity,
   EntityLookupField,
@@ -23,35 +40,17 @@ import {
   ModuleMap,
   ModuleAction,
 } from "@amplication/code-gen-types";
-import { relativeImportPath } from "../../../utils/module";
-
 import {
-  interpolate,
-  importNames,
-  addAutoGenerationComment,
-  addImports,
-  getClassDeclarationById,
-  importContainedIdentifiers,
-  getMethods,
-  removeClassMethodByName,
-} from "../../../utils/ast";
-import { isToManyRelationField } from "../../../utils/field";
-import { getDTONameToPath } from "../create-dtos";
-import { getImportableDTOs } from "../dto/create-dto-module";
-import { createDataMapping } from "./create-data-mapping";
-import { createSelect } from "./create-select";
-import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
-import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports";
-import DsgContext from "../../../dsg-context";
-import pluginWrapper from "../../../plugin-wrapper";
-import {
-  createCreateFunctionId,
-  createDeleteFunctionId,
-  createFieldFindManyFunctionId,
-  createServiceId,
-  createUpdateFunctionId,
-} from "../service/create-service";
-import { setEndpointPermissions } from "../../../utils/set-endpoint-permission";
+  print,
+  readFile,
+  removeESLintComments,
+  removeTSVariableDeclares,
+  removeTSClassDeclares,
+  removeTSInterfaceDeclares,
+  removeTSIgnoreComments,
+} from "@amplication/code-gen-utils";
+import { builders, namedTypes } from "ast-types";
+import { camelCase } from "camel-case";
 
 export type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;

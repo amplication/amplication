@@ -1,7 +1,7 @@
+import { PackageInstallation } from "./DynamicPackageInstallationManager";
+import { BuildLogger } from "@amplication/code-gen-types";
 import downloadHelper from "download";
 import { packument } from "pacote";
-import { BuildLogger } from "@amplication/code-gen-types";
-import { PackageInstallation } from "./DynamicPackageInstallationManager";
 
 export class Tarball {
   constructor(

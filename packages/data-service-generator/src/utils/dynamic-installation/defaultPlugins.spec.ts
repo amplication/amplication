@@ -1,10 +1,10 @@
-import { PluginInstallation } from "@amplication/code-gen-types";
 import {
   MSSQL_PLUGIN_ID,
   POSTGRESQL_NPM,
   POSTGRESQL_PLUGIN_ID,
   prepareDefaultPlugins,
 } from "./defaultPlugins";
+import { PluginInstallation } from "@amplication/code-gen-types";
 
 describe("prepareDefaultPlugins", () => {
   it("should return default plugins if no plugins are installed", () => {

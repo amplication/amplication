@@ -1,9 +1,9 @@
-import { builders, namedTypes } from "ast-types";
 import {
   isOneToOneRelationField,
   isToManyRelationField,
 } from "../../../utils/field";
 import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
+import { builders, namedTypes } from "ast-types";
 
 export const SELECT_ID = builders.identifier("select");
 export const ID_ID = builders.identifier("id");

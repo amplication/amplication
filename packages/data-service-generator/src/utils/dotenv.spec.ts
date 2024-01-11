@@ -1,5 +1,5 @@
-import { VariableDictionary } from "@amplication/code-gen-types";
 import { extractVariablesFromCode, sortAlphabetically } from "./dotenv";
+import { VariableDictionary } from "@amplication/code-gen-types";
 
 describe("sortAlphabetically", () => {
   test("sort env variables in alphabetical order", () => {

@@ -1,4 +1,22 @@
-import { builders, namedTypes } from "ast-types";
+import {
+  interpolate,
+  getClassDeclarationById,
+  classProperty,
+} from "../../../../../utils/ast";
+import { IS_ENUM_ID, IS_OPTIONAL_ID } from "../../class-validator.util";
+import {
+  TRUE_LITERAL,
+  NULLABLE_ID,
+  REQUIRED_ID,
+  ENUM_ID,
+} from "../../create-field-class-property";
+import { FIELD_ID } from "../../nestjs-graphql.util";
+import { API_PROPERTY_ID } from "../../nestjs-swagger.util";
+import {
+  SORT_ORDER_ID,
+  SORT_ORDER_DESC_LITERAL,
+  SORT_ORDER_ASC_LITERAL,
+} from "../../sort-order.util";
 import {
   Entity,
   EnumDataType,
@@ -6,25 +24,7 @@ import {
   NamedClassDeclaration,
 } from "@amplication/code-gen-types";
 import { readFile } from "@amplication/code-gen-utils";
-import {
-  interpolate,
-  getClassDeclarationById,
-  classProperty,
-} from "../../../../../utils/ast";
-import { API_PROPERTY_ID } from "../../nestjs-swagger.util";
-import { FIELD_ID } from "../../nestjs-graphql.util";
-import {
-  TRUE_LITERAL,
-  NULLABLE_ID,
-  REQUIRED_ID,
-  ENUM_ID,
-} from "../../create-field-class-property";
-import {
-  SORT_ORDER_ID,
-  SORT_ORDER_DESC_LITERAL,
-  SORT_ORDER_ASC_LITERAL,
-} from "../../sort-order.util";
-import { IS_ENUM_ID, IS_OPTIONAL_ID } from "../../class-validator.util";
+import { builders, namedTypes } from "ast-types";
 
 const templatePath = require.resolve("./order-by-input.template.ts");
 

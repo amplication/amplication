@@ -1,4 +1,12 @@
 import {
+  createGrants,
+  Grant,
+  ALL_ATTRIBUTES_ALLOWED,
+  CREATE_ANY,
+  createAttributes,
+  createNegativeAttributeMatcher,
+} from "./create-grants";
+import {
   Entity,
   EntityField,
   EntityPermission,
@@ -8,14 +16,6 @@ import {
   EnumEntityAction,
   EnumEntityPermissionType,
 } from "@amplication/code-gen-types";
-import {
-  createGrants,
-  Grant,
-  ALL_ATTRIBUTES_ALLOWED,
-  CREATE_ANY,
-  createAttributes,
-  createNegativeAttributeMatcher,
-} from "./create-grants";
 
 type TestCase = Array<[string, Entity[], Role[], Grant[]]>;
 

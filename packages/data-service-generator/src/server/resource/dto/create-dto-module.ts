@@ -1,14 +1,17 @@
-import { print } from "@amplication/code-gen-utils";
-import { namedTypes, builders } from "ast-types";
-import { DeclarationKind } from "ast-types/gen/kinds";
-import { NamedClassDeclaration, Module } from "@amplication/code-gen-types";
-import { relativeImportPath } from "../../../utils/module";
+import DsgContext from "../../../dsg-context";
+import { logger } from "../../../logging";
 import {
   addAutoGenerationComment,
   addImports,
   exportNames,
   importContainedIdentifiers2,
 } from "../../../utils/ast";
+import { relativeImportPath } from "../../../utils/module";
+import {
+  CLASS_TRANSFORMER_MODULE,
+  TRANSFORM_ID,
+  TYPE_ID,
+} from "./class-transformer.util";
 import {
   CLASS_VALIDATOR_MODULE,
   IS_BOOLEAN_ID,
@@ -22,12 +25,16 @@ import {
   VALIDATE_NESTED_ID,
   CLASS_VALIDATOR_CUSTOM_VALIDATORS_MODULE,
 } from "./class-validator.util";
+import { GRAPHQL_BIGINT_VALUE, INPUT_JSON_VALUE_KEY } from "./constants";
+import { DECIMAL_JS_MODULE, DECIMAL_VALUE_ID } from "./decimal-js";
 import {
-  CLASS_TRANSFORMER_MODULE,
-  TRANSFORM_ID,
-  TYPE_ID,
-} from "./class-transformer.util";
-import { NESTJS_SWAGGER_MODULE, API_PROPERTY_ID } from "./nestjs-swagger.util";
+  EnumScalarFiltersTypes,
+  SCALAR_FILTER_TO_MODULE_AND_TYPE,
+} from "./filters.util";
+import {
+  GRAPHQL_TYPE_JSON_MODULE,
+  GRAPHQL_JSON_ID,
+} from "./graphql-type-json.util";
 import {
   NESTJS_GRAPHQL_MODULE,
   OBJECT_TYPE_ID,
@@ -36,20 +43,13 @@ import {
   FIELD_ID,
   FLOAT_ID,
 } from "./nestjs-graphql.util";
-import {
-  GRAPHQL_TYPE_JSON_MODULE,
-  GRAPHQL_JSON_ID,
-} from "./graphql-type-json.util";
-import { TYPE_FEST_MODULE, JSON_VALUE_ID } from "./type-fest.util";
-import {
-  EnumScalarFiltersTypes,
-  SCALAR_FILTER_TO_MODULE_AND_TYPE,
-} from "./filters.util";
+import { NESTJS_SWAGGER_MODULE, API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { SORT_ORDER_ID, SORT_ORDER_MODULE } from "./sort-order.util";
-import { GRAPHQL_BIGINT_VALUE, INPUT_JSON_VALUE_KEY } from "./constants";
-import DsgContext from "../../../dsg-context";
-import { logger } from "../../../logging";
-import { DECIMAL_JS_MODULE, DECIMAL_VALUE_ID } from "./decimal-js";
+import { TYPE_FEST_MODULE, JSON_VALUE_ID } from "./type-fest.util";
+import { NamedClassDeclaration, Module } from "@amplication/code-gen-types";
+import { print } from "@amplication/code-gen-utils";
+import { namedTypes, builders } from "ast-types";
+import { DeclarationKind } from "ast-types/gen/kinds";
 
 const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   Object.values(EnumScalarFiltersTypes).map((filter) => {

@@ -1,19 +1,5 @@
-import {
-  print,
-  readFile,
-  removeESLintComments,
-  removeTSVariableDeclares,
-  removeTSIgnoreComments,
-} from "@amplication/code-gen-utils";
-import { builders, namedTypes } from "ast-types";
-import {
-  EventNames,
-  Module,
-  CreateServerAppModuleParams,
-  ModuleMap,
-} from "@amplication/code-gen-types";
-import { relativeImportPath } from "../../utils/module";
-
+import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
 import {
   getExportedNames,
   interpolate,
@@ -22,8 +8,21 @@ import {
   importDeclaration,
   callExpression,
 } from "../../utils/ast";
-import DsgContext from "../../dsg-context";
-import pluginWrapper from "../../plugin-wrapper";
+import { relativeImportPath } from "../../utils/module";
+import {
+  EventNames,
+  Module,
+  CreateServerAppModuleParams,
+  ModuleMap,
+} from "@amplication/code-gen-types";
+import {
+  print,
+  readFile,
+  removeESLintComments,
+  removeTSVariableDeclares,
+  removeTSIgnoreComments,
+} from "@amplication/code-gen-utils";
+import { builders, namedTypes } from "ast-types";
 
 const appModuleTemplatePath = require.resolve("./app.module.template.ts");
 const MODULE_PATTERN = /\.module\.ts$/;

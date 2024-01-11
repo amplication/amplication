@@ -1,11 +1,8 @@
-import * as path from "path";
-import {
-  print,
-  readFile,
-  removeTSVariableDeclares,
-  removeTSIgnoreComments,
-} from "@amplication/code-gen-utils";
-import { builders } from "ast-types";
+import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
+import { addImports, importNames, interpolate } from "../../utils/ast";
+import { relativeImportPath } from "../../utils/module";
+import { jsxElement, jsxFragment } from "../util";
 import {
   CreateAdminAppModuleParams,
   EntityComponents,
@@ -13,12 +10,14 @@ import {
   Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { addImports, importNames, interpolate } from "../../utils/ast";
-import { relativeImportPath } from "../../utils/module";
-
-import { jsxElement, jsxFragment } from "../util";
-import DsgContext from "../../dsg-context";
-import pluginWrapper from "../../plugin-wrapper";
+import {
+  print,
+  readFile,
+  removeTSVariableDeclares,
+  removeTSIgnoreComments,
+} from "@amplication/code-gen-utils";
+import { builders } from "ast-types";
+import * as path from "path";
 
 const navigationTemplatePath = path.resolve(__dirname, "App.template.tsx");
 

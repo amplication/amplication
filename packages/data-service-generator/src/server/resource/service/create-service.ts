@@ -1,26 +1,5 @@
-import { builders, namedTypes } from "ast-types";
-import { pascalCase } from "pascal-case";
-import {
-  print,
-  readFile,
-  removeESLintComments,
-  removeTSVariableDeclares,
-  removeTSClassDeclares,
-  removeTSInterfaceDeclares,
-  removeTSIgnoreComments,
-} from "@amplication/code-gen-utils";
-import {
-  Entity,
-  EntityLookupField,
-  Module,
-  EventNames,
-  CreateEntityServiceParams,
-  CreateEntityServiceBaseParams,
-  types,
-  ModuleMap,
-  ModuleAction,
-  entityActions,
-} from "@amplication/code-gen-types";
+import DsgContext from "../../../dsg-context";
+import pluginWrapper from "../../../plugin-wrapper";
 import {
   addAutoGenerationComment,
   addImports,
@@ -35,10 +14,31 @@ import {
   isOneToOneRelationField,
   isToManyRelationField,
 } from "../../../utils/field";
-import { relativeImportPath } from "../../../utils/module";
-import pluginWrapper from "../../../plugin-wrapper";
-import DsgContext from "../../../dsg-context";
 import { getEntityIdType } from "../../../utils/get-entity-id-type";
+import { relativeImportPath } from "../../../utils/module";
+import {
+  Entity,
+  EntityLookupField,
+  Module,
+  EventNames,
+  CreateEntityServiceParams,
+  CreateEntityServiceBaseParams,
+  types,
+  ModuleMap,
+  ModuleAction,
+  entityActions,
+} from "@amplication/code-gen-types";
+import {
+  print,
+  readFile,
+  removeESLintComments,
+  removeTSVariableDeclares,
+  removeTSClassDeclares,
+  removeTSInterfaceDeclares,
+  removeTSIgnoreComments,
+} from "@amplication/code-gen-utils";
+import { builders, namedTypes } from "ast-types";
+import { pascalCase } from "pascal-case";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");

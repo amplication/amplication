@@ -1,11 +1,11 @@
-import { builders, namedTypes } from "ast-types";
 import { EXAMPLE_LOOKUP_FIELD } from "../../util/test-data";
-import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
 import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
 import {
   createNestedInputDTO,
   NestedMutationOptions,
 } from "./create-nested-input-dto";
+import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
+import { builders, namedTypes } from "ast-types";
 
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",

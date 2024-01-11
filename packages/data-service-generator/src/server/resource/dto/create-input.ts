@@ -1,13 +1,13 @@
-import { builders, namedTypes } from "ast-types";
+import { classDeclaration } from "../../../utils/ast";
+import { createFieldClassProperty } from "./create-field-class-property";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
 import {
   Entity,
   EntityField,
   NamedClassDeclaration,
 } from "@amplication/code-gen-types";
-import { classDeclaration } from "../../../utils/ast";
-import { createFieldClassProperty } from "./create-field-class-property";
-import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
-import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
+import { builders, namedTypes } from "ast-types";
 
 export function createInput(
   id: namedTypes.Identifier,

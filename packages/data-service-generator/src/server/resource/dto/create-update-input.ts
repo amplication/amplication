@@ -1,10 +1,10 @@
-import { builders, namedTypes } from "ast-types";
-import { NamedClassDeclaration } from "@amplication/code-gen-types";
+import { classDeclaration } from "../../../utils/ast";
 import { isEditableField } from "../../../utils/field";
+import { createFieldClassProperty } from "./create-field-class-property";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
-import { classDeclaration } from "../../../utils/ast";
-import { createFieldClassProperty } from "./create-field-class-property";
+import { NamedClassDeclaration } from "@amplication/code-gen-types";
+import { builders, namedTypes } from "ast-types";
 
 export const createUpdateInput = (entityDTOsFilesObj) => {
   if (isEditableField(entityDTOsFilesObj.field)) {

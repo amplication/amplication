@@ -1,13 +1,13 @@
+import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
+import { addImports, importContainedIdentifiers } from "../../utils/ast";
 import {
   EventNames,
   ModuleMap,
   Module,
   CreateConnectMicroservicesParams,
 } from "@amplication/code-gen-types";
-import DsgContext from "../../dsg-context";
-import pluginWrapper from "../../plugin-wrapper";
 import { readFile, print } from "@amplication/code-gen-utils";
-import { addImports, importContainedIdentifiers } from "../../utils/ast";
 import { builders } from "ast-types";
 
 const controllerTemplatePath = require.resolve(

@@ -1,3 +1,12 @@
+import { BuildLogger } from "./build-logger";
+import { EnumResourceType } from "./models";
+import {
+  USER_ENTITY_NAME,
+  USER_NAME_FIELD_NAME,
+  USER_PASSWORD_FIELD_NAME,
+  USER_ROLES_FIELD_NAME,
+} from "./server/user-entity/user-entity";
+import { readPluginStaticModules } from "./utils/read-static-modules";
 import * as types from "@amplication/code-gen-types";
 import {
   BuildLogger as IBuildLogger,
@@ -5,15 +14,6 @@ import {
   ContextUtil,
   serverDirectories,
 } from "@amplication/code-gen-types";
-import { EnumResourceType } from "./models";
-import { readPluginStaticModules } from "./utils/read-static-modules";
-import {
-  USER_ENTITY_NAME,
-  USER_NAME_FIELD_NAME,
-  USER_PASSWORD_FIELD_NAME,
-  USER_ROLES_FIELD_NAME,
-} from "./server/user-entity/user-entity";
-import { BuildLogger } from "./build-logger";
 
 class DsgContext implements types.DsgContext {
   public appInfo!: types.AppInfo;

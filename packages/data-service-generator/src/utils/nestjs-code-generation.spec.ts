@@ -1,7 +1,6 @@
+import { removeIdentifierFromModuleDecorator } from "./nestjs-code-generation";
 import { print, parse } from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
-
-import { removeIdentifierFromModuleDecorator } from "./nestjs-code-generation";
 import * as recast from "recast";
 
 const actualRecast = jest.requireActual("recast");

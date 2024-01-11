@@ -1,3 +1,9 @@
+import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
+import DsgContext from "./dsg-context";
+import { EnumResourceType } from "./models";
+import registerPlugins from "./register-plugin";
+import { SERVER_BASE_DIRECTORY } from "./server/constants";
+import { resolveTopicNames } from "./utils/message-broker";
 import {
   clientDirectories,
   DSGResourceData,
@@ -15,21 +21,15 @@ import {
   entityDefaultActions,
   entityRelatedFieldDefaultActions,
 } from "@amplication/code-gen-types";
+import {
+  getDefaultActionsForEntity,
+  getDefaultActionsForRelationField,
+} from "@amplication/dsg-utils";
 import { ILogger } from "@amplication/util/logging";
 import { camelCase } from "camel-case";
 import { get, isEmpty, trim } from "lodash";
 import { join } from "path";
 import pluralize from "pluralize";
-import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
-import DsgContext from "./dsg-context";
-import { EnumResourceType } from "./models";
-import registerPlugins from "./register-plugin";
-import { SERVER_BASE_DIRECTORY } from "./server/constants";
-import { resolveTopicNames } from "./utils/message-broker";
-import {
-  getDefaultActionsForEntity,
-  getDefaultActionsForRelationField,
-} from "@amplication/dsg-utils";
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(

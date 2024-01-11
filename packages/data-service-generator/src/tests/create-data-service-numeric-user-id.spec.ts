@@ -1,13 +1,13 @@
-import { types } from "@amplication/code-gen-types";
-import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
 import { EnumDataType } from "../models";
 import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
 import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 import entities from "./entities";
 import { TEST_DATA } from "./test-data";
+import { types } from "@amplication/code-gen-types";
+import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { rm } from "fs/promises";
-import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 
 jest.setTimeout(100000);
 

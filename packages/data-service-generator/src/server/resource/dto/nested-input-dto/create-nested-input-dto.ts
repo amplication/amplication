@@ -1,11 +1,3 @@
-import { builders, namedTypes } from "ast-types";
-import { TSTypeKind } from "ast-types/gen/kinds";
-import { ObjectField, ScalarField } from "prisma-schema-dsl-types";
-import {
-  Entity,
-  EntityField,
-  NamedClassDeclaration,
-} from "@amplication/code-gen-types";
 import { classDeclaration, classProperty } from "../../../../utils/ast";
 import { createPrismaFields } from "../../../prisma/create-prisma-schema-fields";
 import { ApiPropertyDecoratorBuilder } from "../api-property-decorator";
@@ -16,6 +8,14 @@ import {
 import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
 import { createGraphQLFieldDecorator } from "../graphql-field-decorator";
 import { INPUT_TYPE_DECORATOR } from "../nestjs-graphql.util";
+import {
+  Entity,
+  EntityField,
+  NamedClassDeclaration,
+} from "@amplication/code-gen-types";
+import { builders, namedTypes } from "ast-types";
+import { TSTypeKind } from "ast-types/gen/kinds";
+import { ObjectField, ScalarField } from "prisma-schema-dsl-types";
 
 export enum NestedMutationOptions {
   "Create" = "create",

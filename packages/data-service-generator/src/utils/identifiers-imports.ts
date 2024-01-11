@@ -1,9 +1,9 @@
-import { namedTypes, builders } from "ast-types";
 import { PUBLIC_ID } from "./create-public-decorator";
 import {
   ACL_FILTER_RESPONSE_INTERCEPTOR_NAME,
   ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME,
 } from "./set-endpoint-permission";
+import { namedTypes, builders } from "ast-types";
 
 export const IMPORTABLE_IDENTIFIERS_NAMES: Record<
   string,

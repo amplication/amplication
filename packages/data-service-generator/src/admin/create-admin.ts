@@ -1,28 +1,28 @@
-import * as path from "path";
-import { paramCase } from "param-case";
-import { plural } from "pluralize";
-import { EventNames, ModuleMap } from "@amplication/code-gen-types";
-import { formatCode } from "@amplication/code-gen-utils";
+import DsgContext from "../dsg-context";
+import pluginWrapper from "../plugin-wrapper";
 import { readStaticModules } from "../utils/read-static-modules";
 import { createAppModule } from "./app/create-app";
+import { createDotEnvModule } from "./create-dotenv";
 import { createDTOModules } from "./create-dto-modules";
-import { createEntitiesComponents } from "./entity/create-entities-components";
-import { createEntityTitleComponents } from "./entity/create-entity-title-components";
-import {
-  createEntityComponentsModules,
-  createEntityTitleComponentsModules,
-} from "./entity/create-entity-components-modules";
-import { createPublicFiles } from "./public-files/create-public-files";
 import { createDTONameToPath } from "./create-dto-name-to-path";
 import { createEntityToDirectory } from "./create-entity-to-directory";
 import { createEnumRolesModule } from "./create-enum-roles";
 import { createRolesModule } from "./create-roles-module";
-import { createDotEnvModule } from "./create-dotenv";
-import pluginWrapper from "../plugin-wrapper";
-import DsgContext from "../dsg-context";
-import { createAdminUIPackageJson } from "./package-json/create-package-json";
-import { createGitIgnore } from "./gitignore/create-gitignore";
 import { createTypesRelatedFiles } from "./create-types-related-files/create-types-related-files";
+import { createEntitiesComponents } from "./entity/create-entities-components";
+import {
+  createEntityComponentsModules,
+  createEntityTitleComponentsModules,
+} from "./entity/create-entity-components-modules";
+import { createEntityTitleComponents } from "./entity/create-entity-title-components";
+import { createGitIgnore } from "./gitignore/create-gitignore";
+import { createAdminUIPackageJson } from "./package-json/create-package-json";
+import { createPublicFiles } from "./public-files/create-public-files";
+import { EventNames, ModuleMap } from "@amplication/code-gen-types";
+import { formatCode } from "@amplication/code-gen-utils";
+import { paramCase } from "param-case";
+import * as path from "path";
+import { plural } from "pluralize";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";

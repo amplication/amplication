@@ -1,13 +1,13 @@
+import { createDataService } from "../create-data-service";
+import { EnumResourceType } from "../models";
+import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 import entities from "./entities";
+import { plugins } from "./mock-data-plugin-installations";
 import roles from "./roles";
 import { AppInfo } from "@amplication/code-gen-types";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import { EnumResourceType } from "../models";
-import { createDataService } from "../create-data-service";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
-import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 import { rm } from "fs/promises";
-import { plugins } from "./mock-data-plugin-installations";
 
 const newAppInfo: AppInfo = {
   ...appInfo,

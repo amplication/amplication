@@ -1,14 +1,14 @@
-import path from "path";
-import { promises as fs } from "fs";
-import { Module, ModuleMap } from "@amplication/code-gen-types";
+import DsgContext from "../../dsg-context";
 import {
   BIGINT_FILTER_FILE_NAME,
   BIGINT_NULLABLE_FILTER_FILE_NAME,
   DECIMAL_FILTER_FILE_NAME,
   DECIMAL_NULLABLE_FILTER_FILE_NAME,
 } from "./constants";
-import DsgContext from "../../dsg-context";
+import { Module, ModuleMap } from "@amplication/code-gen-types";
 import { formatCode } from "@amplication/code-gen-utils";
+import { promises as fs } from "fs";
+import path from "path";
 
 export async function createTypesRelatedFiles(): Promise<ModuleMap> {
   const { logger } = DsgContext.getInstance;

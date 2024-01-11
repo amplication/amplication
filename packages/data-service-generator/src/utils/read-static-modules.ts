@@ -1,15 +1,15 @@
-import * as fs from "fs";
-import normalize from "normalize-path";
-import fg from "fast-glob";
+import DsgContext from "../dsg-context";
+import pluginWrapper from "../plugin-wrapper";
+import { getFileEncoding } from "./get-file-encoding";
 import {
   EventNames,
   Module,
   LoadStaticFilesParams,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import pluginWrapper from "../plugin-wrapper";
-import { getFileEncoding } from "./get-file-encoding";
-import DsgContext from "../dsg-context";
+import fg from "fast-glob";
+import * as fs from "fs";
+import normalize from "normalize-path";
 
 const filesToFilter = /(\._.*)|(.DS_Store)$/;
 

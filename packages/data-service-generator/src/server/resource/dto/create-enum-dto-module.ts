@@ -1,6 +1,4 @@
-import { namedTypes, builders } from "ast-types";
-import { print } from "@amplication/code-gen-utils";
-import { Module } from "@amplication/code-gen-types";
+import { logger } from "../../../logging";
 import {
   addAutoGenerationComment,
   addImports,
@@ -8,7 +6,9 @@ import {
   importDeclaration,
 } from "../../../utils/ast";
 import { createDTOFile } from "./create-dto-module";
-import { logger } from "../../../logging";
+import { Module } from "@amplication/code-gen-types";
+import { print } from "@amplication/code-gen-utils";
+import { namedTypes, builders } from "ast-types";
 
 const REGISTER_ENUM_TYPE_ID = builders.identifier("registerEnumType");
 

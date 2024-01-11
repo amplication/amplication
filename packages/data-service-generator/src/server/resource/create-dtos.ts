@@ -1,15 +1,5 @@
-import { namedTypes } from "ast-types";
-import { camelCase } from "camel-case";
-import {
-  DTOs,
-  Entity,
-  NamedClassDeclaration,
-  EntityEnumDTOs,
-  EntityDTOs,
-  EventNames,
-  CreateDTOsParams,
-  ModuleMap,
-} from "@amplication/code-gen-types";
+import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
 import { getEnumFields } from "../../utils/entity";
 import { createEnumName } from "../prisma/create-prisma-schema-fields";
 import { createCreateInput } from "./dto/create-create-input";
@@ -20,18 +10,28 @@ import { createEnumDTOModule } from "./dto/create-enum-dto-module";
 import { createUpdateInput } from "./dto/create-update-input";
 import { createWhereInput } from "./dto/create-where-input";
 import { createWhereUniqueInput } from "./dto/create-where-unique-input";
+import { createCountArgs } from "./dto/graphql/count/create-count-args";
 import { createCreateArgs } from "./dto/graphql/create/create-create-args";
 import { createDeleteArgs } from "./dto/graphql/delete/create-delete-args";
-import { createCountArgs } from "./dto/graphql/count/create-count-args";
+import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 import { createFindManyArgs } from "./dto/graphql/find-many/create-find-many-args";
 import { createFindOneArgs } from "./dto/graphql/find-one/create-find-one-args";
 import { createOrderByInput } from "./dto/graphql/order-by-input/order-by-input";
 import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
 import { createCreateNestedManyDTOs } from "./dto/nested-input-dto/create-nested";
 import { createUpdateManyWithoutInputDTOs } from "./dto/nested-input-dto/update-nested";
-import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
-import pluginWrapper from "../../plugin-wrapper";
-import DsgContext from "../../dsg-context";
+import {
+  DTOs,
+  Entity,
+  NamedClassDeclaration,
+  EntityEnumDTOs,
+  EntityDTOs,
+  EventNames,
+  CreateDTOsParams,
+  ModuleMap,
+} from "@amplication/code-gen-types";
+import { namedTypes } from "ast-types";
+import { camelCase } from "camel-case";
 
 export async function createDTOModules(dtos: DTOs): Promise<ModuleMap> {
   return pluginWrapper(createDTOModulesInternal, EventNames.CreateDTOs, {

@@ -1,10 +1,10 @@
-import { builders, namedTypes } from "ast-types";
-import { pascalCase } from "pascal-case";
-import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
 import {} from "../../../../../utils/ast";
 import { isToManyRelationField } from "../../../../../utils/field";
 import { EntityDtoTypeEnum } from "../../entity-dto-type-enum";
 import { createNestedInputDTO } from "../create-nested-input-dto";
+import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
+import { builders, namedTypes } from "ast-types";
+import { pascalCase } from "pascal-case";
 
 export function createCreateNestedManyDTOs(
   entity: Entity

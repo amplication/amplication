@@ -1,10 +1,10 @@
+import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
 import {
   CreateServerAuthParams,
   EventNames,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import pluginWrapper from "../../plugin-wrapper";
-import DsgContext from "../../dsg-context";
 
 /**
  *

@@ -1,16 +1,16 @@
+import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
+import { updatePackageJSONs } from "../../utils/update-package-jsons";
 import {
   CreateAdminUIPackageJsonParams,
   Module,
   EventNames,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { readFile } from "fs/promises";
-import { join, resolve } from "path";
-import DsgContext from "../../dsg-context";
-import pluginWrapper from "../../plugin-wrapper";
-import { updatePackageJSONs } from "../../utils/update-package-jsons";
-import { paramCase } from "param-case";
 import { promises as fs } from "fs";
+import { readFile } from "fs/promises";
+import { paramCase } from "param-case";
+import { join, resolve } from "path";
 
 const PACKAGE_JSON_ENCODING = "utf-8";
 const PACKAGE_JSON_FILE_NAME = "package.json";

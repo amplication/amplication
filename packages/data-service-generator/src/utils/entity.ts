@@ -1,8 +1,8 @@
-import { Entity, EntityField } from "@amplication/code-gen-types";
-import { isEnumField, isToManyRelationField } from "./field";
-import { camelCase } from "camel-case";
-import { getNamedProperties } from "./ast";
 import DsgContext from "../dsg-context";
+import { getNamedProperties } from "./ast";
+import { isEnumField, isToManyRelationField } from "./field";
+import { Entity, EntityField } from "@amplication/code-gen-types";
+import { camelCase } from "camel-case";
 
 export const ENTITY_NAME_REGEX = /^[A-Z][A-Za-z0-9]+$/;
 

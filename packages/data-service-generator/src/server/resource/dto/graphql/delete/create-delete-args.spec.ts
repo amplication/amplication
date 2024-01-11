@@ -1,12 +1,11 @@
-import { print } from "@amplication/code-gen-utils";
-import { Entity } from "@amplication/code-gen-types";
-
+import { createEntityInputFiles } from "../../../create-dtos";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
 } from "../../../util/test-data";
 import { createDeleteArgs, createDeleteArgsId } from "./create-delete-args";
-import { createEntityInputFiles } from "../../../create-dtos";
+import { Entity } from "@amplication/code-gen-types";
+import { print } from "@amplication/code-gen-utils";
 
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",

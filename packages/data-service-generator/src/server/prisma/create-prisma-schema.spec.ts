@@ -1,12 +1,11 @@
-import * as PrismaSchemaDSL from "prisma-schema-dsl";
-import * as PrismaSchemaDSLTypes from "prisma-schema-dsl-types";
+import DsgContext from "../../dsg-context";
+import { CLIENT_GENERATOR, DATA_SOURCE } from "./constants";
 import {
   CUID_CALL_EXPRESSION,
   NOW_CALL_EXPRESSION,
   createRelationName,
   createPrismaFields,
 } from "./create-prisma-schema-fields";
-
 import {
   Entity,
   EntityField,
@@ -14,8 +13,8 @@ import {
   Module,
   serverDirectories,
 } from "@amplication/code-gen-types";
-import { CLIENT_GENERATOR, DATA_SOURCE } from "./constants";
-import DsgContext from "../../dsg-context";
+import * as PrismaSchemaDSL from "prisma-schema-dsl";
+import * as PrismaSchemaDSLTypes from "prisma-schema-dsl-types";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"

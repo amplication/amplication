@@ -1,3 +1,4 @@
+import DsgContext from "./dsg-context";
 import {
   EventNames,
   EventParams,
@@ -6,7 +7,6 @@ import {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import util from "node:util";
-import DsgContext from "./dsg-context";
 
 export type PluginWrapper = (
   func: (...args: any) => ModuleMap | Promise<ModuleMap>,

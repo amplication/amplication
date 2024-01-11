@@ -1,9 +1,9 @@
-import { builders, namedTypes } from "ast-types";
-import { pascalCase } from "pascal-case";
-import { print } from "@amplication/code-gen-utils";
+import DsgContext from "../dsg-context";
 import { createDTOFile } from "../server/resource/dto/create-dto-module";
 import { Role, Module } from "@amplication/code-gen-types";
-import DsgContext from "../dsg-context";
+import { print } from "@amplication/code-gen-utils";
+import { builders, namedTypes } from "ast-types";
+import { pascalCase } from "pascal-case";
 
 export const ENUM_ROLES_ID = builders.identifier("EnumRoles");
 

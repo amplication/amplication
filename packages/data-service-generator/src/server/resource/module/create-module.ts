@@ -1,11 +1,17 @@
-import { builders, namedTypes } from "ast-types";
+import DsgContext from "../../../dsg-context";
+import pluginWrapper from "../../../plugin-wrapper";
 import {
-  print,
-  readFile,
-  removeESLintComments,
-  removeTSClassDeclares,
-  removeTSIgnoreComments,
-} from "@amplication/code-gen-utils";
+  interpolate,
+  importNames,
+  addAutoGenerationComment,
+  addImports,
+} from "../../../utils/ast";
+import { relativeImportPath } from "../../../utils/module";
+import { removeIdentifierFromModuleDecorator } from "../../../utils/nestjs-code-generation";
+import { createControllerId } from "../controller/create-controller";
+import { createGrpcControllerId } from "../grpc-controller/create-grpc-controller";
+import { createResolverId } from "../resolver/create-resolver";
+import { createServiceId } from "../service/create-service";
 import {
   EventNames,
   Module,
@@ -13,21 +19,14 @@ import {
   CreateEntityModuleBaseParams,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { relativeImportPath } from "../../../utils/module";
-
 import {
-  interpolate,
-  importNames,
-  addAutoGenerationComment,
-  addImports,
-} from "../../../utils/ast";
-import { removeIdentifierFromModuleDecorator } from "../../../utils/nestjs-code-generation";
-import { createControllerId } from "../controller/create-controller";
-import { createServiceId } from "../service/create-service";
-import { createResolverId } from "../resolver/create-resolver";
-import DsgContext from "../../../dsg-context";
-import pluginWrapper from "../../../plugin-wrapper";
-import { createGrpcControllerId } from "../grpc-controller/create-grpc-controller";
+  print,
+  readFile,
+  removeESLintComments,
+  removeTSClassDeclares,
+  removeTSIgnoreComments,
+} from "@amplication/code-gen-utils";
+import { builders, namedTypes } from "ast-types";
 
 const moduleTemplatePath = require.resolve("./module.template.ts");
 const moduleBaseTemplatePath = require.resolve("./module.base.template.ts");

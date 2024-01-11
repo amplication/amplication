@@ -1,5 +1,7 @@
-import { builders, namedTypes } from "ast-types";
-import { EntityField, EnumDataType, Entity } from "@amplication/code-gen-types";
+import { memberExpression } from "../../utils/ast";
+import { createEnumName } from "../prisma/create-prisma-schema-fields";
+import { createEnumMemberName } from "../resource/dto/create-enum-dto";
+import { DEFAULT_USER_ENTITY } from "../user-entity/user-entity";
 import {
   createDefaultValue,
   createAuthEntityObjectCustomProperties,
@@ -12,10 +14,8 @@ import {
   NEW_DATE_EXPRESSION,
   NEW_JSON_EXPRESSION,
 } from "./create-seed";
-import { DEFAULT_USER_ENTITY } from "../user-entity/user-entity";
-import { createEnumMemberName } from "../resource/dto/create-enum-dto";
-import { createEnumName } from "../prisma/create-prisma-schema-fields";
-import { memberExpression } from "../../utils/ast";
+import { EntityField, EnumDataType, Entity } from "@amplication/code-gen-types";
+import { builders, namedTypes } from "ast-types";
 
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityField";
 const EXAMPLE_FIELD_BASE: Pick<

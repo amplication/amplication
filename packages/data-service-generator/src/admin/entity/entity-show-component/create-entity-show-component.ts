@@ -1,5 +1,18 @@
-import * as path from "path";
-import { builders } from "ast-types";
+import DsgContext from "../../../dsg-context";
+import {
+  addImports,
+  importContainedIdentifiers,
+  importNames,
+  interpolate,
+} from "../../../utils/ast";
+import { getFieldsFromDTOWithoutToManyRelations } from "../../../utils/entity";
+import { relativeImportPath } from "../../../utils/module";
+import { jsxElement, jsxFragment } from "../../util";
+import { createFieldValue } from "../create-field-value";
+import {
+  REACT_ADMIN_MODULE,
+  REACT_ADMIN_COMPONENTS_ID,
+} from "../react-admin.util";
 import {
   Entity,
   EnumDataType,
@@ -7,22 +20,9 @@ import {
   LookupResolvedProperties,
   EntityComponent,
 } from "@amplication/code-gen-types";
-import { getFieldsFromDTOWithoutToManyRelations } from "../../../utils/entity";
-import {
-  addImports,
-  importContainedIdentifiers,
-  importNames,
-  interpolate,
-} from "../../../utils/ast";
-import { relativeImportPath } from "../../../utils/module";
 import { readFile } from "@amplication/code-gen-utils";
-import { jsxElement, jsxFragment } from "../../util";
-import { createFieldValue } from "../create-field-value";
-import {
-  REACT_ADMIN_MODULE,
-  REACT_ADMIN_COMPONENTS_ID,
-} from "../react-admin.util";
-import DsgContext from "../../../dsg-context";
+import { builders } from "ast-types";
+import * as path from "path";
 
 const IMPORTABLE_IDS = {
   "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],

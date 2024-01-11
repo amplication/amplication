@@ -1,6 +1,4 @@
-import { builders } from "ast-types";
-import { print } from "@amplication/code-gen-utils";
-import { Entity } from "@amplication/code-gen-types";
+import { createEntityInputFiles } from "../create-dtos";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_NON_SEARCHABLE_SINGLE_LINE_TEXT_FIELD,
@@ -8,7 +6,9 @@ import {
 import { createInput } from "./create-input";
 import { createWhereInputID } from "./create-where-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
-import { createEntityInputFiles } from "../create-dtos";
+import { Entity } from "@amplication/code-gen-types";
+import { print } from "@amplication/code-gen-utils";
+import { builders } from "ast-types";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";

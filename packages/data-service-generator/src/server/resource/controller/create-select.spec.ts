@@ -1,11 +1,4 @@
-import { namedTypes, builders } from "ast-types";
-import { print } from "@amplication/code-gen-utils";
-import {
-  Entity,
-  EntityField,
-  EnumDataType,
-  NamedClassDeclaration,
-} from "@amplication/code-gen-types";
+import { createEntityInputFiles } from "../create-dtos";
 import { EXAMPLE_ID_FIELD } from "../util/test-data";
 import {
   createObjectSelectProperty,
@@ -15,7 +8,14 @@ import {
   SELECT_ID,
   TRUE_BOOLEAN_LITERAL,
 } from "./create-select";
-import { createEntityInputFiles } from "../create-dtos";
+import {
+  Entity,
+  EntityField,
+  EnumDataType,
+  NamedClassDeclaration,
+} from "@amplication/code-gen-types";
+import { print } from "@amplication/code-gen-utils";
+import { namedTypes, builders } from "ast-types";
 
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",

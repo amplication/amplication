@@ -1,7 +1,7 @@
-import { DSGResourceData } from "@amplication/code-gen-types";
+import { appInfo } from "./appInfo";
 import entities from "./entities";
 import roles from "./roles";
-import { appInfo } from "./appInfo";
+import { DSGResourceData } from "@amplication/code-gen-types";
 import { EnumResourceType } from "@amplication/code-gen-types/models";
 
 export const TEST_DATA: DSGResourceData = {

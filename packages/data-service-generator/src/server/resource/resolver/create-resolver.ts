@@ -1,35 +1,6 @@
+import DsgContext from "../../../dsg-context";
 import { EnumEntityAction } from "../../../models";
-import {
-  print,
-  readFile,
-  removeESLintComments,
-  removeTSVariableDeclares,
-  removeTSClassDeclares,
-  removeTSInterfaceDeclares,
-  removeTSIgnoreComments,
-  removeImportsTSIgnoreComments,
-} from "@amplication/code-gen-utils";
-import { builders, namedTypes } from "ast-types";
-import { camelCase } from "camel-case";
-import { pascalCase } from "pascal-case";
 import pluginWrapper from "../../../plugin-wrapper";
-import {
-  Entity,
-  EntityLookupField,
-  Module,
-  NamedClassDeclaration,
-  CreateEntityResolverParams,
-  CreateEntityResolverBaseParams,
-  DTOs,
-  EventNames,
-  CreateEntityResolverToManyRelationMethodsParams,
-  CreateEntityResolverToOneRelationMethodsParams,
-  ModuleMap,
-  ModuleAction,
-} from "@amplication/code-gen-types";
-import { relativeImportPath } from "../../../utils/module";
-
-import { setEndpointPermissions } from "../../../utils/set-endpoint-permission";
 import {
   interpolate,
   importNames,
@@ -46,6 +17,11 @@ import {
   isOneToOneRelationField,
   isToManyRelationField,
 } from "../../../utils/field";
+import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports";
+import { relativeImportPath } from "../../../utils/module";
+import { setEndpointPermissions } from "../../../utils/set-endpoint-permission";
+import { MethodsIdsActionEntityTriplet } from "../controller/create-controller";
+import { createDataMapping } from "../controller/create-data-mapping";
 import { getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import {
@@ -56,10 +32,33 @@ import {
   createDeleteFunctionId,
   createUpdateFunctionId,
 } from "../service/create-service";
-import { createDataMapping } from "../controller/create-data-mapping";
-import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports";
-import DsgContext from "../../../dsg-context";
-import { MethodsIdsActionEntityTriplet } from "../controller/create-controller";
+import {
+  Entity,
+  EntityLookupField,
+  Module,
+  NamedClassDeclaration,
+  CreateEntityResolverParams,
+  CreateEntityResolverBaseParams,
+  DTOs,
+  EventNames,
+  CreateEntityResolverToManyRelationMethodsParams,
+  CreateEntityResolverToOneRelationMethodsParams,
+  ModuleMap,
+  ModuleAction,
+} from "@amplication/code-gen-types";
+import {
+  print,
+  readFile,
+  removeESLintComments,
+  removeTSVariableDeclares,
+  removeTSClassDeclares,
+  removeTSInterfaceDeclares,
+  removeTSIgnoreComments,
+  removeImportsTSIgnoreComments,
+} from "@amplication/code-gen-utils";
+import { builders, namedTypes } from "ast-types";
+import { camelCase } from "camel-case";
+import { pascalCase } from "pascal-case";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;

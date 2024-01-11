@@ -1,3 +1,7 @@
+import DsgContext from "../dsg-context";
+import pluginWrapper from "../plugin-wrapper";
+import { extractVariablesFromCode, sortAlphabetically } from "../utils/dotenv";
+import { replacePlaceholdersInCode } from "../utils/text-file-parser";
 import {
   CreateAdminDotEnvParams,
   EventNames,
@@ -6,10 +10,6 @@ import {
   VariableDictionary,
 } from "@amplication/code-gen-types";
 import { readCode } from "@amplication/code-gen-utils";
-import { replacePlaceholdersInCode } from "../utils/text-file-parser";
-import pluginWrapper from "../plugin-wrapper";
-import DsgContext from "../dsg-context";
-import { extractVariablesFromCode, sortAlphabetically } from "../utils/dotenv";
 
 const templatePath = require.resolve("./create-dotenv.template.env");
 

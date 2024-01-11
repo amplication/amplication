@@ -1,11 +1,7 @@
-import { builders, namedTypes } from "ast-types";
+import DsgContext from "../../dsg-context";
 import { EnumAuthProviderType } from "../../models";
-import {
-  print,
-  readFile,
-  removeTSVariableDeclares,
-  removeTSIgnoreComments,
-} from "@amplication/code-gen-utils";
+import pluginWrapper from "../../plugin-wrapper";
+import { interpolate } from "../../utils/ast";
 import {
   AppInfo,
   CreateSwaggerParams,
@@ -13,10 +9,13 @@ import {
   Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { interpolate } from "../../utils/ast";
-
-import DsgContext from "../../dsg-context";
-import pluginWrapper from "../../plugin-wrapper";
+import {
+  print,
+  readFile,
+  removeTSVariableDeclares,
+  removeTSIgnoreComments,
+} from "@amplication/code-gen-utils";
+import { builders, namedTypes } from "ast-types";
 
 const swaggerTemplatePath = require.resolve("./swagger.template.ts");
 

@@ -1,15 +1,15 @@
+import DsgContext from "../../../dsg-context";
+import pluginWrapper from "../../../plugin-wrapper";
 import {
   CreateMessageBrokerParams,
   EventNames,
   Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
+import { print, EnumBuilder } from "@amplication/code-gen-utils";
 import { pascalCase } from "pascal-case";
 import { join } from "path";
 import { types } from "recast";
-import { print, EnumBuilder } from "@amplication/code-gen-utils";
-import DsgContext from "../../../dsg-context";
-import pluginWrapper from "../../../plugin-wrapper";
 
 const { builders } = types;
 const TOPIC_NAME = "topics.ts";

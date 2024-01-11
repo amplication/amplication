@@ -1,10 +1,10 @@
 import { EnumAuthProviderType } from "../../models";
-import { AppInfo } from "@amplication/code-gen-types";
 import {
   createDescription,
   getInstructions,
   INSTRUCTIONS_BUFFER,
 } from "./create-swagger";
+import { AppInfo } from "@amplication/code-gen-types";
 
 const EXAMPLE_DESCRIPTION = "EXAMPLE_DESCRIPTION";
 const EXAMPLE_APP_INFO: AppInfo = {

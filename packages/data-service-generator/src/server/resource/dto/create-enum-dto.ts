@@ -1,8 +1,7 @@
+import { createEnumName } from "../../prisma/create-prisma-schema-fields";
+import { types, EntityField, Entity } from "@amplication/code-gen-types";
 import { namedTypes, builders } from "ast-types";
 import { pascalCase } from "pascal-case";
-import { types, EntityField, Entity } from "@amplication/code-gen-types";
-
-import { createEnumName } from "../../prisma/create-prisma-schema-fields";
 
 export type StringLiteralEnumMember = namedTypes.TSEnumMember & {
   initializer: namedTypes.StringLiteral;

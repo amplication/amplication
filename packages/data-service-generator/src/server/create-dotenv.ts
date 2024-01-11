@@ -1,3 +1,7 @@
+import DsgContext from "../dsg-context";
+import pluginWrapper from "../plugin-wrapper";
+import { sortAlphabetically } from "../utils/dotenv";
+import { replacePlaceholdersInCode } from "../utils/text-file-parser";
 import {
   CreateServerDotEnvParams,
   EventNames,
@@ -5,10 +9,6 @@ import {
   ModuleMap,
   VariableDictionary,
 } from "@amplication/code-gen-types";
-import DsgContext from "../dsg-context";
-import pluginWrapper from "../plugin-wrapper";
-import { replacePlaceholdersInCode } from "../utils/text-file-parser";
-import { sortAlphabetically } from "../utils/dotenv";
 
 export function createDotEnvModule(
   eventParams: CreateServerDotEnvParams

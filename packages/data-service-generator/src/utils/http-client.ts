@@ -1,7 +1,7 @@
+import { logger } from "../logging";
+import axios from "axios";
 import http from "http";
 import https from "https";
-import axios from "axios";
-import { logger } from "../logging";
 
 const httpAgent = new http.Agent({ keepAlive: true });
 const httpsAgent = new https.Agent({ keepAlive: true });

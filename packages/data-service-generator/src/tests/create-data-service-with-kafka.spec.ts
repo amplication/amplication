@@ -1,16 +1,16 @@
+import { createDataService } from "../create-data-service";
+import { EnumResourceType } from "../models";
+import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
+import { plugins } from "./mock-data-plugin-installations";
+import { TEST_DATA } from "./test-data";
 import {
   DSGResourceData,
   EnumMessagePatternConnectionOptions,
   Topic,
 } from "@amplication/code-gen-types";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
-import { createDataService } from "../create-data-service";
-import { EnumResourceType } from "../models";
-import { TEST_DATA } from "./test-data";
-import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import { rm } from "fs/promises";
-import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
-import { plugins } from "./mock-data-plugin-installations";
 
 jest.setTimeout(100000);
 

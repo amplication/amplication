@@ -1,31 +1,31 @@
-import * as path from "path";
+import DsgContext from "../dsg-context";
+import pluginWrapper from "../plugin-wrapper";
+import { readStaticModules } from "../utils/read-static-modules";
+import { createAppModule } from "./app-module/create-app-module";
+import { createAuthModules } from "./auth/create-auth";
+import { connectMicroservices } from "./connect-microservices/connect-microservices";
+import { ENV_VARIABLES } from "./constants";
+import { createDotEnvModule } from "./create-dotenv";
+import { createMainFile } from "./create-main/create-main-file";
+import { createTypesRelatedFiles } from "./create-types-related-files/create-types-related-files";
+import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
+import { createDockerComposeDevFile } from "./docker-compose/create-docker-compose-dev";
+import { createGitIgnore } from "./gitignore/create-gitignore";
+import { createMessageBroker } from "./message-broker/create-service-message-broker-modules";
+import { createServerPackageJson } from "./package-json/create-package-json";
+import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
+import { createDTOModules } from "./resource/create-dtos";
+import { createResourcesModules } from "./resource/create-resource";
+import { createSecretsManager } from "./secrets-manager/create-secrets-manager";
+import { createSeed } from "./seed/create-seed";
+import { createSwagger } from "./swagger/create-swagger";
 import {
   EventNames,
   CreateServerParams,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { readStaticModules } from "../utils/read-static-modules";
 import { formatCode } from "@amplication/code-gen-utils";
-import { createDTOModules } from "./resource/create-dtos";
-import { createResourcesModules } from "./resource/create-resource";
-import { createSwagger } from "./swagger/create-swagger";
-import { createAppModule } from "./app-module/create-app-module";
-import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
-import { createDotEnvModule } from "./create-dotenv";
-import { createSeed } from "./seed/create-seed";
-import DsgContext from "../dsg-context";
-import { ENV_VARIABLES } from "./constants";
-import { createServerPackageJson } from "./package-json/create-package-json";
-import { createMessageBroker } from "./message-broker/create-service-message-broker-modules";
-import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
-import pluginWrapper from "../plugin-wrapper";
-import { createAuthModules } from "./auth/create-auth";
-import { createGitIgnore } from "./gitignore/create-gitignore";
-import { createDockerComposeDevFile } from "./docker-compose/create-docker-compose-dev";
-import { createTypesRelatedFiles } from "./create-types-related-files/create-types-related-files";
-import { createMainFile } from "./create-main/create-main-file";
-import { connectMicroservices } from "./connect-microservices/connect-microservices";
-import { createSecretsManager } from "./secrets-manager/create-secrets-manager";
+import * as path from "path";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 

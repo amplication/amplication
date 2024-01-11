@@ -1,16 +1,8 @@
-import { builders, namedTypes } from "ast-types";
-import {
-  FieldKind,
-  ObjectField,
-  ScalarField,
-  ScalarType,
-} from "prisma-schema-dsl-types";
-import { createEnumName } from "../../../prisma/create-prisma-schema-fields";
-import { Entity, EntityField } from "@amplication/code-gen-types";
 import {
   isRelationField,
   isToManyRelationField,
 } from "../../../../utils/field";
+import { createEnumName } from "../../../prisma/create-prisma-schema-fields";
 import {
   BOOLEAN_ID,
   DATE_ID,
@@ -23,12 +15,20 @@ import {
   NUMBER_ID,
 } from "../create-field-class-property";
 import { createWhereUniqueInputID } from "../create-where-unique-input";
+import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
+import { createEntityListRelationFilterID } from "../graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 import { GRAPHQL_JSON_ID } from "../graphql-type-json.util";
 import { createCreateNestedManyWithoutInputID } from "../nested-input-dto/create-nested";
 import { createUpdateManyWithoutInputID } from "../nested-input-dto/update-nested";
-import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
 import { FIELD_ID } from "../nestjs-graphql.util";
-import { createEntityListRelationFilterID } from "../graphql/entity-list-relation-filter/create-entity-list-relation-filter";
+import { Entity, EntityField } from "@amplication/code-gen-types";
+import { builders, namedTypes } from "ast-types";
+import {
+  FieldKind,
+  ObjectField,
+  ScalarField,
+  ScalarType,
+} from "prisma-schema-dsl-types";
 
 export function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,

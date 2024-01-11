@@ -1,13 +1,4 @@
-import { builders, namedTypes } from "ast-types";
-import { isEmpty } from "lodash";
-import * as path from "path";
-import {
-  Entity,
-  EntityComponent,
-  EntityField,
-  EnumDataType,
-  LookupResolvedProperties,
-} from "@amplication/code-gen-types";
+import DsgContext from "../../../dsg-context";
 import {
   addImports,
   importContainedIdentifiers,
@@ -21,8 +12,17 @@ import {
   REACT_ADMIN_COMPONENTS_ID,
   REACT_ADMIN_MODULE,
 } from "../react-admin.util";
-import DsgContext from "../../../dsg-context";
+import {
+  Entity,
+  EntityComponent,
+  EntityField,
+  EnumDataType,
+  LookupResolvedProperties,
+} from "@amplication/code-gen-types";
 import { readFile } from "@amplication/code-gen-utils";
+import { builders, namedTypes } from "ast-types";
+import { isEmpty } from "lodash";
+import * as path from "path";
 const template = path.resolve(
   __dirname,
   "entity-create-component.template.tsx"

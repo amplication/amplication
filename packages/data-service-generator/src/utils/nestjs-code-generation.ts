@@ -2,10 +2,10 @@
  * Utilities for generating Nest.js source code
  */
 
-import { ASTNode, builders, namedTypes } from "ast-types";
 import { findConstructor, findFirstDecoratorByName } from "./ast";
-import { visit } from "recast";
 import { USE_INTERCEPTORS_DECORATOR_NAME } from "./set-endpoint-permission";
+import { ASTNode, builders, namedTypes } from "ast-types";
+import { visit } from "recast";
 const MODULE_DECORATOR_NAME = "Module";
 /**
  * Adds a Nest.js injectable dependency to given classDeclaration

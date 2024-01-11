@@ -1,8 +1,8 @@
-import { builders } from "ast-types";
-import { Entity } from "@amplication/code-gen-types";
+import { createEntityInputFiles } from "../create-dtos";
 import { EXAMPLE_ID_FIELD, EXAMPLE_LOOKUP_FIELD } from "../util/test-data";
 import { CONNECT_ID, createDataMapping } from "./create-data-mapping";
-import { createEntityInputFiles } from "../create-dtos";
+import { Entity } from "@amplication/code-gen-types";
+import { builders } from "ast-types";
 
 const DATA_ID = builders.identifier("data");
 

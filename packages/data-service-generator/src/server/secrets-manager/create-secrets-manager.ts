@@ -1,3 +1,7 @@
+import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
+import { getFileEncoding } from "../../utils/get-file-encoding";
+import { createDTOFile } from "../resource/dto/create-dto-module";
 import {
   CreateServerSecretsManagerParams,
   EventNames,
@@ -5,15 +9,11 @@ import {
   SecretsNameKey,
 } from "@amplication/code-gen-types";
 import { print } from "@amplication/code-gen-utils";
-import pluginWrapper from "../../plugin-wrapper";
-import DsgContext from "../../dsg-context";
 import { builders, namedTypes } from "ast-types";
-import { createDTOFile } from "../resource/dto/create-dto-module";
-import { pascalCase } from "pascal-case";
-import path from "path";
 import fg from "fast-glob";
 import { promises as fsPromises } from "fs";
-import { getFileEncoding } from "../../utils/get-file-encoding";
+import { pascalCase } from "pascal-case";
+import path from "path";
 
 export function createSecretsManager(
   eventParams: CreateServerSecretsManagerParams

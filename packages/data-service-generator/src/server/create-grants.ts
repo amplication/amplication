@@ -1,3 +1,4 @@
+import DsgContext from "../dsg-context";
 import {
   Entity,
   Role,
@@ -5,7 +6,6 @@ import {
   EnumEntityAction,
   Module,
 } from "@amplication/code-gen-types";
-import DsgContext from "../dsg-context";
 
 type Action =
   | "create:any"

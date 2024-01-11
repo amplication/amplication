@@ -1,9 +1,17 @@
+import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
 import {
-  print,
-  readFile,
-  removeTSVariableDeclares,
-} from "@amplication/code-gen-utils";
-import { builders, namedTypes } from "ast-types";
+  addImports,
+  awaitExpression,
+  importContainedIdentifiers,
+  interpolate,
+  memberExpression,
+} from "../../utils/ast";
+import { createEnumName } from "../prisma/create-prisma-schema-fields";
+import { getDTONameToPath } from "../resource/create-dtos";
+import { getImportableDTOs } from "../resource/dto/create-dto-module";
+import { createEnumMemberName } from "../resource/dto/create-enum-dto";
+import { USER_AUTH_FIELDS } from "../user-entity/user-entity";
 import {
   CreateSeedParams,
   Entity,
@@ -15,19 +23,11 @@ import {
   types,
 } from "@amplication/code-gen-types";
 import {
-  addImports,
-  awaitExpression,
-  importContainedIdentifiers,
-  interpolate,
-  memberExpression,
-} from "../../utils/ast";
-import { getDTONameToPath } from "../resource/create-dtos";
-import { getImportableDTOs } from "../resource/dto/create-dto-module";
-import { createEnumMemberName } from "../resource/dto/create-enum-dto";
-import { createEnumName } from "../prisma/create-prisma-schema-fields";
-import DsgContext from "../../dsg-context";
-import pluginWrapper from "../../plugin-wrapper";
-import { USER_AUTH_FIELDS } from "../user-entity/user-entity";
+  print,
+  readFile,
+  removeTSVariableDeclares,
+} from "@amplication/code-gen-utils";
+import { builders, namedTypes } from "ast-types";
 
 type SeedProperties = {
   userNameFieldName: string;

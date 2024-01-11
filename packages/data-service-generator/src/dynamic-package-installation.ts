@@ -1,10 +1,10 @@
-import { PluginInstallation } from "@amplication/code-gen-types";
+import DsgContext from "./dsg-context";
 import {
   DynamicPackageInstallationManager,
   PackageInstallation,
 } from "./utils/dynamic-installation/DynamicPackageInstallationManager";
+import { PluginInstallation } from "@amplication/code-gen-types";
 import { ILogger } from "@amplication/util/logging";
-import DsgContext from "./dsg-context";
 
 export async function dynamicPackagesInstallations(
   packages: PluginInstallation[],

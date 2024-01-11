@@ -1,9 +1,9 @@
-import path from "path";
-import { promises as fs } from "fs";
-import { Module, ModuleMap } from "@amplication/code-gen-types";
-import { MAIN_TS_FILE_NAME, MAIN_TS_WITH_BIGINT_FILE_NAME } from "../constants";
 import DsgContext from "../../dsg-context";
+import { MAIN_TS_FILE_NAME, MAIN_TS_WITH_BIGINT_FILE_NAME } from "../constants";
+import { Module, ModuleMap } from "@amplication/code-gen-types";
 import { formatCode } from "@amplication/code-gen-utils";
+import { promises as fs } from "fs";
+import path from "path";
 
 export async function createMainFile() {
   const { logger, serverDirectories, hasBigIntFields } = DsgContext.getInstance;

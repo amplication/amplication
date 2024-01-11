@@ -1,5 +1,5 @@
-import { Entity, PluginInstallation } from "@amplication/code-gen-types";
 import { shouldGenerateGrpc, prepareEntityPluralName } from "./prepare-context";
+import { Entity, PluginInstallation } from "@amplication/code-gen-types";
 
 describe("prepareContext", () => {
   it('should pluralize entity names and add "Items" if necessary', () => {

@@ -1,14 +1,14 @@
-import * as path from "path";
-import { builders } from "ast-types";
+import DsgContext from "../../../dsg-context";
+import { addImports, interpolate } from "../../../utils/ast";
+import { relativeImportPath } from "../../../utils/module";
 import {
   Entity,
   EntityComponent,
   EnumDataType,
 } from "@amplication/code-gen-types";
-import { addImports, interpolate } from "../../../utils/ast";
-import { relativeImportPath } from "../../../utils/module";
 import { readFile } from "@amplication/code-gen-utils";
-import DsgContext from "../../../dsg-context";
+import { builders } from "ast-types";
+import * as path from "path";
 
 const template = path.resolve(__dirname, "entity-title-component.template.tsx");
 

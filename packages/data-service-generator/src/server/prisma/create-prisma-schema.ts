@@ -1,3 +1,7 @@
+import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
+import { getEnumFields } from "../../utils/entity";
+import { createEnumName } from "./create-prisma-schema-fields";
 import {
   CreatePrismaSchemaParams,
   Entity,
@@ -11,11 +15,6 @@ import {
 import { countBy } from "lodash";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import * as PrismaSchemaDSLTypes from "prisma-schema-dsl-types";
-
-import DsgContext from "../../dsg-context";
-import pluginWrapper from "../../plugin-wrapper";
-import { getEnumFields } from "../../utils/entity";
-import { createEnumName } from "./create-prisma-schema-fields";
 
 export async function createPrismaSchema(
   eventParams: CreatePrismaSchemaParams

@@ -1,5 +1,5 @@
-import { join } from "path";
 import { AMPLICATION_MODULES } from "../generate-code";
+import { join } from "path";
 
 /**
  *

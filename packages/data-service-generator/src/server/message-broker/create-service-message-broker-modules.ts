@@ -1,14 +1,14 @@
-import {
-  CreateMessageBrokerParams,
-  EventNames,
-  ModuleMap,
-} from "@amplication/code-gen-types";
+import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
 import { createMessageBrokerClientOptions } from "./generate-message-broker-client-options/generate-message-broker-client-options";
 import { createMessageBrokerModule } from "./message-broker-module/create-message-broker-module";
 import { createMessageBrokerServiceModules } from "./message-broker-service/create-message-broker-service";
 import { createTopicsEnum } from "./topics-enum/createTopicsEnum";
-import DsgContext from "../../dsg-context";
+import {
+  CreateMessageBrokerParams,
+  EventNames,
+  ModuleMap,
+} from "@amplication/code-gen-types";
 
 export async function createMessageBroker(
   eventParams: CreateMessageBrokerParams

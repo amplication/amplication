@@ -1,9 +1,9 @@
-import { Entity, EntityField } from "@amplication/code-gen-types";
-import { cloneDeep } from "lodash";
+import { createEntityInputFiles } from "../../../../server/resource/create-dtos";
 import defaultEntity from "./constants/default-entity";
 import defaultJsonField from "./constants/json-field";
 import { printTypescript } from "./utils";
-import { createEntityInputFiles } from "../../../../server/resource/create-dtos";
+import { Entity, EntityField } from "@amplication/code-gen-types";
+import { cloneDeep } from "lodash";
 
 describe("Test that the entity dto is creating properly", () => {
   let entity: Entity;

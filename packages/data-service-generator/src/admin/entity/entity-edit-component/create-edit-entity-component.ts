@@ -1,13 +1,4 @@
-import * as path from "path";
-import { builders } from "ast-types";
-import { isEmpty } from "lodash";
-import {
-  Entity,
-  EnumDataType,
-  EntityField,
-  LookupResolvedProperties,
-  EntityComponent,
-} from "@amplication/code-gen-types";
+import DsgContext from "../../../dsg-context";
 import {
   addImports,
   getNamedProperties,
@@ -16,15 +7,23 @@ import {
   interpolate,
 } from "../../../utils/ast";
 import { relativeImportPath } from "../../../utils/module";
-import { readFile } from "@amplication/code-gen-utils";
-import { createFieldInput } from "../create-field-input";
 import { jsxFragment } from "../../util";
-
+import { createFieldInput } from "../create-field-input";
 import {
   REACT_ADMIN_MODULE,
   REACT_ADMIN_COMPONENTS_ID,
 } from "../react-admin.util";
-import DsgContext from "../../../dsg-context";
+import {
+  Entity,
+  EnumDataType,
+  EntityField,
+  LookupResolvedProperties,
+  EntityComponent,
+} from "@amplication/code-gen-types";
+import { readFile } from "@amplication/code-gen-utils";
+import { builders } from "ast-types";
+import { isEmpty } from "lodash";
+import * as path from "path";
 const IMPORTABLE_IDS = {
   "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],
   [REACT_ADMIN_MODULE]: REACT_ADMIN_COMPONENTS_ID,

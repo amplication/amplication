@@ -1,6 +1,6 @@
-import { types } from "@amplication/code-gen-types";
 import DsgContext from "../dsg-context";
 import { EnumDataType } from "../models";
+import { types } from "@amplication/code-gen-types";
 
 export const getEntityIdType = (entityName: string): types.Id["idType"] => {
   const { entities } = DsgContext.getInstance;

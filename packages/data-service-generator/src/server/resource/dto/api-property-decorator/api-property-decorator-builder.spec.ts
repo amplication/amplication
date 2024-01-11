@@ -1,7 +1,7 @@
-import { builders, namedTypes } from "ast-types";
 import { ApiPropertyDecoratorBuilder } from ".";
 import { ENUM, REQUIRED, TYPE } from "../create-field-class-property";
 import { API_PROPERTY } from "../nestjs-swagger.util";
+import { builders, namedTypes } from "ast-types";
 
 describe("Testing the generation of the ApiProperty decorator", () => {
   let creator: ApiPropertyDecoratorBuilder;

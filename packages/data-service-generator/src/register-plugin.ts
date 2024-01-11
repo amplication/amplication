@@ -1,3 +1,4 @@
+import { logger } from "./logging";
 import {
   AmplicationPlugin,
   EventNames,
@@ -6,7 +7,6 @@ import {
   PluginMap,
 } from "@amplication/code-gen-types";
 import { join } from "path";
-import { logger } from "./logging";
 
 class EmptyPlugin implements AmplicationPlugin {
   init?: (name: string, version: string) => void;

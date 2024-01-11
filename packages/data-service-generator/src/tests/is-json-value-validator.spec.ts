@@ -1,5 +1,5 @@
-import { validate, ValidationError } from "class-validator";
 import { IsJSONValue } from "../server/static/src/validators/is-json-value-validator";
+import { validate, ValidationError } from "class-validator";
 
 class TestClass {
   @IsJSONValue()

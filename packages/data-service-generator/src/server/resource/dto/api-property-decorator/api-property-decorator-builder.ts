@@ -1,4 +1,3 @@
-import { builders, namedTypes } from "ast-types";
 import {
   ENUM_ID,
   IS_ARRAY_ID,
@@ -7,6 +6,7 @@ import {
   TYPE_ID,
 } from "../create-field-class-property";
 import { API_PROPERTY_ID } from "../nestjs-swagger.util";
+import { builders, namedTypes } from "ast-types";
 
 export class ApiPropertyDecoratorBuilder {
   private apiPropertyOptionsObjectExpression = builders.objectExpression([]);

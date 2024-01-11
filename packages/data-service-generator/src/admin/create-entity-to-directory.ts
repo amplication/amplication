@@ -1,6 +1,6 @@
-import { camelCase } from "camel-case";
-import { Entity } from "@amplication/code-gen-types";
 import DsgContext from "../dsg-context";
+import { Entity } from "@amplication/code-gen-types";
+import { camelCase } from "camel-case";
 
 export function createEntityToDirectory(
   entities: Entity[]

@@ -1,10 +1,10 @@
-import { AppInfo } from "@amplication/code-gen-types";
-import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import { TEST_DATA } from "./test-data";
-import { rm } from "fs/promises";
 import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
+import { TEST_DATA } from "./test-data";
+import { AppInfo } from "@amplication/code-gen-types";
+import { MockedLogger } from "@amplication/util/logging/test-utils";
+import { rm } from "fs/promises";
 
 const newAppInfo: AppInfo = {
   ...appInfo,

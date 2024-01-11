@@ -1,7 +1,7 @@
+import { BuildLogger } from "./build-logger";
 import { logger as applicationLogger } from "./logging";
 import { httpClient } from "./utils/http-client";
 import { LogLevel } from "@amplication/util/logging";
-import { BuildLogger } from "./build-logger";
 jest.mock("./logging");
 jest.mock("./utils/http-client");
 

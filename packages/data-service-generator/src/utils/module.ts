@@ -1,6 +1,5 @@
-import * as path from "path";
-
 import normalize from "normalize-path";
+import * as path from "path";
 
 export type Variables = { [variable: string]: string | null | undefined };
 

@@ -1,7 +1,3 @@
-import { parse, print } from "@amplication/code-gen-utils";
-import { builders, namedTypes } from "ast-types";
-import * as recast from "recast";
-
 import {
   classDeclaration,
   expression,
@@ -12,6 +8,9 @@ import {
   interpolate,
   transformTemplateLiteralToStringLiteral,
 } from "./ast";
+import { parse, print } from "@amplication/code-gen-utils";
+import { builders, namedTypes } from "ast-types";
+import * as recast from "recast";
 
 const actualRecast = jest.requireActual("recast");
 

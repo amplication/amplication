@@ -1,7 +1,7 @@
+import { Tarball } from "./Tarball";
 import { BuildLogger } from "@amplication/code-gen-types";
 import { valid } from "semver";
 import type { Promisable } from "type-fest";
-import { Tarball } from "./Tarball";
 export class DynamicPackageInstallationManager {
   constructor(
     private pluginInstallationPath: string,

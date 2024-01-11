@@ -1,4 +1,3 @@
-import { EntityField, EnumDataType } from "@amplication/code-gen-types";
 import {
   getMissingAuthFields,
   InvalidDataTypeError,
@@ -6,6 +5,7 @@ import {
   USER_NAME_FIELD,
   USER_NAME_FIELD_NAME,
 } from "./user-entity";
+import { EntityField, EnumDataType } from "@amplication/code-gen-types";
 
 describe("getMissingAuthFields", () => {
   const cases: Array<[string, EntityField[], EntityField[]]> = [

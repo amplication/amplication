@@ -1,12 +1,3 @@
-import { builders, namedTypes } from "ast-types";
-import { TSTypeKind } from "ast-types/gen/kinds";
-import {
-  FieldKind,
-  ObjectField,
-  ScalarField,
-  ScalarType,
-} from "prisma-schema-dsl-types";
-import { Entity, EntityField } from "@amplication/code-gen-types";
 import { classProperty, createGenericArray } from "../../../utils/ast";
 import {
   isEnumField,
@@ -42,11 +33,20 @@ import {
   EnumScalarFiltersTypes,
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
+import { createEntityListRelationFilterID } from "./graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 import { createGraphQLFieldDecorator } from "./graphql-field-decorator";
 import { createCreateNestedManyWithoutInputID } from "./nested-input-dto/create-nested";
 import { createUpdateManyWithoutInputID } from "./nested-input-dto/update-nested";
 import { JSON_VALUE_ID } from "./type-fest.util";
-import { createEntityListRelationFilterID } from "./graphql/entity-list-relation-filter/create-entity-list-relation-filter";
+import { Entity, EntityField } from "@amplication/code-gen-types";
+import { builders, namedTypes } from "ast-types";
+import { TSTypeKind } from "ast-types/gen/kinds";
+import {
+  FieldKind,
+  ObjectField,
+  ScalarField,
+  ScalarType,
+} from "prisma-schema-dsl-types";
 
 export const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {

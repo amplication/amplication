@@ -1,11 +1,11 @@
-import { print } from "@amplication/code-gen-utils";
-import { Entity } from "@amplication/code-gen-types";
-import { createFindOneArgs, createFindOneArgsId } from "./create-find-one-args";
+import { createEntityInputFiles } from "../../../create-dtos";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
 } from "../../../util/test-data";
-import { createEntityInputFiles } from "../../../create-dtos";
+import { createFindOneArgs, createFindOneArgsId } from "./create-find-one-args";
+import { Entity } from "@amplication/code-gen-types";
+import { print } from "@amplication/code-gen-utils";
 
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",

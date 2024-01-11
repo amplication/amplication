@@ -1,10 +1,10 @@
+import DsgContext from "../../dsg-context";
+import { createEntityComponentModule } from "./create-entity-component-module";
 import {
   EntityComponent,
   EntityComponents,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { createEntityComponentModule } from "./create-entity-component-module";
-import DsgContext from "../../dsg-context";
 
 export const createEntityComponentsModules = async (
   components: Record<string, EntityComponents>

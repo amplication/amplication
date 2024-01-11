@@ -1,32 +1,32 @@
-import { builders } from "ast-types";
-import { print } from "@amplication/code-gen-utils";
+import DsgContext from "../../../dsg-context";
 import {
   addAutoGenerationComment,
   exportNames,
   importNames,
 } from "../../../utils/ast";
-import { Entity } from "@amplication/code-gen-types";
+import { SERVER_BASE_DIRECTORY, SRC_DIRECTORY } from "../../constants";
+import { createEntityInputFiles } from "../create-dtos";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
   EXAMPLE_OTHER_ENTITY,
 } from "../util/test-data";
+import { CLASS_VALIDATOR_MODULE, IS_STRING_ID } from "./class-validator.util";
+import { createCreateInputID } from "./create-create-input";
 import {
   createDTOModulePath,
   createDTOFile,
   createDTOModule,
 } from "./create-dto-module";
-import { CLASS_VALIDATOR_MODULE, IS_STRING_ID } from "./class-validator.util";
-import { createCreateInputID } from "./create-create-input";
-import { API_PROPERTY_ID, NESTJS_SWAGGER_MODULE } from "./nestjs-swagger.util";
-import { SERVER_BASE_DIRECTORY, SRC_DIRECTORY } from "../../constants";
 import {
   FIELD_ID,
   INPUT_TYPE_ID,
   NESTJS_GRAPHQL_MODULE,
 } from "./nestjs-graphql.util";
-import DsgContext from "../../../dsg-context";
-import { createEntityInputFiles } from "../create-dtos";
+import { API_PROPERTY_ID, NESTJS_SWAGGER_MODULE } from "./nestjs-swagger.util";
+import { Entity } from "@amplication/code-gen-types";
+import { print } from "@amplication/code-gen-utils";
+import { builders } from "ast-types";
 
 const context = DsgContext.getInstance;
 context.serverDirectories = {

@@ -1,13 +1,13 @@
-import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
 import { EnumResourceType } from "../models";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import entities from "./entities";
-import roles from "./roles";
 import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
+import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
-import { rm } from "fs/promises";
+import entities from "./entities";
 import { plugins } from "./mock-data-plugin-installations";
+import roles from "./roles";
+import { MockedLogger } from "@amplication/util/logging/test-utils";
+import { rm } from "fs/promises";
 
 jest.setTimeout(100000);
 

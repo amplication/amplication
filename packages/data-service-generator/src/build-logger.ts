@@ -1,7 +1,7 @@
-import { BuildLogger as IBuildLogger } from "@amplication/code-gen-types";
-import { LogEntry, LogLevel } from "@amplication/util/logging";
 import { logger as applicationLogger } from "./logging";
 import { httpClient } from "./utils/http-client";
+import { BuildLogger as IBuildLogger } from "@amplication/code-gen-types";
+import { LogEntry, LogLevel } from "@amplication/util/logging";
 
 export class BuildLogger implements IBuildLogger {
   private async createLog(log: LogEntry): Promise<void> {

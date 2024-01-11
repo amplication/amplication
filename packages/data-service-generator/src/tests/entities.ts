@@ -1,10 +1,10 @@
+import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
 import {
   Entity,
   EnumDataType,
   EnumEntityPermissionType,
   EnumEntityAction,
 } from "@amplication/code-gen-types";
-import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
 
 const CUSTOMER_ENTITY_ID = "b8d49afb-8c12-49fa-9d6e-eb64be0ddded";
 const PROFILE_ENTITY_ID = "f36aa4e3-d275-41d0-843a-876ec66bc2f7";

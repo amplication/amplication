@@ -1,13 +1,13 @@
-import { builders, namedTypes } from "ast-types";
+import { classDeclaration } from "../../../utils/ast";
+import { createFieldClassProperty } from "./create-field-class-property";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
 import {
   EntityField,
   EnumDataType,
   NamedClassDeclaration,
 } from "@amplication/code-gen-types";
-import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
-import { classDeclaration } from "../../../utils/ast";
-import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
-import { createFieldClassProperty } from "./create-field-class-property";
+import { builders, namedTypes } from "ast-types";
 
 export const createWhereUniqueInput = (entityDTOsFilesObj) => {
   if (isUniqueField(entityDTOsFilesObj.field)) {

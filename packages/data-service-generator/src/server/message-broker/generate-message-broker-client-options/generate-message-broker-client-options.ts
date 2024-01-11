@@ -1,10 +1,10 @@
+import DsgContext from "../../../dsg-context";
+import pluginWrapper from "../../../plugin-wrapper";
 import {
   CreateMessageBrokerClientOptionsFactoryParams,
   EventNames,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import pluginWrapper from "../../../plugin-wrapper";
-import DsgContext from "../../../dsg-context";
 
 export async function createMessageBrokerClientOptions(
   eventParams: CreateMessageBrokerClientOptionsFactoryParams

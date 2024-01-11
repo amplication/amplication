@@ -1,12 +1,3 @@
-import * as path from "path";
-import { builders } from "ast-types";
-import {
-  Entity,
-  EnumDataType,
-  EntityField,
-  LookupResolvedProperties,
-  EntityComponent,
-} from "@amplication/code-gen-types";
 import {
   addImports,
   importContainedIdentifiers,
@@ -15,13 +6,22 @@ import {
 } from "../../../utils/ast";
 import { getFieldsFromDTOWithoutToManyRelations } from "../../../utils/entity";
 import { relativeImportPath } from "../../../utils/module";
-import { readFile } from "@amplication/code-gen-utils";
 import { jsxElement, jsxFragment } from "../../util";
 import { createFieldValue } from "../create-field-value";
 import {
   REACT_ADMIN_MODULE,
   REACT_ADMIN_COMPONENTS_ID,
 } from "../react-admin.util";
+import {
+  Entity,
+  EnumDataType,
+  EntityField,
+  LookupResolvedProperties,
+  EntityComponent,
+} from "@amplication/code-gen-types";
+import { readFile } from "@amplication/code-gen-utils";
+import { builders } from "ast-types";
+import * as path from "path";
 
 const IMPORTABLE_IDS = {
   "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],

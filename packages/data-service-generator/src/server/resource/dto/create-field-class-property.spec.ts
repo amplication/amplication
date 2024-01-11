@@ -1,9 +1,3 @@
-import { builders, namedTypes } from "ast-types";
-import { TSTypeKind } from "ast-types/gen/kinds";
-import { ObjectField, ScalarField, ScalarType } from "prisma-schema-dsl-types";
-import { createObjectField, createScalarField } from "prisma-schema-dsl";
-import { print } from "@amplication/code-gen-utils";
-import { Entity, EntityField, EnumDataType } from "@amplication/code-gen-types";
 import { classProperty, createGenericArray } from "../../../utils/ast";
 import {
   EXAMPLE_ID_FIELD,
@@ -29,6 +23,12 @@ import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import { FIELD_ID } from "./nestjs-graphql.util";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
+import { Entity, EntityField, EnumDataType } from "@amplication/code-gen-types";
+import { print } from "@amplication/code-gen-utils";
+import { builders, namedTypes } from "ast-types";
+import { TSTypeKind } from "ast-types/gen/kinds";
+import { createObjectField, createScalarField } from "prisma-schema-dsl";
+import { ObjectField, ScalarField, ScalarType } from "prisma-schema-dsl-types";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
