@@ -1,21 +1,21 @@
-import { DynamicModule, Module } from "@nestjs/common";
 import {
   OpenTelemetryModuleDefaultConfig,
   OpenTelemetryModule,
   OpenTelemetryModuleAsyncOption,
 } from "@amplication/opentelemetry-nestjs";
-import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
-import { BatchSpanProcessor, Span } from "@opentelemetry/sdk-trace-base";
-import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-grpc";
 import type { OpenTelemetryModuleConfig } from "@amplication/opentelemetry-nestjs";
-import { AWSXRayPropagator } from "@opentelemetry/propagator-aws-xray";
+import { DynamicModule, Module } from "@nestjs/common";
+import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
+import { CompositePropagator } from "@opentelemetry/core";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-grpc";
 import { AWSXRayIdGenerator } from "@opentelemetry/id-generator-aws-xray";
 import { AwsInstrumentation } from "@opentelemetry/instrumentation-aws-sdk";
-import { KafkaJsInstrumentation } from "opentelemetry-instrumentation-kafkajs";
+import { AWSXRayPropagator } from "@opentelemetry/propagator-aws-xray";
 import { AwsEksDetector } from "@opentelemetry/resource-detector-aws";
-import { CompositePropagator } from "@opentelemetry/core";
+import { BatchSpanProcessor, Span } from "@opentelemetry/sdk-trace-base";
 import { PrismaInstrumentation } from "@prisma/instrumentation";
 import { ClientRequest } from "node:http";
+import { KafkaJsInstrumentation } from "opentelemetry-instrumentation-kafkajs";
 
 @Module({
   imports: [],
