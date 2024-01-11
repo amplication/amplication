@@ -1166,6 +1166,8 @@ export type Mutation = {
   setPluginOrder?: Maybe<PluginOrder>;
   signup: Auth;
   signupPreviewAccount: AuthPreviewAccount;
+  /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
+  triggerGenerationBtmResourceRecommendation?: Maybe<Scalars['String']['output']>;
   updateAccount: Account;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
@@ -1491,6 +1493,11 @@ export type MutationSignupArgs = {
 
 export type MutationSignupPreviewAccountArgs = {
   data: SignupPreviewAccountInput;
+};
+
+
+export type MutationTriggerGenerationBtmResourceRecommendationArgs = {
+  resourceId: Scalars['String']['input'];
 };
 
 
