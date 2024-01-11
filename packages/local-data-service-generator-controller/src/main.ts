@@ -1,7 +1,7 @@
+import codeGenRouter from "./code-gen/code-gen.router";
+import * as dotenv from "dotenv";
 import express from "express";
 import path from "path";
-import * as dotenv from "dotenv";
-import codeGenRouter from "./code-gen/code-gen.router";
 
 dotenv.config({ path: path.join(__dirname, ".env") });
 

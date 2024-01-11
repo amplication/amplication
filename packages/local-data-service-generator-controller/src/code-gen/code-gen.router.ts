@@ -1,5 +1,5 @@
-import { Router } from "express";
 import { generateCode } from "./code-gen.controller";
+import { Router } from "express";
 
 const codeGenRouter = Router();
 

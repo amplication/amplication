@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
-import Docker from "dockerode";
 import { CodeGenerationRequest } from "./types";
+import Docker from "dockerode";
+import { Request, Response } from "express";
 
 function generateCode(req: Request, res: Response) {
   const { resourceId, buildId } = req.body as CodeGenerationRequest;
