@@ -1,3 +1,9 @@
+import { MissingBuildFiles } from "../errors/MissingBuildFiles";
+import { BuildPathFactory } from "./build-path-factory";
+import { deleteFilesVisitor } from "./delete-files";
+import { mapDiffSetToPrModule } from "./diffset-mapper";
+import { Traceable } from "@amplication/opentelemetry-nestjs";
+import { File } from "@amplication/util/git";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import assert from "assert";
@@ -5,12 +11,6 @@ import { compare } from "dir-compare";
 import { sync } from "fast-glob";
 import { existsSync, readFileSync } from "fs";
 import { normalize } from "path";
-import { File } from "@amplication/util/git";
-import { mapDiffSetToPrModule } from "./diffset-mapper";
-import { BuildPathFactory } from "./build-path-factory";
-import { deleteFilesVisitor } from "./delete-files";
-import { MissingBuildFiles } from "../errors/MissingBuildFiles";
-import { Traceable } from "@amplication/opentelemetry-nestjs";
 
 @Traceable()
 @Injectable()

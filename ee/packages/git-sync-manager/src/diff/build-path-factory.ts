@@ -1,7 +1,7 @@
+import { Env } from "../env";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { join, normalize } from "path";
-import { Env } from "../env";
 
 @Injectable()
 export class BuildPathFactory {
