@@ -1,3 +1,4 @@
+import { KAFKA_CLIENT } from "../createNestjsKafkaConfig";
 import {
   DecodedKafkaMessage,
   IKafkaMessageSerializer,
@@ -6,7 +7,6 @@ import {
 } from "@amplication/util/kafka";
 import { Inject, Injectable } from "@nestjs/common";
 import { ClientKafka } from "@nestjs/microservices";
-import { KAFKA_CLIENT } from "../createNestjsKafkaConfig";
 
 export const KAFKA_PRODUCER_SERVICE_NAME = "KAFKA_PRODUCER_SERVICE";
 

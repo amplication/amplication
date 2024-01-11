@@ -1,6 +1,6 @@
+import { KafkaEnvironmentVariables } from "@amplication/util/kafka";
 import { KafkaOptions, Transport } from "@nestjs/microservices";
 import { ConsumerConfig } from "@nestjs/microservices/external/kafka.interface";
-import { KafkaEnvironmentVariables } from "@amplication/util/kafka";
 import { randomUUID } from "crypto";
 
 export const KAFKA_CLIENT = "KAFKA_CLIENT";

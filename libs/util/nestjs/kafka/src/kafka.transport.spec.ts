@@ -1,5 +1,5 @@
-import { MessageHandler } from "@nestjs/microservices";
-import { KafkaCustomTransport } from "./kafka.transport"; // Replace with correct path
+import { KafkaCustomTransport } from "./kafka.transport";
+import { MessageHandler } from "@nestjs/microservices"; // Replace with correct path
 import { Consumer } from "@nestjs/microservices/external/kafka.interface";
 
 describe("KafkaCustomTransport", () => {

@@ -1,6 +1,3 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { ClientKafka } from "@nestjs/microservices";
-
 import { KAFKA_CLIENT } from "../createNestjsKafkaConfig";
 import { KafkaProducerService } from "./KafkaProducer.service";
 import {
@@ -10,6 +7,8 @@ import {
   KafkaMessage,
   SchemaIds,
 } from "@amplication/util/kafka";
+import { ClientKafka } from "@nestjs/microservices";
+import { Test, TestingModule } from "@nestjs/testing";
 import { of } from "rxjs";
 
 describe("KafkaProducerService", () => {

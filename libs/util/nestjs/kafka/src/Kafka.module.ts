@@ -1,14 +1,14 @@
 import {
+  createNestjsKafkaConfig,
+  KAFKA_CLIENT,
+} from "./createNestjsKafkaConfig";
+import { KafkaProducerService } from "./producer";
+import {
   KafkaMessageJsonSerializer,
   KAFKA_SERIALIZER,
 } from "@amplication/util/kafka";
 import { Module } from "@nestjs/common";
 import { ClientsModule } from "@nestjs/microservices";
-import {
-  createNestjsKafkaConfig,
-  KAFKA_CLIENT,
-} from "./createNestjsKafkaConfig";
-import { KafkaProducerService } from "./producer";
 
 @Module({
   imports: [
