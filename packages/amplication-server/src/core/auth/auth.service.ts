@@ -156,6 +156,7 @@ export class AuthService {
         message: resetPassword.data,
       };
     } catch (error) {
+      console.log(error.message);
       this.logger.error(error.message, error);
       return {
         message:

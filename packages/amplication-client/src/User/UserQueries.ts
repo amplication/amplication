@@ -7,13 +7,6 @@ export const SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW = gql`
       workspaceId
       projectId
       resourceId
-    }
-  }
-`;
-
-export const SIGNUP_WITH_BUSINESS_EMAIL = gql`
-  mutation SignUpWithBusinessEmail($data: SignupPreviewAccountInput!) {
-    signUpWithBusinessEmail(data: $data) {
       message
     }
   }

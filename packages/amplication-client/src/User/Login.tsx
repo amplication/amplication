@@ -25,7 +25,7 @@ import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import "./Login.scss";
 import { useTracking } from "../util/analytics";
-import { SIGNUP_WITH_BUSINESS_EMAIL } from "./UserQueries";
+import { SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW } from "./UserQueries";
 import { PreviewAccountType } from "../models";
 
 type Values = {
@@ -57,7 +57,7 @@ const AuthWithWorkEmail: React.FC = () => {
   const { values } = useFormikContext<Values>();
   const { trackEvent } = useTracking();
   const [signUpWithBusinessEmail, { data, loading, error }] =
-    useMutation<SignUpWithBusinessEmail>(SIGNUP_WITH_BUSINESS_EMAIL);
+    useMutation<SignUpWithBusinessEmail>(SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW);
 
   const handleAuthWorkEmail = () => {
     trackEvent({
@@ -73,8 +73,19 @@ const AuthWithWorkEmail: React.FC = () => {
     });
   };
 
+  const handleLogin = useCallback(() => {
+    /// track login event
+  }, []);
+
   return (
     <>
+      <a
+        href={REACT_APP_AUTH_LOGIN_URI}
+        className={`${CLASS_NAME}__sso`}
+        onClick={handleLogin}
+      >
+        Login
+      </a>
       <div className={`${CLASS_NAME}__or`}>
         <span>or</span>
       </div>

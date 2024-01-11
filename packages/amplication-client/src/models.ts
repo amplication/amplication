@@ -91,11 +91,11 @@ export type Auth = {
 };
 
 export type AuthPreviewAccount = {
-  message: Scalars['String']['output'];
-  projectId: Scalars['String']['output'];
-  resourceId: Scalars['String']['output'];
-  token: Scalars['String']['output'];
-  workspaceId: Scalars['String']['output'];
+  message?: Maybe<Scalars['String']['output']>;
+  projectId?: Maybe<Scalars['String']['output']>;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  token?: Maybe<Scalars['String']['output']>;
+  workspaceId?: Maybe<Scalars['String']['output']>;
 };
 
 export type AuthorizeResourceWithGitResult = {
