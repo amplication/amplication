@@ -1,8 +1,8 @@
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { Body, Controller, Post } from "@nestjs/common";
+import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
 import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
 import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
-import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { Body, Controller, Post } from "@nestjs/common";
 
 @Controller("build-logger")
 export class BuildLoggerController {

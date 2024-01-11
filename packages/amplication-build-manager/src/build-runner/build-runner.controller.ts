@@ -1,6 +1,4 @@
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Controller, Post } from "@nestjs/common";
-import { EventPattern, Payload } from "@nestjs/microservices";
+import { EnumJobStatus } from "../types";
 import { BuildRunnerService } from "./build-runner.service";
 import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
 import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
@@ -8,7 +6,9 @@ import {
   CodeGenerationRequest,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
-import { EnumJobStatus } from "../types";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Controller, Post } from "@nestjs/common";
+import { EventPattern, Payload } from "@nestjs/microservices";
 
 @Controller("build-runner")
 export class BuildRunnerController {

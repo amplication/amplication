@@ -1,12 +1,11 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { ConfigService } from "@nestjs/config";
-
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
-import { BuildLoggerController } from "./build-logger.controller";
-import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
 import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
 import { EnumDomainName } from "../types";
+import { BuildLoggerController } from "./build-logger.controller";
+import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
+import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { ConfigService } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
 
 describe("Build Logger Controller", () => {
   let controller: BuildLoggerController;

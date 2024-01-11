@@ -1,22 +1,22 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { DSGResourceData } from "@amplication/code-gen-types";
-import axios from "axios";
-import { promises as fs } from "fs";
-import { copy } from "fs-extra";
-import { join, dirname } from "path";
-import { Env } from "../env";
-import { Traceable } from "@amplication/opentelemetry-nestjs";
 import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
+import { Env } from "../env";
+import { EnumJobStatus } from "../types";
+import { DSGResourceData } from "@amplication/code-gen-types";
+import { Traceable } from "@amplication/opentelemetry-nestjs";
 import {
   CodeGenerationFailure,
   CodeGenerationSuccess,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
-import { EnumJobStatus } from "../types";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import axios from "axios";
+import { promises as fs } from "fs";
+import { copy } from "fs-extra";
+import { join, dirname } from "path";
 
 @Traceable()
 @Injectable()

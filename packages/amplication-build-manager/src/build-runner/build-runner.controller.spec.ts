@@ -1,14 +1,13 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { CodeGenerationRequest } from "@amplication/schema-registry";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
-import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-
+import { EnumJobStatus } from "../types";
 import { BuildRunnerController } from "./build-runner.controller";
 import { BuildRunnerService } from "./build-runner.service";
-import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
+import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import { AppInfo } from "@amplication/code-gen-types";
-import { EnumJobStatus } from "../types";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { CodeGenerationRequest } from "@amplication/schema-registry";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { Test, TestingModule } from "@nestjs/testing";
 
 describe("BuildRunnerController", () => {
   let controller: BuildRunnerController;

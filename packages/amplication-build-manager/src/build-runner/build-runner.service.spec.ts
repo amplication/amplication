@@ -1,26 +1,23 @@
-import { join, dirname } from "node:path";
-import { MakeDirectoryOptions, promises } from "node:fs";
-
-import { Test, TestingModule } from "@nestjs/testing";
-import { ConfigService } from "@nestjs/config";
-import fsExtra from "fs-extra";
-
-import { AppInfo, DSGResourceData } from "@amplication/code-gen-types";
-
-import { BuildRunnerService } from "./build-runner.service";
-import { Env } from "../env";
 import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
-import { EnumDomainName, EnumJobStatus } from "../types";
-import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { Env } from "../env";
+import { EnumDomainName, EnumJobStatus } from "../types";
+import { BuildRunnerService } from "./build-runner.service";
+import { AppInfo, DSGResourceData } from "@amplication/code-gen-types";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
 import {
   CodeGenerationFailure,
   CodeGenerationSuccess,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { ConfigService } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
 import axios from "axios";
+import fsExtra from "fs-extra";
+import { MakeDirectoryOptions, promises } from "node:fs";
+import { join, dirname } from "node:path";
 
 const spyOnMkdir = jest.spyOn(promises, "mkdir");
 const spyOnWriteFile = jest.spyOn(promises, "writeFile");

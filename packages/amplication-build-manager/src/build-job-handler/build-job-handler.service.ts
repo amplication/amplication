@@ -1,6 +1,6 @@
-import { DSGResourceData } from "@amplication/code-gen-types";
-import { Injectable } from "@nestjs/common";
-import { cloneDeep } from "lodash";
+import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
+import { Env } from "../env";
+import { RedisService } from "../redis/redis.service";
 import {
   BuildId,
   JobBuildId,
@@ -8,11 +8,11 @@ import {
   EnumJobStatus,
   RedisValue,
 } from "../types";
-import { RedisService } from "../redis/redis.service";
+import { DSGResourceData } from "@amplication/code-gen-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Env } from "../env";
-import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
+import { cloneDeep } from "lodash";
 
 type ResourceTuple = [JobBuildId<BuildId>, DSGResourceData];
 @Injectable()

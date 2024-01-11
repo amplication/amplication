@@ -1,3 +1,8 @@
+import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
+import { Env } from "../env";
+import { RedisService } from "../redis/redis.service";
+import { BuildId, EnumDomainName, EnumJobStatus, JobBuildId } from "../types";
+import { BuildJobsHandlerService } from "./build-job-handler.service";
 import { DSGResourceData } from "@amplication/code-gen-types";
 import {
   CodeGeneratorVersionStrategy,
@@ -6,14 +11,9 @@ import {
   EnumEntityAction,
   EnumEntityPermissionType,
 } from "@amplication/code-gen-types/models";
-import { Test, TestingModule } from "@nestjs/testing";
-import { BuildJobsHandlerService } from "./build-job-handler.service";
-import { BuildId, EnumDomainName, EnumJobStatus, JobBuildId } from "../types";
-import { RedisService } from "../redis/redis.service";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
-import { Env } from "../env";
 import { ConfigService } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
 
 const adminAndServerInputJson: DSGResourceData = {
   entities: [

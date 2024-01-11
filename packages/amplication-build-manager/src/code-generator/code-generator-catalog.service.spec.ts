@@ -1,9 +1,9 @@
-import { ConfigService } from "@nestjs/config";
-import { CodeGeneratorService } from "./code-generator-catalog.service";
-import { Test, TestingModule } from "@nestjs/testing";
 import { Env } from "../env";
-import axios from "axios";
+import { CodeGeneratorService } from "./code-generator-catalog.service";
 import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { ConfigService } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
+import axios from "axios";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
