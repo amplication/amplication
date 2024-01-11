@@ -1,4 +1,3 @@
-import { EnvironmentVariables } from "./environmentVariables";
 import {
   KAFKA_BROKERS,
   KAFKA_CLIENT_CONFIG_SSL,
@@ -8,6 +7,7 @@ import {
   KAFKA_CLIENT_ID,
   KAFKA_GROUP_ID,
 } from "./constants";
+import { EnvironmentVariables } from "./environmentVariables";
 
 export class KafkaEnvironmentVariables {
   private envSuffix = "";

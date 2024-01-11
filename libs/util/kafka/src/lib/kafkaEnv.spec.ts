@@ -1,5 +1,5 @@
-import { KafkaEnvironmentVariables } from "./kafkaEnv";
 import { EnvironmentVariables } from "./environmentVariables";
+import { KafkaEnvironmentVariables } from "./kafkaEnv";
 let spyOnEnvironmentVariableGet: jest.SpyInstance;
 
 describe("KafkaEnvironmentVariables", () => {

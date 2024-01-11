@@ -1,5 +1,5 @@
-import { config } from "dotenv";
 import assert from "assert";
+import { config } from "dotenv";
 
 export class EnvironmentVariables {
   private static _instance: EnvironmentVariables = new EnvironmentVariables();
