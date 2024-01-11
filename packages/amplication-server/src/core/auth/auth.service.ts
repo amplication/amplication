@@ -1,5 +1,5 @@
 import { Injectable, forwardRef, Inject } from "@nestjs/common";
-import { JwtService, JwtSignOptions } from "@nestjs/jwt";
+import { JwtService } from "@nestjs/jwt";
 import { subDays } from "date-fns";
 import { ConfigService } from "@nestjs/config";
 import cuid from "cuid";
@@ -481,11 +481,7 @@ export class AuthService {
       type: EnumTokenType.User,
     };
 
-    const signOptions: JwtSignOptions = {
-      expiresIn: "1h",
-    };
-
-    return this.jwtService.sign(payload, signOptions);
+    return this.jwtService.sign(payload);
   }
 
   /**

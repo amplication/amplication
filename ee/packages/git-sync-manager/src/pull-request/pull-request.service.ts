@@ -77,11 +77,13 @@ export class PullRequestService {
     const logger = this.logger.child({ resourceId, buildId: newBuildId });
     const { body, title } = commit;
 
-    let head = null;
+    let head = null,
+      pullRequestTitle = null;
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
       if (isBranchPerResource) {
         head = `amplication-${resourceName}`;
+        pullRequestTitle = `for ${resourceName}`;
       } else {
         head = `amplication`;
       }
@@ -130,7 +132,7 @@ export class PullRequestService {
       repositoryGroupName,
       branchName: head,
       commitMessage: body,
-      pullRequestTitle: title,
+      pullRequestTitle: pullRequestTitle || title,
       pullRequestBody: body,
       pullRequestMode,
       gitResourceMeta,

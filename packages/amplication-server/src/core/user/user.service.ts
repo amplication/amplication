@@ -107,13 +107,22 @@ export class UserService {
   }
 
   async getAccount(userId: string): Promise<Account> {
-    return this.prisma.user
+    const account = await this.prisma.user
       .findUnique({
         where: {
           id: userId,
         },
       })
       .account();
+
+    if (!account) {
+      throw new ConflictException(`Can't find account for user ${userId}`);
+    }
+
+    return {
+      ...account,
+      email: account.previewAccountEmail ?? account.email,
+    };
   }
 
   async delete(userId: string): Promise<User> {
