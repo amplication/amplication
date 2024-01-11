@@ -1,14 +1,14 @@
-import { Inject, Injectable, LoggerService } from "@nestjs/common";
+import {
+  AmplicationLoggerModulesOptions,
+  AMPLICATION_LOGGER_MODULE_OPTIONS,
+} from "./types";
 import {
   LoggerOptions,
   Logger,
   ILogger,
   LogLevel,
 } from "@amplication/util/logging";
-import {
-  AmplicationLoggerModulesOptions,
-  AMPLICATION_LOGGER_MODULE_OPTIONS,
-} from "./types";
+import { Inject, Injectable, LoggerService } from "@nestjs/common";
 
 @Injectable()
 export class AmplicationLogger implements LoggerService, ILogger {

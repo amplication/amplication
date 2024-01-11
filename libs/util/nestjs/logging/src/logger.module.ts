@@ -1,9 +1,9 @@
-import { DynamicModule, Global, Module } from "@nestjs/common";
 import { AmplicationLogger } from "./logger.service";
 import {
   AmplicationLoggerModulesOptions,
   AMPLICATION_LOGGER_MODULE_OPTIONS,
 } from "./types";
+import { DynamicModule, Global, Module } from "@nestjs/common";
 
 @Global()
 @Module({})
