@@ -828,6 +828,7 @@ export enum EnumUserActionStatus {
 }
 
 export enum EnumUserActionType {
+  BreakTheMonolith = 'BreakTheMonolith',
   DbSchemaImport = 'DBSchemaImport'
 }
 

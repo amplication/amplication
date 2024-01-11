@@ -790,6 +790,7 @@ enum EnumUserActionStatus {
 }
 
 enum EnumUserActionType {
+  BreakTheMonolith
   DBSchemaImport
 }
 
