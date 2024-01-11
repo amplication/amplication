@@ -1,6 +1,6 @@
+import { HealthService } from '../health.service';
 import { Get, HttpStatus, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { HealthService } from '../health.service';
 
 export class HealthControllerBase {
   constructor(protected readonly healthService: HealthService) {}

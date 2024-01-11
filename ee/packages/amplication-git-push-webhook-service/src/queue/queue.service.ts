@@ -1,10 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
-import { KafkaTopics } from './queue.types';
-import { CreateRepositoryPush } from './dto/create-repository-push.dto';
 import { CreateEventRepositoryPush } from './dto/create-event-repository-push.dto';
-import { ConfigService } from '@nestjs/config';
+import { CreateRepositoryPush } from './dto/create-repository-push.dto';
+import { KafkaTopics } from './queue.types';
 import { AmplicationLogger } from '@amplication/util/nestjs/logging';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ClientKafka } from '@nestjs/microservices';
 
 export const QUEUE_SERVICE_NAME = 'REPOSITORY_PUSH_EVENT_SERVICE';
 

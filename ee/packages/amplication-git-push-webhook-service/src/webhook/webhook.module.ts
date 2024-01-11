@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
 import { GitOrganizationModule } from '../git-organization/git-organization.module';
 import { QueueModule } from '../queue/queue.module';
 import { WebhookController } from './webhook.controller';
 import { WebhookService } from './webhook.service';
+import { Module } from '@nestjs/common';
 
 @Module({
   imports: [QueueModule, GitOrganizationModule],

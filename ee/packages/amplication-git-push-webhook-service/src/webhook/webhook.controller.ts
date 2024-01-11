@@ -1,3 +1,5 @@
+import { EnumProvider } from '../git-organization/git-organization.types';
+import { WebhookService } from './webhook.service';
 import {
   Controller,
   Post,
@@ -6,10 +8,7 @@ import {
   LoggerService,
   Inject,
 } from '@nestjs/common';
-import { WebhookService } from './webhook.service';
-
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { EnumProvider } from '../git-organization/git-organization.types';
 @Controller()
 export class WebhookController {
   constructor(
