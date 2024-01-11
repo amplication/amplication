@@ -8,11 +8,10 @@ import {
   EnumModuleActionGqlOperation,
   EnumModuleActionRestVerb,
 } from "@amplication/code-gen-types";
-
 import { camelCase } from "camel-case";
+import { kebabCase } from "lodash";
 import { pascalCase } from "pascal-case";
 import pluralize from "pluralize";
-import { kebabCase } from "lodash";
 
 //returns the plural name of the entity, based on its name, in a camelCase format
 //in case the plural name is the same as the name, it adds the suffix "Items"

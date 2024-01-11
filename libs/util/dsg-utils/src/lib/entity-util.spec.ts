@@ -1,4 +1,9 @@
 import {
+  prepareEntityPluralName,
+  getDefaultActionsForEntity,
+  getDefaultActionsForRelationField,
+} from "./entity-util";
+import {
   Entity,
   EntityField,
   EnumDataType,
@@ -7,11 +12,6 @@ import {
   EnumModuleActionType,
 } from "@amplication/code-gen-types";
 import { camelCase } from "lodash";
-import {
-  prepareEntityPluralName,
-  getDefaultActionsForEntity,
-  getDefaultActionsForRelationField,
-} from "./entity-util";
 
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
 const EXAMPLE_ENTITY_PLURAL_NAME = "exampleEntityNames";
