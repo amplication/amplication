@@ -75,8 +75,9 @@ export class ModuleDtoService extends BlockTypeService<
         ...args,
         data: {
           ...args.data,
+          properties: [],
           enabled: true,
-          type: EnumModuleDtoType.Custom,
+          dtoType: EnumModuleDtoType.Custom,
         },
       },
       user
