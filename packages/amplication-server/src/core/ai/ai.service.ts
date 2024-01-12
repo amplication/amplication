@@ -173,17 +173,15 @@ export class AiService {
     return prompt;
   }
 
-  async onCoversationCompleted(
+  async onConversationCompleted(
     data: AiConversationComplete.Value
   ): Promise<boolean> {
     const { actionId, errorMessage } = data;
 
-    if (errorMessage) {
-      await this.updateActionStatus(actionId, EnumActionStepStatus.Failed);
-      return false;
-    }
-
-    await this.updateActionStatus(actionId, EnumActionStepStatus.Success);
+    await this.updateActionStatus(
+      actionId,
+      errorMessage ? EnumActionStepStatus.Failed : EnumActionStepStatus.Success
+    );
 
     return true;
   }

@@ -1,5 +1,6 @@
 import { PrismaService, UserAction } from "../../prisma";
 import { ActionService } from "../action/action.service";
+import { EnumActionStepStatus } from "../action/dto";
 import { UserActionService } from "../userAction/userAction.service";
 import { EXAMPLE_RESOURCE } from "./__tests__/resource.mock";
 import { AiService } from "./ai.service";
@@ -17,6 +18,8 @@ jest.mock("@amplication/util/nestjs/kafka");
 
 describe("AiService", () => {
   let service: AiService;
+  const mockPrismaUserActionFindFirst = jest.fn().mockResolvedValue(null);
+  const mockActionServiceComplete = jest.fn().mockResolvedValue(null);
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -25,7 +28,9 @@ describe("AiService", () => {
       providers: [
         {
           provide: ActionService,
-          useValue: {},
+          useValue: {
+            complete: mockActionServiceComplete,
+          },
         },
         AiService,
         PromptManagerService,
@@ -37,9 +42,15 @@ describe("AiService", () => {
             action: {
               findUnique: jest.fn().mockResolvedValue(null),
               create: jest.fn().mockResolvedValue(null),
+              complete: jest.fn().mockResolvedValue(null),
             },
             resource: {
               findUnique: jest.fn().mockResolvedValue(EXAMPLE_RESOURCE),
+            },
+            userAction: {
+              create: jest.fn().mockResolvedValue(null),
+              findFirst: mockPrismaUserActionFindFirst,
+              update: jest.fn().mockResolvedValue(null),
             },
           },
         },
@@ -93,5 +104,48 @@ describe("AiService", () => {
         userId
       );
     });
+  });
+
+  describe("onConversationCompleted", () => {
+    it.each([
+      [EnumActionStepStatus.Success, true],
+      [EnumActionStepStatus.Failed, false],
+    ])(
+      "should update the action status to %s when the conversion completion success is %s",
+      async (expectedActionStatus, isCompletedSuccessfully) => {
+        const result = isCompletedSuccessfully ? "A magic anwser" : null;
+        const errorMessage = isCompletedSuccessfully
+          ? null
+          : "An error happened";
+        const actionId = "actionId";
+        const requestUniqueId = "requestUniqueId";
+
+        const actionStepToComplete = {
+          id: "actionStepId",
+        };
+
+        mockPrismaUserActionFindFirst.mockResolvedValue({
+          action: {
+            steps: [actionStepToComplete],
+          },
+        } as unknown as UserAction);
+
+        const res = await service.onConversationCompleted({
+          actionId,
+          requestUniqueId,
+          isGptConversionCompleted: isCompletedSuccessfully,
+          result,
+          errorMessage,
+        });
+
+        expect(res).toBeTruthy();
+
+        expect(mockPrismaUserActionFindFirst).toHaveBeenCalledTimes(1);
+        expect(mockActionServiceComplete).toHaveBeenCalledWith(
+          actionStepToComplete,
+          expectedActionStatus
+        );
+      }
+    );
   });
 });

@@ -1,4 +1,5 @@
 import { PrismaModule } from "../../prisma";
+import { ActionModule } from "../action/action.module";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { UserActionModule } from "../userAction/userActionModule";
 import { AiController } from "./ai.controller";
@@ -10,8 +11,14 @@ import { Module } from "@nestjs/common";
 
 @Module({
   controllers: [AiController],
-  imports: [UserActionModule, KafkaModule, PermissionsModule, PrismaModule],
+  imports: [
+    ActionModule,
+    KafkaModule,
+    PermissionsModule,
+    PrismaModule,
+    UserActionModule,
+  ],
   providers: [AiResolver, AiService, PromptManagerService],
-  exports: [AiResolver, AiService, PromptManagerService],
+  exports: [AiResolver, AiService],
 })
 export class AiModule {}

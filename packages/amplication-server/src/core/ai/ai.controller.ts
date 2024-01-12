@@ -21,5 +21,6 @@ export class AiController {
     this.logger.debug(`onCoversationCompleted: ${message.requestUniqueId}`, {
       result: message.result,
     });
+    await this.aiService.onConversationCompleted(message);
   }
 }
