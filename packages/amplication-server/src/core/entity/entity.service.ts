@@ -2857,7 +2857,10 @@ export class EntityService {
       args.data.dataType === EnumDataType.Lookup &&
       field.dataType === EnumDataType.Lookup &&
       (field.name !== args.data.name ||
-        field.displayName !== args.data.displayName);
+        field.displayName !== args.data.displayName ||
+        (field.properties as unknown as types.Lookup).allowMultipleSelection !==
+          (args.data.properties as unknown as types.Lookup)
+            .allowMultipleSelection);
 
     const relationTypeChanged =
       args.data.dataType === EnumDataType.Lookup &&

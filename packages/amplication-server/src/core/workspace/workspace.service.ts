@@ -135,6 +135,22 @@ export class WorkspaceService {
     return workspace;
   }
 
+  private async shouldBlockWorkspaceCreation(
+    workspaceId: string
+  ): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
+    const blockWorkspaceCreation =
+      await this.billingService.getBooleanEntitlement(
+        workspaceId,
+        BillingFeature.BlockWorkspaceCreation
+      );
+
+    return blockWorkspaceCreation.hasAccess;
+  }
+
   /**
    * Creates a workspace and a user within it for the provided account with workspace admin role
    * @param accountId the account to create the user in the created workspace
@@ -143,9 +159,16 @@ export class WorkspaceService {
    */
   async createWorkspace(
     accountId: string,
-    args: Prisma.WorkspaceCreateArgs
+    args: Prisma.WorkspaceCreateArgs,
+    currentWorkspaceId?: string
   ): Promise<Workspace> {
-    // Create workspace
+    if (await this.shouldBlockWorkspaceCreation(currentWorkspaceId)) {
+      const message = "Your current plan does not allow creating workspaces";
+      throw new BillingLimitationError(
+        message,
+        BillingFeature.BlockWorkspaceCreation
+      );
+    }
     // Create a new user and link it to the account
     // Assign the user an "ORGANIZATION_ADMIN" role
     const workspace = await this.prisma.workspace.create({
@@ -192,21 +215,27 @@ export class WorkspaceService {
     return workspace;
   }
 
+  private async canInvite(workspaceId: string): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
+    const workspaceMembers = await this.billingService.getMeteredEntitlement(
+      workspaceId,
+      BillingFeature.TeamMembers
+    );
+
+    return workspaceMembers.currentUsage < workspaceMembers.usageLimit;
+  }
+
   async inviteUser(
     currentUser: User,
     args: InviteUserArgs
   ): Promise<Invitation | null> {
-    if (this.billingService.isBillingEnabled) {
-      const projectEntitlement =
-        await this.billingService.getMeteredEntitlement(
-          currentUser.workspace.id,
-          BillingFeature.TeamMembers
-        );
-
-      if (projectEntitlement && !projectEntitlement.hasAccess) {
-        const message = `Your workspace exceeds its members limitation.`;
-        throw new BillingLimitationError(message, BillingFeature.Projects);
-      }
+    const canInvite = await this.canInvite(currentUser.workspace.id);
+    if (!canInvite) {
+      const message = `Your workspace exceeds its members limitation.`;
+      throw new BillingLimitationError(message, BillingFeature.Projects);
     }
 
     const { workspace, id: currentUserId, account } = currentUser;
