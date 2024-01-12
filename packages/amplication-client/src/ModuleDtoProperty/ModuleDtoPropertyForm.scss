@@ -12,5 +12,7 @@
   .select-field,
   .text-input {
     flex: 1;
+
+    max-width: var(--form-field-long);
   }
 }

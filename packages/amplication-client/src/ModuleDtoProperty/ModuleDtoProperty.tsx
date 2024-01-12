@@ -1,9 +1,21 @@
-import { Snackbar } from "@amplication/ui/design-system";
+import {
+  Button,
+  EnumButtonStyle,
+  EnumGapSize,
+  FlexItem,
+  ListItem,
+  Snackbar,
+} from "@amplication/ui/design-system";
+import {
+  EnumFlexDirection,
+  FlexEnd,
+} from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import { useCallback, useContext, useState } from "react";
 import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
+import { DeleteModuleDtoProperty } from "./DeleteModuleDtoProperty";
 import ModuleDtoPropertyForm from "./ModuleDtoPropertyForm";
 import ModuleDtoPropertyPreview from "./ModuleDtoPropertyPreview";
 
@@ -34,11 +46,6 @@ const ModuleDtoProperty = ({
   const handleSubmit = useCallback(
     (data) => {
       updateModuleDtoProperty({
-        onCompleted: () => {
-          addEntity(propertyId);
-          setOriginalName(data.name);
-          onPropertyChanged && onPropertyChanged(moduleDtoProperty);
-        },
         variables: {
           where: {
             propertyName: originalName,
@@ -49,6 +56,11 @@ const ModuleDtoProperty = ({
           data: {
             ...data,
           },
+        },
+        onCompleted: () => {
+          addEntity(propertyId);
+          setOriginalName(data.name);
+          onPropertyChanged && onPropertyChanged(moduleDtoProperty);
         },
       }).catch(console.error);
     },
@@ -72,26 +84,45 @@ const ModuleDtoProperty = ({
 
   return (
     <>
-      {!editMode ? (
-        <ModuleDtoPropertyPreview
-          dtoProperty={moduleDtoProperty}
-          onEdit={() => {
-            setEditMode(true);
-          }}
-        />
-      ) : (
-        <ModuleDtoPropertyForm
-          moduleDto={moduleDto}
-          isCustomDto={isCustomDto}
-          onSubmit={handleSubmit}
-          defaultValues={moduleDtoProperty}
-          onPropertyDelete={onPropertyDelete}
-          onPropertyClose={() => {
-            setEditMode(false);
-          }}
-        />
+      <ListItem
+        onClick={() => {
+          setEditMode(!editMode);
+        }}
+      >
+        <FlexItem gap={EnumGapSize.Small}>
+          <ModuleDtoPropertyPreview dtoProperty={moduleDtoProperty} />
+          <FlexEnd direction={EnumFlexDirection.Row}>
+            <DeleteModuleDtoProperty
+              moduleDto={moduleDto}
+              moduleDtoProperty={moduleDtoProperty}
+              onPropertyDelete={onPropertyDelete}
+            />
+            <Button
+              buttonStyle={EnumButtonStyle.Text}
+              onClick={() => {
+                setEditMode(!editMode);
+              }}
+              icon="edit"
+            />
+          </FlexEnd>
+        </FlexItem>
+      </ListItem>
+      {editMode && (
+        <>
+          <ListItem>
+            <ModuleDtoPropertyForm
+              moduleDto={moduleDto}
+              isCustomDto={isCustomDto}
+              onSubmit={handleSubmit}
+              defaultValues={moduleDtoProperty}
+              onPropertyDelete={onPropertyDelete}
+              onPropertyClose={() => {
+                setEditMode(false);
+              }}
+            />
+          </ListItem>
+        </>
       )}
-
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );

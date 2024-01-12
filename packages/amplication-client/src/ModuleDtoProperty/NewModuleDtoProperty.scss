@@ -1,8 +1,13 @@
 @import "../style/index.scss";
 
 .new-dto-property {
+  width: 100%;
+
   .text-input input {
     border-style: dashed;
+    border-color: var(--gray-base);
+    width: 100%;
+    max-width: none;
   }
 
   &__add-field {
@@ -14,6 +19,7 @@
       top: 0;
       right: 0;
       display: none !important;
+      height: 100% !important;
 
       &--show {
         display: flex !important;

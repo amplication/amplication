@@ -1,14 +1,13 @@
 import { Snackbar, TextField } from "@amplication/ui/design-system";
+import { camelCase } from "camel-case";
 import classNames from "classnames";
 import { Form, Formik } from "formik";
-import { camelCase } from "camel-case";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { AppContext } from "../context/appContext";
+import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import "./NewModuleDtoProperty.scss";
-import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 
 type Props = {
   moduleDto: models.ModuleDto;
@@ -31,8 +30,6 @@ const INITIAL_VALUES: Partial<models.ModuleDtoProperty> = {
 const CLASS_NAME = "new-dto-property";
 
 const NewModuleDtoProperty = ({ moduleDto, onPropertyAdd }: Props) => {
-  const { currentResource } = useContext(AppContext);
-
   const {
     createModuleDtoProperty,
     createModuleDtoPropertyError: error,
@@ -64,7 +61,7 @@ const NewModuleDtoProperty = ({ moduleDto, onPropertyAdd }: Props) => {
           }
         });
     },
-    [createModuleDtoProperty, moduleDto, onPropertyAdd, currentResource?.id]
+    [createModuleDtoProperty, moduleDto, onPropertyAdd]
   );
 
   const errorMessage = formatError(error);

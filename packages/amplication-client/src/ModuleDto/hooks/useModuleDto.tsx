@@ -62,7 +62,7 @@ const useModuleDto = () => {
 
       cache.modify({
         fields: {
-          ModuleDtos(existingDtoRefs, { readField }) {
+          moduleDtos(existingDtoRefs, { readField }) {
             return existingDtoRefs.filter(
               (dtoRef: Reference) => deletedDtoId !== readField("id", dtoRef)
             );

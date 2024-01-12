@@ -26,6 +26,8 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "lockedByUser",
   "parentBlockId",
   "resourceId",
+  "relatedEntityId",
+  "dtoType",
   "properties",
 ];
 
@@ -77,10 +79,6 @@ const ModuleDtoForm = ({
           name="name"
           disabled={disabled || !isCustomDto}
         />
-
-        <div>
-          <ToggleField name="enabled" label="Enabled" disabled={disabled} />
-        </div>
         <OptionalDescriptionField
           name="description"
           label="Description"

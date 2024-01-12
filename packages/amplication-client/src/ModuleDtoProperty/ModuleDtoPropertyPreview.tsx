@@ -1,38 +1,22 @@
-import {
-  Button,
-  EnumButtonStyle,
-  EnumGapSize,
-  FlexItem,
-} from "@amplication/ui/design-system";
+import { EnumGapSize, FlexItem } from "@amplication/ui/design-system";
+import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 import * as models from "../models";
 import "./ModuleDtoPropertyPreview.scss";
-import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 
 type Props = {
-  onEdit: (values: models.ModuleDtoProperty) => void;
   dtoProperty?: models.ModuleDtoProperty;
 };
 
 const CLASS_NAME = "module-dto-property-preview";
 const UNAVAILABLE_DTO = "(Unavailable DTO)";
 
-const ModuleDtoPropertyPreview = ({ onEdit, dtoProperty }: Props) => {
+const ModuleDtoPropertyPreview = ({ dtoProperty }: Props) => {
   const isUnion = dtoProperty?.propertyTypes.length > 1;
 
   const { availableDtosDictionary } = useModuleDto();
 
   return (
-    <FlexItem
-      className={CLASS_NAME}
-      gap={EnumGapSize.Small}
-      end={
-        <Button
-          buttonStyle={EnumButtonStyle.Text}
-          onClick={() => onEdit(dtoProperty)}
-          icon="edit"
-        />
-      }
-    >
+    <FlexItem className={CLASS_NAME} gap={EnumGapSize.Small}>
       {dtoProperty.name}
       {dtoProperty.isOptional ? "?" : ""}:{" "}
       {isUnion && dtoProperty.isArray ? "(" : ""}

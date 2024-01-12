@@ -1,10 +1,9 @@
 import {
-  Button,
-  EnumButtonStyle,
   EnumFlexDirection,
-  EnumFlexItemMargin,
   EnumItemsAlign,
+  EnumPanelStyle,
   FlexItem,
+  HorizontalRule,
   Panel,
   ToggleField,
 } from "@amplication/ui/design-system";
@@ -13,11 +12,9 @@ import { omit } from "lodash";
 import { useMemo } from "react";
 import { Form } from "../Components/Form";
 import NameField from "../Components/NameField";
-import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
-import { DeleteModuleDtoProperty } from "./DeleteModuleDtoProperty";
 import DtoPropertyTypesField from "./DtoPropertyTypesField";
 import "./ModuleDtoPropertyForm.scss";
 
@@ -104,41 +101,24 @@ const ModuleDtoPropertyForm = ({
       enableReinitialize
       onSubmit={onSubmit}
     >
-      <Panel className={CLASS_NAME}>
+      <Panel
+        style={{ padding: 0 }}
+        className={CLASS_NAME}
+        panelStyle={EnumPanelStyle.Transparent}
+      >
         <Form>
           {!disabled && <FormikAutoSave debounceMS={1000} />}
 
           <FlexItem
             itemsAlign={EnumItemsAlign.Center}
             direction={EnumFlexDirection.Row}
-            end={
-              <FlexItem itemsAlign={EnumItemsAlign.Center}>
-                <Button
-                  icon="close"
-                  buttonStyle={EnumButtonStyle.Text}
-                  onClick={() => {
-                    onPropertyClose(defaultValues);
-                  }}
-                ></Button>
-                <DeleteModuleDtoProperty
-                  moduleDto={moduleDto}
-                  moduleDtoProperty={defaultValues}
-                  onPropertyDelete={onPropertyDelete}
-                />
-              </FlexItem>
-            }
           >
             <NameField
               label="Name"
               name="name"
               disabled={disabled || !isCustomDto}
             />
-          </FlexItem>
-          <FlexItem
-            itemsAlign={EnumItemsAlign.Center}
-            direction={EnumFlexDirection.Row}
-            margin={EnumFlexItemMargin.Both}
-          >
+
             <ToggleField name="isArray" label="Array" disabled={disabled} />
             <ToggleField
               name="isOptional"
@@ -146,17 +126,8 @@ const ModuleDtoPropertyForm = ({
               disabled={disabled}
             />
           </FlexItem>
-          <FlexItem
-            itemsAlign={EnumItemsAlign.Center}
-            direction={EnumFlexDirection.Row}
-            margin={EnumFlexItemMargin.Both}
-          >
-            <OptionalDescriptionField
-              name="description"
-              label="Description"
-              disabled={disabled}
-            />
-          </FlexItem>
+          <HorizontalRule />
+
           <DtoPropertyTypesField name="propertyTypes" />
         </Form>
       </Panel>

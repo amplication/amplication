@@ -24,6 +24,8 @@ export const MODULE_DTO_FIELDS_FRAGMENT = gql`
     lockedAt
     parentBlockId
     resourceId
+    dtoType
+    relatedEntityId
     properties {
       ...ModuleDtoPropertyFields
     }

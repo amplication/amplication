@@ -1,16 +1,21 @@
 import {
-  EnumFlexItemMargin,
+  EnumContentAlign,
+  EnumFlexDirection,
+  EnumPanelStyle,
   EnumTextStyle,
   FlexItem,
+  HorizontalRule,
+  Panel,
   Snackbar,
   TabContentTitle,
   Text,
+  Toggle,
 } from "@amplication/ui/design-system";
 import { useCallback, useContext, useEffect } from "react";
 import { match } from "react-router-dom";
 import ModuleDtoPropertyList from "../ModuleDtoProperty/ModuleDtoPropertyList";
-import NewModuleDtoProperty from "../ModuleDtoProperty/NewModuleDtoProperty";
 import { AppContext } from "../context/appContext";
+import * as models from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import { DeleteModuleDto } from "./DeleteModuleDto";
@@ -27,6 +32,11 @@ type Props = AppRouteProps & {
   }>;
 };
 
+const DEFAULT_DTO_PROPERTIES_MESSAGE =
+  "The properties for this DTO will be generated automatically based on the entity fields and relations.";
+
+const DEFAULT_DTO_MESSAGE =
+  "This DTO was created automatically with the entity for its default CRUD operations.";
 const ModuleDto = ({ match }: Props) => {
   const { moduleDto: moduleDtoId } = match?.params ?? {};
 
@@ -81,6 +91,14 @@ const ModuleDto = ({ match }: Props) => {
     [updateModuleDto, moduleDtoId, addEntity]
   );
 
+  const onEnableChanged = useCallback(() => {
+    if (!data?.moduleDto) return;
+    handleSubmit({
+      name: data.moduleDto.name,
+      enabled: !data.moduleDto.enabled,
+    });
+  }, [data?.moduleDto, handleSubmit]);
+
   const onPropertyListChanged = useCallback(() => {
     refetch();
   }, [refetch]);
@@ -89,7 +107,8 @@ const ModuleDto = ({ match }: Props) => {
 
   const errorMessage = formatError(error) || formatError(updateModuleDtoError);
 
-  const isCustomDto = true;
+  const isCustomDto =
+    data?.moduleDto.dtoType === models.EnumModuleDtoType.Custom;
 
   return (
     <>
@@ -98,19 +117,24 @@ const ModuleDto = ({ match }: Props) => {
           title={data?.moduleDto?.name}
           subTitle={data?.moduleDto?.description}
         />
-        <FlexItem.FlexEnd>
+        <FlexItem.FlexEnd
+          direction={EnumFlexDirection.Row}
+          alignSelf={EnumContentAlign.Start}
+        >
+          <Toggle
+            name={"enabled"}
+            onValueChange={onEnableChanged}
+            checked={data?.moduleDto?.enabled}
+          ></Toggle>
           {data?.moduleDto && isCustomDto && (
             <DeleteModuleDto moduleDto={data?.moduleDto} />
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
       {data?.moduleDto && !isCustomDto && (
-        <FlexItem margin={EnumFlexItemMargin.Bottom}>
-          <Text textStyle={EnumTextStyle.Description}>
-            This is a default dto that was created automatically with the
-            entity. It cannot be deleted, and its name cannot be changed.
-          </Text>
-        </FlexItem>
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <Text textStyle={EnumTextStyle.Tag}>{DEFAULT_DTO_MESSAGE}</Text>
+        </Panel>
       )}
 
       {!loading && (
@@ -120,16 +144,22 @@ const ModuleDto = ({ match }: Props) => {
           defaultValues={data?.moduleDto}
         />
       )}
+      <HorizontalRule doubleSpacing />
 
       <TabContentTitle title="Properties" />
-      <NewModuleDtoProperty
-        moduleDto={data?.moduleDto}
-        onPropertyAdd={onPropertyListChanged}
-      />
-      <ModuleDtoPropertyList
-        moduleDtoId={moduleDtoId}
-        onPropertyDelete={onPropertyListChanged}
-      />
+      {!isCustomDto ? (
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <Text textStyle={EnumTextStyle.Tag}>
+            {DEFAULT_DTO_PROPERTIES_MESSAGE}
+          </Text>
+        </Panel>
+      ) : (
+        <ModuleDtoPropertyList
+          moduleDto={data?.moduleDto}
+          onPropertyDelete={onPropertyListChanged}
+          onPropertyAdd={onPropertyListChanged}
+        />
+      )}
 
       <Snackbar open={hasError} message={errorMessage} />
     </>

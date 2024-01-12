@@ -30,6 +30,7 @@ export const DeleteModuleDtoProperty = ({
   const handleDelete = useCallback(
     (event) => {
       event.stopPropagation();
+      event.preventDefault();
       setConfirmDelete(true);
     },
     [setConfirmDelete]
