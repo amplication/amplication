@@ -7,6 +7,8 @@ import React from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import WorkspaceSelectorListItem from "./WorkspaceSelectorListItem";
+import { LicenseIndicatorContainer } from "../Components/LicenseIndicatorContainer";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 type TData = {
   workspaces: models.Workspace[];
@@ -45,17 +47,21 @@ function WorkspaceSelectorList({
           <hr className={`${CLASS_NAME}__divider`} />
 
           <div className={`${CLASS_NAME}__new`}>
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              disabled={loading}
-              type="button"
-              icon="plus"
-              className={`${CLASS_NAME}__button`}
-              iconPosition={EnumIconPosition.Left}
-              onClick={onNewWorkspaceClick}
+            <LicenseIndicatorContainer
+              featureId={BillingFeature.BlockWorkspaceCreation}
             >
-              Create new workspace
-            </Button>
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                disabled={loading}
+                type="button"
+                icon="plus"
+                className={`${CLASS_NAME}__button`}
+                iconPosition={EnumIconPosition.Left}
+                onClick={onNewWorkspaceClick}
+              >
+                Create new workspace
+              </Button>
+            </LicenseIndicatorContainer>
           </div>
         </>
       )}

@@ -10,6 +10,8 @@ type Account {
   id: String!
   lastName: String!
   password: String!
+  previewAccountEmail: String
+  previewAccountType: PreviewAccountType!
   updatedAt: DateTime!
 }
 
@@ -65,6 +67,13 @@ input ApiTokenCreateInput {
 type Auth {
   """JWT Bearer token"""
   token: String!
+}
+
+type AuthPreviewAccount {
+  projectId: String!
+  resourceId: String!
+  token: String!
+  workspaceId: String!
 }
 
 type AuthorizeResourceWithGitResult {
@@ -761,6 +770,7 @@ input EnumResourceTypeFilter {
 enum EnumSubscriptionPlan {
   Enterprise
   Free
+  PreviewBreakTheMonolith
   Pro
 }
 
@@ -1124,6 +1134,7 @@ type Mutation {
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   signup(data: SignupInput!): Auth!
+  signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   updateAccount(data: UpdateAccountInput!): Account!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -1282,6 +1293,11 @@ input PluginSetOrderInput {
   order: Int!
 }
 
+enum PreviewAccountType {
+  BreakingTheMonolith
+  None
+}
+
 type Project {
   createdAt: DateTime!
   demoRepoName: String
@@ -1365,16 +1381,6 @@ type ProvisionSubscriptionResult {
 }
 
 type Query {
-  Module(where: WhereUniqueInput!): Module
-  ModuleAction(where: WhereUniqueInput!): ModuleAction
-  ModuleActions(orderBy: ModuleActionOrderByInput, skip: Int, take: Int, where: ModuleActionWhereInput): [ModuleAction!]!
-  Modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
-  PluginInstallation(where: WhereUniqueInput!): PluginInstallation
-  PluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
-  ServiceTopics(where: WhereUniqueInput!): ServiceTopics
-  ServiceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
-  Topic(where: WhereUniqueInput!): Topic
-  Topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
   account: Account!
   action(where: WhereUniqueInput!): Action!
   block(where: WhereUniqueInput!): Block!
@@ -1392,7 +1398,13 @@ type Query {
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!
   me: User!
   messageBrokerConnectedServices(where: WhereUniqueInput!): [Resource!]!
+  module(where: WhereUniqueInput!): Module
+  moduleAction(where: WhereUniqueInput!): ModuleAction
+  moduleActions(orderBy: ModuleActionOrderByInput, skip: Int, take: Int, where: ModuleActionWhereInput): [ModuleAction!]!
+  modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  pluginInstallation(where: WhereUniqueInput!): PluginInstallation
+  pluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
   project(where: WhereUniqueInput!): Project
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
@@ -1403,6 +1415,10 @@ type Query {
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
+  serviceTopics(where: WhereUniqueInput!): ServiceTopics
+  serviceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
+  topic(where: WhereUniqueInput!): Topic
+  topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
   userAction(where: WhereUniqueInput!): UserAction!
   userApiTokens: [ApiToken!]!
   workspace(where: WhereUniqueInput!): Workspace
@@ -1702,6 +1718,11 @@ input SignupInput {
   lastName: String!
   password: String!
   workspaceName: String!
+}
+
+input SignupPreviewAccountInput {
+  previewAccountEmail: String!
+  previewAccountType: PreviewAccountType!
 }
 
 enum SortOrder {

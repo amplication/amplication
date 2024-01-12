@@ -57,7 +57,7 @@ export const ModuleActionLinkList = React.memo(
           <CircularProgress />
         ) : (
           <VerticalNavigation>
-            {data?.ModuleActions.map((action) => (
+            {data?.moduleActions.map((action) => (
               <VerticalNavigationItem
                 key={action.id}
                 icon="git_commit"

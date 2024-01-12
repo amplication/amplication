@@ -9,22 +9,26 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { Test, TestingModule } from "@nestjs/testing";
 import { gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Account, Auth, User } from "../../models";
+import { Account, Auth, User, AuthPreviewAccount } from "../../models";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ApolloServerBase } from "apollo-server-core";
+import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_TOKEN = "exampleToken";
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
+const EXAMPLE_PREVIEW_EMAIL = "exampleEmail@amplication.com";
 const EXAMPLE_FIRST_NAME = "exampleFirstName";
 const EXAMPLE_LAST_NAME = "exampleLastName";
 const EXAMPLE_PASSWORD = "examplePassword";
 const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
+const EXAMPLE_PROJECT_ID = "exampleProjectId";
+const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 
 const EXAMPLE_ACCOUNT: Account = {
   id: EXAMPLE_ACCOUNT_ID,
@@ -34,6 +38,8 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
+  previewAccountType: PreviewAccountType.None,
+  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -53,6 +59,13 @@ const EXAMPLE_USER_WITHOUT_ACCOUNT: User = {
 
 const EXAMPLE_AUTH: Auth = {
   token: EXAMPLE_TOKEN,
+};
+
+const EXAMPLE_AUTH_PREVIEW_ACCOUNT: AuthPreviewAccount = {
+  token: EXAMPLE_TOKEN,
+  workspaceId: EXAMPLE_WORKSPACE_ID,
+  projectId: EXAMPLE_PROJECT_ID,
+  resourceId: EXAMPLE_RESOURCE_ID,
 };
 
 const SIGNUP_MUTATION = gql`
@@ -77,6 +90,25 @@ const SIGNUP_MUTATION = gql`
   }
 `;
 
+const SIGNUP_PREVIEW_ACCOUNT_MUTATION = gql`
+  mutation (
+    $previewAccountEmail: String!
+    $previewAccountType: PreviewAccountType!
+  ) {
+    signupPreviewAccount(
+      data: {
+        previewAccountEmail: $previewAccountEmail
+        previewAccountType: $previewAccountType
+      }
+    ) {
+      token
+      workspaceId
+      projectId
+      resourceId
+    }
+  }
+`;
+
 const LOGIN_MUTATION = gql`
   mutation ($email: String!, $password: String!) {
     login(data: { email: $email, password: $password }) {
@@ -97,6 +129,8 @@ const CHANGE_PASSWORD_MUTATION = gql`
       firstName
       lastName
       password
+      previewAccountType
+      previewAccountEmail
     }
   }
 `;
@@ -123,6 +157,7 @@ const authServiceSignUpMock = jest.fn(() => EXAMPLE_TOKEN);
 const authServiceLoginMock = jest.fn(() => EXAMPLE_TOKEN);
 const authServiceChangePasswordMock = jest.fn(() => EXAMPLE_ACCOUNT);
 const setCurrentWorkspaceMock = jest.fn(() => EXAMPLE_TOKEN);
+const signupPreviewAccountMock = jest.fn(() => EXAMPLE_AUTH_PREVIEW_ACCOUNT);
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
@@ -142,6 +177,7 @@ describe("AuthResolver", () => {
             login: authServiceLoginMock,
             changePassword: authServiceChangePasswordMock,
             setCurrentWorkspace: setCurrentWorkspaceMock,
+            signupPreviewAccount: signupPreviewAccountMock,
           })),
         },
         {
@@ -209,6 +245,28 @@ describe("AuthResolver", () => {
     expect(authServiceSignUpMock).toBeCalledWith({
       ...variables,
       email: variables.email.toLowerCase(),
+    });
+  });
+
+  it("should signup preview account", async () => {
+    const variables = {
+      previewAccountEmail: EXAMPLE_PREVIEW_EMAIL,
+      previewAccountType: PreviewAccountType.BreakingTheMonolith,
+    };
+    const res = await apolloClient.executeOperation({
+      query: SIGNUP_PREVIEW_ACCOUNT_MUTATION,
+      variables: variables,
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      signupPreviewAccount: {
+        ...EXAMPLE_AUTH_PREVIEW_ACCOUNT,
+      },
+    });
+    expect(signupPreviewAccountMock).toBeCalledTimes(1);
+    expect(signupPreviewAccountMock).toBeCalledWith({
+      ...variables,
+      previewAccountEmail: variables.previewAccountEmail.toLowerCase(),
     });
   });
 
