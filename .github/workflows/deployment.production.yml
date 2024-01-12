@@ -33,7 +33,7 @@ jobs:
           echo "tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
         id: base
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -78,7 +78,7 @@ jobs:
         with:
           ref: "${{ github.ref }}"
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: "package.json"
           cache: "npm"
