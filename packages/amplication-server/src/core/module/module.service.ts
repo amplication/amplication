@@ -1,19 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
-import { Entity, EntityField, User } from "../../models";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { Entity, User } from "../../models";
 import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
+import { DefaultModuleForEntityNotFoundError } from "./DefaultModuleForEntityNotFoundError";
 import { CreateModuleArgs } from "./dto/CreateModuleArgs";
 import { DeleteModuleArgs } from "./dto/DeleteModuleArgs";
 import { FindManyModuleArgs } from "./dto/FindManyModuleArgs";
 import { Module } from "./dto/Module";
-import { UpdateModuleArgs } from "./dto/UpdateModuleArgs";
 import { ModuleUpdateInput } from "./dto/ModuleUpdateInput";
-import { DefaultModuleForEntityNotFoundError } from "./DefaultModuleForEntityNotFoundError";
-import { ModuleActionService } from "../moduleAction/moduleAction.service";
-import { ModuleDtoService } from "../moduleDto/moduleDto.service";
-import { AmplicationError } from "../../errors/AmplicationError";
+import { UpdateModuleArgs } from "./dto/UpdateModuleArgs";
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
 
@@ -89,7 +89,6 @@ export class ModuleService extends BlockTypeService<
   async createDefaultModuleForEntity(
     args: CreateModuleArgs,
     entity: Entity,
-    entityFields: EntityField[],
     user: User
   ): Promise<Module> {
     const module = await this.create(
@@ -112,7 +111,6 @@ export class ModuleService extends BlockTypeService<
 
     await this.moduleDtoService.createDefaultDtosForEntityModule(
       entity,
-      entityFields,
       module,
       user
     );
@@ -148,7 +146,6 @@ export class ModuleService extends BlockTypeService<
   async updateDefaultModuleForEntity(
     args: ModuleUpdateInput,
     entity: Entity,
-    entityFields: EntityField[],
     user: User
   ): Promise<Module> {
     const moduleId = await this.getDefaultModuleIdForEntity(
@@ -174,7 +171,6 @@ export class ModuleService extends BlockTypeService<
 
     await this.moduleDtoService.updateDefaultDtosForEntityModule(
       entity,
-      entityFields,
       module,
       user
     );

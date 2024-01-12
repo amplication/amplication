@@ -1,18 +1,13 @@
 import {
   Entity,
-  EntityField,
   EnumModuleDtoType,
   entityDefaultDtos,
   entityDefaultNestedDtos,
 } from "@amplication/code-gen-types";
 import { pascalCase } from "pascal-case";
 import { prepareEntityPluralName } from "./entity-util";
-import { createEntityProperties } from "./create-entity-properties";
 
-export const getDefaultDtosForEntity = (
-  entity: Entity,
-  fields: EntityField[]
-): entityDefaultDtos => {
+export const getDefaultDtosForEntity = (entity: Entity): entityDefaultDtos => {
   const entityName = entity.name;
   const entityDisplayName = entity.displayName;
 
@@ -22,7 +17,7 @@ export const getDefaultDtosForEntity = (
       name: entityName,
       description: `the ${entityDisplayName} model`,
       enabled: true,
-      properties: createEntityProperties(entity, fields),
+      properties: [],
     },
     [EnumModuleDtoType.CountArgs]: {
       dtoType: EnumModuleDtoType.CountArgs,
