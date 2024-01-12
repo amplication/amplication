@@ -3,6 +3,10 @@
 .breaking-the-monolith-options {
   padding: var(--double-spacing);
 
+  &__monolith_options {
+    margin-top: var(--double-spacing);
+  }
+
   &__action-button {
     margin-left: auto;
   }

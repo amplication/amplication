@@ -1,7 +1,10 @@
 import React from "react";
 import {
   Button,
+  EnumContentAlign,
   EnumFlexDirection,
+  EnumItemsAlign,
+  EnumTextAlign,
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
@@ -49,44 +52,73 @@ const BreakingTheMonolithOptions: React.FC<Props> = ({ match }) => {
   };
 
   return (
-    <FlexItem className={CLASS_NAME} direction={EnumFlexDirection.Column}>
-      {monolithOptions.map((option, index) => (
-        <Panel key={index}>
-          <FlexItem direction={EnumFlexDirection.Column}>
-            <FlexItem>
-              <Text textStyle={EnumTextStyle.H2}>{option.title}</Text>
-              <Button
-                onClick={() => handleBreakClicked(option)}
-                className={`${CLASS_NAME}__action-button`}
+    <FlexItem
+      className={CLASS_NAME}
+      direction={EnumFlexDirection.Column}
+      itemsAlign={EnumItemsAlign.Center}
+    >
+      <Text textStyle={EnumTextStyle.H2}>
+        Select the monolith you want to break
+      </Text>
+      <Text
+        textStyle={EnumTextStyle.Normal}
+        textColor={EnumTextColor.Black20}
+        textAlign={EnumTextAlign.Center}
+      >
+        <div>
+          To illustrate how Amplication can transform legacy systems into a
+          micro-services architecture,
+        </div>
+        <div>
+          choose an open-source monolith, represented its its database schema
+        </div>
+      </Text>
+      <FlexItem
+        className={`${CLASS_NAME}__monolith_options`}
+        contentAlign={EnumContentAlign.Center}
+      >
+        {monolithOptions.map((option, index) => (
+          <Panel key={index}>
+            <FlexItem direction={EnumFlexDirection.Column}>
+              <FlexItem>
+                <Text textStyle={EnumTextStyle.H3}>{option.title}</Text>
+                <Button
+                  onClick={() => handleBreakClicked(option)}
+                  className={`${CLASS_NAME}__action-button`}
+                >
+                  Break
+                </Button>
+              </FlexItem>
+              <Text
+                textStyle={EnumTextStyle.Description}
+                textColor={EnumTextColor.Black20}
               >
-                Break
-              </Button>
+                {option.description}
+              </Text>
+              <Text textStyle={EnumTextStyle.Label}>
+                <a
+                  className={`${CLASS_NAME}__link`}
+                  href={option.linkToRepository}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Take me to the Github repository
+                </a>
+              </Text>
+              <Text textStyle={EnumTextStyle.Label}>
+                <a
+                  className={`${CLASS_NAME}__link`}
+                  href={option.linkToPrismaSchema}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Show me the schema
+                </a>
+              </Text>
             </FlexItem>
-            <Text
-              textStyle={EnumTextStyle.Description}
-              textColor={EnumTextColor.Black20}
-            >
-              {option.description}
-            </Text>
-            <Text textStyle={EnumTextStyle.Label}>
-              <a
-                className={`${CLASS_NAME}__link`}
-                href={option.linkToRepository}
-              >
-                Take me to the Github repository
-              </a>
-            </Text>
-            <Text textStyle={EnumTextStyle.Label}>
-              <a
-                className={`${CLASS_NAME}__link`}
-                href={option.linkToPrismaSchema}
-              >
-                Show me the schema
-              </a>
-            </Text>
-          </FlexItem>
-        </Panel>
-      ))}
+          </Panel>
+        ))}
+      </FlexItem>
     </FlexItem>
   );
 };
