@@ -1,8 +1,17 @@
 import { AmplicationError } from "../../errors/AmplicationError";
 import { PrismaService } from "../../prisma";
+import { ActionService } from "../action/action.service";
+import { EnumActionStepStatus } from "../action/dto";
 import { INVALID_RESOURCE_ID } from "../resource/resource.service";
+import { UserActionService } from "../userAction/userAction.service";
+import {
+  GENERATING_BTM_RESOURCE_RECOMMENDATION_STEP_NAME,
+  GENERATING_BTM_RESOURCE_RECOMMENDATION_USER_ACTION_TYPE,
+  initialStepData,
+} from "./constants";
 import { PromptManagerService } from "./prompt-manager.service";
 import {
+  AiConversationComplete,
   AiConversationStart,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
@@ -12,14 +21,70 @@ import { Injectable } from "@nestjs/common";
 @Injectable()
 export class AiService {
   constructor(
+    private readonly actionService: ActionService,
     private readonly kafkaProducerService: KafkaProducerService,
+    private readonly prisma: PrismaService,
     private readonly promptManagerService: PromptManagerService,
-    private readonly prisma: PrismaService
+    private readonly userActionService: UserActionService
   ) {}
 
-  async triggerGenerationBtmResourceRecommendation(
-    resourceId: string
-  ): Promise<string> {
+  private async createAction(
+    resourceId: string,
+    conversationTypeKey: string,
+    conversationParams: any[],
+    userId: string
+  ): Promise<{
+    actionId: string;
+  }> {
+    const userAction =
+      await this.userActionService.createUserActionByTypeWithInitialStep(
+        GENERATING_BTM_RESOURCE_RECOMMENDATION_USER_ACTION_TYPE,
+        {
+          resourceId,
+          conversationTypeKey,
+          conversationParams,
+        },
+        initialStepData,
+        userId,
+        resourceId
+      );
+    return {
+      actionId: userAction.actionId,
+    };
+  }
+
+  private async updateActionStatus(
+    actionId: string,
+    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+  ): Promise<void> {
+    const userAction = await this.prisma.userAction.findFirst({
+      where: {
+        actionId,
+        userActionType: GENERATING_BTM_RESOURCE_RECOMMENDATION_USER_ACTION_TYPE,
+      },
+      select: {
+        action: {
+          select: {
+            steps: {
+              where: {
+                name: GENERATING_BTM_RESOURCE_RECOMMENDATION_STEP_NAME,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    await this.actionService.complete(userAction.action.steps[0], status);
+  }
+
+  async triggerGenerationBtmResourceRecommendation({
+    resourceId,
+    userId,
+  }: {
+    resourceId: string;
+    userId: string;
+  }): Promise<string> {
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },
       select: {
@@ -75,21 +140,31 @@ export class AiService {
         }),
       });
 
-    const requestUniqueId = `btm-${resourceId}-${Date.now()}`;
+    const conversationTypeKey = "BREAK_THE_MONOLITH";
+    const conversationParams = [
+      {
+        name: "userInput",
+        value: prompt,
+      },
+    ];
+
+    const { actionId } = await this.createAction(
+      resourceId,
+      conversationTypeKey,
+      conversationParams,
+      userId
+    );
+    const requestUniqueId = `btm-${resourceId}-${actionId}`;
+
     const kafkaMessage: AiConversationStart.KafkaEvent = {
       key: { requestUniqueId },
       value: {
+        actionId,
         requestUniqueId,
-        messageTypeKey: "BREAK_THE_MONOLITH",
-        params: [
-          {
-            name: "userInput",
-            value: prompt,
-          },
-        ],
+        messageTypeKey: conversationTypeKey,
+        params: conversationParams,
       },
     };
-
     await this.kafkaProducerService.emitMessage(
       KAFKA_TOPICS.AI_CONVERSATION_START_TOPIC,
       kafkaMessage
@@ -98,7 +173,18 @@ export class AiService {
     return prompt;
   }
 
-  async onCoversationCompleted(): Promise<boolean> {
+  async onCoversationCompleted(
+    data: AiConversationComplete.Value
+  ): Promise<boolean> {
+    const { actionId, errorMessage } = data;
+
+    if (errorMessage) {
+      await this.updateActionStatus(actionId, EnumActionStepStatus.Failed);
+      return false;
+    }
+
+    await this.updateActionStatus(actionId, EnumActionStepStatus.Success);
+
     return true;
   }
 }

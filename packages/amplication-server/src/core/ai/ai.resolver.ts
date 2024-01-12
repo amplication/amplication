@@ -1,6 +1,7 @@
+import { UserEntity } from "../../decorators/user.decorator";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Resource } from "../../models";
+import { Resource, User } from "../../models";
 import { AiService } from "./ai.service";
 import { UseFilters, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Resolver } from "@nestjs/graphql";
@@ -18,10 +19,12 @@ export class AiResolver {
   })
   async triggerGenerationBtmResourceRecommendation(
     @Args({ name: "resourceId", type: () => String })
-    resourceId: string
+    resourceId: string,
+    @UserEntity() user: User
   ): Promise<string> {
-    return await this.aiService.triggerGenerationBtmResourceRecommendation(
-      resourceId
-    );
+    return await this.aiService.triggerGenerationBtmResourceRecommendation({
+      resourceId,
+      userId: user.id,
+    });
   }
 }
