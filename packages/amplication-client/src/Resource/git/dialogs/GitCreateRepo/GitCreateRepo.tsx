@@ -54,11 +54,24 @@ export default function GitCreateRepo({
     }
   }, [gitGroups]);
 
+  const processGitRepositoryName = useCallback((name: string) => {
+    if (!name || name.length < 2) {
+      return null;
+    }
+    return name
+      .replace(/[^a-zA-Z0-9.\-_]/g, "-") // Replace characters other than ASCII letters, digits, ., -, and _ with -
+      .replace(/-{2,}/g, "-"); // Replace consecutive dashes with a single dash
+  }, []);
+
   const handleCreation = useCallback(
     (data: CreateGitRepositoryInput) => {
       const inputData = repositoryGroup
-        ? { ...data, groupName: repositoryGroup.name }
-        : data;
+        ? {
+            ...data,
+            groupName: repositoryGroup.name,
+            name: processGitRepositoryName(data.name),
+          }
+        : { ...data, name: processGitRepositoryName(data.name) };
       onCreateGitRepository(inputData);
     },
     [repositoryGroup]
@@ -107,6 +120,18 @@ export default function GitCreateRepo({
             autoComplete="off"
             showError={false}
           />
+
+          {!!values.name && values.name.length > 1 && (
+            <div className={`${CLASS_NAME}__info`}>
+              <p className={`${CLASS_NAME}__info__emphasis`}>
+                {"Your new repository will be created as "}{" "}
+                <b>{processGitRepositoryName(values.name)}.</b>
+              </p>
+              {
+                "The repository name can only contain ASCII letters, digits, and the characters ., -, and _."
+              }
+            </div>
+          )}
 
           <HorizontalRule />
 

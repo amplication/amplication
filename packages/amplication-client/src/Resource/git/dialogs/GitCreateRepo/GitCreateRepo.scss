@@ -42,4 +42,13 @@
     margin-bottom: var(--icon-spacing);
     font-size: 10px;
   }
+
+  &__info {
+    font-size: 10px;
+    color: var(--gray-20);
+  }
+
+  &__info__emphasis {
+    color: var(--theme-green);
+  }
 }

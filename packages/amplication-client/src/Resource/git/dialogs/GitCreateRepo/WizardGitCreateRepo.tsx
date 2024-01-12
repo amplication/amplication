@@ -78,13 +78,16 @@ export default function WizardGitCreateRepo({
 
   const handleNameChange = useCallback(
     (event) => {
+      const processedName = event.target.value
+        .replace(/[^a-zA-Z0-9.\-_]/g, "-") // Replace characters other than ASCII letters, digits, ., -, and _ with -
+        .replace(/-{2,}/g, "-"); // Replace consecutive dashes with a single dash
       setCreateRepositoryInput({
         ...createRepositoryInput,
-        name: event.target.value,
+        name: processedName,
       });
       const gitRepositoryUrl = getGitRepositoryDetails({
         organization: gitOrganization,
-        repositoryName: event.target.value,
+        repositoryName: processedName,
         groupName: createRepositoryInput.groupName,
       }).repositoryUrl;
       setGitRepositoryUrl(gitRepositoryUrl);
@@ -155,6 +158,18 @@ export default function WizardGitCreateRepo({
         showError={false}
         onChange={handleNameChange}
       />
+
+      {!!createRepositoryInput.name && (
+        <div className={`${CLASS_NAME}__info`}>
+          <p className={`${CLASS_NAME}__info__emphasis`}>
+            {"Your new repository will be created as "}{" "}
+            <b>{createRepositoryInput.name}.</b>
+          </p>
+          {
+            "The repository name can only contain ASCII letters, digits, and the characters ., -, and _."
+          }
+        </div>
+      )}
 
       <HorizontalRule />
 
