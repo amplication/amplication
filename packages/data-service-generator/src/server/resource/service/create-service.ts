@@ -29,7 +29,6 @@ import {
   getMethods,
   importNames,
   interpolate,
-  removeClassMethodByName,
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,
