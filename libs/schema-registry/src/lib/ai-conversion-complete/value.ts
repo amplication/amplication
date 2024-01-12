@@ -1,6 +1,12 @@
 import { IsBoolean, IsString } from "class-validator";
 
 export class Value {
+  @IsString()
+  actionId!: string;
+
+  @IsString()
+  requestUniqueId!: string;
+
   @IsBoolean()
   isGptConversionCompleted!: boolean;
 
@@ -9,7 +15,4 @@ export class Value {
 
   @IsString()
   errorMessage?: string;
-
-  @IsString()
-  requestUniqueId!: string;
 }

@@ -1,5 +1,3 @@
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Inject, Injectable } from "@nestjs/common";
 import { KafkaProducerService } from "../kafka/kafka.producer.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { TemplateService } from "../template/template.service";
@@ -9,6 +7,8 @@ import {
   AiConversationStart,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class ConversationTypeService extends ConversationTypeServiceBase {
@@ -23,7 +23,7 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
   }
 
   async startConversionSync(message: AiConversationStart.Value): Promise<{
-    isCompleted: boolean;
+    isCompletedSuccessfully: boolean;
     requestUniqueId: string;
     result: string;
   }> {
@@ -48,14 +48,14 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
       });
 
       return {
-        isCompleted: true,
+        isCompletedSuccessfully: true,
         requestUniqueId,
-        result,
+        result: result ?? "",
       };
     } catch (error) {
       this.logger.error(error.message, error);
       return {
-        isCompleted: false,
+        isCompletedSuccessfully: false,
         requestUniqueId,
         result: error.message,
       };
@@ -65,24 +65,27 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
   async startConversion(message: AiConversationStart.Value): Promise<void> {
     const result = await this.startConversionSync(message);
     this.emitGptKafkaMessage(
-      result.isCompleted,
+      message.actionId,
       result.requestUniqueId,
+      result.isCompletedSuccessfully,
       result.result
     );
   }
 
   private emitGptKafkaMessage(
-    isCompleted: boolean,
+    actionId: string,
     requestUniqueId: string,
+    isCompletedSuccessfully: boolean,
     result: string
   ): void {
-    const key = <AiConversationComplete.Key>{
+    const key: AiConversationComplete.Key = {
       requestUniqueId,
     };
-    const value = <AiConversationComplete.Value>{
-      isGptConversionCompleted: isCompleted,
-      ...(isCompleted ? { result } : { errorMessage: result }),
+    const value: AiConversationComplete.Value = {
+      actionId,
       requestUniqueId,
+      isGptConversionCompleted: isCompletedSuccessfully,
+      ...(isCompletedSuccessfully ? { result } : { errorMessage: result }),
     };
 
     this.kafkaService
