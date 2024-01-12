@@ -2062,7 +2062,8 @@ export type Query = {
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
-  serviceTopics: Array<ServiceTopics>;
+  serviceTopics?: Maybe<ServiceTopics>;
+  serviceTopicsList: Array<ServiceTopics>;
   topic?: Maybe<Topic>;
   topics: Array<Topic>;
   userAction: UserAction;
@@ -2354,6 +2355,11 @@ export type QueryServiceSettingsArgs = {
 
 
 export type QueryServiceTopicsArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryServiceTopicsListArgs = {
   orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;

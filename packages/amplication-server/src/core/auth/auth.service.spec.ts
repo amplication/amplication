@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { PrismaService, User, UserRole } from "../../prisma";
-import { JwtService, JwtSignOptions } from "@nestjs/jwt";
+import { JwtService } from "@nestjs/jwt";
 import { Role } from "../../enums/Role";
 import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
@@ -388,12 +388,8 @@ describe("AuthService", () => {
       type: EnumTokenType.User,
     };
 
-    const signOptions: JwtSignOptions = {
-      expiresIn: "1h",
-    };
-
     expect(signMock).toHaveBeenCalledTimes(1);
-    expect(signMock).toHaveBeenCalledWith(jwtPayload, signOptions);
+    expect(signMock).toHaveBeenCalledWith(jwtPayload);
   });
 
   it("login for existing user", async () => {

@@ -20,6 +20,9 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Env } from "../../env";
 import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
@@ -136,6 +139,35 @@ const createProjectMock = jest.fn(() => {
   return EXAMPLE_PROJECT;
 });
 
+const billingServiceIsBillingEnabledMock = jest.fn();
+
+const billingServiceMock = {
+  getMeteredEntitlement: jest.fn(() => {
+    return {
+      usageLimit: undefined,
+    } as unknown as MeteredEntitlement;
+  }),
+  getNumericEntitlement: jest.fn(() => {
+    return {};
+  }),
+  getBooleanEntitlement: jest.fn(() => {
+    return {};
+  }),
+  reportUsage: jest.fn(() => {
+    return {};
+  }),
+  provisionCustomer: jest.fn(() => {
+    return {};
+  }),
+  provisionPreviewCustomer: jest.fn(() => {
+    return {};
+  }),
+};
+// This is important to mock the getter!!!
+Object.defineProperty(billingServiceMock, "isBillingEnabled", {
+  get: billingServiceIsBillingEnabledMock,
+});
+
 const resourceCreateSampleResourceMock = jest.fn();
 const mockUpdateProjectLicensed = jest.fn();
 const mockUpdateServiceLicensed = jest.fn();
@@ -192,23 +224,7 @@ describe("WorkspaceService", () => {
         },
         {
           provide: BillingService,
-          useValue: {
-            getMeteredEntitlement: jest.fn(() => {
-              return {};
-            }),
-            getNumericEntitlement: jest.fn(() => {
-              return {};
-            }),
-            provisionCustomer: jest.fn(() => {
-              return {};
-            }),
-            reportUsage: jest.fn(() => {
-              return {};
-            }),
-            provisionPreviewCustomer: jest.fn(() => {
-              return {};
-            }),
-          },
+          useValue: billingServiceMock,
         },
         {
           provide: PrismaService,
@@ -324,40 +340,120 @@ describe("WorkspaceService", () => {
     );
   });
 
-  it("should create a workspace", async () => {
-    const args = {
-      accountId: EXAMPLE_ACCOUNT_ID,
-      args: {
-        data: {
-          name: EXAMPLE_WORKSPACE_NAME,
-        },
-      },
-    };
-    const prismaArgs = {
-      ...args.args,
-      data: {
-        ...args.args.data,
-        users: {
-          create: {
-            account: { connect: { id: args.accountId } },
-            userRoles: {
-              create: {
-                role: Role.OrganizationAdmin,
-              },
-            },
-            isOwner: true,
+  describe("when billing is enabled", () => {
+    beforeEach(() => {
+      billingServiceIsBillingEnabledMock.mockReturnValue(true);
+    });
+    it("should create a workspace if block workspace creation is false", async () => {
+      billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+        hasAccess: false,
+      } as unknown as BooleanEntitlement);
+
+      const args = {
+        accountId: EXAMPLE_ACCOUNT_ID,
+        args: {
+          data: {
+            name: EXAMPLE_WORKSPACE_NAME,
           },
         },
-      },
-      include: {
-        users: true,
-      },
-    };
-    expect(await service.createWorkspace(args.accountId, args.args)).toEqual(
-      EXAMPLE_WORKSPACE
-    );
-    expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
-    expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
+      };
+      const prismaArgs = {
+        ...args.args,
+        data: {
+          ...args.args.data,
+          users: {
+            create: {
+              account: { connect: { id: args.accountId } },
+              userRoles: {
+                create: {
+                  role: Role.OrganizationAdmin,
+                },
+              },
+              isOwner: true,
+            },
+          },
+        },
+        include: {
+          users: true,
+        },
+      };
+      expect(await service.createWorkspace(args.accountId, args.args)).toEqual(
+        EXAMPLE_WORKSPACE
+      );
+      expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
+      expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
+    });
+
+    it("should throw a billing limitation error if the block workspace creation entitlement is true", async () => {
+      billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+        hasAccess: true,
+      } as unknown as BooleanEntitlement);
+
+      const args = {
+        accountId: EXAMPLE_ACCOUNT_ID,
+        args: {
+          data: {
+            name: EXAMPLE_WORKSPACE_NAME,
+          },
+        },
+      };
+
+      await expect(
+        service.createWorkspace(args.accountId, args.args)
+      ).rejects.toThrow(
+        new BillingLimitationError(
+          "Your current plan does not allow creating workspaces",
+          BillingFeature.BlockWorkspaceCreation
+        )
+      );
+
+      expect(prismaWorkspaceCreateMock).toBeCalledTimes(0);
+    });
+  });
+
+  describe("when billing is disabled", () => {
+    beforeEach(() => {
+      billingServiceIsBillingEnabledMock.mockReturnValue(false);
+    });
+    it("should create a workspace even if the block workspace creation entitlement is true", async () => {
+      billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+        hasAccess: true,
+      } as unknown as BooleanEntitlement);
+
+      const args = {
+        accountId: EXAMPLE_ACCOUNT_ID,
+        args: {
+          data: {
+            name: EXAMPLE_WORKSPACE_NAME,
+          },
+        },
+      };
+      const prismaArgs = {
+        ...args.args,
+        data: {
+          ...args.args.data,
+          users: {
+            create: {
+              account: { connect: { id: args.accountId } },
+              userRoles: {
+                create: {
+                  role: Role.OrganizationAdmin,
+                },
+              },
+              isOwner: true,
+            },
+          },
+        },
+        include: {
+          users: true,
+        },
+      };
+      expect(await service.createWorkspace(args.accountId, args.args)).toEqual(
+        EXAMPLE_WORKSPACE
+      );
+      expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
+      expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
+    });
   });
 
   it("should create a preview workspace", async () => {

@@ -134,7 +134,11 @@ export class WorkspaceResolver {
     @UserEntity() currentUser: User,
     @Args() args: CreateOneWorkspaceArgs
   ): Promise<Workspace | null> {
-    return this.workspaceService.createWorkspace(currentUser.account.id, args);
+    return this.workspaceService.createWorkspace(
+      currentUser.account.id,
+      args,
+      currentUser.workspace.id
+    );
   }
 
   @Mutation(() => Invitation, {
