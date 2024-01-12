@@ -29,7 +29,6 @@ import {
   getMethods,
   importNames,
   interpolate,
-  removeClassMethodByName,
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,
@@ -217,7 +216,10 @@ async function createServiceBaseModule({
           (moduleContainer && !moduleContainer?.enabled && action) ||
           (action && !action.enabled)
         ) {
-          removeClassMethodByName(classDeclaration, action.name);
+          this.logger.debug(
+            `Removing ${action.name} from ${entityName} - not implemented yet`
+          );
+          // removeClassMethodByName(classDeclaration, action.name);
         }
       }
     )
@@ -233,7 +235,10 @@ async function createServiceBaseModule({
           (moduleContainer && !moduleContainer?.enabled && action) ||
           (action && !action.enabled)
         ) {
-          removeClassMethodByName(classDeclaration, action.name);
+          this.logger.debug(
+            `Removing ${action.name} from ${entityName} - not implemented yet`
+          );
+          // removeClassMethodByName(classDeclaration, action.name);
         }
       }
     )
@@ -245,7 +250,10 @@ async function createServiceBaseModule({
       (moduleContainer && !moduleContainer?.enabled && action) ||
       (action && !action.enabled)
     ) {
-      removeClassMethodByName(classDeclaration, action.name);
+      this.logger.debug(
+        `Removing ${action.name} from ${entityName} - not implemented yet`
+      );
+      // removeClassMethodByName(classDeclaration, action.name);
     }
   });
 
