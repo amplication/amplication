@@ -1,0 +1,13 @@
+@import "../../../style/index.scss";
+
+.breaking-the-monolith-options {
+  padding: var(--double-spacing);
+
+  &__action-button {
+    margin-left: auto;
+  }
+
+  &__link {
+    color: var(--theme-turquoise);
+  }
+}
