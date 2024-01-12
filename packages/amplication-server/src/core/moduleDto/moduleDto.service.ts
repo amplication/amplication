@@ -200,6 +200,7 @@ export class ModuleDtoService extends BlockTypeService<
               },
               data: {
                 ...defaultDtos[dto.dtoType],
+                properties: [], //default DTOs do not have properties
                 displayName: defaultDtos[dto.dtoType].name,
                 enabled: dto.enabled,
               },
@@ -260,6 +261,7 @@ export class ModuleDtoService extends BlockTypeService<
                 ...defaultDtos[dto],
                 displayName: defaultDtos[dto].name,
                 relatedEntityId: relatedEntity.id,
+                properties: [], //default DTOs do not have properties
                 parentBlock: {
                   connect: {
                     id: moduleId,
@@ -335,6 +337,7 @@ export class ModuleDtoService extends BlockTypeService<
               },
               data: {
                 ...defaultDtos[dto.dtoType],
+                properties: [], //default DTOs do not have properties
                 displayName: defaultDtos[dto.dtoType].name,
                 enabled: dto.enabled,
               },
@@ -404,6 +407,10 @@ export class ModuleDtoService extends BlockTypeService<
       );
     }
 
+    if (dto.dtoType !== EnumModuleDtoType.Custom) {
+      throw new AmplicationError("Cannot add properties on default DTOs");
+    }
+
     const existingProperty = dto.properties.find(
       (property) => property.name === args.data.name
     );
@@ -444,6 +451,10 @@ export class ModuleDtoService extends BlockTypeService<
       throw new AmplicationError(
         `Module DTO not found, ID: ${args.where.moduleDto.id}`
       );
+    }
+
+    if (dto.dtoType !== EnumModuleDtoType.Custom) {
+      throw new AmplicationError("Cannot update properties on default DTOs");
     }
 
     const existingPropertyIndex = dto.properties.findIndex(
@@ -502,6 +513,9 @@ export class ModuleDtoService extends BlockTypeService<
       throw new AmplicationError(
         `Module DTO not found, ID: ${args.where.moduleDto.id}`
       );
+    }
+    if (dto.dtoType !== EnumModuleDtoType.Custom) {
+      throw new AmplicationError("Cannot delete properties from default DTOs");
     }
 
     const existingPropertyIndex = dto.properties.findIndex(
