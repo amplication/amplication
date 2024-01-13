@@ -23,6 +23,7 @@ import { KafkaModule } from "@amplication/util/nestjs/kafka";
 import { GitProviderModule } from "../git/git.provider.module";
 import { ModuleModule } from "../module/module.module";
 import { ModuleActionModule } from "../moduleAction/moduleAction.module";
+import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { ModuleActionModule } from "../moduleAction/moduleAction.module";
     GitProviderModule,
     ModuleModule,
     ModuleActionModule,
+    ModuleDtoModule,
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],

@@ -1,20 +1,24 @@
 import {
-  clientDirectories,
   DSGResourceData,
   Entity,
+  EntityActionsMap,
   EntityField,
   EnumDataType,
-  LookupResolvedProperties,
-  PluginInstallation,
-  serverDirectories,
-  types,
-  ModuleAction,
-  EntityActionsMap,
   EnumModuleActionType,
+  LookupResolvedProperties,
+  ModuleAction,
   ModuleContainer,
+  PluginInstallation,
+  clientDirectories,
   entityDefaultActions,
   entityRelatedFieldDefaultActions,
+  serverDirectories,
+  types,
 } from "@amplication/code-gen-types";
+import {
+  getDefaultActionsForEntity,
+  getDefaultActionsForRelationField,
+} from "@amplication/dsg-utils";
 import { ILogger } from "@amplication/util/logging";
 import { camelCase } from "camel-case";
 import { get, isEmpty, trim } from "lodash";
@@ -26,10 +30,6 @@ import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { resolveTopicNames } from "./utils/message-broker";
-import {
-  getDefaultActionsForEntity,
-  getDefaultActionsForRelationField,
-} from "@amplication/dsg-utils";
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
@@ -288,14 +288,24 @@ function prepareEntityActions(
         keyof typeof EnumModuleActionType
       >;
 
+      const currentEntityActions = moduleActions.filter(
+        (moduleAction) => moduleAction.parentBlockId === moduleContainerId
+      );
+
+      const entityCustomAction = currentEntityActions.find(
+        (moduleAction) =>
+          moduleAction.actionType === EnumModuleActionType.Custom
+      );
+
       //create 2 arrays for default and relations
       const entityDefaultEntries = Object.fromEntries(
         actionKeys.map((key) => {
-          const moduleAction = moduleActions.find(
+          if (key === EnumModuleActionType.Custom) {
+            return [];
+          }
+          const moduleAction = currentEntityActions.find(
             (moduleAction) =>
-              moduleAction.parentBlockId === moduleContainerId &&
-              moduleAction.actionType === key &&
-              !moduleAction.fieldPermanentId
+              moduleAction.actionType === key && !moduleAction.fieldPermanentId
           );
           //return the defaultAction if the relevant actions was not provided
           return [key, moduleAction || defaultActions[key]];
@@ -305,9 +315,8 @@ function prepareEntityActions(
       const relatedFieldsDefaultEntries = Object.fromEntries(
         relationFields.map((relatedField) => {
           const actions = actionKeys.map((key) => {
-            const moduleAction = moduleActions.find(
+            const moduleAction = currentEntityActions.find(
               (moduleAction) =>
-                moduleAction.parentBlockId === moduleContainerId &&
                 moduleAction.actionType === key &&
                 moduleAction.fieldPermanentId === relatedField.permanentId
             );
@@ -323,7 +332,7 @@ function prepareEntityActions(
         {
           entityDefaultActions: entityDefaultEntries,
           relatedFieldsDefaultActions: relatedFieldsDefaultEntries,
-          customActions: [],
+          customActions: entityCustomAction,
         },
       ];
     })
