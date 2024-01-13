@@ -3,6 +3,7 @@ import { IBlock } from "../../../models";
 import { EnumModuleActionType } from "./EnumModuleActionType";
 import { EnumModuleActionGqlOperation } from "./EnumModuleActionGqlOperation";
 import { EnumModuleActionRestVerb } from "./EnumModuleActionRestVerb";
+import { PropertyTypeDef } from "../../moduleDto/dto/propertyTypes/PropertyTypeDef";
 
 @ObjectType({
   isAbstract: true,
@@ -43,4 +44,14 @@ export class ModuleAction extends IBlock {
     nullable: true,
   })
   path!: string;
+
+  @Field(() => PropertyTypeDef, {
+    nullable: true,
+  })
+  inputType?: PropertyTypeDef;
+
+  @Field(() => PropertyTypeDef, {
+    nullable: true,
+  })
+  outputType?: PropertyTypeDef;
 }

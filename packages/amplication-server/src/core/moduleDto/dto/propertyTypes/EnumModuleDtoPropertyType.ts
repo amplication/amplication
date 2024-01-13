@@ -7,7 +7,7 @@ export enum EnumModuleDtoPropertyType {
   Float = "Float",
   DateTime = "DateTime",
   Enum = "Enum",
-  DTO = "DTO",
+  Dto = "Dto",
   Json = "Json",
   Null = "Null",
   Undefined = "Undefined",
