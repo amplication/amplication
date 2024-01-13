@@ -12,4 +12,10 @@
   .select-field {
     min-width: var(--form-field-long);
   }
+
+  .text-input {
+    &--textarea {
+      width: 100%;
+    }
+  }
 }
