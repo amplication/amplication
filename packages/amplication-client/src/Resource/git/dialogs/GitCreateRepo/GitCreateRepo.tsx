@@ -22,6 +22,7 @@ import "./GitCreateRepo.scss";
 import { GitSelectMenu } from "../../select/GitSelectMenu";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 import { GET_GROUPS } from "../../queries/gitProvider";
+import { GIT_REPO_CREATION_MESSAGE, GIT_REPO_NAME_RULES } from "./constants";
 
 type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
@@ -136,15 +137,11 @@ export default function GitCreateRepo({
                 textStyle={EnumTextStyle.Subtle}
                 textColor={EnumTextColor.ThemeGreen}
               >
-                {"Your new repository will be created as "}
-                <b>{processGitRepositoryName(values.name)}.</b>
+                {GIT_REPO_CREATION_MESSAGE}
+                {processGitRepositoryName(values.name)}.
               </Text>
 
-              <Text textStyle={EnumTextStyle.Label}>
-                {
-                  "The repository name can only contain ASCII letters, digits, and the characters ., -, and _."
-                }
-              </Text>
+              <Text textStyle={EnumTextStyle.Label}>{GIT_REPO_NAME_RULES}</Text>
             </FlexItem>
           )}
 
