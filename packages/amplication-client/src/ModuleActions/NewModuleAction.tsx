@@ -53,7 +53,6 @@ const NewModuleAction = ({ resourceId, moduleId, onActionCreated }: Props) => {
 
   const {
     createModuleAction,
-    createModuleActionData: data,
     createModuleActionError: error,
     createModuleActionLoading: loading,
   } = useModuleAction();
@@ -70,12 +69,8 @@ const NewModuleAction = ({ resourceId, moduleId, onActionCreated }: Props) => {
       createModuleAction({
         variables: {
           data: {
-            ...data,
             displayName,
             name,
-            gqlOperation: models.EnumModuleActionGqlOperation.Query,
-            restVerb: models.EnumModuleActionRestVerb.Get,
-            path: `/:id/${kebabCase(name)}`,
             resource: { connect: { id: resourceId } },
             parentBlock: { connect: { id: moduleId } },
           },
@@ -94,7 +89,15 @@ const NewModuleAction = ({ resourceId, moduleId, onActionCreated }: Props) => {
         });
       setDialogOpen(false);
     },
-    [createModuleAction, resourceId, moduleId, onActionCreated, setDialogOpen]
+    [
+      createModuleAction,
+      resourceId,
+      moduleId,
+      onActionCreated,
+      history,
+      currentWorkspace?.id,
+      currentProject?.id,
+    ]
   );
 
   const errorMessage = formatError(error);

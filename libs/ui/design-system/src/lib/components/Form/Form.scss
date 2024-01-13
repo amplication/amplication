@@ -48,4 +48,9 @@
       }
     }
   }
+
+  .text-input,
+  .select-field {
+    min-width: var(--form-field-long);
+  }
 }

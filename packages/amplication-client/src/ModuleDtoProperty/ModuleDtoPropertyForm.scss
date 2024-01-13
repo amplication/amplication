@@ -7,12 +7,4 @@
   .toggle-field {
     margin-bottom: 0;
   }
-
-  .amp-name-field,
-  .select-field,
-  .text-input {
-    flex: 1;
-
-    max-width: var(--form-field-long);
-  }
 }

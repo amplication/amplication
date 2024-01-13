@@ -1,10 +1,13 @@
 import {
+  EnumContentAlign,
+  EnumFlexDirection,
   EnumFlexItemMargin,
   EnumTextStyle,
   FlexItem,
   Snackbar,
   TabContentTitle,
   Text,
+  Toggle,
 } from "@amplication/ui/design-system";
 import { useCallback, useContext, useEffect } from "react";
 import { match } from "react-router-dom";
@@ -64,9 +67,6 @@ const ModuleAction = ({ match }: Props) => {
   const handleSubmit = useCallback(
     (data) => {
       updateModuleAction({
-        onCompleted: () => {
-          addEntity(moduleActionId);
-        },
         variables: {
           where: {
             id: moduleActionId,
@@ -75,10 +75,20 @@ const ModuleAction = ({ match }: Props) => {
             ...data,
           },
         },
+        onCompleted: () => {
+          addEntity(moduleActionId);
+        },
       }).catch(console.error);
     },
     [updateModuleAction, moduleActionId, addEntity]
   );
+
+  const onEnableChanged = useCallback(() => {
+    if (!data?.moduleAction) return;
+    handleSubmit({
+      enabled: !data.moduleAction.enabled,
+    });
+  }, [data?.moduleAction, handleSubmit]);
 
   const hasError = Boolean(error) || Boolean(updateModuleActionError);
 
@@ -95,7 +105,15 @@ const ModuleAction = ({ match }: Props) => {
           title={data?.moduleAction?.displayName}
           subTitle={data?.moduleAction?.description}
         />
-        <FlexItem.FlexEnd>
+        <FlexItem.FlexEnd
+          direction={EnumFlexDirection.Row}
+          alignSelf={EnumContentAlign.Start}
+        >
+          <Toggle
+            name={"enabled"}
+            onValueChange={onEnableChanged}
+            checked={data?.moduleAction?.enabled}
+          ></Toggle>
           {data?.moduleAction && isCustomAction && (
             <DeleteModuleAction moduleAction={data?.moduleAction} />
           )}
