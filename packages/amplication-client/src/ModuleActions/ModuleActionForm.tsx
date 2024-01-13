@@ -1,4 +1,12 @@
-import { FlexItem, Form } from "@amplication/ui/design-system";
+import {
+  EnumFlexItemMargin,
+  EnumPanelStyle,
+  FlexItem,
+  Form,
+  Panel,
+  TabContentTitle,
+  TextField,
+} from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import { omit } from "lodash";
 import { useMemo } from "react";
@@ -28,6 +36,7 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "lockedByUserId",
   "lockedAt",
   "lockedByUser",
+  "actionType",
 ];
 
 export const INITIAL_VALUES: Partial<models.ModuleAction> = {
@@ -102,6 +111,7 @@ const ModuleActionForm = ({
     >
       <Form>
         {!disabled && <FormikAutoSave debounceMS={1000} />}
+
         <FlexItem>
           <DisplayNameField
             name="displayName"
@@ -114,25 +124,45 @@ const ModuleActionForm = ({
             disabled={disabled || !isCustomAction}
           />
         </FlexItem>
+        <FlexItem margin={EnumFlexItemMargin.Bottom}>
+          <OptionalDescriptionField
+            name="description"
+            label="Description"
+            disabled={disabled}
+          />
+        </FlexItem>
+        <Panel panelStyle={EnumPanelStyle.Transparent}>
+          <TabContentTitle title="Types" />
 
-        <RestVerbSelectField
-          label={"Method"}
-          name={"restVerb"}
-          disabled={disabled || !isCustomAction}
-        ></RestVerbSelectField>
-        <GqlOperationSelectField
-          name={"gqlOperation"}
-          label={"Operation type"}
-          disabled={disabled || !isCustomAction}
-        ></GqlOperationSelectField>
+          <DtoPropertyTypesSelectField name="inputType" label="Input Type" />
+          <DtoPropertyTypesSelectField name="outputType" label="Output Type" />
+        </Panel>
 
-        <DtoPropertyTypesSelectField name="inputType" label="Input Type" />
-        <DtoPropertyTypesSelectField name="outputType" label="Output Type" />
-        <OptionalDescriptionField
-          name="description"
-          label="Description"
-          disabled={disabled}
-        />
+        <Panel panelStyle={EnumPanelStyle.Transparent}>
+          <TabContentTitle title="REST API" />
+
+          <FlexItem>
+            <RestVerbSelectField
+              label={"Method"}
+              name={"restVerb"}
+              disabled={disabled || !isCustomAction}
+            ></RestVerbSelectField>
+            <TextField
+              label="Path"
+              name="path"
+              disabled={disabled || !isCustomAction}
+            />
+          </FlexItem>
+        </Panel>
+
+        <Panel panelStyle={EnumPanelStyle.Transparent}>
+          <TabContentTitle title="GraphQL API" />
+          <GqlOperationSelectField
+            name={"gqlOperation"}
+            label={"Operation type"}
+            disabled={disabled || !isCustomAction}
+          ></GqlOperationSelectField>
+        </Panel>
       </Form>
     </Formik>
   );
