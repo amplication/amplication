@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createDataService when restapi is disabled creates app as expected 1`] = `
+exports[`when all default actions are disabled creates resource as expected 1`] = `
 {
   "admin-ui/.env": "PORT=3001
 REACT_APP_SERVER_URL=http://localhost:3000",
@@ -4840,6 +4840,600 @@ class UpdateCustomerArgs {
 
 export { UpdateCustomerArgs as UpdateCustomerArgs };
 ",
+  "server/src/customer/base/customer.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from "@nestjs/common";
+import request from "supertest";
+import { ACGuard } from "nest-access-control";
+import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
+import { ACLModule } from "../../auth/acl.module";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { map } from "rxjs";
+import { CustomerController } from "../customer.controller";
+import { CustomerService } from "../customer.service";
+
+const nonExistingId = "nonExistingId";
+const existingId = "existingId";
+const CREATE_INPUT = {
+  id: 42242424,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: "exampleEmail",
+  firstName: "exampleFirstName",
+  lastName: "exampleLastName",
+  isVip: "true",
+  birthData: new Date(),
+  averageSale: 42.424242424,
+  favoriteNumber: 42242424,
+  geoLocation: "exampleGeoLocation",
+  comments: "exampleComments",
+};
+const CREATE_RESULT = {
+  id: 42242424,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: "exampleEmail",
+  firstName: "exampleFirstName",
+  lastName: "exampleLastName",
+  isVip: "true",
+  birthData: new Date(),
+  averageSale: 42.424242424,
+  favoriteNumber: 42242424,
+  geoLocation: "exampleGeoLocation",
+  comments: "exampleComments",
+};
+const FIND_MANY_RESULT = [
+  {
+    id: 42242424,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    email: "exampleEmail",
+    firstName: "exampleFirstName",
+    lastName: "exampleLastName",
+    isVip: "true",
+    birthData: new Date(),
+    averageSale: 42.424242424,
+    favoriteNumber: 42242424,
+    geoLocation: "exampleGeoLocation",
+    comments: "exampleComments",
+  },
+];
+const FIND_ONE_RESULT = {
+  id: 42242424,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: "exampleEmail",
+  firstName: "exampleFirstName",
+  lastName: "exampleLastName",
+  isVip: "true",
+  birthData: new Date(),
+  averageSale: 42.424242424,
+  favoriteNumber: 42242424,
+  geoLocation: "exampleGeoLocation",
+  comments: "exampleComments",
+};
+
+const service = {
+  createCustomer() {
+    return CREATE_RESULT;
+  },
+  customers: () => FIND_MANY_RESULT,
+  customer: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: ["user"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
+describe("Customer", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: CustomerService,
+          useValue: service,
+        },
+      ],
+      controllers: [CustomerController],
+      imports: [ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test("POST /customers", async () => {
+    await request(app.getHttpServer())
+      .post("/customers")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        birthData: CREATE_RESULT.birthData.toISOString(),
+      });
+  });
+
+  test("GET /customers", async () => {
+    await request(app.getHttpServer())
+      .get("/customers")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+          birthData: FIND_MANY_RESULT[0].birthData.toISOString(),
+        },
+      ]);
+  });
+
+  test("GET /customers/:id non existing", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${"/customers"}/\${nonExistingId}\`)
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: \`No resource was found for {"\${"id"}":"\${nonExistingId}"}\`,
+        error: "Not Found",
+      });
+  });
+
+  test("GET /customers/:id existing", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${"/customers"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+        birthData: FIND_ONE_RESULT.birthData.toISOString(),
+      });
+  });
+
+  test("POST /customers existing resource", async () => {
+    const agent = request(app.getHttpServer());
+    await agent
+      .post("/customers")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        birthData: CREATE_RESULT.birthData.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post("/customers")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/customer/base/customer.controller.base.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { isRecordNotFoundError } from "../../prisma.util";
+import * as errors from "../../errors";
+import { Request } from "express";
+import { plainToClass } from "class-transformer";
+import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import { CustomerService } from "../customer.service";
+import { Public } from "../../decorators/public.decorator";
+import { CustomerCreateInput } from "./CustomerCreateInput";
+import { Customer } from "./Customer";
+import { CustomerFindManyArgs } from "./CustomerFindManyArgs";
+import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
+import { CustomerUpdateInput } from "./CustomerUpdateInput";
+import { OrderFindManyArgs } from "../../order/base/OrderFindManyArgs";
+import { Order } from "../../order/base/Order";
+import { OrderWhereUniqueInput } from "../../order/base/OrderWhereUniqueInput";
+
+export class CustomerControllerBase {
+  constructor(protected readonly service: CustomerService) {}
+  @common.Post()
+  @swagger.ApiCreatedResponse({ type: Customer })
+  async createCustomer(
+    @common.Body() data: CustomerCreateInput
+  ): Promise<Customer> {
+    return await this.service.createCustomer({
+      data: {
+        ...data,
+
+        organization: data.organization
+          ? {
+              connect: data.organization,
+            }
+          : undefined,
+
+        vipOrganization: data.vipOrganization
+          ? {
+              connect: data.vipOrganization,
+            }
+          : undefined,
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+  }
+
+  @common.Get()
+  @swagger.ApiOkResponse({ type: [Customer] })
+  @ApiNestedQuery(CustomerFindManyArgs)
+  async customers(@common.Req() request: Request): Promise<Customer[]> {
+    const args = plainToClass(CustomerFindManyArgs, request.query);
+    return this.service.customers({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+  }
+
+  @common.Get("/:id")
+  @swagger.ApiOkResponse({ type: Customer })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async customer(
+    @common.Param() params: CustomerWhereUniqueInput
+  ): Promise<Customer | null> {
+    const result = await this.service.customer({
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return result;
+  }
+
+  @common.Patch("/:id")
+  @swagger.ApiOkResponse({ type: Customer })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async updateCustomer(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() data: CustomerUpdateInput
+  ): Promise<Customer | null> {
+    try {
+      return await this.service.updateCustomer({
+        where: params,
+        data: {
+          ...data,
+
+          organization: data.organization
+            ? {
+                connect: data.organization,
+              }
+            : undefined,
+
+          vipOrganization: data.vipOrganization
+            ? {
+                connect: data.vipOrganization,
+              }
+            : undefined,
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          isVip: true,
+          birthData: true,
+          averageSale: true,
+          favoriteNumber: true,
+          geoLocation: true,
+          comments: true,
+          favoriteColors: true,
+          customerType: true,
+
+          organization: {
+            select: {
+              id: true,
+            },
+          },
+
+          vipOrganization: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.Delete("/:id")
+  @swagger.ApiOkResponse({ type: Customer })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async deleteCustomer(
+    @common.Param() params: CustomerWhereUniqueInput
+  ): Promise<Customer | null> {
+    try {
+      return await this.service.deleteCustomer({
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          isVip: true,
+          birthData: true,
+          averageSale: true,
+          favoriteNumber: true,
+          geoLocation: true,
+          comments: true,
+          favoriteColors: true,
+          customerType: true,
+
+          organization: {
+            select: {
+              id: true,
+            },
+          },
+
+          vipOrganization: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @Public()
+  @common.Get("/:id/orders")
+  @ApiNestedQuery(OrderFindManyArgs)
+  async findOrders(
+    @common.Req() request: Request,
+    @common.Param() params: CustomerWhereUniqueInput
+  ): Promise<Order[]> {
+    const query = plainToClass(OrderFindManyArgs, request.query);
+    const results = await this.service.findOrders(params.id, {
+      ...query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/orders")
+  async connectOrders(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() body: OrderWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        connect: body,
+      },
+    };
+    await this.service.updateCustomer({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/orders")
+  async updateOrders(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() body: OrderWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        set: body,
+      },
+    };
+    await this.service.updateCustomer({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/orders")
+  async disconnectOrders(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() body: OrderWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateCustomer({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+}
+",
   "server/src/customer/base/customer.module.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -5119,13 +5713,28 @@ export class CustomerServiceBase {
   }
 }
 ",
+  "server/src/customer/customer.controller.ts": "import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { CustomerService } from "./customer.service";
+import { CustomerControllerBase } from "./base/customer.controller.base";
+
+@swagger.ApiTags("customers")
+@common.Controller("customers")
+export class CustomerController extends CustomerControllerBase {
+  constructor(protected readonly service: CustomerService) {
+    super(service);
+  }
+}
+",
   "server/src/customer/customer.module.ts": "import { Module } from "@nestjs/common";
 import { CustomerModuleBase } from "./base/customer.module.base";
 import { CustomerService } from "./customer.service";
+import { CustomerController } from "./customer.controller";
 import { CustomerResolver } from "./customer.resolver";
 
 @Module({
   imports: [CustomerModuleBase],
+  controllers: [CustomerController],
   providers: [CustomerService, CustomerResolver],
   exports: [CustomerService],
 })
@@ -5671,6 +6280,327 @@ class EmptyWhereUniqueInput {
 
 export { EmptyWhereUniqueInput as EmptyWhereUniqueInput };
 ",
+  "server/src/empty/base/empty.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from "@nestjs/common";
+import request from "supertest";
+import { ACGuard } from "nest-access-control";
+import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
+import { ACLModule } from "../../auth/acl.module";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { map } from "rxjs";
+import { EmptyController } from "../empty.controller";
+import { EmptyService } from "../empty.service";
+
+const nonExistingId = "nonExistingId";
+const existingId = "existingId";
+const CREATE_INPUT = {
+  id: "exampleId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const CREATE_RESULT = {
+  id: "exampleId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const FIND_MANY_RESULT = [
+  {
+    id: "exampleId",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+const FIND_ONE_RESULT = {
+  id: "exampleId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const service = {
+  createEmpty() {
+    return CREATE_RESULT;
+  },
+  empties: () => FIND_MANY_RESULT,
+  empty: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: ["user"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
+describe("Empty", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: EmptyService,
+          useValue: service,
+        },
+      ],
+      controllers: [EmptyController],
+      imports: [ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test("POST /empties", async () => {
+    await request(app.getHttpServer())
+      .post("/empties")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test("GET /empties", async () => {
+    await request(app.getHttpServer())
+      .get("/empties")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
+  });
+
+  test("GET /empties/:id non existing", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${"/empties"}/\${nonExistingId}\`)
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: \`No resource was found for {"\${"id"}":"\${nonExistingId}"}\`,
+        error: "Not Found",
+      });
+  });
+
+  test("GET /empties/:id existing", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${"/empties"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test("POST /empties existing resource", async () => {
+    const agent = request(app.getHttpServer());
+    await agent
+      .post("/empties")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post("/empties")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/empty/base/empty.controller.base.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { isRecordNotFoundError } from "../../prisma.util";
+import * as errors from "../../errors";
+import { Request } from "express";
+import { plainToClass } from "class-transformer";
+import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import { EmptyService } from "../empty.service";
+import { EmptyCreateInput } from "./EmptyCreateInput";
+import { Empty } from "./Empty";
+import { EmptyFindManyArgs } from "./EmptyFindManyArgs";
+import { EmptyWhereUniqueInput } from "./EmptyWhereUniqueInput";
+import { EmptyUpdateInput } from "./EmptyUpdateInput";
+
+export class EmptyControllerBase {
+  constructor(protected readonly service: EmptyService) {}
+  @common.Post()
+  @swagger.ApiCreatedResponse({ type: Empty })
+  async createEmpty(@common.Body() data: EmptyCreateInput): Promise<Empty> {
+    return await this.service.createEmpty({
+      data: data,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
+  @common.Get()
+  @swagger.ApiOkResponse({ type: [Empty] })
+  @ApiNestedQuery(EmptyFindManyArgs)
+  async empties(@common.Req() request: Request): Promise<Empty[]> {
+    const args = plainToClass(EmptyFindManyArgs, request.query);
+    return this.service.empties({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
+  @common.Get("/:id")
+  @swagger.ApiOkResponse({ type: Empty })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async empty(
+    @common.Param() params: EmptyWhereUniqueInput
+  ): Promise<Empty | null> {
+    const result = await this.service.empty({
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return result;
+  }
+
+  @common.Patch("/:id")
+  @swagger.ApiOkResponse({ type: Empty })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async updateEmpty(
+    @common.Param() params: EmptyWhereUniqueInput,
+    @common.Body() data: EmptyUpdateInput
+  ): Promise<Empty | null> {
+    try {
+      return await this.service.updateEmpty({
+        where: params,
+        data: data,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.Delete("/:id")
+  @swagger.ApiOkResponse({ type: Empty })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async deleteEmpty(
+    @common.Param() params: EmptyWhereUniqueInput
+  ): Promise<Empty | null> {
+    try {
+      return await this.service.deleteEmpty({
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+}
+",
   "server/src/empty/base/empty.module.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -5807,13 +6737,28 @@ export class EmptyServiceBase {
   }
 }
 ",
+  "server/src/empty/empty.controller.ts": "import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { EmptyService } from "./empty.service";
+import { EmptyControllerBase } from "./base/empty.controller.base";
+
+@swagger.ApiTags("empties")
+@common.Controller("empties")
+export class EmptyController extends EmptyControllerBase {
+  constructor(protected readonly service: EmptyService) {
+    super(service);
+  }
+}
+",
   "server/src/empty/empty.module.ts": "import { Module } from "@nestjs/common";
 import { EmptyModuleBase } from "./base/empty.module.base";
 import { EmptyService } from "./empty.service";
+import { EmptyController } from "./empty.controller";
 import { EmptyResolver } from "./empty.resolver";
 
 @Module({
   imports: [EmptyModuleBase],
+  controllers: [EmptyController],
   providers: [EmptyService, EmptyResolver],
   exports: [EmptyService],
 })
@@ -6810,6 +7755,390 @@ class UpdateOrderArgs {
 
 export { UpdateOrderArgs as UpdateOrderArgs };
 ",
+  "server/src/order/base/order.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from "@nestjs/common";
+import request from "supertest";
+import { ACGuard } from "nest-access-control";
+import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
+import { ACLModule } from "../../auth/acl.module";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { map } from "rxjs";
+import { OrderController } from "../order.controller";
+import { OrderService } from "../order.service";
+
+const nonExistingId = "nonExistingId";
+const existingId = "existingId";
+const CREATE_INPUT = {
+  id: "exampleId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const CREATE_RESULT = {
+  id: "exampleId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const FIND_MANY_RESULT = [
+  {
+    id: "exampleId",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+const FIND_ONE_RESULT = {
+  id: "exampleId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const service = {
+  createOrder() {
+    return CREATE_RESULT;
+  },
+  orders: () => FIND_MANY_RESULT,
+  order: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: ["user"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
+describe("Order", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: OrderService,
+          useValue: service,
+        },
+      ],
+      controllers: [OrderController],
+      imports: [ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test("POST /orders", async () => {
+    await request(app.getHttpServer())
+      .post("/orders")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test("GET /orders", async () => {
+    await request(app.getHttpServer())
+      .get("/orders")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
+  });
+
+  test("GET /orders/:id non existing", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${"/orders"}/\${nonExistingId}\`)
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: \`No resource was found for {"\${"id"}":"\${nonExistingId}"}\`,
+        error: "Not Found",
+      });
+  });
+
+  test("GET /orders/:id existing", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${"/orders"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test("POST /orders existing resource", async () => {
+    const agent = request(app.getHttpServer());
+    await agent
+      .post("/orders")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post("/orders")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/order/base/order.controller.base.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { isRecordNotFoundError } from "../../prisma.util";
+import * as errors from "../../errors";
+import { Request } from "express";
+import { plainToClass } from "class-transformer";
+import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import { OrderService } from "../order.service";
+import { Public } from "../../decorators/public.decorator";
+import { OrderCreateInput } from "./OrderCreateInput";
+import { Order } from "./Order";
+import { OrderFindManyArgs } from "./OrderFindManyArgs";
+import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
+import { OrderUpdateInput } from "./OrderUpdateInput";
+
+export class OrderControllerBase {
+  constructor(protected readonly service: OrderService) {}
+  @Public()
+  @common.Post()
+  @swagger.ApiCreatedResponse({ type: Order })
+  async createOrder(@common.Body() data: OrderCreateInput): Promise<Order> {
+    return await this.service.createOrder({
+      data: {
+        ...data,
+
+        customer: {
+          connect: data.customer,
+        },
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+  }
+
+  @Public()
+  @common.Get()
+  @swagger.ApiOkResponse({ type: [Order] })
+  @ApiNestedQuery(OrderFindManyArgs)
+  async orders(@common.Req() request: Request): Promise<Order[]> {
+    const args = plainToClass(OrderFindManyArgs, request.query);
+    return this.service.orders({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+  }
+
+  @Public()
+  @common.Get("/:id")
+  @swagger.ApiOkResponse({ type: Order })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async order(
+    @common.Param() params: OrderWhereUniqueInput
+  ): Promise<Order | null> {
+    const result = await this.service.order({
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return result;
+  }
+
+  @Public()
+  @common.Patch("/:id")
+  @swagger.ApiOkResponse({ type: Order })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async updateOrder(
+    @common.Param() params: OrderWhereUniqueInput,
+    @common.Body() data: OrderUpdateInput
+  ): Promise<Order | null> {
+    try {
+      return await this.service.updateOrder({
+        where: params,
+        data: {
+          ...data,
+
+          customer: {
+            connect: data.customer,
+          },
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+
+          customer: {
+            select: {
+              id: true,
+            },
+          },
+
+          status: true,
+          label: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @Public()
+  @common.Delete("/:id")
+  @swagger.ApiOkResponse({ type: Order })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async deleteOrder(
+    @common.Param() params: OrderWhereUniqueInput
+  ): Promise<Order | null> {
+    try {
+      return await this.service.deleteOrder({
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+
+          customer: {
+            select: {
+              id: true,
+            },
+          },
+
+          status: true,
+          label: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+}
+",
   "server/src/order/base/order.module.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -7020,13 +8349,28 @@ export class OrderServiceBase {
   }
 }
 ",
+  "server/src/order/order.controller.ts": "import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { OrderService } from "./order.service";
+import { OrderControllerBase } from "./base/order.controller.base";
+
+@swagger.ApiTags("orders")
+@common.Controller("orders")
+export class OrderController extends OrderControllerBase {
+  constructor(protected readonly service: OrderService) {
+    super(service);
+  }
+}
+",
   "server/src/order/order.module.ts": "import { Module } from "@nestjs/common";
 import { OrderModuleBase } from "./base/order.module.base";
 import { OrderService } from "./order.service";
+import { OrderController } from "./order.controller";
 import { OrderResolver } from "./order.resolver";
 
 @Module({
   imports: [OrderModuleBase],
+  controllers: [OrderController],
   providers: [OrderService, OrderResolver],
   exports: [OrderService],
 })
@@ -7910,6 +9254,636 @@ class UserUpdateManyWithoutOrganizationsInput {
 
 export { UserUpdateManyWithoutOrganizationsInput as UserUpdateManyWithoutOrganizationsInput };
 ",
+  "server/src/organization/base/organization.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from "@nestjs/common";
+import request from "supertest";
+import { ACGuard } from "nest-access-control";
+import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
+import { ACLModule } from "../../auth/acl.module";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { map } from "rxjs";
+import { OrganizationController } from "../organization.controller";
+import { OrganizationService } from "../organization.service";
+
+const nonExistingId = "nonExistingId";
+const existingId = "existingId";
+const CREATE_INPUT = {
+  id: "exampleId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: "exampleName",
+};
+const CREATE_RESULT = {
+  id: "exampleId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: "exampleName",
+};
+const FIND_MANY_RESULT = [
+  {
+    id: "exampleId",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    name: "exampleName",
+  },
+];
+const FIND_ONE_RESULT = {
+  id: "exampleId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: "exampleName",
+};
+
+const service = {
+  createOrganization() {
+    return CREATE_RESULT;
+  },
+  organizations: () => FIND_MANY_RESULT,
+  organization: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: ["user"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
+describe("Organization", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: OrganizationService,
+          useValue: service,
+        },
+      ],
+      controllers: [OrganizationController],
+      imports: [ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test("POST /organizations", async () => {
+    await request(app.getHttpServer())
+      .post("/organizations")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test("GET /organizations", async () => {
+    await request(app.getHttpServer())
+      .get("/organizations")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
+  });
+
+  test("GET /organizations/:id non existing", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${"/organizations"}/\${nonExistingId}\`)
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: \`No resource was found for {"\${"id"}":"\${nonExistingId}"}\`,
+        error: "Not Found",
+      });
+  });
+
+  test("GET /organizations/:id existing", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${"/organizations"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test("POST /organizations existing resource", async () => {
+    const agent = request(app.getHttpServer());
+    await agent
+      .post("/organizations")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post("/organizations")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/organization/base/organization.controller.base.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { isRecordNotFoundError } from "../../prisma.util";
+import * as errors from "../../errors";
+import { Request } from "express";
+import { plainToClass } from "class-transformer";
+import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import { OrganizationService } from "../organization.service";
+import { OrganizationCreateInput } from "./OrganizationCreateInput";
+import { Organization } from "./Organization";
+import { OrganizationFindManyArgs } from "./OrganizationFindManyArgs";
+import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
+import { OrganizationUpdateInput } from "./OrganizationUpdateInput";
+import { UserFindManyArgs } from "../../user/base/UserFindManyArgs";
+import { User } from "../../user/base/User";
+import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
+import { CustomerFindManyArgs } from "../../customer/base/CustomerFindManyArgs";
+import { Customer } from "../../customer/base/Customer";
+import { CustomerWhereUniqueInput } from "../../customer/base/CustomerWhereUniqueInput";
+
+export class OrganizationControllerBase {
+  constructor(protected readonly service: OrganizationService) {}
+  @common.Post()
+  @swagger.ApiCreatedResponse({ type: Organization })
+  async createOrganization(
+    @common.Body() data: OrganizationCreateInput
+  ): Promise<Organization> {
+    return await this.service.createOrganization({
+      data: data,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+  }
+
+  @common.Get()
+  @swagger.ApiOkResponse({ type: [Organization] })
+  @ApiNestedQuery(OrganizationFindManyArgs)
+  async organizations(@common.Req() request: Request): Promise<Organization[]> {
+    const args = plainToClass(OrganizationFindManyArgs, request.query);
+    return this.service.organizations({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+  }
+
+  @common.Get("/:id")
+  @swagger.ApiOkResponse({ type: Organization })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async organization(
+    @common.Param() params: OrganizationWhereUniqueInput
+  ): Promise<Organization | null> {
+    const result = await this.service.organization({
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return result;
+  }
+
+  @common.Patch("/:id")
+  @swagger.ApiOkResponse({ type: Organization })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async updateOrganization(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() data: OrganizationUpdateInput
+  ): Promise<Organization | null> {
+    try {
+      return await this.service.updateOrganization({
+        where: params,
+        data: data,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.Delete("/:id")
+  @swagger.ApiOkResponse({ type: Organization })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async deleteOrganization(
+    @common.Param() params: OrganizationWhereUniqueInput
+  ): Promise<Organization | null> {
+    try {
+      return await this.service.deleteOrganization({
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.Get("/:id/users")
+  @ApiNestedQuery(UserFindManyArgs)
+  async findUsers(
+    @common.Req() request: Request,
+    @common.Param() params: OrganizationWhereUniqueInput
+  ): Promise<User[]> {
+    const query = plainToClass(UserFindManyArgs, request.query);
+    const results = await this.service.findUsers(params.id, {
+      ...query,
+      select: {
+        id: true,
+        username: true,
+        roles: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+        extendedProperties: true,
+
+        profile: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/users")
+  async connectUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      users: {
+        connect: body,
+      },
+    };
+    await this.service.updateOrganization({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/users")
+  async updateUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      users: {
+        set: body,
+      },
+    };
+    await this.service.updateOrganization({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/users")
+  async disconnectUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      users: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateOrganization({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Get("/:id/customers")
+  @ApiNestedQuery(CustomerFindManyArgs)
+  async findCustomers(
+    @common.Req() request: Request,
+    @common.Param() params: OrganizationWhereUniqueInput
+  ): Promise<Customer[]> {
+    const query = plainToClass(CustomerFindManyArgs, request.query);
+    const results = await this.service.findCustomers(params.id, {
+      ...query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/customers")
+  async connectCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: CustomerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        connect: body,
+      },
+    };
+    await this.service.updateOrganization({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/customers")
+  async updateCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: CustomerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        set: body,
+      },
+    };
+    await this.service.updateOrganization({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/customers")
+  async disconnectCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: CustomerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateOrganization({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Get("/:id/vipCustomers")
+  @ApiNestedQuery(CustomerFindManyArgs)
+  async findVipCustomers(
+    @common.Req() request: Request,
+    @common.Param() params: OrganizationWhereUniqueInput
+  ): Promise<Customer[]> {
+    const query = plainToClass(CustomerFindManyArgs, request.query);
+    const results = await this.service.findVipCustomers(params.id, {
+      ...query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/vipCustomers")
+  async connectVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: CustomerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      vipCustomers: {
+        connect: body,
+      },
+    };
+    await this.service.updateOrganization({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/vipCustomers")
+  async updateVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: CustomerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      vipCustomers: {
+        set: body,
+      },
+    };
+    await this.service.updateOrganization({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/vipCustomers")
+  async disconnectVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: CustomerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      vipCustomers: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateOrganization({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+}
+",
   "server/src/organization/base/organization.module.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -8164,13 +10138,28 @@ export class OrganizationServiceBase {
   }
 }
 ",
+  "server/src/organization/organization.controller.ts": "import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { OrganizationService } from "./organization.service";
+import { OrganizationControllerBase } from "./base/organization.controller.base";
+
+@swagger.ApiTags("organizations")
+@common.Controller("organizations")
+export class OrganizationController extends OrganizationControllerBase {
+  constructor(protected readonly service: OrganizationService) {
+    super(service);
+  }
+}
+",
   "server/src/organization/organization.module.ts": "import { Module } from "@nestjs/common";
 import { OrganizationModuleBase } from "./base/organization.module.base";
 import { OrganizationService } from "./organization.service";
+import { OrganizationController } from "./organization.controller";
 import { OrganizationResolver } from "./organization.resolver";
 
 @Module({
   imports: [OrganizationModuleBase],
+  controllers: [OrganizationController],
   providers: [OrganizationService, OrganizationResolver],
   exports: [OrganizationService],
 })
@@ -9002,6 +10991,410 @@ class UpdateProfileArgs {
 
 export { UpdateProfileArgs as UpdateProfileArgs };
 ",
+  "server/src/profile/base/profile.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from "@nestjs/common";
+import request from "supertest";
+import { ACGuard } from "nest-access-control";
+import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
+import { ACLModule } from "../../auth/acl.module";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { map } from "rxjs";
+import { ProfileController } from "../profile.controller";
+import { ProfileService } from "../profile.service";
+
+const nonExistingId = "nonExistingId";
+const existingId = "existingId";
+const CREATE_INPUT = {
+  id: 42,
+  createdIn: new Date(),
+  createdAt: new Date(),
+  updatedIn: new Date(),
+  updatedAt: new Date(),
+  email: "exampleEmail",
+};
+const CREATE_RESULT = {
+  id: 42,
+  createdIn: new Date(),
+  createdAt: new Date(),
+  updatedIn: new Date(),
+  updatedAt: new Date(),
+  email: "exampleEmail",
+};
+const FIND_MANY_RESULT = [
+  {
+    id: 42,
+    createdIn: new Date(),
+    createdAt: new Date(),
+    updatedIn: new Date(),
+    updatedAt: new Date(),
+    email: "exampleEmail",
+  },
+];
+const FIND_ONE_RESULT = {
+  id: 42,
+  createdIn: new Date(),
+  createdAt: new Date(),
+  updatedIn: new Date(),
+  updatedAt: new Date(),
+  email: "exampleEmail",
+};
+
+const service = {
+  createProfile() {
+    return CREATE_RESULT;
+  },
+  profiles: () => FIND_MANY_RESULT,
+  profile: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: ["user"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
+describe("Profile", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: ProfileService,
+          useValue: service,
+        },
+      ],
+      controllers: [ProfileController],
+      imports: [ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test("POST /profiles", async () => {
+    await request(app.getHttpServer())
+      .post("/profiles")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdIn: CREATE_RESULT.createdIn.toISOString(),
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedIn: CREATE_RESULT.updatedIn.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test("GET /profiles", async () => {
+    await request(app.getHttpServer())
+      .get("/profiles")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdIn: FIND_MANY_RESULT[0].createdIn.toISOString(),
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedIn: FIND_MANY_RESULT[0].updatedIn.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
+  });
+
+  test("GET /profiles/:id non existing", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${"/profiles"}/\${nonExistingId}\`)
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: \`No resource was found for {"\${"id"}":"\${nonExistingId}"}\`,
+        error: "Not Found",
+      });
+  });
+
+  test("GET /profiles/:id existing", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${"/profiles"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdIn: FIND_ONE_RESULT.createdIn.toISOString(),
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedIn: FIND_ONE_RESULT.updatedIn.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test("POST /profiles existing resource", async () => {
+    const agent = request(app.getHttpServer());
+    await agent
+      .post("/profiles")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdIn: CREATE_RESULT.createdIn.toISOString(),
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedIn: CREATE_RESULT.updatedIn.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post("/profiles")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/profile/base/profile.controller.base.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { isRecordNotFoundError } from "../../prisma.util";
+import * as errors from "../../errors";
+import { Request } from "express";
+import { plainToClass } from "class-transformer";
+import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import { ProfileService } from "../profile.service";
+import { ProfileCreateInput } from "./ProfileCreateInput";
+import { Profile } from "./Profile";
+import { ProfileFindManyArgs } from "./ProfileFindManyArgs";
+import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
+import { ProfileUpdateInput } from "./ProfileUpdateInput";
+
+export class ProfileControllerBase {
+  constructor(protected readonly service: ProfileService) {}
+  @common.Post()
+  @swagger.ApiCreatedResponse({ type: Profile })
+  async createProfile(
+    @common.Body() data: ProfileCreateInput
+  ): Promise<Profile> {
+    return await this.service.createProfile({
+      data: {
+        ...data,
+
+        user: data.user
+          ? {
+              connect: data.user,
+            }
+          : undefined,
+      },
+      select: {
+        id: true,
+        createdIn: true,
+        createdAt: true,
+        updatedIn: true,
+        updatedAt: true,
+        email: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+  }
+
+  @common.Get()
+  @swagger.ApiOkResponse({ type: [Profile] })
+  @ApiNestedQuery(ProfileFindManyArgs)
+  async profiles(@common.Req() request: Request): Promise<Profile[]> {
+    const args = plainToClass(ProfileFindManyArgs, request.query);
+    return this.service.profiles({
+      ...args,
+      select: {
+        id: true,
+        createdIn: true,
+        createdAt: true,
+        updatedIn: true,
+        updatedAt: true,
+        email: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+  }
+
+  @common.Get("/:id")
+  @swagger.ApiOkResponse({ type: Profile })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async profile(
+    @common.Param() params: ProfileWhereUniqueInput
+  ): Promise<Profile | null> {
+    const result = await this.service.profile({
+      where: params,
+      select: {
+        id: true,
+        createdIn: true,
+        createdAt: true,
+        updatedIn: true,
+        updatedAt: true,
+        email: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return result;
+  }
+
+  @common.Patch("/:id")
+  @swagger.ApiOkResponse({ type: Profile })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async updateProfile(
+    @common.Param() params: ProfileWhereUniqueInput,
+    @common.Body() data: ProfileUpdateInput
+  ): Promise<Profile | null> {
+    try {
+      return await this.service.updateProfile({
+        where: params,
+        data: {
+          ...data,
+
+          user: data.user
+            ? {
+                connect: data.user,
+              }
+            : undefined,
+        },
+        select: {
+          id: true,
+          createdIn: true,
+          createdAt: true,
+          updatedIn: true,
+          updatedAt: true,
+          email: true,
+
+          user: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.Delete("/:id")
+  @swagger.ApiOkResponse({ type: Profile })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async deleteProfile(
+    @common.Param() params: ProfileWhereUniqueInput
+  ): Promise<Profile | null> {
+    try {
+      return await this.service.deleteProfile({
+        where: params,
+        select: {
+          id: true,
+          createdIn: true,
+          createdAt: true,
+          updatedIn: true,
+          updatedAt: true,
+          email: true,
+
+          user: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+}
+",
   "server/src/profile/base/profile.module.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -9214,13 +11607,28 @@ export class ProfileServiceBase {
   }
 }
 ",
+  "server/src/profile/profile.controller.ts": "import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { ProfileService } from "./profile.service";
+import { ProfileControllerBase } from "./base/profile.controller.base";
+
+@swagger.ApiTags("profiles")
+@common.Controller("profiles")
+export class ProfileController extends ProfileControllerBase {
+  constructor(protected readonly service: ProfileService) {
+    super(service);
+  }
+}
+",
   "server/src/profile/profile.module.ts": "import { Module } from "@nestjs/common";
 import { ProfileModuleBase } from "./base/profile.module.base";
 import { ProfileService } from "./profile.service";
+import { ProfileController } from "./profile.controller";
 import { ProfileResolver } from "./profile.resolver";
 
 @Module({
   imports: [ProfileModuleBase],
+  controllers: [ProfileController],
   providers: [ProfileService, ProfileResolver],
   exports: [ProfileService],
 })
@@ -10969,6 +13377,679 @@ class UserWhereUniqueInput {
 
 export { UserWhereUniqueInput as UserWhereUniqueInput };
 ",
+  "server/src/user/base/user.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from "@nestjs/common";
+import request from "supertest";
+import { ACGuard } from "nest-access-control";
+import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
+import { ACLModule } from "../../auth/acl.module";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { map } from "rxjs";
+import { UserController } from "../user.controller";
+import { UserService } from "../user.service";
+
+const nonExistingId = "nonExistingId";
+const existingId = "existingId";
+const CREATE_INPUT = {
+  id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
+  name: "exampleName",
+  bio: "exampleBio",
+  email: "exampleEmail",
+  age: 42,
+  birthDate: new Date(),
+  score: 42.42,
+  isCurious: "true",
+  location: "exampleLocation",
+};
+const CREATE_RESULT = {
+  id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
+  name: "exampleName",
+  bio: "exampleBio",
+  email: "exampleEmail",
+  age: 42,
+  birthDate: new Date(),
+  score: 42.42,
+  isCurious: "true",
+  location: "exampleLocation",
+};
+const FIND_MANY_RESULT = [
+  {
+    id: "exampleId",
+    username: "exampleUsername",
+    password: "examplePassword",
+    name: "exampleName",
+    bio: "exampleBio",
+    email: "exampleEmail",
+    age: 42,
+    birthDate: new Date(),
+    score: 42.42,
+    isCurious: "true",
+    location: "exampleLocation",
+  },
+];
+const FIND_ONE_RESULT = {
+  id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
+  name: "exampleName",
+  bio: "exampleBio",
+  email: "exampleEmail",
+  age: 42,
+  birthDate: new Date(),
+  score: 42.42,
+  isCurious: "true",
+  location: "exampleLocation",
+};
+
+const service = {
+  createUser() {
+    return CREATE_RESULT;
+  },
+  users: () => FIND_MANY_RESULT,
+  user: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: ["user"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
+describe("User", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: UserService,
+          useValue: service,
+        },
+      ],
+      controllers: [UserController],
+      imports: [ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test("POST /users", async () => {
+    await request(app.getHttpServer())
+      .post("/users")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        birthDate: CREATE_RESULT.birthDate.toISOString(),
+      });
+  });
+
+  test("GET /users", async () => {
+    await request(app.getHttpServer())
+      .get("/users")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          birthDate: FIND_MANY_RESULT[0].birthDate.toISOString(),
+        },
+      ]);
+  });
+
+  test("GET /users/:id non existing", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${"/users"}/\${nonExistingId}\`)
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: \`No resource was found for {"\${"id"}":"\${nonExistingId}"}\`,
+        error: "Not Found",
+      });
+  });
+
+  test("GET /users/:id existing", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${"/users"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        birthDate: FIND_ONE_RESULT.birthDate.toISOString(),
+      });
+  });
+
+  test("POST /users existing resource", async () => {
+    const agent = request(app.getHttpServer());
+    await agent
+      .post("/users")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        birthDate: CREATE_RESULT.birthDate.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post("/users")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/user/base/user.controller.base.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { isRecordNotFoundError } from "../../prisma.util";
+import * as errors from "../../errors";
+import { Request } from "express";
+import { plainToClass } from "class-transformer";
+import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import { UserService } from "../user.service";
+import { UserCreateInput } from "./UserCreateInput";
+import { User } from "./User";
+import { UserFindManyArgs } from "./UserFindManyArgs";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+import { UserUpdateInput } from "./UserUpdateInput";
+import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
+import { Organization } from "../../organization/base/Organization";
+import { OrganizationWhereUniqueInput } from "../../organization/base/OrganizationWhereUniqueInput";
+
+export class UserControllerBase {
+  constructor(protected readonly service: UserService) {}
+  @common.Post()
+  @swagger.ApiCreatedResponse({ type: User })
+  async createUser(@common.Body() data: UserCreateInput): Promise<User> {
+    return await this.service.createUser({
+      data: {
+        ...data,
+
+        manager: data.manager
+          ? {
+              connect: data.manager,
+            }
+          : undefined,
+
+        profile: data.profile
+          ? {
+              connect: data.profile,
+            }
+          : undefined,
+      },
+      select: {
+        id: true,
+        username: true,
+        roles: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+        extendedProperties: true,
+
+        profile: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+  }
+
+  @common.Get()
+  @swagger.ApiOkResponse({ type: [User] })
+  @ApiNestedQuery(UserFindManyArgs)
+  async users(@common.Req() request: Request): Promise<User[]> {
+    const args = plainToClass(UserFindManyArgs, request.query);
+    return this.service.users({
+      ...args,
+      select: {
+        id: true,
+        username: true,
+        roles: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+        extendedProperties: true,
+
+        profile: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+  }
+
+  @common.Get("/:id")
+  @swagger.ApiOkResponse({ type: User })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async user(
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<User | null> {
+    const result = await this.service.user({
+      where: params,
+      select: {
+        id: true,
+        username: true,
+        roles: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+        extendedProperties: true,
+
+        profile: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return result;
+  }
+
+  @common.Patch("/:id")
+  @swagger.ApiOkResponse({ type: User })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async updateUser(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() data: UserUpdateInput
+  ): Promise<User | null> {
+    try {
+      return await this.service.updateUser({
+        where: params,
+        data: {
+          ...data,
+
+          manager: data.manager
+            ? {
+                connect: data.manager,
+              }
+            : undefined,
+
+          profile: data.profile
+            ? {
+                connect: data.profile,
+              }
+            : undefined,
+        },
+        select: {
+          id: true,
+          username: true,
+          roles: true,
+          name: true,
+          bio: true,
+          email: true,
+          age: true,
+          birthDate: true,
+          score: true,
+
+          manager: {
+            select: {
+              id: true,
+            },
+          },
+
+          interests: true,
+          priority: true,
+          isCurious: true,
+          location: true,
+          extendedProperties: true,
+
+          profile: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.Delete("/:id")
+  @swagger.ApiOkResponse({ type: User })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async deleteUser(
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<User | null> {
+    try {
+      return await this.service.deleteUser({
+        where: params,
+        select: {
+          id: true,
+          username: true,
+          roles: true,
+          name: true,
+          bio: true,
+          email: true,
+          age: true,
+          birthDate: true,
+          score: true,
+
+          manager: {
+            select: {
+              id: true,
+            },
+          },
+
+          interests: true,
+          priority: true,
+          isCurious: true,
+          location: true,
+          extendedProperties: true,
+
+          profile: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.Get("/:id/employees")
+  @ApiNestedQuery(UserFindManyArgs)
+  async findEmployees(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<User[]> {
+    const query = plainToClass(UserFindManyArgs, request.query);
+    const results = await this.service.findEmployees(params.id, {
+      ...query,
+      select: {
+        id: true,
+        username: true,
+        roles: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+        extendedProperties: true,
+
+        profile: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/employees")
+  async connectEmployees(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      employees: {
+        connect: body,
+      },
+    };
+    await this.service.updateUser({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/employees")
+  async updateEmployees(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      employees: {
+        set: body,
+      },
+    };
+    await this.service.updateUser({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/employees")
+  async disconnectEmployees(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      employees: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateUser({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Get("/:id/organizations")
+  @ApiNestedQuery(OrganizationFindManyArgs)
+  async findOrganizations(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<Organization[]> {
+    const query = plainToClass(OrganizationFindManyArgs, request.query);
+    const results = await this.service.findOrganizations(params.id, {
+      ...query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/organizations")
+  async connectOrganizations(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      organizations: {
+        connect: body,
+      },
+    };
+    await this.service.updateUser({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/organizations")
+  async updateOrganizations(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      organizations: {
+        set: body,
+      },
+    };
+    await this.service.updateUser({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/organizations")
+  async disconnectOrganizations(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      organizations: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateUser({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+}
+",
   "server/src/user/base/user.module.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -11005,10 +14086,11 @@ import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import { User } from "./User";
 import { UserCountArgs } from "./UserCountArgs";
+import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
 import { CreateUserArgs } from "./CreateUserArgs";
 import { UpdateUserArgs } from "./UpdateUserArgs";
-import { UserFindManyArgs } from "./UserFindManyArgs";
+import { DeleteUserArgs } from "./DeleteUserArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { Profile } from "../../profile/base/Profile";
@@ -11024,6 +14106,11 @@ export class UserResolverBase {
     return {
       count: result,
     };
+  }
+
+  @graphql.Query(() => [User])
+  async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
+    return this.service.users(args);
   }
 
   @graphql.Query(() => User, { nullable: true })
@@ -11078,6 +14165,20 @@ export class UserResolverBase {
             : undefined,
         },
       });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => User)
+  async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
+    try {
+      return await this.service.deleteUser(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -11172,6 +14273,11 @@ export class UserServiceBase {
     return this.prisma.user.count(args);
   }
 
+  async users<T extends Prisma.UserFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
+  ): Promise<User[]> {
+    return this.prisma.user.findMany(args);
+  }
   async user<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
   ): Promise<User | null> {
@@ -11186,6 +14292,11 @@ export class UserServiceBase {
     args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
   ): Promise<User> {
     return this.prisma.user.update<T>(args);
+  }
+  async deleteUser<T extends Prisma.UserDeleteArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
+  ): Promise<User> {
+    return this.prisma.user.delete(args);
   }
 
   async findEmployees(
@@ -11227,13 +14338,28 @@ export class UserServiceBase {
   }
 }
 ",
+  "server/src/user/user.controller.ts": "import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import { UserService } from "./user.service";
+import { UserControllerBase } from "./base/user.controller.base";
+
+@swagger.ApiTags("users")
+@common.Controller("users")
+export class UserController extends UserControllerBase {
+  constructor(protected readonly service: UserService) {
+    super(service);
+  }
+}
+",
   "server/src/user/user.module.ts": "import { Module } from "@nestjs/common";
 import { UserModuleBase } from "./base/user.module.base";
 import { UserService } from "./user.service";
+import { UserController } from "./user.controller";
 import { UserResolver } from "./user.resolver";
 
 @Module({
   imports: [UserModuleBase],
+  controllers: [UserController],
   providers: [UserService, UserResolver],
   exports: [UserService],
 })

@@ -40,6 +40,8 @@ describe("createDataService", () => {
           },
           resourceType: EnumResourceType.Service,
           pluginInstallations: [],
+          moduleActions: [],
+          moduleContainers: [],
         },
         MockedLogger,
         temporaryPluginInstallationPath

@@ -13455,7 +13455,7 @@ const service = {
   createUser() {
     return CREATE_RESULT;
   },
-  users: () => FIND_MANY_RESULT,
+
   user: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
@@ -13537,18 +13537,6 @@ describe("User", () => {
       });
   });
 
-  test("GET /users", async () => {
-    await request(app.getHttpServer())
-      .get("/users")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          birthDate: FIND_MANY_RESULT[0].birthDate.toISOString(),
-        },
-      ]);
-  });
-
   test("GET /users/:id non existing", async () => {
     await request(app.getHttpServer())
       .get(\`\${"/users"}/\${nonExistingId}\`)
@@ -13617,9 +13605,9 @@ import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { UserService } from "../user.service";
 import { UserCreateInput } from "./UserCreateInput";
 import { User } from "./User";
-import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateInput } from "./UserUpdateInput";
+import { UserFindManyArgs } from "./UserFindManyArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { OrganizationWhereUniqueInput } from "../../organization/base/OrganizationWhereUniqueInput";
@@ -13645,45 +13633,6 @@ export class UserControllerBase {
             }
           : undefined,
       },
-      select: {
-        id: true,
-        username: true,
-        roles: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        manager: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-        extendedProperties: true,
-
-        profile: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-  }
-
-  @common.Get()
-  @swagger.ApiOkResponse({ type: [User] })
-  @ApiNestedQuery(UserFindManyArgs)
-  async users(@common.Req() request: Request): Promise<User[]> {
-    const args = plainToClass(UserFindManyArgs, request.query);
-    return this.service.users({
-      ...args,
       select: {
         id: true,
         username: true,
@@ -13787,55 +13736,6 @@ export class UserControllerBase {
               }
             : undefined,
         },
-        select: {
-          id: true,
-          username: true,
-          roles: true,
-          name: true,
-          bio: true,
-          email: true,
-          age: true,
-          birthDate: true,
-          score: true,
-
-          manager: {
-            select: {
-              id: true,
-            },
-          },
-
-          interests: true,
-          priority: true,
-          isCurious: true,
-          location: true,
-          extendedProperties: true,
-
-          profile: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
-    } catch (error) {
-      if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
-          \`No resource was found for \${JSON.stringify(params)}\`
-        );
-      }
-      throw error;
-    }
-  }
-
-  @common.Delete("/:id")
-  @swagger.ApiOkResponse({ type: User })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async deleteUser(
-    @common.Param() params: UserWhereUniqueInput
-  ): Promise<User | null> {
-    try {
-      return await this.service.deleteUser({
-        where: params,
         select: {
           id: true,
           username: true,
@@ -14086,11 +13986,10 @@ import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import { User } from "./User";
 import { UserCountArgs } from "./UserCountArgs";
-import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
 import { CreateUserArgs } from "./CreateUserArgs";
 import { UpdateUserArgs } from "./UpdateUserArgs";
-import { DeleteUserArgs } from "./DeleteUserArgs";
+import { UserFindManyArgs } from "./UserFindManyArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { Profile } from "../../profile/base/Profile";
@@ -14106,11 +14005,6 @@ export class UserResolverBase {
     return {
       count: result,
     };
-  }
-
-  @graphql.Query(() => [User])
-  async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
-    return this.service.users(args);
   }
 
   @graphql.Query(() => User, { nullable: true })
@@ -14165,20 +14059,6 @@ export class UserResolverBase {
             : undefined,
         },
       });
-    } catch (error) {
-      if (isRecordNotFoundError(error)) {
-        throw new GraphQLError(
-          \`No resource was found for \${JSON.stringify(args.where)}\`
-        );
-      }
-      throw error;
-    }
-  }
-
-  @graphql.Mutation(() => User)
-  async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
-    try {
-      return await this.service.deleteUser(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -14273,11 +14153,6 @@ export class UserServiceBase {
     return this.prisma.user.count(args);
   }
 
-  async users<T extends Prisma.UserFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
-  ): Promise<User[]> {
-    return this.prisma.user.findMany(args);
-  }
   async user<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
   ): Promise<User | null> {
@@ -14292,11 +14167,6 @@ export class UserServiceBase {
     args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
   ): Promise<User> {
     return this.prisma.user.update<T>(args);
-  }
-  async deleteUser<T extends Prisma.UserDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
-  ): Promise<User> {
-    return this.prisma.user.delete(args);
   }
 
   async findEmployees(
