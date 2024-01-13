@@ -39,6 +39,7 @@ import { relativeImportPath } from "../../../utils/module";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
 import { getEntityIdType } from "../../../utils/get-entity-id-type";
+import { createCustomActionMethods } from "./create-custom-action";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -204,7 +205,8 @@ async function createServiceBaseModule({
 
   classDeclaration.body.body.push(
     ...toManyRelations.flatMap((relation) => relation.methods),
-    ...toOneRelations.flatMap((relation) => relation.methods)
+    ...toOneRelations.flatMap((relation) => relation.methods),
+    ...(await createCustomActionMethods(entityActions.customActions))
   );
 
   toManyRelationFields.map((field) =>

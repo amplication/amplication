@@ -13,8 +13,8 @@ export {
   EnumModuleDtoType,
   EnumModuleActionGqlOperation,
   EnumModuleActionRestVerb,
-  PropertyTypeDef,
   ModuleDtoProperty,
+  EnumModuleDtoPropertyType,
 } from "./models";
 
 export type ServiceSettings = Omit<
@@ -284,7 +284,7 @@ export type ResourceGenerationConfig = {
   appInfo: AppInfo;
 };
 
-type PropertyTypeDef = Omit<models.PropertyTypeDef, "type"> & {
+export type PropertyTypeDef = Omit<models.PropertyTypeDef, "type"> & {
   type: keyof typeof models.EnumModuleDtoPropertyType;
 };
 

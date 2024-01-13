@@ -292,7 +292,7 @@ function prepareEntityActions(
         (moduleAction) => moduleAction.parentBlockId === moduleContainerId
       );
 
-      const entityCustomAction = currentEntityActions.find(
+      const entityCustomAction = currentEntityActions.filter(
         (moduleAction) =>
           moduleAction.actionType === EnumModuleActionType.Custom
       );
