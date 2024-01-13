@@ -1082,13 +1082,13 @@ export type ModuleActionOrderByInput = {
 export type ModuleActionUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
-  enabled: Scalars['Boolean']['input'];
-  gqlOperation: EnumModuleActionGqlOperation;
-  inputType: PropertyTypeDefInput;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  gqlOperation?: InputMaybe<EnumModuleActionGqlOperation>;
+  inputType?: InputMaybe<PropertyTypeDefInput>;
   name?: InputMaybe<Scalars['String']['input']>;
-  outputType: PropertyTypeDefInput;
+  outputType?: InputMaybe<PropertyTypeDefInput>;
   path?: InputMaybe<Scalars['String']['input']>;
-  restVerb: EnumModuleActionRestVerb;
+  restVerb?: InputMaybe<EnumModuleActionRestVerb>;
 };
 
 export type ModuleActionWhereInput = {
