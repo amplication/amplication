@@ -1,8 +1,14 @@
 import {
   Button,
   CircularProgress,
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
   HorizontalRule,
   Label,
+  Text,
   TextField,
   Toggle,
 } from "@amplication/ui/design-system";
@@ -122,15 +128,24 @@ export default function GitCreateRepo({
           />
 
           {!!values.name && values.name.length > 1 && (
-            <div className={`${CLASS_NAME}__info`}>
-              <p className={`${CLASS_NAME}__info__emphasis`}>
-                {"Your new repository will be created as "}{" "}
+            <FlexItem
+              direction={EnumFlexDirection.Column}
+              gap={EnumGapSize.Default}
+            >
+              <Text
+                textStyle={EnumTextStyle.Subtle}
+                textColor={EnumTextColor.ThemeGreen}
+              >
+                {"Your new repository will be created as "}
                 <b>{processGitRepositoryName(values.name)}.</b>
-              </p>
-              {
-                "The repository name can only contain ASCII letters, digits, and the characters ., -, and _."
-              }
-            </div>
+              </Text>
+
+              <Text textStyle={EnumTextStyle.Label}>
+                {
+                  "The repository name can only contain ASCII letters, digits, and the characters ., -, and _."
+                }
+              </Text>
+            </FlexItem>
           )}
 
           <HorizontalRule />
