@@ -291,7 +291,7 @@ export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
 export type ModuleContainer = BlockOmittedFields<models.Module>;
 export type ModuleAction = Omit<
   BlockOmittedFields<models.ModuleAction>,
-  "id" | "actionType" | "restVerb" | "gqlOperation"
+  "id" | "actionType" | "restVerb" | "gqlOperation" | "inputType" | "outputType"
 > & {
   id?: string;
   displayName: string;
@@ -299,6 +299,12 @@ export type ModuleAction = Omit<
   actionType: keyof typeof models.EnumModuleActionType;
   restVerb: keyof typeof models.EnumModuleActionRestVerb;
   gqlOperation: keyof typeof models.EnumModuleActionGqlOperation;
+  inputType?: Omit<models.PropertyTypeDef, "type"> & {
+    type: keyof typeof models.EnumModuleDtoPropertyType;
+  };
+  outputType?: Omit<models.PropertyTypeDef, "type"> & {
+    type: keyof typeof models.EnumModuleDtoPropertyType;
+  };
 };
 
 export type ModuleDto = Omit<
