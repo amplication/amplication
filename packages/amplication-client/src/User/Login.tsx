@@ -2,6 +2,7 @@ import {
   CircularProgress,
   Snackbar,
   TextField,
+  Form,
 } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
@@ -13,7 +14,6 @@ import { Link, useHistory, useLocation } from "react-router-dom";
 import { setToken } from "../authentication/authentication";
 import { Button } from "../Components/Button";
 import { ErrorMessage } from "../Components/ErrorMessage";
-import { Form } from "../Components/Form";
 import {
   REACT_APP_AUTH_LOGIN_URI,
   REACT_APP_GITHUB_AUTH_ENABLED,

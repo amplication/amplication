@@ -5,11 +5,11 @@ import {
   Dialog,
   DialogProps,
   EnumButtonStyle,
+  Form,
 } from "@amplication/ui/design-system";
 import { camelCase } from "camel-case";
 import { Formik, useFormikContext } from "formik";
 import { DisplayNameField } from "../Components/DisplayNameField";
-import { Form } from "../Components/Form";
 import NameField from "../Components/NameField";
 import * as models from "../models";
 import "./RelatedFieldDialog.scss";
