@@ -37,7 +37,9 @@ const useSignupPreviewAccount = (
           const { token, workspaceId, projectId, resourceId } =
             signupPreviewAccount;
           setToken(token);
-          history.push(`/${workspaceId}/${projectId}/${resourceId}`);
+          history.push(
+            `/${workspaceId}/${projectId}/${resourceId}/breaking-the-monolith-options`
+          );
         },
       }).catch(console.error);
     }
