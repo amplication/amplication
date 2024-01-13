@@ -496,7 +496,10 @@ export class BlockService {
 
       for (const [key, val] of Object.entries(oldSettings)) {
         const valueType = getType(val);
-        if (keysToNotMerge.includes(key)) {
+        if (newSettings === undefined) {
+          mergedObj[key] = val;
+          continue;
+        } else if (keysToNotMerge.includes(key)) {
           mergedObj[key] = newSettings[key];
           continue;
         } else if (getType(newSettings[key]) === "array") {
