@@ -147,7 +147,7 @@ function entitiesToNodes(
         x: 0,
         y: 0,
       },
-      parentNode: entity.resourceId,
+      parentNode: resource.id,
     }))
   );
   return [...parents, ...nodes];
