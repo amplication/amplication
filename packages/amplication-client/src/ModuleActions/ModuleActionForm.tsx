@@ -131,15 +131,21 @@ const ModuleActionForm = ({
             disabled={disabled}
           />
         </FlexItem>
-        <Panel panelStyle={EnumPanelStyle.Transparent}>
-          <TabContentTitle title="Types" />
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <TabContentTitle
+            title="Types"
+            subTitle="Select the input and output types of the action"
+          />
 
           <DtoPropertyTypesSelectField name="inputType" label="Input Type" />
           <DtoPropertyTypesSelectField name="outputType" label="Output Type" />
         </Panel>
 
-        <Panel panelStyle={EnumPanelStyle.Transparent}>
-          <TabContentTitle title="REST API" />
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <TabContentTitle
+            title="REST API"
+            subTitle="Settings related to REST API for this action"
+          />
 
           <FlexItem>
             <RestVerbSelectField
@@ -155,8 +161,11 @@ const ModuleActionForm = ({
           </FlexItem>
         </Panel>
 
-        <Panel panelStyle={EnumPanelStyle.Transparent}>
-          <TabContentTitle title="GraphQL API" />
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <TabContentTitle
+            title="GraphQL API"
+            subTitle="Settings related to GraphQL API for this action"
+          />
           <GqlOperationSelectField
             name={"gqlOperation"}
             label={"Operation type"}
