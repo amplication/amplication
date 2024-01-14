@@ -1,8 +1,14 @@
 import {
   Button,
   CircularProgress,
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
   HorizontalRule,
   Label,
+  Text,
   TextField,
   Toggle,
 } from "@amplication/ui/design-system";
@@ -16,6 +22,7 @@ import "./GitCreateRepo.scss";
 import { GitSelectMenu } from "../../select/GitSelectMenu";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 import { GET_GROUPS } from "../../queries/gitProvider";
+import { GIT_REPO_CREATION_MESSAGE, GIT_REPO_NAME_RULES } from "./constants";
 
 type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
@@ -54,11 +61,24 @@ export default function GitCreateRepo({
     }
   }, [gitGroups]);
 
+  const processGitRepositoryName = useCallback((name: string) => {
+    if (!name || name.length < 2) {
+      return null;
+    }
+    return name
+      .replace(/[^a-zA-Z0-9.\-_]/g, "-") // Replace characters other than ASCII letters, digits, ., -, and _ with -
+      .replace(/-{2,}/g, "-"); // Replace consecutive dashes with a single dash
+  }, []);
+
   const handleCreation = useCallback(
     (data: CreateGitRepositoryInput) => {
       const inputData = repositoryGroup
-        ? { ...data, groupName: repositoryGroup.name }
-        : data;
+        ? {
+            ...data,
+            groupName: repositoryGroup.name,
+            name: processGitRepositoryName(data.name),
+          }
+        : { ...data, name: processGitRepositoryName(data.name) };
       onCreateGitRepository(inputData);
     },
     [repositoryGroup]
@@ -107,6 +127,23 @@ export default function GitCreateRepo({
             autoComplete="off"
             showError={false}
           />
+
+          {!!values.name && values.name.length > 1 && (
+            <FlexItem
+              direction={EnumFlexDirection.Column}
+              gap={EnumGapSize.Default}
+            >
+              <Text
+                textStyle={EnumTextStyle.Subtle}
+                textColor={EnumTextColor.ThemeGreen}
+              >
+                {GIT_REPO_CREATION_MESSAGE}
+                {processGitRepositoryName(values.name)}.
+              </Text>
+
+              <Text textStyle={EnumTextStyle.Label}>{GIT_REPO_NAME_RULES}</Text>
+            </FlexItem>
+          )}
 
           <HorizontalRule />
 
