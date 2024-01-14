@@ -280,6 +280,7 @@ input ConnectGitRepositoryInput {
 
 input CopiedEntity {
   entityId: String!
+  originalResourceId: String!
   targetResourceId: String!
 }
 
