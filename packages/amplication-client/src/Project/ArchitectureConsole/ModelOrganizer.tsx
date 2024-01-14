@@ -78,6 +78,7 @@ export default function ModelOrganizer({
     createNewTempService,
     modelGroupFilterChanged,
     searchPhraseChanged,
+    setDraggableNodes,
     selectedNode,
     setSelectedNode,
     mergeNewResourcesChanges,
@@ -98,23 +99,11 @@ export default function ModelOrganizer({
 
   const onRedesignClick = useCallback(
     (resource: models.Resource) => {
-      setNodes((nodes) => {
-        nodes.forEach((node) => {
-          if (node.data.originalParentNode === resource.id) {
-            node.draggable = true;
-          }
-          if (node.id === resource.id) {
-            node.selected = true;
-            setSelectedNode(node);
-          }
-        });
-
-        return [...nodes];
-      });
+      setDraggableNodes(resource);
 
       setReadOnly(false);
     },
-    [setReadOnly, nodes, setNodes, setSelectedNode]
+    [setReadOnly, setDraggableNodes]
   );
 
   const onCancelChangesClick = useCallback(() => {

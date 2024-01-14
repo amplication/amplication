@@ -387,6 +387,7 @@ const useModelOrganization = () => {
       };
 
       changes.newServices.push(newService);
+      //todo: add new service to resource list
 
       const updatedNodes = await applyAutoLayout(
         nodes,
@@ -406,6 +407,25 @@ const useModelOrganization = () => {
       nodes,
       showRelationDetails,
     ]
+  );
+
+  const setDraggableNodes = useCallback(
+    (resource: models.Resource) => {
+      setNodes((nodes) => {
+        nodes.forEach((node) => {
+          if (node.data.originalParentNode === resource.id) {
+            node.draggable = true;
+          }
+          if (node.id === resource.id) {
+            node.selected = true;
+            setSelectedNode(node);
+          }
+        });
+
+        return [...nodes];
+      });
+    },
+    [nodes, setNodes, setSelectedNode]
   );
 
   useEffect(() => {
@@ -453,7 +473,7 @@ const useModelOrganization = () => {
           const currentResource = currentResourcesData.find(
             (x) => x.id === currentEntityChanged.targetResourceId
           );
-          currentResource.entities = currentResource.entities.filter(
+          currentResource.entities = currentResource.entities?.filter(
             (x) => x.id !== currentEntity.id
           );
           currentEntityChanged.targetResourceId = targetParent.id;
@@ -474,8 +494,6 @@ const useModelOrganization = () => {
         }
       }
 
-      //setChanges((changes) => changes);
-
       setCurrentTheme(JSON.stringify(nodes));
       setCurrentChangesStorageData(JSON.stringify(changes));
       setCurrentResourceStorageData(JSON.stringify(currentResourcesData));
@@ -485,7 +503,6 @@ const useModelOrganization = () => {
       nodes,
       currentResourcesData,
       currentTheme,
-      //setChanges,
       setCurrentResourceStorageData,
       setCurrentTheme,
       setCurrentChangesStorageData,
@@ -495,7 +512,7 @@ const useModelOrganization = () => {
   useEffect(() => {
     if (currentTheme === "" || !currentTheme) return;
     setNodes(JSON.parse(currentTheme));
-  }, [setNodes, currentTheme, changes]);
+  }, [setNodes, currentTheme]);
 
   const [
     createResourceEntities,
@@ -535,6 +552,7 @@ const useModelOrganization = () => {
     resetToOriginalState,
     changes,
     setChanges,
+    setDraggableNodes,
     saveChanges,
     moveNodeToParent,
     createNewTempService,
