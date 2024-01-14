@@ -99,6 +99,14 @@ const ModuleActionForm = ({
     return {
       ...INITIAL_VALUES,
       ...sanitizedDefaultValues,
+      inputType: {
+        ...INITIAL_VALUES.inputType,
+        ...sanitizedDefaultValues.inputType,
+      },
+      outputType: {
+        ...INITIAL_VALUES.outputType,
+        ...sanitizedDefaultValues.outputType,
+      },
     } as models.ModuleAction;
   }, [defaultValues]);
 
@@ -134,11 +142,25 @@ const ModuleActionForm = ({
         <Panel panelStyle={EnumPanelStyle.Bordered}>
           <TabContentTitle
             title="Types"
-            subTitle="Select the input and output types of the action"
+            subTitle={
+              isCustomAction
+                ? "Select the input and output types of the action"
+                : "The input and output types of the action are automatically generated "
+            }
           />
 
-          <DtoPropertyTypesSelectField name="inputType" label="Input Type" />
-          <DtoPropertyTypesSelectField name="outputType" label="Output Type" />
+          {isCustomAction && (
+            <>
+              <DtoPropertyTypesSelectField
+                name="inputType"
+                label="Input Type"
+              />
+              <DtoPropertyTypesSelectField
+                name="outputType"
+                label="Output Type"
+              />
+            </>
+          )}
         </Panel>
 
         <Panel panelStyle={EnumPanelStyle.Bordered}>
