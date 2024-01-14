@@ -209,6 +209,7 @@ const useModelOrganization = () => {
             if (!currentResource) {
               updatedResourcesData.push(updateResource);
               hasChanges = true;
+              return;
             }
 
             const currentEntityMapping = currentResource.entities?.reduce(
@@ -221,10 +222,9 @@ const useModelOrganization = () => {
             updateResource.entities?.forEach((e) => {
               const currentEntity = currentEntityMapping[e.id];
 
-              console.log({ currentEntity });
-
               if (!currentEntity) {
-                currentResource.entities?.push(currentEntity);
+                currentResource.entities?.push(e);
+                hasChanges = true;
               }
             });
           });
