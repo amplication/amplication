@@ -1,14 +1,11 @@
-import React from "react";
 import { Meta } from "@storybook/react";
 import { Formik } from "formik";
-import { Form, EnumFormStyle } from "./Form";
-import { FormHeader } from "./FormHeader";
-import { Button, EnumButtonStyle } from "../Button/Button";
-import { TextField } from "../TextField/TextField";
-import { SelectField } from "../SelectField/SelectField";
-import { ToggleField } from "../Toggle/ToggleField";
 import Page from "../Page/Page";
+import { SelectField } from "../SelectField/SelectField";
+import { TextField } from "../TextField/TextField";
+import { ToggleField } from "../Toggle/ToggleField";
 import { OptionItem } from "../types";
+import { Form } from "./Form";
 
 export default {
   title: "Form",
@@ -45,7 +42,7 @@ export const Default = {
           }}
           onSubmit={() => {}}
         >
-          <Form formStyle={props.formStyle}>
+          <Form>
             <TextField name="name" label="Name" />
             <TextField name="description" textarea label="Description" />
             <SelectField label="Color" name="color" options={OPTIONS} />
@@ -73,15 +70,7 @@ export const WithHeader = {
           }}
           onSubmit={() => {}}
         >
-          <Form
-            formHeaderContent={
-              <FormHeader title="Form Title">
-                <Button buttonStyle={EnumButtonStyle.Text}>Cancel</Button>
-                <Button type="submit">Save</Button>
-              </FormHeader>
-            }
-            formStyle={props.formStyle}
-          >
+          <Form>
             <TextField name="name" label="Name" />
             <TextField name="description" textarea label="Description" />
             <SelectField label="Color" name="color" options={OPTIONS} />
