@@ -297,7 +297,7 @@ model EntityField {
   description      String
   position         Int?
   unique           Boolean                 @default(false)
-  entityVersion    EntityVersion?          @relation(fields: [entityVersionId], references: [id], onDelete: Cascade)
+  entityVersion    EntityVersion           @relation(fields: [entityVersionId], references: [id], onDelete: Cascade)
   permissionField  EntityPermissionField[]
 
   @@unique([entityVersionId, displayName], map: "EntityField.entityVersionId_displayName_unique")
