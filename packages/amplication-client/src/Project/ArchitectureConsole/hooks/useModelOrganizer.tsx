@@ -221,8 +221,11 @@ const useModelOrganization = () => {
             );
             updateResource.entities?.forEach((e) => {
               const currentEntity = currentEntityMapping[e.id];
+              const movedEntity = changes.movedEntities.find(
+                (x) => x.entityId === e.id
+              );
 
-              if (!currentEntity) {
+              if (!currentEntity && !movedEntity) {
                 currentResource.entities?.push(e);
                 hasChanges = true;
               }
