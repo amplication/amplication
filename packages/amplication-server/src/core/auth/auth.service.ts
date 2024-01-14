@@ -286,17 +286,11 @@ export class AuthService {
     return this.prepareToken(user);
   }
 
-  async completeSignupPreviewAccount(account: Account): Promise<string> {
+  async completeSignupPreviewAccount(user: User): Promise<string> {
+    const { account, workspace } = user;
     const currentAccount = await this.accountService.findAccount({
       where: {
         id: account.id,
-      },
-      select: {
-        users: {
-          select: {
-            workspace: true,
-          },
-        },
       },
     });
 
@@ -331,7 +325,7 @@ export class AuthService {
     });
 
     await this.workspaceService.convertPreviewSubscriptionToFreeWithTrial(
-      account.users[0].workspace.id
+      workspace.id
     );
 
     return resetPassword.data;

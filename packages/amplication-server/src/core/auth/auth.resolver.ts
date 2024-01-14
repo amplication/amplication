@@ -59,7 +59,7 @@ export class AuthResolver {
   async completeSignupWithBusinessEmail(
     @UserEntity() user: User
   ): Promise<string> {
-    return this.authService.completeSignupPreviewAccount(user.account);
+    return this.authService.completeSignupPreviewAccount(user);
   }
 
   @Mutation(() => Auth)
