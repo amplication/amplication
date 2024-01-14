@@ -210,42 +210,83 @@ const useModelOrganization = () => {
               updatedResourcesData.push(updateResource);
               hasChanges = true;
             }
+
+            const currentEntityMapping = currentResource.entities?.reduce(
+              (entitiesObj, entity) => {
+                entitiesObj[entity.id] = entity;
+                return entitiesObj;
+              },
+              {}
+            );
+            updateResource.entities?.forEach((e) => {
+              const currentEntity = currentEntityMapping[e.id];
+
+              console.log({ currentEntity });
+
+              if (!currentEntity) {
+                currentResource.entities?.push(currentEntity);
+              }
+            });
           });
 
           currentResourcesData.forEach((resource) => {
             const currentResource: models.Resource =
               updatedResourceMapping[resource.id];
             if (!currentResource) {
+              const resourceEntitiesChanges = changes?.movedEntities
+                ?.filter((x) => x.targetResourceId === resource.id)
+                .map((entity) => {
+                  entity.targetResourceId = entity.originalResourceId;
+                  return entity;
+                });
+              changes.movedEntities = [...resourceEntitiesChanges];
+
               updatedResourcesData = updatedResourcesData.filter(
                 (r) => r.id !== resource.id
               );
               hasChanges = true;
             } else {
-              const updatedEntityMapping = currentResource.entities.reduce(
+              const updatedEntityMapping = currentResource.entities?.reduce(
                 (entitiesObj, entity) => {
                   entitiesObj[entity.id] = entity;
                   return entitiesObj;
                 },
                 {}
               );
+
               const currentResourceEntities = updatedResourcesData.find(
                 (x) => x.id === resource.id
               );
 
-              resource.entities.forEach((entity) => {
+              resource.entities?.forEach((entity) => {
                 const currentEntity: models.Entity =
                   updatedEntityMapping[entity.id];
                 const movedEntity = changes.movedEntities.find(
                   (x) => x.entityId === entity.id
                 );
-                console.log({ currentEntity });
-                if (!currentEntity) {
-                  hasChanges = true;
 
+                if (!currentEntity) {
                   if (!movedEntity) {
                     currentResourceEntities.entities = resource.entities.filter(
                       (e) => e.id !== entity.id
                     );
+                    hasChanges = true;
+                  } else {
+                    const originalResourceEntity = data.resources
+                      .find((x) => x.id === movedEntity.originalResourceId)
+                      .entities?.find((e) => e.id === movedEntity.entityId);
+
+                    if (!originalResourceEntity) {
+                      hasChanges = true;
+
+                      currentResourceEntities.entities =
+                        resource.entities.filter(
+                          (e) => e.id !== movedEntity.entityId
+                        );
+                      changes.movedEntities = changes.movedEntities.filter(
+                        (x) => x.entityId !== movedEntity.entityId
+                      );
+                    }
                   }
                 }
               });
@@ -258,14 +299,14 @@ const useModelOrganization = () => {
                 updatedResourcesData,
                 showRelationDetails
               );
+
             setCurrentResourceStorageData(JSON.stringify(updatedResourcesData));
 
             setCurrentDetailedStorageEdges(JSON.stringify(detailedEdges));
             setCurrentSimpleStorageEdges(JSON.stringify(simpleEdges));
 
-            setNodes(nodes);
             setCurrentTheme(JSON.stringify(nodes));
-            setChanges((changes) => changes);
+            setCurrentChangesStorageData(JSON.stringify(changes));
 
             if (showRelationDetails) {
               setEdges(detailedEdges);
@@ -279,9 +320,9 @@ const useModelOrganization = () => {
   }, [
     currentResourcesData,
     setCurrentDetailedStorageEdges,
-    setNodes,
     setCurrentTheme,
-    setChanges,
+    setCurrentChangesStorageData,
+    currentChangesStorageData,
     setCurrentResourceStorageData,
     showRelationDetails,
     changes,
@@ -420,6 +461,7 @@ const useModelOrganization = () => {
           changes.movedEntities.push({
             entityId: currentNode.id,
             targetResourceId: targetParent.id,
+            originalResourceId: currentNode.data.originalParentNode,
           });
 
           originalResource.entities = originalResource.entities.filter(
@@ -429,7 +471,7 @@ const useModelOrganization = () => {
         }
       }
 
-      setChanges((changes) => changes);
+      //setChanges((changes) => changes);
 
       setCurrentTheme(JSON.stringify(nodes));
       setCurrentChangesStorageData(JSON.stringify(changes));
@@ -439,7 +481,8 @@ const useModelOrganization = () => {
       changes,
       nodes,
       currentResourcesData,
-      setChanges,
+      currentTheme,
+      //setChanges,
       setCurrentResourceStorageData,
       setCurrentTheme,
       setCurrentChangesStorageData,

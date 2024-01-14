@@ -65,6 +65,7 @@ export type ModelChanges = {
   }[];
   movedEntities: {
     entityId: string;
+    originalResourceId: string;
     targetResourceId: string;
   }[];
 };

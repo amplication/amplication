@@ -308,6 +308,7 @@ export type ConnectGitRepositoryInput = {
 
 export type CopiedEntity = {
   entityId: Scalars['String']['input'];
+  originalResourceId: Scalars['String']['input'];
   targetResourceId: Scalars['String']['input'];
 };
 

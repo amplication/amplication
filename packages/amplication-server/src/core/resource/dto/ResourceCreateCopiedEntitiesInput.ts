@@ -46,5 +46,10 @@ export class CopiedEntity {
   @Field(() => String, {
     nullable: false,
   })
+  originalResourceId!: string;
+
+  @Field(() => String, {
+    nullable: false,
+  })
   entityId!: string;
 }
