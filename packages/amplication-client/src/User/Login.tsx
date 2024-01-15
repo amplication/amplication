@@ -183,7 +183,8 @@ const Login = () => {
       <span className={`${CLASS_NAME}__title`}>Hi There</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
-          {JSON.parse(REACT_APP_GITHUB_AUTH_ENABLED) ? (
+          {REACT_APP_GITHUB_AUTH_ENABLED &&
+          JSON.parse(REACT_APP_GITHUB_AUTH_ENABLED) ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
                 Welcome to {content.name}. Please use your GitHub account to
