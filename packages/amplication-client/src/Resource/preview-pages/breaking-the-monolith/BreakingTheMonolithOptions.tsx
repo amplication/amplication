@@ -107,7 +107,7 @@ const BreakingTheMonolithOptions: React.FC<Props> = ({ match }) => {
             micro-services architecture,
           </div>
           <div>
-            choose an open-source monolith, represented its its database schema
+            choose an open-source monolith, represented by its database schema
           </div>
         </Text>
         <FlexItem
@@ -140,16 +140,6 @@ const BreakingTheMonolithOptions: React.FC<Props> = ({ match }) => {
                     rel="noopener noreferrer"
                   >
                     Take me to the Github repository
-                  </a>
-                </Text>
-                <Text textStyle={EnumTextStyle.Label}>
-                  <a
-                    className={`${CLASS_NAME}__link`}
-                    href={option.linkToPrismaSchema}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Show me the schema
                   </a>
                 </Text>
               </FlexItem>
