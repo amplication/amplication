@@ -39,7 +39,10 @@ import {
 } from "../../types";
 import { ConverterUtil } from "../../utils/convert-to-number";
 import { NotImplementedError } from "../../utils/custom-error";
-import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "../../git.constants";
+import {
+  REPO_NAME_TAKEN_ERROR_MESSAGE,
+  UNSUPPORTED_GIT_ORGANIZATION_TYPE,
+} from "../../git.constants";
 import { NoChangesOnPullRequest } from "../../errors/NoChangesOnPullRequest";
 
 const GITHUB_FILE_TYPE = "file";
@@ -256,7 +259,7 @@ export class GithubService implements GitProvider {
       repositoryName
     );
     if (exists) {
-      return null;
+      throw new Error(REPO_NAME_TAKEN_ERROR_MESSAGE);
     }
 
     const { data: repo } = await this.octokit.rest.repos.createInOrg({

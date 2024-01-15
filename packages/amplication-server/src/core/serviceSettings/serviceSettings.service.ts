@@ -52,7 +52,6 @@ export class ServiceSettingsService {
         EnumBlockType.ServiceSettings
       );
     // set the service settings > server settings > generateServer to true by default, as we don't have a UI for it so the client can't set it
-    serviceSettings.serverSettings.generateServer = true;
     if (!serviceSettings) {
       // create default service settings will also set the server settings > generateServer to true
       serviceSettings = await this.createDefaultServiceSettings(
@@ -60,6 +59,8 @@ export class ServiceSettingsService {
         user
       );
     }
+
+    serviceSettings.serverSettings.generateServer = true;
 
     return {
       ...serviceSettings,
