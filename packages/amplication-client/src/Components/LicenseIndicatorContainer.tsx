@@ -1,4 +1,4 @@
-import { Children, FC, useContext, useEffect, useState } from "react";
+import { Children, FC, useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../context/appContext";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
@@ -10,11 +10,12 @@ import {
   EntitlementType,
   FeatureIndicatorPlacement,
   IconType,
+  isPreviewPlan,
 } from "./FeatureIndicatorContainer";
 import { omit } from "lodash";
 
 const CLASS_NAME = "license-indicator-container";
-const defaultBlockedTooltipText = "Your plan does not include this feature. ";
+const defaultBlockedTooltipText = "Your plan doesn't include this feature.";
 const serviceLicenseTooltipText =
   "Your current plan permits only one active Service. ";
 
@@ -106,6 +107,15 @@ export const LicenseIndicatorContainer: FC<Props> = ({
     licensedResourceType,
   ]);
 
+  const linkText = useMemo(() => {
+    if (isPreviewPlan(subscriptionPlan)) {
+      console.log("isPreviewPlan");
+      return ""; // don't show the upgrade link when the plan is preview
+    }
+
+    return undefined; // in case of null, it falls back to the default link text
+  }, [subscriptionPlan]);
+
   const renderProps = {
     disabled: disabled,
     reversePosition,
@@ -119,6 +129,7 @@ export const LicenseIndicatorContainer: FC<Props> = ({
           featureName={featureId}
           icon={IconType.Lock}
           text={tooltipText}
+          linkText={linkText}
           element={
             featureIndicatorPlacement === FeatureIndicatorPlacement.Outside ? (
               <div
