@@ -63,6 +63,7 @@ const RESERVED_NAMES = [
   "static",
   "yield",
   "field",
+  "app",
 ];
 
 export function isReservedName(word: string): boolean {

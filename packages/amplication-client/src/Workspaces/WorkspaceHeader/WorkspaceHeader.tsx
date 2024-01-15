@@ -9,7 +9,7 @@ import {
   SelectMenuModal,
   Tooltip,
 } from "@amplication/ui/design-system";
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client";
 import {
   ButtonTypeEnum,
   IMessage,
@@ -51,6 +51,7 @@ import NoNotifications from "../../assets/images/no-notification.svg";
 import "./WorkspaceHeader.scss";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
+import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -84,6 +85,10 @@ const WorkspaceHeader: React.FC = () => {
   const { currentWorkspace, currentProject, openHubSpotChat } =
     useContext(AppContext);
   const upgradeButtonData = useUpgradeButtonData(currentWorkspace);
+
+  const { data } = useQuery(GET_CONTACT_US_LINK, {
+    variables: { id: currentWorkspace.id },
+  });
 
   const apolloClient = useApolloClient();
   const history = useHistory();
@@ -146,15 +151,21 @@ const WorkspaceHeader: React.FC = () => {
   }, [currentWorkspace, window.location.pathname]);
 
   const handleContactUsClick = useCallback(() => {
-    // This query param is used to open HubSpot chat with the downgrade flow
-    history.push("?contact-us=true");
-    openHubSpotChat();
+    window.open(data?.contactUsLink, "_blank");
     trackEvent({
       eventName: AnalyticsEventNames.HelpMenuItemClick,
       action: "Contact Us",
       eventOriginLocation: "workspace-header-help-menu",
     });
   }, [openHubSpotChat]);
+
+  const handleGenerateCodeClick = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.HelpMenuItemClick,
+      action: "Generate code",
+      eventOriginLocation: "workspace-header-help-menu",
+    });
+  }, []);
 
   const handleItemDataClicked = useCallback(
     (itemData: ItemDataCommand) => {
@@ -250,6 +261,26 @@ const WorkspaceHeader: React.FC = () => {
                 >
                   Upgrade
                 </Button>
+              )}
+            {upgradeButtonData.isCompleted &&
+              upgradeButtonData.isPreviewPlan &&
+              !upgradeButtonData.showUpgradeDefaultButton && (
+                <>
+                  <Button
+                    className={`${CLASS_NAME}__upgrade__btn`}
+                    buttonStyle={EnumButtonStyle.Primary}
+                    onClick={handleGenerateCodeClick}
+                  >
+                    Generate the code
+                  </Button>
+                  <Button
+                    className={`${CLASS_NAME}__upgrade__btn`}
+                    buttonStyle={EnumButtonStyle.Outline}
+                    onClick={handleContactUsClick}
+                  >
+                    Contact us
+                  </Button>
+                </>
               )}
           </div>
           <hr className={`${CLASS_NAME}__vertical_border`} />

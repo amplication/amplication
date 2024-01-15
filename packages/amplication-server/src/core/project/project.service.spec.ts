@@ -32,10 +32,11 @@ import { ConfigService } from "@nestjs/config";
 import { BillingService } from "../billing/billing.service";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { GitProviderService } from "../git/git.provider.service";
-import { MeteredEntitlement } from "@stigg/node-server-sdk";
+import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { SubscriptionService } from "../subscription/subscription.service";
+import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -86,6 +87,8 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
+  previewAccountType: PreviewAccountType.None,
+  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -232,6 +235,9 @@ const billingServiceMock = {
       usageLimit: undefined,
     } as unknown as MeteredEntitlement;
   }),
+  getBooleanEntitlement: jest.fn(() => {
+    return {};
+  }),
   getNumericEntitlement: jest.fn(() => {
     return {};
   }),
@@ -243,6 +249,11 @@ const billingServiceMock = {
 Object.defineProperty(billingServiceMock, "isBillingEnabled", {
   get: billingServiceIsBillingEnabledMock,
 });
+
+const prismaUserFindUniqueMock = jest.fn(() => ({
+  then: (resolve) => resolve(EXAMPLE_USER),
+  workspace: () => EXAMPLE_WORKSPACE,
+}));
 const prismaProjectUpdateMock = jest.fn(() => {
   return EXAMPLE_PROJECT;
 });
@@ -317,6 +328,9 @@ describe("ProjectService", () => {
         {
           provide: PrismaService,
           useClass: jest.fn().mockImplementation(() => ({
+            user: {
+              findUnique: prismaUserFindUniqueMock,
+            },
             resource: {
               create: prismaResourceCreateMock,
               findMany: prismaResourceFindManyMock,
@@ -387,7 +401,7 @@ describe("ProjectService", () => {
       billingServiceIsBillingEnabledMock.mockReturnValue(true);
     });
 
-    it("should not create a project when the workspace exceeded the limitation", async () => {
+    it("should not create a project when the workspace exceeded the project limitation", async () => {
       // arrange
       const args = {
         data: {
@@ -418,6 +432,37 @@ describe("ProjectService", () => {
       // assert
       expect(prismaProjectCreateMock).toBeCalledTimes(0);
     });
+
+    it("should throw a billing limitation error on commit when the block build is true", async () => {
+      billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+        hasAccess: true,
+      } as unknown as BooleanEntitlement);
+      const args = {
+        data: {
+          message: EXAMPLE_MESSAGE,
+          project: { connect: { id: EXAMPLE_PROJECT_ID } },
+          user: { connect: { id: EXAMPLE_USER_ID } },
+        },
+      };
+
+      await expect(service.commit(args, EXAMPLE_USER)).rejects.toThrow(
+        new BillingLimitationError(
+          "Your current plan does not allow code generation.",
+          BillingFeature.BlockBuild
+        )
+      );
+      expect(prismaResourceFindManyMock).toBeCalledTimes(0);
+
+      expect(prismaCommitCreateMock).toBeCalledTimes(0);
+      expect(entityServiceCreateVersionMock).toBeCalledTimes(0);
+      expect(blockServiceCreateVersionMock).toBeCalledTimes(0);
+      expect(entityServiceReleaseLockMock).toBeCalledTimes(0);
+      expect(blockServiceReleaseLockMock).toBeCalledTimes(0);
+
+      expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(0);
+      expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(0);
+      expect(buildServiceCreateMock).toBeCalledTimes(0);
+    });
   });
   describe("when billing is disable", () => {
     beforeEach(() => {
@@ -426,7 +471,10 @@ describe("ProjectService", () => {
     it("should be defined", () => {
       expect(service).toBeDefined();
     });
-    it("should commit", async () => {
+    it("should commit even when the block build is true", async () => {
+      billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+        hasAccess: true,
+      } as unknown as BooleanEntitlement);
       const args = {
         data: {
           message: EXAMPLE_MESSAGE,

@@ -28,6 +28,8 @@ export type Account = {
   id: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
   password: Scalars['String']['output'];
+  previewAccountEmail?: Maybe<Scalars['String']['output']>;
+  previewAccountType: PreviewAccountType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -83,6 +85,13 @@ export type ApiTokenCreateInput = {
 export type Auth = {
   /** JWT Bearer token */
   token: Scalars['String']['output'];
+};
+
+export type AuthPreviewAccount = {
+  projectId: Scalars['String']['output'];
+  resourceId: Scalars['String']['output'];
+  token: Scalars['String']['output'];
+  workspaceId: Scalars['String']['output'];
 };
 
 export type AuthorizeResourceWithGitResult = {
@@ -799,6 +808,7 @@ export type EnumResourceTypeFilter = {
 export enum EnumSubscriptionPlan {
   Enterprise = 'Enterprise',
   Free = 'Free',
+  PreviewBreakTheMonolith = 'PreviewBreakTheMonolith',
   Pro = 'Pro'
 }
 
@@ -1152,6 +1162,7 @@ export type Mutation = {
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
   signup: Auth;
+  signupPreviewAccount: AuthPreviewAccount;
   updateAccount: Account;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
@@ -1475,6 +1486,11 @@ export type MutationSignupArgs = {
 };
 
 
+export type MutationSignupPreviewAccountArgs = {
+  data: SignupPreviewAccountInput;
+};
+
+
 export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
 };
@@ -1722,6 +1738,11 @@ export type PluginSetOrderInput = {
   order: Scalars['Int']['input'];
 };
 
+export enum PreviewAccountType {
+  BreakingTheMonolith = 'BreakingTheMonolith',
+  None = 'None'
+}
+
 export type Project = {
   createdAt: Scalars['DateTime']['output'];
   demoRepoName?: Maybe<Scalars['String']['output']>;
@@ -1839,7 +1860,8 @@ export type Query = {
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
-  serviceTopics: Array<ServiceTopics>;
+  serviceTopics?: Maybe<ServiceTopics>;
+  serviceTopicsList: Array<ServiceTopics>;
   topic?: Maybe<Topic>;
   topics: Array<Topic>;
   userAction: UserAction;
@@ -2040,6 +2062,11 @@ export type QueryServiceSettingsArgs = {
 
 
 export type QueryServiceTopicsArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryServiceTopicsListArgs = {
   orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -2375,6 +2402,11 @@ export type SignupInput = {
   lastName: Scalars['String']['input'];
   password: Scalars['String']['input'];
   workspaceName: Scalars['String']['input'];
+};
+
+export type SignupPreviewAccountInput = {
+  previewAccountEmail: Scalars['String']['input'];
+  previewAccountType: PreviewAccountType;
 };
 
 export enum SortOrder {
