@@ -25,6 +25,17 @@ $message-margin-bottom: 24px;
     }
   }
 
+  &__login {
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 50px;
+
+    & a {
+      margin-left: 10px;
+      font-size: 13px;
+    }
+  }
+
   &__message {
     @include body1;
     white-space: normal;

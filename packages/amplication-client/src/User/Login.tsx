@@ -61,7 +61,7 @@ const AuthWithWorkEmail: React.FC = () => {
 
   const handleAuthWorkEmail = () => {
     trackEvent({
-      eventName: AnalyticsEventNames.SignInWithEmailPassword,
+      eventName: AnalyticsEventNames.SignUpWithEmailPassword,
     });
     signUpWithBusinessEmail({
       variables: {
@@ -74,18 +74,13 @@ const AuthWithWorkEmail: React.FC = () => {
   };
 
   const handleLogin = useCallback(() => {
-    /// track login event
-  }, []);
+    trackEvent({
+      eventName: AnalyticsEventNames.EmailLogin,
+    });
+  }, [trackEvent, AnalyticsEventNames]);
 
   return (
     <>
-      <a
-        href={REACT_APP_AUTH_LOGIN_URI}
-        className={`${CLASS_NAME}__sso`}
-        onClick={handleLogin}
-      >
-        Login
-      </a>
       <div className={`${CLASS_NAME}__or`}>
         <span>or</span>
       </div>
@@ -112,6 +107,16 @@ const AuthWithWorkEmail: React.FC = () => {
       >
         {loading ? <CircularProgress centerToParent /> : "Continue"}
       </Button>
+      <div className={`${CLASS_NAME}__login`}>
+        Already have an account ?
+        <a
+          href={REACT_APP_AUTH_LOGIN_URI}
+          className={`${CLASS_NAME}__sso`}
+          onClick={handleLogin}
+        >
+          Login
+        </a>
+      </div>
     </>
   );
 };

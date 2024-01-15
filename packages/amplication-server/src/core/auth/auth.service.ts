@@ -25,8 +25,11 @@ import { ProjectService } from "../project/project.service";
 import { AuthProfile } from "./types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
+  ApiResponse,
   AuthenticationClient,
+  GetUsers200ResponseOneOfInner,
   JSONApiResponse,
+  ManagementClient,
   SignUpResponse,
   TextApiResponse,
 } from "auth0";
@@ -94,6 +97,7 @@ const generatePassword = () => {
 @Injectable()
 export class AuthService {
   private auth0: AuthenticationClient;
+  private auth0Management: ManagementClient;
 
   constructor(
     private readonly configService: ConfigService,
@@ -115,6 +119,11 @@ export class AuthService {
       clientId: this.configService.get<string>(Env.AUTH0_CLIENT_ID),
       clientSecret: this.configService.get<string>(Env.AUTH0_CLIENT_SECRET),
     });
+    this.auth0Management = new ManagementClient({
+      domain: this.configService.get<string>(Env.AUTH0_DOMAIN),
+      clientId: this.configService.get<string>(Env.AUTH0_CLIENT_ID),
+      clientSecret: this.configService.get<string>(Env.AUTH0_CLIENT_SECRET),
+    });
   }
 
   async signupAuth0User({
@@ -122,35 +131,44 @@ export class AuthService {
     previewAccountEmail,
   }): Promise<{ message: string }> {
     try {
+      let auth0User;
       const existedAccount = await this.accountService.findAccount({
         where: {
           email: previewAccountEmail,
         },
       });
-      // if (existedAccount) what to do ?
-      const auth0User = await this.createAuth0User(previewAccountEmail);
-      if (!auth0User.data.email) throw Error("Failed to create new Auth0 user");
+      const existedAuth0User = await this.getAuth0UserByEmail(
+        previewAccountEmail
+      );
+      if (!existedAuth0User) {
+        auth0User = await this.createAuth0User(previewAccountEmail);
+
+        if (!auth0User.data.email)
+          throw Error("Failed to create new Auth0 user");
+      }
 
       const resetPassword = await this.resetAuth0UserPassword(
-        auth0User.data.email
+        existedAuth0User ? previewAccountEmail : auth0User.data.email
       );
       if (!resetPassword.data)
         throw Error("Failed to send reset message to new Auth0 user");
 
-      const account = await this.accountService.createAccount(
-        {
-          data: {
-            email: previewAccountEmail,
-            firstName: "",
-            lastName: "",
-            password: "",
-            previewAccountType,
+      if (!existedAccount) {
+        const account = await this.accountService.createAccount(
+          {
+            data: {
+              email: previewAccountEmail,
+              firstName: "",
+              lastName: "",
+              password: "",
+              previewAccountType,
+            },
           },
-        },
-        IDENTITY_PROVIDER_AUTH0
-      );
-      const workspaceName = previewAccountEmail.split("@")[0];
-      await this.bootstrapUser(account, workspaceName);
+          IDENTITY_PROVIDER_AUTH0
+        );
+        const workspaceName = previewAccountEmail.split("@")[0];
+        await this.bootstrapUser(account, workspaceName);
+      }
 
       return {
         message: resetPassword.data,
@@ -192,6 +210,13 @@ export class AuthService {
     );
 
     return changePasswordResponse;
+  }
+
+  async getAuth0UserByEmail(email: string): Promise<boolean> {
+    const user = await this.auth0Management.usersByEmail.getByEmail({ email });
+    if (!user.data.length) return false;
+
+    return user.data[0].email === email;
   }
 
   async createGitHubUser(
