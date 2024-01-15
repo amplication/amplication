@@ -59,7 +59,7 @@ export class DBSchemaImportResolver {
     @Args() args: CreateEntitiesFromPredefinedSchemaArgs
   ): Promise<UserAction> {
     const { schemaName, resource } = args.data;
-    const schema = await this.dbSchemaImportService.preparePredefinedSchema(
+    const schema = await this.dbSchemaImportService.getPredefinedSchema(
       schemaName
     );
 

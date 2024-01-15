@@ -142,16 +142,12 @@ export class DBSchemaImportService {
     return dbSchemaImportStep;
   }
 
-  async preparePredefinedSchema(fileName: EnumSchemaNames): Promise<string> {
-    return this.mapSchemaNameToSchema(fileName);
-  }
-
-  private mapSchemaNameToSchema = (schemaNames: EnumSchemaNames): string => {
+  async getPredefinedSchema(schemaNames: EnumSchemaNames): Promise<string> {
     switch (schemaNames) {
       case EnumSchemaNames.CalDotCom:
         return calDotComPredefinedSchema;
       default:
         throw new Error(`Schema name ${schemaNames} is not supported`);
     }
-  };
+  }
 }
