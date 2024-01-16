@@ -112,11 +112,9 @@ describe("AiService", () => {
       [EnumActionStepStatus.Failed, false],
     ])(
       "should update the action status to %s when the conversion completion success is %s",
-      async (expectedActionStatus, isCompletedSuccessfully) => {
-        const result = isCompletedSuccessfully ? "A magic anwser" : null;
-        const errorMessage = isCompletedSuccessfully
-          ? null
-          : "An error happened";
+      async (expectedActionStatus, success) => {
+        const result = success ? "A magic anwser" : null;
+        const errorMessage = success ? null : "An error happened";
         const actionId = "actionId";
         const requestUniqueId = "requestUniqueId";
 
@@ -133,7 +131,7 @@ describe("AiService", () => {
         const res = await service.onConversationCompleted({
           actionId,
           requestUniqueId,
-          isGptConversionCompleted: isCompletedSuccessfully,
+          success,
           result,
           errorMessage,
         });
