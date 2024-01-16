@@ -8,7 +8,10 @@ import {
   Payload,
 } from "@nestjs/microservices";
 import { plainToInstance } from "class-transformer";
-import { AiConversationStart } from "@amplication/schema-registry";
+import {
+  AiConversationStart,
+  KAFKA_TOPICS,
+} from "@amplication/schema-registry";
 
 @Controller("kafka-controller")
 export class KafkaController {
@@ -18,7 +21,7 @@ export class KafkaController {
     private readonly logger: AmplicationLogger
   ) {}
 
-  @EventPattern("ai.conversation.start.1")
+  @EventPattern(KAFKA_TOPICS.AI_CONVERSATION_START_TOPIC)
   async onAiConversationStart_1(
     @Payload()
     value: AiConversationStart.Value,
