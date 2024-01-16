@@ -25,9 +25,7 @@ import { ProjectService } from "../project/project.service";
 import { AuthProfile } from "./types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
-  ApiResponse,
   AuthenticationClient,
-  GetUsers200ResponseOneOfInner,
   JSONApiResponse,
   ManagementClient,
   SignUpResponse,
@@ -87,7 +85,7 @@ const WORKSPACE_INCLUDE = {
 };
 
 const generatePassword = () => {
-  var buf = new Uint8Array(6);
+  const buf = new Uint8Array(6);
   crypto.getRandomValues(buf);
   return Buffer.from(String.fromCharCode.apply(null, buf), "utf8").toString(
     "base64"
@@ -189,6 +187,7 @@ export class AuthService {
     const data = {
       email,
       password: generatePassword(),
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       email_verified: true,
       connection: "business-users",
     };
