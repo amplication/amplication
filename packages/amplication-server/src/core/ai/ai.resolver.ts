@@ -21,8 +21,8 @@ export class AiResolver {
     @Args({ name: "resourceId", type: () => String })
     resourceId: string,
     @UserEntity() user: User
-  ): Promise<string> {
-    return await this.aiService.triggerGenerationBtmResourceRecommendation({
+  ): Promise<void> {
+    await this.aiService.triggerGenerationBtmResourceRecommendation({
       resourceId,
       userId: user.id,
     });
