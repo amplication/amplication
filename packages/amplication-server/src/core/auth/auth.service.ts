@@ -173,14 +173,13 @@ export class AuthService {
       }
 
       return {
-        message: resetPassword.data,
+        message:
+          "Complete signup by setting a password using the email we just sent",
       };
     } catch (error) {
       this.logger.error(error.message, error);
       return {
-        message:
-          error?.body?.friendly_message ||
-          "Please enter a valid work email address",
+        message: "Oops! Signup didn't go through. Please try again later.",
       };
     }
   }

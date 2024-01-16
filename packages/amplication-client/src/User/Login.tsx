@@ -3,6 +3,8 @@ import {
   Snackbar,
   TextField,
   Form,
+  Icon,
+  EnumTextColor,
 } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Formik, useFormikContext } from "formik";
@@ -91,10 +93,16 @@ const AuthWithWorkEmail: React.FC = () => {
         value={values.work_email}
         type="email"
       />
-      {(data || error) && (
-        <ErrorMessage
-          errorMessage={error?.message || data.signUpWithBusinessEmail.message}
-        />
+      {error && <ErrorMessage errorMessage={error?.message} />}
+      {data && (
+        <div className={`${CLASS_NAME}__reset_message`}>
+          <Icon
+            icon="info_circle"
+            size="small"
+            color={EnumTextColor.ThemeGreen}
+          />
+          <p>{data?.signUpWithBusinessEmail.message}</p>
+        </div>
       )}
       <Button
         type="button"
