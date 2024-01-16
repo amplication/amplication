@@ -113,14 +113,18 @@ export class AuthService {
     private readonly resourceService: ResourceService
   ) {
     this.auth0 = new AuthenticationClient({
-      domain: this.configService.get<string>(Env.AUTH0_DOMAIN),
-      clientId: this.configService.get<string>(Env.AUTH0_CLIENT_ID),
-      clientSecret: this.configService.get<string>(Env.AUTH0_CLIENT_SECRET),
+      domain: this.configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
+      clientId: this.configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID),
+      clientSecret: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_SECRET
+      ),
     });
     this.auth0Management = new ManagementClient({
-      domain: this.configService.get<string>(Env.AUTH0_DOMAIN),
-      clientId: this.configService.get<string>(Env.AUTH0_CLIENT_ID),
-      clientSecret: this.configService.get<string>(Env.AUTH0_CLIENT_SECRET),
+      domain: this.configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
+      clientId: this.configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID),
+      clientSecret: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_SECRET
+      ),
     });
   }
 

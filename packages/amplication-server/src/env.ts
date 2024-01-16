@@ -27,11 +27,6 @@ export class Env {
   static readonly AUTH_ISSUER_BASE_URL = "AUTH_ISSUER_BASE_URL";
   static readonly AUTH_ISSUER_CLIENT_ID = "AUTH_ISSUER_CLIENT_ID";
   static readonly AUTH_ISSUER_CLIENT_SECRET = "AUTH_ISSUER_CLIENT_SECRET";
-  static readonly AUTH_ISSUER_CALLBACK_URL = "AUTH_ISSUER_CALLBACK_URL";
-
-  static readonly AUTH0_DOMAIN = "AUTH0_DOMAIN";
-  static readonly AUTH0_CLIENT_ID = "AUTH0_CLIENT_ID";
-  static readonly AUTH0_CLIENT_SECRET = "AUTH0_CLIENT_SECRET";
 
   static readonly USER_LAST_ACTIVE_DAYS = "USER_LAST_ACTIVE_DAYS";
   static readonly CRON_SECRET_KEY = "CRON_SECRET_KEY";
