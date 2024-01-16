@@ -23,7 +23,7 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
   }
 
   async startConversionSync(message: AiConversationStart.Value): Promise<{
-    isCompletedSuccessfully: boolean;
+    success: boolean;
     requestUniqueId: string;
     result: string;
   }> {
@@ -48,14 +48,14 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
       });
 
       return {
-        isCompletedSuccessfully: true,
+        success: true,
         requestUniqueId,
         result: result ?? "",
       };
     } catch (error) {
       this.logger.error(error.message, error);
       return {
-        isCompletedSuccessfully: false,
+        success: false,
         requestUniqueId,
         result: error.message,
       };
@@ -67,7 +67,7 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
     this.emitGptKafkaMessage(
       message.actionId,
       result.requestUniqueId,
-      result.isCompletedSuccessfully,
+      result.success,
       result.result
     );
   }
@@ -75,7 +75,7 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
   private emitGptKafkaMessage(
     actionId: string,
     requestUniqueId: string,
-    isCompletedSuccessfully: boolean,
+    success: boolean,
     result: string
   ): void {
     const key: AiConversationComplete.Key = {
@@ -84,8 +84,8 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
     const value: AiConversationComplete.Value = {
       actionId,
       requestUniqueId,
-      isGptConversionCompleted: isCompletedSuccessfully,
-      ...(isCompletedSuccessfully ? { result } : { errorMessage: result }),
+      success,
+      ...(success ? { result } : { errorMessage: result }),
     };
 
     this.kafkaService

@@ -8,7 +8,7 @@ export class Value {
   requestUniqueId!: string;
 
   @IsBoolean()
-  isGptConversionCompleted!: boolean;
+  success!: boolean;
 
   @IsString()
   result?: string;
