@@ -1,13 +1,19 @@
+import { EnumDataType } from "../../prisma";
+
 export interface PromptManagerGeneratePromptForBreakTheMonolithArgs {
-  resourceName: string;
-  resourceDisplayName: string;
+  name: string;
   entities: {
+    id: string;
     name: string;
     displayName: string;
-    fields: {
-      name: string;
-      displayName: string;
-      dataType: string;
+    pluralDisplayName: string;
+    versions: {
+      fields: {
+        name: string;
+        displayName: string;
+        dataType: EnumDataType;
+        properties?: Record<string, any>;
+      }[];
     }[];
   }[];
 }

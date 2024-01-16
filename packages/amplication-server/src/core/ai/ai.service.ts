@@ -10,6 +10,7 @@ import {
   initialStepData,
 } from "./constants";
 import { PromptManagerService } from "./prompt-manager.service";
+import { PromptManagerGeneratePromptForBreakTheMonolithArgs } from "./prompt-manager.types";
 import {
   AiConversationComplete,
   AiConversationStart,
@@ -94,6 +95,7 @@ export class AiService {
             deletedAt: null,
           },
           select: {
+            id: true,
             name: true,
             displayName: true,
             pluralDisplayName: true,
@@ -122,23 +124,9 @@ export class AiService {
     }
 
     const prompt =
-      await this.promptManagerService.generatePromptForBreakTheMonolith({
-        resourceDisplayName: resource.name,
-        resourceName: resource.name,
-        entities: resource.entities.map((entity) => {
-          return {
-            name: entity.name,
-            displayName: entity.displayName,
-            fields: entity.versions[0].fields.map((field) => {
-              return {
-                name: field.name,
-                displayName: field.displayName,
-                dataType: field.dataType,
-              };
-            }),
-          };
-        }),
-      });
+      await this.promptManagerService.generatePromptForBreakTheMonolith(
+        resource
+      );
 
     const conversationTypeKey = "BREAK_THE_MONOLITH";
     const conversationParams = [

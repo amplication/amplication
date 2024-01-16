@@ -1,3 +1,4 @@
+import { EnumDataType } from "../../prisma";
 import { PromptManagerService } from "./prompt-manager.service";
 import { Test } from "@nestjs/testing";
 
@@ -18,150 +19,249 @@ describe("PromptManagerService", () => {
   describe("generatePromptForBreakTheMonolith", () => {
     it("should return a prompt", () => {
       const result = service.generatePromptForBreakTheMonolith({
-        resourceName: "ecommerce",
-        resourceDisplayName: "E-Commerce",
+        name: "ecommerce",
         entities: [
           {
+            id: "order",
             name: "order",
+            displayName: "Order",
+            pluralDisplayName: "Orders",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "address",
+                    displayName: "address",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "address",
+                    },
+                  },
+                  {
+                    name: "status",
+                    displayName: "Status",
+                    dataType: EnumDataType.Boolean,
+                  },
+                  {
+                    name: "customer",
+                    displayName: "Customer",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "customer",
+                    },
+                  },
+                  {
+                    name: "itemsId",
+                    displayName: "ItemsId",
+                    dataType: EnumDataType.SingleLineText,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "customer",
+            name: "customer",
+            displayName: "Customer",
+            pluralDisplayName: "Customers",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "firstName",
+                    displayName: "First Name",
+                    dataType: EnumDataType.SingleLineText,
+                  },
+                  {
+                    name: "lastName",
+                    displayName: "Last Name",
+                    dataType: EnumDataType.SingleLineText,
+                  },
+                  {
+                    name: "email",
+                    displayName: "Email",
+                    dataType: EnumDataType.SingleLineText,
+                  },
+                  {
+                    name: "address",
+                    displayName: "Address",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "address",
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "item",
+            name: "item",
+            displayName: "Item",
+            pluralDisplayName: "Items",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "name",
+                    displayName: "Name",
+                    dataType: EnumDataType.SingleLineText,
+                  },
+                  {
+                    name: "price",
+                    displayName: "Price",
+                    dataType: EnumDataType.WholeNumber,
+                  },
+                  {
+                    name: "description",
+                    displayName: "Description",
+                    dataType: EnumDataType.MultiLineText,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "address",
+            name: "address",
+            displayName: "Address",
+            pluralDisplayName: "Addresses",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "street",
+                    displayName: "Street",
+                    dataType: EnumDataType.SingleLineText,
+                  },
+                  {
+                    name: "city",
+                    displayName: "City",
+                    dataType: EnumDataType.SingleLineText,
+                  },
+                  {
+                    name: "state",
+                    displayName: "State",
+                    dataType: EnumDataType.SingleLineText,
+                  },
+                  {
+                    name: "zip",
+                    displayName: "Zip",
+                    dataType: EnumDataType.SingleLineText,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      expect(JSON.parse(result)).toStrictEqual({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        DataModels: [
+          {
             displayName: "Order",
             fields: [
               {
-                name: "address",
+                dataType: "address",
                 displayName: "address",
-                dataType: "Address",
+                name: "address",
+                relatedDataModel: "address",
               },
               {
-                name: "status",
+                dataType: "Boolean",
                 displayName: "Status",
-                dataType: "Status",
+                name: "status",
               },
               {
-                name: "customer",
+                dataType: "customer",
                 displayName: "Customer",
-                dataType: "Customer",
+                name: "customer",
+                relatedDataModel: "customer",
               },
               {
-                name: "itemsId",
+                dataType: "SingleLineText",
                 displayName: "ItemsId",
-                dataType: "string[]",
+                name: "itemsId",
               },
             ],
+            name: "order",
           },
           {
-            name: "customer",
             displayName: "Customer",
             fields: [
               {
-                name: "firstName",
+                dataType: "SingleLineText",
                 displayName: "First Name",
-                dataType: "string",
+                name: "firstName",
               },
               {
-                name: "lastName",
+                dataType: "SingleLineText",
                 displayName: "Last Name",
-                dataType: "string",
+                name: "lastName",
               },
               {
-                name: "email",
+                dataType: "SingleLineText",
                 displayName: "Email",
-                dataType: "string",
+                name: "email",
               },
               {
-                name: "address",
+                dataType: "address",
                 displayName: "Address",
-                dataType: "Address",
+                name: "address",
+                relatedDataModel: "address",
               },
             ],
+            name: "customer",
           },
           {
-            name: "item",
             displayName: "Item",
             fields: [
               {
-                name: "name",
+                dataType: "SingleLineText",
                 displayName: "Name",
-                dataType: "string",
+                name: "name",
               },
               {
-                name: "price",
+                dataType: "WholeNumber",
                 displayName: "Price",
-                dataType: "number",
+                name: "price",
               },
               {
-                name: "description",
+                dataType: "MultiLineText",
                 displayName: "Description",
-                dataType: "string",
+                name: "description",
               },
             ],
+            name: "item",
           },
           {
             name: "address",
             displayName: "Address",
             fields: [
               {
-                name: "street",
+                dataType: "SingleLineText",
                 displayName: "Street",
-                dataType: "string",
+                name: "street",
               },
               {
-                name: "city",
+                dataType: "SingleLineText",
                 displayName: "City",
-                dataType: "string",
+                name: "city",
               },
               {
-                name: "state",
+                dataType: "SingleLineText",
                 displayName: "State",
-                dataType: "string",
+                name: "state",
               },
               {
-                name: "zip",
+                dataType: "SingleLineText",
                 displayName: "Zip",
-                dataType: "string",
-              },
-            ],
-          },
-          {
-            name: "status",
-            displayName: "Status",
-            fields: [
-              {
-                name: "name",
-                displayName: "Name",
-                dataType: "string",
-              },
-              {
-                name: "description",
-                displayName: "Description",
-                dataType: "string",
+                name: "zip",
               },
             ],
           },
         ],
       });
-      expect(result).toEqual(
-        "model Order has the following fields:\n" +
-          " - address (type:Address)\n" +
-          " - Status (type:Status)\n" +
-          " - Customer (type:Customer)\n" +
-          " - ItemsId (type:string[])\n" +
-          "model Customer has the following fields:\n" +
-          " - First Name (type:string)\n" +
-          " - Last Name (type:string)\n" +
-          " - Email (type:string)\n" +
-          " - Address (type:Address)\n" +
-          "model Item has the following fields:\n" +
-          " - Name (type:string)\n" +
-          " - Price (type:number)\n" +
-          " - Description (type:string)\n" +
-          "model Address has the following fields:\n" +
-          " - Street (type:string)\n" +
-          " - City (type:string)\n" +
-          " - State (type:string)\n" +
-          " - Zip (type:string)\n" +
-          "model Status has the following fields:\n" +
-          " - Name (type:string)\n" +
-          " - Description (type:string)"
-      );
     });
   });
 });
