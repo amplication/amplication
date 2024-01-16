@@ -34,13 +34,11 @@ export class ConversationTypeResolver extends ConversationTypeResolverBase {
   ): Promise<CreateConversation> {
     const conversation = await this.service.startConversionSync(args);
     return {
-      isGptConversionCompleted: conversation.isCompletedSuccessfully,
+      success: conversation.success,
       actionId: args.actionId,
       requestUniqueId: conversation.requestUniqueId,
-      result: conversation.isCompletedSuccessfully ? conversation.result : null,
-      errorMessage: conversation.isCompletedSuccessfully
-        ? null
-        : conversation.result,
+      result: conversation.result ? conversation.result : null,
+      errorMessage: conversation.result ? null : conversation.result,
     };
   }
 }
