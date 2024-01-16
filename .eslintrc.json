@@ -2,16 +2,6 @@
   "root": true,
   "ignorePatterns": ["**/*"],
   "plugins": ["perfectionist", "@nx"],
-  "rules": {
-    "perfectionist/sort-imports": [
-      "warn",
-      {
-        "type": "natural",
-        "order": "asc",
-        "internal-pattern": ["@amplication/**"]
-      }
-    ]
-  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
