@@ -1,22 +1,24 @@
-import { EnumDataType, Prisma } from "../../prisma";
+import { Entity, EntityField, Resource } from "../../prisma";
 
-export interface GeneratePromptForBreakTheMonolithArgs {
-  name: string;
-  entities: {
-    id: string;
-    name: string;
-    displayName: string;
-    pluralDisplayName: string;
-    versions: {
-      fields: {
-        name: string;
-        displayName: string;
-        dataType: EnumDataType;
-        properties?: Prisma.JsonValue;
-      }[];
-    }[];
-  }[];
+type EntityFieldPartial = Pick<
+  EntityField,
+  "name" | "displayName" | "dataType" | "properties"
+>;
+
+interface EntityPartial
+  extends Pick<Entity, "id" | "name" | "displayName" | "pluralDisplayName"> {
+  versions: [
+    {
+      fields: EntityFieldPartial[];
+    }
+  ];
 }
+
+interface ResourcePartial extends Pick<Resource, "name"> {
+  entities: EntityPartial[];
+}
+
+export type GeneratePromptForBreakTheMonolithArgs = ResourcePartial;
 
 interface DataModel {
   name: string;
