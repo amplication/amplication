@@ -25,9 +25,7 @@ import { ProjectService } from "../project/project.service";
 import { AuthProfile } from "./types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
-  ApiResponse,
   AuthenticationClient,
-  GetUsers200ResponseOneOfInner,
   JSONApiResponse,
   ManagementClient,
   SignUpResponse,
@@ -87,7 +85,7 @@ const WORKSPACE_INCLUDE = {
 };
 
 const generatePassword = () => {
-  var buf = new Uint8Array(6);
+  const buf = new Uint8Array(6);
   crypto.getRandomValues(buf);
   return Buffer.from(String.fromCharCode.apply(null, buf), "utf8").toString(
     "base64"
@@ -115,14 +113,18 @@ export class AuthService {
     private readonly resourceService: ResourceService
   ) {
     this.auth0 = new AuthenticationClient({
-      domain: this.configService.get<string>(Env.AUTH0_DOMAIN),
-      clientId: this.configService.get<string>(Env.AUTH0_CLIENT_ID),
-      clientSecret: this.configService.get<string>(Env.AUTH0_CLIENT_SECRET),
+      domain: this.configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
+      clientId: this.configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID),
+      clientSecret: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_SECRET
+      ),
     });
     this.auth0Management = new ManagementClient({
-      domain: this.configService.get<string>(Env.AUTH0_DOMAIN),
-      clientId: this.configService.get<string>(Env.AUTH0_CLIENT_ID),
-      clientSecret: this.configService.get<string>(Env.AUTH0_CLIENT_SECRET),
+      domain: this.configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
+      clientId: this.configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID),
+      clientSecret: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_SECRET
+      ),
     });
   }
 
@@ -174,7 +176,6 @@ export class AuthService {
         message: resetPassword.data,
       };
     } catch (error) {
-      console.log(error.message);
       this.logger.error(error.message, error);
       return {
         message:
@@ -190,6 +191,7 @@ export class AuthService {
     const data = {
       email,
       password: generatePassword(),
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       email_verified: true,
       connection: "business-users",
     };
