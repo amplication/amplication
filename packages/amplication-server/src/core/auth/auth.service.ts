@@ -312,46 +312,52 @@ export class AuthService {
   }
 
   async completeSignupPreviewAccount(user: User): Promise<string> {
-    const { account, workspace } = user;
-    const currentAccount = await this.accountService.findAccount({
-      where: {
-        id: account.id,
-      },
-    });
+    let auth0User: JSONApiResponse<SignUpResponse>;
+    const { account: currentAccount, workspace } = user;
 
-    if (!account) {
-      throw new AmplicationError(`No account found for id: ${account.id}`);
-    }
-
-    if (currentAccount.email === account.previewAccountEmail) {
-      throw new AmplicationError(
-        `To generate production-ready code tailored to your chosen architecture, follow the signup process outlined in the email you just received to set your password. 
-        If you're already an Amplication user, you can simply sign in using your existing credentials.`
-      );
-    }
-
-    const auth0User = await this.createAuth0User(account.previewAccountEmail);
-    if (!auth0User.data.email) throw Error("Failed to create new Auth0 user");
-
-    const resetPassword = await this.resetAuth0UserPassword(
-      auth0User.data.email
+    const existingAuth0User = await this.getAuth0UserByEmail(
+      currentAccount.previewAccountEmail
     );
+
+    if (!existingAuth0User) {
+      auth0User = await this.createAuth0User(
+        currentAccount.previewAccountEmail
+      );
+      if (!auth0User?.data?.email)
+        throw Error("Failed to create new Auth0 user");
+    }
+
+    const userEmail = existingAuth0User
+      ? currentAccount.previewAccountEmail
+      : auth0User.data.email;
+
+    const resetPassword = await this.resetAuth0UserPassword(userEmail);
 
     if (!resetPassword.data)
       throw Error("Failed to send reset message to new Auth0 user");
 
-    await this.accountService.updateAccount({
-      where: { id: account.id },
-      data: {
-        email: auth0User.data.email,
-        previewAccountEmail: null,
-        previewAccountType: PreviewAccountType.None,
+    const existingAccount = await this.accountService.findAccount({
+      where: {
+        email: currentAccount.previewAccountEmail,
       },
     });
 
-    await this.workspaceService.convertPreviewSubscriptionToFreeWithTrial(
-      workspace.id
-    );
+    if (!existingAccount) {
+      // the current (preview) account didn't sign up yet, so we update his preview account to a regular account.
+      // His data will be kept.
+      await this.accountService.updateAccount({
+        where: { id: currentAccount.id },
+        data: {
+          email: userEmail,
+          previewAccountEmail: null,
+          previewAccountType: PreviewAccountType.None,
+        },
+      });
+
+      await this.workspaceService.convertPreviewSubscriptionToFreeWithTrial(
+        workspace.id
+      );
+    }
 
     return resetPassword.data;
   }
