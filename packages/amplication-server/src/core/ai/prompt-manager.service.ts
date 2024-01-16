@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { BtmRecommendation } from "../../models/BtmRecommendation/BtmRecommendation";
 import { BtmEntityRecommendation, EnumDataType } from "../../prisma";
 import {
@@ -10,6 +11,27 @@ import { AiBadFormatResponseError } from "./ai.errors";
 
 @Injectable()
 export class PromptManagerService {
+  private dataTypeMap: Record<keyof typeof EnumDataType, string> = {
+    SingleLineText: "string",
+    MultiLineText: "string",
+    Email: "string",
+    WholeNumber: "int",
+    DateTime: "datetime",
+    DecimalNumber: "float",
+    Lookup: "enum",
+    MultiSelectOptionSet: "enum",
+    OptionSet: "enum",
+    Boolean: "bool",
+    GeographicLocation: "string",
+    Id: "int",
+    CreatedAt: "datetime",
+    UpdatedAt: "datetime",
+    Roles: "string",
+    Username: "string",
+    Password: "string",
+    Json: "string",
+  };
+
   generatePromptForBreakTheMonolith(
     resource: GeneratePromptForBreakTheMonolithArgs
   ): string {
@@ -28,7 +50,7 @@ export class PromptManagerService {
               dataType:
                 field.dataType == EnumDataType.Lookup
                   ? entityIdNameMap[field.properties["relatedEntityId"]]
-                  : field.dataType,
+                  : this.dataTypeMap[field.dataType],
             };
           }),
         };

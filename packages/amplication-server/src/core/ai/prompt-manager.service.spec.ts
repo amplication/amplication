@@ -176,7 +176,7 @@ describe("PromptManagerService", () => {
                 name: "address",
               },
               {
-                dataType: "Boolean",
+                dataType: "bool",
                 name: "status",
               },
               {
@@ -184,7 +184,7 @@ describe("PromptManagerService", () => {
                 name: "customer",
               },
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "itemsId",
               },
             ],
@@ -193,15 +193,15 @@ describe("PromptManagerService", () => {
           {
             fields: [
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "firstName",
               },
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "lastName",
               },
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "email",
               },
               {
@@ -214,15 +214,15 @@ describe("PromptManagerService", () => {
           {
             fields: [
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "name",
               },
               {
-                dataType: "WholeNumber",
+                dataType: "int",
                 name: "price",
               },
               {
-                dataType: "MultiLineText",
+                dataType: "string",
                 name: "description",
               },
             ],
@@ -232,19 +232,19 @@ describe("PromptManagerService", () => {
             name: "address",
             fields: [
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "street",
               },
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "city",
               },
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "state",
               },
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "zip",
               },
             ],
@@ -268,7 +268,6 @@ describe("PromptManagerService", () => {
                   fields: [
                     {
                       name: "field1",
-                      dataType: "SingleLineText",
                     },
                   ],
                 },
