@@ -192,7 +192,9 @@ export class AuthService {
       password: generatePassword(),
       // eslint-disable-next-line @typescript-eslint/naming-convention
       email_verified: true,
-      connection: "business-users",
+      connection: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
+      ),
     };
 
     const user = await this.auth0.database.signUp(data);
@@ -203,7 +205,9 @@ export class AuthService {
   async resetAuth0UserPassword(email: string): Promise<TextApiResponse> {
     const data = {
       email,
-      connection: "business-users",
+      connection: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
+      ),
     };
 
     const changePasswordResponse = await this.auth0.database.changePassword(
