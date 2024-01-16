@@ -399,7 +399,7 @@ const prismaEntityFieldFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY_FIELD];
 });
 const prismaEntityFieldDeleteMock = jest.fn(() => {
-  return;
+  return Promise.resolve(EXAMPLE_ENTITY_FIELD);
 });
 
 const prismaEntityFieldFindFirstMock = jest.fn(

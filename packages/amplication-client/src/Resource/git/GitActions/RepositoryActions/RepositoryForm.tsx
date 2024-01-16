@@ -2,7 +2,6 @@ import { Formik } from "formik";
 import { omit } from "lodash";
 import { useMemo } from "react";
 import { DisplayNameField } from "../../../../Components/DisplayNameField";
-import { Form } from "../../../../Components/Form";
 import * as models from "../../../../models";
 
 import {
@@ -12,6 +11,7 @@ import {
   EnumTextStyle,
   FlexItem,
   Text,
+  Form,
 } from "@amplication/ui/design-system";
 import { BillingFeature } from "@amplication/util-billing-types";
 import FormikAutoSave from "../../../../util/formikAutoSave";
