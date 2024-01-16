@@ -483,12 +483,8 @@ describe("AuthService", () => {
         type: EnumTokenType.User,
       };
 
-      const signOptions: JwtSignOptions = {
-        expiresIn: "1h",
-      };
-
       expect(signMock).toHaveBeenCalledTimes(1);
-      expect(signMock).toHaveBeenCalledWith(jwtPayload, signOptions);
+      expect(signMock).toHaveBeenCalledWith(jwtPayload);
     });
 
     describe("complete signup for preview account", () => {
