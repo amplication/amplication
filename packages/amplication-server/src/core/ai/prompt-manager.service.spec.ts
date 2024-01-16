@@ -156,8 +156,7 @@ describe("PromptManagerService", () => {
         ],
       });
       expect(JSON.parse(result)).toStrictEqual({
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        DataModels: [
+        dataModels: [
           {
             displayName: "Order",
             fields: [

@@ -1,11 +1,14 @@
 import { EnumDataType } from "../../prisma";
-import { PromptManagerGeneratePromptForBreakTheMonolithArgs } from "./prompt-manager.types";
+import {
+  BreakTheMonolithPromptInput,
+  GeneratePromptForBreakTheMonolithArgs,
+} from "./prompt-manager.types";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class PromptManagerService {
   generatePromptForBreakTheMonolith(
-    resource: PromptManagerGeneratePromptForBreakTheMonolithArgs
+    resource: GeneratePromptForBreakTheMonolithArgs
   ): string {
     const entityIdNameMap = resource.entities.reduce((acc, entity) => {
       acc[entity.id] = entity.name;
@@ -37,9 +40,10 @@ export class PromptManagerService {
       }),
     };
 
-    return JSON.stringify({
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      DataModels: resourceDetails.entities,
-    });
+    const prompt: BreakTheMonolithPromptInput = {
+      dataModels: resourceDetails.entities,
+    };
+
+    return JSON.stringify(prompt);
   }
 }
