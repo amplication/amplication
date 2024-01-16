@@ -1,0 +1,106 @@
+@import "../../style/index.scss";
+
+$feature-tag-padding: 2px 12px;
+$addon-margin-bottom: 44px;
+$addon-feature-tag-border-radius: 32px;
+$addon-feature-tag-gap: 4px;
+$addon-title-line-height: 36px;
+
+.model-organizer-confirmation {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 6px;
+
+  &__information {
+    line-height: 22px;
+    color: #a3a8b8;
+    & span {
+      color: #a3a8b8;
+    }
+  }
+
+  &__Buttons {
+    justify-content: space-between;
+    display: flex;
+  }
+
+  &__newServiceList {
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid var(--gray-70);
+  }
+
+  &__newServiceItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  &__serviceIcon {
+    box-sizing: border-box;
+    border: 3px solid;
+    border-radius: 50%;
+    display: inline-flex;
+  }
+
+  &__gitRepository {
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+  }
+
+  &__gitRepositoryName {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+  }
+
+  &__api_options {
+    align-items: flex-start;
+    display: flex;
+    gap: 8px;
+    align-self: stretch;
+  }
+
+  &__api_item {
+    display: flex;
+    width: 214px;
+    padding: 8px;
+    align-items: center;
+    gap: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--gray-70);
+  }
+
+  &__note {
+    display: flex;
+    padding: 8px 12px;
+    align-items: center;
+    gap: 4px;
+    align-self: stretch;
+    border-radius: 4px;
+    border: 1px solid var(--APP-Secondary-Turquoise, #53dbee);
+    background: rgba(83, 219, 238, 0.1);
+  }
+
+  &__entities {
+    color: var(--feature-indicator);
+  }
+  &__documentation {
+    & span {
+      color: var(--feature-indicator);
+    }
+  }
+
+  .toggle-field label .input-label-value {
+    color: #a3a8b8;
+  }
+
+  .toggle-field label {
+    align-items: stretch;
+  }
+}
+.amp-dialog .amp-dialog__header {
+  margin-bottom: 0px;
+}

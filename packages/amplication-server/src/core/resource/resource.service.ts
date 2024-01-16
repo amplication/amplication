@@ -68,6 +68,9 @@ import { CreateResourcesEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
 import { LookupResolvedProperties } from "@amplication/code-gen-types";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { ModelGroupResource } from "./dto/ResourceCreateCopiedEntitiesInput";
+import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
+import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
+import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -409,10 +412,44 @@ export class ResourceService {
       data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
     });
 
+    const resourceSettings: ServiceSettingsUpdateInput = {
+      adminUISettings: {
+        generateAdminUI: false,
+        adminUIPath: "",
+      },
+      serverSettings: {
+        generateGraphQL: true,
+        generateRestApi: false,
+        generateServer: true,
+        serverPath: "",
+      },
+      authProvider: EnumAuthProviderType.Jwt,
+    };
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
-      user
+      user,
+      resourceSettings
     );
+
+    const currentPlugin: PluginInstallationCreateInput = {
+      pluginId: "db-postgres",
+      enabled: true,
+      npm: "@amplication/plugin-db-postgres",
+      version: "latest",
+      displayName: "db-postgres",
+      resource: undefined,
+    };
+
+    currentPlugin.resource = { connect: { id: resource.id } };
+    const isvValidEntityUser = await this.userEntityValidation(
+      resource.id,
+      currentPlugin.configurations
+    );
+    isvValidEntityUser &&
+      (await this.pluginInstallationService.create(
+        { data: currentPlugin },
+        user
+      ));
 
     await this.environmentService.createDefaultEnvironment(resource.id);
 

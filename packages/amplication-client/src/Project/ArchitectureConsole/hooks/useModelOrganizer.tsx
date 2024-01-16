@@ -41,6 +41,8 @@ const useModelOrganization = () => {
     models.Resource[]
   >([]);
   const [selectedNode, setSelectedNode] = useState<Node>(null);
+  const [selectedResource, setSelectedResource] =
+    useState<models.Resource>(null);
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -384,10 +386,13 @@ const useModelOrganization = () => {
       const newService = {
         tempId: newResource.tempId,
         name: newResource.name,
+        color: newResourceNode.data.groupColor,
       };
 
       changes.newServices.push(newService);
-      //todo: add new service to resource list
+      const resourceDataCopy = currentResourcesData;
+      resourceDataCopy.push(newResource);
+      setCurrentResourceStorageData(JSON.stringify(resourceDataCopy));
 
       const updatedNodes = await applyAutoLayout(
         nodes,
@@ -403,14 +408,17 @@ const useModelOrganization = () => {
       setChanges,
       setCurrentTheme,
       setCurrentChangesStorageData,
+      setCurrentResourceStorageData,
       changes,
       nodes,
       showRelationDetails,
+      currentResourcesData,
     ]
   );
 
   const setDraggableNodes = useCallback(
     (resource: models.Resource) => {
+      setSelectedResource(resource);
       setNodes((nodes) => {
         nodes.forEach((node) => {
           if (node.data.originalParentNode === resource.id) {
@@ -425,7 +433,7 @@ const useModelOrganization = () => {
         return [...nodes];
       });
     },
-    [nodes, setNodes, setSelectedNode]
+    [nodes, setNodes, setSelectedNode, setSelectedResource]
   );
 
   useEffect(() => {
@@ -547,6 +555,7 @@ const useModelOrganization = () => {
     resourcesData,
     loadingResources,
     resourcesError,
+    selectedResource,
     setSearchPhrase,
     toggleShowRelationDetails,
     resetToOriginalState,

@@ -22,6 +22,13 @@ $addon-title-line-height: 36px;
     background-color: var(--feature-indicator);
   }
 
+  &__confirmationDialog {
+    display: flex;
+    padding: 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
   &__addon-section {
     background-color: #15192c;
     width: 100%;
@@ -72,6 +79,10 @@ $addon-title-line-height: 36px;
     flex: 1;
   }
 
+  .amp-dialog {
+    margin-top: 10vh !important;
+    background: #1f2336 !important;
+  }
   .react-flow__controls {
     height: 32px;
     padding: 8px;

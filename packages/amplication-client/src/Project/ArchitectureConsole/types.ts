@@ -57,15 +57,19 @@ export type DetailedRelation = SimpleRelation & {
 };
 
 export type Relation = SimpleRelation | DetailedRelation;
+export type ModelGroupResource = {
+  tempId: string;
+  name: string;
+  color?: string;
+};
+
+export type CopiedEntity = {
+  entityId: string;
+  originalResourceId: string;
+  targetResourceId: string;
+};
 
 export type ModelChanges = {
-  newServices: {
-    tempId: string;
-    name: string;
-  }[];
-  movedEntities: {
-    entityId: string;
-    originalResourceId: string;
-    targetResourceId: string;
-  }[];
+  newServices: ModelGroupResource[];
+  movedEntities: CopiedEntity[];
 };
