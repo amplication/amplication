@@ -193,6 +193,7 @@ model BtmResourceRecommendation {
   createdAt               DateTime                  @default(now())
   updatedAt               DateTime                  @updatedAt
   name                    String
+  description             String
   resourceId              String
   resource                Resource                  @relation(fields: [resourceId], references: [id])
   btmEntityRecommendation BtmEntityRecommendation[]
