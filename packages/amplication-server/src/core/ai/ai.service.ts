@@ -10,7 +10,6 @@ import {
   initialStepData,
 } from "./constants";
 import { PromptManagerService } from "./prompt-manager.service";
-import { PromptManagerGeneratePromptForBreakTheMonolithArgs } from "./prompt-manager.types";
 import {
   AiConversationComplete,
   AiConversationStart,

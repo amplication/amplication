@@ -1,4 +1,4 @@
-import { EnumDataType } from "../../prisma";
+import { EnumDataType, Prisma } from "../../prisma";
 
 export interface PromptManagerGeneratePromptForBreakTheMonolithArgs {
   name: string;
@@ -12,7 +12,7 @@ export interface PromptManagerGeneratePromptForBreakTheMonolithArgs {
         name: string;
         displayName: string;
         dataType: EnumDataType;
-        properties?: Record<string, any>;
+        properties?: Prisma.JsonValue;
       }[];
     }[];
   }[];
