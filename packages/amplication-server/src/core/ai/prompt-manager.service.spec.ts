@@ -253,4 +253,56 @@ describe("PromptManagerService", () => {
       });
     });
   });
+
+  describe("generateResourcesFromPromptResult", () => {
+    it("should return a BtmRecommendation", () => {
+      const result = service.generateResourcesFromPromptResult(
+        JSON.stringify({
+          microservices: [
+            {
+              name: "microservice1",
+              functionality: "functionality1",
+              dataModels: [
+                {
+                  name: "dataModel1",
+                  fields: [
+                    {
+                      name: "field1",
+                      dataType: "SingleLineText",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        })
+      );
+      expect(result).toStrictEqual({
+        actionId: "",
+        resources: [
+          {
+            id: "",
+            name: "microservice1",
+            description: "functionality1",
+            entities: [
+              {
+                id: "",
+                name: "dataModel1",
+                fields: ["field1"],
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    it.each(["invalid", '{"microservice":{}}'])(
+      "should throw an error if the prompt result is not valid",
+      (result: string) => {
+        expect(() =>
+          service.generateResourcesFromPromptResult(result)
+        ).toThrowError();
+      }
+    );
+  });
 });
