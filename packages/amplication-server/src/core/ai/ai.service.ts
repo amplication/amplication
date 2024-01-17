@@ -16,7 +16,7 @@ import {
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { AiBadFormatResponseError } from "./errors/ai-bad-format-response.error";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ResourcePartial } from "./prompt-manager.types";
@@ -60,16 +60,17 @@ export class AiService {
     };
   }
 
-  private async updateActionStatus(
+  private async updateActionStatusAndGetResourceId(
     actionId: string,
     status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
-  ): Promise<void> {
+  ): Promise<string> {
     const userAction = await this.prisma.userAction.findFirst({
       where: {
         actionId,
         userActionType: GENERATING_BTM_RESOURCE_RECOMMENDATION_USER_ACTION_TYPE,
       },
       select: {
+        resourceId: true,
         action: {
           select: {
             steps: {
@@ -83,15 +84,13 @@ export class AiService {
     });
 
     await this.actionService.complete(userAction.action.steps[0], status);
+
+    return userAction.resourceId;
   }
 
-  async triggerGenerationBtmResourceRecommendation({
-    resourceId,
-    userId,
-  }: {
-    resourceId: string;
-    userId: string;
-  }): Promise<string> {
+  private async getPartialResource(
+    resourceId: string
+  ): Promise<ResourcePartial> {
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },
       select: {
@@ -127,6 +126,17 @@ export class AiService {
     if (!resource) {
       throw new AmplicationError(INVALID_RESOURCE_ID);
     }
+    return resource;
+  }
+
+  async triggerGenerationBtmResourceRecommendation({
+    resourceId,
+    userId,
+  }: {
+    resourceId: string;
+    userId: string;
+  }): Promise<string> {
+    const resource = await this.getPartialResource(resourceId);
 
     const prompt =
       await this.promptManagerService.generatePromptForBreakTheMonolith(
@@ -169,13 +179,69 @@ export class AiService {
   async onConversationCompleted(
     data: AiConversationComplete.Value
   ): Promise<boolean> {
-    const { actionId, errorMessage } = data;
+    const { actionId, errorMessage, success, result } = data;
 
-    await this.updateActionStatus(
-      actionId,
-      errorMessage ? EnumActionStepStatus.Failed : EnumActionStepStatus.Success
-    );
+    try {
+      const resourceId = await this.updateActionStatusAndGetResourceId(
+        actionId,
+        success ? EnumActionStepStatus.Success : EnumActionStepStatus.Failed
+      );
 
+      if (!success) {
+        return true;
+      }
+
+      const originalResource = await this.getPartialResource(resourceId);
+
+      const promptResult = this.promptManagerService.parsePromptResult(result);
+      const recommendations =
+        this.btmManagerService.translateToBtmRecommendation(
+          actionId,
+          promptResult,
+          originalResource
+        );
+
+      const deleteOldRecommendations = this.prisma.resource.update({
+        where: {
+          id: resourceId,
+        },
+        data: {
+          btmResourceRecommendation: {
+            deleteMany: {},
+          },
+        },
+      });
+
+      const storeNewRecommendations = this.prisma.resource.update({
+        where: {
+          id: resourceId,
+        },
+        data: {
+          btmResourceRecommendation: {
+            create: recommendations.resources.map((resource) => ({
+              name: resource.name,
+              description: resource.description,
+              btmEntityRecommendation: {
+                create: resource.entities.map((entity) => entity),
+              },
+            })),
+          },
+        },
+      });
+
+      await this.prisma.$transaction([
+        deleteOldRecommendations,
+        storeNewRecommendations,
+      ]);
+    } catch (error) {
+      if (error instanceof AiBadFormatResponseError) {
+        await this.updateActionStatusAndGetResourceId(
+          actionId,
+          EnumActionStepStatus.Failed
+        );
+      }
+      this.logger.error(error.message, error, { errorMessage, result });
+    }
     return true;
   }
 }

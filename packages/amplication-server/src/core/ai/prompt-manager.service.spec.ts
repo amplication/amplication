@@ -250,42 +250,22 @@ describe("PromptManagerService", () => {
     });
   });
 
-  describe("generateResourcesFromPromptResult", () => {
-    it("should return a BtmRecommendation", () => {
-      const result = service.generateResourcesFromPromptResult(
-        JSON.stringify({
-          microservices: [
-            {
-              name: "microservice1",
-              functionality: "functionality1",
-              dataModels: [
-                {
-                  name: "dataModel1",
-                  fields: [
-                    {
-                      name: "field1",
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        })
+  describe("parsePromptResult", () => {
+    it("should return a validated BreakTheMonolithPromptOutput", () => {
+      const result = service.parsePromptResult(
+        '{"microservices":[{"name":"ecommerce","functionality":"manage orders, prices and payments","dataModels":["order","customer","item","address"]},{"name":"inventory","functionality":"manage inventory","dataModels":["item","address"]}]}'
       );
       expect(result).toStrictEqual({
-        actionId: "",
-        resources: [
+        microservices: [
           {
-            id: "",
-            name: "microservice1",
-            description: "functionality1",
-            entities: [
-              {
-                id: "",
-                name: "dataModel1",
-                fields: ["field1"],
-              },
-            ],
+            name: "ecommerce",
+            functionality: "manage orders, prices and payments",
+            dataModels: ["order", "customer", "item", "address"],
+          },
+          {
+            name: "inventory",
+            functionality: "manage inventory",
+            dataModels: ["item", "address"],
           },
         ],
       });
@@ -294,9 +274,7 @@ describe("PromptManagerService", () => {
     it.each(["invalid", '{"microservice":{}}'])(
       "should throw an error if the prompt result is not valid",
       (result: string) => {
-        expect(() =>
-          service.generateResourcesFromPromptResult(result)
-        ).toThrowError();
+        expect(() => service.parsePromptResult(result)).toThrowError();
       }
     );
   });

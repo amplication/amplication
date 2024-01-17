@@ -58,24 +58,15 @@ export class PromptManagerService {
     return JSON.stringify(prompt);
   }
 
-  generateResourcesFromPromptResult(promptResult: string): BtmRecommendation {
+  parsePromptResult(promptResult: string): BreakTheMonolithPromptOutput {
     try {
-      const result: BreakTheMonolithPromptOutput = JSON.parse(promptResult);
+      const result = JSON.parse(promptResult);
 
       return {
-        actionId: "",
-        resources: result.microservices.map((microservice) => ({
-          id: "",
+        microservices: result.microservices.map((microservice) => ({
           name: microservice.name,
-          description: microservice.functionality,
-          entities: microservice.dataModels.map(
-            (dataModel) =>
-              <BtmEntityRecommendation>{
-                id: "",
-                name: dataModel.name,
-                fields: dataModel.fields.map((field) => field.name),
-              }
-          ),
+          functionality: microservice.functionality,
+          dataModels: microservice.dataModels,
         })),
       };
     } catch (error) {
