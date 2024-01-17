@@ -109,7 +109,6 @@ export const LicenseIndicatorContainer: FC<Props> = ({
 
   const linkText = useMemo(() => {
     if (isPreviewPlan(subscriptionPlan)) {
-      console.log("isPreviewPlan");
       return ""; // don't show the upgrade link when the plan is preview
     }
 
