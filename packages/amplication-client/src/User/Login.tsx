@@ -3,9 +3,11 @@ import {
   Snackbar,
   TextField,
   Form,
+  Icon,
+  EnumTextColor,
 } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
-import { Formik } from "formik";
+import { Formik, useFormikContext } from "formik";
 import { Location } from "history";
 import queryString from "query-string";
 import { useCallback, useEffect, useMemo } from "react";
@@ -25,14 +27,23 @@ import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import "./Login.scss";
 import { useTracking } from "../util/analytics";
+import { SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW } from "./UserQueries";
+import { PreviewAccountType } from "../models";
 
 type Values = {
   email: string;
   password: string;
+  work_email: string;
 };
 
 interface LocationStateInterface {
   from?: Location;
+}
+
+interface SignUpWithBusinessEmail {
+  signUpWithBusinessEmail: {
+    message: string;
+  };
 }
 
 const CLASS_NAME = "login-page";
@@ -41,6 +52,81 @@ const URL_SOURCE_PARAM = "utm_source";
 const INITIAL_VALUES: Values = {
   email: "",
   password: "",
+  work_email: "",
+};
+
+const AuthWithWorkEmail: React.FC = () => {
+  const { values } = useFormikContext<Values>();
+  const { trackEvent } = useTracking();
+  const [signUpWithBusinessEmail, { data, loading, error }] =
+    useMutation<SignUpWithBusinessEmail>(SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW);
+
+  const handleAuthWorkEmail = () => {
+    trackEvent({
+      eventName: AnalyticsEventNames.SignUpWithEmailPassword,
+    });
+    signUpWithBusinessEmail({
+      variables: {
+        data: {
+          previewAccountEmail: values.work_email,
+          previewAccountType: PreviewAccountType.Auth0Signup,
+        },
+      },
+    });
+  };
+
+  const handleLogin = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.EmailLogin,
+    });
+  }, [trackEvent, AnalyticsEventNames]);
+
+  return (
+    <>
+      <div className={`${CLASS_NAME}__or`}>
+        <span>or</span>
+      </div>
+      <TextField
+        className={`${CLASS_NAME}__work_email`}
+        label="Work email"
+        name="work_email"
+        value={values.work_email}
+        type="email"
+      />
+      {error && <ErrorMessage errorMessage={error?.message} />}
+      {data && (
+        <div className={`${CLASS_NAME}__reset_message`}>
+          <Icon
+            icon="info_circle"
+            size="small"
+            color={EnumTextColor.ThemeGreen}
+          />
+          <p>{data?.signUpWithBusinessEmail.message}</p>
+        </div>
+      )}
+      <Button
+        type="button"
+        className={`${CLASS_NAME}__work_email_btn`}
+        onClick={handleAuthWorkEmail}
+        eventData={{
+          eventName: AnalyticsEventNames.SignInWithUserName,
+        }}
+        disabled={!values.work_email.length || !!data || !!error}
+      >
+        {loading ? <CircularProgress centerToParent /> : "Continue"}
+      </Button>
+      <div className={`${CLASS_NAME}__login`}>
+        Already have an account ?
+        <a
+          href={REACT_APP_AUTH_LOGIN_URI}
+          className={`${CLASS_NAME}__sso`}
+          onClick={handleLogin}
+        >
+          Login
+        </a>
+      </div>
+    </>
+  );
 };
 
 const Login = () => {
@@ -105,9 +191,8 @@ const Login = () => {
       <span className={`${CLASS_NAME}__title`}>Hi There</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
-          {urlError && <ErrorMessage errorMessage={urlError} />}
-
-          {REACT_APP_GITHUB_AUTH_ENABLED ? (
+          {REACT_APP_GITHUB_AUTH_ENABLED &&
+          JSON.parse(REACT_APP_GITHUB_AUTH_ENABLED) ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
                 Welcome to {content.name}. Please use your GitHub account to
@@ -121,6 +206,8 @@ const Login = () => {
               >
                 Continue with SSO
               </a>
+              <AuthWithWorkEmail />
+              {urlError && <ErrorMessage errorMessage={urlError} />}
             </>
           ) : (
             <>

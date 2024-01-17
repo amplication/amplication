@@ -3,6 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { subDays } from "date-fns";
 import { ConfigService } from "@nestjs/config";
 import cuid from "cuid";
+import { Env } from "../../env";
 import { Prisma, PrismaService } from "../../prisma";
 import { Profile as GitHubProfile } from "passport-github2";
 import { Account, Resource, User, UserRole, Workspace } from "../../models";
@@ -23,6 +24,13 @@ import { CompleteInvitationArgs } from "../workspace/dto";
 import { ProjectService } from "../project/project.service";
 import { AuthProfile } from "./types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import {
+  AuthenticationClient,
+  JSONApiResponse,
+  ManagementClient,
+  SignUpResponse,
+  TextApiResponse,
+} from "auth0";
 import { SignupPreviewAccountInput } from "./dto/SignupPreviewAccountInput";
 import * as crypto from "crypto";
 import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
@@ -62,6 +70,7 @@ export const IDENTITY_PROVIDER_GITHUB = "GitHub";
 export const IDENTITY_PROVIDER_SSO = "SSO";
 export const IDENTITY_PROVIDER_MANUAL = "Manual";
 export const IDENTITY_PROVIDER_PREVIEW_ACCOUNT = "PreviewAccount";
+export const IDENTITY_PROVIDER_AUTH0 = "Auth0";
 
 const AUTH_USER_INCLUDE = {
   account: true,
@@ -75,8 +84,19 @@ const WORKSPACE_INCLUDE = {
   },
 };
 
+const generatePassword = () => {
+  const buf = new Uint8Array(6);
+  crypto.getRandomValues(buf);
+  return Buffer.from(String.fromCharCode.apply(null, buf), "utf8").toString(
+    "base64"
+  );
+};
+
 @Injectable()
 export class AuthService {
+  private auth0: AuthenticationClient;
+  private auth0Management: ManagementClient;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
@@ -91,7 +111,118 @@ export class AuthService {
     private readonly projectService: ProjectService,
     @Inject(forwardRef(() => ResourceService))
     private readonly resourceService: ResourceService
-  ) {}
+  ) {
+    this.auth0 = new AuthenticationClient({
+      domain: this.configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
+      clientId: this.configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID),
+      clientSecret: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_SECRET
+      ),
+    });
+    this.auth0Management = new ManagementClient({
+      domain: this.configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
+      clientId: this.configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID),
+      clientSecret: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_SECRET
+      ),
+    });
+  }
+
+  async signupAuth0User({
+    previewAccountType,
+    previewAccountEmail,
+  }): Promise<{ message: string }> {
+    try {
+      let auth0User;
+      const existedAccount = await this.accountService.findAccount({
+        where: {
+          email: previewAccountEmail,
+        },
+      });
+      const existedAuth0User = await this.getAuth0UserByEmail(
+        previewAccountEmail
+      );
+      if (!existedAuth0User) {
+        auth0User = await this.createAuth0User(previewAccountEmail);
+
+        if (!auth0User.data.email)
+          throw Error("Failed to create new Auth0 user");
+      }
+
+      const resetPassword = await this.resetAuth0UserPassword(
+        existedAuth0User ? previewAccountEmail : auth0User.data.email
+      );
+      if (!resetPassword.data)
+        throw Error("Failed to send reset message to new Auth0 user");
+
+      if (!existedAccount) {
+        const account = await this.accountService.createAccount(
+          {
+            data: {
+              email: previewAccountEmail,
+              firstName: "",
+              lastName: "",
+              password: "",
+              previewAccountType,
+            },
+          },
+          IDENTITY_PROVIDER_AUTH0
+        );
+        const workspaceName = previewAccountEmail.split("@")[0];
+        await this.bootstrapUser(account, workspaceName);
+      }
+
+      return {
+        message:
+          "Complete signup by setting a password using the email we just sent",
+      };
+    } catch (error) {
+      this.logger.error(error.message, error);
+      return {
+        message: "Oops! Signup didn't go through. Please try again later.",
+      };
+    }
+  }
+
+  async createAuth0User(
+    email: string
+  ): Promise<JSONApiResponse<SignUpResponse>> {
+    const data = {
+      email,
+      password: generatePassword(),
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      email_verified: true,
+      connection: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
+      ),
+    };
+
+    const user = await this.auth0.database.signUp(data);
+
+    return user;
+  }
+
+  async resetAuth0UserPassword(email: string): Promise<TextApiResponse> {
+    const data = {
+      email,
+      connection: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
+      ),
+    };
+
+    const changePasswordResponse = await this.auth0.database.changePassword(
+      data
+    );
+
+    return changePasswordResponse;
+  }
+
+  async getAuth0UserByEmail(email: string): Promise<boolean> {
+    const user = await this.auth0Management.usersByEmail.getByEmail({ email });
+    if (!user.data.length) return false;
+
+    return user.data[0].email === email;
+  }
 
   async createGitHubUser(
     payload: GitHubProfile,
@@ -185,12 +316,13 @@ export class AuthService {
     return this.prepareToken(user);
   }
 
-  async signupPreviewAccount(
-    payload: SignupPreviewAccountInput
-  ): Promise<AuthPreviewAccount> {
+  async signupPreviewAccount({
+    previewAccountEmail,
+    previewAccountType,
+  }: SignupPreviewAccountInput): Promise<AuthPreviewAccount> {
     const { signupData, identityProvider } = this.generateDataForPreviewAccount(
-      payload.previewAccountEmail,
-      payload.previewAccountType
+      previewAccountEmail,
+      previewAccountType
     );
 
     const account = await this.accountService.createAccount(

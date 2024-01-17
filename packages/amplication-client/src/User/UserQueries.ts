@@ -1,12 +1,13 @@
 import { gql } from "@apollo/client";
 
-export const SIGNUP_PREVIEW_ACCOUNT = gql`
-  mutation SignupPreviewAccount($data: SignupPreviewAccountInput!) {
-    signupPreviewAccount(data: $data) {
+export const SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW = gql`
+  mutation SignUpWithBusinessEmail($data: SignupPreviewAccountInput!) {
+    signUpWithBusinessEmail(data: $data) {
       token
       workspaceId
       projectId
       resourceId
+      message
     }
   }
 `;
