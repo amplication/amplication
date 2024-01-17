@@ -281,12 +281,13 @@ export class AuthService {
     return user;
   }
 
-  async updateUser(user: AuthUser, profile: AuthProfile): Promise<AuthUser> {
+  async updateUser(
+    user: AuthUser,
+    data: { githubId?: string; previewAccountType?: PreviewAccountType }
+  ): Promise<AuthUser> {
     const account = await this.accountService.updateAccount({
       where: { id: user.account.id },
-      data: {
-        githubId: profile.sub,
-      },
+      data,
     });
     return {
       ...user,
