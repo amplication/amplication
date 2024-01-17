@@ -48,7 +48,7 @@ const EXAMPLE_PREVIEW_ACCOUNT: Account = {
   updatedAt: new Date(),
   githubId: null,
   previewAccountType: PreviewAccountType.BreakingTheMonolith,
-  previewAccountEmail: "examplePreveiw@AmplicationError.com",
+  previewAccountEmail: "examplePreveiw@amplication.com",
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -452,6 +452,27 @@ describe("AuthService", () => {
   });
 
   describe("preview account", () => {
+    it("should fail to signup a preview account when the email is not work email", async () => {
+      createAccountMock.mockResolvedValueOnce({
+        ...EXAMPLE_PREVIEW_ACCOUNT,
+        previewAccountEmail: "test@gmail.com",
+      });
+
+      await expect(
+        service.signupPreviewAccount({
+          previewAccountEmail: "test@gmail.com",
+          previewAccountType:
+            PreviewAccountType[EXAMPLE_PREVIEW_ACCOUNT.previewAccountType],
+        })
+      ).rejects.toThrowError(
+        "Email must be a work email, not a public domain email"
+      );
+
+      expect(createAccountMock).toHaveBeenCalledTimes(0);
+      expect(createAccountMock).toHaveBeenCalledTimes(0);
+      expect(signMock).toHaveBeenCalledTimes(0);
+    });
+
     it("should signs up for correct data with preview account", async () => {
       createAccountMock.mockResolvedValueOnce(EXAMPLE_PREVIEW_ACCOUNT);
 

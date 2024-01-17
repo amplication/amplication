@@ -39,6 +39,7 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
 import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
 import { USER_ENTITY_NAME } from "../entity/constants";
+import { PUBLIC_DOMAINS } from "./publicDomains";
 
 export type AuthUser = User & {
   account: Account;
@@ -368,10 +369,20 @@ export class AuthService {
     return resetPassword.data;
   }
 
+  private isValidWorkEmail(email: string): boolean {
+    const domain = email.split("@")[1];
+    return !PUBLIC_DOMAINS.includes(domain);
+  }
+
   async signupPreviewAccount({
     previewAccountEmail,
     previewAccountType,
   }: SignupPreviewAccountInput): Promise<AuthPreviewAccount> {
+    if (!this.isValidWorkEmail(previewAccountEmail)) {
+      throw new AmplicationError(
+        `Email must be a work email, not a public domain email`
+      );
+    }
     const { signupData, identityProvider } = this.generateDataForPreviewAccount(
       previewAccountEmail,
       previewAccountType
