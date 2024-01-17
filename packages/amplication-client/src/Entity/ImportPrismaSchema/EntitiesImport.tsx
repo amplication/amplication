@@ -18,6 +18,10 @@ import useUserActionWatchStatus from "./useUserActionWatchStatus";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { useStiggContext } from "@stigg/react-sdk";
 import { Button } from "../../Components/Button";
+import {
+  mapUserActionStatusToUploadSchemaState,
+  uploadSchemaState,
+} from "./uploadSchemaState";
 
 const PROCESSING_PRISMA_SCHEMA = "PROCESSING_PRISMA_SCHEMA";
 
@@ -133,6 +137,16 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
     [createEntitiesFormSchema, resourceId]
   );
 
+  const importSchemaState = useMemo(() => {
+    return uploadSchemaState[
+      mapUserActionStatusToUploadSchemaState(userActionData?.userAction?.status)
+    ]({
+      className: CLASS_NAME,
+      message:
+        actionLog.steps[0]?.logs[actionLog.steps[0]?.logs.length - 1]?.message,
+    });
+  }, [userActionData]);
+
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
       <>
@@ -168,17 +182,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
           </div>
         ) : (
           <>
-            <div className={`${CLASS_NAME}__header`}>
-              <SvgThemeImage image={EnumImages.ImportPrismaSchema} />
-              <h2>Import Prisma schema file</h2>
-              <div className={`${CLASS_NAME}__message`}>
-                upload a Prisma schema file to import its content, and create
-                entities and relations.
-                <br />
-                Only '*.prisma' files are supported.
-              </div>
-            </div>
-
+            {importSchemaState}
             <div className={`${CLASS_NAME}__content`}>
               {loading || (data && data.createEntitiesFromPrismaSchema) ? (
                 <>
