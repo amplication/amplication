@@ -23,7 +23,7 @@ const resourceRoutes = [
     Component: lazy(
       () =>
         import(
-          "../Resource/preview-pages/breaking-the-monolith/BreakingTheMonolithOptions"
+          "../Resource/preview-pages/breaking-the-monolith/BreakingTheMonolithOptionsPage"
         )
     ),
     moduleName: "ChangesPage",
