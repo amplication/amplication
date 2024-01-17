@@ -87,10 +87,29 @@ export class AuthController {
   @UseInterceptors(MorganInterceptor("combined"))
   @Get(AUTH_LOGIN_PATH)
   async auth0Login(@Req() request: Request, @Res() response: Response) {
-    await response.oidc.login({
-      returnTo: AUTH_AFTER_CALLBACK_PATH,
-    });
-    return;
+    try {
+      const screenHint = request.query.work_email
+        ? {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            screen_hint: "signup",
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            login_hint: request.query.work_email as string,
+          }
+        : // eslint-disable-next-line @typescript-eslint/naming-convention
+          { screen_hint: "login-id" };
+      await response.oidc.login({
+        authorizationParams: {
+          ...screenHint,
+        },
+        returnTo: AUTH_AFTER_CALLBACK_PATH,
+      });
+      return;
+    } catch (error) {
+      this.logger.error(error.message, error);
+      return (
+        error.body.friendly_message || "Please enter a valid work email address"
+      );
+    }
   }
 
   @UseInterceptors(MorganInterceptor("combined"))

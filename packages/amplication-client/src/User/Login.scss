@@ -2,11 +2,18 @@
 
 $title-padding-bottom: 24px;
 $policy-margin-top: 64px;
-$message-margin-bottom: 40px;
+$message-margin-bottom: 24px;
 
 .login-page {
+  &__title {
+    font-size: 24px;
+    font-weight: 600;
+  }
   &__sso {
     text-decoration: underline;
+    color: var(--gray-base);
+    font-size: 12px;
+    font-weight: 400;
   }
 
   &__signup {
@@ -18,12 +25,83 @@ $message-margin-bottom: 40px;
     }
   }
 
+  &__login {
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 50px;
+
+    & a {
+      margin-left: 10px;
+      font-size: 13px;
+    }
+  }
+
   &__message {
     @include body1;
     white-space: normal;
-    color: var(--gray-30);
+    color: var(--gray-base);
+    font-size: 14px;
+    font-weight: 400;
     margin-top: var(--default-spacing);
     margin-bottom: $message-margin-bottom;
+  }
+
+  &__or {
+    display: flex;
+    flex-direction: row;
+    & span {
+      padding: 0 8px;
+      color: var(--gray-50);
+    }
+  }
+  &__or:before,
+  &__or:after {
+    content: "";
+    flex: 1 1;
+    border-bottom: 1px solid var(--gray-50);
+    margin: auto;
+  }
+
+  &__work_email_btn {
+    height: 34px;
+    border-radius: 4px;
+  }
+
+  &.amp-button--primary[disabled] {
+    background-color: #2c3249;
+  }
+
+  &.amp-button {
+    margin-top: 0px;
+    border-radius: 4px;
+  }
+
+  &__reset_message {
+    border: 1px solid var(--theme-green);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border-radius: 4px;
+    color: var(--gray-20);
+    padding: 7px;
+    & i {
+      align-self: center;
+      margin-right: 10px;
+    }
+  }
+
+  &__work_email {
+    & .amplication-label__ {
+      color: var(--gray-20);
+      font-size: 10px;
+    }
+    & input {
+      max-width: 100%;
+    }
+    & input:hover:not(:disabled),
+    input:focus:not(:disabled) {
+      border: 1px solid var(--gray-base);
+    }
   }
 
   &__title {
@@ -32,7 +110,6 @@ $message-margin-bottom: 40px;
   }
 
   &__policy {
-    margin-top: $policy-margin-top !important;
     margin-bottom: 0;
     @include body2;
     color: var(--gray-20);

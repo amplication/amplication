@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { SIGNUP_PREVIEW_ACCOUNT } from "../UserQueries";
+import { SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW } from "../UserQueries";
 import { setToken } from "../../authentication/authentication";
 import { PreviewAccountType } from "../../models";
 import { useHistory } from "react-router-dom";
 
 type TData = {
-  signupPreviewAccount: {
+  signUpWithBusinessEmail: {
     token: string;
     workspaceId: string;
     resourceId: string;
@@ -20,22 +20,22 @@ const useSignupPreviewAccount = (
 ) => {
   const history = useHistory();
 
-  const [signupPreviewAccount, { loading, error }] = useMutation<TData>(
-    SIGNUP_PREVIEW_ACCOUNT
+  const [signUpWithBusinessEmail, { loading, error }] = useMutation<TData>(
+    SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW
   );
 
   useEffect(() => {
     if (email && previewAccountType) {
-      signupPreviewAccount({
+      signUpWithBusinessEmail({
         variables: {
           data: {
             previewAccountEmail: email,
             previewAccountType,
           },
         },
-        onCompleted: ({ signupPreviewAccount }) => {
+        onCompleted: ({ signUpWithBusinessEmail }) => {
           const { token, workspaceId, projectId, resourceId } =
-            signupPreviewAccount;
+            signUpWithBusinessEmail;
           setToken(token);
           history.push(`/${workspaceId}/${projectId}/${resourceId}`);
         },

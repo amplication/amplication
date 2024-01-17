@@ -91,10 +91,11 @@ export type Auth = {
 };
 
 export type AuthPreviewAccount = {
-  projectId: Scalars['String']['output'];
-  resourceId: Scalars['String']['output'];
-  token: Scalars['String']['output'];
-  workspaceId: Scalars['String']['output'];
+  message?: Maybe<Scalars['String']['output']>;
+  projectId?: Maybe<Scalars['String']['output']>;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  token?: Maybe<Scalars['String']['output']>;
+  workspaceId?: Maybe<Scalars['String']['output']>;
 };
 
 export type AuthorizeResourceWithGitResult = {
@@ -1165,8 +1166,8 @@ export type Mutation = {
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
+  signUpWithBusinessEmail: AuthPreviewAccount;
   signup: Auth;
-  signupPreviewAccount: AuthPreviewAccount;
   /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
   triggerGenerationBtmResourceRecommendation?: Maybe<Scalars['String']['output']>;
   updateAccount: Account;
@@ -1487,13 +1488,13 @@ export type MutationSetPluginOrderArgs = {
 };
 
 
-export type MutationSignupArgs = {
-  data: SignupInput;
+export type MutationSignUpWithBusinessEmailArgs = {
+  data: SignupPreviewAccountInput;
 };
 
 
-export type MutationSignupPreviewAccountArgs = {
-  data: SignupPreviewAccountInput;
+export type MutationSignupArgs = {
+  data: SignupInput;
 };
 
 
@@ -1750,6 +1751,7 @@ export type PluginSetOrderInput = {
 };
 
 export enum PreviewAccountType {
+  Auth0Signup = 'Auth0Signup',
   BreakingTheMonolith = 'BreakingTheMonolith',
   None = 'None'
 }

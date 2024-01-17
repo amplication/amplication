@@ -70,10 +70,11 @@ type Auth {
 }
 
 type AuthPreviewAccount {
-  projectId: String!
-  resourceId: String!
-  token: String!
-  workspaceId: String!
+  message: String
+  projectId: String
+  resourceId: String
+  token: String
+  workspaceId: String
 }
 
 type AuthorizeResourceWithGitResult {
@@ -1134,8 +1135,8 @@ type Mutation {
   revokeInvitation(where: WhereUniqueInput!): Invitation
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  signUpWithBusinessEmail(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signup(data: SignupInput!): Auth!
-  signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
 
   """
   Trigger the generation of a set of recommendations for breaking a resource into microservices
@@ -1300,6 +1301,7 @@ input PluginSetOrderInput {
 }
 
 enum PreviewAccountType {
+  Auth0Signup
   BreakingTheMonolith
   None
 }
