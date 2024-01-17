@@ -17,6 +17,7 @@ import {
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { Injectable } from "@nestjs/common";
+import { AiBadFormatResponseError } from "./errors/ai-bad-format-response.error";
 
 @Injectable()
 export class AiService {

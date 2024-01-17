@@ -7,7 +7,7 @@ import {
   GeneratePromptForBreakTheMonolithArgs,
 } from "./prompt-manager.types";
 import { Injectable } from "@nestjs/common";
-import { AiBadFormatResponseError } from "./ai.errors";
+import { AiBadFormatResponseError } from "./errors/ai-bad-format-response.error";
 
 @Injectable()
 export class PromptManagerService {
