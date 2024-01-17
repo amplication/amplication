@@ -145,7 +145,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
       message:
         actionLog.steps[0]?.logs[actionLog.steps[0]?.logs.length - 1]?.message,
     });
-  }, [userActionData]);
+  }, [actionLog.steps, userActionData?.userAction?.status]);
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
