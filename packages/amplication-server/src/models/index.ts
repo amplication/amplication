@@ -21,3 +21,4 @@ export { Project } from "./Project";
 export { GitOrganization } from "./GitOrganization";
 export { GitRepository } from "./GitRepository";
 export { AuthPreviewAccount } from "./AuthPreviewAccount";
+export { BtmRecommendation } from "./BtmRecommendation/BtmRecommendation";

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { BtmRecommendation } from "../../models/BtmRecommendation/BtmRecommendation";
-import { BtmEntityRecommendation, EnumDataType } from "../../prisma";
+import { EnumDataType } from "../../prisma";
 import {
   BreakTheMonolithPromptInput,
   BreakTheMonolithPromptOutput,
