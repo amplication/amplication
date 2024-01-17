@@ -206,7 +206,7 @@ model BtmEntityRecommendation {
   name                        String
   fields                      String[]
   btmResourceRecommendationId String
-  btmResourceRecommendation   BtmResourceRecommendation @relation(fields: [btmResourceRecommendationId], references: [id])
+  btmResourceRecommendation   BtmResourceRecommendation @relation(fields: [btmResourceRecommendationId], references: [id], onDelete: Cascade)
 }
 
 model Commit {
