@@ -76,6 +76,20 @@ $message-margin-bottom: 24px;
     border-radius: 4px;
   }
 
+  &__reset_message {
+    border: 1px solid var(--theme-green);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border-radius: 4px;
+    color: var(--gray-20);
+    padding: 7px;
+    & i {
+      align-self: center;
+      margin-right: 10px;
+    }
+  }
+
   &__work_email {
     & .amplication-label__ {
       color: var(--gray-20);

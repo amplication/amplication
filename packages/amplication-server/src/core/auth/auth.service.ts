@@ -173,14 +173,13 @@ export class AuthService {
       }
 
       return {
-        message: resetPassword.data,
+        message:
+          "Complete signup by setting a password using the email we just sent",
       };
     } catch (error) {
       this.logger.error(error.message, error);
       return {
-        message:
-          error?.body?.friendly_message ||
-          "Please enter a valid work email address",
+        message: "Oops! Signup didn't go through. Please try again later.",
       };
     }
   }
@@ -193,7 +192,9 @@ export class AuthService {
       password: generatePassword(),
       // eslint-disable-next-line @typescript-eslint/naming-convention
       email_verified: true,
-      connection: "business-users",
+      connection: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
+      ),
     };
 
     const user = await this.auth0.database.signUp(data);
@@ -204,7 +205,9 @@ export class AuthService {
   async resetAuth0UserPassword(email: string): Promise<TextApiResponse> {
     const data = {
       email,
-      connection: "business-users",
+      connection: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
+      ),
     };
 
     const changePasswordResponse = await this.auth0.database.changePassword(
