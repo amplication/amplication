@@ -4,7 +4,7 @@ import { BtmEntityRecommendation, EnumDataType } from "../../prisma";
 import {
   BreakTheMonolithPromptInput,
   BreakTheMonolithPromptOutput,
-  GeneratePromptForBreakTheMonolithArgs,
+  ResourcePartial,
 } from "./prompt-manager.types";
 import { Injectable } from "@nestjs/common";
 import { AiBadFormatResponseError } from "./errors/ai-bad-format-response.error";
@@ -32,9 +32,7 @@ export class PromptManagerService {
     Json: "string",
   };
 
-  generatePromptForBreakTheMonolith(
-    resource: GeneratePromptForBreakTheMonolithArgs
-  ): string {
+  generatePromptForBreakTheMonolith(resource: ResourcePartial): string {
     const entityIdNameMap = resource.entities.reduce((acc, entity) => {
       acc[entity.id] = entity.name;
       return acc;

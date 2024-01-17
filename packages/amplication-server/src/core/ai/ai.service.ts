@@ -19,6 +19,7 @@ import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { Injectable } from "@nestjs/common";
 import { AiBadFormatResponseError } from "./errors/ai-bad-format-response.error";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ResourcePartial } from "./prompt-manager.types";
 import { BtmManagerService } from "./btm-manager.service";
 
 @Injectable()
@@ -103,7 +104,6 @@ export class AiService {
             id: true,
             name: true,
             displayName: true,
-            pluralDisplayName: true,
             versions: {
               where: {
                 versionNumber: 0,

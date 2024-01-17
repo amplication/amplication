@@ -5,20 +5,15 @@ type EntityFieldPartial = Pick<
   "name" | "displayName" | "dataType" | "properties"
 >;
 
-interface EntityPartial
-  extends Pick<Entity, "id" | "name" | "displayName" | "pluralDisplayName"> {
-  versions: [
-    {
-      fields: EntityFieldPartial[];
-    }
-  ];
+interface EntityPartial extends Pick<Entity, "id" | "name" | "displayName"> {
+  versions: {
+    fields: EntityFieldPartial[];
+  }[];
 }
 
-interface ResourcePartial extends Pick<Resource, "name"> {
+export interface ResourcePartial extends Pick<Resource, "name"> {
   entities: EntityPartial[];
 }
-
-export type GeneratePromptForBreakTheMonolithArgs = ResourcePartial;
 
 interface DataModel {
   name: string;
@@ -36,6 +31,6 @@ export interface BreakTheMonolithPromptOutput {
   microservices: {
     name: string;
     functionality: string;
-    dataModels: DataModel[];
+    dataModels: string[];
   }[];
 }

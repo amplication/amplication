@@ -25,7 +25,6 @@ describe("PromptManagerService", () => {
             id: "order",
             name: "order",
             displayName: "Order",
-            pluralDisplayName: "Orders",
             versions: [
               {
                 fields: [
@@ -65,7 +64,6 @@ describe("PromptManagerService", () => {
             id: "customer",
             name: "customer",
             displayName: "Customer",
-            pluralDisplayName: "Customers",
             versions: [
               {
                 fields: [
@@ -103,7 +101,6 @@ describe("PromptManagerService", () => {
             id: "item",
             name: "item",
             displayName: "Item",
-            pluralDisplayName: "Items",
             versions: [
               {
                 fields: [
@@ -133,7 +130,6 @@ describe("PromptManagerService", () => {
             id: "address",
             name: "address",
             displayName: "Address",
-            pluralDisplayName: "Addresses",
             versions: [
               {
                 fields: [
