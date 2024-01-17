@@ -28,7 +28,7 @@ $sub-title-font-size: 28px;
     box-sizing: border-box;
     height: $stripe-top-height-small;
 
-    background-color: var(--welcome-page-stripe-background);
+    background-color: var(--gray-full);
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -112,10 +112,11 @@ $sub-title-font-size: 28px;
     text-align: center;
     padding: $panel-padding !important;
     border: $border-dark;
-    border-radius: 4px 4px 0px 0px;
+    border-radius: 8px;
     margin-left: var(--double-spacing);
     margin-right: var(--double-spacing);
     margin-bottom: 0;
+    background-color: var(--gray-90);
 
     label {
       text-align: left;
@@ -123,7 +124,6 @@ $sub-title-font-size: 28px;
 
     .amp-button {
       display: inline-block;
-      margin-top: $button-padding;
       width: 100%;
     }
   }

@@ -1,4 +1,4 @@
-import { IsString } from "class-validator";
+import { IsArray, IsString } from "class-validator";
 
 class MessageParam {
   @IsString()
@@ -10,9 +10,14 @@ class MessageParam {
 
 export class Value {
   @IsString()
+  actionId!: string;
+
+  @IsString()
   requestUniqueId!: string;
+
   @IsString()
   messageTypeKey!: string;
 
+  @IsArray()
   params!: MessageParam[];
 }
