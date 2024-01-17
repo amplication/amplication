@@ -70,10 +70,11 @@ type Auth {
 }
 
 type AuthPreviewAccount {
-  projectId: String!
-  resourceId: String!
-  token: String!
-  workspaceId: String!
+  message: String
+  projectId: String
+  resourceId: String
+  token: String
+  workspaceId: String
 }
 
 type AuthorizeResourceWithGitResult {
@@ -790,6 +791,7 @@ enum EnumUserActionStatus {
 }
 
 enum EnumUserActionType {
+  BreakTheMonolith
   DBSchemaImport
 }
 
@@ -1133,8 +1135,13 @@ type Mutation {
   revokeInvitation(where: WhereUniqueInput!): Invitation
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  signUpWithBusinessEmail(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signup(data: SignupInput!): Auth!
-  signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
+
+  """
+  Trigger the generation of a set of recommendations for breaking a resource into microservices
+  """
+  triggerGenerationBtmResourceRecommendation(resourceId: String!): String
   updateAccount(data: UpdateAccountInput!): Account!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -1294,6 +1301,7 @@ input PluginSetOrderInput {
 }
 
 enum PreviewAccountType {
+  Auth0Signup
   BreakingTheMonolith
   None
 }
