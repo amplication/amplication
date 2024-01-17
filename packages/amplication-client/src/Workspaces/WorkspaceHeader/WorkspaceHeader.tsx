@@ -53,7 +53,7 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
 import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
 import { FeatureIndicator } from "../../Components/FeatureIndicator";
-import { CompleteSignupDialog } from "../../authentication/CompleteSignupDialog";
+import { CompleteSignupDialog } from "../../Components/CompleteSignupDialog";
 import { COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL } from "../../User/UserQueries";
 
 const CLASS_NAME = "workspace-header";
