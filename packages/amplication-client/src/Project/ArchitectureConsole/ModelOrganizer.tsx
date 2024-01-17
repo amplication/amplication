@@ -6,7 +6,7 @@ import {
   Icon,
   Snackbar,
 } from "@amplication/ui/design-system";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   Background,
   ConnectionMode,
@@ -35,6 +35,8 @@ import {
 import { BillingFeature } from "@amplication/util-billing-types";
 import { ModuleOrganizerDisabled } from "./ModuleOrganizerDisabled";
 import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
+import { useHistory } from "react-router-dom";
+import { AppContext } from "../../context/appContext";
 
 export const CLASS_NAME = "model-organizer";
 
@@ -65,6 +67,8 @@ export default function ModelOrganizer({
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
 
+  const { currentWorkspace, currentProject } = useContext(AppContext);
+
   const {
     nodes,
     currentResourcesData,
@@ -88,6 +92,7 @@ export default function ModelOrganizer({
   } = useModelOrganization();
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
+  const history = useHistory();
 
   const [readOnly, setReadOnly] = useState<boolean>(true);
   const [confirmChanges, setConfirmChanges] = useState<boolean>(false);
@@ -122,7 +127,8 @@ export default function ModelOrganizer({
     setReadOnly(true);
     setConfirmChanges(false);
     setSelectedNode(null);
-  }, [saveChanges, setSelectedNode, setReadOnly, setConfirmChanges]);
+    history.push(`/${currentWorkspace?.id}/${currentProject?.id}`);
+  }, [saveChanges, setSelectedNode, setReadOnly, setConfirmChanges, history]);
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
