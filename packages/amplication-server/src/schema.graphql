@@ -300,6 +300,11 @@ type Coupon {
   subscriptionPlan: EnumSubscriptionPlan!
 }
 
+input CreateEntitiesFromPredefinedSchemaInput {
+  resource: WhereParentIdInput!
+  schemaName: EnumSchemaNames!
+}
+
 input CreateGitRepositoryBaseInput {
   gitOrganizationId: String!
   gitOrganizationType: EnumGitOrganizationType!
@@ -768,6 +773,10 @@ input EnumResourceTypeFilter {
   notIn: [EnumResourceType!]
 }
 
+enum EnumSchemaNames {
+  CalDotCom
+}
+
 enum EnumSubscriptionPlan {
   Enterprise
   Free
@@ -1089,6 +1098,7 @@ type Mutation {
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
+  createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
   createEntityField(data: EntityFieldCreateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!

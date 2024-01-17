@@ -331,6 +331,11 @@ export type Coupon = {
   subscriptionPlan: EnumSubscriptionPlan;
 };
 
+export type CreateEntitiesFromPredefinedSchemaInput = {
+  resource: WhereParentIdInput;
+  schemaName: EnumSchemaNames;
+};
+
 export type CreateGitRepositoryBaseInput = {
   gitOrganizationId: Scalars['String']['input'];
   gitOrganizationType: EnumGitOrganizationType;
@@ -809,6 +814,10 @@ export type EnumResourceTypeFilter = {
   notIn?: InputMaybe<Array<EnumResourceType>>;
 };
 
+export enum EnumSchemaNames {
+  CalDotCom = 'CalDotCom'
+}
+
 export enum EnumSubscriptionPlan {
   Enterprise = 'Enterprise',
   Free = 'Free',
@@ -1120,6 +1129,7 @@ export type Mutation = {
   createApiToken: ApiToken;
   createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
+  createEntitiesFromPredefinedSchema: UserAction;
   createEntitiesFromPrismaSchema: UserAction;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
@@ -1249,6 +1259,11 @@ export type MutationCreateBuildArgs = {
 
 export type MutationCreateDefaultEntitiesArgs = {
   data: DefaultEntitiesInput;
+};
+
+
+export type MutationCreateEntitiesFromPredefinedSchemaArgs = {
+  data: CreateEntitiesFromPredefinedSchemaInput;
 };
 
 
