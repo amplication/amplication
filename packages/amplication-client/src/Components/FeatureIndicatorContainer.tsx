@@ -93,7 +93,16 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       const isDisabled = usageExceeded ?? !hasMeteredAccess;
       setDisabled(isDisabled);
     }
-  }, [featureId, usageLimit, currentUsage, hasMeteredAccess, hasBooleanAccess]);
+  }, [
+    featureId,
+    usageLimit,
+    currentUsage,
+    hasMeteredAccess,
+    hasBooleanAccess,
+    subscriptionPlan,
+    status,
+    entitlementType,
+  ]);
 
   const text = useMemo(() => {
     if (disabled) {

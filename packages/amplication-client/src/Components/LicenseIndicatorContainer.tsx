@@ -105,6 +105,11 @@ export const LicenseIndicatorContainer: FC<Props> = ({
     currentProjectLicense,
     currentServiceLicense,
     licensedResourceType,
+    subscriptionPlan,
+    status,
+    entitlementType,
+    licensedTooltipText,
+    blockedTooltipText,
   ]);
 
   const linkText = useMemo(() => {
