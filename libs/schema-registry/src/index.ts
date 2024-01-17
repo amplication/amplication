@@ -34,4 +34,7 @@ export enum KAFKA_TOPICS {
   USER_ACTION_LOG_TOPIC = "user-action.internal.action-log.1",
   USER_ACTION_TOPIC = "user-action.internal.1",
   USER_BUILD_TOPIC = "user-build.internal.1",
+  /// ai
+  AI_CONVERSATION_START_TOPIC = "ai.internal.conversation.start.1",
+  AI_CONVERSATION_COMPLETED_TOPIC = "ai.internal.conversation.completed.1",
 }
