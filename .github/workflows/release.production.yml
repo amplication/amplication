@@ -42,7 +42,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_PRODUCTION_PAT }}
@@ -68,7 +68,7 @@ jobs:
           git tag -d ${{ github.event.inputs.version }}> /dev/null
         id: check-tag
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: "package.json"
           cache: "npm"

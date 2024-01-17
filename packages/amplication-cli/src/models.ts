@@ -829,6 +829,7 @@ export enum EnumUserActionStatus {
 }
 
 export enum EnumUserActionType {
+  BreakTheMonolith = 'BreakTheMonolith',
   DbSchemaImport = 'DBSchemaImport'
 }
 
@@ -1165,6 +1166,8 @@ export type Mutation = {
   setPluginOrder?: Maybe<PluginOrder>;
   signUpWithBusinessEmail: AuthPreviewAccount;
   signup: Auth;
+  /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
+  triggerGenerationBtmResourceRecommendation?: Maybe<Scalars['String']['output']>;
   updateAccount: Account;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
@@ -1490,6 +1493,11 @@ export type MutationSignUpWithBusinessEmailArgs = {
 
 export type MutationSignupArgs = {
   data: SignupInput;
+};
+
+
+export type MutationTriggerGenerationBtmResourceRecommendationArgs = {
+  resourceId: Scalars['String']['input'];
 };
 
 

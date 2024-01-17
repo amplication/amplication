@@ -791,6 +791,7 @@ enum EnumUserActionStatus {
 }
 
 enum EnumUserActionType {
+  BreakTheMonolith
   DBSchemaImport
 }
 
@@ -1137,6 +1138,11 @@ type Mutation {
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   signUpWithBusinessEmail(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signup(data: SignupInput!): Auth!
+
+  """
+  Trigger the generation of a set of recommendations for breaking a resource into microservices
+  """
+  triggerGenerationBtmResourceRecommendation(resourceId: String!): String
   updateAccount(data: UpdateAccountInput!): Account!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity

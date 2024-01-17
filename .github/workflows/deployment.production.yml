@@ -21,7 +21,7 @@ jobs:
       affected-deploy-container: ${{ steps.configure-nx.outputs.affected-deploy-container }}
     steps:
       - name: Checkout source code repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: "${{ github.ref }}"
           fetch-depth: 0
@@ -33,7 +33,7 @@ jobs:
           echo "tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
         id: base
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -74,11 +74,11 @@ jobs:
     needs: preparation
     steps:
       - name: Checkout source code repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: "${{ github.ref }}"
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -137,7 +137,7 @@ jobs:
     needs: [preparation, package]
     steps:
       - name: Checkout manifest repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: "amplication/amplication-cluster-configuration"
           token: "${{ secrets.PAT }}"
