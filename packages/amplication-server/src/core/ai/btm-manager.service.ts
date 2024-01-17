@@ -8,6 +8,14 @@ import { BtmEntityRecommendation } from "../../prisma";
 
 @Injectable()
 export class BtmManagerService {
+  duplicatedEntities(entites: string[]): Set<string> {
+    return new Set(
+      entites.filter((entity, index) => {
+        return entites.indexOf(entity) !== index;
+      })
+    );
+  }
+
   translateToBtmRecommendation(
     actionId: string,
     promptResult: BreakTheMonolithPromptOutput,

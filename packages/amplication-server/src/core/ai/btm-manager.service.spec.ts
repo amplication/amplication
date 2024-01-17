@@ -203,4 +203,18 @@ describe("BtmManagerService", () => {
 
     expect(result).toStrictEqual(expectedResult);
   });
+
+  describe("duplicatedEntities", () => {
+    it("should return an empty array if there are no duplicated entities", () => {
+      const result = service.duplicatedEntities(["a", "b", "c"]);
+
+      expect(result).toStrictEqual(new Set([]));
+    });
+
+    it("should return the duplicated entities", () => {
+      const result = service.duplicatedEntities(["a", "b", "c", "a", "b"]);
+
+      expect(result).toStrictEqual(new Set(["a", "b"]));
+    });
+  });
 });
