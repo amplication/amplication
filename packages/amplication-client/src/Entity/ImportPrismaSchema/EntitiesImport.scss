@@ -70,4 +70,19 @@ $max-width: 700px;
       color: var(--theme-turquoise);
     }
   }
+
+  &__import-success {
+    margin: 48px 0;
+  }
+
+  .label-description-selector {
+    padding: 24px 40px;
+    margin: 0 8px;
+    min-width: 270px;
+    max-width: 270px;
+
+    &:last-child {
+      border-image: linear-gradient(260deg, #23c4da, #6c37ff) 1;
+    }
+  }
 }
