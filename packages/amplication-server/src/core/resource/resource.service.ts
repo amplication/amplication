@@ -901,7 +901,7 @@ export class ResourceService {
         wizardType: data.wizardType,
         resourceName: resource.name,
         gitProvider: provider,
-        gitOrganizationName: gitRepository?.name,
+        gitOrganizationName: gitOrganization?.name,
         repoName: gitRepository?.name,
         graphQlApi: String(serviceSettings.serverSettings.generateGraphQL),
         restApi: String(serviceSettings.serverSettings.generateRestApi),
