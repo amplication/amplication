@@ -13,6 +13,7 @@ import { PromptManagerService } from "./prompt-manager.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { TestingModule, Test } from "@nestjs/testing";
 import { BtmManagerService } from "./btm-manager.service";
+import { BtmRecommendationModelChanges } from "./dto";
 
 jest.mock("../../prisma");
 jest.mock("./prompt-manager.service");
@@ -22,6 +23,23 @@ describe("AiService", () => {
   let service: AiService;
   const mockPrismaUserActionFindFirst = jest.fn().mockResolvedValue(null);
   const mockActionServiceComplete = jest.fn().mockResolvedValue(null);
+
+  const prismaServiceMock = {
+    action: {
+      findUnique: jest.fn().mockResolvedValue(null),
+      create: jest.fn().mockResolvedValue(null),
+      complete: jest.fn().mockResolvedValue(null),
+    },
+
+    resource: {
+      findUnique: jest.fn().mockResolvedValue(EXAMPLE_RESOURCE),
+    },
+    userAction: {
+      create: jest.fn().mockResolvedValue(null),
+      findFirst: mockPrismaUserActionFindFirst,
+      update: jest.fn().mockResolvedValue(null),
+    },
+  };
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -47,21 +65,7 @@ describe("AiService", () => {
         UserActionService,
         {
           provide: PrismaService,
-          useValue: {
-            action: {
-              findUnique: jest.fn().mockResolvedValue(null),
-              create: jest.fn().mockResolvedValue(null),
-              complete: jest.fn().mockResolvedValue(null),
-            },
-            resource: {
-              findUnique: jest.fn().mockResolvedValue(EXAMPLE_RESOURCE),
-            },
-            userAction: {
-              create: jest.fn().mockResolvedValue(null),
-              findFirst: mockPrismaUserActionFindFirst,
-              update: jest.fn().mockResolvedValue(null),
-            },
-          },
+          useValue: prismaServiceMock,
         },
       ],
     }).compile();
@@ -154,5 +158,22 @@ describe("AiService", () => {
         );
       }
     );
+  });
+
+  describe("getBtmRecommendationModelChanges", () => {
+    it("should return the changes to apply to the model in order to break a resource into microservices", async () => {
+      const resourceId = "resourceId";
+
+      const result = await service.getBtmRecommendationModelChanges({
+        resourceId,
+      });
+
+      const expectedResult: BtmRecommendationModelChanges = {
+        newResources: [],
+        copiedEntities: [],
+      };
+
+      expect(result).toStrictEqual(expectedResult);
+    });
   });
 });

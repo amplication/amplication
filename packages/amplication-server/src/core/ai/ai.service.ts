@@ -20,6 +20,10 @@ import { Inject, Injectable } from "@nestjs/common";
 import { AiBadFormatResponseError } from "./errors/ai-bad-format-response.error";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BtmManagerService } from "./btm-manager.service";
+import {
+  BtmRecommendationModelChanges,
+  BtmRecommendationModelChangesInput,
+} from "./dto";
 import { ResourcePartial } from "./ai.types";
 
 @Injectable()
@@ -244,5 +248,16 @@ export class AiService {
       this.logger.error(error.message, error, { errorMessage, result });
     }
     return true;
+  }
+
+  async getBtmRecommendationModelChanges(
+    data: BtmRecommendationModelChangesInput
+  ): Promise<BtmRecommendationModelChanges> {
+    const { resourceId } = data;
+
+    return {
+      newResources: [],
+      copiedEntities: [],
+    };
   }
 }

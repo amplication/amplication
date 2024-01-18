@@ -4,7 +4,11 @@ import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Resource, User } from "../../models";
 import { AiService } from "./ai.service";
 import { UseFilters, UseGuards } from "@nestjs/common";
-import { Args, Mutation, Resolver } from "@nestjs/graphql";
+import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
+import { BtmRecommendationModelChanges } from "./dto/btm-recommendation-model-changes.dto";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { BtmRecommendationModelChangesArgs } from "./dto/btm-recommendation-model-changes-args.dto";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -26,5 +30,17 @@ export class AiResolver {
       resourceId,
       userId: user.id,
     });
+  }
+
+  @Query(() => BtmRecommendationModelChanges, {
+    description:
+      "Get the changes to apply to the model in order to break a resource into microservices",
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
+  async getBtmRecommendationModelChanges(
+    @Args()
+    args: BtmRecommendationModelChangesArgs
+  ): Promise<BtmRecommendationModelChanges> {
+    return this.aiService.getBtmRecommendationModelChanges(args.data);
   }
 }
