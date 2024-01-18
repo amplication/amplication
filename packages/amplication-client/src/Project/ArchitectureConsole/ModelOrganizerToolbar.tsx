@@ -1,6 +1,7 @@
 import "./ModelOrganizerToolbar.scss";
 
 import {
+  Dialog,
   EnumButtonStyle,
   EnumContentAlign,
   EnumFlexItemMargin,
@@ -9,6 +10,7 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
+  Icon,
   SearchField,
   SelectMenu,
   SelectMenuItem,
@@ -22,8 +24,7 @@ import {
   FlexEnd,
 } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import * as models from "../../models";
-import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useState } from "react";
 import { BillingFeature } from "@amplication/util-billing-types";
 import {
   FeatureIndicatorContainer,
@@ -31,12 +32,16 @@ import {
 } from "../../Components/FeatureIndicatorContainer";
 import { BackNavigation } from "../../Components/BackNavigation";
 import { AppContext } from "../../context/appContext";
+import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
+import { ModelChanges } from "./types";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
 type Props = {
   readOnly: boolean;
   hasChanges: boolean;
+  selectedResource: models.Resource;
+  changes: ModelChanges;
   onApplyPlan: () => void;
   searchPhraseChanged: (searchPhrase: string) => void;
   onRedesign: (resource: models.Resource) => void;
@@ -45,22 +50,78 @@ type Props = {
 
 export default function ModelOrganizerToolbar({
   readOnly,
+  selectedResource,
+  changes,
   hasChanges,
   resources,
   onApplyPlan,
   searchPhraseChanged,
   onRedesign,
 }: Props) {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { currentWorkspace, currentProject, pendingChanges } =
+    useContext(AppContext);
   const handleSearchPhraseChanged = useCallback(
     (searchPhrase: string) => {
       searchPhraseChanged(searchPhrase);
     },
     [searchPhraseChanged]
   );
+  const [confirmChanges, setConfirmChanges] = useState<boolean>(false);
+
+  const handleConfirmChangesState = useCallback(() => {
+    setConfirmChanges(!confirmChanges);
+  }, [confirmChanges, setConfirmChanges]);
+
+  const [changesDialog, setChangesDialog] = useState<boolean>(false);
+
+  const handleAiClicked = useCallback(() => {
+    if (pendingChanges.length > 0) {
+      setChangesDialog(true);
+    } else {
+      //trigger AI process
+    }
+  }, [setChangesDialog]);
+
+  const handleChangesDialogDismiss = useCallback(() => {
+    setChangesDialog(false);
+  }, [setChangesDialog]);
 
   return (
     <div className={CLASS_NAME}>
+      <Dialog
+        style={{ marginTop: "10vh" }}
+        isOpen={confirmChanges}
+        onDismiss={handleConfirmChangesState}
+        title="Confirm Architecture Changes"
+      >
+        <ModelOrganizerConfirmation
+          onConfirmChanges={onApplyPlan}
+          onCancelChanges={handleConfirmChangesState}
+          changes={changes}
+          selectedResource={selectedResource}
+        ></ModelOrganizerConfirmation>
+      </Dialog>
+
+      <Dialog isOpen={changesDialog} onDismiss={handleChangesDialogDismiss}>
+        <div className={`${CLASS_NAME}__changesDialog`}>
+          <div className={`${CLASS_NAME}__changesDialogTitle`}>
+            <span style={{ color: "#F6AA50" }}>Warning:</span>{" "}
+            <span>Save Changes Before Using Amplication AI</span>
+          </div>
+          <div className={`${CLASS_NAME}__changesDialogDescription`}>
+            <span>
+              Breaking the monolith recommendation may override your existing
+              changes.{" "}
+            </span>
+            <span>
+              If you want to apply the changes, please quit and apply before
+              using
+            </span>
+            <span>Amplication AI</span>
+          </div>
+          <Button onClick={handleChangesDialogDismiss}>I understand</Button>
+        </div>
+      </Dialog>
       <FlexItem
         itemsAlign={EnumItemsAlign.Center}
         contentAlign={EnumContentAlign.Start}
@@ -103,6 +164,7 @@ export default function ModelOrganizerToolbar({
             >
               <Button
                 buttonStyle={EnumButtonStyle.Outline}
+                onClick={handleAiClicked}
                 // eventData={{
                 //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
                 // }}
@@ -119,7 +181,7 @@ export default function ModelOrganizerToolbar({
               >
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}
-                  onClick={onApplyPlan}
+                  onClick={handleConfirmChangesState}
                   // eventData={{
                   //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
                   // }}
@@ -139,24 +201,35 @@ export default function ModelOrganizerToolbar({
                   title="Redesign"
                   buttonStyle={EnumButtonStyle.Primary}
                 >
-                  <SelectMenuModal align="left">
-                    <SelectMenuList>
-                      {resources?.map((resource) => (
-                        <SelectMenuItem
-                          key={resource.id}
-                          closeAfterSelectionChange
-                          itemData={resource}
-                          onSelectionChange={onRedesign}
-                          as="span"
+                  <SelectMenuModal>
+                    <div className={`${CLASS_NAME}__resourceListModassl`}>
+                      {" "}
+                      <SelectMenuList className={`${CLASS_NAME}__resourceList`}>
+                        <Text
+                          className={`${CLASS_NAME}__selectMonoTag`}
+                          textStyle={EnumTextStyle.Tag}
+                          textColor={EnumTextColor.Black20}
                         >
-                          <ResourceCircleBadge
-                            type={resource.resourceType}
-                            size="small"
-                          />
-                          <span>{resource.name}</span>
-                        </SelectMenuItem>
-                      ))}
-                    </SelectMenuList>
+                          {"Select Monolith"}
+                        </Text>
+                        {resources?.map((resource) => (
+                          <div className={`${CLASS_NAME}__resourceListItem`}>
+                            <SelectMenuItem
+                              key={resource.id}
+                              closeAfterSelectionChange
+                              itemData={resource}
+                              onSelectionChange={onRedesign}
+                              //as="span"
+                            >
+                              <div>
+                                <Icon icon={"app-settings"}></Icon>
+                                <span>{resource.name}</span>
+                              </div>
+                            </SelectMenuItem>
+                          </div>
+                        ))}
+                      </SelectMenuList>
+                    </div>
                   </SelectMenuModal>
                 </SelectMenu>
               </FeatureIndicatorContainer>

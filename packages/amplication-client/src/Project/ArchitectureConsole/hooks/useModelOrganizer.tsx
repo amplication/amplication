@@ -6,7 +6,7 @@ import {
   CREATE_RESOURCE_ENTITIES,
   GET_RESOURCES,
 } from "../queries/modelsQueries";
-import { ModelChanges, Node } from "../types";
+import { ModelChanges, Node, ResourceNode } from "../types";
 import { entitiesToNodesAndEdges, tempResourceToNode } from "../helpers";
 import { Edge, useEdgesState } from "reactflow";
 import { applyAutoLayout } from "../layout";
@@ -40,7 +40,7 @@ const useModelOrganization = () => {
   const [currentResourcesData, setCurrentResourcesData] = useState<
     models.Resource[]
   >([]);
-  const [selectedNode, setSelectedNode] = useState<Node>(null);
+  const [selectedNode, setSelectedNode] = useState<ResourceNode>(null);
   const [selectedResource, setSelectedResource] =
     useState<models.Resource>(null);
 
@@ -426,7 +426,8 @@ const useModelOrganization = () => {
           }
           if (node.id === resource.id) {
             node.selected = true;
-            setSelectedNode(node);
+            const selectedResourceNode: ResourceNode = node as ResourceNode;
+            setSelectedNode(selectedResourceNode);
           }
         });
 
@@ -528,11 +529,19 @@ const useModelOrganization = () => {
   ] = useMutation<modelChangesData>(CREATE_RESOURCE_ENTITIES, {});
 
   const saveChanges = useCallback(async () => {
+    const { newServices, movedEntities } = changes;
+    const mapServices = newServices.map((s) => {
+      return {
+        tempId: s.tempId,
+        name: s.name,
+      };
+    });
+
     await createResourceEntities({
       variables: {
         data: {
-          entitiesToCopy: changes.movedEntities,
-          modelGroupsResources: changes.newServices,
+          entitiesToCopy: movedEntities,
+          modelGroupsResources: mapServices,
           projectId: currentProject.id,
         },
       },

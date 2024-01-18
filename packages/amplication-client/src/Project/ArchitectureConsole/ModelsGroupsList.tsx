@@ -16,7 +16,7 @@ const CLASS_NAME = "model-group-list";
 
 type Props = {
   modelGroups: Node[];
-  selectedNode: Node;
+  selectedNode: ResourceNode;
   readOnly: boolean;
   handleModelGroupFilterChanged: (event: any, modelGroup: Node) => void;
   handleServiceCreated: (newResource: Resource) => void;
@@ -39,22 +39,25 @@ export default function ModelsGroupsList({
         <div className={`${CLASS_NAME}__filter`}>
           {selectedNode && (
             <>
-              <div className={`${CLASS_NAME}__selectedNode`}>
+              <div
+                className={`${CLASS_NAME}__serviceBox`}
+                style={{ borderColor: selectedNode.data.groupColor }}
+              >
                 <Button
                   key={selectedNode?.id}
                   icon="services"
-                  iconSize="xsmall"
+                  iconSize="small"
                   buttonStyle={EnumButtonStyle.Text}
                 ></Button>
               </div>
-              <hr className="amp-horizontal-rule amp-horizontal-rule--black5" />
+              <hr className={`${CLASS_NAME}__hr`} />
             </>
           )}
           <Text textStyle={EnumTextStyle.Tag}>{"Filter"}</Text>
 
           {modelGroups.map((model: ResourceNode) => (
             <div
-              className={`${CLASS_NAME}__modelGroups`}
+              className={`${CLASS_NAME}__serviceBox`}
               style={{ borderColor: model.data.groupColor }}
             >
               <Tooltip

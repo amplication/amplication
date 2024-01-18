@@ -2,7 +2,6 @@ import "reactflow/dist/style.css";
 import "./ModelOrganizer.scss";
 import {
   CircularProgress,
-  Dialog,
   Icon,
   Snackbar,
 } from "@amplication/ui/design-system";
@@ -34,7 +33,6 @@ import {
 } from "../../Components/FeatureIndicatorContainer";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { ModuleOrganizerDisabled } from "./ModuleOrganizerDisabled";
-import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../context/appContext";
 
@@ -95,7 +93,6 @@ export default function ModelOrganizer({
   const history = useHistory();
 
   const [readOnly, setReadOnly] = useState<boolean>(true);
-  const [confirmChanges, setConfirmChanges] = useState<boolean>(false);
 
   useEffect(() => {
     if (
@@ -125,10 +122,9 @@ export default function ModelOrganizer({
   const onApplyPlanClick = useCallback(() => {
     saveChanges();
     setReadOnly(true);
-    setConfirmChanges(false);
     setSelectedNode(null);
     history.push(`/${currentWorkspace?.id}/${currentProject?.id}`);
-  }, [saveChanges, setSelectedNode, setReadOnly, setConfirmChanges, history]);
+  }, [saveChanges, setSelectedNode, setReadOnly, history]);
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
@@ -213,10 +209,6 @@ export default function ModelOrganizer({
     [setNodes, edges, nodes, reactFlowInstance, showRelationDetails, changes]
   );
 
-  const handleConfirmChangesState = useCallback(() => {
-    setConfirmChanges(!confirmChanges);
-  }, [confirmChanges, setConfirmChanges]);
-
   const onToggleShowRelationDetails = useCallback(async () => {
     await toggleShowRelationDetails();
 
@@ -239,19 +231,6 @@ export default function ModelOrganizer({
         <CircularProgress centerToParent />
       ) : (
         <>
-          <Dialog
-            isOpen={confirmChanges}
-            onDismiss={handleConfirmChangesState}
-            title="Confirm Architecture Changes"
-          >
-            <ModelOrganizerConfirmation
-              onConfirmChanges={onApplyPlanClick}
-              onCancelChanges={handleConfirmChangesState}
-              changes={changes}
-              selectedResource={selectedResource}
-            ></ModelOrganizerConfirmation>
-          </Dialog>
-
           <FeatureIndicatorContainer
             featureId={BillingFeature.RedesignArchitecture}
             entitlementType={EntitlementType.Boolean}
@@ -267,13 +246,15 @@ export default function ModelOrganizer({
             )}
           />
           <ModelOrganizerToolbar
+            selectedResource={selectedResource}
+            changes={changes}
             readOnly={readOnly}
             hasChanges={
               changes?.movedEntities?.length > 0 ||
               changes?.newServices?.length > 0
             }
             resources={currentResourcesData}
-            onApplyPlan={handleConfirmChangesState}
+            onApplyPlan={onApplyPlanClick}
             searchPhraseChanged={searchPhraseChanged}
             onRedesign={onRedesignClick}
           />

@@ -1,10 +1,63 @@
 @import "../../style/index.scss";
 
 .model-organizer-toolbar {
-  margin-top: var(--large-spacing);
+  // margin-top: var(--large-spacing);
 
   &__backToBtn {
     color: var(--gray-20);
+  }
+
+  &__changesDialogTitle {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  &__changesDialog {
+    display: flex;
+    width: 552px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__selectMonoTag {
+    font-size: 8px;
+  }
+
+  &__resourceList {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    align-self: stretch;
+  }
+
+  &__resourceListModal {
+    display: flex;
+    width: 250px;
+    padding: 12px 4px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--gray-70);
+    background: var(--APP-Black-90);
+    box-shadow: rgba(9, 11, 20, 0.5);
+  }
+
+  &__resourceListItem {
+    display: flex;
+    padding: 4px 8px;
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  &__changesDialogDescription {
+    line-height: 22px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 32px;
   }
 
   .search-field {
