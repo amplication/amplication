@@ -30,6 +30,12 @@ class CopiedEntity {
 
   @Field(() => String, {
     nullable: false,
+    description: "The name of the entity to copy",
+  })
+  name!: string;
+
+  @Field(() => String, {
+    nullable: false,
     description: "The id of the resource to copy the entity from",
   })
   originalResourceId!: string;

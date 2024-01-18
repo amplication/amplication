@@ -38,10 +38,10 @@ export class AiResolver {
       "Get the changes to apply to the model in order to break a resource into microservices",
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
-  async getBtmRecommendationModelChanges(
+  async btmRecommendationModelChanges(
     @Args()
     args: BtmRecommendationModelChangesArgs
   ): Promise<BtmRecommendationModelChanges> {
-    return this.aiService.getBtmRecommendationModelChanges(args.data);
+    return this.aiService.btmRecommendationModelChanges(args.data);
   }
 }

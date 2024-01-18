@@ -1,5 +1,10 @@
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { PrismaService, UserAction } from "../../prisma";
+import {
+  BtmEntityRecommendation,
+  BtmResourceRecommendation,
+  PrismaService,
+  UserAction,
+} from "../../prisma";
 import { ActionService } from "../action/action.service";
 import { EnumActionStepStatus } from "../action/dto";
 import { UserActionService } from "../userAction/userAction.service";
@@ -22,6 +27,7 @@ jest.mock("@amplication/util/nestjs/kafka");
 describe("AiService", () => {
   let service: AiService;
   const mockPrismaUserActionFindFirst = jest.fn().mockResolvedValue(null);
+  const mockPrismaBtmResourceRecFindMany = jest.fn().mockResolvedValue([]);
   const mockActionServiceComplete = jest.fn().mockResolvedValue(null);
 
   const prismaServiceMock = {
@@ -33,6 +39,9 @@ describe("AiService", () => {
 
     resource: {
       findUnique: jest.fn().mockResolvedValue(EXAMPLE_RESOURCE),
+    },
+    btmResourceRecommendation: {
+      findMany: mockPrismaBtmResourceRecFindMany,
     },
     userAction: {
       create: jest.fn().mockResolvedValue(null),
@@ -160,11 +169,13 @@ describe("AiService", () => {
     );
   });
 
-  describe("getBtmRecommendationModelChanges", () => {
-    it("should return the changes to apply to the model in order to break a resource into microservices", async () => {
+  describe("btmRecommendationModelChanges", () => {
+    it("should return the no changes to apply to the model in order to break a resource into microservice when no recommendation is find", async () => {
       const resourceId = "resourceId";
 
-      const result = await service.getBtmRecommendationModelChanges({
+      mockPrismaBtmResourceRecFindMany.mockResolvedValue([]);
+
+      const result = await service.btmRecommendationModelChanges({
         resourceId,
       });
 
@@ -174,6 +185,80 @@ describe("AiService", () => {
       };
 
       expect(result).toStrictEqual(expectedResult);
+      expect(mockPrismaBtmResourceRecFindMany).toHaveReturnedTimes(1);
+    });
+
+    it("should return the changes to apply to the model in order to break a resource into microservices", async () => {
+      const originatingResourceId = "originalResourceId";
+
+      const recommendations: BtmResourceRecommendation & {
+        btmEntityRecommendation: BtmEntityRecommendation[];
+      } = {
+        id: "resourceRecId",
+        name: "newSuperCoolService",
+        description: "description",
+        resourceId: originatingResourceId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        btmEntityRecommendation: [
+          {
+            id: "id",
+            name: "order",
+            originalEntityId: "originalOrderEntityId",
+            fields: ["id", "customer", "item", "address"],
+            btmResourceRecommendationId: "resourceRecId",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+          {
+            id: "id",
+            name: "customer",
+            originalEntityId: "originalCustomerEntityId",
+            fields: ["id", "firstName", "lastName", "address"],
+            btmResourceRecommendationId: "resourceRecId",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ],
+      };
+      mockPrismaBtmResourceRecFindMany.mockResolvedValue([recommendations]);
+
+      const result = await service.btmRecommendationModelChanges({
+        resourceId: originatingResourceId,
+      });
+
+      const expectedResult: BtmRecommendationModelChanges = {
+        newResources: [
+          {
+            id: "resourceRecId",
+            name: "newSuperCoolService",
+          },
+        ],
+        copiedEntities: [
+          {
+            entityId: "originalOrderEntityId",
+            name: "order",
+            originalResourceId: originatingResourceId,
+            targetResourceId: "resourceRecId",
+          },
+          {
+            entityId: "originalCustomerEntityId",
+            name: "customer",
+            originalResourceId: originatingResourceId,
+            targetResourceId: "resourceRecId",
+          },
+        ],
+      };
+
+      expect(result).toStrictEqual(expectedResult);
+      expect(mockPrismaBtmResourceRecFindMany).toHaveBeenCalledWith({
+        where: {
+          resourceId: originatingResourceId,
+        },
+        include: {
+          btmEntityRecommendation: true,
+        },
+      });
     });
   });
 });

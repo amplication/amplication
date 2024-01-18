@@ -1,5 +1,5 @@
 import { AmplicationError } from "../../errors/AmplicationError";
-import { PrismaService } from "../../prisma";
+import { BtmEntityRecommendation, PrismaService } from "../../prisma";
 import { ActionService } from "../action/action.service";
 import { EnumActionStepStatus } from "../action/dto";
 import { INVALID_RESOURCE_ID } from "../resource/resource.service";
@@ -250,14 +250,43 @@ export class AiService {
     return true;
   }
 
-  async getBtmRecommendationModelChanges(
+  async btmRecommendationModelChanges(
     data: BtmRecommendationModelChangesInput
   ): Promise<BtmRecommendationModelChanges> {
     const { resourceId } = data;
 
+    const btmResourceRecommendation =
+      await this.prisma.btmResourceRecommendation.findMany({
+        where: {
+          resourceId: resourceId,
+        },
+        include: {
+          btmEntityRecommendation: true,
+        },
+      });
+
+    const newResources: BtmRecommendationModelChanges["newResources"] =
+      btmResourceRecommendation.map((resource) => ({
+        id: resource.id,
+        name: resource.name,
+      }));
+
+    const recommendedEntities: BtmRecommendationModelChanges["copiedEntities"] =
+      [];
+    for (const resource of btmResourceRecommendation) {
+      for (const entity of resource.btmEntityRecommendation) {
+        recommendedEntities.push({
+          name: entity.name,
+          entityId: entity.originalEntityId,
+          targetResourceId: resource.id,
+          originalResourceId: resourceId,
+        });
+      }
+    }
+
     return {
-      newResources: [],
-      copiedEntities: [],
+      newResources: newResources,
+      copiedEntities: recommendedEntities,
     };
   }
 }
