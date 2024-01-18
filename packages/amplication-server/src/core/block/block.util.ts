@@ -10,7 +10,7 @@ export const mergeAllSettings = (
 ) => {
   const mergedObj = {};
 
-  for (let [key, val] of Object.entries(oldSettings)) {
+  for (const [key, val] of Object.entries(oldSettings)) {
     const valueType = getType(val);
     if (
       keysToNotMerge.includes(key) &&
