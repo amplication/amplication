@@ -39,6 +39,7 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
 import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
 import { USER_ENTITY_NAME } from "../entity/constants";
+import { PUBLIC_DOMAINS } from "./publicDomains";
 
 export type AuthUser = User & {
   account: Account;
@@ -281,12 +282,13 @@ export class AuthService {
     return user;
   }
 
-  async updateUser(user: AuthUser, profile: AuthProfile): Promise<AuthUser> {
+  async updateUser(
+    user: AuthUser,
+    data: { githubId?: string; previewAccountType?: PreviewAccountType }
+  ): Promise<AuthUser> {
     const account = await this.accountService.updateAccount({
       where: { id: user.account.id },
-      data: {
-        githubId: profile.sub,
-      },
+      data,
     });
     return {
       ...user,
@@ -316,10 +318,71 @@ export class AuthService {
     return this.prepareToken(user);
   }
 
+  async completeSignupPreviewAccount(user: User): Promise<string> {
+    let auth0User: JSONApiResponse<SignUpResponse>;
+    const { account: currentAccount, workspace } = user;
+
+    const existingAuth0User = await this.getAuth0UserByEmail(
+      currentAccount.previewAccountEmail
+    );
+
+    if (!existingAuth0User) {
+      auth0User = await this.createAuth0User(
+        currentAccount.previewAccountEmail
+      );
+      if (!auth0User?.data?.email)
+        throw Error("Failed to create new Auth0 user");
+    }
+
+    const userEmail = existingAuth0User
+      ? currentAccount.previewAccountEmail
+      : auth0User.data.email;
+
+    const resetPassword = await this.resetAuth0UserPassword(userEmail);
+
+    if (!resetPassword.data)
+      throw Error("Failed to send reset message to new Auth0 user");
+
+    const existingAccount = await this.accountService.findAccount({
+      where: {
+        email: currentAccount.previewAccountEmail,
+      },
+    });
+
+    if (!existingAccount) {
+      // the current (preview) account didn't sign up yet, so we update his preview account to a regular account.
+      // His data will be kept.
+      await this.accountService.updateAccount({
+        where: { id: currentAccount.id },
+        data: {
+          email: userEmail,
+          previewAccountEmail: null,
+          previewAccountType: PreviewAccountType.None,
+        },
+      });
+
+      await this.workspaceService.convertPreviewSubscriptionToFreeWithTrial(
+        workspace.id
+      );
+    }
+
+    return resetPassword.data;
+  }
+
+  private isValidWorkEmail(email: string): boolean {
+    const domain = email.split("@")[1];
+    return !PUBLIC_DOMAINS.includes(domain);
+  }
+
   async signupPreviewAccount({
     previewAccountEmail,
     previewAccountType,
   }: SignupPreviewAccountInput): Promise<AuthPreviewAccount> {
+    if (!this.isValidWorkEmail(previewAccountEmail)) {
+      throw new AmplicationError(
+        `Email must be a work email, not a public domain email`
+      );
+    }
     const { signupData, identityProvider } = this.generateDataForPreviewAccount(
       previewAccountEmail,
       previewAccountType

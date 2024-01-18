@@ -135,6 +135,12 @@ export class WorkspaceService {
     return workspace;
   }
 
+  async convertPreviewSubscriptionToFreeWithTrial(workspaceId: string) {
+    await this.billingService.provisionNewSubscriptionForPreviewAccount(
+      workspaceId
+    );
+  }
+
   private async shouldBlockWorkspaceCreation(
     workspaceId: string
   ): Promise<boolean> {
