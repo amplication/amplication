@@ -3,25 +3,25 @@ import React, { useCallback, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageContent from "../../Layout/PageContent";
 
-import { Snackbar } from "@amplication/ui/design-system";
+import {
+  EnumFlexDirection,
+  EnumItemsAlign,
+  EnumTextStyle,
+  FlexItem,
+  Snackbar,
+  Text,
+} from "@amplication/ui/design-system";
 import { FileUploader } from "../../Components/FileUploader";
-import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ActionLog from "../../VersionControl/ActionLog";
 import * as models from "../../models";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
-import "./EntitiesImport.scss";
 import { CREATE_ENTITIES_FROM_SCHEMA } from "./queries";
 import useUserActionWatchStatus from "./useUserActionWatchStatus";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { useStiggContext } from "@stigg/react-sdk";
-import { Button } from "../../Components/Button";
-import {
-  mapUserActionStatusToUploadSchemaState,
-  uploadSchemaState,
-} from "./uploadSchemaState";
+import { UploadSchemaStatus } from "./UploadSchemaStatus";
+import "./EntitiesImport.scss";
 
 const PROCESSING_PRISMA_SCHEMA = "PROCESSING_PRISMA_SCHEMA";
 
@@ -73,12 +73,6 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
 
   const { resource: resourceId } = match.params;
   const { trackEvent } = useTracking();
-
-  const { stigg } = useStiggContext();
-
-  const canImportDBSchema = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.ImportDBSchema,
-  }).hasAccess;
 
   const [createEntitiesFormSchema, { data, error, loading }] =
     useMutation<TData>(CREATE_ENTITIES_FROM_SCHEMA, {
@@ -137,89 +131,56 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
     [createEntitiesFormSchema, resourceId]
   );
 
-  const importSchemaState = useMemo(() => {
-    return uploadSchemaState[
-      mapUserActionStatusToUploadSchemaState(userActionData?.userAction?.status)
-    ]({
-      className: CLASS_NAME,
-      message:
-        actionLog.steps[0]?.logs[actionLog.steps[0]?.logs.length - 1]?.message,
-    });
-  }, [actionLog.steps, userActionData?.userAction?.status]);
-
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
-      <>
-        {!canImportDBSchema ? (
-          <div className={`${CLASS_NAME}__beta-wrapper`}>
-            <div className={`${CLASS_NAME}__beta-wrapper__header`}>
-              <SvgThemeImage image={EnumImages.ImportPrisma} />
-              <h2>Modernize Faster with Amplication DB Schema Import</h2>
-              <div className={`${CLASS_NAME}__beta-wrapper__feature `}>
-                Seamlessly import your existing database schema directly into
-                Amplication. <br /> Ideal for modernization initiatives,
-                significantly reduces transition time by preserving your
-                underlying database while you rebuild and enhance your systems.
-              </div>
-              <div className={`${CLASS_NAME}__beta-wrapper__feature `}>
-                Want to get early access and help shape the future of our
-                platform?
-              </div>
-              <a
-                target="db-import-beta"
-                href="https://amplication.com/db-import-beta"
-              >
-                <Button
-                  eventData={{
-                    eventName:
-                      AnalyticsEventNames.ImportPrismaSchemaJoinBetaClick,
-                  }}
-                >
-                  Join our beta group now
-                </Button>
-              </a>
-            </div>
-          </div>
-        ) : (
-          <>
-            {importSchemaState}
-            <div className={`${CLASS_NAME}__content`}>
-              {loading || (data && data.createEntitiesFromPrismaSchema) ? (
-                <>
-                  <ActionLog
-                    height={"40vh"}
-                    action={actionLog}
-                    title="Import Schema"
-                    versionNumber=""
-                  />
-                </>
-              ) : (
-                <>
-                  <FileUploader
-                    onFilesSelected={onFilesSelected}
-                    maxFiles={MAX_FILES}
-                    acceptedFileTypes={ACCEPTED_FILE_TYPES}
-                  />
-                </>
-              )}
-            </div>
-          </>
-        )}
-        <div className={`${CLASS_NAME}__header`}>
-          <p className={`${CLASS_NAME}__link-button`}>
-            Need more guidance? Explore our
-            <a
-              href="https://docs.amplication.com/how-to/import-prisma-schema/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              &nbsp;documentation
-            </a>
-            &nbsp;on importing Prisma schema files
-          </p>
+      <FlexItem
+        direction={EnumFlexDirection.Column}
+        itemsAlign={EnumItemsAlign.Stretch}
+      >
+        <UploadSchemaStatus
+          userAction={userActionData?.userAction}
+          logMessage={
+            actionLog.steps[0]?.logs[actionLog.steps[0]?.logs.length - 1]
+              ?.message
+          }
+        />
+        <div>
+          {loading || (data && data.createEntitiesFromPrismaSchema) ? (
+            <>
+              <ActionLog
+                height={"40vh"}
+                action={actionLog}
+                title="Import Schema"
+                versionNumber=""
+              />
+            </>
+          ) : (
+            <>
+              <FileUploader
+                onFilesSelected={onFilesSelected}
+                maxFiles={MAX_FILES}
+                acceptedFileTypes={ACCEPTED_FILE_TYPES}
+              />
+            </>
+          )}
         </div>
+
+        <Text
+          textStyle={EnumTextStyle.Label}
+          className={`${CLASS_NAME}__link-docs`}
+        >
+          Need more guidance? Explore our
+          <a
+            href="https://docs.amplication.com/how-to/import-prisma-schema/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            &nbsp;documentation
+          </a>
+          &nbsp;on importing Prisma schema files
+        </Text>
         <Snackbar open={Boolean(error)} message={errorMessage} />
-      </>
+      </FlexItem>
     </PageContent>
   );
 };
