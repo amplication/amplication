@@ -11,7 +11,7 @@ interface EntityPartial extends Pick<Entity, "id" | "name" | "displayName"> {
   }[];
 }
 
-export interface ResourcePartial extends Pick<Resource, "name"> {
+export interface ResourcePartial extends Pick<Resource, "id" | "name"> {
   entities: EntityPartial[];
 }
 

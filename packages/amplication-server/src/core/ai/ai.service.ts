@@ -94,6 +94,7 @@ export class AiService {
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },
       select: {
+        id: true,
         name: true,
         entities: {
           where: {
