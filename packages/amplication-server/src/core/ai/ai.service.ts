@@ -1,5 +1,5 @@
 import { AmplicationError } from "../../errors/AmplicationError";
-import { BtmEntityRecommendation, PrismaService } from "../../prisma";
+import { PrismaService } from "../../prisma";
 import { ActionService } from "../action/action.service";
 import { EnumActionStepStatus } from "../action/dto";
 import { INVALID_RESOURCE_ID } from "../resource/resource.service";
