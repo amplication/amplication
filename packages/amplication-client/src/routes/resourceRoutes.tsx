@@ -18,6 +18,20 @@ const resourceRoutes = [
     exactPath: true,
     isAnalytics: true,
   },
+  {
+    path: "/:workspace/:project/:resource/breaking-the-monolith-options",
+    Component: lazy(
+      () =>
+        import(
+          "../Resource/preview-pages/breaking-the-monolith/BreakingTheMonolithOptionsPage"
+        )
+    ),
+    moduleName: "ChangesPage",
+    moduleClass: "changes-page",
+    routeTrackType: "",
+    exactPath: true,
+    isAnalytics: true,
+  },
 ];
 
 export default resourceRoutes;

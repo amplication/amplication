@@ -31,6 +31,7 @@ import {
   ResourceCreateWithEntitiesResult,
   UpdateCodeGeneratorVersionArgs,
 } from "./dto";
+import { CreateResourceEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -157,6 +158,22 @@ export class ResourceResolver {
     @Args() args: UpdateOneResourceArgs
   ): Promise<Resource | null> {
     return this.resourceService.updateResource(args);
+  }
+
+  @Mutation(() => Resource, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "data.project.connect.id"
+  )
+  async createResourceEntitiesFromExistingResource(
+    @Args() args: CreateResourceEntitiesArgs,
+    @UserEntity() user: User
+  ): Promise<Resource> {
+    return this.resourceService.createResourceEntitiesFromExistingResource(
+      args,
+      user
+    );
   }
 
   @Mutation(() => Resource, {

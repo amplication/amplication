@@ -16,7 +16,7 @@ const PendingChangeServiceTopics = ({ change, linkToOrigin }: Props) => {
   const { serviceTopicsList } = useServiceConnection(change.resource.id);
 
   const connectedBroker = useMemo(() => {
-    const connection = serviceTopicsList?.ServiceTopicsList.find(
+    const connection = serviceTopicsList?.serviceTopicsList.find(
       (item) => item.id === origin.id
     );
 

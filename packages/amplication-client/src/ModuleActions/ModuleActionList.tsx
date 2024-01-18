@@ -5,6 +5,7 @@ import {
   EnumListStyle,
   EnumTextColor,
   EnumTextStyle,
+  EnumTextWeight,
   FlexItem,
   List,
   Text,
@@ -25,9 +26,10 @@ type Props = {
   resourceId: string;
   displayMode: EnumApiOperationTagStyle;
   searchPhrase: string;
+  disabled?: boolean;
 };
 const ModuleActionList = React.memo(
-  ({ moduleId, resourceId, displayMode, searchPhrase }: Props) => {
+  ({ moduleId, resourceId, displayMode, searchPhrase, disabled }: Props) => {
     const [error, setError] = useState<Error>();
 
     const {
@@ -40,13 +42,13 @@ const ModuleActionList = React.memo(
     const { getModuleData: moduleData, updateModule } = useModule(moduleId);
 
     const [enabledActions, setEnabledActions] = useState<boolean>(
-      moduleData?.Module?.enabled || null
+      moduleData?.module?.enabled || null
     );
 
     useEffect(() => {
       if (!moduleData) return;
-      setEnabledActions(moduleData.Module.enabled);
-    }, [moduleData, moduleData?.Module?.enabled]);
+      setEnabledActions(moduleData.module.enabled);
+    }, [moduleData, moduleData?.module?.enabled]);
 
     const onEnableChanged = useCallback(
       (value: boolean) => {
@@ -56,9 +58,9 @@ const ModuleActionList = React.memo(
               id: moduleId,
             },
             data: {
-              description: moduleData.Module.description,
-              displayName: moduleData.Module.description,
-              name: moduleData.Module.name,
+              description: moduleData.module.description,
+              displayName: moduleData.module.description,
+              name: moduleData.module.name,
               enabled: value,
             },
           },
@@ -106,6 +108,7 @@ const ModuleActionList = React.memo(
                     name={"enabled"}
                     onValueChange={onEnableChanged}
                     checked={enabledActions}
+                    disabled={disabled}
                   ></Toggle>
                 </div>
               }
@@ -113,22 +116,23 @@ const ModuleActionList = React.memo(
               <Text
                 textStyle={EnumTextStyle.Normal}
                 textColor={EnumTextColor.White}
+                textWeight={EnumTextWeight.Bold}
               >
-                {moduleData?.Module.name}
+                {moduleData?.module.name}
               </Text>
               <Text textStyle={EnumTextStyle.Description}>
-                {moduleData?.Module.description}
+                {moduleData?.module.description}
               </Text>
             </FlexItem>
           }
         >
-          {data?.ModuleActions?.map((action) => (
+          {data?.moduleActions?.map((action) => (
             <ModuleActionListItem
               key={action.id}
-              module={moduleData?.Module}
+              module={moduleData?.module}
               moduleAction={action}
               tagStyle={displayMode}
-              disabled={!enabledActions}
+              disabled={disabled || !enabledActions}
             />
           ))}
         </List>

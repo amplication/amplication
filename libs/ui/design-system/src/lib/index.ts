@@ -7,8 +7,10 @@ export {
   EnumButtonState,
   EnumIconPosition,
 } from "./components/Button/Button";
-
 export type { Props as ButtonProps } from "./components/Button/Button";
+
+export { ButtonProgress } from "./components/ButtonProgress/ButtonProgress";
+export type { Props as ButtonProgressProps } from "./components/ButtonProgress/ButtonProgress";
 
 export {
   default as CircleIcon,
@@ -105,13 +107,9 @@ export type { Props as CircleBadgeProps } from "./components/CircleBadge/CircleB
 export { default as Page } from "./components/Page/Page";
 export type { Props as PageProps } from "./components/Page/Page";
 
-export { Form, EnumFormStyle } from "./components/Form/Form";
+export { Form } from "./components/Form/Form";
 
 export type { Props as FormProps } from "./components/Form/Form";
-
-export { FormHeader } from "./components/Form/FormHeader";
-
-export type { Props as FormHeaderProps } from "./components/Form/FormHeader";
 
 export { default as Breadcrumbs } from "./components/Breadcrumbs/Breadcrumbs";
 

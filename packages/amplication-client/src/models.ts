@@ -31,6 +31,8 @@ export type Account = {
   id: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
   password: Scalars['String']['output'];
+  previewAccountEmail?: Maybe<Scalars['String']['output']>;
+  previewAccountType: PreviewAccountType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -86,6 +88,14 @@ export type ApiTokenCreateInput = {
 export type Auth = {
   /** JWT Bearer token */
   token: Scalars['String']['output'];
+};
+
+export type AuthPreviewAccount = {
+  message?: Maybe<Scalars['String']['output']>;
+  projectId?: Maybe<Scalars['String']['output']>;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  token?: Maybe<Scalars['String']['output']>;
+  workspaceId?: Maybe<Scalars['String']['output']>;
 };
 
 export type AuthorizeResourceWithGitResult = {
@@ -272,6 +282,8 @@ export type CommitBuildsArgs = {
 };
 
 export type CommitCreateInput = {
+  /** It will bypass the limitations of the plan (if any). It will only work for limitation that support commit bypass. */
+  bypassLimitations?: InputMaybe<Scalars['Boolean']['input']>;
   message: Scalars['String']['input'];
   project: WhereParentIdInput;
 };
@@ -307,12 +319,21 @@ export type ConnectGitRepositoryInput = {
   resourceId: Scalars['String']['input'];
 };
 
+export type CopiedEntities = {
+  shouldDeleteFromSource: Scalars['Boolean']['input'];
+};
+
 export type Coupon = {
   code: Scalars['String']['output'];
   couponType?: Maybe<Scalars['String']['output']>;
   durationMonths: Scalars['Int']['output'];
   id: Scalars['String']['output'];
   subscriptionPlan: EnumSubscriptionPlan;
+};
+
+export type CreateEntitiesFromPredefinedSchemaInput = {
+  resource: WhereParentIdInput;
+  schemaName: EnumSchemaNames;
 };
 
 export type CreateGitRepositoryBaseInput = {
@@ -793,9 +814,14 @@ export type EnumResourceTypeFilter = {
   notIn?: InputMaybe<Array<EnumResourceType>>;
 };
 
+export enum EnumSchemaNames {
+  CalDotCom = 'CalDotCom'
+}
+
 export enum EnumSubscriptionPlan {
   Enterprise = 'Enterprise',
   Free = 'Free',
+  PreviewBreakTheMonolith = 'PreviewBreakTheMonolith',
   Pro = 'Pro'
 }
 
@@ -815,6 +841,7 @@ export enum EnumUserActionStatus {
 }
 
 export enum EnumUserActionType {
+  BreakTheMonolith = 'BreakTheMonolith',
   DbSchemaImport = 'DBSchemaImport'
 }
 
@@ -1091,16 +1118,19 @@ export type ModuleWhereInput = {
 
 export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
+  bulkUpdateWorkspaceProjectsAndResourcesLicensed: Scalars['Boolean']['output'];
   changePassword: Account;
   commit?: Maybe<Commit>;
   completeGitOAuth2Flow: GitOrganization;
   completeInvitation: Auth;
+  completeSignupWithBusinessEmail: Scalars['String']['output'];
   connectGitRepository: Resource;
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
+  createEntitiesFromPredefinedSchema: UserAction;
   createEntitiesFromPrismaSchema: UserAction;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
@@ -1112,6 +1142,7 @@ export type Mutation = {
   createPluginInstallation: PluginInstallation;
   createProject: Project;
   createRemoteGitRepository: RemoteGitRepository;
+  createResourceEntitiesFromExistingResource: Resource;
   createResourceRole: ResourceRole;
   createService: Resource;
   createServiceTopics: ServiceTopics;
@@ -1146,7 +1177,10 @@ export type Mutation = {
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
+  signUpWithBusinessEmail: AuthPreviewAccount;
   signup: Auth;
+  /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
+  triggerGenerationBtmResourceRecommendation?: Maybe<Scalars['String']['output']>;
   updateAccount: Account;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
@@ -1171,6 +1205,11 @@ export type Mutation = {
 
 export type MutationAddEntityPermissionFieldArgs = {
   data: EntityAddPermissionFieldInput;
+};
+
+
+export type MutationBulkUpdateWorkspaceProjectsAndResourcesLicensedArgs = {
+  useUserLastActive?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -1221,6 +1260,11 @@ export type MutationCreateBuildArgs = {
 
 export type MutationCreateDefaultEntitiesArgs = {
   data: DefaultEntitiesInput;
+};
+
+
+export type MutationCreateEntitiesFromPredefinedSchemaArgs = {
+  data: CreateEntitiesFromPredefinedSchemaInput;
 };
 
 
@@ -1280,6 +1324,11 @@ export type MutationCreateProjectArgs = {
 
 export type MutationCreateRemoteGitRepositoryArgs = {
   data: CreateGitRepositoryBaseInput;
+};
+
+
+export type MutationCreateResourceEntitiesFromExistingResourceArgs = {
+  data: ResourceCreateCopiedEntitiesInput;
 };
 
 
@@ -1455,8 +1504,18 @@ export type MutationSetPluginOrderArgs = {
 };
 
 
+export type MutationSignUpWithBusinessEmailArgs = {
+  data: SignupPreviewAccountInput;
+};
+
+
 export type MutationSignupArgs = {
   data: SignupInput;
+};
+
+
+export type MutationTriggerGenerationBtmResourceRecommendationArgs = {
+  resourceId: Scalars['String']['input'];
 };
 
 
@@ -1707,11 +1766,18 @@ export type PluginSetOrderInput = {
   order: Scalars['Int']['input'];
 };
 
+export enum PreviewAccountType {
+  Auth0Signup = 'Auth0Signup',
+  BreakingTheMonolith = 'BreakingTheMonolith',
+  None = 'None'
+}
+
 export type Project = {
   createdAt: Scalars['DateTime']['output'];
   demoRepoName?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
+  licensed: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   resources?: Maybe<Array<Resource>>;
   updatedAt: Scalars['DateTime']['output'];
@@ -1789,16 +1855,6 @@ export type ProvisionSubscriptionResult = {
 };
 
 export type Query = {
-  Module?: Maybe<Module>;
-  ModuleAction?: Maybe<ModuleAction>;
-  ModuleActions: Array<ModuleAction>;
-  Modules: Array<Module>;
-  PluginInstallation?: Maybe<PluginInstallation>;
-  PluginInstallations: Array<PluginInstallation>;
-  ServiceTopics?: Maybe<ServiceTopics>;
-  ServiceTopicsList: Array<ServiceTopics>;
-  Topic?: Maybe<Topic>;
-  Topics: Array<Topic>;
   account: Account;
   action: Action;
   block: Block;
@@ -1816,7 +1872,13 @@ export type Query = {
   gitOrganizations: Array<GitOrganization>;
   me: User;
   messageBrokerConnectedServices: Array<Resource>;
+  module?: Maybe<Module>;
+  moduleAction?: Maybe<ModuleAction>;
+  moduleActions: Array<ModuleAction>;
+  modules: Array<Module>;
   pendingChanges: Array<PendingChange>;
+  pluginInstallation?: Maybe<PluginInstallation>;
+  pluginInstallations: Array<PluginInstallation>;
   pluginOrder: PluginOrder;
   project?: Maybe<Project>;
   projectConfigurationSettings: ProjectConfigurationSettings;
@@ -1827,76 +1889,15 @@ export type Query = {
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
+  serviceTopics?: Maybe<ServiceTopics>;
+  serviceTopicsList: Array<ServiceTopics>;
+  topic?: Maybe<Topic>;
+  topics: Array<Topic>;
   userAction: UserAction;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
   workspaces: Array<Workspace>;
-};
-
-
-export type QueryModuleArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryModuleActionArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryModuleActionsArgs = {
-  orderBy?: InputMaybe<ModuleActionOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ModuleActionWhereInput>;
-};
-
-
-export type QueryModulesArgs = {
-  orderBy?: InputMaybe<ModuleOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ModuleWhereInput>;
-};
-
-
-export type QueryPluginInstallationArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryPluginInstallationsArgs = {
-  orderBy?: InputMaybe<PluginInstallationOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<PluginInstallationWhereInput>;
-};
-
-
-export type QueryServiceTopicsArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryServiceTopicsListArgs = {
-  orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ServiceTopicsWhereInput>;
-};
-
-
-export type QueryTopicArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryTopicsArgs = {
-  orderBy?: InputMaybe<TopicOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<TopicWhereInput>;
 };
 
 
@@ -1985,8 +1986,47 @@ export type QueryMessageBrokerConnectedServicesArgs = {
 };
 
 
+export type QueryModuleArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModuleActionArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModuleActionsArgs = {
+  orderBy?: InputMaybe<ModuleActionOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleActionWhereInput>;
+};
+
+
+export type QueryModulesArgs = {
+  orderBy?: InputMaybe<ModuleOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleWhereInput>;
+};
+
+
 export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
+};
+
+
+export type QueryPluginInstallationArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryPluginInstallationsArgs = {
+  orderBy?: InputMaybe<PluginInstallationOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PluginInstallationWhereInput>;
 };
 
 
@@ -2050,6 +2090,32 @@ export type QueryServiceSettingsArgs = {
 };
 
 
+export type QueryServiceTopicsArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryServiceTopicsListArgs = {
+  orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ServiceTopicsWhereInput>;
+};
+
+
+export type QueryTopicArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryTopicsArgs = {
+  orderBy?: InputMaybe<TopicOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TopicWhereInput>;
+};
+
+
 export type QueryUserActionArgs = {
   where: WhereUniqueInput;
 };
@@ -2108,6 +2174,7 @@ export type Resource = {
   githubLastMessage?: Maybe<Scalars['String']['output']>;
   githubLastSync?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['String']['output'];
+  licensed: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;
@@ -2129,6 +2196,11 @@ export type ResourceEntitiesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<EntityWhereInput>;
+};
+
+export type ResourceCreateCopiedEntitiesInput = {
+  entitiesToCopy: Array<CopiedEntities>;
+  targetResourceId: Scalars['String']['input'];
 };
 
 export type ResourceCreateInput = {
@@ -2359,6 +2431,11 @@ export type SignupInput = {
   lastName: Scalars['String']['input'];
   password: Scalars['String']['input'];
   workspaceName: Scalars['String']['input'];
+};
+
+export type SignupPreviewAccountInput = {
+  previewAccountEmail: Scalars['String']['input'];
+  previewAccountType: PreviewAccountType;
 };
 
 export enum SortOrder {

@@ -12,6 +12,7 @@ generator client {
 model Plugin {
   createdAt      DateTime @default(now())
   description    String?
+  downloads      Int?
   github         String?
   icon           String?
   id             String   @id @default(cuid())
@@ -19,6 +20,7 @@ model Plugin {
   npm            String?
   pluginId       String?  @unique
   taggedVersions Json?
+  categories     Json?    @default("[]")
   updatedAt      DateTime @updatedAt
   website        String?
 }

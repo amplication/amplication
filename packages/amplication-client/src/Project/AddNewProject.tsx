@@ -1,11 +1,12 @@
-import {
-  Button,
-  Dialog,
-  EnumButtonStyle,
-  EnumIconPosition,
-} from "@amplication/ui/design-system";
-import { useCallback, useState } from "react";
+import { Dialog, EnumButtonStyle } from "@amplication/ui/design-system";
+import { useCallback, useContext, useState } from "react";
 import NewProject from "./NewProject";
+import { BillingFeature } from "@amplication/util-billing-types";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+} from "../Components/FeatureIndicatorContainer";
+import { Button } from "../Components/Button";
 
 const CLASS_NAME = "add-new-project";
 
@@ -31,15 +32,20 @@ const AddNewProject = () => {
       >
         <NewProject onProjectCreated={handleProjectCreated} />
       </Dialog>
-      <Button
-        onClick={handleNewProjectClick}
-        type="button"
-        iconPosition={EnumIconPosition.Left}
-        iconSize="small"
-        buttonStyle={EnumButtonStyle.Primary}
+      <FeatureIndicatorContainer
+        featureId={BillingFeature.Projects}
+        entitlementType={EntitlementType.Metered}
+        limitationText="The workspace reached your plan's project limitation. "
       >
-        <span className={`${CLASS_NAME}__label`}>Add New Project</span>
-      </Button>
+        <Button
+          onClick={handleNewProjectClick}
+          type="button"
+          iconSize="small"
+          buttonStyle={EnumButtonStyle.Primary}
+        >
+          <span className={`${CLASS_NAME}__label`}>Add New Project</span>
+        </Button>
+      </FeatureIndicatorContainer>
     </>
   );
 };

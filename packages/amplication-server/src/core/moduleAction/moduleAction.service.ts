@@ -55,7 +55,7 @@ export class ModuleActionService extends BlockTypeService<
         data: {
           ...args.data,
           enabled: true,
-          type: EnumModuleActionType.Custom,
+          actionType: EnumModuleActionType.Custom,
         },
       },
       user
@@ -255,23 +255,49 @@ export class ModuleActionService extends BlockTypeService<
       }
     );
 
-    return await Promise.all(
-      existingDefaultActions.map((action) => {
+    const defaultActionKeysSet = new Set(Object.keys(defaultActions));
+    const existingDefaultActionKeysSet = new Set(
+      existingDefaultActions.map((action) => action.actionType) as string[]
+    );
+
+    const actionsToDelete: EnumModuleActionType[] = [];
+    const actionsToCreate: EnumModuleActionType[] = [];
+    const actionsToUpdate: EnumModuleActionType[] = [];
+
+    // Iterate through once and categorize actions
+    for (const action of defaultActionKeysSet) {
+      if (!existingDefaultActionKeysSet.has(action)) {
+        actionsToCreate.push(action as EnumModuleActionType);
+      } else {
+        actionsToUpdate.push(action as EnumModuleActionType);
+      }
+    }
+
+    for (const action of existingDefaultActionKeysSet) {
+      if (!defaultActionKeysSet.has(action)) {
+        actionsToDelete.push(action as EnumModuleActionType);
+      }
+    }
+
+    const created = Promise.all(
+      actionsToCreate.map((action) => {
         return (
-          defaultActions[action.actionType] &&
-          super.update(
+          defaultActions[action] &&
+          super.create(
             {
-              where: {
-                id: action.id,
-              },
               data: {
-                name: defaultActions[action.actionType].name,
-                displayName: defaultActions[action.actionType].displayName,
-                description: defaultActions[action.actionType].description,
-                enabled: action.enabled,
-                gqlOperation: defaultActions[action.actionType].gqlOperation,
-                restVerb: defaultActions[action.actionType].restVerb,
-                path: defaultActions[action.actionType].path,
+                fieldPermanentId: field.permanentId,
+                ...defaultActions[action],
+                parentBlock: {
+                  connect: {
+                    id: moduleId,
+                  },
+                },
+                resource: {
+                  connect: {
+                    id: entity.resourceId,
+                  },
+                },
               },
             },
             user
@@ -279,6 +305,54 @@ export class ModuleActionService extends BlockTypeService<
         );
       })
     );
+
+    const deleted = Promise.all(
+      actionsToDelete.map((actionType) => {
+        const actionToDelete = existingDefaultActions.find(
+          (existing) => existing.actionType === actionType
+        );
+
+        return super.delete(
+          {
+            where: {
+              id: actionToDelete.id,
+            },
+          },
+          user,
+          true
+        );
+      })
+    );
+
+    const updated = Promise.all(
+      actionsToUpdate.map((action) => {
+        const actionToUpdate = existingDefaultActions.find(
+          (existing) => existing.actionType === action
+        );
+
+        return super.update(
+          {
+            where: {
+              id: actionToUpdate.id,
+            },
+            data: {
+              name: defaultActions[action].name,
+              displayName: defaultActions[action].displayName,
+              description: defaultActions[action].description,
+              enabled: actionToUpdate.enabled,
+              gqlOperation: defaultActions[action].gqlOperation,
+              restVerb: defaultActions[action].restVerb,
+              path: defaultActions[action].path,
+            },
+          },
+          user
+        );
+      })
+    );
+
+    await Promise.all([created, deleted, updated]);
+
+    return [...(await created), ...(await updated)];
   }
 
   async deleteDefaultActionsForRelationField(

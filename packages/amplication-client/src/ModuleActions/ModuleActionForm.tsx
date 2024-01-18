@@ -1,8 +1,7 @@
-import { ToggleField } from "@amplication/ui/design-system";
+import { ToggleField, Form } from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import { omit } from "lodash";
 import { useMemo } from "react";
-import { Form } from "../Components/Form";
 import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";
 import { DisplayNameField } from "../Components/DisplayNameField";

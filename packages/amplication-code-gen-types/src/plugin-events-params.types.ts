@@ -135,6 +135,8 @@ export interface CreateEntityControllerSpecParams extends EventParams {
   entityControllerBaseModulePath: string;
   controllerId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
+  moduleContainers: ModuleContainer[];
+  entityActions: entityActions;
 }
 
 export interface CreateServerAuthParams extends EventParams {}

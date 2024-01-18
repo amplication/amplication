@@ -3,9 +3,10 @@ import { JwtService } from "@nestjs/jwt";
 import { subDays } from "date-fns";
 import { ConfigService } from "@nestjs/config";
 import cuid from "cuid";
+import { Env } from "../../env";
 import { Prisma, PrismaService } from "../../prisma";
 import { Profile as GitHubProfile } from "passport-github2";
-import { Account, User, UserRole, Workspace } from "../../models";
+import { Account, Resource, User, UserRole, Workspace } from "../../models";
 import { AccountService } from "../account/account.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { PasswordService } from "../account/password.service";
@@ -23,6 +24,22 @@ import { CompleteInvitationArgs } from "../workspace/dto";
 import { ProjectService } from "../project/project.service";
 import { AuthProfile } from "./types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import {
+  AuthenticationClient,
+  JSONApiResponse,
+  ManagementClient,
+  SignUpResponse,
+  TextApiResponse,
+} from "auth0";
+import { SignupPreviewAccountInput } from "./dto/SignupPreviewAccountInput";
+import * as crypto from "crypto";
+import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
+import { ResourceService } from "../resource/resource.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
+import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
+import { USER_ENTITY_NAME } from "../entity/constants";
+import { PUBLIC_DOMAINS } from "./publicDomains";
 
 export type AuthUser = User & {
   account: Account;
@@ -30,11 +47,31 @@ export type AuthUser = User & {
   userRoles: UserRole[];
 };
 
+export type BootstrapPreviewUser = {
+  user: AuthUser;
+  workspaceId: string;
+  projectId: string;
+  resourceId: string;
+};
+
+export type CreatePreviewServiceArgs = {
+  projectId: string;
+  name: string;
+  description: string;
+  adminUIPath: string;
+  serverPath: string;
+  generateAdminUI: boolean;
+  generateGraphQL: boolean;
+  generateRestApi: boolean;
+};
+
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
 export const IDENTITY_PROVIDER_GITHUB = "GitHub";
 export const IDENTITY_PROVIDER_SSO = "SSO";
 export const IDENTITY_PROVIDER_MANUAL = "Manual";
+export const IDENTITY_PROVIDER_PREVIEW_ACCOUNT = "PreviewAccount";
+export const IDENTITY_PROVIDER_AUTH0 = "Auth0";
 
 const AUTH_USER_INCLUDE = {
   account: true,
@@ -48,8 +85,19 @@ const WORKSPACE_INCLUDE = {
   },
 };
 
+const generatePassword = () => {
+  const buf = new Uint8Array(6);
+  crypto.getRandomValues(buf);
+  return Buffer.from(String.fromCharCode.apply(null, buf), "utf8").toString(
+    "base64"
+  );
+};
+
 @Injectable()
 export class AuthService {
+  private auth0: AuthenticationClient;
+  private auth0Management: ManagementClient;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
@@ -61,8 +109,121 @@ export class AuthService {
     @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService,
     @Inject(forwardRef(() => ProjectService))
-    private readonly projectService: ProjectService
-  ) {}
+    private readonly projectService: ProjectService,
+    @Inject(forwardRef(() => ResourceService))
+    private readonly resourceService: ResourceService
+  ) {
+    this.auth0 = new AuthenticationClient({
+      domain: this.configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
+      clientId: this.configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID),
+      clientSecret: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_SECRET
+      ),
+    });
+    this.auth0Management = new ManagementClient({
+      domain: this.configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
+      clientId: this.configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID),
+      clientSecret: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_SECRET
+      ),
+    });
+  }
+
+  async signupAuth0User({
+    previewAccountType,
+    previewAccountEmail,
+  }): Promise<{ message: string }> {
+    try {
+      let auth0User;
+      const existedAccount = await this.accountService.findAccount({
+        where: {
+          email: previewAccountEmail,
+        },
+      });
+      const existedAuth0User = await this.getAuth0UserByEmail(
+        previewAccountEmail
+      );
+      if (!existedAuth0User) {
+        auth0User = await this.createAuth0User(previewAccountEmail);
+
+        if (!auth0User.data.email)
+          throw Error("Failed to create new Auth0 user");
+      }
+
+      const resetPassword = await this.resetAuth0UserPassword(
+        existedAuth0User ? previewAccountEmail : auth0User.data.email
+      );
+      if (!resetPassword.data)
+        throw Error("Failed to send reset message to new Auth0 user");
+
+      if (!existedAccount) {
+        const account = await this.accountService.createAccount(
+          {
+            data: {
+              email: previewAccountEmail,
+              firstName: "",
+              lastName: "",
+              password: "",
+              previewAccountType,
+            },
+          },
+          IDENTITY_PROVIDER_AUTH0
+        );
+        const workspaceName = previewAccountEmail.split("@")[0];
+        await this.bootstrapUser(account, workspaceName);
+      }
+
+      return {
+        message:
+          "Complete signup by setting a password using the email we just sent",
+      };
+    } catch (error) {
+      this.logger.error(error.message, error);
+      return {
+        message: "Oops! Signup didn't go through. Please try again later.",
+      };
+    }
+  }
+
+  async createAuth0User(
+    email: string
+  ): Promise<JSONApiResponse<SignUpResponse>> {
+    const data = {
+      email,
+      password: generatePassword(),
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      email_verified: true,
+      connection: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
+      ),
+    };
+
+    const user = await this.auth0.database.signUp(data);
+
+    return user;
+  }
+
+  async resetAuth0UserPassword(email: string): Promise<TextApiResponse> {
+    const data = {
+      email,
+      connection: this.configService.get<string>(
+        Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
+      ),
+    };
+
+    const changePasswordResponse = await this.auth0.database.changePassword(
+      data
+    );
+
+    return changePasswordResponse;
+  }
+
+  async getAuth0UserByEmail(email: string): Promise<boolean> {
+    const user = await this.auth0Management.usersByEmail.getByEmail({ email });
+    if (!user.data.length) return false;
+
+    return user.data[0].email === email;
+  }
 
   async createGitHubUser(
     payload: GitHubProfile,
@@ -121,12 +282,13 @@ export class AuthService {
     return user;
   }
 
-  async updateUser(user: AuthUser, profile: AuthProfile): Promise<AuthUser> {
+  async updateUser(
+    user: AuthUser,
+    data: { githubId?: string; previewAccountType?: PreviewAccountType }
+  ): Promise<AuthUser> {
     const account = await this.accountService.updateAccount({
       where: { id: user.account.id },
-      data: {
-        githubId: profile.sub,
-      },
+      data,
     });
     return {
       ...user,
@@ -156,6 +318,121 @@ export class AuthService {
     return this.prepareToken(user);
   }
 
+  async completeSignupPreviewAccount(user: User): Promise<string> {
+    let auth0User: JSONApiResponse<SignUpResponse>;
+    const { account: currentAccount, workspace } = user;
+
+    const existingAuth0User = await this.getAuth0UserByEmail(
+      currentAccount.previewAccountEmail
+    );
+
+    if (!existingAuth0User) {
+      auth0User = await this.createAuth0User(
+        currentAccount.previewAccountEmail
+      );
+      if (!auth0User?.data?.email)
+        throw Error("Failed to create new Auth0 user");
+    }
+
+    const userEmail = existingAuth0User
+      ? currentAccount.previewAccountEmail
+      : auth0User.data.email;
+
+    const resetPassword = await this.resetAuth0UserPassword(userEmail);
+
+    if (!resetPassword.data)
+      throw Error("Failed to send reset message to new Auth0 user");
+
+    const existingAccount = await this.accountService.findAccount({
+      where: {
+        email: currentAccount.previewAccountEmail,
+      },
+    });
+
+    if (!existingAccount) {
+      // the current (preview) account didn't sign up yet, so we update his preview account to a regular account.
+      // His data will be kept.
+      await this.accountService.updateAccount({
+        where: { id: currentAccount.id },
+        data: {
+          email: userEmail,
+          previewAccountEmail: null,
+          previewAccountType: PreviewAccountType.None,
+        },
+      });
+
+      await this.workspaceService.convertPreviewSubscriptionToFreeWithTrial(
+        workspace.id
+      );
+    }
+
+    return resetPassword.data;
+  }
+
+  private isValidWorkEmail(email: string): boolean {
+    const domain = email.split("@")[1];
+    return !PUBLIC_DOMAINS.includes(domain);
+  }
+
+  async signupPreviewAccount({
+    previewAccountEmail,
+    previewAccountType,
+  }: SignupPreviewAccountInput): Promise<AuthPreviewAccount> {
+    if (!this.isValidWorkEmail(previewAccountEmail)) {
+      throw new AmplicationError(
+        `Email must be a work email, not a public domain email`
+      );
+    }
+    const { signupData, identityProvider } = this.generateDataForPreviewAccount(
+      previewAccountEmail,
+      previewAccountType
+    );
+
+    const account = await this.accountService.createAccount(
+      {
+        data: signupData,
+      },
+      identityProvider
+    );
+
+    const { user, workspaceId, projectId, resourceId } =
+      await this.bootstrapPreviewUser(account);
+
+    const token = await this.prepareTokenForPreviewAccount(user);
+
+    return {
+      token,
+      workspaceId,
+      projectId,
+      resourceId,
+    };
+  }
+
+  private generateDataForPreviewAccount(
+    previewAccountEmail: string,
+    previewAccountType: PreviewAccountType
+  ) {
+    return {
+      signupData: {
+        email: this.generateRandomEmail(),
+        firstName: "Amplication Preview Account",
+        lastName: previewAccountType,
+        password: this.generateRandomString(),
+        previewAccountType,
+        previewAccountEmail,
+      },
+      identityProvider: `${IDENTITY_PROVIDER_PREVIEW_ACCOUNT}_${previewAccountType}`,
+    };
+  }
+
+  private generateRandomString(): string {
+    return crypto.randomBytes(10).toString("hex");
+  }
+
+  private generateRandomEmail(): string {
+    return `fake-${this.generateRandomString()}@amplication.com`;
+  }
+
   private async bootstrapUser(
     account: Account,
     workspaceName: string
@@ -165,6 +442,22 @@ export class AuthService {
     await this.accountService.setCurrentUser(account.id, user.id);
 
     return user;
+  }
+
+  private async bootstrapPreviewUser(
+    account: Account
+  ): Promise<BootstrapPreviewUser> {
+    const { user, workspace, project, resource } =
+      await this.createPreviewWorkspaceWithProjectAndResource(account);
+
+    await this.accountService.setCurrentUser(account.id, user.id);
+
+    return {
+      user,
+      workspaceId: workspace.id,
+      projectId: project.id,
+      resourceId: resource.id,
+    };
   }
 
   async login(email: string, password: string): Promise<string> {
@@ -372,6 +665,20 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
+  async prepareTokenForPreviewAccount(user: AuthUser): Promise<string> {
+    const roles = user.userRoles.map((role) => role.role);
+
+    const payload: JwtDto = {
+      accountId: user.account.id,
+      userId: user.id,
+      roles,
+      workspaceId: user.workspace.id,
+      type: EnumTokenType.User,
+    };
+
+    return this.jwtService.sign(payload);
+  }
+
   /**
    * Creates an API token from given user
    * @param user to create token for
@@ -421,6 +728,124 @@ export class AuthService {
     });
 
     return workspace as unknown as Workspace & { users: AuthUser[] };
+  }
+
+  private async createPreviewWorkspaceWithProjectAndResource(account: Account) {
+    const workspaceName = `Amplication-${this.generateRandomString()}`;
+    const projectName = account.previewAccountType;
+
+    const workspace = (await this.workspaceService.createPreviewWorkspace(
+      {
+        data: {
+          name: workspaceName,
+        },
+        include: WORKSPACE_INCLUDE,
+      },
+      account.id
+    )) as unknown as Workspace & { users: AuthUser[] };
+    const [user] = workspace.users as AuthUser[];
+
+    const project = await this.projectService.createProject(
+      {
+        data: {
+          name: projectName,
+          workspace: {
+            connect: {
+              id: workspace.id,
+            },
+          },
+        },
+      },
+      user.id
+    );
+
+    let resource: Resource;
+    switch (account.previewAccountType) {
+      case PreviewAccountType.BreakingTheMonolith:
+        resource = await this.createBreakingTheMonolithPreviewService(
+          project.id,
+          user
+        );
+        break;
+      case PreviewAccountType.None:
+        throw new AmplicationError(
+          `${PreviewAccountType.None} is not a preview account, but a regular account`
+        );
+      default:
+        throw new AmplicationError(
+          `Unsupported preview account type: ${account.previewAccountType}`
+        );
+    }
+
+    return {
+      user,
+      workspace,
+      project,
+      resource,
+    };
+  }
+
+  private async createBreakingTheMonolithPreviewService(
+    projectId: string,
+    user: User
+  ): Promise<Resource> {
+    const serviceName = "Monolith";
+    const createPreviewServiceArgs = this.createPreviewServiceArgs({
+      projectId: projectId,
+      name: serviceName,
+      description: "Monolith Service",
+      adminUIPath: "",
+      serverPath: `./apps/${serviceName}`,
+      generateAdminUI: false,
+      generateGraphQL: true,
+      generateRestApi: true,
+    });
+
+    const resource = await this.resourceService.createPreviewService({
+      args: createPreviewServiceArgs,
+      user,
+      nonDefaultPluginsToInstall: [],
+      requireAuthenticationEntity: false,
+    });
+
+    return resource;
+  }
+
+  private createPreviewServiceArgs({
+    name,
+    description,
+    adminUIPath,
+    serverPath,
+    generateAdminUI,
+    generateGraphQL,
+    generateRestApi,
+    projectId,
+  }: CreatePreviewServiceArgs) {
+    return {
+      data: {
+        name,
+        description,
+        resourceType: EnumResourceType.Service,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        serviceSettings: {
+          authProvider: EnumAuthProviderType.Jwt,
+          authEntityName: USER_ENTITY_NAME,
+          adminUISettings: {
+            adminUIPath,
+            generateAdminUI,
+          },
+          serverSettings: {
+            generateGraphQL,
+            generateRestApi,
+            serverPath,
+          },
+        },
+      },
+    };
   }
 
   async completeInvitation(

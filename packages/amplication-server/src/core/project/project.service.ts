@@ -19,7 +19,7 @@ import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
 import { BillingService } from "../billing/billing.service";
 import { FeatureUsageReport } from "./FeatureUsageReport";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { GitProviderService } from "../git/git.provider.service";
 
 export const INVALID_PROJECT_ID = "Invalid projectId";
@@ -29,6 +29,8 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import dockerNames from "docker-names";
 import { EntityPendingChange } from "../entity/entity.service";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { SubscriptionService } from "../subscription/subscription.service";
 
 @Injectable()
 export class ProjectService {
@@ -40,7 +42,8 @@ export class ProjectService {
     private readonly entityService: EntityService,
     private readonly billingService: BillingService,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly gitProviderService: GitProviderService
+    private readonly gitProviderService: GitProviderService,
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -65,6 +68,19 @@ export class ProjectService {
     args: ProjectCreateArgs,
     userId: string
   ): Promise<Project> {
+    if (this.billingService.isBillingEnabled) {
+      const projectEntitlement =
+        await this.billingService.getMeteredEntitlement(
+          args.data.workspace.connect.id,
+          BillingFeature.Projects
+        );
+
+      if (projectEntitlement && !projectEntitlement.hasAccess) {
+        const message = `Your workspace exceeds its project limitation.`;
+        throw new BillingLimitationError(message, BillingFeature.Projects);
+      }
+    }
+
     const project = await this.prisma.project.create({
       data: {
         ...args.data,
@@ -112,19 +128,24 @@ export class ProjectService {
       -archivedServiceCount
     );
 
-    await this.billingService.reportUsage(
-      project.workspaceId,
-      BillingFeature.Projects,
-      -1
-    );
-
-    return this.prisma.project.update({
+    const updatedProject = this.prisma.project.update({
       where: args.where,
       data: {
         name: prepareDeletedItemName(project.name, project.id),
         deletedAt: new Date(),
       },
     });
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.Projects,
+      -1
+    );
+
+    await this.subscriptionService.updateProjectLicensed(project.workspaceId);
+    await this.subscriptionService.updateServiceLicensed(project.workspaceId);
+
+    return updatedProject;
   }
 
   async updateProject(args: UpdateProjectArgs): Promise<Project> {
@@ -191,6 +212,11 @@ export class ProjectService {
       },
       include: {
         subscriptions: true,
+        users: {
+          where: {
+            deletedAt: null,
+          },
+        },
         projects: {
           include: {
             resources: {
@@ -233,7 +259,30 @@ export class ProjectService {
       services: workspaceServices.length,
       servicesAboveEntityPerServiceLimit:
         servicesAboveEntityPerServiceLimitCount,
+      teamMembers: workspace.users.length,
     };
+  }
+
+  private async shouldBlockBuild(userId: string): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
+    const workspace = await this.prisma.user
+      .findUnique({
+        where: {
+          id: userId,
+        },
+      })
+      .workspace();
+
+    const blockBuildEntitlement =
+      await this.billingService.getBooleanEntitlement(
+        workspace.id,
+        BillingFeature.BlockBuild
+      );
+
+    return blockBuildEntitlement.hasAccess;
   }
 
   async commit(
@@ -243,6 +292,11 @@ export class ProjectService {
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
+
+    if (await this.shouldBlockBuild(userId)) {
+      const message = "Your current plan does not allow code generation.";
+      throw new BillingLimitationError(message, BillingFeature.BlockBuild);
+    }
 
     const resources = await this.prisma.resource.findMany({
       where: {
@@ -277,11 +331,20 @@ export class ProjectService {
         },
       });
 
+      const repositories =
+        await this.gitProviderService.getProjectsConnectedGitRepositories([
+          project.id,
+        ]);
+
       await this.billingService.validateSubscriptionPlanLimitationsForWorkspace(
-        project.workspaceId,
-        currentUser,
-        project.id,
-        projects
+        {
+          workspaceId: project.workspaceId,
+          currentUser,
+          currentProjectId: project.id,
+          projects: projects,
+          repositories,
+          bypassLimitations: args.data.bypassLimitations,
+        }
       );
     }
 
@@ -306,7 +369,21 @@ export class ProjectService {
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
-    const commit = await this.prisma.commit.create(args);
+    const commit = await this.prisma.commit.create({
+      data: {
+        message: args.data.message,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
 
     await this.billingService.reportUsage(
       project.workspaceId,
