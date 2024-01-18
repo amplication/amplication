@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { BreakTheMonolithPromptOutput } from "./prompt-manager.types";
+import { BtmEntityRecommendation, Entity } from "../../prisma";
 import { BtmRecommendation } from "./dto";
 import { EntityPartial, ResourcePartial } from "./ai.types";
 
@@ -53,17 +54,25 @@ export class BtmManagerService {
                 !isDuplicatedAlreadyUsed
               );
             })
-            .map(
-              (dataModelName) =>
-                <BtmEntityRecommendation>{
-                  id: undefined,
-                  name: dataModelName,
-                  fields:
-                    originalResource.entities
-                      ?.find((x) => x.name === dataModelName)
-                      ?.versions[0]?.fields.map((field) => field.name) ?? [],
-                }
-            ),
+            .map((dataModelName) => {
+              const entityNameIdMap = originalResource.entities.reduce(
+                (map, entity) => {
+                  map[entity.name] = entity;
+                  return map;
+                },
+                {} as Record<string, EntityPartial>
+              );
+
+              return {
+                id: undefined,
+                name: dataModelName,
+                fields:
+                  entityNameIdMap[dataModelName]?.versions[0]?.fields.map(
+                    (field) => field.name
+                  ) ?? [],
+                originalEntityId: entityNameIdMap[dataModelName]?.id,
+              };
+            }),
         })),
     };
   }

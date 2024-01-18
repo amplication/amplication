@@ -223,7 +223,7 @@ export class AiService {
               name: resource.name,
               description: resource.description,
               btmEntityRecommendation: {
-                create: resource.entities.map((entity) => entity),
+                create: resource.entities,
               },
             })),
           },

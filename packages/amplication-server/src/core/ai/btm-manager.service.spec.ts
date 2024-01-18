@@ -157,6 +157,7 @@ describe("BtmManagerService", () => {
             ],
           },
         ],
+        id: "resourceId",
       };
 
       const expectedResult: BtmRecommendation = {
@@ -170,11 +171,13 @@ describe("BtmManagerService", () => {
               {
                 id: undefined,
                 name: "order",
+                originalEntityId: "order",
                 fields: ["address", "status", "customer", "itemsId"],
               },
               {
                 id: undefined,
                 name: "orderItem",
+                originalEntityId: "orderItem",
                 fields: ["order", "product", "quantity"],
               },
             ],
@@ -187,6 +190,7 @@ describe("BtmManagerService", () => {
               {
                 id: undefined,
                 name: "product",
+                originalEntityId: "product",
                 fields: ["name", "price"],
               },
             ],
@@ -219,6 +223,7 @@ describe("BtmManagerService", () => {
         ],
       };
       const originalResource: ResourcePartial = {
+        id: "resourceId",
         name: "order",
         entities: [
           {
@@ -353,11 +358,13 @@ describe("BtmManagerService", () => {
               {
                 id: undefined,
                 name: "order",
+                originalEntityId: "order",
                 fields: ["address", "status", "customer", "itemsId"],
               },
               {
                 id: undefined,
                 name: "orderItem",
+                originalEntityId: "orderItem",
                 fields: ["order", "product", "quantity"],
               },
             ],
@@ -370,6 +377,7 @@ describe("BtmManagerService", () => {
               {
                 id: undefined,
                 name: "product",
+                originalEntityId: "product",
                 fields: ["name", "price"],
               },
             ],
@@ -404,6 +412,7 @@ describe("BtmManagerService", () => {
 
       const originalResource: ResourcePartial = {
         name: "order",
+        id: "resourceId",
         entities: [
           {
             id: "order",
@@ -487,16 +496,19 @@ describe("BtmManagerService", () => {
               {
                 id: undefined,
                 name: "order",
+                originalEntityId: "order",
                 fields: ["id"],
               },
               {
                 id: undefined,
                 name: "orderItem",
+                originalEntityId: "orderItem",
                 fields: ["id"],
               },
               {
                 id: undefined,
                 name: "price",
+                originalEntityId: "price",
                 fields: ["id"],
               },
             ],
@@ -509,6 +521,7 @@ describe("BtmManagerService", () => {
               {
                 id: undefined,
                 name: "product",
+                originalEntityId: "product",
                 fields: ["name"],
               },
             ],
