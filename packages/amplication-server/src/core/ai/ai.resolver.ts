@@ -21,6 +21,7 @@ export class AiResolver {
     description:
       "Trigger the generation of a set of recommendations for breaking a resource into microservices",
   })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
   async triggerGenerationBtmResourceRecommendation(
     @Args({ name: "resourceId", type: () => String })
     resourceId: string,
