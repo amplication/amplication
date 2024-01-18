@@ -19,8 +19,8 @@ import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { Inject, Injectable } from "@nestjs/common";
 import { AiBadFormatResponseError } from "./errors/ai-bad-format-response.error";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { ResourcePartial } from "./prompt-manager.types";
 import { BtmManagerService } from "./btm-manager.service";
+import { ResourcePartial } from "./ai.types";
 
 @Injectable()
 export class AiService {

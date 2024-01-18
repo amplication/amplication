@@ -1,11 +1,9 @@
 import { Test } from "@nestjs/testing";
 import { BtmManagerService } from "./btm-manager.service";
-import {
-  BreakTheMonolithPromptOutput,
-  ResourcePartial,
-} from "./prompt-manager.types";
+import { BreakTheMonolithPromptOutput } from "./prompt-manager.types";
 import { EnumDataType } from "../../prisma";
 import { BtmRecommendation } from "./dto";
+import { ResourcePartial } from "./ai.types";
 
 describe("BtmManagerService", () => {
   let service: BtmManagerService;

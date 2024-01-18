@@ -1,10 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import {
-  BreakTheMonolithPromptOutput,
-  ResourcePartial,
-} from "./prompt-manager.types";
-import { BtmEntityRecommendation } from "../../prisma";
+import { BreakTheMonolithPromptOutput } from "./prompt-manager.types";
 import { BtmRecommendation } from "./dto";
+import { EntityPartial, ResourcePartial } from "./ai.types";
 
 @Injectable()
 export class BtmManagerService {
