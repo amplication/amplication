@@ -1,0 +1,32 @@
+@import "../../style/index.scss";
+
+$header-image-size: 100px;
+$header-image-size-large: 150px;
+
+.upload-schema-state {
+  min-height: 250px;
+
+  &__title {
+    flex-grow: 1;
+  }
+
+  &__message {
+    flex-grow: 1;
+  }
+
+  .svg-theme-image {
+    height: $header-image-size;
+    background-position: center;
+  }
+
+  .label-description-selector {
+    padding: 24px 40px;
+    margin: 0 8px;
+    min-width: 270px;
+    max-width: 270px;
+
+    &:last-child {
+      border-image: linear-gradient(260deg, #23c4da, #6c37ff) 1;
+    }
+  }
+}
