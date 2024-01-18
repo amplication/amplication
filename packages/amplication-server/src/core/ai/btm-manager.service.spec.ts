@@ -5,7 +5,7 @@ import {
   ResourcePartial,
 } from "./prompt-manager.types";
 import { EnumDataType } from "../../prisma";
-import { BtmRecommendation } from "../../models";
+import { BtmRecommendation } from "./dto";
 
 describe("BtmManagerService", () => {
   let service: BtmManagerService;

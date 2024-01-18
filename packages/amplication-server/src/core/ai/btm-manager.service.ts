@@ -3,8 +3,8 @@ import {
   BreakTheMonolithPromptOutput,
   ResourcePartial,
 } from "./prompt-manager.types";
-import { BtmRecommendation } from "../../models";
 import { BtmEntityRecommendation } from "../../prisma";
+import { BtmRecommendation } from "./dto";
 
 @Injectable()
 export class BtmManagerService {
