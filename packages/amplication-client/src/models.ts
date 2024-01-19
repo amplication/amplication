@@ -32,7 +32,7 @@ export type Account = {
   lastName: Scalars['String']['output'];
   password: Scalars['String']['output'];
   previewAccountEmail?: Maybe<Scalars['String']['output']>;
-  previewAccountType: PreviewAccountType;
+  previewAccountType: EnumPreviewAccountType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -91,11 +91,10 @@ export type Auth = {
 };
 
 export type AuthPreviewAccount = {
-  message?: Maybe<Scalars['String']['output']>;
-  projectId?: Maybe<Scalars['String']['output']>;
-  resourceId?: Maybe<Scalars['String']['output']>;
-  token?: Maybe<Scalars['String']['output']>;
-  workspaceId?: Maybe<Scalars['String']['output']>;
+  projectId: Scalars['String']['output'];
+  resourceId: Scalars['String']['output'];
+  token: Scalars['String']['output'];
+  workspaceId: Scalars['String']['output'];
 };
 
 export type AuthorizeResourceWithGitResult = {
@@ -801,6 +800,12 @@ export enum EnumPendingChangeOriginType {
   Entity = 'Entity'
 }
 
+export enum EnumPreviewAccountType {
+  Auth0Signup = 'Auth0Signup',
+  BreakingTheMonolith = 'BreakingTheMonolith',
+  None = 'None'
+}
+
 export enum EnumResourceType {
   MessageBroker = 'MessageBroker',
   ProjectConfiguration = 'ProjectConfiguration',
@@ -1177,8 +1182,9 @@ export type Mutation = {
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
-  signUpWithBusinessEmail: AuthPreviewAccount;
   signup: Auth;
+  signupPreviewAccount: AuthPreviewAccount;
+  signupWithBusinessEmail: Scalars['Boolean']['output'];
   /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
   triggerGenerationBtmResourceRecommendation?: Maybe<Scalars['String']['output']>;
   updateAccount: Account;
@@ -1504,13 +1510,18 @@ export type MutationSetPluginOrderArgs = {
 };
 
 
-export type MutationSignUpWithBusinessEmailArgs = {
+export type MutationSignupArgs = {
+  data: SignupInput;
+};
+
+
+export type MutationSignupPreviewAccountArgs = {
   data: SignupPreviewAccountInput;
 };
 
 
-export type MutationSignupArgs = {
-  data: SignupInput;
+export type MutationSignupWithBusinessEmailArgs = {
+  data: SignupWithBusinessEmailInput;
 };
 
 
@@ -1765,12 +1776,6 @@ export type PluginOrderItem = {
 export type PluginSetOrderInput = {
   order: Scalars['Int']['input'];
 };
-
-export enum PreviewAccountType {
-  Auth0Signup = 'Auth0Signup',
-  BreakingTheMonolith = 'BreakingTheMonolith',
-  None = 'None'
-}
 
 export type Project = {
   createdAt: Scalars['DateTime']['output'];
@@ -2435,7 +2440,11 @@ export type SignupInput = {
 
 export type SignupPreviewAccountInput = {
   previewAccountEmail: Scalars['String']['input'];
-  previewAccountType: PreviewAccountType;
+  previewAccountType: EnumPreviewAccountType;
+};
+
+export type SignupWithBusinessEmailInput = {
+  email: Scalars['String']['input'];
 };
 
 export enum SortOrder {
