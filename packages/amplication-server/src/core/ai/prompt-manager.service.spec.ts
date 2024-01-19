@@ -158,76 +158,59 @@ describe("PromptManagerService", () => {
       expect(JSON.parse(result)).toStrictEqual({
         dataModels: [
           {
-            displayName: "Order",
             fields: [
               {
                 dataType: "address",
-                displayName: "address",
                 name: "address",
-                relatedDataModel: "address",
               },
               {
                 dataType: "Boolean",
-                displayName: "Status",
                 name: "status",
               },
               {
                 dataType: "customer",
-                displayName: "Customer",
                 name: "customer",
-                relatedDataModel: "customer",
               },
               {
                 dataType: "SingleLineText",
-                displayName: "ItemsId",
                 name: "itemsId",
               },
             ],
             name: "order",
           },
           {
-            displayName: "Customer",
             fields: [
               {
                 dataType: "SingleLineText",
-                displayName: "First Name",
                 name: "firstName",
               },
               {
                 dataType: "SingleLineText",
-                displayName: "Last Name",
                 name: "lastName",
               },
               {
                 dataType: "SingleLineText",
-                displayName: "Email",
                 name: "email",
               },
               {
                 dataType: "address",
-                displayName: "Address",
                 name: "address",
-                relatedDataModel: "address",
               },
             ],
             name: "customer",
           },
           {
-            displayName: "Item",
             fields: [
               {
                 dataType: "SingleLineText",
-                displayName: "Name",
                 name: "name",
               },
               {
                 dataType: "WholeNumber",
-                displayName: "Price",
                 name: "price",
               },
               {
                 dataType: "MultiLineText",
-                displayName: "Description",
                 name: "description",
               },
             ],
@@ -235,26 +218,21 @@ describe("PromptManagerService", () => {
           },
           {
             name: "address",
-            displayName: "Address",
             fields: [
               {
                 dataType: "SingleLineText",
-                displayName: "Street",
                 name: "street",
               },
               {
                 dataType: "SingleLineText",
-                displayName: "City",
                 name: "city",
               },
               {
                 dataType: "SingleLineText",
-                displayName: "State",
                 name: "state",
               },
               {
                 dataType: "SingleLineText",
-                displayName: "Zip",
                 name: "zip",
               },
             ],

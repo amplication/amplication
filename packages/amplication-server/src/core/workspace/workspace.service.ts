@@ -231,7 +231,9 @@ export class WorkspaceService {
       BillingFeature.TeamMembers
     );
 
-    return workspaceMembers.currentUsage < workspaceMembers.usageLimit;
+    return !workspaceMembers.usageLimit
+      ? true
+      : workspaceMembers.currentUsage < workspaceMembers.usageLimit;
   }
 
   async inviteUser(
