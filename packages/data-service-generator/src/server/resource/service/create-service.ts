@@ -154,10 +154,6 @@ async function createServiceBaseModule({
 
   interpolate(template, templateMapping);
 
-  const moduleContainer = moduleContainers?.find(
-    (moduleContainer) => moduleContainer.entityId === entity.id
-  );
-
   const classDeclaration = getClassDeclarationById(template, serviceBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
   const toManyRelations = (
@@ -237,10 +233,7 @@ async function createServiceBaseModule({
 
   Object.keys(entityActions.entityDefaultActions).forEach((key) => {
     const action: ModuleAction = entityActions.entityDefaultActions[key];
-    if (
-      (moduleContainer && !moduleContainer?.enabled && action) ||
-      (action && !action.enabled)
-    ) {
+    if (action && !action.enabled) {
       removeClassMethodByName(classDeclaration, action.name);
     }
   });

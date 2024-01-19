@@ -254,10 +254,6 @@ async function createControllerBaseModule({
 
   interpolate(template, templateMapping);
 
-  const moduleContainer = moduleContainers?.find(
-    (moduleContainer) => moduleContainer.entityId === entity.id
-  );
-
   const classDeclaration = getClassDeclarationById(template, controllerBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
   const toManyRelationMethods = (

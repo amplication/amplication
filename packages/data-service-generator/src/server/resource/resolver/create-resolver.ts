@@ -270,10 +270,6 @@ async function createResolverBaseModule({
   const { entity: entityDTO } = entityDTOs;
   interpolate(template, templateMapping);
 
-  const moduleContainer = moduleContainers?.find(
-    (moduleContainer) => moduleContainer.entityId === entity.id
-  );
-
   const classDeclaration = getClassDeclarationById(template, resolverBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
   const toManyRelationMethods = (
