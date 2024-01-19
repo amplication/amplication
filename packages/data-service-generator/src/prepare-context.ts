@@ -7,7 +7,10 @@ import {
   EnumModuleActionType,
   LookupResolvedProperties,
   ModuleAction,
+  ModuleActionsAndDtosMap,
+  ModuleActionsAndDtos,
   ModuleContainer,
+  ModuleDto,
   PluginInstallation,
   clientDirectories,
   entityDefaultActions,
@@ -47,6 +50,7 @@ export async function prepareContext(
     otherResources,
     moduleActions,
     moduleContainers,
+    moduleDtos,
   } = dSGResourceData;
 
   if (!entities || !roles || !appInfo) {
@@ -73,6 +77,14 @@ export async function prepareContext(
   context.otherResources = otherResources;
   context.pluginInstallations = resourcePlugins;
   context.moduleContainers = moduleContainers;
+  context.moduleDtos = moduleDtos;
+
+  context.moduleActionsAndDtoMap = prepareModuleActionsAndDtos(
+    moduleContainers,
+    moduleActions,
+    moduleDtos
+  );
+
   context.entityActionsMap = prepareEntityActions(
     entities,
     moduleContainers,
@@ -361,6 +373,34 @@ function prepareEntityActions(
           customActions: entityCustomAction,
         },
       ];
+    })
+  );
+}
+
+function prepareModuleActionsAndDtos(
+  moduleContainers: ModuleContainer[],
+  moduleActions: ModuleAction[],
+  moduleDtos: ModuleDto[]
+): ModuleActionsAndDtosMap {
+  return Object.fromEntries(
+    moduleContainers.map((moduleContainer) => {
+      const moduleContainerId = moduleContainer.id;
+
+      const currentModuleActions = moduleActions?.filter(
+        (moduleAction) => moduleAction.parentBlockId === moduleContainerId
+      );
+
+      const currentModuleDtos = moduleDtos?.filter(
+        (moduleDto) => moduleDto.parentBlockId === moduleContainerId
+      );
+
+      const moduleActionsAndDtos: ModuleActionsAndDtos = {
+        moduleContainer: moduleContainer,
+        actions: currentModuleActions,
+        dtos: currentModuleDtos,
+      };
+
+      return [moduleContainer.name, moduleActionsAndDtos];
     })
   );
 }

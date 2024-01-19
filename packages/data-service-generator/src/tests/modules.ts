@@ -162,6 +162,29 @@ const userModuleCustomActions: ModuleAction[] = [
       dtoId: "ResendInviteEmailArgs", //replace with reference to dto by its id
     },
   },
+  {
+    id: "clraten5x000rc9yh29927zwf",
+    displayName: "Soft Delete User",
+    description: "Soft delete one User",
+    resourceId: "clraten1t0004c9yhz1t3o8bp",
+    parentBlockId: USER_MODULE_ID,
+    name: "softDeleteUser",
+    path: "/{:id}/softDeleteUser",
+    enabled: true,
+    restVerb: "Post",
+    actionType: "Custom",
+    gqlOperation: "Mutation",
+    outputType: {
+      isArray: false,
+      type: "Dto",
+      dtoId: "SoftDeleteUserResults", //replace with reference to dto by its id
+    },
+    inputType: {
+      isArray: false,
+      type: "Dto",
+      dtoId: "SoftDeleteUserArgs", //replace with reference to dto by its id
+    },
+  },
 ];
 
 export const moduleContainers = [userModuleContainer];

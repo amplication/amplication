@@ -13,7 +13,6 @@ export {
   EnumModuleDtoType,
   EnumModuleActionGqlOperation,
   EnumModuleActionRestVerb,
-  ModuleDtoProperty,
   EnumModuleDtoPropertyType,
 } from "./models";
 
@@ -291,6 +290,7 @@ export type PropertyTypeDef = Omit<models.PropertyTypeDef, "type"> & {
 export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
 
 export type ModuleContainer = BlockOmittedFields<models.Module>;
+
 export type ModuleAction = Omit<
   BlockOmittedFields<models.ModuleAction>,
   "id" | "actionType" | "restVerb" | "gqlOperation" | "inputType" | "outputType"
@@ -305,6 +305,13 @@ export type ModuleAction = Omit<
   outputType?: PropertyTypeDef;
 };
 
+export type ModuleDtoProperty = Omit<
+  models.ModuleDtoProperty,
+  "propertyTypes"
+> & {
+  propertyTypes: PropertyTypeDef[];
+};
+
 export type ModuleDto = Omit<
   BlockOmittedFields<models.ModuleDto>,
   "id" | "dtoType" | "properties"
@@ -312,9 +319,7 @@ export type ModuleDto = Omit<
   id?: string;
   description: string;
   dtoType: keyof typeof models.EnumModuleDtoType;
-  properties: (Omit<models.ModuleDtoProperty, "propertyTypes"> & {
-    propertyTypes: PropertyTypeDef[];
-  })[];
+  properties: ModuleDtoProperty[];
 };
 
 export type ModuleActionDefaultTypesNestedOnly = Extract<
@@ -373,6 +378,17 @@ export type entityActions = {
 export type EntityActionsMap = Record<
   string, //module name/ entity name
   entityActions
+>;
+
+export type ModuleActionsAndDtos = {
+  moduleContainer: ModuleContainer;
+  actions: ModuleAction[];
+  dtos: ModuleDto[];
+};
+
+export type ModuleActionsAndDtosMap = Record<
+  string, //module name
+  ModuleActionsAndDtos
 >;
 
 type BlockOmittedFields<T> = Omit<

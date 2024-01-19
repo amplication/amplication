@@ -14216,13 +14216,16 @@ export class UserServiceBase {
       })
       .profile();
   }
-  async promoteUser(input: string): Promise<Array<dtoNAme>> {
+  async promoteUser(args: string): Promise<Array<dtoNAme>> {
     throw new Error("Not implemented");
   }
-  async sendPasswordResetEmail(input: dtoNAme): Promise<boolean> {
+  async sendPasswordResetEmail(args: dtoNAme): Promise<boolean> {
     throw new Error("Not implemented");
   }
-  async resendInviteEmail(input: dtoNAme): Promise<dtoNAme> {
+  async resendInviteEmail(args: dtoNAme): Promise<dtoNAme> {
+    throw new Error("Not implemented");
+  }
+  async softDeleteUser(args: dtoNAme): Promise<dtoNAme> {
     throw new Error("Not implemented");
   }
 }
