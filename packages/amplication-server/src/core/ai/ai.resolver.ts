@@ -5,10 +5,10 @@ import { Resource, User } from "../../models";
 import { AiService } from "./ai.service";
 import { UseFilters, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
-import { BtmRecommendationModelChanges } from "./dto/btm-recommendation-model-changes.dto";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
-import { BtmRecommendationModelChangesArgs } from "./dto/btm-recommendation-model-changes-args.dto";
+import { AiRecommendations, TriggerAiRecommendations } from "./dto";
+import { AiRecommendationsArgs } from "./dto/ai-recommendation-args.dto";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -16,32 +16,35 @@ import { BtmRecommendationModelChangesArgs } from "./dto/btm-recommendation-mode
 export class AiResolver {
   constructor(private readonly aiService: AiService) {}
 
-  @Mutation(() => String, {
+  @Mutation(() => TriggerAiRecommendations, {
     nullable: true,
     description:
       "Trigger the generation of a set of recommendations for breaking a resource into microservices",
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
-  async triggerGenerationBtmResourceRecommendation(
+  async triggerAiRecommendations(
     @Args({ name: "resourceId", type: () => String })
     resourceId: string,
     @UserEntity() user: User
-  ): Promise<void> {
-    await this.aiService.triggerGenerationBtmResourceRecommendation({
+  ): Promise<TriggerAiRecommendations> {
+    const actionId = await this.aiService.triggerAiRecommendations({
       resourceId,
       userId: user.id,
     });
+    return {
+      actionId,
+    };
   }
 
-  @Query(() => BtmRecommendationModelChanges, {
+  @Query(() => AiRecommendations, {
     description:
       "Get the changes to apply to the model in order to break a resource into microservices",
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
-  async btmRecommendationModelChanges(
+  async aiRecommendations(
     @Args()
-    args: BtmRecommendationModelChangesArgs
-  ): Promise<BtmRecommendationModelChanges> {
+    args: AiRecommendationsArgs
+  ): Promise<AiRecommendations> {
     return this.aiService.btmRecommendationModelChanges(args.data);
   }
 }

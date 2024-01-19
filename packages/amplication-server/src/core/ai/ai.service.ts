@@ -20,11 +20,8 @@ import { Inject, Injectable } from "@nestjs/common";
 import { AiBadFormatResponseError } from "./errors/ai-bad-format-response.error";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BtmManagerService } from "./btm-manager.service";
-import {
-  BtmRecommendationModelChanges,
-  BtmRecommendationModelChangesInput,
-} from "./dto";
 import { ResourcePartial } from "./ai.types";
+import { AiRecommendations, AiRecommendationsInput } from "./dto";
 
 @Injectable()
 export class AiService {
@@ -134,7 +131,7 @@ export class AiService {
     return resource;
   }
 
-  async triggerGenerationBtmResourceRecommendation({
+  async triggerAiRecommendations({
     resourceId,
     userId,
   }: {
@@ -178,7 +175,7 @@ export class AiService {
       kafkaMessage
     );
 
-    return prompt;
+    return actionId;
   }
 
   async onConversationCompleted(
@@ -251,8 +248,8 @@ export class AiService {
   }
 
   async btmRecommendationModelChanges(
-    data: BtmRecommendationModelChangesInput
-  ): Promise<BtmRecommendationModelChanges> {
+    data: AiRecommendationsInput
+  ): Promise<AiRecommendations> {
     const { resourceId } = data;
 
     const btmResourceRecommendation =
@@ -265,14 +262,13 @@ export class AiService {
         },
       });
 
-    const newResources: BtmRecommendationModelChanges["newResources"] =
+    const newResources: AiRecommendations["newResources"] =
       btmResourceRecommendation.map((resource) => ({
         id: resource.id,
         name: resource.name,
       }));
 
-    const recommendedEntities: BtmRecommendationModelChanges["copiedEntities"] =
-      [];
+    const recommendedEntities: AiRecommendations["copiedEntities"] = [];
     for (const resource of btmResourceRecommendation) {
       for (const entity of resource.btmEntityRecommendation) {
         recommendedEntities.push({

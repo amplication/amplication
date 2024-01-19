@@ -18,7 +18,7 @@ import { PromptManagerService } from "./prompt-manager.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { TestingModule, Test } from "@nestjs/testing";
 import { BtmManagerService } from "./btm-manager.service";
-import { BtmRecommendationModelChanges } from "./dto";
+import { AiRecommendations } from "./dto";
 
 jest.mock("../../prisma");
 jest.mock("./prompt-manager.service");
@@ -86,17 +86,18 @@ describe("AiService", () => {
     expect(service).toBeDefined();
   });
 
-  describe("triggerGenerationBtmResourceRecommendation", () => {
-    it("should return the generated prompt", async () => {
+  describe("triggerAiRecommendations", () => {
+    it("should return the actionId for the generation process", async () => {
       const resourceId = "resourceId";
       const userId = "resourceId";
+      const mockedActionId = "actionId";
 
       jest
         .spyOn(
           PromptManagerService.prototype,
           "generatePromptForBreakTheMonolith"
         )
-        .mockReturnValue("Ciao ciao");
+        .mockReturnValue("some prompt result");
 
       const spyOnCreateUserActionByTypeWithInitialStep = jest
         .spyOn(
@@ -104,15 +105,15 @@ describe("AiService", () => {
           "createUserActionByTypeWithInitialStep"
         )
         .mockResolvedValue({
-          actionId: "actionId",
+          actionId: mockedActionId,
         } as unknown as UserAction);
 
-      const result = await service.triggerGenerationBtmResourceRecommendation({
+      const result = await service.triggerAiRecommendations({
         resourceId,
         userId,
       });
 
-      expect(result).toEqual("Ciao ciao");
+      expect(result).toEqual(mockedActionId);
       expect(spyOnCreateUserActionByTypeWithInitialStep).toBeCalledWith(
         GENERATING_BTM_RESOURCE_RECOMMENDATION_USER_ACTION_TYPE,
         expect.objectContaining({
@@ -179,7 +180,7 @@ describe("AiService", () => {
         resourceId,
       });
 
-      const expectedResult: BtmRecommendationModelChanges = {
+      const expectedResult: AiRecommendations = {
         newResources: [],
         copiedEntities: [],
       };
@@ -227,7 +228,7 @@ describe("AiService", () => {
         resourceId: originatingResourceId,
       });
 
-      const expectedResult: BtmRecommendationModelChanges = {
+      const expectedResult: AiRecommendations = {
         newResources: [
           {
             id: "resourceRecId",
