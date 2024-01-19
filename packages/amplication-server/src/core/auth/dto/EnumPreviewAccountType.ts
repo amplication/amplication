@@ -7,5 +7,5 @@ export enum EnumPreviewAccountType {
 }
 
 registerEnumType(EnumPreviewAccountType, {
-  name: "PreviewAccountType",
+  name: "EnumPreviewAccountType",
 });
