@@ -65,7 +65,7 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
   async startConversion(message: AiConversationStart.Value): Promise<void> {
     const result = await this.startConversionSync(message);
     this.emitGptKafkaMessage(
-      message.actionId,
+      message.userActionId,
       result.requestUniqueId,
       result.success,
       result.result
@@ -73,7 +73,7 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
   }
 
   private emitGptKafkaMessage(
-    actionId: string,
+    userActionId: string,
     requestUniqueId: string,
     success: boolean,
     result: string
@@ -82,7 +82,7 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
       requestUniqueId,
     };
     const value: AiConversationComplete.Value = {
-      actionId,
+      userActionId,
       requestUniqueId,
       success,
       ...(success ? { result } : { errorMessage: result }),

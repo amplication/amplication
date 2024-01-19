@@ -2,7 +2,7 @@ import { IsBoolean, IsString } from "class-validator";
 
 export class Value {
   @IsString()
-  actionId!: string;
+  userActionId!: string;
 
   @IsString()
   requestUniqueId!: string;
