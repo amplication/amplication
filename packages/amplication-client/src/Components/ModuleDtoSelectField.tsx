@@ -33,7 +33,7 @@ const ModuleDtoSelectField = ({ ...props }: Props) => {
       }));
     }
     return [];
-  }, [data]);
+  }, [data, resourceNameDictionary]);
 
   return <SelectField {...props} options={options} />;
 };

@@ -14206,6 +14206,15 @@ export class UserServiceBase {
       })
       .profile();
   }
+  async promoteUser(input: string): Promise<Array<dtoNAme>> {
+    throw new Error("Not implemented");
+  }
+  async sendPasswordResetEmail(input: dtoNAme): Promise<boolean> {
+    throw new Error("Not implemented");
+  }
+  async resendInviteEmail(input: dtoNAme): Promise<dtoNAme> {
+    throw new Error("Not implemented");
+  }
 }
 ",
   "server/src/user/user.controller.ts": "import * as common from "@nestjs/common";

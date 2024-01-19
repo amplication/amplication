@@ -270,10 +270,6 @@ async function createResolverBaseModule({
   const { entity: entityDTO } = entityDTOs;
   interpolate(template, templateMapping);
 
-  const moduleContainer = moduleContainers?.find(
-    (moduleContainer) => moduleContainer.entityId === entity.id
-  );
-
   const classDeclaration = getClassDeclarationById(template, resolverBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
   const toManyRelationMethods = (
@@ -352,10 +348,7 @@ async function createResolverBaseModule({
         const action: ModuleAction =
           entityActions.relatedFieldsDefaultActions[field.name][key];
 
-        if (
-          (moduleContainer && !moduleContainer?.enabled && action) ||
-          (action && !action.enabled)
-        ) {
+        if (action && !action.enabled) {
           removeClassMethodByName(classDeclaration, action.name);
         }
       }
@@ -368,10 +361,7 @@ async function createResolverBaseModule({
         const action: ModuleAction =
           entityActions.relatedFieldsDefaultActions[field.name][key];
 
-        if (
-          (moduleContainer && !moduleContainer?.enabled && action) ||
-          (action && !action.enabled)
-        ) {
+        if (action && !action.enabled) {
           removeClassMethodByName(classDeclaration, action.name);
         }
       }
@@ -380,10 +370,7 @@ async function createResolverBaseModule({
 
   Object.keys(entityActions.entityDefaultActions).forEach((key) => {
     const action: ModuleAction = entityActions.entityDefaultActions[key];
-    if (
-      (moduleContainer && !moduleContainer?.enabled && action) ||
-      (action && !action.enabled)
-    ) {
+    if (action && !action.enabled) {
       removeClassMethodByName(classDeclaration, action.name);
     }
   });

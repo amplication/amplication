@@ -92,8 +92,80 @@ const userModuleDefaultActions: ModuleAction[] = [
   },
 ];
 
+const userModuleCustomActions: ModuleAction[] = [
+  {
+    id: "clraten5x000rc9yh29927zwf",
+    displayName: "Promote User",
+    description: "Promote one User to admin",
+    resourceId: "clraten1t0004c9yhz1t3o8bp",
+    parentBlockId: USER_MODULE_ID,
+    name: "promoteUser",
+    path: "/{:id}/promote",
+    enabled: true,
+    restVerb: "Post",
+    actionType: "Custom",
+    gqlOperation: "Mutation",
+    outputType: {
+      isArray: true,
+      type: "Dto",
+      dtoId: "User", //replace with reference to dto by its id
+    },
+    inputType: {
+      isArray: false,
+      type: "String",
+      dtoId: "", //replace with reference to dto by its id
+    },
+  },
+  {
+    id: "clraten5x000rc9yh29927zwf",
+    displayName: "Send Password Reset Email",
+    description: "Send password reset email to one User",
+    resourceId: "clraten1t0004c9yhz1t3o8bp",
+    parentBlockId: USER_MODULE_ID,
+    name: "sendPasswordResetEmail",
+    path: "/{:id}/sendPasswordResetEmail",
+    enabled: true,
+    restVerb: "Post",
+    actionType: "Custom",
+    gqlOperation: "Mutation",
+    outputType: {
+      isArray: false,
+      type: "Boolean",
+      dtoId: "",
+    },
+    inputType: {
+      isArray: false,
+      type: "Dto",
+      dtoId: "SendPasswordResetEmailArgs", //replace with reference to dto by its id
+    },
+  },
+  {
+    id: "clraten5x000rc9yh29927zwf",
+    displayName: "Resend Invite Email",
+    description: "Resend invite email to one User",
+    resourceId: "clraten1t0004c9yhz1t3o8bp",
+    parentBlockId: USER_MODULE_ID,
+    name: "resendInviteEmail",
+    path: "/{:id}/resendInviteEmail",
+    enabled: true,
+    restVerb: "Post",
+    actionType: "Custom",
+    gqlOperation: "Mutation",
+    outputType: {
+      isArray: false,
+      type: "Dto",
+      dtoId: "ResendInviteEmailResults", //replace with reference to dto by its id
+    },
+    inputType: {
+      isArray: false,
+      type: "Dto",
+      dtoId: "ResendInviteEmailArgs", //replace with reference to dto by its id
+    },
+  },
+];
+
 export const moduleContainers = [userModuleContainer];
 export const defaultActions = [...userModuleDefaultActions];
-export const customActions = [];
+export const customActions = [...userModuleCustomActions];
 
 export const moduleActions = [...defaultActions, ...customActions];

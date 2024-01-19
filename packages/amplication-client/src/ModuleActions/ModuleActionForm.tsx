@@ -99,6 +99,14 @@ const ModuleActionForm = ({
     return {
       ...INITIAL_VALUES,
       ...sanitizedDefaultValues,
+      inputType: {
+        ...INITIAL_VALUES.inputType,
+        ...sanitizedDefaultValues.inputType,
+      },
+      outputType: {
+        ...INITIAL_VALUES.outputType,
+        ...sanitizedDefaultValues.outputType,
+      },
     } as models.ModuleAction;
   }, [defaultValues]);
 
@@ -131,15 +139,35 @@ const ModuleActionForm = ({
             disabled={disabled}
           />
         </FlexItem>
-        <Panel panelStyle={EnumPanelStyle.Transparent}>
-          <TabContentTitle title="Types" />
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <TabContentTitle
+            title="Types"
+            subTitle={
+              isCustomAction
+                ? "Select the input and output types of the action"
+                : "The input and output types of the action are automatically generated "
+            }
+          />
 
-          <DtoPropertyTypesSelectField name="inputType" label="Input Type" />
-          <DtoPropertyTypesSelectField name="outputType" label="Output Type" />
+          {isCustomAction && (
+            <>
+              <DtoPropertyTypesSelectField
+                name="inputType"
+                label="Input Type"
+              />
+              <DtoPropertyTypesSelectField
+                name="outputType"
+                label="Output Type"
+              />
+            </>
+          )}
         </Panel>
 
-        <Panel panelStyle={EnumPanelStyle.Transparent}>
-          <TabContentTitle title="REST API" />
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <TabContentTitle
+            title="REST API"
+            subTitle="Settings related to REST API for this action"
+          />
 
           <FlexItem>
             <RestVerbSelectField
@@ -155,8 +183,11 @@ const ModuleActionForm = ({
           </FlexItem>
         </Panel>
 
-        <Panel panelStyle={EnumPanelStyle.Transparent}>
-          <TabContentTitle title="GraphQL API" />
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <TabContentTitle
+            title="GraphQL API"
+            subTitle="Settings related to GraphQL API for this action"
+          />
           <GqlOperationSelectField
             name={"gqlOperation"}
             label={"Operation type"}
