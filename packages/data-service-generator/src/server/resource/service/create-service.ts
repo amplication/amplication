@@ -40,6 +40,7 @@ import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
 import { getEntityIdType } from "../../../utils/get-entity-id-type";
 import { createCustomActionMethods } from "./create-custom-action";
+import { logger as applicationLogger } from "../../../logging";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -234,7 +235,10 @@ async function createServiceBaseModule({
   Object.keys(entityActions.entityDefaultActions).forEach((key) => {
     const action: ModuleAction = entityActions.entityDefaultActions[key];
     if (action && !action.enabled) {
-      removeClassMethodByName(classDeclaration, action.name);
+      applicationLogger.debug(
+        `Removing ${action.name} from ${entityName} - not implemented yet`
+      );
+      // removeClassMethodByName(classDeclaration, action.name);
     }
   });
 
