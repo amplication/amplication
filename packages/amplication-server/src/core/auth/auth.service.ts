@@ -35,7 +35,11 @@ import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
 import { PUBLIC_DOMAINS } from "./publicDomains";
 import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
-import { generateRandomEmail, generateRandomString } from "./auth-utils";
+import {
+  generatePassword,
+  generateRandomEmail,
+  generateRandomString,
+} from "./auth-utils";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
@@ -56,14 +60,6 @@ const WORKSPACE_INCLUDE = {
   users: {
     include: AUTH_USER_INCLUDE,
   },
-};
-
-const generatePassword = () => {
-  const buf = new Uint8Array(6);
-  crypto.getRandomValues(buf);
-  return Buffer.from(String.fromCharCode.apply(null, buf), "utf8").toString(
-    "base64"
-  );
 };
 
 @Injectable()
