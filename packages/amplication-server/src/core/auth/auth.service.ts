@@ -141,7 +141,7 @@ export class AuthService {
     }
 
     try {
-      let auth0User;
+      let auth0User: JSONApiResponse<SignUpResponse>;
       const existedAccount = await this.accountService.findAccount({
         where: {
           email: emailAddress,
@@ -149,6 +149,7 @@ export class AuthService {
       });
 
       const existedAuth0User = await this.getAuth0UserByEmail(emailAddress);
+
       if (!existedAuth0User) {
         auth0User = await this.createAuth0User(emailAddress);
 
@@ -167,7 +168,7 @@ export class AuthService {
           {
             data: {
               email: emailAddress,
-              firstName: "",
+              firstName: emailAddress,
               lastName: "",
               password: "",
               previewAccountType: EnumPreviewAccountType.Auth0Signup,
@@ -175,7 +176,7 @@ export class AuthService {
           },
           IDENTITY_PROVIDER_AUTH0
         );
-        const workspaceName = emailAddress.split("@")[0];
+        const workspaceName = this.generateRandomString();
         await this.bootstrapUser(account, workspaceName);
       }
 
