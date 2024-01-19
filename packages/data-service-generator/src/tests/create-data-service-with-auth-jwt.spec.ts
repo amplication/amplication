@@ -38,6 +38,8 @@ describe("createDataService", () => {
           },
           resourceType: EnumResourceType.Service,
           pluginInstallations: [plugins.authCore, plugins.authJwt],
+          moduleActions: [],
+          moduleContainers: [],
         },
         MockedLogger,
         temporaryPluginInstallationPath

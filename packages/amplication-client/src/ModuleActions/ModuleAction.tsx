@@ -8,6 +8,9 @@ import {
   TabContentTitle,
   Text,
   Toggle,
+  Panel,
+  EnumPanelStyle,
+  EnumTextColor,
 } from "@amplication/ui/design-system";
 import { useCallback, useContext, useEffect } from "react";
 import { match } from "react-router-dom";
@@ -120,12 +123,15 @@ const ModuleAction = ({ match }: Props) => {
         </FlexItem.FlexEnd>
       </FlexItem>
       {data?.moduleAction && !isCustomAction && (
-        <FlexItem margin={EnumFlexItemMargin.Bottom}>
-          <Text textStyle={EnumTextStyle.Description}>
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <Text
+            textStyle={EnumTextStyle.Description}
+            textColor={EnumTextColor.ThemeOrange}
+          >
             This is a default action that was created automatically with the
-            entity. It cannot be deleted, and its name cannot be changed.
+            entity. It cannot be deleted, and its settings cannot be changed.
           </Text>
-        </FlexItem>
+        </Panel>
       )}
 
       {!loading && (
