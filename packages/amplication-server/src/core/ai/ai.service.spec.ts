@@ -1,3 +1,4 @@
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { PrismaService, UserAction } from "../../prisma";
 import { ActionService } from "../action/action.service";
 import { EnumActionStepStatus } from "../action/dto";
@@ -11,6 +12,7 @@ import {
 import { PromptManagerService } from "./prompt-manager.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { TestingModule, Test } from "@nestjs/testing";
+import { BtmManagerService } from "./btm-manager.service";
 
 jest.mock("../../prisma");
 jest.mock("./prompt-manager.service");
@@ -30,6 +32,13 @@ describe("AiService", () => {
           provide: ActionService,
           useValue: {
             complete: mockActionServiceComplete,
+          },
+        },
+        MockedAmplicationLoggerProvider,
+        {
+          provide: BtmManagerService,
+          useValue: {
+            translateToBtmRecommendation: jest.fn().mockResolvedValue(null),
           },
         },
         AiService,

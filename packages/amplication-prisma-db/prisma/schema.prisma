@@ -193,6 +193,7 @@ model BtmResourceRecommendation {
   createdAt               DateTime                  @default(now())
   updatedAt               DateTime                  @updatedAt
   name                    String
+  description             String
   resourceId              String
   resource                Resource                  @relation(fields: [resourceId], references: [id])
   btmEntityRecommendation BtmEntityRecommendation[]
@@ -205,7 +206,7 @@ model BtmEntityRecommendation {
   name                        String
   fields                      String[]
   btmResourceRecommendationId String
-  btmResourceRecommendation   BtmResourceRecommendation @relation(fields: [btmResourceRecommendationId], references: [id])
+  btmResourceRecommendation   BtmResourceRecommendation @relation(fields: [btmResourceRecommendationId], references: [id], onDelete: Cascade)
 }
 
 model Commit {

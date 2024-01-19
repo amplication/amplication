@@ -1,15 +1,37 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { EnumDataType } from "../../prisma";
 import {
   BreakTheMonolithPromptInput,
-  GeneratePromptForBreakTheMonolithArgs,
+  BreakTheMonolithPromptOutput,
+  ResourcePartial,
 } from "./prompt-manager.types";
 import { Injectable } from "@nestjs/common";
+import { AiBadFormatResponseError } from "./errors/ai-bad-format-response.error";
 
 @Injectable()
 export class PromptManagerService {
-  generatePromptForBreakTheMonolith(
-    resource: GeneratePromptForBreakTheMonolithArgs
-  ): string {
+  private dataTypeMap: Record<keyof typeof EnumDataType, string> = {
+    SingleLineText: "string",
+    MultiLineText: "string",
+    Email: "string",
+    WholeNumber: "int",
+    DateTime: "datetime",
+    DecimalNumber: "float",
+    Lookup: "enum",
+    MultiSelectOptionSet: "enum",
+    OptionSet: "enum",
+    Boolean: "bool",
+    GeographicLocation: "string",
+    Id: "int",
+    CreatedAt: "datetime",
+    UpdatedAt: "datetime",
+    Roles: "string",
+    Username: "string",
+    Password: "string",
+    Json: "string",
+  };
+
+  generatePromptForBreakTheMonolith(resource: ResourcePartial): string {
     const entityIdNameMap = resource.entities.reduce((acc, entity) => {
       acc[entity.id] = entity.name;
       return acc;
@@ -25,7 +47,7 @@ export class PromptManagerService {
               dataType:
                 field.dataType == EnumDataType.Lookup
                   ? entityIdNameMap[field.properties["relatedEntityId"]]
-                  : field.dataType,
+                  : this.dataTypeMap[field.dataType],
             };
           }),
         };
@@ -33,5 +55,21 @@ export class PromptManagerService {
     };
 
     return JSON.stringify(prompt);
+  }
+
+  parsePromptResult(promptResult: string): BreakTheMonolithPromptOutput {
+    try {
+      const result = JSON.parse(promptResult);
+
+      return {
+        microservices: result.microservices.map((microservice) => ({
+          name: microservice.name,
+          functionality: microservice.functionality,
+          dataModels: microservice.dataModels,
+        })),
+      };
+    } catch (error) {
+      throw new AiBadFormatResponseError(promptResult, error);
+    }
   }
 }

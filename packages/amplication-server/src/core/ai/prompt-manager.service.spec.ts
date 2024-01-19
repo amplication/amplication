@@ -25,7 +25,6 @@ describe("PromptManagerService", () => {
             id: "order",
             name: "order",
             displayName: "Order",
-            pluralDisplayName: "Orders",
             versions: [
               {
                 fields: [
@@ -41,6 +40,7 @@ describe("PromptManagerService", () => {
                     name: "status",
                     displayName: "Status",
                     dataType: EnumDataType.Boolean,
+                    properties: {},
                   },
                   {
                     name: "customer",
@@ -54,6 +54,7 @@ describe("PromptManagerService", () => {
                     name: "itemsId",
                     displayName: "ItemsId",
                     dataType: EnumDataType.SingleLineText,
+                    properties: {},
                   },
                 ],
               },
@@ -63,7 +64,6 @@ describe("PromptManagerService", () => {
             id: "customer",
             name: "customer",
             displayName: "Customer",
-            pluralDisplayName: "Customers",
             versions: [
               {
                 fields: [
@@ -71,16 +71,19 @@ describe("PromptManagerService", () => {
                     name: "firstName",
                     displayName: "First Name",
                     dataType: EnumDataType.SingleLineText,
+                    properties: {},
                   },
                   {
                     name: "lastName",
                     displayName: "Last Name",
                     dataType: EnumDataType.SingleLineText,
+                    properties: {},
                   },
                   {
                     name: "email",
                     displayName: "Email",
                     dataType: EnumDataType.SingleLineText,
+                    properties: {},
                   },
                   {
                     name: "address",
@@ -98,7 +101,6 @@ describe("PromptManagerService", () => {
             id: "item",
             name: "item",
             displayName: "Item",
-            pluralDisplayName: "Items",
             versions: [
               {
                 fields: [
@@ -106,16 +108,19 @@ describe("PromptManagerService", () => {
                     name: "name",
                     displayName: "Name",
                     dataType: EnumDataType.SingleLineText,
+                    properties: {},
                   },
                   {
                     name: "price",
                     displayName: "Price",
                     dataType: EnumDataType.WholeNumber,
+                    properties: {},
                   },
                   {
                     name: "description",
                     displayName: "Description",
                     dataType: EnumDataType.MultiLineText,
+                    properties: {},
                   },
                 ],
               },
@@ -125,7 +130,6 @@ describe("PromptManagerService", () => {
             id: "address",
             name: "address",
             displayName: "Address",
-            pluralDisplayName: "Addresses",
             versions: [
               {
                 fields: [
@@ -133,21 +137,25 @@ describe("PromptManagerService", () => {
                     name: "street",
                     displayName: "Street",
                     dataType: EnumDataType.SingleLineText,
+                    properties: {},
                   },
                   {
                     name: "city",
                     displayName: "City",
                     dataType: EnumDataType.SingleLineText,
+                    properties: {},
                   },
                   {
                     name: "state",
                     displayName: "State",
                     dataType: EnumDataType.SingleLineText,
+                    properties: {},
                   },
                   {
                     name: "zip",
                     displayName: "Zip",
                     dataType: EnumDataType.SingleLineText,
+                    properties: {},
                   },
                 ],
               },
@@ -164,7 +172,7 @@ describe("PromptManagerService", () => {
                 name: "address",
               },
               {
-                dataType: "Boolean",
+                dataType: "bool",
                 name: "status",
               },
               {
@@ -172,7 +180,7 @@ describe("PromptManagerService", () => {
                 name: "customer",
               },
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "itemsId",
               },
             ],
@@ -181,15 +189,15 @@ describe("PromptManagerService", () => {
           {
             fields: [
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "firstName",
               },
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "lastName",
               },
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "email",
               },
               {
@@ -202,15 +210,15 @@ describe("PromptManagerService", () => {
           {
             fields: [
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "name",
               },
               {
-                dataType: "WholeNumber",
+                dataType: "int",
                 name: "price",
               },
               {
-                dataType: "MultiLineText",
+                dataType: "string",
                 name: "description",
               },
             ],
@@ -220,19 +228,19 @@ describe("PromptManagerService", () => {
             name: "address",
             fields: [
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "street",
               },
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "city",
               },
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "state",
               },
               {
-                dataType: "SingleLineText",
+                dataType: "string",
                 name: "zip",
               },
             ],
@@ -240,5 +248,34 @@ describe("PromptManagerService", () => {
         ],
       });
     });
+  });
+
+  describe("parsePromptResult", () => {
+    it("should return a validated BreakTheMonolithPromptOutput", () => {
+      const result = service.parsePromptResult(
+        '{"microservices":[{"name":"ecommerce","functionality":"manage orders, prices and payments","dataModels":["order","customer","item","address"]},{"name":"inventory","functionality":"manage inventory","dataModels":["item","address"]}]}'
+      );
+      expect(result).toStrictEqual({
+        microservices: [
+          {
+            name: "ecommerce",
+            functionality: "manage orders, prices and payments",
+            dataModels: ["order", "customer", "item", "address"],
+          },
+          {
+            name: "inventory",
+            functionality: "manage inventory",
+            dataModels: ["item", "address"],
+          },
+        ],
+      });
+    });
+
+    it.each(["invalid", '{"microservice":{}}'])(
+      "should throw an error if the prompt result is not valid",
+      (result: string) => {
+        expect(() => service.parsePromptResult(result)).toThrowError();
+      }
+    );
   });
 });

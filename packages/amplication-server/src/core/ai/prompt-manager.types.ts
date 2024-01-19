@@ -1,21 +1,18 @@
-import { EnumDataType, Prisma } from "../../prisma";
+import { Entity, EntityField, Resource } from "../../prisma";
 
-export interface GeneratePromptForBreakTheMonolithArgs {
-  name: string;
-  entities: {
-    id: string;
-    name: string;
-    displayName: string;
-    pluralDisplayName: string;
-    versions: {
-      fields: {
-        name: string;
-        displayName: string;
-        dataType: EnumDataType;
-        properties?: Prisma.JsonValue;
-      }[];
-    }[];
+type EntityFieldPartial = Pick<
+  EntityField,
+  "name" | "displayName" | "dataType" | "properties"
+>;
+
+interface EntityPartial extends Pick<Entity, "id" | "name" | "displayName"> {
+  versions: {
+    fields: EntityFieldPartial[];
   }[];
+}
+
+export interface ResourcePartial extends Pick<Resource, "name"> {
+  entities: EntityPartial[];
 }
 
 interface DataModel {
@@ -34,6 +31,6 @@ export interface BreakTheMonolithPromptOutput {
   microservices: {
     name: string;
     functionality: string;
-    dataModels: DataModel[];
+    dataModels: string[];
   }[];
 }

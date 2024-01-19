@@ -5,6 +5,7 @@ import { UserActionModule } from "../userAction/userActionModule";
 import { AiController } from "./ai.controller";
 import { AiResolver } from "./ai.resolver";
 import { AiService } from "./ai.service";
+import { BtmManagerService } from "./btm-manager.service";
 import { PromptManagerService } from "./prompt-manager.service";
 import { KafkaModule } from "@amplication/util/nestjs/kafka";
 import { Module } from "@nestjs/common";
@@ -18,7 +19,7 @@ import { Module } from "@nestjs/common";
     PrismaModule,
     UserActionModule,
   ],
-  providers: [AiResolver, AiService, PromptManagerService],
+  providers: [AiResolver, AiService, BtmManagerService, PromptManagerService],
   exports: [AiResolver, AiService],
 })
 export class AiModule {}
