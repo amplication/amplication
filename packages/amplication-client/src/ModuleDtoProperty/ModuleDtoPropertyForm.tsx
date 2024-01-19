@@ -6,11 +6,11 @@ import {
   HorizontalRule,
   Panel,
   ToggleField,
+  Form,
 } from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import { omit } from "lodash";
 import { useMemo } from "react";
-import { Form } from "../Components/Form";
 import NameField from "../Components/NameField";
 import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";

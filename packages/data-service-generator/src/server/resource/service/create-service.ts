@@ -29,6 +29,7 @@ import {
   getMethods,
   importNames,
   interpolate,
+  removeClassMethodByName,
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,
@@ -38,6 +39,7 @@ import { relativeImportPath } from "../../../utils/module";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
 import { getEntityIdType } from "../../../utils/get-entity-id-type";
+import { createCustomActionMethods } from "./create-custom-action";
 import { logger as applicationLogger } from "../../../logging";
 
 const MIXIN_ID = builders.identifier("Mixin");
@@ -153,10 +155,6 @@ async function createServiceBaseModule({
 
   interpolate(template, templateMapping);
 
-  const moduleContainer = moduleContainers?.find(
-    (moduleContainer) => moduleContainer.entityId === entity.id
-  );
-
   const classDeclaration = getClassDeclarationById(template, serviceBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
   const toManyRelations = (
@@ -204,7 +202,8 @@ async function createServiceBaseModule({
 
   classDeclaration.body.body.push(
     ...toManyRelations.flatMap((relation) => relation.methods),
-    ...toOneRelations.flatMap((relation) => relation.methods)
+    ...toOneRelations.flatMap((relation) => relation.methods),
+    ...(await createCustomActionMethods(entityActions.customActions))
   );
 
   toManyRelationFields.map((field) =>
@@ -213,14 +212,8 @@ async function createServiceBaseModule({
         const action: ModuleAction =
           entityActions.relatedFieldsDefaultActions[field.name][key];
 
-        if (
-          (moduleContainer && !moduleContainer?.enabled && action) ||
-          (action && !action.enabled)
-        ) {
-          applicationLogger.debug(
-            `Removing ${action.name} from ${entityName} - not implemented yet`
-          );
-          // removeClassMethodByName(classDeclaration, action.name);
+        if (action && !action.enabled) {
+          removeClassMethodByName(classDeclaration, action.name);
         }
       }
     )
@@ -232,14 +225,8 @@ async function createServiceBaseModule({
         const action: ModuleAction =
           entityActions.relatedFieldsDefaultActions[field.name][key];
 
-        if (
-          (moduleContainer && !moduleContainer?.enabled && action) ||
-          (action && !action.enabled)
-        ) {
-          applicationLogger.debug(
-            `Removing ${action.name} from ${entityName} - not implemented yet`
-          );
-          // removeClassMethodByName(classDeclaration, action.name);
+        if (action && !action.enabled) {
+          removeClassMethodByName(classDeclaration, action.name);
         }
       }
     )
@@ -247,10 +234,7 @@ async function createServiceBaseModule({
 
   Object.keys(entityActions.entityDefaultActions).forEach((key) => {
     const action: ModuleAction = entityActions.entityDefaultActions[key];
-    if (
-      (moduleContainer && !moduleContainer?.enabled && action) ||
-      (action && !action.enabled)
-    ) {
+    if (action && !action.enabled) {
       applicationLogger.debug(
         `Removing ${action.name} from ${entityName} - not implemented yet`
       );

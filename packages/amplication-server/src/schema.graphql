@@ -746,8 +746,8 @@ enum EnumModuleActionType {
 
 enum EnumModuleDtoPropertyType {
   Boolean
-  DTO
   DateTime
+  Dto
   Enum
   Float
   Integer
@@ -1016,11 +1016,13 @@ type ModuleAction implements IBlock {
   gqlOperation: EnumModuleActionGqlOperation!
   id: String!
   inputParameters: [BlockInputOutput!]!
+  inputType: PropertyTypeDef
   lockedAt: DateTime
   lockedByUser: User
   lockedByUserId: String
   name: String!
   outputParameters: [BlockInputOutput!]!
+  outputType: PropertyTypeDef
   parentBlock: Block
   parentBlockId: String
   path: String
@@ -1033,14 +1035,11 @@ type ModuleAction implements IBlock {
 input ModuleActionCreateInput {
   description: String
   displayName: String!
-  gqlOperation: EnumModuleActionGqlOperation!
   inputParameters: [BlockInputOutputInput!]
   name: String
   outputParameters: [BlockInputOutputInput!]
   parentBlock: WhereParentIdInput
-  path: String
   resource: WhereParentIdInput!
-  restVerb: EnumModuleActionRestVerb!
 }
 
 input ModuleActionOrderByInput {
@@ -1055,11 +1054,13 @@ input ModuleActionOrderByInput {
 input ModuleActionUpdateInput {
   description: String
   displayName: String
-  enabled: Boolean!
-  gqlOperation: EnumModuleActionGqlOperation!
+  enabled: Boolean
+  gqlOperation: EnumModuleActionGqlOperation
+  inputType: PropertyTypeDefInput
   name: String
+  outputType: PropertyTypeDefInput
   path: String
-  restVerb: EnumModuleActionRestVerb!
+  restVerb: EnumModuleActionRestVerb
 }
 
 input ModuleActionWhereInput {

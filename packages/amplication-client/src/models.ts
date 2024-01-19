@@ -787,8 +787,8 @@ export enum EnumModuleActionType {
 
 export enum EnumModuleDtoPropertyType {
   Boolean = 'Boolean',
-  Dto = 'DTO',
   DateTime = 'DateTime',
+  Dto = 'Dto',
   Enum = 'Enum',
   Float = 'Float',
   Integer = 'Integer',
@@ -1047,11 +1047,13 @@ export type ModuleAction = IBlock & {
   gqlOperation: EnumModuleActionGqlOperation;
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
+  inputType?: Maybe<PropertyTypeDef>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
   lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
+  outputType?: Maybe<PropertyTypeDef>;
   parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['String']['output']>;
   path?: Maybe<Scalars['String']['output']>;
@@ -1064,14 +1066,11 @@ export type ModuleAction = IBlock & {
 export type ModuleActionCreateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName: Scalars['String']['input'];
-  gqlOperation: EnumModuleActionGqlOperation;
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   name?: InputMaybe<Scalars['String']['input']>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  path?: InputMaybe<Scalars['String']['input']>;
   resource: WhereParentIdInput;
-  restVerb: EnumModuleActionRestVerb;
 };
 
 export type ModuleActionOrderByInput = {
@@ -1086,11 +1085,13 @@ export type ModuleActionOrderByInput = {
 export type ModuleActionUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
-  enabled: Scalars['Boolean']['input'];
-  gqlOperation: EnumModuleActionGqlOperation;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  gqlOperation?: InputMaybe<EnumModuleActionGqlOperation>;
+  inputType?: InputMaybe<PropertyTypeDefInput>;
   name?: InputMaybe<Scalars['String']['input']>;
+  outputType?: InputMaybe<PropertyTypeDefInput>;
   path?: InputMaybe<Scalars['String']['input']>;
-  restVerb: EnumModuleActionRestVerb;
+  restVerb?: InputMaybe<EnumModuleActionRestVerb>;
 };
 
 export type ModuleActionWhereInput = {

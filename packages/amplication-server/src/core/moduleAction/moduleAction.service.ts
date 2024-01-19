@@ -18,6 +18,8 @@ import { EnumModuleActionType } from "./dto/EnumModuleActionType";
 import { FindManyModuleActionArgs } from "./dto/FindManyModuleActionArgs";
 import { ModuleAction } from "./dto/ModuleAction";
 import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
+import { kebabCase } from "lodash";
+import { EnumModuleDtoPropertyType } from "../moduleDto/dto/propertyTypes/EnumModuleDtoPropertyType";
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
@@ -54,8 +56,21 @@ export class ModuleActionService extends BlockTypeService<
         ...args,
         data: {
           ...args.data,
-          enabled: true,
           actionType: EnumModuleActionType.Custom,
+          enabled: true,
+          gqlOperation: CodeGenTypes.EnumModuleActionGqlOperation.Query,
+          restVerb: CodeGenTypes.EnumModuleActionRestVerb.Get,
+          path: `/:id/${kebabCase(args.data.name)}`,
+          outputType: {
+            type: EnumModuleDtoPropertyType.Dto,
+            dtoId: "",
+            isArray: false,
+          },
+          inputType: {
+            type: EnumModuleDtoPropertyType.Dto,
+            dtoId: "",
+            isArray: false,
+          },
         },
       },
       user
@@ -80,7 +95,10 @@ export class ModuleActionService extends BlockTypeService<
     }
 
     if (existingAction.actionType !== EnumModuleActionType.Custom) {
-      if (existingAction.name !== args.data.name) {
+      if (
+        existingAction.name !== args.data.name &&
+        args.data.name !== undefined
+      ) {
         throw new AmplicationError(
           "Cannot update the name of a default Action for entity."
         );
@@ -182,6 +200,8 @@ export class ModuleActionService extends BlockTypeService<
                 gqlOperation: defaultActions[action.actionType].gqlOperation,
                 restVerb: defaultActions[action.actionType].restVerb,
                 path: defaultActions[action.actionType].path,
+                inputType: defaultActions[action.actionType].inputType,
+                outputType: defaultActions[action.actionType].outputType,
               },
             },
             user
@@ -343,6 +363,8 @@ export class ModuleActionService extends BlockTypeService<
               gqlOperation: defaultActions[action].gqlOperation,
               restVerb: defaultActions[action].restVerb,
               path: defaultActions[action].path,
+              inputType: defaultActions[action].inputType,
+              outputType: defaultActions[action].outputType,
             },
           },
           user

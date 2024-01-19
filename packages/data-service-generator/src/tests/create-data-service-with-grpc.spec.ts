@@ -45,6 +45,8 @@ describe("createDataService", () => {
           resourceInfo: newAppInfo,
           resourceType: EnumResourceType.Service,
           pluginInstallations: [plugins.grpc],
+          moduleActions: [],
+          moduleContainers: [],
         },
         MockedLogger,
         temporaryPluginInstallationPath

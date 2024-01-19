@@ -13,8 +13,8 @@ export {
   EnumModuleDtoType,
   EnumModuleActionGqlOperation,
   EnumModuleActionRestVerb,
-  PropertyTypeDef,
   ModuleDtoProperty,
+  EnumModuleDtoPropertyType,
 } from "./models";
 
 export type ServiceSettings = Omit<
@@ -269,8 +269,6 @@ export type EntityDTOs = {
   updateArgs?: NamedClassDeclaration;
   orderByInput: NamedClassDeclaration;
   listRelationFilter: NamedClassDeclaration;
-  createNestedManyInput: NamedClassDeclaration;
-  updateNestedManyInput: NamedClassDeclaration;
 };
 
 export type EntityEnumDTOs = {
@@ -286,12 +284,16 @@ export type ResourceGenerationConfig = {
   appInfo: AppInfo;
 };
 
+export type PropertyTypeDef = Omit<models.PropertyTypeDef, "type"> & {
+  type: keyof typeof models.EnumModuleDtoPropertyType;
+};
+
 export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
 
 export type ModuleContainer = BlockOmittedFields<models.Module>;
 export type ModuleAction = Omit<
   BlockOmittedFields<models.ModuleAction>,
-  "id" | "actionType" | "restVerb" | "gqlOperation"
+  "id" | "actionType" | "restVerb" | "gqlOperation" | "inputType" | "outputType"
 > & {
   id?: string;
   displayName: string;
@@ -299,32 +301,42 @@ export type ModuleAction = Omit<
   actionType: keyof typeof models.EnumModuleActionType;
   restVerb: keyof typeof models.EnumModuleActionRestVerb;
   gqlOperation: keyof typeof models.EnumModuleActionGqlOperation;
+  inputType?: PropertyTypeDef;
+  outputType?: PropertyTypeDef;
 };
 
 export type ModuleDto = Omit<
   BlockOmittedFields<models.ModuleDto>,
-  "id" | "dtoType"
+  "id" | "dtoType" | "properties"
 > & {
   id?: string;
   description: string;
   dtoType: keyof typeof models.EnumModuleDtoType;
+  properties: (Omit<models.ModuleDtoProperty, "propertyTypes"> & {
+    propertyTypes: PropertyTypeDef[];
+  })[];
+};
+
+export type ModuleActionDefaultTypesNestedOnly = Extract<
+  models.EnumModuleActionType,
+  | models.EnumModuleActionType.ChildrenConnect
+  | models.EnumModuleActionType.ChildrenDisconnect
+  | models.EnumModuleActionType.ChildrenFind
+  | models.EnumModuleActionType.ChildrenUpdate
+  | models.EnumModuleActionType.ParentGet
+>;
+
+export type ModuleActionDefaultTypesWithoutNested = Exclude<
+  models.EnumModuleActionType,
+  ModuleActionDefaultTypesNestedOnly | models.EnumModuleActionType.Custom
+>;
+
+export type entityRelatedFieldDefaultActions = {
+  [key in ModuleActionDefaultTypesNestedOnly]?: ModuleAction | undefined;
 };
 
 export type entityDefaultActions = {
-  [models.EnumModuleActionType.Create]: ModuleAction | undefined;
-  [models.EnumModuleActionType.Delete]: ModuleAction | undefined;
-  [models.EnumModuleActionType.Find]: ModuleAction | undefined;
-  [models.EnumModuleActionType.Meta]: ModuleAction | undefined;
-  [models.EnumModuleActionType.Read]: ModuleAction | undefined;
-  [models.EnumModuleActionType.Update]: ModuleAction | undefined;
-};
-
-export type entityRelatedFieldDefaultActions = {
-  [models.EnumModuleActionType.ChildrenConnect]?: ModuleAction | undefined;
-  [models.EnumModuleActionType.ChildrenDisconnect]?: ModuleAction | undefined;
-  [models.EnumModuleActionType.ChildrenFind]?: ModuleAction | undefined;
-  [models.EnumModuleActionType.ChildrenUpdate]?: ModuleAction | undefined;
-  [models.EnumModuleActionType.ParentGet]?: ModuleAction | undefined;
+  [key in ModuleActionDefaultTypesWithoutNested]?: ModuleAction | undefined;
 };
 
 type defaultDtoTypes = Exclude<

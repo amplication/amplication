@@ -4,16 +4,13 @@ import {
   EnumItemsAlign,
   FlexItem,
   Icon,
-  SelectField,
-  SelectFieldProps,
-  ToggleField,
 } from "@amplication/ui/design-system";
-import { EnumModuleDtoPropertyType } from "../models";
-import * as models from "../models";
 import { FieldArray, FieldArrayRenderProps, getIn } from "formik";
-import { useCallback, useMemo } from "react";
 import { get } from "lodash";
-import ModuleDtoSelectField from "../Components/ModuleDtoSelectField";
+import { useCallback, useMemo } from "react";
+import * as models from "../models";
+import { EnumModuleDtoPropertyType } from "../models";
+import DtoPropertyTypesSelectField from "./DtoPropertyTypesSelectField";
 
 export const typeMapping: {
   [key in models.EnumModuleDtoPropertyType]: {
@@ -52,10 +49,12 @@ export const typeMapping: {
   },
 };
 
-const options = Object.values(EnumModuleDtoPropertyType).map((value) => ({
-  label: typeMapping[value].label,
-  value,
-}));
+export const TYPE_OPTIONS = Object.values(EnumModuleDtoPropertyType).map(
+  (value) => ({
+    label: typeMapping[value].label,
+    value,
+  })
+);
 
 type Props = {
   name: string;
@@ -123,17 +122,7 @@ const PropertyType = ({ name, index, onRemove, value }: PropertyTypeProps) => {
 
   return (
     <FlexItem itemsAlign={EnumItemsAlign.Center}>
-      <SelectField
-        name={`${name}.${index}.type`}
-        label="Type"
-        options={options}
-      />
-
-      {value?.type === EnumModuleDtoPropertyType.Dto && (
-        <ModuleDtoSelectField name={`${name}.${index}.dtoId`} label="DTO" />
-      )}
-      <ToggleField name={`${name}.${index}.isArray`} label="Array" />
-
+      <DtoPropertyTypesSelectField name={`${name}.${index}`} label="Type" />
       <Button
         type="button"
         buttonStyle={EnumButtonStyle.Text}
