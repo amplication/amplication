@@ -31,7 +31,6 @@ export class KafkaController {
     const messageInput = plainToInstance(AiConversationStart.Value, value);
 
     this.logger.info(`Got a new Gpt Conversation request item from queue.`, {
-      requestedId: messageInput.requestUniqueId,
       params: messageInput.params,
       messageTypeKey: messageInput.messageTypeKey,
       class: this.constructor.name,

@@ -13,9 +13,6 @@ export class Value {
   userActionId!: string;
 
   @IsString()
-  requestUniqueId!: string;
-
-  @IsString()
   messageTypeKey!: string;
 
   @IsArray()

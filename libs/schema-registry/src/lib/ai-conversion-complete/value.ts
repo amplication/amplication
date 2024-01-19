@@ -4,9 +4,6 @@ export class Value {
   @IsString()
   userActionId!: string;
 
-  @IsString()
-  requestUniqueId!: string;
-
   @IsBoolean()
   success!: boolean;
 

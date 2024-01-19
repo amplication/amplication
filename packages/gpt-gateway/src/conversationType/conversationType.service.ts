@@ -24,10 +24,9 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
 
   async startConversionSync(message: AiConversationStart.Value): Promise<{
     success: boolean;
-    requestUniqueId: string;
     result: string;
   }> {
-    const { messageTypeKey, params, requestUniqueId } = message;
+    const { messageTypeKey, params } = message;
 
     try {
       const messageType = await this.prisma.conversationType.findUnique({
@@ -49,14 +48,12 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
 
       return {
         success: true,
-        requestUniqueId,
         result: result ?? "",
       };
     } catch (error) {
       this.logger.error(error.message, error);
       return {
         success: false,
-        requestUniqueId,
         result: error.message,
       };
     }
@@ -66,7 +63,6 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
     const result = await this.startConversionSync(message);
     this.emitGptKafkaMessage(
       message.userActionId,
-      result.requestUniqueId,
       result.success,
       result.result
     );
@@ -74,16 +70,14 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
 
   private emitGptKafkaMessage(
     userActionId: string,
-    requestUniqueId: string,
     success: boolean,
     result: string
   ): void {
     const key: AiConversationComplete.Key = {
-      requestUniqueId,
+      userActionId,
     };
     const value: AiConversationComplete.Value = {
       userActionId,
-      requestUniqueId,
       success,
       ...(success ? { result } : { errorMessage: result }),
     };
@@ -95,7 +89,7 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
       })
       .catch((error) => {
         this.logger.error(
-          `Failed to emit Gpt kafka message: ${requestUniqueId}`,
+          `Failed to emit Gpt kafka message: ${userActionId}`,
           error
         );
       });
