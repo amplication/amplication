@@ -24,6 +24,11 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "lockedByUserId",
   "lockedAt",
   "lockedByUser",
+  "parentBlockId",
+  "resourceId",
+  "relatedEntityId",
+  "dtoType",
+  "properties",
 ];
 
 export const INITIAL_VALUES: Partial<models.ModuleDto> = {
@@ -74,10 +79,6 @@ const ModuleDtoForm = ({
           name="name"
           disabled={disabled || !isCustomDto}
         />
-
-        <div>
-          <ToggleField name="enabled" label="Enabled" disabled={disabled} />
-        </div>
         <OptionalDescriptionField
           name="description"
           label="Description"

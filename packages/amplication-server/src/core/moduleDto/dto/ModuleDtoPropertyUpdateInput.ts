@@ -1,21 +1,19 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { JsonValue } from "type-fest";
-import { BlockCreateInput } from "../../block/dto/BlockCreateInput";
 import { PropertyTypeDef } from "./propertyTypes/PropertyTypeDef";
 
 @InputType({
   isAbstract: true,
 })
-export class ModuleDtoPropertyCreateInput extends BlockCreateInput {
+export class ModuleDtoPropertyUpdateInput {
   @Field(() => String, {
-    nullable: true,
+    nullable: false,
   })
-  name!: string | null;
+  name!: string;
 
   @Field(() => [PropertyTypeDef], {
     nullable: false,
   })
-  propertyTypes!: PropertyTypeDef[] & JsonValue;
+  propertyTypes!: PropertyTypeDef[];
 
   @Field(() => Boolean, {
     nullable: false,

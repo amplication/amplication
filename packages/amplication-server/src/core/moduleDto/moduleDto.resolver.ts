@@ -1,19 +1,22 @@
-import { Parent, ResolveField, Resolver, Query, Args } from "@nestjs/graphql";
-import { ModuleDtoService } from "./moduleDto.service";
-import { FindManyModuleDtoArgs } from "./dto/FindManyModuleDtoArgs";
-import { BlockTypeResolver } from "../block/blockType.resolver";
-import { ModuleDto } from "./dto/ModuleDto";
-import { CreateModuleDtoArgs } from "./dto/CreateModuleDtoArgs";
-import { UpdateModuleDtoArgs } from "./dto/UpdateModuleDtoArgs";
-import { DeleteModuleDtoArgs } from "./dto/DeleteModuleDtoArgs";
 import { UseFilters, UseGuards } from "@nestjs/common";
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { UserEntity } from "../../decorators/user.decorator";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { ModuleDtoProperty } from "../moduleDtoProperty/dto/ModuleDtoProperty";
-import { ModuleDtoPropertyService } from "../moduleDtoProperty/moduleDtoProperty.service";
-import { SortOrder } from "../../enums/SortOrder";
-import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { User } from "../../models";
+import { BlockTypeResolver } from "../block/blockType.resolver";
+import { CreateModuleDtoArgs } from "./dto/CreateModuleDtoArgs";
+import { CreateModuleDtoPropertyArgs } from "./dto/CreateModuleDtoPropertyArgs";
+import { DeleteModuleDtoArgs } from "./dto/DeleteModuleDtoArgs";
+import { FindManyModuleDtoArgs } from "./dto/FindManyModuleDtoArgs";
+import { ModuleDto } from "./dto/ModuleDto";
+import { ModuleDtoProperty } from "./dto/ModuleDtoProperty";
+import { UpdateModuleDtoArgs } from "./dto/UpdateModuleDtoArgs";
+import { UpdateModuleDtoPropertyArgs } from "./dto/UpdateModuleDtoPropertyArgs";
+import { ModuleDtoService } from "./moduleDto.service";
+import { DeleteModuleDtoPropertyArgs } from "./dto/DeleteModuleDtoPropertyArgs";
 
 @Resolver(() => ModuleDto)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -29,10 +32,7 @@ export class ModuleDtoResolver extends BlockTypeResolver(
   "deleteModuleDto",
   DeleteModuleDtoArgs
 ) {
-  constructor(
-    private readonly service: ModuleDtoService,
-    private readonly moduleDtoPropertyService: ModuleDtoPropertyService
-  ) {
+  constructor(private readonly service: ModuleDtoService) {
     super();
   }
 
@@ -45,11 +45,39 @@ export class ModuleDtoResolver extends BlockTypeResolver(
     return this.service.availableDtosForResource(args);
   }
 
-  @ResolveField(() => [ModuleDtoProperty])
-  async properties(@Parent() moduleDto: ModuleDto) {
-    return this.moduleDtoPropertyService.findMany({
-      where: { parentBlock: { id: moduleDto.id } },
-      orderBy: { createdAt: SortOrder.Asc },
-    });
+  @Mutation(() => ModuleDtoProperty, {
+    nullable: false,
+  })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlockId,
+    "data.moduleDto.connect.id"
+  )
+  async createModuleDtoProperty(
+    @UserEntity() user: User,
+    @Args() args: CreateModuleDtoPropertyArgs
+  ): Promise<ModuleDtoProperty> {
+    return this.service.createDtoProperty(args, user);
+  }
+
+  @Mutation(() => ModuleDtoProperty, {
+    nullable: false,
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.moduleDto.id")
+  async updateModuleDtoProperty(
+    @UserEntity() user: User,
+    @Args() args: UpdateModuleDtoPropertyArgs
+  ): Promise<ModuleDtoProperty> {
+    return this.service.updateDtoProperty(args, user);
+  }
+
+  @Mutation(() => ModuleDtoProperty, {
+    nullable: false,
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.moduleDto.id")
+  async deleteModuleDtoProperty(
+    @UserEntity() user: User,
+    @Args() args: DeleteModuleDtoPropertyArgs
+  ): Promise<ModuleDtoProperty> {
+    return this.service.deleteDtoProperty(args, user);
   }
 }

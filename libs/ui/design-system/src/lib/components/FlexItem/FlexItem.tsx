@@ -93,12 +93,14 @@ export type FlexStartProps = {
   children?: ReactNode;
   alignSelf?: EnumContentAlign;
   minWidthAuto?: boolean;
+  direction?: EnumFlexDirection;
 };
 
 export const FlexStart = ({
   children,
   className,
   alignSelf,
+  direction = EnumFlexDirection.Column,
   minWidthAuto = false,
 }: FlexStartProps) => {
   return (
@@ -106,6 +108,7 @@ export const FlexStart = ({
       style={{
         alignSelf: alignSelf,
         minWidth: minWidthAuto ? "auto" : undefined,
+        flexDirection: direction,
       }}
       className={classNames(`${CLASS_NAME}__start`, className)}
     >
@@ -119,12 +122,14 @@ export type FlexEndProps = {
   children?: ReactNode;
   alignSelf?: EnumContentAlign;
   minWidthAuto?: boolean;
+  direction?: EnumFlexDirection;
 };
 
 export const FlexEnd = ({
   children,
   className,
   alignSelf,
+  direction = EnumFlexDirection.Column,
   minWidthAuto = false,
 }: FlexEndProps) => {
   return (
@@ -132,6 +137,7 @@ export const FlexEnd = ({
       style={{
         alignSelf: alignSelf,
         minWidth: minWidthAuto ? "auto" : undefined,
+        flexDirection: direction,
       }}
       className={classNames(`${CLASS_NAME}__end`, className)}
     >

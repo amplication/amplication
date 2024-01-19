@@ -30,6 +30,7 @@ $expandable-transition-duration: 0.1s;
   &--bordered {
     border: $border-dark;
     margin-bottom: var(--double-spacing);
+    background-color: var(--gray-90);
   }
 
   &--bold {

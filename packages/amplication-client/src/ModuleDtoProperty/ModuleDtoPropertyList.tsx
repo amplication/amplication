@@ -1,51 +1,38 @@
-import {
-  CircularProgress,
-  EnumTextStyle,
-  List,
-  ListItem,
-  Text,
-} from "@amplication/ui/design-system";
-import React, { useEffect } from "react";
-import useModuleDto from "../ModuleDto/hooks/useModuleDto";
+import { List } from "@amplication/ui/design-system";
+import React, { useCallback } from "react";
 import * as models from "../models";
 import ModuleDtoProperty from "./ModuleDtoProperty";
+import NewModuleDtoProperty from "./NewModuleDtoProperty";
 
 type Props = {
-  moduleDtoId: string;
+  moduleDto: models.ModuleDto;
   onPropertyDelete?: (property: models.ModuleDtoProperty) => void;
+  onPropertyAdd?: (property: models.ModuleDto) => void;
 };
 const ModuleDtoPropertyList = React.memo(
-  ({ moduleDtoId, onPropertyDelete }: Props) => {
-    const {
-      getModuleDto,
-      getModuleDtoData: data,
-      getModuleDtoLoading: loading,
-    } = useModuleDto();
-
-    useEffect(() => {
-      if (!moduleDtoId) return;
-
-      getModuleDto({
-        variables: {
-          moduleDtoId: moduleDtoId,
-        },
-      });
-    }, [moduleDtoId, getModuleDto]);
+  ({ moduleDto, onPropertyDelete, onPropertyAdd }: Props) => {
+    const onDtoPropertyChanged = useCallback(() => {
+      onPropertyAdd && onPropertyAdd(moduleDto);
+    }, [moduleDto, onPropertyAdd]);
 
     return (
       <>
-        {loading && <CircularProgress centerToParent />}
-
         <List
-          headerContent={<Text textStyle={EnumTextStyle.Tag}>Properties</Text>}
+          headerContent={
+            <NewModuleDtoProperty
+              moduleDto={moduleDto}
+              onPropertyAdd={onPropertyAdd}
+            />
+          }
         >
-          {data?.moduleDto?.properties.map((property) => (
-            <ListItem key={property.id}>
-              <ModuleDtoProperty
-                moduleDtoProperty={property}
-                onPropertyDelete={onPropertyDelete}
-              />
-            </ListItem>
+          {moduleDto?.properties.map((property, index) => (
+            <ModuleDtoProperty
+              key={index}
+              moduleDto={moduleDto}
+              moduleDtoProperty={property}
+              onPropertyChanged={onDtoPropertyChanged}
+              onPropertyDelete={onPropertyDelete}
+            />
           ))}
         </List>
       </>

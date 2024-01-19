@@ -4,14 +4,21 @@ import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import {
   CREATE_MODULE_DTO,
+  CREATE_MODULE_DTO_PROPERTY,
   DELETE_MODULE_DTO,
+  DELETE_MODULE_DTO_PROPERTY,
   FIND_MODULE_DTOS,
   GET_AVAILABLE_DTOS_FOR_RESOURCE,
   GET_MODULE_DTO,
   UPDATE_MODULE_DTO,
+  UPDATE_MODULE_DTO_PROPERTY,
 } from "../queries/moduleDtosQueries";
 type TDeleteData = {
   deleteModuleDto: models.ModuleDto;
+};
+
+type TDeletePropertyData = {
+  deleteModuleDtoProperty: models.ModuleDtoProperty;
 };
 
 type TFindData = {
@@ -26,8 +33,16 @@ type TCreateData = {
   createModuleDto: models.ModuleDto;
 };
 
+type TCreatePropertyData = {
+  createModuleDtoProperty: models.ModuleDtoProperty;
+};
+
 type TUpdateData = {
   updateModuleDto: models.ModuleDto;
+};
+
+type TUpdatePropertyData = {
+  updateModuleDtoProperty: models.ModuleDtoProperty;
 };
 
 const useModuleDto = () => {
@@ -47,7 +62,7 @@ const useModuleDto = () => {
 
       cache.modify({
         fields: {
-          ModuleDtos(existingDtoRefs, { readField }) {
+          moduleDtos(existingDtoRefs, { readField }) {
             return existingDtoRefs.filter(
               (dtoRef: Reference) => deletedDtoId !== readField("id", dtoRef)
             );
@@ -62,6 +77,18 @@ const useModuleDto = () => {
   });
 
   const [
+    deleteModuleDtoProperty,
+    {
+      error: deleteModuleDtoPropertyError,
+      loading: deleteModuleDtoPropertyLoading,
+    },
+  ] = useMutation<TDeletePropertyData>(DELETE_MODULE_DTO_PROPERTY, {
+    onCompleted: (data) => {
+      addBlock(data.deleteModuleDtoProperty.name);
+    },
+  });
+
+  const [
     createModuleDto,
     {
       data: createModuleDtoData,
@@ -72,6 +99,19 @@ const useModuleDto = () => {
     onCompleted: (data) => {
       addBlock(data.createModuleDto.id);
       getAvailableDtosForResourceRefetch();
+    },
+  });
+
+  const [
+    createModuleDtoProperty,
+    {
+      data: createModuleDtoPropertyData,
+      error: createModuleDtoPropertyError,
+      loading: createModuleDtoPropertyLoading,
+    },
+  ] = useMutation<TCreatePropertyData>(CREATE_MODULE_DTO_PROPERTY, {
+    onCompleted: (data) => {
+      addBlock(data.createModuleDtoProperty.name);
     },
   });
 
@@ -138,6 +178,18 @@ const useModuleDto = () => {
     },
   });
 
+  const [
+    updateModuleDtoProperty,
+    {
+      error: updateModuleDtoPropertyError,
+      loading: updateModuleDtoPropertyLoading,
+    },
+  ] = useMutation<TUpdatePropertyData>(UPDATE_MODULE_DTO_PROPERTY, {
+    onCompleted: (data) => {
+      addEntity(data.updateModuleDtoProperty.name);
+    },
+  });
+
   useEffect(() => {
     if (!currentResource) return;
     getAvailableDtosForCurrentResource();
@@ -168,6 +220,16 @@ const useModuleDto = () => {
     availableDtosForCurrentResourceLoading,
     availableDtosForCurrentResourceError,
     availableDtosDictionary,
+    createModuleDtoProperty,
+    createModuleDtoPropertyData,
+    createModuleDtoPropertyError,
+    createModuleDtoPropertyLoading,
+    updateModuleDtoProperty,
+    updateModuleDtoPropertyError,
+    updateModuleDtoPropertyLoading,
+    deleteModuleDtoProperty,
+    deleteModuleDtoPropertyError,
+    deleteModuleDtoPropertyLoading,
   };
 };
 

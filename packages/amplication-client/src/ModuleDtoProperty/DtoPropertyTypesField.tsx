@@ -103,7 +103,7 @@ const PropertyTypes = ({
         buttonStyle={EnumButtonStyle.Text}
       >
         <Icon icon="plus" />
-        Add type
+        Add union type
       </Button>
     </div>
   );

@@ -132,17 +132,16 @@ const changeOriginMap = {
       },
       //@todo: update the url, icon and display name
       [models.EnumBlockType.ModuleAction]: {
-        relativeUrl: `modules/${change.id}`,
+        relativeUrl: `modules/${
+          (change as models.Block).parentBlock?.id
+        }/actions/${change.id}`,
         icon: "box",
         displayName: change.displayName,
       },
       [models.EnumBlockType.ModuleDto]: {
-        relativeUrl: `modules/${change.id}`,
-        icon: "box",
-        displayName: change.displayName,
-      },
-      [models.EnumBlockType.ModuleDtoProperty]: {
-        relativeUrl: `modules/${change.id}`,
+        relativeUrl: `modules/${
+          (change as models.Block).parentBlock?.id
+        }/dtos/${change.id}`,
         icon: "box",
         displayName: change.displayName,
       },

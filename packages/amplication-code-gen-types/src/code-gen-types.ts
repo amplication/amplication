@@ -10,8 +10,11 @@ export {
   EnumEntityPermissionType,
   EnumMessagePatternConnectionOptions,
   EnumModuleActionType,
+  EnumModuleDtoType,
   EnumModuleActionGqlOperation,
   EnumModuleActionRestVerb,
+  PropertyTypeDef,
+  ModuleDtoProperty,
 } from "./models";
 
 export type ServiceSettings = Omit<
@@ -266,6 +269,8 @@ export type EntityDTOs = {
   updateArgs?: NamedClassDeclaration;
   orderByInput: NamedClassDeclaration;
   listRelationFilter: NamedClassDeclaration;
+  createNestedManyInput: NamedClassDeclaration;
+  updateNestedManyInput: NamedClassDeclaration;
 };
 
 export type EntityEnumDTOs = {
@@ -296,6 +301,15 @@ export type ModuleAction = Omit<
   gqlOperation: keyof typeof models.EnumModuleActionGqlOperation;
 };
 
+export type ModuleDto = Omit<
+  BlockOmittedFields<models.ModuleDto>,
+  "id" | "dtoType"
+> & {
+  id?: string;
+  description: string;
+  dtoType: keyof typeof models.EnumModuleDtoType;
+};
+
 export type entityDefaultActions = {
   [models.EnumModuleActionType.Create]: ModuleAction | undefined;
   [models.EnumModuleActionType.Delete]: ModuleAction | undefined;
@@ -311,6 +325,28 @@ export type entityRelatedFieldDefaultActions = {
   [models.EnumModuleActionType.ChildrenFind]?: ModuleAction | undefined;
   [models.EnumModuleActionType.ChildrenUpdate]?: ModuleAction | undefined;
   [models.EnumModuleActionType.ParentGet]?: ModuleAction | undefined;
+};
+
+type defaultDtoTypes = Exclude<
+  models.EnumModuleDtoType,
+  | models.EnumModuleDtoType.Custom
+  | models.EnumModuleDtoType.Enum
+  | models.EnumModuleDtoType.CreateNestedManyInput
+  | models.EnumModuleDtoType.UpdateNestedManyInput
+>;
+
+type defaultDtoNestedTypes = Extract<
+  models.EnumModuleDtoType,
+  | models.EnumModuleDtoType.CreateNestedManyInput
+  | models.EnumModuleDtoType.UpdateNestedManyInput
+>;
+
+export type entityDefaultDtos = {
+  [key in defaultDtoTypes]: ModuleDto | undefined;
+};
+
+export type entityDefaultNestedDtos = {
+  [key in defaultDtoNestedTypes]: ModuleDto | undefined;
 };
 
 export type entityActions = {

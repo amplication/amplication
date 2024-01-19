@@ -37,6 +37,7 @@ $expandable-transition-duration: 0.1s;
     align-items: flex-start;
     justify-content: center;
     min-width: 0;
+    gap: var(--default-spacing);
   }
 
   &--row {

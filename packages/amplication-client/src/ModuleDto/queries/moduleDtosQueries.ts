@@ -1,6 +1,20 @@
 import { gql } from "@apollo/client";
 
+export const MODULE_DTO_PROPERTY_FIELDS_FRAGMENT = gql`
+  fragment ModuleDtoPropertyFields on ModuleDtoProperty {
+    name
+    propertyTypes {
+      type
+      isArray
+      dtoId
+    }
+    isOptional
+    isArray
+  }
+`;
+
 export const MODULE_DTO_FIELDS_FRAGMENT = gql`
+  ${MODULE_DTO_PROPERTY_FIELDS_FRAGMENT}
   fragment ModuleDtoFields on ModuleDto {
     id
     name
@@ -10,25 +24,10 @@ export const MODULE_DTO_FIELDS_FRAGMENT = gql`
     lockedAt
     parentBlockId
     resourceId
+    dtoType
+    relatedEntityId
     properties {
-      id
-      name
-      description
-      propertyTypes {
-        type
-        isArray
-        dtoId
-      }
-      isOptional
-      isArray
-      lockedByUserId
-      lockedAt
-      lockedByUser {
-        account {
-          firstName
-          lastName
-        }
-      }
+      ...ModuleDtoPropertyFields
     }
     lockedByUser {
       account {
@@ -101,6 +100,36 @@ export const GET_AVAILABLE_DTOS_FOR_RESOURCE = gql`
         id
         displayName
       }
+    }
+  }
+`;
+
+export const CREATE_MODULE_DTO_PROPERTY = gql`
+  ${MODULE_DTO_PROPERTY_FIELDS_FRAGMENT}
+  mutation createModuleDtoProperty($data: ModuleDtoPropertyCreateInput!) {
+    createModuleDtoProperty(data: $data) {
+      ...ModuleDtoPropertyFields
+    }
+  }
+`;
+
+export const UPDATE_MODULE_DTO_PROPERTY = gql`
+  ${MODULE_DTO_PROPERTY_FIELDS_FRAGMENT}
+  mutation updateModuleDtoProperty(
+    $where: WherePropertyUniqueInput!
+    $data: ModuleDtoPropertyUpdateInput!
+  ) {
+    updateModuleDtoProperty(data: $data, where: $where) {
+      ...ModuleDtoPropertyFields
+    }
+  }
+`;
+
+export const DELETE_MODULE_DTO_PROPERTY = gql`
+  ${MODULE_DTO_PROPERTY_FIELDS_FRAGMENT}
+  mutation deleteModuleDtoProperty($where: WherePropertyUniqueInput!) {
+    deleteModuleDtoProperty(where: $where) {
+      ...ModuleDtoPropertyFields
     }
   }
 `;

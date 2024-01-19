@@ -671,7 +671,6 @@ export enum EnumBlockType {
   Module = 'Module',
   ModuleAction = 'ModuleAction',
   ModuleDto = 'ModuleDto',
-  ModuleDtoProperty = 'ModuleDtoProperty',
   PluginInstallation = 'PluginInstallation',
   PluginOrder = 'PluginOrder',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
@@ -797,6 +796,26 @@ export enum EnumModuleDtoPropertyType {
   Null = 'Null',
   String = 'String',
   Undefined = 'Undefined'
+}
+
+export enum EnumModuleDtoType {
+  CountArgs = 'CountArgs',
+  CreateArgs = 'CreateArgs',
+  CreateInput = 'CreateInput',
+  CreateNestedManyInput = 'CreateNestedManyInput',
+  Custom = 'Custom',
+  DeleteArgs = 'DeleteArgs',
+  Entity = 'Entity',
+  Enum = 'Enum',
+  FindManyArgs = 'FindManyArgs',
+  FindOneArgs = 'FindOneArgs',
+  ListRelationFilter = 'ListRelationFilter',
+  OrderByInput = 'OrderByInput',
+  UpdateArgs = 'UpdateArgs',
+  UpdateInput = 'UpdateInput',
+  UpdateNestedManyInput = 'UpdateNestedManyInput',
+  WhereInput = 'WhereInput',
+  WhereUniqueInput = 'WhereUniqueInput'
 }
 
 export enum EnumPendingChangeAction {
@@ -1099,6 +1118,7 @@ export type ModuleDto = IBlock & {
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
+  dtoType: EnumModuleDtoType;
   enabled: Scalars['Boolean']['output'];
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
@@ -1110,6 +1130,7 @@ export type ModuleDto = IBlock & {
   parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['String']['output']>;
   properties: Array<ModuleDtoProperty>;
+  relatedEntityId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
@@ -1134,67 +1155,23 @@ export type ModuleDtoOrderByInput = {
   updatedAt?: InputMaybe<SortOrder>;
 };
 
-export type ModuleDtoProperty = IBlock & {
-  blockType: EnumBlockType;
-  createdAt: Scalars['DateTime']['output'];
-  description?: Maybe<Scalars['String']['output']>;
-  displayName: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  inputParameters: Array<BlockInputOutput>;
+export type ModuleDtoProperty = {
   isArray: Scalars['Boolean']['output'];
   isOptional: Scalars['Boolean']['output'];
-  lockedAt?: Maybe<Scalars['DateTime']['output']>;
-  lockedByUser?: Maybe<User>;
-  lockedByUserId?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  outputParameters: Array<BlockInputOutput>;
-  parentBlock?: Maybe<Block>;
-  parentBlockId?: Maybe<Scalars['String']['output']>;
   propertyTypes: Array<PropertyTypeDef>;
-  resourceId?: Maybe<Scalars['String']['output']>;
-  updatedAt: Scalars['DateTime']['output'];
-  versionNumber: Scalars['Float']['output'];
 };
 
 export type ModuleDtoPropertyCreateInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  displayName: Scalars['String']['input'];
-  inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
-  isArray: Scalars['Boolean']['input'];
-  isOptional: Scalars['Boolean']['input'];
+  moduleDto: WhereParentIdInput;
   name?: InputMaybe<Scalars['String']['input']>;
-  outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
-  parentBlock?: InputMaybe<WhereParentIdInput>;
-  propertyTypes: Array<PropertyTypeDefInput>;
-  resource: WhereParentIdInput;
-};
-
-export type ModuleDtoPropertyOrderByInput = {
-  blockType?: InputMaybe<SortOrder>;
-  createdAt?: InputMaybe<SortOrder>;
-  description?: InputMaybe<SortOrder>;
-  displayName?: InputMaybe<SortOrder>;
-  id?: InputMaybe<SortOrder>;
-  updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type ModuleDtoPropertyUpdateInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  displayName?: InputMaybe<Scalars['String']['input']>;
   isArray: Scalars['Boolean']['input'];
   isOptional: Scalars['Boolean']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
   propertyTypes: Array<PropertyTypeDefInput>;
-};
-
-export type ModuleDtoPropertyWhereInput = {
-  createdAt?: InputMaybe<DateTimeFilter>;
-  description?: InputMaybe<StringFilter>;
-  displayName?: InputMaybe<StringFilter>;
-  id?: InputMaybe<StringFilter>;
-  parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<ResourceWhereInput>;
-  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type ModuleDtoUpdateInput = {
@@ -1540,7 +1517,7 @@ export type MutationDeleteModuleDtoArgs = {
 
 
 export type MutationDeleteModuleDtoPropertyArgs = {
-  where: WhereUniqueInput;
+  where: WherePropertyUniqueInput;
 };
 
 
@@ -1723,7 +1700,7 @@ export type MutationUpdateModuleDtoArgs = {
 
 export type MutationUpdateModuleDtoPropertyArgs = {
   data: ModuleDtoPropertyUpdateInput;
-  where: WhereUniqueInput;
+  where: WherePropertyUniqueInput;
 };
 
 
@@ -2014,22 +1991,9 @@ export type ProvisionSubscriptionResult = {
 };
 
 export type Query = {
-  Module?: Maybe<Module>;
-  ModuleAction?: Maybe<ModuleAction>;
-  ModuleActions: Array<ModuleAction>;
-  ModuleDto?: Maybe<ModuleDto>;
-  ModuleDtoProperties: Array<ModuleDtoProperty>;
-  ModuleDtoProperty?: Maybe<ModuleDtoProperty>;
-  ModuleDtos: Array<ModuleDto>;
-  Modules: Array<Module>;
-  PluginInstallation?: Maybe<PluginInstallation>;
-  PluginInstallations: Array<PluginInstallation>;
-  ServiceTopics?: Maybe<ServiceTopics>;
-  ServiceTopicsList: Array<ServiceTopics>;
-  Topic?: Maybe<Topic>;
-  Topics: Array<Topic>;
   account: Account;
   action: Action;
+  availableDtosForResource: Array<ModuleDto>;
   block: Block;
   blocks: Array<Block>;
   build: Build;
@@ -2048,6 +2012,8 @@ export type Query = {
   module?: Maybe<Module>;
   moduleAction?: Maybe<ModuleAction>;
   moduleActions: Array<ModuleAction>;
+  moduleDto?: Maybe<ModuleDto>;
+  moduleDtos: Array<ModuleDto>;
   modules: Array<Module>;
   pendingChanges: Array<PendingChange>;
   pluginInstallation?: Maybe<PluginInstallation>;
@@ -2074,99 +2040,16 @@ export type Query = {
 };
 
 
-export type QueryModuleArgs = {
+export type QueryActionArgs = {
   where: WhereUniqueInput;
 };
 
 
-export type QueryModuleActionArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryModuleActionsArgs = {
-  orderBy?: InputMaybe<ModuleActionOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ModuleActionWhereInput>;
-};
-
-
-export type QueryModuleDtoArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryModuleDtoPropertiesArgs = {
-  orderBy?: InputMaybe<ModuleDtoPropertyOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ModuleDtoPropertyWhereInput>;
-};
-
-
-export type QueryModuleDtoPropertyArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryModuleDtosArgs = {
+export type QueryAvailableDtosForResourceArgs = {
   orderBy?: InputMaybe<ModuleDtoOrderByInput>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ModuleDtoWhereInput>;
-};
-
-
-export type QueryModulesArgs = {
-  orderBy?: InputMaybe<ModuleOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ModuleWhereInput>;
-};
-
-
-export type QueryPluginInstallationArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryPluginInstallationsArgs = {
-  orderBy?: InputMaybe<PluginInstallationOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<PluginInstallationWhereInput>;
-};
-
-
-export type QueryServiceTopicsArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryServiceTopicsListArgs = {
-  orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ServiceTopicsWhereInput>;
-};
-
-
-export type QueryTopicArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryTopicsArgs = {
-  orderBy?: InputMaybe<TopicOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<TopicWhereInput>;
-};
-
-
-export type QueryActionArgs = {
-  where: WhereUniqueInput;
 };
 
 
@@ -2265,6 +2148,19 @@ export type QueryModuleActionsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ModuleActionWhereInput>;
+};
+
+
+export type QueryModuleDtoArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModuleDtosArgs = {
+  orderBy?: InputMaybe<ModuleDtoOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleDtoWhereInput>;
 };
 
 
@@ -2831,6 +2727,11 @@ export type UserRole = {
 
 export type WhereParentIdInput = {
   connect: WhereUniqueInput;
+};
+
+export type WherePropertyUniqueInput = {
+  moduleDto: WhereUniqueInput;
+  propertyName: Scalars['String']['input'];
 };
 
 export type WhereUniqueInput = {

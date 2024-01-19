@@ -505,7 +505,6 @@ enum EnumBlockType {
   Module
   ModuleAction
   ModuleDto
-  ModuleDtoProperty
 }
 
 enum ActionStepStatus {
