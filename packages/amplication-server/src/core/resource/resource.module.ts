@@ -17,6 +17,12 @@ import { TopicModule } from "../topic/topic.module";
 import { BillingModule } from "../billing/billing.module";
 import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
 import { SubscriptionModule } from "../subscription/subscription.module";
+import { ResourceBtmResolver } from "./resourceBtm.resolver";
+import { ResourceBtmPromptService } from "./resourceBtmPrompt.service";
+import { ResourceBtmService } from "./resourceBtm.service";
+import { KafkaModule } from "@amplication/util/nestjs/kafka";
+import { UserAction } from "@amplication/schema-registry";
+import { UserActionModule } from "../userAction/userAction.module";
 
 @Module({
   imports: [
@@ -36,8 +42,16 @@ import { SubscriptionModule } from "../subscription/subscription.module";
     BillingModule,
     PluginInstallationModule,
     SubscriptionModule,
+    KafkaModule,
+    UserActionModule,
   ],
-  providers: [ResourceService, ResourceResolver],
-  exports: [ResourceService, ResourceResolver],
+  providers: [
+    ResourceService,
+    ResourceResolver,
+    ResourceBtmResolver,
+    ResourceBtmService,
+    ResourceBtmPromptService,
+  ],
+  exports: [ResourceBtmService, ResourceService, ResourceResolver],
 })
 export class ResourceModule {}
