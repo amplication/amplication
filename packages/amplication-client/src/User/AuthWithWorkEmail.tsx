@@ -11,7 +11,6 @@ import { useCallback } from "react";
 import { Button } from "../Components/Button";
 import { ErrorMessage } from "../Components/ErrorMessage";
 import { REACT_APP_AUTH_LOGIN_URI } from "../env";
-import { PreviewAccountType } from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import "./AuthWithWorkEmail.scss";

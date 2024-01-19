@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { SIGNUP_PREVIEW_ACCOUNT } from "../UserQueries";
 import { setToken } from "../../authentication/authentication";
-import { PreviewAccountType } from "../../models";
+import { EnumPreviewAccountType } from "../../models";
 import { useHistory } from "react-router-dom";
 
 type TData = {
@@ -16,7 +16,7 @@ type TData = {
 
 const useSignupPreviewAccount = (
   email: string,
-  previewAccountType: PreviewAccountType
+  previewAccountType: EnumPreviewAccountType
 ) => {
   const history = useHistory();
 
