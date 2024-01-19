@@ -15,7 +15,7 @@ import { PreviewAccountType } from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import "./AuthWithWorkEmail.scss";
-import { SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW } from "./UserQueries";
+import { SIGNUP_WITH_BUSINESS_EMAIL } from "./UserQueries";
 
 type FormValues = {
   work_email: string;
@@ -36,7 +36,7 @@ const CLASS_NAME = "auth-with-work-email";
 export const AuthWithWorkEmail: React.FC = () => {
   const { trackEvent } = useTracking();
   const [signUpWithBusinessEmail, { data, loading, error }] =
-    useMutation<SignUpWithBusinessEmail>(SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW);
+    useMutation<SignUpWithBusinessEmail>(SIGNUP_WITH_BUSINESS_EMAIL);
 
   const handleSubmit = (data: FormValues) => {
     trackEvent({
@@ -45,11 +45,10 @@ export const AuthWithWorkEmail: React.FC = () => {
     signUpWithBusinessEmail({
       variables: {
         data: {
-          previewAccountEmail: data.work_email,
-          previewAccountType: PreviewAccountType.Auth0Signup,
+          email: data.work_email,
         },
       },
-    });
+    }).catch(console.error);
   };
 
   const handleLoginClick = useCallback(() => {
@@ -69,7 +68,9 @@ export const AuthWithWorkEmail: React.FC = () => {
               </div>
               {data && (
                 <div className={`${CLASS_NAME}__reset_message`}>
-                  {data?.signUpWithBusinessEmail.message}
+                  Complete signup by setting a password using the email we just
+                  sent
+                  {/* {data?.signUpWithBusinessEmail.message} */}
                 </div>
               )}
               {loading && <CircularProgress centerToParent />}
