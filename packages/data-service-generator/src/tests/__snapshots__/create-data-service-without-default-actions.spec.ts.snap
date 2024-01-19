@@ -13451,20 +13451,7 @@ const FIND_ONE_RESULT = {
   location: "exampleLocation",
 };
 
-const service = {
-  createUser() {
-    return CREATE_RESULT;
-  },
-  users: () => FIND_MANY_RESULT,
-  user: ({ where }: { where: { id: string } }) => {
-    switch (where.id) {
-      case existingId:
-        return FIND_ONE_RESULT;
-      case nonExistingId:
-        return null;
-    }
-  },
-};
+const service = {};
 
 const basicAuthGuard = {
   canActivate: (context: ExecutionContext) => {
@@ -13526,71 +13513,6 @@ describe("User", () => {
     await app.init();
   });
 
-  test("POST /users", async () => {
-    await request(app.getHttpServer())
-      .post("/users")
-      .send(CREATE_INPUT)
-      .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT,
-        birthDate: CREATE_RESULT.birthDate.toISOString(),
-      });
-  });
-
-  test("GET /users", async () => {
-    await request(app.getHttpServer())
-      .get("/users")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          birthDate: FIND_MANY_RESULT[0].birthDate.toISOString(),
-        },
-      ]);
-  });
-
-  test("GET /users/:id non existing", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${"/users"}/\${nonExistingId}\`)
-      .expect(HttpStatus.NOT_FOUND)
-      .expect({
-        statusCode: HttpStatus.NOT_FOUND,
-        message: \`No resource was found for {"\${"id"}":"\${nonExistingId}"}\`,
-        error: "Not Found",
-      });
-  });
-
-  test("GET /users/:id existing", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${"/users"}/\${existingId}\`)
-      .expect(HttpStatus.OK)
-      .expect({
-        ...FIND_ONE_RESULT,
-        birthDate: FIND_ONE_RESULT.birthDate.toISOString(),
-      });
-  });
-
-  test("POST /users existing resource", async () => {
-    const agent = request(app.getHttpServer());
-    await agent
-      .post("/users")
-      .send(CREATE_INPUT)
-      .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT,
-        birthDate: CREATE_RESULT.birthDate.toISOString(),
-      })
-      .then(function () {
-        agent
-          .post("/users")
-          .send(CREATE_INPUT)
-          .expect(HttpStatus.CONFLICT)
-          .expect({
-            statusCode: HttpStatus.CONFLICT,
-          });
-      });
-  });
-
   afterAll(async () => {
     await app.close();
   });
@@ -13615,266 +13537,15 @@ import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { UserService } from "../user.service";
-import { UserCreateInput } from "./UserCreateInput";
-import { User } from "./User";
-import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-import { UserUpdateInput } from "./UserUpdateInput";
+import { UserFindManyArgs } from "./UserFindManyArgs";
+import { User } from "./User";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { OrganizationWhereUniqueInput } from "../../organization/base/OrganizationWhereUniqueInput";
 
 export class UserControllerBase {
   constructor(protected readonly service: UserService) {}
-  @common.Post()
-  @swagger.ApiCreatedResponse({ type: User })
-  async createUser(@common.Body() data: UserCreateInput): Promise<User> {
-    return await this.service.createUser({
-      data: {
-        ...data,
-
-        manager: data.manager
-          ? {
-              connect: data.manager,
-            }
-          : undefined,
-
-        profile: data.profile
-          ? {
-              connect: data.profile,
-            }
-          : undefined,
-      },
-      select: {
-        id: true,
-        username: true,
-        roles: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        manager: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-        extendedProperties: true,
-
-        profile: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-  }
-
-  @common.Get()
-  @swagger.ApiOkResponse({ type: [User] })
-  @ApiNestedQuery(UserFindManyArgs)
-  async users(@common.Req() request: Request): Promise<User[]> {
-    const args = plainToClass(UserFindManyArgs, request.query);
-    return this.service.users({
-      ...args,
-      select: {
-        id: true,
-        username: true,
-        roles: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        manager: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-        extendedProperties: true,
-
-        profile: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-  }
-
-  @common.Get("/:id")
-  @swagger.ApiOkResponse({ type: User })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async user(
-    @common.Param() params: UserWhereUniqueInput
-  ): Promise<User | null> {
-    const result = await this.service.user({
-      where: params,
-      select: {
-        id: true,
-        username: true,
-        roles: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        manager: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-        extendedProperties: true,
-
-        profile: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    if (result === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(params)}\`
-      );
-    }
-    return result;
-  }
-
-  @common.Patch("/:id")
-  @swagger.ApiOkResponse({ type: User })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async updateUser(
-    @common.Param() params: UserWhereUniqueInput,
-    @common.Body() data: UserUpdateInput
-  ): Promise<User | null> {
-    try {
-      return await this.service.updateUser({
-        where: params,
-        data: {
-          ...data,
-
-          manager: data.manager
-            ? {
-                connect: data.manager,
-              }
-            : undefined,
-
-          profile: data.profile
-            ? {
-                connect: data.profile,
-              }
-            : undefined,
-        },
-        select: {
-          id: true,
-          username: true,
-          roles: true,
-          name: true,
-          bio: true,
-          email: true,
-          age: true,
-          birthDate: true,
-          score: true,
-
-          manager: {
-            select: {
-              id: true,
-            },
-          },
-
-          interests: true,
-          priority: true,
-          isCurious: true,
-          location: true,
-          extendedProperties: true,
-
-          profile: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
-    } catch (error) {
-      if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
-          \`No resource was found for \${JSON.stringify(params)}\`
-        );
-      }
-      throw error;
-    }
-  }
-
-  @common.Delete("/:id")
-  @swagger.ApiOkResponse({ type: User })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async deleteUser(
-    @common.Param() params: UserWhereUniqueInput
-  ): Promise<User | null> {
-    try {
-      return await this.service.deleteUser({
-        where: params,
-        select: {
-          id: true,
-          username: true,
-          roles: true,
-          name: true,
-          bio: true,
-          email: true,
-          age: true,
-          birthDate: true,
-          score: true,
-
-          manager: {
-            select: {
-              id: true,
-            },
-          },
-
-          interests: true,
-          priority: true,
-          isCurious: true,
-          location: true,
-          extendedProperties: true,
-
-          profile: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
-    } catch (error) {
-      if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
-          \`No resource was found for \${JSON.stringify(params)}\`
-        );
-      }
-      throw error;
-    }
-  }
 
   @common.Get("/:id/employees")
   @ApiNestedQuery(UserFindManyArgs)
@@ -14085,12 +13756,7 @@ import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import { User } from "./User";
-import { UserCountArgs } from "./UserCountArgs";
 import { UserFindManyArgs } from "./UserFindManyArgs";
-import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
-import { CreateUserArgs } from "./CreateUserArgs";
-import { UpdateUserArgs } from "./UpdateUserArgs";
-import { DeleteUserArgs } from "./DeleteUserArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { Profile } from "../../profile/base/Profile";
@@ -14098,96 +13764,6 @@ import { UserService } from "../user.service";
 @graphql.Resolver(() => User)
 export class UserResolverBase {
   constructor(protected readonly service: UserService) {}
-
-  async _usersMeta(
-    @graphql.Args() args: UserCountArgs
-  ): Promise<MetaQueryPayload> {
-    const result = await this.service.count(args);
-    return {
-      count: result,
-    };
-  }
-
-  @graphql.Query(() => [User])
-  async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
-    return this.service.users(args);
-  }
-
-  @graphql.Query(() => User, { nullable: true })
-  async user(@graphql.Args() args: UserFindUniqueArgs): Promise<User | null> {
-    const result = await this.service.user(args);
-    if (result === null) {
-      return null;
-    }
-    return result;
-  }
-
-  @graphql.Mutation(() => User)
-  async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
-    return await this.service.createUser({
-      ...args,
-      data: {
-        ...args.data,
-
-        manager: args.data.manager
-          ? {
-              connect: args.data.manager,
-            }
-          : undefined,
-
-        profile: args.data.profile
-          ? {
-              connect: args.data.profile,
-            }
-          : undefined,
-      },
-    });
-  }
-
-  @graphql.Mutation(() => User)
-  async updateUser(@graphql.Args() args: UpdateUserArgs): Promise<User | null> {
-    try {
-      return await this.service.updateUser({
-        ...args,
-        data: {
-          ...args.data,
-
-          manager: args.data.manager
-            ? {
-                connect: args.data.manager,
-              }
-            : undefined,
-
-          profile: args.data.profile
-            ? {
-                connect: args.data.profile,
-              }
-            : undefined,
-        },
-      });
-    } catch (error) {
-      if (isRecordNotFoundError(error)) {
-        throw new GraphQLError(
-          \`No resource was found for \${JSON.stringify(args.where)}\`
-        );
-      }
-      throw error;
-    }
-  }
-
-  @graphql.Mutation(() => User)
-  async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
-    try {
-      return await this.service.deleteUser(args);
-    } catch (error) {
-      if (isRecordNotFoundError(error)) {
-        throw new GraphQLError(
-          \`No resource was found for \${JSON.stringify(args.where)}\`
-        );
-      }
-      throw error;
-    }
-  }
 
   @graphql.ResolveField(() => [User], { name: "employees" })
   async findEmployees(
@@ -14273,32 +13849,6 @@ export class UserServiceBase {
     return this.prisma.user.count(args);
   }
 
-  async users<T extends Prisma.UserFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
-  ): Promise<User[]> {
-    return this.prisma.user.findMany(args);
-  }
-  async user<T extends Prisma.UserFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
-  ): Promise<User | null> {
-    return this.prisma.user.findUnique(args);
-  }
-  async createUser<T extends Prisma.UserCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
-  ): Promise<User> {
-    return this.prisma.user.create<T>(args);
-  }
-  async updateUser<T extends Prisma.UserUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
-  ): Promise<User> {
-    return this.prisma.user.update<T>(args);
-  }
-  async deleteUser<T extends Prisma.UserDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
-  ): Promise<User> {
-    return this.prisma.user.delete(args);
-  }
-
   async findEmployees(
     parentId: string,
     args: Prisma.UserFindManyArgs
@@ -14335,6 +13885,15 @@ export class UserServiceBase {
         where: { id: parentId },
       })
       .profile();
+  }
+  async promoteUser(input: string): Promise<Array<dtoNAme>> {
+    throw new Error("Not implemented");
+  }
+  async sendPasswordResetEmail(input: dtoNAme): Promise<boolean> {
+    throw new Error("Not implemented");
+  }
+  async resendInviteEmail(input: dtoNAme): Promise<dtoNAme> {
+    throw new Error("Not implemented");
   }
 }
 ",
