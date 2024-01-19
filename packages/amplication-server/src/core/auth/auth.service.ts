@@ -6,7 +6,7 @@ import cuid from "cuid";
 import { Env } from "../../env";
 import { Prisma, PrismaService } from "../../prisma";
 import { Profile as GitHubProfile } from "passport-github2";
-import { Account, Resource, User, UserRole, Workspace } from "../../models";
+import { Account, User, Workspace } from "../../models";
 import { AccountService } from "../account/account.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { PasswordService } from "../account/password.service";
@@ -21,8 +21,7 @@ import {
 import { AmplicationError } from "../../errors/AmplicationError";
 import { FindOneArgs } from "../../dto";
 import { CompleteInvitationArgs } from "../workspace/dto";
-import { ProjectService } from "../project/project.service";
-import { AuthProfile } from "./types";
+import { AuthProfile, AuthUser, BootstrapPreviewUser } from "./types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   AuthenticationClient,
@@ -32,39 +31,11 @@ import {
   TextApiResponse,
 } from "auth0";
 import { SignupPreviewAccountInput } from "./dto/SignupPreviewAccountInput";
-import * as crypto from "crypto";
 import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
-import { ResourceService } from "../resource/resource.service";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
 import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
-import { USER_ENTITY_NAME } from "../entity/constants";
 import { PUBLIC_DOMAINS } from "./publicDomains";
 import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
-
-export type AuthUser = User & {
-  account: Account;
-  workspace: Workspace;
-  userRoles: UserRole[];
-};
-
-export type BootstrapPreviewUser = {
-  user: AuthUser;
-  workspaceId: string;
-  projectId: string;
-  resourceId: string;
-};
-
-export type CreatePreviewServiceArgs = {
-  projectId: string;
-  name: string;
-  description: string;
-  adminUIPath: string;
-  serverPath: string;
-  generateAdminUI: boolean;
-  generateGraphQL: boolean;
-  generateRestApi: boolean;
-};
+import { generateRandomEmail, generateRandomString } from "./auth-utils";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
@@ -109,11 +80,7 @@ export class AuthService {
     private readonly logger: AmplicationLogger,
     private readonly userService: UserService,
     @Inject(forwardRef(() => WorkspaceService))
-    private readonly workspaceService: WorkspaceService,
-    @Inject(forwardRef(() => ProjectService))
-    private readonly projectService: ProjectService,
-    @Inject(forwardRef(() => ResourceService))
-    private readonly resourceService: ResourceService
+    private readonly workspaceService: WorkspaceService
   ) {
     this.auth0 = new AuthenticationClient({
       domain: this.configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
@@ -176,7 +143,7 @@ export class AuthService {
           },
           IDENTITY_PROVIDER_AUTH0
         );
-        const workspaceName = this.generateRandomString();
+        const workspaceName = generateRandomString();
         await this.bootstrapUser(account, workspaceName);
       }
 
@@ -414,23 +381,15 @@ export class AuthService {
   ) {
     return {
       signupData: {
-        email: this.generateRandomEmail(),
+        email: generateRandomEmail(),
         firstName: "Amplication Preview Account",
         lastName: previewAccountType,
-        password: this.generateRandomString(),
+        password: generateRandomString(),
         previewAccountType,
         previewAccountEmail,
       },
       identityProvider: `${IDENTITY_PROVIDER_PREVIEW_ACCOUNT}_${previewAccountType}`,
     };
-  }
-
-  private generateRandomString(): string {
-    return crypto.randomBytes(10).toString("hex");
-  }
-
-  private generateRandomEmail(): string {
-    return `fake-${this.generateRandomString()}@amplication.com`;
   }
 
   private async bootstrapUser(
@@ -447,8 +406,10 @@ export class AuthService {
   private async bootstrapPreviewUser(
     account: Account
   ): Promise<BootstrapPreviewUser> {
-    const { user, workspace, project, resource } =
-      await this.createPreviewWorkspaceWithProjectAndResource(account);
+    const { workspace, project, resource } =
+      await this.workspaceService.createPreviewEnvironment(account);
+
+    const [user] = workspace.users;
 
     await this.accountService.setCurrentUser(account.id, user.id);
 
@@ -728,124 +689,6 @@ export class AuthService {
     });
 
     return workspace as unknown as Workspace & { users: AuthUser[] };
-  }
-
-  private async createPreviewWorkspaceWithProjectAndResource(account: Account) {
-    const workspaceName = `Amplication-${this.generateRandomString()}`;
-    const projectName = account.previewAccountType;
-
-    const workspace = (await this.workspaceService.createPreviewWorkspace(
-      {
-        data: {
-          name: workspaceName,
-        },
-        include: WORKSPACE_INCLUDE,
-      },
-      account.id
-    )) as unknown as Workspace & { users: AuthUser[] };
-    const [user] = workspace.users as AuthUser[];
-
-    const project = await this.projectService.createProject(
-      {
-        data: {
-          name: projectName,
-          workspace: {
-            connect: {
-              id: workspace.id,
-            },
-          },
-        },
-      },
-      user.id
-    );
-
-    let resource: Resource;
-    switch (account.previewAccountType) {
-      case EnumPreviewAccountType.BreakingTheMonolith:
-        resource = await this.createBreakingTheMonolithPreviewService(
-          project.id,
-          user
-        );
-        break;
-      case EnumPreviewAccountType.None:
-        throw new AmplicationError(
-          `${EnumPreviewAccountType.None} is not a preview account, but a regular account`
-        );
-      default:
-        throw new AmplicationError(
-          `Unsupported preview account type: ${account.previewAccountType}`
-        );
-    }
-
-    return {
-      user,
-      workspace,
-      project,
-      resource,
-    };
-  }
-
-  private async createBreakingTheMonolithPreviewService(
-    projectId: string,
-    user: User
-  ): Promise<Resource> {
-    const serviceName = "Monolith";
-    const createPreviewServiceArgs = this.createPreviewServiceArgs({
-      projectId: projectId,
-      name: serviceName,
-      description: "Monolith Service",
-      adminUIPath: "",
-      serverPath: `./apps/${serviceName}`,
-      generateAdminUI: false,
-      generateGraphQL: true,
-      generateRestApi: true,
-    });
-
-    const resource = await this.resourceService.createPreviewService({
-      args: createPreviewServiceArgs,
-      user,
-      nonDefaultPluginsToInstall: [],
-      requireAuthenticationEntity: false,
-    });
-
-    return resource;
-  }
-
-  private createPreviewServiceArgs({
-    name,
-    description,
-    adminUIPath,
-    serverPath,
-    generateAdminUI,
-    generateGraphQL,
-    generateRestApi,
-    projectId,
-  }: CreatePreviewServiceArgs) {
-    return {
-      data: {
-        name,
-        description,
-        resourceType: EnumResourceType.Service,
-        project: {
-          connect: {
-            id: projectId,
-          },
-        },
-        serviceSettings: {
-          authProvider: EnumAuthProviderType.Jwt,
-          authEntityName: USER_ENTITY_NAME,
-          adminUISettings: {
-            adminUIPath,
-            generateAdminUI,
-          },
-          serverSettings: {
-            generateGraphQL,
-            generateRestApi,
-            serverPath,
-          },
-        },
-      },
-    };
   }
 
   async completeInvitation(
