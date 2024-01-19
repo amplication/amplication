@@ -6,7 +6,6 @@ import { BtmRecommendations } from "./dto/BtmRecommendations";
 import { ResourcePartial } from "./resourceBtm.types";
 import { AiService } from "../gpt/ai.service";
 import { PrismaService } from "../../prisma";
-import { UserAction } from "@amplication/schema-registry";
 import { UserActionService } from "../userAction/userAction.service";
 import { ResourceBtmPromptService } from "./resourceBtmPrompt.service";
 
@@ -573,4 +572,86 @@ describe("ResourceBtmService", () => {
       expect(result).toStrictEqual(new Set(["a", "b"]));
     });
   });
+
+  //   describe("triggerAiRecommendations", () => {
+  //     it("should return the userAction for the generation process", async () => {
+  //       const resourceId = "resourceId";
+  //       const userId = "resourceId";
+  //       const mockedActionId = "actionId";
+
+  //       jest
+  //         .spyOn(
+  //           PromptManagerService.prototype,
+  //           "generatePromptForBreakTheMonolith"
+  //         )
+  //         .mockReturnValue("some prompt result");
+
+  //       const spyOnCreateUserActionByTypeWithInitialStep = jest
+  //         .spyOn(
+  //           UserActionService.prototype,
+  //           "createUserActionByTypeWithInitialStep"
+  //         )
+  //         .mockResolvedValue({
+  //           actionId: mockedActionId,
+  //         } as unknown as UserAction);
+
+  //       const result = await service.triggerAiRecommendations({
+  //         resourceId,
+  //         userId,
+  //       });
+
+  //       expect(result).toEqual(mockedActionId);
+  //       expect(spyOnCreateUserActionByTypeWithInitialStep).toBeCalledWith(
+  //         GENERATING_BTM_RESOURCE_RECOMMENDATION_USER_ACTION_TYPE,
+  //         expect.objectContaining({
+  //           resourceId,
+  //           conversationTypeKey: "BREAK_THE_MONOLITH",
+  //         }),
+  //         expect.objectContaining({
+  //           name: GENERATING_BTM_RESOURCE_RECOMMENDATION_STEP_NAME,
+  //         }),
+  //         resourceId,
+  //         userId
+  //       );
+  //     });
+  //   });
+
+  //   describe("onConversationCompleted", () => {
+  //     it.each([
+  //       [EnumActionStepStatus.Success, true],
+  //       [EnumActionStepStatus.Failed, false],
+  //     ])(
+  //       "should update the action status to %s when the conversion completion success is %s",
+  //       async (expectedActionStatus, success) => {
+  //         const result = success ? "A magic anwser" : null;
+  //         const errorMessage = success ? null : "An error happened";
+  //         const userActionId = "actionId";
+
+  //         const actionStepToComplete = {
+  //           id: "actionStepId",
+  //         };
+
+  //         mockPrismaUserActionFindFirst.mockResolvedValue({
+  //           action: {
+  //             steps: [actionStepToComplete],
+  //           },
+  //         } as unknown as UserAction);
+
+  //         const res = await service.onConversationCompleted({
+  //           userActionId,
+  //           success,
+  //           result,
+  //           errorMessage,
+  //         });
+
+  //         expect(res).toBeTruthy();
+
+  //         expect(mockPrismaUserActionFindFirst).toHaveBeenCalledTimes(1);
+  //         expect(mockActionServiceComplete).toHaveBeenCalledWith(
+  //           actionStepToComplete,
+  //           expectedActionStatus
+  //         );
+  //       }
+  //     );
+  //   });
 });
