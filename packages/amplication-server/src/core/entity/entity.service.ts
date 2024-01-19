@@ -3077,14 +3077,14 @@ export class EntityService {
             moduleId,
             user
           );
-        }
 
-        await this.moduleDtoService.deleteDefaultDtosForRelatedEntity(
-          field,
-          field.entityVersion.entity,
-          moduleId,
-          user
-        );
+          await this.moduleDtoService.deleteDefaultDtosForRelatedEntity(
+            field,
+            field.entityVersion.entity,
+            moduleId,
+            user
+          );
+        }
 
         return deletedField;
       }
