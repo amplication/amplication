@@ -6,7 +6,7 @@ import { UserService } from "./user.service";
 import { BillingService } from "../billing/billing.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_ROLE_ID = "exampleRoleId";
@@ -35,7 +35,7 @@ const EXAMPLE_ACCOUNT: Account = {
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
   githubId: null,
-  previewAccountType: PreviewAccountType.None,
+  previewAccountType: EnumPreviewAccountType.None,
   previewAccountEmail: null,
 };
 
@@ -134,7 +134,7 @@ describe("UserService", () => {
       then: (resolve) => resolve(EXAMPLE_USER),
       account: () => ({
         ...EXAMPLE_ACCOUNT,
-        previewAccountType: PreviewAccountType.BreakingTheMonolith,
+        previewAccountType: EnumPreviewAccountType.BreakingTheMonolith,
         previewAccountEmail: EXAMPLE_PREVIEW_EMAIL,
       }),
     }));
