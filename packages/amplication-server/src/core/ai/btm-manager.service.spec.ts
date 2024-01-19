@@ -164,18 +164,18 @@ describe("BtmManagerService", () => {
         actionId: "actionId",
         resources: [
           {
-            id: undefined,
+            id: expect.any(String),
             name: "order",
             description: "manage orders, prices and payments",
             entities: [
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "order",
                 originalEntityId: "order",
                 fields: ["address", "status", "customer", "itemsId"],
               },
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "orderItem",
                 originalEntityId: "orderItem",
                 fields: ["order", "product", "quantity"],
@@ -183,12 +183,12 @@ describe("BtmManagerService", () => {
             ],
           },
           {
-            id: undefined,
+            id: expect.any(String),
             name: "product",
             description: "manage products",
             entities: [
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "product",
                 originalEntityId: "product",
                 fields: ["name", "price"],
@@ -351,18 +351,18 @@ describe("BtmManagerService", () => {
         actionId: "actionId",
         resources: [
           {
-            id: undefined,
+            id: expect.any(String),
             name: "order",
             description: "manage orders, prices and payments",
             entities: [
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "order",
                 originalEntityId: "order",
                 fields: ["address", "status", "customer", "itemsId"],
               },
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "orderItem",
                 originalEntityId: "orderItem",
                 fields: ["order", "product", "quantity"],
@@ -370,12 +370,12 @@ describe("BtmManagerService", () => {
             ],
           },
           {
-            id: undefined,
+            id: expect.any(String),
             name: "product",
             description: "manage products",
             entities: [
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "product",
                 originalEntityId: "product",
                 fields: ["name", "price"],
@@ -489,24 +489,24 @@ describe("BtmManagerService", () => {
         actionId: "actionId",
         resources: [
           {
-            id: undefined,
+            id: expect.any(String),
             name: "order",
             description: "manage orders, prices and payments",
             entities: [
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "order",
                 originalEntityId: "order",
                 fields: ["id"],
               },
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "orderItem",
                 originalEntityId: "orderItem",
                 fields: ["id"],
               },
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "price",
                 originalEntityId: "price",
                 fields: ["id"],
@@ -514,12 +514,12 @@ describe("BtmManagerService", () => {
             ],
           },
           {
-            id: undefined,
+            id: expect.any(String),
             name: "product",
             description: "manage products",
             entities: [
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "product",
                 originalEntityId: "product",
                 fields: ["name"],
