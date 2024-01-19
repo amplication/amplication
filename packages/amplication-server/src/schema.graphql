@@ -11,7 +11,7 @@ type Account {
   lastName: String!
   password: String!
   previewAccountEmail: String
-  previewAccountType: PreviewAccountType!
+  previewAccountType: EnumPreviewAccountType!
   updatedAt: DateTime!
 }
 
@@ -82,11 +82,10 @@ type Auth {
 }
 
 type AuthPreviewAccount {
-  message: String
-  projectId: String
-  resourceId: String
-  token: String
-  workspaceId: String
+  projectId: String!
+  resourceId: String!
+  token: String!
+  workspaceId: String!
 }
 
 type AuthorizeResourceWithGitResult {
@@ -786,6 +785,12 @@ enum EnumPendingChangeOriginType {
   Entity
 }
 
+enum EnumPreviewAccountType {
+  Auth0Signup
+  BreakingTheMonolith
+  None
+}
+
 enum EnumResourceType {
   MessageBroker
   ProjectConfiguration
@@ -1180,8 +1185,9 @@ type Mutation {
   revokeInvitation(where: WhereUniqueInput!): Invitation
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
-  signUpWithBusinessEmail(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signup(data: SignupInput!): Auth!
+  signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
+  signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
 
   """
   Trigger the generation of a set of recommendations for breaking a resource into microservices
@@ -1343,12 +1349,6 @@ type PluginOrderItem {
 
 input PluginSetOrderInput {
   order: Int!
-}
-
-enum PreviewAccountType {
-  Auth0Signup
-  BreakingTheMonolith
-  None
 }
 
 type Project {
@@ -1780,7 +1780,11 @@ input SignupInput {
 
 input SignupPreviewAccountInput {
   previewAccountEmail: String!
-  previewAccountType: PreviewAccountType!
+  previewAccountType: EnumPreviewAccountType!
+}
+
+input SignupWithBusinessEmailInput {
+  email: String!
 }
 
 enum SortOrder {

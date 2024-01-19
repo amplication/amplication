@@ -6,7 +6,7 @@ import { EnumDataType } from "../../enums/EnumDataType";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { Account, Entity, EntityField, User } from "../../models";
 import { PrismaService } from "../../prisma/prisma.service";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { BlockService } from "../block/block.service";
 import { EntityService } from "../entity/entity.service";
 import { Module } from "../module/dto/Module";
@@ -32,7 +32,7 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: PreviewAccountType.None,
+  previewAccountType: EnumPreviewAccountType.None,
   previewAccountEmail: null,
 };
 
