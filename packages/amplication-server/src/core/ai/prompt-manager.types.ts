@@ -18,15 +18,22 @@ export interface GeneratePromptForBreakTheMonolithArgs {
   }[];
 }
 
-export interface BreakTheMonolithPromptInput {
-  dataModels: {
+interface DataModel {
+  name: string;
+  fields: {
     name: string;
-    displayName: string;
-    fields: {
-      name: string;
-      displayName: string;
-      dataType: EnumDataType | string;
-      relatedDataModel?: string;
-    }[];
+    dataType: string;
+  }[];
+}
+
+export interface BreakTheMonolithPromptInput {
+  dataModels: DataModel[];
+}
+
+export interface BreakTheMonolithPromptOutput {
+  microservices: {
+    name: string;
+    functionality: string;
+    dataModels: DataModel[];
   }[];
 }
