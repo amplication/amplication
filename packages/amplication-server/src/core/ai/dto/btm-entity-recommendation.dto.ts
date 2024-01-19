@@ -19,4 +19,10 @@ export class BtmEntityRecommendation {
     description: "The fields of the entity",
   })
   fields!: string[];
+
+  @Field(() => String, {
+    nullable: false,
+    description: "The id of the original entity",
+  })
+  originalEntityId!: string;
 }

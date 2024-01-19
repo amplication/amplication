@@ -19,8 +19,12 @@ import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { Inject, Injectable } from "@nestjs/common";
 import { AiBadFormatResponseError } from "./errors/ai-bad-format-response.error";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { ResourcePartial } from "./prompt-manager.types";
 import { BtmManagerService } from "./btm-manager.service";
+import {
+  BtmRecommendationModelChanges,
+  BtmRecommendationModelChangesInput,
+} from "./dto";
+import { ResourcePartial } from "./ai.types";
 
 @Injectable()
 export class AiService {
@@ -94,6 +98,7 @@ export class AiService {
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },
       select: {
+        id: true,
         name: true,
         entities: {
           where: {
@@ -222,7 +227,7 @@ export class AiService {
               name: resource.name,
               description: resource.description,
               btmEntityRecommendation: {
-                create: resource.entities.map((entity) => entity),
+                create: resource.entities,
               },
             })),
           },
@@ -243,5 +248,45 @@ export class AiService {
       this.logger.error(error.message, error, { errorMessage, result });
     }
     return true;
+  }
+
+  async btmRecommendationModelChanges(
+    data: BtmRecommendationModelChangesInput
+  ): Promise<BtmRecommendationModelChanges> {
+    const { resourceId } = data;
+
+    const btmResourceRecommendation =
+      await this.prisma.btmResourceRecommendation.findMany({
+        where: {
+          resourceId: resourceId,
+        },
+        include: {
+          btmEntityRecommendation: true,
+        },
+      });
+
+    const newResources: BtmRecommendationModelChanges["newResources"] =
+      btmResourceRecommendation.map((resource) => ({
+        id: resource.id,
+        name: resource.name,
+      }));
+
+    const recommendedEntities: BtmRecommendationModelChanges["copiedEntities"] =
+      [];
+    for (const resource of btmResourceRecommendation) {
+      for (const entity of resource.btmEntityRecommendation) {
+        recommendedEntities.push({
+          name: entity.name,
+          entityId: entity.originalEntityId,
+          targetResourceId: resource.id,
+          originalResourceId: resourceId,
+        });
+      }
+    }
+
+    return {
+      newResources: newResources,
+      copiedEntities: recommendedEntities,
+    };
   }
 }

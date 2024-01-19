@@ -205,6 +205,8 @@ model BtmEntityRecommendation {
   updatedAt                   DateTime                  @updatedAt
   name                        String
   fields                      String[]
+  originalEntityId            String                    @unique()
+  entity                      Entity                    @relation(fields: [originalEntityId], references: [id])
   btmResourceRecommendationId String
   btmResourceRecommendation   BtmResourceRecommendation @relation(fields: [btmResourceRecommendationId], references: [id], onDelete: Cascade)
 }
@@ -224,21 +226,22 @@ model Commit {
 }
 
 model Entity {
-  id                String          @id @default(cuid())
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  resourceId        String
-  name              String
-  displayName       String
-  pluralDisplayName String
-  description       String?
-  customAttributes  String?
-  lockedByUserId    String?
-  lockedAt          DateTime?
-  deletedAt         DateTime?
-  resource          Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-  lockedByUser      User?           @relation(fields: [lockedByUserId], references: [id])
-  versions          EntityVersion[]
+  id                      String                   @id @default(cuid())
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  resourceId              String
+  name                    String
+  displayName             String
+  pluralDisplayName       String
+  description             String?
+  customAttributes        String?
+  lockedByUserId          String?
+  lockedAt                DateTime?
+  deletedAt               DateTime?
+  resource                Resource                 @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  lockedByUser            User?                    @relation(fields: [lockedByUserId], references: [id])
+  versions                EntityVersion[]
+  BtmEntityRecommendation BtmEntityRecommendation?
 
   @@unique([resourceId, displayName], map: "Entity.resourceId_displayName_unique")
   @@unique([resourceId, name], map: "Entity.resourceId_name_unique")

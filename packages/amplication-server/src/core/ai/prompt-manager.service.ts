@@ -3,10 +3,10 @@ import { EnumDataType } from "../../prisma";
 import {
   BreakTheMonolithPromptInput,
   BreakTheMonolithPromptOutput,
-  ResourcePartial,
 } from "./prompt-manager.types";
 import { Injectable } from "@nestjs/common";
 import { AiBadFormatResponseError } from "./errors/ai-bad-format-response.error";
+import { ResourcePartial } from "./ai.types";
 
 @Injectable()
 export class PromptManagerService {

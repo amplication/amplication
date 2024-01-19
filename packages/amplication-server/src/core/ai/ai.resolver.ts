@@ -4,7 +4,11 @@ import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Resource, User } from "../../models";
 import { AiService } from "./ai.service";
 import { UseFilters, UseGuards } from "@nestjs/common";
-import { Args, Mutation, Resolver } from "@nestjs/graphql";
+import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
+import { BtmRecommendationModelChanges } from "./dto/btm-recommendation-model-changes.dto";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { BtmRecommendationModelChangesArgs } from "./dto/btm-recommendation-model-changes-args.dto";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -17,14 +21,27 @@ export class AiResolver {
     description:
       "Trigger the generation of a set of recommendations for breaking a resource into microservices",
   })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
   async triggerGenerationBtmResourceRecommendation(
     @Args({ name: "resourceId", type: () => String })
     resourceId: string,
     @UserEntity() user: User
-  ): Promise<string> {
-    return await this.aiService.triggerGenerationBtmResourceRecommendation({
+  ): Promise<void> {
+    await this.aiService.triggerGenerationBtmResourceRecommendation({
       resourceId,
       userId: user.id,
     });
+  }
+
+  @Query(() => BtmRecommendationModelChanges, {
+    description:
+      "Get the changes to apply to the model in order to break a resource into microservices",
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
+  async btmRecommendationModelChanges(
+    @Args()
+    args: BtmRecommendationModelChangesArgs
+  ): Promise<BtmRecommendationModelChanges> {
+    return this.aiService.btmRecommendationModelChanges(args.data);
   }
 }

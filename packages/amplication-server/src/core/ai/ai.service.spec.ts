@@ -1,5 +1,10 @@
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { PrismaService, UserAction } from "../../prisma";
+import {
+  BtmEntityRecommendation,
+  BtmResourceRecommendation,
+  PrismaService,
+  UserAction,
+} from "../../prisma";
 import { ActionService } from "../action/action.service";
 import { EnumActionStepStatus } from "../action/dto";
 import { UserActionService } from "../userAction/userAction.service";
@@ -13,6 +18,7 @@ import { PromptManagerService } from "./prompt-manager.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { TestingModule, Test } from "@nestjs/testing";
 import { BtmManagerService } from "./btm-manager.service";
+import { BtmRecommendationModelChanges } from "./dto";
 
 jest.mock("../../prisma");
 jest.mock("./prompt-manager.service");
@@ -21,7 +27,28 @@ jest.mock("@amplication/util/nestjs/kafka");
 describe("AiService", () => {
   let service: AiService;
   const mockPrismaUserActionFindFirst = jest.fn().mockResolvedValue(null);
+  const mockPrismaBtmResourceRecFindMany = jest.fn().mockResolvedValue([]);
   const mockActionServiceComplete = jest.fn().mockResolvedValue(null);
+
+  const prismaServiceMock = {
+    action: {
+      findUnique: jest.fn().mockResolvedValue(null),
+      create: jest.fn().mockResolvedValue(null),
+      complete: jest.fn().mockResolvedValue(null),
+    },
+
+    resource: {
+      findUnique: jest.fn().mockResolvedValue(EXAMPLE_RESOURCE),
+    },
+    btmResourceRecommendation: {
+      findMany: mockPrismaBtmResourceRecFindMany,
+    },
+    userAction: {
+      create: jest.fn().mockResolvedValue(null),
+      findFirst: mockPrismaUserActionFindFirst,
+      update: jest.fn().mockResolvedValue(null),
+    },
+  };
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -47,21 +74,7 @@ describe("AiService", () => {
         UserActionService,
         {
           provide: PrismaService,
-          useValue: {
-            action: {
-              findUnique: jest.fn().mockResolvedValue(null),
-              create: jest.fn().mockResolvedValue(null),
-              complete: jest.fn().mockResolvedValue(null),
-            },
-            resource: {
-              findUnique: jest.fn().mockResolvedValue(EXAMPLE_RESOURCE),
-            },
-            userAction: {
-              create: jest.fn().mockResolvedValue(null),
-              findFirst: mockPrismaUserActionFindFirst,
-              update: jest.fn().mockResolvedValue(null),
-            },
-          },
+          useValue: prismaServiceMock,
         },
       ],
     }).compile();
@@ -154,5 +167,98 @@ describe("AiService", () => {
         );
       }
     );
+  });
+
+  describe("btmRecommendationModelChanges", () => {
+    it("should return the no changes to apply to the model in order to break a resource into microservice when no recommendation is find", async () => {
+      const resourceId = "resourceId";
+
+      mockPrismaBtmResourceRecFindMany.mockResolvedValue([]);
+
+      const result = await service.btmRecommendationModelChanges({
+        resourceId,
+      });
+
+      const expectedResult: BtmRecommendationModelChanges = {
+        newResources: [],
+        copiedEntities: [],
+      };
+
+      expect(result).toStrictEqual(expectedResult);
+      expect(mockPrismaBtmResourceRecFindMany).toHaveReturnedTimes(1);
+    });
+
+    it("should return the changes to apply to the model in order to break a resource into microservices", async () => {
+      const originatingResourceId = "originalResourceId";
+
+      const recommendations: BtmResourceRecommendation & {
+        btmEntityRecommendation: BtmEntityRecommendation[];
+      } = {
+        id: "resourceRecId",
+        name: "newSuperCoolService",
+        description: "description",
+        resourceId: originatingResourceId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        btmEntityRecommendation: [
+          {
+            id: "id",
+            name: "order",
+            originalEntityId: "originalOrderEntityId",
+            fields: ["id", "customer", "item", "address"],
+            btmResourceRecommendationId: "resourceRecId",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+          {
+            id: "id",
+            name: "customer",
+            originalEntityId: "originalCustomerEntityId",
+            fields: ["id", "firstName", "lastName", "address"],
+            btmResourceRecommendationId: "resourceRecId",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ],
+      };
+      mockPrismaBtmResourceRecFindMany.mockResolvedValue([recommendations]);
+
+      const result = await service.btmRecommendationModelChanges({
+        resourceId: originatingResourceId,
+      });
+
+      const expectedResult: BtmRecommendationModelChanges = {
+        newResources: [
+          {
+            id: "resourceRecId",
+            name: "newSuperCoolService",
+          },
+        ],
+        copiedEntities: [
+          {
+            entityId: "originalOrderEntityId",
+            name: "order",
+            originalResourceId: originatingResourceId,
+            targetResourceId: "resourceRecId",
+          },
+          {
+            entityId: "originalCustomerEntityId",
+            name: "customer",
+            originalResourceId: originatingResourceId,
+            targetResourceId: "resourceRecId",
+          },
+        ],
+      };
+
+      expect(result).toStrictEqual(expectedResult);
+      expect(mockPrismaBtmResourceRecFindMany).toHaveBeenCalledWith({
+        where: {
+          resourceId: originatingResourceId,
+        },
+        include: {
+          btmEntityRecommendation: true,
+        },
+      });
+    });
   });
 });

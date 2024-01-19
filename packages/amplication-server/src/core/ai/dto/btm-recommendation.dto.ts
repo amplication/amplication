@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { BtmResourceRecommendation } from "./BtmResourceRecommendation";
+import { BtmResourceRecommendation } from "./btm-resource-recommendation.dto";
 
 @ObjectType({
   isAbstract: true,

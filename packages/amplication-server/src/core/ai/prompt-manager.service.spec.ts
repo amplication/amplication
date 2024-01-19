@@ -20,6 +20,7 @@ describe("PromptManagerService", () => {
     it("should return a prompt", () => {
       const result = service.generatePromptForBreakTheMonolith({
         name: "ecommerce",
+        id: "ecommerce-id",
         entities: [
           {
             id: "order",

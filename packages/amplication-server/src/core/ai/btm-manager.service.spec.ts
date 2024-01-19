@@ -1,11 +1,9 @@
 import { Test } from "@nestjs/testing";
 import { BtmManagerService } from "./btm-manager.service";
-import {
-  BreakTheMonolithPromptOutput,
-  ResourcePartial,
-} from "./prompt-manager.types";
+import { BreakTheMonolithPromptOutput } from "./prompt-manager.types";
 import { EnumDataType } from "../../prisma";
-import { BtmRecommendation } from "../../models";
+import { BtmRecommendation } from "./dto";
+import { ResourcePartial } from "./ai.types";
 
 describe("BtmManagerService", () => {
   let service: BtmManagerService;
@@ -159,36 +157,40 @@ describe("BtmManagerService", () => {
             ],
           },
         ],
+        id: "resourceId",
       };
 
       const expectedResult: BtmRecommendation = {
         actionId: "actionId",
         resources: [
           {
-            id: undefined,
+            id: expect.any(String),
             name: "order",
             description: "manage orders, prices and payments",
             entities: [
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "order",
+                originalEntityId: "order",
                 fields: ["address", "status", "customer", "itemsId"],
               },
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "orderItem",
+                originalEntityId: "orderItem",
                 fields: ["order", "product", "quantity"],
               },
             ],
           },
           {
-            id: undefined,
+            id: expect.any(String),
             name: "product",
             description: "manage products",
             entities: [
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "product",
+                originalEntityId: "product",
                 fields: ["name", "price"],
               },
             ],
@@ -221,6 +223,7 @@ describe("BtmManagerService", () => {
         ],
       };
       const originalResource: ResourcePartial = {
+        id: "resourceId",
         name: "order",
         entities: [
           {
@@ -348,30 +351,33 @@ describe("BtmManagerService", () => {
         actionId: "actionId",
         resources: [
           {
-            id: undefined,
+            id: expect.any(String),
             name: "order",
             description: "manage orders, prices and payments",
             entities: [
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "order",
+                originalEntityId: "order",
                 fields: ["address", "status", "customer", "itemsId"],
               },
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "orderItem",
+                originalEntityId: "orderItem",
                 fields: ["order", "product", "quantity"],
               },
             ],
           },
           {
-            id: undefined,
+            id: expect.any(String),
             name: "product",
             description: "manage products",
             entities: [
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "product",
+                originalEntityId: "product",
                 fields: ["name", "price"],
               },
             ],
@@ -406,6 +412,7 @@ describe("BtmManagerService", () => {
 
       const originalResource: ResourcePartial = {
         name: "order",
+        id: "resourceId",
         entities: [
           {
             id: "order",
@@ -482,35 +489,39 @@ describe("BtmManagerService", () => {
         actionId: "actionId",
         resources: [
           {
-            id: undefined,
+            id: expect.any(String),
             name: "order",
             description: "manage orders, prices and payments",
             entities: [
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "order",
+                originalEntityId: "order",
                 fields: ["id"],
               },
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "orderItem",
+                originalEntityId: "orderItem",
                 fields: ["id"],
               },
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "price",
+                originalEntityId: "price",
                 fields: ["id"],
               },
             ],
           },
           {
-            id: undefined,
+            id: expect.any(String),
             name: "product",
             description: "manage products",
             entities: [
               {
-                id: undefined,
+                id: expect.any(String),
                 name: "product",
+                originalEntityId: "product",
                 fields: ["name"],
               },
             ],

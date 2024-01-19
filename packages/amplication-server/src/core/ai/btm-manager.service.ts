@@ -1,10 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import {
-  BreakTheMonolithPromptOutput,
-  ResourcePartial,
-} from "./prompt-manager.types";
-import { BtmRecommendation } from "../../models";
-import { BtmEntityRecommendation } from "../../prisma";
+import { BreakTheMonolithPromptOutput } from "./prompt-manager.types";
+import { BtmRecommendation } from "./dto";
+import { EntityPartial, ResourcePartial } from "./ai.types";
+import cuid from "cuid";
 
 @Injectable()
 export class BtmManagerService {
@@ -41,7 +39,7 @@ export class BtmManagerService {
       resources: promptResult.microservices
         .sort((microservice) => -1 * microservice.dataModels.length)
         .map((microservice) => ({
-          id: undefined,
+          id: cuid(),
           name: microservice.name,
           description: microservice.functionality,
           entities: microservice.dataModels
@@ -56,17 +54,25 @@ export class BtmManagerService {
                 !isDuplicatedAlreadyUsed
               );
             })
-            .map(
-              (dataModelName) =>
-                <BtmEntityRecommendation>{
-                  id: undefined,
-                  name: dataModelName,
-                  fields:
-                    originalResource.entities
-                      ?.find((x) => x.name === dataModelName)
-                      ?.versions[0]?.fields.map((field) => field.name) ?? [],
-                }
-            ),
+            .map((dataModelName) => {
+              const entityNameIdMap = originalResource.entities.reduce(
+                (map, entity) => {
+                  map[entity.name] = entity;
+                  return map;
+                },
+                {} as Record<string, EntityPartial>
+              );
+
+              return {
+                id: cuid(),
+                name: dataModelName,
+                fields:
+                  entityNameIdMap[dataModelName]?.versions[0]?.fields.map(
+                    (field) => field.name
+                  ) ?? [],
+                originalEntityId: entityNameIdMap[dataModelName]?.id,
+              };
+            }),
         })),
     };
   }
