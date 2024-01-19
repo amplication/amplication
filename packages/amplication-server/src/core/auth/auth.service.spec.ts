@@ -24,6 +24,7 @@ import { Workspace, Project, Resource, Account, User } from "../../models";
 import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
 import { anyString } from "jest-mock-extended";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
+const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
 const EXAMPLE_ACCOUNT: Account = {
   id: "alice",
@@ -464,9 +465,7 @@ describe("AuthService", () => {
           previewAccountType:
             EnumPreviewAccountType[EXAMPLE_PREVIEW_ACCOUNT.previewAccountType],
         })
-      ).rejects.toThrowError(
-        "Email must be a work email, not a public domain email"
-      );
+      ).rejects.toThrowError(WORK_EMAIL_INVALID);
 
       expect(createAccountMock).toHaveBeenCalledTimes(0);
       expect(createAccountMock).toHaveBeenCalledTimes(0);

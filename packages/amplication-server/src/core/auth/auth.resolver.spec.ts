@@ -96,7 +96,7 @@ const SIGNUP_PREVIEW_ACCOUNT_MUTATION = gql`
     $previewAccountEmail: String!
     $previewAccountType: EnumPreviewAccountType!
   ) {
-    signUpWithBusinessEmail(
+    signupPreviewAccount(
       data: {
         previewAccountEmail: $previewAccountEmail
         previewAccountType: $previewAccountType
@@ -268,7 +268,7 @@ describe("AuthResolver", () => {
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      signUpWithBusinessEmail: {
+      signupPreviewAccount: {
         ...EXAMPLE_AUTH_PREVIEW_ACCOUNT,
       },
     });
