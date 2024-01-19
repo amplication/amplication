@@ -22,7 +22,7 @@ import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { AuthExceptionFilter } from "../../filters/auth-exception.filter";
 import { requiresAuth } from "express-openid-connect";
-import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 export const AUTH_LOGIN_PATH = "/auth/login";
 export const AUTH_LOGOUT_PATH = "/auth/logout";
 export const AUTH_CALLBACK_PATH = "/auth/callback";
@@ -183,9 +183,11 @@ export class AuthController {
       isNew = false;
     }
 
-    if (user.account.previewAccountType === PreviewAccountType.Auth0Signup) {
+    if (
+      user.account.previewAccountType === EnumPreviewAccountType.Auth0Signup
+    ) {
       user = await this.authService.updateUser(user, {
-        previewAccountType: PreviewAccountType.None,
+        previewAccountType: EnumPreviewAccountType.None,
       });
       isNew = true;
     }

@@ -33,13 +33,14 @@ import {
 } from "auth0";
 import { SignupPreviewAccountInput } from "./dto/SignupPreviewAccountInput";
 import * as crypto from "crypto";
-import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
 import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
 import { USER_ENTITY_NAME } from "../entity/constants";
 import { PUBLIC_DOMAINS } from "./publicDomains";
+import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
 
 export type AuthUser = User & {
   account: Account;
@@ -72,6 +73,7 @@ export const IDENTITY_PROVIDER_SSO = "SSO";
 export const IDENTITY_PROVIDER_MANUAL = "Manual";
 export const IDENTITY_PROVIDER_PREVIEW_ACCOUNT = "PreviewAccount";
 export const IDENTITY_PROVIDER_AUTH0 = "Auth0";
+const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
 const AUTH_USER_INCLUDE = {
   account: true,
@@ -129,29 +131,33 @@ export class AuthService {
     });
   }
 
-  async signupAuth0User({
-    previewAccountType,
-    previewAccountEmail,
-  }): Promise<{ message: string }> {
+  async signupWithBusinessEmail(
+    args: SignupWithBusinessEmailArgs
+  ): Promise<boolean> {
+    const emailAddress = args.data.email.toLowerCase();
+
+    if (!this.isValidWorkEmail(emailAddress)) {
+      throw new AmplicationError(WORK_EMAIL_INVALID);
+    }
+
     try {
       let auth0User;
       const existedAccount = await this.accountService.findAccount({
         where: {
-          email: previewAccountEmail,
+          email: emailAddress,
         },
       });
-      const existedAuth0User = await this.getAuth0UserByEmail(
-        previewAccountEmail
-      );
+
+      const existedAuth0User = await this.getAuth0UserByEmail(emailAddress);
       if (!existedAuth0User) {
-        auth0User = await this.createAuth0User(previewAccountEmail);
+        auth0User = await this.createAuth0User(emailAddress);
 
         if (!auth0User.data.email)
           throw Error("Failed to create new Auth0 user");
       }
 
       const resetPassword = await this.resetAuth0UserPassword(
-        existedAuth0User ? previewAccountEmail : auth0User.data.email
+        existedAuth0User ? emailAddress : auth0User.data.email
       );
       if (!resetPassword.data)
         throw Error("Failed to send reset message to new Auth0 user");
@@ -160,28 +166,23 @@ export class AuthService {
         const account = await this.accountService.createAccount(
           {
             data: {
-              email: previewAccountEmail,
+              email: emailAddress,
               firstName: "",
               lastName: "",
               password: "",
-              previewAccountType,
+              previewAccountType: EnumPreviewAccountType.Auth0Signup,
             },
           },
           IDENTITY_PROVIDER_AUTH0
         );
-        const workspaceName = previewAccountEmail.split("@")[0];
+        const workspaceName = emailAddress.split("@")[0];
         await this.bootstrapUser(account, workspaceName);
       }
 
-      return {
-        message:
-          "Complete signup by setting a password using the email we just sent",
-      };
+      return true;
     } catch (error) {
       this.logger.error(error.message, error);
-      return {
-        message: "Oops! Signup didn't go through. Please try again later.",
-      };
+      throw new AmplicationError("Sign up failed, please try again later.");
     }
   }
 
@@ -284,7 +285,7 @@ export class AuthService {
 
   async updateUser(
     user: AuthUser,
-    data: { githubId?: string; previewAccountType?: PreviewAccountType }
+    data: { githubId?: string; previewAccountType?: EnumPreviewAccountType }
   ): Promise<AuthUser> {
     const account = await this.accountService.updateAccount({
       where: { id: user.account.id },
@@ -357,7 +358,7 @@ export class AuthService {
         data: {
           email: userEmail,
           previewAccountEmail: null,
-          previewAccountType: PreviewAccountType.None,
+          previewAccountType: EnumPreviewAccountType.None,
         },
       });
 
@@ -379,9 +380,7 @@ export class AuthService {
     previewAccountType,
   }: SignupPreviewAccountInput): Promise<AuthPreviewAccount> {
     if (!this.isValidWorkEmail(previewAccountEmail)) {
-      throw new AmplicationError(
-        `Email must be a work email, not a public domain email`
-      );
+      throw new AmplicationError(WORK_EMAIL_INVALID);
     }
     const { signupData, identityProvider } = this.generateDataForPreviewAccount(
       previewAccountEmail,
@@ -410,7 +409,7 @@ export class AuthService {
 
   private generateDataForPreviewAccount(
     previewAccountEmail: string,
-    previewAccountType: PreviewAccountType
+    previewAccountType: EnumPreviewAccountType
   ) {
     return {
       signupData: {
@@ -761,15 +760,15 @@ export class AuthService {
 
     let resource: Resource;
     switch (account.previewAccountType) {
-      case PreviewAccountType.BreakingTheMonolith:
+      case EnumPreviewAccountType.BreakingTheMonolith:
         resource = await this.createBreakingTheMonolithPreviewService(
           project.id,
           user
         );
         break;
-      case PreviewAccountType.None:
+      case EnumPreviewAccountType.None:
         throw new AmplicationError(
-          `${PreviewAccountType.None} is not a preview account, but a regular account`
+          `${EnumPreviewAccountType.None} is not a preview account, but a regular account`
         );
       default:
         throw new AmplicationError(

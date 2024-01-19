@@ -21,7 +21,7 @@ import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { SignupPreviewAccountArgs } from "./dto/SignupPreviewAccountArgs";
 import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
-import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
+import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
 
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -34,8 +34,15 @@ export class AuthResolver {
     return user;
   }
 
+  @Mutation(() => Boolean)
+  async signupWithBusinessEmail(
+    @Args() args: SignupWithBusinessEmailArgs
+  ): Promise<boolean> {
+    return this.authService.signupWithBusinessEmail(args);
+  }
+
   @Mutation(() => AuthPreviewAccount)
-  async signUpWithBusinessEmail(
+  async signupPreviewAccount(
     @Args() args: SignupPreviewAccountArgs
   ): Promise<AuthPreviewAccount> {
     const {
@@ -43,15 +50,11 @@ export class AuthResolver {
     } = args;
 
     const previewAccountEmailToLower = previewAccountEmail.toLowerCase();
-    return previewAccountType === PreviewAccountType.BreakingTheMonolith
-      ? this.authService.signupPreviewAccount({
-          previewAccountEmail: previewAccountEmailToLower,
-          previewAccountType,
-        })
-      : this.authService.signupAuth0User({
-          previewAccountEmail: previewAccountEmailToLower,
-          previewAccountType,
-        });
+
+    return this.authService.signupPreviewAccount({
+      previewAccountEmail: previewAccountEmailToLower,
+      previewAccountType,
+    });
   }
 
   @Mutation(() => String)

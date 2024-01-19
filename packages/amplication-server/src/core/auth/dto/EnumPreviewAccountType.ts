@@ -1,11 +1,11 @@
 import { registerEnumType } from "@nestjs/graphql";
 
-export enum PreviewAccountType {
+export enum EnumPreviewAccountType {
   None = "None",
   BreakingTheMonolith = "BreakingTheMonolith",
   Auth0Signup = "Auth0Signup",
 }
 
-registerEnumType(PreviewAccountType, {
+registerEnumType(EnumPreviewAccountType, {
   name: "PreviewAccountType",
 });
