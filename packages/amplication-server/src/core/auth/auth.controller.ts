@@ -13,10 +13,10 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { MorganInterceptor } from "nest-morgan";
 import { Request, Response } from "express";
-import { AuthService, AuthUser } from "./auth.service";
+import { AuthService } from "./auth.service";
 import { GithubAuthExceptionFilter } from "../../filters/github-auth-exception.filter";
 import { GitHubAuthGuard } from "./github.guard";
-import { AuthProfile, GitHubRequest } from "./types";
+import { AuthProfile, AuthUser, GitHubRequest } from "./types";
 import { stringifyUrl } from "query-string";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
