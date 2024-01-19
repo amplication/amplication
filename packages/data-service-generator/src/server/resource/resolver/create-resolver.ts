@@ -46,7 +46,6 @@ import {
   isOneToOneRelationField,
   isToManyRelationField,
 } from "../../../utils/field";
-import { getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import {
   createServiceId,
@@ -72,7 +71,8 @@ export async function createResolverModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entity: Entity
+  entity: Entity,
+  dtoNameToPath: Record<string, string>
 ): Promise<ModuleMap> {
   const serviceId = createServiceId(entityType);
   const createFunctionId = createCreateFunctionId(entityType);
@@ -164,7 +164,8 @@ export async function createResolverModules(
       resolverBaseId,
       templateMapping,
       entityActions,
-    }),
+      dtoNameToPath,
+    } as CreateEntityResolverParams),
     await pluginWrapper(
       createResolverBaseModule,
       EventNames.CreateEntityResolverBase,
@@ -184,7 +185,8 @@ export async function createResolverModules(
         templateMapping,
         moduleContainers,
         entityActions,
-      }
+        dtoNameToPath,
+      } as CreateEntityResolverBaseParams
     ),
   ]);
 
@@ -198,9 +200,10 @@ async function createResolverModule({
   serviceId,
   resolverBaseId,
   templateMapping,
+  dtoNameToPath,
 }: CreateEntityResolverParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { serverDirectories, DTOs } = DsgContext.getInstance;
+  const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.resolver.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
 
@@ -213,7 +216,6 @@ async function createResolverModule({
     ),
   ]);
 
-  const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     template,
     getImportableDTOs(modulePath, dtoNameToPath)
@@ -262,6 +264,7 @@ async function createResolverBaseModule({
   templateMapping,
   moduleContainers,
   entityActions,
+  dtoNameToPath,
 }: CreateEntityResolverBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { serverDirectories, DTOs } = DsgContext.getInstance;
@@ -389,7 +392,6 @@ async function createResolverBaseModule({
     deleteClassMemberByKey(classDeclaration, updateMutationId);
   }
 
-  const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     template,
     getImportableDTOs(moduleBasePath, dtoNameToPath)

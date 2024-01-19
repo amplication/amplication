@@ -36,7 +36,6 @@ import {
   removeClassMethodByName,
 } from "../../../utils/ast";
 import { isToManyRelationField } from "../../../utils/field";
-import { getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
@@ -72,7 +71,8 @@ export async function createControllerModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entity: Entity
+  entity: Entity,
+  dtoNameToPath: Record<string, string>
 ): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { appInfo, DTOs, entityActionsMap, moduleContainers } =
@@ -169,7 +169,7 @@ export async function createControllerModules(
         controllerBaseId,
         serviceId,
         entityActions,
-      }
+      } as CreateEntityControllerParams
     ),
     await pluginWrapper(
       createControllerBaseModule,
@@ -185,7 +185,8 @@ export async function createControllerModules(
         serviceId,
         moduleContainers,
         entityActions,
-      }
+        dtoNameToPath,
+      } as CreateEntityControllerBaseParams
     ),
   ]);
 
@@ -245,6 +246,7 @@ async function createControllerBaseModule({
   serviceId,
   moduleContainers,
   entityActions,
+  dtoNameToPath,
 }: CreateEntityControllerBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories } = DsgContext.getInstance;
@@ -346,7 +348,6 @@ async function createControllerBaseModule({
   removeTSInterfaceDeclares(template);
   removeTSClassDeclares(template);
 
-  const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     template,
     getImportableDTOs(moduleBasePath, dtoNameToPath)

@@ -6,7 +6,7 @@ import {
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../utils/read-static-modules";
 import { formatCode } from "@amplication/code-gen-utils";
-import { createDTOModules } from "./resource/create-dtos";
+import { createDTOModules, getDTONameToPath } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
@@ -43,6 +43,8 @@ async function createServerInternal(
   await context.logger.info(`Server path: ${serverDirectories.baseDirectory}`);
   await context.logger.info("Creating server...");
 
+  const dtoNameToPath = getDTONameToPath(context.DTOs);
+
   await context.logger.info("Copying static modules...");
   const staticModules = await readStaticModules(
     STATIC_DIRECTORY,
@@ -59,7 +61,10 @@ async function createServerInternal(
   const dtoModules = await createDTOModules(context.DTOs);
 
   await context.logger.info("Creating resources...");
-  const resourcesModules = await createResourcesModules(entities);
+  const resourcesModules = await createResourcesModules(
+    entities,
+    dtoNameToPath
+  );
 
   await context.logger.info("Creating auth module...");
   const authModules = await createAuthModules();
@@ -68,7 +73,7 @@ async function createServerInternal(
   const swagger = await createSwagger();
 
   await context.logger.info("Creating seed script...");
-  const seedModule = await createSeed();
+  const seedModule = await createSeed(dtoNameToPath);
 
   await context.logger.info("Creating message broker...");
   const messageBrokerModules = await createMessageBroker({});
