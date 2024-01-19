@@ -6,7 +6,7 @@ import { EnumPreviewAccountType } from "../../models";
 import { useHistory } from "react-router-dom";
 
 type TData = {
-  signUpWithBusinessEmail: {
+  signupPreviewAccount: {
     token: string;
     workspaceId: string;
     resourceId: string;
@@ -33,9 +33,9 @@ const useSignupPreviewAccount = (
             previewAccountType,
           },
         },
-        onCompleted: ({ signUpWithBusinessEmail }) => {
+        onCompleted: ({ signupPreviewAccount }) => {
           const { token, workspaceId, projectId, resourceId } =
-            signUpWithBusinessEmail;
+            signupPreviewAccount;
           setToken(token);
           history.push(
             `/${workspaceId}/${projectId}/${resourceId}/breaking-the-monolith-options`
