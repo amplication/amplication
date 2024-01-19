@@ -292,13 +292,13 @@ function prepareEntityActions(
         (moduleAction) => moduleAction.parentBlockId === moduleContainerId
       );
 
-      const entityCustomAction = currentEntityActions.filter(
+      let entityCustomAction = currentEntityActions.filter(
         (moduleAction) =>
           moduleAction.actionType === EnumModuleActionType.Custom
       );
 
       //create 2 arrays for default and relations
-      const entityDefaultEntries = Object.fromEntries(
+      let entityDefaultEntries = Object.fromEntries(
         actionKeys.map((key) => {
           if (key === EnumModuleActionType.Custom) {
             return [];
@@ -312,7 +312,7 @@ function prepareEntityActions(
         })
       ) as entityDefaultActions;
 
-      const relatedFieldsDefaultEntries = Object.fromEntries(
+      let relatedFieldsDefaultEntries = Object.fromEntries(
         relationFields.map((relatedField) => {
           const actions = actionKeys.map((key) => {
             const moduleAction = currentEntityActions.find(
@@ -326,6 +326,32 @@ function prepareEntityActions(
           return [relatedField.name, actions];
         })
       ) as Record<string, entityRelatedFieldDefaultActions>;
+
+      //disable all actions if the moduleContainer is disabled
+      if (!moduleContainer.enabled) {
+        entityDefaultEntries = Object.fromEntries(
+          Object.entries(entityDefaultEntries).map(([key, value]) => {
+            return [key, { ...value, enabled: false }];
+          })
+        ) as entityDefaultActions;
+
+        relatedFieldsDefaultEntries = Object.fromEntries(
+          Object.entries(relatedFieldsDefaultEntries).map(([key, value]) => {
+            return [
+              key,
+              Object.fromEntries(
+                Object.entries(value).map(([key, value]) => {
+                  return [key, { ...value, enabled: false }];
+                })
+              ),
+            ];
+          })
+        ) as Record<string, entityRelatedFieldDefaultActions>;
+
+        entityCustomAction = entityCustomAction.map((action) => {
+          return { ...action, enabled: false };
+        });
+      }
 
       return [
         entity.name,
