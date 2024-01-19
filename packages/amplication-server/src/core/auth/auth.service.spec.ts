@@ -6,11 +6,7 @@ import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
 import { UserService } from "../user/user.service";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import {
-  AuthService,
-  AuthUser,
-  IDENTITY_PROVIDER_MANUAL,
-} from "./auth.service";
+import { AuthService, IDENTITY_PROVIDER_MANUAL } from "./auth.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { EnumTokenType } from "./dto";
 import { ProjectService } from "../project/project.service";
@@ -23,6 +19,7 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Workspace, Project, Resource, Account, User } from "../../models";
 import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
 import { anyString } from "jest-mock-extended";
+import { AuthUser } from "./types";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
@@ -189,6 +186,15 @@ const createWorkspaceMock = jest.fn(() => ({
 
 const convertPreviewSubscriptionToFreeWithTrialMock = jest.fn();
 
+const createPreviewEnvironmentMock = jest.fn(() => ({
+  workspace: {
+    ...EXAMPLE_WORKSPACE,
+    users: [EXAMPLE_AUTH_USER],
+  },
+  project: EXAMPLE_PROJECT,
+  resource: EXAMPLE_RESOURCE,
+}));
+
 const mockedCreateProject = jest.fn(() => EXAMPLE_PROJECT);
 
 const mockedCreatePreviewService = jest.fn(() => EXAMPLE_RESOURCE);
@@ -257,6 +263,7 @@ describe("AuthService", () => {
             createPreviewWorkspace: createWorkspaceMock,
             convertPreviewSubscriptionToFreeWithTrial:
               convertPreviewSubscriptionToFreeWithTrialMock,
+            createPreviewEnvironment: createPreviewEnvironmentMock,
           })),
         },
         MockedAmplicationLoggerProvider,
