@@ -171,11 +171,7 @@ export async function createEntityControllerSpecInternal({
       action?.actionType === EnumModuleActionType.Read ||
       action?.actionType === EnumModuleActionType.Find;
 
-    if (
-      action &&
-      moduleContainer &&
-      (!moduleContainer?.enabled || !action.enabled)
-    ) {
+    if (action && !action.enabled) {
       if (isCreateAction || isReadOrFindManyAction) {
         removeCallExpressionStatementByName(template, action);
       }
