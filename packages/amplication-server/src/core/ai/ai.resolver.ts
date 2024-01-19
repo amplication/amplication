@@ -16,21 +16,24 @@ import { AiRecommendationsArgs } from "./dto/ai-recommendation-args.dto";
 export class AiResolver {
   constructor(private readonly aiService: AiService) {}
 
-  @Mutation(() => String, {
+  @Mutation(() => TriggerAiRecommendations, {
     nullable: true,
     description:
       "Trigger the generation of a set of recommendations for breaking a resource into microservices",
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
-  async triggerGenerationBtmResourceRecommendation(
+  async triggerAiRecommendations(
     @Args({ name: "resourceId", type: () => String })
     resourceId: string,
     @UserEntity() user: User
-  ): Promise<void> {
-    await this.aiService.triggerGenerationBtmResourceRecommendation({
+  ): Promise<TriggerAiRecommendations> {
+    const actionId = await this.aiService.triggerAiRecommendations({
       resourceId,
       userId: user.id,
     });
+    return {
+      actionId,
+    };
   }
 
   @Query(() => AiRecommendations, {

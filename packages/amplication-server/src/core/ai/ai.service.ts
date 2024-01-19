@@ -175,7 +175,7 @@ export class AiService {
       kafkaMessage
     );
 
-    return prompt;
+    return actionId;
   }
 
   async onConversationCompleted(

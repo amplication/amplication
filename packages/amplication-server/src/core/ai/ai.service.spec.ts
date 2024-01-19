@@ -113,7 +113,7 @@ describe("AiService", () => {
         userId,
       });
 
-      expect(result).toEqual("Ciao ciao");
+      expect(result).toEqual(mockedActionId);
       expect(spyOnCreateUserActionByTypeWithInitialStep).toBeCalledWith(
         GENERATING_BTM_RESOURCE_RECOMMENDATION_USER_ACTION_TYPE,
         expect.objectContaining({
