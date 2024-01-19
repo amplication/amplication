@@ -88,10 +88,11 @@ export type Auth = {
 };
 
 export type AuthPreviewAccount = {
-  projectId: Scalars['String']['output'];
-  resourceId: Scalars['String']['output'];
-  token: Scalars['String']['output'];
-  workspaceId: Scalars['String']['output'];
+  message?: Maybe<Scalars['String']['output']>;
+  projectId?: Maybe<Scalars['String']['output']>;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  token?: Maybe<Scalars['String']['output']>;
+  workspaceId?: Maybe<Scalars['String']['output']>;
 };
 
 export type AuthorizeResourceWithGitResult = {
@@ -325,6 +326,11 @@ export type Coupon = {
   durationMonths: Scalars['Int']['output'];
   id: Scalars['String']['output'];
   subscriptionPlan: EnumSubscriptionPlan;
+};
+
+export type CreateEntitiesFromPredefinedSchemaInput = {
+  resource: WhereParentIdInput;
+  schemaName: EnumSchemaNames;
 };
 
 export type CreateGitRepositoryBaseInput = {
@@ -839,6 +845,10 @@ export type EnumResourceTypeFilter = {
   notIn?: InputMaybe<Array<EnumResourceType>>;
 };
 
+export enum EnumSchemaNames {
+  CalDotCom = 'CalDotCom'
+}
+
 export enum EnumSubscriptionPlan {
   Enterprise = 'Enterprise',
   Free = 'Free',
@@ -862,6 +872,7 @@ export enum EnumUserActionStatus {
 }
 
 export enum EnumUserActionType {
+  BreakTheMonolith = 'BreakTheMonolith',
   DbSchemaImport = 'DBSchemaImport'
 }
 
@@ -1222,12 +1233,14 @@ export type Mutation = {
   commit?: Maybe<Commit>;
   completeGitOAuth2Flow: GitOrganization;
   completeInvitation: Auth;
+  completeSignupWithBusinessEmail: Scalars['String']['output'];
   connectGitRepository: Resource;
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
+  createEntitiesFromPredefinedSchema: UserAction;
   createEntitiesFromPrismaSchema: UserAction;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
@@ -1278,8 +1291,10 @@ export type Mutation = {
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
+  signUpWithBusinessEmail: AuthPreviewAccount;
   signup: Auth;
-  signupPreviewAccount: AuthPreviewAccount;
+  /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
+  triggerGenerationBtmResourceRecommendation?: Maybe<Scalars['String']['output']>;
   updateAccount: Account;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
@@ -1361,6 +1376,11 @@ export type MutationCreateBuildArgs = {
 
 export type MutationCreateDefaultEntitiesArgs = {
   data: DefaultEntitiesInput;
+};
+
+
+export type MutationCreateEntitiesFromPredefinedSchemaArgs = {
+  data: CreateEntitiesFromPredefinedSchemaInput;
 };
 
 
@@ -1620,13 +1640,18 @@ export type MutationSetPluginOrderArgs = {
 };
 
 
+export type MutationSignUpWithBusinessEmailArgs = {
+  data: SignupPreviewAccountInput;
+};
+
+
 export type MutationSignupArgs = {
   data: SignupInput;
 };
 
 
-export type MutationSignupPreviewAccountArgs = {
-  data: SignupPreviewAccountInput;
+export type MutationTriggerGenerationBtmResourceRecommendationArgs = {
+  resourceId: Scalars['String']['input'];
 };
 
 
@@ -1890,6 +1915,7 @@ export type PluginSetOrderInput = {
 };
 
 export enum PreviewAccountType {
+  Auth0Signup = 'Auth0Signup',
   BreakingTheMonolith = 'BreakingTheMonolith',
   None = 'None'
 }

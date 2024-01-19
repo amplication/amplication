@@ -11,7 +11,7 @@ export class CreateConversation extends AiConversationComplete.Value {
   @Field(() => Boolean, {
     nullable: false,
   })
-  declare isGptConversionCompleted: boolean;
+  declare success: boolean;
 
   @Field(() => String, {
     nullable: true,

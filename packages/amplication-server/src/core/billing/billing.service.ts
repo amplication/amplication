@@ -315,6 +315,20 @@ export class BillingService {
     });
   }
 
+  async provisionNewSubscriptionForPreviewAccount(
+    workspaceId: string
+  ): Promise<null> {
+    if (!this.isBillingEnabled) {
+      return;
+    }
+
+    await this.stiggClient.provisionSubscription({
+      customerId: workspaceId,
+      planId: this.defaultSubscriptionPlan.planId,
+      addons: this.defaultSubscriptionPlan.addons,
+    });
+  }
+
   //todo: wrap with a try catch and return an object with the details about the limitations
   async validateSubscriptionPlanLimitationsForWorkspace({
     workspaceId,

@@ -70,10 +70,11 @@ type Auth {
 }
 
 type AuthPreviewAccount {
-  projectId: String!
-  resourceId: String!
-  token: String!
-  workspaceId: String!
+  message: String
+  projectId: String
+  resourceId: String
+  token: String
+  workspaceId: String
 }
 
 type AuthorizeResourceWithGitResult {
@@ -297,6 +298,11 @@ type Coupon {
   durationMonths: Int!
   id: String!
   subscriptionPlan: EnumSubscriptionPlan!
+}
+
+input CreateEntitiesFromPredefinedSchemaInput {
+  resource: WhereParentIdInput!
+  schemaName: EnumSchemaNames!
 }
 
 input CreateGitRepositoryBaseInput {
@@ -801,6 +807,10 @@ input EnumResourceTypeFilter {
   notIn: [EnumResourceType!]
 }
 
+enum EnumSchemaNames {
+  CalDotCom
+}
+
 enum EnumSubscriptionPlan {
   Enterprise
   Free
@@ -824,6 +834,7 @@ enum EnumUserActionStatus {
 }
 
 enum EnumUserActionType {
+  BreakTheMonolith
   DBSchemaImport
 }
 
@@ -1194,12 +1205,14 @@ type Mutation {
   commit(data: CommitCreateInput!): Commit
   completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
   completeInvitation(data: CompleteInvitationInput!): Auth!
+  completeSignupWithBusinessEmail: String!
   connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
+  createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
   createEntityField(data: EntityFieldCreateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
@@ -1250,8 +1263,13 @@ type Mutation {
   revokeInvitation(where: WhereUniqueInput!): Invitation
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  signUpWithBusinessEmail(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signup(data: SignupInput!): Auth!
-  signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
+
+  """
+  Trigger the generation of a set of recommendations for breaking a resource into microservices
+  """
+  triggerGenerationBtmResourceRecommendation(resourceId: String!): String
   updateAccount(data: UpdateAccountInput!): Account!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -1413,6 +1431,7 @@ input PluginSetOrderInput {
 }
 
 enum PreviewAccountType {
+  Auth0Signup
   BreakingTheMonolith
   None
 }

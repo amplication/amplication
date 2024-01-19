@@ -5460,8 +5460,10 @@ export class CustomerGrpcControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
   @GrpcMethod("CustomerService", "createCustomer")
-  async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
-    return await this.service.CREATE_FUNCTION({
+  async createCustomer(
+    @common.Body() data: CustomerCreateInput
+  ): Promise<Customer> {
+    return await this.service.createCustomer({
       data: {
         ...data,
 
@@ -5512,9 +5514,9 @@ export class CustomerGrpcControllerBase {
   @swagger.ApiOkResponse({ type: [Customer] })
   @ApiNestedQuery(CustomerFindManyArgs)
   @GrpcMethod("CustomerService", "customers")
-  async findMany(@common.Req() request: Request): Promise<Customer[]> {
+  async customers(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
-    return this.service.FIND_MANY_FUNCTION({
+    return this.service.customers({
       ...args,
       select: {
         id: true,
@@ -5551,10 +5553,10 @@ export class CustomerGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("CustomerService", "customer")
-  async findOne(
+  async customer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    const result = await this.service.FIND_ONE_FUNCTION({
+    const result = await this.service.customer({
       where: params,
       select: {
         id: true,
@@ -5597,12 +5599,12 @@ export class CustomerGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("CustomerService", "updateCustomer")
-  async update(
+  async updateCustomer(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() data: CustomerUpdateInput
   ): Promise<Customer | null> {
     try {
-      return await this.service.UPDATE_FUNCTION({
+      return await this.service.updateCustomer({
         where: params,
         data: {
           ...data,
@@ -5662,11 +5664,11 @@ export class CustomerGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("CustomerService", "deleteCustomer")
-  async delete(
+  async deleteCustomer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
     try {
-      return await this.service.DELETE_FUNCTION({
+      return await this.service.deleteCustomer({
         where: params,
         select: {
           id: true,
@@ -5752,7 +5754,7 @@ export class CustomerGrpcControllerBase {
         connect: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5770,7 +5772,7 @@ export class CustomerGrpcControllerBase {
         set: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5788,7 +5790,7 @@ export class CustomerGrpcControllerBase {
         disconnect: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -6922,8 +6924,8 @@ export class EmptyGrpcControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
   @GrpcMethod("EmptyService", "createEmpty")
-  async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
-    return await this.service.CREATE_FUNCTION({
+  async createEmpty(@common.Body() data: EmptyCreateInput): Promise<Empty> {
+    return await this.service.createEmpty({
       data: data,
       select: {
         id: true,
@@ -6937,9 +6939,9 @@ export class EmptyGrpcControllerBase {
   @swagger.ApiOkResponse({ type: [Empty] })
   @ApiNestedQuery(EmptyFindManyArgs)
   @GrpcMethod("EmptyService", "empties")
-  async findMany(@common.Req() request: Request): Promise<Empty[]> {
+  async empties(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
-    return this.service.FIND_MANY_FUNCTION({
+    return this.service.empties({
       ...args,
       select: {
         id: true,
@@ -6953,10 +6955,10 @@ export class EmptyGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("EmptyService", "empty")
-  async findOne(
+  async empty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
-    const result = await this.service.FIND_ONE_FUNCTION({
+    const result = await this.service.empty({
       where: params,
       select: {
         id: true,
@@ -6976,12 +6978,12 @@ export class EmptyGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("EmptyService", "updateEmpty")
-  async update(
+  async updateEmpty(
     @common.Param() params: EmptyWhereUniqueInput,
     @common.Body() data: EmptyUpdateInput
   ): Promise<Empty | null> {
     try {
-      return await this.service.UPDATE_FUNCTION({
+      return await this.service.updateEmpty({
         where: params,
         data: data,
         select: {
@@ -7004,11 +7006,11 @@ export class EmptyGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("EmptyService", "deleteEmpty")
-  async delete(
+  async deleteEmpty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
     try {
-      return await this.service.DELETE_FUNCTION({
+      return await this.service.deleteEmpty({
         where: params,
         select: {
           id: true,
@@ -8587,8 +8589,8 @@ export class OrderGrpcControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
   @GrpcMethod("OrderService", "createOrder")
-  async create(@common.Body() data: OrderCreateInput): Promise<Order> {
-    return await this.service.CREATE_FUNCTION({
+  async createOrder(@common.Body() data: OrderCreateInput): Promise<Order> {
+    return await this.service.createOrder({
       data: {
         ...data,
 
@@ -8618,9 +8620,9 @@ export class OrderGrpcControllerBase {
   @swagger.ApiOkResponse({ type: [Order] })
   @ApiNestedQuery(OrderFindManyArgs)
   @GrpcMethod("OrderService", "orders")
-  async findMany(@common.Req() request: Request): Promise<Order[]> {
+  async orders(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
-    return this.service.FIND_MANY_FUNCTION({
+    return this.service.orders({
       ...args,
       select: {
         id: true,
@@ -8644,10 +8646,10 @@ export class OrderGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("OrderService", "order")
-  async findOne(
+  async order(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    const result = await this.service.FIND_ONE_FUNCTION({
+    const result = await this.service.order({
       where: params,
       select: {
         id: true,
@@ -8677,12 +8679,12 @@ export class OrderGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("OrderService", "updateOrder")
-  async update(
+  async updateOrder(
     @common.Param() params: OrderWhereUniqueInput,
     @common.Body() data: OrderUpdateInput
   ): Promise<Order | null> {
     try {
-      return await this.service.UPDATE_FUNCTION({
+      return await this.service.updateOrder({
         where: params,
         data: {
           ...data,
@@ -8721,11 +8723,11 @@ export class OrderGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("OrderService", "deleteOrder")
-  async delete(
+  async deleteOrder(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
     try {
-      return await this.service.DELETE_FUNCTION({
+      return await this.service.deleteOrder({
         where: params,
         select: {
           id: true,
@@ -10450,10 +10452,10 @@ export class OrganizationGrpcControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Organization })
   @GrpcMethod("OrganizationService", "createOrganization")
-  async create(
+  async createOrganization(
     @common.Body() data: OrganizationCreateInput
   ): Promise<Organization> {
-    return await this.service.CREATE_FUNCTION({
+    return await this.service.createOrganization({
       data: data,
       select: {
         id: true,
@@ -10468,9 +10470,9 @@ export class OrganizationGrpcControllerBase {
   @swagger.ApiOkResponse({ type: [Organization] })
   @ApiNestedQuery(OrganizationFindManyArgs)
   @GrpcMethod("OrganizationService", "organizations")
-  async findMany(@common.Req() request: Request): Promise<Organization[]> {
+  async organizations(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
-    return this.service.FIND_MANY_FUNCTION({
+    return this.service.organizations({
       ...args,
       select: {
         id: true,
@@ -10485,10 +10487,10 @@ export class OrganizationGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("OrganizationService", "organization")
-  async findOne(
+  async organization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
-    const result = await this.service.FIND_ONE_FUNCTION({
+    const result = await this.service.organization({
       where: params,
       select: {
         id: true,
@@ -10509,12 +10511,12 @@ export class OrganizationGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("OrganizationService", "updateOrganization")
-  async update(
+  async updateOrganization(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() data: OrganizationUpdateInput
   ): Promise<Organization | null> {
     try {
-      return await this.service.UPDATE_FUNCTION({
+      return await this.service.updateOrganization({
         where: params,
         data: data,
         select: {
@@ -10538,11 +10540,11 @@ export class OrganizationGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("OrganizationService", "deleteOrganization")
-  async delete(
+  async deleteOrganization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
     try {
-      return await this.service.DELETE_FUNCTION({
+      return await this.service.deleteOrganization({
         where: params,
         select: {
           id: true,
@@ -10620,7 +10622,7 @@ export class OrganizationGrpcControllerBase {
         connect: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10638,7 +10640,7 @@ export class OrganizationGrpcControllerBase {
         set: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10656,7 +10658,7 @@ export class OrganizationGrpcControllerBase {
         disconnect: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10721,7 +10723,7 @@ export class OrganizationGrpcControllerBase {
         connect: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10739,7 +10741,7 @@ export class OrganizationGrpcControllerBase {
         set: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10757,7 +10759,7 @@ export class OrganizationGrpcControllerBase {
         disconnect: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10822,7 +10824,7 @@ export class OrganizationGrpcControllerBase {
         connect: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10840,7 +10842,7 @@ export class OrganizationGrpcControllerBase {
         set: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10858,7 +10860,7 @@ export class OrganizationGrpcControllerBase {
         disconnect: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -12399,8 +12401,10 @@ export class ProfileGrpcControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Profile })
   @GrpcMethod("ProfileService", "createProfile")
-  async create(@common.Body() data: ProfileCreateInput): Promise<Profile> {
-    return await this.service.CREATE_FUNCTION({
+  async createProfile(
+    @common.Body() data: ProfileCreateInput
+  ): Promise<Profile> {
+    return await this.service.createProfile({
       data: {
         ...data,
 
@@ -12431,9 +12435,9 @@ export class ProfileGrpcControllerBase {
   @swagger.ApiOkResponse({ type: [Profile] })
   @ApiNestedQuery(ProfileFindManyArgs)
   @GrpcMethod("ProfileService", "profiles")
-  async findMany(@common.Req() request: Request): Promise<Profile[]> {
+  async profiles(@common.Req() request: Request): Promise<Profile[]> {
     const args = plainToClass(ProfileFindManyArgs, request.query);
-    return this.service.FIND_MANY_FUNCTION({
+    return this.service.profiles({
       ...args,
       select: {
         id: true,
@@ -12456,10 +12460,10 @@ export class ProfileGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("ProfileService", "profile")
-  async findOne(
+  async profile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
-    const result = await this.service.FIND_ONE_FUNCTION({
+    const result = await this.service.profile({
       where: params,
       select: {
         id: true,
@@ -12488,12 +12492,12 @@ export class ProfileGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("ProfileService", "updateProfile")
-  async update(
+  async updateProfile(
     @common.Param() params: ProfileWhereUniqueInput,
     @common.Body() data: ProfileUpdateInput
   ): Promise<Profile | null> {
     try {
-      return await this.service.UPDATE_FUNCTION({
+      return await this.service.updateProfile({
         where: params,
         data: {
           ...data,
@@ -12533,11 +12537,11 @@ export class ProfileGrpcControllerBase {
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("ProfileService", "deleteProfile")
-  async delete(
+  async deleteProfile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
     try {
-      return await this.service.DELETE_FUNCTION({
+      return await this.service.deleteProfile({
         where: params,
         select: {
           id: true,
@@ -15175,8 +15179,8 @@ export class UserGrpcControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
   @GrpcMethod("UserService", "createUser")
-  async create(@common.Body() data: UserCreateInput): Promise<User> {
-    return await this.service.CREATE_FUNCTION({
+  async createUser(@common.Body() data: UserCreateInput): Promise<User> {
+    return await this.service.createUser({
       data: {
         ...data,
 
@@ -15228,9 +15232,9 @@ export class UserGrpcControllerBase {
   @swagger.ApiOkResponse({ type: [User] })
   @ApiNestedQuery(UserFindManyArgs)
   @GrpcMethod("UserService", "users")
-  async findMany(@common.Req() request: Request): Promise<User[]> {
+  async users(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
-    return this.service.FIND_MANY_FUNCTION({
+    return this.service.users({
       ...args,
       select: {
         id: true,
@@ -15268,10 +15272,10 @@ export class UserGrpcControllerBase {
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("UserService", "user")
-  async findOne(
+  async user(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    const result = await this.service.FIND_ONE_FUNCTION({
+    const result = await this.service.user({
       where: params,
       select: {
         id: true,
@@ -15315,12 +15319,12 @@ export class UserGrpcControllerBase {
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("UserService", "updateUser")
-  async update(
+  async updateUser(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() data: UserUpdateInput
   ): Promise<User | null> {
     try {
-      return await this.service.UPDATE_FUNCTION({
+      return await this.service.updateUser({
         where: params,
         data: {
           ...data,
@@ -15381,11 +15385,11 @@ export class UserGrpcControllerBase {
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @GrpcMethod("UserService", "deleteUser")
-  async delete(
+  async deleteUser(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     try {
-      return await this.service.DELETE_FUNCTION({
+      return await this.service.deleteUser({
         where: params,
         select: {
           id: true,
@@ -15486,7 +15490,7 @@ export class UserGrpcControllerBase {
         connect: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -15504,7 +15508,7 @@ export class UserGrpcControllerBase {
         set: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -15522,7 +15526,7 @@ export class UserGrpcControllerBase {
         disconnect: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -15565,7 +15569,7 @@ export class UserGrpcControllerBase {
         connect: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -15583,7 +15587,7 @@ export class UserGrpcControllerBase {
         set: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -15601,7 +15605,7 @@ export class UserGrpcControllerBase {
         disconnect: body,
       },
     };
-    await this.service.UPDATE_FUNCTION({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },

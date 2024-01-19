@@ -19,6 +19,7 @@ import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_TOKEN = "exampleToken";
+const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
 const EXAMPLE_PREVIEW_EMAIL = "exampleEmail@amplication.com";
@@ -95,7 +96,7 @@ const SIGNUP_PREVIEW_ACCOUNT_MUTATION = gql`
     $previewAccountEmail: String!
     $previewAccountType: PreviewAccountType!
   ) {
-    signupPreviewAccount(
+    signUpWithBusinessEmail(
       data: {
         previewAccountEmail: $previewAccountEmail
         previewAccountType: $previewAccountType
@@ -153,11 +154,18 @@ const ME_QUERY = gql`
   }
 `;
 
+const COMPETE_SIGNUP_PREVIEW_ACCOUNT_MUTATION = gql`
+  mutation {
+    completeSignupWithBusinessEmail
+  }
+`;
+
 const authServiceSignUpMock = jest.fn(() => EXAMPLE_TOKEN);
 const authServiceLoginMock = jest.fn(() => EXAMPLE_TOKEN);
 const authServiceChangePasswordMock = jest.fn(() => EXAMPLE_ACCOUNT);
 const setCurrentWorkspaceMock = jest.fn(() => EXAMPLE_TOKEN);
 const signupPreviewAccountMock = jest.fn(() => EXAMPLE_AUTH_PREVIEW_ACCOUNT);
+const completeSignupPreviewAccountMock = jest.fn(() => EXAMPLE_MESSAGE);
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
@@ -178,6 +186,7 @@ describe("AuthResolver", () => {
             changePassword: authServiceChangePasswordMock,
             setCurrentWorkspace: setCurrentWorkspaceMock,
             signupPreviewAccount: signupPreviewAccountMock,
+            completeSignupPreviewAccount: completeSignupPreviewAccountMock,
           })),
         },
         {
@@ -259,7 +268,7 @@ describe("AuthResolver", () => {
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      signupPreviewAccount: {
+      signUpWithBusinessEmail: {
         ...EXAMPLE_AUTH_PREVIEW_ACCOUNT,
       },
     });
@@ -268,6 +277,24 @@ describe("AuthResolver", () => {
       ...variables,
       previewAccountEmail: variables.previewAccountEmail.toLowerCase(),
     });
+  });
+
+  it("should complete signup for preview account", async () => {
+    const res = await apolloClient.executeOperation(
+      {
+        query: COMPETE_SIGNUP_PREVIEW_ACCOUNT_MUTATION,
+      },
+      {
+        req: {
+          user: EXAMPLE_USER,
+        },
+      }
+    );
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      completeSignupWithBusinessEmail: EXAMPLE_MESSAGE,
+    });
+    expect(completeSignupPreviewAccountMock).toBeCalledTimes(1);
   });
 
   it("should login", async () => {

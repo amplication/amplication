@@ -37,15 +37,15 @@ jobs:
     if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.head_ref != 'next' )
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: nrwl/nx-set-shas@v3
+      - uses: nrwl/nx-set-shas@v4
         with:
           main-branch-name: ${{ env.BASE }}
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: "package.json"
           cache: "npm"

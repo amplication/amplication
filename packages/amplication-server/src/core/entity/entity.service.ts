@@ -3048,18 +3048,36 @@ export class EntityService {
           }
         }
 
-        const deletedField = await this.prisma.entityField.delete(args);
+        const deletedField = await this.prisma.entityField
+          .delete(args)
+          // Continue with the rest of the delete even if the field was not found
+          // This is done in order to allow the user to workaround issues in any case when a field has been deleted before
+          // Currently deleteIfExists doesn't exist. Tracking issue :- https://github.com/prisma/prisma/issues/4072
+          .catch((error) => {
+            if (error.code === "P2025") {
+              this.logger.error(
+                "Continue with the rest of the deletion even though the field was not found ",
+                error
+              );
 
-        const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
-          entity.resourceId,
-          entity.id
-        );
+              return null;
+            }
 
-        await this.moduleActionService.deleteDefaultActionsForRelationField(
-          deletedField,
-          moduleId,
-          user
-        );
+            throw new AmplicationError(error);
+          });
+
+        if (deletedField) {
+          const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
+            entity.resourceId,
+            entity.id
+          );
+
+          await this.moduleActionService.deleteDefaultActionsForRelationField(
+            deletedField,
+            moduleId,
+            user
+          );
+        }
 
         await this.moduleDtoService.deleteDefaultDtosForRelatedEntity(
           field,

@@ -135,6 +135,12 @@ export class WorkspaceService {
     return workspace;
   }
 
+  async convertPreviewSubscriptionToFreeWithTrial(workspaceId: string) {
+    await this.billingService.provisionNewSubscriptionForPreviewAccount(
+      workspaceId
+    );
+  }
+
   private async shouldBlockWorkspaceCreation(
     workspaceId: string
   ): Promise<boolean> {
@@ -225,7 +231,9 @@ export class WorkspaceService {
       BillingFeature.TeamMembers
     );
 
-    return workspaceMembers.currentUsage < workspaceMembers.usageLimit;
+    return !workspaceMembers.usageLimit
+      ? true
+      : workspaceMembers.currentUsage < workspaceMembers.usageLimit;
   }
 
   async inviteUser(

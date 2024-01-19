@@ -2,15 +2,18 @@ import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 export class AuthPreviewAccount {
-  @Field({ nullable: false })
-  token: string;
+  @Field(() => String, { nullable: true })
+  token?: string;
 
-  @Field({ nullable: false })
-  workspaceId: string;
+  @Field(() => String, { nullable: true })
+  workspaceId?: string;
 
-  @Field({ nullable: false })
-  projectId: string;
+  @Field(() => String, { nullable: true })
+  projectId?: string;
 
-  @Field({ nullable: false })
-  resourceId: string;
+  @Field(() => String, { nullable: true })
+  resourceId?: string;
+
+  @Field(() => String, { nullable: true })
+  message?: string;
 }

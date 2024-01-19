@@ -27,6 +27,7 @@ import { ModuleModule } from "./module/module.module";
 import { ModuleActionModule } from "./moduleAction/moduleAction.module";
 import { ModuleDtoModule } from "./moduleDto/moduleDto.module";
 import { AdministratorModule } from "./administrator/administrator.module";
+import { AiModule } from "./ai/ai.module";
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { AdministratorModule } from "./administrator/administrator.module";
     ModuleModule,
     ModuleActionModule,
     ModuleDtoModule,
+    AiModule,
   ],
   exports: [
     AccountModule,
