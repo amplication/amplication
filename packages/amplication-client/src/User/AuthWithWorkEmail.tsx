@@ -68,9 +68,10 @@ export const AuthWithWorkEmail: React.FC = () => {
               </div>
               {data && (
                 <div className={`${CLASS_NAME}__reset_message`}>
-                  Complete signup by setting a password using the email we just
-                  sent
-                  {/* {data?.signUpWithBusinessEmail.message} */}
+                  Signup successful!
+                  <br />
+                  Please check your inbox to complete registration and set your
+                  password.
                 </div>
               )}
               {loading && <CircularProgress centerToParent />}
