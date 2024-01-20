@@ -1,6 +1,6 @@
 import { IsEmail } from "class-validator";
 import { InputType, Field } from "@nestjs/graphql";
-import { PreviewAccountType } from "./EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "./EnumPreviewAccountType";
 
 @InputType()
 export class SignupPreviewAccountInput {
@@ -8,6 +8,6 @@ export class SignupPreviewAccountInput {
   @Field(() => String, { nullable: false })
   previewAccountEmail!: string;
 
-  @Field(() => PreviewAccountType, { nullable: false })
-  previewAccountType!: PreviewAccountType;
+  @Field(() => EnumPreviewAccountType, { nullable: false })
+  previewAccountType!: EnumPreviewAccountType;
 }

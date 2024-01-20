@@ -6,24 +6,22 @@ import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
 import { UserService } from "../user/user.service";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import {
-  AuthService,
-  AuthUser,
-  IDENTITY_PROVIDER_MANUAL,
-} from "./auth.service";
+import { AuthService, IDENTITY_PROVIDER_MANUAL } from "./auth.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { EnumTokenType } from "./dto";
 import { ProjectService } from "../project/project.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { ConfigService } from "@nestjs/config";
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
-import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Workspace, Project, Resource, Account, User } from "../../models";
 import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
 import { anyString } from "jest-mock-extended";
+import { AuthUser } from "./types";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
+const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
 const EXAMPLE_ACCOUNT: Account = {
   id: "alice",
@@ -34,7 +32,7 @@ const EXAMPLE_ACCOUNT: Account = {
   createdAt: new Date(),
   updatedAt: new Date(),
   githubId: null,
-  previewAccountType: PreviewAccountType.None,
+  previewAccountType: EnumPreviewAccountType.None,
   previewAccountEmail: null,
 };
 
@@ -47,7 +45,7 @@ const EXAMPLE_PREVIEW_ACCOUNT: Account = {
   createdAt: new Date(),
   updatedAt: new Date(),
   githubId: null,
-  previewAccountType: PreviewAccountType.BreakingTheMonolith,
+  previewAccountType: EnumPreviewAccountType.BreakingTheMonolith,
   previewAccountEmail: "examplePreveiw@amplication.com",
 };
 
@@ -188,6 +186,15 @@ const createWorkspaceMock = jest.fn(() => ({
 
 const convertPreviewSubscriptionToFreeWithTrialMock = jest.fn();
 
+const createPreviewEnvironmentMock = jest.fn(() => ({
+  workspace: {
+    ...EXAMPLE_WORKSPACE,
+    users: [EXAMPLE_AUTH_USER],
+  },
+  project: EXAMPLE_PROJECT,
+  resource: EXAMPLE_RESOURCE,
+}));
+
 const mockedCreateProject = jest.fn(() => EXAMPLE_PROJECT);
 
 const mockedCreatePreviewService = jest.fn(() => EXAMPLE_RESOURCE);
@@ -256,6 +263,7 @@ describe("AuthService", () => {
             createPreviewWorkspace: createWorkspaceMock,
             convertPreviewSubscriptionToFreeWithTrial:
               convertPreviewSubscriptionToFreeWithTrialMock,
+            createPreviewEnvironment: createPreviewEnvironmentMock,
           })),
         },
         MockedAmplicationLoggerProvider,
@@ -462,11 +470,9 @@ describe("AuthService", () => {
         service.signupPreviewAccount({
           previewAccountEmail: "test@gmail.com",
           previewAccountType:
-            PreviewAccountType[EXAMPLE_PREVIEW_ACCOUNT.previewAccountType],
+            EnumPreviewAccountType[EXAMPLE_PREVIEW_ACCOUNT.previewAccountType],
         })
-      ).rejects.toThrowError(
-        "Email must be a work email, not a public domain email"
-      );
+      ).rejects.toThrowError(WORK_EMAIL_INVALID);
 
       expect(createAccountMock).toHaveBeenCalledTimes(0);
       expect(createAccountMock).toHaveBeenCalledTimes(0);
@@ -479,7 +485,7 @@ describe("AuthService", () => {
       const result = await service.signupPreviewAccount({
         previewAccountEmail: EXAMPLE_PREVIEW_ACCOUNT.previewAccountEmail,
         previewAccountType:
-          PreviewAccountType[EXAMPLE_PREVIEW_ACCOUNT.previewAccountType],
+          EnumPreviewAccountType[EXAMPLE_PREVIEW_ACCOUNT.previewAccountType],
       });
 
       expect(result).toEqual({
