@@ -13119,6 +13119,7 @@ export { OrganizationUpdateManyWithoutUsersInput as OrganizationUpdateManyWithou
 ",
   "server/src/user/base/PromoteUserArgs.ts": "import { ObjectType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+import { PromoteUserInput } from "./PromoteUserInput";
 import { Type } from "class-transformer";
 
 @ObjectType()

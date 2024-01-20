@@ -1,4 +1,5 @@
 import {
+  EnumModuleDtoType,
   ModuleDto,
   ModuleDtoProperty,
   ModuleMap,
@@ -25,24 +26,36 @@ export function createCustomDtos() {
   const { moduleActionsAndDtoMap, DTOs } = DsgContext.getInstance;
   const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
 
+  //@todo: refactor to support multiple custom dtos with the same name in different modules
+  const customDtoNameToPath: Record<string, string> = {};
+
   const dtos = Object.entries(moduleActionsAndDtoMap).flatMap(
     ([moduleName, module]) => {
       const { dtos } = module;
       return (
-        dtos?.map((dto) => {
-          const path = createDTOModulePath(camelCase(moduleName), dto.name);
-          return {
-            path,
-            dto: createDto(dto),
-          };
-        }) || []
+        dtos
+          ?.filter((dto) => dto.dtoType === EnumModuleDtoType.Custom)
+          .map((dto) => {
+            const path = createDTOModulePath(camelCase(moduleName), dto.name);
+            customDtoNameToPath[dto.name] = path;
+            return {
+              path,
+              dto: createDto(dto),
+            };
+          }) || []
       );
     }
   );
 
   const dtoNameToPath = getDTONameToPath(DTOs);
+
   const dtoModules = dtos?.map((dto) => {
-    return createDTOModule(dto.dto, dtoNameToPath, dto.path, false);
+    return createDTOModule(
+      dto.dto,
+      { ...dtoNameToPath, ...customDtoNameToPath },
+      dto.path,
+      false
+    );
   });
 
   dtoModules.forEach((module) => moduleMap.set(module));

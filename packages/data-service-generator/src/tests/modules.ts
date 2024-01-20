@@ -192,6 +192,29 @@ const userModuleCustomActions: ModuleAction[] = [
   },
 ];
 
+const userModuleDefaultDtos: ModuleDto[] = [
+  {
+    id: "clraten970011c9yhe7fmtc2p",
+    description: "Args type for User deletion",
+    resourceId: "clraten1t0004c9yhz1t3o8bp",
+    parentBlockId: "clraten4g000fc9yhr62nxheo",
+    name: "DeleteUserArgs",
+    dtoType: "DeleteArgs",
+    enabled: true,
+    properties: [],
+  },
+  {
+    id: "clraten980019c9yhv4pjmzqp",
+    description: "Args type for User creation",
+    resourceId: "clraten1t0004c9yhz1t3o8bp",
+    parentBlockId: "clraten4g000fc9yhr62nxheo",
+    name: "CreateUserArgs",
+    dtoType: "CreateArgs",
+    enabled: true,
+    properties: [],
+  },
+];
+
 const userModuleCustomDtos: ModuleDto[] = [
   {
     id: "clratpp1m0005c9egg5tcxd01",
@@ -282,9 +305,12 @@ const userModuleCustomDtos: ModuleDto[] = [
 ];
 
 export const moduleContainers = [userModuleContainer];
+
 export const defaultActions = [...userModuleDefaultActions];
 export const customActions = [...userModuleCustomActions];
+
+export const defaultDtos = [...userModuleDefaultDtos];
 export const customDtos = [...userModuleCustomDtos];
 
 export const moduleActions = [...defaultActions, ...customActions];
-export const moduleDtos = [...customDtos];
+export const moduleDtos = [...defaultDtos, ...customDtos];

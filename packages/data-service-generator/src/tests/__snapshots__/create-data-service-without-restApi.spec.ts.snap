@@ -9616,6 +9616,7 @@ class OrganizationUpdateManyWithoutUsersInput {
 export { OrganizationUpdateManyWithoutUsersInput as OrganizationUpdateManyWithoutUsersInput };
 ",
   "server/src/user/base/PromoteUserArgs.ts": "import { ObjectType, Field } from "@nestjs/graphql";
+import { PromoteUserInput } from "./PromoteUserInput";
 import { Type } from "class-transformer";
 
 @ObjectType()
