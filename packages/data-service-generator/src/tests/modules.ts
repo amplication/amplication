@@ -237,6 +237,46 @@ const userModuleCustomDtos: ModuleDto[] = [
         isOptional: false,
         propertyTypes: [{ type: "Integer", isArray: false }],
       },
+      {
+        name: "isAdmin",
+        isArray: false,
+        isOptional: false,
+        propertyTypes: [{ type: "Boolean", isArray: false }],
+      },
+      {
+        name: "lastLogin",
+        isArray: false,
+        isOptional: false,
+        propertyTypes: [{ type: "DateTime", isArray: false }],
+      },
+      {
+        name: "weightedScore",
+        isArray: false,
+        isOptional: true,
+        propertyTypes: [{ type: "Float", isArray: false }],
+      },
+      {
+        name: "extendedProfile",
+        isArray: false,
+        isOptional: true,
+        propertyTypes: [{ type: "Json", isArray: false }],
+      },
+      {
+        name: "selfReference",
+        isArray: false,
+        isOptional: true,
+        propertyTypes: [
+          { type: "Dto", isArray: false, dtoId: PROMOTE_USER_INPUT_DTO_ID },
+        ],
+      },
+      {
+        name: "selfReferenceArray",
+        isArray: false,
+        isOptional: true,
+        propertyTypes: [
+          { type: "Dto", isArray: true, dtoId: PROMOTE_USER_INPUT_DTO_ID },
+        ],
+      },
     ],
   },
 ];

@@ -14,6 +14,7 @@ import { OBJECT_TYPE_ID } from "../nestjs-graphql.util";
 import { createApiPropertyDecorator } from "./create-api-property-decorator";
 import { createGraphQLFieldDecorator } from "./create-graphql-field-decorator";
 import { createPropTypeFromTypeDefList } from "./create-property-type";
+import { createTypeDecorator } from "./create-type-decorator";
 
 export const OBJECT_TYPE_DECORATOR = builders.decorator(
   builders.callExpression(OBJECT_TYPE_ID, [])
@@ -78,9 +79,13 @@ export function createProperty(
 
   const decorators: namedTypes.Decorator[] = [];
 
+  console.log("createProperty", property.name, property.propertyTypes);
+
   decorators.push(createGraphQLFieldDecorator(property));
 
   decorators.push(createApiPropertyDecorator(property));
+
+  decorators.push(createTypeDecorator(property));
 
   const classProperty = builders.classProperty(
     builders.identifier(property.name),
@@ -93,7 +98,7 @@ export function createProperty(
   classProperty.optional = property.isOptional;
 
   //@ts-ignore
-  classProperty.decorators = decorators;
+  classProperty.decorators = decorators.filter((decorator) => decorator);
 
   return classProperty;
 }

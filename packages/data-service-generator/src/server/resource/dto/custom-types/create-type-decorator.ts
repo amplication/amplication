@@ -5,78 +5,75 @@ import {
 } from "@amplication/code-gen-types";
 import { builders } from "ast-types";
 import { namedTypes } from "ast-types/gen/namedTypes";
-import { ApiPropertyDecoratorBuilder } from "../api-property-decorator";
+import * as classTransformerUtil from "../class-transformer.util";
 import {
   BOOLEAN_ID,
+  DATE_ID,
   NUMBER_ID,
   STRING_ID,
 } from "../create-field-class-property";
 
-/*
-adds the @Field decorator to the class property
-@Field(() => [EnumUserInterests], {
-  nullable: true,
-})
-*/
-export function createApiPropertyDecorator(
+export function createTypeDecorator(
   property: ModuleDtoProperty
 ): namedTypes.Decorator {
-  const [type, isArray] = createApiPropertyType(property);
-
+  const type = createType(property);
   if (type == null) return null;
 
-  return new ApiPropertyDecoratorBuilder(property.isArray || isArray, false)
-    .optional(property.isOptional)
-    .objectType(type)
-    .build();
+  return builders.decorator(
+    builders.callExpression(classTransformerUtil.TYPE_ID, [
+      builders.arrowFunctionExpression([], type),
+    ])
+  );
 }
 
-function createApiPropertyType(
+function createType(
   property: ModuleDtoProperty
-): [namedTypes.Identifier, boolean] {
+): namedTypes.Identifier | namedTypes.ArrayExpression {
+  if (property.isArray) {
+    const itemType = createType({ ...property, isArray: false });
+    return builders.arrayExpression([itemType]);
+  }
+
   if (property.propertyTypes.length > 1) {
     throw new Error(
-      "Multiple property types for API property decorator are not supported"
-    ); //@todo: add support for API property union type
+      "Multiple property types for graphQL field are not supported"
+    ); //@todo: add support for graphQL union type
   }
 
   const typeDef = property.propertyTypes[0];
 
-  return getTypeDefApiPropertyType(typeDef);
+  return getTypeDefType(typeDef);
 }
 
-function getTypeDefApiPropertyType(
+function getTypeDefType(
   typeDef: PropertyTypeDef
-): [namedTypes.Identifier, boolean] {
+): namedTypes.Identifier | namedTypes.ArrayExpression {
   if (typeDef.isArray) {
-    const [itemType] = getTypeDefApiPropertyType({
-      ...typeDef,
-      isArray: false,
-    });
-    return [itemType, true];
+    const itemType = getTypeDefType({ ...typeDef, isArray: false });
+    return builders.arrayExpression([itemType]);
   }
 
   if (typeDef.type === EnumModuleDtoPropertyType.Boolean) {
-    return [BOOLEAN_ID, false];
+    return BOOLEAN_ID;
   }
   if (typeDef.type === EnumModuleDtoPropertyType.DateTime) {
-    return [null, false];
+    return DATE_ID;
   }
   if (
     typeDef.type === EnumModuleDtoPropertyType.Integer ||
     typeDef.type === EnumModuleDtoPropertyType.Float
   ) {
-    return [NUMBER_ID, false];
+    return NUMBER_ID;
   }
 
   if (typeDef.type === EnumModuleDtoPropertyType.String) {
-    return [STRING_ID, false];
+    return STRING_ID;
   }
   if (typeDef.type === EnumModuleDtoPropertyType.Json) {
-    return [null, false];
+    return null;
   }
   if (typeDef.type === EnumModuleDtoPropertyType.Dto) {
-    return [builders.identifier(typeDef.dto.name), false];
+    return builders.identifier(typeDef.dto.name);
   }
 
   //@todo: complete support for enum, null, undefined
