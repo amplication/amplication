@@ -12035,7 +12035,7 @@ export { PromoteUserArgs as PromoteUserArgs };",
 
 @ObjectType()
 class PromoteUserInput {
-    userId: Array<string>;
+    userId: string[];
     score: number;
 }
 
@@ -14233,7 +14233,7 @@ export class UserServiceBase {
       })
       .profile();
   }
-  async promoteUser(args: string): Promise<Array<PromoteUserInput>> {
+  async promoteUser(args: string): Promise<PromoteUserInput[]> {
     throw new Error("Not implemented");
   }
   async sendPasswordResetEmail(args: PromoteUserInput): Promise<boolean> {
