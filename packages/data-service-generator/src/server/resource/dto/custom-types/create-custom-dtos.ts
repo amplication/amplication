@@ -11,8 +11,9 @@ import { classDeclaration } from "../../../../utils/ast";
 import { getDTONameToPath } from "../../create-dtos";
 import { createDTOModule, createDTOModulePath } from "../create-dto-module";
 import { OBJECT_TYPE_ID } from "../nestjs-graphql.util";
-import { createPropTypeFromTypeDefList } from "./create-property-type";
+import { createApiPropertyDecorator } from "./create-api-property-decorator";
 import { createGraphQLFieldDecorator } from "./create-graphql-field-decorator";
+import { createPropTypeFromTypeDefList } from "./create-property-type";
 
 export const OBJECT_TYPE_DECORATOR = builders.decorator(
   builders.callExpression(OBJECT_TYPE_ID, [])
@@ -78,6 +79,8 @@ export function createProperty(
   const decorators: namedTypes.Decorator[] = [];
 
   decorators.push(createGraphQLFieldDecorator(property));
+
+  decorators.push(createApiPropertyDecorator(property));
 
   const classProperty = builders.classProperty(
     builders.identifier(property.name),

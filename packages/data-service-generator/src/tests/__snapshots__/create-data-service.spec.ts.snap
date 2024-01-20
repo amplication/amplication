@@ -12024,24 +12024,38 @@ class OrganizationUpdateManyWithoutUsersInput {
 export { OrganizationUpdateManyWithoutUsersInput as OrganizationUpdateManyWithoutUsersInput };
 ",
   "server/src/user/base/PromoteUserArgs.ts": "import { ObjectType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
 
 @ObjectType()
 class PromoteUserArgs {
     @Field(() => PromoteUserInput, {
         nullable: true
     })
+    @ApiProperty({
+        required: false,
+        type: () => PromoteUserInput
+    })
     data?: PromoteUserInput;
 }
 
 export { PromoteUserArgs as PromoteUserArgs };",
   "server/src/user/base/PromoteUserInput.ts": "import { ObjectType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
 
 @ObjectType()
 class PromoteUserInput {
     @Field(() => [String])
+    @ApiProperty({
+        required: true,
+        type: () => String
+    })
     userId: string[];
 
     @Field(() => Number)
+    @ApiProperty({
+        required: true,
+        type: () => Number
+    })
     score: number;
 }
 
