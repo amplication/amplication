@@ -5,13 +5,14 @@ import {
   NamedClassDeclaration,
 } from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
+import { camelCase } from "lodash";
 import DsgContext from "../../../../dsg-context";
 import { classDeclaration } from "../../../../utils/ast";
+import { getDTONameToPath } from "../../create-dtos";
+import { createDTOModule, createDTOModulePath } from "../create-dto-module";
 import { OBJECT_TYPE_ID } from "../nestjs-graphql.util";
 import { createPropTypeFromTypeDefList } from "./create-property-type";
-import { createDTOModule, createDTOModulePath } from "../create-dto-module";
-import { getDTONameToPath } from "../../create-dtos";
-import { camelCase } from "lodash";
+import { createGraphQLFieldDecorator } from "./create-graphql-field-decorator";
 
 export const OBJECT_TYPE_DECORATOR = builders.decorator(
   builders.callExpression(OBJECT_TYPE_ID, [])
@@ -65,15 +66,31 @@ export function createDto(dto: ModuleDto): NamedClassDeclaration {
 export function createProperties(
   properties: ModuleDtoProperty[]
 ): namedTypes.ClassProperty[] {
-  return properties.map((property) => {
-    const type = createPropTypeFromTypeDefList(property.propertyTypes);
-    const tsTypeAnnotationNode = builders.tsTypeAnnotation(type);
+  return properties.map((property) => createProperty(property));
+}
 
-    return builders.classProperty(
-      builders.identifier(property.name),
-      null,
-      tsTypeAnnotationNode,
-      false
-    );
-  });
+export function createProperty(
+  property: ModuleDtoProperty
+): namedTypes.ClassProperty {
+  const type = createPropTypeFromTypeDefList(property.propertyTypes);
+  const tsTypeAnnotationNode = builders.tsTypeAnnotation(type);
+
+  const decorators: namedTypes.Decorator[] = [];
+
+  decorators.push(createGraphQLFieldDecorator(property));
+
+  const classProperty = builders.classProperty(
+    builders.identifier(property.name),
+    null,
+    tsTypeAnnotationNode,
+    false
+  );
+
+  //@ts-ignore
+  classProperty.optional = property.isOptional;
+
+  //@ts-ignore
+  classProperty.decorators = decorators;
+
+  return classProperty;
 }

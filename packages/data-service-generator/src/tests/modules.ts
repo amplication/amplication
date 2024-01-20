@@ -205,7 +205,7 @@ const userModuleCustomDtos: ModuleDto[] = [
       {
         name: "data",
         isArray: false,
-        isOptional: false,
+        isOptional: true,
         propertyTypes: [
           {
             type: "Dto",
