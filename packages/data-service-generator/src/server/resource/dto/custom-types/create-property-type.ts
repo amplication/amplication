@@ -71,7 +71,7 @@ export function createPropTypeFromTypeDef(
   }
 
   if (typeDef.isArray) {
-    return createGenericArray(baseType);
+    return builders.tsArrayType(baseType);
   }
 
   return baseType;
