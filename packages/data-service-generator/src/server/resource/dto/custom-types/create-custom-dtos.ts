@@ -74,17 +74,18 @@ export function createProperties(
 export function createProperty(
   property: ModuleDtoProperty
 ): namedTypes.ClassProperty {
+  const { appInfo } = DsgContext.getInstance;
+
   const type = createPropTypeFromTypeDefList(property.propertyTypes);
   const tsTypeAnnotationNode = builders.tsTypeAnnotation(type);
 
   const decorators: namedTypes.Decorator[] = [];
 
-  console.log("createProperty", property.name, property.propertyTypes);
+  appInfo.settings.serverSettings.generateGraphQL &&
+    decorators.push(createGraphQLFieldDecorator(property));
 
-  decorators.push(createGraphQLFieldDecorator(property));
-
-  decorators.push(createApiPropertyDecorator(property));
-
+  appInfo.settings.serverSettings.generateRestApi &&
+    decorators.push(createApiPropertyDecorator(property));
   decorators.push(createTypeDecorator(property));
 
   const classProperty = builders.classProperty(
