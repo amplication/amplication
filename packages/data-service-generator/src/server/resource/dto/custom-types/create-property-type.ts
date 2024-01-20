@@ -4,7 +4,6 @@ import {
 } from "@amplication/code-gen-types";
 import { builders } from "ast-types";
 import { TSTypeKind } from "ast-types/gen/kinds";
-import { createGenericArray } from "../../../../utils/ast";
 import { INPUT_JSON_VALUE_KEY } from "../constants";
 
 export const DATE_ID = builders.identifier("Date");
