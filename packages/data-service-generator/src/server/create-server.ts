@@ -26,6 +26,7 @@ import { createTypesRelatedFiles } from "./create-types-related-files/create-typ
 import { createMainFile } from "./create-main/create-main-file";
 import { connectMicroservices } from "./connect-microservices/connect-microservices";
 import { createSecretsManager } from "./secrets-manager/create-secrets-manager";
+import { createCustomDtos } from "./resource/dto/custom-types/create-custom-dtos";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -50,6 +51,9 @@ async function createServerInternal(
     STATIC_DIRECTORY,
     serverDirectories.baseDirectory
   );
+
+  await context.logger.info("Creating custom DTOs...");
+  const customDtos = await createCustomDtos();
 
   await context.logger.info("Creating gitignore...");
   const gitIgnore = await createGitIgnore();
@@ -137,6 +141,7 @@ async function createServerInternal(
   const moduleMap = new ModuleMap(context.logger);
   await moduleMap.mergeMany([
     staticModules,
+    customDtos,
     gitIgnore,
     packageJsonModule,
     resourcesModules,

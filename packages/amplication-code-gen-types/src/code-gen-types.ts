@@ -285,6 +285,7 @@ export type ResourceGenerationConfig = {
 
 export type PropertyTypeDef = Omit<models.PropertyTypeDef, "type"> & {
   type: keyof typeof models.EnumModuleDtoPropertyType;
+  dto?: ModuleDto;
 };
 
 export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;

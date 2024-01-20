@@ -1,7 +1,12 @@
-import { ModuleAction, ModuleContainer } from "@amplication/code-gen-types";
+import {
+  ModuleAction,
+  ModuleContainer,
+  ModuleDto,
+} from "@amplication/code-gen-types";
+import { USER_ENTITY_ID } from "./entities";
 
 const USER_MODULE_ID = "clraten4g000fc9yhr62nxheo";
-import { USER_ENTITY_ID } from "./entities";
+const PROMOTE_USER_INPUT_DTO_ID = "promoteUserInputDtoId";
 
 const userModuleContainer: ModuleContainer = {
   id: USER_MODULE_ID,
@@ -108,7 +113,7 @@ const userModuleCustomActions: ModuleAction[] = [
     outputType: {
       isArray: true,
       type: "Dto",
-      dtoId: "User", //replace with reference to dto by its id
+      dtoId: PROMOTE_USER_INPUT_DTO_ID, //replace with reference to dto by its id
     },
     inputType: {
       isArray: false,
@@ -136,7 +141,7 @@ const userModuleCustomActions: ModuleAction[] = [
     inputType: {
       isArray: false,
       type: "Dto",
-      dtoId: "SendPasswordResetEmailArgs", //replace with reference to dto by its id
+      dtoId: PROMOTE_USER_INPUT_DTO_ID, //replace with reference to dto by its id
     },
   },
   {
@@ -154,12 +159,12 @@ const userModuleCustomActions: ModuleAction[] = [
     outputType: {
       isArray: false,
       type: "Dto",
-      dtoId: "ResendInviteEmailResults", //replace with reference to dto by its id
+      dtoId: PROMOTE_USER_INPUT_DTO_ID, //replace with reference to dto by its id
     },
     inputType: {
       isArray: false,
       type: "Dto",
-      dtoId: "ResendInviteEmailArgs", //replace with reference to dto by its id
+      dtoId: PROMOTE_USER_INPUT_DTO_ID, //replace with reference to dto by its id
     },
   },
   {
@@ -177,18 +182,69 @@ const userModuleCustomActions: ModuleAction[] = [
     outputType: {
       isArray: false,
       type: "Dto",
-      dtoId: "SoftDeleteUserResults", //replace with reference to dto by its id
+      dtoId: PROMOTE_USER_INPUT_DTO_ID, //replace with reference to dto by its id
     },
     inputType: {
       isArray: false,
       type: "Dto",
-      dtoId: "SoftDeleteUserArgs", //replace with reference to dto by its id
+      dtoId: PROMOTE_USER_INPUT_DTO_ID, //replace with reference to dto by its id
     },
+  },
+];
+
+const userModuleCustomDtos: ModuleDto[] = [
+  {
+    id: "clratpp1m0005c9egg5tcxd01",
+    description: "",
+    resourceId: "clraten1t0004c9yhz1t3o8bp",
+    parentBlockId: "clraten4g000fc9yhr62nxheo",
+    name: "PromoteUserArgs",
+    dtoType: "Custom",
+    enabled: true,
+    properties: [
+      {
+        name: "data",
+        isArray: false,
+        isOptional: false,
+        propertyTypes: [
+          {
+            type: "Dto",
+            dtoId: PROMOTE_USER_INPUT_DTO_ID,
+            isArray: false,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: PROMOTE_USER_INPUT_DTO_ID,
+    description: "",
+    resourceId: "clraten1t0004c9yhz1t3o8bp",
+    parentBlockId: "clraten4g000fc9yhr62nxheo",
+    name: "PromoteUserInput",
+    dtoType: "Custom",
+    enabled: true,
+    properties: [
+      {
+        name: "userId",
+        isArray: false,
+        isOptional: false,
+        propertyTypes: [{ type: "String", dtoId: null, isArray: true }],
+      },
+      {
+        name: "score",
+        isArray: false,
+        isOptional: false,
+        propertyTypes: [{ type: "Integer", isArray: false }],
+      },
+    ],
   },
 ];
 
 export const moduleContainers = [userModuleContainer];
 export const defaultActions = [...userModuleDefaultActions];
 export const customActions = [...userModuleCustomActions];
+export const customDtos = [...userModuleCustomDtos];
 
 export const moduleActions = [...defaultActions, ...customActions];
+export const moduleDtos = [...customDtos];

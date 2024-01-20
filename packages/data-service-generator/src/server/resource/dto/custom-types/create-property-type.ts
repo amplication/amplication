@@ -57,8 +57,13 @@ export function createPropTypeFromTypeDef(
   let baseType: TSTypeKind;
 
   if (typeDef.type === EnumModuleDtoPropertyType.Dto) {
-    const dtoName = "dtoNAme"; // find dto based on dtoId
-    baseType = builders.tsTypeReference(builders.identifier(dtoName));
+    if (!typeDef.dto) {
+      throw new Error(
+        `Property with type "DTO" and dtoId "${typeDef.dtoId}" is missing reference to the referenced DTO}`
+      );
+    }
+
+    baseType = builders.tsTypeReference(builders.identifier(typeDef.dto.name));
   } else if (typeDef.type === EnumModuleDtoPropertyType.Enum) {
     baseType = builders.tsTypeReference(builders.identifier("enumName"));
   } else {

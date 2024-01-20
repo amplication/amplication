@@ -382,6 +382,70 @@ function prepareModuleActionsAndDtos(
   moduleActions: ModuleAction[],
   moduleDtos: ModuleDto[]
 ): ModuleActionsAndDtosMap {
+  const dtosMap = Object.fromEntries(
+    moduleDtos.map((moduleDto) => {
+      return [moduleDto.id, moduleDto];
+    })
+  );
+
+  //resolve references from dto properties to dtos
+  moduleDtos.forEach((moduleDto) => {
+    const dtoProperties = moduleDto.properties;
+    if (dtoProperties) {
+      dtoProperties.forEach((property) => {
+        const propertyTypes = property.propertyTypes;
+        if (propertyTypes) {
+          propertyTypes.forEach((propertyType) => {
+            const dtoId = propertyType.dtoId;
+            if (dtoId) {
+              const dto = dtosMap[dtoId];
+              if (dto) {
+                propertyType.dto = dto;
+              } else {
+                throw new Error(
+                  `Could not find dto with the ID ${dtoId} referenced in dto property ${property.name}`
+                );
+              }
+            }
+          });
+        }
+      });
+    }
+  });
+
+  //resolve references from action input/output types to dtos
+  moduleActions.forEach((moduleAction) => {
+    const actionInputType = moduleAction.inputType;
+    if (actionInputType) {
+      const dtoId = actionInputType.dtoId;
+      if (dtoId) {
+        const dto = dtosMap[dtoId];
+        if (dto) {
+          actionInputType.dto = dto;
+        } else {
+          throw new Error(
+            `Could not find dto with the ID ${dtoId} referenced in action ${moduleAction.name} input type`
+          );
+        }
+      }
+    }
+
+    const actionOutputType = moduleAction.outputType;
+    if (actionOutputType) {
+      const dtoId = actionOutputType.dtoId;
+      if (dtoId) {
+        const dto = dtosMap[dtoId];
+        if (dto) {
+          actionOutputType.dto = dto;
+        } else {
+          throw new Error(
+            `Could not find dto with the ID ${dtoId} referenced in action ${moduleAction.name} output type`
+          );
+        }
+      }
+    }
+  });
+
   return Object.fromEntries(
     moduleContainers.map((moduleContainer) => {
       const moduleContainerId = moduleContainer.id;
