@@ -4,7 +4,7 @@ import { registerEnumType } from "@nestjs/graphql";
 
 export enum EnumUserActionType {
   DBSchemaImport = "DBSchemaImport",
-  BreakTheMonolith = "BreakTheMonolith",
+  GptConversation = "GptConversation",
 }
 
 registerEnumType(EnumUserActionType, {

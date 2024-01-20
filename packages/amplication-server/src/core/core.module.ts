@@ -26,6 +26,7 @@ import { DBSchemaImportModule } from "./dbSchemaImport/dbSchemaImport.module";
 import { ModuleModule } from "./module/module.module";
 import { ModuleActionModule } from "./moduleAction/moduleAction.module";
 import { AdministratorModule } from "./administrator/administrator.module";
+import { GptModule } from "./gpt/gpt.module";
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { AdministratorModule } from "./administrator/administrator.module";
     DBSchemaImportModule,
     ModuleModule,
     ModuleActionModule,
+    GptModule,
   ],
   exports: [
     AccountModule,
@@ -84,6 +86,7 @@ import { AdministratorModule } from "./administrator/administrator.module";
     DBSchemaImportModule,
     ModuleModule,
     ModuleActionModule,
+    GptModule,
   ],
 })
 export class CoreModule {}

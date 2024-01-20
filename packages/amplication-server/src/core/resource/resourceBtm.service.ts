@@ -1,49 +1,57 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma, PrismaService } from "../../prisma";
-import { EntityPartial, ResourcePartial } from "./resourceBtm.types";
 import { AmplicationError } from "../../errors/AmplicationError";
+import { EnumDataType, PrismaService } from "../../prisma";
 import { INVALID_RESOURCE_ID } from "./resource.service";
-import { ResourceBtmPromptService } from "./resourceBtmPrompt.service";
-import { UserActionService } from "../userAction/userAction.service";
-import { UserAction } from "../userAction/dto";
-import { EnumActionStepStatus } from "../action/dto";
-import { EnumUserActionStatus, EnumUserActionType } from "../userAction/types";
-import { ConversationTypeKey } from "../gpt/ai.types";
+import {
+  BreakTheMonolithPromptInput,
+  BreakTheMonolithPromptOutput,
+  EntityPartial,
+  ResourcePartial,
+} from "./resourceBtm.types";
 import cuid from "cuid";
-import { BreakTheMonolithPromptOutput } from "./resourceBtmPrompt.types";
-import { BtmRecommendations } from "./dto/BtmRecommendations";
+import { GptService } from "../gpt/gpt.service";
+import { ConversationTypeKey } from "../gpt/gpt.types";
+import { UserAction } from "../userAction/dto";
+import { EnumUserActionStatus } from "../userAction/types";
 import { BreakServiceToMicroserviceResult } from "./dto/BreakServiceToMicroserviceResult";
-import { AiService } from "../gpt/ai.service";
+import { BtmRecommendations } from "./dto/BtmRecommendations";
+import { AiBadFormatResponseError } from "./errors/AiBadFormatResponseError";
+
+import { UserActionService } from "../userAction/userAction.service";
 
 @Injectable()
 export class ResourceBtmService {
   private actionStepName = "GENERATING_BTM_RESOURCE_RECOMMENDATION";
 
+  /* eslint-disable @typescript-eslint/naming-convention */
+  private dataTypeMap: Record<keyof typeof EnumDataType, string> = {
+    SingleLineText: "string",
+    MultiLineText: "string",
+    Email: "string",
+    WholeNumber: "int",
+    DateTime: "datetime",
+    DecimalNumber: "float",
+    Lookup: "enum",
+    MultiSelectOptionSet: "enum",
+    OptionSet: "enum",
+    Boolean: "bool",
+    GeographicLocation: "string",
+    Id: "int",
+    CreatedAt: "datetime",
+    UpdatedAt: "datetime",
+    Roles: "string",
+    Username: "string",
+    Password: "string",
+    Json: "string",
+  };
+
   constructor(
-    private readonly aiService: AiService,
+    private readonly gptService: GptService,
     private readonly prisma: PrismaService,
-    private readonly promptService: ResourceBtmPromptService,
     private readonly userActionService: UserActionService
   ) {}
 
-  private async createUserAction(
-    resourceId: string,
-    userId: string
-  ): Promise<UserAction> {
-    return this.userActionService.createUserActionByTypeWithInitialStep(
-      EnumUserActionType.BreakTheMonolith,
-      {},
-      <Prisma.ActionStepCreateWithoutActionInput>{
-        name: this.actionStepName,
-        message: "Emitting event to generate BTM resource recommendation",
-        status: EnumActionStepStatus.Waiting,
-      },
-      userId,
-      resourceId
-    );
-  }
-
-  private async getPartialResource(
+  private async getResourceDataForBtm(
     resourceId: string
   ): Promise<ResourcePartial> {
     const resource = await this.prisma.resource.findUnique({
@@ -85,10 +93,10 @@ export class ResourceBtmService {
     return resource;
   }
 
-  duplicatedEntities(entites: string[]): Set<string> {
+  duplicatedEntities(entities: string[]): Set<string> {
     return new Set(
-      entites.filter((entity, index) => {
-        return entites.indexOf(entity) !== index;
+      entities.filter((entity, index) => {
+        return entities.indexOf(entity) !== index;
       })
     );
   }
@@ -161,13 +169,9 @@ export class ResourceBtmService {
     resourceId: string;
     userId: string;
   }): Promise<UserAction> {
-    const resource = await this.getPartialResource(resourceId);
+    const resource = await this.getResourceDataForBtm(resourceId);
 
-    const prompt = await this.promptService.generatePromptForBreakTheMonolith(
-      resource
-    );
-
-    const userAction = await this.createUserAction(resourceId, userId);
+    const prompt = await this.generatePromptForBreakTheMonolith(resource);
 
     const conversationParams = [
       {
@@ -176,46 +180,14 @@ export class ResourceBtmService {
       },
     ];
 
-    await this.aiService.startConversation(
-      userAction,
+    const userAction = await this.gptService.startConversation(
       ConversationTypeKey.BreakTheMonolith,
-      conversationParams
+      conversationParams,
+      userId,
+      resourceId
     );
 
     return userAction;
-  }
-
-  async onCompleteBreakServiceIntoMicroservices(
-    userAction: UserAction,
-    success: boolean,
-    errorMessage: string,
-    result: string
-  ): Promise<void> {
-    const userActionStatus = success
-      ? EnumActionStepStatus.Success
-      : EnumActionStepStatus.Failed;
-
-    let metadata: Record<string, any> = {};
-
-    if (success) {
-      const promptResult = this.promptService.parsePromptResult(result);
-      const originalResource = await this.getPartialResource(
-        userAction.resourceId
-      );
-
-      metadata = this.translateToBtmRecommendation(
-        promptResult,
-        originalResource
-      );
-    }
-
-    await this.userActionService.updateUserActionMetadata(
-      userAction.id,
-      EnumUserActionType[userAction.userActionType],
-      this.actionStepName,
-      userActionStatus,
-      success ? metadata : { errorMessage }
-    );
   }
 
   async finalizeBreakServiceIntoMicroservices(
@@ -263,5 +235,47 @@ export class ResourceBtmService {
         copiedEntities: recommendedEntities,
       },
     };
+  }
+
+  generatePromptForBreakTheMonolith(resource: ResourcePartial): string {
+    const entityIdNameMap = resource.entities.reduce((acc, entity) => {
+      acc[entity.id] = entity.name;
+      return acc;
+    });
+
+    const prompt: BreakTheMonolithPromptInput = {
+      dataModels: resource.entities.map((entity) => {
+        return {
+          name: entity.name,
+          fields: entity.versions[0].fields.map((field) => {
+            return {
+              name: field.name,
+              dataType:
+                field.dataType == EnumDataType.Lookup
+                  ? entityIdNameMap[field.properties["relatedEntityId"]]
+                  : this.dataTypeMap[field.dataType],
+            };
+          }),
+        };
+      }),
+    };
+
+    return JSON.stringify(prompt);
+  }
+
+  parsePromptResult(promptResult: string): BreakTheMonolithPromptOutput {
+    try {
+      const result = JSON.parse(promptResult);
+
+      return {
+        microservices: result.microservices.map((microservice) => ({
+          name: microservice.name,
+          functionality: microservice.functionality,
+          dataModels: microservice.dataModels,
+        })),
+      };
+    } catch (error) {
+      throw new AiBadFormatResponseError(promptResult, error);
+    }
   }
 }

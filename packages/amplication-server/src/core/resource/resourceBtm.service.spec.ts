@@ -1,13 +1,12 @@
 import { Test } from "@nestjs/testing";
 import { ResourceBtmService } from "./resourceBtm.service";
-import { BreakTheMonolithPromptOutput } from "./resourceBtmPrompt.types";
+import { BreakTheMonolithPromptOutput } from "./resourceBtm.types";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { BtmRecommendations } from "./dto/BtmRecommendations";
 import { ResourcePartial } from "./resourceBtm.types";
-import { AiService } from "../gpt/ai.service";
+import { GptService } from "../gpt/gpt.service";
 import { PrismaService } from "../../prisma";
 import { UserActionService } from "../userAction/userAction.service";
-import { ResourceBtmPromptService } from "./resourceBtmPrompt.service";
 
 describe("ResourceBtmService", () => {
   let service: ResourceBtmService;
@@ -17,7 +16,7 @@ describe("ResourceBtmService", () => {
       providers: [
         ResourceBtmService,
         {
-          provide: AiService,
+          provide: GptService,
           useValue: {
             startConversation: jest.fn(),
             onConversationCompleted: jest.fn(),
@@ -35,7 +34,6 @@ describe("ResourceBtmService", () => {
           provide: UserActionService,
           useValue: {},
         },
-        ResourceBtmPromptService,
       ],
     }).compile();
     service = module.get<ResourceBtmService>(ResourceBtmService);
@@ -571,6 +569,270 @@ describe("ResourceBtmService", () => {
 
       expect(result).toStrictEqual(new Set(["a", "b"]));
     });
+  });
+
+  describe("generatePromptForBreakTheMonolith", () => {
+    it("should return a prompt", () => {
+      const result = service.generatePromptForBreakTheMonolith({
+        name: "ecommerce",
+        id: "ecommerce-id",
+        entities: [
+          {
+            id: "order",
+            name: "order",
+            displayName: "Order",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "address",
+                    displayName: "address",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "address",
+                    },
+                  },
+                  {
+                    name: "status",
+                    displayName: "Status",
+                    dataType: EnumDataType.Boolean,
+                    properties: {},
+                  },
+                  {
+                    name: "customer",
+                    displayName: "Customer",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "customer",
+                    },
+                  },
+                  {
+                    name: "itemsId",
+                    displayName: "ItemsId",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "customer",
+            name: "customer",
+            displayName: "Customer",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "firstName",
+                    displayName: "First Name",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "lastName",
+                    displayName: "Last Name",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "email",
+                    displayName: "Email",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "address",
+                    displayName: "Address",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "address",
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "item",
+            name: "item",
+            displayName: "Item",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "name",
+                    displayName: "Name",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "price",
+                    displayName: "Price",
+                    dataType: EnumDataType.WholeNumber,
+                    properties: {},
+                  },
+                  {
+                    name: "description",
+                    displayName: "Description",
+                    dataType: EnumDataType.MultiLineText,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "address",
+            name: "address",
+            displayName: "Address",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "street",
+                    displayName: "Street",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "city",
+                    displayName: "City",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "state",
+                    displayName: "State",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "zip",
+                    displayName: "Zip",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      expect(JSON.parse(result)).toStrictEqual({
+        dataModels: [
+          {
+            fields: [
+              {
+                dataType: "address",
+                name: "address",
+              },
+              {
+                dataType: "bool",
+                name: "status",
+              },
+              {
+                dataType: "customer",
+                name: "customer",
+              },
+              {
+                dataType: "string",
+                name: "itemsId",
+              },
+            ],
+            name: "order",
+          },
+          {
+            fields: [
+              {
+                dataType: "string",
+                name: "firstName",
+              },
+              {
+                dataType: "string",
+                name: "lastName",
+              },
+              {
+                dataType: "string",
+                name: "email",
+              },
+              {
+                dataType: "address",
+                name: "address",
+              },
+            ],
+            name: "customer",
+          },
+          {
+            fields: [
+              {
+                dataType: "string",
+                name: "name",
+              },
+              {
+                dataType: "int",
+                name: "price",
+              },
+              {
+                dataType: "string",
+                name: "description",
+              },
+            ],
+            name: "item",
+          },
+          {
+            name: "address",
+            fields: [
+              {
+                dataType: "string",
+                name: "street",
+              },
+              {
+                dataType: "string",
+                name: "city",
+              },
+              {
+                dataType: "string",
+                name: "state",
+              },
+              {
+                dataType: "string",
+                name: "zip",
+              },
+            ],
+          },
+        ],
+      });
+    });
+  });
+
+  describe("parsePromptResult", () => {
+    it("should return a validated BreakTheMonolithPromptOutput", () => {
+      const result = service.parsePromptResult(
+        '{"microservices":[{"name":"ecommerce","functionality":"manage orders, prices and payments","dataModels":["order","customer","item","address"]},{"name":"inventory","functionality":"manage inventory","dataModels":["item","address"]}]}'
+      );
+      expect(result).toStrictEqual({
+        microservices: [
+          {
+            name: "ecommerce",
+            functionality: "manage orders, prices and payments",
+            dataModels: ["order", "customer", "item", "address"],
+          },
+          {
+            name: "inventory",
+            functionality: "manage inventory",
+            dataModels: ["item", "address"],
+          },
+        ],
+      });
+    });
+
+    it.each(["invalid", '{"microservice":{}}'])(
+      "should throw an error if the prompt result is not valid",
+      (result: string) => {
+        expect(() => service.parsePromptResult(result)).toThrowError();
+      }
+    );
   });
 
   //   describe("triggerAiRecommendations", () => {

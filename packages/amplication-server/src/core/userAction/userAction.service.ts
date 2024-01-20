@@ -85,15 +85,13 @@ export class UserActionService {
 
   async updateUserActionMetadata(
     userActionId: string,
-    userActionType: EnumUserActionType,
     actionStepName: string,
     status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
-    metadata: Record<string, any>
+    metadata: any
   ): Promise<UserAction> {
-    const userAction = await this.prisma.userAction.findFirst({
+    const userAction = await this.prisma.userAction.findUnique({
       where: {
         id: userActionId,
-        userActionType,
       },
       include: {
         action: {

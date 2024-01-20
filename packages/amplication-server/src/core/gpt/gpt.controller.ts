@@ -1,4 +1,4 @@
-import { AiService } from "../gpt/ai.service";
+import { GptService } from "./gpt.service";
 import {
   AiConversationComplete,
   KAFKA_TOPICS,
@@ -8,18 +8,18 @@ import { Controller, Inject } from "@nestjs/common";
 import { EventPattern, Payload } from "@nestjs/microservices";
 
 @Controller("ai-controller")
-export class AiController {
+export class GptController {
   constructor(
-    private readonly aiService: AiService,
+    private readonly aiService: GptService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
   @EventPattern(KAFKA_TOPICS.AI_CONVERSATION_COMPLETED_TOPIC)
-  async onAiCoversationCompleted(
+  async onAiConversationCompleted(
     @Payload() message: AiConversationComplete.Value
   ): Promise<void> {
     this.logger.debug(
-      `RECEIVED: onCoversationCompleted ${message.userActionId} `,
+      `RECEIVED: onConversationCompleted ${message.userActionId} `,
       {
         result: message.result,
       }
@@ -27,7 +27,7 @@ export class AiController {
     try {
       await this.aiService.onConversationCompleted(message);
       this.logger.debug(
-        `COMPLETED: onCoversationCompleted ${message.userActionId}`
+        `COMPLETED: onConversationCompleted ${message.userActionId}`
       );
     } catch (error) {
       this.logger.error(error.message, error, { message });

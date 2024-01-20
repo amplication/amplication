@@ -604,7 +604,7 @@ enum EnumGitOrganizationType {
 
 enum EnumUserActionType {
   DBSchemaImport
-  BreakTheMonolith
+  GptConversation
 }
 
 enum CodeGeneratorVersionStrategy {
