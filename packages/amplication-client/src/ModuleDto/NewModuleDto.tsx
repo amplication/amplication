@@ -96,7 +96,7 @@ const NewModuleDto = ({ resourceId, moduleId, onDtoCreated }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <>
+    <div>
       <Dialog
         isOpen={dialogOpen}
         onDismiss={handleDialogStateChange}
@@ -149,7 +149,7 @@ const NewModuleDto = ({ resourceId, moduleId, onDtoCreated }: Props) => {
         Add Dto
       </Button>
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </>
+    </div>
   );
 };
 

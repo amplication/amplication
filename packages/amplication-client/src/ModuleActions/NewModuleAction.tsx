@@ -103,7 +103,7 @@ const NewModuleAction = ({ resourceId, moduleId, onActionCreated }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <>
+    <div>
       <Dialog
         isOpen={dialogOpen}
         onDismiss={handleDialogStateChange}
@@ -158,7 +158,7 @@ const NewModuleAction = ({ resourceId, moduleId, onActionCreated }: Props) => {
       </Button>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </>
+    </div>
   );
 };
 
