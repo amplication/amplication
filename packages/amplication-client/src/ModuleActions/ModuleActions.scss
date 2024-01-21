@@ -7,11 +7,6 @@ $addon-feature-tag-gap: 4px;
 $addon-title-line-height: 36px;
 
 .module-actions {
-  &__search-field {
-    display: flex;
-    margin-bottom: var(--double-spacing);
-  }
-
   &__feature-tag {
     display: flex;
     align-items: center;

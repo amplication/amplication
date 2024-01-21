@@ -1,15 +1,4 @@
-import {
-  EnumApiOperationTagStyle,
-  EnumContentAlign,
-  EnumFlexDirection,
-  EnumFlexItemMargin,
-  EnumItemsAlign,
-  EnumTextColor,
-  EnumTextStyle,
-  FlexItem,
-  Text,
-  Toggle,
-} from "@amplication/ui/design-system";
+import { EnumApiOperationTagStyle } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { BillingFeature } from "@amplication/util-billing-types";
@@ -25,11 +14,8 @@ import * as models from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import "./ModuleActions.scss";
 import ModuleActionsAndTypes from "./ModuleActionsAndTypes";
-import { ModuleActionsDisabled } from "./ModuleActionsDisabled";
-import { ModuleActionsEnabled } from "./ModuleActionsEnabled";
+import ModuleHeader from "./ModuleHeader";
 import "./ToggleModule.scss";
-
-const CLASS_NAME = "module-actions";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -87,7 +73,7 @@ const ModuleActions = React.memo(({ match }: Props) => {
 
       setDisplayMode(value);
     },
-    [displayMode]
+    [setDisplayMode]
   );
 
   const { findModulesData: moduleListData } = useModule();
@@ -101,58 +87,14 @@ const ModuleActions = React.memo(({ match }: Props) => {
       entitlementType={EntitlementType.Boolean}
       render={({ disabled, icon }) => (
         <>
-          {disabled ? (
-            <ModuleActionsDisabled
-              icon={icon}
-              handleSearchChange={handleSearchChange}
-              className={CLASS_NAME}
-            />
-          ) : (
-            <ModuleActionsEnabled
-              icon={icon}
-              handleSearchChange={handleSearchChange}
-              className={CLASS_NAME}
-            />
-          )}
-
-          {generateGraphQlAndRestApi && (
-            <FlexItem
-              direction={EnumFlexDirection.Row}
-              className={`${CLASS_NAME}__api-toggle`}
-              margin={EnumFlexItemMargin.Top}
-              contentAlign={
-                disabled ? EnumContentAlign.Center : EnumContentAlign.Start
-              }
-              itemsAlign={EnumItemsAlign.Normal}
-            >
-              <Text
-                textStyle={EnumTextStyle.Tag}
-                textColor={
-                  displayMode === EnumApiOperationTagStyle.GQL
-                    ? EnumTextColor.White
-                    : EnumTextColor.Black20
-                }
-              >
-                GraphQL API
-              </Text>
-              <div className={`module-toggle-field__operation-toggle`}>
-                <Toggle
-                  checked={displayMode === EnumApiOperationTagStyle.REST}
-                  onValueChange={handleDisplayModeChange}
-                />
-              </div>
-              <Text
-                textStyle={EnumTextStyle.Tag}
-                textColor={
-                  displayMode === EnumApiOperationTagStyle.REST
-                    ? EnumTextColor.White
-                    : EnumTextColor.Black20
-                }
-              >
-                REST API
-              </Text>
-            </FlexItem>
-          )}
+          <ModuleHeader
+            handleSearchChange={handleSearchChange}
+            handleDisplayModeChange={handleDisplayModeChange}
+            showApiToggle={generateGraphQlAndRestApi}
+            displayMode={displayMode}
+            title={moduleData?.module.displayName || "All Modules"}
+            subTitle={"Create, update, and manage actions and types"}
+          />
 
           {moduleId
             ? moduleData && (
