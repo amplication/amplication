@@ -107,6 +107,12 @@ export class SubscriptionService {
       BillingFeature.Projects
     );
 
+    this.logger.debug("feature projects", {
+      workspaceId,
+      usageLimit: featureProjects.usageLimit,
+      hasAccess: featureProjects.hasAccess,
+    });
+
     if (!featureProjects.usageLimit) {
       await this.prisma.project.updateMany({
         where: {
@@ -173,6 +179,12 @@ export class SubscriptionService {
       workspaceId,
       BillingFeature.Services
     );
+
+    this.logger.debug("feature services", {
+      workspaceId,
+      usageLimit: featureServices.usageLimit,
+      hasAccess: featureServices.hasAccess,
+    });
 
     if (!featureServices.usageLimit) {
       await this.prisma.resource.updateMany({
@@ -246,14 +258,24 @@ export class SubscriptionService {
   async handleUpdateSubscriptionStatusEvent(
     updateStatusDto: UpdateStatusDto
   ): Promise<void> {
-    const data =
-      this.mapUpdateStatusDtoToUpsertSubscriptionInput(updateStatusDto);
+    let data: UpsertSubscriptionInput;
 
     switch (updateStatusDto.type) {
       case "subscription.created":
       case "subscription.updated":
       case "subscription.expired":
       case "subscription.canceled": {
+        data =
+          this.mapUpdateStatusDtoToUpsertSubscriptionInput(updateStatusDto);
+
+        this.logger.debug(
+          "subscription created/updated/expired/canceled event emitted",
+          {
+            workspaceId: updateStatusDto.customer.id,
+            data,
+          }
+        );
+
         await this.prisma.subscription.upsert({
           where: {
             id: updateStatusDto.id,
@@ -270,6 +292,19 @@ export class SubscriptionService {
         });
         break;
       }
+      case "promotionalEntitlement.granted":
+      case "promotionalEntitlement.updated":
+      case "promotionalEntitlement.revoked":
+      case "promotionalEntitlement.expired": {
+        this.logger.debug("promotionalEntitlement event emitted", {
+          workspaceId: updateStatusDto.customer.id,
+          data: updateStatusDto,
+        });
+
+        await this.updateProjectLicensed(updateStatusDto.customer.id);
+        await this.updateServiceLicensed(updateStatusDto.customer.id);
+        break;
+      }
     }
     if (updateStatusDto.type === "subscription.created") {
       await this.trackUpgradeCompletedEvent(
@@ -283,6 +318,11 @@ export class SubscriptionService {
       updateStatusDto.type === "subscription.created" ||
       updateStatusDto.type === "subscription.updated"
     ) {
+      this.logger.debug("subscription created/updated event emitted", {
+        workspaceId: updateStatusDto.customer.id,
+        data: updateStatusDto,
+      });
+
       await this.updateProjectLicensed(updateStatusDto.customer.id);
       await this.updateServiceLicensed(updateStatusDto.customer.id);
     }

@@ -65,6 +65,7 @@ import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { SubscriptionService } from "../subscription/subscription.service";
 import entitiesToCopy from "../entity/__mocks__/entitiesToCopy";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -218,6 +219,8 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
+  previewAccountType: EnumPreviewAccountType.None,
+  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -565,6 +568,9 @@ describe("ResourceService", () => {
         {
           provide: PluginInstallationService,
           useValue: { get: () => "" },
+          useClass: jest.fn(() => ({
+            create: jest.fn(),
+          })),
         },
         {
           provide: SegmentAnalyticsService,
@@ -762,6 +768,47 @@ describe("ResourceService", () => {
     expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID
     );
+  });
+
+  describe("createPreviewService", () => {
+    it("should create a preview service", async () => {
+      const createResourceArgs = {
+        args: {
+          data: {
+            name: EXAMPLE_RESOURCE_NAME,
+            description: EXAMPLE_RESOURCE_DESCRIPTION,
+            color: DEFAULT_RESOURCE_COLORS.service,
+            resourceType: EnumResourceType.Service,
+            wizardType: "create resource",
+            project: {
+              connect: {
+                id: EXAMPLE_PROJECT_ID,
+              },
+            },
+            serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+            gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+          },
+        },
+        user: EXAMPLE_USER,
+      };
+      const user = EXAMPLE_USER;
+      const nonDefaultPluginsToInstall = [];
+      const requireAuthenticationEntity = true;
+
+      const result = await service.createPreviewService({
+        args: createResourceArgs.args,
+        user,
+        nonDefaultPluginsToInstall,
+        requireAuthenticationEntity,
+      });
+
+      expect(result).toEqual(EXAMPLE_RESOURCE);
+      expect(prismaResourceCreateMock).toBeCalledTimes(1);
+      expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledTimes(1);
+      expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
+        EXAMPLE_RESOURCE_ID
+      );
+    });
   });
 
   it("should create all entities from source resource to target resource", async () => {

@@ -75,6 +75,13 @@ import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationP
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
 
+export type CreatePreviewServiceArgs = {
+  args: CreateOneResourceArgs;
+  user: User;
+  nonDefaultPluginsToInstall: PluginInstallationCreateInput[];
+  requireAuthenticationEntity: boolean;
+};
+
 @Injectable()
 export class ResourceService {
   constructor(
@@ -370,6 +377,97 @@ export class ResourceService {
       user,
       serviceSettings
     );
+
+    await this.environmentService.createDefaultEnvironment(resource.id);
+
+    const project = await this.projectService.findUnique({
+      where: { id: resource.projectId },
+    });
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.Services
+    );
+
+    return resource;
+  }
+
+  async createPreviewService({
+    args,
+    user,
+    nonDefaultPluginsToInstall,
+    requireAuthenticationEntity,
+  }: CreatePreviewServiceArgs): Promise<Resource> {
+    const { serviceSettings, gitRepository, ...rest } = args.data;
+    const resource = await this.createResource(
+      {
+        data: {
+          ...rest,
+          resourceType: EnumResourceType.Service,
+        },
+      },
+      user,
+      gitRepository,
+      "create resource"
+    );
+
+    await this.prisma.resourceRole.create({
+      data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
+    });
+
+    if (requireAuthenticationEntity) {
+      await this.entityService.createDefaultEntities(resource.id, user);
+      serviceSettings.authEntityName = USER_ENTITY_NAME;
+    }
+
+    await this.serviceSettingsService.createDefaultServiceSettings(
+      resource.id,
+      user,
+      serviceSettings
+    );
+
+    const defaultAuthPlugins: PluginInstallationCreateInput[] = [
+      {
+        displayName: "Auth-core",
+        pluginId: "auth-core",
+        npm: "@amplication/plugin-auth-core",
+        version: "latest",
+        enabled: true,
+        resource: { connect: { id: resource.id } },
+      },
+      {
+        displayName: "Auth-jwt",
+        pluginId: "auth-jwt",
+        npm: "@amplication/plugin-auth-jwt",
+        version: "latest",
+        enabled: true,
+        resource: { connect: { id: resource.id } },
+      },
+    ];
+
+    const defaultDBPlugin: PluginInstallationCreateInput = {
+      displayName: "postgres",
+      pluginId: "db-postgres",
+      npm: "@amplication/plugin-db-postgres",
+      version: "latest",
+      enabled: true,
+      resource: { connect: { id: resource.id } },
+    };
+
+    const plugins = [
+      defaultDBPlugin,
+      ...(requireAuthenticationEntity ? defaultAuthPlugins : []),
+      ...nonDefaultPluginsToInstall,
+    ];
+
+    for (const plugin of plugins) {
+      await this.pluginInstallationService.create(
+        {
+          data: plugin,
+        },
+        user
+      );
+    }
 
     await this.environmentService.createDefaultEnvironment(resource.id);
 
@@ -935,7 +1033,7 @@ export class ResourceService {
         wizardType: data.wizardType,
         resourceName: resource.name,
         gitProvider: provider,
-        gitOrganizationName: gitRepository?.name,
+        gitOrganizationName: gitOrganization?.name,
         repoName: gitRepository?.name,
         graphQlApi: String(serviceSettings.serverSettings.generateGraphQL),
         restApi: String(serviceSettings.serverSettings.generateRestApi),

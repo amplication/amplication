@@ -22,6 +22,7 @@ import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Inject, UseFilters, UseGuards } from "@nestjs/common";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 import { UserService } from "../user/user.service";
+import { camelCase } from "camel-case";
 
 type Constructor<T> = {
   new (...args: any): T;
@@ -61,7 +62,7 @@ export function BlockTypeResolver<
     >;
 
     @Query(() => classRef, {
-      name: classRef.name,
+      name: camelCase(classRef.name),
       nullable: true,
     })
     @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")

@@ -19,9 +19,11 @@ export class Auth0Middleware implements NestMiddleware {
   ) {
     this.clientHost = configService.get(Env.CLIENT_HOST);
     const baseURL = `${configService.get(Env.HOST)}`;
+
     const issuerBaseUrl = configService.get(Env.AUTH_ISSUER_BASE_URL);
     const clientID = configService.get(Env.AUTH_ISSUER_CLIENT_ID);
     const clientSecret = configService.get(Env.AUTH_ISSUER_CLIENT_SECRET);
+
     this.middleware = auth({
       authRequired: false,
       authorizationParams: {

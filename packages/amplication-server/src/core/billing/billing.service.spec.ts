@@ -20,6 +20,7 @@ import { GitOrganization, GitRepository, Project, User } from "../../models";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../../prisma";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 jest.mock("@stigg/node-server-sdk");
 Stigg.initialize = jest.fn().mockReturnValue(Stigg.prototype);
@@ -226,6 +227,8 @@ describe("BillingService", () => {
           firstName: "first-name",
           lastName: "last-name",
           password: "password",
+          previewAccountType: EnumPreviewAccountType.None,
+          previewAccountEmail: null,
         },
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -353,6 +356,8 @@ describe("BillingService", () => {
           firstName: "first-name",
           lastName: "last-name",
           password: "password",
+          previewAccountType: EnumPreviewAccountType.None,
+          previewAccountEmail: null,
         },
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -474,6 +479,8 @@ describe("BillingService", () => {
             firstName: "first-name",
             lastName: "last-name",
             password: "password",
+            previewAccountType: EnumPreviewAccountType.None,
+            previewAccountEmail: null,
           },
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -573,6 +580,8 @@ describe("BillingService", () => {
             firstName: "first-name",
             lastName: "last-name",
             password: "password",
+            previewAccountType: EnumPreviewAccountType.None,
+            previewAccountEmail: null,
           },
           createdAt: new Date(),
           updatedAt: new Date(),

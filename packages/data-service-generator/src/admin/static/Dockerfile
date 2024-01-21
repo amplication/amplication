@@ -44,7 +44,7 @@ RUN chown -R nginx:nginx /var/run/nginx.pid \
 USER nginx
 
 # expose a specific port on the docker container
-ENV PORT=80
+ENV PORT=3001
 EXPOSE ${PORT}
 
 # start the server using the previously build application

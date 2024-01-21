@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 
 import * as models from "../models";
 
@@ -8,6 +8,7 @@ import { UserAvatar, Tooltip } from "@amplication/ui/design-system";
 
 import "./UserBadge.scss";
 import { identity } from "../util/analytics";
+import { GET_USER } from "../Profile/accountQueries";
 
 type TData = {
   me: {
@@ -47,17 +48,3 @@ function UserBadge() {
 }
 
 export default UserBadge;
-
-export const GET_USER = gql`
-  query getUser {
-    me {
-      account {
-        id
-        email
-        firstName
-        lastName
-        createdAt
-      }
-    }
-  }
-`;

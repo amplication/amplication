@@ -1,10 +1,9 @@
-import { Icon } from "@amplication/ui/design-system";
+import { Icon, Form } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import { Formik } from "formik";
 import { isEmpty } from "lodash";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { Form } from "../Components/Form";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import "./EntityRelationFieldsChart.scss";

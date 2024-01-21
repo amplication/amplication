@@ -301,4 +301,13 @@ export const Routes: RouteDef[] = [
     exactPath: true,
     isAnalytics: true,
   },
+  {
+    path: "/signup/preview-account",
+    Component: lazy(() => import("../User/SignupPreviewAccount")),
+    moduleName: "SignupPreviewAccount",
+    moduleClass: "signupPreviewAccount-page",
+    routeTrackType: "signupPreviewAccount",
+    exactPath: true,
+    isAnalytics: true,
+  },
 ];

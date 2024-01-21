@@ -878,7 +878,7 @@ export class BuildService {
       : undefined;
 
     return {
-      entities: await this.getOrderedEntities(buildId),
+      entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: plugins,
       moduleContainers: modules,

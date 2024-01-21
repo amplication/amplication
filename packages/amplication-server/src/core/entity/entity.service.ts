@@ -95,6 +95,7 @@ import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForE
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { pascalCase } from "pascal-case";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -259,6 +260,20 @@ export class EntityService {
     });
   }
 
+  async checkServiceLicense(resource: Resource) {
+    if (!this.billingService.isBillingEnabled) {
+      return;
+    }
+
+    if (
+      !resource.project?.licensed ||
+      (!resource.licensed && resource.resourceType === EnumResourceType.Service)
+    ) {
+      const message = "Your workspace reached its service limitation.";
+      throw new BillingLimitationError(message, BillingFeature.Services);
+    }
+  }
+
   async createOneEntity(
     args: CreateOneEntityArgs,
     user: User,
@@ -269,12 +284,10 @@ export class EntityService {
     const resourceId = args.data.resource.connect.id;
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },
+      include: { project: true },
     });
 
-    if (!resource.licensed) {
-      const message = "Your workspace reached its service limitation.";
-      throw new BillingLimitationError(message, BillingFeature.Services);
-    }
+    await this.checkServiceLicense(resource);
 
     if (
       args.data?.name?.toLowerCase().trim() ===
@@ -1898,7 +1911,11 @@ export class EntityService {
               id: entityId,
             },
             include: {
-              resource: true,
+              resource: {
+                include: {
+                  project: true,
+                },
+              },
             },
           });
 
@@ -1906,10 +1923,7 @@ export class EntityService {
             throw new NotFoundException(`Entity ${entityId} not found`);
           }
 
-          if (!entityWithResource.resource.licensed) {
-            const message = "Your workspace reached its service limitation.";
-            throw new BillingLimitationError(message, BillingFeature.Services);
-          }
+          await this.checkServiceLicense(entityWithResource.resource);
 
           const createMany = args.data.addRoles.map((role) => {
             return {
@@ -2524,7 +2538,11 @@ export class EntityService {
         id: entityId,
       },
       include: {
-        resource: true,
+        resource: {
+          include: {
+            project: true,
+          },
+        },
       },
     });
 
@@ -2532,10 +2550,7 @@ export class EntityService {
       throw new NotFoundException(`Entity ${entityId} not found`);
     }
 
-    if (!entityWithResource.resource.licensed) {
-      const message = "Your workspace reached its service limitation.";
-      throw new BillingLimitationError(message, BillingFeature.Services);
-    }
+    await this.checkServiceLicense(entityWithResource.resource);
 
     if (
       enforceValidation &&
@@ -2793,7 +2808,10 @@ export class EntityService {
       args.data.dataType === EnumDataType.Lookup &&
       field.dataType === EnumDataType.Lookup &&
       (field.name !== args.data.name ||
-        field.displayName !== args.data.displayName);
+        field.displayName !== args.data.displayName ||
+        (field.properties as unknown as types.Lookup).allowMultipleSelection !==
+          (args.data.properties as unknown as types.Lookup)
+            .allowMultipleSelection);
 
     return await this.useLocking(
       field.entityVersion.entityId,
@@ -2973,18 +2991,36 @@ export class EntityService {
           }
         }
 
-        const deletedField = await this.prisma.entityField.delete(args);
+        const deletedField = await this.prisma.entityField
+          .delete(args)
+          // Continue with the rest of the delete even if the field was not found
+          // This is done in order to allow the user to workaround issues in any case when a field has been deleted before
+          // Currently deleteIfExists doesn't exist. Tracking issue :- https://github.com/prisma/prisma/issues/4072
+          .catch((error) => {
+            if (error.code === "P2025") {
+              this.logger.error(
+                "Continue with the rest of the deletion even though the field was not found ",
+                error
+              );
 
-        const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
-          entity.resourceId,
-          entity.id
-        );
+              return null;
+            }
 
-        await this.moduleActionService.deleteDefaultActionsForRelationField(
-          deletedField,
-          moduleId,
-          user
-        );
+            throw new AmplicationError(error);
+          });
+
+        if (deletedField) {
+          const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
+            entity.resourceId,
+            entity.id
+          );
+
+          await this.moduleActionService.deleteDefaultActionsForRelationField(
+            deletedField,
+            moduleId,
+            user
+          );
+        }
 
         return deletedField;
       }

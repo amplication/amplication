@@ -49,8 +49,9 @@ import { join } from "path";
             join(process.cwd(), "src", "schema.graphql"),
           sortSchema: true,
           debug: configService.get("GRAPHQL_DEBUG") === "1",
-          playground: configService.get("PLAYGROUND_ENABLE") === "1",
-          introspection: configService.get("PLAYGROUND_ENABLE") === "1",
+          playground: configService.get("GRAPHQL_PLAYGROUND_ENABLED") === "1",
+          introspection:
+            configService.get("GRAPHQL_INTROSPECTION_ENABLED") === "1",
           context: ({ req }: { req: Request }) => ({
             req,
           }),
