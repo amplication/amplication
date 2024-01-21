@@ -108,6 +108,11 @@ export class UserActionService {
         },
       },
     });
+
+    if (!userAction) {
+      throw new Error(`User action not found: ${userActionId}`);
+    }
+
     await this.actionService.complete(userAction.action.steps[0], status);
 
     await this.prisma.userAction.update({

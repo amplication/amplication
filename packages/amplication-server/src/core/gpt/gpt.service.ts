@@ -62,22 +62,12 @@ export class GptService {
     errorMessage,
     result,
   }: AiConversationComplete.Value): Promise<void> {
-    const userAction = await this.userActionService.findOne({
-      where: {
-        id: userActionId,
-      },
-    });
-
-    if (!userAction) {
-      throw new Error(`User action not found: ${userActionId}`);
-    }
-
     const userActionStatus = success
       ? EnumActionStepStatus.Success
       : EnumActionStepStatus.Failed;
 
     await this.userActionService.updateUserActionMetadata(
-      userAction.id,
+      userActionId,
       START_CONVERSATION_STEP_NAME,
       userActionStatus,
       success ? result : { errorMessage }
