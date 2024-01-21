@@ -1,0 +1,34 @@
+@import "../style/index.scss";
+
+.redesign-resource-button-item {
+  &__serviceIcon {
+    grid-column: none;
+  }
+  &__selectMonoTag {
+    font-size: 8px;
+  }
+
+  .span {
+    margin: 0;
+  }
+  &__icon {
+    border-radius: 24px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    color: var(--gray-full);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--secondary);
+    margin-right: 4px;
+  }
+  &__item {
+    display: grid;
+    grid-template: 1fr 1fr / repeat(6, 1fr);
+    align-items: center;
+    width: 100%;
+    color: var(--gray-base);
+    line-height: 12px;
+  }
+}

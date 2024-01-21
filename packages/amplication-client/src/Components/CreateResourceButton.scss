@@ -4,6 +4,11 @@ $caret-width: 7px;
 .create-resource-button {
   position: relative;
 
+  &__selectMonoTag {
+    padding: 0px 8px;
+    align-items: center;
+    font-size: var(--subtle-font-size);
+  }
   .select-menu__modal {
     top: calc(100% + ($caret-width / 2));
 
