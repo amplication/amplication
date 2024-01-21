@@ -22,78 +22,89 @@ const DATE_CREATED_FIELD = "createdAt";
 type Props = {
   moduleId: string;
   resourceId: string;
+  searchPhrase?: string;
+  disabled?: boolean;
 };
-const ModuleDtoList = React.memo(({ moduleId, resourceId }: Props) => {
-  const {
-    findModuleDtos,
-    findModuleDtosData: data,
-    findModuleDtosLoading: loading,
-    findModuleDtoRefetch: refetch,
-  } = useModuleDto();
+const ModuleDtoList = React.memo(
+  ({ moduleId, resourceId, searchPhrase, disabled }: Props) => {
+    const {
+      findModuleDtos,
+      findModuleDtosData: data,
+      findModuleDtosLoading: loading,
+      findModuleDtoRefetch: refetch,
+    } = useModuleDto();
 
-  const { getModuleData: moduleData } = useModule(moduleId);
+    const { getModuleData: moduleData } = useModule(moduleId);
 
-  useEffect(() => {
-    findModuleDtos({
-      variables: {
-        where: {
-          parentBlock: { id: moduleId },
-          resource: { id: resourceId },
+    useEffect(() => {
+      findModuleDtos({
+        variables: {
+          where: {
+            parentBlock: { id: moduleId },
+            resource: { id: resourceId },
+            displayName:
+              searchPhrase !== ""
+                ? {
+                    contains: searchPhrase,
+                    mode: models.QueryMode.Insensitive,
+                  }
+                : undefined,
+          },
+          orderBy: {
+            [DATE_CREATED_FIELD]: models.SortOrder.Asc,
+          },
         },
-        orderBy: {
-          [DATE_CREATED_FIELD]: models.SortOrder.Asc,
-        },
-      },
-    });
-  }, [moduleId, findModuleDtos, resourceId]);
+      });
+    }, [moduleId, findModuleDtos, resourceId, searchPhrase]);
 
-  const onDtoCreated = useCallback(() => {
-    refetch();
-  }, [refetch]);
+    const onDtoCreated = useCallback(() => {
+      refetch();
+    }, [refetch]);
 
-  return (
-    <>
-      {loading && <CircularProgress centerToParent />}
-      <List
-        listStyle={EnumListStyle.Transparent}
-        collapsible
-        headerContent={
-          <FlexItem
-            itemsAlign={EnumItemsAlign.Center}
-            end={
-              <NewModuleDto
-                moduleId={moduleId}
-                resourceId={resourceId}
-                onDtoCreated={onDtoCreated}
-              />
-            }
-          >
-            <Text
-              textStyle={EnumTextStyle.Normal}
-              textColor={EnumTextColor.White}
-              textWeight={EnumTextWeight.Bold}
+    return (
+      <>
+        {loading && <CircularProgress centerToParent />}
+        <List
+          listStyle={EnumListStyle.Transparent}
+          collapsible
+          headerContent={
+            <FlexItem
+              itemsAlign={EnumItemsAlign.Center}
+              end={
+                <NewModuleDto
+                  moduleId={moduleId}
+                  resourceId={resourceId}
+                  onDtoCreated={onDtoCreated}
+                />
+              }
             >
-              DTOs
-            </Text>
-          </FlexItem>
-        }
-      >
-        {data?.moduleDtos?.length ? (
-          data?.moduleDtos?.map((dto) => (
-            <ModuleDtoListItem
-              key={dto.id}
-              module={moduleData?.module}
-              moduleDto={dto}
-            />
-          ))
-        ) : (
-          <ListItem>
-            <Text textStyle={EnumTextStyle.Description}>No DTOs found</Text>
-          </ListItem>
-        )}
-      </List>
-    </>
-  );
-});
+              <Text
+                textStyle={EnumTextStyle.Normal}
+                textColor={EnumTextColor.White}
+                textWeight={EnumTextWeight.Bold}
+              >
+                DTOs
+              </Text>
+            </FlexItem>
+          }
+        >
+          {data?.moduleDtos?.length ? (
+            data?.moduleDtos?.map((dto) => (
+              <ModuleDtoListItem
+                key={dto.id}
+                module={moduleData?.module}
+                moduleDto={dto}
+              />
+            ))
+          ) : (
+            <ListItem>
+              <Text textStyle={EnumTextStyle.Description}>No DTOs found</Text>
+            </ListItem>
+          )}
+        </List>
+      </>
+    );
+  }
+);
 
 export default ModuleDtoList;

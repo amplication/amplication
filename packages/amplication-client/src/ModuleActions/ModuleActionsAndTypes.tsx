@@ -35,7 +35,12 @@ const ModuleActionsAndTypes = React.memo(
           />
         </FlexItem>
         <FlexItem margin={EnumFlexItemMargin.Both}>
-          <ModuleDtoList moduleId={module.id} resourceId={module.resourceId} />
+          <ModuleDtoList
+            moduleId={module.id}
+            resourceId={module.resourceId}
+            searchPhrase={searchPhrase}
+            disabled={disabled}
+          />
         </FlexItem>
         <HorizontalRule />
       </>
