@@ -13,8 +13,8 @@
     align-items: center;
     gap: 8px;
     border-radius: 4px;
-    border: 1px solid #2c3249;
-    background: #15192c;
+    border: 1px solid var(--gray-80);
+    background: var(-gray-full);
   }
 
   &__selectedNode {

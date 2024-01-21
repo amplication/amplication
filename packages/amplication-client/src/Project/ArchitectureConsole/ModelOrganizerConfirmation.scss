@@ -14,9 +14,9 @@ $addon-title-line-height: 36px;
 
   &__information {
     line-height: 22px;
-    color: #a3a8b8;
+    color: var(--gray-20);
     & span {
-      color: #a3a8b8;
+      color: var(--gray-20);
     }
   }
 
@@ -80,7 +80,7 @@ $addon-title-line-height: 36px;
     gap: 4px;
     align-self: stretch;
     border-radius: 4px;
-    border: 1px solid var(--APP-Secondary-Turquoise, #53dbee);
+    border: 1px solid var(--theme-turquoise);
     background: rgba(83, 219, 238, 0.1);
   }
 
@@ -94,7 +94,7 @@ $addon-title-line-height: 36px;
   }
 
   .toggle-field label .input-label-value {
-    color: #a3a8b8;
+    color: var(--gray-20);
   }
 
   .toggle-field label {

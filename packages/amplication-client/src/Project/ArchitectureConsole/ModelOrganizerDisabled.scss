@@ -19,12 +19,12 @@ $addon-title-line-height: 36px;
   }
 
   &__addon-section {
-    background-color: #15192c;
+    background-color: var(--gray-full);
     width: 100%;
     height: 146px;
     padding: 12px;
     border-radius: 8px;
-    border: 1px solid #373d57;
+    border: 1px solid var(--gray-70);
     gap: 8px;
 
     &__contact-us {
