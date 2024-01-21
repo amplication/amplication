@@ -18,6 +18,7 @@ import { ENTITY_ACTIONS } from "./constants";
 import { AppContext } from "../context/appContext";
 import useModule from "../Modules/hooks/useModule";
 import { DATE_CREATED_FIELD } from "../Modules/ModuleList";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
 
 type Props = {
   match: match<{ resource: string; entityId: string; fieldId: string }>;
@@ -91,6 +92,8 @@ const Entity = ({ match }: Props) => {
 
   const errorMessage = formatError(error || updateError);
 
+  useBreadcrumbs(data?.entity.name, match.url);
+
   return (
     <PageContent
       pageTitle={data?.entity.displayName}
@@ -132,6 +135,7 @@ const Entity = ({ match }: Props) => {
           <RouteWithAnalytics path="/:workspace/:project/:resource/entities/:entityId/permissions">
             <PermissionsForm
               entityId={entityId}
+              entityName={data.entity.name}
               resourceId={resource}
               availableActions={ENTITY_ACTIONS}
               objectDisplayName={data.entity.pluralDisplayName}
@@ -141,7 +145,10 @@ const Entity = ({ match }: Props) => {
             <EntityField />
           </RouteWithAnalytics>
           <RouteWithAnalytics path="/:workspace/:project/:resource/entities/:entityId/fields/">
-            <EntityFieldList entityId={data.entity.id} />
+            <EntityFieldList
+              entityId={data.entity.id}
+              entityName={data.entity.name}
+            />
           </RouteWithAnalytics>
           <RouteWithAnalytics path="/:workspace/:project/:resource/entities/:entityId">
             <EntityForm
