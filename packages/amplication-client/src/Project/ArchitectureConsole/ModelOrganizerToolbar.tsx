@@ -58,8 +58,7 @@ export default function ModelOrganizerToolbar({
   searchPhraseChanged,
   onRedesign,
 }: Props) {
-  const { currentWorkspace, currentProject, pendingChanges } =
-    useContext(AppContext);
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   const handleSearchPhraseChanged = useCallback(
     (searchPhrase: string) => {
       searchPhraseChanged(searchPhrase);
@@ -75,12 +74,12 @@ export default function ModelOrganizerToolbar({
   const [changesDialog, setChangesDialog] = useState<boolean>(false);
 
   const handleAiClicked = useCallback(() => {
-    if (pendingChanges.length > 0) {
+    if (hasChanges) {
       setChangesDialog(true);
     } else {
       //trigger AI process
     }
-  }, [setChangesDialog]);
+  }, [setChangesDialog, hasChanges]);
 
   const handleChangesDialogDismiss = useCallback(() => {
     setChangesDialog(false);
@@ -202,34 +201,33 @@ export default function ModelOrganizerToolbar({
                   buttonStyle={EnumButtonStyle.Primary}
                 >
                   <SelectMenuModal>
-                    <div className={`${CLASS_NAME}__resourceListModassl`}>
-                      {" "}
-                      <SelectMenuList className={`${CLASS_NAME}__resourceList`}>
-                        <Text
-                          className={`${CLASS_NAME}__selectMonoTag`}
-                          textStyle={EnumTextStyle.Tag}
-                          textColor={EnumTextColor.Black20}
-                        >
-                          {"Select Monolith"}
-                        </Text>
-                        {resources?.map((resource) => (
-                          <div className={`${CLASS_NAME}__resourceListItem`}>
-                            <SelectMenuItem
-                              key={resource.id}
-                              closeAfterSelectionChange
-                              itemData={resource}
-                              onSelectionChange={onRedesign}
-                              //as="span"
-                            >
-                              <div>
-                                <Icon icon={"app-settings"}></Icon>
-                                <span>{resource.name}</span>
-                              </div>
-                            </SelectMenuItem>
-                          </div>
-                        ))}
-                      </SelectMenuList>
-                    </div>
+                    {" "}
+                    <SelectMenuList className={`${CLASS_NAME}__resourceList`}>
+                      <Text
+                        className={`${CLASS_NAME}__selectMonoTag`}
+                        textStyle={EnumTextStyle.Tag}
+                        textColor={EnumTextColor.Black20}
+                      >
+                        {"Select Monolith"}
+                      </Text>
+                      {resources?.map((resource) => (
+                        <div className={`${CLASS_NAME}__resourceListItem`}>
+                          <Icon
+                            className={`${CLASS_NAME}__serviceIcon`}
+                            icon={"app-settings"}
+                          ></Icon>
+                          <SelectMenuItem
+                            key={resource.id}
+                            closeAfterSelectionChange
+                            itemData={resource}
+                            onSelectionChange={onRedesign}
+                            //as="span"
+                          >
+                            <span>{resource.name}</span>
+                          </SelectMenuItem>
+                        </div>
+                      ))}
+                    </SelectMenuList>
                   </SelectMenuModal>
                 </SelectMenu>
               </FeatureIndicatorContainer>
