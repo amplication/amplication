@@ -50,7 +50,7 @@ export const ModuleOrganizerDisabled: React.FC<Props> = ({ icon }) => {
           </span>
           <a
             className={`${CLASS_NAME}__addon-section__contact-us`}
-            href={"https://meetings-eu1.hubspot.com/liza-dymava/cta-link"}
+            href={"https://meetings-eu1.hubspot.com/oalaluf"}
             target="blank"
           >
             <Text>{"Contact us"}</Text>{" "}
