@@ -10,7 +10,7 @@ import { EventPattern, Payload } from "@nestjs/microservices";
 @Controller("ai-controller")
 export class GptController {
   constructor(
-    private readonly aiService: GptService,
+    private readonly gptService: GptService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
@@ -25,7 +25,7 @@ export class GptController {
       }
     );
     try {
-      await this.aiService.onConversationCompleted(message);
+      await this.gptService.onConversationCompleted(message);
       this.logger.debug(
         `COMPLETED: onConversationCompleted ${message.userActionId}`
       );
