@@ -65,8 +65,6 @@ export default function ModelOrganizer({
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
 
-  const { currentWorkspace, currentProject } = useContext(AppContext);
-
   const {
     nodes,
     currentResourcesData,
@@ -78,6 +76,7 @@ export default function ModelOrganizer({
     resetToOriginalState,
     changes,
     saveChanges,
+    loadingCreateResourceAndEntities,
     moveNodeToParent,
     createNewTempService,
     modelGroupFilterChanged,
@@ -90,7 +89,6 @@ export default function ModelOrganizer({
   } = useModelOrganization();
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
-  const history = useHistory();
 
   const [readOnly, setReadOnly] = useState<boolean>(true);
 
@@ -123,8 +121,7 @@ export default function ModelOrganizer({
     saveChanges();
     setReadOnly(true);
     setSelectedNode(null);
-    history.push(`/${currentWorkspace?.id}/${currentProject?.id}`);
-  }, [saveChanges, setSelectedNode, setReadOnly, history]);
+  }, [saveChanges, setSelectedNode, setReadOnly]);
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
@@ -224,6 +221,9 @@ export default function ModelOrganizer({
     setNodes(updatedNodes);
     reactFlowInstance.fitView();
   }, [setNodes, showRelationDetails, reactFlowInstance, nodes, edges]);
+
+  if (loadingCreateResourceAndEntities)
+    return <CircularProgress centerToParent />;
 
   return (
     <div className={CLASS_NAME}>

@@ -11,6 +11,7 @@ import { entitiesToNodesAndEdges, tempResourceToNode } from "../helpers";
 import { Edge, useEdgesState } from "reactflow";
 import { applyAutoLayout } from "../layout";
 import useLocalStorage from "react-use-localstorage";
+import { useHistory } from "react-router-dom";
 
 type TData = {
   resources: models.Resource[];
@@ -33,8 +34,9 @@ const LOCAL_DETAILED_EDGES_STORAGE_KEY = "ModelOrganizerDetailedEdgesData";
 const LOCAL_SIMPLE_EDGES_STORAGE_KEY = "ModelOrganizerSimpleEdgesData";
 
 const useModelOrganization = () => {
-  const { currentProject } = useContext(AppContext);
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const history = useHistory();
   // const [modelGroups, setModelGroups] = useState<ResourceNode[]>([]);
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
   const [currentResourcesData, setCurrentResourcesData] = useState<
@@ -525,8 +527,12 @@ const useModelOrganization = () => {
 
   const [
     createResourceEntities,
-    { loading: loadingCreateEntities, error: createEntitiesError },
-  ] = useMutation<modelChangesData>(CREATE_RESOURCE_ENTITIES, {});
+    { loading: loadingCreateResourceAndEntities, error: createEntitiesError },
+  ] = useMutation<modelChangesData>(CREATE_RESOURCE_ENTITIES, {
+    onCompleted: () => {
+      history.push(`/${currentWorkspace?.id}/${currentProject?.id}`);
+    },
+  });
 
   const saveChanges = useCallback(async () => {
     const { newServices, movedEntities } = changes;
@@ -565,6 +571,7 @@ const useModelOrganization = () => {
     loadingResources,
     resourcesError,
     selectedResource,
+    loadingCreateResourceAndEntities,
     setSearchPhrase,
     toggleShowRelationDetails,
     resetToOriginalState,
