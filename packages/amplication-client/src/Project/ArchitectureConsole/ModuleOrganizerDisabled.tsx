@@ -8,9 +8,12 @@ import {
   Icon,
   Text,
 } from "@amplication/ui/design-system";
-import React from "react";
+import React, { useContext } from "react";
 import { IconType } from "../../Components/FeatureIndicatorContainer";
 import "./ModelOrganizerDisabled.scss";
+import { GET_CONTACT_US_LINK } from "../../Workspaces/queries/workspaceQueries";
+import { AppContext } from "../../context/appContext";
+import { useQuery } from "@apollo/client";
 
 type Props = {
   icon: IconType;
@@ -19,6 +22,12 @@ type Props = {
 export const CLASS_NAME = "model-organizer-disabled";
 
 export const ModuleOrganizerDisabled: React.FC<Props> = ({ icon }) => {
+  const { currentWorkspace } = useContext(AppContext);
+
+  const { data } = useQuery(GET_CONTACT_US_LINK, {
+    variables: { id: currentWorkspace.id },
+  });
+
   return (
     <div className={CLASS_NAME}>
       <FlexItem
@@ -50,7 +59,7 @@ export const ModuleOrganizerDisabled: React.FC<Props> = ({ icon }) => {
           </span>
           <a
             className={`${CLASS_NAME}__addon-section__contact-us`}
-            href={"https://meetings-eu1.hubspot.com/oalaluf"}
+            href={data?.contactUsLink}
             target="blank"
           >
             <Text>{"Contact us"}</Text>{" "}

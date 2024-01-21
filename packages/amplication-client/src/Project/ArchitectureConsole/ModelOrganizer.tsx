@@ -2,10 +2,13 @@ import "reactflow/dist/style.css";
 import "./ModelOrganizer.scss";
 import {
   CircularProgress,
+  EnumTextAlign,
+  EnumTextStyle,
   Icon,
   Snackbar,
+  Text,
 } from "@amplication/ui/design-system";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Background,
   ConnectionMode,
@@ -33,8 +36,6 @@ import {
 } from "../../Components/FeatureIndicatorContainer";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { ModuleOrganizerDisabled } from "./ModuleOrganizerDisabled";
-import { useHistory } from "react-router-dom";
-import { AppContext } from "../../context/appContext";
 
 export const CLASS_NAME = "model-organizer";
 
@@ -91,6 +92,7 @@ export default function ModelOrganizer({
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
 
   const [readOnly, setReadOnly] = useState<boolean>(true);
+  const [zoom, setZoom] = useState<string>(null);
 
   useEffect(() => {
     if (
@@ -125,6 +127,7 @@ export default function ModelOrganizer({
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
+      if (!instance) return;
       setReactFlowInstance(instance);
     },
     [setReactFlowInstance]
@@ -212,6 +215,17 @@ export default function ModelOrganizer({
     reactFlowInstance.fitView();
   }, [setNodes, reactFlowInstance, showRelationDetails, nodes, edges]);
 
+  const onToggleZoomInRelationDetails = useCallback(async () => {
+    await reactFlowInstance.zoomIn();
+
+    setZoom((reactFlowInstance.getZoom() * 100).toFixed());
+  }, [setNodes, setZoom, reactFlowInstance]);
+
+  const onToggleZoomOutRelationDetails = useCallback(async () => {
+    await reactFlowInstance.zoomOut();
+    setZoom((reactFlowInstance.getZoom() * 100).toFixed());
+  }, [setNodes, setZoom, reactFlowInstance]);
+
   const onArrangeNodes = useCallback(async () => {
     const updatedNodes = await applyAutoLayout(
       nodes,
@@ -288,7 +302,22 @@ export default function ModelOrganizer({
                 nodesDraggable={!readOnly}
               >
                 <Background color="grey" />
-                <Controls>
+                <Controls
+                  showInteractive={false}
+                  showFitView={false}
+                  showZoom={false}
+                >
+                  <ControlButton onClick={onToggleZoomInRelationDetails}>
+                    <Icon icon="plus" />
+                  </ControlButton>
+                  <Text
+                    textStyle={EnumTextStyle.Tag}
+                    textAlign={EnumTextAlign.Center}
+                  >{`${zoom ? zoom : "51"}%`}</Text>
+                  <ControlButton onClick={onToggleZoomOutRelationDetails}>
+                    <Icon icon="minus" />
+                  </ControlButton>
+
                   <ControlButton onClick={onToggleShowRelationDetails}>
                     <Icon icon="list" />
                   </ControlButton>

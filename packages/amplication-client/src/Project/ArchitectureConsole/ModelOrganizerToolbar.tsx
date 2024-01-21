@@ -34,6 +34,7 @@ import { BackNavigation } from "../../Components/BackNavigation";
 import { AppContext } from "../../context/appContext";
 import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import { ModelChanges } from "./types";
+import RedesignResourceButton from "../../Components/RedesignResourceButton";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
@@ -191,46 +192,10 @@ export default function ModelOrganizerToolbar({
               </FeatureIndicatorContainer>
             )}
             {readOnly && (
-              <FeatureIndicatorContainer
-                featureId={BillingFeature.RedesignArchitecture}
-                entitlementType={EntitlementType.Boolean}
-                limitationText="Available as part of the Enterprise plan only."
-              >
-                <SelectMenu
-                  title="Redesign"
-                  buttonStyle={EnumButtonStyle.Primary}
-                >
-                  <SelectMenuModal>
-                    {" "}
-                    <SelectMenuList className={`${CLASS_NAME}__resourceList`}>
-                      <Text
-                        className={`${CLASS_NAME}__selectMonoTag`}
-                        textStyle={EnumTextStyle.Tag}
-                        textColor={EnumTextColor.Black20}
-                      >
-                        {"Select Monolith"}
-                      </Text>
-                      {resources?.map((resource) => (
-                        <div className={`${CLASS_NAME}__resourceListItem`}>
-                          <Icon
-                            className={`${CLASS_NAME}__serviceIcon`}
-                            icon={"app-settings"}
-                          ></Icon>
-                          <SelectMenuItem
-                            key={resource.id}
-                            closeAfterSelectionChange
-                            itemData={resource}
-                            onSelectionChange={onRedesign}
-                            //as="span"
-                          >
-                            <span>{resource.name}</span>
-                          </SelectMenuItem>
-                        </div>
-                      ))}
-                    </SelectMenuList>
-                  </SelectMenuModal>
-                </SelectMenu>
-              </FeatureIndicatorContainer>
+              <RedesignResourceButton
+                resources={resources}
+                onSelectResource={onRedesign}
+              ></RedesignResourceButton>
             )}
           </FlexItem>
         </FlexEnd>

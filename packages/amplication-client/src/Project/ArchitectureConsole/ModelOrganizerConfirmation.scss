@@ -65,7 +65,7 @@ $addon-title-line-height: 36px;
 
   &__api_item {
     display: flex;
-    width: 214px;
+    min-width: 200px;
     padding: 8px;
     align-items: center;
     gap: 8px;

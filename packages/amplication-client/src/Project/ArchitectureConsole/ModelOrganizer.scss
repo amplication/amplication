@@ -89,9 +89,9 @@ $addon-title-line-height: 36px;
     margin-bottom: 24px;
     border: 1px solid var(--gray-80);
     background: var(--gray-full);
+    align-items: center;
   }
   .react-flow__controls-button {
-    gap: 8px;
     background: transparent;
     border-bottom: 0cm;
     color: var(--gray-20);
@@ -108,7 +108,4 @@ $addon-title-line-height: 36px;
     background: var(--gray-90) !important;
     padding: 0 4px !important;
   }
-}
-.react-flow__controls-button svg {
-  background: var(--gray-20);
 }
