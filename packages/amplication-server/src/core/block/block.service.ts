@@ -3,7 +3,7 @@ import {
   NotFoundException,
   ConflictException,
 } from "@nestjs/common";
-import type { JsonObject, JsonValue } from "type-fest";
+import type { JsonObject } from "type-fest";
 import { pick, head, last } from "lodash";
 import {
   Block as PrismaBlock,
@@ -42,6 +42,7 @@ import {
 } from "../resource/dto";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 import { JsonFilter } from "../../dto/JsonFilter";
+import { mergeAllSettings } from "./block.util";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
@@ -482,47 +483,6 @@ export class BlockService {
         },
       },
     });
-
-    const getType = (obj) =>
-      Object.prototype.toString.call(obj).slice(8, -1).toLowerCase();
-
-    const mergeAllSettings = (
-      oldSettings: JsonValue,
-      newSettings: { [key: string]: any },
-      keysToNotMerge: string[]
-    ) => {
-      const mergedObj = {};
-
-      for (const [key, val] of Object.entries(oldSettings)) {
-        const valueType = getType(val);
-        if (keysToNotMerge.includes(key)) {
-          mergedObj[key] = newSettings[key];
-          continue;
-        } else if (getType(newSettings[key]) === "array") {
-          mergedObj[key] = newSettings[key];
-          continue;
-        } else if (valueType === "object") {
-          mergedObj[key] = mergeAllSettings(
-            val,
-            newSettings[key],
-            keysToNotMerge
-          );
-          continue;
-        } else {
-          mergedObj[key] = Object.prototype.hasOwnProperty.call(
-            newSettings,
-            key
-          )
-            ? newSettings[key]
-            : val;
-        }
-      }
-
-      return {
-        ...newSettings,
-        ...mergedObj,
-      };
-    };
 
     // merge the existing settings with the new settings. use deep merge but do not merge arrays
     const allSettings = mergeAllSettings(
