@@ -64,7 +64,6 @@ import { MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { SubscriptionService } from "../subscription/subscription.service";
-import entitiesToCopy from "../entity/__mocks__/entitiesToCopy";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
@@ -199,7 +198,6 @@ const EXAMPLE_TARGET_RESOURCE: Resource = {
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
   gitRepositoryOverride: false,
-  entities: entitiesToCopy.filter((x) => x.name === "User"),
   licensed: false,
 };
 
@@ -419,11 +417,9 @@ const prismaResourceFindOneMock = jest.fn(
   (args: Prisma.ResourceFindUniqueArgs) => {
     if (args.where.id === EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID) {
       return EXAMPLE_PROJECT_CONFIGURATION_RESOURCE;
+    } else {
+      return EXAMPLE_RESOURCE;
     }
-    if (args.where.id === EXAMPLE_TARGET_RESOURCE_ID) {
-      return EXAMPLE_TARGET_RESOURCE;
-    }
-    return EXAMPLE_RESOURCE;
   }
 );
 
@@ -447,13 +443,6 @@ const prismaEntityFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY];
 });
 
-const prismaEntityFieldFindManyMock = jest.fn(
-  (args: Prisma.EntityFieldFindManyArgs) => {
-    return entitiesToCopy.find((x) => x.versions[0].id === args.where.id)
-      .fields;
-  }
-);
-
 const prismaCommitCreateMock = jest.fn(() => {
   return EXAMPLE_COMMIT;
 });
@@ -469,32 +458,9 @@ const entityServiceCreateVersionMock = jest.fn(
   async () => EXAMPLE_ENTITY_VERSION
 );
 
-const entityFieldFindFirstMock = jest.fn(
-  async (args: Prisma.EntityFieldFindFirstArgs) => {
-    const { displayName, entityVersionId } = args.where;
-    const entityField = entitiesToCopy.find(
-      (x) =>
-        x.versions[0].id === entityVersionId &&
-        x.fields.find((f) => f.displayName === displayName)
-    );
-    return entityField;
-  }
-);
-
-const entityServiceCreateOneEntityMock = jest.fn(
-  async (args: Prisma.EntityCreateArgs) => {
-    if (args.data.resourceId === EXAMPLE_RESOURCE_ID) {
-      return EXAMPLE_ENTITY;
-    }
-    const entity = entitiesToCopy.find((x) => x.name === args.data.name);
-
-    if (entity) {
-      return entity;
-    } else {
-      return EXAMPLE_ENTITY;
-    }
-  }
-);
+const entityServiceCreateOneEntityMock = jest.fn(async () => {
+  return EXAMPLE_ENTITY;
+});
 
 const entityServiceCreateFieldByDisplayNameMock = jest.fn(
   async () => EXAMPLE_ENTITY_FIELD
@@ -617,13 +583,6 @@ describe("ResourceService", () => {
             entity: {
               findMany: prismaEntityFindManyMock,
             },
-            entityField: {
-              findMany: prismaEntityFieldFindManyMock,
-              findFirst: entityFieldFindFirstMock,
-              create: jest.fn(() => {
-                return null;
-              }),
-            },
             commit: {
               create: prismaCommitCreateMock,
             },
@@ -641,12 +600,6 @@ describe("ResourceService", () => {
         {
           provide: EntityService,
           useClass: jest.fn().mockImplementation(() => ({
-            createCopiedEntityFieldByDisplayName: jest.fn(() => {
-              return null;
-            }),
-            deleteEntityFromSource: jest.fn(() => {
-              return null;
-            }),
             createVersion: entityServiceCreateVersionMock,
             createFieldByDisplayName: entityServiceCreateFieldByDisplayNameMock,
             createOneEntity: entityServiceCreateOneEntityMock,
@@ -656,9 +609,6 @@ describe("ResourceService", () => {
             findFirst: entityServiceFindFirstMock,
             bulkCreateEntities: entityServiceBulkCreateEntities,
             bulkCreateFields: entityServiceBulkCreateFields,
-            updateFieldDataTypeIdByRelatedEntity: jest.fn(() => {
-              return null;
-            }),
           })),
         },
         {
