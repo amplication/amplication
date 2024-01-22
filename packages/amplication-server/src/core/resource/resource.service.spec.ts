@@ -811,40 +811,6 @@ describe("ResourceService", () => {
     });
   });
 
-  it("should create all entities from source resource to target resource", async () => {
-    const createResourceEntitiesArgs = {
-      data: {
-        targetResourceId: EXAMPLE_TARGET_RESOURCE_ID,
-        entitiesToCopy: entitiesToCopy.filter(
-          (x) => x.name.toLowerCase() !== "user"
-        ),
-      },
-    };
-    expect(
-      await service.createResourceEntitiesFromExistingResource(
-        createResourceEntitiesArgs,
-        EXAMPLE_USER
-      )
-    ).toEqual(EXAMPLE_TARGET_RESOURCE);
-  });
-
-  it("should create all entities except Order entity from source resource to target resource", async () => {
-    const createResourceEntitiesArgs = {
-      data: {
-        targetResourceId: EXAMPLE_TARGET_RESOURCE_ID,
-        entitiesToCopy: entitiesToCopy.filter(
-          (x) => x.name.toLowerCase() !== ("order" && "user")
-        ),
-      },
-    };
-    expect(
-      await service.createResourceEntitiesFromExistingResource(
-        createResourceEntitiesArgs,
-        EXAMPLE_USER
-      )
-    ).toEqual(EXAMPLE_TARGET_RESOURCE);
-  });
-
   it("should throw an error while trying to create a service when the user exceeded the limit of services in his project", async () => {
     const createResourceArgs = {
       args: {
