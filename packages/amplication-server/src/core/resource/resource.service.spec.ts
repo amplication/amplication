@@ -188,18 +188,6 @@ const EXAMPLE_PROJECT: Project = {
   demoRepoName: undefined,
   licensed: true,
 };
-const EXAMPLE_TARGET_RESOURCE_ID = "exampleTargetResourceId";
-const EXAMPLE_TARGET_RESOURCE: Resource = {
-  id: EXAMPLE_TARGET_RESOURCE_ID,
-  resourceType: EnumResourceType.Service,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: EXAMPLE_RESOURCE_NAME,
-  description: EXAMPLE_RESOURCE_DESCRIPTION,
-  deletedAt: null,
-  gitRepositoryOverride: false,
-  licensed: false,
-};
 
 const EXAMPLE_USER_ID = "exampleUserId";
 
