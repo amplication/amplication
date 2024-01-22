@@ -231,7 +231,7 @@ describe("AiService", () => {
       const expectedResult: AiRecommendations = {
         newResources: [
           {
-            id: "resourceRecId",
+            tempId: "resourceRecId",
             name: "newSuperCoolService",
           },
         ],
