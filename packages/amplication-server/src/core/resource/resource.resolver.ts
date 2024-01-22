@@ -161,11 +161,8 @@ export class ResourceResolver {
   }
 
   @Mutation(() => [Resource], { nullable: false })
-  // @Roles("ORGANIZATION_ADMIN")
-  // @AuthorizeContext(
-  //   AuthorizableOriginParameter.ProjectId,
-  //   "data.project.connect.id"
-  // )
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "data.projectId")
   async copiedEntities(
     @Args() args: CreateResourcesEntitiesArgs,
     @UserEntity() user: User
