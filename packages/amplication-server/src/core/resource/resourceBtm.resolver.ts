@@ -37,7 +37,7 @@ export class ResourceBtmResolver {
     description:
       "Get the changes to apply to the model in order to break a resource into microservices",
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
+  @AuthorizeContext(AuthorizableOriginParameter.UserActionId, "userActionId")
   async finalizeBreakServiceIntoMicroservices(
     @Args({ name: "userActionId", type: () => String })
     userActionId: string
