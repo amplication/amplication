@@ -72,20 +72,5 @@ export class GptService {
       userActionStatus,
       success ? result : { errorMessage }
     );
-
-    // switch (userAction.userActionType) {
-    //   case EnumUserActionType.BreakTheMonolith:
-    //     await this.resourceBtmService.onCompleteBreakServiceIntoMicroservices(
-    //       userAction,
-    //       success,
-    //       errorMessage,
-    //       result
-    //     );
-    //     break;
-    //   default:
-    //     throw new Error(
-    //       `Unsupported user action type: ${userAction.userActionType}`
-    //     );
-    // }
   }
 }

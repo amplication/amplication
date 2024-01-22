@@ -171,7 +171,7 @@ export class ResourceBtmService {
   }): Promise<UserAction> {
     const resource = await this.getResourceDataForBtm(resourceId);
 
-    const prompt = await this.generatePromptForBreakTheMonolith(resource);
+    const prompt = this.generatePromptForBreakTheMonolith(resource);
 
     const conversationParams = [
       {
