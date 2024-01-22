@@ -46,6 +46,9 @@ const LazyRouteWrapper: React.FC<{
           route.isAnalytics &&
             pageTracking(match.path, match.url, match.params);
 
+          // hack to prevent installed route and :category path to be rendered on the same page
+          if (match.params.category === "installed") return;
+
           const nestedRoutes =
             route.routes && routesGenerator(route.routes, route.path);
           const tabRoutes =
