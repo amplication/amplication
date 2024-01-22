@@ -89,7 +89,7 @@ export class UserActionService {
     status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
     metadata: any
   ): Promise<UserAction> {
-    const userAction = await this.prisma.userAction.findUnique({
+    const userAction = await this.prisma.userAction.findFirst({
       where: {
         id: userActionId,
       },

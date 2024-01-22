@@ -17,7 +17,6 @@ import { BreakServiceToMicroserviceResult } from "./dto/BreakServiceToMicroservi
 import { BtmRecommendations } from "./dto/BtmRecommendations";
 import { UserActionService } from "../userAction/userAction.service";
 import { AiBadFormatResponseError } from "./errors/AiBadFormatResponseError";
-import { JsonValue } from "type-fest";
 
 @Injectable()
 export class ResourceBtmService {
@@ -194,26 +193,29 @@ export class ResourceBtmService {
   async finalizeBreakServiceIntoMicroservices(
     userActionId: string
   ): Promise<BreakServiceToMicroserviceResult> {
-    const userAction = await this.userActionService.findOne({
+    const { resourceId, metadata } = await this.userActionService.findOne({
       where: {
         id: userActionId,
       },
     });
 
-    console.log(status, "status");
-    if (status !== EnumUserActionStatus.Completed) {
+    const userActionStatus = await this.userActionService.calcUserActionStatus(
+      userActionId
+    );
+
+    if (userActionStatus !== EnumUserActionStatus.Completed) {
       return {
-        status: EnumUserActionStatus[userAction.status],
+        status: EnumUserActionStatus[userActionStatus],
         data: null,
       };
     }
 
     const promptResult = this.mapToBreakTheMonolithPromptOutput(
-      userAction.metadata
+      JSON.stringify(metadata)
     );
     const recommendations = await this.translateToBtmRecommendation(
       promptResult,
-      userAction.resourceId
+      resourceId
     );
 
     const newResources: BreakServiceToMicroserviceResult["data"]["newResources"] =
@@ -230,7 +232,7 @@ export class ResourceBtmService {
           name: entity.name,
           entityId: entity.originalEntityId,
           targetResourceId: resource.id,
-          originalResourceId: userAction.resourceId,
+          originalResourceId: resourceId,
         });
       }
     }
@@ -271,12 +273,13 @@ export class ResourceBtmService {
   }
 
   mapToBreakTheMonolithPromptOutput(
-    promptResult: JsonValue
+    promptResult: string
   ): BreakTheMonolithPromptOutput {
     try {
-      const result = JSON.parse(promptResult as string);
+      const result = JSON.parse(promptResult);
+
       return {
-        microservices: result.metadata.microservices.map((microservice) => ({
+        microservices: result.microservices.map((microservice) => ({
           name: microservice.name,
           functionality: microservice.functionality,
           dataModels: microservice.dataModels,
