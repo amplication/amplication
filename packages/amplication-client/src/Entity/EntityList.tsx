@@ -83,7 +83,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
     pluginInstallations?.filter(
       (x) =>
         x?.configurations?.requireAuthenticationEntity === "true" && x.enabled
-    ).length > 0;
+    )?.length > 0;
 
   const handleNewEntityClick = useCallback(() => {
     setNewEntity(!newEntity);
