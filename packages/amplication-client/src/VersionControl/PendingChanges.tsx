@@ -25,6 +25,7 @@ import "./PendingChanges.scss";
 import { AppContext } from "../context/appContext";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
+import PendingChangesList from "./PendingChangesList";
 
 const CLASS_NAME = "pending-changes";
 
@@ -45,7 +46,6 @@ const PendingChanges = ({ projectId }: Props) => {
     entity: string;
   }>("/:workspace/:project/:resource/entities/:entity");
   const {
-    pendingChangesByResource,
     pendingChangesDataError,
     pendingChangesIsError,
     pendingChangesDataLoading,
@@ -88,34 +88,8 @@ const PendingChanges = ({ projectId }: Props) => {
         <div className={`${CLASS_NAME}__changes-wrapper`}>
           {pendingChangesDataLoading ? (
             <CircularProgress centerToParent />
-          ) : isEmpty(pendingChanges) && !pendingChangesDataLoading ? (
-            <div className={`${CLASS_NAME}__empty-state`}>
-              <SvgThemeImage image={EnumImages.NoChanges} />
-              <div className={`${CLASS_NAME}__empty-state__title`}>
-                No pending changes! keep working.
-              </div>
-            </div>
           ) : (
-            <div className={`${CLASS_NAME}__changes`}>
-              {pendingChangesByResource.map((group) => (
-                <div key={group.resource.id}>
-                  <div className={`${CLASS_NAME}__changes__resource`}>
-                    <ResourceCircleBadge
-                      type={group.resource.resourceType}
-                      size="xsmall"
-                    />
-                    <span>{group.resource.name}</span>
-                  </div>
-                  {group.changes.map((change) => (
-                    <PendingChange
-                      key={change.originId}
-                      change={change}
-                      linkToOrigin
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
+            <PendingChangesList />
           )}
           <hr className={`${CLASS_NAME}__divider`} />
           <div className={`${CLASS_NAME}__changes-header`}>
