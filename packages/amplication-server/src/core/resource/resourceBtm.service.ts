@@ -15,9 +15,9 @@ import { UserAction } from "../userAction/dto";
 import { EnumUserActionStatus } from "../userAction/types";
 import { BreakServiceToMicroserviceResult } from "./dto/BreakServiceToMicroserviceResult";
 import { BtmRecommendations } from "./dto/BtmRecommendations";
-import { AiBadFormatResponseError } from "./errors/AiBadFormatResponseError";
-
 import { UserActionService } from "../userAction/userAction.service";
+import { AiBadFormatResponseError } from "./errors/AiBadFormatResponseError";
+import { JsonValue } from "type-fest";
 
 @Injectable()
 export class ResourceBtmService {
@@ -101,10 +101,10 @@ export class ResourceBtmService {
     );
   }
 
-  translateToBtmRecommendation(
+  async translateToBtmRecommendation(
     promptResult: BreakTheMonolithPromptOutput,
-    originalResource: ResourcePartial
-  ): BtmRecommendations {
+    resourceId: string
+  ): Promise<BtmRecommendations> {
     // validate all the entities in the original resource are present
     // at most once in the recommended resources and vice versa
     const recommendedResourceEntities = promptResult.microservices
@@ -116,6 +116,7 @@ export class ResourceBtmService {
     );
     const usedDuplicatedEntities = new Set<string>();
 
+    const originalResource = await this.getResourceDataForBtm(resourceId);
     const originalResourceEntitiesSet = new Set(
       originalResource.entities.map((entity) => entity.name)
     );
@@ -193,21 +194,27 @@ export class ResourceBtmService {
   async finalizeBreakServiceIntoMicroservices(
     userActionId: string
   ): Promise<BreakServiceToMicroserviceResult> {
-    const { resourceId, metadata, status } =
-      await this.userActionService.findOne({
-        where: {
-          id: userActionId,
-        },
-      });
+    const userAction = await this.userActionService.findOne({
+      where: {
+        id: userActionId,
+      },
+    });
 
+    console.log(status, "status");
     if (status !== EnumUserActionStatus.Completed) {
       return {
-        status: EnumUserActionStatus[status],
+        status: EnumUserActionStatus[userAction.status],
         data: null,
       };
     }
 
-    const recommendations = metadata as unknown as BtmRecommendations;
+    const promptResult = this.mapToBreakTheMonolithPromptOutput(
+      userAction.metadata
+    );
+    const recommendations = await this.translateToBtmRecommendation(
+      promptResult,
+      userAction.resourceId
+    );
 
     const newResources: BreakServiceToMicroserviceResult["data"]["newResources"] =
       recommendations.microservices.map((resource) => ({
@@ -223,7 +230,7 @@ export class ResourceBtmService {
           name: entity.name,
           entityId: entity.originalEntityId,
           targetResourceId: resource.id,
-          originalResourceId: resourceId,
+          originalResourceId: userAction.resourceId,
         });
       }
     }
@@ -231,7 +238,7 @@ export class ResourceBtmService {
     return {
       status: EnumUserActionStatus.Completed,
       data: {
-        newResources: newResources,
+        newResources,
         copiedEntities: recommendedEntities,
       },
     };
@@ -263,19 +270,20 @@ export class ResourceBtmService {
     return JSON.stringify(prompt);
   }
 
-  parsePromptResult(promptResult: string): BreakTheMonolithPromptOutput {
+  mapToBreakTheMonolithPromptOutput(
+    promptResult: JsonValue
+  ): BreakTheMonolithPromptOutput {
     try {
-      const result = JSON.parse(promptResult);
-
+      const result = JSON.parse(promptResult as string);
       return {
-        microservices: result.microservices.map((microservice) => ({
+        microservices: result.metadata.microservices.map((microservice) => ({
           name: microservice.name,
           functionality: microservice.functionality,
           dataModels: microservice.dataModels,
         })),
       };
     } catch (error) {
-      throw new AiBadFormatResponseError(promptResult, error);
+      throw new AiBadFormatResponseError(JSON.stringify(promptResult), error);
     }
   }
 }

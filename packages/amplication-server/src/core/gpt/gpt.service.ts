@@ -66,11 +66,13 @@ export class GptService {
       ? EnumActionStepStatus.Success
       : EnumActionStepStatus.Failed;
 
-    await this.userActionService.updateUserActionMetadata(
+    const userActionMetadata = success ? JSON.parse(result) : { errorMessage };
+
+    await this.userActionService.updateUserActionStepAndMetadata(
       userActionId,
       START_CONVERSATION_STEP_NAME,
       userActionStatus,
-      success ? result : { errorMessage }
+      userActionMetadata
     );
   }
 }

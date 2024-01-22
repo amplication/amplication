@@ -83,7 +83,7 @@ export class UserActionService {
     return EnumUserActionStatus.Running;
   }
 
-  async updateUserActionMetadata(
+  async updateUserActionStepAndMetadata(
     userActionId: string,
     actionStepName: string,
     status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
