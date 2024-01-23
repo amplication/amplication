@@ -171,24 +171,30 @@ input BooleanFilter {
   not: Boolean
 }
 
-type BreakServiceToMicroserviceResult {
-  """Prompt result with some data manipulation"""
-  data: BreakTheMonolithRecommendationsResult
+type BreakServiceToMicroservicesData {
+  microservices: [BreakServiceToMicroservicesItem!]!
+}
+
+type BreakServiceToMicroservicesItem {
+  dataModels: [BreakServiceToMicroservicesItemEntities!]!
+  functionality: String!
+  name: String!
+}
+
+type BreakServiceToMicroservicesItemEntities {
+  name: String!
+  originalEntityId: String!
+}
+
+type BreakServiceToMicroservicesResult {
+  """Prompt result with some data structure manipulation"""
+  data: BreakServiceToMicroservicesData
 
   """The original resource ID"""
   originalResourceId: String!
 
   """The status of the user action"""
   status: EnumUserActionStatus!
-}
-
-type BreakTheMonolithDataModel {
-  name: String!
-  originalEntityId: String!
-}
-
-type BreakTheMonolithRecommendationsResult {
-  microservices: [Microservice!]!
 }
 
 type Build {
@@ -986,12 +992,6 @@ input MessagePatternCreateInput {
   type: EnumMessagePatternConnectionOptions!
 }
 
-type Microservice {
-  dataModels: [BreakTheMonolithDataModel!]!
-  functionality: String!
-  name: String!
-}
-
 type Module implements IBlock {
   blockType: EnumBlockType!
   createdAt: DateTime!
@@ -1442,7 +1442,7 @@ type Query {
   """
   Get the changes to apply to the model in order to break a resource into microservices
   """
-  finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroserviceResult!
+  finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!

@@ -199,22 +199,28 @@ export type BooleanFilter = {
   not?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type BreakServiceToMicroserviceResult = {
-  /** Prompt result with some data manipulation */
-  data?: Maybe<BreakTheMonolithRecommendationsResult>;
-  /** The original resource ID */
-  originalResourceId: Scalars['String']['output'];
-  /** The status of the user action */
-  status: EnumUserActionStatus;
+export type BreakServiceToMicroservicesData = {
+  microservices: Array<BreakServiceToMicroservicesItem>;
 };
 
-export type BreakTheMonolithDataModel = {
+export type BreakServiceToMicroservicesItem = {
+  dataModels: Array<BreakServiceToMicroservicesItemEntities>;
+  functionality: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type BreakServiceToMicroservicesItemEntities = {
   name: Scalars['String']['output'];
   originalEntityId: Scalars['String']['output'];
 };
 
-export type BreakTheMonolithRecommendationsResult = {
-  microservices: Array<Microservice>;
+export type BreakServiceToMicroservicesResult = {
+  /** Prompt result with some data manipulation */
+  data?: Maybe<BreakServiceToMicroservicesData>;
+  /** The original resource ID */
+  originalResourceId: Scalars['String']['output'];
+  /** The status of the user action */
+  status: EnumUserActionStatus;
 };
 
 export type Build = {
@@ -1013,12 +1019,6 @@ export type MessagePattern = {
 export type MessagePatternCreateInput = {
   topicId: Scalars['String']['input'];
   type: EnumMessagePatternConnectionOptions;
-};
-
-export type Microservice = {
-  dataModels: Array<BreakTheMonolithDataModel>;
-  functionality: Scalars['String']['output'];
-  name: Scalars['String']['output'];
 };
 
 export type Module = IBlock & {
@@ -1897,7 +1897,7 @@ export type Query = {
   entities: Array<Entity>;
   entity?: Maybe<Entity>;
   /** Get the changes to apply to the model in order to break a resource into microservices */
-  finalizeBreakServiceIntoMicroservices: BreakServiceToMicroserviceResult;
+  finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
   gitGroups: PaginatedGitGroup;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
