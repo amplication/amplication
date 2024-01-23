@@ -8,20 +8,19 @@ import {
   EntityPartial,
   ResourcePartial,
 } from "./resourceBtm.types";
-import cuid from "cuid";
 import { GptService } from "../gpt/gpt.service";
 import { ConversationTypeKey } from "../gpt/gpt.types";
 import { UserAction } from "../userAction/dto";
 import { EnumUserActionStatus } from "../userAction/types";
-import { BreakServiceToMicroserviceResult } from "./dto/BreakServiceToMicroserviceResult";
-import { BtmRecommendations } from "./dto/BtmRecommendations";
+import {
+  BreakServiceToMicroserviceResult,
+  BreakTheMonolithRecommendationsResult,
+} from "./dto/BreakServiceToMicroserviceResult";
 import { UserActionService } from "../userAction/userAction.service";
 import { AiBadFormatResponseError } from "./errors/AiBadFormatResponseError";
 
 @Injectable()
 export class ResourceBtmService {
-  private actionStepName = "GENERATING_BTM_RESOURCE_RECOMMENDATION";
-
   /* eslint-disable @typescript-eslint/naming-convention */
   private dataTypeMap: Record<keyof typeof EnumDataType, string> = {
     SingleLineText: "string",
@@ -49,118 +48,6 @@ export class ResourceBtmService {
     private readonly prisma: PrismaService,
     private readonly userActionService: UserActionService
   ) {}
-
-  private async getResourceDataForBtm(
-    resourceId: string
-  ): Promise<ResourcePartial> {
-    const resource = await this.prisma.resource.findUnique({
-      where: { id: resourceId },
-      select: {
-        id: true,
-        name: true,
-        entities: {
-          where: {
-            deletedAt: null,
-          },
-          select: {
-            id: true,
-            name: true,
-            displayName: true,
-            versions: {
-              where: {
-                versionNumber: 0,
-              },
-              select: {
-                fields: {
-                  select: {
-                    name: true,
-                    displayName: true,
-                    dataType: true,
-                    properties: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!resource) {
-      throw new AmplicationError(INVALID_RESOURCE_ID);
-    }
-    return resource;
-  }
-
-  duplicatedEntities(entities: string[]): Set<string> {
-    return new Set(
-      entities.filter((entity, index) => {
-        return entities.indexOf(entity) !== index;
-      })
-    );
-  }
-
-  async translateToBtmRecommendation(
-    promptResult: BreakTheMonolithPromptOutput,
-    resourceId: string
-  ): Promise<BtmRecommendations> {
-    // validate all the entities in the original resource are present
-    // at most once in the recommended resources and vice versa
-    const recommendedResourceEntities = promptResult.microservices
-      .map((resource) => resource.dataModels)
-      .flat();
-
-    const duplicatedEntities = this.duplicatedEntities(
-      recommendedResourceEntities
-    );
-    const usedDuplicatedEntities = new Set<string>();
-
-    const originalResource = await this.getResourceDataForBtm(resourceId);
-    const originalResourceEntitiesSet = new Set(
-      originalResource.entities.map((entity) => entity.name)
-    );
-
-    return {
-      microservices: promptResult.microservices
-        .sort((microservice) => -1 * microservice.dataModels.length)
-        .map((microservice) => ({
-          id: cuid(),
-          name: microservice.name,
-          description: microservice.functionality,
-          entities: microservice.dataModels
-            .filter((dataModelName) => {
-              const isDuplicatedAlreadyUsed =
-                usedDuplicatedEntities.has(dataModelName);
-              if (duplicatedEntities.has(dataModelName)) {
-                usedDuplicatedEntities.add(dataModelName);
-              }
-              return (
-                originalResourceEntitiesSet.has(dataModelName) &&
-                !isDuplicatedAlreadyUsed
-              );
-            })
-            .map((dataModelName) => {
-              const entityNameIdMap = originalResource.entities.reduce(
-                (map, entity) => {
-                  map[entity.name] = entity;
-                  return map;
-                },
-                {} as Record<string, EntityPartial>
-              );
-
-              return {
-                id: cuid(),
-                name: dataModelName,
-                fields:
-                  entityNameIdMap[dataModelName]?.versions[0]?.fields.map(
-                    (field) => field.name
-                  ) ?? [],
-                originalEntityId: entityNameIdMap[dataModelName]?.id,
-              };
-            }),
-        })),
-    };
-  }
 
   async triggerBreakServiceIntoMicroservices({
     resourceId,
@@ -206,43 +93,20 @@ export class ResourceBtmService {
     if (userActionStatus !== EnumUserActionStatus.Completed) {
       return {
         status: EnumUserActionStatus[userActionStatus],
+        originalResourceId: resourceId,
         data: null,
       };
     }
 
-    const promptResult = this.mapToBreakTheMonolithPromptOutput(
-      JSON.stringify(metadata)
-    );
-    const recommendations = await this.translateToBtmRecommendation(
-      promptResult,
+    const recommendations = await this.preparePromptResultToBtmRecommendation(
+      JSON.stringify(metadata),
       resourceId
     );
 
-    const newResources: BreakServiceToMicroserviceResult["data"]["newResources"] =
-      recommendations.microservices.map((resource) => ({
-        id: resource.id,
-        name: resource.name,
-      }));
-
-    const recommendedEntities: BreakServiceToMicroserviceResult["data"]["copiedEntities"] =
-      [];
-    for (const resource of recommendations.microservices) {
-      for (const entity of resource.entities) {
-        recommendedEntities.push({
-          name: entity.name,
-          entityId: entity.originalEntityId,
-          targetResourceId: resource.id,
-          originalResourceId: resourceId,
-        });
-      }
-    }
-
     return {
       status: EnumUserActionStatus.Completed,
-      data: {
-        newResources,
-        copiedEntities: recommendedEntities,
-      },
+      originalResourceId: resourceId,
+      data: recommendations,
     };
   }
 
@@ -272,6 +136,63 @@ export class ResourceBtmService {
     return JSON.stringify(prompt);
   }
 
+  async preparePromptResultToBtmRecommendation(
+    promptResult: string,
+    resourceId: string
+  ): Promise<BreakTheMonolithRecommendationsResult> {
+    const promptResultObj =
+      this.mapToBreakTheMonolithPromptOutput(promptResult);
+
+    const recommendedResourceEntities = promptResultObj.microservices
+      .map((resource) => resource.dataModels)
+      .flat();
+
+    const duplicatedEntities = this.duplicatedEntities(
+      recommendedResourceEntities
+    );
+    const usedDuplicatedEntities = new Set<string>();
+
+    const originalResource = await this.getResourceDataForBtm(resourceId);
+    const originalResourceEntitiesSet = new Set(
+      originalResource.entities.map((entity) => entity.name)
+    );
+
+    return {
+      microservices: promptResultObj.microservices
+        .sort((microservice) => -1 * microservice.dataModels.length)
+        .map((microservice) => ({
+          name: microservice.name,
+          functionality: microservice.functionality,
+          dataModels: microservice.dataModels
+            .filter((dataModelName) => {
+              const isDuplicatedAlreadyUsed =
+                usedDuplicatedEntities.has(dataModelName);
+              if (duplicatedEntities.has(dataModelName)) {
+                usedDuplicatedEntities.add(dataModelName);
+              }
+              return (
+                originalResourceEntitiesSet.has(dataModelName) &&
+                !isDuplicatedAlreadyUsed
+              );
+            })
+            .map((dataModelName) => {
+              const entityNameIdMap = originalResource.entities.reduce(
+                (map, entity) => {
+                  map[entity.name] = entity;
+                  return map;
+                },
+                {} as Record<string, EntityPartial>
+              );
+
+              return {
+                name: dataModelName,
+                originalEntityId: entityNameIdMap[dataModelName]?.id,
+              };
+            }),
+        })),
+    };
+  }
+
   mapToBreakTheMonolithPromptOutput(
     promptResult: string
   ): BreakTheMonolithPromptOutput {
@@ -288,5 +209,53 @@ export class ResourceBtmService {
     } catch (error) {
       throw new AiBadFormatResponseError(JSON.stringify(promptResult), error);
     }
+  }
+
+  duplicatedEntities(entities: string[]): Set<string> {
+    return new Set(
+      entities.filter((entity, index) => {
+        return entities.indexOf(entity) !== index;
+      })
+    );
+  }
+
+  async getResourceDataForBtm(resourceId: string): Promise<ResourcePartial> {
+    const resource = await this.prisma.resource.findUnique({
+      where: { id: resourceId },
+      select: {
+        id: true,
+        name: true,
+        entities: {
+          where: {
+            deletedAt: null,
+          },
+          select: {
+            id: true,
+            name: true,
+            displayName: true,
+            versions: {
+              where: {
+                versionNumber: 0,
+              },
+              select: {
+                fields: {
+                  select: {
+                    name: true,
+                    displayName: true,
+                    dataType: true,
+                    properties: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!resource) {
+      throw new AmplicationError(INVALID_RESOURCE_ID);
+    }
+    return resource;
   }
 }
