@@ -2,14 +2,39 @@ import { Test } from "@nestjs/testing";
 import { ResourceBtmService } from "./resourceBtm.service";
 import { BreakTheMonolithPromptOutput } from "./resourceBtm.types";
 import { EnumDataType } from "../../enums/EnumDataType";
-import { BtmRecommendations } from "./dto/BtmRecommendations";
 import { ResourcePartial } from "./resourceBtm.types";
 import { GptService } from "../gpt/gpt.service";
 import { PrismaService } from "../../prisma";
 import { UserActionService } from "../userAction/userAction.service";
+import { UserAction } from "../userAction/dto";
+import { EnumUserActionType } from "../userAction/types";
+import { ConversationTypeKey } from "../gpt/gpt.types";
+import { BreakTheMonolithRecommendationsResult } from "./dto/BreakServiceToMicroserviceResult";
+
+const resourceIdMock = "resourceId";
+const userIdMock = "userId";
+const userActionIdMock = "userActionId";
+const actionIdMock = "actionId";
+
+const userActionMock = {
+  id: userActionIdMock,
+  resourceId: resourceIdMock,
+  userId: userIdMock,
+  userActionType: EnumUserActionType.GptConversation,
+  actionId: actionIdMock,
+} as unknown as UserAction;
+
+const startConversationMock = jest.fn(() => Promise.resolve(userActionMock));
+const userActionServiceFindOneMock = jest.fn(() =>
+  Promise.resolve(userActionMock)
+);
 
 describe("ResourceBtmService", () => {
   let service: ResourceBtmService;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -18,8 +43,7 @@ describe("ResourceBtmService", () => {
         {
           provide: GptService,
           useValue: {
-            startConversation: jest.fn(),
-            onConversationCompleted: jest.fn(),
+            startConversation: startConversationMock,
           },
         },
         {
@@ -32,7 +56,9 @@ describe("ResourceBtmService", () => {
         },
         {
           provide: UserActionService,
-          useValue: {},
+          useValue: {
+            findOne: userActionServiceFindOneMock,
+          },
         },
       ],
     }).compile();
@@ -44,7 +70,7 @@ describe("ResourceBtmService", () => {
   });
 
   describe("translateToBtmRecommendation", () => {
-    it("should map the prompt result to a btm recommendation", () => {
+    it("should map the prompt result to a btm recommendation", async () => {
       const promptResult: BreakTheMonolithPromptOutput = {
         microservices: [
           {
@@ -61,192 +87,7 @@ describe("ResourceBtmService", () => {
       };
       const originalResource: ResourcePartial = {
         name: "order",
-        entities: [
-          {
-            id: "order",
-            name: "order",
-            displayName: "Order",
-            versions: [
-              {
-                fields: [
-                  {
-                    name: "address",
-                    displayName: "address",
-                    dataType: EnumDataType.Lookup,
-                    properties: {
-                      relatedEntityId: "address",
-                    },
-                  },
-                  {
-                    name: "status",
-                    displayName: "Status",
-                    dataType: EnumDataType.Boolean,
-                    properties: {},
-                  },
-                  {
-                    name: "customer",
-                    displayName: "Customer",
-                    dataType: EnumDataType.Lookup,
-                    properties: {
-                      relatedEntityId: "customer",
-                    },
-                  },
-                  {
-                    name: "itemsId",
-                    displayName: "ItemsId",
-                    dataType: EnumDataType.SingleLineText,
-                    properties: {},
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            id: "orderItem",
-            name: "orderItem",
-            displayName: "OrderItem",
-            versions: [
-              {
-                fields: [
-                  {
-                    name: "order",
-                    displayName: "Order",
-                    dataType: EnumDataType.Lookup,
-                    properties: {
-                      relatedEntityId: "order",
-                    },
-                  },
-                  {
-                    name: "product",
-                    displayName: "Product",
-                    dataType: EnumDataType.Lookup,
-                    properties: {
-                      relatedEntityId: "product",
-                    },
-                  },
-                  {
-                    name: "quantity",
-                    displayName: "Quantity",
-                    dataType: EnumDataType.DecimalNumber,
-                    properties: {},
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            id: "product",
-            name: "product",
-            displayName: "Product",
-            versions: [
-              {
-                fields: [
-                  {
-                    name: "name",
-                    displayName: "Name",
-                    dataType: EnumDataType.SingleLineText,
-                    properties: {},
-                  },
-                  {
-                    name: "price",
-                    displayName: "Price",
-                    dataType: EnumDataType.DecimalNumber,
-                    properties: {},
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            id: "customer",
-            name: "customer",
-            displayName: "Customer",
-            versions: [
-              {
-                fields: [
-                  {
-                    name: "firstName",
-                    displayName: "First Name",
-                    dataType: EnumDataType.SingleLineText,
-                    properties: {},
-                  },
-                  {
-                    name: "lastName",
-                    displayName: "Last Name",
-                    dataType: EnumDataType.SingleLineText,
-                    properties: {},
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-        id: "resourceId",
-      };
-
-      const expectedResult: BtmRecommendations = {
-        microservices: [
-          {
-            id: expect.any(String),
-            name: "order",
-            description: "manage orders, prices and payments",
-            entities: [
-              {
-                id: expect.any(String),
-                name: "order",
-                originalEntityId: "order",
-                fields: ["address", "status", "customer", "itemsId"],
-              },
-              {
-                id: expect.any(String),
-                name: "orderItem",
-                originalEntityId: "orderItem",
-                fields: ["order", "product", "quantity"],
-              },
-            ],
-          },
-          {
-            id: expect.any(String),
-            name: "product",
-            description: "manage products",
-            entities: [
-              {
-                id: expect.any(String),
-                name: "product",
-                originalEntityId: "product",
-                fields: ["name", "price"],
-              },
-            ],
-          },
-        ],
-      };
-
-      const result = service.translateToBtmRecommendation(
-        promptResult,
-        originalResource
-      );
-
-      expect(result).toStrictEqual(expectedResult);
-    });
-
-    it("should filter out entities that are not in the original resource", () => {
-      const promptResult: BreakTheMonolithPromptOutput = {
-        microservices: [
-          {
-            name: "product",
-            functionality: "manage products",
-            dataModels: ["product"],
-          },
-          {
-            name: "order",
-            functionality: "manage orders, prices and payments",
-            dataModels: ["order", "orderItem"],
-          },
-        ],
-      };
-      const originalResource: ResourcePartial = {
-        id: "resourceId",
-        name: "order",
+        id: resourceIdMock,
         entities: [
           {
             id: "order",
@@ -369,52 +210,229 @@ describe("ResourceBtmService", () => {
         ],
       };
 
-      const expectedResult: BtmRecommendations = {
+      jest
+        .spyOn(service, "getResourceDataForBtm")
+        .mockResolvedValue(originalResource);
+
+      const expectedResult: BreakTheMonolithRecommendationsResult = {
         microservices: [
           {
-            id: expect.any(String),
             name: "order",
-            description: "manage orders, prices and payments",
-            entities: [
+            functionality: "manage orders, prices and payments",
+            dataModels: [
               {
-                id: expect.any(String),
                 name: "order",
                 originalEntityId: "order",
-                fields: ["address", "status", "customer", "itemsId"],
               },
               {
-                id: expect.any(String),
                 name: "orderItem",
                 originalEntityId: "orderItem",
-                fields: ["order", "product", "quantity"],
               },
             ],
           },
           {
-            id: expect.any(String),
             name: "product",
-            description: "manage products",
-            entities: [
+            functionality: "manage products",
+            dataModels: [
               {
-                id: expect.any(String),
                 name: "product",
                 originalEntityId: "product",
-                fields: ["name", "price"],
               },
             ],
           },
         ],
       };
 
-      const result = service.translateToBtmRecommendation(
-        promptResult,
-        originalResource
+      const result = await service.preparePromptResultToBtmRecommendation(
+        JSON.stringify(promptResult),
+        resourceIdMock
       );
 
       expect(result).toStrictEqual(expectedResult);
     });
 
-    it("should add entities that are duplicated in the prompt result only to new resource with more dataModels", () => {
+    it("should filter out entities that are not in the original resource", async () => {
+      const promptResult: BreakTheMonolithPromptOutput = {
+        microservices: [
+          {
+            name: "product",
+            functionality: "manage products",
+            dataModels: ["product"],
+          },
+          {
+            name: "order",
+            functionality: "manage orders, prices and payments",
+            dataModels: ["order", "orderItem"],
+          },
+        ],
+      };
+      const originalResource: ResourcePartial = {
+        id: resourceIdMock,
+        name: "order",
+        entities: [
+          {
+            id: "order",
+            name: "order",
+            displayName: "Order",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "address",
+                    displayName: "address",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "address",
+                    },
+                  },
+                  {
+                    name: "status",
+                    displayName: "Status",
+                    dataType: EnumDataType.Boolean,
+                    properties: {},
+                  },
+                  {
+                    name: "customer",
+                    displayName: "Customer",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "customer",
+                    },
+                  },
+                  {
+                    name: "itemsId",
+                    displayName: "ItemsId",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "orderItem",
+            name: "orderItem",
+            displayName: "OrderItem",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "order",
+                    displayName: "Order",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "order",
+                    },
+                  },
+                  {
+                    name: "product",
+                    displayName: "Product",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "product",
+                    },
+                  },
+                  {
+                    name: "quantity",
+                    displayName: "Quantity",
+                    dataType: EnumDataType.DecimalNumber,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "product",
+            name: "product",
+            displayName: "Product",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "name",
+                    displayName: "Name",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "price",
+                    displayName: "Price",
+                    dataType: EnumDataType.DecimalNumber,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "customer",
+            name: "customer",
+            displayName: "Customer",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "firstName",
+                    displayName: "First Name",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "lastName",
+                    displayName: "Last Name",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      jest
+        .spyOn(service, "getResourceDataForBtm")
+        .mockResolvedValue(originalResource);
+
+      const expectedResult: BreakTheMonolithRecommendationsResult = {
+        microservices: [
+          {
+            name: "order",
+            functionality: "manage orders, prices and payments",
+            dataModels: [
+              {
+                name: "order",
+                originalEntityId: "order",
+              },
+              {
+                name: "orderItem",
+                originalEntityId: "orderItem",
+              },
+            ],
+          },
+          {
+            name: "product",
+            functionality: "manage products",
+            dataModels: [
+              {
+                name: "product",
+                originalEntityId: "product",
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = await service.preparePromptResultToBtmRecommendation(
+        JSON.stringify(promptResult),
+        resourceIdMock
+      );
+
+      expect(result).toStrictEqual(expectedResult);
+    });
+
+    it("should add entities that are duplicated in the prompt result only to new resource with more dataModels", async () => {
       const promptResult: BreakTheMonolithPromptOutput = {
         microservices: [
           {
@@ -432,7 +450,7 @@ describe("ResourceBtmService", () => {
 
       const originalResource: ResourcePartial = {
         name: "order",
-        id: "resourceId",
+        id: resourceIdMock,
         entities: [
           {
             id: "order",
@@ -505,52 +523,46 @@ describe("ResourceBtmService", () => {
         ],
       };
 
-      const expectedResult: BtmRecommendations = {
+      jest
+        .spyOn(service, "getResourceDataForBtm")
+        .mockResolvedValue(originalResource);
+
+      const expectedResult: BreakTheMonolithRecommendationsResult = {
         microservices: [
           {
-            id: expect.any(String),
             name: "order",
-            description: "manage orders, prices and payments",
-            entities: [
+            functionality: "manage orders, prices and payments",
+            dataModels: [
               {
-                id: expect.any(String),
                 name: "order",
                 originalEntityId: "order",
-                fields: ["id"],
               },
               {
-                id: expect.any(String),
                 name: "orderItem",
                 originalEntityId: "orderItem",
-                fields: ["id"],
               },
               {
-                id: expect.any(String),
                 name: "price",
                 originalEntityId: "price",
-                fields: ["id"],
               },
             ],
           },
           {
-            id: expect.any(String),
             name: "product",
-            description: "manage products",
-            entities: [
+            functionality: "manage products",
+            dataModels: [
               {
-                id: expect.any(String),
                 name: "product",
                 originalEntityId: "product",
-                fields: ["name"],
               },
             ],
           },
         ],
       };
 
-      const result = service.translateToBtmRecommendation(
-        promptResult,
-        originalResource
+      const result = await service.preparePromptResultToBtmRecommendation(
+        JSON.stringify(promptResult),
+        resourceIdMock
       );
 
       expect(result).toStrictEqual(expectedResult);
@@ -808,7 +820,7 @@ describe("ResourceBtmService", () => {
 
   describe("parsePromptResult", () => {
     it("should return a validated BreakTheMonolithPromptOutput", () => {
-      const result = service.parsePromptResult(
+      const result = service.mapToBreakTheMonolithPromptOutput(
         '{"microservices":[{"name":"ecommerce","functionality":"manage orders, prices and payments","dataModels":["order","customer","item","address"]},{"name":"inventory","functionality":"manage inventory","dataModels":["item","address"]}]}'
       );
       expect(result).toStrictEqual({
@@ -830,90 +842,43 @@ describe("ResourceBtmService", () => {
     it.each(["invalid", '{"microservice":{}}'])(
       "should throw an error if the prompt result is not valid",
       (result: string) => {
-        expect(() => service.parsePromptResult(result)).toThrowError();
+        expect(() =>
+          service.mapToBreakTheMonolithPromptOutput(result)
+        ).toThrowError();
       }
     );
   });
 
-  //   describe("triggerAiRecommendations", () => {
-  //     it("should return the userAction for the generation process", async () => {
-  //       const resourceId = "resourceId";
-  //       const userId = "resourceId";
-  //       const mockedActionId = "actionId";
+  describe("triggerBreakServiceIntoMicroservices", () => {
+    const mockPromptResult = "prompt-result";
+    it("should start a conversation with the GPT service", async () => {
+      jest
+        .spyOn(service, "getResourceDataForBtm")
+        .mockResolvedValue({ id: resourceIdMock } as ResourcePartial);
 
-  //       jest
-  //         .spyOn(
-  //           PromptManagerService.prototype,
-  //           "generatePromptForBreakTheMonolith"
-  //         )
-  //         .mockReturnValue("some prompt result");
+      jest
+        .spyOn(service, "generatePromptForBreakTheMonolith")
+        .mockReturnValue(mockPromptResult);
 
-  //       const spyOnCreateUserActionByTypeWithInitialStep = jest
-  //         .spyOn(
-  //           UserActionService.prototype,
-  //           "createUserActionByTypeWithInitialStep"
-  //         )
-  //         .mockResolvedValue({
-  //           actionId: mockedActionId,
-  //         } as unknown as UserAction);
+      const result = await service.triggerBreakServiceIntoMicroservices({
+        resourceId: resourceIdMock,
+        userId: userIdMock,
+      });
 
-  //       const result = await service.triggerAiRecommendations({
-  //         resourceId,
-  //         userId,
-  //       });
+      expect(startConversationMock).toHaveBeenCalledTimes(1);
+      expect(startConversationMock).toHaveBeenCalledWith(
+        ConversationTypeKey.BreakTheMonolith,
+        [
+          {
+            name: "userInput",
+            value: mockPromptResult,
+          },
+        ],
+        userIdMock,
+        resourceIdMock
+      );
 
-  //       expect(result).toEqual(mockedActionId);
-  //       expect(spyOnCreateUserActionByTypeWithInitialStep).toBeCalledWith(
-  //         GENERATING_BTM_RESOURCE_RECOMMENDATION_USER_ACTION_TYPE,
-  //         expect.objectContaining({
-  //           resourceId,
-  //           conversationTypeKey: "BREAK_THE_MONOLITH",
-  //         }),
-  //         expect.objectContaining({
-  //           name: GENERATING_BTM_RESOURCE_RECOMMENDATION_STEP_NAME,
-  //         }),
-  //         resourceId,
-  //         userId
-  //       );
-  //     });
-  //   });
-
-  //   describe("onConversationCompleted", () => {
-  //     it.each([
-  //       [EnumActionStepStatus.Success, true],
-  //       [EnumActionStepStatus.Failed, false],
-  //     ])(
-  //       "should update the action status to %s when the conversion completion success is %s",
-  //       async (expectedActionStatus, success) => {
-  //         const result = success ? "A magic anwser" : null;
-  //         const errorMessage = success ? null : "An error happened";
-  //         const userActionId = "actionId";
-
-  //         const actionStepToComplete = {
-  //           id: "actionStepId",
-  //         };
-
-  //         mockPrismaUserActionFindFirst.mockResolvedValue({
-  //           action: {
-  //             steps: [actionStepToComplete],
-  //           },
-  //         } as unknown as UserAction);
-
-  //         const res = await service.onConversationCompleted({
-  //           userActionId,
-  //           success,
-  //           result,
-  //           errorMessage,
-  //         });
-
-  //         expect(res).toBeTruthy();
-
-  //         expect(mockPrismaUserActionFindFirst).toHaveBeenCalledTimes(1);
-  //         expect(mockActionServiceComplete).toHaveBeenCalledWith(
-  //           actionStepToComplete,
-  //           expectedActionStatus
-  //         );
-  //       }
-  //     );
-  //   });
+      expect(result).toStrictEqual(userActionMock);
+    });
+  });
 });
