@@ -2,14 +2,14 @@ import { Test } from "@nestjs/testing";
 import { ResourceBtmService } from "./resourceBtm.service";
 import { BreakTheMonolithPromptOutput } from "./resourceBtm.types";
 import { EnumDataType } from "../../enums/EnumDataType";
-import { ResourcePartial } from "./resourceBtm.types";
+import { ResourceDataForBtm } from "./resourceBtm.types";
 import { GptService } from "../gpt/gpt.service";
 import { PrismaService } from "../../prisma";
 import { UserActionService } from "../userAction/userAction.service";
 import { UserAction } from "../userAction/dto";
 import { EnumUserActionType } from "../userAction/types";
 import { ConversationTypeKey } from "../gpt/gpt.types";
-import { BreakTheMonolithRecommendationsResult } from "./dto/BreakServiceToMicroserviceResult";
+import { BreakServiceToMicroservicesData } from "./dto/BreakServiceToMicroservicesResult";
 
 const resourceIdMock = "resourceId";
 const userIdMock = "userId";
@@ -85,7 +85,7 @@ describe("ResourceBtmService", () => {
           },
         ],
       };
-      const originalResource: ResourcePartial = {
+      const originalResource: ResourceDataForBtm = {
         name: "order",
         id: resourceIdMock,
         entities: [
@@ -214,7 +214,7 @@ describe("ResourceBtmService", () => {
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
 
-      const expectedResult: BreakTheMonolithRecommendationsResult = {
+      const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
             name: "order",
@@ -266,7 +266,7 @@ describe("ResourceBtmService", () => {
           },
         ],
       };
-      const originalResource: ResourcePartial = {
+      const originalResource: ResourceDataForBtm = {
         id: resourceIdMock,
         name: "order",
         entities: [
@@ -395,7 +395,7 @@ describe("ResourceBtmService", () => {
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
 
-      const expectedResult: BreakTheMonolithRecommendationsResult = {
+      const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
             name: "order",
@@ -448,7 +448,7 @@ describe("ResourceBtmService", () => {
         ],
       };
 
-      const originalResource: ResourcePartial = {
+      const originalResource: ResourceDataForBtm = {
         name: "order",
         id: resourceIdMock,
         entities: [
@@ -527,7 +527,7 @@ describe("ResourceBtmService", () => {
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
 
-      const expectedResult: BreakTheMonolithRecommendationsResult = {
+      const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
             name: "order",
@@ -854,7 +854,7 @@ describe("ResourceBtmService", () => {
     it("should start a conversation with the GPT service", async () => {
       jest
         .spyOn(service, "getResourceDataForBtm")
-        .mockResolvedValue({ id: resourceIdMock } as ResourcePartial);
+        .mockResolvedValue({ id: resourceIdMock } as ResourceDataForBtm);
 
       jest
         .spyOn(service, "generatePromptForBreakTheMonolith")

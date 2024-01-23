@@ -5,15 +5,15 @@ type EntityFieldPartial = Pick<
   "name" | "displayName" | "dataType" | "properties"
 >;
 
-export interface EntityPartial
+export interface EntityDataForBtm
   extends Pick<Entity, "id" | "name" | "displayName"> {
   versions: {
     fields: EntityFieldPartial[];
   }[];
 }
 
-export interface ResourcePartial extends Pick<Resource, "id" | "name"> {
-  entities: EntityPartial[];
+export interface ResourceDataForBtm extends Pick<Resource, "id" | "name"> {
+  entities: EntityDataForBtm[];
 }
 
 interface DataModel {

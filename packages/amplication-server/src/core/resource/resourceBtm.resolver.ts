@@ -8,7 +8,7 @@ import { UserEntity } from "../../decorators/user.decorator";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { UserAction } from "../userAction/dto";
 import { ResourceBtmService } from "./resourceBtm.service";
-import { BreakServiceToMicroserviceResult } from "./dto/BreakServiceToMicroserviceResult";
+import { BreakServiceToMicroservicesResult } from "./dto/BreakServiceToMicroservicesResult";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -33,7 +33,7 @@ export class ResourceBtmResolver {
     });
   }
 
-  @Query(() => BreakServiceToMicroserviceResult, {
+  @Query(() => BreakServiceToMicroservicesResult, {
     description:
       "Get the changes to apply to the model in order to break a resource into microservices",
   })
@@ -41,7 +41,7 @@ export class ResourceBtmResolver {
   async finalizeBreakServiceIntoMicroservices(
     @Args({ name: "userActionId", type: () => String })
     userActionId: string
-  ): Promise<BreakServiceToMicroserviceResult> {
+  ): Promise<BreakServiceToMicroservicesResult> {
     return this.resourceBtmService.finalizeBreakServiceIntoMicroservices(
       userActionId
     );

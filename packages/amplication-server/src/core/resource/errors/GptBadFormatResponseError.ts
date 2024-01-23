@@ -1,4 +1,4 @@
-export class AiBadFormatResponseError extends Error {
+export class GptBadFormatResponseError extends Error {
   constructor(private readonly promptResponse: string, originalError?: Error) {
     super("Bad format response from AI");
     this.name = "AiError";

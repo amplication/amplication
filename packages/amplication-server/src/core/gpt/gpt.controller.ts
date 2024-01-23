@@ -7,7 +7,7 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Controller, Inject } from "@nestjs/common";
 import { EventPattern, Payload } from "@nestjs/microservices";
 
-@Controller("ai-controller")
+@Controller("gpt-controller")
 export class GptController {
   constructor(
     private readonly gptService: GptService,

@@ -4,7 +4,7 @@ import { EnumUserActionStatus } from "../../userAction/types";
 @ObjectType({
   isAbstract: true,
 })
-class BreakTheMonolithDataModel {
+class BreakServiceToMicroservicesItemEntities {
   @Field()
   originalEntityId: string;
 
@@ -15,29 +15,29 @@ class BreakTheMonolithDataModel {
 @ObjectType({
   isAbstract: true,
 })
-class Microservice {
+class BreakServiceToMicroservicesItem {
   @Field()
   name: string;
 
   @Field()
   functionality: string;
 
-  @Field(() => [BreakTheMonolithDataModel])
-  dataModels: BreakTheMonolithDataModel[];
+  @Field(() => [BreakServiceToMicroservicesItemEntities])
+  dataModels: BreakServiceToMicroservicesItemEntities[];
 }
 
 @ObjectType({
   isAbstract: true,
 })
-export class BreakTheMonolithRecommendationsResult {
-  @Field(() => [Microservice])
-  microservices: Microservice[];
+export class BreakServiceToMicroservicesData {
+  @Field(() => [BreakServiceToMicroservicesItem])
+  microservices: BreakServiceToMicroservicesItem[];
 }
 
 @ObjectType({
   isAbstract: true,
 })
-export class BreakServiceToMicroserviceResult {
+export class BreakServiceToMicroservicesResult {
   @Field(() => EnumUserActionStatus, {
     nullable: false,
     description: "The status of the user action",
@@ -50,9 +50,9 @@ export class BreakServiceToMicroserviceResult {
   })
   originalResourceId: string;
 
-  @Field(() => BreakTheMonolithRecommendationsResult, {
+  @Field(() => BreakServiceToMicroservicesData, {
     nullable: true,
-    description: "Prompt result with some data manipulation",
+    description: "Prompt result with some data structure manipulation",
   })
-  data: BreakTheMonolithRecommendationsResult;
+  data: BreakServiceToMicroservicesData;
 }

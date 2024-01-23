@@ -5,19 +5,19 @@ import { INVALID_RESOURCE_ID } from "./resource.service";
 import {
   BreakTheMonolithPromptInput,
   BreakTheMonolithPromptOutput,
-  EntityPartial,
-  ResourcePartial,
+  EntityDataForBtm,
+  ResourceDataForBtm,
 } from "./resourceBtm.types";
 import { GptService } from "../gpt/gpt.service";
 import { ConversationTypeKey } from "../gpt/gpt.types";
 import { UserAction } from "../userAction/dto";
 import { EnumUserActionStatus } from "../userAction/types";
 import {
-  BreakServiceToMicroserviceResult,
-  BreakTheMonolithRecommendationsResult,
-} from "./dto/BreakServiceToMicroserviceResult";
+  BreakServiceToMicroservicesResult,
+  BreakServiceToMicroservicesData,
+} from "./dto/BreakServiceToMicroservicesResult";
 import { UserActionService } from "../userAction/userAction.service";
-import { AiBadFormatResponseError } from "./errors/AiBadFormatResponseError";
+import { GptBadFormatResponseError } from "./errors/GptBadFormatResponseError";
 
 @Injectable()
 export class ResourceBtmService {
@@ -79,7 +79,7 @@ export class ResourceBtmService {
 
   async finalizeBreakServiceIntoMicroservices(
     userActionId: string
-  ): Promise<BreakServiceToMicroserviceResult> {
+  ): Promise<BreakServiceToMicroservicesResult> {
     const { resourceId, metadata } = await this.userActionService.findOne({
       where: {
         id: userActionId,
@@ -110,7 +110,7 @@ export class ResourceBtmService {
     };
   }
 
-  generatePromptForBreakTheMonolith(resource: ResourcePartial): string {
+  generatePromptForBreakTheMonolith(resource: ResourceDataForBtm): string {
     const entityIdNameMap = resource.entities.reduce((acc, entity) => {
       acc[entity.id] = entity.name;
       return acc;
@@ -139,7 +139,7 @@ export class ResourceBtmService {
   async preparePromptResultToBtmRecommendation(
     promptResult: string,
     resourceId: string
-  ): Promise<BreakTheMonolithRecommendationsResult> {
+  ): Promise<BreakServiceToMicroservicesData> {
     const promptResultObj =
       this.mapToBreakTheMonolithPromptOutput(promptResult);
 
@@ -181,7 +181,7 @@ export class ResourceBtmService {
                   map[entity.name] = entity;
                   return map;
                 },
-                {} as Record<string, EntityPartial>
+                {} as Record<string, EntityDataForBtm>
               );
 
               return {
@@ -207,7 +207,7 @@ export class ResourceBtmService {
         })),
       };
     } catch (error) {
-      throw new AiBadFormatResponseError(JSON.stringify(promptResult), error);
+      throw new GptBadFormatResponseError(JSON.stringify(promptResult), error);
     }
   }
 
@@ -219,7 +219,7 @@ export class ResourceBtmService {
     );
   }
 
-  async getResourceDataForBtm(resourceId: string): Promise<ResourcePartial> {
+  async getResourceDataForBtm(resourceId: string): Promise<ResourceDataForBtm> {
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },
       select: {
