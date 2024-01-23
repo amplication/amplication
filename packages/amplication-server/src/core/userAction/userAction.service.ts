@@ -83,11 +83,10 @@ export class UserActionService {
     return EnumUserActionStatus.Running;
   }
 
-  async updateUserActionStepAndMetadata(
+  async updateUserActionStep(
     userActionId: string,
     actionStepName: string,
-    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
-    metadata: any
+    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
   ): Promise<UserAction> {
     const userAction = await this.prisma.userAction.findFirst({
       where: {
@@ -114,8 +113,14 @@ export class UserActionService {
     }
 
     await this.actionService.complete(userAction.action.steps[0], status);
+    return userAction;
+  }
 
-    await this.prisma.userAction.update({
+  async updateUserActionMetadata(
+    userActionId: string,
+    metadata: any
+  ): Promise<UserAction> {
+    return this.prisma.userAction.update({
       where: {
         id: userActionId,
       },
@@ -123,7 +128,5 @@ export class UserActionService {
         metadata,
       },
     });
-
-    return userAction;
   }
 }

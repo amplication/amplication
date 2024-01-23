@@ -4,12 +4,13 @@ import {
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { EnumActionStepStatus } from "../action/dto";
 import { UserAction } from "../userAction/dto";
 import { UserActionService } from "../userAction/userAction.service";
 import { ConversationTypeKey } from "./gpt.types";
 import { EnumUserActionType } from "../userAction/types";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const START_CONVERSATION_STEP_NAME = "START_CONVERSATION";
 
@@ -23,7 +24,9 @@ const CONVERSATION_INITIAL_STEP = {
 export class GptService {
   constructor(
     private readonly kafkaProducerService: KafkaProducerService,
-    private readonly userActionService: UserActionService
+    private readonly userActionService: UserActionService,
+    @Inject(AmplicationLogger)
+    private readonly logger: AmplicationLogger
   ) {}
 
   async startConversation(
@@ -49,6 +52,7 @@ export class GptService {
         params,
       },
     };
+
     await this.kafkaProducerService.emitMessage(
       KAFKA_TOPICS.AI_CONVERSATION_START_TOPIC,
       kafkaMessage
@@ -66,13 +70,20 @@ export class GptService {
       ? EnumActionStepStatus.Success
       : EnumActionStepStatus.Failed;
 
-    const userActionMetadata = success ? JSON.parse(result) : { errorMessage };
-
-    await this.userActionService.updateUserActionStepAndMetadata(
+    await this.userActionService.updateUserActionStep(
       userActionId,
       START_CONVERSATION_STEP_NAME,
-      userActionStatus,
-      userActionMetadata
+      userActionStatus
+    );
+
+    if (errorMessage) {
+      this.logger.warn(errorMessage, null, { userActionId });
+      return;
+    }
+
+    await this.userActionService.updateUserActionMetadata(
+      userActionId,
+      JSON.parse(result)
     );
   }
 }
