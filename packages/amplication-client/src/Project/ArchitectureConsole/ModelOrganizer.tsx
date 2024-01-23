@@ -310,10 +310,7 @@ export default function ModelOrganizer({
                   <ControlButton onClick={onToggleZoomInRelationDetails}>
                     <Icon icon="plus" />
                   </ControlButton>
-                  <Text
-                    textStyle={EnumTextStyle.Tag}
-                    textAlign={EnumTextAlign.Center}
-                  >{`${zoom ? zoom : "51"}%`}</Text>
+
                   <ControlButton onClick={onToggleZoomOutRelationDetails}>
                     <Icon icon="minus" />
                   </ControlButton>
