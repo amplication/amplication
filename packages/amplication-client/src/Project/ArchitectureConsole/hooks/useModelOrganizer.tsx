@@ -374,8 +374,15 @@ const useModelOrganization = () => {
 
       childrenNodes.forEach((x) => (x.hidden = currentNode.hidden));
       setNodes((nodes) => [...nodes]);
+
+      const nodeEdges = edges.filter((e) => {
+        return childrenNodes.find((n) => e.source === n.id);
+      });
+
+      nodeEdges.forEach((x) => (x.hidden = currentNode.hidden));
+      setEdges((edges) => [...edges]);
     },
-    [setNodes, nodes]
+    [setNodes, setEdges, edges, nodes]
   );
 
   const createNewTempService = useCallback(
