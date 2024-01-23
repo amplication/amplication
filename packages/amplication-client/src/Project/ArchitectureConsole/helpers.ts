@@ -175,15 +175,26 @@ export function tempResourceToNode(
   return parent;
 }
 
-function entitiesToDetailedEdges(resources: models.Resource[]) {
+export function entitiesToDetailedEdges(resources: models.Resource[]) {
   const relations: DetailedRelation[] = [];
 
   resources?.forEach((resource) => {
+    const currentEntityMapping = resource.entities?.reduce(
+      (entitiesObj, entity) => {
+        entitiesObj[entity.id] = entity;
+        return entitiesObj;
+      },
+      {}
+    );
     resource.entities?.forEach((entity) => {
       entity?.fields?.forEach((field) => {
-        if (field.properties.relatedEntityId) {
+        if (
+          field.properties.relatedEntityId &&
+          currentEntityMapping[field.properties.relatedEntityId]
+        ) {
           const { relatedEntityId, relatedFieldId, allowMultipleSelection } =
             field.properties;
+
           const existingRelationIndex = relations.findIndex(
             (relation) =>
               relation.targetEntity === entity.id &&
@@ -229,9 +240,19 @@ function entitiesToSimpleEdges(resources: models.Resource[]) {
   const relations: SimpleRelation[] = [];
 
   resources?.forEach((resource) => {
+    const currentEntityMapping = resource.entities?.reduce(
+      (entitiesObj, entity) => {
+        entitiesObj[entity.id] = entity;
+        return entitiesObj;
+      },
+      {}
+    );
     resource.entities?.forEach((entity) => {
       entity?.fields?.forEach((field) => {
-        if (field.properties.relatedEntityId) {
+        if (
+          field.properties.relatedEntityId &&
+          currentEntityMapping[field.properties.relatedEntityId]
+        ) {
           const { relatedEntityId } = field.properties;
           const existingRelationIndex = relations.findIndex(
             (relation) =>

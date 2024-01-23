@@ -206,6 +206,7 @@ const useModelOrganization = () => {
           );
 
           let updatedResourcesData = currentResourcesData;
+
           let hasChanges = false;
 
           data.resources.forEach((updateResource) => {
@@ -240,17 +241,39 @@ const useModelOrganization = () => {
             const currentResource: models.Resource =
               updatedResourceMapping[resource.id];
             if (!currentResource) {
-              const resourceEntitiesChanges = changes?.movedEntities
-                ?.filter((x) => x.targetResourceId === resource.id)
-                .map((entity) => {
-                  entity.targetResourceId = entity.originalResourceId;
-                  return entity;
+              let originalResource: models.Resource = null;
+              let originalResourceIndex: number;
+
+              changes?.movedEntities?.forEach((e) => {
+                if (e.targetResourceId === resource.id) {
+                  const index = changes.movedEntities.indexOf(e);
+                  changes.movedEntities.splice(index, 1);
+                }
+                if (!originalResource) {
+                  originalResource =
+                    updatedResourceMapping[e.originalResourceId];
+                } else {
+                  originalResourceIndex = updatedResourcesData.indexOf(
+                    resourceMapping[originalResource.id]
+                  );
+                }
+              });
+
+              if (originalResource) {
+                resource.entities.forEach((e) => {
+                  if (e.resourceId === originalResource.id) {
+                    resourceMapping[originalResource.id].entities.push(e);
+                  }
                 });
-              changes.movedEntities = [...resourceEntitiesChanges];
+
+                updatedResourcesData[originalResourceIndex] =
+                  resourceMapping[originalResource.id];
+              }
 
               updatedResourcesData = updatedResourcesData.filter(
                 (r) => r.id !== resource.id
               );
+
               hasChanges = true;
             } else {
               const updatedEntityMapping = currentResource.entities?.reduce(
@@ -281,11 +304,10 @@ const useModelOrganization = () => {
                   } else {
                     const originalResourceEntity = data.resources
                       .find((x) => x.id === movedEntity.originalResourceId)
-                      .entities?.find((e) => e.id === movedEntity.entityId);
+                      ?.entities?.find((e) => e.id === movedEntity.entityId);
 
                     if (!originalResourceEntity) {
                       hasChanges = true;
-
                       currentResourceEntities.entities =
                         resource.entities.filter(
                           (e) => e.id !== movedEntity.entityId
@@ -306,7 +328,6 @@ const useModelOrganization = () => {
                 updatedResourcesData,
                 showRelationDetails
               );
-
             setCurrentResourceStorageData(JSON.stringify(updatedResourcesData));
 
             setCurrentDetailedStorageEdges(JSON.stringify(detailedEdges));
@@ -335,10 +356,30 @@ const useModelOrganization = () => {
     changes,
   ]);
 
+  const updateNodesLayout = useCallback(async () => {
+    const edges: Edge[] =
+      currentSimpleStorageEdges !== "" && JSON.parse(currentSimpleStorageEdges);
+    const nodesResults = await applyAutoLayout(
+      JSON.parse(currentTheme),
+      edges,
+      showRelationDetails
+    );
+
+    setNodes(nodesResults);
+    setEdges(JSON.parse(currentSimpleStorageEdges));
+  }, [
+    currentTheme,
+    currentSimpleStorageEdges,
+    showRelationDetails,
+    setNodes,
+    setEdges,
+  ]);
+
   const searchPhraseChanged = useCallback(
     (searchPhrase: string) => {
       if (searchPhrase === "") {
         nodes.forEach((x) => (x.hidden = false));
+        edges.forEach((e) => (e.hidden = false));
       } else {
         const searchModelGroupNodes = nodes.filter(
           (node) =>
@@ -354,12 +395,19 @@ const useModelOrganization = () => {
           );
 
           childrenNodes.forEach((x) => (x.hidden = true));
+
+          const nodeEdges = edges.filter((e) => {
+            return childrenNodes.find((n) => e.source === n.id);
+          });
+
+          nodeEdges.forEach((x) => (x.hidden = true));
         });
       }
 
       setNodes((nodes) => [...nodes]);
+      setEdges((edges) => [...edges]);
     },
-    [nodes, setNodes]
+    [nodes, edges, setEdges, setNodes]
   );
 
   const modelGroupFilterChanged = useCallback(
@@ -474,6 +522,7 @@ const useModelOrganization = () => {
       );
 
       const currentEntity = currentNode.data.payload as models.Entity;
+
       currentNode.parentNode = targetParent.id;
 
       const currentEntityChanged = changes.movedEntities.find(
@@ -529,8 +578,8 @@ const useModelOrganization = () => {
 
   useEffect(() => {
     if (currentTheme === "" || !currentTheme) return;
-    setNodes(JSON.parse(currentTheme));
-  }, [setNodes, currentTheme]);
+    updateNodesLayout();
+  }, [currentTheme]);
 
   const [
     createResourceEntities,
