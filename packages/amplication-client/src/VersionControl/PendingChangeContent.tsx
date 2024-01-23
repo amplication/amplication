@@ -50,36 +50,31 @@ const PendingChangeContent = ({
           icon={icon}
         />
       </FlexStart>
-      <Text
-        textStyle={EnumTextStyle.Tag}
-        textColor={EnumTextColor.White}
-        className={`${CLASS_NAME}__name`}
+
+      <Tooltip
+        wrap
+        direction={"nw"}
+        aria-label={`${change.action}: ${name} `}
+        className={`${CLASS_NAME}__tooltip_deleted`}
       >
-        {name}
-      </Text>
+        <Text
+          textStyle={EnumTextStyle.Tag}
+          textColor={EnumTextColor.White}
+          className={`${CLASS_NAME}__name`}
+        >
+          {name}
+        </Text>
+      </Tooltip>
     </FlexItem>
   );
 
-  // const isDeleted = change.action === models.EnumPendingChangeAction.Delete;
-  // {isDeleted ? (
-  //   <Tooltip
-  //     wrap
-  //     direction={TOOLTIP_DIRECTION}
-  //     aria-label="The item has been deleted"
-  //     className={`${CLASS_NAME}__tooltip_deleted`}
-  //   >
-  //     <div className={classNames(`${CLASS_NAME}__deleted`)}>{content}</div>
-  //   </Tooltip>
-  // ) : (
-
-  // )}
-
-  return linkToOrigin ? (
+  return linkToOrigin &&
+    change.action !== models.EnumPendingChangeAction.Delete ? (
     <Link className={`${CLASS_NAME}__link`} to={url}>
       {nameElement}
     </Link>
   ) : (
-    <span>{nameElement}</span>
+    <span className={`${CLASS_NAME}__link`}>{nameElement}</span>
   );
 };
 export default PendingChangeContent;

@@ -1,12 +1,5 @@
-import React, { useState, useCallback, useContext } from "react";
-import { isEmpty } from "lodash";
-import { Link, useHistory, useRouteMatch } from "react-router-dom";
-import { formatError } from "../util/error";
-import PendingChange from "./PendingChange";
-import { Button, EnumButtonStyle } from "../Components/Button";
 import {
   CircularProgress,
-  EnumContentAlign,
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumGapSize,
@@ -17,14 +10,17 @@ import {
   Text,
   Tooltip,
 } from "@amplication/ui/design-system";
+import { isEmpty } from "lodash";
+import { useCallback, useContext, useState } from "react";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import { Button, EnumButtonStyle } from "../Components/Button";
+import { formatError } from "../util/error";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
-import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
-import "./PendingChanges.scss";
-import { AppContext } from "../context/appContext";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
+import { AppContext } from "../context/appContext";
+import "./PendingChanges.scss";
 import PendingChangesList from "./PendingChangesList";
 
 const CLASS_NAME = "pending-changes";
@@ -61,7 +57,13 @@ const PendingChanges = ({ projectId }: Props) => {
         `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities`
       );
     }
-  }, [currentResource, currentProject, currentWorkspace, entityMatch]);
+  }, [
+    entityMatch,
+    history,
+    currentWorkspace?.id,
+    currentProject?.id,
+    currentResource?.id,
+  ]);
 
   const errorMessage = formatError(pendingChangesDataError);
 

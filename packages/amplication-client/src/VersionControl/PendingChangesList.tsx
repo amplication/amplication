@@ -1,12 +1,11 @@
 import { useContext } from "react";
-import PendingChange from "./PendingChange";
 
+import { EnumTextStyle, Text } from "@amplication/ui/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import { AppContext } from "../context/appContext";
 import "./PendingChangesList.scss";
-import { EnumTextStyle, Text } from "@amplication/ui/design-system";
-import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 import PendingChangesListGroup from "./PendingChangesListGroup";
 
 const CLASS_NAME = "pending-changes-list";

@@ -1,5 +1,3 @@
-import { Tooltip } from "@amplication/ui/design-system";
-import classNames from "classnames";
 import React, { useMemo } from "react";
 import * as models from "../models";
 import "./PendingChange.scss";
@@ -7,7 +5,6 @@ import PendingChangeContent from "./PendingChangeContent";
 import PendingChangeServiceTopics from "./PendingChangeServiceTopics";
 
 const CLASS_NAME = "pending-change";
-const TOOLTIP_DIRECTION = "ne";
 
 export type EntityLinkAndDisplayName = {
   relativeUrl: string;
@@ -19,14 +16,6 @@ export type EntityLinkAndDisplayName = {
 type Props = {
   change: models.PendingChange;
   linkToOrigin?: boolean;
-};
-
-const ACTION_TO_LABEL: {
-  [key in models.EnumPendingChangeAction]: string;
-} = {
-  [models.EnumPendingChangeAction.Create]: "C",
-  [models.EnumPendingChangeAction.Delete]: "D",
-  [models.EnumPendingChangeAction.Update]: "U",
 };
 
 const PendingChange = ({ change, linkToOrigin = false }: Props) => {
