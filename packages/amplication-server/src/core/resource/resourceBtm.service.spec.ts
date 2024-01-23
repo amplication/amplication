@@ -243,7 +243,7 @@ describe("ResourceBtmService", () => {
         ],
       };
 
-      const result = await service.preparePromptResultToBtmRecommendation(
+      const result = await service.prepareBtmRecommendations(
         JSON.stringify(promptResult),
         resourceIdMock
       );
@@ -424,7 +424,7 @@ describe("ResourceBtmService", () => {
         ],
       };
 
-      const result = await service.preparePromptResultToBtmRecommendation(
+      const result = await service.prepareBtmRecommendations(
         JSON.stringify(promptResult),
         resourceIdMock
       );
@@ -560,7 +560,7 @@ describe("ResourceBtmService", () => {
         ],
       };
 
-      const result = await service.preparePromptResultToBtmRecommendation(
+      const result = await service.prepareBtmRecommendations(
         JSON.stringify(promptResult),
         resourceIdMock
       );

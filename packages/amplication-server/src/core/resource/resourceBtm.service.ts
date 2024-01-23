@@ -98,7 +98,7 @@ export class ResourceBtmService {
       };
     }
 
-    const recommendations = await this.preparePromptResultToBtmRecommendation(
+    const recommendations = await this.prepareBtmRecommendations(
       JSON.stringify(metadata),
       resourceId
     );
@@ -136,7 +136,7 @@ export class ResourceBtmService {
     return JSON.stringify(prompt);
   }
 
-  async preparePromptResultToBtmRecommendation(
+  async prepareBtmRecommendations(
     promptResult: string,
     resourceId: string
   ): Promise<BreakServiceToMicroservicesData> {
