@@ -105,7 +105,7 @@ describe("GptService", () => {
         {
           key: { requestUniqueId: mockUserActionId },
           value: {
-            userActionId: mockUserActionId,
+            requestUniqueId: mockUserActionId,
             messageTypeKey: ConversationTypeKey.BreakTheMonolith,
             params: [
               {
@@ -113,7 +113,7 @@ describe("GptService", () => {
                 value: "prompt",
               },
             ],
-          },
+          } as AiConversationStart.Value,
         }
       );
       expect(result).toEqual(mockUserAction);
@@ -123,7 +123,7 @@ describe("GptService", () => {
     it("should update user action status and metadata when there is not error message", async () => {
       await service.onConversationCompleted({
         success: true,
-        userActionId: mockUserActionId,
+        requestUniqueId: mockUserActionId,
         errorMessage: null,
         result: '{"result": 123}',
       });
@@ -143,7 +143,7 @@ describe("GptService", () => {
   it("should update user action status but not the metadata when there is a error message", async () => {
     await service.onConversationCompleted({
       success: true,
-      userActionId: mockUserActionId,
+      requestUniqueId: mockUserActionId,
       errorMessage: "error message",
       result: null,
     });
