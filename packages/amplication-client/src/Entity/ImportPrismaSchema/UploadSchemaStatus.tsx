@@ -2,6 +2,7 @@ import { ImportSchemaSuccess } from "./ImportSchemaSuccess";
 import { EnumUserActionStatus, UserAction } from "../../models";
 import {
   EnumFlexDirection,
+  EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
   EnumTextColor,
@@ -78,7 +79,6 @@ export const UploadSchemaStatus = ({
   userAction,
   logMessage,
 }: UploadSchemaStatusProps) => {
-  // const status = EnumUploadSchemaState.Success;
   const status = mapUserActionStatusToUploadSchemaStatus(userAction?.status);
   const { title, message, showLogMessage } = uploadSchemaStateMap[status];
 
@@ -88,8 +88,9 @@ export const UploadSchemaStatus = ({
       direction={EnumFlexDirection.Column}
       gap={EnumGapSize.Large}
       itemsAlign={EnumItemsAlign.Center}
+      margin={EnumFlexItemMargin.Bottom}
     >
-      {status !== EnumUploadSchemaState.Success && (
+      {status === EnumUploadSchemaState.Initial && (
         <SvgThemeImage image={EnumImages.ImportPrismaSchema} />
       )}
       <Text textStyle={EnumTextStyle.H2} className={`${CLASS_NAME}__title`}>
