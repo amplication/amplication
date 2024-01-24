@@ -247,6 +247,7 @@ export default function ModelOrganizer({
             <div className={`${CLASS_NAME}__body`}>
               <ModelOrganizerToolbar
                 changes={changes}
+                nodes={nodes}
                 readOnly={readOnly}
                 hasChanges={
                   changes?.movedEntities?.length > 0 ||

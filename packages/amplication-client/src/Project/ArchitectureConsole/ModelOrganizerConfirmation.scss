@@ -25,7 +25,7 @@ $addon-title-line-height: 36px;
     display: flex;
   }
 
-  &__newServiceList {
+  &__boxList {
     padding: 12px;
     border-radius: 4px;
     border: 1px solid var(--gray-70);
@@ -41,19 +41,6 @@ $addon-title-line-height: 36px;
     border: 3px solid;
     border-radius: 50%;
     display: inline-flex;
-  }
-
-  &__gitRepository {
-    justify-content: space-between;
-    display: flex;
-    align-items: center;
-  }
-
-  &__gitRepositoryName {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 12px;
   }
 
   &__api_options {
@@ -92,15 +79,4 @@ $addon-title-line-height: 36px;
       color: var(--feature-indicator);
     }
   }
-
-  .toggle-field label .input-label-value {
-    color: var(--gray-20);
-  }
-
-  .toggle-field label {
-    align-items: stretch;
-  }
-}
-.amp-dialog .amp-dialog__header {
-  margin-bottom: 0px;
 }
