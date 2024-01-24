@@ -10,7 +10,7 @@ class MessageParam {
 
 export class Value {
   @IsString()
-  userActionId!: string;
+  requestUniqueId!: string;
 
   @IsString()
   messageTypeKey!: string;
