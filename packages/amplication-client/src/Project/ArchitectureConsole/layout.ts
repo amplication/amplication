@@ -2,13 +2,12 @@ import Elk, { type ElkExtendedEdge, type ElkNode } from "elkjs/lib/elk.bundled";
 import { type Edge } from "reactflow";
 
 import {
-  groupContentCoords,
-  NodeType,
-  Node,
   EntityNode,
-  ResourceNode,
   NODE_TYPE_MODEL,
   NODE_TYPE_MODEL_GROUP,
+  Node,
+  ResourceNode,
+  groupContentCoords,
 } from "./types";
 
 const FIELD_HEIGHT = 30;
@@ -18,7 +17,7 @@ const GROUP_PADDING = 40;
 const GROUP_TOP_PADDING = 100;
 const GROUP_MARGIN = 40;
 const SIMPLE_MODEL_MIN_WIDTH = 200;
-const SIMPLE_MODEL_MIN_HEIGHT = 20;
+const SIMPLE_MODEL_MIN_HEIGHT = 60;
 const GROUP_MIN_SIZE = 400;
 
 const elk = new Elk({
