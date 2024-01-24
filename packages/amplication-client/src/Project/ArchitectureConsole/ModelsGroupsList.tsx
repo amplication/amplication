@@ -1,5 +1,3 @@
-import "reactflow/dist/style.css";
-import "./ArchitectureConsole.scss";
 import {
   Button,
   EnumButtonStyle,

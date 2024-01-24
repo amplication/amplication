@@ -9,9 +9,6 @@ $addon-title-line-height: 36px;
 .model-organizer {
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
 
   &__feature-tag {
     display: flex;
@@ -59,11 +56,22 @@ $addon-title-line-height: 36px;
     background-color: var(--gray-full);
   }
 
-  &__body {
+  &__container {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: row;
+    gap: var(--default-spacing);
+  }
+
+  &__body {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    gap: var(--default-spacing);
   }
 
   &__resource {

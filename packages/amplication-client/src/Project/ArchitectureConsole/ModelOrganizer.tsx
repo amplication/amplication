@@ -1,12 +1,7 @@
-import "reactflow/dist/style.css";
-import "./ModelOrganizer.scss";
 import {
   CircularProgress,
-  EnumTextAlign,
-  EnumTextStyle,
   Icon,
   Snackbar,
-  Text,
 } from "@amplication/ui/design-system";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -17,8 +12,11 @@ import {
   ReactFlow,
   ReactFlowInstance,
 } from "reactflow";
+import "reactflow/dist/style.css";
 import * as models from "../../models";
+import "./ModelOrganizer.scss";
 import ModelOrganizerToolbar from "./ModelOrganizerToolbar";
+import ModelsGroupsList from "./ModelsGroupsList";
 import relationEdge from "./edges/relationEdge";
 import RelationMarkets from "./edges/relationMarkets";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
@@ -29,13 +27,6 @@ import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
 import { NODE_TYPE_MODEL, NODE_TYPE_MODEL_GROUP, Node } from "./types";
-import ModelsGroupsList from "./ModelsGroupsList";
-import {
-  EntitlementType,
-  FeatureIndicatorContainer,
-} from "../../Components/FeatureIndicatorContainer";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { ModuleOrganizerDisabled } from "./ModuleOrganizerDisabled";
 
 export const CLASS_NAME = "model-organizer";
 
@@ -245,21 +236,7 @@ export default function ModelOrganizer({
         <CircularProgress centerToParent />
       ) : (
         <>
-          <ModelOrganizerToolbar
-            selectedResource={selectedResource}
-            changes={changes}
-            readOnly={readOnly}
-            hasChanges={
-              changes?.movedEntities?.length > 0 ||
-              changes?.newServices?.length > 0
-            }
-            resources={currentResourcesData}
-            onApplyPlan={onApplyPlanClick}
-            searchPhraseChanged={searchPhraseChanged}
-            onRedesign={onRedesignClick}
-          />
-
-          <div className={`${CLASS_NAME}__body`}>
+          <div className={`${CLASS_NAME}__container`}>
             <ModelsGroupsList
               modelGroups={nodes?.filter(
                 (model) => model.type === "modelGroup"
@@ -271,47 +248,63 @@ export default function ModelOrganizer({
               onCancelChanges={onCancelChangesClick}
               mergeNewResourcesChanges={mergeNewResourcesChanges}
             ></ModelsGroupsList>
-            <div className={"reactflow-wrapper"}>
-              <ReactFlow
-                onInit={onInit}
-                nodes={nodes}
-                edges={edges}
-                fitView
-                nodeTypes={showRelationDetails ? nodeTypes : simpleNodeTypes}
-                edgeTypes={edgeTypes}
-                onNodeDrag={onNodeDrag}
-                onNodeDragStop={onNodeDragStop}
-                onEdgesChange={onEdgesChange}
-                connectionMode={ConnectionMode.Loose}
-                proOptions={{ hideAttribution: true }}
-                minZoom={0.1}
-                nodesDraggable={!readOnly}
-              >
-                <Background color="grey" />
-                <Controls
-                  showInteractive={false}
-                  showFitView={false}
-                  showZoom={false}
+            <div className={`${CLASS_NAME}__body`}>
+              <ModelOrganizerToolbar
+                selectedResource={selectedResource}
+                changes={changes}
+                readOnly={readOnly}
+                hasChanges={
+                  changes?.movedEntities?.length > 0 ||
+                  changes?.newServices?.length > 0
+                }
+                resources={currentResourcesData}
+                onApplyPlan={onApplyPlanClick}
+                searchPhraseChanged={searchPhraseChanged}
+                onRedesign={onRedesignClick}
+              />
+
+              <div className={"reactflow-wrapper"}>
+                <ReactFlow
+                  onInit={onInit}
+                  nodes={nodes}
+                  edges={edges}
+                  fitView
+                  nodeTypes={showRelationDetails ? nodeTypes : simpleNodeTypes}
+                  edgeTypes={edgeTypes}
+                  onNodeDrag={onNodeDrag}
+                  onNodeDragStop={onNodeDragStop}
+                  onEdgesChange={onEdgesChange}
+                  connectionMode={ConnectionMode.Loose}
+                  proOptions={{ hideAttribution: true }}
+                  minZoom={0.1}
+                  nodesDraggable={!readOnly}
                 >
-                  <ControlButton onClick={onToggleZoomInRelationDetails}>
-                    <Icon icon="plus" />
-                  </ControlButton>
+                  <Background color="grey" />
+                  <Controls
+                    showInteractive={false}
+                    showFitView={false}
+                    showZoom={false}
+                  >
+                    <ControlButton onClick={onToggleZoomInRelationDetails}>
+                      <Icon icon="plus" />
+                    </ControlButton>
 
-                  <ControlButton onClick={onToggleZoomOutRelationDetails}>
-                    <Icon icon="minus" />
-                  </ControlButton>
+                    <ControlButton onClick={onToggleZoomOutRelationDetails}>
+                      <Icon icon="minus" />
+                    </ControlButton>
 
-                  <ControlButton onClick={onToggleShowRelationDetails}>
-                    <Icon icon="list" />
-                  </ControlButton>
-                  <ControlButton onClick={onArrangeNodes}>
-                    <Icon icon="layers" />
-                  </ControlButton>
-                </Controls>
+                    <ControlButton onClick={onToggleShowRelationDetails}>
+                      <Icon icon="list" />
+                    </ControlButton>
+                    <ControlButton onClick={onArrangeNodes}>
+                      <Icon icon="layers" />
+                    </ControlButton>
+                  </Controls>
 
-                {/* <MiniMap pannable={true} zoomable={true} /> */}
-              </ReactFlow>
-              <RelationMarkets />
+                  {/* <MiniMap pannable={true} zoomable={true} /> */}
+                </ReactFlow>
+                <RelationMarkets />
+              </div>
             </div>
           </div>
 

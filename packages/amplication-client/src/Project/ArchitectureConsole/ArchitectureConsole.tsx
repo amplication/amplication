@@ -1,5 +1,3 @@
-import "reactflow/dist/style.css";
-import "./ArchitectureConsole.scss";
 import ModelOrganizer from "./ModelOrganizer";
 import * as models from "../../models";
 import {
@@ -8,8 +6,7 @@ import {
 } from "../../Components/FeatureIndicatorContainer";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { ModuleOrganizerDisabled } from "./ModuleOrganizerDisabled";
-
-export const CLASS_NAME = "architecture-console";
+import PageContent, { EnumPageWidth } from "../../Layout/PageContent";
 
 export type ResourceFilter = models.Resource & {
   isFilter: boolean;
@@ -17,7 +14,10 @@ export type ResourceFilter = models.Resource & {
 
 export default function ArchitectureConsole() {
   return (
-    <div className={CLASS_NAME}>
+    <PageContent
+      pageTitle={"Architecture Console"}
+      pageWidth={EnumPageWidth.Full}
+    >
       <FeatureIndicatorContainer
         featureId={BillingFeature.RedesignArchitecture}
         entitlementType={EntitlementType.Boolean}
@@ -26,6 +26,6 @@ export default function ArchitectureConsole() {
         )}
       />
       <ModelOrganizer />
-    </div>
+    </PageContent>
   );
 }

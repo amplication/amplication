@@ -121,28 +121,12 @@ export default function ModelOrganizerToolbar({
         itemsAlign={EnumItemsAlign.Center}
         contentAlign={EnumContentAlign.Start}
         gap={EnumGapSize.Large}
-        margin={EnumFlexItemMargin.Both}
       >
         <FlexItem
           itemsAlign={EnumItemsAlign.Start}
           contentAlign={EnumContentAlign.Start}
           direction={EnumFlexDirection.Column}
-          margin={EnumFlexItemMargin.Both}
         >
-          {readOnly ? (
-            <BackNavigation
-              className={`${CLASS_NAME}__backToBtn`}
-              to={`/${currentWorkspace?.id}/${currentProject?.id}`}
-              label="Back to service overview"
-            />
-          ) : (
-            <Text
-              textStyle={EnumTextStyle.Tag}
-              textColor={EnumTextColor.ThemeRed}
-            >
-              {"Cancel edit"}
-            </Text>
-          )}
           <SearchField
             label="search"
             placeholder="search"
