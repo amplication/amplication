@@ -19,7 +19,7 @@ export class GptController {
     @Payload() message: AiConversationComplete.Value
   ): Promise<void> {
     this.logger.debug(
-      `RECEIVED: onConversationCompleted ${message.userActionId} `,
+      `RECEIVED: onConversationCompleted ${message.requestUniqueId} `,
       {
         result: message.result,
       }
@@ -27,7 +27,7 @@ export class GptController {
     try {
       await this.gptService.onConversationCompleted(message);
       this.logger.debug(
-        `COMPLETED: onConversationCompleted ${message.userActionId}`
+        `COMPLETED: onConversationCompleted ${message.requestUniqueId}`
       );
     } catch (error) {
       this.logger.error(error.message, error, { message });

@@ -47,7 +47,7 @@ export class GptService {
     const kafkaMessage: AiConversationStart.KafkaEvent = {
       key: { requestUniqueId: userAction.id },
       value: {
-        userActionId: userAction.id,
+        requestUniqueId: userAction.id,
         messageTypeKey: conversationTypeKey,
         params,
       },
@@ -62,7 +62,7 @@ export class GptService {
 
   async onConversationCompleted({
     success,
-    userActionId,
+    requestUniqueId,
     errorMessage,
     result,
   }: AiConversationComplete.Value): Promise<void> {
@@ -71,18 +71,18 @@ export class GptService {
       : EnumActionStepStatus.Failed;
 
     await this.userActionService.updateUserActionStep(
-      userActionId,
+      requestUniqueId,
       START_CONVERSATION_STEP_NAME,
       userActionStatus
     );
 
     if (errorMessage) {
-      this.logger.warn(errorMessage, null, { userActionId });
+      this.logger.warn(errorMessage, null, { requestUniqueId });
       return;
     }
 
     await this.userActionService.updateUserActionMetadata(
-      userActionId,
+      requestUniqueId,
       JSON.parse(result)
     );
   }
