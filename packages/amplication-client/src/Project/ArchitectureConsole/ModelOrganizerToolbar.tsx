@@ -10,31 +10,26 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
-  Icon,
   SearchField,
-  SelectMenu,
-  SelectMenuItem,
-  SelectMenuList,
-  SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
-import { Button } from "../../Components/Button";
 import {
   EnumFlexDirection,
   FlexEnd,
 } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
-import * as models from "../../models";
-import { useCallback, useContext, useState } from "react";
 import { BillingFeature } from "@amplication/util-billing-types";
-import {
-  FeatureIndicatorContainer,
-  EntitlementType,
-} from "../../Components/FeatureIndicatorContainer";
+import { useCallback, useContext, useState } from "react";
 import { BackNavigation } from "../../Components/BackNavigation";
+import { Button } from "../../Components/Button";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+} from "../../Components/FeatureIndicatorContainer";
+import RedesignResourceButton from "../../Components/RedesignResourceButton";
 import { AppContext } from "../../context/appContext";
+import * as models from "../../models";
 import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import { ModelChanges } from "./types";
-import RedesignResourceButton from "../../Components/RedesignResourceButton";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
