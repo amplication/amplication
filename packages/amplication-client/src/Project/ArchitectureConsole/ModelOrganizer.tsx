@@ -245,20 +245,6 @@ export default function ModelOrganizer({
         <CircularProgress centerToParent />
       ) : (
         <>
-          <FeatureIndicatorContainer
-            featureId={BillingFeature.RedesignArchitecture}
-            entitlementType={EntitlementType.Boolean}
-            render={({ disabled, icon }) => (
-              <>
-                {disabled && (
-                  <ModuleOrganizerDisabled
-                    icon={icon}
-                    handleSearchChange={searchPhraseChanged}
-                  />
-                )}
-              </>
-            )}
-          />
           <ModelOrganizerToolbar
             selectedResource={selectedResource}
             changes={changes}

@@ -1,4 +1,9 @@
 @import "../../style/index.scss";
 
 .architecture-console {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }

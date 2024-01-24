@@ -17,7 +17,6 @@ import { useQuery } from "@apollo/client";
 
 type Props = {
   icon: IconType;
-  handleSearchChange: (value: string) => void;
 };
 export const CLASS_NAME = "model-organizer-disabled";
 
