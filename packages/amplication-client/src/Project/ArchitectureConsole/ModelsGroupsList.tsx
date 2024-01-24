@@ -4,23 +4,24 @@ import {
   EnumTextStyle,
   Tooltip,
   Text,
+  HorizontalRule,
+  Icon,
 } from "@amplication/ui/design-system";
 import { Node, ResourceNode } from "./types";
 import "./ModelsGroupList.scss";
+import classNames from "classnames";
 
 const CLASS_NAME = "model-group-list";
 
 type Props = {
   modelGroups: Node[];
   selectedNode: ResourceNode;
-  readOnly: boolean;
   handleModelGroupFilterChanged: (event: any, modelGroup: Node) => void;
 };
 
 export default function ModelsGroupsList({
   modelGroups,
   selectedNode,
-  readOnly,
   handleModelGroupFilterChanged,
 }: Props) {
   return (
@@ -33,28 +34,34 @@ export default function ModelsGroupsList({
                 className={`${CLASS_NAME}__serviceBox`}
                 style={{ borderColor: selectedNode.data.groupColor }}
               >
-                <Button
-                  key={selectedNode?.id}
-                  icon="services"
-                  iconSize="small"
-                  buttonStyle={EnumButtonStyle.Text}
-                ></Button>
+                <Tooltip
+                  className="amp-menu-item__tooltip"
+                  aria-label={selectedNode.data.payload.name}
+                  direction="e"
+                  noDelay
+                >
+                  <Icon icon="services" size="small"></Icon>
+                </Tooltip>
               </div>
-              <hr className={`${CLASS_NAME}__hr`} />
+              <HorizontalRule />
             </>
           )}
-          <Text textStyle={EnumTextStyle.Tag}>{"Filter"}</Text>
+          <Text textStyle={EnumTextStyle.Subtle}>Filter</Text>
 
           {modelGroups.map((model: ResourceNode) => (
             <div
               key={model.id}
-              className={`${CLASS_NAME}__serviceBox`}
-              style={{ borderColor: model.data.groupColor }}
+              className={classNames(`${CLASS_NAME}__serviceBox`, {
+                [`${CLASS_NAME}__serviceBox--hidden`]: model.hidden,
+              })}
+              style={{
+                borderColor: model.hidden ? undefined : model.data.groupColor,
+              }}
             >
               <Tooltip
                 className="amp-menu-item__tooltip"
                 aria-label={model.data.payload.name}
-                direction="nw"
+                direction="e"
                 noDelay
               >
                 <Button

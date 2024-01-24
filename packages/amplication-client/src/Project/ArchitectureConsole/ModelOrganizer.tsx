@@ -242,7 +242,6 @@ export default function ModelOrganizer({
               )}
               handleModelGroupFilterChanged={modelGroupFilterChanged}
               selectedNode={selectedNode}
-              readOnly={readOnly}
             ></ModelsGroupsList>
             <div className={`${CLASS_NAME}__body`}>
               <ModelOrganizerToolbar

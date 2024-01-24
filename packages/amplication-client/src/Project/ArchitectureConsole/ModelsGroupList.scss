@@ -1,46 +1,46 @@
 @import "../../style/index.scss";
 
+$item-size: 25px;
+
 .model-group-list {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
   &__filter {
     display: flex;
-    width: 40px;
-    padding: 8px;
+    padding: var(--default-spacing-small);
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    border-radius: 4px;
-    border: 1px solid var(--gray-80);
-    background: var(-gray-full);
-  }
-
-  &__selectedNode {
-    margin: 6px;
-    border-radius: 4px;
-    gap: 4px;
-    border: 1px solid var(--border-color);
-  }
-
-  &__hr {
-    border: none;
-    border-top: 1px solid var(--border-color);
-    width: 100%;
+    border-radius: var(--default-border-radius);
+    border: $border-dark;
+    background: var(--gray-full);
+    box-sizing: border-box;
   }
 
   &__serviceBox {
-    border-radius: 4px;
-    border: 1px solid;
-    margin: 6px;
-  }
+    border-radius: var(--default-border-radius);
+    border: 1px solid var(--gray-50);
+    width: $item-size;
+    height: $item-size;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin-top: var(--default-spacing-small);
 
-  &__modelToolBtn {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    margin: 6px;
-    border: 1px solid var(--border-color);
+    .amp-tooltip {
+      line-height: 1;
+    }
+
+    i {
+      margin: 0;
+    }
+
+    &--hidden {
+      i {
+        color: var(--gray-50);
+      }
+    }
+
+    &:last-child {
+      margin-bottom: var(--default-spacing-small);
+    }
   }
 }
