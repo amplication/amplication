@@ -1,0 +1,93 @@
+name: Documentation Request
+description: Provide information for a new or updated documentation
+title: "📖 Documentation: "
+labels: ["type: docs"]
+body:
+  - type: markdown
+    attributes:
+      value: "
+        <img src='https://avatars.githubusercontent.com/u/65107786?s=200&v=4' align='left' width='80' height='80'>
+
+
+        Each new or updated feature must be accompanied by a Document Feature Request.
+
+        The information will be used by the technical writer to edit and curate the information for inclusion in the docs.
+        <br/>
+        <br/>
+        <b>
+        Important: Please provide raw data. You are not expected to provide a polished text. The tech writer will write and edit the content as required.
+        </b>
+        <br clear='left'/>"
+  - type: textarea
+    attributes:
+      label: Description (What is it?)
+      description: "
+        Use this section to provide an overview of the feature or process being described.
+        If it is an update to an existing feature, describe what has changed.
+        [Example:] (https://docs.amplication.com/how-to/create-message-broker/#overview)"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Use Case (Why does the user need it?)
+      description: "
+        Describe the feature or process from the users' point of view. How does the feature meet the user's requirements?
+        [Example:](https://docs.amplication.com/how-to/custom-code/#the-vision)"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Issue URL
+      description: Link to the related issue.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Pull Request URL
+      description: Link to the related PR.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: How it works (How does the user use it?)
+      description: "
+        Our users are developers, so the emphasis should be on giving information that is required for understanding the feature,
+        rather than step-by-step instructions of how to use the UI. However, there should be a mention of where the feature is located.
+        [Example:](https://docs.amplication.com/how-to/custom-code/#how-it-works)."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Screenshots
+      description: Add screenshots to show where this feature is displayed in the UI. If not relevant, write N/A.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Code Samples
+      description: Add any code samples that are relevant to the user. If not relevant, write N/A.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Figma URL
+      description: Add a link to any Figma diagrams that relate to the feature. If not relevant, write N/A.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reference (What data does the user need to use this feature?)
+      description: "
+        Sometimes, some reference info is required. Include the information here, or link to a source of the information.
+        Example:[Plugin Events](https://docs.amplication.com/plugins/plugin-events/CreateEntityServiceBase/)"
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Additional Information
+      description: Include any information or links that might help with writing the Docs article.
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: By submitting this issue I agree to follow this project`s [Code of Conduct](https://github.com/amplication/amplication/blob/master/CODE_OF_CONDUCT.md)

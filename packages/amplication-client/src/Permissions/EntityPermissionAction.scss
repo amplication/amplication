@@ -1,0 +1,26 @@
+@import "../style/index.scss";
+
+$toggle-min-width: 250px;
+
+.entity-permissions-action {
+  margin-left: 0;
+  margin-right: 0;
+
+  .multi-state-toggle {
+    margin-bottom: 0;
+    min-width: $toggle-min-width;
+
+    label {
+      display: none;
+    }
+  }
+
+  &__action-name {
+    color: var(--gray-base);
+  }
+  .amp-panel-collapsible__body {
+    .panel-list .toggle-button label span {
+      border-radius: 25px;
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "$id": "https://amplication.com/schema/entityfield/properties/decimalNumber.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "decimalNumber",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["minimumValue", "maximumValue", "precision"],
+  "properties": {
+    "databaseFieldType": {
+      "type": "string",
+      "description": "The database field scalar type",
+      "enum": ["DECIMAL", "FLOAT"],
+      "default": "DECIMAL"
+    },
+    "minimumValue": {
+      "type": "integer",
+      "description": "The minimum value",
+      "default": 0
+    },
+    "maximumValue": {
+      "type": "integer",
+      "description": "The maximum value",
+      "default": 99999999999
+    },
+    "precision": {
+      "type": "integer",
+      "description": "The number of digits to the right of the decimal point",
+      "minimum": 0,
+      "maximum": 8,
+      "default": 8
+    }
+  }
+}

@@ -1,0 +1,68 @@
+mutation {
+  createAppRole(
+    data: {
+      name: "admin"
+      description: "admin description"
+      displayName: "admin"
+      app: { connect: { id: "ckac6htik0004pojnkybeh42v" } }
+    }
+  ) {
+    id
+    createdAt
+    updatedAt
+    name
+    displayName
+    description
+  }
+}
+
+mutation {
+  updateAppRole(
+    data: {
+      name: "admin"
+      description: "admin description"
+      displayName: "admin"
+    }
+    where: { id: "ckdd1ey680002bkjnq4eyds0t" }
+  ) {
+    id
+    createdAt
+    updatedAt
+    name
+    displayName
+    description
+  }
+}
+
+query {
+  appRoles(where: { app: { id: "ckac6htik0004pojnkybeh42v" } }) {
+    id
+    createdAt
+    updatedAt
+    name
+    displayName
+    description
+  }
+}
+
+query {
+  appRole(where: { id: "ckdd1ey680002bkjnq4eyds0t" }) {
+    id
+    createdAt
+    updatedAt
+    name
+    displayName
+    description
+  }
+}
+
+mutation {
+  deleteAppRole(where: { id: "ckdd1ey680002bkjnq4eyds0t" }) {
+    id
+    createdAt
+    updatedAt
+    name
+    displayName
+    description
+  }
+}
