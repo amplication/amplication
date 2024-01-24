@@ -5,10 +5,14 @@
   border-radius: var(--default-border-radius);
   background-color: var(--gray-full);
   border: 1px solid var(--gray-70);
+  padding: var(--default-spacing);
+  box-sizing: border-box;
 
   &--simple {
-    .model-node__display_name {
+    height: 60px;
+    .model-node__header {
       border-bottom: none;
+      padding-bottom: 0;
     }
   }
 
@@ -16,12 +20,9 @@
     border-color: var(--theme-turquoise);
   }
 
-  &__display_name {
-    padding: var(--default-spacing-small) 0;
-    margin-left: var(--default-spacing);
-    margin-right: var(--default-spacing);
-
+  &__header {
     border-bottom: $border-dark;
+    padding-bottom: var(--default-spacing);
   }
 
   &__column_container {
@@ -32,8 +33,6 @@
     position: relative;
   }
   &__column_display_name {
-    padding-left: var(--default-spacing);
-    padding-right: var(--default-spacing);
     align-items: center;
     display: flex;
     font-size: var(--normal-font-size);
