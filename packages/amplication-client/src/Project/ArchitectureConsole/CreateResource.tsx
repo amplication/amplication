@@ -3,15 +3,17 @@ import { Form, Formik } from "formik";
 import { useCallback } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../../Components/Button";
-import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import { validate } from "../../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../../util/hotkeys";
 import { generatedKey } from "../../Plugins/InstalledPluginSettings";
 import * as models from "../../models";
 import { EnumResourceType } from "../../models";
+import "./CreateResource.scss";
 
 type Props = {
   onSuccess: (newResource: models.Resource) => void;
+  title: string;
+  actionDescription: string;
 };
 
 const INITIAL_VALUES = {
@@ -27,13 +29,13 @@ const FORM_SCHEMA = {
     },
   },
 };
-const CLASS_NAME = "new-entity";
+const CLASS_NAME = "create-resource";
 
 const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const NewTempResource = ({ onSuccess }: Props) => {
+const CreateResource = ({ onSuccess, title, actionDescription }: Props) => {
   const handleSubmit = useCallback(
     (data) => {
       const tempId = generatedKey();
@@ -57,10 +59,7 @@ const NewTempResource = ({ onSuccess }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <SvgThemeImage image={EnumImages.Entities} />
-      <Text textAlign={EnumTextAlign.Center}>
-        Give your new service a descriptive name.
-      </Text>
+      <Text textAlign={EnumTextAlign.Right}>{actionDescription}</Text>
 
       <Formik
         initialValues={INITIAL_VALUES}
@@ -77,27 +76,21 @@ const NewTempResource = ({ onSuccess }: Props) => {
               <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
               <TextField
                 name="name"
-                label="New Service Name"
-                // disabled={loading}
+                label={title}
                 autoFocus
                 hideLabel
                 placeholder="Type New Service Name"
                 autoComplete="off"
               />
-              <Button
-                type="submit"
-                buttonStyle={EnumButtonStyle.Primary}
-                // disabled={!formik.isValid || loading}
-              >
+              <Button type="submit" buttonStyle={EnumButtonStyle.Primary}>
                 Create Service
               </Button>
             </Form>
           );
         }}
       </Formik>
-      {/* <Snackbar open={Boolean(error)} message={errorMessage} /> */}
     </div>
   );
 };
 
-export default NewTempResource;
+export default CreateResource;

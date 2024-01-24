@@ -7,7 +7,7 @@ import {
 } from "@amplication/ui/design-system";
 import { useCallback, useState } from "react";
 import { Resource } from "../../models";
-import NewTempResource from "./NewTempResource";
+import CreateResource from "./CreateResource";
 
 const DIRECTION = "s";
 
@@ -70,9 +70,11 @@ export default function ModelsTool({
         onDismiss={handleNewServiceClick}
         title="New Service"
       >
-        <NewTempResource
+        <CreateResource
+          title="New Service Name"
+          actionDescription="Type New Service Name"
           onSuccess={handleNewCreatedServiceClick}
-        ></NewTempResource>
+        ></CreateResource>
       </Dialog>
     </>
   );
