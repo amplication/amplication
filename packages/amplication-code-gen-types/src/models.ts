@@ -212,7 +212,7 @@ export type BreakServiceToMicroservicesItemEntities = {
 };
 
 export type BreakServiceToMicroservicesResult = {
-  /** Prompt result with some data manipulation */
+  /** Prompt result with some data structure manipulation */
   data?: Maybe<BreakServiceToMicroservicesData>;
   /** The original resource ID */
   originalResourceId: Scalars['String']['output'];
