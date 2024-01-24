@@ -24,7 +24,7 @@ import RedesignResourceButton from "../../Components/RedesignResourceButton";
 import * as models from "../../models";
 import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import ModelsTool from "./ModelsTool";
-import { ModelChanges } from "./types";
+import { ModelChanges, Node } from "./types";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
@@ -32,6 +32,7 @@ type Props = {
   readOnly: boolean;
   hasChanges: boolean;
   changes: ModelChanges;
+  nodes: Node[];
   onApplyPlan: () => void;
   searchPhraseChanged: (searchPhrase: string) => void;
   onRedesign: (resource: models.Resource) => void;
@@ -45,6 +46,7 @@ export default function ModelOrganizerToolbar({
   readOnly,
   changes,
   hasChanges,
+  nodes,
   resources,
   onApplyPlan,
   searchPhraseChanged,
@@ -88,6 +90,7 @@ export default function ModelOrganizerToolbar({
         title="Confirm Architecture Changes"
       >
         <ModelOrganizerConfirmation
+          nodes={nodes}
           onConfirmChanges={onApplyPlan}
           onCancelChanges={handleConfirmChangesState}
           changes={changes}

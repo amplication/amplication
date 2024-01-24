@@ -1,47 +1,50 @@
 import "./ModelOrganizerConfirmation.scss";
 import { Button, EnumButtonStyle } from "../../Components/Button";
 import {
-  CircleBadge,
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumItemsAlign,
   EnumTextWeight,
+  FlexItem,
   Text,
-  Toggle,
 } from "@amplication/ui/design-system";
-import { ModelChanges } from "./types";
+import { EntityNode, ModelChanges, Node } from "./types";
 import TempServiceView from "./TempServiceView";
-import adminUI from "../../assets/images/admin-ui.svg";
-import graphql from "../../assets/images/graphql.svg";
-import swagger from "../../assets/images/swagger.svg";
-import { PLUGIN_LOGO_BASE_URL } from "../../Resource/create-resource/CreateServiceWizard";
-import ImgSvg from "../../Resource/create-resource/wizard-pages/ImgSvg";
+import { useMemo } from "react";
+
+type movedEntitiesData = {
+  id: string;
+  name: string;
+};
 export const CLASS_NAME = "model-organizer-confirmation";
 
 type Props = {
   onConfirmChanges: () => void;
   onCancelChanges: () => void;
   changes: ModelChanges;
+  nodes: Node[];
 };
 
 export default function ModelOrganizerConfirmation({
   onConfirmChanges,
   onCancelChanges,
+  nodes,
   changes,
 }: Props) {
-  const PostgresPng = ImgSvg({
-    image: `${PLUGIN_LOGO_BASE_URL}db-postgres.png`,
-    imgSize: "large",
-  });
-  const MongoPng = ImgSvg({
-    image: `${PLUGIN_LOGO_BASE_URL}db-mongo.png`,
-    imgSize: "large",
-  });
-  const MysqlPng = ImgSvg({
-    image: `${PLUGIN_LOGO_BASE_URL}db-mysql.png`,
-    imgSize: "large",
-  });
-  const MsSqlPng = ImgSvg({
-    image: `${PLUGIN_LOGO_BASE_URL}db-mssql.png`,
-    imgSize: "large",
-  });
+  const movedEntities = useMemo(() => {
+    const movedEntities: movedEntitiesData[] = [];
+    nodes
+      .filter((n) => n.type === "model")
+      .forEach((n: EntityNode) => {
+        if (n.data.originalParentNode !== n.parentNode) {
+          movedEntities.push({
+            id: n.data.payload.id,
+            name: n.data.payload.displayName,
+          });
+        }
+      });
+    return movedEntities;
+  }, [nodes]);
 
   return (
     <div className={CLASS_NAME}>
@@ -67,10 +70,8 @@ export default function ModelOrganizerConfirmation({
       </div>
       {changes?.newServices?.length > 0 && (
         <>
-          <Text textWeight={EnumTextWeight.Bold}>
-            {"This is the services will be created"}
-          </Text>
-          <div className={`${CLASS_NAME}__newServiceList`}>
+          <Text textWeight={EnumTextWeight.Bold}>{"New services"}</Text>
+          <div className={`${CLASS_NAME}__boxList`}>
             {changes.newServices.map((service) => (
               <TempServiceView
                 newService={service}
@@ -82,77 +83,17 @@ export default function ModelOrganizerConfirmation({
           </div>
         </>
       )}
-      <Text textWeight={EnumTextWeight.Bold}>{"The services properties"}</Text>
-      <Text textWeight={EnumTextWeight.Bold}>
-        {"Select APIs & Admin UI Options"}
-      </Text>
-      <div className={`${CLASS_NAME}__api_options`}>
-        <div
-          style={{ background: "#2C3249" }}
-          className={`${CLASS_NAME}__api_item`}
-        >
-          <img src={graphql} alt="" />
-          <span>GraphQL API</span>
-        </div>
-        <div className={`${CLASS_NAME}__api_item`}>
-          <img src={swagger} alt="" />
-          <span>REST API & Swagger UI</span>
-        </div>
-        <div className={`${CLASS_NAME}__api_item`}>
-          <img src={adminUI} alt="" />
-          <span>Admin UI</span>
-        </div>
-      </div>
-      <Text textWeight={EnumTextWeight.Bold}>
-        {"Are you using a monorepo or polyrepo?"}
-      </Text>
-      <div className={`${CLASS_NAME}__api_options`}>
-        <div
-          style={{ background: "#2C3249" }}
-          className={`${CLASS_NAME}__api_item`}
-        >
-          <span>Monorepo</span>
-        </div>
-        <div className={`${CLASS_NAME}__api_item`}>
-          <span>Polyrepo</span>
-        </div>
-      </div>
-      <Text textWeight={EnumTextWeight.Bold}>
-        {"Which database do you want to use?"}
-      </Text>
-      <div className={`${CLASS_NAME}__api_options`}>
-        <div
-          style={{ background: "#2C3249" }}
-          className={`${CLASS_NAME}__api_item`}
-        >
-          <CircleBadge color="#22273C" border="1px solid #373D57" size="small">
-            {PostgresPng}
-          </CircleBadge>
-          <span>PostgreSQL</span>
-        </div>
-        <div className={`${CLASS_NAME}__api_item`}>
-          <CircleBadge color="#22273C" border="1px solid #373D57" size="small">
-            {MongoPng}
-          </CircleBadge>
-          <span>MongoDB</span>
-        </div>
-        <div className={`${CLASS_NAME}__api_item`}>
-          <CircleBadge color="#22273C" border="1px solid #373D57" size="small">
-            {MysqlPng}
-          </CircleBadge>
-          <span>MySQL</span>
-        </div>
-        <div className={`${CLASS_NAME}__api_item`}>
-          <CircleBadge color="#22273C" border="1px solid #373D57" size="small">
-            {MsSqlPng}
-          </CircleBadge>
-          <span>MS SQL Server</span>
-        </div>
-      </div>
-      <div className={`${CLASS_NAME}__api_options`}>
-        <Toggle checked={false} disabled />
-        <Text textWeight={EnumTextWeight.Regular}>{"Use Auth module"}</Text>
-      </div>
+      <Text textWeight={EnumTextWeight.Bold}>{"The effected entities:"} </Text>
+      <FlexItem
+        className={`${CLASS_NAME}__boxList`}
+        gap={EnumGapSize.Default}
+        direction={EnumFlexDirection.Column}
+        itemsAlign={EnumItemsAlign.Start}
+      >
+        {movedEntities.map((entity) => (
+          <span>{entity.name}</span>
+        ))}
+      </FlexItem>
       <div className={`${CLASS_NAME}__note`}>
         <span style={{ color: "#53DBEE" }}>Note:</span>
         <span>
