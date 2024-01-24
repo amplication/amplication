@@ -1,8 +1,10 @@
 @import "../../style/index.scss";
 
 .model-organizer-toolbar {
-  &__backToBtn {
-    color: var(--gray-20);
+  &__divider {
+    width: 1px;
+    height: var(--default-button-height);
+    background: var(--border-color);
   }
 
   &__changesDialogTitle {

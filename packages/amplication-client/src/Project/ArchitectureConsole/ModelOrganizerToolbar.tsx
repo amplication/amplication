@@ -4,31 +4,26 @@ import {
   Dialog,
   EnumButtonStyle,
   EnumContentAlign,
-  EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
-  EnumTextColor,
-  EnumTextStyle,
   FlexItem,
   SearchField,
-  Text,
 } from "@amplication/ui/design-system";
 import {
   EnumFlexDirection,
   FlexEnd,
 } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { useCallback, useContext, useState } from "react";
-import { BackNavigation } from "../../Components/BackNavigation";
+import { useCallback, useState } from "react";
 import { Button } from "../../Components/Button";
 import {
   EntitlementType,
   FeatureIndicatorContainer,
 } from "../../Components/FeatureIndicatorContainer";
 import RedesignResourceButton from "../../Components/RedesignResourceButton";
-import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
+import ModelsTool from "./ModelsTool";
 import { ModelChanges } from "./types";
 
 export const CLASS_NAME = "model-organizer-toolbar";
@@ -42,6 +37,9 @@ type Props = {
   searchPhraseChanged: (searchPhrase: string) => void;
   onRedesign: (resource: models.Resource) => void;
   resources: models.Resource[];
+  handleServiceCreated: (newResource: models.Resource) => void;
+  onCancelChanges: () => void;
+  mergeNewResourcesChanges: () => void;
 };
 
 export default function ModelOrganizerToolbar({
@@ -53,8 +51,10 @@ export default function ModelOrganizerToolbar({
   onApplyPlan,
   searchPhraseChanged,
   onRedesign,
+  handleServiceCreated,
+  onCancelChanges,
+  mergeNewResourcesChanges,
 }: Props) {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
   const handleSearchPhraseChanged = useCallback(
     (searchPhrase: string) => {
       searchPhraseChanged(searchPhrase);
@@ -153,22 +153,31 @@ export default function ModelOrganizerToolbar({
             </FeatureIndicatorContainer>
 
             {!readOnly && (
-              <FeatureIndicatorContainer
-                featureId={BillingFeature.RedesignArchitecture}
-                entitlementType={EntitlementType.Boolean}
-                limitationText="Available as part of the Enterprise plan only."
-              >
-                <Button
-                  buttonStyle={EnumButtonStyle.Primary}
-                  onClick={handleConfirmChangesState}
-                  // eventData={{
-                  //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                  // }}
-                  disabled={!hasChanges}
+              <>
+                <div className={`${CLASS_NAME}__divider`}></div>
+                <ModelsTool
+                  handleServiceCreated={handleServiceCreated}
+                  onCancelChanges={onCancelChanges}
+                  mergeNewResourcesChanges={mergeNewResourcesChanges}
+                ></ModelsTool>
+                <div className={`${CLASS_NAME}__divider`}></div>
+                <FeatureIndicatorContainer
+                  featureId={BillingFeature.RedesignArchitecture}
+                  entitlementType={EntitlementType.Boolean}
+                  limitationText="Available as part of the Enterprise plan only."
                 >
-                  Apply Plan
-                </Button>
-              </FeatureIndicatorContainer>
+                  <Button
+                    buttonStyle={EnumButtonStyle.Primary}
+                    onClick={handleConfirmChangesState}
+                    // eventData={{
+                    //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                    // }}
+                    disabled={!hasChanges}
+                  >
+                    Apply Plan
+                  </Button>
+                </FeatureIndicatorContainer>
+              </>
             )}
             {readOnly && (
               <RedesignResourceButton

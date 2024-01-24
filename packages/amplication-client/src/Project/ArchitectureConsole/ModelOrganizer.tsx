@@ -244,9 +244,6 @@ export default function ModelOrganizer({
               handleModelGroupFilterChanged={modelGroupFilterChanged}
               selectedNode={selectedNode}
               readOnly={readOnly}
-              handleServiceCreated={handleServiceCreated}
-              onCancelChanges={onCancelChangesClick}
-              mergeNewResourcesChanges={mergeNewResourcesChanges}
             ></ModelsGroupsList>
             <div className={`${CLASS_NAME}__body`}>
               <ModelOrganizerToolbar
@@ -261,6 +258,9 @@ export default function ModelOrganizer({
                 onApplyPlan={onApplyPlanClick}
                 searchPhraseChanged={searchPhraseChanged}
                 onRedesign={onRedesignClick}
+                handleServiceCreated={handleServiceCreated}
+                onCancelChanges={onCancelChangesClick}
+                mergeNewResourcesChanges={mergeNewResourcesChanges}
               />
 
               <div className={"reactflow-wrapper"}>

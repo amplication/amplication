@@ -7,8 +7,6 @@ import {
 } from "@amplication/ui/design-system";
 import { Node, ResourceNode } from "./types";
 import "./ModelsGroupList.scss";
-import { Resource } from "../../models";
-import ModelsTool from "./ModelsTool";
 
 const CLASS_NAME = "model-group-list";
 
@@ -17,9 +15,6 @@ type Props = {
   selectedNode: ResourceNode;
   readOnly: boolean;
   handleModelGroupFilterChanged: (event: any, modelGroup: Node) => void;
-  handleServiceCreated: (newResource: Resource) => void;
-  onCancelChanges: () => void;
-  mergeNewResourcesChanges: () => void;
 };
 
 export default function ModelsGroupsList({
@@ -27,9 +22,6 @@ export default function ModelsGroupsList({
   selectedNode,
   readOnly,
   handleModelGroupFilterChanged,
-  handleServiceCreated,
-  onCancelChanges,
-  mergeNewResourcesChanges,
 }: Props) {
   return (
     <>
@@ -78,13 +70,6 @@ export default function ModelsGroupsList({
             </div>
           ))}
         </div>
-        {!readOnly && (
-          <ModelsTool
-            handleServiceCreated={handleServiceCreated}
-            onCancelChanges={onCancelChanges}
-            mergeNewResourcesChanges={mergeNewResourcesChanges}
-          ></ModelsTool>
-        )}
       </div>
     </>
   );

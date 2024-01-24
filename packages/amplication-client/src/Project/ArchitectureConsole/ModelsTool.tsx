@@ -2,15 +2,14 @@ import {
   Button,
   Dialog,
   EnumButtonStyle,
-  EnumTextStyle,
   Icon,
-  Text,
+  Tooltip,
 } from "@amplication/ui/design-system";
 import { useCallback, useState } from "react";
-import NewTempResource from "./NewTempResource";
 import { Resource } from "../../models";
+import NewTempResource from "./NewTempResource";
 
-const CLASS_NAME = "model-group-list";
+const DIRECTION = "s";
 
 type Props = {
   handleServiceCreated: (newResource: Resource) => void;
@@ -38,39 +37,43 @@ export default function ModelsTool({
 
   return (
     <>
-      <div className={`${CLASS_NAME}__filter`}>
-        <Text textStyle={EnumTextStyle.Tag}>{"Tools"}</Text>
-        <Button
-          className={`${CLASS_NAME}__modelToolBtn`}
-          buttonStyle={EnumButtonStyle.Outline}
-          onClick={onCancelChanges}
-        >
+      <Tooltip aria-label="Discard changes" direction={DIRECTION} noDelay>
+        <Button buttonStyle={EnumButtonStyle.Outline} onClick={onCancelChanges}>
           <Icon icon={"trash_2"} size="small"></Icon>
         </Button>
+      </Tooltip>
+
+      <Tooltip
+        aria-label="Fetch updates from server"
+        direction={DIRECTION}
+        noDelay
+      >
         <Button
-          className={`${CLASS_NAME}__modelToolBtn`}
           onClick={mergeNewResourcesChanges}
           buttonStyle={EnumButtonStyle.Outline}
         >
           <Icon icon={"refresh_cw"} size="small"></Icon>
         </Button>
-        <hr className={`${CLASS_NAME}__hr`} />
+      </Tooltip>
+
+      <Tooltip aria-label="Add new service" direction={DIRECTION} noDelay>
         <Button
-          className={`${CLASS_NAME}__modelToolBtn`}
           onClick={handleNewServiceClick}
+          buttonStyle={EnumButtonStyle.Outline}
         >
-          <Icon icon={"pluse"} size="small"></Icon>
+          <Icon icon={"plus"} size="small"></Icon>
         </Button>
-        <Dialog
-          isOpen={newService}
-          onDismiss={handleNewServiceClick}
-          title="New Service"
-        >
-          <NewTempResource
-            onSuccess={handleNewCreatedServiceClick}
-          ></NewTempResource>
-        </Dialog>
-      </div>
+      </Tooltip>
+
+      <Dialog
+        isOpen={newService}
+        onDismiss={handleNewServiceClick}
+        title="New Service"
+      >
+        <NewTempResource
+          onSuccess={handleNewCreatedServiceClick}
+        ></NewTempResource>
+      </Dialog>
     </>
   );
 }
