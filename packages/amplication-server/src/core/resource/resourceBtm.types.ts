@@ -28,7 +28,7 @@ export interface BreakTheMonolithPromptInput {
   dataModels: DataModel[];
 }
 
-export interface BreakTheMonolithPromptOutput {
+export interface BreakTheMonolithOutput {
   microservices: {
     name: string;
     functionality: string;

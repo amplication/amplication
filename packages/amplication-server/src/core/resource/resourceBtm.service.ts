@@ -4,7 +4,7 @@ import { EnumDataType, PrismaService } from "../../prisma";
 import { INVALID_RESOURCE_ID } from "./resource.service";
 import {
   BreakTheMonolithPromptInput,
-  BreakTheMonolithPromptOutput,
+  BreakTheMonolithOutput,
   EntityDataForBtm,
   ResourceDataForBtm,
 } from "./resourceBtm.types";
@@ -140,14 +140,13 @@ export class ResourceBtmService {
     promptResult: string,
     resourceId: string
   ): Promise<BreakServiceToMicroservicesData> {
-    const promptResultObj =
-      this.mapToBreakTheMonolithPromptOutput(promptResult);
+    const promptResultObj = this.mapToBreakTheMonolithOutput(promptResult);
 
     const recommendedResourceEntities = promptResultObj.microservices
       .map((resource) => resource.dataModels)
       .flat();
 
-    const duplicatedEntities = this.duplicatedEntities(
+    const duplicatedEntities = this.findDuplicatedEntities(
       recommendedResourceEntities
     );
     const usedDuplicatedEntities = new Set<string>();
@@ -193,9 +192,7 @@ export class ResourceBtmService {
     };
   }
 
-  mapToBreakTheMonolithPromptOutput(
-    promptResult: string
-  ): BreakTheMonolithPromptOutput {
+  mapToBreakTheMonolithOutput(promptResult: string): BreakTheMonolithOutput {
     try {
       const result = JSON.parse(promptResult);
 
@@ -211,7 +208,7 @@ export class ResourceBtmService {
     }
   }
 
-  duplicatedEntities(entities: string[]): Set<string> {
+  findDuplicatedEntities(entities: string[]): Set<string> {
     return new Set(
       entities.filter((entity, index) => {
         return entities.indexOf(entity) !== index;

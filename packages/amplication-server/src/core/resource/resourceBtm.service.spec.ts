@@ -1,6 +1,6 @@
 import { Test } from "@nestjs/testing";
 import { ResourceBtmService } from "./resourceBtm.service";
-import { BreakTheMonolithPromptOutput } from "./resourceBtm.types";
+import { BreakTheMonolithOutput } from "./resourceBtm.types";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { ResourceDataForBtm } from "./resourceBtm.types";
 import { GptService } from "../gpt/gpt.service";
@@ -71,7 +71,7 @@ describe("ResourceBtmService", () => {
 
   describe("translateToBtmRecommendation", () => {
     it("should map the prompt result to a btm recommendation", async () => {
-      const promptResult: BreakTheMonolithPromptOutput = {
+      const promptResult: BreakTheMonolithOutput = {
         microservices: [
           {
             name: "product",
@@ -252,7 +252,7 @@ describe("ResourceBtmService", () => {
     });
 
     it("should filter out entities that are not in the original resource", async () => {
-      const promptResult: BreakTheMonolithPromptOutput = {
+      const promptResult: BreakTheMonolithOutput = {
         microservices: [
           {
             name: "product",
@@ -433,7 +433,7 @@ describe("ResourceBtmService", () => {
     });
 
     it("should add entities that are duplicated in the prompt result only to new resource with more dataModels", async () => {
-      const promptResult: BreakTheMonolithPromptOutput = {
+      const promptResult: BreakTheMonolithOutput = {
         microservices: [
           {
             name: "product",
@@ -569,15 +569,15 @@ describe("ResourceBtmService", () => {
     });
   });
 
-  describe("duplicatedEntities", () => {
+  describe("findDuplicatedEntities", () => {
     it("should return an empty array if there are no duplicated entities", () => {
-      const result = service.duplicatedEntities(["a", "b", "c"]);
+      const result = service.findDuplicatedEntities(["a", "b", "c"]);
 
       expect(result).toStrictEqual(new Set([]));
     });
 
     it("should return the duplicated entities", () => {
-      const result = service.duplicatedEntities(["a", "b", "c", "a", "b"]);
+      const result = service.findDuplicatedEntities(["a", "b", "c", "a", "b"]);
 
       expect(result).toStrictEqual(new Set(["a", "b"]));
     });
@@ -819,8 +819,8 @@ describe("ResourceBtmService", () => {
   });
 
   describe("parsePromptResult", () => {
-    it("should return a validated BreakTheMonolithPromptOutput", () => {
-      const result = service.mapToBreakTheMonolithPromptOutput(
+    it("should return a validated BreakTheMonolithOutput", () => {
+      const result = service.mapToBreakTheMonolithOutput(
         '{"microservices":[{"name":"ecommerce","functionality":"manage orders, prices and payments","dataModels":["order","customer","item","address"]},{"name":"inventory","functionality":"manage inventory","dataModels":["item","address"]}]}'
       );
       expect(result).toStrictEqual({
@@ -843,7 +843,7 @@ describe("ResourceBtmService", () => {
       "should throw an error if the prompt result is not valid",
       (result: string) => {
         expect(() =>
-          service.mapToBreakTheMonolithPromptOutput(result)
+          service.mapToBreakTheMonolithOutput(result)
         ).toThrowError();
       }
     );
