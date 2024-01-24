@@ -8,7 +8,6 @@ import {
   Icon,
   Text,
 } from "@amplication/ui/design-system";
-import "./ModelGroupList.scss";
 import { useCallback, useState } from "react";
 import NewTempResource from "./NewTempResource";
 import { Resource } from "../../models";

@@ -8,7 +8,7 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { Node, ResourceNode } from "./types";
-import "./ModelGroupList.scss";
+import "./ModelsGroupList.scss";
 import { Resource } from "../../models";
 import ModelsTool from "./ModelsTool";
 
@@ -57,6 +57,7 @@ export default function ModelsGroupsList({
 
           {modelGroups.map((model: ResourceNode) => (
             <div
+              key={model.id}
               className={`${CLASS_NAME}__serviceBox`}
               style={{ borderColor: model.data.groupColor }}
             >
