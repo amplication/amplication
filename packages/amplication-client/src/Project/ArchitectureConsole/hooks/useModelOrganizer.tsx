@@ -6,7 +6,7 @@ import {
   CREATE_RESOURCE_ENTITIES,
   GET_RESOURCES,
 } from "../queries/modelsQueries";
-import { ModelChanges, Node, ResourceNode } from "../types";
+import { EntityNode, ModelChanges, Node, ResourceNode } from "../types";
 import { entitiesToNodesAndEdges, tempResourceToNode } from "../helpers";
 import { Edge, useEdgesState } from "reactflow";
 import { applyAutoLayout } from "../layout";
@@ -30,28 +30,35 @@ type modelChangesData = {
 };
 
 const LOCAL_NODES_STORAGE_KEY = "ModelOrganizerNodesData";
+const LOCAL_EDGES_STATE_STORAGE_KEY = "ModelOrganizerEdgesState";
 const LOCAL_DETAILED_EDGES_STORAGE_KEY = "ModelOrganizerDetailedEdgesData";
 const LOCAL_SIMPLE_EDGES_STORAGE_KEY = "ModelOrganizerSimpleEdgesData";
+const LOCAL_RESOURCE_STORAGE_KEY = "ModelOrganizerResourceData";
 
 const useModelOrganization = () => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const history = useHistory();
-  // const [modelGroups, setModelGroups] = useState<ResourceNode[]>([]);
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
   const [currentResourcesData, setCurrentResourcesData] = useState<
     models.Resource[]
   >([]);
   const [selectedNode, setSelectedNode] = useState<ResourceNode>(null);
-  const [selectedResource, setSelectedResource] =
-    useState<models.Resource>(null);
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  const [currentShowRelationDetails, setCurrentShowRelationDetails] =
+    useLocalStorage(LOCAL_EDGES_STATE_STORAGE_KEY, "false");
 
   const [showRelationDetails, setShowRelationDetails] = useState(false);
 
   const [currentTheme, setCurrentTheme] = useLocalStorage(
     LOCAL_NODES_STORAGE_KEY,
+    ""
+  );
+
+  const [selectedResource, setSelectedResource] = useLocalStorage(
+    LOCAL_RESOURCE_STORAGE_KEY,
     ""
   );
 
@@ -78,6 +85,10 @@ const useModelOrganization = () => {
       setChanges(data);
     }
   }, [currentChangesStorageData, setChanges]);
+
+  useEffect(() => {
+    setShowRelationDetails(JSON.parse(currentShowRelationDetails));
+  }, [currentShowRelationDetails, setShowRelationDetails]);
 
   const [
     loadProjectResourcesInternal,
@@ -145,7 +156,7 @@ const useModelOrganization = () => {
       ? (JSON.parse(currentDetailedStorageEdges) as Edge[])
       : (JSON.parse(currentSimpleStorageEdges) as Edge[]);
 
-    setShowRelationDetails(currentShowRelationDetails);
+    setCurrentShowRelationDetails(JSON.stringify(currentShowRelationDetails));
 
     setEdges(currentEdges);
 
@@ -161,7 +172,7 @@ const useModelOrganization = () => {
     nodes,
     currentSimpleStorageEdges,
     setEdges,
-    setShowRelationDetails,
+    setCurrentShowRelationDetails,
     setCurrentTheme,
   ]);
 
@@ -356,25 +367,6 @@ const useModelOrganization = () => {
     changes,
   ]);
 
-  const updateNodesLayout = useCallback(async () => {
-    const edges: Edge[] =
-      currentSimpleStorageEdges !== "" && JSON.parse(currentSimpleStorageEdges);
-    const nodesResults = await applyAutoLayout(
-      JSON.parse(currentTheme),
-      edges,
-      showRelationDetails
-    );
-
-    setNodes(nodesResults);
-    setEdges(JSON.parse(currentSimpleStorageEdges));
-  }, [
-    currentTheme,
-    currentSimpleStorageEdges,
-    showRelationDetails,
-    setNodes,
-    setEdges,
-  ]);
-
   const searchPhraseChanged = useCallback(
     (searchPhrase: string) => {
       if (searchPhrase === "") {
@@ -391,7 +383,7 @@ const useModelOrganization = () => {
         searchModelGroupNodes.forEach((x) => {
           x.hidden = true;
           const childrenNodes = nodes.filter(
-            (node) => node.data.originalParentNode === x.id
+            (node: EntityNode) => node.parentNode === x.id
           );
 
           childrenNodes.forEach((x) => (x.hidden = true));
@@ -475,7 +467,7 @@ const useModelOrganization = () => {
 
   const setDraggableNodes = useCallback(
     (resource: models.Resource) => {
-      setSelectedResource(resource);
+      setSelectedResource(JSON.stringify(resource));
       setNodes((nodes) => {
         nodes.forEach((node) => {
           if (node.data.originalParentNode === resource.id) {
@@ -578,8 +570,23 @@ const useModelOrganization = () => {
 
   useEffect(() => {
     if (currentTheme === "" || !currentTheme) return;
-    updateNodesLayout();
-  }, [currentTheme]);
+
+    setNodes(JSON.parse(currentTheme));
+    if (currentSimpleStorageEdges === "" || !currentSimpleStorageEdges) return;
+
+    if (showRelationDetails) {
+      setEdges(JSON.parse(currentDetailedStorageEdges));
+    } else {
+      setEdges(JSON.parse(currentSimpleStorageEdges));
+    }
+  }, [
+    setEdges,
+    setEdges,
+    currentTheme,
+    currentSimpleStorageEdges,
+    currentDetailedStorageEdges,
+    showRelationDetails,
+  ]);
 
   const [
     createResourceEntities,
@@ -626,7 +633,6 @@ const useModelOrganization = () => {
     resourcesData,
     loadingResources,
     resourcesError,
-    selectedResource,
     loadingCreateResourceAndEntities,
     setSearchPhrase,
     toggleShowRelationDetails,

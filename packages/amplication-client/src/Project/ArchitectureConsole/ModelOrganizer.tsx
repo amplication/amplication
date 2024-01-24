@@ -75,7 +75,6 @@ export default function ModelOrganizer({
     searchPhraseChanged,
     setDraggableNodes,
     selectedNode,
-    selectedResource,
     setSelectedNode,
     mergeNewResourcesChanges,
   } = useModelOrganization();
@@ -247,7 +246,6 @@ export default function ModelOrganizer({
             ></ModelsGroupsList>
             <div className={`${CLASS_NAME}__body`}>
               <ModelOrganizerToolbar
-                selectedResource={selectedResource}
                 changes={changes}
                 readOnly={readOnly}
                 hasChanges={
