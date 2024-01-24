@@ -75,7 +75,6 @@ export default function ModelOrganizer({
     searchPhraseChanged,
     setDraggableNodes,
     selectedNode,
-    setSelectedNode,
     mergeNewResourcesChanges,
   } = useModelOrganization();
 
@@ -104,16 +103,14 @@ export default function ModelOrganizer({
 
   const onCancelChangesClick = useCallback(() => {
     resetToOriginalState();
-    setSelectedNode(null);
 
     setReadOnly(true);
-  }, [setReadOnly, setSelectedNode]);
+  }, [resetToOriginalState]);
 
   const onApplyPlanClick = useCallback(() => {
     saveChanges();
     setReadOnly(true);
-    setSelectedNode(null);
-  }, [saveChanges, setSelectedNode, setReadOnly]);
+  }, [saveChanges, setReadOnly]);
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
@@ -127,7 +124,7 @@ export default function ModelOrganizer({
     (newResource: models.Resource) => {
       createNewTempService(newResource);
     },
-    [nodes, setNodes]
+    [createNewTempService]
   );
 
   const onNodeDrag = useCallback(
@@ -145,6 +142,7 @@ export default function ModelOrganizer({
         });
         targetGroup = findGroupByPosition(nodes, dropPosition);
         if (targetGroup?.id !== draggedNode.parentNode) {
+          console.log("settings drop target");
           setCurrentDropTarget(targetGroup);
         } else {
           setCurrentDropTarget(null);
@@ -189,32 +187,35 @@ export default function ModelOrganizer({
           y: dropPosition.y - currentDropTarget.position.y,
         };
 
+        currentDropTarget.data.isCurrentDropTarget = false;
         moveNodeToParent(node, currentDropTarget);
       }
       if (currentDropTarget) {
+        console.log("clearing drop target");
         currentDropTarget.data.isCurrentDropTarget = false;
       }
       setCurrentDropTarget(null);
+      setNodes([...nodes]);
     },
-    [setNodes, edges, nodes, reactFlowInstance, showRelationDetails, changes]
+    [nodes, currentDropTarget, setNodes, reactFlowInstance, moveNodeToParent]
   );
 
   const onToggleShowRelationDetails = useCallback(async () => {
     await toggleShowRelationDetails();
 
     reactFlowInstance.fitView();
-  }, [setNodes, reactFlowInstance, showRelationDetails, nodes, edges]);
+  }, [toggleShowRelationDetails, reactFlowInstance]);
 
   const onToggleZoomInRelationDetails = useCallback(async () => {
     await reactFlowInstance.zoomIn();
 
     setZoom((reactFlowInstance.getZoom() * 100).toFixed());
-  }, [setNodes, setZoom, reactFlowInstance]);
+  }, [setZoom, reactFlowInstance]);
 
   const onToggleZoomOutRelationDetails = useCallback(async () => {
     await reactFlowInstance.zoomOut();
     setZoom((reactFlowInstance.getZoom() * 100).toFixed());
-  }, [setNodes, setZoom, reactFlowInstance]);
+  }, [setZoom, reactFlowInstance]);
 
   const onArrangeNodes = useCallback(async () => {
     const updatedNodes = await applyAutoLayout(

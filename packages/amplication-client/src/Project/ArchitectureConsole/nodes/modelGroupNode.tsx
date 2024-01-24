@@ -27,14 +27,19 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
   );
   const data = sourceNode?.data;
 
+  const style = !data.isEditable
+    ? { borderTopColor: data.groupColor }
+    : { borderColor: data.groupColor };
+
   return (
     data && (
       <div
         className={classNames(`${CLASS_NAME}`, {
           "drop-target": sourceNode.data.isCurrentDropTarget,
+          [`${CLASS_NAME}--editable`]: sourceNode.data.isEditable,
         })}
         tabIndex={0}
-        style={{ borderTopColor: data.groupColor }}
+        style={style}
         title={data.payload.description}
       >
         <FlexItem

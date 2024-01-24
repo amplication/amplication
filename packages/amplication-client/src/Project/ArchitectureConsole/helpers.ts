@@ -13,11 +13,11 @@ import * as models from "../../models";
 import { applyAutoLayout } from "./layout";
 
 const resourceColorMapping: { [key: number]: string } = {
-  0: "#FF6f00",
+  0: "#31C587",
   1: "#A787FF",
   2: "#F85B6E",
   3: "#20A4F3",
-  4: "#31C587",
+  4: "#f685a1",
   5: "#F6AA50",
   6: "#FF5118",
   7: "#FF5a00",
@@ -126,6 +126,7 @@ function entitiesToNodes(
       payload: resource,
       groupOrder: index,
       groupColor: resourceColorMapping[index],
+      isEditable: false,
     },
     id: resource.id,
     tempId: resource.tempId,
@@ -162,6 +163,7 @@ export function tempResourceToNode(
       payload: resource,
       groupOrder: index,
       groupColor: resourceColorMapping[index],
+      isEditable: false,
     },
     id: resource.id,
     type: NODE_TYPE_MODEL_GROUP,

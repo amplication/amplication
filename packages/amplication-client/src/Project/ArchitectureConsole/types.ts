@@ -28,6 +28,7 @@ export type EntityNode = NodeWithType<NodePayload<models.Entity>> & {
 export type ResourceNodePayload = NodePayload<models.Resource> & {
   groupOrder: number;
   groupColor: string;
+  isEditable: boolean;
 };
 
 export type ResourceNode = NodeWithType<ResourceNodePayload> & {
