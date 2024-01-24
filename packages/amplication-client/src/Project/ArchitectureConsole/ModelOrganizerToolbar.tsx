@@ -10,12 +10,7 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
-  Icon,
   SearchField,
-  SelectMenu,
-  SelectMenuItem,
-  SelectMenuList,
-  SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
 import { Button } from "../../Components/Button";
