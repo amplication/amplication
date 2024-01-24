@@ -1,6 +1,6 @@
 import {
-  AiConversationComplete,
-  AiConversationStart,
+  GptConversationComplete,
+  GptConversationStart,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
@@ -31,7 +31,7 @@ export class GptService {
 
   async startConversation(
     conversationTypeKey: ConversationTypeKey,
-    params: AiConversationStart.KafkaEvent["value"]["params"],
+    params: GptConversationStart.KafkaEvent["value"]["params"],
     userId: string,
     resourceId?: string
   ): Promise<UserAction> {
@@ -44,7 +44,7 @@ export class GptService {
         resourceId
       );
 
-    const kafkaMessage: AiConversationStart.KafkaEvent = {
+    const kafkaMessage: GptConversationStart.KafkaEvent = {
       key: { requestUniqueId: userAction.id },
       value: {
         requestUniqueId: userAction.id,
@@ -65,7 +65,7 @@ export class GptService {
     requestUniqueId,
     errorMessage,
     result,
-  }: AiConversationComplete.Value): Promise<void> {
+  }: GptConversationComplete.Value): Promise<void> {
     const userActionStatus = success
       ? EnumActionStepStatus.Success
       : EnumActionStepStatus.Failed;

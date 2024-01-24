@@ -1,6 +1,6 @@
 import { GptService } from "./gpt.service";
 import {
-  AiConversationComplete,
+  GptConversationComplete,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -16,7 +16,7 @@ export class GptController {
 
   @EventPattern(KAFKA_TOPICS.AI_CONVERSATION_COMPLETED_TOPIC)
   async onAiConversationCompleted(
-    @Payload() message: AiConversationComplete.Value
+    @Payload() message: GptConversationComplete.Value
   ): Promise<void> {
     this.logger.debug(
       `RECEIVED: onConversationCompleted ${message.requestUniqueId} `,

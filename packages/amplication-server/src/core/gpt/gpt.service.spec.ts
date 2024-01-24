@@ -5,7 +5,7 @@ import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { UserActionService } from "../userAction/userAction.service";
 import { UserAction } from "../userAction/dto";
 import {
-  AiConversationStart,
+  GptConversationStart,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { EnumUserActionType } from "../userAction/types";
@@ -27,7 +27,7 @@ const mockUserAction = {
 const mockServiceEmitMessage = jest
   .fn()
   .mockImplementation(
-    (topic: string, message: AiConversationStart.KafkaEvent) =>
+    (topic: string, message: GptConversationStart.KafkaEvent) =>
       Promise.resolve()
   );
 
@@ -113,7 +113,7 @@ describe("GptService", () => {
                 value: "prompt",
               },
             ],
-          } as AiConversationStart.Value,
+          } as GptConversationStart.Value,
         }
       );
       expect(result).toEqual(mockUserAction);
