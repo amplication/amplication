@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { UserActionResolver } from "./userAction.resolver";
 import { UserActionService } from "./userAction.service";
 import { PrismaModule } from "../../prisma";
@@ -12,7 +12,7 @@ import { UserModule } from "../user/user.module";
     PrismaModule,
     PermissionsModule,
     ActionModule,
-    ResourceModule,
+    forwardRef(() => ResourceModule),
     UserModule,
   ],
   providers: [UserActionResolver, UserActionService],

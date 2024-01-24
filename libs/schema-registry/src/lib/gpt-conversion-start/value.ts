@@ -10,9 +10,6 @@ class MessageParam {
 
 export class Value {
   @IsString()
-  actionId!: string;
-
-  @IsString()
   requestUniqueId!: string;
 
   @IsString()

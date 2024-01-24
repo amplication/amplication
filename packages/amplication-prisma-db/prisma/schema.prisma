@@ -144,31 +144,30 @@ model ApiToken {
 }
 
 model Resource {
-  id                        String                       @id @default(cuid())
-  createdAt                 DateTime                     @default(now())
-  updatedAt                 DateTime                     @updatedAt
-  name                      String
-  description               String
-  gitRepositoryOverride     Boolean                      @default(false)
-  githubLastSync            DateTime?
-  githubLastMessage         String?
-  deletedAt                 DateTime?
-  archived                  Boolean                      @default(false)
-  gitRepositoryId           String?
-  roles                     ResourceRole[]
-  blocks                    Block[]
-  builds                    Build[]
-  userAction                UserAction[]
-  entities                  Entity[]
-  environments              Environment[]
-  gitRepository             GitRepository?               @relation(fields: [gitRepositoryId], references: [id], onDelete: NoAction)
-  projectId                 String
-  project                   Project                      @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: Cascade)
-  resourceType              EnumResourceType
-  codeGeneratorVersion      String?
-  codeGeneratorStrategy     CodeGeneratorVersionStrategy @default(LatestMajor)
-  licensed                  Boolean                      @default(true)
-  btmResourceRecommendation BtmResourceRecommendation[]
+  id                    String                       @id @default(cuid())
+  createdAt             DateTime                     @default(now())
+  updatedAt             DateTime                     @updatedAt
+  name                  String
+  description           String
+  gitRepositoryOverride Boolean                      @default(false)
+  githubLastSync        DateTime?
+  githubLastMessage     String?
+  deletedAt             DateTime?
+  archived              Boolean                      @default(false)
+  gitRepositoryId       String?
+  roles                 ResourceRole[]
+  blocks                Block[]
+  builds                Build[]
+  userAction            UserAction[]
+  entities              Entity[]
+  environments          Environment[]
+  gitRepository         GitRepository?               @relation(fields: [gitRepositoryId], references: [id], onDelete: NoAction)
+  projectId             String
+  project               Project                      @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  resourceType          EnumResourceType
+  codeGeneratorVersion  String?
+  codeGeneratorStrategy CodeGeneratorVersionStrategy @default(LatestMajor)
+  licensed              Boolean                      @default(true)
 
   @@unique([projectId, name], map: "Resource.projectId_name_unique")
 }
@@ -188,29 +187,6 @@ model ResourceRole {
   @@unique([resourceId, name], map: "ResourceRole.resourceId_name_unique")
 }
 
-model BtmResourceRecommendation {
-  id                      String                    @id @default(cuid())
-  createdAt               DateTime                  @default(now())
-  updatedAt               DateTime                  @updatedAt
-  name                    String
-  description             String
-  resourceId              String
-  resource                Resource                  @relation(fields: [resourceId], references: [id])
-  btmEntityRecommendation BtmEntityRecommendation[]
-}
-
-model BtmEntityRecommendation {
-  id                          String                    @id @default(cuid())
-  createdAt                   DateTime                  @default(now())
-  updatedAt                   DateTime                  @updatedAt
-  name                        String
-  fields                      String[]
-  originalEntityId            String                    @unique()
-  entity                      Entity                    @relation(fields: [originalEntityId], references: [id])
-  btmResourceRecommendationId String
-  btmResourceRecommendation   BtmResourceRecommendation @relation(fields: [btmResourceRecommendationId], references: [id], onDelete: Cascade)
-}
-
 model Commit {
   id             String          @id @default(cuid())
   createdAt      DateTime        @default(now())
@@ -226,22 +202,21 @@ model Commit {
 }
 
 model Entity {
-  id                      String                   @id @default(cuid())
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime                 @updatedAt
-  resourceId              String
-  name                    String
-  displayName             String
-  pluralDisplayName       String
-  description             String?
-  customAttributes        String?
-  lockedByUserId          String?
-  lockedAt                DateTime?
-  deletedAt               DateTime?
-  resource                Resource                 @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-  lockedByUser            User?                    @relation(fields: [lockedByUserId], references: [id])
-  versions                EntityVersion[]
-  BtmEntityRecommendation BtmEntityRecommendation?
+  id                String          @id @default(cuid())
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  resourceId        String
+  name              String
+  displayName       String
+  pluralDisplayName String
+  description       String?
+  customAttributes  String?
+  lockedByUserId    String?
+  lockedAt          DateTime?
+  deletedAt         DateTime?
+  resource          Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  lockedByUser      User?           @relation(fields: [lockedByUserId], references: [id])
+  versions          EntityVersion[]
 
   @@unique([resourceId, displayName], map: "Entity.resourceId_displayName_unique")
   @@unique([resourceId, name], map: "Entity.resourceId_name_unique")
@@ -629,7 +604,7 @@ enum EnumGitOrganizationType {
 
 enum EnumUserActionType {
   DBSchemaImport
-  BreakTheMonolith
+  GptConversation
 }
 
 enum CodeGeneratorVersionStrategy {

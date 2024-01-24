@@ -35,7 +35,6 @@ export class ConversationTypeResolver extends ConversationTypeResolverBase {
     const conversation = await this.service.startConversionSync(args);
     return {
       success: conversation.success,
-      actionId: args.actionId,
       requestUniqueId: conversation.requestUniqueId,
       result: conversation.result ? conversation.result : null,
       errorMessage: conversation.result ? null : conversation.result,
