@@ -1,4 +1,3 @@
-import * as models from "../../models";
 import "./ModelOrganizerConfirmation.scss";
 import { Button, EnumButtonStyle } from "../../Components/Button";
 import {
@@ -14,48 +13,19 @@ import graphql from "../../assets/images/graphql.svg";
 import swagger from "../../assets/images/swagger.svg";
 import { PLUGIN_LOGO_BASE_URL } from "../../Resource/create-resource/CreateServiceWizard";
 import ImgSvg from "../../Resource/create-resource/wizard-pages/ImgSvg";
-import { useContext, useMemo } from "react";
-import { AppContext } from "../../context/appContext";
-import { getGitRepositoryDetails } from "../../util/git-repository-details";
 export const CLASS_NAME = "model-organizer-confirmation";
 
 type Props = {
   onConfirmChanges: () => void;
   onCancelChanges: () => void;
   changes: ModelChanges;
-  selectedResource: models.Resource;
 };
 
 export default function ModelOrganizerConfirmation({
   onConfirmChanges,
   onCancelChanges,
-  selectedResource,
   changes,
 }: Props) {
-  const { currentProject } = useContext(AppContext);
-
-  const gitRepository = useMemo(() => {
-    if (!selectedResource || !currentProject) return;
-    const currentResource = currentProject.resources?.find(
-      (r) => r.id === selectedResource.id
-    );
-
-    return {
-      repository: currentResource.gitRepository,
-      gitRepositoryOverride: currentResource.gitRepositoryOverride,
-    };
-  }, [currentProject]);
-
-  const gitRepositoryUrl = useMemo(() => {
-    if (!gitRepository || !currentProject) return;
-
-    return getGitRepositoryDetails({
-      organization: gitRepository?.repository?.gitOrganization,
-      repositoryName: gitRepository?.repository?.name,
-      groupName: gitRepository?.repository?.groupName,
-    }).repositoryUrl;
-  }, [currentProject, gitRepository]);
-
   const PostgresPng = ImgSvg({
     image: `${PLUGIN_LOGO_BASE_URL}db-postgres.png`,
     imgSize: "large",
@@ -113,19 +83,6 @@ export default function ModelOrganizerConfirmation({
         </>
       )}
       <Text textWeight={EnumTextWeight.Bold}>{"The services properties"}</Text>
-      <div className={`${CLASS_NAME}__gitRepository`}>
-        <div className={`${CLASS_NAME}__gitRepositoryName`}>
-          <span>{`${gitRepository?.repository?.gitOrganization?.name}/${gitRepository?.repository?.name}`}</span>
-          <span style={{ fontSize: "10px", color: "#A3A8B8" }}>
-            {gitRepositoryUrl}
-          </span>
-        </div>
-        <Toggle
-          label={"override settings"}
-          checked={gitRepository?.gitRepositoryOverride}
-          disabled
-        ></Toggle>
-      </div>
       <Text textWeight={EnumTextWeight.Bold}>
         {"Select APIs & Admin UI Options"}
       </Text>

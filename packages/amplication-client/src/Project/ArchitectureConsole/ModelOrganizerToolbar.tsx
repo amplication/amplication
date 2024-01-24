@@ -36,7 +36,6 @@ export const CLASS_NAME = "model-organizer-toolbar";
 type Props = {
   readOnly: boolean;
   hasChanges: boolean;
-  selectedResource: models.Resource;
   changes: ModelChanges;
   onApplyPlan: () => void;
   searchPhraseChanged: (searchPhrase: string) => void;
@@ -46,7 +45,6 @@ type Props = {
 
 export default function ModelOrganizerToolbar({
   readOnly,
-  selectedResource,
   changes,
   hasChanges,
   resources,
@@ -93,7 +91,6 @@ export default function ModelOrganizerToolbar({
           onConfirmChanges={onApplyPlan}
           onCancelChanges={handleConfirmChangesState}
           changes={changes}
-          selectedResource={selectedResource}
         ></ModelOrganizerConfirmation>
       </Dialog>
 
