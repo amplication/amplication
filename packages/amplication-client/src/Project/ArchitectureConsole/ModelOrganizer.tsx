@@ -1,5 +1,9 @@
 import {
+  Button,
   CircularProgress,
+  Dialog,
+  EnumFlexDirection,
+  FlexItem,
   Icon,
   Snackbar,
 } from "@amplication/ui/design-system";
@@ -33,6 +37,7 @@ import {
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
+import { EnumItemsAlign } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 
 export const CLASS_NAME = "model-organizer";
 
@@ -88,6 +93,8 @@ export default function ModelOrganizer({
   const [readOnly, setReadOnly] = useState<boolean>(true);
   const [zoom, setZoom] = useState<string>(null);
 
+  const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
+
   const onNodesChange = useCallback(
     (changes) => {
       const updatedNodes = applyNodeChanges<NodePayloadWithPayloadType>(
@@ -98,6 +105,10 @@ export default function ModelOrganizer({
     },
     [nodes, setNodes]
   );
+
+  const handleCreateResourceState = useCallback(() => {
+    setIsValidResourceName(true);
+  }, [setIsValidResourceName]);
 
   useEffect(() => {
     if (
@@ -138,9 +149,22 @@ export default function ModelOrganizer({
 
   const handleServiceCreated = useCallback(
     (newResource: models.Resource) => {
-      createNewTempService(newResource);
+      let isValidName = true;
+      currentResourcesData.forEach((r) => {
+        if (
+          r.name.trim().toLowerCase() === newResource.name.trim().toLowerCase()
+        ) {
+          isValidName = false;
+          setIsValidResourceName(false);
+          return;
+        }
+      });
+      if (isValidName) {
+        setIsValidResourceName(true);
+        createNewTempService(newResource);
+      }
     },
-    [createNewTempService]
+    [createNewTempService, setIsValidResourceName, currentResourcesData]
   );
 
   const onNodeDrag = useCallback(
@@ -207,7 +231,6 @@ export default function ModelOrganizer({
         moveNodeToParent(node, currentDropTarget);
       }
       if (currentDropTarget) {
-        console.log("clearing drop target");
         currentDropTarget.data.isCurrentDropTarget = false;
       }
       setCurrentDropTarget(null);
@@ -274,7 +297,23 @@ export default function ModelOrganizer({
                 onCancelChanges={onCancelChangesClick}
                 mergeNewResourcesChanges={mergeNewResourcesChanges}
               />
-
+              <Dialog
+                isOpen={!isValidResourceName}
+                onDismiss={handleCreateResourceState}
+              >
+                <FlexItem
+                  direction={EnumFlexDirection.Column}
+                  itemsAlign={EnumItemsAlign.Center}
+                >
+                  <span>Error:</span>
+                  <span>
+                    resource creation is failed: resource name is already exist
+                  </span>
+                  <Button onClick={handleCreateResourceState}>
+                    I understand
+                  </Button>
+                </FlexItem>
+              </Dialog>
               <div className={"reactflow-wrapper"}>
                 <ReactFlow
                   onInit={onInit}
