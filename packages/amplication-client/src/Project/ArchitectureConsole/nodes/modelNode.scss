@@ -16,6 +16,20 @@
     }
   }
 
+  &--selected {
+    background-color: var(--gray-90);
+  }
+
+  &--draggable {
+    border-color: var(--theme-turquoise);
+
+    .model-node__header {
+      .amp-text {
+        color: var(--gray-base) !important;
+      }
+    }
+  }
+
   &.model-with-pending-changes {
     border-color: var(--theme-turquoise);
   }
@@ -23,6 +37,9 @@
   &__header {
     border-bottom: $border-dark;
     padding-bottom: var(--default-spacing);
+    .amp-text {
+      color: var(--gray-20) !important;
+    }
   }
 
   &__column_container {

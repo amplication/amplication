@@ -28,11 +28,17 @@ const ModelNodeBase: FC<Props> = memo(
 
     return (
       <div
-        className={classNames(`${CLASS_NAME}`, className, {
-          "model-with-pending-changes":
-            data.originalParentNode &&
-            data.originalParentNode !== sourceNode.parentNode,
-        })}
+        className={classNames(
+          `${CLASS_NAME}`,
+          className,
+          {
+            "model-with-pending-changes":
+              data.originalParentNode &&
+              data.originalParentNode !== sourceNode.parentNode,
+          },
+          { [`${CLASS_NAME}--draggable`]: sourceNode.draggable },
+          { [`${CLASS_NAME}--selected`]: sourceNode.selected }
+        )}
         tabIndex={0}
         title={data.payload.description}
       >

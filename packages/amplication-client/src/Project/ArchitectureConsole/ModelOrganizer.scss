@@ -105,12 +105,6 @@ $addon-title-line-height: 36px;
     color: var(--gray-20);
   }
 
-  .react-flow__node.selected {
-    div {
-      border-color: var(--gray-base) !important;
-    }
-  }
-
   .react-flow__attribution {
     font-size: calc(var(--normal-font-size) - 2px);
     background: var(--gray-90) !important;
