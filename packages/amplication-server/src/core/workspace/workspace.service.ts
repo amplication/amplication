@@ -639,7 +639,9 @@ export class WorkspaceService {
     return myArray;
   }
 
-  async dataMigrateWorkspacesResourcesCustomActions(): Promise<boolean> {
+  async dataMigrateWorkspacesResourcesCustomActions(
+    quantity: number
+  ): Promise<boolean> {
     const workspaces = await this.prisma.workspace.findMany({
       where: {
         projects: {
@@ -657,7 +659,7 @@ export class WorkspaceService {
           },
         },
       },
-      take: 1000,
+      take: quantity,
       include: {
         users: {
           orderBy: {
@@ -702,7 +704,9 @@ export class WorkspaceService {
     return true;
   }
 
-  async dataMigrateWorkspacesResourcesCustomActionsFix(): Promise<boolean> {
+  async dataMigrateWorkspacesResourcesCustomActionsFix(
+    quantity: number
+  ): Promise<boolean> {
     const workspaces = await this.prisma.workspace.findMany({
       where: {
         projects: {
@@ -720,7 +724,7 @@ export class WorkspaceService {
           },
         },
       },
-      take: 1000,
+      take: quantity,
       include: {
         users: {
           orderBy: {
