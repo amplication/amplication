@@ -163,7 +163,7 @@ export default function ModelOrganizerToolbar({
 
         <FlexEnd>
           <FlexItem>
-            <FeatureIndicatorContainer
+            {/* <FeatureIndicatorContainer //todo: return in phase 2
               featureId={BillingFeature.RedesignArchitecture}
               entitlementType={EntitlementType.Boolean}
               limitationText="Available as part of the Enterprise plan only."
@@ -171,13 +171,13 @@ export default function ModelOrganizerToolbar({
               <Button
                 buttonStyle={EnumButtonStyle.Outline}
                 onClick={handleAiClicked}
-                // eventData={{
-                //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                // }}
+                eventData={{
+                  eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                }}
               >
                 AI Helper
               </Button>
-            </FeatureIndicatorContainer>
+            </FeatureIndicatorContainer> */}
 
             {!readOnly && (
               <>
