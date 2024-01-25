@@ -128,6 +128,9 @@ function entitiesToNodes(
       groupColor: resourceColorMapping[index],
       isEditable: false,
     },
+    selectable: false,
+    deletable: false,
+    draggable: false,
     id: resource.id,
     tempId: resource.tempId,
     type: NODE_TYPE_MODEL_GROUP,
@@ -143,6 +146,9 @@ function entitiesToNodes(
       data: { payload: entity, originalParentNode: entity.resourceId },
       id: entity.id,
       draggable: false,
+      selectable: false,
+      deletable: false,
+
       type: NODE_TYPE_MODEL,
       position: {
         x: 0,
@@ -166,6 +172,9 @@ export function tempResourceToNode(
       isEditable: false,
     },
     id: resource.id,
+    selectable: false,
+    deletable: false,
+    draggable: false,
     type: NODE_TYPE_MODEL_GROUP,
     dragHandle: ".group-drag-handle",
     position: {

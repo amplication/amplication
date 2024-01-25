@@ -11,6 +11,7 @@ import {
   Controls,
   ReactFlow,
   ReactFlowInstance,
+  applyNodeChanges,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import * as models from "../../models";
@@ -26,7 +27,12 @@ import { applyAutoLayout } from "./layout";
 import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
-import { NODE_TYPE_MODEL, NODE_TYPE_MODEL_GROUP, Node } from "./types";
+import {
+  NODE_TYPE_MODEL,
+  NODE_TYPE_MODEL_GROUP,
+  Node,
+  NodePayloadWithPayloadType,
+} from "./types";
 
 export const CLASS_NAME = "model-organizer";
 
@@ -74,7 +80,6 @@ export default function ModelOrganizer({
     modelGroupFilterChanged,
     searchPhraseChanged,
     setDraggableNodes,
-    selectedNode,
     mergeNewResourcesChanges,
   } = useModelOrganization();
 
@@ -82,6 +87,17 @@ export default function ModelOrganizer({
 
   const [readOnly, setReadOnly] = useState<boolean>(true);
   const [zoom, setZoom] = useState<string>(null);
+
+  const onNodesChange = useCallback(
+    (changes) => {
+      const updatedNodes = applyNodeChanges<NodePayloadWithPayloadType>(
+        changes,
+        nodes
+      );
+      setNodes(updatedNodes as Node[]);
+    },
+    [nodes, setNodes]
+  );
 
   useEffect(() => {
     if (
@@ -238,11 +254,8 @@ export default function ModelOrganizer({
         <>
           <div className={`${CLASS_NAME}__container`}>
             <ModelsGroupsList
-              modelGroups={nodes?.filter(
-                (model) => model.type === "modelGroup"
-              )}
+              nodes={nodes}
               handleModelGroupFilterChanged={modelGroupFilterChanged}
-              selectedNode={selectedNode}
             ></ModelsGroupsList>
             <div className={`${CLASS_NAME}__body`}>
               <ModelOrganizerToolbar
@@ -270,13 +283,14 @@ export default function ModelOrganizer({
                   fitView
                   nodeTypes={showRelationDetails ? nodeTypes : simpleNodeTypes}
                   edgeTypes={edgeTypes}
+                  onNodesChange={onNodesChange}
                   onNodeDrag={onNodeDrag}
                   onNodeDragStop={onNodeDragStop}
                   onEdgesChange={onEdgesChange}
                   connectionMode={ConnectionMode.Loose}
                   proOptions={{ hideAttribution: true }}
                   minZoom={0.1}
-                  nodesDraggable={!readOnly}
+                  panOnScroll
                 >
                   <Background color="grey" />
                   <Controls

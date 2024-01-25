@@ -42,7 +42,8 @@ const useModelOrganization = () => {
   const [currentResourcesData, setCurrentResourcesData] = useState<
     models.Resource[]
   >([]);
-  const [selectedNode, setSelectedNode] = useState<ResourceNode>(null);
+  const [currentEditableResourceNode, setCurrentEditableResourceNode] =
+    useState<ResourceNode>(null);
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -171,10 +172,10 @@ const useModelOrganization = () => {
       movedEntities: [],
       newServices: [],
     });
-    if (selectedNode) {
-      selectedNode.data.isEditable = false;
+    if (currentEditableResourceNode) {
+      currentEditableResourceNode.data.isEditable = false;
     }
-    setSelectedNode(null);
+    setCurrentEditableResourceNode(null);
     setCurrentTheme("");
     setCurrentDetailedStorageEdges("");
     setCurrentSimpleStorageEdges("");
@@ -184,7 +185,7 @@ const useModelOrganization = () => {
     setCurrentDetailedStorageEdges,
     setCurrentSimpleStorageEdges,
     setCurrentChangesStorageData,
-    selectedNode,
+    currentEditableResourceNode,
   ]);
 
   const mergeNewResourcesChanges = useCallback(() => {
@@ -374,7 +375,7 @@ const useModelOrganization = () => {
           (node) =>
             node.type === "modelGroup" &&
             !node.data.payload.name.includes(searchPhrase) &&
-            node.id !== selectedNode?.id
+            node.id !== currentEditableResourceNode?.id
         );
 
         searchModelGroupNodes.forEach((x) => {
@@ -396,7 +397,7 @@ const useModelOrganization = () => {
       setNodes((nodes) => [...nodes]);
       setEdges((edges) => [...edges]);
     },
-    [setEdges, nodes, edges, selectedNode?.id]
+    [setEdges, nodes, edges, currentEditableResourceNode?.id]
   );
 
   const modelGroupFilterChanged = useCallback(
@@ -468,18 +469,19 @@ const useModelOrganization = () => {
         nodes.forEach((node) => {
           if (node.data.originalParentNode === resource.id) {
             node.draggable = true;
+            node.selectable = true;
           }
           if (node.id === resource.id) {
             const selectedResourceNode: ResourceNode = node as ResourceNode;
             selectedResourceNode.data.isEditable = true;
-            setSelectedNode(selectedResourceNode);
+            setCurrentEditableResourceNode(selectedResourceNode);
           }
         });
 
         return [...nodes];
       });
     },
-    [setNodes, setSelectedNode]
+    [setNodes, setCurrentEditableResourceNode]
   );
 
   useEffect(() => {
@@ -626,7 +628,6 @@ const useModelOrganization = () => {
     nodes,
     currentResourcesData,
     setNodes,
-    selectedNode,
     edges,
     setEdges,
     onEdgesChange,
