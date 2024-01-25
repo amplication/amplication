@@ -16,10 +16,6 @@
     }
   }
 
-  &--selected {
-    background-color: var(--gray-90);
-  }
-
   &--draggable {
     border-color: var(--theme-turquoise);
 
@@ -28,6 +24,11 @@
         color: var(--gray-base) !important;
       }
     }
+  }
+
+  &--selected {
+    background-color: var(--gray-90);
+    border-color: var(--primary);
   }
 
   &.model-with-pending-changes {
