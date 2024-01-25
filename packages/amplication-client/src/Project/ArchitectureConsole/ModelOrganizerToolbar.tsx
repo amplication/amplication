@@ -84,7 +84,6 @@ export default function ModelOrganizerToolbar({
   return (
     <div className={CLASS_NAME}>
       <Dialog
-        style={{ marginTop: "10vh" }}
         isOpen={confirmChanges}
         onDismiss={handleConfirmChangesState}
         title="Confirm Architecture Changes"
