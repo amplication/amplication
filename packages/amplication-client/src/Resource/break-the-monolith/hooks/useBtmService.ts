@@ -1,18 +1,19 @@
-import { useMutation } from "@apollo/client";
-import { useQuery } from "@apollo/client";
-import { useEffect } from "react";
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { useCallback, useEffect, useState } from "react";
 import {
   FINALIZE_BREAK_SERVICE_INTO_MICROSERVICES,
   TRIGGER_BREAK_SERVICE_INTO_MICROSERVICES,
 } from "../queries";
-import { BreakServiceToMicroservicesResult } from "../../../models";
+import {
+  BreakServiceToMicroservicesResult,
+  EnumUserActionStatus,
+  UserAction,
+} from "../../../models";
 
-const POOLING_INTERVAL = 3000;
+const POLL_INTERVAL = 3000;
 
 type TTriggerBreakServiceIntoMicroservices = {
-  triggerBreakServiceIntoMicroservices: {
-    id: string;
-  };
+  triggerBreakServiceIntoMicroservices: UserAction;
 };
 
 type TBreakServiceToMicroservicesResult = {
@@ -21,56 +22,71 @@ type TBreakServiceToMicroservicesResult = {
 
 type BtmProps = {
   resourceId: string;
-  userActionId: string;
 };
 
-export const useBtmService = ({ userActionId, resourceId }: BtmProps) => {
-  const [
-    trigger,
-    // {
-    //   data: triggerBtmData,
-    //   loading: triggerBtmLoading,
-    //   error: triggerBtmError,
-    // },
-  ] = useMutation<TTriggerBreakServiceIntoMicroservices>(
-    TRIGGER_BREAK_SERVICE_INTO_MICROSERVICES
-  );
+export const useBtmService = ({ resourceId }: BtmProps) => {
+  const [userAction, setUserAction] = useState<UserAction | null>(null);
 
-  const {
-    data: btmResult,
-    loading: btmResultLoading,
-    error: btmResultError,
-    startPolling,
-    stopPolling,
-    refetch,
-  } = useQuery<TBreakServiceToMicroservicesResult>(
-    FINALIZE_BREAK_SERVICE_INTO_MICROSERVICES,
+  const [
+    triggerBreakServiceIntoMicroservices,
     {
-      variables: { userActionId },
-      notifyOnNetworkStatusChange: true,
-      skip: !userActionId,
+      loading: triggerBreakServiceIntoMicroservicesLoading,
+      error: triggerBreakServiceIntoMicroservicesError,
+    },
+  ] = useMutation<TTriggerBreakServiceIntoMicroservices>(
+    TRIGGER_BREAK_SERVICE_INTO_MICROSERVICES,
+    {
+      variables: { resourceId },
+      onCompleted: (data) => {
+        setUserAction(data.triggerBreakServiceIntoMicroservices);
+        finalizeBreakServiceIntoMicroservices({
+          variables: {
+            userActionId: data.triggerBreakServiceIntoMicroservices.id,
+          },
+        });
+      },
     }
   );
 
-  const triggerBreakTheMonolith = () => {
-    return trigger({ variables: { resourceId } });
-  };
+  const [
+    finalizeBreakServiceIntoMicroservices,
+    {
+      data: btmResult,
+      loading: btmLoading,
+      error: btmError,
+      startPolling,
+      stopPolling,
+    },
+  ] = useLazyQuery<TBreakServiceToMicroservicesResult>(
+    FINALIZE_BREAK_SERVICE_INTO_MICROSERVICES,
+    {
+      variables: { userActionId: userAction?.id },
+    }
+  );
+
+  const shouldReload = useCallback(
+    (btmResult: BreakServiceToMicroservicesResult) => {
+      return btmResult?.status === EnumUserActionStatus.Running;
+    },
+    []
+  );
 
   useEffect(() => {
-    refetch().catch(console.error);
-    startPolling(POOLING_INTERVAL);
-    return () => {
+    if (!btmResult) return;
+    if (!shouldReload(btmResult?.finalizeBreakServiceIntoMicroservices)) {
       stopPolling();
-    };
-  }, [btmResult, refetch, startPolling, stopPolling]);
+    } else {
+      startPolling(POLL_INTERVAL);
+    }
+  }, [btmResult, stopPolling, startPolling, shouldReload]);
+
+  useEffect(() => {
+    triggerBreakServiceIntoMicroservices().catch(console.error);
+  }, []);
 
   return {
-    triggerBreakTheMonolith,
-    // triggerBtmData,
-    // triggerBtmLoading,
-    // triggerBtmError,
-    btmResult,
-    btmResultLoading,
-    btmResultError,
+    btmResult: btmResult?.finalizeBreakServiceIntoMicroservices,
+    loading: triggerBreakServiceIntoMicroservicesLoading || btmLoading,
+    error: triggerBreakServiceIntoMicroservicesError || btmError,
   };
 };

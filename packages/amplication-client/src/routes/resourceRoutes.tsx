@@ -35,10 +35,7 @@ const resourceRoutes = [
   {
     path: "/:workspace/:project/:resource/breaking-the-monolith-recommendations",
     Component: lazy(
-      () =>
-        import(
-          "../Resource/break-the-monolith/BreakingTheMonolithRecommendationsPage"
-        )
+      () => import("../Resource/break-the-monolith/BreakTheMonolith")
     ),
     moduleName: "ChangesPage",
     moduleClass: "changes-page",
