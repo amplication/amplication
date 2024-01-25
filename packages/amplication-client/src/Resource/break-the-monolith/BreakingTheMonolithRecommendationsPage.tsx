@@ -1,22 +1,24 @@
-import React from "react";
-import { useFinalizeBreakServiceIntoMicroservices } from "./hooks/useFinalizeBreakServiceIntoMicroservices";
-import { useParams } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { useBtmService } from "./hooks/useBtmService";
+import { AppContext } from "../../context/appContext";
 
 const BreakingTheMonolithRecommendationsPage: React.FC = () => {
-  const { userActionId } = useParams<{ userActionId: string }>();
-  const {
-    data: breakTheMonolithResult,
-    loading,
-    error,
-  } = useFinalizeBreakServiceIntoMicroservices(userActionId);
+  const { currentResource } = useContext(AppContext);
+  const [userActionId, setUserActionId] = useState<string>(null);
+  const { triggerBreakTheMonolith, btmResult } = useBtmService({
+    userActionId,
+    resourceId: currentResource?.id,
+  });
 
-  if (
-    loading ||
-    !breakTheMonolithResult.finalizeBreakServiceIntoMicroservices.data
-  )
-    return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message} </p>;
-  console.log("breakTheMonolithResult", breakTheMonolithResult);
+  useEffect(() => {
+    triggerBreakTheMonolith()
+      .then((res) => {
+        setUserActionId(res.data.triggerBreakServiceIntoMicroservices.id);
+      })
+      .catch((err) => console.error(err));
+  }, [triggerBreakTheMonolith]);
+
+  console.log("btmResult", btmResult);
   return <>BreakingTheMonolithRecommendationsPage</>;
 };
 

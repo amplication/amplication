@@ -33,7 +33,7 @@ const resourceRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace/:project/:resource/breaking-the-monolith-recommendations/:userActionId",
+    path: "/:workspace/:project/:resource/breaking-the-monolith-recommendations",
     Component: lazy(
       () =>
         import(
