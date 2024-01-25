@@ -58,7 +58,7 @@ export class PluginService extends PluginServiceBase {
         throw pluginsList;
       }
 
-      const PluginsAndCategories = pluginsList.reduce(
+      const pluginsAndCategories = pluginsList.reduce(
         (pluginsDataObj: PluginsDataObj, plugin: PluginCreateInput) => {
           const pluginData = setPluginData(plugin);
 
@@ -100,21 +100,21 @@ export class PluginService extends PluginServiceBase {
       );
 
       const createdPlugins = await this.prisma.plugin.createMany({
-        data: PluginsAndCategories.pluginsData,
+        data: pluginsAndCategories.pluginsData,
         skipDuplicates: true,
       });
 
-      await this.prisma.$transaction(PluginsAndCategories.pluginUpdate);
+      await this.prisma.$transaction(pluginsAndCategories.pluginUpdate);
 
       this.logger.debug("createdPlugins", createdPlugins);
 
       const createdCategories = await this.prisma.category.createMany({
-        data: PluginsAndCategories.categories.data,
+        data: pluginsAndCategories.categories.data,
         skipDuplicates: true,
       });
 
       await this.prisma.$transaction(
-        PluginsAndCategories.categories.categoryUpdate
+        pluginsAndCategories.categories.categoryUpdate
       );
 
       this.logger.debug("createdCategories", createdCategories);
