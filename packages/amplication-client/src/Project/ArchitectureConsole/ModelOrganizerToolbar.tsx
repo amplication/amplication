@@ -1,6 +1,7 @@
 import "./ModelOrganizerToolbar.scss";
 
 import {
+  ConfirmationDialog,
   Dialog,
   EnumButtonStyle,
   EnumContentAlign,
@@ -27,6 +28,8 @@ import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
 
 export const CLASS_NAME = "model-organizer-toolbar";
+const CONFIRM_BUTTON = { label: "Delete" };
+const DISMISS_BUTTON = { label: "Dismiss" };
 
 type Props = {
   readOnly: boolean;
@@ -62,6 +65,8 @@ export default function ModelOrganizerToolbar({
     [searchPhraseChanged]
   );
   const [confirmChanges, setConfirmChanges] = useState<boolean>(false);
+  const [confirmDiscardChanges, setConfirmDiscardChanges] =
+    useState<boolean>(false);
 
   const handleConfirmChangesState = useCallback(() => {
     setConfirmChanges(!confirmChanges);
@@ -77,9 +82,18 @@ export default function ModelOrganizerToolbar({
     }
   }, [setChangesDialog, hasChanges]);
 
+  const handleDiscardChangesClicked = useCallback(() => {
+    setConfirmDiscardChanges(!confirmDiscardChanges);
+  }, [setConfirmDiscardChanges, confirmDiscardChanges]);
+
   const handleChangesDialogDismiss = useCallback(() => {
     setChangesDialog(false);
   }, [setChangesDialog]);
+
+  const handleConfirmDelete = useCallback(() => {
+    setConfirmDiscardChanges(!confirmDiscardChanges);
+    onCancelChanges();
+  }, [setConfirmDiscardChanges, confirmDiscardChanges]);
 
   return (
     <div className={CLASS_NAME}>
@@ -95,6 +109,20 @@ export default function ModelOrganizerToolbar({
           changes={changes}
         ></ModelOrganizerConfirmation>
       </Dialog>
+
+      <ConfirmationDialog
+        isOpen={confirmDiscardChanges}
+        title={`Discard changes ?`}
+        confirmButton={CONFIRM_BUTTON}
+        dismissButton={DISMISS_BUTTON}
+        message={
+          <span>
+            Are you sure you want to discard all the existing changes?
+          </span>
+        }
+        onConfirm={handleConfirmDelete}
+        onDismiss={handleDiscardChangesClicked}
+      />
 
       <Dialog isOpen={changesDialog} onDismiss={handleChangesDialogDismiss}>
         <div className={`${CLASS_NAME}__changesDialog`}>
@@ -156,7 +184,7 @@ export default function ModelOrganizerToolbar({
                 <div className={`${CLASS_NAME}__divider`}></div>
                 <ModelsTool
                   handleServiceCreated={handleServiceCreated}
-                  onCancelChanges={onCancelChanges}
+                  onCancelChanges={handleDiscardChangesClicked}
                   mergeNewResourcesChanges={mergeNewResourcesChanges}
                 ></ModelsTool>
                 <div className={`${CLASS_NAME}__divider`}></div>
