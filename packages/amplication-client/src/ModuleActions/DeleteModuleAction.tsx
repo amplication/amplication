@@ -48,7 +48,7 @@ export const DeleteModuleAction = ({ moduleAction }: Props) => {
     })
       .then((result) => {
         history.push(
-          `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/all`
+          `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules`
         );
       })
       .catch(console.error);

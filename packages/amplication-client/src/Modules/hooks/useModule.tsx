@@ -2,7 +2,7 @@ import { Reference, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useContext, useState } from "react";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
-import { DATE_CREATED_FIELD } from "../ModuleList";
+import { DATE_CREATED_FIELD } from "../ModuleNavigationList";
 import {
   CREATE_MODULE,
   DELETE_MODULE,

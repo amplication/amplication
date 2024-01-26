@@ -6,7 +6,6 @@ import {
   TextField,
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
-import { kebabCase } from "lodash";
 import { pascalCase } from "pascal-case";
 import { useCallback, useContext, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
