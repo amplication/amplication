@@ -38,6 +38,7 @@ import {
   NodePayloadWithPayloadType,
 } from "./types";
 import { EnumItemsAlign } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
+import ModelOrganizerControls from "./ModelOrganizerControls";
 
 export const CLASS_NAME = "model-organizer";
 
@@ -91,7 +92,6 @@ export default function ModelOrganizer({
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
 
   const [readOnly, setReadOnly] = useState<boolean>(true);
-  const [zoom, setZoom] = useState<string>(null);
 
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
 
@@ -245,27 +245,6 @@ export default function ModelOrganizer({
     reactFlowInstance.fitView();
   }, [toggleShowRelationDetails, reactFlowInstance]);
 
-  const onToggleZoomInRelationDetails = useCallback(async () => {
-    await reactFlowInstance.zoomIn();
-
-    setZoom((reactFlowInstance.getZoom() * 100).toFixed());
-  }, [setZoom, reactFlowInstance]);
-
-  const onToggleZoomOutRelationDetails = useCallback(async () => {
-    await reactFlowInstance.zoomOut();
-    setZoom((reactFlowInstance.getZoom() * 100).toFixed());
-  }, [setZoom, reactFlowInstance]);
-
-  const onArrangeNodes = useCallback(async () => {
-    const updatedNodes = await applyAutoLayout(
-      nodes,
-      edges,
-      showRelationDetails
-    );
-    setNodes(updatedNodes);
-    reactFlowInstance.fitView();
-  }, [setNodes, showRelationDetails, reactFlowInstance, nodes, edges]);
-
   if (loadingCreateResourceAndEntities)
     return <CircularProgress centerToParent />;
 
@@ -276,10 +255,16 @@ export default function ModelOrganizer({
       ) : (
         <>
           <div className={`${CLASS_NAME}__container`}>
-            <ModelsGroupsList
-              nodes={nodes}
-              handleModelGroupFilterChanged={modelGroupFilterChanged}
-            ></ModelsGroupsList>
+            <div className={`${CLASS_NAME}__side_toolbar`}>
+              <ModelsGroupsList
+                nodes={nodes}
+                handleModelGroupFilterChanged={modelGroupFilterChanged}
+              ></ModelsGroupsList>
+              <ModelOrganizerControls
+                onToggleShowRelationDetails={onToggleShowRelationDetails}
+                reactFlowInstance={reactFlowInstance}
+              />
+            </div>
             <div className={`${CLASS_NAME}__body`}>
               <ModelOrganizerToolbar
                 changes={changes}
@@ -332,28 +317,6 @@ export default function ModelOrganizer({
                   panOnScroll
                 >
                   <Background color="grey" />
-                  <Controls
-                    showInteractive={false}
-                    showFitView={false}
-                    showZoom={false}
-                  >
-                    <ControlButton onClick={onToggleZoomInRelationDetails}>
-                      <Icon icon="plus" />
-                    </ControlButton>
-
-                    <ControlButton onClick={onToggleZoomOutRelationDetails}>
-                      <Icon icon="minus" />
-                    </ControlButton>
-
-                    <ControlButton onClick={onToggleShowRelationDetails}>
-                      <Icon icon="list" />
-                    </ControlButton>
-                    <ControlButton onClick={onArrangeNodes}>
-                      <Icon icon="layers" />
-                    </ControlButton>
-                  </Controls>
-
-                  {/* <MiniMap pannable={true} zoomable={true} /> */}
                 </ReactFlow>
                 <RelationMarkets />
               </div>

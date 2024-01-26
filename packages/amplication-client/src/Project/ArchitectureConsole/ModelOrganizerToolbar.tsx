@@ -28,7 +28,7 @@ import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
 
 export const CLASS_NAME = "model-organizer-toolbar";
-const CONFIRM_BUTTON = { label: "Delete" };
+const CONFIRM_BUTTON = { label: "Discard Changes" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 type Props = {
@@ -93,7 +93,7 @@ export default function ModelOrganizerToolbar({
   const handleConfirmDelete = useCallback(() => {
     setConfirmDiscardChanges(!confirmDiscardChanges);
     onCancelChanges();
-  }, [setConfirmDiscardChanges, confirmDiscardChanges]);
+  }, [confirmDiscardChanges, onCancelChanges]);
 
   return (
     <div className={CLASS_NAME}>
@@ -115,11 +115,7 @@ export default function ModelOrganizerToolbar({
         title={`Discard changes ?`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
-        message={
-          <span>
-            Are you sure you want to discard all the existing changes?
-          </span>
-        }
+        message={<span>Are you sure you want to discard all the changes?</span>}
         onConfirm={handleConfirmDelete}
         onDismiss={handleDiscardChangesClicked}
       />

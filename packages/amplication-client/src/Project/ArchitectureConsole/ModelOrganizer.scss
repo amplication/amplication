@@ -83,31 +83,13 @@ $addon-title-line-height: 36px;
     margin-bottom: 8px;
   }
 
+  &__side_toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--default-spacing);
+  }
+
   .reactflow-wrapper {
     flex: 1;
-  }
-
-  .react-flow__controls {
-    height: 32px;
-    padding: 8px;
-    gap: 16px;
-    border-radius: 4px;
-    display: flex;
-    margin-left: 80%;
-    margin-bottom: 24px;
-    border: 1px solid var(--gray-80);
-    background: var(--gray-full);
-    align-items: center;
-  }
-  .react-flow__controls-button {
-    background: transparent;
-    border-bottom: 0cm;
-    color: var(--gray-20);
-  }
-
-  .react-flow__attribution {
-    font-size: calc(var(--normal-font-size) - 2px);
-    background: var(--gray-90) !important;
-    padding: 0 4px !important;
   }
 }
