@@ -1,0 +1,42 @@
+@import "../../style/index.scss";
+
+.break-the-monolith {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  flex-direction: column;
+  overflow-y: auto;
+
+  &__loader {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__content {
+    max-width: var(--page-content-width-default);
+  }
+
+  &__services {
+    padding: var(--double-spacing);
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    &__service {
+      overflow-y: auto;
+      min-width: 25%;
+      max-height: 200px;
+
+      &__header {
+        overflow: hidden;
+      }
+    }
+  }
+
+  &__continue_button {
+    align-self: flex-end;
+  }
+}
