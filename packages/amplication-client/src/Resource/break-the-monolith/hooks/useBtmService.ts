@@ -84,9 +84,21 @@ export const useBtmService = ({ resourceId }: BtmProps) => {
     triggerBreakServiceIntoMicroservices().catch(console.error);
   }, []);
 
+  const isLoading =
+    triggerBreakServiceIntoMicroservicesLoading ||
+    btmLoading ||
+    btmResult?.finalizeBreakServiceIntoMicroservices.status ===
+      EnumUserActionStatus.Running;
+
+  const hasError =
+    triggerBreakServiceIntoMicroservicesError ||
+    btmError ||
+    btmResult?.finalizeBreakServiceIntoMicroservices.status ===
+      EnumUserActionStatus.Failed;
+
   return {
     btmResult: btmResult?.finalizeBreakServiceIntoMicroservices,
-    loading: triggerBreakServiceIntoMicroservicesLoading || btmLoading,
-    error: triggerBreakServiceIntoMicroservicesError || btmError,
+    loading: isLoading,
+    error: hasError,
   };
 };
