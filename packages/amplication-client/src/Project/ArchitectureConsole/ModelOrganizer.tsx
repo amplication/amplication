@@ -290,13 +290,11 @@ export default function ModelOrganizer({
                   direction={EnumFlexDirection.Column}
                   itemsAlign={EnumItemsAlign.Center}
                 >
-                  <span>Error:</span>
                   <span>
-                    resource creation is failed: resource name is already exist
+                    The service name already exists. Please choose a different
+                    name.
                   </span>
-                  <Button onClick={handleCreateResourceState}>
-                    I understand
-                  </Button>
+                  <Button onClick={handleCreateResourceState}>Ok</Button>
                 </FlexItem>
               </Dialog>
               <div className={"reactflow-wrapper"}>

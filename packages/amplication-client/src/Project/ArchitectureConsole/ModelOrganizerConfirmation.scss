@@ -9,74 +9,7 @@ $addon-title-line-height: 36px;
 .model-organizer-confirmation {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 6px;
-
-  &__information {
-    line-height: 22px;
-    color: var(--gray-20);
-    & span {
-      color: var(--gray-20);
-    }
-  }
-
-  &__Buttons {
-    justify-content: space-between;
-    display: flex;
-  }
-
-  &__boxList {
-    padding: 12px;
-    border-radius: 4px;
-    border: 1px solid var(--gray-70);
-  }
-
-  &__newServiceItem {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  &__serviceIcon {
-    box-sizing: border-box;
-    border: 3px solid;
-    border-radius: 50%;
-    display: inline-flex;
-  }
-
-  &__api_options {
-    align-items: flex-start;
-    display: flex;
-    gap: 8px;
-    align-self: stretch;
-  }
-
-  &__api_item {
-    display: flex;
-    min-width: 200px;
-    padding: 8px;
-    align-items: center;
-    gap: 8px;
-    border-radius: 4px;
-    border: 1px solid var(--gray-70);
-  }
-
-  &__note {
-    display: flex;
-    padding: 8px 12px;
-    align-items: center;
-    gap: 4px;
-    align-self: stretch;
-    border-radius: 4px;
-    border: 1px solid var(--theme-turquoise);
-    background: rgba(83, 219, 238, 0.1);
-  }
-
-  &__entities {
-    color: var(--feature-indicator);
-  }
-  &__documentation {
-    & span {
-      color: var(--feature-indicator);
-    }
-  }
+  gap: var(--large-spacing);
+  max-height: 60vh;
+  overflow: auto;
 }

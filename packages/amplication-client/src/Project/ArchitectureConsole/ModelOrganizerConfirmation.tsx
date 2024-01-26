@@ -1,16 +1,20 @@
-import "./ModelOrganizerConfirmation.scss";
-import { Button, EnumButtonStyle } from "../../Components/Button";
 import {
-  EnumFlexDirection,
-  EnumGapSize,
+  EnumContentAlign,
   EnumItemsAlign,
-  EnumTextWeight,
+  EnumListStyle,
+  EnumPanelStyle,
+  EnumTextColor,
+  EnumTextStyle,
   FlexItem,
+  List,
+  ListItem,
+  Panel,
   Text,
 } from "@amplication/ui/design-system";
-import { EntityNode, ModelChanges, Node } from "./types";
-import TempServiceView from "./TempServiceView";
 import { useMemo } from "react";
+import { Button, EnumButtonStyle } from "../../Components/Button";
+import "./ModelOrganizerConfirmation.scss";
+import { EntityNode, ModelChanges, NODE_TYPE_MODEL, Node } from "./types";
 
 type movedEntitiesData = {
   id: string;
@@ -34,7 +38,7 @@ export default function ModelOrganizerConfirmation({
   const movedEntities = useMemo(() => {
     const movedEntities: movedEntitiesData[] = [];
     nodes
-      .filter((n) => n.type === "model")
+      .filter((n) => n.type === NODE_TYPE_MODEL)
       .forEach((n: EntityNode) => {
         if (n.data.originalParentNode !== n.parentNode) {
           movedEntities.push({
@@ -48,64 +52,69 @@ export default function ModelOrganizerConfirmation({
 
   return (
     <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__information`}>
-        {" "}
-        <Text textWeight={EnumTextWeight.Regular}>
-          <a
-            className={`${CLASS_NAME}__documentation`}
-            href={"https://docs.amplication.com"}
-            target="blank"
-          >
-            <Text>{"Check our documentation"}</Text>{" "}
+      {changes?.newServices?.length > 0 && (
+        <div>
+          <Panel panelStyle={EnumPanelStyle.Transparent}>
+            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+              We're ready to create the following services using default
+              configurations for a smooth start.
+            </Text>
+            <br />
+            <Text textStyle={EnumTextStyle.Tag}>
+              Remember, you can easily tailor the settings for each service to
+              your preference at any point.
+            </Text>
+          </Panel>
+
+          <>
+            <List listStyle={EnumListStyle.Dark}>
+              <ListItem>
+                {changes.newServices.map((service) => (
+                  <Text textStyle={EnumTextStyle.Tag}>{service.name}</Text>
+                ))}
+              </ListItem>
+            </List>
+          </>
+        </div>
+      )}
+
+      <div>
+        <Panel panelStyle={EnumPanelStyle.Transparent}>
+          <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+            The following entities will be moved to the new services.
+          </Text>
+          <br />
+          <a href={"https://docs.amplication.com"} target="blank">
+            <Text textStyle={EnumTextStyle.Tag} underline>
+              Check our documentation
+            </Text>
           </a>
-          <span>
+
+          <Text textStyle={EnumTextStyle.Tag}>
             {" "}
             to understand how relations between entities are resolved as part of
-            this migration process{" "}
-          </span>
-        </Text>
-        <span>
-          In case of existing database, data migration may be required
-        </span>
-      </div>
-      {changes?.newServices?.length > 0 && (
-        <>
-          <Text textWeight={EnumTextWeight.Bold}>{"New services"}</Text>
-          <div className={`${CLASS_NAME}__boxList`}>
-            {changes.newServices.map((service) => (
-              <TempServiceView
-                newService={service}
-                movedEntities={changes.movedEntities.filter(
-                  (e) => e.targetResourceId === service.tempId
-                )}
-              ></TempServiceView>
+            this migration process. In case of existing database, data migration
+            may be required.
+          </Text>
+        </Panel>
+        <List listStyle={EnumListStyle.Dark}>
+          <ListItem>
+            {movedEntities.map((entity) => (
+              <Text textStyle={EnumTextStyle.Tag}>{entity.name}</Text>
             ))}
-          </div>
-        </>
-      )}
-      <Text textWeight={EnumTextWeight.Bold}>{"The effected entities:"} </Text>
-      <FlexItem
-        className={`${CLASS_NAME}__boxList`}
-        gap={EnumGapSize.Default}
-        direction={EnumFlexDirection.Column}
-        itemsAlign={EnumItemsAlign.Start}
-      >
-        {movedEntities.map((entity) => (
-          <span>{entity.name}</span>
-        ))}
-      </FlexItem>
-      <div className={`${CLASS_NAME}__note`}>
-        <span style={{ color: "#53DBEE" }}>Note:</span>
-        <span>
-          All parameters can be updated later on for each service separately.
-        </span>
+          </ListItem>
+        </List>
       </div>
-      <div className={`${CLASS_NAME}__Buttons`}>
+
+      <FlexItem
+        itemsAlign={EnumItemsAlign.Center}
+        contentAlign={EnumContentAlign.End}
+      >
         <Button buttonStyle={EnumButtonStyle.Outline} onClick={onCancelChanges}>
           Cancel
         </Button>
         <Button onClick={onConfirmChanges}>Apply</Button>
-      </div>
+      </FlexItem>
     </div>
   );
 }
