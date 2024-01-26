@@ -1,6 +1,7 @@
 import {
   Button,
   EnumFlexDirection,
+  EnumItemsAlign,
   EnumListStyle,
   EnumTextColor,
   EnumTextStyle,
@@ -33,31 +34,31 @@ const BreakTheMonolith: React.FC<Props> = ({
 
   return (
     <div className={CLASS_NAME}>
-      {!btmResult?.data && loading ? (
+      {loading ? (
         <div className={`${CLASS_NAME}__loader`}>
           <BtmLoader />
         </div>
       ) : (
         <>
           <div className={`${CLASS_NAME}__content`}>
-            <FlexItem direction={EnumFlexDirection.Column}>
+            <FlexItem
+              direction={EnumFlexDirection.Column}
+              itemsAlign={
+                openInModal ? EnumItemsAlign.Center : EnumItemsAlign.Start
+              }
+            >
               <Text textStyle={EnumTextStyle.H3}>
                 Microservices Suggestion by Amplication AI
               </Text>
-
               <Text
-                textStyle={EnumTextStyle.H4}
+                textStyle={
+                  openInModal ? EnumTextStyle.Normal : EnumTextStyle.Tag
+                }
                 textColor={EnumTextColor.Black20}
               >
                 Our AI has mapped out a sleek microservices architecture for
-                you.
-              </Text>
-              <Text
-                textStyle={EnumTextStyle.Tag}
-                textColor={EnumTextColor.Black20}
-              >
-                Check out the suggested breakdown and start streamlining your
-                system.
+                you. Check out the suggested breakdown and start streamlining
+                your system.
               </Text>
             </FlexItem>
             <div className={`${CLASS_NAME}__services`}>
@@ -89,13 +90,13 @@ const BreakTheMonolith: React.FC<Props> = ({
                 </List>
               ))}
             </div>
+            <Button
+              className={`${CLASS_NAME}__continue_button`}
+              onClick={handleConfirmSuggestion}
+            >
+              Redesign
+            </Button>
           </div>
-          <Button
-            className={`${CLASS_NAME}__continue_button`}
-            onClick={handleConfirmSuggestion}
-          >
-            Redesign
-          </Button>
         </>
       )}
     </div>

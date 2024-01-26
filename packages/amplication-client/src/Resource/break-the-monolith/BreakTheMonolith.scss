@@ -5,8 +5,7 @@
   height: 100%;
   width: 100%;
   align-items: center;
-  flex-direction: column;
-  overflow-y: auto;
+  justify-content: center;
 
   &__loader {
     display: flex;
@@ -14,6 +13,8 @@
   }
 
   &__content {
+    display: flex;
+    flex-direction: column;
     max-width: var(--page-content-width-default);
   }
 
