@@ -81,7 +81,7 @@ export default function ModelOrganizerConfirmation({
       <div>
         <Panel panelStyle={EnumPanelStyle.Transparent}>
           <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-            The following entities will be moved to the new services.
+            The following entities will be moved to new services.
           </Text>
           <br />
           <a href={"https://docs.amplication.com"} target="blank">
@@ -93,8 +93,8 @@ export default function ModelOrganizerConfirmation({
           <Text textStyle={EnumTextStyle.Tag}>
             {" "}
             to understand how relations between entities are resolved as part of
-            this migration process. In case of existing database, data migration
-            may be required.
+            this migration process. <br /> In case of existing database, data
+            migration may be required.
           </Text>
         </Panel>
         <List listStyle={EnumListStyle.Dark}>
@@ -113,7 +113,7 @@ export default function ModelOrganizerConfirmation({
         <Button buttonStyle={EnumButtonStyle.Outline} onClick={onCancelChanges}>
           Cancel
         </Button>
-        <Button onClick={onConfirmChanges}>Apply</Button>
+        <Button onClick={onConfirmChanges}>Let's go</Button>
       </FlexItem>
     </div>
   );
