@@ -94,7 +94,7 @@ const BreakTheMonolith: React.FC<Props> = ({
             className={`${CLASS_NAME}__continue_button`}
             onClick={handleConfirmSuggestion}
           >
-            Continue
+            Redesign
           </Button>
         </>
       )}

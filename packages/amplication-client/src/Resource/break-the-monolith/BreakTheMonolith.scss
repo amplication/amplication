@@ -18,7 +18,7 @@
   }
 
   &__services {
-    padding: var(--double-spacing);
+    padding: var(--double-spacing) 0;
     display: flex;
     flex-direction: row;
     gap: 12px;
