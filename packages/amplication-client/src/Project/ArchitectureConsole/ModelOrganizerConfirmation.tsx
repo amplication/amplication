@@ -99,6 +99,11 @@ export default function ModelOrganizerConfirmation({
         </Panel>
         <List listStyle={EnumListStyle.Dark}>
           <ListItem>
+            {movedEntities.length === 0 && (
+              <Text textStyle={EnumTextStyle.Tag}>
+                No entities will be moved
+              </Text>
+            )}
             {movedEntities.map((entity) => (
               <Text textStyle={EnumTextStyle.Tag}>{entity.name}</Text>
             ))}

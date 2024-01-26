@@ -4,15 +4,13 @@ import {
   Dialog,
   EnumFlexDirection,
   FlexItem,
-  Icon,
   Snackbar,
 } from "@amplication/ui/design-system";
+import { EnumItemsAlign } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import { useCallback, useEffect, useState } from "react";
 import {
   Background,
   ConnectionMode,
-  ControlButton,
-  Controls,
   ReactFlow,
   ReactFlowInstance,
   applyNodeChanges,
@@ -20,6 +18,7 @@ import {
 import "reactflow/dist/style.css";
 import * as models from "../../models";
 import "./ModelOrganizer.scss";
+import ModelOrganizerControls from "./ModelOrganizerControls";
 import ModelOrganizerToolbar from "./ModelOrganizerToolbar";
 import ModelsGroupsList from "./ModelsGroupsList";
 import relationEdge from "./edges/relationEdge";
@@ -27,7 +26,6 @@ import RelationMarkets from "./edges/relationMarkets";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
 import { findGroupByPosition } from "./helpers";
 import useModelOrganization from "./hooks/useModelOrganizer";
-import { applyAutoLayout } from "./layout";
 import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
@@ -37,8 +35,6 @@ import {
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
-import { EnumItemsAlign } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
-import ModelOrganizerControls from "./ModelOrganizerControls";
 
 export const CLASS_NAME = "model-organizer";
 
@@ -228,7 +224,9 @@ export default function ModelOrganizer({
         };
 
         currentDropTarget.data.isCurrentDropTarget = false;
-        moveNodeToParent(node, currentDropTarget);
+        console.log({ draggedNode, node });
+
+        moveNodeToParent(draggedNodes, currentDropTarget);
       }
       if (currentDropTarget) {
         currentDropTarget.data.isCurrentDropTarget = false;
@@ -313,6 +311,7 @@ export default function ModelOrganizer({
                   proOptions={{ hideAttribution: true }}
                   minZoom={0.1}
                   panOnScroll
+                  selectionKeyCode={null}
                 >
                   <Background color="grey" />
                 </ReactFlow>

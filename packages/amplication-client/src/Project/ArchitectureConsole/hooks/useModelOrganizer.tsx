@@ -503,57 +503,67 @@ const useModelOrganization = () => {
   }, [currentProject]);
 
   const moveNodeToParent = useCallback(
-    (node: Node, targetParent: Node) => {
-      const currentNode = nodes.find((n) => n.id === node.id);
-      const originalResource = currentResourcesData.find(
-        (x) => x.id === currentNode.data.originalParentNode
-      );
+    async (movedNodes: Node[], targetParent: Node) => {
+      movedNodes.forEach((node) => {
+        const currentNode = nodes.find((n) => n.id === node.id);
+        const originalResource = currentResourcesData.find(
+          (x) => x.id === currentNode.data.originalParentNode
+        );
 
-      const targetResource = currentResourcesData.find(
-        (x) => x.id === targetParent.id
-      );
+        const targetResource = currentResourcesData.find(
+          (x) => x.id === targetParent.id
+        );
 
-      const currentEntity = currentNode.data.payload as models.Entity;
+        const currentEntity = currentNode.data.payload as models.Entity;
 
-      currentNode.parentNode = targetParent.id;
+        currentNode.parentNode = targetParent.id;
 
-      const currentEntityChanged = changes.movedEntities.find(
-        (x) => x.entityId === node.id
-      );
+        const currentEntityChanged = changes.movedEntities.find(
+          (x) => x.entityId === node.id
+        );
 
-      if (currentEntityChanged) {
-        if (currentNode.data.originalParentNode === currentNode.parentNode) {
-          //remove the change from the changes list
-          changes.movedEntities = changes.movedEntities.filter(
-            (x) => x.entityId !== currentEntityChanged.entityId
-          );
-          originalResource.entities.push(currentEntity);
+        if (currentEntityChanged) {
+          if (currentNode.data.originalParentNode === currentNode.parentNode) {
+            //remove the change from the changes list
+            changes.movedEntities = changes.movedEntities.filter(
+              (x) => x.entityId !== currentEntityChanged.entityId
+            );
+            originalResource.entities.push(currentEntity);
+          } else {
+            const currentResource = currentResourcesData.find(
+              (x) => x.id === currentEntityChanged.targetResourceId
+            );
+            currentResource.entities = currentResource.entities?.filter(
+              (x) => x.id !== currentEntity.id
+            );
+            currentEntityChanged.targetResourceId = targetParent.id;
+            targetResource.entities.push(currentEntity);
+          }
         } else {
-          const currentResource = currentResourcesData.find(
-            (x) => x.id === currentEntityChanged.targetResourceId
-          );
-          currentResource.entities = currentResource.entities?.filter(
-            (x) => x.id !== currentEntity.id
-          );
-          currentEntityChanged.targetResourceId = targetParent.id;
-          targetResource.entities.push(currentEntity);
-        }
-      } else {
-        if (currentNode.data.originalParentNode !== currentNode.parentNode) {
-          changes.movedEntities.push({
-            entityId: currentNode.id,
-            targetResourceId: targetParent.id,
-            originalResourceId: currentNode.data.originalParentNode,
-          });
+          if (currentNode.data.originalParentNode !== currentNode.parentNode) {
+            changes.movedEntities.push({
+              entityId: currentNode.id,
+              targetResourceId: targetParent.id,
+              originalResourceId: currentNode.data.originalParentNode,
+            });
 
-          originalResource.entities = originalResource.entities.filter(
-            (x) => x.id !== currentEntity.id
-          );
-          targetResource.entities.push(currentEntity);
+            originalResource.entities = originalResource.entities.filter(
+              (x) => x.id !== currentEntity.id
+            );
+            targetResource.entities.push(currentEntity);
+          }
         }
-      }
+      });
 
-      setCurrentTheme(JSON.stringify(nodes));
+      const updatedNodes = await applyAutoLayout(
+        nodes,
+        edges,
+        showRelationDetails
+      );
+
+      setNodes(updatedNodes);
+
+      setCurrentTheme(JSON.stringify(updatedNodes));
       setCurrentChangesStorageData(JSON.stringify(changes));
       setCurrentResourceStorageData(JSON.stringify(currentResourcesData));
     },
