@@ -241,3 +241,13 @@ export {
   EnumRestApiOperationTagType,
   EnumGqlApiOperationTagType,
 } from "./components/ApiOperationTag/ApiOperationTag";
+
+export {
+  CollapsibleList,
+  Props as CollapsibleListProps,
+} from "./components/CollapsibleList/CollapsibleList";
+
+export {
+  CollapsibleListItem,
+  Props as CollapsibleListItemProps,
+} from "./components/CollapsibleList/CollapsibleListItem";
