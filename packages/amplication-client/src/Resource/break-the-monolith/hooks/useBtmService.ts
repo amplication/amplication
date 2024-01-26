@@ -88,7 +88,8 @@ export const useBtmService = ({ resourceId }: BtmProps) => {
     triggerBreakServiceIntoMicroservicesLoading ||
     btmLoading ||
     btmResult?.finalizeBreakServiceIntoMicroservices.status ===
-      EnumUserActionStatus.Running;
+      EnumUserActionStatus.Running ||
+    !btmResult?.finalizeBreakServiceIntoMicroservices.data;
 
   const hasError =
     triggerBreakServiceIntoMicroservicesError ||
