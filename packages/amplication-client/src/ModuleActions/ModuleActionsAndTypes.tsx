@@ -23,7 +23,7 @@ const ModuleActionsAndTypes = React.memo(
     return (
       <>
         <FlexItem margin={EnumFlexItemMargin.Top}>
-          <Text textStyle={EnumTextStyle.Normal}>Actions</Text>
+          <Text textStyle={EnumTextStyle.H4}>Actions</Text>
         </FlexItem>
 
         <FlexItem margin={EnumFlexItemMargin.Top}>
@@ -35,7 +35,7 @@ const ModuleActionsAndTypes = React.memo(
           />
         </FlexItem>
         <FlexItem margin={EnumFlexItemMargin.Top}>
-          <Text textStyle={EnumTextStyle.Normal}>DTOs</Text>
+          <Text textStyle={EnumTextStyle.H4}>DTOs</Text>
         </FlexItem>
         <FlexItem margin={EnumFlexItemMargin.Both}>
           <ModuleDtoList

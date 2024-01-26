@@ -13,11 +13,10 @@ import {
   Toggle,
 } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect, useState } from "react";
+import useModule from "../Modules/hooks/useModule";
 import * as models from "../models";
 import { ModuleActionListItem } from "./ModuleActionListItem";
-import NewModuleAction from "./NewModuleAction";
 import useModuleAction from "./hooks/useModuleAction";
-import useModule from "../Modules/hooks/useModule";
 
 const DATE_CREATED_FIELD = "createdAt";
 
@@ -33,7 +32,6 @@ const ModuleActionList = React.memo(
       findModuleActions,
       findModuleActionsData: data,
       findModuleActionsLoading: loading,
-      findModuleActionRefetch: refetch,
     } = useModuleAction();
 
     const moduleId = module.id;
@@ -44,10 +42,6 @@ const ModuleActionList = React.memo(
     const [enabledActions, setEnabledActions] = useState<boolean>(
       module?.enabled || null
     );
-
-    const onActionCreated = useCallback(() => {
-      refetch();
-    }, [refetch]);
 
     useEffect(() => {
       if (!module) return;
@@ -67,7 +61,7 @@ const ModuleActionList = React.memo(
           },
         }).catch(console.error);
       },
-      [moduleId, module, updateModule]
+      [moduleId, updateModule]
     );
 
     useEffect(() => {
@@ -107,13 +101,6 @@ const ModuleActionList = React.memo(
                     disabled={disabled}
                   ></Toggle>
                 </div>
-              }
-              end={
-                <NewModuleAction
-                  moduleId={moduleId}
-                  resourceId={resourceId}
-                  onActionCreated={onActionCreated}
-                />
               }
             >
               <Text

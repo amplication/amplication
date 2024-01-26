@@ -10,11 +10,10 @@ import {
   ListItem,
   Text,
 } from "@amplication/ui/design-system";
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import useModule from "../Modules/hooks/useModule";
 import * as models from "../models";
 import { ModuleDtoListItem } from "./ModuleDtoListItem";
-import NewModuleDto from "./NewModuleDto";
 import useModuleDto from "./hooks/useModuleDto";
 
 const DATE_CREATED_FIELD = "createdAt";
@@ -57,25 +56,12 @@ const ModuleDtoList = React.memo(
       });
     }, [moduleId, findModuleDtos, resourceId, searchPhrase]);
 
-    const onDtoCreated = useCallback(() => {
-      refetch();
-    }, [refetch]);
-
     return (
       <>
         <List
           listStyle={EnumListStyle.Transparent}
           headerContent={
-            <FlexItem
-              itemsAlign={EnumItemsAlign.Center}
-              end={
-                <NewModuleDto
-                  moduleId={moduleId}
-                  resourceId={resourceId}
-                  onDtoCreated={onDtoCreated}
-                />
-              }
-            >
+            <FlexItem itemsAlign={EnumItemsAlign.Center}>
               <Text
                 textStyle={EnumTextStyle.Normal}
                 textColor={EnumTextColor.White}

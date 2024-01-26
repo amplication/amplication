@@ -20,6 +20,7 @@ import {
   ModulesContextInterface,
   ModulesContextProvider,
 } from "./modulesContext";
+import NewModule from "./NewModule";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -104,6 +105,7 @@ const ModulesPage: React.FC<Props> = ({
               title={"All Modules"}
               subTitle={"Select a module to view its Actions and DTOs"}
               hideApiToggle
+              actions={<NewModule resourceId={resource} />}
             />
 
             <ModuleList />

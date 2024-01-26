@@ -1,5 +1,5 @@
 import { Reference, useMutation, useQuery } from "@apollo/client";
-import { useCallback, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import { DATE_CREATED_FIELD } from "../ModuleNavigationList";
@@ -96,18 +96,6 @@ const useModule = (moduleId?: string) => {
     },
   });
 
-  let timeout;
-
-  const handleSearchChange = useCallback(
-    (value) => {
-      if (timeout) clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        setSearchPhrase(value);
-      }, 750);
-    },
-    [setSearchPhrase, timeout]
-  );
-
   const {
     data: findModulesData,
     loading: findModulesLoading,
@@ -171,7 +159,7 @@ const useModule = (moduleId?: string) => {
     updateModule,
     updateModuleError,
     updateModuleLoading,
-    handleSearchChange,
+    setSearchPhrase,
   };
 };
 

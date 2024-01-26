@@ -7,6 +7,7 @@ import ModuleDtoList from "./ModuleDtoList";
 import "./ModuleDtos.scss";
 import ModulesHeader from "../Modules/ModulesHeader";
 import useModule from "../Modules/hooks/useModule";
+import NewModuleDto from "./NewModuleDto";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -29,6 +30,7 @@ const ModuleDtos = React.memo(({ match, innerRoutes }: Props) => {
           moduleData?.module.description ||
           "Create, update, and manage actions and types"
         }
+        actions={<NewModuleDto moduleId={moduleId} resourceId={resourceId} />}
       />
 
       <ModuleDtoList

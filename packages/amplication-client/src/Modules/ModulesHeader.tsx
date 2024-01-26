@@ -15,6 +15,7 @@ import {
 } from "@amplication/ui/design-system";
 import React, { useCallback } from "react";
 import { useModulesContext } from "./modulesContext";
+import { FlexEnd } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 
 const CLASS_NAME = "module-actions";
 
@@ -22,10 +23,11 @@ type Props = {
   title: string;
   subTitle: string;
   hideApiToggle?: boolean;
+  actions?: React.ReactNode;
 };
 
 const ModulesHeader = React.memo(
-  ({ title, subTitle, hideApiToggle }: Props) => {
+  ({ title, subTitle, hideApiToggle, actions }: Props) => {
     const {
       displayMode,
       graphQlEnabled,
@@ -58,16 +60,16 @@ const ModulesHeader = React.memo(
 
     return (
       <>
-        <FlexItem
-          start={<TabContentTitle title={title} subTitle={subTitle} />}
-          end={
+        <FlexItem start={<TabContentTitle title={title} subTitle={subTitle} />}>
+          <FlexEnd direction={EnumFlexDirection.Row}>
             <SearchField
               label="search"
               placeholder="Search"
               onChange={handleSearchChange}
             />
-          }
-        ></FlexItem>
+            {actions}
+          </FlexEnd>
+        </FlexItem>
         {showApiToggle && (
           <FlexItem
             direction={EnumFlexDirection.Row}

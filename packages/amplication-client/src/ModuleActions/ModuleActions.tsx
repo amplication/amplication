@@ -7,6 +7,7 @@ import { useModulesContext } from "../Modules/modulesContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import ModuleActionList from "./ModuleActionList";
 import "./ToggleModule.scss";
+import NewModuleAction from "./NewModuleAction";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -15,7 +16,7 @@ type Props = AppRouteProps & {
   }>;
 };
 const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
-  const { module: moduleId } = match.params;
+  const { module: moduleId, resource: resourceId } = match.params;
 
   const { getModuleData: moduleData } = useModule(moduleId);
   const { searchPhrase, displayMode, customActionsLicenseEnabled } =
@@ -29,6 +30,9 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
             subTitle={
               moduleData?.module.description ||
               "Create, update, and manage actions and types"
+            }
+            actions={
+              <NewModuleAction moduleId={moduleId} resourceId={resourceId} />
             }
           />
 

@@ -6,6 +6,8 @@ import { AppRouteProps } from "../routes/routesUtil";
 import ModulesHeader from "./ModulesHeader";
 import useModule from "./hooks/useModule";
 import { useModulesContext } from "./modulesContext";
+import NewModuleAction from "../ModuleActions/NewModuleAction";
+import NewModuleDto from "../ModuleDto/NewModuleDto";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -14,7 +16,7 @@ type Props = AppRouteProps & {
   }>;
 };
 const ModuleOverview = React.memo(({ match, innerRoutes }: Props) => {
-  const { module: moduleId } = match.params;
+  const { module: moduleId, resource: resourceId } = match.params;
   const { getModuleData: moduleData } = useModule(moduleId);
 
   const { searchPhrase, displayMode, customActionsLicenseEnabled } =
@@ -30,6 +32,15 @@ const ModuleOverview = React.memo(({ match, innerRoutes }: Props) => {
                 subTitle={
                   moduleData?.module.description ||
                   "Create, update, and manage actions and types"
+                }
+                actions={
+                  <>
+                    <NewModuleAction
+                      moduleId={moduleId}
+                      resourceId={resourceId}
+                    />
+                    <NewModuleDto moduleId={moduleId} resourceId={resourceId} />
+                  </>
                 }
               />
 
