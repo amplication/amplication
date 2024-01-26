@@ -2,7 +2,7 @@ import { formatError } from "../util/error";
 import "./Signup.scss";
 import { CircularProgress } from "@mui/material";
 import useSignupPreviewAccount from "./hooks/useSignupPreviewAccount";
-import { PreviewAccountType } from "../models";
+import { EnumPreviewAccountType } from "../models";
 
 const SignupPreviewAccount = () => {
   const queryString = window.location.search;
@@ -13,7 +13,7 @@ const SignupPreviewAccount = () => {
 
   const { loading, error } = useSignupPreviewAccount(
     email,
-    PreviewAccountType[previewAccountTypeParam]
+    EnumPreviewAccountType[previewAccountTypeParam]
   );
 
   const errorMessage = formatError(error);
