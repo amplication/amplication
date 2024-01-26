@@ -63,10 +63,8 @@ const ModuleDtoList = React.memo(
 
     return (
       <>
-        {loading && <CircularProgress centerToParent />}
         <List
           listStyle={EnumListStyle.Transparent}
-          collapsible
           headerContent={
             <FlexItem
               itemsAlign={EnumItemsAlign.Center}
@@ -98,7 +96,11 @@ const ModuleDtoList = React.memo(
             ))
           ) : (
             <ListItem>
-              <Text textStyle={EnumTextStyle.Description}>No DTOs found</Text>
+              {loading ? (
+                <CircularProgress centerToParent />
+              ) : (
+                <Text textStyle={EnumTextStyle.Description}>No DTOs found</Text>
+              )}
             </ListItem>
           )}
         </List>

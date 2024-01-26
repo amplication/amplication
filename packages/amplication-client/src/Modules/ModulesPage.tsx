@@ -102,7 +102,8 @@ const ModulesPage: React.FC<Props> = ({
           <>
             <ModulesHeader
               title={"All Modules"}
-              subTitle={"Create, update, and manage actions and types"}
+              subTitle={"Select a module to view its Actions and DTOs"}
+              hideApiToggle
             />
 
             <ModuleList />

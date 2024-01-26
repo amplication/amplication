@@ -93,10 +93,8 @@ const ModuleActionList = React.memo(
 
     return (
       <>
-        {loading && <CircularProgress centerToParent />}
         <List
           listStyle={EnumListStyle.Dark}
-          collapsible
           headerContent={
             <FlexItem
               itemsAlign={EnumItemsAlign.Center}
@@ -143,9 +141,13 @@ const ModuleActionList = React.memo(
             ))
           ) : (
             <ListItem>
-              <Text textStyle={EnumTextStyle.Description}>
-                No actions found
-              </Text>
+              {loading ? (
+                <CircularProgress centerToParent />
+              ) : (
+                <Text textStyle={EnumTextStyle.Description}>
+                  No actions found
+                </Text>
+              )}
             </ListItem>
           )}
         </List>

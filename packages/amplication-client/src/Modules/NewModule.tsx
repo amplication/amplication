@@ -18,6 +18,7 @@ import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import useModule from "./hooks/useModule";
+import { useModulesContext } from "./modulesContext";
 
 type Props = {
   resourceId: string;
@@ -48,6 +49,8 @@ const NewModule = ({ resourceId, onModuleCreated }: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+
+  const { customActionsLicenseEnabled } = useModulesContext();
 
   const {
     createModule,
@@ -143,6 +146,7 @@ const NewModule = ({ resourceId, onModuleCreated }: Props) => {
       <Button
         buttonStyle={EnumButtonStyle.Primary}
         onClick={handleDialogStateChange}
+        disabled={!customActionsLicenseEnabled}
       >
         Add Module
       </Button>

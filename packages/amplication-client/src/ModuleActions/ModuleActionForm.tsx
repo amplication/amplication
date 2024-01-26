@@ -139,7 +139,7 @@ const ModuleActionForm = ({
             disabled={disabled}
           />
         </FlexItem>
-        <Panel panelStyle={EnumPanelStyle.Bordered}>
+        <Panel panelStyle={EnumPanelStyle.Transparent}>
           <TabContentTitle
             title="Types"
             subTitle={
@@ -163,7 +163,7 @@ const ModuleActionForm = ({
           )}
         </Panel>
 
-        <Panel panelStyle={EnumPanelStyle.Bordered}>
+        <Panel panelStyle={EnumPanelStyle.Transparent}>
           <TabContentTitle
             title="REST API"
             subTitle="Settings related to REST API for this action"
@@ -183,7 +183,7 @@ const ModuleActionForm = ({
           </FlexItem>
         </Panel>
 
-        <Panel panelStyle={EnumPanelStyle.Bordered}>
+        <Panel panelStyle={EnumPanelStyle.Transparent}>
           <TabContentTitle
             title="GraphQL API"
             subTitle="Settings related to GraphQL API for this action"

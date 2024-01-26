@@ -18,6 +18,7 @@ import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import useModuleDto from "./hooks/useModuleDto";
+import { useModulesContext } from "../Modules/modulesContext";
 
 type Props = {
   resourceId: string;
@@ -49,6 +50,7 @@ const NewModuleDto = ({ resourceId, moduleId, onDtoCreated }: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const { customActionsLicenseEnabled } = useModulesContext();
 
   const {
     createModuleDto,
@@ -145,6 +147,7 @@ const NewModuleDto = ({ resourceId, moduleId, onDtoCreated }: Props) => {
       <Button
         buttonStyle={EnumButtonStyle.Primary}
         onClick={handleDialogStateChange}
+        disabled={!customActionsLicenseEnabled}
       >
         Add Dto
       </Button>

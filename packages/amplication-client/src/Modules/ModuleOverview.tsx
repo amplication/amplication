@@ -22,22 +22,24 @@ const ModuleOverview = React.memo(({ match, innerRoutes }: Props) => {
 
   return (
     <>
-      <ModulesHeader
-        title={moduleData?.module.displayName}
-        subTitle={
-          moduleData?.module.description ||
-          "Create, update, and manage actions and types"
-        }
-      />
-
       {match.isExact
         ? moduleData && (
-            <ModuleActionsAndTypes
-              module={moduleData?.module}
-              searchPhrase={searchPhrase}
-              displayMode={displayMode}
-              disabled={!customActionsLicenseEnabled}
-            />
+            <>
+              <ModulesHeader
+                title={moduleData?.module.displayName}
+                subTitle={
+                  moduleData?.module.description ||
+                  "Create, update, and manage actions and types"
+                }
+              />
+
+              <ModuleActionsAndTypes
+                module={moduleData?.module}
+                searchPhrase={searchPhrase}
+                displayMode={displayMode}
+                disabled={!customActionsLicenseEnabled}
+              />
+            </>
           )
         : innerRoutes}
     </>
