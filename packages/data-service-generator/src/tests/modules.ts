@@ -7,6 +7,7 @@ import { USER_ENTITY_ID } from "./entities";
 
 const USER_MODULE_ID = "clraten4g000fc9yhr62nxheo";
 const PROMOTE_USER_INPUT_DTO_ID = "promoteUserInputDtoId";
+const PROMOTE_USER_ARGS_DTO_ID = "promoteUserArgsDtoId";
 
 const userModuleContainer: ModuleContainer = {
   id: USER_MODULE_ID,
@@ -117,8 +118,8 @@ const userModuleCustomActions: ModuleAction[] = [
     },
     inputType: {
       isArray: false,
-      type: "String",
-      dtoId: "", //replace with reference to dto by its id
+      type: "Dto",
+      dtoId: PROMOTE_USER_ARGS_DTO_ID,
     },
   },
   {
@@ -153,9 +154,9 @@ const userModuleCustomActions: ModuleAction[] = [
     name: "resendInviteEmail",
     path: "/{:id}/resendInviteEmail",
     enabled: true,
-    restVerb: "Post",
+    restVerb: "Get",
     actionType: "Custom",
-    gqlOperation: "Mutation",
+    gqlOperation: "Query",
     outputType: {
       isArray: false,
       type: "Dto",
@@ -217,7 +218,7 @@ const userModuleDefaultDtos: ModuleDto[] = [
 
 const userModuleCustomDtos: ModuleDto[] = [
   {
-    id: "clratpp1m0005c9egg5tcxd01",
+    id: PROMOTE_USER_ARGS_DTO_ID,
     description: "",
     resourceId: "clraten1t0004c9yhz1t3o8bp",
     parentBlockId: "clraten4g000fc9yhr62nxheo",

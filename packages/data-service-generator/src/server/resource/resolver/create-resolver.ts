@@ -59,6 +59,7 @@ import { createDataMapping } from "../controller/create-data-mapping";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports";
 import DsgContext from "../../../dsg-context";
 import { MethodsIdsActionEntityTriplet } from "../controller/create-controller";
+import { createResolverCustomActionMethods } from "./create-resolver-custom-actions";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -342,7 +343,8 @@ async function createResolverBaseModule({
 
   classDeclaration.body.body.push(
     ...toManyRelationMethods,
-    ...toOneRelationMethods
+    ...toOneRelationMethods,
+    ...(await createResolverCustomActionMethods(entityActions.customActions))
   );
 
   toManyRelationFields.map((field) =>

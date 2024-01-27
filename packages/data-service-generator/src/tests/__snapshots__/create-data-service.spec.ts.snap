@@ -14214,6 +14214,18 @@ export class UserResolverBase {
     }
     return result;
   }
+
+  @graphql.Mutation(() => [PromoteUserInput])
+  async promoteUser(args: PromoteUserArgs): Promise<PromoteUserInput[]> {}
+
+  @graphql.Mutation(() => Boolean)
+  async sendPasswordResetEmail(args: PromoteUserInput): Promise<boolean> {}
+
+  @graphql.Query(() => PromoteUserInput)
+  async resendInviteEmail(args: PromoteUserInput): Promise<PromoteUserInput> {}
+
+  @graphql.Mutation(() => PromoteUserInput)
+  async softDeleteUser(args: PromoteUserInput): Promise<PromoteUserInput> {}
 }
 ",
   "server/src/user/base/user.service.base.ts": "/*
@@ -14308,7 +14320,7 @@ export class UserServiceBase {
       })
       .profile();
   }
-  async promoteUser(args: string): Promise<PromoteUserInput[]> {
+  async promoteUser(args: PromoteUserArgs): Promise<PromoteUserInput[]> {
     throw new Error("Not implemented");
   }
   async sendPasswordResetEmail(args: PromoteUserInput): Promise<boolean> {

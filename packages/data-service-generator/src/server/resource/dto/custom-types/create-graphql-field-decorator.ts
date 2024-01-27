@@ -60,14 +60,17 @@ function createGraphQLFieldType(
 
   const typeDef = property.propertyTypes[0];
 
-  return getTypeDefGraphQLFieldType(typeDef);
+  return convertTypeDefToGraphQLType(typeDef);
 }
 
-function getTypeDefGraphQLFieldType(
+export function convertTypeDefToGraphQLType(
   typeDef: PropertyTypeDef
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
   if (typeDef.isArray) {
-    const itemType = getTypeDefGraphQLFieldType({ ...typeDef, isArray: false });
+    const itemType = convertTypeDefToGraphQLType({
+      ...typeDef,
+      isArray: false,
+    });
     return builders.arrayExpression([itemType]);
   }
 
