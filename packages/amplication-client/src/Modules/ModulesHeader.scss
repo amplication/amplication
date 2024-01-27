@@ -1,16 +1,6 @@
 @import "../style/index.scss";
 
-.module-toggle-field {
-  &__search-field {
-    width: 180px;
-  }
-  .toggle-field {
-    .MuiSwitch-root {
-      .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
-        background-color: #31c587;
-      }
-    }
-  }
+.modules-header {
   &__operation-toggle {
     .toggle-field {
       border: $border-dark;
@@ -18,10 +8,10 @@
       .MuiSwitch-root {
         border-radius: 8px;
         .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
-          background-color: #15192c;
+          background-color: var(--gray-full);
         }
         .MuiSwitch-switchBase:not(.Mui-checked) + .MuiSwitch-track {
-          background-color: #15192c;
+          background-color: var(--gray-full);
         }
       }
     }

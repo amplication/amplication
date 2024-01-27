@@ -16,8 +16,7 @@ import {
 import React, { useCallback } from "react";
 import { useModulesContext } from "./modulesContext";
 import { FlexEnd } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
-
-const CLASS_NAME = "module-actions";
+import "./ModulesHeader.scss";
 
 type Props = {
   title: string;
@@ -25,6 +24,8 @@ type Props = {
   hideApiToggle?: boolean;
   actions?: React.ReactNode;
 };
+
+const CLASS_NAME = "modules-header";
 
 const ModulesHeader = React.memo(
   ({ title, subTitle, hideApiToggle, actions }: Props) => {
@@ -73,7 +74,6 @@ const ModulesHeader = React.memo(
         {showApiToggle && (
           <FlexItem
             direction={EnumFlexDirection.Row}
-            className={`${CLASS_NAME}__api-toggle`}
             contentAlign={EnumContentAlign.Start}
             itemsAlign={EnumItemsAlign.Center}
             margin={EnumFlexItemMargin.Bottom}
@@ -88,7 +88,7 @@ const ModulesHeader = React.memo(
             >
               GraphQL API
             </Text>
-            <div className={`module-toggle-field__operation-toggle`}>
+            <div className={`${CLASS_NAME}__operation-toggle`}>
               <Toggle
                 checked={displayMode === EnumApiOperationTagStyle.REST}
                 onValueChange={handleDisplayModeChange}

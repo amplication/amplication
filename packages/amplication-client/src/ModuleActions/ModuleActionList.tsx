@@ -6,6 +6,7 @@ import {
   EnumTextColor,
   EnumTextStyle,
   EnumTextWeight,
+  EnumToggleStyle,
   FlexItem,
   List,
   ListItem,
@@ -93,14 +94,13 @@ const ModuleActionList = React.memo(
             <FlexItem
               itemsAlign={EnumItemsAlign.Center}
               start={
-                <div className="module-toggle-field">
-                  <Toggle
-                    name={"enabled"}
-                    onValueChange={onEnableChanged}
-                    checked={enabledActions}
-                    disabled={disabled}
-                  ></Toggle>
-                </div>
+                <Toggle
+                  toggleStyle={EnumToggleStyle.Green}
+                  name={"enabled"}
+                  onValueChange={onEnableChanged}
+                  checked={enabledActions}
+                  disabled={disabled}
+                ></Toggle>
               }
             >
               <Text

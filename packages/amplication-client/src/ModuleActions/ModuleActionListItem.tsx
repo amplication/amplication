@@ -10,6 +10,7 @@ import {
   EnumRestApiOperationTagType,
   EnumTextColor,
   EnumTextStyle,
+  EnumToggleStyle,
   ListItem,
   Text,
   Toggle,
@@ -19,7 +20,6 @@ import { useCallback, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
-import "./ToggleModule.scss";
 import useModuleAction from "./hooks/useModuleAction";
 
 type Props = {
@@ -102,14 +102,13 @@ export const ModuleActionListItem = ({
         </NavLink>
       }
       start={
-        <div className="module-toggle-field">
-          <Toggle
-            name={"enabled"}
-            onValueChange={onEnableChanged}
-            checked={moduleAction.enabled}
-            disabled={disabled}
-          ></Toggle>
-        </div>
+        <Toggle
+          toggleStyle={EnumToggleStyle.Green}
+          name={"enabled"}
+          onValueChange={onEnableChanged}
+          checked={moduleAction.enabled}
+          disabled={disabled}
+        ></Toggle>
       }
     >
       <ApiOperationTag

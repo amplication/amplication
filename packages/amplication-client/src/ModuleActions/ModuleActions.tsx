@@ -6,7 +6,6 @@ import useModule from "../Modules/hooks/useModule";
 import { useModulesContext } from "../Modules/modulesContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import ModuleActionList from "./ModuleActionList";
-import "./ToggleModule.scss";
 import NewModuleAction from "./NewModuleAction";
 
 type Props = AppRouteProps & {
