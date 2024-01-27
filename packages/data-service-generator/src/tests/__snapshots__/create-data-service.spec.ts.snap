@@ -14041,29 +14041,57 @@ export class UserControllerBase {
     });
   }
 
+  @common.Post("/:id/promote")
   @swagger.ApiOkResponse({
     type: [PromoteUserInput],
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async promoteUser(args: PromoteUserArgs): Promise<PromoteUserInput[]> {
     return this.service.promoteUser(args);
   }
 
+  @common.Patch("/:id/sendPasswordResetEmail")
   @swagger.ApiOkResponse({
     type: Boolean,
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async sendPasswordResetEmail(args: PromoteUserInput): Promise<boolean> {
     return this.service.sendPasswordResetEmail(args);
   }
 
+  @common.Get("/:id/resendInviteEmail")
   @swagger.ApiOkResponse({
     type: PromoteUserInput,
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async resendInviteEmail(args: PromoteUserInput): Promise<PromoteUserInput> {
     return this.service.resendInviteEmail(args);
   }
 
+  @common.Delete("/:id/softDeleteUser")
   @swagger.ApiOkResponse({
     type: PromoteUserInput,
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async softDeleteUser(args: PromoteUserInput): Promise<PromoteUserInput> {
     return this.service.softDeleteUser(args);

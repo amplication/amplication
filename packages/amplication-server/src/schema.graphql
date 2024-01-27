@@ -757,7 +757,6 @@ enum EnumModuleActionRestVerb {
   Patch
   Post
   Put
-  Trace
 }
 
 enum EnumModuleActionType {

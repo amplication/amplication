@@ -1,7 +1,11 @@
 import { ModuleAction } from "@amplication/code-gen-types";
 import { namedTypes } from "ast-types";
 import { generateBaseCustomActionMethod } from "../resolver/create-resolver-custom-actions";
-import { createRestApiResponseTypeDecorator } from "./create-rest-api-decorator";
+import {
+  createRestApiResponseTypeDecorator,
+  createRestApiVerbDecorator,
+  createStaticDecorators,
+} from "./create-rest-api-decorator";
 
 export function createControllerCustomActionMethods(
   actions: ModuleAction[]
@@ -22,11 +26,11 @@ function generateGraphQLResolverMethod(
 ): namedTypes.ClassMethod {
   const method = generateBaseCustomActionMethod(action);
 
-  // Add decorators for GraphQL operation
-  const restApiResponseTypeDecorator =
-    createRestApiResponseTypeDecorator(action);
-
-  method.decorators = [restApiResponseTypeDecorator];
+  method.decorators = [
+    createRestApiVerbDecorator(action),
+    createRestApiResponseTypeDecorator(action),
+    ...createStaticDecorators(),
+  ];
 
   return method;
 }
