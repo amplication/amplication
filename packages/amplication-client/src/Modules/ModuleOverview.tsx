@@ -1,9 +1,9 @@
 import React from "react";
 
-import { match } from "react-router-dom";
+import { NavLink, match } from "react-router-dom";
+import { Button, EnumButtonStyle } from "../Components/Button";
 import ModuleActionsAndTypes from "../ModuleActions/ModuleActionsAndTypes";
-import NewModuleAction from "../ModuleActions/NewModuleAction";
-import NewModuleDto from "../ModuleDto/NewModuleDto";
+import { useAppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import ModulesHeader from "./ModulesHeader";
 import useModule from "./hooks/useModule";
@@ -16,11 +16,15 @@ type Props = AppRouteProps & {
   }>;
 };
 const ModuleOverview = React.memo(({ match, innerRoutes }: Props) => {
-  const { module: moduleId, resource: resourceId } = match.params;
+  const { currentWorkspace, currentProject, currentResource } = useAppContext();
+
+  const { module: moduleId } = match.params;
   const { getModuleData: moduleData } = useModule(moduleId);
 
   const { searchPhrase, displayMode, customActionsLicenseEnabled } =
     useModulesContext();
+
+  const moduleUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${moduleId}/edit`;
 
   return (
     <>
@@ -34,13 +38,11 @@ const ModuleOverview = React.memo(({ match, innerRoutes }: Props) => {
                   "Create, update, and manage actions and types"
                 }
                 actions={
-                  <>
-                    <NewModuleAction
-                      moduleId={moduleId}
-                      resourceId={resourceId}
-                    />
-                    <NewModuleDto moduleId={moduleId} resourceId={resourceId} />
-                  </>
+                  <NavLink to={moduleUrl}>
+                    <Button buttonStyle={EnumButtonStyle.Primary} icon="edit">
+                      Edit Module
+                    </Button>
+                  </NavLink>
                 }
               />
 

@@ -24,6 +24,7 @@ type Props = {
   resourceId: string;
   moduleId: string;
   onDtoCreated?: (moduleAction: models.ModuleDto) => void;
+  buttonStyle?: EnumButtonStyle;
 };
 
 const FORM_SCHEMA = {
@@ -46,7 +47,12 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const NewModuleDto = ({ resourceId, moduleId, onDtoCreated }: Props) => {
+const NewModuleDto = ({
+  resourceId,
+  moduleId,
+  onDtoCreated,
+  buttonStyle = EnumButtonStyle.Primary,
+}: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -145,7 +151,7 @@ const NewModuleDto = ({ resourceId, moduleId, onDtoCreated }: Props) => {
         </Formik>
       </Dialog>
       <Button
-        buttonStyle={EnumButtonStyle.Primary}
+        buttonStyle={buttonStyle}
         onClick={handleDialogStateChange}
         disabled={!customActionsLicenseEnabled}
         icon="zap"

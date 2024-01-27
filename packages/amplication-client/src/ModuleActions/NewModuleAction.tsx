@@ -24,6 +24,7 @@ type Props = {
   resourceId: string;
   moduleId: string;
   onActionCreated?: (moduleAction: models.ModuleAction) => void;
+  buttonStyle?: EnumButtonStyle;
 };
 
 const FORM_SCHEMA = {
@@ -46,7 +47,12 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const NewModuleAction = ({ resourceId, moduleId, onActionCreated }: Props) => {
+const NewModuleAction = ({
+  resourceId,
+  moduleId,
+  onActionCreated,
+  buttonStyle = EnumButtonStyle.Primary,
+}: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -153,7 +159,7 @@ const NewModuleAction = ({ resourceId, moduleId, onActionCreated }: Props) => {
       </Dialog>
 
       <Button
-        buttonStyle={EnumButtonStyle.Primary}
+        buttonStyle={buttonStyle}
         onClick={handleDialogStateChange}
         disabled={!customActionsLicenseEnabled}
         icon="api"
