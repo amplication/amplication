@@ -20,6 +20,8 @@ import { ModuleAction } from "./dto/ModuleAction";
 import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
 import { kebabCase } from "lodash";
 import { EnumModuleDtoPropertyType } from "../moduleDto/dto/propertyTypes/EnumModuleDtoPropertyType";
+import { EnumModuleActionGqlOperation } from "./dto/EnumModuleActionGqlOperation";
+import { EnumModuleActionRestVerb } from "./dto/EnumModuleActionRestVerb";
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
@@ -58,8 +60,8 @@ export class ModuleActionService extends BlockTypeService<
           ...args.data,
           actionType: EnumModuleActionType.Custom,
           enabled: true,
-          gqlOperation: CodeGenTypes.EnumModuleActionGqlOperation.Query,
-          restVerb: CodeGenTypes.EnumModuleActionRestVerb.Get,
+          gqlOperation: EnumModuleActionGqlOperation.Query,
+          restVerb: EnumModuleActionRestVerb.Get,
           path: `/:id/${kebabCase(args.data.name)}`,
           outputType: {
             type: EnumModuleDtoPropertyType.Dto,
