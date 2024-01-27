@@ -78,7 +78,7 @@ export { ToggleButton } from "./components/ToggleButton/ToggleButton";
 
 export type { Props as ToggleButtonProps } from "./components/ToggleButton/ToggleButton";
 
-export { Toggle } from "./components/Toggle/Toggle";
+export { Toggle, EnumToggleStyle } from "./components/Toggle/Toggle";
 export type { Props as ToggleProps } from "./components/Toggle/Toggle";
 
 export { ToggleField } from "./components/Toggle/ToggleField";
