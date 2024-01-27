@@ -41,6 +41,7 @@ import { BillingService } from "../billing/billing.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
@@ -492,6 +493,7 @@ describe("EntityService", () => {
             }),
           })),
         },
+
         {
           provide: ModuleActionService,
           useClass: jest.fn(() => ({
@@ -499,6 +501,17 @@ describe("EntityService", () => {
               return [];
             }),
             deleteDefaultActionsForRelationField: jest.fn(() => {
+              return [];
+            }),
+          })),
+        },
+        {
+          provide: ModuleDtoService,
+          useClass: jest.fn(() => ({
+            createDefaultDtosForRelatedEntity: jest.fn(() => {
+              return [];
+            }),
+            deleteDefaultDtosForRelatedEntity: jest.fn(() => {
               return [];
             }),
           })),
@@ -1300,6 +1313,9 @@ describe("EntityService", () => {
       data: {
         ...EXAMPLE_ENTITY_FIELD_DATA,
         permanentId: expect.any(String),
+      },
+      include: {
+        entityVersion: true,
       },
     });
   });
