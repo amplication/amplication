@@ -83,7 +83,7 @@ export class ModuleService extends BlockTypeService<
         "Cannot delete the default module for entity. To delete it, you must delete the entity"
       );
     }
-    return super.delete(args, user);
+    return super.delete(args, user, true, true);
   }
 
   async createDefaultModuleForEntity(
