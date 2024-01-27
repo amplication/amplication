@@ -148,6 +148,7 @@ const NewModuleDto = ({ resourceId, moduleId, onDtoCreated }: Props) => {
         buttonStyle={EnumButtonStyle.Primary}
         onClick={handleDialogStateChange}
         disabled={!customActionsLicenseEnabled}
+        icon="zap"
       >
         Add Dto
       </Button>

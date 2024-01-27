@@ -66,13 +66,15 @@ const ModulesHeader = React.memo(
       <>
         <FlexItem start={<TabContentTitle title={title} subTitle={subTitle} />}>
           <FlexEnd direction={EnumFlexDirection.Row}>
-            {actions}
+            <FlexItem itemsAlign={EnumItemsAlign.Center}>
+              {actions}
 
-            <SearchField
-              label="search"
-              placeholder="Search"
-              onChange={handleSearchChange}
-            />
+              <SearchField
+                label="search"
+                placeholder="Search"
+                onChange={handleSearchChange}
+              />
+            </FlexItem>
           </FlexEnd>
         </FlexItem>
         <FlexItem>

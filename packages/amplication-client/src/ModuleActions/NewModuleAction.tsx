@@ -156,6 +156,7 @@ const NewModuleAction = ({ resourceId, moduleId, onActionCreated }: Props) => {
         buttonStyle={EnumButtonStyle.Primary}
         onClick={handleDialogStateChange}
         disabled={!customActionsLicenseEnabled}
+        icon="api"
       >
         Add Action
       </Button>

@@ -10,6 +10,7 @@ import {
   FIND_MODULE_DTOS,
   GET_AVAILABLE_DTOS_FOR_RESOURCE,
   GET_MODULE_DTO,
+  MODULE_DTO_FIELDS_FRAGMENT,
   UPDATE_MODULE_DTO,
   UPDATE_MODULE_DTO_PROPERTY,
 } from "../queries/moduleDtosQueries";
@@ -96,6 +97,34 @@ const useModuleDto = () => {
       loading: createModuleDtoLoading,
     },
   ] = useMutation<TCreateData>(CREATE_MODULE_DTO, {
+    update(cache, { data }) {
+      if (!data) return;
+
+      const newModuleDto = data.createModuleDto;
+
+      cache.modify({
+        fields: {
+          moduleDtos(existingModuleDtoRefs = [], { readField }) {
+            const newModuleDtoRef = cache.writeFragment({
+              data: newModuleDto,
+              fragment: MODULE_DTO_FIELDS_FRAGMENT,
+              fragmentName: "ModuleDtoFields",
+            });
+
+            if (
+              existingModuleDtoRefs.some(
+                (moduleRef: Reference) =>
+                  readField("id", moduleRef) === newModuleDto.id
+              )
+            ) {
+              return existingModuleDtoRefs;
+            }
+
+            return [...existingModuleDtoRefs, newModuleDtoRef];
+          },
+        },
+      });
+    },
     onCompleted: (data) => {
       addBlock(data.createModuleDto.id);
       getAvailableDtosForResourceRefetch();

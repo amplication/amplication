@@ -147,6 +147,7 @@ const NewModule = ({ resourceId, onModuleCreated }: Props) => {
         buttonStyle={EnumButtonStyle.Primary}
         onClick={handleDialogStateChange}
         disabled={!customActionsLicenseEnabled}
+        icon="box"
       >
         Add Module
       </Button>
