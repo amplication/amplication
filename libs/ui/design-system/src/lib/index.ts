@@ -213,6 +213,10 @@ export {
   EnumListStyle,
 } from "./components/List/List";
 export { ListItem, Props as ListItemProps } from "./components/List/ListItem";
+export {
+  ClickableListItemWithInnerActions,
+  Props as ClickableListItemWithInnerActionsProps,
+} from "./components/List/ClickableListItemWithActions";
 
 export {
   TabContentTitle,
