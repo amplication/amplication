@@ -1,23 +1,17 @@
 import {
   ApiOperationTag,
-  Button,
+  ClickableListItemWithInnerActions,
   EnumApiOperationTagStyle,
-  EnumButtonStyle,
-  EnumFlexDirection,
-  EnumGapSize,
   EnumGqlApiOperationTagType,
-  EnumItemsAlign,
   EnumRestApiOperationTagType,
   EnumTextColor,
   EnumTextStyle,
   EnumToggleStyle,
-  ListItem,
   Text,
   Toggle,
 } from "@amplication/ui/design-system";
 import { kebabCase } from "lodash";
 import { useCallback, useContext } from "react";
-import { NavLink } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import useModuleAction from "./hooks/useModuleAction";
@@ -87,21 +81,9 @@ export const ModuleActionListItem = ({
   const actionUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/actions/${moduleAction.id}`;
 
   return (
-    <ListItem
-      showDefaultActionIcon={false}
-      direction={EnumFlexDirection.Row}
-      itemsAlign={EnumItemsAlign.Center}
-      gap={EnumGapSize.Default}
-      end={
-        <NavLink to={actionUrl}>
-          <Button
-            type="button"
-            buttonStyle={EnumButtonStyle.Text}
-            icon="settings"
-          />
-        </NavLink>
-      }
-      start={
+    <ClickableListItemWithInnerActions
+      to={actionUrl}
+      startAction={
         <Toggle
           toggleStyle={EnumToggleStyle.Green}
           name={"enabled"}
@@ -128,6 +110,6 @@ export const ModuleActionListItem = ({
       <Text textStyle={EnumTextStyle.Description}>
         {moduleAction.displayName}
       </Text>
-    </ListItem>
+    </ClickableListItemWithInnerActions>
   );
 };

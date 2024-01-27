@@ -1,12 +1,14 @@
 import {
-  EnumFlexDirection,
-  EnumGapSize,
-  EnumItemsAlign,
+  Button,
+  ClickableListItemWithInnerActions,
+  EnumButtonStyle,
   EnumTextStyle,
-  ListItem,
+  FlexItem,
+  Icon,
   Text,
 } from "@amplication/ui/design-system";
 import { useContext } from "react";
+import { NavLink } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 
@@ -20,17 +22,30 @@ export const ModuleListItem = ({ module }: Props) => {
 
   if (!module) return null;
 
-  const moduleUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/edit`;
+  const moduleUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}`;
+  const editUrl = `${moduleUrl}/edit`;
+  const actionsUrl = `${moduleUrl}/actions`;
+  const dtosUrl = `${moduleUrl}/dtos`;
 
   return (
-    <ListItem
-      showDefaultActionIcon
-      direction={EnumFlexDirection.Row}
-      itemsAlign={EnumItemsAlign.Center}
-      gap={EnumGapSize.Default}
-      to={moduleUrl}
+    <ClickableListItemWithInnerActions
+      to={editUrl}
+      endAction={
+        <FlexItem>
+          <NavLink to={actionsUrl}>
+            <Button buttonStyle={EnumButtonStyle.Text}>
+              <Icon icon="api" size="xsmall" />
+            </Button>
+          </NavLink>
+          <NavLink to={dtosUrl}>
+            <Button buttonStyle={EnumButtonStyle.Text}>
+              <Icon icon="zap" size="xsmall" />
+            </Button>
+          </NavLink>
+        </FlexItem>
+      }
     >
       <Text textStyle={EnumTextStyle.Description}>{module.displayName}</Text>
-    </ListItem>
+    </ClickableListItemWithInnerActions>
   );
 };
