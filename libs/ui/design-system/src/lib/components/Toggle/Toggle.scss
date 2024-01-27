@@ -28,6 +28,15 @@ $thumb-position-offset: -6px;
 
   position: relative;
   height: $track-height;
+  --toggle-track-background: var(--primary);
+
+  &--green {
+    --toggle-track-background: var(--color-positive);
+  }
+
+  &--dark {
+    --toggle-track-background: var(--gray-full);
+  }
 
   label {
     white-space: nowrap;
@@ -54,7 +63,7 @@ $thumb-position-offset: -6px;
       left: $thumb-position-offset;
 
       &.Mui-checked {
-        @include state(var(--static-white), var(--primary));
+        @include state(var(--static-white), var(--toggle-track-background));
       }
 
       &:not(.Mui-checked) {
