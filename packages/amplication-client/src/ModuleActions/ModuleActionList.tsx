@@ -106,12 +106,8 @@ const ModuleActionList = React.memo(
               <Text
                 textStyle={EnumTextStyle.Normal}
                 textColor={EnumTextColor.White}
-                textWeight={EnumTextWeight.Bold}
               >
-                {module.name}
-              </Text>
-              <Text textStyle={EnumTextStyle.Description}>
-                {module.description}
+                All actions in module {module.name}
               </Text>
             </FlexItem>
           }

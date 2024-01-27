@@ -2,12 +2,12 @@ import React from "react";
 
 import { match } from "react-router-dom";
 import ModuleActionsAndTypes from "../ModuleActions/ModuleActionsAndTypes";
+import NewModuleAction from "../ModuleActions/NewModuleAction";
+import NewModuleDto from "../ModuleDto/NewModuleDto";
 import { AppRouteProps } from "../routes/routesUtil";
 import ModulesHeader from "./ModulesHeader";
 import useModule from "./hooks/useModule";
 import { useModulesContext } from "./modulesContext";
-import NewModuleAction from "../ModuleActions/NewModuleAction";
-import NewModuleDto from "../ModuleDto/NewModuleDto";
 
 type Props = AppRouteProps & {
   match: match<{

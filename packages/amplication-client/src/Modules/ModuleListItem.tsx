@@ -20,7 +20,7 @@ export const ModuleListItem = ({ module }: Props) => {
 
   if (!module) return null;
 
-  const moduleUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}`;
+  const moduleUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/edit`;
 
   return (
     <ListItem

@@ -3,6 +3,7 @@ import {
   EnumFlexItemMargin,
   EnumTextStyle,
   FlexItem,
+  HorizontalRule,
   Snackbar,
   Text,
   VerticalNavigation,
@@ -51,8 +52,9 @@ const ModuleNavigationList: React.FC<Props> = ({ resourceId }) => {
             icon={"box"}
             to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules`}
           >
-            All
+            All Modules
           </VerticalNavigationItem>
+          <HorizontalRule />
           {data?.modules.map((module) => (
             <ModuleNavigationListItem
               key={module.id}
