@@ -18,6 +18,8 @@ export function createResolverCustomActionMethods(
   return methods;
 }
 
+const SERVICE_ID = builders.identifier("service");
+
 function generateGraphQLResolverMethod(
   action: ModuleAction
 ): namedTypes.ClassMethod {
@@ -27,11 +29,23 @@ function generateGraphQLResolverMethod(
   const inputParam = builders.identifier("args");
   inputParam.typeAnnotation = builders.tsTypeAnnotation(inputType);
 
+  //generate this code within the function
+  //return this.service.[name]](args);
   const method = builders.classMethod(
     "method",
     builders.identifier(action.name),
     [inputParam],
-    builders.blockStatement([]),
+    builders.blockStatement([
+      builders.returnStatement(
+        builders.callExpression(
+          builders.memberExpression(
+            builders.memberExpression(builders.thisExpression(), SERVICE_ID),
+            builders.identifier(action.name)
+          ),
+          [builders.identifier("args")]
+        )
+      ),
+    ]),
     false,
     false
   );
@@ -47,7 +61,7 @@ function generateGraphQLResolverMethod(
     method.returnType = builders.tsTypeAnnotation(typeWithPromise);
   }
 
-  // Add decorators for NestJS GraphQL
+  // Add decorators for GraphQL operation
   const gqlOperationDecorator = createGraphQLOperationDecorator(action);
 
   method.decorators = [gqlOperationDecorator];

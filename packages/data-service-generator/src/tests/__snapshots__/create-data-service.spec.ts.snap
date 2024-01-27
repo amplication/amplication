@@ -14216,16 +14216,24 @@ export class UserResolverBase {
   }
 
   @graphql.Mutation(() => [PromoteUserInput])
-  async promoteUser(args: PromoteUserArgs): Promise<PromoteUserInput[]> {}
+  async promoteUser(args: PromoteUserArgs): Promise<PromoteUserInput[]> {
+    return this.service.promoteUser(args);
+  }
 
   @graphql.Mutation(() => Boolean)
-  async sendPasswordResetEmail(args: PromoteUserInput): Promise<boolean> {}
+  async sendPasswordResetEmail(args: PromoteUserInput): Promise<boolean> {
+    return this.service.sendPasswordResetEmail(args);
+  }
 
   @graphql.Query(() => PromoteUserInput)
-  async resendInviteEmail(args: PromoteUserInput): Promise<PromoteUserInput> {}
+  async resendInviteEmail(args: PromoteUserInput): Promise<PromoteUserInput> {
+    return this.service.resendInviteEmail(args);
+  }
 
   @graphql.Mutation(() => PromoteUserInput)
-  async softDeleteUser(args: PromoteUserInput): Promise<PromoteUserInput> {}
+  async softDeleteUser(args: PromoteUserInput): Promise<PromoteUserInput> {
+    return this.service.softDeleteUser(args);
+  }
 }
 ",
   "server/src/user/base/user.service.base.ts": "/*
