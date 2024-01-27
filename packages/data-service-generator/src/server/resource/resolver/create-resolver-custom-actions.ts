@@ -23,6 +23,19 @@ const SERVICE_ID = builders.identifier("service");
 function generateGraphQLResolverMethod(
   action: ModuleAction
 ): namedTypes.ClassMethod {
+  const method = generateBaseCustomActionMethod(action);
+
+  // Add decorators for GraphQL operation
+  const gqlOperationDecorator = createGraphQLOperationDecorator(action);
+
+  method.decorators = [gqlOperationDecorator];
+
+  return method;
+}
+
+export function generateBaseCustomActionMethod(
+  action: ModuleAction
+): namedTypes.ClassMethod {
   const inputType = createPropTypeFromTypeDefList([action.inputType]);
   const outputType = createPropTypeFromTypeDefList([action.outputType]);
 
@@ -60,11 +73,6 @@ function generateGraphQLResolverMethod(
 
     method.returnType = builders.tsTypeAnnotation(typeWithPromise);
   }
-
-  // Add decorators for GraphQL operation
-  const gqlOperationDecorator = createGraphQLOperationDecorator(action);
-
-  method.decorators = [gqlOperationDecorator];
 
   return method;
 }

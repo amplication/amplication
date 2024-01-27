@@ -42,14 +42,14 @@ function createType(
 
   const typeDef = property.propertyTypes[0];
 
-  return getTypeDefType(typeDef);
+  return createTypeFromTypeDef(typeDef);
 }
 
-function getTypeDefType(
+export function createTypeFromTypeDef(
   typeDef: PropertyTypeDef
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
   if (typeDef.isArray) {
-    const itemType = getTypeDefType({ ...typeDef, isArray: false });
+    const itemType = createTypeFromTypeDef({ ...typeDef, isArray: false });
     return builders.arrayExpression([itemType]);
   }
 

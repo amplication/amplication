@@ -51,6 +51,7 @@ import {
   createUpdateFunctionId,
 } from "../service/create-service";
 import { setEndpointPermissions } from "../../../utils/set-endpoint-permission";
+import { createControllerCustomActionMethods } from "./create-conroller-custom-actions";
 
 export type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
@@ -320,7 +321,10 @@ async function createControllerBaseModule({
     setEndpointPermissions(classDeclaration, methodId, action, entity);
   });
 
-  classDeclaration.body.body.push(...toManyRelationMethods);
+  classDeclaration.body.body.push(
+    ...toManyRelationMethods,
+    ...(await createControllerCustomActionMethods(entityActions.customActions))
+  );
 
   toManyRelationFields.map((field) =>
     Object.keys(entityActions.relatedFieldsDefaultActions[field.name]).forEach(

@@ -14040,6 +14040,34 @@ export class UserControllerBase {
       select: { id: true },
     });
   }
+
+  @swagger.ApiOkResponse({
+    type: [PromoteUserInput],
+  })
+  async promoteUser(args: PromoteUserArgs): Promise<PromoteUserInput[]> {
+    return this.service.promoteUser(args);
+  }
+
+  @swagger.ApiOkResponse({
+    type: Boolean,
+  })
+  async sendPasswordResetEmail(args: PromoteUserInput): Promise<boolean> {
+    return this.service.sendPasswordResetEmail(args);
+  }
+
+  @swagger.ApiOkResponse({
+    type: PromoteUserInput,
+  })
+  async resendInviteEmail(args: PromoteUserInput): Promise<PromoteUserInput> {
+    return this.service.resendInviteEmail(args);
+  }
+
+  @swagger.ApiOkResponse({
+    type: PromoteUserInput,
+  })
+  async softDeleteUser(args: PromoteUserInput): Promise<PromoteUserInput> {
+    return this.service.softDeleteUser(args);
+  }
 }
 ",
   "server/src/user/base/user.module.base.ts": "/*
