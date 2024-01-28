@@ -32,31 +32,29 @@ function BetaFeatureTag({ tagLabel }: Props) {
               currently in beta.
             </Text>
             <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-              For more details, check our "Break the Monolith" documentation{" "}
+              For more details, check our "Break the Monolith"{" "}
               <a href="https://docs.amplication.com/docs/beta-features">
                 <Text
                   textStyle={EnumTextStyle.Tag}
                   textColor={EnumTextColor.ThemeTurquoise}
                   underline
                 >
-                  our docs.
+                  documentation
                 </Text>
               </a>
             </Text>
             <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
               If you encounter issues or have feedback, please join the
-              discussion on our GitHub repository{" "}
-              <div>
-                <a href="https://github.com/amplication/amplication/discussions/7869">
-                  <Text
-                    textStyle={EnumTextStyle.Tag}
-                    textColor={EnumTextColor.ThemeTurquoise}
-                    underline
-                  >
-                    GitHub repo.
-                  </Text>
-                </a>
-              </div>
+              discussion on{" "}
+              <a href="https://github.com/amplication/amplication/discussions/7869">
+                <Text
+                  textStyle={EnumTextStyle.Tag}
+                  textColor={EnumTextColor.ThemeTurquoise}
+                  underline
+                >
+                  our GitHub repository
+                </Text>
+              </a>
             </Text>
           </FlexItem>
         </div>
