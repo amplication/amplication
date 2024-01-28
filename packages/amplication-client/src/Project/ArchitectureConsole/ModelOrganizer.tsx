@@ -243,8 +243,6 @@ export default function ModelOrganizer({
     reactFlowInstance.fitView();
   }, [toggleShowRelationDetails, reactFlowInstance]);
 
-  const updatedError = formatError(createEntitiesError);
-
   return (
     <div className={CLASS_NAME}>
       {loadingResources ? (
@@ -322,10 +320,6 @@ export default function ModelOrganizer({
               </div>
             </div>
           </div>
-          <Snackbar
-            open={Boolean(createEntitiesError)}
-            message={updatedError}
-          />
         </>
       )}
     </div>

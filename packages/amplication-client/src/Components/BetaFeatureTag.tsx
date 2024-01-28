@@ -28,10 +28,11 @@ function BetaFeatureTag({ tagLabel }: Props) {
             gap={EnumGapSize.Small}
           >
             <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-              The architecture tab and models redesign tools are under beta.
+              The Architecture tab's overview and redesign features are
+              currently in beta.
             </Text>
             <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-              You can ream more about this feature on{" "}
+              For more details, check our "Break the Monolith" documentation{" "}
               <a href="https://docs.amplication.com/docs/beta-features">
                 <Text
                   textStyle={EnumTextStyle.Tag}
@@ -43,16 +44,19 @@ function BetaFeatureTag({ tagLabel }: Props) {
               </a>
             </Text>
             <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-              To report an issue, go to our{" "}
-              <a href="https://docs.amplication.com/docs/beta-features">
-                <Text
-                  textStyle={EnumTextStyle.Tag}
-                  textColor={EnumTextColor.ThemeTurquoise}
-                  underline
-                >
-                  GitHub repo.
-                </Text>
-              </a>
+              If you encounter issues or have feedback, please join the
+              discussion on our GitHub repository{" "}
+              <div>
+                <a href="https://github.com/amplication/amplication/discussions/7869">
+                  <Text
+                    textStyle={EnumTextStyle.Tag}
+                    textColor={EnumTextColor.ThemeTurquoise}
+                    underline
+                  >
+                    GitHub repo.
+                  </Text>
+                </a>
+              </div>
             </Text>
           </FlexItem>
         </div>
@@ -63,7 +67,7 @@ function BetaFeatureTag({ tagLabel }: Props) {
         <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.Black}>
           {tagLabel || "Beta Feature"}
         </Text>
-        <Icon icon="taget" />
+        <Icon icon="icon-publish" />
       </div>
     </Popover>
   );

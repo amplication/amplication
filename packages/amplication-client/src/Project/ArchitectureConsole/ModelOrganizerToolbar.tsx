@@ -154,13 +154,22 @@ export default function ModelOrganizerToolbar({
         ></ModelOrganizerConfirmation>
       </Dialog>
 
-      <Dialog
-        isOpen={applyChangesSteps && !createEntitiesError}
-        onDismiss={handleDismissChangesSteps}
-      >
-        <ApplyChangesNextSteps
-          onDisplayArchitectureClicked={handleDismissChangesSteps}
-        />
+      <Dialog isOpen={applyChangesSteps} onDismiss={handleDismissChangesSteps}>
+        {createEntitiesError ? (
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            itemsAlign={EnumItemsAlign.Center}
+          >
+            <span>
+              We encountered a problem while processing your new architecture.
+            </span>
+            <span> Please try again in a few minutes</span>
+          </FlexItem>
+        ) : (
+          <ApplyChangesNextSteps
+            onDisplayArchitectureClicked={handleDismissChangesSteps}
+          />
+        )}
       </Dialog>
 
       <ConfirmationDialog
