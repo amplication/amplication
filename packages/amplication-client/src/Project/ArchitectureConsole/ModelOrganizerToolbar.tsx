@@ -1,13 +1,16 @@
 import "./ModelOrganizerToolbar.scss";
 
 import {
+  Chip,
   ConfirmationDialog,
   Dialog,
   EnumButtonStyle,
+  EnumChipStyle,
   EnumContentAlign,
   EnumGapSize,
   EnumItemsAlign,
   FlexItem,
+  Icon,
   SearchField,
 } from "@amplication/ui/design-system";
 import {
@@ -20,6 +23,7 @@ import { Button } from "../../Components/Button";
 import {
   EntitlementType,
   FeatureIndicatorContainer,
+  IconType,
 } from "../../Components/FeatureIndicatorContainer";
 import RedesignResourceButton from "../../Components/RedesignResourceButton";
 import * as models from "../../models";
@@ -28,6 +32,8 @@ import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
 import { ApplyChangesNextSteps } from "./ApplyChangesNextSteps";
 import CreateApplyChangesLoader from "./CreateApplyChangesLoader";
+import { FeatureIndicator } from "../../Components/FeatureIndicator";
+import BetaFeatureTag from "../../Components/BetaFeatureTag";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 const CONFIRM_BUTTON = { label: "Discard Changes" };
@@ -193,9 +199,9 @@ export default function ModelOrganizerToolbar({
         gap={EnumGapSize.Large}
       >
         <FlexItem
-          itemsAlign={EnumItemsAlign.Start}
+          itemsAlign={EnumItemsAlign.Center}
           contentAlign={EnumContentAlign.Start}
-          direction={EnumFlexDirection.Column}
+          direction={EnumFlexDirection.Row}
         >
           <SearchField
             label="search"
@@ -221,6 +227,7 @@ export default function ModelOrganizerToolbar({
                 AI Helper
               </Button>
             </FeatureIndicatorContainer> */}
+            <BetaFeatureTag></BetaFeatureTag>
 
             {!readOnly && (
               <>
