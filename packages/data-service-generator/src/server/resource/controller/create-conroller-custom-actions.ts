@@ -15,13 +15,13 @@ export function createControllerCustomActionMethods(
   }
 
   const methods = actions.map((action) => {
-    return generateGraphQLResolverMethod(action);
+    return generateRestApiControllerMethod(action);
   });
 
   return methods;
 }
 
-function generateGraphQLResolverMethod(
+function generateRestApiControllerMethod(
   action: ModuleAction
 ): namedTypes.ClassMethod {
   const method = generateBaseCustomActionMethod(action);
