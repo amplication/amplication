@@ -58,20 +58,7 @@ const ModuleDtoList = React.memo(
 
     return (
       <>
-        <List
-          listStyle={EnumListStyle.Transparent}
-          headerContent={
-            <FlexItem itemsAlign={EnumItemsAlign.Center}>
-              <Text
-                textStyle={EnumTextStyle.Normal}
-                textColor={EnumTextColor.White}
-                textWeight={EnumTextWeight.Bold}
-              >
-                DTOs
-              </Text>
-            </FlexItem>
-          }
-        >
+        <List listStyle={EnumListStyle.Dark}>
           {data?.moduleDtos?.length ? (
             data?.moduleDtos?.map((dto) => (
               <ModuleDtoListItem

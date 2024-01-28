@@ -25,7 +25,7 @@ const ModuleDtos = React.memo(({ match, innerRoutes }: Props) => {
     <>
       <ModulesHeader
         hideApiToggle
-        title={moduleData?.module.displayName}
+        title={`${moduleData?.module.displayName} DTOs `}
         subTitle={
           moduleData?.module.description ||
           "Create, update, and manage actions and types"

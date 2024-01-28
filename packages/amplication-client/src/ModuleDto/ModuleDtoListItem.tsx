@@ -2,6 +2,7 @@ import {
   EnumFlexDirection,
   EnumGapSize,
   EnumItemsAlign,
+  EnumTextColor,
   EnumTextStyle,
   ListItem,
   Text,
@@ -31,7 +32,9 @@ export const ModuleDtoListItem = ({ module, moduleDto }: Props) => {
       itemsAlign={EnumItemsAlign.Center}
       gap={EnumGapSize.Default}
     >
-      <Text textStyle={EnumTextStyle.Normal}>{moduleDto.name}</Text>
+      <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+        {moduleDto.name}
+      </Text>
     </ListItem>
   );
 };

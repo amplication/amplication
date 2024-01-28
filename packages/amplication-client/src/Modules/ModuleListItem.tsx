@@ -2,6 +2,7 @@ import {
   Button,
   ClickableListItemWithInnerActions,
   EnumButtonStyle,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Icon,
@@ -45,7 +46,9 @@ export const ModuleListItem = ({ module }: Props) => {
         </FlexItem>
       }
     >
-      <Text textStyle={EnumTextStyle.Description}>{module.displayName}</Text>
+      <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+        {module.displayName}
+      </Text>
     </ClickableListItemWithInnerActions>
   );
 };

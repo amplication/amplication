@@ -25,7 +25,7 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
     ? moduleData && (
         <>
           <ModulesHeader
-            title={moduleData?.module.displayName}
+            title={`${moduleData?.module.displayName} Actions `}
             subTitle={
               moduleData?.module.description ||
               "Create, update, and manage actions and types"
