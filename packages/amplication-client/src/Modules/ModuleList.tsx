@@ -29,7 +29,7 @@ const ModuleList = React.memo(() => {
       {loading ? (
         <CircularProgress />
       ) : (
-        <List listStyle={EnumListStyle.Dark}>
+        <List listStyle={EnumListStyle.Default}>
           {data?.modules?.length ? (
             data?.modules?.map((module) => (
               <ModuleListItem key={module.id} module={module} />

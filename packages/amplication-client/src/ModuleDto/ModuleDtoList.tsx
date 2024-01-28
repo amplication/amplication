@@ -58,7 +58,7 @@ const ModuleDtoList = React.memo(
 
     return (
       <>
-        <List listStyle={EnumListStyle.Dark}>
+        <List listStyle={EnumListStyle.Default}>
           {data?.moduleDtos?.length ? (
             data?.moduleDtos?.map((dto) => (
               <ModuleDtoListItem

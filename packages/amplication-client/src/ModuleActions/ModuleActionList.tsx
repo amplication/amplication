@@ -89,7 +89,7 @@ const ModuleActionList = React.memo(
     return (
       <>
         <List
-          listStyle={EnumListStyle.Dark}
+          listStyle={EnumListStyle.Default}
           headerContent={
             <FlexItem
               itemsAlign={EnumItemsAlign.Center}
