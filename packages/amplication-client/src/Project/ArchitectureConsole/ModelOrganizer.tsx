@@ -35,6 +35,7 @@ import {
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
+import { formatError } from "../../util/error";
 
 export const CLASS_NAME = "model-organizer";
 
@@ -83,6 +84,7 @@ export default function ModelOrganizer({
     searchPhraseChanged,
     setDraggableNodes,
     mergeNewResourcesChanges,
+    createEntitiesError,
   } = useModelOrganization();
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
@@ -178,7 +180,6 @@ export default function ModelOrganizer({
         });
         targetGroup = findGroupByPosition(nodes, dropPosition);
         if (targetGroup?.id !== draggedNode.parentNode) {
-          console.log("settings drop target");
           setCurrentDropTarget(targetGroup);
         } else {
           setCurrentDropTarget(null);
@@ -224,7 +225,6 @@ export default function ModelOrganizer({
         };
 
         currentDropTarget.data.isCurrentDropTarget = false;
-        console.log({ draggedNode, node });
 
         moveNodeToParent(draggedNodes, currentDropTarget);
       }
@@ -243,8 +243,7 @@ export default function ModelOrganizer({
     reactFlowInstance.fitView();
   }, [toggleShowRelationDetails, reactFlowInstance]);
 
-  if (loadingCreateResourceAndEntities)
-    return <CircularProgress centerToParent />;
+  const updatedError = formatError(createEntitiesError);
 
   return (
     <div className={CLASS_NAME}>
@@ -272,6 +271,9 @@ export default function ModelOrganizer({
                   changes?.movedEntities?.length > 0 ||
                   changes?.newServices?.length > 0
                 }
+                loadingCreateResourceAndEntities={
+                  loadingCreateResourceAndEntities
+                }
                 resources={currentResourcesData}
                 onApplyPlan={onApplyPlanClick}
                 searchPhraseChanged={searchPhraseChanged}
@@ -279,6 +281,7 @@ export default function ModelOrganizer({
                 handleServiceCreated={handleServiceCreated}
                 onCancelChanges={onCancelChangesClick}
                 mergeNewResourcesChanges={mergeNewResourcesChanges}
+                createEntitiesError={Boolean(createEntitiesError)}
               />
               <Dialog
                 isOpen={!isValidResourceName}
@@ -319,8 +322,10 @@ export default function ModelOrganizer({
               </div>
             </div>
           </div>
-
-          <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
+          <Snackbar
+            open={Boolean(createEntitiesError)}
+            message={updatedError}
+          />
         </>
       )}
     </div>

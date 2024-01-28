@@ -15,7 +15,7 @@ import {
   FlexEnd,
 } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "../../Components/Button";
 import {
   EntitlementType,
@@ -26,6 +26,8 @@ import * as models from "../../models";
 import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
+import { ApplyChangesNextSteps } from "./ApplyChangesNextSteps";
+import CreateApplyChangesLoader from "./CreateApplyChangesLoader";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 const CONFIRM_BUTTON = { label: "Discard Changes" };
@@ -43,7 +45,11 @@ type Props = {
   handleServiceCreated: (newResource: models.Resource) => void;
   onCancelChanges: () => void;
   mergeNewResourcesChanges: () => void;
+  loadingCreateResourceAndEntities: boolean;
+  createEntitiesError: boolean;
 };
+
+const MIN_TIME_OUT_LOADER = 2000;
 
 export default function ModelOrganizerToolbar({
   readOnly,
@@ -51,6 +57,8 @@ export default function ModelOrganizerToolbar({
   hasChanges,
   nodes,
   resources,
+  loadingCreateResourceAndEntities,
+  createEntitiesError,
   onApplyPlan,
   searchPhraseChanged,
   onRedesign,
@@ -65,6 +73,8 @@ export default function ModelOrganizerToolbar({
     [searchPhraseChanged]
   );
   const [confirmChanges, setConfirmChanges] = useState<boolean>(false);
+  const [keepLoadingChanges, setKeepLoadingChanges] = useState<boolean>(false);
+
   const [confirmDiscardChanges, setConfirmDiscardChanges] =
     useState<boolean>(false);
 
@@ -73,6 +83,7 @@ export default function ModelOrganizerToolbar({
   }, [confirmChanges, setConfirmChanges]);
 
   const [changesDialog, setChangesDialog] = useState<boolean>(false);
+  const [applyChangesSteps, setApplyChangesSteps] = useState<boolean>(false);
 
   const handleAiClicked = useCallback(() => {
     if (hasChanges) {
@@ -90,13 +101,40 @@ export default function ModelOrganizerToolbar({
     setChangesDialog(false);
   }, [setChangesDialog]);
 
+  const handleOnApplyPlan = useCallback(() => {
+    setConfirmChanges(false);
+    onApplyPlan();
+  }, [setConfirmChanges, onApplyPlan]);
+
   const handleConfirmDelete = useCallback(() => {
     setConfirmDiscardChanges(!confirmDiscardChanges);
     onCancelChanges();
   }, [confirmDiscardChanges, onCancelChanges]);
 
+  useEffect(() => {
+    if (loadingCreateResourceAndEntities) {
+      setKeepLoadingChanges(true);
+    }
+  }, [setKeepLoadingChanges, loadingCreateResourceAndEntities]);
+
+  const handleTimeout = useCallback(() => {
+    setKeepLoadingChanges(false);
+    setApplyChangesSteps(true);
+  }, [setKeepLoadingChanges, setApplyChangesSteps]);
+
+  const handleDismissChangesSteps = useCallback(() => {
+    setApplyChangesSteps(!applyChangesSteps);
+  }, [setApplyChangesSteps, applyChangesSteps]);
+
   return (
     <div className={CLASS_NAME}>
+      {keepLoadingChanges || loadingCreateResourceAndEntities ? (
+        <CreateApplyChangesLoader
+          onTimeout={handleTimeout}
+          minimumLoadTimeMS={MIN_TIME_OUT_LOADER}
+        />
+      ) : null}
+
       <Dialog
         isOpen={confirmChanges}
         onDismiss={handleConfirmChangesState}
@@ -104,10 +142,19 @@ export default function ModelOrganizerToolbar({
       >
         <ModelOrganizerConfirmation
           nodes={nodes}
-          onConfirmChanges={onApplyPlan}
+          onConfirmChanges={handleOnApplyPlan}
           onCancelChanges={handleConfirmChangesState}
           changes={changes}
         ></ModelOrganizerConfirmation>
+      </Dialog>
+
+      <Dialog
+        isOpen={applyChangesSteps && !createEntitiesError}
+        onDismiss={handleDismissChangesSteps}
+      >
+        <ApplyChangesNextSteps
+          onDisplayArchitectureClicked={handleDismissChangesSteps}
+        />
       </Dialog>
 
       <ConfirmationDialog

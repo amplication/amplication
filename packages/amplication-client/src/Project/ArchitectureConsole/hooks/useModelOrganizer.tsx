@@ -485,7 +485,6 @@ const useModelOrganization = () => {
   );
 
   useEffect(() => {
-    console.log("effect 1");
     if (currentTheme === "" || !currentTheme) {
       loadProjectResources();
     }
@@ -599,11 +598,7 @@ const useModelOrganization = () => {
   const [
     createResourceEntities,
     { loading: loadingCreateResourceAndEntities, error: createEntitiesError },
-  ] = useMutation<modelChangesData>(CREATE_RESOURCE_ENTITIES, {
-    onCompleted: () => {
-      history.push(`/${currentWorkspace?.id}/${currentProject?.id}`);
-    },
-  });
+  ] = useMutation<modelChangesData>(CREATE_RESOURCE_ENTITIES, {});
 
   const saveChanges = useCallback(async () => {
     const { newServices, movedEntities } = changes;
@@ -650,6 +645,7 @@ const useModelOrganization = () => {
     toggleShowRelationDetails,
     resetToOriginalState,
     changes,
+    createEntitiesError,
     setChanges,
     setDraggableNodes,
     saveChanges,
