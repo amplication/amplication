@@ -11,7 +11,6 @@ export enum BillingFeature {
   CustomActions = "feature-custom-actions",
   EntitiesPerService = "feature-entities-per-service",
   GitLab = "feature-gitlab",
-  HideNotifications = "feature-ignore-validation-code-generation-hide-notifications",
   IgnoreValidationCodeGeneration = "feature-ignore-validation-code-generation",
   ImportDBSchema = "feature-import-db-schema",
   Notification = "feature-notifications",

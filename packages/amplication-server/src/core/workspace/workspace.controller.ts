@@ -17,7 +17,8 @@ export class WorkspaceController {
 
   @Post(`createWorkspacesResourcesDefaultCustomActionsMigration/:token`)
   async createWorkspacesResourcesDefaultCustomActionsMigration(
-    @Param("token") token: string
+    @Param("token") token: string,
+    @Param("quantity") quantity: number
   ): Promise<boolean> {
     this.logger.info(
       "createWorkspacesResourcesDefaultCustomActionsMigration...."
@@ -28,12 +29,15 @@ export class WorkspaceController {
       this.logger.error("InvalidToken, process aborted");
       return;
     }
-    return this.workspaceService.dataMigrateWorkspacesResourcesCustomActions();
+    return this.workspaceService.dataMigrateWorkspacesResourcesCustomActions(
+      quantity
+    );
   }
 
   @Post(`createWorkspacesResourcesDefaultCustomActionsMigrationFix/:token`)
   async createWorkspacesResourcesDefaultCustomActionsMigrationFix(
-    @Param("token") token: string
+    @Param("token") token: string,
+    @Param("quantity") quantity: number
   ): Promise<boolean> {
     this.logger.info(
       "createWorkspacesResourcesDefaultCustomActionsMigrationFix...."
@@ -44,6 +48,8 @@ export class WorkspaceController {
       this.logger.error("InvalidToken, process aborted");
       return;
     }
-    return this.workspaceService.dataMigrateWorkspacesResourcesCustomActionsFix();
+    return this.workspaceService.dataMigrateWorkspacesResourcesCustomActionsFix(
+      quantity
+    );
   }
 }

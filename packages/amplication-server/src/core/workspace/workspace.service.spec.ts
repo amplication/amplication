@@ -168,7 +168,7 @@ Object.defineProperty(billingServiceMock, "isBillingEnabled", {
   get: billingServiceIsBillingEnabledMock,
 });
 
-const resourceCreateSampleResourceMock = jest.fn();
+const createPreviewServiceMock = jest.fn();
 const mockUpdateProjectLicensed = jest.fn();
 const mockUpdateServiceLicensed = jest.fn();
 describe("WorkspaceService", () => {
@@ -248,7 +248,7 @@ describe("WorkspaceService", () => {
         {
           provide: ResourceService,
           useClass: jest.fn().mockImplementation(() => ({
-            createSampleResource: resourceCreateSampleResourceMock,
+            createPreviewService: createPreviewServiceMock,
           })),
         },
         {

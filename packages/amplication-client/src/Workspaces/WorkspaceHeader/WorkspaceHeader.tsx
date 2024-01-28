@@ -292,7 +292,7 @@ const WorkspaceHeader: React.FC = () => {
                   </Dialog>
                   <FeatureIndicator
                     featureName={BillingFeature.CodeGenerationBuilds}
-                    text="in order to “Create the ready-to-production code for this architecture in a few simple clicks"
+                    text="Generate production-ready code for this architecture with just a few simple clicks"
                     linkText=""
                     element={
                       <Button

@@ -9,12 +9,10 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { AuthService, IDENTITY_PROVIDER_MANUAL } from "./auth.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { EnumTokenType } from "./dto";
-import { ProjectService } from "../project/project.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { ConfigService } from "@nestjs/config";
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
-import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Workspace, Project, Resource, Account, User } from "../../models";
 import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
@@ -195,10 +193,6 @@ const createPreviewEnvironmentMock = jest.fn(() => ({
   resource: EXAMPLE_RESOURCE,
 }));
 
-const mockedCreateProject = jest.fn(() => EXAMPLE_PROJECT);
-
-const mockedCreatePreviewService = jest.fn(() => EXAMPLE_RESOURCE);
-
 const prismaCreateProjectMock = jest.fn(() => EXAMPLE_PROJECT);
 
 describe("AuthService", () => {
@@ -215,8 +209,6 @@ describe("AuthService", () => {
     findUsersMock.mockClear();
     createWorkspaceMock.mockClear();
     prismaCreateProjectMock.mockClear();
-    mockedCreateProject.mockClear();
-    mockedCreatePreviewService.mockClear();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -271,18 +263,6 @@ describe("AuthService", () => {
           provide: JwtService,
           useClass: jest.fn(() => ({
             sign: signMock,
-          })),
-        },
-        {
-          provide: ProjectService,
-          useClass: jest.fn(() => ({
-            createProject: mockedCreateProject,
-          })),
-        },
-        {
-          provide: ResourceService,
-          useClass: jest.fn(() => ({
-            createPreviewService: mockedCreatePreviewService,
           })),
         },
         {
