@@ -143,7 +143,7 @@ const useModelOrganization = () => {
     setCurrentTheme,
     showRelationDetails,
     currentProject,
-    currentResourcesData,
+    currentResourcesStorageData,
     currentTheme,
   ]);
 
