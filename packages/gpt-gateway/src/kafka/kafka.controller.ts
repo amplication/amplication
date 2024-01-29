@@ -8,7 +8,10 @@ import {
   Payload,
 } from "@nestjs/microservices";
 import { plainToInstance } from "class-transformer";
-import { AiConversationStart } from "@amplication/schema-registry";
+import {
+  GptConversationStart,
+  KAFKA_TOPICS,
+} from "@amplication/schema-registry";
 
 @Controller("kafka-controller")
 export class KafkaController {
@@ -18,17 +21,17 @@ export class KafkaController {
     private readonly logger: AmplicationLogger
   ) {}
 
-  @EventPattern("ai.conversation.start.1")
+  @EventPattern(KAFKA_TOPICS.AI_CONVERSATION_START_TOPIC)
   async onAiConversationStart_1(
     @Payload()
-    value: AiConversationStart.Value,
+    value: GptConversationStart.Value,
     @Ctx()
     context: KafkaContext
   ): Promise<void> {
-    const messageInput = plainToInstance(AiConversationStart.Value, value);
+    const messageInput = plainToInstance(GptConversationStart.Value, value);
 
     this.logger.info(`Got a new Gpt Conversation request item from queue.`, {
-      requestedId: messageInput.requestUniqueId,
+      requestUniqueId: messageInput.requestUniqueId,
       params: messageInput.params,
       messageTypeKey: messageInput.messageTypeKey,
       class: this.constructor.name,

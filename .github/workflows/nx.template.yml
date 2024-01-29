@@ -65,7 +65,7 @@ jobs:
           ref: ${{ inputs.nx-head }}
           filter: blob:none
 
-      - uses: nrwl/nx-set-shas@v3
+      - uses: nrwl/nx-set-shas@v4
         if: inputs.nx-force-all == false
         with:
           main-branch-name: ${{ inputs.nx-base }}

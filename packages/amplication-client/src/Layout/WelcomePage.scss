@@ -7,7 +7,7 @@ $stripe-side-padding: 75px;
 $form-min-width: 550px;
 $form-mobile-max-width: 400px;
 $panel-min-width: 400px;
-$panel-padding: 48px 32px;
+$panel-padding: 24px 32px;
 $trial-message-padding: 16px 32px;
 $button-padding: 24px;
 
@@ -28,7 +28,7 @@ $sub-title-font-size: 28px;
     box-sizing: border-box;
     height: $stripe-top-height-small;
 
-    background-color: var(--welcome-page-stripe-background);
+    background-color: var(--gray-full);
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -112,10 +112,11 @@ $sub-title-font-size: 28px;
     text-align: center;
     padding: $panel-padding !important;
     border: $border-dark;
-    border-radius: 4px 4px 0px 0px;
+    border-radius: 8px;
     margin-left: var(--double-spacing);
     margin-right: var(--double-spacing);
-    margin-bottom: 0;
+    margin-bottom: var(--double-spacing);
+    background-color: var(--gray-90);
 
     label {
       text-align: left;
@@ -123,25 +124,7 @@ $sub-title-font-size: 28px;
 
     .amp-button {
       display: inline-block;
-      margin-top: $button-padding;
       width: 100%;
-    }
-  }
-
-  &__trial-message {
-    box-sizing: border-box;
-    text-align: center;
-    padding: $trial-message-padding;
-    border: $border-dark;
-    margin-left: var(--double-spacing);
-    margin-right: var(--double-spacing);
-    border-radius: 0px 0px 4px 4px;
-    border: $border-dark;
-    background: var(--gray-full);
-
-    strong {
-      font: var(--primary-font-family);
-      color: var(--theme-turquoise);
     }
   }
 
@@ -199,6 +182,7 @@ $sub-title-font-size: 28px;
     &__trial-message {
       width: $panel-min-width;
       padding: $trial-message-padding;
+      margin-bottom: var(--default-spacing);
     }
   }
 }

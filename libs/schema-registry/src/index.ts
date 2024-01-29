@@ -10,8 +10,8 @@ export * as CanUserAccessBuild from "./lib/can-user-access-build";
 export * as DBSchemaImportRequest from "./lib/db-schema-import-request";
 export * as UserActionLog from "./lib/user-action-log";
 export * as UserAction from "./lib/user-action";
-export * as AiConversationStart from "./lib/ai-conversion-start";
-export * as AiConversationComplete from "./lib/ai-conversion-complete";
+export * as GptConversationStart from "./lib/gpt-conversion-start";
+export * as GptConversationComplete from "./lib/gpt-conversion-complete";
 export * as UserBuild from "./lib/user-build";
 
 export enum KAFKA_TOPICS {
@@ -34,4 +34,7 @@ export enum KAFKA_TOPICS {
   USER_ACTION_LOG_TOPIC = "user-action.internal.action-log.1",
   USER_ACTION_TOPIC = "user-action.internal.1",
   USER_BUILD_TOPIC = "user-build.internal.1",
+  /// ai
+  AI_CONVERSATION_START_TOPIC = "ai.internal.conversation.start.1",
+  AI_CONVERSATION_COMPLETED_TOPIC = "ai.internal.conversation.completed.1",
 }

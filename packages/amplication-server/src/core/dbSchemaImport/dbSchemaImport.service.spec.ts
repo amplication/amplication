@@ -13,6 +13,8 @@ import { UserService } from "../user/user.service";
 import { UserActionService } from "../userAction/userAction.service";
 import { ActionService } from "../action/action.service";
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
+import { EnumSchemaNames } from "./dto/EnumSchemaNames";
+import { calDotComPredefinedSchema } from "./predefinedSchemes/calDotCom/calDotCom";
 
 describe("DbSchemaImportService", () => {
   let service: DBSchemaImportService;
@@ -151,5 +153,27 @@ describe("DbSchemaImportService", () => {
       KAFKA_TOPICS.DB_SCHEMA_IMPORT_TOPIC,
       dbSchemaImportEvent
     );
+  });
+
+  describe("getPredefinedSchema", () => {
+    it("should return predefined schema", async () => {
+      const result = await service.getPredefinedSchema(
+        EnumSchemaNames.CalDotCom
+      );
+
+      expect(result).toEqual(calDotComPredefinedSchema);
+    });
+
+    it("should throw error if schema name is not in EnumSchemaNames", async () => {
+      await expect(
+        service.getPredefinedSchema("invalidSchemaName" as EnumSchemaNames)
+      ).rejects.toThrowError();
+    });
+
+    it("should throw error if schema name is undefined", async () => {
+      await expect(
+        service.getPredefinedSchema(undefined)
+      ).rejects.toThrowError();
+    });
   });
 });

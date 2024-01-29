@@ -37,3 +37,11 @@ model PluginVersion {
   updatedAt       DateTime @updatedAt
   version         String?
 }
+
+model Category {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String   @unique
+  rank      Int?     @unique
+  updatedAt DateTime @updatedAt
+}

@@ -11,7 +11,7 @@ type Account {
   lastName: String!
   password: String!
   previewAccountEmail: String
-  previewAccountType: PreviewAccountType!
+  previewAccountType: EnumPreviewAccountType!
   updatedAt: DateTime!
 }
 
@@ -171,6 +171,32 @@ input BooleanFilter {
   not: Boolean
 }
 
+type BreakServiceToMicroservicesData {
+  microservices: [BreakServiceToMicroservicesItem!]!
+}
+
+type BreakServiceToMicroservicesItem {
+  dataModels: [BreakServiceToMicroservicesItemEntities!]!
+  functionality: String!
+  name: String!
+}
+
+type BreakServiceToMicroservicesItemEntities {
+  name: String!
+  originalEntityId: String!
+}
+
+type BreakServiceToMicroservicesResult {
+  """Prompt result with some data structure manipulation"""
+  data: BreakServiceToMicroservicesData
+
+  """The original resource ID"""
+  originalResourceId: String!
+
+  """The status of the user action"""
+  status: EnumUserActionStatus!
+}
+
 type Build {
   action: Action
   actionId: String!
@@ -287,8 +313,10 @@ input ConnectGitRepositoryInput {
   resourceId: String!
 }
 
-input CopiedEntities {
-  shouldDeleteFromSource: Boolean!
+input CopiedEntity {
+  entityId: String!
+  originalResourceId: String!
+  targetResourceId: String!
 }
 
 type Coupon {
@@ -297,6 +325,11 @@ type Coupon {
   durationMonths: Int!
   id: String!
   subscriptionPlan: EnumSubscriptionPlan!
+}
+
+input CreateEntitiesFromPredefinedSchemaInput {
+  resource: WhereParentIdInput!
+  schemaName: EnumSchemaNames!
 }
 
 input CreateGitRepositoryBaseInput {
@@ -754,6 +787,12 @@ enum EnumPendingChangeOriginType {
   Entity
 }
 
+enum EnumPreviewAccountType {
+  Auth0Signup
+  BreakingTheMonolith
+  None
+}
+
 enum EnumResourceType {
   MessageBroker
   ProjectConfiguration
@@ -765,6 +804,10 @@ input EnumResourceTypeFilter {
   in: [EnumResourceType!]
   not: EnumResourceType
   notIn: [EnumResourceType!]
+}
+
+enum EnumSchemaNames {
+  CalDotCom
 }
 
 enum EnumSubscriptionPlan {
@@ -791,6 +834,7 @@ enum EnumUserActionStatus {
 
 enum EnumUserActionType {
   DBSchemaImport
+  GptConversation
 }
 
 enum EnumWorkspaceMemberType {
@@ -950,6 +994,11 @@ input MessagePatternCreateInput {
   type: EnumMessagePatternConnectionOptions!
 }
 
+input ModelGroupResource {
+  name: String!
+  tempId: String!
+}
+
 type Module implements IBlock {
   blockType: EnumBlockType!
   createdAt: DateTime!
@@ -1081,12 +1130,15 @@ type Mutation {
   commit(data: CommitCreateInput!): Commit
   completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
   completeInvitation(data: CompleteInvitationInput!): Auth!
+  completeSignupWithBusinessEmail: String!
   connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
+  copiedEntities(data: ResourcesCreateCopiedEntitiesInput!): [Resource!]!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
+  createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
   createEntityField(data: EntityFieldCreateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
@@ -1098,7 +1150,6 @@ type Mutation {
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   createProject(data: ProjectCreateInput!): Project!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
-  createResourceEntitiesFromExistingResource(data: ResourceCreateCopiedEntitiesInput!): Resource!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createService(data: ResourceCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
@@ -1135,6 +1186,12 @@ type Mutation {
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   signup(data: SignupInput!): Auth!
   signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
+  signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
+
+  """
+  Trigger the generation of a set of recommendations for breaking a resource into microservices
+  """
+  triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -1293,11 +1350,6 @@ input PluginSetOrderInput {
   order: Int!
 }
 
-enum PreviewAccountType {
-  BreakingTheMonolith
-  None
-}
-
 type Project {
   createdAt: DateTime!
   demoRepoName: String
@@ -1393,6 +1445,11 @@ type Query {
   currentWorkspace: Workspace
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!
   entity(where: WhereUniqueInput!): Entity
+
+  """
+  Get the changes to apply to the model in order to break a resource into microservices
+  """
+  finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!
@@ -1482,12 +1539,8 @@ type Resource {
   project: Project
   projectId: String
   resourceType: EnumResourceType!
+  tempId: String
   updatedAt: DateTime!
-}
-
-input ResourceCreateCopiedEntitiesInput {
-  entitiesToCopy: [CopiedEntities!]!
-  targetResourceId: String!
 }
 
 input ResourceCreateInput {
@@ -1497,6 +1550,7 @@ input ResourceCreateInput {
   project: WhereParentIdInput!
   resourceType: EnumResourceType!
   serviceSettings: ServiceSettingsUpdateInput
+  tempId: String
 }
 
 input ResourceCreateWithEntitiesEntityInput {
@@ -1598,6 +1652,12 @@ input ResourceWhereInput {
   projectId: String
   resourceType: EnumResourceTypeFilter
   updatedAt: DateTimeFilter
+}
+
+input ResourcesCreateCopiedEntitiesInput {
+  entitiesToCopy: [CopiedEntity!]!
+  modelGroupsResources: [ModelGroupResource!]!
+  projectId: String!
 }
 
 enum Role {
@@ -1722,7 +1782,11 @@ input SignupInput {
 
 input SignupPreviewAccountInput {
   previewAccountEmail: String!
-  previewAccountType: PreviewAccountType!
+  previewAccountType: EnumPreviewAccountType!
+}
+
+input SignupWithBusinessEmailInput {
+  email: String!
 }
 
 enum SortOrder {
