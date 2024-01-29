@@ -313,8 +313,10 @@ input ConnectGitRepositoryInput {
   resourceId: String!
 }
 
-input CopiedEntities {
-  shouldDeleteFromSource: Boolean!
+input CopiedEntity {
+  entityId: String!
+  originalResourceId: String!
+  targetResourceId: String!
 }
 
 type Coupon {
@@ -992,6 +994,11 @@ input MessagePatternCreateInput {
   type: EnumMessagePatternConnectionOptions!
 }
 
+input ModelGroupResource {
+  name: String!
+  tempId: String!
+}
+
 type Module implements IBlock {
   blockType: EnumBlockType!
   createdAt: DateTime!
@@ -1127,6 +1134,7 @@ type Mutation {
   connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
+  copiedEntities(data: ResourcesCreateCopiedEntitiesInput!): [Resource!]!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
@@ -1142,7 +1150,6 @@ type Mutation {
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   createProject(data: ProjectCreateInput!): Project!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
-  createResourceEntitiesFromExistingResource(data: ResourceCreateCopiedEntitiesInput!): Resource!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createService(data: ResourceCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
@@ -1532,12 +1539,8 @@ type Resource {
   project: Project
   projectId: String
   resourceType: EnumResourceType!
+  tempId: String
   updatedAt: DateTime!
-}
-
-input ResourceCreateCopiedEntitiesInput {
-  entitiesToCopy: [CopiedEntities!]!
-  targetResourceId: String!
 }
 
 input ResourceCreateInput {
@@ -1547,6 +1550,7 @@ input ResourceCreateInput {
   project: WhereParentIdInput!
   resourceType: EnumResourceType!
   serviceSettings: ServiceSettingsUpdateInput
+  tempId: String
 }
 
 input ResourceCreateWithEntitiesEntityInput {
@@ -1648,6 +1652,12 @@ input ResourceWhereInput {
   projectId: String
   resourceType: EnumResourceTypeFilter
   updatedAt: DateTimeFilter
+}
+
+input ResourcesCreateCopiedEntitiesInput {
+  entitiesToCopy: [CopiedEntity!]!
+  modelGroupsResources: [ModelGroupResource!]!
+  projectId: String!
 }
 
 enum Role {
