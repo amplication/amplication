@@ -14,6 +14,7 @@ export const GET_PROJECTS = gql`
         name
         resourceType
         licensed
+        gitRepositoryOverride
         gitRepository {
           id
           name
@@ -22,6 +23,7 @@ export const GET_PROJECTS = gql`
           gitOrganizationId
           gitOrganization {
             provider
+            name
           }
         }
       }
