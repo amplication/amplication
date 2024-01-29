@@ -84,7 +84,12 @@ export default function ModelOrganizerConfirmation({
             The following entities will be moved to new services.
           </Text>
           <br />
-          <a href={"https://docs.amplication.com"} target="blank">
+          <a
+            href={
+              "https://docs.amplication.com/how-to/understanding-break-the-monolith"
+            }
+            target="blank"
+          >
             <Text textStyle={EnumTextStyle.Tag} underline>
               Check our documentation
             </Text>
