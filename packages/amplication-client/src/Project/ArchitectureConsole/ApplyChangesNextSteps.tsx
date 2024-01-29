@@ -106,7 +106,7 @@ export const ApplyChangesNextSteps = ({
         buttonStyle={EnumButtonStyle.Outline}
         onClick={onDisplayArchitectureClicked}
       >
-        Cancel
+        Close
       </Button>
     </div>
   );
