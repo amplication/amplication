@@ -14,6 +14,9 @@ export const GET_RESOURCES = gql`
       name
       description
       resourceType
+      project {
+        id
+      }
       entities {
         id
         displayName
