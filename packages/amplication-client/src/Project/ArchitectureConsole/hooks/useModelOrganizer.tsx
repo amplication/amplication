@@ -101,7 +101,14 @@ const useModelOrganization = () => {
 
   const loadProjectResources = useCallback(() => {
     if (currentTheme !== "" && currentTheme) {
-      return;
+      const resources: models.Resource[] = JSON.parse(
+        currentResourcesStorageData
+      );
+      const resourcesProject = resources?.find(
+        (x) => x.project.id === currentProject?.id
+      );
+
+      if (resourcesProject) return;
     }
 
     loadProjectResourcesInternal({
@@ -136,6 +143,7 @@ const useModelOrganization = () => {
     setCurrentTheme,
     showRelationDetails,
     currentProject,
+    currentResourcesStorageData,
     currentTheme,
   ]);
 
@@ -493,7 +501,6 @@ const useModelOrganization = () => {
   }, [resetChanges]);
 
   useEffect(() => {
-    console.log("effect 2");
     if (currentProject?.id) {
       loadProjectResources();
     }
