@@ -85,7 +85,7 @@ jobs:
             ~/.bun/install/cache
 
       - name: Install Dependencies
-        run: bun i --lockfile package-lock.json
+        run: bun install
 
       - name: Evaluate affected projects
         id: configure-nx
