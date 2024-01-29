@@ -168,7 +168,7 @@ const WorkspaceHeader: React.FC = () => {
   }, [openHubSpotChat]);
 
   const handleGenerateCodeClick = useCallback(() => {
-    completeSignup({ onCompleted: () => unsetToken() });
+    completeSignup();
     setShowCompleteSignupDialog(!showCompleteSignupDialog);
     trackEvent({
       eventName: AnalyticsEventNames.HelpMenuItemClick,
