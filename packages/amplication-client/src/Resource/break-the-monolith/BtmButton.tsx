@@ -1,14 +1,24 @@
 import React, { useCallback, useState } from "react";
-import { Button, Dialog, Modal } from "@amplication/ui/design-system";
+import {
+  Button,
+  Dialog,
+  EnumButtonStyle,
+  Modal,
+} from "@amplication/ui/design-system";
 import BreakTheMonolith from "./BreakTheMonolith";
 import { useHistory } from "react-router-dom";
 
 type Props = {
   resourceId: string;
-  openInModal: boolean;
+  openInFullScreen: boolean;
+  ButtonStyle?: EnumButtonStyle;
 };
 
-export const BtmButton: React.FC<Props> = ({ resourceId, openInModal }) => {
+export const BtmButton: React.FC<Props> = ({
+  resourceId,
+  openInFullScreen,
+  ButtonStyle = EnumButtonStyle.GradientOutline,
+}) => {
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -17,15 +27,17 @@ export const BtmButton: React.FC<Props> = ({ resourceId, openInModal }) => {
   }, [isOpen]);
 
   const handleConfirm = useCallback(() => {
-    openInModal && history.push("/"); // TODO: redirect to the architecture page in redesign mode
+    openInFullScreen && history.push("/"); // TODO: redirect to the architecture page in redesign mode
     setIsOpen(!isOpen);
-  }, [openInModal, history, isOpen]);
+  }, [openInFullScreen, history, isOpen]);
 
   return (
     <>
-      <Button onClick={handleDialogState}>Break</Button>
+      <Button buttonStyle={ButtonStyle} onClick={handleDialogState}>
+        Break the Monolith
+      </Button>
 
-      {openInModal && isOpen ? (
+      {openInFullScreen && isOpen ? (
         <Modal
           open
           onCloseEvent={handleDialogState}
@@ -34,7 +46,7 @@ export const BtmButton: React.FC<Props> = ({ resourceId, openInModal }) => {
         >
           <BreakTheMonolith
             resourceId={resourceId}
-            openInModal
+            openInFullScreen
             handleConfirmSuggestion={handleConfirm}
           />
         </Modal>

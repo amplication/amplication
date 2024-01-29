@@ -20,12 +20,12 @@ const CLASS_NAME = "break-the-monolith";
 type Props = {
   resourceId: string;
   handleConfirmSuggestion: () => void;
-  openInModal?: boolean;
+  openInFullScreen?: boolean;
 };
 
 const BreakTheMonolith: React.FC<Props> = ({
   resourceId,
-  openInModal = false,
+  openInFullScreen = false,
   handleConfirmSuggestion,
 }) => {
   const { btmResult, loading, error } = useBtmService({
@@ -44,7 +44,7 @@ const BreakTheMonolith: React.FC<Props> = ({
             <FlexItem
               direction={EnumFlexDirection.Column}
               itemsAlign={
-                openInModal ? EnumItemsAlign.Center : EnumItemsAlign.Start
+                openInFullScreen ? EnumItemsAlign.Center : EnumItemsAlign.Start
               }
             >
               <Text textStyle={EnumTextStyle.H3}>
@@ -52,7 +52,7 @@ const BreakTheMonolith: React.FC<Props> = ({
               </Text>
               <Text
                 textStyle={
-                  openInModal ? EnumTextStyle.Normal : EnumTextStyle.Tag
+                  openInFullScreen ? EnumTextStyle.Normal : EnumTextStyle.Tag
                 }
                 textColor={EnumTextColor.Black20}
               >
