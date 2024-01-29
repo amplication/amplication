@@ -21,7 +21,7 @@ export const BtmLoader: React.FC = () => {
         itemsAlign={EnumItemsAlign.Center}
       >
         <Text textStyle={EnumTextStyle.H3}>
-          Experience the Microservices Marvel using Amplication AI.
+          Experience the Microservices Marvel using Amplication AI
         </Text>
         <Text
           textColor={EnumTextColor.Black20}
@@ -30,7 +30,7 @@ export const BtmLoader: React.FC = () => {
           Our AI-driven magic is currently at work, suggesting how to elevate
           your service and its entities into a thriving microservices wonderland
         </Text>
-        <Loader animationType={AnimationType.Tiny} />
+        <Loader animationType={AnimationType.Full} />
       </FlexItem>
     </div>
   );
