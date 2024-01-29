@@ -11,7 +11,6 @@ import { entitiesToNodesAndEdges, tempResourceToNode } from "../helpers";
 import { Edge, useEdgesState } from "reactflow";
 import { applyAutoLayout } from "../layout";
 import useLocalStorage from "react-use-localstorage";
-import { useHistory } from "react-router-dom";
 
 type TData = {
   resources: models.Resource[];
@@ -35,9 +34,8 @@ const LOCAL_DETAILED_EDGES_STORAGE_KEY = "ModelOrganizerDetailedEdgesData";
 const LOCAL_SIMPLE_EDGES_STORAGE_KEY = "ModelOrganizerSimpleEdgesData";
 
 const useModelOrganization = () => {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { currentProject } = useContext(AppContext);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
-  const history = useHistory();
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
   const [currentResourcesData, setCurrentResourcesData] = useState<
     models.Resource[]

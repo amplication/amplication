@@ -4,7 +4,6 @@ import {
   Dialog,
   EnumFlexDirection,
   FlexItem,
-  Snackbar,
 } from "@amplication/ui/design-system";
 import { EnumItemsAlign } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import { useCallback, useEffect, useState } from "react";
@@ -35,9 +34,9 @@ import {
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
-import { formatError } from "../../util/error";
 
 export const CLASS_NAME = "model-organizer";
+const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
 
 const nodeTypes = {
   model: ModelNode,
@@ -296,7 +295,7 @@ export default function ModelOrganizer({
                   <Button onClick={handleCreateResourceState}>Ok</Button>
                 </FlexItem>
               </Dialog>
-              <div className={"reactflow-wrapper"}>
+              <div className={REACT_FLOW_CLASS_NAME}>
                 <ReactFlow
                   onInit={onInit}
                   nodes={nodes}
