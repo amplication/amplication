@@ -3,17 +3,21 @@ import {
   EnumFlexDirection,
   EnumItemsAlign,
   EnumListStyle,
+  EnumPanelStyle,
+  EnumTextAlign,
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
-  Icon,
   List,
   ListItem,
+  Panel,
   Text,
 } from "@amplication/ui/design-system";
-import { useBtmService } from "./hooks/useBtmService";
-import { BtmLoader } from "./BtmLoader";
+import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
+import { EnumResourceType } from "../../models";
 import "./BreakTheMonolith.scss";
+import { BtmLoader } from "./BtmLoader";
+import { useBtmService } from "./hooks/useBtmService";
 
 const CLASS_NAME = "break-the-monolith";
 
@@ -40,20 +44,22 @@ const BreakTheMonolith: React.FC<Props> = ({
         </div>
       ) : (
         <>
-          <div className={`${CLASS_NAME}__content`}>
+          <div className={`${CLASS_NAME}__header`}>
             <FlexItem
               direction={EnumFlexDirection.Column}
-              itemsAlign={
-                openInFullScreen ? EnumItemsAlign.Center : EnumItemsAlign.Start
-              }
+              itemsAlign={EnumItemsAlign.Center}
             >
-              <Text textStyle={EnumTextStyle.H3}>
+              <Text
+                textStyle={EnumTextStyle.H3}
+                textAlign={EnumTextAlign.Center}
+              >
                 Microservices Suggestion by Amplication AI
               </Text>
               <Text
                 textStyle={
                   openInFullScreen ? EnumTextStyle.Normal : EnumTextStyle.Tag
                 }
+                textAlign={EnumTextAlign.Center}
                 textColor={EnumTextColor.Black20}
               >
                 Our AI has mapped out a sleek microservices architecture for
@@ -61,17 +67,30 @@ const BreakTheMonolith: React.FC<Props> = ({
                 your system.
               </Text>
             </FlexItem>
-            <div className={`${CLASS_NAME}__services`}>
+          </div>
+          <div className={`${CLASS_NAME}__content`}>
+            <Panel className={`${CLASS_NAME}__services`}>
               {btmResult?.data?.microservices.map((item) => (
                 <List
                   className={`${CLASS_NAME}__services__service`}
                   listStyle={EnumListStyle.Dark}
                   headerContent={
                     <FlexItem
+                      itemsAlign={EnumItemsAlign.Center}
                       className={`${CLASS_NAME}__services__service__header`}
-                      start={<Icon icon="settings"></Icon>}
+                      start={
+                        <ResourceCircleBadge
+                          type={EnumResourceType.Service}
+                          size={"xsmall"}
+                        />
+                      }
                     >
-                      {item.name}
+                      <Text
+                        textStyle={EnumTextStyle.Tag}
+                        textColor={EnumTextColor.White}
+                      >
+                        {item.name}
+                      </Text>
                     </FlexItem>
                   }
                 >
@@ -89,14 +108,23 @@ const BreakTheMonolith: React.FC<Props> = ({
                   </ListItem>
                 </List>
               ))}
-            </div>
+            </Panel>
+          </div>
+          <Panel
+            panelStyle={EnumPanelStyle.Default}
+            className={`${CLASS_NAME}__confirmation`}
+          >
+            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+              All suggestions can be edited and customized on the next step. You
+              can move entities between services, add new services, and more.
+            </Text>
             <Button
               className={`${CLASS_NAME}__continue_button`}
               onClick={handleConfirmSuggestion}
             >
               Let's go!
             </Button>
-          </div>
+          </Panel>
         </>
       )}
     </div>

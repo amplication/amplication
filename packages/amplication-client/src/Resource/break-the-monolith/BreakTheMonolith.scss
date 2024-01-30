@@ -1,35 +1,53 @@
 @import "../../style/index.scss";
 
+$max-width: 80vw;
+$header-max-width: 600px;
+$service-min-width: max(200px, 20%);
+$service-max-height: 200px;
+$button-width: 100px;
+
 .break-the-monolith {
   display: flex;
-  height: 100%;
   width: 100%;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-width: min(var(--page-content-width-default), $max-width);
+  margin: auto;
 
   &__loader {
     display: flex;
     flex-direction: column;
   }
 
+  &__header {
+    max-width: $header-max-width;
+    margin-top: var(--double-spacing);
+  }
+
   &__content {
-    display: flex;
-    flex-direction: column;
-    max-width: var(--page-content-width-default);
+    width: 100%;
   }
 
   &__services {
-    padding: var(--double-spacing) 0;
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: var(--default-spacing);
     flex-wrap: wrap;
     justify-content: center;
+    overflow: auto;
+    margin-top: var(--default-spacing);
+    margin-bottom: var(--default-spacing);
 
     &__service {
       overflow-y: auto;
-      min-width: 25%;
-      max-height: 200px;
+      min-width: $service-min-width;
+      max-height: $service-max-height;
+
+      .amp-list-item:first-child {
+        flex: 0;
+      }
 
       &__header {
         overflow: hidden;
@@ -37,7 +55,16 @@
     }
   }
 
+  &__confirmation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: var(--default-spacing);
+  }
+
   &__continue_button {
     align-self: flex-end;
+    width: $button-width;
   }
 }
