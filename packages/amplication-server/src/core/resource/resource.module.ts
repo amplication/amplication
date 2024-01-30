@@ -17,6 +17,7 @@ import { TopicModule } from "../topic/topic.module";
 import { BillingModule } from "../billing/billing.module";
 import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
 import { SubscriptionModule } from "../subscription/subscription.module";
+import { ResourceRoleModule } from "../resourceRole/resourceRole.module";
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { SubscriptionModule } from "../subscription/subscription.module";
     EnvironmentModule,
     CommitModule,
     BlockModule,
+    ResourceRoleModule,
     ProjectConfigurationSettingsModule,
     forwardRef(() => ProjectModule),
     BillingModule,
