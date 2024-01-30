@@ -1,24 +1,34 @@
-import {
-  PrismaService,
-  GitRepository,
-  Prisma,
-  EnumResourceType,
-} from "../../prisma";
+import { LookupResolvedProperties } from "@amplication/code-gen-types";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   ConflictException,
-  forwardRef,
   Inject,
   Injectable,
+  forwardRef,
 } from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
 import pluralize from "pluralize";
+import { JsonValue } from "type-fest";
 import { FindOneArgs } from "../../dto";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
-import { Project, Resource, User, GitOrganization, Entity } from "../../models";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { Entity, GitOrganization, Project, Resource, User } from "../../models";
+import {
+  EnumResourceType,
+  GitRepository,
+  Prisma,
+  PrismaService,
+} from "../../prisma";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { prepareDeletedItemName } from "../../util/softDelete";
-import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { BillingService } from "../billing/billing.service";
 import {
   CURRENT_VERSION_NUMBER,
   INITIAL_ENTITY_FIELDS,
@@ -26,18 +36,28 @@ import {
 } from "../entity/constants";
 import { EntityService } from "../entity/entity.service";
 import { EnvironmentService } from "../environment/environment.service";
+import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
+import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ProjectService } from "../project/project.service";
+import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
+import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
+import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { TopicService } from "../topic/topic.service";
+import { ReservedEntityNameError } from "./ReservedEntityNameError";
 import {
   CreateOneResourceArgs,
   FindManyResourceArgs,
   ResourceCreateWithEntitiesInput,
-  UpdateOneResourceArgs,
   ResourceCreateWithEntitiesResult,
   UpdateCodeGeneratorVersionArgs,
+  UpdateOneResourceArgs,
 } from "./dto";
-import { ReservedEntityNameError } from "./ReservedEntityNameError";
+import { CreateResourcesEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
-import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
-import { AmplicationError } from "../../errors/AmplicationError";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -50,27 +70,6 @@ export const INITIAL_COMMIT_MESSAGE = "Initial Commit";
 export const INVALID_RESOURCE_ID = "Invalid resourceId";
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
   "The resource of type `ProjectConfiguration` cannot be deleted";
-import { ProjectService } from "../project/project.service";
-import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
-import { TopicService } from "../topic/topic.service";
-import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
-import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { JsonValue } from "type-fest";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { CreateResourcesEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
-import { LookupResolvedProperties } from "@amplication/code-gen-types";
-import { SubscriptionService } from "../subscription/subscription.service";
-import { ModelGroupResource } from "./dto/ResourceCreateCopiedEntitiesInput";
-import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
-import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
-import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
