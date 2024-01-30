@@ -15,16 +15,7 @@ import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Workspace, Project, Resource, Account, User } from "../../models";
-import {
-  AuthenticationClient,
-  InitOverrideFunction,
-  JSONApiResponse,
-  ManagementClient,
-  RequestOpts,
-  SignUpResponse,
-  TextApiResponse,
-  UsersByEmailManager,
-} from "auth0";
+import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
 import { anyString } from "jest-mock-extended";
 import { AuthUser } from "./types";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
