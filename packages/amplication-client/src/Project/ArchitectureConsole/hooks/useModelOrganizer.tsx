@@ -101,14 +101,16 @@ const useModelOrganization = () => {
 
   const loadProjectResources = useCallback(() => {
     if (currentTheme !== "" && currentTheme) {
-      const resources: models.Resource[] = JSON.parse(
-        currentResourcesStorageData
-      );
-      const resourcesProject = resources?.find(
-        (x) => x.project.id === currentProject?.id
-      );
+      if (currentResourcesStorageData !== "" && currentResourcesStorageData) {
+        const resources: models.Resource[] = JSON.parse(
+          currentResourcesStorageData
+        );
+        const resourcesProject = resources?.find(
+          (x) => x.project.id === currentProject?.id
+        );
 
-      if (resourcesProject) return;
+        if (resourcesProject) return;
+      }
     }
 
     loadProjectResourcesInternal({
