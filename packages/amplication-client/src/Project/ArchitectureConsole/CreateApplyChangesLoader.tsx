@@ -20,10 +20,10 @@ const CreateApplyChangesLoader = ({ onTimeout, minimumLoadTimeMS }: Props) => {
   }, [onTimeout, minimumLoadTimeMS]);
 
   return (
-    <div className={`${CLASS_NAME}`}>
-      <h2>Processing your new architecture.</h2>
+    <div className={CLASS_NAME}>
+      <h2>Processing your new architecture</h2>
       <span>
-        Please wait as we handle the creation of your new architectural design.
+        Please wait as we handle the creation of your new architectural design
       </span>
       <div className={`${CLASS_NAME}__animation`}>
         <Loader animationType={AnimationType.Full} />
