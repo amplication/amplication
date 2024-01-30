@@ -1,0 +1,23 @@
+@import "../../../style/index.scss";
+
+$border-width: 2px;
+$border-top-width: 6px;
+
+.model-group-node {
+  background-color: var(--gray-full);
+  width: 100%;
+  height: 100%;
+  border: $border-width solid var(--border-color);
+  border-top: $border-top-width solid var(--secondary);
+  border-radius: var(--default-button-radius);
+  padding: var(--default-spacing);
+
+  &.drop-target {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--theme-turquoise);
+    border-right-color: var(--theme-turquoise);
+    border-bottom-color: var(--theme-turquoise);
+  }
+}

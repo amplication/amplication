@@ -1,4 +1,4 @@
-import { AiConversationStart } from "@amplication/schema-registry";
+import { GptConversationStart } from "@amplication/schema-registry";
 import { Field, InputType } from "@nestjs/graphql";
 
 @InputType()
@@ -15,7 +15,7 @@ class MessageParam {
 }
 
 @InputType()
-export class CreateConversationInput extends AiConversationStart.Value {
+export class CreateConversationInput extends GptConversationStart.Value {
   @Field(() => String, {
     nullable: false,
   })

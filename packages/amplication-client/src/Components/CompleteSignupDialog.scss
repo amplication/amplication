@@ -1,0 +1,8 @@
+@import "../style/index.scss";
+
+.complete-signup-dialog {
+  &__dismiss_button {
+    margin-top: var(--default-spacing);
+    align-self: flex-end;
+  }
+}

@@ -64,10 +64,13 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { JsonValue } from "type-fest";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { CreateResourceEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
+import { CreateResourcesEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
 import { LookupResolvedProperties } from "@amplication/code-gen-types";
 import { SubscriptionService } from "../subscription/subscription.service";
+import { ModelGroupResource } from "./dto/ResourceCreateCopiedEntitiesInput";
 import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
+import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
+import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -480,43 +483,177 @@ export class ResourceService {
     return resource;
   }
 
-  async createResourceEntitiesFromExistingResource(
-    args: CreateResourceEntitiesArgs,
+  async createModelGroupService(
+    projectId: string,
+    modelGroupResource: ModelGroupResource,
     user: User
   ): Promise<Resource> {
-    const { targetResourceId, entitiesToCopy } = args.data;
-    const resource = await this.prisma.resource.findUnique({
-      where: {
-        id: targetResourceId,
-      },
-      include: {
-        entities: {
-          where: {
-            deletedAt: null,
+    const { tempId, name } = modelGroupResource;
+
+    const resource = await this.createResource(
+      {
+        data: {
+          resourceType: EnumResourceType.Service,
+          name: name,
+          description: `create service: ${name} from architecture model`,
+          project: {
+            connect: {
+              id: projectId,
+            },
           },
         },
       },
-    });
-
-    if (!resource) throw new AmplicationError("Target Resource doesn't exist");
-
-    entitiesToCopy.map((entity) => {
-      if (resource.entities.find((x) => x.name === entity.name)) {
-        throw new AmplicationError(
-          `Entity ${entity.name} is already exist in resourceId: ${resource.id}, process abort`
-        );
-      }
-    });
-
-    // 1.create resource entities
-
-    const copiedEntities: Entity[] = await this.createResourceCopiedEntities(
-      entitiesToCopy,
-      targetResourceId,
       user
     );
 
-    const entitiesWithFieldsMap = entitiesToCopy.reduce(
+    await this.prisma.resourceRole.create({
+      data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
+    });
+
+    const resourceSettings: ServiceSettingsUpdateInput = {
+      adminUISettings: {
+        generateAdminUI: false,
+        adminUIPath: "",
+      },
+      serverSettings: {
+        generateGraphQL: true,
+        generateRestApi: false,
+        generateServer: true,
+        serverPath: "",
+      },
+      authProvider: EnumAuthProviderType.Jwt,
+    };
+    await this.serviceSettingsService.createDefaultServiceSettings(
+      resource.id,
+      user,
+      resourceSettings
+    );
+
+    const currentPlugin: PluginInstallationCreateInput = {
+      pluginId: "db-postgres",
+      enabled: true,
+      npm: "@amplication/plugin-db-postgres",
+      version: "latest",
+      displayName: "db-postgres",
+      resource: undefined,
+    };
+
+    currentPlugin.resource = { connect: { id: resource.id } };
+    const isvValidEntityUser = await this.userEntityValidation(
+      resource.id,
+      currentPlugin.configurations
+    );
+    isvValidEntityUser &&
+      (await this.pluginInstallationService.create(
+        { data: currentPlugin },
+        user
+      ));
+
+    await this.environmentService.createDefaultEnvironment(resource.id);
+
+    const project = await this.projectService.findUnique({
+      where: { id: resource.projectId },
+    });
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.Services
+    );
+
+    resource.tempId = tempId;
+
+    return resource;
+  }
+
+  async copiedEntities(
+    args: CreateResourcesEntitiesArgs,
+    user: User
+  ): Promise<Resource[]> {
+    const { entitiesToCopy, modelGroupsResources, projectId } = args.data;
+
+    // 1. create new resources
+
+    const newResources: Resource[] = [];
+    for (const modelGroupResource of modelGroupsResources) {
+      const newResource = await this.createModelGroupService(
+        projectId,
+        modelGroupResource,
+        user
+      );
+      newResources.push(newResource);
+    }
+
+    // 2. update resourceId in copied entities list
+    if (newResources?.length > 0) {
+      const moduleGroupResourcesMap = newResources.reduce(
+        (resourcesObj, resource) => {
+          resourcesObj[resource.tempId] = resource;
+          return resourcesObj;
+        },
+        {}
+      );
+
+      for (const entityToCopy of entitiesToCopy) {
+        const newResource: Resource =
+          moduleGroupResourcesMap[entityToCopy.targetResourceId];
+
+        if (newResource) {
+          entityToCopy.targetResourceId = newResource.id;
+        }
+      }
+    }
+
+    // 3.create resource entities
+
+    const copiedEntities: Entity[] = [];
+    const entitiesWithFields: Entity[] = [];
+    const resources: Resource[] = [];
+
+    for (const entityToCopy of entitiesToCopy) {
+      const currentEntityToCopy = await this.prisma.entity.findUnique({
+        where: {
+          id: entityToCopy.entityId,
+        },
+        include: {
+          versions: {
+            include: {
+              fields: true,
+            },
+          },
+        },
+      });
+
+      entitiesWithFields.push(currentEntityToCopy);
+
+      const entity = await this.createResourceCopiedEntity(
+        currentEntityToCopy,
+        entityToCopy.targetResourceId,
+        user
+      );
+
+      copiedEntities.push(entity);
+
+      const currentResource = await this.prisma.resource.findUnique({
+        where: {
+          id: entityToCopy.targetResourceId,
+        },
+        include: {
+          entities: {
+            include: {
+              versions: {
+                include: {
+                  fields: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      resources.push(currentResource);
+    }
+
+    const entitiesWithFieldsMap = entitiesWithFields.reduce(
       (entitiesObj, entity) => {
         entitiesObj[entity.name] = entity;
         return entitiesObj;
@@ -547,7 +684,7 @@ export class ResourceService {
           if (isFieldExist) continue;
 
           const currentRelatedEntity = entitiesToCopy.find(
-            (entity) => entity.id === relatedEntityId
+            (entity) => entity.entityId === relatedEntityId
           );
 
           if (!currentRelatedEntity) {
@@ -571,66 +708,61 @@ export class ResourceService {
       }
     }
 
-    // 3.delete entity from source service by flag
-    for (const entity of entitiesToCopy) {
-      if (entity.shouldDeleteFromSource) {
-        await this.entityService.deleteEntityFromSource(
-          { where: { id: entity.id } },
-          user
-        );
-      }
+    // 3.delete entities from source services
+    for (const entity of entitiesWithFields) {
+      await this.entityService.deleteEntityFromSource(
+        { where: { id: entity.id } },
+        user
+      );
     }
 
-    return resource;
+    return resources;
   }
 
-  async createResourceCopiedEntities(
-    entitiesToCopy: Entity[],
+  async createResourceCopiedEntity(
+    entityToCopy: Entity,
     targetResourceId: string,
     user: User
-  ): Promise<Entity[]> {
-    const copiedEntities: Entity[] = [];
+  ): Promise<Entity> {
+    const {
+      name,
+      displayName,
+      pluralDisplayName,
+      description,
+      customAttributes,
+    } = entityToCopy;
 
-    for (const entity of entitiesToCopy) {
-      const {
-        name,
-        displayName,
-        pluralDisplayName,
-        description,
-        customAttributes,
-      } = entity;
+    let copiedEntity: Entity;
 
-      try {
-        const copiedEntity = await this.entityService.createOneEntity(
-          {
-            data: {
-              resource: {
-                connect: {
-                  id: targetResourceId,
-                },
+    try {
+      copiedEntity = await this.entityService.createOneEntity(
+        {
+          data: {
+            resource: {
+              connect: {
+                id: targetResourceId,
               },
-              name,
-              displayName,
-              pluralDisplayName,
-              description,
-              customAttributes,
             },
+            name,
+            displayName,
+            pluralDisplayName,
+            description,
+            customAttributes,
           },
-          user,
-          false,
-          false,
-          false
-        );
-        copiedEntities.push(copiedEntity);
-      } catch (error) {
-        this.logger.error(error.message, error, { entity: entity.name });
-        throw new Error(
-          `Failed to create entity "${entity.name}" due to ${error.message}`
-        );
-      }
+        },
+        user,
+        false,
+        false,
+        false
+      );
+    } catch (error) {
+      this.logger.error(error.message, error, { entity: entityToCopy.name });
+      throw new Error(
+        `Failed to create entity "${entityToCopy.name}" due to ${error.message}`
+      );
     }
 
-    return copiedEntities;
+    return copiedEntity;
   }
 
   async createCopiedEntityIdField(copiedEntityId: string): Promise<void> {
@@ -901,7 +1033,7 @@ export class ResourceService {
         wizardType: data.wizardType,
         resourceName: resource.name,
         gitProvider: provider,
-        gitOrganizationName: gitRepository?.name,
+        gitOrganizationName: gitOrganization?.name,
         repoName: gitRepository?.name,
         graphQlApi: String(serviceSettings.serverSettings.generateGraphQL),
         restApi: String(serviceSettings.serverSettings.generateRestApi),
