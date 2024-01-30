@@ -100,18 +100,7 @@ const useModelOrganization = () => {
   }, [setCurrentResourcesData, currentResourcesStorageData]);
 
   const loadProjectResources = useCallback(() => {
-    if (currentTheme !== "" && currentTheme) {
-      if (currentResourcesStorageData !== "" && currentResourcesStorageData) {
-        const resources: models.Resource[] = JSON.parse(
-          currentResourcesStorageData
-        );
-        const resourcesProject = resources?.find(
-          (x) => x.project.id === currentProject?.id
-        );
-
-        if (resourcesProject) return;
-      }
-    }
+    if (currentTheme !== "" && currentTheme) return;
 
     loadProjectResourcesInternal({
       variables: {
@@ -145,7 +134,6 @@ const useModelOrganization = () => {
     setCurrentTheme,
     showRelationDetails,
     currentProject,
-    currentResourcesStorageData,
     currentTheme,
   ]);
 
