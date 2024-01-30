@@ -82,6 +82,34 @@ export type CreatePreviewServiceArgs = {
   requireAuthenticationEntity: boolean;
 };
 
+const DEFAULT_DB_PLUGIN: PluginInstallationCreateInput = {
+  pluginId: "db-postgres",
+  enabled: true,
+  npm: "@amplication/plugin-db-postgres",
+  version: "latest",
+  displayName: "db-postgres",
+  resource: undefined,
+};
+
+const DEFAULT_AUTH_PLUGINS: PluginInstallationCreateInput[] = [
+  {
+    displayName: "Auth-core",
+    pluginId: "auth-core",
+    npm: "@amplication/plugin-auth-core",
+    version: "latest",
+    enabled: true,
+    resource: undefined,
+  },
+  {
+    displayName: "Auth-jwt",
+    pluginId: "auth-jwt",
+    npm: "@amplication/plugin-auth-jwt",
+    version: "latest",
+    enabled: true,
+    resource: undefined,
+  },
+];
+
 @Injectable()
 export class ResourceService {
   constructor(
@@ -269,7 +297,8 @@ export class ResourceService {
       data: {
         ...args.data,
         gitRepository: gitRepository,
-        gitRepositoryOverride: gitRepositoryToCreate?.isOverrideGitRepository,
+        gitRepositoryOverride:
+          gitRepositoryToCreate?.isOverrideGitRepository ?? false,
       },
     });
   }
@@ -426,48 +455,13 @@ export class ResourceService {
       serviceSettings
     );
 
-    const defaultAuthPlugins: PluginInstallationCreateInput[] = [
-      {
-        displayName: "Auth-core",
-        pluginId: "auth-core",
-        npm: "@amplication/plugin-auth-core",
-        version: "latest",
-        enabled: true,
-        resource: { connect: { id: resource.id } },
-      },
-      {
-        displayName: "Auth-jwt",
-        pluginId: "auth-jwt",
-        npm: "@amplication/plugin-auth-jwt",
-        version: "latest",
-        enabled: true,
-        resource: { connect: { id: resource.id } },
-      },
-    ];
-
-    const defaultDBPlugin: PluginInstallationCreateInput = {
-      displayName: "postgres",
-      pluginId: "db-postgres",
-      npm: "@amplication/plugin-db-postgres",
-      version: "latest",
-      enabled: true,
-      resource: { connect: { id: resource.id } },
-    };
-
     const plugins = [
-      defaultDBPlugin,
-      ...(requireAuthenticationEntity ? defaultAuthPlugins : []),
+      DEFAULT_DB_PLUGIN,
+      ...(requireAuthenticationEntity ? DEFAULT_AUTH_PLUGINS : []),
       ...nonDefaultPluginsToInstall,
     ];
 
-    for (const plugin of plugins) {
-      await this.pluginInstallationService.create(
-        {
-          data: plugin,
-        },
-        user
-      );
-    }
+    await this.installPlugins(resource.id, plugins, user);
 
     await this.environmentService.createDefaultEnvironment(resource.id);
 
@@ -483,86 +477,20 @@ export class ResourceService {
     return resource;
   }
 
-  async createModelGroupService(
-    projectId: string,
-    modelGroupResource: ModelGroupResource,
+  async installPlugins(
+    resourceId: string,
+    plugins: PluginInstallationCreateInput[],
     user: User
-  ): Promise<Resource> {
-    const { tempId, name } = modelGroupResource;
-
-    const resource = await this.createResource(
-      {
-        data: {
-          resourceType: EnumResourceType.Service,
-          name: name,
-          description: `create service: ${name} from architecture model`,
-          project: {
-            connect: {
-              id: projectId,
-            },
-          },
-        },
-      },
-      user
-    );
-
-    await this.prisma.resourceRole.create({
-      data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
-    });
-
-    const resourceSettings: ServiceSettingsUpdateInput = {
-      adminUISettings: {
-        generateAdminUI: false,
-        adminUIPath: "",
-      },
-      serverSettings: {
-        generateGraphQL: true,
-        generateRestApi: false,
-        generateServer: true,
-        serverPath: "",
-      },
-      authProvider: EnumAuthProviderType.Jwt,
-    };
-    await this.serviceSettingsService.createDefaultServiceSettings(
-      resource.id,
-      user,
-      resourceSettings
-    );
-
-    const currentPlugin: PluginInstallationCreateInput = {
-      pluginId: "db-postgres",
-      enabled: true,
-      npm: "@amplication/plugin-db-postgres",
-      version: "latest",
-      displayName: "db-postgres",
-      resource: undefined,
-    };
-
-    currentPlugin.resource = { connect: { id: resource.id } };
-    const isvValidEntityUser = await this.userEntityValidation(
-      resource.id,
-      currentPlugin.configurations
-    );
-    isvValidEntityUser &&
-      (await this.pluginInstallationService.create(
-        { data: currentPlugin },
-        user
-      ));
-
-    await this.environmentService.createDefaultEnvironment(resource.id);
-
-    const project = await this.projectService.findUnique({
-      where: { id: resource.projectId },
-    });
-
-    await this.billingService.reportUsage(
-      project.workspaceId,
-      BillingFeature.Services
-    );
-
-    resource.tempId = tempId;
-
-    return resource;
+  ): Promise<void> {
+    for (const plugin of plugins) {
+      plugin.resource = { connect: { id: resourceId } };
+      const isvValidEntityUser = await this.userEntityValidation(
+        resourceId,
+        plugin.configurations
+      );
+      isvValidEntityUser &&
+        (await this.pluginInstallationService.create({ data: plugin }, user));
+    }
   }
 
   async copiedEntities(
@@ -571,16 +499,49 @@ export class ResourceService {
   ): Promise<Resource[]> {
     const { entitiesToCopy, modelGroupsResources, projectId } = args.data;
 
-    // 1. create new resources
+    const defaultServiceSettings: ServiceSettingsUpdateInput = {
+      adminUISettings: {
+        generateAdminUI: false,
+        adminUIPath: "",
+      },
+      serverSettings: {
+        generateGraphQL: true, //@todo: take value from original service
+        generateRestApi: false, //@todo: take value from original service
+        generateServer: true,
+        serverPath: "", //@todo: take path from original service and use the same base path
+      },
+      authProvider: EnumAuthProviderType.Jwt,
+    };
 
+    // 1. create new resources
     const newResources: Resource[] = [];
     for (const modelGroupResource of modelGroupsResources) {
-      const newResource = await this.createModelGroupService(
-        projectId,
-        modelGroupResource,
-        user
-      );
-      newResources.push(newResource);
+      const args: CreateOneResourceArgs = {
+        data: {
+          name: modelGroupResource.name,
+          description: "",
+          project: {
+            connect: {
+              id: projectId,
+            },
+          },
+          resourceType: EnumResourceType.Service,
+          serviceSettings: defaultServiceSettings,
+          gitRepository: {
+            isOverrideGitRepository: false,
+            name: "",
+            resourceId: "",
+            gitOrganizationId: "",
+          },
+        },
+      };
+
+      const resource = await this.createService(args, user);
+      resource.tempId = modelGroupResource.tempId; //@todo: remove tempId from resource type
+
+      await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
+
+      newResources.push(resource);
     }
 
     // 2. update resourceId in copied entities list
@@ -959,20 +920,7 @@ export class ResourceService {
     }
 
     if (data.plugins?.plugins) {
-      for (let index = 0; index < data.plugins.plugins.length; index++) {
-        const currentPlugin = data.plugins.plugins[index];
-
-        currentPlugin.resource = { connect: { id: resource.id } };
-        const isvValidEntityUser = await this.userEntityValidation(
-          resource.id,
-          currentPlugin.configurations
-        );
-        isvValidEntityUser &&
-          (await this.pluginInstallationService.create(
-            { data: currentPlugin },
-            user
-          ));
-      }
+      await this.installPlugins(resource.id, data.plugins.plugins, user);
     }
 
     const isOnboarding = data.wizardType.trim().toLowerCase() === "onboarding";
