@@ -24,6 +24,7 @@ const userIdMock = "userId";
 const userActionIdMock = "userActionId";
 const actionIdMock = "actionId";
 const workspaceIdMock = "workspaceId";
+const projectIdMock = "projectId";
 
 const userMock: User = {
   id: userIdMock,
@@ -35,6 +36,9 @@ const userMock: User = {
 const resourceMock: Resource = {
   id: resourceIdMock,
   name: "resourceName",
+  project: {
+    id: projectIdMock,
+  },
 } as unknown as Resource;
 
 const userActionMock = {
@@ -119,6 +123,8 @@ describe("ResourceBtmService", () => {
       userId: userMock.id,
       properties: {
         workspaceId: userMock.workspace.id,
+        projectId: resourceMock.project.id,
+        resourceId: resourceMock.id,
         serviceName: resourceMock.name,
         plan: EnumSubscriptionPlan.Enterprise,
       },
@@ -144,6 +150,7 @@ describe("ResourceBtmService", () => {
       };
       const originalResource: ResourceDataForBtm = {
         name: "order",
+        project: resourceMock.project,
         id: resourceIdMock,
         entities: [
           {
@@ -326,6 +333,7 @@ describe("ResourceBtmService", () => {
       const originalResource: ResourceDataForBtm = {
         id: resourceIdMock,
         name: "order",
+        project: resourceMock.project,
         entities: [
           {
             id: "order",
@@ -507,6 +515,7 @@ describe("ResourceBtmService", () => {
 
       const originalResource: ResourceDataForBtm = {
         name: "order",
+        project: resourceMock.project,
         id: resourceIdMock,
         entities: [
           {
@@ -911,7 +920,7 @@ describe("ResourceBtmService", () => {
     it("should start a conversation with the GPT service", async () => {
       jest
         .spyOn(service, "getResourceDataForBtm")
-        .mockResolvedValue({ id: resourceMock.id } as ResourceDataForBtm);
+        .mockResolvedValue(resourceMock as ResourceDataForBtm);
 
       jest
         .spyOn(service, "generatePromptForBreakTheMonolith")
@@ -933,10 +942,12 @@ describe("ResourceBtmService", () => {
         userId: userMock.id,
         properties: {
           workspaceId: userMock.workspace.id,
+          projectId: resourceMock.project.id,
+          resourceId: resourceMock.id,
           serviceName: resourceMock.name,
           plan: EnumSubscriptionPlan.Pro,
         },
-        event: EnumEventType.StartRedesign,
+        event: EnumEventType.BreakTheMonolithStart,
       });
       expect(startConversationMock).toHaveBeenCalledTimes(1);
       expect(startConversationMock).toHaveBeenCalledWith(
