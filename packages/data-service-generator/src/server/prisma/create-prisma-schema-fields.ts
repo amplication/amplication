@@ -473,7 +473,7 @@ export const createPrismaSchemaFieldsHandlers: {
       PrismaSchemaDSLTypes.ScalarType.String,
       false,
       field.required,
-      true,
+      field.unique,
       undefined,
       undefined,
       undefined,
