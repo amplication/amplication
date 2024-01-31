@@ -428,7 +428,7 @@ describe("createPrismaFields", () => {
         PrismaSchemaDSLTypes.ScalarType.String,
         false,
         true,
-        true
+        false
       ),
     ],
     [
