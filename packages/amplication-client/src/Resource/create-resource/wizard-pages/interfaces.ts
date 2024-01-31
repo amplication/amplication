@@ -14,7 +14,7 @@ export interface ResourceSettings {
   generateRestApi: boolean;
   baseDir: string;
   structureType: "Mono" | " Poly";
-  databaseType: "postgres" | "mysql" | "mongo";
+  databaseType: "postgres" | "mysql" | "mongo" | "sqlserver";
   templateType: "empty" | "orderManagement";
   authType: string;
   isGenerateCompleted: string;
