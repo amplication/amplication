@@ -6,7 +6,7 @@ import {
   FlexItem,
 } from "@amplication/ui/design-system";
 import { EnumItemsAlign } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   Background,
   ConnectionMode,
@@ -34,6 +34,9 @@ import {
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
+import { useTracking } from "react-tracking";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { AppContext } from "../../context/appContext";
 
 export const CLASS_NAME = "model-organizer";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -62,6 +65,9 @@ export default function ModelOrganizer({
   loadingResources,
   errorMessage,
 }: Props) {
+  const { trackEvent } = useTracking();
+  const { currentWorkspace } = useContext(AppContext);
+
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
 
@@ -106,6 +112,13 @@ export default function ModelOrganizer({
   const handleCreateResourceState = useCallback(() => {
     setIsValidResourceName(true);
   }, [setIsValidResourceName]);
+
+  useEffect(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.ModelOrganizer_EnterTab,
+      plan: currentWorkspace?.subscription?.subscriptionPlan,
+    });
+  }, []);
 
   useEffect(() => {
     if (

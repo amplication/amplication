@@ -5,9 +5,12 @@ import {
   Icon,
   Tooltip,
 } from "@amplication/ui/design-system";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { Resource } from "../../models";
 import CreateResource from "./CreateResource";
+import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { AppContext } from "../../context/appContext";
 
 const DIRECTION = "s";
 
@@ -22,6 +25,8 @@ export default function ModelsTool({
   onCancelChanges,
   mergeNewResourcesChanges,
 }: Props) {
+  const { trackEvent } = useTracking();
+  const { currentWorkspace } = useContext(AppContext);
   const [newService, setNewService] = useState<boolean>(false);
   const handleNewServiceClick = useCallback(() => {
     setNewService(!newService);
@@ -31,6 +36,12 @@ export default function ModelsTool({
     (newResource: Resource) => {
       setNewService(!newService);
       handleServiceCreated(newResource);
+
+      trackEvent({
+        eventName: AnalyticsEventNames.ModelOrganizer_AddServiceClick,
+        serviceName: newResource.name,
+        plan: currentWorkspace?.subscription?.subscriptionPlan,
+      });
     },
     [newService, handleServiceCreated, setNewService]
   );
