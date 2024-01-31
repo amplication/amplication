@@ -1930,6 +1930,8 @@ export type Query = {
   serviceSettings: ServiceSettings;
   serviceTopics?: Maybe<ServiceTopics>;
   serviceTopicsList: Array<ServiceTopics>;
+  /** Track the redesign button for analytics purposes. */
+  startRedesign?: Maybe<TrackBreakTheMonolith>;
   topic?: Maybe<Topic>;
   topics: Array<Topic>;
   userAction: UserAction;
@@ -2144,6 +2146,11 @@ export type QueryServiceTopicsListArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ServiceTopicsWhereInput>;
+};
+
+
+export type QueryStartRedesignArgs = {
+  resourceId: Scalars['String']['input'];
 };
 
 
@@ -2576,6 +2583,11 @@ export type TopicWhereInput = {
   parentBlock?: InputMaybe<WhereUniqueInput>;
   resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type TrackBreakTheMonolith = {
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
 };
 
 export type UpdateAccountInput = {
