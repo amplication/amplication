@@ -18,6 +18,7 @@ import { EnumResourceType } from "../../models";
 import "./BreakTheMonolith.scss";
 import { BtmLoader } from "./BtmLoader";
 import { useBtmService } from "./hooks/useBtmService";
+import classNames from "classnames";
 
 const CLASS_NAME = "break-the-monolith";
 
@@ -37,7 +38,11 @@ const BreakTheMonolith: React.FC<Props> = ({
   });
 
   return (
-    <div className={CLASS_NAME}>
+    <div
+      className={classNames(CLASS_NAME, {
+        [`${CLASS_NAME}--full-screen`]: openInFullScreen,
+      })}
+    >
       {loading ? (
         <div className={`${CLASS_NAME}__loader`}>
           <BtmLoader />
@@ -68,6 +73,21 @@ const BreakTheMonolith: React.FC<Props> = ({
               </Text>
             </FlexItem>
           </div>
+          <Panel
+            panelStyle={EnumPanelStyle.Default}
+            className={`${CLASS_NAME}__confirmation`}
+          >
+            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+              All suggestions can be edited and customized on the next step. You
+              can move entities between services, add new services, and more.
+            </Text>
+            <Button
+              className={`${CLASS_NAME}__continue_button`}
+              onClick={handleConfirmSuggestion}
+            >
+              Let's go!
+            </Button>
+          </Panel>
           <div className={`${CLASS_NAME}__content`}>
             <Panel className={`${CLASS_NAME}__services`}>
               {btmResult?.data?.microservices.map((item) => (
@@ -110,21 +130,6 @@ const BreakTheMonolith: React.FC<Props> = ({
               ))}
             </Panel>
           </div>
-          <Panel
-            panelStyle={EnumPanelStyle.Default}
-            className={`${CLASS_NAME}__confirmation`}
-          >
-            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-              All suggestions can be edited and customized on the next step. You
-              can move entities between services, add new services, and more.
-            </Text>
-            <Button
-              className={`${CLASS_NAME}__continue_button`}
-              onClick={handleConfirmSuggestion}
-            >
-              Let's go!
-            </Button>
-          </Panel>
         </>
       )}
     </div>

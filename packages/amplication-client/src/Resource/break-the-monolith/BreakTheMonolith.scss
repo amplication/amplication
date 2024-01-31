@@ -16,6 +16,14 @@ $button-width: 100px;
   max-width: min(var(--page-content-width-default), $max-width);
   margin: auto;
 
+  &--full-screen {
+    .break-the-monolith {
+      &__header {
+        margin-top: var(--double-spacing);
+      }
+    }
+  }
+
   &__loader {
     display: flex;
     flex-direction: column;
@@ -23,11 +31,12 @@ $button-width: 100px;
 
   &__header {
     max-width: $header-max-width;
-    margin-top: var(--double-spacing);
+    margin-top: 0;
   }
 
   &__content {
     width: 100%;
+    margin-bottom: var(--default-spacing);
   }
 
   &__services {
@@ -61,6 +70,7 @@ $button-width: 100px;
     align-items: center;
     width: 100%;
     margin-bottom: var(--default-spacing);
+    margin-top: var(--double-spacing);
   }
 
   &__continue_button {
