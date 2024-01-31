@@ -247,22 +247,17 @@ export default function ModelOrganizerToolbar({
                   mergeNewResourcesChanges={mergeNewResourcesChanges}
                 ></ModelsTool>
                 <div className={`${CLASS_NAME}__divider`}></div>
-                <FeatureIndicatorContainer
-                  featureId={BillingFeature.RedesignArchitecture}
-                  entitlementType={EntitlementType.Boolean}
-                  limitationText="Available as part of the Enterprise plan only."
+
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  onClick={handleConfirmChangesState}
+                  // eventData={{
+                  //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                  // }}
+                  disabled={!hasChanges}
                 >
-                  <Button
-                    buttonStyle={EnumButtonStyle.Primary}
-                    onClick={handleConfirmChangesState}
-                    // eventData={{
-                    //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                    // }}
-                    disabled={!hasChanges}
-                  >
-                    Apply Plan
-                  </Button>
-                </FeatureIndicatorContainer>
+                  Apply Plan
+                </Button>
               </>
             )}
             {readOnly && (
