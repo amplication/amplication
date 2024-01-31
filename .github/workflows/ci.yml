@@ -34,7 +34,7 @@ env:
 jobs:
   ci:
     name: Continuous Integration
-    if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.head_ref != 'next' )
+    if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.head_ref != 'next' ) || github.event_name  == 'workflow_dispatch'
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
