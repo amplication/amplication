@@ -210,7 +210,7 @@ export default function ModelOrganizerToolbar({
         </FlexItem>
 
         <FlexEnd>
-          <FlexItem>
+          <FlexItem itemsAlign={EnumItemsAlign.Center}>
             {/* <FeatureIndicatorContainer //todo: return in phase 2
               featureId={BillingFeature.RedesignArchitecture}
               entitlementType={EntitlementType.Boolean}

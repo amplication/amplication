@@ -86,7 +86,9 @@ export class AuthService {
       ),
     });
     this.auth0Management = new ManagementClient({
-      domain: this.configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
+      domain: this.configService.get<string>(
+        Env.AUTH_ISSUER_MANAGEMENT_BASE_URL
+      ),
       clientId: this.configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID),
       clientSecret: this.configService.get<string>(
         Env.AUTH_ISSUER_CLIENT_SECRET
