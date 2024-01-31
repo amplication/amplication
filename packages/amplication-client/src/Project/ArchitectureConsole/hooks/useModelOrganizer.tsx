@@ -1,15 +1,28 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { AppContext } from "../../../context/appContext";
+import { useCallback, useEffect, useState } from "react";
+import { useEdgesState } from "reactflow";
 import * as models from "../../../models";
+import {
+  entitiesToNodesAndEdges,
+  nodesToDetailedEdges,
+  nodesToSimpleEdges,
+  tempResourceToNode,
+} from "../helpers";
+import { applyAutoLayout } from "../layout";
 import {
   CREATE_RESOURCE_ENTITIES,
   GET_RESOURCES,
 } from "../queries/modelsQueries";
-import { EntityNode, ModelChanges, Node, ResourceNode } from "../types";
-import { entitiesToNodesAndEdges, tempResourceToNode } from "../helpers";
-import { useEdgesState } from "reactflow";
-import { applyAutoLayout } from "../layout";
+import {
+  EntityNode,
+  ModelChanges,
+  ModelOrganizerPersistentData,
+  NODE_TYPE_MODEL_GROUP,
+  Node,
+  ResourceNode,
+} from "../types";
+
+import useModelOrganizerPersistentData from "./useModelOrganizerPersistentData";
 
 type TData = {
   resources: models.Resource[];
@@ -27,8 +40,7 @@ type modelChangesData = {
   }[];
 };
 
-const useModelOrganization = () => {
-  const { currentProject } = useContext(AppContext);
+const useModelOrganization = (projectId: string) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
   const [currentResourcesData, setCurrentResourcesData] = useState<
@@ -38,59 +50,109 @@ const useModelOrganization = () => {
     useState<ResourceNode>(null);
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
   const [showRelationDetails, setShowRelationDetails] = useState(false);
-
   const [currentDetailedEdges, setCurrentDetailedEdges] = useEdgesState([]);
-
   const [currentSimpleEdges, setCurrentSimpleEdges] = useEdgesState([]);
+  const [saveDataTimestampTrigger, setSaveDataTimestampTrigger] =
+    useState<Date>(null);
 
   const [changes, setChanges] = useState<ModelChanges>({
     movedEntities: [],
     newServices: [],
   });
 
+  const { persistData, loadPersistentData, clearPersistentData } =
+    useModelOrganizerPersistentData(projectId);
+
+  useEffect(() => {
+    if (saveDataTimestampTrigger === null) return;
+
+    const savedData: ModelOrganizerPersistentData = {
+      projectId: projectId,
+      nodes: nodes,
+      changes: changes,
+      showRelationDetails: showRelationDetails,
+    };
+
+    persistData(savedData);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saveDataTimestampTrigger]);
+
+  const saveToPersistentData = useCallback(() => {
+    //update the timestamp to trigger the useEffect
+    setSaveDataTimestampTrigger(new Date());
+  }, [setSaveDataTimestampTrigger]);
+
   const [
     loadProjectResourcesInternal,
     { loading: loadingResources, error: resourcesError, data: resourcesData },
   ] = useLazyQuery<TData>(GET_RESOURCES, {
     variables: {
-      projectId: currentProject?.id,
+      projectId: projectId,
     },
     fetchPolicy: "no-cache",
   });
 
-  const loadProjectResources = useCallback(() => {
-    loadProjectResourcesInternal({
-      variables: {
-        projectId: currentProject?.id,
-      },
-      onCompleted: async (data) => {
-        const { nodes, detailedEdges, simpleEdges } =
-          await entitiesToNodesAndEdges(data.resources, showRelationDetails);
-        setCurrentResourcesData(data.resources);
-        setCurrentDetailedEdges(detailedEdges);
-        setCurrentSimpleEdges(simpleEdges);
+  const loadProjectResources = useCallback(
+    (forceRefresh?: boolean) => {
+      if (!forceRefresh) {
+        //try to load a saved copy of the data from the persistent layer
+        const savedData = loadPersistentData();
+        if (savedData) {
+          setNodes(savedData.nodes);
+          setCurrentDetailedEdges(nodesToDetailedEdges(savedData.nodes));
+          setCurrentSimpleEdges(nodesToSimpleEdges(savedData.nodes));
+          setChanges(savedData.changes);
+          setShowRelationDetails(savedData.showRelationDetails);
 
-        setNodes(nodes);
+          const resources = savedData.nodes.reduce((resources, node) => {
+            if (node.type === NODE_TYPE_MODEL_GROUP) {
+              resources.push(node.data.payload);
+            }
+            return resources;
+          }, []);
 
-        if (showRelationDetails) {
-          setEdges(detailedEdges);
-        } else {
-          setEdges(simpleEdges);
+          setCurrentResourcesData(resources);
+          return;
         }
-      },
-    });
-  }, [
-    loadProjectResourcesInternal,
-    setCurrentResourcesData,
-    setEdges,
-    setNodes,
-    setCurrentDetailedEdges,
-    setCurrentSimpleEdges,
-    showRelationDetails,
-    currentProject,
-  ]);
+      }
+
+      //load fresh copy of the data from the server
+      loadProjectResourcesInternal({
+        variables: {
+          projectId: projectId,
+        },
+        onCompleted: async (data) => {
+          const { nodes, detailedEdges, simpleEdges } =
+            await entitiesToNodesAndEdges(data.resources, showRelationDetails);
+          setCurrentResourcesData(data.resources);
+          setCurrentDetailedEdges(detailedEdges);
+          setCurrentSimpleEdges(simpleEdges);
+
+          setNodes(nodes);
+
+          if (showRelationDetails) {
+            setEdges(detailedEdges);
+          } else {
+            setEdges(simpleEdges);
+          }
+
+          saveToPersistentData();
+        },
+      });
+    },
+    [
+      loadPersistentData,
+      loadProjectResourcesInternal,
+      projectId,
+      setCurrentDetailedEdges,
+      setCurrentSimpleEdges,
+      showRelationDetails,
+      saveToPersistentData,
+      setEdges,
+    ]
+  );
 
   const toggleShowRelationDetails = useCallback(async () => {
     const currentShowRelationDetails = !showRelationDetails;
@@ -108,14 +170,14 @@ const useModelOrganization = () => {
       currentShowRelationDetails
     );
     setNodes(updatedNodes);
+    saveToPersistentData();
   }, [
     showRelationDetails,
     currentDetailedEdges,
-    nodes,
     currentSimpleEdges,
     setEdges,
-    setShowRelationDetails,
-    setNodes,
+    nodes,
+    saveToPersistentData,
   ]);
 
   const resetChanges = useCallback(() => {
@@ -127,18 +189,14 @@ const useModelOrganization = () => {
       currentEditableResourceNode.data.isEditable = false;
     }
     setCurrentEditableResourceNode(null);
-  }, [
-    setNodes,
-    setCurrentDetailedEdges,
-    setCurrentSimpleEdges,
-    setChanges,
-    currentEditableResourceNode,
-  ]);
+    clearPersistentData();
+    loadProjectResources(true);
+  }, [currentEditableResourceNode, clearPersistentData, loadProjectResources]);
 
   const mergeNewResourcesChanges = useCallback(() => {
     loadProjectResourcesInternal({
       variables: {
-        projectId: currentProject?.id,
+        projectId: projectId,
       },
       onCompleted: async (data) => {
         if (data?.resources) {
@@ -294,21 +352,20 @@ const useModelOrganization = () => {
             } else {
               setEdges(simpleEdges);
             }
+            saveToPersistentData();
           }
         }
       },
     });
   }, [
     loadProjectResourcesInternal,
-    currentProject?.id,
+    projectId,
     currentResourcesData,
     changes,
     showRelationDetails,
-    setCurrentResourcesData,
     setCurrentDetailedEdges,
     setCurrentSimpleEdges,
-    setNodes,
-    setChanges,
+    saveToPersistentData,
     setEdges,
   ]);
 
@@ -397,20 +454,19 @@ const useModelOrganization = () => {
       setChanges((changes) => changes);
       setNodes(updatedNodes);
       setChanges(changes);
+      saveToPersistentData();
     },
     [
       nodes,
       changes,
       currentResourcesData,
-      setCurrentResourcesData,
       edges,
       showRelationDetails,
-      setNodes,
-      setChanges,
+      saveToPersistentData,
     ]
   );
 
-  const setDraggableNodes = useCallback(
+  const setCurrentEditableResource = useCallback(
     (resource: models.Resource) => {
       setNodes((nodes) => {
         nodes.forEach((node) => {
@@ -424,22 +480,12 @@ const useModelOrganization = () => {
             setCurrentEditableResourceNode(selectedResourceNode);
           }
         });
-
+        saveToPersistentData();
         return [...nodes];
       });
     },
-    [setNodes, setCurrentEditableResourceNode]
+    [setNodes, setCurrentEditableResourceNode, saveToPersistentData]
   );
-
-  const resetToOriginalState = useCallback(() => {
-    loadProjectResources();
-  }, []);
-
-  useEffect(() => {
-    if (currentProject?.id) {
-      loadProjectResources();
-    }
-  }, [currentProject]);
 
   const moveNodeToParent = useCallback(
     async (movedNodes: Node[], targetParent: Node) => {
@@ -504,8 +550,16 @@ const useModelOrganization = () => {
 
       setChanges(changes);
       setCurrentResourcesData(currentResourcesData);
+      saveToPersistentData();
     },
-    [changes, nodes, currentResourcesData, setCurrentResourcesData, setChanges]
+    [
+      nodes,
+      edges,
+      showRelationDetails,
+      changes,
+      currentResourcesData,
+      saveToPersistentData,
+    ]
   );
 
   const [
@@ -513,7 +567,7 @@ const useModelOrganization = () => {
     { loading: loadingCreateResourceAndEntities, error: createEntitiesError },
   ] = useMutation<modelChangesData>(CREATE_RESOURCE_ENTITIES, {});
 
-  const saveChanges = useCallback(async () => {
+  const applyChanges = useCallback(async () => {
     const { newServices, movedEntities } = changes;
     const mapServices = newServices.map((s) => {
       return {
@@ -527,20 +581,24 @@ const useModelOrganization = () => {
         data: {
           entitiesToCopy: movedEntities,
           modelGroupsResources: mapServices,
-          projectId: currentProject.id,
+          projectId: projectId,
         },
       },
+      onCompleted: async (data) => {
+        resetChanges();
+      },
+      onError: (error) => {
+        //@todo: show Errors
+      },
     }).catch(console.error);
+  }, [changes, createResourceEntities, projectId, resetChanges]);
 
-    resetChanges();
-    loadProjectResources();
-  }, [
-    changes,
-    createResourceEntities,
-    currentProject?.id,
-    resetChanges,
-    loadProjectResources,
-  ]);
+  useEffect(() => {
+    if (projectId) {
+      loadProjectResources();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
 
   return {
     nodes,
@@ -556,12 +614,12 @@ const useModelOrganization = () => {
     loadingCreateResourceAndEntities,
     setSearchPhrase,
     toggleShowRelationDetails,
-    resetToOriginalState,
+    resetChanges,
     changes,
     createEntitiesError,
     setChanges,
-    setDraggableNodes,
-    saveChanges,
+    setCurrentEditableResource,
+    applyChanges,
     moveNodeToParent,
     createNewTempService,
     modelGroupFilterChanged,

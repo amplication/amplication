@@ -34,6 +34,8 @@ import {
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
+import { useAppContext } from "../../context/appContext";
+import { applyAutoLayout } from "./layout";
 
 export const CLASS_NAME = "model-organizer";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -62,6 +64,8 @@ export default function ModelOrganizer({
   loadingResources,
   errorMessage,
 }: Props) {
+  const { currentProject } = useAppContext();
+
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
 
@@ -73,18 +77,18 @@ export default function ModelOrganizer({
     onEdgesChange,
     showRelationDetails,
     toggleShowRelationDetails,
-    resetToOriginalState,
+    resetChanges,
     changes,
-    saveChanges,
+    applyChanges,
     loadingCreateResourceAndEntities,
     moveNodeToParent,
     createNewTempService,
     modelGroupFilterChanged,
     searchPhraseChanged,
-    setDraggableNodes,
+    setCurrentEditableResource,
     mergeNewResourcesChanges,
     createEntitiesError,
-  } = useModelOrganization();
+  } = useModelOrganization(currentProject?.id);
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
 
@@ -118,23 +122,23 @@ export default function ModelOrganizer({
 
   const onRedesignClick = useCallback(
     (resource: models.Resource) => {
-      setDraggableNodes(resource);
+      setCurrentEditableResource(resource);
 
       setReadOnly(false);
     },
-    [setReadOnly, setDraggableNodes]
+    [setReadOnly, setCurrentEditableResource]
   );
 
   const onCancelChangesClick = useCallback(() => {
-    resetToOriginalState();
+    resetChanges();
 
     setReadOnly(true);
-  }, [resetToOriginalState]);
+  }, [resetChanges]);
 
   const onApplyPlanClick = useCallback(() => {
-    saveChanges();
+    applyChanges();
     setReadOnly(true);
-  }, [saveChanges, setReadOnly]);
+  }, [applyChanges, setReadOnly]);
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
@@ -242,6 +246,16 @@ export default function ModelOrganizer({
     reactFlowInstance.fitView();
   }, [toggleShowRelationDetails, reactFlowInstance]);
 
+  const onArrangeNodes = useCallback(async () => {
+    const updatedNodes = await applyAutoLayout(
+      nodes,
+      edges,
+      showRelationDetails
+    );
+    setNodes(updatedNodes);
+    reactFlowInstance.fitView();
+  }, [setNodes, showRelationDetails, reactFlowInstance, nodes, edges]);
+
   return (
     <div className={CLASS_NAME}>
       {loadingResources ? (
@@ -256,6 +270,7 @@ export default function ModelOrganizer({
               ></ModelsGroupsList>
               <ModelOrganizerControls
                 onToggleShowRelationDetails={onToggleShowRelationDetails}
+                onArrangeNodes={onArrangeNodes}
                 reactFlowInstance={reactFlowInstance}
               />
             </div>
