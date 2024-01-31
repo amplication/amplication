@@ -56,6 +56,8 @@ const useModelOrganization = (projectId: string) => {
   const [saveDataTimestampTrigger, setSaveDataTimestampTrigger] =
     useState<Date>(null);
 
+  const [redesignMode, setRedesignMode] = useState<boolean>(false);
+
   const [changes, setChanges] = useState<ModelChanges>({
     movedEntities: [],
     newServices: [],
@@ -72,6 +74,7 @@ const useModelOrganization = (projectId: string) => {
       nodes: nodes,
       changes: changes,
       showRelationDetails: showRelationDetails,
+      redesignMode: redesignMode,
     };
 
     persistData(savedData);
@@ -99,12 +102,14 @@ const useModelOrganization = (projectId: string) => {
       if (!forceRefresh) {
         //try to load a saved copy of the data from the persistent layer
         const savedData = loadPersistentData();
-        if (savedData) {
+
+        if (savedData && savedData.redesignMode) {
           setNodes(savedData.nodes);
           setCurrentDetailedEdges(nodesToDetailedEdges(savedData.nodes));
           setCurrentSimpleEdges(nodesToSimpleEdges(savedData.nodes));
           setChanges(savedData.changes);
           setShowRelationDetails(savedData.showRelationDetails);
+          setRedesignMode(savedData.redesignMode);
 
           const resources = savedData.nodes.reduce((resources, node) => {
             if (node.type === NODE_TYPE_MODEL_GROUP) {
@@ -189,6 +194,7 @@ const useModelOrganization = (projectId: string) => {
       currentEditableResourceNode.data.isEditable = false;
     }
     setCurrentEditableResourceNode(null);
+    setRedesignMode(false);
     clearPersistentData();
     loadProjectResources(true);
   }, [currentEditableResourceNode, clearPersistentData, loadProjectResources]);
@@ -480,6 +486,7 @@ const useModelOrganization = (projectId: string) => {
             setCurrentEditableResourceNode(selectedResourceNode);
           }
         });
+        setRedesignMode(true);
         saveToPersistentData();
         return [...nodes];
       });
@@ -625,6 +632,7 @@ const useModelOrganization = (projectId: string) => {
     modelGroupFilterChanged,
     searchPhraseChanged,
     mergeNewResourcesChanges,
+    redesignMode,
   };
 };
 

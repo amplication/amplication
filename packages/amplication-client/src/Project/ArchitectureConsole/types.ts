@@ -80,4 +80,5 @@ export type ModelOrganizerPersistentData = {
   nodes: Node[];
   changes: ModelChanges;
   showRelationDetails: boolean;
+  redesignMode: boolean;
 };

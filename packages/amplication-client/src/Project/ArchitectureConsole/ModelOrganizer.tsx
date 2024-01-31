@@ -88,11 +88,10 @@ export default function ModelOrganizer({
     setCurrentEditableResource,
     mergeNewResourcesChanges,
     createEntitiesError,
+    redesignMode,
   } = useModelOrganization(currentProject?.id);
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
-
-  const [readOnly, setReadOnly] = useState<boolean>(true);
 
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
 
@@ -111,34 +110,20 @@ export default function ModelOrganizer({
     setIsValidResourceName(true);
   }, [setIsValidResourceName]);
 
-  useEffect(() => {
-    if (
-      changes?.movedEntities?.length > 0 ||
-      changes?.newServices?.length > 0
-    ) {
-      setReadOnly(false);
-    }
-  }, [changes, setReadOnly]);
-
   const onRedesignClick = useCallback(
     (resource: models.Resource) => {
       setCurrentEditableResource(resource);
-
-      setReadOnly(false);
     },
-    [setReadOnly, setCurrentEditableResource]
+    [setCurrentEditableResource]
   );
 
   const onCancelChangesClick = useCallback(() => {
     resetChanges();
-
-    setReadOnly(true);
   }, [resetChanges]);
 
   const onApplyPlanClick = useCallback(() => {
     applyChanges();
-    setReadOnly(true);
-  }, [applyChanges, setReadOnly]);
+  }, [applyChanges]);
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
@@ -278,7 +263,7 @@ export default function ModelOrganizer({
               <ModelOrganizerToolbar
                 changes={changes}
                 nodes={nodes}
-                readOnly={readOnly}
+                redesignMode={redesignMode}
                 hasChanges={
                   changes?.movedEntities?.length > 0 ||
                   changes?.newServices?.length > 0

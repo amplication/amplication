@@ -1,46 +1,36 @@
 import "./ModelOrganizerToolbar.scss";
 
 import {
-  Chip,
   ConfirmationDialog,
   Dialog,
   EnumButtonStyle,
-  EnumChipStyle,
   EnumContentAlign,
   EnumGapSize,
   EnumItemsAlign,
   FlexItem,
-  Icon,
   SearchField,
 } from "@amplication/ui/design-system";
 import {
   EnumFlexDirection,
   FlexEnd,
 } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
-import { BillingFeature } from "@amplication/util-billing-types";
 import { useCallback, useEffect, useState } from "react";
+import BetaFeatureTag from "../../Components/BetaFeatureTag";
 import { Button } from "../../Components/Button";
-import {
-  EntitlementType,
-  FeatureIndicatorContainer,
-  IconType,
-} from "../../Components/FeatureIndicatorContainer";
 import RedesignResourceButton from "../../Components/RedesignResourceButton";
 import * as models from "../../models";
+import { ApplyChangesNextSteps } from "./ApplyChangesNextSteps";
+import CreateApplyChangesLoader from "./CreateApplyChangesLoader";
 import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
-import { ApplyChangesNextSteps } from "./ApplyChangesNextSteps";
-import CreateApplyChangesLoader from "./CreateApplyChangesLoader";
-import { FeatureIndicator } from "../../Components/FeatureIndicator";
-import BetaFeatureTag from "../../Components/BetaFeatureTag";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 const CONFIRM_BUTTON = { label: "Discard Changes" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 type Props = {
-  readOnly: boolean;
+  redesignMode: boolean;
   hasChanges: boolean;
   changes: ModelChanges;
   nodes: Node[];
@@ -58,7 +48,7 @@ type Props = {
 const MIN_TIME_OUT_LOADER = 2000;
 
 export default function ModelOrganizerToolbar({
-  readOnly,
+  redesignMode,
   changes,
   hasChanges,
   nodes,
@@ -238,7 +228,7 @@ export default function ModelOrganizerToolbar({
             </FeatureIndicatorContainer> */}
             <BetaFeatureTag></BetaFeatureTag>
 
-            {!readOnly && (
+            {redesignMode && (
               <>
                 <div className={`${CLASS_NAME}__divider`}></div>
                 <ModelsTool
@@ -260,7 +250,7 @@ export default function ModelOrganizerToolbar({
                 </Button>
               </>
             )}
-            {readOnly && (
+            {!redesignMode && (
               <RedesignResourceButton
                 resources={resources}
                 onSelectResource={onRedesign}
