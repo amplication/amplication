@@ -16,7 +16,7 @@ export interface ResourceSettings {
   structureType: "Mono" | " Poly";
   databaseType: "postgres" | "mysql" | "mongo" | "sqlserver";
   templateType: "empty" | "orderManagement";
-  authType: string;
+  authType: "no" | "core";
   isGenerateCompleted: string;
   connectToDemoRepo: boolean;
 }
