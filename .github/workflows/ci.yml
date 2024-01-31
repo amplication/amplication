@@ -79,7 +79,7 @@ jobs:
           npx nx affected --target=postbuild --parallel=3 $NX_FORCE_ALL
 
       - name: Get number of CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
+        uses: SimenB/github-actions-cpu-cores@v2
         id: cpu-cores
 
       - name: Test
