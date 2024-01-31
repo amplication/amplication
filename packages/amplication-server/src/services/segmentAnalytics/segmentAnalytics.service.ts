@@ -34,6 +34,11 @@ export enum EnumEventType {
   CodeGeneratorVersionUpdate = "codeGeneratorVersionUpdate",
 
   RedeemCoupon = "RedeemCoupon",
+
+  // break the monolith
+  StartRedesign = "startRedesign",
+  BreakTheMonolithApply = "BreakTheMonolith_Apply",
+  BreakTheMonolithStart = "BreakTheMonolith_Start",
 }
 
 export type IdentifyData = {

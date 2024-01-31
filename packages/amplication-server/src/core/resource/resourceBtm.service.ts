@@ -18,6 +18,14 @@ import {
 } from "./dto/BreakServiceToMicroservicesResult";
 import { UserActionService } from "../userAction/userAction.service";
 import { GptBadFormatResponseError } from "./errors/GptBadFormatResponseError";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { User } from "../../models";
+import { BillingService } from "../billing/billing.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { TrackBreakTheMonolith } from "./dto/TrackBreakTheMonolith";
 
 @Injectable()
 export class ResourceBtmService {
@@ -46,16 +54,61 @@ export class ResourceBtmService {
   constructor(
     private readonly gptService: GptService,
     private readonly prisma: PrismaService,
-    private readonly userActionService: UserActionService
+    private readonly userActionService: UserActionService,
+    private readonly billingService: BillingService,
+    private readonly analyticsService: SegmentAnalyticsService,
+    private readonly logger: AmplicationLogger
   ) {}
+
+  private async trackBreakTheMonolith(
+    user: User,
+    resourceId: string,
+    customProperties: Record<string, unknown> = {}
+  ): Promise<TrackBreakTheMonolith> {
+    try {
+      const service = await this.prisma.resource.findUnique({
+        where: { id: resourceId },
+        select: {
+          name: true,
+        },
+      });
+
+      const subscription = await this.billingService.getSubscription(
+        user.workspace?.id
+      );
+
+      await this.analyticsService.track({
+        userId: user.id,
+        properties: {
+          ...customProperties,
+          workspaceId: user.workspace?.id,
+          serviceName: service.name,
+          plan: subscription.subscriptionPlan,
+        },
+        event: EnumEventType.StartRedesign,
+      });
+      return { success: true, message: null };
+    } catch (error) {
+      this.logger.error(error.message, error, { userId: user.id, resourceId });
+      return { success: false, message: error.message };
+    }
+  }
+
+  async startRedesign(
+    user: User,
+    resourceId: string
+  ): Promise<TrackBreakTheMonolith> {
+    return this.trackBreakTheMonolith(user, resourceId);
+  }
 
   async triggerBreakServiceIntoMicroservices({
     resourceId,
-    userId,
+    user,
   }: {
     resourceId: string;
-    userId: string;
+    user: User;
   }): Promise<UserAction> {
+    await this.trackBreakTheMonolith(user, resourceId);
     const resource = await this.getResourceDataForBtm(resourceId);
 
     const prompt = this.generatePromptForBreakTheMonolith(resource);
@@ -70,7 +123,7 @@ export class ResourceBtmService {
     const userAction = await this.gptService.startConversation(
       ConversationTypeKey.BreakTheMonolith,
       conversationParams,
-      userId,
+      user.id,
       resourceId
     );
 

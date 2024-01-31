@@ -9,6 +9,7 @@ import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParam
 import { UserAction } from "../userAction/dto";
 import { ResourceBtmService } from "./resourceBtm.service";
 import { BreakServiceToMicroservicesResult } from "./dto/BreakServiceToMicroservicesResult";
+import { TrackBreakTheMonolith } from "./dto/TrackBreakTheMonolith";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -29,7 +30,7 @@ export class ResourceBtmResolver {
   ): Promise<UserAction> {
     return this.resourceBtmService.triggerBreakServiceIntoMicroservices({
       resourceId,
-      userId: user.id,
+      user,
     });
   }
 
@@ -45,5 +46,17 @@ export class ResourceBtmResolver {
     return this.resourceBtmService.finalizeBreakServiceIntoMicroservices(
       userActionId
     );
+  }
+
+  @Query(() => TrackBreakTheMonolith, {
+    nullable: true,
+    description: "Track the redesign button for analytics purposes.",
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
+  async startRedesign(
+    @UserEntity() user: User,
+    @Args({ name: "resourceId", type: () => String }) resourceId: string
+  ): Promise<TrackBreakTheMonolith> {
+    return this.resourceBtmService.startRedesign(user, resourceId);
   }
 }

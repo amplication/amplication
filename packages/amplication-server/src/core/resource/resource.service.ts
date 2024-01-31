@@ -498,6 +498,21 @@ export class ResourceService {
   ): Promise<Resource[]> {
     const { entitiesToCopy, modelGroupsResources, projectId } = args.data;
 
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.track({
+      userId: user.id,
+      properties: {
+        workspaceId: user.workspace?.id,
+        plan: subscription.subscriptionPlan,
+        movedEntities: entitiesToCopy.length,
+        newServices: modelGroupsResources.length,
+      },
+      event: EnumEventType.BreakTheMonolithApply,
+    });
+
     const defaultServiceSettings: ServiceSettingsUpdateInput = {
       adminUISettings: {
         generateAdminUI: false,
