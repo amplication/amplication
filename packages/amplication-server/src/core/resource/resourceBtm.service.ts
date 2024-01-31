@@ -58,6 +58,10 @@ export class ResourceBtmService {
   }): Promise<UserAction> {
     const resource = await this.getResourceDataForBtm(resourceId);
 
+    if (resource.entities.length === 0) {
+      throw new AmplicationError("Resource has no entities");
+    }
+
     const prompt = this.generatePromptForBreakTheMonolith(resource);
 
     const conversationParams = [
