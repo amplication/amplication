@@ -1188,6 +1188,9 @@ type Mutation {
   signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
 
+  """Track the redesign button for analytics purposes."""
+  startRedesign(data: WhereUniqueInput!): Resource
+
   """
   Trigger the generation of a set of recommendations for breaking a resource into microservices
   """
@@ -1474,9 +1477,6 @@ type Query {
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
   serviceTopics(where: WhereUniqueInput!): ServiceTopics
   serviceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
-
-  """Track the redesign button for analytics purposes."""
-  startRedesign(resourceId: String!): TrackBreakTheMonolith
   topic(where: WhereUniqueInput!): Topic
   topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
   userAction(where: WhereUniqueInput!): UserAction!
@@ -1879,11 +1879,6 @@ input TopicWhereInput {
   parentBlock: WhereUniqueInput
   resource: ResourceWhereInput
   updatedAt: DateTimeFilter
-}
-
-type TrackBreakTheMonolith {
-  message: String
-  success: Boolean!
 }
 
 input UpdateAccountInput {

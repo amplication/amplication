@@ -1020,12 +1020,10 @@ export type MessagePatternCreateInput = {
   type: EnumMessagePatternConnectionOptions;
 };
 
-
 export type ModelGroupResource = {
   name: Scalars['String']['input'];
   tempId: Scalars['String']['input'];
 };
-
 
 export type Module = IBlock & {
   blockType: EnumBlockType;
@@ -1215,6 +1213,8 @@ export type Mutation = {
   signup: Auth;
   signupPreviewAccount: AuthPreviewAccount;
   signupWithBusinessEmail: Scalars['Boolean']['output'];
+  /** Track the redesign button for analytics purposes. */
+  startRedesign?: Maybe<Resource>;
   /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
   triggerBreakServiceIntoMicroservices?: Maybe<UserAction>;
   updateAccount: Account;
@@ -1552,6 +1552,11 @@ export type MutationSignupPreviewAccountArgs = {
 
 export type MutationSignupWithBusinessEmailArgs = {
   data: SignupWithBusinessEmailInput;
+};
+
+
+export type MutationStartRedesignArgs = {
+  data: WhereUniqueInput;
 };
 
 
@@ -1928,8 +1933,6 @@ export type Query = {
   serviceSettings: ServiceSettings;
   serviceTopics?: Maybe<ServiceTopics>;
   serviceTopicsList: Array<ServiceTopics>;
-  /** Track the redesign button for analytics purposes. */
-  startRedesign?: Maybe<TrackBreakTheMonolith>;
   topic?: Maybe<Topic>;
   topics: Array<Topic>;
   userAction: UserAction;
@@ -2144,11 +2147,6 @@ export type QueryServiceTopicsListArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ServiceTopicsWhereInput>;
-};
-
-
-export type QueryStartRedesignArgs = {
-  resourceId: Scalars['String']['input'];
 };
 
 
@@ -2581,11 +2579,6 @@ export type TopicWhereInput = {
   parentBlock?: InputMaybe<WhereUniqueInput>;
   resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
-};
-
-export type TrackBreakTheMonolith = {
-  message?: Maybe<Scalars['String']['output']>;
-  success: Scalars['Boolean']['output'];
 };
 
 export type UpdateAccountInput = {
