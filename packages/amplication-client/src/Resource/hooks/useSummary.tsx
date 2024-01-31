@@ -3,8 +3,9 @@ import useModule from "../../Modules/hooks/useModule";
 import { GET_ROLES } from "../../Roles/RoleList";
 import { DATE_CREATED_FIELD } from "../../Modules/ModuleList";
 import * as models from "../../models";
-import { GET_PLUGIN_INSTALLATIONS } from "../../Plugins/queries/pluginsQueries";
 import { useEffect, useState } from "react";
+import { GET_CATEGORIES } from "./categoriesQueries";
+import usePlugins from "../../Plugins/hooks/usePlugins";
 
 type TData = {
   resourceRoles: models.ResourceRole[];
@@ -18,33 +19,30 @@ interface SummaryData {
 }
 
 export const useSummary = (currentResource: models.Resource) => {
+  const [rankedCategories, setRankedCategories] = useState<
+    { name: string; description: string }[]
+  >([]);
   const [summaryData, setSummaryData] = useState<SummaryData>({
     models: 0,
     apis: 0,
     installedPlugins: 0,
     roles: 0,
   });
-  // categories
+  const { pluginInstallations } = usePlugins(currentResource.id);
 
-  const {
-    data: pluginInstallations,
-    loading: loadingPluginInstallations,
-    error: errorPluginInstallations,
-  } = useQuery<{
-    pluginInstallations: models.PluginInstallation[];
-  }>(GET_PLUGIN_INSTALLATIONS, {
-    variables: {
-      resourceId: currentResource.id,
+  const { data: categoriesData } = useQuery<{
+    categories: { name: string; rank: number }[];
+  }>(GET_CATEGORIES, {
+    context: {
+      clientName: "pluginApiHttpLink",
     },
+    variables: {},
     skip: !currentResource.id,
   });
-  const { findModulesData, findModulesError, findModulesLoading } = useModule();
 
-  const {
-    data: rolesData,
-    loading: rolesLoading,
-    error: rolesError,
-  } = useQuery<TData>(GET_ROLES, {
+  const { findModulesData } = useModule();
+
+  const { data: rolesData } = useQuery<TData>(GET_ROLES, {
     variables: {
       id: currentResource.id,
       orderBy: {
@@ -55,9 +53,48 @@ export const useSummary = (currentResource: models.Resource) => {
   });
 
   useEffect(() => {
+    if (!pluginInstallations && !pluginInstallations?.length) return;
+    if (!categoriesData && !categoriesData?.categories.length) return;
+
+    const installedPluginsMap = pluginInstallations.reduce(
+      (pluginObj, plugin) => {
+        if (!plugin.categories) return pluginObj;
+
+        plugin.categories.forEach((category) => {
+          if (!Object.prototype.hasOwnProperty.call(pluginObj, category))
+            pluginObj[category] = true;
+        });
+
+        return pluginObj;
+      },
+      {}
+    );
+
+    const tempRankedCategory = categoriesData.categories.reduce(
+      (rankedArr, category) => {
+        if (
+          !Object.prototype.hasOwnProperty.call(
+            installedPluginsMap,
+            category.name
+          )
+        )
+          rankedArr.push({
+            ...category,
+            description:
+              "Connect and manage message queues for efficient data transfer.",
+          });
+        return rankedArr;
+      },
+      []
+    );
+
+    setRankedCategories(tempRankedCategory.slice(0, 4));
+  }, [pluginInstallations, categoriesData]);
+
+  useEffect(() => {
     const models = currentResource?.entities.length;
     const modules = findModulesData?.modules.length;
-    const installedPlugins = pluginInstallations?.pluginInstallations.length;
+    const installedPlugins = pluginInstallations?.length;
     const roles = rolesData?.resourceRoles.length;
     if (
       summaryData.models !== models ||
@@ -75,9 +112,8 @@ export const useSummary = (currentResource: models.Resource) => {
           ? { apis: findModulesData.modules.length }
           : {}),
         ...(pluginInstallations &&
-        pluginInstallations.pluginInstallations.length !==
-          summaryData.installedPlugins
-          ? { installedPlugins: pluginInstallations.pluginInstallations.length }
+        pluginInstallations.length !== summaryData.installedPlugins
+          ? { installedPlugins: pluginInstallations.length }
           : {}),
         ...(rolesData && rolesData.resourceRoles.length !== summaryData.roles
           ? { roles: rolesData.resourceRoles.length }
@@ -94,5 +130,6 @@ export const useSummary = (currentResource: models.Resource) => {
 
   return {
     summaryData,
+    rankedCategories,
   };
 };

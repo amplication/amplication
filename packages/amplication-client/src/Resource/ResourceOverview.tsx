@@ -1,4 +1,3 @@
-import { EnumResourceType } from "@amplication/code-gen-types/models";
 import {
   Button,
   CircleBadge,
@@ -7,31 +6,26 @@ import {
   EnumGapSize,
   EnumItemsAlign,
   EnumPanelStyle,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Icon,
-  List,
   Panel,
+  SelectMenu,
+  SelectMenuList,
+  SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
-import { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import PageContent from "../Layout/PageContent";
 import { AppContext } from "../context/appContext";
-// import DocsTile from "./DocsTile";
-// import EntitiesTile from "./EntitiesTile";
-// import FeatureRequestTile from "./FeatureRequestTile";
-// import RolesTile from "./RolesTile";
-// import { ServicesTile } from "./ServicesTile";
-// import SyncWithGithubTile from "./SyncWithGithubTile";
-// import { TopicsTile } from "./TopicsTile";
-// import ViewCodeViewTile from "./ViewCodeViewTile";
 import { resourceThemeMap } from "./constants";
-// import PluginsTile from "./PluginsTile";
 import { useStiggContext } from "@stigg/react-sdk";
 import { useSummary } from "./hooks/useSummary";
 import { FlexEnd } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import "./ResourceOverview.scss";
+import { getGitRepositoryDetails } from "../util/git-repository-details";
 
 const PAGE_TITLE = "Resource Overview";
 const PAGE_OVERVIEW_CSS = "resource_overview";
@@ -57,33 +51,6 @@ const SummaryBox: React.FC<{
   </div>
 );
 
-const categories = [
-  {
-    name: "Message broker",
-    description:
-      "Connect and manage message queues for efficient data transfer.",
-    link: "",
-  },
-  {
-    name: "Message broker",
-    description:
-      "Connect and manage message queues for efficient data transfer.",
-    link: "",
-  },
-  {
-    name: "Message broker",
-    description:
-      "Connect and manage message queues for efficient data transfer.",
-    link: "",
-  },
-  {
-    name: "Message broker",
-    description:
-      "Connect and manage message queues for efficient data transfer.",
-    link: "",
-  },
-];
-
 const installedPlugins = [
   {
     icon: "database",
@@ -103,16 +70,46 @@ const CategoryBox: React.FC<{
   name: string;
   description: string;
   link: string;
-}> = ({ name, description, link }) => (
-  <div className={`${PAGE_OVERVIEW_CSS}_category`}>
-    <div className={`${PAGE_OVERVIEW_CSS}_category_info`}>
-      <p className={`${PAGE_OVERVIEW_CSS}_category_name`}>{name}</p>
-      <p className={`${PAGE_OVERVIEW_CSS}_category_description`}>
-        {description}
-      </p>
+}> = ({ name, description, link }) => {
+  const history = useHistory();
+  const handleInstallClick = useCallback(() => {
+    history.push(link);
+  }, [history]);
+
+  return (
+    <div className={`${PAGE_OVERVIEW_CSS}_category`}>
+      <div className={`${PAGE_OVERVIEW_CSS}_category_info`}>
+        <p className={`${PAGE_OVERVIEW_CSS}_category_name`}>{name}</p>
+        <p className={`${PAGE_OVERVIEW_CSS}_category_description`}>
+          {description}
+        </p>
+      </div>
+      <Button
+        onClick={handleInstallClick}
+        buttonStyle={EnumButtonStyle.Outline}
+      >
+        install
+      </Button>
     </div>
-    <Button buttonStyle={EnumButtonStyle.Outline}>install</Button>
-  </div>
+  );
+};
+
+const AddFunctionalitiesBox: React.FC<{
+  icon?: string;
+  name: string;
+  link: string;
+  key?: string;
+}> = ({ icon, name, link, key }) => (
+  <Link
+    key={key}
+    to={link}
+    className={`${PAGE_OVERVIEW_CSS}_addFunctionalities`}
+  >
+    <div className={`${PAGE_OVERVIEW_CSS}_addFunctionalities_icon_wrapper`}>
+      <Icon icon={icon} size="xsmall" color={EnumTextColor.Black} />
+    </div>
+    <p className={`${PAGE_OVERVIEW_CSS}_addFunctionalities_name`}>{name}</p>
+  </Link>
 );
 
 const InstalledPLuginBox: React.FC<{
@@ -152,18 +149,69 @@ const EssentialBox: React.FC<{
 );
 
 const ResourceOverview = () => {
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+  const {
+    currentWorkspace,
+    currentProject,
+    currentResource,
+    projectConfigurationResource,
+  } = useContext(AppContext);
   const { refreshData } = useStiggContext();
-  const { summaryData } = useSummary(currentResource);
+  const { summaryData, rankedCategories } = useSummary(currentResource);
   const resourceId = currentResource?.id;
 
   useEffect(() => {
     refreshData();
   }, []);
 
+  const gitRepositoryDetails = getGitRepositoryDetails({
+    organization: projectConfigurationResource.gitRepository?.gitOrganization,
+    repositoryName: projectConfigurationResource.gitRepository?.name,
+    groupName: projectConfigurationResource?.gitRepository?.groupName,
+  });
+
   return (
     <PageContent pageTitle={PAGE_TITLE}>
+      <Panel
+        panelStyle={EnumPanelStyle.Transparent}
+        className={`${PAGE_OVERVIEW_CSS}_buttons_panel`}
+      >
+        <SelectMenu
+          className={`${PAGE_OVERVIEW_CSS}_buttons_panel_select`}
+          title="Add functionality"
+          buttonStyle={EnumButtonStyle.Primary}
+        >
+          <SelectMenuModal
+            className={`${PAGE_OVERVIEW_CSS}_buttons_panel_modal`}
+            align="right"
+          >
+            <SelectMenuList
+              className={`${PAGE_OVERVIEW_CSS}_buttons_panel_list`}
+            >
+              <p className={`${PAGE_OVERVIEW_CSS}_buttons_panel_list_title`}>
+                Functionalities
+              </p>
+              {rankedCategories.map(({ name }) => (
+                <AddFunctionalitiesBox
+                  name={name}
+                  key={name}
+                  link={`/${currentWorkspace.id}/${currentProject.id}/${
+                    currentResource.id
+                  }/plugins/catalog/${encodeURIComponent(name)}`}
+                  icon="database"
+                />
+              ))}
+              <hr className={`${PAGE_OVERVIEW_CSS}_buttons_panel_list_hr`} />
+              <Link
+                to={`/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/catalog`}
+                className={`${PAGE_OVERVIEW_CSS}_buttons_panel_list_view`}
+              >
+                <p>View all</p>
+                <Icon icon="chevron_right" size="small" />
+              </Link>
+            </SelectMenuList>
+          </SelectMenuModal>
+        </SelectMenu>
+      </Panel>
       <Panel
         panelStyle={EnumPanelStyle.Bold}
         className={`${PAGE_OVERVIEW_CSS}_resource_panel`}
@@ -189,6 +237,12 @@ const ResourceOverview = () => {
             <Text textStyle={EnumTextStyle.Description}>
               {currentResource?.description}
             </Text>
+            <div className={`${PAGE_OVERVIEW_CSS}_summary_provider`}>
+              <Icon icon="github" size="xsmall" />
+              <a target="_blank" href={gitRepositoryDetails.repositoryUrl}>
+                {gitRepositoryDetails.repositoryUrl}
+              </a>
+            </div>
           </FlexItem>
           <FlexEnd className={`${PAGE_OVERVIEW_CSS}_summary_wrapper`}>
             <SummaryBox
@@ -254,8 +308,15 @@ const ResourceOverview = () => {
           <div
             className={`${PAGE_OVERVIEW_CSS}_functionalities_plugins_categories`}
           >
-            {categories.map(({ name, description, link }) => (
-              <CategoryBox name={name} description={description} link={link} />
+            {rankedCategories.map(({ name, description }) => (
+              <CategoryBox
+                key={name}
+                name={name}
+                description={description}
+                link={`/${currentWorkspace.id}/${currentProject.id}/${
+                  currentResource.id
+                }/plugins/catalog/${encodeURIComponent(name)}`}
+              />
             ))}
           </div>
           <hr className={`${PAGE_OVERVIEW_CSS}_functionalities_hr`} />
@@ -263,7 +324,7 @@ const ResourceOverview = () => {
             className={`${PAGE_OVERVIEW_CSS}_functionalities_installed_plugins`}
           >
             {installedPlugins.map(({ name, icon }) => (
-              <InstalledPLuginBox name={name} icon={icon} />
+              <InstalledPLuginBox key={name} name={name} icon={icon} />
             ))}
             <div
               className={`${PAGE_OVERVIEW_CSS}_functionalities_installed_plugins_view`}
