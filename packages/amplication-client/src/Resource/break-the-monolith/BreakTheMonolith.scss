@@ -1,6 +1,7 @@
 @import "../../style/index.scss";
 
 $max-width: 80vw;
+$modal-min-height: 80vh;
 $header-max-width: 600px;
 $service-min-width: max(200px, 20%);
 $service-max-height: 200px;
@@ -17,6 +18,8 @@ $button-width: 100px;
   margin: auto;
 
   &--full-screen {
+    justify-content: flex-start;
+    min-height: $modal-min-height;
     .break-the-monolith {
       &__header {
         margin-top: var(--double-spacing);
@@ -67,6 +70,15 @@ $button-width: 100px;
   &__confirmation {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: var(--default-spacing);
+    margin-top: var(--double-spacing);
+  }
+
+  &__error {
+    display: flex;
+    justify-content: center;
     align-items: center;
     width: 100%;
     margin-bottom: var(--default-spacing);

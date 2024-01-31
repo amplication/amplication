@@ -19,6 +19,7 @@ import "./BreakTheMonolith.scss";
 import { BtmLoader } from "./BtmLoader";
 import { useBtmService } from "./hooks/useBtmService";
 import classNames from "classnames";
+import { formatError } from "../../util/error";
 
 const CLASS_NAME = "break-the-monolith";
 
@@ -36,6 +37,9 @@ const BreakTheMonolith: React.FC<Props> = ({
   const { btmResult, loading, error } = useBtmService({
     resourceId,
   });
+
+  const hasError = Boolean(error);
+  const errorMessage = formatError(error);
 
   return (
     <div
@@ -73,63 +77,83 @@ const BreakTheMonolith: React.FC<Props> = ({
               </Text>
             </FlexItem>
           </div>
-          <Panel
-            panelStyle={EnumPanelStyle.Default}
-            className={`${CLASS_NAME}__confirmation`}
-          >
-            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-              All suggestions can be edited and customized on the next step. You
-              can move entities between services, add new services, and more.
-            </Text>
-            <Button
-              className={`${CLASS_NAME}__continue_button`}
-              onClick={handleConfirmSuggestion}
+          {hasError ? (
+            <Panel
+              panelStyle={EnumPanelStyle.Bordered}
+              className={`${CLASS_NAME}__error`}
             >
-              Let's go!
-            </Button>
-          </Panel>
-          <div className={`${CLASS_NAME}__content`}>
-            <Panel className={`${CLASS_NAME}__services`}>
-              {btmResult?.data?.microservices.map((item) => (
-                <List
-                  className={`${CLASS_NAME}__services__service`}
-                  listStyle={EnumListStyle.Dark}
-                  headerContent={
-                    <FlexItem
-                      itemsAlign={EnumItemsAlign.Center}
-                      className={`${CLASS_NAME}__services__service__header`}
-                      start={
-                        <ResourceCircleBadge
-                          type={EnumResourceType.Service}
-                          size={"xsmall"}
-                        />
+              <Text
+                textStyle={EnumTextStyle.Tag}
+                textColor={EnumTextColor.ThemeRed}
+              >
+                {errorMessage}
+              </Text>
+            </Panel>
+          ) : (
+            <>
+              <Panel
+                panelStyle={EnumPanelStyle.Default}
+                className={`${CLASS_NAME}__confirmation`}
+              >
+                <Text
+                  textStyle={EnumTextStyle.Tag}
+                  textColor={EnumTextColor.White}
+                >
+                  All suggestions can be edited and customized on the next step.
+                  You can move entities between services, add new services, and
+                  more.
+                </Text>
+                <Button
+                  className={`${CLASS_NAME}__continue_button`}
+                  onClick={handleConfirmSuggestion}
+                >
+                  Let's go!
+                </Button>
+              </Panel>
+              <div className={`${CLASS_NAME}__content`}>
+                <Panel className={`${CLASS_NAME}__services`}>
+                  {btmResult?.data?.microservices.map((item) => (
+                    <List
+                      className={`${CLASS_NAME}__services__service`}
+                      listStyle={EnumListStyle.Dark}
+                      headerContent={
+                        <FlexItem
+                          itemsAlign={EnumItemsAlign.Center}
+                          className={`${CLASS_NAME}__services__service__header`}
+                          start={
+                            <ResourceCircleBadge
+                              type={EnumResourceType.Service}
+                              size={"xsmall"}
+                            />
+                          }
+                        >
+                          <Text
+                            textStyle={EnumTextStyle.Tag}
+                            textColor={EnumTextColor.White}
+                          >
+                            {item.name}
+                          </Text>
+                        </FlexItem>
                       }
                     >
-                      <Text
-                        textStyle={EnumTextStyle.Tag}
-                        textColor={EnumTextColor.White}
+                      <ListItem
+                        className={`${CLASS_NAME}__services__service__entities`}
                       >
-                        {item.name}
-                      </Text>
-                    </FlexItem>
-                  }
-                >
-                  <ListItem
-                    className={`${CLASS_NAME}__services__service__entities`}
-                  >
-                    {item.dataModels.map((entity) => (
-                      <Text
-                        className={`${CLASS_NAME}__services__service__entities__entity`}
-                        textStyle={EnumTextStyle.Subtle}
-                      >
-                        {entity.name}
-                      </Text>
-                    ))}
-                  </ListItem>
-                </List>
-              ))}
-            </Panel>
-          </div>
+                        {item.dataModels.map((entity) => (
+                          <Text
+                            className={`${CLASS_NAME}__services__service__entities__entity`}
+                            textStyle={EnumTextStyle.Subtle}
+                          >
+                            {entity.name}
+                          </Text>
+                        ))}
+                      </ListItem>
+                    </List>
+                  ))}
+                </Panel>
+              </div>
+            </>
+          )}
         </>
       )}
     </div>
