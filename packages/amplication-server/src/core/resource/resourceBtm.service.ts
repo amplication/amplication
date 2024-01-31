@@ -22,10 +22,9 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { User } from "../../models";
+import { Resource, User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { TrackBreakTheMonolith } from "./dto/TrackBreakTheMonolith";
 
 @Injectable()
 export class ResourceBtmService {
@@ -60,19 +59,13 @@ export class ResourceBtmService {
     private readonly logger: AmplicationLogger
   ) {}
 
-  private async trackBreakTheMonolith(
+  private async trackEvent(
     user: User,
-    resourceId: string,
+    resource: Resource | ResourceDataForBtm,
+    eventName: EnumEventType,
     customProperties: Record<string, unknown> = {}
-  ): Promise<TrackBreakTheMonolith> {
+  ): Promise<void> {
     try {
-      const service = await this.prisma.resource.findUnique({
-        where: { id: resourceId },
-        select: {
-          name: true,
-        },
-      });
-
       const subscription = await this.billingService.getSubscription(
         user.workspace?.id
       );
@@ -82,23 +75,34 @@ export class ResourceBtmService {
         properties: {
           ...customProperties,
           workspaceId: user.workspace?.id,
-          serviceName: service.name,
+          projectId: resource.project?.id,
+          resourceId: resource.id,
+          serviceName: resource.name,
           plan: subscription.subscriptionPlan,
         },
-        event: EnumEventType.StartRedesign,
+        event: eventName,
       });
-      return { success: true, message: null };
     } catch (error) {
-      this.logger.error(error.message, error, { userId: user.id, resourceId });
-      return { success: false, message: error.message };
+      this.logger.error(error.message, error, {
+        userId: user.id,
+        workspaceId: user.workspace?.id,
+        resourceId: resource.id,
+      });
+      throw new AmplicationError(error.message);
     }
   }
 
-  async startRedesign(
-    user: User,
-    resourceId: string
-  ): Promise<TrackBreakTheMonolith> {
-    return this.trackBreakTheMonolith(user, resourceId);
+  async startRedesign(user: User, resourceId: string): Promise<Resource> {
+    const resource = await this.prisma.resource.findUnique({
+      where: { id: resourceId },
+      include: {
+        project: true,
+      },
+    });
+
+    await this.trackEvent(user, resource, EnumEventType.StartRedesign);
+
+    return resource;
   }
 
   async triggerBreakServiceIntoMicroservices({
@@ -108,8 +112,8 @@ export class ResourceBtmService {
     resourceId: string;
     user: User;
   }): Promise<UserAction> {
-    await this.trackBreakTheMonolith(user, resourceId);
     const resource = await this.getResourceDataForBtm(resourceId);
+    await this.trackEvent(user, resource, EnumEventType.BreakTheMonolithStart);
 
     const prompt = this.generatePromptForBreakTheMonolith(resource);
 
@@ -275,6 +279,7 @@ export class ResourceBtmService {
       select: {
         id: true,
         name: true,
+        project: true,
         entities: {
           where: {
             deletedAt: null,
