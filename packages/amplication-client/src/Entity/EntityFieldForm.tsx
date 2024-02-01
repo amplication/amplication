@@ -37,6 +37,7 @@ type Props = {
   resourceId: string;
   entity: models.Entity;
   isSystemDataType?: boolean;
+  isAuthEntitySpecificDataType?: boolean;
 };
 
 const FORM_SCHEMA = {
@@ -74,6 +75,7 @@ const EntityFieldForm = ({
   resourceId,
   entity,
   isSystemDataType,
+  isAuthEntitySpecificDataType,
 }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
@@ -134,14 +136,15 @@ const EntityFieldForm = ({
               label="Description"
               disabled={isSystemDataType}
             />
-
-            <div>
-              <ToggleField
-                name="unique"
-                label="Unique Field"
-                disabled={isSystemDataType}
-              />
-            </div>
+            {!isAuthEntitySpecificDataType && (
+              <div>
+                <ToggleField
+                  name="unique"
+                  label="Unique Field"
+                  disabled={isSystemDataType}
+                />
+              </div>
+            )}
             <div>
               <ToggleField
                 name="required"
