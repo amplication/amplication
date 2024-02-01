@@ -623,7 +623,8 @@ export class ResourceService {
       });
 
       const resourceExist =
-        resources?.find((resource) => resource.id === currentResource.id) !== null;
+        resources?.find((resource) => resource.id === currentResource.id) !==
+        null;
 
       !resourceExist && resources.push(currentResource);
     }
