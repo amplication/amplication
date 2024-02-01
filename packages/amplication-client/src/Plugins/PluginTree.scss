@@ -1,0 +1,56 @@
+@import "../style/index.scss";
+
+.plugin-tree {
+  &__header {
+    margin-bottom: var(--default-spacing);
+  }
+
+  &__list {
+    &__item {
+      margin-bottom: var(--default-spacing-small);
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &__categories_container {
+    background-color: var(--gray-full);
+    box-shadow: none;
+    margin-bottom: 8px;
+    padding: var(--default-spacing-small);
+    cursor: pointer;
+    &.MuiListItem-root {
+      color: var(--gray-20);
+    }
+    > div {
+      margin: 0px;
+    }
+    & span {
+      display: flex;
+      flex-direction: row;
+    }
+  }
+
+  &__categories_chevron {
+    margin-left: auto;
+  }
+
+  &__categories_title {
+    font-size: 12px;
+    font-weight: 300;
+    margin-left: 5px;
+  }
+  &.amp-icon:hover {
+    color: var(--gray-base);
+  }
+  &__categories_container:hover {
+    background-color: var(--gray-70);
+    color: var(--gray-base);
+    border-radius: 3px;
+  }
+
+  &__categories_title:hover {
+    font-weight: 500;
+  }
+}

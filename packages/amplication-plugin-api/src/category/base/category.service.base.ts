@@ -10,7 +10,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Category } from "@prisma/client";
+import { Prisma, Category } from "../../../prisma/generated-prisma-client";
 
 export class CategoryServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -29,7 +29,7 @@ export class CategoryServiceBase {
   async findOne<T extends Prisma.CategoryFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.CategoryFindUniqueArgs>
   ): Promise<Category | null> {
-    return this.prisma.category.findUnique(args);
+    return await this.prisma.category.findUnique(args);
   }
   async create<T extends Prisma.CategoryCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CategoryCreateArgs>

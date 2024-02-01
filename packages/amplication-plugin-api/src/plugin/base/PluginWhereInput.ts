@@ -22,17 +22,6 @@ import { StringFilter } from "../../util/StringFilter";
 class PluginWhereInput {
   @ApiProperty({
     required: false,
-    type: JsonFilter,
-  })
-  @Type(() => JsonFilter)
-  @IsOptional()
-  @Field(() => JsonFilter, {
-    nullable: true,
-  })
-  categories?: JsonFilter;
-
-  @ApiProperty({
-    required: false,
     type: StringNullableFilter,
   })
   @Type(() => StringNullableFilter)
@@ -140,6 +129,14 @@ class PluginWhereInput {
     nullable: true,
   })
   website?: StringNullableFilter;
+
+  @ApiProperty({
+    required: true,
+    type: JsonFilter,
+  })
+  @Type(() => JsonFilter)
+  @Field(() => JsonFilter)
+  categories?: JsonFilter;
 }
 
 export { PluginWhereInput as PluginWhereInput };

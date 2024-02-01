@@ -1,0 +1,61 @@
+name: _Reusable Deployment Container template
+
+on:
+  workflow_call:
+    inputs:
+      environment-name:
+        type: string
+        description: Environment to deploy to.
+        required: true
+      project-name:
+        type: string
+        description: Project (amplication application component) to deploy.
+        required: true
+      deploy-type:
+        type: string
+        description: Deployment type, valid options are 'container' or 'static'.
+        required: true
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+
+jobs:
+  deployment-container:
+    name: Deployment container
+    if: ${{ inputs.deploy-type == 'container' }}
+    environment:
+      name: ${{ inputs.environment-name }}
+      url: ${{ vars.AMPLICATION_URL }}
+    runs-on: ubuntu-20.04
+    steps:
+      - name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Fetch kubeconfig File
+        run: |
+          aws eks update-kubeconfig --region ${{ vars.AWS_REGION }} --name amplication-${{ inputs.environment-name }}
+
+      # Based on the project matrix we do a rolling update of certain components of the application
+      # first the 'amplication-' prefix is stripped to match the application component names expected
+      # in the 'amplication-manifest' repository deployments. Subsequently a rollout command with the
+      # applicable namespace is executed for the affected project. This workflow is to be replaced when
+      # argocd image updater can be used in conjunction with argocd plugin type applications (required
+      # when using Hashicorp Vault).
+      - name: Rollout Restart Deployment(s)
+        run: |
+          project=${{ inputs.project-name }}
+          prefix="amplication-"
+          project=${project#$prefix}
+
+          if [[ "$project" == "build-manager" ]];
+          then
+            kubectl rollout restart deployments/$project -n "${{ inputs.environment-name }}-dsg"
+          else
+            kubectl rollout restart deployments/$project -n "${{ inputs.environment-name }}"
+          fi;
