@@ -14,6 +14,7 @@ import {
   GET_RESOURCES,
 } from "../queries/modelsQueries";
 import {
+  CopiedEntity,
   EntityNode,
   ModelChanges,
   ModelOrganizerPersistentData,
@@ -23,6 +24,7 @@ import {
 } from "../types";
 
 import useModelOrganizerPersistentData from "./useModelOrganizerPersistentData";
+import { add } from "lodash";
 
 type TData = {
   resources: models.Resource[];
@@ -105,19 +107,27 @@ const useModelOrganization = (projectId: string) => {
 
         if (savedData && savedData.redesignMode) {
           setNodes(savedData.nodes);
-          setCurrentDetailedEdges(nodesToDetailedEdges(savedData.nodes));
-          setCurrentSimpleEdges(nodesToSimpleEdges(savedData.nodes));
-          setChanges(savedData.changes);
           setShowRelationDetails(savedData.showRelationDetails);
+
+          const simpleEdges = nodesToSimpleEdges(savedData.nodes);
+          setCurrentSimpleEdges(simpleEdges);
+          console.log({ simpleEdges });
+
+          const detailedEdges = nodesToDetailedEdges(savedData.nodes);
+          setCurrentDetailedEdges(detailedEdges);
+          console.log({ detailedEdges });
+          console.log({ show: savedData.showRelationDetails });
+
+          setEdges(savedData.showRelationDetails ? detailedEdges : simpleEdges);
+
+          setChanges(savedData.changes);
           setRedesignMode(savedData.redesignMode);
-          if (savedData.showRelationDetails) {
-            setEdges(nodesToDetailedEdges(savedData?.nodes));
-          } else {
-            setEdges(nodesToSimpleEdges(savedData?.nodes));
-          }
 
           const resources = savedData.nodes.reduce((resources, node) => {
             if (node.type === NODE_TYPE_MODEL_GROUP) {
+              if (node.data.isEditable) {
+                setCurrentEditableResourceNode(node);
+              }
               resources.push(node.data.payload);
             }
             return resources;
@@ -204,6 +214,64 @@ const useModelOrganization = (projectId: string) => {
     loadProjectResources(true);
   }, [currentEditableResourceNode, clearPersistentData, loadProjectResources]);
 
+  const createNewServiceObject = useCallback(
+    (serviceName: string, serviceTempId: string) => {
+      const newService: models.Resource = {
+        tempId: serviceTempId,
+        description: "",
+        entities: [],
+        id: serviceTempId,
+        name: serviceName,
+        resourceType: models.EnumResourceType.Service,
+        builds: [],
+        createdAt: undefined,
+        environments: [],
+        gitRepositoryOverride: false,
+        licensed: false,
+        updatedAt: undefined,
+      };
+
+      return newService;
+    },
+    []
+  );
+
+  //return an array with two element - the list of updates nodes and the selected resource node
+  const prepareCurrentEditableResourceNodesData = useCallback(
+    (nodes: Node[], resource: models.Resource) => {
+      let selectedResourceNode: ResourceNode;
+      nodes.forEach((node) => {
+        if (node.data.originalParentNode === resource.id) {
+          node.draggable = true;
+          node.selectable = true;
+        }
+        if (node.id === resource.id) {
+          selectedResourceNode = node as ResourceNode;
+          selectedResourceNode.data.isEditable = true;
+        }
+      });
+
+      return { updatedNodes: [...nodes], selectedResourceNode };
+    },
+    []
+  );
+
+  const setCurrentEditableResource = useCallback(
+    (resource: models.Resource) => {
+      setNodes((nodes) => {
+        const { updatedNodes, selectedResourceNode } =
+          prepareCurrentEditableResourceNodesData(nodes, resource);
+
+        setCurrentEditableResourceNode(selectedResourceNode);
+
+        setRedesignMode(true);
+        saveToPersistentData();
+        return [...updatedNodes];
+      });
+    },
+    [prepareCurrentEditableResourceNodesData, saveToPersistentData]
+  );
+
   const mergeNewResourcesChanges = useCallback(() => {
     loadProjectResourcesInternal({
       variables: {
@@ -211,172 +279,113 @@ const useModelOrganization = (projectId: string) => {
       },
       onCompleted: async (data) => {
         if (data?.resources) {
-          const resourceMapping = currentResourcesData.reduce(
-            (resourcesObj, resource) => {
-              resourcesObj[resource.id] = resource;
-              return resourcesObj;
-            },
-            {}
-          );
-
-          const updatedResourceMapping = data.resources.reduce(
-            (resourcesObj, resource) => {
-              resourcesObj[resource.id] = resource;
-              return resourcesObj;
-            },
-            {}
-          );
-
-          let updatedResourcesData = currentResourcesData;
-
-          let hasChanges = false;
-
-          data.resources.forEach((updateResource) => {
-            const currentResource = resourceMapping[updateResource.id];
-            if (!currentResource) {
-              updatedResourcesData.push(updateResource);
-              hasChanges = true;
-              return;
-            }
-
-            const currentEntityMapping = currentResource.entities?.reduce(
-              (entitiesObj, entity) => {
-                entitiesObj[entity.id] = entity;
-                return entitiesObj;
-              },
-              {}
+          //add the new services into the list of resources returned from the server
+          for (const newServiceChange of changes.newServices) {
+            //check if the service name already exists in the list of resources
+            const newExistingServiceWithSameName = data.resources.find(
+              (x) => x.name === newServiceChange.name
             );
-            updateResource.entities?.forEach((e) => {
-              const currentEntity = currentEntityMapping[e.id];
-              const movedEntity = changes.movedEntities.find(
-                (x) => x.entityId === e.id
-              );
 
-              if (!currentEntity && !movedEntity) {
-                currentResource.entities?.push(e);
-                hasChanges = true;
-              }
-            });
-          });
+            const serviceName = newExistingServiceWithSameName
+              ? newServiceChange.name + "_" + newServiceChange.tempId
+              : newServiceChange.name;
 
-          currentResourcesData.forEach((resource) => {
-            const currentResource: models.Resource =
-              updatedResourceMapping[resource.id];
-            if (!currentResource) {
-              let originalResource: models.Resource = null;
-              let originalResourceIndex: number;
+            newServiceChange.name = serviceName;
 
-              changes?.movedEntities?.forEach((e) => {
-                if (e.targetResourceId === resource.id) {
-                  const index = changes.movedEntities.indexOf(e);
-                  changes.movedEntities.splice(index, 1);
-                }
-                if (!originalResource) {
-                  originalResource =
-                    updatedResourceMapping[e.originalResourceId];
-                } else {
-                  originalResourceIndex = updatedResourcesData.indexOf(
-                    resourceMapping[originalResource.id]
-                  );
-                }
-              });
-
-              if (originalResource) {
-                resource.entities.forEach((e) => {
-                  if (e.resourceId === originalResource.id) {
-                    resourceMapping[originalResource.id].entities.push(e);
-                  }
-                });
-
-                updatedResourcesData[originalResourceIndex] =
-                  resourceMapping[originalResource.id];
-              }
-
-              updatedResourcesData = updatedResourcesData.filter(
-                (r) => r.id !== resource.id
-              );
-
-              hasChanges = true;
-            } else {
-              const updatedEntityMapping = currentResource.entities?.reduce(
-                (entitiesObj, entity) => {
-                  entitiesObj[entity.id] = entity;
-                  return entitiesObj;
-                },
-                {}
-              );
-
-              const currentResourceEntities = updatedResourcesData.find(
-                (x) => x.id === resource.id
-              );
-
-              resource.entities?.forEach((entity) => {
-                const currentEntity: models.Entity =
-                  updatedEntityMapping[entity.id];
-                const movedEntity = changes.movedEntities.find(
-                  (x) => x.entityId === entity.id
-                );
-
-                if (!currentEntity) {
-                  if (!movedEntity) {
-                    currentResourceEntities.entities = resource.entities.filter(
-                      (e) => e.id !== entity.id
-                    );
-                    hasChanges = true;
-                  } else {
-                    const originalResourceEntity = data.resources
-                      .find((x) => x.id === movedEntity.originalResourceId)
-                      ?.entities?.find((e) => e.id === movedEntity.entityId);
-
-                    if (!originalResourceEntity) {
-                      hasChanges = true;
-                      currentResourceEntities.entities =
-                        resource.entities.filter(
-                          (e) => e.id !== movedEntity.entityId
-                        );
-                      changes.movedEntities = changes.movedEntities.filter(
-                        (x) => x.entityId !== movedEntity.entityId
-                      );
-                    }
-                  }
-                }
-              });
-            }
-          });
-
-          if (hasChanges) {
-            const { nodes, detailedEdges, simpleEdges } =
-              await entitiesToNodesAndEdges(
-                updatedResourcesData,
-                showRelationDetails
-              );
-            setCurrentResourcesData(updatedResourcesData);
-
-            setCurrentDetailedEdges(detailedEdges);
-            setCurrentSimpleEdges(simpleEdges);
-
-            setNodes(nodes);
-            setChanges(changes);
-
-            if (showRelationDetails) {
-              setEdges(detailedEdges);
-            } else {
-              setEdges(simpleEdges);
-            }
-            saveToPersistentData();
+            const newResource = createNewServiceObject(
+              serviceName,
+              newServiceChange.tempId
+            );
+            data.resources.push(newResource);
           }
+
+          const resourceMapping = data.resources.reduce(
+            (resourcesObj, resource) => {
+              resourcesObj[resource.id] = resource;
+              return resourcesObj;
+            },
+            {}
+          );
+
+          const newMovedEntities: CopiedEntity[] = [];
+
+          for (const movedEntity of changes.movedEntities) {
+            if (!resourceMapping[movedEntity.originalResourceId]) {
+              //do not take this change because the original resource was deleted
+              continue;
+            }
+            if (!resourceMapping[movedEntity.targetResourceId]) {
+              continue;
+              //do not take this change because the target resource was deleted
+            }
+            newMovedEntities.push(movedEntity);
+          }
+
+          const {
+            nodes: newNodes,
+            detailedEdges: newDetailedEdges,
+            simpleEdges: newSimpleEdges,
+          } = await entitiesToNodesAndEdges(
+            data.resources,
+            showRelationDetails
+          );
+
+          for (const newMovedEntitiesChange of newMovedEntities) {
+            const movedNode = newNodes.find(
+              (x) => x.id === newMovedEntitiesChange.entityId
+            );
+            movedNode.parentNode = newMovedEntitiesChange.targetResourceId;
+          }
+
+          //find the current editable resource and update the nodes
+          const currentEditableResource = data.resources.find(
+            (x) => x.id === currentEditableResourceNode.id
+          );
+          const { updatedNodes, selectedResourceNode } =
+            prepareCurrentEditableResourceNodesData(
+              newNodes,
+              currentEditableResource
+            );
+          setCurrentEditableResourceNode(selectedResourceNode);
+
+          setCurrentResourcesData(data.resources);
+
+          setCurrentDetailedEdges(newDetailedEdges);
+          setCurrentSimpleEdges(newSimpleEdges);
+
+          const updatedNodesWithLayout = await applyAutoLayout(
+            updatedNodes,
+            newSimpleEdges,
+            showRelationDetails
+          );
+
+          setNodes(updatedNodesWithLayout);
+          setChanges({
+            movedEntities: newMovedEntities,
+            newServices: changes.newServices,
+          });
+
+          if (showRelationDetails) {
+            setEdges(newDetailedEdges);
+          } else {
+            setEdges(newSimpleEdges);
+          }
+          saveToPersistentData();
         }
       },
     });
   }, [
     loadProjectResourcesInternal,
     projectId,
-    currentResourcesData,
-    changes,
     showRelationDetails,
+    prepareCurrentEditableResourceNodesData,
     setCurrentDetailedEdges,
     setCurrentSimpleEdges,
+    changes.newServices,
+    changes.movedEntities,
     saveToPersistentData,
+    createNewServiceObject,
+    currentEditableResourceNode,
     setEdges,
   ]);
 
@@ -454,7 +463,7 @@ const useModelOrganization = (projectId: string) => {
       };
 
       changes.newServices.push(newService);
-      const resourceDataCopy = currentResourcesData;
+      const resourceDataCopy = [...currentResourcesData];
       resourceDataCopy.push(newResource);
       setCurrentResourcesData(resourceDataCopy);
 
@@ -479,101 +488,45 @@ const useModelOrganization = (projectId: string) => {
     ]
   );
 
-  const setCurrentEditableResource = useCallback(
-    (resource: models.Resource) => {
-      setNodes((nodes) => {
-        nodes.forEach((node) => {
-          if (node.data.originalParentNode === resource.id) {
-            node.draggable = true;
-            node.selectable = true;
-          }
-          if (node.id === resource.id) {
-            const selectedResourceNode: ResourceNode = node as ResourceNode;
-            selectedResourceNode.data.isEditable = true;
-            setCurrentEditableResourceNode(selectedResourceNode);
-          }
-        });
-        setRedesignMode(true);
-        saveToPersistentData();
-        return [...nodes];
-      });
-    },
-    [setNodes, setCurrentEditableResourceNode, saveToPersistentData]
-  );
-
   const moveNodeToParent = useCallback(
     async (movedNodes: Node[], targetParent: Node) => {
+      const currentNodes = [...nodes];
+
+      let newMovedEntities = [...changes.movedEntities];
+
       movedNodes.forEach((node) => {
-        const currentNode = nodes.find((n) => n.id === node.id);
-        const originalResource = currentResourcesData.find(
-          (x) => x.id === currentNode.data.originalParentNode
-        );
-
-        const targetResource = currentResourcesData.find(
-          (x) => x.id === targetParent.id
-        );
-
-        const currentEntity = currentNode.data.payload as models.Entity;
+        const currentNode = currentNodes.find((n) => n.id === node.id);
 
         currentNode.parentNode = targetParent.id;
 
-        const currentEntityChanged = changes.movedEntities.find(
-          (x) => x.entityId === node.id
+        newMovedEntities = newMovedEntities.filter(
+          (x) => x.entityId !== node.id
         );
 
-        if (currentEntityChanged) {
-          if (currentNode.data.originalParentNode === currentNode.parentNode) {
-            //remove the change from the changes list
-            changes.movedEntities = changes.movedEntities.filter(
-              (x) => x.entityId !== currentEntityChanged.entityId
-            );
-            originalResource.entities.push(currentEntity);
-          } else {
-            const currentResource = currentResourcesData.find(
-              (x) => x.id === currentEntityChanged.targetResourceId
-            );
-            currentResource.entities = currentResource.entities?.filter(
-              (x) => x.id !== currentEntity.id
-            );
-            currentEntityChanged.targetResourceId = targetParent.id;
-            targetResource.entities.push(currentEntity);
-          }
-        } else {
-          if (currentNode.data.originalParentNode !== currentNode.parentNode) {
-            changes.movedEntities.push({
-              entityId: currentNode.id,
-              targetResourceId: targetParent.id,
-              originalResourceId: currentNode.data.originalParentNode,
-            });
-
-            originalResource.entities = originalResource.entities.filter(
-              (x) => x.id !== currentEntity.id
-            );
-            targetResource.entities.push(currentEntity);
-          }
+        if (currentNode.data.originalParentNode !== currentNode.parentNode) {
+          newMovedEntities.push({
+            entityId: currentNode.id,
+            targetResourceId: targetParent.id,
+            originalResourceId: currentNode.data.originalParentNode,
+          });
         }
       });
 
       const updatedNodes = await applyAutoLayout(
-        nodes,
+        currentNodes,
         edges,
         showRelationDetails
       );
 
       setNodes(updatedNodes);
 
-      setChanges(changes);
-      setCurrentResourcesData(currentResourcesData);
+      setChanges({
+        movedEntities: [...newMovedEntities],
+        newServices: [...changes.newServices],
+      });
       saveToPersistentData();
     },
-    [
-      nodes,
-      edges,
-      showRelationDetails,
-      changes,
-      currentResourcesData,
-      saveToPersistentData,
-    ]
+    [nodes, edges, showRelationDetails, changes, saveToPersistentData]
   );
 
   const [
