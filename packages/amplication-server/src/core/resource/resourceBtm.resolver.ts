@@ -50,7 +50,6 @@ export class ResourceBtmResolver {
 
   @Mutation(() => Resource, {
     nullable: true,
-    description: "Track the redesign button for analytics purposes.",
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.id")
   async startRedesign(

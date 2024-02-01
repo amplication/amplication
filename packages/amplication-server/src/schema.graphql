@@ -1187,8 +1187,6 @@ type Mutation {
   signup(data: SignupInput!): Auth!
   signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
-
-  """Track the redesign button for analytics purposes."""
   startRedesign(data: WhereUniqueInput!): Resource
 
   """
