@@ -28,6 +28,7 @@ import {
   ChangePasswordRequest,
   JSONApiResponse,
   ManagementClient,
+  SignUpRequest,
   SignUpResponse,
   TextApiResponse,
 } from "auth0";
@@ -156,11 +157,9 @@ export class AuthService {
   async createAuth0User(
     email: string
   ): Promise<JSONApiResponse<SignUpResponse>> {
-    const data = {
+    const data: SignUpRequest = {
       email,
       password: generatePassword(),
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      email_verified: true,
       connection: this.configService.get<string>(
         Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
       ),
