@@ -136,15 +136,13 @@ const EntityFieldForm = ({
               label="Description"
               disabled={isSystemDataType}
             />
-            {!isAuthEntitySpecificDataType && (
-              <div>
-                <ToggleField
-                  name="unique"
-                  label="Unique Field"
-                  disabled={isSystemDataType}
-                />
-              </div>
-            )}
+            <div>
+              <ToggleField
+                name="unique"
+                label="Unique Field"
+                disabled={isSystemDataType || isAuthEntitySpecificDataType}
+              />
+            </div>
             <div>
               <ToggleField
                 name="required"
