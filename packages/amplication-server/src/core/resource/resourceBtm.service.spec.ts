@@ -128,7 +128,7 @@ describe("ResourceBtmService", () => {
         serviceName: resourceMock.name,
         plan: EnumSubscriptionPlan.Enterprise,
       },
-      event: EnumEventType.StartRedesign,
+      event: EnumEventType.ArchitectureRedesignStartRedesign,
     });
   });
 
@@ -947,7 +947,7 @@ describe("ResourceBtmService", () => {
           serviceName: resourceMock.name,
           plan: EnumSubscriptionPlan.Pro,
         },
-        event: EnumEventType.BreakTheMonolithStart,
+        event: EnumEventType.ArchitectureRedesignStartBreakTheMonolith,
       });
       expect(startConversationMock).toHaveBeenCalledTimes(1);
       expect(startConversationMock).toHaveBeenCalledWith(

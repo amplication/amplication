@@ -512,7 +512,7 @@ export class ResourceService {
         movedEntities: entitiesToCopy.length,
         newServices: modelGroupsResources.length,
       },
-      event: EnumEventType.BreakTheMonolithApply,
+      event: EnumEventType.ArchitectureRedesignApply,
     });
 
     const defaultServiceSettings: ServiceSettingsUpdateInput = {

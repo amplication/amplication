@@ -100,7 +100,11 @@ export class ResourceBtmService {
       },
     });
 
-    await this.trackEvent(user, resource, EnumEventType.StartRedesign);
+    await this.trackEvent(
+      user,
+      resource,
+      EnumEventType.ArchitectureRedesignStartRedesign
+    );
 
     return resource;
   }
@@ -129,7 +133,11 @@ export class ResourceBtmService {
       resourceId
     );
 
-    await this.trackEvent(user, resource, EnumEventType.BreakTheMonolithStart);
+    await this.trackEvent(
+      user,
+      resource,
+      EnumEventType.ArchitectureRedesignStartBreakTheMonolith
+    );
     return userAction;
   }
 
