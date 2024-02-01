@@ -23,10 +23,8 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { GitProviderService } from "../git/git.provider.service";
 
 export const INVALID_PROJECT_ID = "Invalid projectId";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import dockerNames from "docker-names";
 import { EntityPendingChange } from "../entity/entity.service";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";

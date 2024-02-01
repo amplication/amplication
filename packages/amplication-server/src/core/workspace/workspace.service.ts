@@ -27,10 +27,8 @@ import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { Role } from "../../enums/Role";
 import { GitOrganization } from "../../models/GitOrganization";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { BillingService } from "../billing/billing.service";
 import { MailService } from "../mail/mail.service";
 import { ProjectService } from "../project/project.service";

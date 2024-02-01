@@ -23,10 +23,8 @@ import {
   Prisma,
   PrismaService,
 } from "../../prisma";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { BillingService } from "../billing/billing.service";
 import {

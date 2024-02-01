@@ -18,13 +18,11 @@ import {
 } from "./dto/BreakServiceToMicroservicesResult";
 import { UserActionService } from "../userAction/userAction.service";
 import { GptBadFormatResponseError } from "./errors/GptBadFormatResponseError";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { Resource, User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 
 @Injectable()
 export class ResourceBtmService {
