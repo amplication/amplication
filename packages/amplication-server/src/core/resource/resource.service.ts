@@ -506,6 +506,8 @@ export class ResourceService {
       userId: user.id,
       properties: {
         workspaceId: user.workspace?.id,
+        projectId,
+        resourceId: entitiesToCopy[0].originalResourceId,
         plan: subscription.subscriptionPlan,
         movedEntities: entitiesToCopy.length,
         newServices: modelGroupsResources.length,

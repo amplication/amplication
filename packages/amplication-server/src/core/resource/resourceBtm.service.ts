@@ -73,12 +73,12 @@ export class ResourceBtmService {
       await this.analyticsService.track({
         userId: user.id,
         properties: {
-          ...customProperties,
           workspaceId: user.workspace?.id,
           projectId: resource.project?.id,
           resourceId: resource.id,
           serviceName: resource.name,
           plan: subscription.subscriptionPlan,
+          ...customProperties,
         },
         event: eventName,
       });
@@ -113,8 +113,6 @@ export class ResourceBtmService {
     user: User;
   }): Promise<UserAction> {
     const resource = await this.getResourceDataForBtm(resourceId);
-    await this.trackEvent(user, resource, EnumEventType.BreakTheMonolithStart);
-
     const prompt = this.generatePromptForBreakTheMonolith(resource);
 
     const conversationParams = [
@@ -131,6 +129,7 @@ export class ResourceBtmService {
       resourceId
     );
 
+    await this.trackEvent(user, resource, EnumEventType.BreakTheMonolithStart);
     return userAction;
   }
 
