@@ -96,18 +96,18 @@ const EntityFieldForm = ({
         );
         //validate the field dynamic properties
         const schema = getSchemaForDataType(values.dataType);
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        const propertiesError = validate<Object>(values.properties, schema);
+        const propertiesError = validate<{
+          relatedEntityId?: string;
+          allowMultipleSelection?: string;
+        }>(values.properties, schema);
 
         // Ignore related field ID error
         if ("relatedFieldId" in propertiesError) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           delete propertiesError.relatedFieldId;
         }
 
         if (!isEmpty(propertiesError)) {
-          errors.properties = propertiesError as any; // TODO: remove eslint rules and fix this
+          errors.properties = propertiesError;
         }
 
         return errors;
