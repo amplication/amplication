@@ -1,9 +1,9 @@
-import { AiConversationStart } from "@amplication/schema-registry";
+import { GptConversationStart } from "@amplication/schema-registry";
 
 class ProcessTemplateInput {
   templateId!: string;
 
-  params!: AiConversationStart.Value["params"];
+  params!: GptConversationStart.Value["params"];
 }
 
 export { ProcessTemplateInput };

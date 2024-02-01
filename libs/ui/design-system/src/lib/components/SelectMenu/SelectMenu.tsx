@@ -25,6 +25,7 @@ export interface Props extends Omit<SelectMenuProps, "title"> {
   openIcon?: string;
   buttonClassName?: string;
   selectRef?: React.Ref<HTMLDetailsElement> | undefined;
+  hideSelectedItemsIndication?: boolean;
 }
 
 const SelectButton: React.FC<Props> = ({
@@ -60,6 +61,7 @@ export const SelectMenu = ({
   icon,
   openIcon,
   selectRef,
+  hideSelectedItemsIndication = false,
   ...rest
 }: Props) => {
   if (disabled) {
@@ -78,7 +80,10 @@ export const SelectMenu = ({
   } else
     return (
       <PrimerSelectMenu
-        className={classNames("select-menu", className)}
+        className={classNames("select-menu", className, {
+          "select-menu--hide-selected-item-indication":
+            hideSelectedItemsIndication,
+        })}
         {...(selectRef ? { ref: selectRef } : {})}
         {...rest}
       >
@@ -95,17 +100,24 @@ export const SelectMenu = ({
     );
 };
 
-export type SelectMenuModalProps = PrimerSelectMenuModalProps;
+export type SelectMenuModalProps = PrimerSelectMenuModalProps & {
+  withCaret?: boolean;
+};
 
-export const SelectMenuModal: React.FC<SelectMenuModalProps> = (props) => {
+export const SelectMenuModal: React.FC<SelectMenuModalProps> = ({
+  withCaret = false,
+  ...rest
+}: SelectMenuModalProps) => {
   return (
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     <PrimerSelectMenu.Modal
-      className={classNames("select-menu__modal", props.className)}
-      {...props}
+      className={classNames("select-menu__modal", rest.className, {
+        "select-menu__modal--with-caret": withCaret,
+      })}
+      {...rest}
     >
-      {props.children}
+      {rest.children}
     </PrimerSelectMenu.Modal>
   );
 };
