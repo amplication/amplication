@@ -22,6 +22,9 @@ export const useSummary = (currentResource: models.Resource) => {
   const [rankedCategories, setRankedCategories] = useState<
     { name: string; description: string }[]
   >([]);
+  const [rankedInstalledCategories, setRankedInstalledCategories] = useState<
+    { name: string; icon?: string; pluginsIcons?: string[] }[]
+  >([]);
   const [summaryData, setSummaryData] = useState<SummaryData>({
     models: 0,
     apis: 0,
