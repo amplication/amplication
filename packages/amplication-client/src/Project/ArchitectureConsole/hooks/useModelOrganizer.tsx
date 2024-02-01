@@ -24,7 +24,6 @@ import {
 } from "../types";
 
 import useModelOrganizerPersistentData from "./useModelOrganizerPersistentData";
-import { add } from "lodash";
 
 type TData = {
   resources: models.Resource[];
@@ -108,18 +107,11 @@ const useModelOrganization = (projectId: string) => {
         if (savedData && savedData.redesignMode) {
           setNodes(savedData.nodes);
           setShowRelationDetails(savedData.showRelationDetails);
-
           const simpleEdges = nodesToSimpleEdges(savedData.nodes);
           setCurrentSimpleEdges(simpleEdges);
-          console.log({ simpleEdges });
-
           const detailedEdges = nodesToDetailedEdges(savedData.nodes);
           setCurrentDetailedEdges(detailedEdges);
-          console.log({ detailedEdges });
-          console.log({ show: savedData.showRelationDetails });
-
           setEdges(savedData.showRelationDetails ? detailedEdges : simpleEdges);
-
           setChanges(savedData.changes);
           setRedesignMode(savedData.redesignMode);
 
