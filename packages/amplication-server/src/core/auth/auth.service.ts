@@ -112,11 +112,6 @@ export class AuthService {
 
     try {
       let auth0User: JSONApiResponse<SignUpResponse>;
-      const existedAccount = await this.accountService.findAccount({
-        where: {
-          email: emailAddress,
-        },
-      });
 
       const existedAuth0User = await this.getAuth0UserByEmail(emailAddress);
 
@@ -132,23 +127,6 @@ export class AuthService {
       );
       if (!resetPassword.data)
         throw Error("Failed to send reset message to new Auth0 user");
-
-      if (!existedAccount) {
-        const account = await this.accountService.createAccount(
-          {
-            data: {
-              email: emailAddress,
-              firstName: emailAddress,
-              lastName: "",
-              password: "",
-              previewAccountType: EnumPreviewAccountType.Auth0Signup,
-            },
-          },
-          IDENTITY_PROVIDER_AUTH0
-        );
-        const workspaceName = generateRandomString();
-        await this.bootstrapUser(account, workspaceName);
-      }
 
       return true;
     } catch (error) {
