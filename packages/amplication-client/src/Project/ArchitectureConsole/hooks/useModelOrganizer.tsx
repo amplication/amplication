@@ -110,6 +110,11 @@ const useModelOrganization = (projectId: string) => {
           setChanges(savedData.changes);
           setShowRelationDetails(savedData.showRelationDetails);
           setRedesignMode(savedData.redesignMode);
+          if (savedData.showRelationDetails) {
+            setEdges(nodesToDetailedEdges(savedData?.nodes));
+          } else {
+            setEdges(nodesToSimpleEdges(savedData?.nodes));
+          }
 
           const resources = savedData.nodes.reduce((resources, node) => {
             if (node.type === NODE_TYPE_MODEL_GROUP) {
@@ -154,8 +159,11 @@ const useModelOrganization = (projectId: string) => {
       setCurrentDetailedEdges,
       setCurrentSimpleEdges,
       showRelationDetails,
+      nodes,
       saveToPersistentData,
       setEdges,
+      nodesToDetailedEdges,
+      nodesToSimpleEdges,
     ]
   );
 
@@ -565,6 +573,8 @@ const useModelOrganization = (projectId: string) => {
       showRelationDetails,
       changes,
       currentResourcesData,
+      setCurrentDetailedEdges,
+      setCurrentSimpleEdges,
       saveToPersistentData,
     ]
   );
