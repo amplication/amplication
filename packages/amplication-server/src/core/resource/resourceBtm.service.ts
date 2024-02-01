@@ -158,6 +158,7 @@ export class ResourceBtmService {
 
     return {
       microservices: promptResultObj.microservices
+        .filter((microservice) => microservice.dataModels.length > 0)
         .sort((microservice) => -1 * microservice.dataModels.length)
         .map((microservice) => ({
           name: microservice.name,
