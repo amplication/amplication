@@ -241,9 +241,6 @@ export default function ModelOrganizerToolbar({
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}
                   onClick={handleConfirmChangesState}
-                  // eventData={{
-                  //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                  // }}
                   disabled={!hasChanges}
                 >
                   Apply Plan
