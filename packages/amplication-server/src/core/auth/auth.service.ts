@@ -25,6 +25,7 @@ import { AuthProfile, AuthUser, BootstrapPreviewUser } from "./types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   AuthenticationClient,
+  ChangePasswordRequest,
   JSONApiResponse,
   ManagementClient,
   SignUpResponse,
@@ -171,8 +172,10 @@ export class AuthService {
   }
 
   async resetAuth0UserPassword(email: string): Promise<TextApiResponse> {
-    const data = {
+    const data: ChangePasswordRequest = {
       email,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      client_id: this.clientId,
       connection: this.configService.get<string>(
         Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
       ),
