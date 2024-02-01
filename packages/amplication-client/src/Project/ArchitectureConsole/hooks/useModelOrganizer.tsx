@@ -159,11 +159,8 @@ const useModelOrganization = (projectId: string) => {
       setCurrentDetailedEdges,
       setCurrentSimpleEdges,
       showRelationDetails,
-      nodes,
       saveToPersistentData,
       setEdges,
-      nodesToDetailedEdges,
-      nodesToSimpleEdges,
     ]
   );
 
@@ -425,14 +422,16 @@ const useModelOrganization = (projectId: string) => {
       currentNode.hidden = !currentNode.hidden;
 
       const childrenNodes = nodes.filter(
-        (node) => node.data.originalParentNode === currentNode.id
+        (node) => node.parentNode === currentNode.id
       );
 
       childrenNodes.forEach((x) => (x.hidden = currentNode.hidden));
       setNodes((nodes) => [...nodes]);
 
       const nodeEdges = edges.filter((e) => {
-        return childrenNodes.find((n) => e.source === n.id);
+        return childrenNodes.find(
+          (n) => e.source === n.id || e.target === n.id
+        );
       });
 
       nodeEdges.forEach((x) => (x.hidden = currentNode.hidden));
@@ -573,8 +572,6 @@ const useModelOrganization = (projectId: string) => {
       showRelationDetails,
       changes,
       currentResourcesData,
-      setCurrentDetailedEdges,
-      setCurrentSimpleEdges,
       saveToPersistentData,
     ]
   );
