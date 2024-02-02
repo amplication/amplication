@@ -160,5 +160,4 @@ export enum AnalyticsEventNames {
   StartBreakTheMonolithClick = "StartBreakTheMonolithClick",
   ModelOrganizer_AddServiceClick = "ModelOrganizer_AddServiceClick",
   ModelOrganizer_MoveEntity = "ModelOrganizer_MoveEntity",
-  ModelOrganizer_EnterTab = "ModelOrganizer_EnterTab",
 }
