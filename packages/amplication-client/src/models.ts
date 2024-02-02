@@ -1028,7 +1028,6 @@ export type ModelGroupResource = {
   tempId: Scalars['String']['input'];
 };
 
-
 export type Module = IBlock & {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -1217,6 +1216,8 @@ export type Mutation = {
   signup: Auth;
   signupPreviewAccount: AuthPreviewAccount;
   signupWithBusinessEmail: Scalars['Boolean']['output'];
+  /** Track the redesign button for analytics purposes. */
+  startRedesign?: Maybe<Resource>;
   /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
   triggerBreakServiceIntoMicroservices?: Maybe<UserAction>;
   updateAccount: Account;
@@ -1554,6 +1555,11 @@ export type MutationSignupPreviewAccountArgs = {
 
 export type MutationSignupWithBusinessEmailArgs = {
   data: SignupWithBusinessEmailInput;
+};
+
+
+export type MutationStartRedesignArgs = {
+  data: WhereUniqueInput;
 };
 
 
