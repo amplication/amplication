@@ -2,8 +2,8 @@ import { PrismaService, Account } from "../../prisma";
 import { Test, TestingModule } from "@nestjs/testing";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { AccountService } from "./account.service";
-import { IDENTITY_PROVIDER_MANUAL } from "../auth/auth.service";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { IdentityProvider } from "../auth/auth.types";
 
 const EXAMPLE_ACCOUNT_ID = "ExampleAccountId",
   EXAMPLE_EMAIL = "example@email.com",
@@ -89,7 +89,7 @@ describe("AccountService", () => {
         password: EXAMPLE_PASSWORD,
       },
     };
-    expect(await service.createAccount(args, IDENTITY_PROVIDER_MANUAL)).toEqual(
+    expect(await service.createAccount(args, IdentityProvider.Local)).toEqual(
       EXAMPLE_ACCOUNT
     );
     expect(prismaAccountCreateMock).toBeCalledTimes(1);

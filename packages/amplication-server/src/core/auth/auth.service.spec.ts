@@ -6,7 +6,7 @@ import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
 import { UserService } from "../user/user.service";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { AuthService, IDENTITY_PROVIDER_MANUAL } from "./auth.service";
+import { AuthService } from "./auth.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { EnumTokenType } from "./dto";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
@@ -18,6 +18,7 @@ import { Workspace, Project, Resource, Account, User } from "../../models";
 import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
 import { anyString } from "jest-mock-extended";
 import { AuthUser } from "./types";
+import { IdentityProvider } from "./auth.types";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
@@ -331,7 +332,7 @@ describe("AuthService", () => {
           lastName: EXAMPLE_ACCOUNT.lastName,
         },
       },
-      IDENTITY_PROVIDER_MANUAL
+      IdentityProvider.Local
     );
     expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(

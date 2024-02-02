@@ -42,14 +42,10 @@ import {
   generateRandomEmail,
   generateRandomString,
 } from "./auth-utils";
+import { IdentityProvider, IdentityProviderPreview } from "./auth.types";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
-export const IDENTITY_PROVIDER_GITHUB = "GitHub";
-export const IDENTITY_PROVIDER_SSO = "SSO";
-export const IDENTITY_PROVIDER_MANUAL = "Manual";
-export const IDENTITY_PROVIDER_PREVIEW_ACCOUNT = "PreviewAccount";
-export const IDENTITY_PROVIDER_AUTH0 = "Auth0";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
 const AUTH_USER_INCLUDE = {
@@ -185,7 +181,7 @@ export class AuthService {
           githubId: payload.id,
         },
       },
-      IDENTITY_PROVIDER_GITHUB
+      IdentityProvider.GitHub
     );
 
     const user = await this.bootstrapUser(account, payload.id);
@@ -218,12 +214,13 @@ export class AuthService {
           lastName: profile.family_name || "",
           password: "",
           githubId: profile.sub,
+          previewAccountType: EnumPreviewAccountType.None,
         },
       },
-      IDENTITY_PROVIDER_SSO
+      IdentityProvider.IdentityPlatform
     );
 
-    const user = await this.bootstrapUser(account, profile.sub);
+    const user = await this.bootstrapUser(account, profile.email);
 
     return user;
   }
@@ -256,7 +253,7 @@ export class AuthService {
           password: hashedPassword,
         },
       },
-      IDENTITY_PROVIDER_MANUAL
+      IdentityProvider.Local
     );
 
     const user = await this.bootstrapUser(account, payload.workspaceName);
@@ -356,6 +353,7 @@ export class AuthService {
     previewAccountEmail: string,
     previewAccountType: EnumPreviewAccountType
   ) {
+    const identityProvider: IdentityProviderPreview = `${IdentityProvider.PreviewAccount}_${previewAccountType}`;
     return {
       signupData: {
         email: generateRandomEmail(),
@@ -365,7 +363,7 @@ export class AuthService {
         previewAccountType,
         previewAccountEmail,
       },
-      identityProvider: `${IDENTITY_PROVIDER_PREVIEW_ACCOUNT}_${previewAccountType}`,
+      identityProvider,
     };
   }
 
