@@ -24,9 +24,15 @@ import {
 } from "../types";
 
 import useModelOrganizerPersistentData from "./useModelOrganizerPersistentData";
+import { EnumMessageType } from "../../../util/useMessage";
 
 type TData = {
   resources: models.Resource[];
+};
+
+type Props = {
+  projectId: string;
+  onMessage: (message: string, type: EnumMessageType) => void;
 };
 
 type modelChangesData = {
@@ -41,7 +47,7 @@ type modelChangesData = {
   }[];
 };
 
-const useModelOrganization = (projectId: string) => {
+const useModelOrganization = ({ projectId, onMessage }: Props) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
   const [currentResourcesData, setCurrentResourcesData] = useState<
@@ -204,7 +210,13 @@ const useModelOrganization = (projectId: string) => {
     setRedesignMode(false);
     clearPersistentData();
     loadProjectResources(true);
-  }, [currentEditableResourceNode, clearPersistentData, loadProjectResources]);
+    onMessage("Changes discarded successfully", EnumMessageType.Success);
+  }, [
+    currentEditableResourceNode,
+    clearPersistentData,
+    loadProjectResources,
+    onMessage,
+  ]);
 
   const createNewServiceObject = useCallback(
     (serviceName: string, serviceTempId: string) => {
