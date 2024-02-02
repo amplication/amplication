@@ -252,7 +252,8 @@ export class ResourceBtmService {
                 originalEntityId: entityNameIdMap[dataModelName]?.id,
               };
             }),
-        })),
+        }))
+        .filter((microservice) => microservice.dataModels.length > 0),
     };
   }
 
