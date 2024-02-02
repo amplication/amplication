@@ -183,15 +183,6 @@ export class AuthController {
       isNew = false;
     }
 
-    if (
-      user.account.previewAccountType === EnumPreviewAccountType.Auth0Signup
-    ) {
-      user = await this.authService.updateUser(user, {
-        previewAccountType: EnumPreviewAccountType.None,
-      });
-      isNew = true;
-    }
-
     // @todo update the token to include the auth0 expiry / issued at / etc
     const token = await this.authService.prepareToken(user);
     const url = stringifyUrl({
