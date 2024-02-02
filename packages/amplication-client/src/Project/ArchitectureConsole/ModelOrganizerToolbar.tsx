@@ -95,7 +95,11 @@ export default function ModelOrganizerToolbar({
 
   return (
     <div className={CLASS_NAME}>
-      <Dialog isOpen={confirmChanges} onDismiss={handleConfirmChangesState}>
+      <Dialog
+        isOpen={confirmChanges}
+        onDismiss={handleConfirmChangesState}
+        title="Apply Changes"
+      >
         <ModelOrganizerConfirmation
           nodes={nodes}
           onConfirmChanges={onApplyPlan}

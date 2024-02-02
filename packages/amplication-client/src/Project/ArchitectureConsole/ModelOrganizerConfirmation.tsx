@@ -14,10 +14,10 @@ import {
 } from "@amplication/ui/design-system";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, EnumButtonStyle } from "../../Components/Button";
+import { ApplyChangesNextSteps } from "./ApplyChangesNextSteps";
+import CreateApplyChangesLoader from "./CreateApplyChangesLoader";
 import "./ModelOrganizerConfirmation.scss";
 import { EntityNode, ModelChanges, NODE_TYPE_MODEL, Node } from "./types";
-import CreateApplyChangesLoader from "./CreateApplyChangesLoader";
-import { ApplyChangesNextSteps } from "./ApplyChangesNextSteps";
 
 type movedEntitiesData = {
   id: string;
@@ -114,7 +114,12 @@ export default function ModelOrganizerConfirmation({
                 <List listStyle={EnumListStyle.Dark}>
                   <ListItem>
                     {changes.newServices.map((service) => (
-                      <Text textStyle={EnumTextStyle.Tag}>{service.name}</Text>
+                      <Text
+                        textStyle={EnumTextStyle.Tag}
+                        textColor={EnumTextColor.White}
+                      >
+                        {service.name}
+                      </Text>
                     ))}
                   </ListItem>
                 </List>
@@ -123,12 +128,6 @@ export default function ModelOrganizerConfirmation({
           )}
           <div>
             <Panel panelStyle={EnumPanelStyle.Transparent}>
-              <Text
-                textStyle={EnumTextStyle.H2}
-                textColor={EnumTextColor.White}
-              >
-                Confirm Architecture Changes
-              </Text>
               <Text
                 textStyle={EnumTextStyle.Tag}
                 textColor={EnumTextColor.White}
@@ -162,7 +161,12 @@ export default function ModelOrganizerConfirmation({
                   </Text>
                 )}
                 {movedEntities.map((entity) => (
-                  <Text textStyle={EnumTextStyle.Tag}>{entity.name}</Text>
+                  <Text
+                    textStyle={EnumTextStyle.Tag}
+                    textColor={EnumTextColor.White}
+                  >
+                    {entity.name}
+                  </Text>
                 ))}
               </ListItem>
             </List>

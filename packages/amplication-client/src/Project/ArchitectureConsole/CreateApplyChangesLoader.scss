@@ -2,20 +2,13 @@
 @import "../../style/index.scss";
 
 $min-size: 300px;
-$max-size: 400px;
 
 .create-apply-changes-loader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  padding: var(--double-spacing);
+  margin: auto;
 
   &__animation {
-    min-width: $min-size;
-    // min-height: $min-size;
-    // max-height: $max-size;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: $min-size;
+    margin: auto;
   }
 }
