@@ -212,7 +212,10 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     setRedesignMode(false);
     clearPersistentData();
     loadProjectResources(true, () => {
-      onMessage("Changes discarded successfully", EnumMessageType.Success);
+      onMessage(
+        "Redesign changes were discarded successfully",
+        EnumMessageType.Success
+      );
     });
   }, [
     currentEditableResourceNode,
@@ -276,7 +279,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         return [...updatedNodes];
       });
       onMessage(
-        `You can now start moving models from service ${resource.name}`,
+        `You can start breaking ${resource.name}, and drag entities to other services`,
         EnumMessageType.Success
       );
     },
@@ -493,7 +496,6 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       setNodes(updatedNodes);
       setChanges(changes);
       saveToPersistentData();
-      onMessage("New service added successfully", EnumMessageType.Success);
     },
     [
       nodes,
@@ -502,7 +504,6 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       edges,
       showRelationDetails,
       saveToPersistentData,
-      onMessage,
     ]
   );
 
