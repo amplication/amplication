@@ -44,23 +44,28 @@ export const ModuleActionsEnabled: React.FC<Props> = ({
           />
         }
         end={
-          <FeatureIndicator
-            featureName={BillingFeature.CustomActions}
-            placement="bottom-end"
-            text="The Custom Actions feature is exclusive to the Enterprise plan."
-            icon={icon}
-            element={
-              <div className={`${className}__feature-tag`}>
-                <Text
-                  textStyle={EnumTextStyle.Tag}
-                  textColor={EnumTextColor.Black}
-                >
-                  Premium feature
-                </Text>
-                <Icon icon={icon} size={"xsmall"} color={EnumTextColor.Black} />
-              </div>
-            }
-          />
+          icon && (
+            <FeatureIndicator
+              featureName={BillingFeature.CustomActions}
+              placement="bottom-end"
+              icon={icon}
+              element={
+                <div className={`${className}__feature-tag`}>
+                  <Text
+                    textStyle={EnumTextStyle.Tag}
+                    textColor={EnumTextColor.Black}
+                  >
+                    Premium feature
+                  </Text>
+                  <Icon
+                    icon={icon}
+                    size={"xsmall"}
+                    color={EnumTextColor.Black}
+                  />
+                </div>
+              }
+            />
+          )
         }
       ></FlexItem>
     </>

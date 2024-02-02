@@ -1840,8 +1840,7 @@ export const EmptyTitle = (record: TEmpty): string => {
   "admin-ui/src/index.tsx": "import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-// @ts-ignore
-// eslint-disable-next-line import/no-unresolved
+
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
@@ -2500,8 +2499,7 @@ export type InputJsonValue = Omit<JsonValue, "null">;
   AreaManager = "areaManager",
 }
 ",
-  "admin-ui/src/user/RolesOptions.ts": "//@ts-ignore
-import { ROLES } from "./roles";
+  "admin-ui/src/user/RolesOptions.ts": "import { ROLES } from "./roles";
 
 declare interface Role {
   name: string;

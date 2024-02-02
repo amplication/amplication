@@ -368,6 +368,11 @@ export class BuildService {
     const commitWithAccount = await this.prisma.build.findUnique({
       where: { id: buildId },
       include: {
+        resource: {
+          select: {
+            name: true,
+          },
+        },
         commit: {
           include: {
             user: true,
@@ -385,6 +390,7 @@ export class BuildService {
             commitId: commitWithAccount.commit.id,
             commitMessage: commitWithAccount.commit.message,
             resourceId: commitWithAccount.resourceId,
+            resourceName: commitWithAccount.resource.name,
             workspaceId: commitWithAccount.commit.project.workspaceId,
             projectId: commitWithAccount.commit.projectId,
             buildId: buildId,
@@ -872,7 +878,7 @@ export class BuildService {
       : undefined;
 
     return {
-      entities: await this.getOrderedEntities(buildId),
+      entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: plugins,
       moduleContainers: modules,

@@ -1,5 +1,13 @@
 import { ConflictException, Inject, Injectable } from "@nestjs/common";
-import { Entity, EntityField, Resource, User, Workspace } from "../../models";
+import {
+  Account,
+  Entity,
+  EntityField,
+  Project,
+  Resource,
+  User,
+  Workspace,
+} from "../../models";
 import { Prisma, PrismaService } from "../../prisma";
 import {
   CompleteInvitationArgs,
@@ -36,6 +44,7 @@ import { BillingPeriod } from "@stigg/node-server-sdk";
 import { Coupon } from "./dto/Coupon";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import {
+  EnumAuthProviderType,
   EnumBlockType,
   EnumDataType,
 } from "@amplication/code-gen-types/models";
@@ -44,24 +53,45 @@ import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { Env } from "../../env";
+import { ConfigService } from "@nestjs/config";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { ResourceService } from "../resource/resource.service";
+import { generateRandomString } from "../auth/auth-utils";
+import { AuthUser, CreatePreviewServiceSettingsArgs } from "../auth/types";
+import { USER_ENTITY_NAME } from "../entity/constants";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
+type PreviewAccountEnvironment = {
+  workspace: Workspace & {
+    users: AuthUser[];
+  };
+  project: Project;
+  resource: Resource;
+};
+
 @Injectable()
 export class WorkspaceService {
+  private userLastActiveDays: number;
   constructor(
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
     private readonly mailService: MailService,
     private readonly subscriptionService: SubscriptionService,
     private readonly projectService: ProjectService,
+    private readonly resourceService: ResourceService,
     private readonly billingService: BillingService,
     private analytics: SegmentAnalyticsService,
     private readonly moduleService: ModuleService,
     private readonly moduleActionService: ModuleActionService,
+    private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
-  ) {}
+  ) {
+    this.userLastActiveDays =
+      Number(this.configService.get<string>(Env.USER_LAST_ACTIVE_DAYS)) ?? 30;
+  }
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
     return this.prisma.workspace.findUnique(args);
@@ -81,6 +111,74 @@ export class WorkspaceService {
     return this.prisma.workspace.update(args);
   }
 
+  async createPreviewWorkspace(
+    args: Prisma.WorkspaceCreateArgs,
+    accountId: string
+  ): Promise<Workspace> {
+    const workspace = await this.prisma.workspace.create({
+      ...args,
+      data: {
+        ...args.data,
+        users: {
+          create: {
+            account: { connect: { id: accountId } },
+            isOwner: true,
+            userRoles: {
+              create: {
+                role: Role.OrganizationAdmin,
+              },
+            },
+          },
+        },
+      },
+      include: {
+        ...args.include,
+        // Include users by default, allow to bypass it for including additional user links
+        users: args?.include?.users || true,
+      },
+    });
+
+    const account = await this.prisma.account.findUnique({
+      where: {
+        id: accountId,
+      },
+    });
+
+    await this.billingService.provisionPreviewCustomer(
+      workspace.id,
+      EnumPreviewAccountType[account.previewAccountType]
+    );
+
+    await this.billingService.reportUsage(
+      workspace.id,
+      BillingFeature.TeamMembers
+    );
+
+    return workspace;
+  }
+
+  async convertPreviewSubscriptionToFreeWithTrial(workspaceId: string) {
+    await this.billingService.provisionNewSubscriptionForPreviewAccount(
+      workspaceId
+    );
+  }
+
+  private async shouldBlockWorkspaceCreation(
+    workspaceId: string
+  ): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
+    const blockWorkspaceCreation =
+      await this.billingService.getBooleanEntitlement(
+        workspaceId,
+        BillingFeature.BlockWorkspaceCreation
+      );
+
+    return blockWorkspaceCreation.hasAccess;
+  }
+
   /**
    * Creates a workspace and a user within it for the provided account with workspace admin role
    * @param accountId the account to create the user in the created workspace
@@ -89,9 +187,16 @@ export class WorkspaceService {
    */
   async createWorkspace(
     accountId: string,
-    args: Prisma.WorkspaceCreateArgs
+    args: Prisma.WorkspaceCreateArgs,
+    currentWorkspaceId?: string
   ): Promise<Workspace> {
-    // Create workspace
+    if (await this.shouldBlockWorkspaceCreation(currentWorkspaceId)) {
+      const message = "Your current plan does not allow creating workspaces";
+      throw new BillingLimitationError(
+        message,
+        BillingFeature.BlockWorkspaceCreation
+      );
+    }
     // Create a new user and link it to the account
     // Assign the user an "ORGANIZATION_ADMIN" role
     const workspace = await this.prisma.workspace.create({
@@ -138,21 +243,29 @@ export class WorkspaceService {
     return workspace;
   }
 
+  private async canInvite(workspaceId: string): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
+    const workspaceMembers = await this.billingService.getMeteredEntitlement(
+      workspaceId,
+      BillingFeature.TeamMembers
+    );
+
+    return !workspaceMembers.usageLimit
+      ? true
+      : workspaceMembers.currentUsage < workspaceMembers.usageLimit;
+  }
+
   async inviteUser(
     currentUser: User,
     args: InviteUserArgs
   ): Promise<Invitation | null> {
-    if (this.billingService.isBillingEnabled) {
-      const projectEntitlement =
-        await this.billingService.getMeteredEntitlement(
-          currentUser.workspace.id,
-          BillingFeature.TeamMembers
-        );
-
-      if (projectEntitlement && !projectEntitlement.hasAccess) {
-        const message = `Your workspace exceeds its members limitation.`;
-        throw new BillingLimitationError(message, BillingFeature.Projects);
-      }
+    const canInvite = await this.canInvite(currentUser.workspace.id);
+    if (!canInvite) {
+      const message = `Your workspace exceeds its members limitation.`;
+      throw new BillingLimitationError(message, BillingFeature.Projects);
     }
 
     const { workspace, id: currentUserId, account } = currentUser;
@@ -526,7 +639,9 @@ export class WorkspaceService {
     return myArray;
   }
 
-  async dataMigrateWorkspacesResourcesCustomActions(): Promise<boolean> {
+  async dataMigrateWorkspacesResourcesCustomActions(
+    quantity: number
+  ): Promise<boolean> {
     const workspaces = await this.prisma.workspace.findMany({
       where: {
         projects: {
@@ -544,7 +659,7 @@ export class WorkspaceService {
           },
         },
       },
-      take: 1000,
+      take: quantity,
       include: {
         users: {
           orderBy: {
@@ -589,7 +704,9 @@ export class WorkspaceService {
     return true;
   }
 
-  async dataMigrateWorkspacesResourcesCustomActionsFix(): Promise<boolean> {
+  async dataMigrateWorkspacesResourcesCustomActionsFix(
+    quantity: number
+  ): Promise<boolean> {
     const workspaces = await this.prisma.workspace.findMany({
       where: {
         projects: {
@@ -607,7 +724,7 @@ export class WorkspaceService {
           },
         },
       },
-      take: 1000,
+      take: quantity,
       include: {
         users: {
           orderBy: {
@@ -798,6 +915,57 @@ export class WorkspaceService {
     }
   }
 
+  async bulkUpdateWorkspaceProjectsAndResourcesLicensed(
+    useUserLastActive: boolean
+  ): Promise<boolean> {
+    try {
+      const date = new Date();
+      const userLastActiveQuery = useUserLastActive
+        ? {
+            some: {
+              lastActive: {
+                gte: new Date(
+                  date.setDate(date.getDate() - this.userLastActiveDays)
+                ),
+              },
+            },
+          }
+        : {};
+
+      const workspaces = await this.prisma.workspace.findMany({
+        where: {
+          users: userLastActiveQuery,
+          projects: {
+            some: {
+              deletedAt: null,
+              resources: {
+                some: {
+                  deletedAt: null,
+                  archived: { not: true },
+                  resourceType: {
+                    in: [EnumResourceType.Service],
+                  },
+                },
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      for (const workspace of workspaces) {
+        await this.subscriptionService.updateProjectLicensed(workspace.id);
+        await this.subscriptionService.updateServiceLicensed(workspace.id);
+      }
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+      return false;
+    }
+  }
+
   async createEntityCustomActions(
     entity: Entity,
     user: User
@@ -967,5 +1135,123 @@ export class WorkspaceService {
     });
     await Promise.allSettled(promises);
     return hasChanges;
+  }
+
+  /**
+   * workspace, project and service creation for preview account
+   */
+
+  async createPreviewEnvironment(
+    account: Account
+  ): Promise<PreviewAccountEnvironment> {
+    const workspaceName = `Amplication-${generateRandomString()}`;
+    const projectName = account.previewAccountType;
+
+    const workspace = (await this.createPreviewWorkspace(
+      {
+        data: {
+          name: workspaceName,
+        },
+        include: {
+          users: {
+            include: {
+              account: true,
+              userRoles: true,
+              workspace: true,
+            },
+          },
+        },
+      },
+      account.id
+    )) as unknown as Workspace & { users: AuthUser[] };
+    const [user] = workspace.users as AuthUser[];
+
+    const project = await this.projectService.createProject(
+      {
+        data: {
+          name: projectName,
+          workspace: {
+            connect: {
+              id: workspace.id,
+            },
+          },
+        },
+      },
+      user.id
+    );
+
+    const resource = await this.createPreviewServiceWithPredefinedSettings(
+      project.id,
+      user
+    );
+
+    return {
+      workspace,
+      project,
+      resource,
+    };
+  }
+
+  private async createPreviewServiceWithPredefinedSettings(
+    projectId: string,
+    user: User
+  ): Promise<Resource> {
+    const serviceName = "Monolith";
+    const previewServiceSettings = this.createPreviewServiceSettings({
+      projectId: projectId,
+      name: serviceName,
+      description: "Monolith Service",
+      adminUIPath: "",
+      serverPath: `./apps/${serviceName}`,
+      generateAdminUI: false,
+      generateGraphQL: true,
+      generateRestApi: true,
+    });
+
+    const resource = await this.resourceService.createPreviewService({
+      args: previewServiceSettings,
+      user,
+      nonDefaultPluginsToInstall: [],
+      requireAuthenticationEntity: false,
+    });
+
+    return resource;
+  }
+
+  private createPreviewServiceSettings({
+    name,
+    description,
+    adminUIPath,
+    serverPath,
+    generateAdminUI,
+    generateGraphQL,
+    generateRestApi,
+    projectId,
+  }: CreatePreviewServiceSettingsArgs) {
+    return {
+      data: {
+        name,
+        description,
+        resourceType: EnumResourceType.Service,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        serviceSettings: {
+          authProvider: EnumAuthProviderType.Jwt,
+          authEntityName: USER_ENTITY_NAME,
+          adminUISettings: {
+            adminUIPath,
+            generateAdminUI,
+          },
+          serverSettings: {
+            generateGraphQL,
+            generateRestApi,
+            serverPath,
+          },
+        },
+      },
+    };
   }
 }

@@ -11,13 +11,9 @@ import {
 } from "@nestjs/common";
 import request from "supertest";
 import { ACGuard } from "nest-access-control";
-// @ts-ignore
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
-// @ts-ignore
 import { ACLModule } from "../../auth/acl.module";
-// @ts-ignore
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
-// @ts-ignore
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { map } from "rxjs";
 

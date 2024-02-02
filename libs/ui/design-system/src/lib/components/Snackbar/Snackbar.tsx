@@ -4,10 +4,33 @@ import { Snackbar as MuiSnackbar, SnackbarProps } from "@mui/material";
 
 import "./Snackbar.scss";
 
-export type Props = SnackbarProps;
+export enum EnumMessageType {
+  Error = "Error",
+  Success = "Success",
+  Warning = "Warning",
+  Info = "Info",
+  Default = "Default",
+}
 
-export function Snackbar({ className, ...rest }: Props) {
+export type Props = SnackbarProps & {
+  messageType?: EnumMessageType;
+};
+
+const CLASS_NAME = "amp-snackbar";
+
+export function Snackbar({
+  className,
+  messageType = EnumMessageType.Default,
+  ...rest
+}: Props) {
   return (
-    <MuiSnackbar className={classNames("amp-snackbar", className)} {...rest} />
+    <MuiSnackbar
+      className={classNames(
+        CLASS_NAME,
+        `${CLASS_NAME}--${messageType.toLowerCase()}`,
+        className
+      )}
+      {...rest}
+    />
   );
 }

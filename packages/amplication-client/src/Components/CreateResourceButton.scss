@@ -1,33 +1,7 @@
 @import "../style/index.scss";
-$caret-width: 7px;
 
 .create-resource-button {
   position: relative;
-
-  .select-menu__modal {
-    top: calc(100% + ($caret-width / 2));
-
-    > div {
-      &::before {
-        content: "";
-        z-index: 1;
-        width: $caret-width;
-        height: $caret-width;
-        position: absolute;
-        background: linear-gradient(
-          135deg,
-          var(--gray-90) 50%,
-          rgba(0, 0, 0, 0) 50%
-        );
-        left: 88%;
-        transform: rotate(45deg) translateY(-85%);
-        border: $border-dark;
-        border-bottom: none;
-        border-right: none;
-        border-radius: 2px;
-      }
-    }
-  }
 
   .select-menu__item {
     display: flex;

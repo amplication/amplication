@@ -18,17 +18,19 @@ datasource db {
 }
 
 model Account {
-  id            String   @id @default(cuid())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  email         String   @unique(map: "Account.email_unique")
-  firstName     String
-  lastName      String
-  password      String
-  currentUserId String?  @unique(map: "Account.currentUserId_unique")
-  githubId      String?
-  currentUser   User?    @relation(fields: [currentUserId], references: [id])
-  users         User[]   @relation("AccountOnUser")
+  id                  String             @id @default(cuid())
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  email               String             @unique(map: "Account.email_unique")
+  firstName           String
+  lastName            String
+  password            String
+  currentUserId       String?            @unique(map: "Account.currentUserId_unique")
+  githubId            String?
+  currentUser         User?              @relation(fields: [currentUserId], references: [id])
+  users               User[]             @relation("AccountOnUser")
+  previewAccountEmail String?
+  previewAccountType  PreviewAccountType @default(None)
 }
 
 model Workspace {
@@ -55,6 +57,7 @@ model Project {
   commits      Commit[]
   useDemoRepo  Boolean    @default(false)
   demoRepoName String?
+  licensed     Boolean    @default(true)
 
   @@unique([workspaceId, name])
 }
@@ -164,6 +167,7 @@ model Resource {
   resourceType          EnumResourceType
   codeGeneratorVersion  String?
   codeGeneratorStrategy CodeGeneratorVersionStrategy @default(LatestMajor)
+  licensed              Boolean                      @default(true)
 
   @@unique([projectId, name], map: "Resource.projectId_name_unique")
 }
@@ -558,6 +562,7 @@ enum EnumSubscriptionPlan {
   Free
   Pro
   Enterprise
+  PreviewBreakTheMonolith
 }
 
 enum EnumSubscriptionStatus {
@@ -599,10 +604,17 @@ enum EnumGitOrganizationType {
 
 enum EnumUserActionType {
   DBSchemaImport
+  GptConversation
 }
 
 enum CodeGeneratorVersionStrategy {
   LatestMajor
   LatestMinor
   Specific
+}
+
+enum PreviewAccountType {
+  None
+  BreakingTheMonolith
+  Auth0Signup
 }

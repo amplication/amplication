@@ -19,6 +19,10 @@ import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { FindOneArgs } from "../../dto";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { SignupPreviewAccountArgs } from "./dto/SignupPreviewAccountArgs";
+import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
+import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
+
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {
@@ -30,9 +34,41 @@ export class AuthResolver {
     return user;
   }
 
+  @Mutation(() => Boolean)
+  async signupWithBusinessEmail(
+    @Args() args: SignupWithBusinessEmailArgs
+  ): Promise<boolean> {
+    return this.authService.signupWithBusinessEmail(args);
+  }
+
+  @Mutation(() => AuthPreviewAccount)
+  async signupPreviewAccount(
+    @Args() args: SignupPreviewAccountArgs
+  ): Promise<AuthPreviewAccount> {
+    const {
+      data: { previewAccountEmail, previewAccountType },
+    } = args;
+
+    const previewAccountEmailToLower = previewAccountEmail.toLowerCase();
+
+    return this.authService.signupPreviewAccount({
+      previewAccountEmail: previewAccountEmailToLower,
+      previewAccountType,
+    });
+  }
+
+  @Mutation(() => String)
+  @UseGuards(GqlAuthGuard)
+  async completeSignupWithBusinessEmail(
+    @UserEntity() user: User
+  ): Promise<string> {
+    return this.authService.completeSignupPreviewAccount(user);
+  }
+
   @Mutation(() => Auth)
   async signup(@Args() args: SignupArgs): Promise<Auth> {
     const { data } = args;
+
     data.email = data.email.toLowerCase();
     const token = await this.authService.signup(data);
     return { token };

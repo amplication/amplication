@@ -15,7 +15,7 @@ import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 @UseGuards(GqlAuthGuard)
 export class TopicResolver extends BlockTypeResolver(
   Topic,
-  "Topics",
+  "topics",
   FindManyTopicArgs,
   "createTopic",
   CreateTopicArgs,

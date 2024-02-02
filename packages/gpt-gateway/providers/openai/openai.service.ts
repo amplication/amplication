@@ -1,20 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import {
-  Configuration,
-  OpenAIApi,
-  ChatCompletionRequestMessage,
-  CreateChatCompletionRequest,
-} from "openai";
+import OpenAI from "openai";
+import { ContentLengthExceededError } from "../../src/errors/ContentLengthExceededError";
 
 export type CreateChatCompletionRequestSettings = Omit<
-  CreateChatCompletionRequest,
+  OpenAI.Chat.ChatCompletionCreateParamsNonStreaming,
   "model" | "messages"
 >;
 
-export {
-  ChatCompletionRequestMessage,
-  ChatCompletionRequestMessageRoleEnum,
-} from "openai";
+export type ChatCompletionMessageParam = OpenAI.Chat.ChatCompletionMessageParam;
 
 const CREATE_CHAT_COMPLETION_DEFAULT_SETTINGS: CreateChatCompletionRequestSettings =
   {
@@ -27,31 +20,36 @@ const CREATE_CHAT_COMPLETION_DEFAULT_SETTINGS: CreateChatCompletionRequestSettin
 
 @Injectable()
 export class OpenaiService {
-  // constructor() {}
-
   async createChatCompletion(
     model: string,
-    messages: ChatCompletionRequestMessage[],
+    messages: OpenAI.Chat.ChatCompletionMessageParam[],
     requestSettings?: CreateChatCompletionRequestSettings
   ): Promise<string> {
-    const configuration = new Configuration({
+    const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
-    const openai = new OpenAIApi(configuration);
 
     const settings = {
       ...CREATE_CHAT_COMPLETION_DEFAULT_SETTINGS,
       ...requestSettings,
     };
 
-    const response = await openai.createChatCompletion({
-      ...settings,
-      model: model,
-      messages: messages,
-    });
+    try {
+      const response = await openai.chat.completions.create({
+        ...settings,
+        model: model,
+        messages: messages,
+      });
+      const results = response.choices[0].message?.content || "";
 
-    const results = response.data.choices[0].message?.content || "";
-
-    return results;
+      return results;
+    } catch (error) {
+      if (error instanceof OpenAI.APIError) {
+        // Add custom error handling here. Check codes: https://github.com/openai/openai-node?tab=readme-ov-file#handling-errors
+        if (error.status === 400 && error.code === "context_length_exceeded")
+          throw new ContentLengthExceededError(error.message);
+      }
+      throw error;
+    }
   }
 }

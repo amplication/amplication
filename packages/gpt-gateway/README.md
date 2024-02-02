@@ -1,12 +1,13 @@
-<p align="right">
-  <a href="https://amplication.com" target="_blank">
-    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/images/amplication-logo-purple.svg"/>
-  </a>
-</p>
-
 # Introduction
 
-This service was generated with Amplication. The server-side of the generated project. This component provides the different backend services - i.e., REST API, GraphQL API, authentication, authorization, logging, data validation and the connection to the database. Additional information about the server component and the architecture around it, can be found on the [documentation](https://docs.amplication.com/guides/getting-started) site.
+Service that act as a gateway to OpenAI API.
+
+![HLD](./docs/HLD.png "HLD")
+
+It allows to generate a message response from the only `conversationTypeKey` and `params` that will be interpolated in the messages part of the GPT conversation.
+This is achieved by getting the template associated to the `conversationTypeKey` as it contains a list of messages, interpolating all the params and send them to the OpenAi APIs.
+![DB Model](./docs/db-model.png "DB Model")
+
 
 # Getting started
 
@@ -17,7 +18,7 @@ Configuration for the server component can be provided through the use of enviro
 | Variable             | Description                                  | Value                                                               |
 | -------------------- | -------------------------------------------- | ------------------------------------------------------------------- |
 | BCRYPT_SALT          | the string used for hashing                  | [random-string]                                                     |
-| COMPOSE_PROJECT_NAME | the identifier of the service plus prefix    | amp\_[service-identifier]                                           |
+| COMPOSE_PROJECT_NAME | the identifier of the service plus prefix    | amp_[service-identifier]                                            |
 | PORT                 | the port on which to run the server          | 3000                                                                |
 | DB_URL               | the connection url for the database          | [db-provider]://[username]:[password]@localhost:[db-port]/[db-name] |
 | DB_PORT              | the port used by the database instance       | [db-provider-port]                                                  |
@@ -28,7 +29,7 @@ Configuration for the server component can be provided through the use of enviro
 | JWT_EXPIRATION       | the expiration time for the json-web token   | 2d                                                                  |
 
 > **Note**
-> Amplication generates default values and stores them under the .env file. It is advised to use some form of secrets manager/vault solution when using in production.
+> Amplication generates default values and stores them under the .env file. It is advised to use some form of secrets manager/vault solution when using in production. 
 
 ## Step 2.1: Scripts - pre-requisites
 
@@ -54,7 +55,6 @@ $ npm run db:init
 # start the server component
 $ npm run start
 ```
-
 By default, your app comes with one user with the username "admin" and password "admin".
 
 ## Step 2.2: Scripts - container based development
