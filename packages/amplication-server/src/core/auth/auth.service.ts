@@ -70,7 +70,7 @@ export class AuthService {
   private readonly auth0: AuthenticationClient;
   private readonly auth0Management: ManagementClient;
   private readonly clientId: string;
-  private readonly dbConnectionName: string;
+  private readonly businessEmailDbConnectionName: string;
 
   constructor(
     configService: ConfigService,
@@ -88,7 +88,7 @@ export class AuthService {
     const clientSecret = configService.get<string>(
       Env.AUTH_ISSUER_CLIENT_SECRET
     );
-    this.dbConnectionName = configService.get<string>(
+    this.businessEmailDbConnectionName = configService.get<string>(
       Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
     );
     this.auth0 = new AuthenticationClient({
@@ -183,7 +183,7 @@ export class AuthService {
     const data: SignUpRequest = {
       email,
       password: generatePassword(),
-      connection: this.dbConnectionName,
+      connection: this.businessEmailDbConnectionName,
     };
 
     const user = await this.auth0.database.signUp(data);
@@ -196,7 +196,7 @@ export class AuthService {
       email,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       client_id: this.clientId,
-      connection: this.dbConnectionName,
+      connection: this.businessEmailDbConnectionName,
     };
 
     const changePasswordResponse = await this.auth0.database.changePassword(
