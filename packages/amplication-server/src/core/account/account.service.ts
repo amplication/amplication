@@ -24,7 +24,7 @@ export class AccountService {
     const userData: IdentifyData = {
       userId: account.id,
       createdAt: account.createdAt,
-      email: account.email,
+      email: account.previewAccountEmail ?? account.email,
       firstName: account.firstName,
       lastName: account.lastName,
     };

@@ -1,0 +1,41 @@
+@import "../style/index.scss";
+
+.auth-with-work-email {
+  &__or {
+    margin-top: var(--large-spacing);
+    display: flex;
+    flex-direction: row;
+    & span {
+      padding: 0 8px;
+      color: var(--gray-50);
+    }
+  }
+  &__or:before,
+  &__or:after {
+    content: "";
+    flex: 1 1;
+    border-bottom: 1px solid var(--gray-50);
+    margin: auto;
+  }
+
+  &__reset_message {
+    border: 1px solid var(--theme-turquoise);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border-radius: var(--default-border-radius);
+    color: var(--gray-solid);
+    padding: var(--default-spacing);
+    background-color: var(--theme-turquoise-transparent);
+  }
+
+  &__work_email {
+    & input {
+      max-width: 100%;
+    }
+    & input:hover:not(:disabled),
+    input:focus:not(:disabled) {
+      border: 1px solid var(--gray-base);
+    }
+  }
+}

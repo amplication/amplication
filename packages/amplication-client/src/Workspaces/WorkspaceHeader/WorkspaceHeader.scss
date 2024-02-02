@@ -113,3 +113,15 @@ $select-menu-max-width: 300px;
     }
   }
 }
+
+.notification_container {
+  margin-top: 38%;
+  text-align: center;
+}
+.notification_text {
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Roboto";
+  color: var(--gray-20);
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+}

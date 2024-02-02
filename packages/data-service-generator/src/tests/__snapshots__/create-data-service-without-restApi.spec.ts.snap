@@ -1840,8 +1840,7 @@ export const EmptyTitle = (record: TEmpty): string => {
   "admin-ui/src/index.tsx": "import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-// @ts-ignore
-// eslint-disable-next-line import/no-unresolved
+
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
@@ -2500,8 +2499,7 @@ export type InputJsonValue = Omit<JsonValue, "null">;
   AreaManager = "areaManager",
 }
 ",
-  "admin-ui/src/user/RolesOptions.ts": "//@ts-ignore
-import { ROLES } from "./roles";
+  "admin-ui/src/user/RolesOptions.ts": "import { ROLES } from "./roles";
 
 declare interface Role {
   name: string;
@@ -3010,12 +3008,12 @@ export class StringNullableFilter {
 ",
   "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
-PORT=3000
-DB_URL=postgres://admin:admin@localhost:5432/my-db
-DB_USER=admin
+DB_NAME=my-db
 DB_PASSWORD=admin
 DB_PORT=5432
-DB_NAME=my-db",
+DB_URL=postgres://admin:admin@localhost:5432/my-db
+DB_USER=admin
+PORT=3000",
   "server/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
@@ -4875,13 +4873,13 @@ import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import { Public } from "../../decorators/public.decorator";
-import { CreateCustomerArgs } from "./CreateCustomerArgs";
-import { UpdateCustomerArgs } from "./UpdateCustomerArgs";
-import { DeleteCustomerArgs } from "./DeleteCustomerArgs";
+import { Customer } from "./Customer";
 import { CustomerCountArgs } from "./CustomerCountArgs";
 import { CustomerFindManyArgs } from "./CustomerFindManyArgs";
 import { CustomerFindUniqueArgs } from "./CustomerFindUniqueArgs";
-import { Customer } from "./Customer";
+import { CreateCustomerArgs } from "./CreateCustomerArgs";
+import { UpdateCustomerArgs } from "./UpdateCustomerArgs";
+import { DeleteCustomerArgs } from "./DeleteCustomerArgs";
 import { OrderFindManyArgs } from "../../order/base/OrderFindManyArgs";
 import { Order } from "../../order/base/Order";
 import { Organization } from "../../organization/base/Organization";
@@ -4903,14 +4901,14 @@ export class CustomerResolverBase {
   async customers(
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
-    return this.service.findMany(args);
+    return this.service.customers(args);
   }
 
   @graphql.Query(() => Customer, { nullable: true })
   async customer(
     @graphql.Args() args: CustomerFindUniqueArgs
   ): Promise<Customer | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.customer(args);
     if (result === null) {
       return null;
     }
@@ -4921,7 +4919,7 @@ export class CustomerResolverBase {
   async createCustomer(
     @graphql.Args() args: CreateCustomerArgs
   ): Promise<Customer> {
-    return await this.service.create({
+    return await this.service.createCustomer({
       ...args,
       data: {
         ...args.data,
@@ -4946,7 +4944,7 @@ export class CustomerResolverBase {
     @graphql.Args() args: UpdateCustomerArgs
   ): Promise<Customer | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateCustomer({
         ...args,
         data: {
           ...args.data,
@@ -4979,7 +4977,7 @@ export class CustomerResolverBase {
     @graphql.Args() args: DeleteCustomerArgs
   ): Promise<Customer | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteCustomer(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -4992,7 +4990,7 @@ export class CustomerResolverBase {
 
   @Public()
   @graphql.ResolveField(() => [Order], { name: "orders" })
-  async resolveFieldOrders(
+  async findOrders(
     @graphql.Parent() parent: Customer,
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<Order[]> {
@@ -5009,7 +5007,7 @@ export class CustomerResolverBase {
     nullable: true,
     name: "organization",
   })
-  async resolveFieldOrganization(
+  async getOrganization(
     @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
     const result = await this.service.getOrganization(parent.id);
@@ -5024,7 +5022,7 @@ export class CustomerResolverBase {
     nullable: true,
     name: "vipOrganization",
   })
-  async resolveFieldVipOrganization(
+  async getVipOrganization(
     @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
     const result = await this.service.getVipOrganization(parent.id);
@@ -5059,27 +5057,27 @@ export class CustomerServiceBase {
     return this.prisma.customer.count(args);
   }
 
-  async findMany<T extends Prisma.CustomerFindManyArgs>(
+  async customers<T extends Prisma.CustomerFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
   ): Promise<Customer[]> {
     return this.prisma.customer.findMany(args);
   }
-  async findOne<T extends Prisma.CustomerFindUniqueArgs>(
+  async customer<T extends Prisma.CustomerFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindUniqueArgs>
   ): Promise<Customer | null> {
     return this.prisma.customer.findUnique(args);
   }
-  async create<T extends Prisma.CustomerCreateArgs>(
+  async createCustomer<T extends Prisma.CustomerCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>
   ): Promise<Customer> {
     return this.prisma.customer.create<T>(args);
   }
-  async update<T extends Prisma.CustomerUpdateArgs>(
+  async updateCustomer<T extends Prisma.CustomerUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerUpdateArgs>
   ): Promise<Customer> {
     return this.prisma.customer.update<T>(args);
   }
-  async delete<T extends Prisma.CustomerDeleteArgs>(
+  async deleteCustomer<T extends Prisma.CustomerDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerDeleteArgs>
   ): Promise<Customer> {
     return this.prisma.customer.delete(args);
@@ -5699,11 +5697,11 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { DeleteEmptyArgs } from "./DeleteEmptyArgs";
+import { Empty } from "./Empty";
 import { EmptyCountArgs } from "./EmptyCountArgs";
 import { EmptyFindManyArgs } from "./EmptyFindManyArgs";
 import { EmptyFindUniqueArgs } from "./EmptyFindUniqueArgs";
-import { Empty } from "./Empty";
+import { DeleteEmptyArgs } from "./DeleteEmptyArgs";
 import { EmptyService } from "../empty.service";
 @graphql.Resolver(() => Empty)
 export class EmptyResolverBase {
@@ -5720,14 +5718,14 @@ export class EmptyResolverBase {
 
   @graphql.Query(() => [Empty])
   async empties(@graphql.Args() args: EmptyFindManyArgs): Promise<Empty[]> {
-    return this.service.findMany(args);
+    return this.service.empties(args);
   }
 
   @graphql.Query(() => Empty, { nullable: true })
   async empty(
     @graphql.Args() args: EmptyFindUniqueArgs
   ): Promise<Empty | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.empty(args);
     if (result === null) {
       return null;
     }
@@ -5739,7 +5737,7 @@ export class EmptyResolverBase {
     @graphql.Args() args: DeleteEmptyArgs
   ): Promise<Empty | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteEmpty(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -5774,27 +5772,27 @@ export class EmptyServiceBase {
     return this.prisma.empty.count(args);
   }
 
-  async findMany<T extends Prisma.EmptyFindManyArgs>(
+  async empties<T extends Prisma.EmptyFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
   ): Promise<Empty[]> {
     return this.prisma.empty.findMany(args);
   }
-  async findOne<T extends Prisma.EmptyFindUniqueArgs>(
+  async empty<T extends Prisma.EmptyFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindUniqueArgs>
   ): Promise<Empty | null> {
     return this.prisma.empty.findUnique(args);
   }
-  async create<T extends Prisma.EmptyCreateArgs>(
+  async createEmpty<T extends Prisma.EmptyCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyCreateArgs>
   ): Promise<Empty> {
     return this.prisma.empty.create<T>(args);
   }
-  async update<T extends Prisma.EmptyUpdateArgs>(
+  async updateEmpty<T extends Prisma.EmptyUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyUpdateArgs>
   ): Promise<Empty> {
     return this.prisma.empty.update<T>(args);
   }
-  async delete<T extends Prisma.EmptyDeleteArgs>(
+  async deleteEmpty<T extends Prisma.EmptyDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyDeleteArgs>
   ): Promise<Empty> {
     return this.prisma.empty.delete(args);
@@ -6039,7 +6037,6 @@ async function main() {
 
   //This fix is based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   BigInt.prototype.toJSON = function () {
     return this.toString();
   };
@@ -6839,13 +6836,13 @@ import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import { Public } from "../../decorators/public.decorator";
-import { CreateOrderArgs } from "./CreateOrderArgs";
-import { UpdateOrderArgs } from "./UpdateOrderArgs";
-import { DeleteOrderArgs } from "./DeleteOrderArgs";
+import { Order } from "./Order";
 import { OrderCountArgs } from "./OrderCountArgs";
 import { OrderFindManyArgs } from "./OrderFindManyArgs";
 import { OrderFindUniqueArgs } from "./OrderFindUniqueArgs";
-import { Order } from "./Order";
+import { CreateOrderArgs } from "./CreateOrderArgs";
+import { UpdateOrderArgs } from "./UpdateOrderArgs";
+import { DeleteOrderArgs } from "./DeleteOrderArgs";
 import { Customer } from "../../customer/base/Customer";
 import { OrderService } from "../order.service";
 @graphql.Resolver(() => Order)
@@ -6864,7 +6861,7 @@ export class OrderResolverBase {
   @Public()
   @graphql.Query(() => [Order])
   async orders(@graphql.Args() args: OrderFindManyArgs): Promise<Order[]> {
-    return this.service.findMany(args);
+    return this.service.orders(args);
   }
 
   @Public()
@@ -6872,7 +6869,7 @@ export class OrderResolverBase {
   async order(
     @graphql.Args() args: OrderFindUniqueArgs
   ): Promise<Order | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.order(args);
     if (result === null) {
       return null;
     }
@@ -6882,7 +6879,7 @@ export class OrderResolverBase {
   @Public()
   @graphql.Mutation(() => Order)
   async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
-    return await this.service.create({
+    return await this.service.createOrder({
       ...args,
       data: {
         ...args.data,
@@ -6900,7 +6897,7 @@ export class OrderResolverBase {
     @graphql.Args() args: UpdateOrderArgs
   ): Promise<Order | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrder({
         ...args,
         data: {
           ...args.data,
@@ -6926,7 +6923,7 @@ export class OrderResolverBase {
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteOrder(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -6941,9 +6938,7 @@ export class OrderResolverBase {
     nullable: true,
     name: "customer",
   })
-  async resolveFieldCustomer(
-    @graphql.Parent() parent: Order
-  ): Promise<Customer | null> {
+  async getCustomer(@graphql.Parent() parent: Order): Promise<Customer | null> {
     const result = await this.service.getCustomer(parent.id);
 
     if (!result) {
@@ -6976,27 +6971,27 @@ export class OrderServiceBase {
     return this.prisma.order.count(args);
   }
 
-  async findMany<T extends Prisma.OrderFindManyArgs>(
+  async orders<T extends Prisma.OrderFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
   ): Promise<Order[]> {
     return this.prisma.order.findMany(args);
   }
-  async findOne<T extends Prisma.OrderFindUniqueArgs>(
+  async order<T extends Prisma.OrderFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindUniqueArgs>
   ): Promise<Order | null> {
     return this.prisma.order.findUnique(args);
   }
-  async create<T extends Prisma.OrderCreateArgs>(
+  async createOrder<T extends Prisma.OrderCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderCreateArgs>
   ): Promise<Order> {
     return this.prisma.order.create<T>(args);
   }
-  async update<T extends Prisma.OrderUpdateArgs>(
+  async updateOrder<T extends Prisma.OrderUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderUpdateArgs>
   ): Promise<Order> {
     return this.prisma.order.update<T>(args);
   }
-  async delete<T extends Prisma.OrderDeleteArgs>(
+  async deleteOrder<T extends Prisma.OrderDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderDeleteArgs>
   ): Promise<Order> {
     return this.prisma.order.delete(args);
@@ -7935,13 +7930,13 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { CreateOrganizationArgs } from "./CreateOrganizationArgs";
-import { UpdateOrganizationArgs } from "./UpdateOrganizationArgs";
-import { DeleteOrganizationArgs } from "./DeleteOrganizationArgs";
+import { Organization } from "./Organization";
 import { OrganizationCountArgs } from "./OrganizationCountArgs";
 import { OrganizationFindManyArgs } from "./OrganizationFindManyArgs";
 import { OrganizationFindUniqueArgs } from "./OrganizationFindUniqueArgs";
-import { Organization } from "./Organization";
+import { CreateOrganizationArgs } from "./CreateOrganizationArgs";
+import { UpdateOrganizationArgs } from "./UpdateOrganizationArgs";
+import { DeleteOrganizationArgs } from "./DeleteOrganizationArgs";
 import { UserFindManyArgs } from "../../user/base/UserFindManyArgs";
 import { User } from "../../user/base/User";
 import { CustomerFindManyArgs } from "../../customer/base/CustomerFindManyArgs";
@@ -7964,14 +7959,14 @@ export class OrganizationResolverBase {
   async organizations(
     @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<Organization[]> {
-    return this.service.findMany(args);
+    return this.service.organizations(args);
   }
 
   @graphql.Query(() => Organization, { nullable: true })
   async organization(
     @graphql.Args() args: OrganizationFindUniqueArgs
   ): Promise<Organization | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.organization(args);
     if (result === null) {
       return null;
     }
@@ -7982,7 +7977,7 @@ export class OrganizationResolverBase {
   async createOrganization(
     @graphql.Args() args: CreateOrganizationArgs
   ): Promise<Organization> {
-    return await this.service.create({
+    return await this.service.createOrganization({
       ...args,
       data: args.data,
     });
@@ -7993,7 +7988,7 @@ export class OrganizationResolverBase {
     @graphql.Args() args: UpdateOrganizationArgs
   ): Promise<Organization | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrganization({
         ...args,
         data: args.data,
       });
@@ -8012,7 +8007,7 @@ export class OrganizationResolverBase {
     @graphql.Args() args: DeleteOrganizationArgs
   ): Promise<Organization | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteOrganization(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -8024,7 +8019,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [User], { name: "users" })
-  async resolveFieldUsers(
+  async findUsers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: UserFindManyArgs
   ): Promise<User[]> {
@@ -8038,7 +8033,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [Customer], { name: "customers" })
-  async resolveFieldCustomers(
+  async findCustomers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
@@ -8052,7 +8047,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [Customer], { name: "vipCustomers" })
-  async resolveFieldVipCustomers(
+  async findVipCustomers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
@@ -8089,27 +8084,27 @@ export class OrganizationServiceBase {
     return this.prisma.organization.count(args);
   }
 
-  async findMany<T extends Prisma.OrganizationFindManyArgs>(
+  async organizations<T extends Prisma.OrganizationFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
   ): Promise<Organization[]> {
     return this.prisma.organization.findMany(args);
   }
-  async findOne<T extends Prisma.OrganizationFindUniqueArgs>(
+  async organization<T extends Prisma.OrganizationFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindUniqueArgs>
   ): Promise<Organization | null> {
     return this.prisma.organization.findUnique(args);
   }
-  async create<T extends Prisma.OrganizationCreateArgs>(
+  async createOrganization<T extends Prisma.OrganizationCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationCreateArgs>
   ): Promise<Organization> {
     return this.prisma.organization.create<T>(args);
   }
-  async update<T extends Prisma.OrganizationUpdateArgs>(
+  async updateOrganization<T extends Prisma.OrganizationUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationUpdateArgs>
   ): Promise<Organization> {
     return this.prisma.organization.update<T>(args);
   }
-  async delete<T extends Prisma.OrganizationDeleteArgs>(
+  async deleteOrganization<T extends Prisma.OrganizationDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationDeleteArgs>
   ): Promise<Organization> {
     return this.prisma.organization.delete(args);
@@ -9021,13 +9016,13 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { CreateProfileArgs } from "./CreateProfileArgs";
-import { UpdateProfileArgs } from "./UpdateProfileArgs";
-import { DeleteProfileArgs } from "./DeleteProfileArgs";
+import { Profile } from "./Profile";
 import { ProfileCountArgs } from "./ProfileCountArgs";
 import { ProfileFindManyArgs } from "./ProfileFindManyArgs";
 import { ProfileFindUniqueArgs } from "./ProfileFindUniqueArgs";
-import { Profile } from "./Profile";
+import { CreateProfileArgs } from "./CreateProfileArgs";
+import { UpdateProfileArgs } from "./UpdateProfileArgs";
+import { DeleteProfileArgs } from "./DeleteProfileArgs";
 import { User } from "../../user/base/User";
 import { ProfileService } from "../profile.service";
 @graphql.Resolver(() => Profile)
@@ -9047,14 +9042,14 @@ export class ProfileResolverBase {
   async profiles(
     @graphql.Args() args: ProfileFindManyArgs
   ): Promise<Profile[]> {
-    return this.service.findMany(args);
+    return this.service.profiles(args);
   }
 
   @graphql.Query(() => Profile, { nullable: true })
   async profile(
     @graphql.Args() args: ProfileFindUniqueArgs
   ): Promise<Profile | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.profile(args);
     if (result === null) {
       return null;
     }
@@ -9065,7 +9060,7 @@ export class ProfileResolverBase {
   async createProfile(
     @graphql.Args() args: CreateProfileArgs
   ): Promise<Profile> {
-    return await this.service.create({
+    return await this.service.createProfile({
       ...args,
       data: {
         ...args.data,
@@ -9084,7 +9079,7 @@ export class ProfileResolverBase {
     @graphql.Args() args: UpdateProfileArgs
   ): Promise<Profile | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateProfile({
         ...args,
         data: {
           ...args.data,
@@ -9111,7 +9106,7 @@ export class ProfileResolverBase {
     @graphql.Args() args: DeleteProfileArgs
   ): Promise<Profile | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteProfile(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -9126,9 +9121,7 @@ export class ProfileResolverBase {
     nullable: true,
     name: "user",
   })
-  async resolveFieldUser(
-    @graphql.Parent() parent: Profile
-  ): Promise<User | null> {
+  async getUser(@graphql.Parent() parent: Profile): Promise<User | null> {
     const result = await this.service.getUser(parent.id);
 
     if (!result) {
@@ -9161,27 +9154,27 @@ export class ProfileServiceBase {
     return this.prisma.profile.count(args);
   }
 
-  async findMany<T extends Prisma.ProfileFindManyArgs>(
+  async profiles<T extends Prisma.ProfileFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
   ): Promise<Profile[]> {
     return this.prisma.profile.findMany(args);
   }
-  async findOne<T extends Prisma.ProfileFindUniqueArgs>(
+  async profile<T extends Prisma.ProfileFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindUniqueArgs>
   ): Promise<Profile | null> {
     return this.prisma.profile.findUnique(args);
   }
-  async create<T extends Prisma.ProfileCreateArgs>(
+  async createProfile<T extends Prisma.ProfileCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileCreateArgs>
   ): Promise<Profile> {
     return this.prisma.profile.create<T>(args);
   }
-  async update<T extends Prisma.ProfileUpdateArgs>(
+  async updateProfile<T extends Prisma.ProfileUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileUpdateArgs>
   ): Promise<Profile> {
     return this.prisma.profile.update<T>(args);
   }
-  async delete<T extends Prisma.ProfileDeleteArgs>(
+  async deleteProfile<T extends Prisma.ProfileDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileDeleteArgs>
   ): Promise<Profile> {
     return this.prisma.profile.delete(args);
@@ -9234,6 +9227,7 @@ export class ProfileService extends ProfileServiceBase {
   "server/src/providers/secrets/base/secretsManager.service.base.spec.ts": "import { ConfigService } from "@nestjs/config";
 import { mock } from "jest-mock-extended";
 import { SecretsManagerServiceBase } from "./secretsManager.service.base";
+import { EnumSecretsNameKey } from "../secretsNameKey.enum";
 
 describe("Testing the secrets manager base class", () => {
   const SECRET_KEY = "SECRET_KEY";
@@ -9249,7 +9243,9 @@ describe("Testing the secrets manager base class", () => {
     //ARRANGE
     configService.get.mockReturnValue(SECRET_VALUE);
     //ACT
-    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    const result = await secretsManagerServiceBase.getSecret(
+      SECRET_KEY as unknown as EnumSecretsNameKey
+    );
     //ASSERT
     expect(result).toBe(SECRET_VALUE);
   });
@@ -9257,16 +9253,15 @@ describe("Testing the secrets manager base class", () => {
     //ARRANGE
     configService.get.mockReturnValue(undefined);
     //ACT
-    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    const result = await secretsManagerServiceBase.getSecret(
+      SECRET_KEY as unknown as EnumSecretsNameKey
+    );
     //ASSERT
     expect(result).toBeNull();
   });
-  it("should throw error if dont get key", () => {
-    return expect(secretsManagerServiceBase.getSecret("")).rejects.toThrow();
-  });
   it("should throw an exception if getting null key", () => {
     return expect(
-      secretsManagerServiceBase.getSecret(null as unknown as string)
+      secretsManagerServiceBase.getSecret(null as unknown as EnumSecretsNameKey)
     ).rejects.toThrow();
   });
 });
@@ -9661,7 +9656,7 @@ import {
   IsBoolean,
 } from "class-validator";
 
-import { IsJSONValue } from "@app/custom-validators";
+import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { JsonValue } from "type-fest";
 import { Type } from "class-transformer";
@@ -9883,7 +9878,7 @@ import {
   IsBoolean,
 } from "class-validator";
 
-import { IsJSONValue } from "@app/custom-validators";
+import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
@@ -10479,7 +10474,7 @@ import {
   IsBoolean,
 } from "class-validator";
 
-import { IsJSONValue } from "@app/custom-validators";
+import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
@@ -10983,13 +10978,13 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { CreateUserArgs } from "./CreateUserArgs";
-import { UpdateUserArgs } from "./UpdateUserArgs";
-import { DeleteUserArgs } from "./DeleteUserArgs";
+import { User } from "./User";
 import { UserCountArgs } from "./UserCountArgs";
 import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
-import { User } from "./User";
+import { CreateUserArgs } from "./CreateUserArgs";
+import { UpdateUserArgs } from "./UpdateUserArgs";
+import { DeleteUserArgs } from "./DeleteUserArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { Profile } from "../../profile/base/Profile";
@@ -11009,12 +11004,12 @@ export class UserResolverBase {
 
   @graphql.Query(() => [User])
   async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
-    return this.service.findMany(args);
+    return this.service.users(args);
   }
 
   @graphql.Query(() => User, { nullable: true })
   async user(@graphql.Args() args: UserFindUniqueArgs): Promise<User | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.user(args);
     if (result === null) {
       return null;
     }
@@ -11023,7 +11018,7 @@ export class UserResolverBase {
 
   @graphql.Mutation(() => User)
   async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
-    return await this.service.create({
+    return await this.service.createUser({
       ...args,
       data: {
         ...args.data,
@@ -11046,7 +11041,7 @@ export class UserResolverBase {
   @graphql.Mutation(() => User)
   async updateUser(@graphql.Args() args: UpdateUserArgs): Promise<User | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateUser({
         ...args,
         data: {
           ...args.data,
@@ -11077,7 +11072,7 @@ export class UserResolverBase {
   @graphql.Mutation(() => User)
   async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteUser(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -11089,7 +11084,7 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => [User], { name: "employees" })
-  async resolveFieldEmployees(
+  async findEmployees(
     @graphql.Parent() parent: User,
     @graphql.Args() args: UserFindManyArgs
   ): Promise<User[]> {
@@ -11103,7 +11098,7 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => [Organization], { name: "organizations" })
-  async resolveFieldOrganizations(
+  async findOrganizations(
     @graphql.Parent() parent: User,
     @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<Organization[]> {
@@ -11120,9 +11115,7 @@ export class UserResolverBase {
     nullable: true,
     name: "manager",
   })
-  async resolveFieldManager(
-    @graphql.Parent() parent: User
-  ): Promise<User | null> {
+  async getManager(@graphql.Parent() parent: User): Promise<User | null> {
     const result = await this.service.getManager(parent.id);
 
     if (!result) {
@@ -11135,9 +11128,7 @@ export class UserResolverBase {
     nullable: true,
     name: "profile",
   })
-  async resolveFieldProfile(
-    @graphql.Parent() parent: User
-  ): Promise<Profile | null> {
+  async getProfile(@graphql.Parent() parent: User): Promise<Profile | null> {
     const result = await this.service.getProfile(parent.id);
 
     if (!result) {
@@ -11170,27 +11161,27 @@ export class UserServiceBase {
     return this.prisma.user.count(args);
   }
 
-  async findMany<T extends Prisma.UserFindManyArgs>(
+  async users<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
   ): Promise<User[]> {
     return this.prisma.user.findMany(args);
   }
-  async findOne<T extends Prisma.UserFindUniqueArgs>(
+  async user<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
   ): Promise<User | null> {
     return this.prisma.user.findUnique(args);
   }
-  async create<T extends Prisma.UserCreateArgs>(
+  async createUser<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
   ): Promise<User> {
     return this.prisma.user.create<T>(args);
   }
-  async update<T extends Prisma.UserUpdateArgs>(
+  async updateUser<T extends Prisma.UserUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
   ): Promise<User> {
     return this.prisma.user.update<T>(args);
   }
-  async delete<T extends Prisma.UserDeleteArgs>(
+  async deleteUser<T extends Prisma.UserDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
   ): Promise<User> {
     return this.prisma.user.delete(args);
@@ -12835,10 +12826,7 @@ export function IsJSONValue(validationOptions?: ValidationOptions) {
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true,
-    "paths": {
-      "@app/custom-validators": ["src/validators"]
-    }
+    "strict": true
   },
   "include": ["src"]
 }

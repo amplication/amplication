@@ -11,7 +11,7 @@ import {
   Panel,
   Text,
 } from "@amplication/ui/design-system";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import PageContent from "../Layout/PageContent";
 import { AppContext } from "../context/appContext";
 import DocsTile from "./DocsTile";
@@ -24,13 +24,19 @@ import { TopicsTile } from "./TopicsTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { resourceThemeMap } from "./constants";
 import PluginsTile from "./PluginsTile";
+import { useStiggContext } from "@stigg/react-sdk";
 
 const PAGE_TITLE = "Resource Overview";
 
 const ResourceOverview = () => {
   const { currentResource } = useContext(AppContext);
+  const { refreshData } = useStiggContext();
 
   const resourceId = currentResource?.id;
+
+  useEffect(() => {
+    refreshData();
+  }, []);
 
   return (
     <PageContent pageTitle={PAGE_TITLE}>

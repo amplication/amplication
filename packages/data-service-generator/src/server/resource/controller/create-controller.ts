@@ -21,6 +21,7 @@ import {
   CreateEntityControllerToManyRelationMethodsParams,
   EnumEntityAction,
   ModuleMap,
+  ModuleAction,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../utils/module";
 
@@ -32,6 +33,7 @@ import {
   getClassDeclarationById,
   importContainedIdentifiers,
   getMethods,
+  removeClassMethodByName,
 } from "../../../utils/ast";
 import { isToManyRelationField } from "../../../utils/field";
 import { getDTONameToPath } from "../create-dtos";
@@ -43,8 +45,11 @@ import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports
 import DsgContext from "../../../dsg-context";
 import pluginWrapper from "../../../plugin-wrapper";
 import {
+  createCreateFunctionId,
+  createDeleteFunctionId,
   createFieldFindManyFunctionId,
   createServiceId,
+  createUpdateFunctionId,
 } from "../service/create-service";
 import { setEndpointPermissions } from "../../../utils/set-endpoint-permission";
 
@@ -70,11 +75,14 @@ export async function createControllerModules(
   entity: Entity
 ): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { appInfo, DTOs } = DsgContext.getInstance;
+  const { appInfo, DTOs, entityActionsMap, moduleContainers } =
+    DsgContext.getInstance;
   const { settings } = appInfo;
   const { authProvider } = settings;
   const entityDTOs = DTOs[entity.name];
   const entityDTO = entityDTOs.entity;
+
+  const entityActions = entityActionsMap[entity.name];
 
   const template = await readFile(controllerTemplatePath);
   const templateBase = await readFile(controllerBaseTemplatePath);
@@ -82,11 +90,31 @@ export async function createControllerModules(
   const controllerId = createControllerId(entityType);
   const controllerBaseId = createControllerBaseId(entityType);
   const serviceId = createServiceId(entityType);
-  const createEntityId = builders.identifier("create");
-  const findManyEntityId = builders.identifier("findMany");
-  const findOneEntityId = builders.identifier("findOne");
-  const updateEntityId = builders.identifier("update");
-  const deleteEntityId = builders.identifier("delete");
+  const createEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Create.name
+  );
+
+  const createFunctionId = createCreateFunctionId(entityType);
+  const updateFunctionId = createUpdateFunctionId(entityType);
+  const deleteFunctionId = createDeleteFunctionId(entityType);
+  const findManyEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Find.name
+  );
+
+  const findOneEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Read.name
+  );
+
+  const findOneEntityPathId = builders.stringLiteral(
+    entityActions.entityDefaultActions.Read.path
+  );
+
+  const updateEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Update.name
+  );
+  const deleteEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Delete.name
+  );
 
   const templateMapping = {
     RESOURCE: builders.stringLiteral(resource),
@@ -96,7 +124,11 @@ export async function createControllerModules(
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
     SELECT: createSelect(entityDTO, entity),
-
+    CREATE_FUNCTION: createFunctionId,
+    FIND_MANY_FUNCTION: findManyEntityId,
+    FIND_ONE_FUNCTION: builders.identifier(camelCase(entityType)),
+    UPDATE_FUNCTION: updateFunctionId,
+    DELETE_FUNCTION: deleteFunctionId,
     CREATE_INPUT: entityDTOs.createInput.id,
     CREATE_DATA_MAPPING: createDataMapping(
       entity,
@@ -117,7 +149,7 @@ export async function createControllerModules(
     UPDATE_ENTITY_FUNCTION: updateEntityId,
     DELETE_ENTITY_FUNCTION: deleteEntityId,
     /** @todo make dynamic */
-    FINE_ONE_PATH: builders.stringLiteral("/:id"),
+    FINE_ONE_PATH: findOneEntityPathId,
     UPDATE_PATH: builders.stringLiteral("/:id"),
     DELETE_PATH: builders.stringLiteral("/:id"),
     WHERE_UNIQUE_INPUT: entityDTOs.whereUniqueInput.id,
@@ -136,6 +168,7 @@ export async function createControllerModules(
         templateMapping,
         controllerBaseId,
         serviceId,
+        entityActions,
       }
     ),
     await pluginWrapper(
@@ -150,6 +183,8 @@ export async function createControllerModules(
         templateMapping,
         controllerBaseId,
         serviceId,
+        moduleContainers,
+        entityActions,
       }
     ),
   ]);
@@ -208,6 +243,8 @@ async function createControllerBaseModule({
   templateMapping,
   controllerBaseId,
   serviceId,
+  moduleContainers,
+  entityActions,
 }: CreateEntityControllerBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories } = DsgContext.getInstance;
@@ -216,6 +253,10 @@ async function createControllerBaseModule({
   const entityDTOs = DTOs[entity.name];
 
   interpolate(template, templateMapping);
+
+  const moduleContainer = moduleContainers?.find(
+    (moduleContainer) => moduleContainer.entityId === entity.id
+  );
 
   const classDeclaration = getClassDeclarationById(template, controllerBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
@@ -283,6 +324,38 @@ async function createControllerBaseModule({
 
   classDeclaration.body.body.push(...toManyRelationMethods);
 
+  toManyRelationFields.map((field) =>
+    Object.keys(entityActions.relatedFieldsDefaultActions[field.name]).forEach(
+      (key) => {
+        const action: ModuleAction =
+          entityActions.relatedFieldsDefaultActions[field.name][key];
+
+        if (
+          (moduleContainer && !moduleContainer?.enabled && action) ||
+          (action && !action.enabled)
+        ) {
+          removeClassMethodByName(classDeclaration, action.name);
+        }
+      }
+    )
+  );
+
+  Object.keys(entityActions.entityDefaultActions).forEach((key) => {
+    const action: ModuleAction = entityActions.entityDefaultActions[key];
+    if (
+      (moduleContainer && !moduleContainer?.enabled && action) ||
+      (action && !action.enabled)
+    ) {
+      removeClassMethodByName(classDeclaration, action.name);
+    }
+  });
+
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
+  removeTSClassDeclares(template);
+
   const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     template,
@@ -294,11 +367,6 @@ async function createControllerBaseModule({
   );
   addImports(template, [serviceImport, ...identifiersImports, ...dtoImports]);
 
-  removeTSIgnoreComments(template);
-  removeESLintComments(template);
-  removeTSVariableDeclares(template);
-  removeTSInterfaceDeclares(template);
-  removeTSClassDeclares(template);
   addAutoGenerationComment(template);
 
   const module: Module = {
@@ -341,10 +409,11 @@ async function createToManyRelationMethods(
     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     WHERE_UNIQUE_INPUT: whereUniqueInput.id,
     SERVICE: serviceId,
+    UPDATE_FUNCTION: createUpdateFunctionId(entityType),
     ENTITY_NAME: builders.stringLiteral(entityType),
     FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
     PROPERTY: builders.identifier(field.name),
-    FIND_MANY: builders.identifier(camelCase(`findMany ${field.name}`)),
+    FIND_MANY: builders.identifier(camelCase(`find ${field.name}`)),
     FIND_MANY_PATH: builders.stringLiteral(`/:id/${field.name}`),
     CONNECT: builders.identifier(camelCase(`connect ${field.name}`)),
     CREATE_PATH: builders.stringLiteral(`/:id/${field.name}`),

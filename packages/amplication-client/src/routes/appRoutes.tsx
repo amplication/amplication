@@ -61,6 +61,19 @@ export const Routes: RouteDef[] = [
             exactPath: false,
             tabRoutes: [
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/architecture",
+                Component: lazy(
+                  () =>
+                    import("../Project/ArchitectureConsole/ArchitectureConsole")
+                ),
+                moduleName: "ProjectArchitecture",
+                displayName: "Architecture",
+                moduleClass: "",
+                routeTrackType: "",
+                exactPath: false,
+                isAnalytics: true,
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/git-sync",
                 Component: lazy(
                   () => import("../Resource/git/SyncWithGithubPage")
@@ -269,11 +282,31 @@ export const Routes: RouteDef[] = [
     isAnalytics: true,
   },
   {
+    path: "/gitlab-auth-app/callback",
+    Component: lazy(
+      () => import("../Resource/git/AuthResourceWithGitLabCallback")
+    ),
+    moduleName: "AuthResourceWithGitLabCallback",
+    permission: true,
+    routeTrackType: "auth app with git callback",
+    exactPath: true,
+    isAnalytics: true,
+  },
+  {
     path: "/signup",
     Component: lazy(() => import("../User/Signup")),
     moduleName: "Signup",
     moduleClass: "signup-page",
     routeTrackType: "signup",
+    exactPath: true,
+    isAnalytics: true,
+  },
+  {
+    path: "/signup/preview-account",
+    Component: lazy(() => import("../User/SignupPreviewAccount")),
+    moduleName: "SignupPreviewAccount",
+    moduleClass: "signupPreviewAccount-page",
+    routeTrackType: "signupPreviewAccount",
     exactPath: true,
     isAnalytics: true,
   },

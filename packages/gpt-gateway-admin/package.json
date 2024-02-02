@@ -20,12 +20,24 @@
       "@svgr/webpack": "6.5.1"
     }
   },
+  "nx": {
+    "targets": {
+      "build": {
+        "dependsOn": [
+          "install"
+        ]
+      },
+      "start": {
+        "dependsOn": [
+          "install"
+        ]
+      }
+    }
+  },
   "scripts": {
-    "start": "react-scripts start",
+    "serve": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "package:container": "docker build ."
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [

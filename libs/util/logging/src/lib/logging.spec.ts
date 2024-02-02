@@ -28,6 +28,8 @@ describe("Logger", () => {
       logLevel: LogLevel.Debug,
       isProduction: false,
     };
+
+    jest.clearAllMocks();
   });
 
   afterAll(() => {
@@ -88,6 +90,7 @@ describe("Logger", () => {
 
       logger.debug("debug message");
 
+      expect(mockLogger.debug).toHaveBeenCalledTimes(1);
       expect(mockLogger.debug).toHaveBeenCalledWith("debug message", undefined);
     });
 
@@ -96,6 +99,7 @@ describe("Logger", () => {
 
       logger.info("info message");
 
+      expect(mockLogger.info).toHaveBeenCalledTimes(1);
       expect(mockLogger.info).toHaveBeenCalledWith("info message", undefined);
     });
 
@@ -104,6 +108,7 @@ describe("Logger", () => {
 
       logger.warn("warn message");
 
+      expect(mockLogger.warn).toHaveBeenCalledTimes(1);
       expect(mockLogger.warn).toHaveBeenCalledWith("warn message", undefined);
     });
 
@@ -112,6 +117,7 @@ describe("Logger", () => {
 
       logger.error("error message");
 
+      expect(mockLogger.error).toHaveBeenCalledTimes(1);
       expect(mockLogger.error).toHaveBeenCalledWith("error message", undefined);
     });
 
@@ -126,6 +132,7 @@ describe("Logger", () => {
         message: "My error message",
       });
 
+      expect(mockLogger.error).toHaveBeenCalledTimes(1);
       expect(mockLogger.error).toHaveBeenCalledWith(expectedError);
     });
 
@@ -141,6 +148,7 @@ describe("Logger", () => {
         foo: { what: "yeah" },
       });
 
+      expect(mockLogger.error).toHaveBeenCalledTimes(1);
       expect(mockLogger.error).toHaveBeenCalledWith(expectedError);
     });
 
@@ -152,6 +160,7 @@ describe("Logger", () => {
       const expectedError = error;
       Object.assign(expectedError, { foo: { what: "yeah" } });
 
+      expect(mockLogger.error).toHaveBeenCalledTimes(1);
       expect(mockLogger.error).toHaveBeenCalledWith(expectedError);
     });
   });

@@ -10,19 +10,37 @@ import {
 } from "../types";
 import { RedisService } from "../redis/redis.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../env";
+import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 
 type ResourceTuple = [JobBuildId<BuildId>, DSGResourceData];
 @Injectable()
 export class BuildJobsHandlerService {
+  private readonly minDsgVersionToSplitBuild: string;
+
   constructor(
     private readonly redisService: RedisService,
-    private readonly logger: AmplicationLogger
-  ) {}
+    private readonly logger: AmplicationLogger,
+    private readonly configService: ConfigService<Env, true>,
+    private readonly codeGeneratorService: CodeGeneratorService
+  ) {
+    this.minDsgVersionToSplitBuild = this.configService.getOrThrow(
+      Env.FEATURE_SPLIT_JOBS_MIN_DSG_VERSION
+    );
+  }
 
   async splitBuildsIntoJobs(
     dsgResourceData: DSGResourceData,
-    buildId: BuildId
+    buildId: BuildId,
+    codeGeneratorVersion: string
   ): Promise<ResourceTuple[]> {
+    const shouldSplitBuild =
+      this.codeGeneratorService.compareVersions(
+        codeGeneratorVersion,
+        this.minDsgVersionToSplitBuild
+      ) >= 0;
+
     const {
       resourceInfo: {
         settings: {
@@ -33,23 +51,29 @@ export class BuildJobsHandlerService {
     } = dsgResourceData;
 
     const jobs: ResourceTuple[] = [];
-    if (generateServer) {
-      const serverDSGResourceData: DSGResourceData = cloneDeep(dsgResourceData);
-      serverDSGResourceData.resourceInfo.settings.adminUISettings.generateAdminUI =
-        false;
-      const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.Server}`;
-      await this.setJobStatus(jobBuildId, EnumJobStatus.InProgress);
-      jobs.push([jobBuildId, serverDSGResourceData]);
-    }
+    if (shouldSplitBuild) {
+      if (generateServer) {
+        const serverDSGResourceData: DSGResourceData =
+          cloneDeep(dsgResourceData);
+        serverDSGResourceData.resourceInfo.settings.adminUISettings.generateAdminUI =
+          false;
+        const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.Server}`;
+        await this.setJobStatus(jobBuildId, EnumJobStatus.InProgress);
+        jobs.push([jobBuildId, serverDSGResourceData]);
+      }
 
-    if (generateAdminUI) {
-      const adminUiDSGResourceData: DSGResourceData =
-        cloneDeep(dsgResourceData);
-      adminUiDSGResourceData.resourceInfo.settings.serverSettings.generateServer =
-        false;
-      const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
-      await this.setJobStatus(jobBuildId, EnumJobStatus.InProgress);
-      jobs.push([jobBuildId, adminUiDSGResourceData]);
+      if (generateAdminUI) {
+        const adminUiDSGResourceData: DSGResourceData =
+          cloneDeep(dsgResourceData);
+        adminUiDSGResourceData.resourceInfo.settings.serverSettings.generateServer =
+          false;
+        const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
+        await this.setJobStatus(jobBuildId, EnumJobStatus.InProgress);
+        jobs.push([jobBuildId, adminUiDSGResourceData]);
+      }
+    } else {
+      await this.setJobStatus(buildId, EnumJobStatus.InProgress);
+      jobs.push([buildId, dsgResourceData]);
     }
 
     return jobs;
@@ -122,5 +146,16 @@ export class BuildJobsHandlerService {
     }
 
     return jobBuildId.replace(regex, "");
+  }
+
+  extractDomain(jobBuildId: string): string {
+    const regexPattern = `-(?:${EnumDomainName.Server}|${EnumDomainName.AdminUI})$`;
+    const regex = new RegExp(regexPattern);
+
+    if (!regex.test(jobBuildId)) {
+      return null;
+    }
+
+    return regex.exec(jobBuildId)[0].replace("-", "");
   }
 }

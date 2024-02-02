@@ -1,4 +1,4 @@
-datasource postgres {
+datasource db {
   provider = "postgresql"
   url      = env("DB_URL")
 }
@@ -9,20 +9,10 @@ generator client {
   binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
 }
 
-model User {
-  createdAt DateTime @default(now())
-  firstName String?
-  id        String   @id @default(cuid())
-  lastName  String?
-  password  String
-  roles     Json
-  updatedAt DateTime @updatedAt
-  username  String   @unique
-}
-
 model Plugin {
   createdAt      DateTime @default(now())
   description    String?
+  downloads      Int?
   github         String?
   icon           String?
   id             String   @id @default(cuid())
@@ -30,6 +20,7 @@ model Plugin {
   npm            String?
   pluginId       String?  @unique
   taggedVersions Json?
+  categories     Json?    @default("[]")
   updatedAt      DateTime @updatedAt
   website        String?
 }
@@ -45,4 +36,14 @@ model PluginVersion {
   configurations  Json?
   updatedAt       DateTime @updatedAt
   version         String?
+}
+
+model Category {
+  createdAt   DateTime @default(now())
+  description String?
+  icon        String?
+  id          String   @id @default(cuid())
+  name        String   @unique
+  rank        Int?     @unique
+  updatedAt   DateTime @updatedAt
 }

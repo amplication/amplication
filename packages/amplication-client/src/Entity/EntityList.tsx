@@ -26,16 +26,23 @@ import { formatError } from "../util/error";
 import { EntityListItem } from "./EntityListItem";
 import NewEntity from "./NewEntity";
 
-import { useStiggContext } from "@stigg/react-sdk";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import usePlugins from "../Plugins/hooks/usePlugins";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
-import { BillingFeature } from "../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { pluralize } from "../util/pluralize";
 import EntitiesERD from "./EntityERD/EntitiesERD";
 import "./EntityList.scss";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+} from "../Components/FeatureIndicatorContainer";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 
 type TData = {
   entities: models.Entity[];
@@ -56,7 +63,7 @@ type Props = AppRouteProps & {
 const NAME_FIELD = "displayName";
 const CLASS_NAME = "entity-list";
 
-const POLL_INTERVAL = 2000;
+const POLL_INTERVAL = 30000;
 
 const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource } = match.params;
@@ -74,8 +81,8 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const isUserEntityMandatory =
     pluginInstallations?.filter(
       (x) =>
-        x.configurations?.requireAuthenticationEntity === "true" && x.enabled
-    ).length > 0;
+        x?.configurations?.requireAuthenticationEntity === "true" && x.enabled
+    )?.length > 0;
 
   const handleNewEntityClick = useCallback(() => {
     setNewEntity(!newEntity);
@@ -119,18 +126,14 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
 
   const handleEntityClick = () => {
     trackEvent({
-      eventName: AnalyticsEventNames.UpgradeOnEntityListClick,
+      eventName: AnalyticsEventNames.UpgradeClick,
+      eventOriginLocation: "entity-list",
     });
   };
 
   const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
     GET_CURRENT_WORKSPACE
   );
-
-  const { stigg } = useStiggContext();
-  const hideNotifications = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.HideNotifications,
-  });
 
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
@@ -211,23 +214,34 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               <Link
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
               >
-                <Button
-                  className={`${CLASS_NAME}__install`}
-                  buttonStyle={EnumButtonStyle.Outline}
-                  eventData={{
-                    eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                  }}
+                <FeatureIndicatorContainer
+                  featureId={BillingFeature.ImportDBSchema}
+                  entitlementType={EntitlementType.Boolean}
+                  limitationText="Available in Enterprise plans only. "
+                  reversePosition={true}
                 >
-                  Upload Prisma Schema
-                </Button>
+                  <Button
+                    className={`${CLASS_NAME}__install`}
+                    buttonStyle={EnumButtonStyle.Outline}
+                    eventData={{
+                      eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                    }}
+                  >
+                    Upload Prisma Schema
+                  </Button>
+                </FeatureIndicatorContainer>
               </Link>
-              <Button
-                className={`${CLASS_NAME}__add-button`}
-                buttonStyle={EnumButtonStyle.Primary}
-                onClick={handleNewEntityClick}
+              <LicenseIndicatorContainer
+                licensedResourceType={LicensedResourceType.Service}
               >
-                Add entity
-              </Button>
+                <Button
+                  className={`${CLASS_NAME}__add-button`}
+                  buttonStyle={EnumButtonStyle.Primary}
+                  onClick={handleNewEntityClick}
+                >
+                  Add entity
+                </Button>
+              </LicenseIndicatorContainer>
             </FlexItem>
           </FlexItem.FlexEnd>
         </FlexItem>
@@ -244,14 +258,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                   {pluralize(data?.entities.length, "Entity", "Entities")}
                 </Text>
               </FlexItem>
-
-              {!hideNotifications.hasAccess && (
-                <LimitationNotification
-                  description="With the current plan, you can use to 7 entities per service."
-                  link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
-                  handleClick={handleEntityClick}
-                />
-              )}
 
               <List>
                 {data?.entities.map((entity) => (

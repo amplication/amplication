@@ -10,6 +10,8 @@ type Account {
   id: String!
   lastName: String!
   password: String!
+  previewAccountEmail: String
+  previewAccountType: EnumPreviewAccountType!
   updatedAt: DateTime!
 }
 
@@ -67,6 +69,13 @@ type Auth {
   token: String!
 }
 
+type AuthPreviewAccount {
+  projectId: String!
+  resourceId: String!
+  token: String!
+  workspaceId: String!
+}
+
 type AuthorizeResourceWithGitResult {
   """"""
   url: String!
@@ -79,7 +88,7 @@ type Block {
   displayName: String!
   id: String!
   lockedAt: DateTime
-  lockedByUser: [User!]!
+  lockedByUser: User!
   lockedByUserId: String
   parentBlock: Block
   resource: Resource
@@ -162,6 +171,32 @@ input BooleanFilter {
   not: Boolean
 }
 
+type BreakServiceToMicroservicesData {
+  microservices: [BreakServiceToMicroservicesItem!]!
+}
+
+type BreakServiceToMicroservicesItem {
+  dataModels: [BreakServiceToMicroservicesItemEntities!]!
+  functionality: String!
+  name: String!
+}
+
+type BreakServiceToMicroservicesItemEntities {
+  name: String!
+  originalEntityId: String!
+}
+
+type BreakServiceToMicroservicesResult {
+  """Prompt result with some data structure manipulation"""
+  data: BreakServiceToMicroservicesData
+
+  """The original resource ID"""
+  originalResourceId: String!
+
+  """The status of the user action"""
+  status: EnumUserActionStatus!
+}
+
 type Build {
   action: Action
   actionId: String!
@@ -236,6 +271,10 @@ type Commit {
 }
 
 input CommitCreateInput {
+  """
+  It will bypass the limitations of the plan (if any). It will only work for limitation that support commit bypass.
+  """
+  bypassLimitations: Boolean = false
   message: String!
   project: WhereParentIdInput!
 }
@@ -274,12 +313,23 @@ input ConnectGitRepositoryInput {
   resourceId: String!
 }
 
+input CopiedEntity {
+  entityId: String!
+  originalResourceId: String!
+  targetResourceId: String!
+}
+
 type Coupon {
   code: String!
   couponType: String
   durationMonths: Int!
   id: String!
   subscriptionPlan: EnumSubscriptionPlan!
+}
+
+input CreateEntitiesFromPredefinedSchemaInput {
+  resource: WhereParentIdInput!
+  schemaName: EnumSchemaNames!
 }
 
 input CreateGitRepositoryBaseInput {
@@ -610,6 +660,8 @@ enum EnumAuthProviderType {
 }
 
 enum EnumBlockType {
+  Module
+  ModuleAction
   PluginInstallation
   PluginOrder
   ProjectConfigurationSettings
@@ -683,6 +735,7 @@ enum EnumGitOrganizationType {
 enum EnumGitProvider {
   AwsCodeCommit
   Bitbucket
+  GitLab
   Github
 }
 
@@ -690,6 +743,37 @@ enum EnumMessagePatternConnectionOptions {
   None
   Receive
   Send
+}
+
+enum EnumModuleActionGqlOperation {
+  Mutation
+  Query
+}
+
+enum EnumModuleActionRestVerb {
+  Delete
+  Get
+  Head
+  Options
+  Patch
+  Post
+  Put
+  Trace
+}
+
+enum EnumModuleActionType {
+  ChildrenConnect
+  ChildrenDisconnect
+  ChildrenFind
+  ChildrenUpdate
+  Create
+  Custom
+  Delete
+  Find
+  Meta
+  ParentGet
+  Read
+  Update
 }
 
 enum EnumPendingChangeAction {
@@ -701,6 +785,12 @@ enum EnumPendingChangeAction {
 enum EnumPendingChangeOriginType {
   Block
   Entity
+}
+
+enum EnumPreviewAccountType {
+  Auth0Signup
+  BreakingTheMonolith
+  None
 }
 
 enum EnumResourceType {
@@ -716,9 +806,14 @@ input EnumResourceTypeFilter {
   notIn: [EnumResourceType!]
 }
 
+enum EnumSchemaNames {
+  CalDotCom
+}
+
 enum EnumSubscriptionPlan {
   Enterprise
   Free
+  PreviewBreakTheMonolith
   Pro
 }
 
@@ -739,6 +834,7 @@ enum EnumUserActionStatus {
 
 enum EnumUserActionType {
   DBSchemaImport
+  GptConversation
 }
 
 enum EnumWorkspaceMemberType {
@@ -844,9 +940,11 @@ interface IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
+  lockedByUser: User
   lockedByUserId: String
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
@@ -896,23 +994,157 @@ input MessagePatternCreateInput {
   type: EnumMessagePatternConnectionOptions!
 }
 
+input ModelGroupResource {
+  name: String!
+  tempId: String!
+}
+
+type Module implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  enabled: Boolean!
+  entityId: String
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  name: String!
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+type ModuleAction implements IBlock {
+  actionType: EnumModuleActionType!
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  enabled: Boolean!
+  fieldPermanentId: String
+  gqlOperation: EnumModuleActionGqlOperation!
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  name: String!
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  path: String
+  resourceId: String
+  restVerb: EnumModuleActionRestVerb!
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input ModuleActionCreateInput {
+  description: String
+  displayName: String!
+  gqlOperation: EnumModuleActionGqlOperation!
+  inputParameters: [BlockInputOutputInput!]
+  name: String
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  path: String
+  resource: WhereParentIdInput!
+  restVerb: EnumModuleActionRestVerb!
+}
+
+input ModuleActionOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input ModuleActionUpdateInput {
+  description: String
+  displayName: String
+  enabled: Boolean!
+  gqlOperation: EnumModuleActionGqlOperation!
+  name: String
+  path: String
+  restVerb: EnumModuleActionRestVerb!
+}
+
+input ModuleActionWhereInput {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
+}
+
+input ModuleCreateInput {
+  description: String
+  displayName: String!
+  inputParameters: [BlockInputOutputInput!]
+  name: String
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  resource: WhereParentIdInput!
+}
+
+input ModuleOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input ModuleUpdateInput {
+  description: String
+  displayName: String
+  enabled: Boolean
+  name: String
+}
+
+input ModuleWhereInput {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
+}
+
 type Mutation {
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
+  bulkUpdateWorkspaceProjectsAndResourcesLicensed(useUserLastActive: Boolean): Boolean!
   changePassword(data: ChangePasswordInput!): Account!
   commit(data: CommitCreateInput!): Commit
   completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
   completeInvitation(data: CompleteInvitationInput!): Auth!
+  completeSignupWithBusinessEmail: String!
   connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
+  copiedEntities(data: ResourcesCreateCopiedEntitiesInput!): [Resource!]!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
-  createDefaultRelatedField(relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
+  createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
   createEntityField(data: EntityFieldCreateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
   createMessageBroker(data: ResourceCreateInput!): Resource!
+  createModule(data: ModuleCreateInput!): Module!
+  createModuleAction(data: ModuleActionCreateInput!): ModuleAction!
   createOneEntity(data: EntityCreateInput!): Entity!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
@@ -930,6 +1162,8 @@ type Mutation {
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   deleteGitRepository(gitRepositoryId: String!): Resource!
+  deleteModule(where: WhereUniqueInput!): Module!
+  deleteModuleAction(where: WhereUniqueInput!): ModuleAction!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   deleteProject(where: WhereUniqueInput!): Project
   deleteResource(where: WhereUniqueInput!): Resource
@@ -951,6 +1185,14 @@ type Mutation {
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   signup(data: SignupInput!): Auth!
+  signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
+  signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
+  startRedesign(data: WhereUniqueInput!): Resource
+
+  """
+  Trigger the generation of a set of recommendations for breaking a resource into microservices
+  """
+  triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -959,6 +1201,8 @@ type Mutation {
   updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
   updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission!
   updateGitRepository(data: GitRepositoryUpdateInput!, where: WhereUniqueInput!): GitRepository!
+  updateModule(data: ModuleUpdateInput!, where: WhereUniqueInput!): Module!
+  updateModuleAction(data: ModuleActionUpdateInput!, where: WhereUniqueInput!): ModuleAction!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
@@ -1018,10 +1262,12 @@ type PluginInstallation implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
+  lockedByUser: User
   lockedByUserId: String
   npm: String!
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   pluginId: String!
   resourceId: String
   settings: JSONObject
@@ -1085,10 +1331,12 @@ type PluginOrder implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
+  lockedByUser: User
   lockedByUserId: String
   order: [PluginOrderItem!]!
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
@@ -1108,6 +1356,7 @@ type Project {
   demoRepoName: String
   description: String
   id: String!
+  licensed: Boolean!
   name: String!
   resources: [Resource!]
   updatedAt: DateTime!
@@ -1123,9 +1372,11 @@ type ProjectConfigurationSettings implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
+  lockedByUser: User
   lockedByUserId: String
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
@@ -1183,12 +1434,6 @@ type ProvisionSubscriptionResult {
 }
 
 type Query {
-  PluginInstallation(where: WhereUniqueInput!): PluginInstallation
-  PluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
-  ServiceTopics(where: WhereUniqueInput!): ServiceTopics
-  ServiceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
-  Topic(where: WhereUniqueInput!): Topic
-  Topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
   account: Account!
   action(where: WhereUniqueInput!): Action!
   block(where: WhereUniqueInput!): Block!
@@ -1197,15 +1442,27 @@ type Query {
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput): [Commit!]
+  contactUsLink(where: WhereUniqueInput!): String
   currentWorkspace: Workspace
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!
   entity(where: WhereUniqueInput!): Entity
+
+  """
+  Get the changes to apply to the model in order to break a resource into microservices
+  """
+  finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!
   me: User!
   messageBrokerConnectedServices(where: WhereUniqueInput!): [Resource!]!
+  module(where: WhereUniqueInput!): Module
+  moduleAction(where: WhereUniqueInput!): ModuleAction
+  moduleActions(orderBy: ModuleActionOrderByInput, skip: Int, take: Int, where: ModuleActionWhereInput): [ModuleAction!]!
+  modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  pluginInstallation(where: WhereUniqueInput!): PluginInstallation
+  pluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
   project(where: WhereUniqueInput!): Project
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
@@ -1216,6 +1473,10 @@ type Query {
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
+  serviceTopics(where: WhereUniqueInput!): ServiceTopics
+  serviceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
+  topic(where: WhereUniqueInput!): Topic
+  topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
   userAction(where: WhereUniqueInput!): UserAction!
   userApiTokens: [ApiToken!]!
   workspace(where: WhereUniqueInput!): Workspace
@@ -1274,10 +1535,12 @@ type Resource {
   githubLastMessage: String
   githubLastSync: DateTime
   id: String!
+  licensed: Boolean!
   name: String!
   project: Project
   projectId: String
   resourceType: EnumResourceType!
+  tempId: String
   updatedAt: DateTime!
 }
 
@@ -1288,6 +1551,7 @@ input ResourceCreateInput {
   project: WhereParentIdInput!
   resourceType: EnumResourceType!
   serviceSettings: ServiceSettingsUpdateInput
+  tempId: String
 }
 
 input ResourceCreateWithEntitiesEntityInput {
@@ -1391,6 +1655,12 @@ input ResourceWhereInput {
   updatedAt: DateTimeFilter
 }
 
+input ResourcesCreateCopiedEntitiesInput {
+  entitiesToCopy: [CopiedEntity!]!
+  modelGroupsResources: [ModelGroupResource!]!
+  projectId: String!
+}
+
 enum Role {
   Admin
   OrganizationAdmin
@@ -1423,9 +1693,11 @@ type ServiceSettings implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
+  lockedByUser: User
   lockedByUserId: String
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   resourceId: String
   serverSettings: ServerSettings!
   updatedAt: DateTime!
@@ -1450,10 +1722,12 @@ type ServiceTopics implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
+  lockedByUser: User
   lockedByUserId: String
   messageBrokerId: String!
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   patterns: [MessagePattern!]!
   resourceId: String
   updatedAt: DateTime!
@@ -1507,6 +1781,15 @@ input SignupInput {
   workspaceName: String!
 }
 
+input SignupPreviewAccountInput {
+  previewAccountEmail: String!
+  previewAccountType: EnumPreviewAccountType!
+}
+
+input SignupWithBusinessEmailInput {
+  email: String!
+}
+
 enum SortOrder {
   Asc
   Desc
@@ -1550,10 +1833,12 @@ type Topic implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
+  lockedByUser: User
   lockedByUserId: String
   name: String!
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!

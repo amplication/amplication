@@ -12,6 +12,7 @@ import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { AppContext } from "../context/appContext";
 import { useHistory } from "react-router-dom";
 import { Reference, gql, useMutation } from "@apollo/client";
+import { useStiggContext } from "@stigg/react-sdk";
 
 const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -31,6 +32,7 @@ export const DeleteProject = ({ project, onDelete }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
   const { trackEvent } = useTracking();
+  const { refreshData } = useStiggContext();
   const history = useHistory();
 
   const [error, setError] = useState<Error | null>(null);
@@ -66,6 +68,7 @@ export const DeleteProject = ({ project, onDelete }: Props) => {
           },
         },
       });
+      refreshData();
     },
   });
 

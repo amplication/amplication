@@ -19,6 +19,8 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { UserActionService } from "../userAction/userAction.service";
 import { DBSchemaImportMetadata } from "./types";
 import { CreateDBSchemaImportArgs } from "./dto/CreateDBSchemaImportArgs";
+import { EnumSchemaNames } from "./dto/EnumSchemaNames";
+import { calDotComPredefinedSchema } from "./predefinedSchemes/calDotCom/calDotCom";
 
 @Injectable()
 export class DBSchemaImportService {
@@ -138,5 +140,14 @@ export class DBSchemaImportService {
       });
 
     return dbSchemaImportStep;
+  }
+
+  async getPredefinedSchema(schemaNames: EnumSchemaNames): Promise<string> {
+    switch (schemaNames) {
+      case EnumSchemaNames.CalDotCom:
+        return calDotComPredefinedSchema;
+      default:
+        throw new Error(`Schema name ${schemaNames} is not supported`);
+    }
   }
 }
