@@ -72,7 +72,6 @@ import { Auth0Middleware } from "./auth0.middleware";
   controllers: [AuthController],
   exports: [GqlAuthGuard, AuthService, AuthResolver],
 })
-// export class AuthModule {}
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
