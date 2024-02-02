@@ -36,6 +36,8 @@ import {
 } from "./types";
 import { useAppContext } from "../../context/appContext";
 import { applyAutoLayout } from "./layout";
+import { useTracking } from "react-tracking";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 export const CLASS_NAME = "model-organizer";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -64,7 +66,8 @@ export default function ModelOrganizer({
   loadingResources,
   errorMessage,
 }: Props) {
-  const { currentProject } = useAppContext();
+  const { trackEvent } = useTracking();
+  const { currentProject, currentWorkspace, currentResource } = useAppContext();
 
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
@@ -184,6 +187,12 @@ export default function ModelOrganizer({
         });
 
         return [...nodes];
+      });
+
+      trackEvent({
+        eventName: AnalyticsEventNames.ModelOrganizer_MoveEntity,
+        serviceName: currentResource.name,
+        plan: currentWorkspace?.subscription?.subscriptionPlan,
       });
     },
     [setNodes, reactFlowInstance, nodes]
