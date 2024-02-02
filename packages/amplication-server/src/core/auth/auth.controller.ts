@@ -173,6 +173,7 @@ export class AuthController {
       },
     });
 
+    const existingUser = !!user;
     if (!user) {
       user = await this.authService.createUser(profile);
       isNew = true;
@@ -181,6 +182,13 @@ export class AuthController {
       user = await this.authService.updateUser(user, { githubId: profile.sub });
       isNew = false;
     }
+
+    this.authService.trackCompleteBusinessEmailSignup(
+      user.id,
+      user.createdAt,
+      profile,
+      existingUser
+    );
 
     // @todo update the token to include the auth0 expiry / issued at / etc
     const token = await this.authService.prepareToken(user);

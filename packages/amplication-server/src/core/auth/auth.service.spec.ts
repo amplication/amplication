@@ -10,7 +10,6 @@ import { AuthService } from "./auth.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { EnumTokenType } from "./dto";
 import { ConfigService } from "@nestjs/config";
-import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Workspace, Project, Resource, Account, User } from "../../models";
@@ -19,7 +18,8 @@ import { anyString } from "jest-mock-extended";
 import { AuthUser } from "./types";
 import { IdentityProvider } from "./auth.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-//import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { Env } from "../../env";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
@@ -151,6 +151,9 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_WORKSPACE: Account & {
   ...EXAMPLE_ACCOUNT,
   currentUser: EXAMPLE_AUTH_USER,
 };
+
+const EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME = "business-users-local";
+
 jest.mock("auth0", () => {
   return {
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -221,8 +224,8 @@ const createPreviewEnvironmentMock = jest.fn(() => ({
 }));
 
 const prismaCreateProjectMock = jest.fn(() => EXAMPLE_PROJECT);
-const segmentAnalyticsIdentifyMock = jest.fn();
-const segmentAnalyticsTrackMock = jest.fn();
+const segmentAnalyticsIdentifyMock = jest.fn().mockResolvedValue(undefined);
+const segmentAnalyticsTrackMock = jest.fn().mockResolvedValue(undefined);
 
 describe("AuthService", () => {
   let service: AuthService;
@@ -237,8 +240,8 @@ describe("AuthService", () => {
           useValue: {
             get: (variable) => {
               switch (variable) {
-                case KAFKA_TOPICS.USER_ACTION_TOPIC:
-                  return "user_action_topic";
+                case Env.AUTH_ISSUER_CLIENT_DB_CONNECTION:
+                  return EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME;
                 default:
                   return "";
               }
@@ -665,7 +668,6 @@ describe("AuthService", () => {
   });
 
   describe("signupWithBusinessEmail", () => {
-    /*
     it("should track the event when a user signs up with a business email", async () => {
       const email = "invalid@invalid.com";
 
@@ -704,7 +706,7 @@ describe("AuthService", () => {
           traits: expect.any(Object),
         },
       });
-    });*/
+    });
 
     it("should fail to signup a preview account when the email is not work email", async () => {
       const email = "invalid@gmail.com";
@@ -783,6 +785,89 @@ describe("AuthService", () => {
       expect(
         mockAuthenticationClientDatabaseChangePassword
       ).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("trackCompleteBusinessEmailSignup", () => {
+    it("should track the event only when a user completes the signup with a business email and login for the first time", async () => {
+      service.trackCompleteBusinessEmailSignup(
+        EXAMPLE_USER.id,
+        EXAMPLE_USER.createdAt,
+        {
+          email: EXAMPLE_ACCOUNT.email,
+          sub: "asdadsad",
+          nickname: "asdasd",
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          given_name: EXAMPLE_ACCOUNT.firstName,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          family_name: EXAMPLE_ACCOUNT.lastName,
+          identityOrigin: EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME,
+          loginsCount: 1,
+          name: EXAMPLE_ACCOUNT.firstName,
+        },
+        false
+      );
+
+      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackMock).toHaveBeenCalledWith({
+        userId: EXAMPLE_USER.id,
+        event: EnumEventType.CompleteEmailSignup,
+        properties: {
+          identityProvider: IdentityProvider.IdentityPlatform,
+          identityOrigin: EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME,
+          existingUser: false,
+        },
+        context: {
+          traits: expect.any(Object),
+        },
+      });
+    });
+
+    it("should not track the event when a user with a business email logs in for the second time forward", async () => {
+      service.trackCompleteBusinessEmailSignup(
+        EXAMPLE_USER.id,
+        EXAMPLE_USER.createdAt,
+        {
+          email: EXAMPLE_ACCOUNT.email,
+          sub: "asdadsad",
+          nickname: "asdasd",
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          given_name: EXAMPLE_ACCOUNT.firstName,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          family_name: EXAMPLE_ACCOUNT.lastName,
+          identityOrigin: EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME,
+          loginsCount: 2,
+          name: EXAMPLE_ACCOUNT.firstName,
+        },
+        false
+      );
+
+      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(0);
+    });
+
+    it("should not track the event when a SSO user logs in", async () => {
+      service.trackCompleteBusinessEmailSignup(
+        EXAMPLE_USER.id,
+        EXAMPLE_USER.createdAt,
+        {
+          email: EXAMPLE_ACCOUNT.email,
+          sub: "asdadsad",
+          nickname: "asdasd",
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          given_name: EXAMPLE_ACCOUNT.firstName,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          family_name: EXAMPLE_ACCOUNT.lastName,
+          identityOrigin: "AnSSOIntegration",
+          loginsCount: 2,
+          name: EXAMPLE_ACCOUNT.firstName,
+        },
+        false
+      );
+
+      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(0);
     });
   });
 });

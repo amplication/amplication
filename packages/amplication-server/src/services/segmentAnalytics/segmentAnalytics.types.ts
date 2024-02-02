@@ -1,6 +1,7 @@
 export enum EnumEventType {
   Signup = "Signup",
   StartEmailSignup = "StartEmailSignup",
+  CompleteEmailSignup = "CompleteEmailSignup",
   WorkspacePlanUpgradeRequest = "WorkspacePlanUpgradeRequest",
   WorkspacePlanUpgradeCompleted = "WorkspacePlanUpgradeCompleted",
   WorkspacePlanDowngradeRequest = "WorkspacePlanDowngradeRequest",

@@ -129,6 +129,57 @@ export class AuthService {
       },
     });
   }
+
+  trackCompleteBusinessEmailSignup(
+    userId: string,
+    createdAt: Date,
+    profile: AuthProfile,
+    existingUser: boolean
+  ): void {
+    const { identityOrigin, loginsCount } = profile;
+
+    if (loginsCount != 1) {
+      return;
+    }
+
+    const userData: IdentifyData = {
+      userId: userId,
+      email: profile.email,
+      createdAt: createdAt,
+      firstName: profile.given_name,
+      lastName: profile.family_name,
+    };
+
+    // Check if the identityOrigin is business email or not
+    if (identityOrigin === this.businessEmailDbConnectionName) {
+      void this.analytics.identify(userData).catch((error) => {
+        this.logger.error(
+          `Failed to identify user ${userId} in segment analytics`,
+          error
+        );
+      });
+      //we send the userData again to prevent race condition
+      void this.analytics
+        .track({
+          userId: userData.userId,
+          event: EnumEventType.CompleteEmailSignup,
+          properties: {
+            identityProvider: IdentityProvider.IdentityPlatform,
+            identityOrigin,
+            existingUser,
+          },
+          context: {
+            traits: userData,
+          },
+        })
+        .catch((error) => {
+          this.logger.error(
+            `Failed to track complete business email signup for user ${userId}`,
+            error
+          );
+        });
+    }
+  }
   async signupWithBusinessEmail(
     args: SignupWithBusinessEmailArgs
   ): Promise<boolean> {
@@ -139,11 +190,12 @@ export class AuthService {
     }
 
     try {
-      /*const existedAccount = await this.accountService.findAccount({
+      const existingAccount = await this.accountService.findAccount({
         where: {
           email: emailAddress,
         },
-      });*/
+      });
+
       let auth0User: JSONApiResponse<SignUpResponse>;
 
       const existedAuth0User = await this.getAuth0UserByEmail(emailAddress);
@@ -161,14 +213,14 @@ export class AuthService {
       if (!resetPassword.data)
         throw Error("Failed to send reset message to new Auth0 user");
 
-      /*await this.trackStartBusinessEmailSignup(
+      await this.trackStartBusinessEmailSignup(
         emailAddress,
-        existedAccount
+        existingAccount
           ? IdentityProvider.GitHub
           : existedAuth0User
           ? IdentityProvider.IdentityPlatform
           : undefined
-      );*/
+      );
 
       return true;
     } catch (error) {
@@ -568,7 +620,6 @@ export class AuthService {
     if (apiToken.count === 1) {
       return true;
     }
-    return false;
   }
 
   async deleteApiToken(args: FindOneArgs): Promise<ApiToken> {
