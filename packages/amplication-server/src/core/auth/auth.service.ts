@@ -43,6 +43,7 @@ import {
   generateRandomString,
 } from "./auth-utils";
 import { IdentityProvider, IdentityProviderPreview } from "./auth.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
@@ -76,7 +77,8 @@ export class AuthService {
     private readonly logger: AmplicationLogger,
     private readonly userService: UserService,
     @Inject(forwardRef(() => WorkspaceService))
-    private readonly workspaceService: WorkspaceService
+    private readonly workspaceService: WorkspaceService,
+    private readonly analytics: SegmentAnalyticsService
   ) {
     this.clientId = configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID);
     const clientSecret = configService.get<string>(

@@ -19,6 +19,7 @@ import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
 import { anyString } from "jest-mock-extended";
 import { AuthUser } from "./types";
 import { IdentityProvider } from "./auth.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
@@ -220,6 +221,8 @@ const createPreviewEnvironmentMock = jest.fn(() => ({
 }));
 
 const prismaCreateProjectMock = jest.fn(() => EXAMPLE_PROJECT);
+const segmentAnalyticsIdentifyMock = jest.fn();
+const segmentAnalyticsTrackMock = jest.fn();
 
 describe("AuthService", () => {
   let service: AuthService;
@@ -297,6 +300,13 @@ describe("AuthService", () => {
             project: {
               create: prismaCreateProjectMock,
             },
+          })),
+        },
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            identify: segmentAnalyticsIdentifyMock,
+            track: segmentAnalyticsTrackMock,
           })),
         },
         AuthService,
