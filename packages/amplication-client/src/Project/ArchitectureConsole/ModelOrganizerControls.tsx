@@ -1,8 +1,5 @@
-import { useCallback } from "react";
 import { ReactFlowInstance } from "reactflow";
 import ModelOrganizerControl from "./ModelOrganizerControl";
-import useModelOrganization from "./hooks/useModelOrganizer";
-import { applyAutoLayout } from "./layout";
 import "./ModelOrganizerControls.scss";
 
 const CLASS_NAME = "model-organizer-controls";
@@ -10,25 +7,14 @@ const CLASS_NAME = "model-organizer-controls";
 type Props = {
   reactFlowInstance: ReactFlowInstance;
   onToggleShowRelationDetails: () => void;
+  onArrangeNodes: () => void;
 };
 
 export default function ModelOrganizerControls({
   reactFlowInstance,
   onToggleShowRelationDetails,
+  onArrangeNodes,
 }: Props) {
-  const { nodes, setNodes, edges, showRelationDetails } =
-    useModelOrganization();
-
-  const onArrangeNodes = useCallback(async () => {
-    const updatedNodes = await applyAutoLayout(
-      nodes,
-      edges,
-      showRelationDetails
-    );
-    setNodes(updatedNodes);
-    reactFlowInstance.fitView();
-  }, [setNodes, showRelationDetails, reactFlowInstance, nodes, edges]);
-
   return (
     <>
       {reactFlowInstance && (

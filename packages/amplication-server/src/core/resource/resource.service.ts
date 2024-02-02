@@ -531,6 +531,16 @@ export class ResourceService {
 
     // 1. create new resources
     const newResources: Resource[] = [];
+    const projectGitRepository = await this.prisma.gitRepository.findFirst({
+      where: {
+        resources: {
+          some: {
+            id: projectId,
+          },
+        },
+      },
+    });
+
     for (const modelGroupResource of modelGroupsResources) {
       const args: CreateOneResourceArgs = {
         data: {
@@ -543,12 +553,14 @@ export class ResourceService {
           },
           resourceType: EnumResourceType.Service,
           serviceSettings: defaultServiceSettings,
-          gitRepository: {
-            isOverrideGitRepository: false,
-            name: "",
-            resourceId: "",
-            gitOrganizationId: "",
-          },
+          gitRepository: projectGitRepository
+            ? {
+                isOverrideGitRepository: false,
+                name: projectGitRepository?.name,
+                resourceId: "",
+                gitOrganizationId: projectGitRepository?.gitOrganizationId,
+              }
+            : null,
         },
       };
 
@@ -627,7 +639,11 @@ export class ResourceService {
         },
       });
 
-      resources.push(currentResource);
+      const resourceExist =
+        resources?.find((resource) => resource.id === currentResource.id) !==
+        null;
+
+      !resourceExist && resources.push(currentResource);
     }
 
     const entitiesWithFieldsMap = entitiesWithFields.reduce(
