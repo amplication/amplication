@@ -132,7 +132,6 @@ const BuildPage = ({ match, buildId }: Props) => {
                   gap={EnumGapSize.None}
                 >
                   <Link
-                    target="_blank"
                     to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}`}
                   >
                     <FlexItem
