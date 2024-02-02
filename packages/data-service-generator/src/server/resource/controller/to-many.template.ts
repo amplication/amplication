@@ -1,9 +1,7 @@
 import * as common from "@nestjs/common";
 import { Request } from "express";
-// @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { plainToClass } from "class-transformer";
-// @ts-ignore
 import * as errors from "../../errors";
 
 declare interface WHERE_UNIQUE_INPUT {

@@ -1,0 +1,16 @@
+@import "../../style/index.scss";
+
+$feature-tag-padding: 2px 12px;
+$addon-margin-bottom: 44px;
+$addon-feature-tag-border-radius: 32px;
+$addon-feature-tag-gap: 4px;
+$addon-title-line-height: 36px;
+
+.model-organizer-confirmation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--large-spacing);
+  max-height: 60vh;
+  overflow: auto;
+  padding: 0 var(--default-spacing-small);
+}

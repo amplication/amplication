@@ -93,7 +93,16 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       const isDisabled = usageExceeded ?? !hasMeteredAccess;
       setDisabled(isDisabled);
     }
-  }, [featureId, usageLimit, currentUsage, hasMeteredAccess, hasBooleanAccess]);
+  }, [
+    featureId,
+    usageLimit,
+    currentUsage,
+    hasMeteredAccess,
+    hasBooleanAccess,
+    subscriptionPlan,
+    status,
+    entitlementType,
+  ]);
 
   const text = useMemo(() => {
     if (disabled) {
@@ -101,7 +110,15 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
 
     return featureText;
-  }, [disabled]);
+  }, [disabled, featureText, limitationText]);
+
+  const linkText = useMemo(() => {
+    if (isPreviewPlan(subscriptionPlan)) {
+      return ""; // don't show the upgrade link when the plan is preview
+    }
+
+    return undefined; // in case of null, it falls back to the default link text
+  }, [subscriptionPlan]);
 
   useEffect(() => {
     if (!subscriptionPlan || !status || !featureId) {
@@ -139,6 +156,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
             featureName={featureId}
             icon={icon}
             text={text}
+            linkText={linkText}
             element={
               featureIndicatorPlacement ===
               FeatureIndicatorPlacement.Outside ? (
@@ -165,7 +183,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   );
 };
 
-function isPreviewPlan(plan: EnumSubscriptionPlan) {
+export function isPreviewPlan(plan: EnumSubscriptionPlan) {
   const previewPlans = [EnumSubscriptionPlan.PreviewBreakTheMonolith];
   return previewPlans.includes(plan);
 }

@@ -19,7 +19,7 @@ import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Env } from "../../env";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
@@ -47,7 +47,7 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: PreviewAccountType.None,
+  previewAccountType: EnumPreviewAccountType.None,
   previewAccountEmail: null,
 };
 
@@ -59,7 +59,7 @@ const EXAMPLE_PREVIEW_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: PreviewAccountType.BreakingTheMonolith,
+  previewAccountType: EnumPreviewAccountType.BreakingTheMonolith,
   previewAccountEmail: "example@amplicaion.com",
 };
 
@@ -168,7 +168,7 @@ Object.defineProperty(billingServiceMock, "isBillingEnabled", {
   get: billingServiceIsBillingEnabledMock,
 });
 
-const resourceCreateSampleResourceMock = jest.fn();
+const createPreviewServiceMock = jest.fn();
 const mockUpdateProjectLicensed = jest.fn();
 const mockUpdateServiceLicensed = jest.fn();
 describe("WorkspaceService", () => {
@@ -248,7 +248,7 @@ describe("WorkspaceService", () => {
         {
           provide: ResourceService,
           useClass: jest.fn().mockImplementation(() => ({
-            createSampleResource: resourceCreateSampleResourceMock,
+            createPreviewService: createPreviewServiceMock,
           })),
         },
         {

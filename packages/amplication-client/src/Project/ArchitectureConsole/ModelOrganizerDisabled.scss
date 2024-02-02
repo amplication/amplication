@@ -1,0 +1,40 @@
+@import "../../style/index.scss";
+
+$feature-tag-padding: 2px 12px;
+$addon-margin-bottom: 44px;
+$addon-feature-tag-border-radius: 32px;
+$addon-feature-tag-gap: 4px;
+$addon-title-line-height: 36px;
+
+.model-organizer-disabled {
+  padding: 12px;
+
+  &__feature-tag {
+    display: flex;
+    align-items: center;
+    gap: $addon-feature-tag-gap;
+    padding: $feature-tag-padding;
+    border-radius: $addon-feature-tag-border-radius;
+    background-color: var(--feature-indicator);
+  }
+
+  &__addon-section {
+    background-color: var(--gray-full);
+    width: 100%;
+    height: 146px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-70);
+    gap: 8px;
+
+    &__contact-us {
+      & span {
+        color: var(--feature-indicator);
+      }
+    }
+
+    &__title {
+      line-height: $addon-title-line-height;
+    }
+  }
+}

@@ -2,14 +2,24 @@
 
 $dropdown-box-shadow: 0 36px 34px -24px #15102c70;
 $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
+$caret-width: 7px;
 
 .select-menu {
+  position: relative;
+
+  &--hide-selected-item-indication {
+    .SelectMenu-icon {
+      display: none !important;
+    }
+  }
+
   & &__item {
     border-bottom: none;
     color: var(--gray-20);
     background-color: var(--gray-90);
     flex-direction: row-reverse;
     justify-content: space-between;
+    box-sizing: border-box;
 
     &--selected,
     &[aria-checked="true"] {
@@ -22,6 +32,31 @@ $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
   }
 
   & &__modal {
+    &--with-caret {
+      top: calc(100% + ($caret-width / 2));
+
+      > div {
+        &::before {
+          content: "";
+          z-index: 1;
+          width: $caret-width;
+          height: $caret-width;
+          position: absolute;
+          background: linear-gradient(
+            135deg,
+            var(--gray-90) 50%,
+            rgba(0, 0, 0, 0) 50%
+          );
+          left: 88%;
+          transform: rotate(45deg) translateY(-85%);
+          border: $border-dark;
+          border-bottom: none;
+          border-right: none;
+          border-radius: 2px;
+        }
+      }
+    }
+
     > div {
       border: $border-dark;
       box-shadow: $dropdown-box-shadow;

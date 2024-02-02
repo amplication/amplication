@@ -21,10 +21,8 @@ import {
 import { JwtStrategy } from "./jwt.strategy";
 import { GitHubStrategy } from "./github.strategy";
 import { GitHubStrategyConfigService } from "./githubStrategyConfig.service";
-import { ProjectModule } from "../project/project.module";
 import { GitHubAuthGuard } from "./github.guard";
 import { Auth0Middleware } from "./auth0.middleware";
-import { ResourceModule } from "../resource/resource.module";
 
 @Module({
   imports: [
@@ -42,8 +40,6 @@ import { ResourceModule } from "../resource/resource.module";
     ExceptionFiltersModule,
     WorkspaceModule,
     UserModule,
-    ProjectModule,
-    ResourceModule,
   ],
   providers: [
     AuthService,

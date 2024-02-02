@@ -21,11 +21,12 @@ import { HealthModule } from "./health/health.module";
 import { PluginInstallationModule } from "./pluginInstallation/pluginInstallation.module";
 import { TopicModule } from "./topic/topic.module";
 import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
-import { UserActionModule } from "./userAction/userActionModule";
+import { UserActionModule } from "./userAction/userAction.module";
 import { DBSchemaImportModule } from "./dbSchemaImport/dbSchemaImport.module";
 import { ModuleModule } from "./module/module.module";
 import { ModuleActionModule } from "./moduleAction/moduleAction.module";
 import { AdministratorModule } from "./administrator/administrator.module";
+import { GptModule } from "./gpt/gpt.module";
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { AdministratorModule } from "./administrator/administrator.module";
     DBSchemaImportModule,
     ModuleModule,
     ModuleActionModule,
+    GptModule,
   ],
   exports: [
     AccountModule,
@@ -84,6 +86,7 @@ import { AdministratorModule } from "./administrator/administrator.module";
     DBSchemaImportModule,
     ModuleModule,
     ModuleActionModule,
+    GptModule,
   ],
 })
 export class CoreModule {}

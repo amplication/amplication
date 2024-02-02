@@ -21,7 +21,10 @@ import {
   RelatedFieldDialog,
   Values as RelatedFieldValues,
 } from "./RelatedFieldDialog";
-import { SYSTEM_DATA_TYPES } from "./constants";
+import {
+  AUTHENTICATION_ENTITY_DATA_TYPES,
+  SYSTEM_DATA_TYPES,
+} from "./constants";
 
 type TData = {
   entity: models.Entity;
@@ -112,7 +115,7 @@ const EntityField = () => {
         }
       }
 
-      const { id, permanentId, ...rest } = data; // eslint-disable-line @typescript-eslint/no-unused-vars
+      const { id, permanentId, ...rest } = data;
       updateEntityField({
         variables: {
           where: {
@@ -130,7 +133,7 @@ const EntityField = () => {
       if (!lookupPendingData) {
         throw new Error("lookupPendingData must be defined");
       }
-      const { id, permanentId, ...rest } = lookupPendingData; // eslint-disable-line @typescript-eslint/no-unused-vars
+      const { id, permanentId, ...rest } = lookupPendingData;
       updateEntityField({
         variables: {
           where: {
@@ -196,6 +199,10 @@ const EntityField = () => {
           <EntityFieldForm
             isSystemDataType={
               defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
+            }
+            isAuthEntitySpecificDataType={
+              defaultValues &&
+              AUTHENTICATION_ENTITY_DATA_TYPES.has(defaultValues.dataType)
             }
             onSubmit={handleSubmit}
             defaultValues={defaultValues}

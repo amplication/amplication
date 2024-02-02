@@ -81,7 +81,7 @@ function PluginsCatalogItem({
 
   const handleChipClick = useCallback((category) => {
     history.push(
-      `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/${category}`
+      `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/catalog/${category}`
     );
   }, []);
 
