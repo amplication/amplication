@@ -2,32 +2,13 @@
 @import "../../style/index.scss";
 
 $min-size: 300px;
-$max-size: 400px;
-$loading-z-index: 10001;
 
 .create-apply-changes-loader {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: $loading-z-index;
-  background: var(--gray-full);
-  font-weight: 500;
+  padding: var(--double-spacing);
+  margin: auto;
 
   &__animation {
-    min-width: $min-size;
-    min-height: $min-size;
-    max-height: $max-size;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: $min-size;
+    margin: auto;
   }
 }
