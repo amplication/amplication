@@ -34,6 +34,8 @@ import {
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
+import { useAppContext } from "../../context/appContext";
+import { applyAutoLayout } from "./layout";
 
 export const CLASS_NAME = "model-organizer";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -62,6 +64,8 @@ export default function ModelOrganizer({
   loadingResources,
   errorMessage,
 }: Props) {
+  const { currentProject } = useAppContext();
+
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
 
@@ -73,22 +77,21 @@ export default function ModelOrganizer({
     onEdgesChange,
     showRelationDetails,
     toggleShowRelationDetails,
-    resetToOriginalState,
+    resetChanges,
     changes,
-    saveChanges,
+    applyChanges,
     loadingCreateResourceAndEntities,
     moveNodeToParent,
     createNewTempService,
     modelGroupFilterChanged,
     searchPhraseChanged,
-    setDraggableNodes,
+    setCurrentEditableResource,
     mergeNewResourcesChanges,
     createEntitiesError,
-  } = useModelOrganization();
+    redesignMode,
+  } = useModelOrganization(currentProject?.id);
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
-
-  const [readOnly, setReadOnly] = useState<boolean>(true);
 
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
 
@@ -107,34 +110,20 @@ export default function ModelOrganizer({
     setIsValidResourceName(true);
   }, [setIsValidResourceName]);
 
-  useEffect(() => {
-    if (
-      changes?.movedEntities?.length > 0 ||
-      changes?.newServices?.length > 0
-    ) {
-      setReadOnly(false);
-    }
-  }, [changes, setReadOnly]);
-
   const onRedesignClick = useCallback(
     (resource: models.Resource) => {
-      setDraggableNodes(resource);
-
-      setReadOnly(false);
+      setCurrentEditableResource(resource);
     },
-    [setReadOnly, setDraggableNodes]
+    [setCurrentEditableResource]
   );
 
   const onCancelChangesClick = useCallback(() => {
-    resetToOriginalState();
-
-    setReadOnly(true);
-  }, [resetToOriginalState]);
+    resetChanges();
+  }, [resetChanges]);
 
   const onApplyPlanClick = useCallback(() => {
-    saveChanges();
-    setReadOnly(true);
-  }, [saveChanges, setReadOnly]);
+    applyChanges();
+  }, [applyChanges]);
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
@@ -242,6 +231,16 @@ export default function ModelOrganizer({
     reactFlowInstance.fitView();
   }, [toggleShowRelationDetails, reactFlowInstance]);
 
+  const onArrangeNodes = useCallback(async () => {
+    const updatedNodes = await applyAutoLayout(
+      nodes,
+      edges,
+      showRelationDetails
+    );
+    setNodes(updatedNodes);
+    reactFlowInstance.fitView();
+  }, [setNodes, showRelationDetails, reactFlowInstance, nodes, edges]);
+
   return (
     <div className={CLASS_NAME}>
       {loadingResources ? (
@@ -256,6 +255,7 @@ export default function ModelOrganizer({
               ></ModelsGroupsList>
               <ModelOrganizerControls
                 onToggleShowRelationDetails={onToggleShowRelationDetails}
+                onArrangeNodes={onArrangeNodes}
                 reactFlowInstance={reactFlowInstance}
               />
             </div>
@@ -263,7 +263,7 @@ export default function ModelOrganizer({
               <ModelOrganizerToolbar
                 changes={changes}
                 nodes={nodes}
-                readOnly={readOnly}
+                redesignMode={redesignMode}
                 hasChanges={
                   changes?.movedEntities?.length > 0 ||
                   changes?.newServices?.length > 0

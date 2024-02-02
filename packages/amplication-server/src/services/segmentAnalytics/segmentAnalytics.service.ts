@@ -36,9 +36,9 @@ export enum EnumEventType {
   RedeemCoupon = "RedeemCoupon",
 
   // break the monolith
-  StartRedesign = "startRedesign",
-  BreakTheMonolithApply = "BreakTheMonolith_Apply",
-  BreakTheMonolithStart = "BreakTheMonolith_Start",
+  ArchitectureRedesignStartRedesign = " architectureRedesign_StartRedesign",
+  ArchitectureRedesignApply = "architectureRedesign__Apply",
+  ArchitectureRedesignStartBreakTheMonolith = "architectureRedesign__StartBreakTheMonolith",
 }
 
 export type IdentifyData = {

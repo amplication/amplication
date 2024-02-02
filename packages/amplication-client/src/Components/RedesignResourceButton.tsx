@@ -37,13 +37,15 @@ const RedesignResourceButton: React.FC<Props> = ({
         featureId={BillingFeature.RedesignArchitecture}
         entitlementType={EntitlementType.Boolean}
         limitationText="Available as part of the Enterprise plan only."
-        render={({ disabled }) => (
+        render={({ disabled, icon }) => (
           <>
             {
               <FeatureIndicator
                 featureName={"RedesignArchitecture"}
+                text={"Available as part of the Enterprise plan only."}
                 element={
                   <SelectMenu
+                    icon={icon}
                     title="Redesign"
                     buttonStyle={EnumButtonStyle.Primary}
                     hideSelectedItemsIndication
