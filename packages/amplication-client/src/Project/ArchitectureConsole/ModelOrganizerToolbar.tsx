@@ -18,8 +18,6 @@ import BetaFeatureTag from "../../Components/BetaFeatureTag";
 import { Button } from "../../Components/Button";
 import RedesignResourceButton from "../../Components/RedesignResourceButton";
 import * as models from "../../models";
-import { ApplyChangesNextSteps } from "./ApplyChangesNextSteps";
-import CreateApplyChangesLoader from "./CreateApplyChangesLoader";
 import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
@@ -41,8 +39,6 @@ type Props = {
   loadingCreateResourceAndEntities: boolean;
   createEntitiesError: boolean;
 };
-
-const MIN_TIME_OUT_LOADER = 2000;
 
 export default function ModelOrganizerToolbar({
   redesignMode,
@@ -66,77 +62,37 @@ export default function ModelOrganizerToolbar({
     [searchPhraseChanged]
   );
   const [confirmChanges, setConfirmChanges] = useState<boolean>(false);
-  const [keepLoadingChanges, setKeepLoadingChanges] = useState<boolean>(false);
+  const [changesDialog, setChangesDialog] = useState<boolean>(false);
+  const [createError, setCreateError] = useState<boolean>(false);
 
   const handleConfirmChangesState = useCallback(() => {
     setConfirmChanges(!confirmChanges);
+    setCreateError(false);
   }, [confirmChanges, setConfirmChanges]);
 
-  const [changesDialog, setChangesDialog] = useState<boolean>(false);
-  const [applyChangesSteps, setApplyChangesSteps] = useState<boolean>(false);
+  useEffect(() => {
+    setCreateError(createEntitiesError);
+  }, [createEntitiesError, setCreateError]);
 
   const handleChangesDialogDismiss = useCallback(() => {
     setChangesDialog(false);
   }, [setChangesDialog]);
 
-  const handleOnApplyPlan = useCallback(() => {
-    setConfirmChanges(false);
-    onApplyPlan();
-  }, [setConfirmChanges, onApplyPlan]);
-
-  useEffect(() => {
-    if (loadingCreateResourceAndEntities) {
-      setKeepLoadingChanges(true);
-    }
-  }, [setKeepLoadingChanges, loadingCreateResourceAndEntities]);
-
-  const handleTimeout = useCallback(() => {
-    setKeepLoadingChanges(false);
-    setApplyChangesSteps(true);
-  }, [setKeepLoadingChanges, setApplyChangesSteps]);
-
-  const handleDismissChangesSteps = useCallback(() => {
-    setApplyChangesSteps(!applyChangesSteps);
-  }, [setApplyChangesSteps, applyChangesSteps]);
-
   return (
     <div className={CLASS_NAME}>
-      {keepLoadingChanges || loadingCreateResourceAndEntities ? (
-        <CreateApplyChangesLoader
-          onTimeout={handleTimeout}
-          minimumLoadTimeMS={MIN_TIME_OUT_LOADER}
-        />
-      ) : null}
-
       <Dialog
         isOpen={confirmChanges}
         onDismiss={handleConfirmChangesState}
-        title="Confirm Architecture Changes"
+        title="Apply Changes"
       >
         <ModelOrganizerConfirmation
           nodes={nodes}
-          onConfirmChanges={handleOnApplyPlan}
+          onConfirmChanges={onApplyPlan}
           onCancelChanges={handleConfirmChangesState}
           changes={changes}
+          createEntitiesError={createError}
+          loadingCreateResourceAndEntities={loadingCreateResourceAndEntities}
         ></ModelOrganizerConfirmation>
-      </Dialog>
-
-      <Dialog isOpen={applyChangesSteps} onDismiss={handleDismissChangesSteps}>
-        {createEntitiesError ? (
-          <FlexItem
-            direction={EnumFlexDirection.Column}
-            itemsAlign={EnumItemsAlign.Center}
-          >
-            <span>
-              We encountered a problem while processing your new architecture.
-            </span>
-            <span> Please try again in a few minutes</span>
-          </FlexItem>
-        ) : (
-          <ApplyChangesNextSteps
-            onDisplayArchitectureClicked={handleDismissChangesSteps}
-          />
-        )}
       </Dialog>
 
       <Dialog isOpen={changesDialog} onDismiss={handleChangesDialogDismiss}>

@@ -57,7 +57,7 @@ const USER: Entity = {
       displayName: "Username",
       dataType: EnumDataType.Username,
       required: true,
-      unique: false,
+      unique: true,
       searchable: true,
     },
     {
