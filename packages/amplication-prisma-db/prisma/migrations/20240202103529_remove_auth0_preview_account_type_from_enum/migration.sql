@@ -6,6 +6,9 @@
 */
 -- AlterEnum
 BEGIN;
+UPDATE "Account"
+SET "previewAccountType" = 'None'
+WHERE "previewAccountType" = 'Auth0Signup';
 CREATE TYPE "PreviewAccountType_new" AS ENUM ('None', 'BreakingTheMonolith');
 ALTER TABLE "Account" ALTER COLUMN "previewAccountType" DROP DEFAULT;
 ALTER TABLE "Account" ALTER COLUMN "previewAccountType" TYPE "PreviewAccountType_new" USING ("previewAccountType"::text::"PreviewAccountType_new");
