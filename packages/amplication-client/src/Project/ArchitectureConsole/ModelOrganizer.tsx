@@ -6,7 +6,7 @@ import {
   FlexItem,
 } from "@amplication/ui/design-system";
 import { EnumItemsAlign } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Background,
   ConnectionMode,
