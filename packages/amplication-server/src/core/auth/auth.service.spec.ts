@@ -9,7 +9,6 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { AuthService } from "./auth.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { EnumTokenType } from "./dto";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { ConfigService } from "@nestjs/config";
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
@@ -283,12 +282,6 @@ describe("AuthService", () => {
           provide: JwtService,
           useClass: jest.fn(() => ({
             sign: signMock,
-          })),
-        },
-        {
-          provide: KafkaProducerService,
-          useClass: jest.fn(() => ({
-            emitMessage: jest.fn(() => Promise.resolve("error")),
           })),
         },
         {
