@@ -86,7 +86,6 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
               <FlexItem itemsAlign={EnumItemsAlign.Center}>
                 <Link
                   to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/changes/${build.commitId}`}
-                  target="_blank"
                 >
                   <FlexItem
                     gap={EnumGapSize.Small}
