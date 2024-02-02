@@ -39,9 +39,11 @@ model PluginVersion {
 }
 
 model Category {
-  createdAt DateTime @default(now())
-  id        String   @id @default(cuid())
-  name      String   @unique
-  rank      Int?     @unique
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  description String?
+  icon        String?
+  id          String   @id @default(cuid())
+  name        String   @unique
+  rank        Int?     @unique
+  updatedAt   DateTime @updatedAt
 }

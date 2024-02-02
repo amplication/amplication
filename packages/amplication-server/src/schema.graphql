@@ -1187,6 +1187,7 @@ type Mutation {
   signup(data: SignupInput!): Auth!
   signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
+  startRedesign(data: WhereUniqueInput!): Resource
 
   """
   Trigger the generation of a set of recommendations for breaking a resource into microservices
