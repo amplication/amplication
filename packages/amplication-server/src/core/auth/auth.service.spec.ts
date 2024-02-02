@@ -19,6 +19,7 @@ import { anyString } from "jest-mock-extended";
 import { AuthUser } from "./types";
 import { IdentityProvider } from "./auth.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
@@ -150,10 +151,6 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_WORKSPACE: Account & {
   ...EXAMPLE_ACCOUNT,
   currentUser: EXAMPLE_AUTH_USER,
 };
-
-const mockManagementClientGetByEmail = jest.fn();
-const mockAuthenticationClientDatabaseChangePassword = jest.fn();
-const mockAuthenticationClientDatabaseSignUp = jest.fn();
 jest.mock("auth0", () => {
   return {
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -175,6 +172,10 @@ jest.mock("auth0", () => {
     }),
   };
 });
+
+const mockManagementClientGetByEmail = jest.fn();
+const mockAuthenticationClientDatabaseChangePassword = jest.fn();
+const mockAuthenticationClientDatabaseSignUp = jest.fn();
 
 const signMock = jest.fn(() => EXAMPLE_TOKEN);
 
@@ -664,6 +665,46 @@ describe("AuthService", () => {
   });
 
   describe("signupWithBusinessEmail", () => {
+    it("should track the event when a user signs up with a business email", async () => {
+      const email = "invalid@invalid.com";
+
+      mockManagementClientGetByEmail.mockResolvedValueOnce({
+        data: [],
+      });
+
+      mockAuthenticationClientDatabaseSignUp.mockResolvedValueOnce({
+        data: {
+          email,
+        },
+      });
+
+      mockAuthenticationClientDatabaseChangePassword.mockResolvedValueOnce({
+        data: "ok",
+      });
+
+      const result = await service.signupWithBusinessEmail({
+        data: {
+          email,
+        },
+      });
+
+      expect(result).toBeTruthy();
+
+      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackMock).toHaveBeenCalledWith({
+        userId: null,
+        event: EnumEventType.StartEmailSignup,
+        properties: {
+          identityProvider: IdentityProvider.IdentityPlatform,
+          existingUser: "No",
+        },
+        context: {
+          traits: expect.any(Object),
+        },
+      });
+    });
+
     it("should fail to signup a preview account when the email is not work email", async () => {
       const email = "invalid@gmail.com";
 
