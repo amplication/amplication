@@ -105,7 +105,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
   });
 
   const loadProjectResources = useCallback(
-    (forceRefresh?: boolean) => {
+    (forceRefresh?: boolean, onLoadResourcesCompleted?: () => void) => {
       if (!forceRefresh) {
         //try to load a saved copy of the data from the persistent layer
         const savedData = loadPersistentData();
@@ -132,6 +132,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
           }, []);
 
           setCurrentResourcesData(resources);
+          onLoadResourcesCompleted && onLoadResourcesCompleted();
           return;
         }
       }
@@ -157,6 +158,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
           }
 
           saveToPersistentData();
+          onLoadResourcesCompleted && onLoadResourcesCompleted();
         },
       });
     },
@@ -209,8 +211,12 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     setCurrentEditableResourceNode(null);
     setRedesignMode(false);
     clearPersistentData();
-    loadProjectResources(true);
-    onMessage("Changes discarded successfully", EnumMessageType.Success);
+    loadProjectResources(true, () => {
+      onMessage(
+        "Redesign changes were discarded successfully",
+        EnumMessageType.Success
+      );
+    });
   }, [
     currentEditableResourceNode,
     clearPersistentData,
@@ -272,8 +278,12 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         saveToPersistentData();
         return [...updatedNodes];
       });
+      onMessage(
+        `You can start breaking ${resource.name}, and drag entities to other services`,
+        EnumMessageType.Success
+      );
     },
-    [prepareCurrentEditableResourceNodesData, saveToPersistentData]
+    [prepareCurrentEditableResourceNodesData, saveToPersistentData, onMessage]
   );
 
   const mergeNewResourcesChanges = useCallback(() => {
@@ -375,6 +385,10 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
             setEdges(newSimpleEdges);
           }
           saveToPersistentData();
+          onMessage(
+            "Updates fetched from the server and applied successfully",
+            EnumMessageType.Success
+          );
         }
       },
     });
@@ -391,6 +405,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     createNewServiceObject,
     currentEditableResourceNode,
     setEdges,
+    onMessage,
   ]);
 
   const searchPhraseChanged = useCallback(
