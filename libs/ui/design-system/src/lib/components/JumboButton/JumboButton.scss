@@ -15,13 +15,4 @@ $width: 300px;
   justify-content: center;
   padding: var(--double-spacing);
   box-sizing: border-box;
-
-  &:hover {
-    background-color: var(--gray-full);
-    box-shadow: var(--hover-box-shadow);
-  }
-
-  &:active {
-    box-shadow: none;
-  }
 }
