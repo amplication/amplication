@@ -24,9 +24,15 @@ import {
 } from "../types";
 
 import useModelOrganizerPersistentData from "./useModelOrganizerPersistentData";
+import { EnumMessageType } from "../../../util/useMessage";
 
 type TData = {
   resources: models.Resource[];
+};
+
+type Props = {
+  projectId: string;
+  onMessage: (message: string, type: EnumMessageType) => void;
 };
 
 type modelChangesData = {
@@ -41,7 +47,7 @@ type modelChangesData = {
   }[];
 };
 
-const useModelOrganization = (projectId: string) => {
+const useModelOrganization = ({ projectId, onMessage }: Props) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
   const [currentResourcesData, setCurrentResourcesData] = useState<
@@ -99,7 +105,7 @@ const useModelOrganization = (projectId: string) => {
   });
 
   const loadProjectResources = useCallback(
-    (forceRefresh?: boolean) => {
+    (forceRefresh?: boolean, onLoadResourcesCompleted?: () => void) => {
       if (!forceRefresh) {
         //try to load a saved copy of the data from the persistent layer
         const savedData = loadPersistentData();
@@ -126,6 +132,7 @@ const useModelOrganization = (projectId: string) => {
           }, []);
 
           setCurrentResourcesData(resources);
+          onLoadResourcesCompleted && onLoadResourcesCompleted();
           return;
         }
       }
@@ -151,6 +158,7 @@ const useModelOrganization = (projectId: string) => {
           }
 
           saveToPersistentData();
+          onLoadResourcesCompleted && onLoadResourcesCompleted();
         },
       });
     },
@@ -203,8 +211,18 @@ const useModelOrganization = (projectId: string) => {
     setCurrentEditableResourceNode(null);
     setRedesignMode(false);
     clearPersistentData();
-    loadProjectResources(true);
-  }, [currentEditableResourceNode, clearPersistentData, loadProjectResources]);
+    loadProjectResources(true, () => {
+      onMessage(
+        "Redesign changes were discarded successfully",
+        EnumMessageType.Success
+      );
+    });
+  }, [
+    currentEditableResourceNode,
+    clearPersistentData,
+    loadProjectResources,
+    onMessage,
+  ]);
 
   const createNewServiceObject = useCallback(
     (serviceName: string, serviceTempId: string) => {
@@ -260,8 +278,12 @@ const useModelOrganization = (projectId: string) => {
         saveToPersistentData();
         return [...updatedNodes];
       });
+      onMessage(
+        `You can start breaking ${resource.name}, and drag entities to other services`,
+        EnumMessageType.Success
+      );
     },
-    [prepareCurrentEditableResourceNodesData, saveToPersistentData]
+    [prepareCurrentEditableResourceNodesData, saveToPersistentData, onMessage]
   );
 
   const mergeNewResourcesChanges = useCallback(() => {
@@ -363,6 +385,10 @@ const useModelOrganization = (projectId: string) => {
             setEdges(newSimpleEdges);
           }
           saveToPersistentData();
+          onMessage(
+            "Updates fetched from the server and applied successfully",
+            EnumMessageType.Success
+          );
         }
       },
     });
@@ -379,6 +405,7 @@ const useModelOrganization = (projectId: string) => {
     createNewServiceObject,
     currentEditableResourceNode,
     setEdges,
+    onMessage,
   ]);
 
   const searchPhraseChanged = useCallback(
