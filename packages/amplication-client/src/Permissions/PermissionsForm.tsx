@@ -3,8 +3,10 @@ import { gql, useQuery } from "@apollo/client";
 
 import {
   CircularProgress,
+  EnumTextColor,
   Snackbar,
   TabContentTitle,
+  Text,
 } from "@amplication/ui/design-system";
 
 import "./PermissionsForm.scss";
@@ -24,6 +26,7 @@ type Props = {
   availableActions: permissionsTypes.PermissionAction[];
   resourceId: string;
   entityId: string;
+  entityName: string;
   objectDisplayName: string;
 };
 
@@ -31,6 +34,7 @@ const PermissionsForm = ({
   availableActions,
   resourceId,
   entityId,
+  entityName,
   objectDisplayName,
 }: Props) => {
   const { data, loading, error } = useQuery<TData>(GET_ENTITY_PERMISSIONS, {
@@ -49,6 +53,7 @@ const PermissionsForm = ({
 
   return (
     <div className="permissions-form">
+      <Text textColor={EnumTextColor.Primary}>{`${entityName} entity`}</Text>
       <TabContentTitle
         title="Entity Permissions"
         subTitle="Set the access permissions for the various actions and fields of the entity"
