@@ -22,7 +22,6 @@ import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { AuthExceptionFilter } from "../../filters/auth-exception.filter";
 import { requiresAuth } from "express-openid-connect";
-import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 export const AUTH_LOGIN_PATH = "/auth/login";
 export const AUTH_LOGOUT_PATH = "/auth/logout";
 export const AUTH_CALLBACK_PATH = "/auth/callback";
