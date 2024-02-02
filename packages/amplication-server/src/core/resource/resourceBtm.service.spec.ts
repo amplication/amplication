@@ -10,11 +10,36 @@ import { UserAction } from "../userAction/dto";
 import { EnumUserActionType } from "../userAction/types";
 import { ConversationTypeKey } from "../gpt/gpt.types";
 import { BreakServiceToMicroservicesData } from "./dto/BreakServiceToMicroservicesResult";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { Resource, User } from "../../models";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { BillingService } from "../billing/billing.service";
+import { EnumSubscriptionPlan } from "../subscription/dto";
 
 const resourceIdMock = "resourceId";
 const userIdMock = "userId";
 const userActionIdMock = "userActionId";
 const actionIdMock = "actionId";
+const workspaceIdMock = "workspaceId";
+const projectIdMock = "projectId";
+
+const userMock: User = {
+  id: userIdMock,
+  workspace: {
+    id: workspaceIdMock,
+  },
+} as User;
+
+const resourceMock: Resource = {
+  id: resourceIdMock,
+  name: "resourceName",
+  project: {
+    id: projectIdMock,
+  },
+} as unknown as Resource;
 
 const userActionMock = {
   id: userActionIdMock,
@@ -28,6 +53,10 @@ const startConversationMock = jest.fn(() => Promise.resolve(userActionMock));
 const userActionServiceFindOneMock = jest.fn(() =>
   Promise.resolve(userActionMock)
 );
+
+const resourceFindUniqueMock = jest.fn(() => Promise.resolve(resourceMock));
+const getSubscriptionMock = jest.fn();
+const trackMock = jest.fn();
 
 describe("ResourceBtmService", () => {
   let service: ResourceBtmService;
@@ -50,7 +79,7 @@ describe("ResourceBtmService", () => {
           provide: PrismaService,
           useValue: {
             resource: {
-              findUnique: jest.fn(),
+              findUnique: resourceFindUniqueMock,
             },
           },
         },
@@ -60,6 +89,17 @@ describe("ResourceBtmService", () => {
             findOne: userActionServiceFindOneMock,
           },
         },
+        {
+          provide: SegmentAnalyticsService,
+          useValue: {
+            track: trackMock,
+          },
+        },
+        {
+          provide: BillingService,
+          useValue: { getSubscription: getSubscriptionMock },
+        },
+        MockedAmplicationLoggerProvider,
       ],
     }).compile();
     service = module.get<ResourceBtmService>(ResourceBtmService);
@@ -67,6 +107,29 @@ describe("ResourceBtmService", () => {
 
   it("should be defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("should send analytics event for start redesign", async () => {
+    getSubscriptionMock.mockResolvedValue({
+      subscriptionPlan: EnumSubscriptionPlan.Enterprise,
+    });
+
+    await service.startRedesign(userMock, resourceMock.id);
+
+    expect(getSubscriptionMock).toHaveBeenCalledTimes(1);
+    expect(getSubscriptionMock).toHaveBeenCalledWith(userMock.workspace.id);
+    expect(trackMock).toHaveBeenCalledTimes(1);
+    expect(trackMock).toHaveBeenCalledWith({
+      userId: userMock.id,
+      properties: {
+        workspaceId: userMock.workspace.id,
+        projectId: resourceMock.project.id,
+        resourceId: resourceMock.id,
+        serviceName: resourceMock.name,
+        plan: EnumSubscriptionPlan.Enterprise,
+      },
+      event: EnumEventType.ArchitectureRedesignStartRedesign,
+    });
   });
 
   describe("translateToBtmRecommendation", () => {
@@ -87,6 +150,7 @@ describe("ResourceBtmService", () => {
       };
       const originalResource: ResourceDataForBtm = {
         name: "order",
+        project: resourceMock.project,
         id: resourceIdMock,
         entities: [
           {
@@ -269,6 +333,7 @@ describe("ResourceBtmService", () => {
       const originalResource: ResourceDataForBtm = {
         id: resourceIdMock,
         name: "order",
+        project: resourceMock.project,
         entities: [
           {
             id: "order",
@@ -450,6 +515,7 @@ describe("ResourceBtmService", () => {
 
       const originalResource: ResourceDataForBtm = {
         name: "order",
+        project: resourceMock.project,
         id: resourceIdMock,
         entities: [
           {
@@ -854,17 +920,35 @@ describe("ResourceBtmService", () => {
     it("should start a conversation with the GPT service", async () => {
       jest
         .spyOn(service, "getResourceDataForBtm")
-        .mockResolvedValue({ id: resourceIdMock } as ResourceDataForBtm);
+        .mockResolvedValue(resourceMock as ResourceDataForBtm);
 
       jest
         .spyOn(service, "generatePromptForBreakTheMonolith")
         .mockReturnValue(mockPromptResult);
 
-      const result = await service.triggerBreakServiceIntoMicroservices({
-        resourceId: resourceIdMock,
-        userId: userIdMock,
+      getSubscriptionMock.mockResolvedValue({
+        subscriptionPlan: EnumSubscriptionPlan.Pro,
       });
 
+      const result = await service.triggerBreakServiceIntoMicroservices({
+        resourceId: resourceMock.id,
+        user: userMock,
+      });
+
+      expect(getSubscriptionMock).toHaveBeenCalledTimes(1);
+      expect(getSubscriptionMock).toHaveBeenCalledWith(userMock.workspace.id);
+      expect(trackMock).toHaveBeenCalledTimes(1);
+      expect(trackMock).toHaveBeenCalledWith({
+        userId: userMock.id,
+        properties: {
+          workspaceId: userMock.workspace.id,
+          projectId: resourceMock.project.id,
+          resourceId: resourceMock.id,
+          serviceName: resourceMock.name,
+          plan: EnumSubscriptionPlan.Pro,
+        },
+        event: EnumEventType.ArchitectureRedesignStartBreakTheMonolith,
+      });
       expect(startConversationMock).toHaveBeenCalledTimes(1);
       expect(startConversationMock).toHaveBeenCalledWith(
         ConversationTypeKey.BreakTheMonolith,

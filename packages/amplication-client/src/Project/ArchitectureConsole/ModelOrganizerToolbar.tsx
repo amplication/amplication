@@ -15,20 +15,20 @@ import {
   FlexEnd,
 } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import { useCallback, useEffect, useState } from "react";
+import BetaFeatureTag from "../../Components/BetaFeatureTag";
 import { Button } from "../../Components/Button";
 import RedesignResourceButton from "../../Components/RedesignResourceButton";
 import * as models from "../../models";
 import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
-import BetaFeatureTag from "../../Components/BetaFeatureTag";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 const CONFIRM_BUTTON = { label: "Discard Changes" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 type Props = {
-  readOnly: boolean;
+  redesignMode: boolean;
   hasChanges: boolean;
   changes: ModelChanges;
   nodes: Node[];
@@ -44,7 +44,7 @@ type Props = {
 };
 
 export default function ModelOrganizerToolbar({
-  readOnly,
+  redesignMode,
   changes,
   hasChanges,
   nodes,
@@ -79,14 +79,6 @@ export default function ModelOrganizerToolbar({
   useEffect(() => {
     setCreateError(createEntitiesError);
   }, [createEntitiesError, setCreateError]);
-
-  const handleAiClicked = useCallback(() => {
-    if (hasChanges) {
-      setChangesDialog(true);
-    } else {
-      //trigger AI process
-    }
-  }, [setChangesDialog, hasChanges]);
 
   const handleDiscardChangesClicked = useCallback(() => {
     setConfirmDiscardChanges(!confirmDiscardChanges);
@@ -162,25 +154,10 @@ export default function ModelOrganizerToolbar({
         </FlexItem>
 
         <FlexEnd>
-          <FlexItem>
-            {/* <FeatureIndicatorContainer //todo: return in phase 2
-              featureId={BillingFeature.RedesignArchitecture}
-              entitlementType={EntitlementType.Boolean}
-              limitationText="Available as part of the Enterprise plan only."
-            >
-              <Button
-                buttonStyle={EnumButtonStyle.Outline}
-                onClick={handleAiClicked}
-                eventData={{
-                  eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                }}
-              >
-                AI Helper
-              </Button>
-            </FeatureIndicatorContainer> */}
+          <FlexItem itemsAlign={EnumItemsAlign.Center}>
             <BetaFeatureTag></BetaFeatureTag>
 
-            {!readOnly && (
+            {redesignMode && (
               <>
                 <div className={`${CLASS_NAME}__divider`}></div>
                 <ModelsTool
@@ -193,16 +170,13 @@ export default function ModelOrganizerToolbar({
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}
                   onClick={handleConfirmChangesState}
-                  // eventData={{
-                  //   eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                  // }}
                   disabled={!hasChanges}
                 >
                   Apply Plan
                 </Button>
               </>
             )}
-            {readOnly && (
+            {!redesignMode && (
               <RedesignResourceButton
                 resources={resources}
                 onSelectResource={onRedesign}

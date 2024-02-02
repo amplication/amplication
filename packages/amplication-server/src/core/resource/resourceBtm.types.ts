@@ -1,4 +1,4 @@
-import { Entity, EntityField, Resource } from "../../prisma";
+import { Entity, EntityField, Resource } from "../../models";
 
 type EntityFieldPartial = Pick<
   EntityField,
@@ -12,7 +12,8 @@ export interface EntityDataForBtm
   }[];
 }
 
-export interface ResourceDataForBtm extends Pick<Resource, "id" | "name"> {
+export interface ResourceDataForBtm
+  extends Pick<Resource, "id" | "name" | "project"> {
   entities: EntityDataForBtm[];
 }
 

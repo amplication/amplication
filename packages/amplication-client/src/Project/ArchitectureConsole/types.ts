@@ -74,3 +74,11 @@ export type ModelChanges = {
   newServices: ModelGroupResource[];
   movedEntities: CopiedEntity[];
 };
+
+export type ModelOrganizerPersistentData = {
+  projectId: string;
+  nodes: Node[];
+  changes: ModelChanges;
+  showRelationDetails: boolean;
+  redesignMode: boolean;
+};
