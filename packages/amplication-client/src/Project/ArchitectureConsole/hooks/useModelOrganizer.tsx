@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { useEdgesState } from "reactflow";
 import * as models from "../../../models";
@@ -12,6 +12,7 @@ import { applyAutoLayout } from "../layout";
 import {
   CREATE_RESOURCE_ENTITIES,
   GET_RESOURCES,
+  START_REDESIGN,
 } from "../queries/modelsQueries";
 import {
   CopiedEntity,
@@ -27,6 +28,12 @@ import useModelOrganizerPersistentData from "./useModelOrganizerPersistentData";
 
 type TData = {
   resources: models.Resource[];
+};
+
+type TDataStartRedesign = {
+  startRedesign: {
+    data: models.Resource;
+  };
 };
 
 type modelChangesData = {
@@ -66,6 +73,8 @@ const useModelOrganization = (projectId: string) => {
 
   const { persistData, loadPersistentData, clearPersistentData } =
     useModelOrganizerPersistentData(projectId);
+
+  const [startRedesign] = useMutation<TDataStartRedesign>(START_REDESIGN);
 
   useEffect(() => {
     if (saveDataTimestampTrigger === null) return;
@@ -258,6 +267,8 @@ const useModelOrganization = (projectId: string) => {
 
         setRedesignMode(true);
         saveToPersistentData();
+        startRedesign({ variables: { resourceId: resource.id } });
+
         return [...updatedNodes];
       });
     },

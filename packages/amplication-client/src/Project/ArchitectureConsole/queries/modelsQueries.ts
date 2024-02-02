@@ -60,3 +60,11 @@ export const CREATE_RESOURCE_ENTITIES = gql`
     }
   }
 `;
+
+export const START_REDESIGN = gql`
+  mutation startRedesign($data: WhereUniqueInput!) {
+    startRedesign(data: $data) {
+      name
+    }
+  }
+`;
