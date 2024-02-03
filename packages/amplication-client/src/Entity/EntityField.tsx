@@ -1,9 +1,11 @@
 import { types } from "@amplication/code-gen-types";
 import {
   EnumItemsAlign,
+  EnumTextColor,
   FlexItem,
   Snackbar,
   TabContentTitle,
+  Text,
 } from "@amplication/ui/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useContext, useMemo, useState } from "react";
@@ -174,6 +176,9 @@ const EntityField = () => {
     <div className={CLASS_NAME}>
       {!loading && (
         <>
+          <Text
+            textColor={EnumTextColor.Primary}
+          >{`${entityRecord.name} entity`}</Text>
           <FlexItem
             itemsAlign={EnumItemsAlign.Start}
             start={<TabContentTitle title="Field Settings" />}
