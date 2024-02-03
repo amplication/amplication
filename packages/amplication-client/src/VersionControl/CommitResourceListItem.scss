@@ -1,0 +1,39 @@
+@import "../style/index.scss";
+
+.commit-resource-list-item {
+  &__title-row {
+    @include regular-10;
+
+    &__resource-icon {
+      .amp-icon {
+        font-size: var(--tag-font-size) !important;
+      }
+    }
+
+    &__title {
+      @include regular-12;
+      @include semiBold;
+      color: var(--static-white);
+    }
+  }
+
+  &__description-row {
+    @include regular-10;
+
+    .amp-text {
+      @include regular-10;
+      color: var(--gray-20);
+    }
+    .amp-icon {
+      @include regular-12;
+    }
+  }
+
+  &__vertical_border {
+    width: 1px;
+    height: var(--large-spacing);
+    background: var(--gray-70);
+    border: none;
+    margin: 0;
+  }
+}
