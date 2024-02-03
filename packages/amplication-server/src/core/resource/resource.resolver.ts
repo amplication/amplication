@@ -31,7 +31,7 @@ import {
   ResourceCreateWithEntitiesResult,
   UpdateCodeGeneratorVersionArgs,
 } from "./dto";
-import { CreateResourcesEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
+import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -163,11 +163,11 @@ export class ResourceResolver {
   @Mutation(() => [Resource], { nullable: false })
   @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "data.projectId")
-  async copiedEntities(
-    @Args() args: CreateResourcesEntitiesArgs,
+  async redesignProject(
+    @Args() args: RedesignProjectArgs,
     @UserEntity() user: User
   ): Promise<Resource[]> {
-    return this.resourceService.copiedEntities(args, user);
+    return this.resourceService.redesignProject(args, user);
   }
 
   @Mutation(() => Resource, {

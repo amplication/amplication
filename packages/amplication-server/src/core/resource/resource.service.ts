@@ -56,7 +56,7 @@ import {
   UpdateCodeGeneratorVersionArgs,
   UpdateOneResourceArgs,
 } from "./dto";
-import { CreateResourcesEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
+import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
 
 const USER_RESOURCE_ROLE = {
@@ -492,11 +492,11 @@ export class ResourceService {
     }
   }
 
-  async copiedEntities(
-    args: CreateResourcesEntitiesArgs,
+  async redesignProject(
+    args: RedesignProjectArgs,
     user: User
   ): Promise<Resource[]> {
-    const { entitiesToCopy, modelGroupsResources, projectId } = args.data;
+    const { movedEntities, newServices, projectId } = args.data;
 
     const subscription = await this.billingService.getSubscription(
       user.workspace?.id
@@ -507,10 +507,10 @@ export class ResourceService {
       properties: {
         workspaceId: user.workspace?.id,
         projectId,
-        resourceId: entitiesToCopy[0].originalResourceId,
+        resourceId: movedEntities[0].originalResourceId,
         plan: subscription.subscriptionPlan,
-        movedEntities: entitiesToCopy.length,
-        newServices: modelGroupsResources.length,
+        movedEntities: movedEntities.length,
+        newServices: newServices.length,
       },
       event: EnumEventType.ArchitectureRedesignApply,
     });
@@ -541,10 +541,10 @@ export class ResourceService {
       },
     });
 
-    for (const modelGroupResource of modelGroupsResources) {
+    for (const newService of newServices) {
       const args: CreateOneResourceArgs = {
         data: {
-          name: modelGroupResource.name,
+          name: newService.name,
           description: "",
           project: {
             connect: {
@@ -565,7 +565,7 @@ export class ResourceService {
       };
 
       const resource = await this.createService(args, user);
-      resource.tempId = modelGroupResource.tempId; //@todo: remove tempId from resource type
+      resource.tempId = newService.id; //@todo: remove tempId from resource type
 
       await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
 
@@ -582,7 +582,7 @@ export class ResourceService {
         {}
       );
 
-      for (const entityToCopy of entitiesToCopy) {
+      for (const entityToCopy of movedEntities) {
         const newResource: Resource =
           moduleGroupResourcesMap[entityToCopy.targetResourceId];
 
@@ -598,7 +598,7 @@ export class ResourceService {
     const entitiesWithFields: Entity[] = [];
     const resources: Resource[] = [];
 
-    for (const entityToCopy of entitiesToCopy) {
+    for (const entityToCopy of movedEntities) {
       const currentEntityToCopy = await this.prisma.entity.findUnique({
         where: {
           id: entityToCopy.entityId,
@@ -676,7 +676,7 @@ export class ResourceService {
 
           if (isFieldExist) continue;
 
-          const currentRelatedEntity = entitiesToCopy.find(
+          const currentRelatedEntity = movedEntities.find(
             (entity) => entity.entityId === relatedEntityId
           );
 
