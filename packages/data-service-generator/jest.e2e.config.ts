@@ -1,6 +1,6 @@
 export default {
-  preset: "../../jest.preset.js",
   displayName: "data-service-generator",
+  preset: "../../jest.preset.js",
   globals: {},
   moduleFileExtensions: ["js", "json", "ts"],
   testEnvironment: "node",

@@ -11,6 +11,9 @@ module.exports = composePlugins(withNx(), withReact(), (config) => {
   if (miniCssExtractPlugin) {
     miniCssExtractPlugin.options.ignoreOrder = true;
   }
+  config.ignoreWarnings = [
+    /(Failed to parse source map from)\s.*\/node_modules\/.*/,
+  ];
 
   return config;
 });

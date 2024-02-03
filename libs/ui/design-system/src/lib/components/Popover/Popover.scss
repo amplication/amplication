@@ -3,6 +3,7 @@
 $width-short: 100px;
 
 .amp-popover {
+  max-width: 400px;
   &__content {
     background: var(--menu-background-color) !important;
     color: var(--static-white);

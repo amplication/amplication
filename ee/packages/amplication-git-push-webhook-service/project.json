@@ -50,7 +50,8 @@
           }
         ],
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -65,7 +66,8 @@
       "options": {
         "buildTarget": "amplication-git-push-webhook-service:build",
         "inspect": true,
-        "port": 7015
+        "port": 7015,
+        "watch": true
       },
       "configurations": {
         "production": {

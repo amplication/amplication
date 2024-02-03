@@ -4,8 +4,8 @@ import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
 } from "../../../util/test-data";
-import { createWhereInput } from "../../create-where-input";
 import { createCountArgs, createCountArgsId } from "./create-count-args";
+import { createEntityInputFiles } from "../../../create-dtos";
 
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
@@ -16,21 +16,21 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [EXAMPLE_ID_FIELD, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],
 };
-const EXAMPLE_WHERE_INPUT = createWhereInput(EXAMPLE_ENTITY);
+const EXAMPLE_WHERE_INPUT = createEntityInputFiles(EXAMPLE_ENTITY);
+const exampleWhereInput = EXAMPLE_WHERE_INPUT.whereInput;
 
 describe("createCountArgs", () => {
   test("creates count args", async () => {
-    expect(
-      print(await createCountArgs(EXAMPLE_ENTITY, EXAMPLE_WHERE_INPUT)).code
-    ).toEqual(`@ArgsType()
+    expect(print(await createCountArgs(EXAMPLE_ENTITY, exampleWhereInput)).code)
+      .toEqual(`@ArgsType()
 class ${createCountArgsId(EXAMPLE_ENTITY.name).name} {
   @ApiProperty({
     required: false,
-    type: () => ${EXAMPLE_WHERE_INPUT.id.name},
+    type: () => ${exampleWhereInput.id.name},
   })
-  @Field(() => ${EXAMPLE_WHERE_INPUT.id.name}, { nullable: true })
-  @Type(() => ${EXAMPLE_WHERE_INPUT.id.name})
-  where?: ${EXAMPLE_WHERE_INPUT.id.name};
+  @Field(() => ${exampleWhereInput.id.name}, { nullable: true })
+  @Type(() => ${exampleWhereInput.id.name})
+  where?: ${exampleWhereInput.id.name};
 }`);
   });
 });

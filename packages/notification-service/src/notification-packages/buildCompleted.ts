@@ -24,7 +24,7 @@ export const buildCompleted = async (notificationCtx: NotificationContext) => {
           shortBuildId,
           createdAt: `${format(
             new Date(restParams?.createdAt),
-            "MM/dd/yyyy hh:mm a"
+            "E LLL dd yyyy hh:mm a zzzz"
           )}`,
         },
       },

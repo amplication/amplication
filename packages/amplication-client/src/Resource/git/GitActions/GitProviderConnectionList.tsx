@@ -9,7 +9,7 @@ import { useCallback } from "react";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { gql, useMutation } from "@apollo/client";
 import { useStiggContext } from "@stigg/react-sdk";
-import { BillingFeature } from "../../../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -40,10 +40,10 @@ export const GitProviderConnectionList: React.FC<Props> = ({
 
   const showBitbucketConnect = stigg.getBooleanEntitlement({
     featureId: BillingFeature.Bitbucket,
-  });
-  const showAwsCodeCommitConnect = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.AwsCodeCommit,
-  });
+  }).hasAccess;
+  const showGitLab = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.GitLab,
+  }).hasAccess;
 
   const [authWithGit] = useMutation<DType>(START_AUTH_APP_WITH_GITHUB, {
     onCompleted: (data) => {
@@ -61,7 +61,8 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   const handleAddProvider = useCallback(
     (provider: EnumGitProvider) => {
       trackEvent({
-        eventName: AnalyticsEventNames.AddGitProviderClick,
+        eventName: AnalyticsEventNames.GitProviderConnectClick,
+        eventOriginLocation: "git-provider-connection-list",
         provider: provider,
       });
       authWithGit({
@@ -83,18 +84,29 @@ export const GitProviderConnectionList: React.FC<Props> = ({
       <GitProviderConnection
         provider={EnumGitProvider.Github}
         onSyncNewGitOrganizationClick={handleAddProvider}
+        disabled={false}
+      />
+      <GitProviderConnection
+        provider={EnumGitProvider.GitLab}
+        onSyncNewGitOrganizationClick={handleAddProvider}
+        billingFeature={BillingFeature.GitLab}
+        disabled={!showGitLab}
+        comingSoon={true}
       />
       <GitProviderConnection
         provider={EnumGitProvider.Bitbucket}
         onSyncNewGitOrganizationClick={handleAddProvider}
-        disabled={!showBitbucketConnect.hasAccess}
+        billingFeature={BillingFeature.Bitbucket}
+        disabled={!showBitbucketConnect}
       />
       <GitProviderConnection
         provider={EnumGitProvider.AwsCodeCommit}
         onSyncNewGitOrganizationClick={() => {
-          window.open("https://amplication.com/contact-us");
+          // Manual work following Notion docs
         }}
-        disabled={!showAwsCodeCommitConnect.hasAccess}
+        billingFeature={BillingFeature.AwsCodeCommit}
+        disabled={true}
+        comingSoon={true}
       />
     </div>
   );

@@ -9,6 +9,7 @@ import { ResourceModule } from "../resource/resource.module";
 import { ProjectResolver } from "./project.resolver";
 import { ProjectService } from "./project.service";
 import { GitProviderModule } from "../git/git.provider.module";
+import { SubscriptionModule } from "../subscription/subscription.module";
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { GitProviderModule } from "../git/git.provider.module";
     BuildModule,
     BillingModule,
     GitProviderModule,
+    SubscriptionModule,
   ],
   providers: [ProjectResolver, ProjectService],
   exports: [ProjectResolver, ProjectService],

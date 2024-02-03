@@ -41,7 +41,6 @@ import {
   CreateOneEntityFieldArgs,
   CreateOneEntityFieldByDisplayNameArgs,
   UpdateOneEntityFieldArgs,
-  CreateDefaultRelatedFieldArgs,
   CreateDefaultEntitiesArgs,
 } from "./dto";
 import { EntityService } from "./entity.service";
@@ -269,14 +268,5 @@ export class EntityResolver {
     @Args() args: UpdateOneEntityFieldArgs
   ): Promise<EntityField | null> {
     return this.entityService.updateField(args, user);
-  }
-
-  @Mutation(() => EntityField, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.EntityFieldId, "where.id")
-  async createDefaultRelatedField(
-    @UserEntity() user: User,
-    @Args() args: CreateDefaultRelatedFieldArgs
-  ): Promise<EntityField | null> {
-    return this.entityService.createDefaultRelatedField(args, user);
   }
 }

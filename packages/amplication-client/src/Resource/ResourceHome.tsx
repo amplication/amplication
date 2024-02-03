@@ -1,5 +1,4 @@
 import { TabItem } from "@amplication/ui/design-system";
-import { gql } from "@apollo/client";
 import { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
@@ -14,6 +13,7 @@ import {
   resourceMenuLayout,
   setResourceUrlLink,
 } from "./resourceMenuUtils";
+import { useStiggContext } from "@stigg/react-sdk";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -35,6 +35,8 @@ const ResourceHome = ({
   const { currentResource, currentWorkspace, currentProject, pendingChanges } =
     useContext(AppContext);
 
+  const { stigg } = useStiggContext();
+
   const tabs: TabItem[] = useMemo(() => {
     const fixedRoutes = resourceMenuLayout[currentResource?.resourceType]?.map(
       (menuItem: MenuItemLinks) => {
@@ -43,13 +45,15 @@ const ResourceHome = ({
             ? pendingChanges.length
             : undefined;
 
+        const toUrl = linksMap[menuItem].to;
+
         return {
           name: linksMap[menuItem].title,
           to: setResourceUrlLink(
             currentWorkspace.id,
             currentProject.id,
             currentResource.id,
-            linksMap[menuItem].to
+            toUrl
           ),
           iconName: linksMap[menuItem].icon,
           exact: false,
@@ -85,18 +89,3 @@ const ResourceHome = ({
 };
 
 export default ResourceHome;
-
-export const GET_RESOURCE = gql`
-  query getResource($id: String!) {
-    resource(where: { id: $id }) {
-      id
-      createdAt
-      updatedAt
-      name
-      description
-      githubLastSync
-      githubLastMessage
-      resourceType
-    }
-  }
-`;

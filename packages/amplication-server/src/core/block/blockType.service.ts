@@ -10,6 +10,7 @@ import {
 } from "../block/dto";
 import { UserEntity } from "../../decorators/user.decorator";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
+import { JsonFilter } from "../../dto/JsonFilter";
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
@@ -30,6 +31,17 @@ export abstract class BlockTypeService<
     return this.blockService.findManyByBlockType(args, this.blockType);
   }
 
+  async findManyBySettings(
+    args: FindManyArgs,
+    settingsFilter: JsonFilter
+  ): Promise<T[]> {
+    return this.blockService.findManyByBlockTypeAndSettings(
+      args,
+      this.blockType,
+      settingsFilter
+    );
+  }
+
   async create(args: CreateArgs, @UserEntity() user: User): Promise<T> {
     return this.blockService.create<T>(
       {
@@ -43,16 +55,31 @@ export abstract class BlockTypeService<
     );
   }
 
-  async update(args: UpdateArgs, @UserEntity() user: User): Promise<T> {
+  async update(
+    args: UpdateArgs,
+    @UserEntity() user: User,
+    keysToNotMerge?: string[]
+  ): Promise<T> {
     return this.blockService.update<T>(
       {
         ...args,
       },
-      user
+      user,
+      keysToNotMerge
     );
   }
 
-  async delete(args: DeleteArgs, @UserEntity() user: User): Promise<T> {
-    return await this.blockService.delete(args, user);
+  async delete(
+    args: DeleteArgs,
+    @UserEntity() user: User,
+    deleteChildBlocks = false,
+    deleteChildBlocksRecursive = true
+  ): Promise<T> {
+    return await this.blockService.delete(
+      args,
+      user,
+      deleteChildBlocks,
+      deleteChildBlocksRecursive
+    );
   }
 }

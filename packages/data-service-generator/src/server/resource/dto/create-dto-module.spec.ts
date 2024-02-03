@@ -17,7 +17,7 @@ import {
   createDTOModule,
 } from "./create-dto-module";
 import { CLASS_VALIDATOR_MODULE, IS_STRING_ID } from "./class-validator.util";
-import { createCreateInput, createCreateInputID } from "./create-create-input";
+import { createCreateInputID } from "./create-create-input";
 import { API_PROPERTY_ID, NESTJS_SWAGGER_MODULE } from "./nestjs-swagger.util";
 import { SERVER_BASE_DIRECTORY, SRC_DIRECTORY } from "../../constants";
 import {
@@ -26,6 +26,7 @@ import {
   NESTJS_GRAPHQL_MODULE,
 } from "./nestjs-graphql.util";
 import DsgContext from "../../../dsg-context";
+import { createEntityInputFiles } from "../create-dtos";
 
 const context = DsgContext.getInstance;
 context.serverDirectories = {
@@ -64,7 +65,7 @@ const EXAMPLE_DTO_NAME_TO_PATH = {
 
 describe("createDTOModule", () => {
   test("creates module", () => {
-    const dto = createCreateInput(EXAMPLE_ENTITY);
+    const dto = createEntityInputFiles(EXAMPLE_ENTITY).createInput;
     const modulePath = createDTOModulePath(
       EXAMPLE_ENTITY_NAME_DIRECTORY,
       dto.id.name
@@ -80,7 +81,7 @@ describe("createDTOModule", () => {
 
 describe("createDTOFile", () => {
   test("creates file", () => {
-    const dto = createCreateInput(EXAMPLE_ENTITY);
+    const dto = createEntityInputFiles(EXAMPLE_ENTITY).createInput;
     const modulePath = createDTOModulePath(
       EXAMPLE_ENTITY_NAME_DIRECTORY,
       dto.id.name

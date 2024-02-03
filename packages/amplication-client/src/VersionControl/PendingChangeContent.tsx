@@ -23,7 +23,13 @@ const PendingChangeContent = ({
 }: Props) => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
 
-  const url = `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/${relativeUrl}`;
+  const isProjectConfigResourceType =
+    change.resource.resourceType ===
+    models.EnumResourceType.ProjectConfiguration;
+
+  const url = isProjectConfigResourceType
+    ? `/${currentWorkspace?.id}/${currentProject?.id}/settings/general`
+    : `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/${relativeUrl}`;
 
   const nameElement = (
     <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import * as dotenv from "dotenv";
 import { PrismaClient } from "../prisma/generated-prisma-client";
 import { customSeed } from "./customSeed";

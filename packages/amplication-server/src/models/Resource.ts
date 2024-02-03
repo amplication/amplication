@@ -16,6 +16,11 @@ export class Resource {
   })
   id!: string;
 
+  @Field(() => String, {
+    nullable: true,
+  })
+  tempId?: string;
+
   @Field(() => Date, {
     nullable: false,
   })
@@ -92,6 +97,9 @@ export class Resource {
     nullable: true,
   })
   codeGeneratorStrategy?: keyof typeof CodeGeneratorVersionStrategy;
+
+  @Field(() => Boolean, { nullable: false, defaultValue: true })
+  licensed: boolean;
 
   // no need to expose to GraphQL
   deletedAt?: Date;

@@ -9,6 +9,7 @@ import { readCode } from "@amplication/code-gen-utils";
 import { replacePlaceholdersInCode } from "../utils/text-file-parser";
 import pluginWrapper from "../plugin-wrapper";
 import DsgContext from "../dsg-context";
+import { extractVariablesFromCode, sortAlphabetically } from "../utils/dotenv";
 
 const templatePath = require.resolve("./create-dotenv.template.env");
 
@@ -38,22 +39,19 @@ export async function createDotEnvModuleInternal({
   const MODULE_PATH = `${clientDirectories.baseDirectory}/.env`;
   const code = await readCode(templatePath);
   const envVariablesWithoutDuplicateKeys = removeDuplicateKeys(envVariables);
-  const formattedAdditionalVariables = convertToKeyValueString(
-    envVariablesWithoutDuplicateKeys
-  );
-  const codeWithAdditionalVariables = appendAdditionalVariables(
-    code,
-    formattedAdditionalVariables
-  );
+  const extractedVariables = extractVariablesFromCode(code);
+  const allVariables = [
+    ...extractedVariables,
+    ...envVariablesWithoutDuplicateKeys,
+  ];
+  const envVariablesSorted = sortAlphabetically(allVariables);
+  const codeWithEnvVariables = convertToKeyValueString(envVariablesSorted);
 
   const serviceSettingsDic: { [key: string]: any } = appInfo.settings;
 
   const dotEnvModule: Module = {
     path: MODULE_PATH,
-    code: replacePlaceholdersInCode(
-      codeWithAdditionalVariables,
-      serviceSettingsDic
-    ),
+    code: replacePlaceholdersInCode(codeWithEnvVariables, serviceSettingsDic),
   };
 
   const moduleMap = new ModuleMap(context.logger);
@@ -68,12 +66,6 @@ function convertToKeyValueString(arr: VariableDictionary): string {
       Object.entries(item).map(([key, value]) => `${key}=${value}`)
     )
     .join("\n");
-}
-
-function appendAdditionalVariables(file: string, variables: string): string {
-  if (!variables.trim()) return file;
-  if (!file.trim()) return file.concat(variables);
-  return file.concat(`\n${variables}`);
 }
 
 function removeDuplicateKeys(arr: VariableDictionary): VariableDictionary {

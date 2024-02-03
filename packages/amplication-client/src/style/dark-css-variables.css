@@ -49,4 +49,6 @@
   --diffViewerTitleColor: var(--gray-base);
   --diffViewerTitleBorderColor: var(--gray-full);
   --screenResolutionMessageColor: var(--gray-base);
+
+  --feature-indicator: #53dbee;
 }

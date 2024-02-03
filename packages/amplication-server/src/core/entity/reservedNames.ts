@@ -16,6 +16,7 @@ const RESERVED_NAMES = [
   "export",
   "extends",
   "false",
+  "field",
   "finally",
   "for",
   "function",
@@ -61,6 +62,8 @@ const RESERVED_NAMES = [
   "public",
   "static",
   "yield",
+  "field",
+  "app",
 ];
 
 export function isReservedName(word: string): boolean {

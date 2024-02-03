@@ -43,7 +43,7 @@ export async function createMainFile() {
 
   await logger.info("Formatting main.ts file...");
   await moduleMap.replaceModulesPath((path) => path.replace(".template", ""));
-  await moduleMap.replaceModulesCode((code) => formatCode(code));
+  await moduleMap.replaceModulesCode((path, code) => formatCode(path, code));
 
   return moduleMap;
 }

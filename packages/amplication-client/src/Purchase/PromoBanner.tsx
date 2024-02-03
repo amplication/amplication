@@ -1,6 +1,7 @@
 import { useStiggContext } from "@stigg/react-sdk";
 import { useEffect, useState } from "react";
 import "./PromoBanner.scss";
+import { REACT_APP_BILLING_ENABLED } from "../env";
 
 const CLASS_NAME = "promo-banner";
 
@@ -14,6 +15,11 @@ export const PromoBanner = () => {
 
   useEffect(() => {
     async function getCustomer() {
+      if (REACT_APP_BILLING_ENABLED === "false") {
+        setFreePlan(true);
+        return;
+      }
+
       if (isInitialized) {
         const customer = await stigg.getCustomer();
         const subs = customer.getActiveSubscriptions();

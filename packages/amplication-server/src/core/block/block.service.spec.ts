@@ -28,6 +28,7 @@ const EXAMPLE_RESOURCE: Resource = {
   name: "Example Resource",
   description: "Example Resource Description",
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const EXAMPLE_USER: User = {
@@ -94,6 +95,7 @@ const EXAMPLE_IBLOCK: BlockType = {
   inputParameters: EXAMPLE_BLOCK_INPUT_LIST,
   outputParameters: EXAMPLE_BLOCK_INPUT_LIST,
   parentBlock: EXAMPLE_BLOCK.parentBlock,
+  parentBlockId: EXAMPLE_BLOCK.parentBlockId,
   versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
   resourceId: EXAMPLE_RESOURCE.id,
   ...EXAMPLE_BLOCK_SETTINGS,
@@ -153,6 +155,7 @@ describe("BlockService", () => {
               create: prismaBlockVersionCreateMock,
               findMany: prismaBlockVersionFindManyMock,
               findUnique: prismaBlockVersionFindOneMock,
+              findFirst: prismaBlockVersionFindOneMock,
               update: prismaBlockVersionUpdateMock,
             },
           })),
@@ -248,10 +251,10 @@ describe("BlockService", () => {
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledTimes(1);
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledWith({
       where: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        blockId_versionNumber: {
-          blockId: EXAMPLE_BLOCK.id,
-          versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
+        blockId: EXAMPLE_BLOCK.id,
+        versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
+        block: {
+          deletedAt: null,
         },
       },
       include: {
@@ -382,10 +385,18 @@ describe("BlockService", () => {
   });
 
   it("should find many blocks", async () => {
-    const args = {};
+    const args = {
+      where: undefined,
+    };
     expect(await service.findMany(args)).toEqual([EXAMPLE_BLOCK]);
     expect(prismaBlockFindManyMock).toBeCalledTimes(1);
-    expect(prismaBlockFindManyMock).toBeCalledWith(args);
+    expect(prismaBlockFindManyMock).toBeCalledWith({
+      ...args,
+      where: {
+        ...args.where,
+        deletedAt: null,
+      },
+    });
   });
 
   it("should find many blocks by block type", async () => {

@@ -30,7 +30,8 @@
             "output": "./"
           }
         ],
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -44,7 +45,8 @@
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "gpt-gateway:build",
-        "inspect": true
+        "inspect": true,
+        "watch": true
       },
       "configurations": {
         "production": {
@@ -86,7 +88,7 @@
     "db:migrate:dev": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "prisma migrate dev",
+        "command": "prisma migrate dev --name $([[ {args.name} = undefined ]] && echo migration || echo {args.name})",
         "cwd": "packages/gpt-gateway"
       }
     },
@@ -126,7 +128,7 @@
     "db:clean": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node scripts/clean.ts",
+        "command": "prisma migrate reset --force",
         "cwd": "packages/gpt-gateway"
       }
     },

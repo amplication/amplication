@@ -10,15 +10,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
+import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import * as nestAccessControl from "nest-access-control";
-import * as gqlACGuard from "../../auth/gqlAC.guard";
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as common from "@nestjs/common";
 import { Public } from "../../decorators/public.decorator";
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { CreatePluginVersionArgs } from "./CreatePluginVersionArgs";
 import { UpdatePluginVersionArgs } from "./UpdatePluginVersionArgs";
 import { DeletePluginVersionArgs } from "./DeletePluginVersionArgs";
@@ -27,16 +22,10 @@ import { PluginVersionFindManyArgs } from "./PluginVersionFindManyArgs";
 import { PluginVersionFindUniqueArgs } from "./PluginVersionFindUniqueArgs";
 import { PluginVersion } from "./PluginVersion";
 import { PluginVersionService } from "../pluginVersion.service";
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => PluginVersion)
 export class PluginVersionResolverBase {
-  constructor(
-    protected readonly service: PluginVersionService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(protected readonly service: PluginVersionService) {}
 
-  @Public()
-  @graphql.Query(() => MetaQueryPayload)
   async _pluginVersionsMeta(
     @graphql.Args() args: PluginVersionCountArgs
   ): Promise<MetaQueryPayload> {
@@ -66,13 +55,7 @@ export class PluginVersionResolverBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => PluginVersion)
-  @nestAccessControl.UseRoles({
-    resource: "PluginVersion",
-    action: "create",
-    possession: "any",
-  })
   async createPluginVersion(
     @graphql.Args() args: CreatePluginVersionArgs
   ): Promise<PluginVersion> {
@@ -82,13 +65,7 @@ export class PluginVersionResolverBase {
     });
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => PluginVersion)
-  @nestAccessControl.UseRoles({
-    resource: "PluginVersion",
-    action: "update",
-    possession: "any",
-  })
   async updatePluginVersion(
     @graphql.Args() args: UpdatePluginVersionArgs
   ): Promise<PluginVersion | null> {
@@ -99,7 +76,7 @@ export class PluginVersionResolverBase {
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -108,11 +85,6 @@ export class PluginVersionResolverBase {
   }
 
   @graphql.Mutation(() => PluginVersion)
-  @nestAccessControl.UseRoles({
-    resource: "PluginVersion",
-    action: "delete",
-    possession: "any",
-  })
   async deletePluginVersion(
     @graphql.Args() args: DeletePluginVersionArgs
   ): Promise<PluginVersion | null> {
@@ -120,7 +92,7 @@ export class PluginVersionResolverBase {
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
