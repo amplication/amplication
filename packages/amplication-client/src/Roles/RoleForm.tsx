@@ -1,11 +1,10 @@
 import React, { useMemo } from "react";
 import { Formik } from "formik";
-import { Form } from "../Components/Form";
 import { omit } from "lodash";
 import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
-import { TextField } from "@amplication/ui/design-system";
+import { TextField, Form } from "@amplication/ui/design-system";
 import {
   validate,
   validationErrorMessages,

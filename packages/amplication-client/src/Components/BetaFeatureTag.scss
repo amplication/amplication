@@ -1,0 +1,29 @@
+@import "../style/index.scss";
+
+$height: 24px;
+$border-radius: $height / 2;
+
+.beta-feature-tag {
+  &__tag {
+    box-sizing: border-box;
+    padding: 0 var(--default-spacing);
+    background-color: var(--theme-turquoise);
+    border-radius: $border-radius;
+    height: $height;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-full);
+
+    i {
+      padding-left: var(--icon-spacing);
+    }
+  }
+
+  &__tooltip-content {
+    background-color: var(--gray-full);
+    border: 1px solid var(--theme-turquoise);
+    border-radius: var(--default-border-radius);
+    padding: var(--default-spacing);
+  }
+}

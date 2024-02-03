@@ -2636,13 +2636,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-
-import {
-  Prisma,
-  Customer, // @ts-ignore
-  Order, // @ts-ignore
-  Organization,
-} from "@prisma/client";
+import { Prisma, Customer, Order, Organization } from "@prisma/client";
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -3984,7 +3978,6 @@ async function main() {
 
   //This fix is based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   BigInt.prototype.toJSON = function () {
     return this.toString();
   };
@@ -5292,12 +5285,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-
-import {
-  Prisma,
-  Order, // @ts-ignore
-  Customer,
-} from "@prisma/client";
+import { Prisma, Order, Customer } from "@prisma/client";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -7055,13 +7043,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-
-import {
-  Prisma,
-  Organization, // @ts-ignore
-  User, // @ts-ignore
-  Customer,
-} from "@prisma/client";
+import { Prisma, Organization, User, Customer } from "@prisma/client";
 
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -8550,12 +8532,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-
-import {
-  Prisma,
-  Profile, // @ts-ignore
-  User,
-} from "@prisma/client";
+import { Prisma, Profile, User } from "@prisma/client";
 
 export class ProfileServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -11250,13 +11227,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-
-import {
-  Prisma,
-  User, // @ts-ignore
-  Organization, // @ts-ignore
-  Profile,
-} from "@prisma/client";
+import { Prisma, User, Organization, Profile } from "@prisma/client";
 
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}

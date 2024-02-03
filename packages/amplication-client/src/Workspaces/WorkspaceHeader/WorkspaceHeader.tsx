@@ -9,7 +9,7 @@ import {
   SelectMenuModal,
   Tooltip,
 } from "@amplication/ui/design-system";
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import {
   ButtonTypeEnum,
   IMessage,
@@ -52,6 +52,9 @@ import "./WorkspaceHeader.scss";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
 import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
+import { FeatureIndicator } from "../../Components/FeatureIndicator";
+import { CompleteSignupDialog } from "../../Components/CompleteSignupDialog";
+import { COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL } from "../../User/UserQueries";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -86,6 +89,8 @@ const WorkspaceHeader: React.FC = () => {
     useContext(AppContext);
   const upgradeButtonData = useUpgradeButtonData(currentWorkspace);
 
+  const [completeSignup] = useMutation(COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL);
+
   const { data } = useQuery(GET_CONTACT_US_LINK, {
     variables: { id: currentWorkspace.id },
   });
@@ -110,6 +115,9 @@ const WorkspaceHeader: React.FC = () => {
   }).hasAccess;
 
   const [showProfileFormDialog, setShowProfileFormDialog] =
+    useState<boolean>(false);
+
+  const [showCompleteSignupDialog, setShowCompleteSignupDialog] =
     useState<boolean>(false);
 
   const handleSignOut = useCallback(() => {
@@ -160,12 +168,14 @@ const WorkspaceHeader: React.FC = () => {
   }, [openHubSpotChat]);
 
   const handleGenerateCodeClick = useCallback(() => {
+    completeSignup();
+    setShowCompleteSignupDialog(!showCompleteSignupDialog);
     trackEvent({
       eventName: AnalyticsEventNames.HelpMenuItemClick,
       action: "Generate code",
       eventOriginLocation: "workspace-header-help-menu",
     });
-  }, []);
+  }, [completeSignup, showCompleteSignupDialog, trackEvent]);
 
   const handleItemDataClicked = useCallback(
     (itemData: ItemDataCommand) => {
@@ -179,6 +189,10 @@ const WorkspaceHeader: React.FC = () => {
   const handleShowProfileForm = useCallback(() => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
+
+  const handleShowCompleteSignupDialog = useCallback(() => {
+    setShowCompleteSignupDialog(!showCompleteSignupDialog);
+  }, [showCompleteSignupDialog]);
 
   const handleBellClick = useCallback(() => {
     if (!novuCenterState) {
@@ -266,13 +280,30 @@ const WorkspaceHeader: React.FC = () => {
               upgradeButtonData.isPreviewPlan &&
               !upgradeButtonData.showUpgradeDefaultButton && (
                 <>
-                  <Button
-                    className={`${CLASS_NAME}__upgrade__btn`}
-                    buttonStyle={EnumButtonStyle.Primary}
-                    onClick={handleGenerateCodeClick}
+                  <Dialog
+                    className="new-entity-dialog"
+                    isOpen={showCompleteSignupDialog}
+                    onDismiss={handleShowCompleteSignupDialog}
+                    title="Generate your Code"
                   >
-                    Generate the code
-                  </Button>
+                    <CompleteSignupDialog
+                      handleDialogClose={handleShowCompleteSignupDialog}
+                    />
+                  </Dialog>
+                  <FeatureIndicator
+                    featureName={BillingFeature.CodeGenerationBuilds}
+                    text="Generate production-ready code for this architecture with just a few simple clicks"
+                    linkText=""
+                    element={
+                      <Button
+                        className={`${CLASS_NAME}__upgrade__btn`}
+                        buttonStyle={EnumButtonStyle.Primary}
+                        onClick={handleGenerateCodeClick}
+                      >
+                        Generate the code
+                      </Button>
+                    }
+                  />
                   <Button
                     className={`${CLASS_NAME}__upgrade__btn`}
                     buttonStyle={EnumButtonStyle.Outline}

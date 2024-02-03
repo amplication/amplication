@@ -1,6 +1,7 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { PluginModule } from "./plugin/plugin.module";
 import { PluginVersionModule } from "./pluginVersion/pluginVersion.module";
+import { CategoryModule } from "./category/category.module";
 import { HealthModule } from "./health/health.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
@@ -18,6 +19,7 @@ import { SERVICE_NAME } from "./constants";
     PrismaModule,
     PluginModule,
     forwardRef(() => PluginVersionModule),
+    CategoryModule,
     HealthModule,
     SecretsManagerModule,
     ConfigModule.forRoot({ isGlobal: true }),

@@ -43,7 +43,7 @@ export const PluginTree = React.memo(
 
     useEffect(() => {
       setChevronIcon(
-        /catalog|installed/.test(location.pathname) ? "close" : "open"
+        /catalog\/|!installed/.test(location.pathname) ? "open" : "close"
       );
     }, [location.pathname]);
 
@@ -54,7 +54,7 @@ export const PluginTree = React.memo(
           icon="plugins"
           to={`/${currentWorkspace?.id}/${
             currentProject?.id
-          }/${resourceId}/plugins/${encodeURIComponent(category)}`}
+          }/${resourceId}/plugins/catalog/${encodeURIComponent(category)}`}
         >
           <span>{category}</span>
         </InnerTabLink>

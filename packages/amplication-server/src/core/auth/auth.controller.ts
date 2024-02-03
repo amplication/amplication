@@ -13,15 +13,16 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { MorganInterceptor } from "nest-morgan";
 import { Request, Response } from "express";
-import { AuthService, AuthUser } from "./auth.service";
+import { AuthService } from "./auth.service";
 import { GithubAuthExceptionFilter } from "../../filters/github-auth-exception.filter";
 import { GitHubAuthGuard } from "./github.guard";
-import { AuthProfile, GitHubRequest } from "./types";
+import { AuthProfile, AuthUser, GitHubRequest } from "./types";
 import { stringifyUrl } from "query-string";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { AuthExceptionFilter } from "../../filters/auth-exception.filter";
 import { requiresAuth } from "express-openid-connect";
+import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 export const AUTH_LOGIN_PATH = "/auth/login";
 export const AUTH_LOGOUT_PATH = "/auth/logout";
 export const AUTH_CALLBACK_PATH = "/auth/callback";
@@ -87,10 +88,29 @@ export class AuthController {
   @UseInterceptors(MorganInterceptor("combined"))
   @Get(AUTH_LOGIN_PATH)
   async auth0Login(@Req() request: Request, @Res() response: Response) {
-    await response.oidc.login({
-      returnTo: AUTH_AFTER_CALLBACK_PATH,
-    });
-    return;
+    try {
+      const screenHint = request.query.work_email
+        ? {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            screen_hint: "signup",
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            login_hint: request.query.work_email as string,
+          }
+        : // eslint-disable-next-line @typescript-eslint/naming-convention
+          { screen_hint: "login-id" };
+      await response.oidc.login({
+        authorizationParams: {
+          ...screenHint,
+        },
+        returnTo: AUTH_AFTER_CALLBACK_PATH,
+      });
+      return;
+    } catch (error) {
+      this.logger.error(error.message, error);
+      return (
+        error.body.friendly_message || "Please enter a valid work email address"
+      );
+    }
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
@@ -159,8 +179,17 @@ export class AuthController {
       isNew = true;
     }
     if (!user.account.githubId || user.account.githubId !== profile.sub) {
-      user = await this.authService.updateUser(user, profile);
+      user = await this.authService.updateUser(user, { githubId: profile.sub });
       isNew = false;
+    }
+
+    if (
+      user.account.previewAccountType === EnumPreviewAccountType.Auth0Signup
+    ) {
+      user = await this.authService.updateUser(user, {
+        previewAccountType: EnumPreviewAccountType.None,
+      });
+      isNew = true;
     }
 
     // @todo update the token to include the auth0 expiry / issued at / etc
