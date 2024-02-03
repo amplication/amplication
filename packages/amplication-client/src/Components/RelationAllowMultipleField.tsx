@@ -32,7 +32,7 @@ const RelationAllowMultiple = ({ fieldName, entityDisplayName }: Props) => {
       <RadioButtonField
         name="relationAllowMultiple-field"
         value="true"
-        checked={formik.values.properties.allowMultipleSelection}
+        checked={formik.values.properties.allowMultipleSelection == true}
         label={`One '${entityDisplayName}' can be related to many '${formik.values.displayName}'`}
         onChange={handleChange}
       />
