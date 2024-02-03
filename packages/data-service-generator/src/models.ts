@@ -1194,7 +1194,7 @@ export type Mutation = {
   login: Auth;
   provisionSubscription?: Maybe<ProvisionSubscriptionResult>;
   redeemCoupon: Coupon;
-  redesignProject: Array<Resource>;
+  redesignProject: UserAction;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
@@ -2231,7 +2231,6 @@ export type Resource = {
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;
   resourceType: EnumResourceType;
-  tempId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -2258,7 +2257,6 @@ export type ResourceCreateInput = {
   project: WhereParentIdInput;
   resourceType: EnumResourceType;
   serviceSettings?: InputMaybe<ServiceSettingsUpdateInput>;
-  tempId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ResourceCreateWithEntitiesEntityInput = {

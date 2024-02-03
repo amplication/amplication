@@ -22,6 +22,7 @@ import { ResourceBtmResolver } from "./resourceBtm.resolver";
 import { ResourceBtmService } from "./resourceBtm.service";
 import { GptModule } from "../gpt/gpt.module";
 import { UserActionModule } from "../userAction/userAction.module";
+import { ActionModule } from "../action/action.module";
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { UserActionModule } from "../userAction/userAction.module";
     KafkaModule,
     forwardRef(() => GptModule),
     UserActionModule,
+    ActionModule,
   ],
   providers: [
     ResourceService,
