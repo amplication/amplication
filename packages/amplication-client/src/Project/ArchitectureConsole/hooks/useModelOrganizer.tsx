@@ -545,7 +545,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
 
   const [
     redesignProject,
-    { loading: loadingCreateResourceAndEntities, error: createEntitiesError },
+    { loading: applyChangesLoading, error: applyChangesError },
   ] = useMutation<modelChangesData>(REDESIGN_PROJECT, {});
 
   const applyChanges = useCallback(async () => {
@@ -583,12 +583,12 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     resourcesData,
     loadingResources,
     resourcesError,
-    loadingCreateResourceAndEntities,
+    applyChangesLoading,
+    applyChangesError,
     setSearchPhrase,
     toggleShowRelationDetails,
     resetChanges,
     changes,
-    createEntitiesError,
     setChanges,
     setCurrentEditableResource,
     applyChanges,

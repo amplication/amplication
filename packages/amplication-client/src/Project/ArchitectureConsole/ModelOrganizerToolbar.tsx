@@ -37,8 +37,8 @@ type Props = {
   handleServiceCreated: (newResource: models.Resource) => void;
   onCancelChanges: () => void;
   mergeNewResourcesChanges: () => void;
-  loadingCreateResourceAndEntities: boolean;
-  createEntitiesError: any;
+  applyChangesLoading: boolean;
+  applyChangesError: any;
 };
 
 export default function ModelOrganizerToolbar({
@@ -47,8 +47,8 @@ export default function ModelOrganizerToolbar({
   hasChanges,
   nodes,
   resources,
-  loadingCreateResourceAndEntities,
-  createEntitiesError,
+  applyChangesLoading,
+  applyChangesError,
   onApplyPlan,
   searchPhraseChanged,
   onRedesign,
@@ -64,16 +64,18 @@ export default function ModelOrganizerToolbar({
   );
   const [confirmChanges, setConfirmChanges] = useState<boolean>(false);
   const [changesDialog, setChangesDialog] = useState<boolean>(false);
-  const [createError, setCreateError] = useState<string | null>(null);
+  const [applyChangesErrorMessage, setApplyChangesErrorMessage] = useState<
+    string | null
+  >(null);
 
   const handleConfirmChangesState = useCallback(() => {
     setConfirmChanges(!confirmChanges);
-    setCreateError(null);
+    setApplyChangesErrorMessage(null);
   }, [confirmChanges, setConfirmChanges]);
 
   useEffect(() => {
-    setCreateError(formatError(createEntitiesError));
-  }, [createEntitiesError, setCreateError]);
+    setApplyChangesErrorMessage(formatError(applyChangesError));
+  }, [applyChangesError]);
 
   const handleChangesDialogDismiss = useCallback(() => {
     setChangesDialog(false);
@@ -91,8 +93,8 @@ export default function ModelOrganizerToolbar({
           onConfirmChanges={onApplyPlan}
           onCancelChanges={handleConfirmChangesState}
           changes={changes}
-          createEntitiesError={createError}
-          loadingCreateResourceAndEntities={loadingCreateResourceAndEntities}
+          applyChangesErrorMessage={applyChangesErrorMessage}
+          applyChangesLoading={applyChangesLoading}
         ></ModelOrganizerConfirmation>
       </Dialog>
 

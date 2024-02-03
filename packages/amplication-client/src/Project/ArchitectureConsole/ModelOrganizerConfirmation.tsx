@@ -33,8 +33,8 @@ type Props = {
   onCancelChanges: () => void;
   changes: ModelChanges;
   nodes: Node[];
-  loadingCreateResourceAndEntities: boolean;
-  createEntitiesError: string;
+  applyChangesLoading: boolean;
+  applyChangesErrorMessage: string;
 };
 
 export default function ModelOrganizerConfirmation({
@@ -42,8 +42,8 @@ export default function ModelOrganizerConfirmation({
   onCancelChanges,
   nodes,
   changes,
-  loadingCreateResourceAndEntities,
-  createEntitiesError,
+  applyChangesLoading,
+  applyChangesErrorMessage,
 }: Props) {
   const [applyChangesSteps, setApplyChangesSteps] = useState<boolean>(false);
   const [keepLoadingChanges, setKeepLoadingChanges] = useState<boolean>(false);
@@ -64,10 +64,10 @@ export default function ModelOrganizerConfirmation({
   }, [nodes]);
 
   useEffect(() => {
-    if (loadingCreateResourceAndEntities) {
+    if (applyChangesLoading) {
       setKeepLoadingChanges(true);
     }
-  }, [setKeepLoadingChanges, loadingCreateResourceAndEntities]);
+  }, [setKeepLoadingChanges, applyChangesLoading]);
 
   const handleTimeout = useCallback(() => {
     setKeepLoadingChanges(false);
@@ -76,12 +76,12 @@ export default function ModelOrganizerConfirmation({
 
   return (
     <div className={CLASS_NAME}>
-      {keepLoadingChanges || loadingCreateResourceAndEntities ? (
+      {keepLoadingChanges || applyChangesLoading ? (
         <CreateApplyChangesLoader
           onTimeout={handleTimeout}
           minimumLoadTimeMS={MIN_TIME_OUT_LOADER}
         />
-      ) : createEntitiesError ? (
+      ) : applyChangesErrorMessage ? (
         <>
           <FlexItem
             direction={EnumFlexDirection.Column}
@@ -99,7 +99,7 @@ export default function ModelOrganizerConfirmation({
                 textStyle={EnumTextStyle.Tag}
                 textColor={EnumTextColor.White}
               >
-                {createEntitiesError}
+                {applyChangesErrorMessage}
               </Text>
             </Panel>
           </FlexItem>
