@@ -37,9 +37,9 @@ export const GET_RESOURCES = gql`
   }
 `;
 
-export const CREATE_RESOURCE_ENTITIES = gql`
-  mutation copiedEntities($data: ResourcesCreateCopiedEntitiesInput!) {
-    copiedEntities(data: $data) {
+export const REDESIGN_PROJECT = gql`
+  mutation redesignProject($data: RedesignProjectInput!) {
+    redesignProject(data: $data) {
       id
       name
       entities {

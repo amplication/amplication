@@ -16,5 +16,6 @@ $max-width: 50vw;
   &__error {
     background-color: var(--theme-light-red-transparent);
     border: 1px solid var(--theme-red);
+    width: 100%;
   }
 }

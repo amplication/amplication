@@ -9,12 +9,8 @@ import {
   tempResourceToNode,
 } from "../helpers";
 import { applyAutoLayout } from "../layout";
+import { REDESIGN_PROJECT, GET_RESOURCES } from "../queries/modelsQueries";
 import {
-  CREATE_RESOURCE_ENTITIES,
-  GET_RESOURCES,
-} from "../queries/modelsQueries";
-import {
-  CopiedEntity,
   EntityNode,
   ModelChanges,
   ModelOrganizerPersistentData,
@@ -301,14 +297,14 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
             );
 
             const serviceName = newExistingServiceWithSameName
-              ? newServiceChange.name + "_" + newServiceChange.tempId
+              ? newServiceChange.name + "_" + newServiceChange.id
               : newServiceChange.name;
 
             newServiceChange.name = serviceName;
 
             const newResource = createNewServiceObject(
               serviceName,
-              newServiceChange.tempId
+              newServiceChange.id
             );
             data.resources.push(newResource);
           }
@@ -321,7 +317,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
             {}
           );
 
-          const newMovedEntities: CopiedEntity[] = [];
+          const newMovedEntities: models.RedesignProjectMovedEntity[] = [];
 
           for (const movedEntity of changes.movedEntities) {
             if (!resourceMapping[movedEntity.originalResourceId]) {
@@ -476,9 +472,8 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       nodes.push(newResourceNode);
 
       const newService = {
-        tempId: newResource.tempId,
+        id: newResource.tempId,
         name: newResource.name,
-        color: newResourceNode.data.groupColor,
       };
 
       changes.newServices.push(newService);
@@ -549,24 +544,15 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
   );
 
   const [
-    createResourceEntities,
+    redesignProject,
     { loading: loadingCreateResourceAndEntities, error: createEntitiesError },
-  ] = useMutation<modelChangesData>(CREATE_RESOURCE_ENTITIES, {});
+  ] = useMutation<modelChangesData>(REDESIGN_PROJECT, {});
 
   const applyChanges = useCallback(async () => {
-    const { newServices, movedEntities } = changes;
-    const mapServices = newServices.map((s) => {
-      return {
-        tempId: s.tempId,
-        name: s.name,
-      };
-    });
-
-    await createResourceEntities({
+    await redesignProject({
       variables: {
         data: {
-          entitiesToCopy: movedEntities,
-          modelGroupsResources: mapServices,
+          ...changes,
           projectId: projectId,
         },
       },
@@ -577,7 +563,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         //@todo: show Errors
       },
     }).catch(console.error);
-  }, [changes, createResourceEntities, projectId, resetChanges]);
+  }, [changes, redesignProject, projectId, resetChanges]);
 
   useEffect(() => {
     if (projectId) {
