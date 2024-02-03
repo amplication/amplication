@@ -39,6 +39,7 @@ type Props = {
   mergeNewResourcesChanges: () => void;
   applyChangesLoading: boolean;
   applyChangesError: any;
+  applyChangesData: models.UserAction;
 };
 
 export default function ModelOrganizerToolbar({
@@ -49,6 +50,7 @@ export default function ModelOrganizerToolbar({
   resources,
   applyChangesLoading,
   applyChangesError,
+  applyChangesData,
   onApplyPlan,
   searchPhraseChanged,
   onRedesign,
@@ -95,6 +97,7 @@ export default function ModelOrganizerToolbar({
           changes={changes}
           applyChangesErrorMessage={applyChangesErrorMessage}
           applyChangesLoading={applyChangesLoading}
+          applyChangesData={applyChangesData}
         ></ModelOrganizerConfirmation>
       </Dialog>
 

@@ -21,6 +21,7 @@ import {
 
 import useModelOrganizerPersistentData from "./useModelOrganizerPersistentData";
 import { EnumMessageType } from "../../../util/useMessage";
+import useUserActionWatchStatus from "../../../UserAction/useUserActionWatchStatus";
 
 type TData = {
   resources: models.Resource[];
@@ -31,16 +32,8 @@ type Props = {
   onMessage: (message: string, type: EnumMessageType) => void;
 };
 
-type modelChangesData = {
-  projectId: string;
-  modelGroupsResources: {
-    tempId: string;
-    name: string;
-  }[];
-  entitiesToCopy: {
-    targetResourceId: string;
-    entityId: string;
-  }[];
+type RedesignProjectData = {
+  redesignProject: models.UserAction;
 };
 
 const useModelOrganization = ({ projectId, onMessage }: Props) => {
@@ -60,6 +53,9 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     useState<Date>(null);
 
   const [redesignMode, setRedesignMode] = useState<boolean>(false);
+
+  const [userAction, setUserAction] = useState<models.UserAction>(null);
+  const { data: applyChangesResults } = useUserActionWatchStatus(userAction);
 
   const [changes, setChanges] = useState<ModelChanges>({
     movedEntities: [],
@@ -206,6 +202,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     }
     setCurrentEditableResourceNode(null);
     setRedesignMode(false);
+
     clearPersistentData();
     loadProjectResources(true, () => {
       onMessage(
@@ -223,7 +220,6 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
   const createNewServiceObject = useCallback(
     (serviceName: string, serviceTempId: string) => {
       const newService: models.Resource = {
-        tempId: serviceTempId,
         description: "",
         entities: [],
         id: serviceTempId,
@@ -271,6 +267,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         setCurrentEditableResourceNode(selectedResourceNode);
 
         setRedesignMode(true);
+        setUserAction(null); //clear results of previous apply if exists
         saveToPersistentData();
         return [...updatedNodes];
       });
@@ -472,7 +469,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       nodes.push(newResourceNode);
 
       const newService = {
-        id: newResource.tempId,
+        id: newResource.id,
         name: newResource.name,
       };
 
@@ -546,7 +543,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
   const [
     redesignProject,
     { loading: applyChangesLoading, error: applyChangesError },
-  ] = useMutation<modelChangesData>(REDESIGN_PROJECT, {});
+  ] = useMutation<RedesignProjectData>(REDESIGN_PROJECT, {});
 
   const applyChanges = useCallback(async () => {
     await redesignProject({
@@ -557,6 +554,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         },
       },
       onCompleted: async (data) => {
+        setUserAction(data.redesignProject);
         resetChanges();
       },
       onError: (error) => {
@@ -585,6 +583,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     resourcesError,
     applyChangesLoading,
     applyChangesError,
+    applyChangesData: applyChangesResults?.userAction,
     setSearchPhrase,
     toggleShowRelationDetails,
     resetChanges,
