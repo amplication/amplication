@@ -21,6 +21,7 @@ import * as models from "../../models";
 import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
+import { formatError } from "../../util/error";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
@@ -37,7 +38,7 @@ type Props = {
   onCancelChanges: () => void;
   mergeNewResourcesChanges: () => void;
   loadingCreateResourceAndEntities: boolean;
-  createEntitiesError: boolean;
+  createEntitiesError: any;
 };
 
 export default function ModelOrganizerToolbar({
@@ -63,15 +64,15 @@ export default function ModelOrganizerToolbar({
   );
   const [confirmChanges, setConfirmChanges] = useState<boolean>(false);
   const [changesDialog, setChangesDialog] = useState<boolean>(false);
-  const [createError, setCreateError] = useState<boolean>(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const handleConfirmChangesState = useCallback(() => {
     setConfirmChanges(!confirmChanges);
-    setCreateError(false);
+    setCreateError(null);
   }, [confirmChanges, setConfirmChanges]);
 
   useEffect(() => {
-    setCreateError(createEntitiesError);
+    setCreateError(formatError(createEntitiesError));
   }, [createEntitiesError, setCreateError]);
 
   const handleChangesDialogDismiss = useCallback(() => {

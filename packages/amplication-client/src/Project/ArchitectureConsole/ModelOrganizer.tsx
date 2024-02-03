@@ -274,7 +274,7 @@ export default function ModelOrganizer() {
               handleServiceCreated={handleServiceCreated}
               onCancelChanges={onCancelChangesClick}
               mergeNewResourcesChanges={mergeNewResourcesChanges}
-              createEntitiesError={Boolean(createEntitiesError)}
+              createEntitiesError={createEntitiesError}
             />
             <Dialog
               isOpen={!isValidResourceName}
