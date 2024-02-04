@@ -78,18 +78,32 @@ export default function ModelOrganizerConfirmation({
     setApplyChangesSteps(true);
   }, [setKeepLoadingChanges, setApplyChangesSteps]);
 
+  const ActionStep = applyChangesData?.action?.steps?.length
+    ? applyChangesData?.action?.steps[0]
+    : null;
+
   return (
     <div className={CLASS_NAME}>
-      {applyChangesData ? (
+      {ActionStep?.status === models.EnumActionStepStatus.Failed ? (
         <>
+          <Panel
+            panelStyle={EnumPanelStyle.Bordered}
+            className={`${CLASS_NAME}__error`}
+          >
+            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+              Something went wrong. See the log below for more details.
+            </Text>
+          </Panel>
           <ActionLog
-            height={"150px"}
+            height={"250px"}
             action={applyChangesData?.action}
             title={"Apply Changes to Architecture"}
             versionNumber={""}
           />
         </>
-      ) : keepLoadingChanges || applyChangesLoading ? (
+      ) : keepLoadingChanges ||
+        applyChangesLoading ||
+        ActionStep?.status === models.EnumActionStepStatus.Running ? (
         <CreateApplyChangesLoader
           onTimeout={handleTimeout}
           minimumLoadTimeMS={MIN_TIME_OUT_LOADER}

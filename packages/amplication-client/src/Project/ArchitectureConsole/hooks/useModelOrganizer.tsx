@@ -192,30 +192,38 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     saveToPersistentData,
   ]);
 
-  const resetChanges = useCallback(() => {
-    setChanges({
-      movedEntities: [],
-      newServices: [],
-    });
-    if (currentEditableResourceNode) {
-      currentEditableResourceNode.data.isEditable = false;
-    }
-    setCurrentEditableResourceNode(null);
-    setRedesignMode(false);
+  const resetChanges = useCallback(
+    (showResetMessage = true) => {
+      setChanges({
+        movedEntities: [],
+        newServices: [],
+      });
+      if (currentEditableResourceNode) {
+        currentEditableResourceNode.data.isEditable = false;
+      }
+      setCurrentEditableResourceNode(null);
+      setRedesignMode(false);
 
-    clearPersistentData();
-    loadProjectResources(true, () => {
-      onMessage(
-        "Redesign changes were discarded successfully",
-        EnumMessageType.Success
+      clearPersistentData();
+      loadProjectResources(
+        true,
+        showResetMessage
+          ? () => {
+              onMessage(
+                "Redesign changes were discarded successfully",
+                EnumMessageType.Success
+              );
+            }
+          : undefined
       );
-    });
-  }, [
-    currentEditableResourceNode,
-    clearPersistentData,
-    loadProjectResources,
-    onMessage,
-  ]);
+    },
+    [
+      currentEditableResourceNode,
+      clearPersistentData,
+      loadProjectResources,
+      onMessage,
+    ]
+  );
 
   const createNewServiceObject = useCallback(
     (serviceName: string, serviceTempId: string) => {
@@ -555,7 +563,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       },
       onCompleted: async (data) => {
         setUserAction(data.redesignProject);
-        resetChanges();
+        resetChanges(false);
       },
       onError: (error) => {
         //@todo: show Errors
