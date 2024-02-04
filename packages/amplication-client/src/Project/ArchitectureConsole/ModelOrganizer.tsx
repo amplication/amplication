@@ -78,6 +78,7 @@ export default function ModelOrganizer() {
     applyChanges,
     applyChangesLoading,
     applyChangesError,
+    applyChangesData,
     moveNodeToParent,
     createNewTempService,
     modelGroupFilterChanged,
@@ -273,6 +274,7 @@ export default function ModelOrganizer() {
               onCancelChanges={onCancelChangesClick}
               mergeNewResourcesChanges={mergeNewResourcesChanges}
               applyChangesError={applyChangesError}
+              applyChangesData={applyChangesData}
             />
             <Dialog
               isOpen={!isValidResourceName}

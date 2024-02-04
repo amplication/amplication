@@ -1168,7 +1168,7 @@ type Mutation {
   login(data: LoginInput!): Auth!
   provisionSubscription(data: ProvisionSubscriptionInput!): ProvisionSubscriptionResult
   redeemCoupon(data: RedeemCouponInput!): Coupon!
-  redesignProject(data: RedesignProjectInput!): [Resource!]!
+  redesignProject(data: RedesignProjectInput!): UserAction!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
@@ -1546,7 +1546,6 @@ type Resource {
   project: Project
   projectId: String
   resourceType: EnumResourceType!
-  tempId: String
   updatedAt: DateTime!
 }
 
@@ -1557,7 +1556,6 @@ input ResourceCreateInput {
   project: WhereParentIdInput!
   resourceType: EnumResourceType!
   serviceSettings: ServiceSettingsUpdateInput
-  tempId: String
 }
 
 input ResourceCreateWithEntitiesEntityInput {

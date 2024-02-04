@@ -132,7 +132,6 @@ function entitiesToNodes(
     deletable: false,
     draggable: false,
     id: resource.id,
-    tempId: resource.tempId,
     type: NODE_TYPE_MODEL_GROUP,
     dragHandle: ".group-drag-handle",
     position: {

@@ -20,6 +20,8 @@ import { ApplyChangesNextSteps } from "./ApplyChangesNextSteps";
 import CreateApplyChangesLoader from "./CreateApplyChangesLoader";
 import "./ModelOrganizerConfirmation.scss";
 import { EntityNode, ModelChanges, NODE_TYPE_MODEL, Node } from "./types";
+import ActionLog from "../../VersionControl/ActionLog";
+import * as models from "../../models";
 
 type movedEntitiesData = {
   id: string;
@@ -35,6 +37,7 @@ type Props = {
   nodes: Node[];
   applyChangesLoading: boolean;
   applyChangesErrorMessage: string;
+  applyChangesData: models.UserAction;
 };
 
 export default function ModelOrganizerConfirmation({
@@ -44,6 +47,7 @@ export default function ModelOrganizerConfirmation({
   changes,
   applyChangesLoading,
   applyChangesErrorMessage,
+  applyChangesData,
 }: Props) {
   const [applyChangesSteps, setApplyChangesSteps] = useState<boolean>(false);
   const [keepLoadingChanges, setKeepLoadingChanges] = useState<boolean>(false);
@@ -74,9 +78,32 @@ export default function ModelOrganizerConfirmation({
     setApplyChangesSteps(true);
   }, [setKeepLoadingChanges, setApplyChangesSteps]);
 
+  const ActionStep = applyChangesData?.action?.steps?.length
+    ? applyChangesData?.action?.steps[0]
+    : null;
+
   return (
     <div className={CLASS_NAME}>
-      {keepLoadingChanges || applyChangesLoading ? (
+      {ActionStep?.status === models.EnumActionStepStatus.Failed ? (
+        <>
+          <Panel
+            panelStyle={EnumPanelStyle.Bordered}
+            className={`${CLASS_NAME}__error`}
+          >
+            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+              Something went wrong. See the log below for more details.
+            </Text>
+          </Panel>
+          <ActionLog
+            height={"250px"}
+            action={applyChangesData?.action}
+            title={"Apply Changes to Architecture"}
+            versionNumber={""}
+          />
+        </>
+      ) : keepLoadingChanges ||
+        applyChangesLoading ||
+        ActionStep?.status === models.EnumActionStepStatus.Running ? (
         <CreateApplyChangesLoader
           onTimeout={handleTimeout}
           minimumLoadTimeMS={MIN_TIME_OUT_LOADER}
@@ -141,6 +168,7 @@ export default function ModelOrganizerConfirmation({
                   <ListItem>
                     {changes.newServices.map((service) => (
                       <Text
+                        key={service.id}
                         textStyle={EnumTextStyle.Tag}
                         textColor={EnumTextColor.White}
                       >
@@ -188,6 +216,7 @@ export default function ModelOrganizerConfirmation({
                 )}
                 {movedEntities.map((entity) => (
                   <Text
+                    key={entity.id}
                     textStyle={EnumTextStyle.Tag}
                     textColor={EnumTextColor.White}
                   >

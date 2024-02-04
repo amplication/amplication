@@ -605,6 +605,7 @@ enum EnumGitOrganizationType {
 enum EnumUserActionType {
   DBSchemaImport
   GptConversation
+  ProjectRedesign
 }
 
 enum CodeGeneratorVersionStrategy {

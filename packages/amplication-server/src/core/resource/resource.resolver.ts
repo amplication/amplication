@@ -32,6 +32,7 @@ import {
   UpdateCodeGeneratorVersionArgs,
 } from "./dto";
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
+import { UserAction } from "../userAction/dto";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -160,13 +161,13 @@ export class ResourceResolver {
     return this.resourceService.updateResource(args);
   }
 
-  @Mutation(() => [Resource], { nullable: false })
+  @Mutation(() => UserAction, { nullable: false })
   @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "data.projectId")
   async redesignProject(
     @Args() args: RedesignProjectArgs,
     @UserEntity() user: User
-  ): Promise<Resource[]> {
+  ): Promise<UserAction> {
     return this.resourceService.redesignProject(args, user);
   }
 
