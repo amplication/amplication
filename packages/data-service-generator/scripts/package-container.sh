@@ -23,5 +23,5 @@ if [[ $PRODUCTION_TAGS = "true" ]]; then
 else
     echo "Local deployment detected"
     echo "Using Dockerfile-dev to include latest code-gen-types"
-    npx nx internal:package:container data-service-generator --dev
+    npx nx internal:package:container data-service-generator --configuration dev
 fi
