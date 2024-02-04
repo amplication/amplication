@@ -1,0 +1,59 @@
+@import "../../style/index.scss";
+
+.model-organizer-toolbar {
+  &__divider {
+    width: 1px;
+    height: var(--default-button-height);
+    background: var(--border-color);
+  }
+
+  &__changesDialogTitle {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  &__changesDialog {
+    display: flex;
+    width: 552px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__resourceList {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    align-self: stretch;
+  }
+
+  &__serviceIcon {
+    border-radius: 24px;
+    background: var(--secondary);
+    width: 20px;
+    height: 20px;
+    padding: 1px 3px;
+    color: var(--gray-80);
+  }
+
+  &__resourceListItem {
+    display: flex;
+    padding: 4px 8px;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  &__changesDialogDescription {
+    line-height: 22px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 32px;
+  }
+
+  .search-field {
+    background: var(--gray-full);
+  }
+}
