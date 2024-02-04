@@ -106,7 +106,7 @@ const useResources = (
     data: resourcesData,
     loading: loadingResources,
     error: errorResources,
-    refetch,
+    refetch: reloadResources,
   } = useQuery<TGetResources>(GET_RESOURCES, {
     variables: {
       projectId: currentProject?.id,
@@ -199,7 +199,7 @@ const useResources = (
       addEntity(currentResourceId);
       setCurrentResource(result.data?.createServiceWithEntities.resource);
       expireCookie("signup");
-      refetch();
+      reloadResources();
     });
   };
 
@@ -219,7 +219,7 @@ const useResources = (
       result.data?.createMessageBroker.id &&
         addBlock(result.data.createMessageBroker.id);
       result.data?.createMessageBroker.id &&
-        refetch().then(() => {
+        reloadResources().then(() => {
           resourceRedirect(result.data?.createMessageBroker.id as string);
         });
     });
@@ -328,6 +328,7 @@ const useResources = (
     handleSearchChange,
     loadingResources,
     errorResources,
+    reloadResources,
     currentResource,
     setResource,
     createService,

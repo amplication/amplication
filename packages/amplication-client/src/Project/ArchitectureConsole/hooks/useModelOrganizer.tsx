@@ -22,6 +22,7 @@ import {
 import useModelOrganizerPersistentData from "./useModelOrganizerPersistentData";
 import { EnumMessageType } from "../../../util/useMessage";
 import useUserActionWatchStatus from "../../../UserAction/useUserActionWatchStatus";
+import { useAppContext } from "../../../context/appContext";
 
 type TData = {
   resources: models.Resource[];
@@ -37,6 +38,8 @@ type RedesignProjectData = {
 };
 
 const useModelOrganization = ({ projectId, onMessage }: Props) => {
+  const { reloadResources } = useAppContext();
+
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
   const [currentResourcesData, setCurrentResourcesData] = useState<
@@ -563,6 +566,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       },
       onCompleted: async (data) => {
         setUserAction(data.redesignProject);
+        reloadResources();
         resetChanges(false);
       },
       onError: (error) => {
