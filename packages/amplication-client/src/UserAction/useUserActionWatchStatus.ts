@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 
 import * as models from "../models";
-import { GET_USER_ACTION } from "../Entity/ImportPrismaSchema/queries";
+import { GET_USER_ACTION } from "./queries";
 import { AppContext } from "../context/appContext";
 
 const POLL_INTERVAL = 2000;
