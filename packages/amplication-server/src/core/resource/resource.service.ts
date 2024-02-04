@@ -517,7 +517,12 @@ export class ResourceService {
       user.workspace?.id
     );
 
-    const resourceId = movedEntities[0]?.originalResourceId;
+    const [firstResource] = await this.resources({
+      where: { projectId: projectId },
+    });
+
+    const resourceId =
+      movedEntities[0]?.originalResourceId ?? firstResource?.id;
 
     await this.analytics.track({
       userId: user.id,
