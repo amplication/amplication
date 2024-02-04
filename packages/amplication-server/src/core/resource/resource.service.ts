@@ -548,7 +548,7 @@ export class ResourceService {
 
     const userAction =
       await this.userActionService.createUserActionByTypeWithInitialStep(
-        EnumUserActionType.DBSchemaImport, //@todo: create new user action type
+        EnumUserActionType.ProjectRedesign,
         undefined,
         REDESIGN_PROJECT_INITIAL_STEP_DATA,
         user.id,
