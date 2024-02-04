@@ -76,14 +76,14 @@ export default function ModelOrganizer() {
     resetChanges,
     changes,
     applyChanges,
-    loadingCreateResourceAndEntities,
+    applyChangesLoading,
+    applyChangesError,
     moveNodeToParent,
     createNewTempService,
     modelGroupFilterChanged,
     searchPhraseChanged,
     setCurrentEditableResource,
     mergeNewResourcesChanges,
-    createEntitiesError,
     redesignMode,
   } = useModelOrganization({
     projectId: currentProject?.id,
@@ -264,9 +264,7 @@ export default function ModelOrganizer() {
                 changes?.movedEntities?.length > 0 ||
                 changes?.newServices?.length > 0
               }
-              loadingCreateResourceAndEntities={
-                loadingCreateResourceAndEntities
-              }
+              applyChangesLoading={applyChangesLoading}
               resources={currentResourcesData}
               onApplyPlan={onApplyPlanClick}
               searchPhraseChanged={searchPhraseChanged}
@@ -274,7 +272,7 @@ export default function ModelOrganizer() {
               handleServiceCreated={handleServiceCreated}
               onCancelChanges={onCancelChangesClick}
               mergeNewResourcesChanges={mergeNewResourcesChanges}
-              createEntitiesError={Boolean(createEntitiesError)}
+              applyChangesError={applyChangesError}
             />
             <Dialog
               isOpen={!isValidResourceName}

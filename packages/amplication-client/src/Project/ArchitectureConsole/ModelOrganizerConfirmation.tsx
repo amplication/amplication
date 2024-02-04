@@ -1,6 +1,8 @@
 import {
   EnumContentAlign,
   EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumGapSize,
   EnumItemsAlign,
   EnumListStyle,
   EnumPanelStyle,
@@ -31,8 +33,8 @@ type Props = {
   onCancelChanges: () => void;
   changes: ModelChanges;
   nodes: Node[];
-  loadingCreateResourceAndEntities: boolean;
-  createEntitiesError: boolean;
+  applyChangesLoading: boolean;
+  applyChangesErrorMessage: string;
 };
 
 export default function ModelOrganizerConfirmation({
@@ -40,8 +42,8 @@ export default function ModelOrganizerConfirmation({
   onCancelChanges,
   nodes,
   changes,
-  loadingCreateResourceAndEntities,
-  createEntitiesError,
+  applyChangesLoading,
+  applyChangesErrorMessage,
 }: Props) {
   const [applyChangesSteps, setApplyChangesSteps] = useState<boolean>(false);
   const [keepLoadingChanges, setKeepLoadingChanges] = useState<boolean>(false);
@@ -62,10 +64,10 @@ export default function ModelOrganizerConfirmation({
   }, [nodes]);
 
   useEffect(() => {
-    if (loadingCreateResourceAndEntities) {
+    if (applyChangesLoading) {
       setKeepLoadingChanges(true);
     }
-  }, [setKeepLoadingChanges, loadingCreateResourceAndEntities]);
+  }, [setKeepLoadingChanges, applyChangesLoading]);
 
   const handleTimeout = useCallback(() => {
     setKeepLoadingChanges(false);
@@ -74,21 +76,45 @@ export default function ModelOrganizerConfirmation({
 
   return (
     <div className={CLASS_NAME}>
-      {keepLoadingChanges || loadingCreateResourceAndEntities ? (
+      {keepLoadingChanges || applyChangesLoading ? (
         <CreateApplyChangesLoader
           onTimeout={handleTimeout}
           minimumLoadTimeMS={MIN_TIME_OUT_LOADER}
         />
-      ) : createEntitiesError ? (
-        <FlexItem
-          direction={EnumFlexDirection.Column}
-          itemsAlign={EnumItemsAlign.Center}
-        >
-          <span>
-            We encountered a problem while processing your new architecture.
-          </span>
-          <span> Please try again in a few minutes</span>
-        </FlexItem>
+      ) : applyChangesErrorMessage ? (
+        <>
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            itemsAlign={EnumItemsAlign.Start}
+            gap={EnumGapSize.Large}
+          >
+            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+              There was an error applying the changes.
+            </Text>
+            <Panel
+              panelStyle={EnumPanelStyle.Bordered}
+              className={`${CLASS_NAME}__error`}
+            >
+              <Text
+                textStyle={EnumTextStyle.Tag}
+                textColor={EnumTextColor.White}
+              >
+                {applyChangesErrorMessage}
+              </Text>
+            </Panel>
+          </FlexItem>
+          <FlexItem
+            margin={EnumFlexItemMargin.Both}
+            contentAlign={EnumContentAlign.End}
+          >
+            <Button
+              buttonStyle={EnumButtonStyle.Outline}
+              onClick={onCancelChanges}
+            >
+              Close
+            </Button>
+          </FlexItem>
+        </>
       ) : applyChangesSteps ? (
         <ApplyChangesNextSteps onDisplayArchitectureClicked={onCancelChanges} />
       ) : !applyChangesSteps ? (
