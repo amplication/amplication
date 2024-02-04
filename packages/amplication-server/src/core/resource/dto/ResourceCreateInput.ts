@@ -14,11 +14,6 @@ export class ResourceCreateInput {
   name!: string;
 
   @Field(() => String, {
-    nullable: true,
-  })
-  tempId?: string;
-
-  @Field(() => String, {
     nullable: false,
   })
   description!: string;

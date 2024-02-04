@@ -40,7 +40,6 @@ const CreateResource = ({ onSuccess, title, actionDescription }: Props) => {
     (data) => {
       const tempId = generatedKey();
       onSuccess({
-        tempId: tempId,
         builds: [],
         createdAt: new Date(),
         description: `create service: ${data.name} from architecture model`,

@@ -12,4 +12,10 @@ $max-width: 50vw;
   width: $width;
   max-width: calc($max-width - (var(--double-spacing) * 2));
   overflow: auto;
+
+  &__error {
+    background-color: var(--theme-light-red-transparent);
+    border: 1px solid var(--theme-red);
+    width: 100%;
+  }
 }
