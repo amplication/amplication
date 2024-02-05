@@ -2,7 +2,7 @@ import {
   EnumActionStepStatus,
   RedesignProjectMovedEntity,
 } from "@amplication/code-gen-types/models";
-import { Lookup, SingleLineText } from "@amplication/code-gen-types/types";
+import { Lookup } from "@amplication/code-gen-types/types";
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -35,7 +35,10 @@ import { prepareDeletedItemName } from "../../util/softDelete";
 import { ActionService } from "../action/action.service";
 import { EnumActionLogLevel } from "../action/dto/EnumActionLogLevel";
 import { BillingService } from "../billing/billing.service";
-import { USER_ENTITY_NAME } from "../entity/constants";
+import {
+  DATA_TYPE_TO_DEFAULT_PROPERTIES,
+  USER_ENTITY_NAME,
+} from "../entity/constants";
 import {
   CreateBulkEntitiesAndFieldsArgs,
   CreateBulkEntitiesInput,
@@ -69,6 +72,7 @@ import {
 } from "./dto";
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
+import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -767,15 +771,17 @@ export class ResourceService {
                 if (!fieldProperties.allowMultipleSelection) {
                   createFieldInput.name = `${createFieldInput.name}Id`;
                   createFieldInput.displayName = `${createFieldInput.displayName} ID`;
-                  createFieldInput.dataType = EnumDataType.SingleLineText; //@todo: set the new type based on the ID type of the related entity (WholeNumber or SingleLineText)
-                  const fieldProperties: SingleLineText = {
-                    maxLength: 255,
-                  };
+                  createFieldInput.dataType =
+                    await this.entityService.getRelatedFieldScalarTypeByRelatedEntityIdType(
+                      relatedEntityId
+                    );
+
                   createFieldInput.properties =
-                    fieldProperties as unknown as JsonObject;
+                    DATA_TYPE_TO_DEFAULT_PROPERTIES[createFieldInput.dataType];
                 } else {
                   createFieldInput.dataType = EnumDataType.Json;
-                  createFieldInput.properties = {}; //type Json does not have properties
+                  createFieldInput.properties =
+                    DATA_TYPE_TO_DEFAULT_PROPERTIES[EnumDataType.Json]; //type Json does not have properties
                 }
               }
             }
@@ -790,15 +796,15 @@ export class ResourceService {
       }
 
       // 3.delete entities from source services
-      //@todo: we should keep the relation fields on the related entities that were not moved
       for (const entity of movedEntities) {
         await actionContext.onEmitUserActionLog(
           `deleting entity ${entity.entityId} from source service`,
           EnumActionLogLevel.Info
         );
-        await this.entityService.deleteEntityFromSource(
+        await this.entityService.deleteOneEntity(
           { where: { id: entity.entityId } },
-          user
+          user,
+          EnumRelatedFieldStrategy.UpdateToScalar
         );
       }
     } catch (error) {

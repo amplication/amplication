@@ -863,7 +863,8 @@ export enum EnumUserActionStatus {
 
 export enum EnumUserActionType {
   DbSchemaImport = 'DBSchemaImport',
-  GptConversation = 'GptConversation'
+  GptConversation = 'GptConversation',
+  ProjectRedesign = 'ProjectRedesign'
 }
 
 export enum EnumWorkspaceMemberType {
