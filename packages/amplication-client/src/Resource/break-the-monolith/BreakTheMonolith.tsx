@@ -20,22 +20,23 @@ import { BtmLoader } from "./BtmLoader";
 import { useBtmService } from "./hooks/useBtmService";
 import classNames from "classnames";
 import { formatError } from "../../util/error";
+import { Resource } from "../../models";
 
 const CLASS_NAME = "break-the-monolith";
 
 type Props = {
-  resourceId: string;
+  resource: Resource;
   handleConfirmSuggestion: () => void;
   openInFullScreen?: boolean;
 };
 
 const BreakTheMonolith: React.FC<Props> = ({
-  resourceId,
+  resource,
   openInFullScreen = false,
   handleConfirmSuggestion,
 }) => {
   const { btmResult, loading, error } = useBtmService({
-    resourceId,
+    resourceId: resource?.id,
   });
 
   const hasError = Boolean(error);

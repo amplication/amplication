@@ -47,7 +47,6 @@ const ResourceOverview = () => {
       <FlexItem>
         <FlexEnd>
           <BtmButton
-            resource={currentResource}
             openInFullScreen
             location={EnumButtonLocation.Resource}
             ButtonStyle={EnumButtonStyle.GradientFull}
