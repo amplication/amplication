@@ -43,6 +43,11 @@ import {
   generateRandomString,
 } from "./auth-utils";
 import { IdentityProvider, IdentityProviderPreview } from "./auth.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import {
+  IdentifyData,
+  EnumEventType,
+} from "../../services/segmentAnalytics/segmentAnalytics.types";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
@@ -76,7 +81,8 @@ export class AuthService {
     private readonly logger: AmplicationLogger,
     private readonly userService: UserService,
     @Inject(forwardRef(() => WorkspaceService))
-    private readonly workspaceService: WorkspaceService
+    private readonly workspaceService: WorkspaceService,
+    private readonly analytics: SegmentAnalyticsService
   ) {
     this.clientId = configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID);
     const clientSecret = configService.get<string>(
@@ -97,6 +103,32 @@ export class AuthService {
     });
   }
 
+  private async trackStartBusinessEmailSignup(
+    emailAddress: string,
+    existingUser: IdentityProvider | "No" = "No"
+  ) {
+    const userData: IdentifyData = {
+      userId: null,
+      createdAt: null,
+      email: emailAddress,
+      firstName: null,
+      lastName: null,
+    };
+
+    await this.analytics.identify(userData);
+    //we send the userData again to prevent race condition
+    await this.analytics.track({
+      userId: userData.userId,
+      event: EnumEventType.StartEmailSignup,
+      properties: {
+        identityProvider: IdentityProvider.IdentityPlatform,
+        existingUser: existingUser,
+      },
+      context: {
+        traits: userData,
+      },
+    });
+  }
   async signupWithBusinessEmail(
     args: SignupWithBusinessEmailArgs
   ): Promise<boolean> {
@@ -107,6 +139,11 @@ export class AuthService {
     }
 
     try {
+      const existedAccount = await this.accountService.findAccount({
+        where: {
+          email: emailAddress,
+        },
+      });
       let auth0User: JSONApiResponse<SignUpResponse>;
 
       const existedAuth0User = await this.getAuth0UserByEmail(emailAddress);
@@ -123,6 +160,15 @@ export class AuthService {
       );
       if (!resetPassword.data)
         throw Error("Failed to send reset message to new Auth0 user");
+
+      await this.trackStartBusinessEmailSignup(
+        emailAddress,
+        existedAccount
+          ? IdentityProvider.GitHub
+          : existedAuth0User
+          ? IdentityProvider.IdentityPlatform
+          : undefined
+      );
 
       return true;
     } catch (error) {

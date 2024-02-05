@@ -9,7 +9,6 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { AuthService } from "./auth.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { EnumTokenType } from "./dto";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { ConfigService } from "@nestjs/config";
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
@@ -19,6 +18,8 @@ import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
 import { anyString } from "jest-mock-extended";
 import { AuthUser } from "./types";
 import { IdentityProvider } from "./auth.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
@@ -150,10 +151,6 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_WORKSPACE: Account & {
   ...EXAMPLE_ACCOUNT,
   currentUser: EXAMPLE_AUTH_USER,
 };
-
-const mockManagementClientGetByEmail = jest.fn();
-const mockAuthenticationClientDatabaseChangePassword = jest.fn();
-const mockAuthenticationClientDatabaseSignUp = jest.fn();
 jest.mock("auth0", () => {
   return {
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -175,6 +172,10 @@ jest.mock("auth0", () => {
     }),
   };
 });
+
+const mockManagementClientGetByEmail = jest.fn();
+const mockAuthenticationClientDatabaseChangePassword = jest.fn();
+const mockAuthenticationClientDatabaseSignUp = jest.fn();
 
 const signMock = jest.fn(() => EXAMPLE_TOKEN);
 
@@ -220,6 +221,8 @@ const createPreviewEnvironmentMock = jest.fn(() => ({
 }));
 
 const prismaCreateProjectMock = jest.fn(() => EXAMPLE_PROJECT);
+const segmentAnalyticsIdentifyMock = jest.fn();
+const segmentAnalyticsTrackMock = jest.fn();
 
 describe("AuthService", () => {
   let service: AuthService;
@@ -283,12 +286,6 @@ describe("AuthService", () => {
           })),
         },
         {
-          provide: KafkaProducerService,
-          useClass: jest.fn(() => ({
-            emitMessage: jest.fn(() => Promise.resolve("error")),
-          })),
-        },
-        {
           provide: PrismaService,
           useClass: jest.fn(() => ({
             account: {
@@ -297,6 +294,13 @@ describe("AuthService", () => {
             project: {
               create: prismaCreateProjectMock,
             },
+          })),
+        },
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            identify: segmentAnalyticsIdentifyMock,
+            track: segmentAnalyticsTrackMock,
           })),
         },
         AuthService,
@@ -661,6 +665,46 @@ describe("AuthService", () => {
   });
 
   describe("signupWithBusinessEmail", () => {
+    it("should track the event when a user signs up with a business email", async () => {
+      const email = "invalid@invalid.com";
+
+      mockManagementClientGetByEmail.mockResolvedValueOnce({
+        data: [],
+      });
+
+      mockAuthenticationClientDatabaseSignUp.mockResolvedValueOnce({
+        data: {
+          email,
+        },
+      });
+
+      mockAuthenticationClientDatabaseChangePassword.mockResolvedValueOnce({
+        data: "ok",
+      });
+
+      const result = await service.signupWithBusinessEmail({
+        data: {
+          email,
+        },
+      });
+
+      expect(result).toBeTruthy();
+
+      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackMock).toHaveBeenCalledWith({
+        userId: null,
+        event: EnumEventType.StartEmailSignup,
+        properties: {
+          identityProvider: IdentityProvider.IdentityPlatform,
+          existingUser: "No",
+        },
+        context: {
+          traits: expect.any(Object),
+        },
+      });
+    });
+
     it("should fail to signup a preview account when the email is not work email", async () => {
       const email = "invalid@gmail.com";
 
