@@ -150,6 +150,31 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_WORKSPACE: Account & {
   currentUser: EXAMPLE_AUTH_USER,
 };
 
+const mockManagementClientGetByEmail = jest.fn();
+const mockAuthenticationClientDatabaseChangePassword = jest.fn();
+const mockAuthenticationClientDatabaseSignUp = jest.fn();
+jest.mock("auth0", () => {
+  return {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    ManagementClient: jest.fn().mockImplementation(() => {
+      return {
+        usersByEmail: {
+          getByEmail: mockManagementClientGetByEmail,
+        },
+      };
+    }),
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    AuthenticationClient: jest.fn().mockImplementation(() => {
+      return {
+        database: {
+          changePassword: mockAuthenticationClientDatabaseChangePassword,
+          signUp: mockAuthenticationClientDatabaseSignUp,
+        },
+      };
+    }),
+  };
+});
+
 const signMock = jest.fn(() => EXAMPLE_TOKEN);
 
 const createAccountMock = jest.fn();
@@ -199,16 +224,7 @@ describe("AuthService", () => {
   let service: AuthService;
 
   beforeEach(async () => {
-    signMock.mockClear();
-    createAccountMock.mockClear();
-    setCurrentUserMock.mockClear();
-    prismaAccountFindOneMock.mockClear();
-    setPasswordMock.mockClear();
-    hashPasswordMock.mockClear();
-    validatePasswordMock.mockClear();
-    findUsersMock.mockClear();
-    createWorkspaceMock.mockClear();
-    prismaCreateProjectMock.mockClear();
+    jest.clearAllMocks();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -640,6 +656,128 @@ describe("AuthService", () => {
           convertPreviewSubscriptionToFreeWithTrialMock
         ).toHaveBeenCalledTimes(0);
       });
+    });
+  });
+
+  describe("signupWithBusinessEmail", () => {
+    it("should fail to signup a preview account when the email is not work email", async () => {
+      const email = "invalid@gmail.com";
+
+      await expect(
+        service.signupWithBusinessEmail({
+          data: {
+            email,
+          },
+        })
+      ).rejects.toThrow(WORK_EMAIL_INVALID);
+    });
+
+    it("should signs up for correct data with preview account", async () => {
+      const email = "invalid@invalid.com";
+      findAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
+
+      mockManagementClientGetByEmail.mockResolvedValueOnce({
+        data: [
+          {
+            email,
+          },
+        ],
+      });
+
+      mockAuthenticationClientDatabaseChangePassword.mockResolvedValueOnce({
+        data: "ok",
+      });
+
+      const result = await service.signupWithBusinessEmail({
+        data: {
+          email,
+        },
+      });
+
+      expect(result).toBeTruthy();
+      expect(findAccountMock).toHaveBeenCalledTimes(1);
+      expect(
+        mockAuthenticationClientDatabaseChangePassword
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        mockAuthenticationClientDatabaseChangePassword
+      ).toHaveBeenCalledWith({
+        email,
+        connection: expect.any(String),
+      });
+    });
+
+    it("should create an Auth0 user and reset password if the user does not exist on Auth0", async () => {
+      const email = "invalid@invalid.com";
+      findAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
+
+      mockManagementClientGetByEmail.mockResolvedValueOnce({
+        data: [],
+      });
+
+      mockAuthenticationClientDatabaseSignUp.mockResolvedValueOnce({
+        data: {
+          email,
+        },
+      });
+
+      mockAuthenticationClientDatabaseChangePassword.mockResolvedValueOnce({
+        data: "ok",
+      });
+
+      const result = await service.signupWithBusinessEmail({
+        data: {
+          email,
+        },
+      });
+
+      expect(result).toBeTruthy();
+      expect(findAccountMock).toHaveBeenCalledTimes(1);
+
+      expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledTimes(1);
+      expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledWith({
+        email,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        email_verified: true,
+        password: expect.any(String),
+        connection: expect.any(String),
+      });
+      expect(
+        mockAuthenticationClientDatabaseChangePassword
+      ).toHaveBeenCalledTimes(1);
+    });
+
+    it("should not create an Auth0 user, but only reset password if the user already exists on Auth0", async () => {
+      const email = "invalid@invalid.com";
+      findAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
+
+      mockManagementClientGetByEmail.mockResolvedValueOnce({
+        data: [{ email }],
+      });
+
+      mockAuthenticationClientDatabaseSignUp.mockResolvedValueOnce({
+        data: {
+          email,
+        },
+      });
+
+      mockAuthenticationClientDatabaseChangePassword.mockResolvedValueOnce({
+        data: "ok",
+      });
+
+      const result = await service.signupWithBusinessEmail({
+        data: {
+          email,
+        },
+      });
+
+      expect(result).toBeTruthy();
+      expect(findAccountMock).toHaveBeenCalledTimes(1);
+
+      expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledTimes(0);
+      expect(
+        mockAuthenticationClientDatabaseChangePassword
+      ).toHaveBeenCalledTimes(1);
     });
   });
 });

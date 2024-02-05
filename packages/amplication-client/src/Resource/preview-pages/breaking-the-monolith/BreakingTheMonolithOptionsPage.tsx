@@ -16,7 +16,7 @@ import {
 } from "@amplication/ui/design-system";
 import * as models from "../../../models";
 import { MonolithOption, monolithOptions } from "./monolith-options";
-import useUserActionWatchStatus from "../../../Entity/ImportPrismaSchema/useUserActionWatchStatus";
+import useUserActionWatchStatus from "../../../UserAction/useUserActionWatchStatus";
 import { AppRouteProps } from "../../../routes/routesUtil";
 import { CREATE_ENTITIES_FROM_PREDEFINED_SCHEMA } from "../../../Entity/ImportPrismaSchema/queries";
 

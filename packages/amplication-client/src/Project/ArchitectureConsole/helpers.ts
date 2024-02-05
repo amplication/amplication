@@ -132,7 +132,6 @@ function entitiesToNodes(
     deletable: false,
     draggable: false,
     id: resource.id,
-    tempId: resource.tempId,
     type: NODE_TYPE_MODEL_GROUP,
     dragHandle: ".group-drag-handle",
     position: {
@@ -186,10 +185,13 @@ export function tempResourceToNode(
   return parent;
 }
 
-export function entitiesToDetailedEdges(resources: models.Resource[]) {
+export function nodesToDetailedEdges(nodes: Node[]) {
   const relations: DetailedRelation[] = [];
 
-  resources?.forEach((resource) => {
+  nodes.forEach((node) => {
+    if (node.type !== NODE_TYPE_MODEL_GROUP) return;
+
+    const resource = node.data.payload as models.Resource;
     const currentEntityMapping = resource.entities?.reduce(
       (entitiesObj, entity) => {
         entitiesObj[entity.id] = entity;
@@ -247,10 +249,13 @@ export function entitiesToDetailedEdges(resources: models.Resource[]) {
   return edges;
 }
 
-function entitiesToSimpleEdges(resources: models.Resource[]) {
+export function nodesToSimpleEdges(nodes: Node[]) {
   const relations: SimpleRelation[] = [];
 
-  resources?.forEach((resource) => {
+  nodes.forEach((node) => {
+    if (node.type !== NODE_TYPE_MODEL_GROUP) return;
+
+    const resource = node.data.payload as models.Resource;
     const currentEntityMapping = resource.entities?.reduce(
       (entitiesObj, entity) => {
         entitiesObj[entity.id] = entity;
@@ -300,9 +305,9 @@ export async function entitiesToNodesAndEdges(
   showDetailedRelations: boolean
 ) {
   const nodes = entitiesToNodes(resources, showDetailedRelations);
-  const detailedEdges = entitiesToDetailedEdges(resources);
+  const detailedEdges = nodesToDetailedEdges(nodes);
 
-  const simpleEdges = entitiesToSimpleEdges(resources);
+  const simpleEdges = nodesToSimpleEdges(nodes);
 
   return {
     nodes: await applyAutoLayout(

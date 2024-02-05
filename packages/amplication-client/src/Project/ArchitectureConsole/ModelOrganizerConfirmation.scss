@@ -1,16 +1,21 @@
 @import "../../style/index.scss";
 
-$feature-tag-padding: 2px 12px;
-$addon-margin-bottom: 44px;
-$addon-feature-tag-border-radius: 32px;
-$addon-feature-tag-gap: 4px;
-$addon-title-line-height: 36px;
+$width: 800px;
+$max-height: 60vh;
+$max-width: 50vw;
 
 .model-organizer-confirmation {
   display: flex;
   flex-direction: column;
   gap: var(--large-spacing);
-  max-height: 60vh;
+  max-height: $max-height;
+  width: $width;
+  max-width: calc($max-width - (var(--double-spacing) * 2));
   overflow: auto;
-  padding: 0 var(--default-spacing-small);
+
+  &__error {
+    background-color: var(--theme-light-red-transparent);
+    border: 1px solid var(--theme-red);
+    width: 100%;
+  }
 }

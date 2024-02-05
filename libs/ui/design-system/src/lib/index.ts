@@ -117,7 +117,7 @@ export type { Props as BreadcrumbsProps } from "./components/Breadcrumbs/Breadcr
 
 export type { ItemProps as BreadcrumbsItemProps } from "./components/Breadcrumbs/Breadcrumbs";
 
-export { Snackbar } from "./components/Snackbar/Snackbar";
+export { Snackbar, EnumMessageType } from "./components/Snackbar/Snackbar";
 
 export type { Props as SnackbarProps } from "./components/Snackbar/Snackbar";
 
@@ -241,3 +241,5 @@ export {
   EnumRestApiOperationTagType,
   EnumGqlApiOperationTagType,
 } from "./components/ApiOperationTag/ApiOperationTag";
+
+export { JumboButton } from "./components/JumboButton/JumboButton";

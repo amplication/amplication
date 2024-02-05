@@ -1,12 +1,23 @@
-import { CircleBadge, Icon } from "@amplication/ui/design-system";
-import { useCallback, useContext } from "react";
-import { AppContext } from "../../context/appContext";
-import { useHistory } from "react-router-dom";
-import "./ApplyChangesNextSteps.scss";
+import {
+  EnumContentAlign,
+  EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumGapSize,
+  EnumItemsAlign,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
+  JumboButton,
+  Text,
+} from "@amplication/ui/design-system";
 import { ApolloError, useMutation } from "@apollo/client";
-import { COMMIT_CHANGES } from "../../VersionControl/Commit";
-import { Commit, EnumSubscriptionPlan } from "../../models";
+import { useCallback, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../../Components/Button";
+import { COMMIT_CHANGES } from "../../VersionControl/Commit";
+import { AppContext } from "../../context/appContext";
+import { Commit, EnumSubscriptionPlan } from "../../models";
+import "./ApplyChangesNextSteps.scss";
 
 const className = "apply-changes-next-steps";
 
@@ -35,14 +46,6 @@ export const ApplyChangesNextSteps = ({
     onError: (error: ApolloError) => {
       setCommitRunning(false);
       setPendingChangesError(true);
-
-      // setOpenLimitationDialog(
-      //   error?.graphQLErrors?.some(
-      //     (gqlError) =>
-      //       gqlError.extensions.code ===
-      //       GraphQLErrorCode.BILLING_LIMITATION_ERROR
-      //   ) ?? false
-      // );
     },
     onCompleted: (response) => {
       setCommitRunning(false);
@@ -73,41 +76,47 @@ export const ApplyChangesNextSteps = ({
 
   return (
     <div className={className}>
-      <h2>
-        <span> Your new architecture is ready! </span>
-        <span role="img" aria-label="party emoji">
-          🎉
-        </span>
-      </h2>
-      <span>What should we do next?</span>
-      <div className={`${className}__box_container`}>
-        <div
-          className={`${className}__box`}
-          onClick={handleGenerateCodeClicked}
-        >
-          <CircleBadge color="#53DBEE" size="medium">
-            <Icon icon="pending_changes" size="small" />
-          </CircleBadge>
-          <span>Generate the code</span>
-          <span>for my new architecture</span>
-        </div>
-        <div
-          className={`${className}__box`}
-          onClick={handleProjectOverviewClicked}
-        >
-          <CircleBadge color="#f85b6e" size="medium">
-            <Icon icon="services" size="small" />
-          </CircleBadge>
-          <span>Show my updated</span>
-          <span>project overview</span>
-        </div>
-      </div>
-      <Button
-        buttonStyle={EnumButtonStyle.Outline}
-        onClick={onDisplayArchitectureClicked}
+      <FlexItem
+        itemsAlign={EnumItemsAlign.Center}
+        direction={EnumFlexDirection.Column}
+        gap={EnumGapSize.Large}
+        margin={EnumFlexItemMargin.Both}
       >
-        Close
-      </Button>
+        <Text textStyle={EnumTextStyle.H1}>
+          Your new architecture is ready!
+          <span role="img" aria-label="party emoji">
+            {" "}
+            🎉
+          </span>
+        </Text>
+        <Text textStyle={EnumTextStyle.H3}>What should we do next?</Text>
+      </FlexItem>
+      <div className={`${className}__box_container`}>
+        <JumboButton
+          onClick={handleGenerateCodeClicked}
+          text="Generate the code for my new architecture"
+          icon="pending_changes"
+          circleColor={EnumTextColor.ThemeTurquoise}
+        ></JumboButton>
+
+        <JumboButton
+          onClick={handleProjectOverviewClicked}
+          text="Show my updated project overview"
+          icon="services"
+          circleColor={EnumTextColor.Primary}
+        />
+      </div>
+      <FlexItem
+        margin={EnumFlexItemMargin.Both}
+        contentAlign={EnumContentAlign.Center}
+      >
+        <Button
+          buttonStyle={EnumButtonStyle.Outline}
+          onClick={onDisplayArchitectureClicked}
+        >
+          Done
+        </Button>
+      </FlexItem>
     </div>
   );
 };

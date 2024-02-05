@@ -1,31 +1,31 @@
 import {
   CircularProgress,
   EnumFlexDirection,
-  EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
-  HorizontalRule,
+  Icon,
   Snackbar,
   Text,
-  UserAndTime,
 } from "@amplication/ui/design-system";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import { useContext, useMemo } from "react";
-import { match } from "react-router-dom";
+import { Link, match, useLocation } from "react-router-dom";
 import { TruncatedId } from "../Components/TruncatedId";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { truncateId } from "../util/truncatedId";
 import ActionLog from "./ActionLog";
-import BuildGitLink from "./BuildGitLink";
 import "./BuildPage.scss";
 import { GET_COMMIT } from "./PendingChangesPage";
 import useBuildWatchStatus, { GET_BUILD } from "./useBuildWatchStatus";
 import { BackNavigation } from "../Components/BackNavigation";
 import { AppContext } from "../context/appContext";
+import { resourceThemeMap } from "../Resource/constants";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
 
 export type LogData = {
   action: models.Action;
@@ -45,7 +45,10 @@ const BuildPage = ({ match, buildId }: Props) => {
     return truncateId(build);
   }, [build]);
 
-  const { currentProject, currentWorkspace } = useContext(AppContext);
+  const { currentProject, currentWorkspace, resources } =
+    useContext(AppContext);
+
+  const location = useLocation();
 
   const [getCommit, { data: commitData }] = useLazyQuery<{
     commit: models.Commit;
@@ -63,6 +66,16 @@ const BuildPage = ({ match, buildId }: Props) => {
   });
 
   const { data: updatedBuild } = useBuildWatchStatus(buildData?.build);
+
+  useBreadcrumbs(buildData?.build?.version, location.pathname);
+
+  const currentResource = useMemo(
+    () =>
+      resources.find(
+        (resource) => resource.id === updatedBuild.build?.resourceId
+      ),
+    [resources, updatedBuild]
+  );
 
   const actionLog = useMemo<LogData | null>(() => {
     if (!updatedBuild?.build) return null;
@@ -97,48 +110,55 @@ const BuildPage = ({ match, buildId }: Props) => {
         ) : (
           <>
             {commitData && (
-              <>
-                <FlexItem>
-                  <FlexItem
-                    gap={EnumGapSize.Small}
-                    direction={EnumFlexDirection.Column}
-                  >
-                    <Text textStyle={EnumTextStyle.H4}>
-                      Build <TruncatedId id={updatedBuild.build.id} />
-                    </Text>
-
-                    <Text textStyle={EnumTextStyle.Tag}>
-                      <BackNavigation
-                        to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${updatedBuild.build.commitId}`}
-                        label={
-                          <>
-                            Commit&nbsp;
-                            <TruncatedId id={commitData.commit.id} />
-                          </>
-                        }
-                      />
-                    </Text>
-                  </FlexItem>
-                  <FlexItem.FlexEnd>
-                    <UserAndTime
-                      account={commitData.commit.user.account}
-                      time={updatedBuild.build.createdAt}
-                    />
-                  </FlexItem.FlexEnd>
-                </FlexItem>
+              <FlexItem
+                direction={EnumFlexDirection.Column}
+                className={`${CLASS_NAME}__header`}
+              >
+                <Text textStyle={EnumTextStyle.Tag}>
+                  <BackNavigation
+                    to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${updatedBuild.build.commitId}`}
+                    label={
+                      <>
+                        &nbsp;Return to Commit&nbsp;
+                        <TruncatedId id={commitData.commit.id} />
+                      </>
+                    }
+                    iconSize="xsmall"
+                  />
+                </Text>
 
                 <FlexItem
-                  itemsAlign={EnumItemsAlign.Center}
-                  margin={EnumFlexItemMargin.Top}
-                  end={<BuildGitLink build={updatedBuild.build} />}
+                  direction={EnumFlexDirection.Column}
+                  gap={EnumGapSize.None}
                 >
-                  <Text textStyle={EnumTextStyle.Tag}>
-                    {updatedBuild.build.message}
-                  </Text>
+                  <Link
+                    to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}`}
+                  >
+                    <FlexItem
+                      itemsAlign={EnumItemsAlign.Center}
+                      gap={EnumGapSize.Small}
+                      className={`${CLASS_NAME}__header__title__service`}
+                    >
+                      <Icon
+                        icon={
+                          resourceThemeMap[currentResource?.resourceType]?.icon
+                        }
+                        size="large"
+                        color={EnumTextColor.ThemeTurquoise}
+                      />
+                      <Text textColor={EnumTextColor.ThemeTurquoise}>
+                        {currentResource?.name}
+                      </Text>
+                    </FlexItem>
+                  </Link>
+                  <h3>
+                    Commit&nbsp;
+                    <span>
+                      <TruncatedId id={commitData.commit.id} />
+                    </span>
+                  </h3>
                 </FlexItem>
-
-                <HorizontalRule />
-              </>
+              </FlexItem>
             )}
             <div className={`${CLASS_NAME}__build-details`}>
               <aside className="log-container">

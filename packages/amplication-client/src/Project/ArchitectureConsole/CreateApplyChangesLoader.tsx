@@ -1,4 +1,10 @@
-import { AnimationType, Loader } from "@amplication/ui/design-system";
+import {
+  AnimationType,
+  EnumTextColor,
+  EnumTextStyle,
+  Loader,
+  Text,
+} from "@amplication/ui/design-system";
 import React, { useEffect } from "react";
 import "./CreateApplyChangesLoader.scss";
 
@@ -20,14 +26,13 @@ const CreateApplyChangesLoader = ({ onTimeout, minimumLoadTimeMS }: Props) => {
   }, [onTimeout, minimumLoadTimeMS]);
 
   return (
-    <div className={`${CLASS_NAME}`}>
-      <h2>Processing your new architecture.</h2>
-      <span>
-        Please wait as we handle the creation of your new architectural design.
-      </span>
+    <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__animation`}>
         <Loader animationType={AnimationType.Full} />
       </div>
+      <Text textStyle={EnumTextStyle.Normal} textColor={EnumTextColor.Black20}>
+        Please wait as we handle the creation of your new architectural design
+      </Text>
     </div>
   );
 };

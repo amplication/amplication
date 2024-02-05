@@ -9,12 +9,12 @@ import ImgSvg from "./ImgSvg";
 const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
   const AuthCoreSvg = ImgSvg({ image: authModuleImage });
 
-  const handleDatabaseSelect = useCallback(
-    (database: string) => {
+  const handleAuthSelect = useCallback(
+    (authType: string) => {
       formik.setValues(
         {
           ...formik.values,
-          authType: database,
+          authType,
         },
         true
       );
@@ -37,7 +37,7 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
             image={AuthCoreSvg}
             label="Include Auth Module"
             description="Generate the code needed for authentication and authorization"
-            onClick={handleDatabaseSelect}
+            onClick={handleAuthSelect}
             currentValue={formik.values.authType}
           />
           <LabelDescriptionSelector
@@ -45,7 +45,7 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
             icon="unlock"
             label="Skip Authentication"
             description="Do not include code for authentication"
-            onClick={handleDatabaseSelect}
+            onClick={handleAuthSelect}
             currentValue={formik.values.authType}
           />
         </Layout.SelectorWrapper>
