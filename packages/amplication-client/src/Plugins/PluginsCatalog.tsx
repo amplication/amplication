@@ -70,7 +70,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   } = usePlugins(resource);
 
   const filteredCatalog = useMemo(() => {
-    if (category === "catalog") return Object.values(pluginCatalog);
+    if (category === "undefined") return Object.values(pluginCatalog);
 
     return Object.values(pluginCatalog).reduce(
       (pluginsCatalogArr: Plugin[], plugin: Plugin) => {
@@ -150,7 +150,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
       const requireAuthenticationEntity = configurations
         ? configurations[REQUIRE_AUTH_ENTITY]
         : null;
-      console.log("onEnableStateChange", userEntity);
+
       if (requireAuthenticationEntity === "true" && !userEntity && !enabled) {
         setIsCreatePluginInstallation(false);
         setPluginInstallationUpdateData(pluginInstallation);

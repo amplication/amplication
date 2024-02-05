@@ -8,7 +8,7 @@ import { EntityModule } from "../entity/entity.module";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { UserModule } from "../user/user.module";
 import { ActionModule } from "../action/action.module";
-import { UserActionModule } from "../userAction/userActionModule";
+import { UserActionModule } from "../userAction/userAction.module";
 
 @Module({
   imports: [

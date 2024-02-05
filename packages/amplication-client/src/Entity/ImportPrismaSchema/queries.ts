@@ -33,9 +33,11 @@ export const CREATE_ENTITIES_FROM_SCHEMA = gql`
   }
 `;
 
-export const GET_USER_ACTION = gql`
-  query userAction($userActionId: String!) {
-    userAction(where: { id: $userActionId }) {
+export const CREATE_ENTITIES_FROM_PREDEFINED_SCHEMA = gql`
+  mutation createEntitiesFromPredefinedSchema(
+    $data: CreateEntitiesFromPredefinedSchemaInput!
+  ) {
+    createEntitiesFromPredefinedSchema(data: $data) {
       id
       createdAt
       actionId

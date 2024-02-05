@@ -10,6 +10,8 @@ type Account {
   id: String!
   lastName: String!
   password: String!
+  previewAccountEmail: String
+  previewAccountType: EnumPreviewAccountType!
   updatedAt: DateTime!
 }
 
@@ -65,6 +67,13 @@ input ApiTokenCreateInput {
 type Auth {
   """JWT Bearer token"""
   token: String!
+}
+
+type AuthPreviewAccount {
+  projectId: String!
+  resourceId: String!
+  token: String!
+  workspaceId: String!
 }
 
 type AuthorizeResourceWithGitResult {
@@ -160,6 +169,32 @@ input BlockWhereInput {
 input BooleanFilter {
   equals: Boolean
   not: Boolean
+}
+
+type BreakServiceToMicroservicesData {
+  microservices: [BreakServiceToMicroservicesItem!]!
+}
+
+type BreakServiceToMicroservicesItem {
+  dataModels: [BreakServiceToMicroservicesItemEntities!]!
+  functionality: String!
+  name: String!
+}
+
+type BreakServiceToMicroservicesItemEntities {
+  name: String!
+  originalEntityId: String!
+}
+
+type BreakServiceToMicroservicesResult {
+  """Prompt result with some data structure manipulation"""
+  data: BreakServiceToMicroservicesData
+
+  """The original resource ID"""
+  originalResourceId: String!
+
+  """The status of the user action"""
+  status: EnumUserActionStatus!
 }
 
 type Build {
@@ -278,16 +313,17 @@ input ConnectGitRepositoryInput {
   resourceId: String!
 }
 
-input CopiedEntities {
-  shouldDeleteFromSource: Boolean!
-}
-
 type Coupon {
   code: String!
   couponType: String
   durationMonths: Int!
   id: String!
   subscriptionPlan: EnumSubscriptionPlan!
+}
+
+input CreateEntitiesFromPredefinedSchemaInput {
+  resource: WhereParentIdInput!
+  schemaName: EnumSchemaNames!
 }
 
 input CreateGitRepositoryBaseInput {
@@ -745,6 +781,11 @@ enum EnumPendingChangeOriginType {
   Entity
 }
 
+enum EnumPreviewAccountType {
+  BreakingTheMonolith
+  None
+}
+
 enum EnumResourceType {
   MessageBroker
   ProjectConfiguration
@@ -758,9 +799,14 @@ input EnumResourceTypeFilter {
   notIn: [EnumResourceType!]
 }
 
+enum EnumSchemaNames {
+  CalDotCom
+}
+
 enum EnumSubscriptionPlan {
   Enterprise
   Free
+  PreviewBreakTheMonolith
   Pro
 }
 
@@ -781,6 +827,8 @@ enum EnumUserActionStatus {
 
 enum EnumUserActionType {
   DBSchemaImport
+  GptConversation
+  ProjectRedesign
 }
 
 enum EnumWorkspaceMemberType {
@@ -1071,12 +1119,14 @@ type Mutation {
   commit(data: CommitCreateInput!): Commit
   completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
   completeInvitation(data: CompleteInvitationInput!): Auth!
+  completeSignupWithBusinessEmail: String!
   connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
+  createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
   createEntityField(data: EntityFieldCreateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
@@ -1088,7 +1138,6 @@ type Mutation {
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   createProject(data: ProjectCreateInput!): Project!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
-  createResourceEntitiesFromExistingResource(data: ResourceCreateCopiedEntitiesInput!): Resource!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createService(data: ResourceCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
@@ -1119,11 +1168,20 @@ type Mutation {
   login(data: LoginInput!): Auth!
   provisionSubscription(data: ProvisionSubscriptionInput!): ProvisionSubscriptionResult
   redeemCoupon(data: RedeemCouponInput!): Coupon!
+  redesignProject(data: RedesignProjectInput!): UserAction!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   signup(data: SignupInput!): Auth!
+  signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
+  signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
+  startRedesign(data: WhereUniqueInput!): Resource
+
+  """
+  Trigger the generation of a set of recommendations for breaking a resource into microservices
+  """
+  triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -1365,16 +1423,6 @@ type ProvisionSubscriptionResult {
 }
 
 type Query {
-  Module(where: WhereUniqueInput!): Module
-  ModuleAction(where: WhereUniqueInput!): ModuleAction
-  ModuleActions(orderBy: ModuleActionOrderByInput, skip: Int, take: Int, where: ModuleActionWhereInput): [ModuleAction!]!
-  Modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
-  PluginInstallation(where: WhereUniqueInput!): PluginInstallation
-  PluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
-  ServiceTopics(where: WhereUniqueInput!): ServiceTopics
-  ServiceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
-  Topic(where: WhereUniqueInput!): Topic
-  Topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
   account: Account!
   action(where: WhereUniqueInput!): Action!
   block(where: WhereUniqueInput!): Block!
@@ -1387,12 +1435,23 @@ type Query {
   currentWorkspace: Workspace
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!
   entity(where: WhereUniqueInput!): Entity
+
+  """
+  Get the changes to apply to the model in order to break a resource into microservices
+  """
+  finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!
   me: User!
   messageBrokerConnectedServices(where: WhereUniqueInput!): [Resource!]!
+  module(where: WhereUniqueInput!): Module
+  moduleAction(where: WhereUniqueInput!): ModuleAction
+  moduleActions(orderBy: ModuleActionOrderByInput, skip: Int, take: Int, where: ModuleActionWhereInput): [ModuleAction!]!
+  modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  pluginInstallation(where: WhereUniqueInput!): PluginInstallation
+  pluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
   project(where: WhereUniqueInput!): Project
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
@@ -1403,6 +1462,10 @@ type Query {
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
+  serviceTopics(where: WhereUniqueInput!): ServiceTopics
+  serviceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
+  topic(where: WhereUniqueInput!): Topic
+  topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
   userAction(where: WhereUniqueInput!): UserAction!
   userApiTokens: [ApiToken!]!
   workspace(where: WhereUniqueInput!): Workspace
@@ -1417,6 +1480,23 @@ enum QueryMode {
 
 input RedeemCouponInput {
   code: String!
+}
+
+input RedesignProjectInput {
+  movedEntities: [RedesignProjectMovedEntity!]!
+  newServices: [RedesignProjectNewService!]!
+  projectId: String!
+}
+
+input RedesignProjectMovedEntity {
+  entityId: String!
+  originalResourceId: String!
+  targetResourceId: String!
+}
+
+input RedesignProjectNewService {
+  id: String!
+  name: String!
 }
 
 type RemoteGitRepos {
@@ -1467,11 +1547,6 @@ type Resource {
   projectId: String
   resourceType: EnumResourceType!
   updatedAt: DateTime!
-}
-
-input ResourceCreateCopiedEntitiesInput {
-  entitiesToCopy: [CopiedEntities!]!
-  targetResourceId: String!
 }
 
 input ResourceCreateInput {
@@ -1702,6 +1777,15 @@ input SignupInput {
   lastName: String!
   password: String!
   workspaceName: String!
+}
+
+input SignupPreviewAccountInput {
+  previewAccountEmail: String!
+  previewAccountType: EnumPreviewAccountType!
+}
+
+input SignupWithBusinessEmailInput {
+  email: String!
 }
 
 enum SortOrder {

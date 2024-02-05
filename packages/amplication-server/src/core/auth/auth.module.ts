@@ -21,9 +21,9 @@ import {
 import { JwtStrategy } from "./jwt.strategy";
 import { GitHubStrategy } from "./github.strategy";
 import { GitHubStrategyConfigService } from "./githubStrategyConfig.service";
-import { ProjectModule } from "../project/project.module";
 import { GitHubAuthGuard } from "./github.guard";
 import { Auth0Middleware } from "./auth0.middleware";
+import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
 
 @Module({
   imports: [
@@ -41,7 +41,6 @@ import { Auth0Middleware } from "./auth0.middleware";
     ExceptionFiltersModule,
     WorkspaceModule,
     UserModule,
-    ProjectModule,
   ],
   providers: [
     AuthService,
@@ -70,11 +69,11 @@ import { Auth0Middleware } from "./auth0.middleware";
     AuthResolver,
     GitHubStrategyConfigService,
     Auth0Middleware,
+    SegmentAnalyticsModule,
   ],
   controllers: [AuthController],
   exports: [GqlAuthGuard, AuthService, AuthResolver],
 })
-// export class AuthModule {}
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer

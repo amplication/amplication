@@ -13,10 +13,10 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { MorganInterceptor } from "nest-morgan";
 import { Request, Response } from "express";
-import { AuthService, AuthUser } from "./auth.service";
+import { AuthService } from "./auth.service";
 import { GithubAuthExceptionFilter } from "../../filters/github-auth-exception.filter";
 import { GitHubAuthGuard } from "./github.guard";
-import { AuthProfile, GitHubRequest } from "./types";
+import { AuthProfile, AuthUser, GitHubRequest } from "./types";
 import { stringifyUrl } from "query-string";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -87,10 +87,29 @@ export class AuthController {
   @UseInterceptors(MorganInterceptor("combined"))
   @Get(AUTH_LOGIN_PATH)
   async auth0Login(@Req() request: Request, @Res() response: Response) {
-    await response.oidc.login({
-      returnTo: AUTH_AFTER_CALLBACK_PATH,
-    });
-    return;
+    try {
+      const screenHint = request.query.work_email
+        ? {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            screen_hint: "signup",
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            login_hint: request.query.work_email as string,
+          }
+        : // eslint-disable-next-line @typescript-eslint/naming-convention
+          { screen_hint: "login-id" };
+      await response.oidc.login({
+        authorizationParams: {
+          ...screenHint,
+        },
+        returnTo: AUTH_AFTER_CALLBACK_PATH,
+      });
+      return;
+    } catch (error) {
+      this.logger.error(error.message, error);
+      return (
+        error.body.friendly_message || "Please enter a valid work email address"
+      );
+    }
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
@@ -159,7 +178,7 @@ export class AuthController {
       isNew = true;
     }
     if (!user.account.githubId || user.account.githubId !== profile.sub) {
-      user = await this.authService.updateUser(user, profile);
+      user = await this.authService.updateUser(user, { githubId: profile.sub });
       isNew = false;
     }
 

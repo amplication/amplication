@@ -1,10 +1,13 @@
 import React, { useMemo } from "react";
 import { Formik } from "formik";
 import * as models from "../models";
-import { TabContentTitle, TextField } from "@amplication/ui/design-system";
+import {
+  TabContentTitle,
+  TextField,
+  Form,
+} from "@amplication/ui/design-system";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
-import { Form } from "../Components/Form";
 import FormikAutoSave from "../util/formikAutoSave";
 import {
   validate,

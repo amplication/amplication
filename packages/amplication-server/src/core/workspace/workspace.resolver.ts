@@ -34,10 +34,8 @@ import { ProvisionSubscriptionArgs } from "./dto/ProvisionSubscriptionArgs";
 import { ProvisionSubscriptionResult } from "./dto/ProvisionSubscriptionResult";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { UserService } from "../user/user.service";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 import { Coupon } from "./dto/Coupon";
 import { ConfigService } from "@nestjs/config";
@@ -134,7 +132,11 @@ export class WorkspaceResolver {
     @UserEntity() currentUser: User,
     @Args() args: CreateOneWorkspaceArgs
   ): Promise<Workspace | null> {
-    return this.workspaceService.createWorkspace(currentUser.account.id, args);
+    return this.workspaceService.createWorkspace(
+      currentUser.account.id,
+      args,
+      currentUser.workspace.id
+    );
   }
 
   @Mutation(() => Invitation, {

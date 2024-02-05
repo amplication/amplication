@@ -11,6 +11,8 @@ export enum AnalyticsEventNames {
   SignInWithGitHub = "signInWithGitHub",
   SignInWithUserName = "signInWithUserName",
   ContinueWithSSOClick = "continueWithSSOClick",
+  SignUpWithEmailPassword = "SignUpWithEmailPassword",
+  EmailLogin = "EmailLogin",
 
   // account
   AccountInfoUpdate = "updateAccountInfo",
@@ -153,4 +155,9 @@ export enum AnalyticsEventNames {
   // notification
   OpenNotificationCenter = "OpenNotificationCenter",
   ClickNotificationMessage = "ClickNotificationMessage",
+
+  // break the monolith
+  StartBreakTheMonolithClick = "StartBreakTheMonolithClick",
+  ModelOrganizer_AddServiceClick = "ModelOrganizer_AddServiceClick",
+  ModelOrganizer_MoveEntity = "ModelOrganizer_MoveEntity",
 }

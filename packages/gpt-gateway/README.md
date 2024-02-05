@@ -1,12 +1,13 @@
-<p align="right">
-  <a href="https://amplication.com" target="_blank">
-    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/images/amplication-logo-purple.svg"/>
-  </a>
-</p>
-
 # Introduction
 
-This service was generated with Amplication. The server-side of the generated project. This component provides the different backend services - i.e., REST API, GraphQL API, authentication, authorization, logging, data validation and the connection to the database. Additional information about the server component and the architecture around it, can be found on the [documentation](https://docs.amplication.com/guides/getting-started) site.
+Service that act as a gateway to OpenAI API.
+
+![HLD](./docs/HLD.png "HLD")
+
+It allows to generate a message response from the only `conversationTypeKey` and `params` that will be interpolated in the messages part of the GPT conversation.
+This is achieved by getting the template associated to the `conversationTypeKey` as it contains a list of messages, interpolating all the params and send them to the OpenAi APIs.
+![DB Model](./docs/db-model.png "DB Model")
+
 
 # Getting started
 
