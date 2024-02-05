@@ -1104,6 +1104,19 @@ describe("ResourceBtmService", () => {
 
   describe("triggerBreakServiceIntoMicroservices", () => {
     const mockPromptResult = "prompt-result";
+
+    it("should throw an error when there are no data models in the service", async () => {
+      jest
+        .spyOn(service, "getResourceDataForBtm")
+        .mockResolvedValue({} as ResourceDataForBtm);
+
+      await expect(
+        service.triggerBreakServiceIntoMicroservices({
+          resourceId: resourceMock.id,
+          user: userMock,
+        })
+      ).rejects.toThrowError();
+    });
     it("should start a conversation with the GPT service", async () => {
       jest
         .spyOn(service, "getResourceDataForBtm")
