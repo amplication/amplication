@@ -25,8 +25,10 @@ import { AuthProfile, AuthUser, BootstrapPreviewUser } from "./types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   AuthenticationClient,
+  ChangePasswordRequest,
   JSONApiResponse,
   ManagementClient,
+  SignUpRequest,
   SignUpResponse,
   TextApiResponse,
 } from "auth0";
@@ -40,14 +42,10 @@ import {
   generateRandomEmail,
   generateRandomString,
 } from "./auth-utils";
+import { IdentityProvider, IdentityProviderPreview } from "./auth.types";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
-export const IDENTITY_PROVIDER_GITHUB = "GitHub";
-export const IDENTITY_PROVIDER_SSO = "SSO";
-export const IDENTITY_PROVIDER_MANUAL = "Manual";
-export const IDENTITY_PROVIDER_PREVIEW_ACCOUNT = "PreviewAccount";
-export const IDENTITY_PROVIDER_AUTH0 = "Auth0";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
 const AUTH_USER_INCLUDE = {
@@ -64,11 +62,13 @@ const WORKSPACE_INCLUDE = {
 
 @Injectable()
 export class AuthService {
-  private auth0: AuthenticationClient;
-  private auth0Management: ManagementClient;
+  private readonly auth0: AuthenticationClient;
+  private readonly auth0Management: ManagementClient;
+  private readonly clientId: string;
+  private readonly dbConnectionName: string;
 
   constructor(
-    private readonly configService: ConfigService,
+    configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly passwordService: PasswordService,
     private readonly prismaService: PrismaService,
@@ -78,21 +78,22 @@ export class AuthService {
     @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService
   ) {
+    this.clientId = configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID);
+    const clientSecret = configService.get<string>(
+      Env.AUTH_ISSUER_CLIENT_SECRET
+    );
+    this.dbConnectionName = configService.get<string>(
+      Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
+    );
     this.auth0 = new AuthenticationClient({
-      domain: this.configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
-      clientId: this.configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID),
-      clientSecret: this.configService.get<string>(
-        Env.AUTH_ISSUER_CLIENT_SECRET
-      ),
+      domain: configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
+      clientId: this.clientId,
+      clientSecret,
     });
     this.auth0Management = new ManagementClient({
-      domain: this.configService.get<string>(
-        Env.AUTH_ISSUER_MANAGEMENT_BASE_URL
-      ),
-      clientId: this.configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID),
-      clientSecret: this.configService.get<string>(
-        Env.AUTH_ISSUER_CLIENT_SECRET
-      ),
+      domain: configService.get<string>(Env.AUTH_ISSUER_MANAGEMENT_BASE_URL),
+      clientId: this.clientId,
+      clientSecret: clientSecret,
     });
   }
 
@@ -107,11 +108,6 @@ export class AuthService {
 
     try {
       let auth0User: JSONApiResponse<SignUpResponse>;
-      const existedAccount = await this.accountService.findAccount({
-        where: {
-          email: emailAddress,
-        },
-      });
 
       const existedAuth0User = await this.getAuth0UserByEmail(emailAddress);
 
@@ -128,23 +124,6 @@ export class AuthService {
       if (!resetPassword.data)
         throw Error("Failed to send reset message to new Auth0 user");
 
-      if (!existedAccount) {
-        const account = await this.accountService.createAccount(
-          {
-            data: {
-              email: emailAddress,
-              firstName: emailAddress,
-              lastName: "",
-              password: "",
-              previewAccountType: EnumPreviewAccountType.Auth0Signup,
-            },
-          },
-          IDENTITY_PROVIDER_AUTH0
-        );
-        const workspaceName = generateRandomString();
-        await this.bootstrapUser(account, workspaceName);
-      }
-
       return true;
     } catch (error) {
       this.logger.error(error.message, error);
@@ -155,14 +134,10 @@ export class AuthService {
   async createAuth0User(
     email: string
   ): Promise<JSONApiResponse<SignUpResponse>> {
-    const data = {
+    const data: SignUpRequest = {
       email,
       password: generatePassword(),
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      email_verified: true,
-      connection: this.configService.get<string>(
-        Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
-      ),
+      connection: this.dbConnectionName,
     };
 
     const user = await this.auth0.database.signUp(data);
@@ -171,11 +146,11 @@ export class AuthService {
   }
 
   async resetAuth0UserPassword(email: string): Promise<TextApiResponse> {
-    const data = {
+    const data: ChangePasswordRequest = {
       email,
-      connection: this.configService.get<string>(
-        Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
-      ),
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      client_id: this.clientId,
+      connection: this.dbConnectionName,
     };
 
     const changePasswordResponse = await this.auth0.database.changePassword(
@@ -206,7 +181,7 @@ export class AuthService {
           githubId: payload.id,
         },
       },
-      IDENTITY_PROVIDER_GITHUB
+      IdentityProvider.GitHub
     );
 
     const user = await this.bootstrapUser(account, payload.id);
@@ -239,12 +214,13 @@ export class AuthService {
           lastName: profile.family_name || "",
           password: "",
           githubId: profile.sub,
+          previewAccountType: EnumPreviewAccountType.None,
         },
       },
-      IDENTITY_PROVIDER_SSO
+      IdentityProvider.IdentityPlatform
     );
 
-    const user = await this.bootstrapUser(account, profile.sub);
+    const user = await this.bootstrapUser(account, profile.email);
 
     return user;
   }
@@ -277,7 +253,7 @@ export class AuthService {
           password: hashedPassword,
         },
       },
-      IDENTITY_PROVIDER_MANUAL
+      IdentityProvider.Local
     );
 
     const user = await this.bootstrapUser(account, payload.workspaceName);
@@ -377,6 +353,7 @@ export class AuthService {
     previewAccountEmail: string,
     previewAccountType: EnumPreviewAccountType
   ) {
+    const identityProvider: IdentityProviderPreview = `${IdentityProvider.PreviewAccount}_${previewAccountType}`;
     return {
       signupData: {
         email: generateRandomEmail(),
@@ -386,7 +363,7 @@ export class AuthService {
         previewAccountType,
         previewAccountEmail,
       },
-      identityProvider: `${IDENTITY_PROVIDER_PREVIEW_ACCOUNT}_${previewAccountType}`,
+      identityProvider,
     };
   }
 

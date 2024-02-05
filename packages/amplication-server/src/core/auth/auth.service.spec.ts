@@ -6,7 +6,7 @@ import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
 import { UserService } from "../user/user.service";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { AuthService, IDENTITY_PROVIDER_MANUAL } from "./auth.service";
+import { AuthService } from "./auth.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { EnumTokenType } from "./dto";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
@@ -18,6 +18,7 @@ import { Workspace, Project, Resource, Account, User } from "../../models";
 import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
 import { anyString } from "jest-mock-extended";
 import { AuthUser } from "./types";
+import { IdentityProvider } from "./auth.types";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
@@ -331,7 +332,7 @@ describe("AuthService", () => {
           lastName: EXAMPLE_ACCOUNT.lastName,
         },
       },
-      IDENTITY_PROVIDER_MANUAL
+      IdentityProvider.Local
     );
     expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
@@ -672,44 +673,8 @@ describe("AuthService", () => {
       ).rejects.toThrow(WORK_EMAIL_INVALID);
     });
 
-    it("should signs up for correct data with preview account", async () => {
+    it("should create only an Auth0 user (not an amplication user) and reset password if the user does not exist on Auth0", async () => {
       const email = "invalid@invalid.com";
-      findAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
-
-      mockManagementClientGetByEmail.mockResolvedValueOnce({
-        data: [
-          {
-            email,
-          },
-        ],
-      });
-
-      mockAuthenticationClientDatabaseChangePassword.mockResolvedValueOnce({
-        data: "ok",
-      });
-
-      const result = await service.signupWithBusinessEmail({
-        data: {
-          email,
-        },
-      });
-
-      expect(result).toBeTruthy();
-      expect(findAccountMock).toHaveBeenCalledTimes(1);
-      expect(
-        mockAuthenticationClientDatabaseChangePassword
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        mockAuthenticationClientDatabaseChangePassword
-      ).toHaveBeenCalledWith({
-        email,
-        connection: expect.any(String),
-      });
-    });
-
-    it("should create an Auth0 user and reset password if the user does not exist on Auth0", async () => {
-      const email = "invalid@invalid.com";
-      findAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
 
       mockManagementClientGetByEmail.mockResolvedValueOnce({
         data: [],
@@ -732,13 +697,10 @@ describe("AuthService", () => {
       });
 
       expect(result).toBeTruthy();
-      expect(findAccountMock).toHaveBeenCalledTimes(1);
 
       expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledTimes(1);
       expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledWith({
         email,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        email_verified: true,
         password: expect.any(String),
         connection: expect.any(String),
       });
@@ -749,7 +711,6 @@ describe("AuthService", () => {
 
     it("should not create an Auth0 user, but only reset password if the user already exists on Auth0", async () => {
       const email = "invalid@invalid.com";
-      findAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
 
       mockManagementClientGetByEmail.mockResolvedValueOnce({
         data: [{ email }],
@@ -772,7 +733,6 @@ describe("AuthService", () => {
       });
 
       expect(result).toBeTruthy();
-      expect(findAccountMock).toHaveBeenCalledTimes(1);
 
       expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledTimes(0);
       expect(

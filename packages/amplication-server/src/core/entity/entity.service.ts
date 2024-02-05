@@ -80,10 +80,8 @@ import {
 } from "./dto";
 import { ReservedNameError } from "../resource/ReservedNameError";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
 import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
 import { BillingService } from "../billing/billing.service";

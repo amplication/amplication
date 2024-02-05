@@ -821,7 +821,6 @@ export enum EnumPendingChangeOriginType {
 }
 
 export enum EnumPreviewAccountType {
-  Auth0Signup = 'Auth0Signup',
   BreakingTheMonolith = 'BreakingTheMonolith',
   None = 'None'
 }
