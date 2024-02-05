@@ -16,6 +16,7 @@ export const AlwaysOpen = {
         open
         message="This message will show indefinitely"
         autoHideDuration={-1}
+        {...props}
       />
     );
   },

@@ -313,12 +313,6 @@ input ConnectGitRepositoryInput {
   resourceId: String!
 }
 
-input CopiedEntity {
-  entityId: String!
-  originalResourceId: String!
-  targetResourceId: String!
-}
-
 type Coupon {
   code: String!
   couponType: String
@@ -788,7 +782,6 @@ enum EnumPendingChangeOriginType {
 }
 
 enum EnumPreviewAccountType {
-  Auth0Signup
   BreakingTheMonolith
   None
 }
@@ -835,6 +828,7 @@ enum EnumUserActionStatus {
 enum EnumUserActionType {
   DBSchemaImport
   GptConversation
+  ProjectRedesign
 }
 
 enum EnumWorkspaceMemberType {
@@ -994,11 +988,6 @@ input MessagePatternCreateInput {
   type: EnumMessagePatternConnectionOptions!
 }
 
-input ModelGroupResource {
-  name: String!
-  tempId: String!
-}
-
 type Module implements IBlock {
   blockType: EnumBlockType!
   createdAt: DateTime!
@@ -1134,7 +1123,6 @@ type Mutation {
   connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
-  copiedEntities(data: ResourcesCreateCopiedEntitiesInput!): [Resource!]!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
@@ -1180,6 +1168,7 @@ type Mutation {
   login(data: LoginInput!): Auth!
   provisionSubscription(data: ProvisionSubscriptionInput!): ProvisionSubscriptionResult
   redeemCoupon(data: RedeemCouponInput!): Coupon!
+  redesignProject(data: RedesignProjectInput!): UserAction!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
@@ -1187,6 +1176,7 @@ type Mutation {
   signup(data: SignupInput!): Auth!
   signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
+  startRedesign(data: WhereUniqueInput!): Resource
 
   """
   Trigger the generation of a set of recommendations for breaking a resource into microservices
@@ -1492,6 +1482,23 @@ input RedeemCouponInput {
   code: String!
 }
 
+input RedesignProjectInput {
+  movedEntities: [RedesignProjectMovedEntity!]!
+  newServices: [RedesignProjectNewService!]!
+  projectId: String!
+}
+
+input RedesignProjectMovedEntity {
+  entityId: String!
+  originalResourceId: String!
+  targetResourceId: String!
+}
+
+input RedesignProjectNewService {
+  id: String!
+  name: String!
+}
+
 type RemoteGitRepos {
   pagination: Pagination!
   repos: [RemoteGitRepository!]!
@@ -1539,7 +1546,6 @@ type Resource {
   project: Project
   projectId: String
   resourceType: EnumResourceType!
-  tempId: String
   updatedAt: DateTime!
 }
 
@@ -1550,7 +1556,6 @@ input ResourceCreateInput {
   project: WhereParentIdInput!
   resourceType: EnumResourceType!
   serviceSettings: ServiceSettingsUpdateInput
-  tempId: String
 }
 
 input ResourceCreateWithEntitiesEntityInput {
@@ -1652,12 +1657,6 @@ input ResourceWhereInput {
   projectId: String
   resourceType: EnumResourceTypeFilter
   updatedAt: DateTimeFilter
-}
-
-input ResourcesCreateCopiedEntitiesInput {
-  entitiesToCopy: [CopiedEntity!]!
-  modelGroupsResources: [ModelGroupResource!]!
-  projectId: String!
 }
 
 enum Role {

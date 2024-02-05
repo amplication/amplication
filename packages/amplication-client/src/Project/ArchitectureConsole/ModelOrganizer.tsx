@@ -1,12 +1,12 @@
 import {
   Button,
-  CircularProgress,
   Dialog,
   EnumFlexDirection,
   FlexItem,
+  Snackbar,
 } from "@amplication/ui/design-system";
 import { EnumItemsAlign } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Background,
   ConnectionMode,
@@ -15,7 +15,9 @@ import {
   applyNodeChanges,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { useAppContext } from "../../context/appContext";
 import * as models from "../../models";
+import useMessage from "../../util/useMessage";
 import "./ModelOrganizer.scss";
 import ModelOrganizerControls from "./ModelOrganizerControls";
 import ModelOrganizerToolbar from "./ModelOrganizerToolbar";
@@ -25,6 +27,7 @@ import RelationMarkets from "./edges/relationMarkets";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
 import { findGroupByPosition } from "./helpers";
 import useModelOrganization from "./hooks/useModelOrganizer";
+import { applyAutoLayout } from "./layout";
 import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
@@ -37,6 +40,7 @@ import {
 
 export const CLASS_NAME = "model-organizer";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
+const MESSAGE_AUTO_HIDE_DURATION = 3000;
 
 const nodeTypes = {
   model: ModelNode,
@@ -53,17 +57,13 @@ const edgeTypes = {
   relationSimple: simpleRelationEdge,
 };
 
-type Props = {
-  loadingResources?: boolean;
-  errorMessage?: string;
-};
+export default function ModelOrganizer() {
+  const { currentProject } = useAppContext();
 
-export default function ModelOrganizer({
-  loadingResources,
-  errorMessage,
-}: Props) {
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
+
+  const { message, messageType, showMessage, removeMessage } = useMessage();
 
   const {
     nodes,
@@ -73,24 +73,49 @@ export default function ModelOrganizer({
     onEdgesChange,
     showRelationDetails,
     toggleShowRelationDetails,
-    resetToOriginalState,
+    resetChanges,
     changes,
-    saveChanges,
-    loadingCreateResourceAndEntities,
+    applyChanges,
+    applyChangesLoading,
+    applyChangesError,
+    applyChangesData,
     moveNodeToParent,
     createNewTempService,
     modelGroupFilterChanged,
     searchPhraseChanged,
-    setDraggableNodes,
+    setCurrentEditableResource,
     mergeNewResourcesChanges,
-    createEntitiesError,
-  } = useModelOrganization();
+    redesignMode,
+  } = useModelOrganization({
+    projectId: currentProject?.id,
+    onMessage: showMessage,
+  });
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
 
-  const [readOnly, setReadOnly] = useState<boolean>(true);
-
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
+
+  const fitViewTimerRef = useRef(null);
+
+  const fitToView = useCallback(
+    (delayBeforeStart = 100) => {
+      if (reactFlowInstance) {
+        if (delayBeforeStart > 0) {
+          fitViewTimerRef.current = setTimeout(() => {
+            reactFlowInstance.fitView({ duration: 1000 });
+          }, delayBeforeStart);
+        } else {
+          reactFlowInstance.fitView({ duration: 1000 });
+        }
+      }
+    },
+    [reactFlowInstance]
+  );
+
+  useEffect(() => {
+    // Clear the timeout ref when the component unmounts
+    return () => clearTimeout(fitViewTimerRef.current);
+  }, []);
 
   const onNodesChange = useCallback(
     (changes) => {
@@ -107,34 +132,20 @@ export default function ModelOrganizer({
     setIsValidResourceName(true);
   }, [setIsValidResourceName]);
 
-  useEffect(() => {
-    if (
-      changes?.movedEntities?.length > 0 ||
-      changes?.newServices?.length > 0
-    ) {
-      setReadOnly(false);
-    }
-  }, [changes, setReadOnly]);
-
   const onRedesignClick = useCallback(
     (resource: models.Resource) => {
-      setDraggableNodes(resource);
-
-      setReadOnly(false);
+      setCurrentEditableResource(resource);
     },
-    [setReadOnly, setDraggableNodes]
+    [setCurrentEditableResource]
   );
 
   const onCancelChangesClick = useCallback(() => {
-    resetToOriginalState();
-
-    setReadOnly(true);
-  }, [resetToOriginalState]);
+    resetChanges();
+  }, [resetChanges]);
 
   const onApplyPlanClick = useCallback(() => {
-    saveChanges();
-    setReadOnly(true);
-  }, [saveChanges, setReadOnly]);
+    applyChanges();
+  }, [applyChanges]);
 
   const onInit = useCallback(
     (instance: ReactFlowInstance) => {
@@ -145,7 +156,7 @@ export default function ModelOrganizer({
   );
 
   const handleServiceCreated = useCallback(
-    (newResource: models.Resource) => {
+    async (newResource: models.Resource) => {
       let isValidName = true;
       currentResourcesData.forEach((r) => {
         if (
@@ -158,10 +169,12 @@ export default function ModelOrganizer({
       });
       if (isValidName) {
         setIsValidResourceName(true);
-        createNewTempService(newResource);
+        await createNewTempService(newResource);
+
+        fitToView();
       }
     },
-    [createNewTempService, setIsValidResourceName, currentResourcesData]
+    [currentResourcesData, createNewTempService, fitToView]
   );
 
   const onNodeDrag = useCallback(
@@ -238,89 +251,101 @@ export default function ModelOrganizer({
 
   const onToggleShowRelationDetails = useCallback(async () => {
     await toggleShowRelationDetails();
+    fitToView();
+  }, [fitToView, toggleShowRelationDetails]);
 
-    reactFlowInstance.fitView();
-  }, [toggleShowRelationDetails, reactFlowInstance]);
+  const onArrangeNodes = useCallback(async () => {
+    const updatedNodes = await applyAutoLayout(
+      nodes,
+      edges,
+      showRelationDetails
+    );
+    setNodes(updatedNodes);
+    fitToView();
+  }, [nodes, edges, showRelationDetails, setNodes, fitToView]);
 
   return (
     <div className={CLASS_NAME}>
-      {loadingResources ? (
-        <CircularProgress centerToParent />
-      ) : (
-        <>
-          <div className={`${CLASS_NAME}__container`}>
-            <div className={`${CLASS_NAME}__side_toolbar`}>
-              <ModelsGroupsList
-                nodes={nodes}
-                handleModelGroupFilterChanged={modelGroupFilterChanged}
-              ></ModelsGroupsList>
-              <ModelOrganizerControls
-                onToggleShowRelationDetails={onToggleShowRelationDetails}
-                reactFlowInstance={reactFlowInstance}
-              />
-            </div>
-            <div className={`${CLASS_NAME}__body`}>
-              <ModelOrganizerToolbar
-                changes={changes}
-                nodes={nodes}
-                readOnly={readOnly}
-                hasChanges={
-                  changes?.movedEntities?.length > 0 ||
-                  changes?.newServices?.length > 0
-                }
-                loadingCreateResourceAndEntities={
-                  loadingCreateResourceAndEntities
-                }
-                resources={currentResourcesData}
-                onApplyPlan={onApplyPlanClick}
-                searchPhraseChanged={searchPhraseChanged}
-                onRedesign={onRedesignClick}
-                handleServiceCreated={handleServiceCreated}
-                onCancelChanges={onCancelChangesClick}
-                mergeNewResourcesChanges={mergeNewResourcesChanges}
-                createEntitiesError={Boolean(createEntitiesError)}
-              />
-              <Dialog
-                isOpen={!isValidResourceName}
-                onDismiss={handleCreateResourceState}
+      <>
+        <div className={`${CLASS_NAME}__container`}>
+          <div className={`${CLASS_NAME}__side_toolbar`}>
+            <ModelsGroupsList
+              nodes={nodes}
+              handleModelGroupFilterChanged={modelGroupFilterChanged}
+            ></ModelsGroupsList>
+            <ModelOrganizerControls
+              onToggleShowRelationDetails={onToggleShowRelationDetails}
+              onArrangeNodes={onArrangeNodes}
+              reactFlowInstance={reactFlowInstance}
+            />
+          </div>
+          <div className={`${CLASS_NAME}__body`}>
+            <ModelOrganizerToolbar
+              changes={changes}
+              nodes={nodes}
+              redesignMode={redesignMode}
+              hasChanges={
+                changes?.movedEntities?.length > 0 ||
+                changes?.newServices?.length > 0
+              }
+              applyChangesLoading={applyChangesLoading}
+              resources={currentResourcesData}
+              onApplyPlan={onApplyPlanClick}
+              searchPhraseChanged={searchPhraseChanged}
+              onRedesign={onRedesignClick}
+              handleServiceCreated={handleServiceCreated}
+              onCancelChanges={onCancelChangesClick}
+              mergeNewResourcesChanges={mergeNewResourcesChanges}
+              applyChangesError={applyChangesError}
+              applyChangesData={applyChangesData}
+            />
+            <Dialog
+              isOpen={!isValidResourceName}
+              onDismiss={handleCreateResourceState}
+            >
+              <FlexItem
+                direction={EnumFlexDirection.Column}
+                itemsAlign={EnumItemsAlign.Center}
               >
-                <FlexItem
-                  direction={EnumFlexDirection.Column}
-                  itemsAlign={EnumItemsAlign.Center}
-                >
-                  <span>
-                    The service name already exists. Please choose a different
-                    name.
-                  </span>
-                  <Button onClick={handleCreateResourceState}>Ok</Button>
-                </FlexItem>
-              </Dialog>
-              <div className={REACT_FLOW_CLASS_NAME}>
-                <ReactFlow
-                  onInit={onInit}
-                  nodes={nodes}
-                  edges={edges}
-                  fitView
-                  nodeTypes={showRelationDetails ? nodeTypes : simpleNodeTypes}
-                  edgeTypes={edgeTypes}
-                  onNodesChange={onNodesChange}
-                  onNodeDrag={onNodeDrag}
-                  onNodeDragStop={onNodeDragStop}
-                  onEdgesChange={onEdgesChange}
-                  connectionMode={ConnectionMode.Loose}
-                  proOptions={{ hideAttribution: true }}
-                  minZoom={0.1}
-                  panOnScroll
-                  selectionKeyCode={null}
-                >
-                  <Background color="grey" />
-                </ReactFlow>
-                <RelationMarkets />
-              </div>
+                <span>
+                  The service name already exists. Please choose a different
+                  name.
+                </span>
+                <Button onClick={handleCreateResourceState}>Ok</Button>
+              </FlexItem>
+            </Dialog>
+            <div className={REACT_FLOW_CLASS_NAME}>
+              <ReactFlow
+                onInit={onInit}
+                nodes={nodes}
+                edges={edges}
+                fitView
+                nodeTypes={showRelationDetails ? nodeTypes : simpleNodeTypes}
+                edgeTypes={edgeTypes}
+                onNodesChange={onNodesChange}
+                onNodeDrag={onNodeDrag}
+                onNodeDragStop={onNodeDragStop}
+                onEdgesChange={onEdgesChange}
+                connectionMode={ConnectionMode.Loose}
+                proOptions={{ hideAttribution: true }}
+                minZoom={0.1}
+                panOnScroll
+                selectionKeyCode={null}
+              >
+                <Background color="grey" />
+              </ReactFlow>
+              <RelationMarkets />
             </div>
           </div>
-        </>
-      )}
+          <Snackbar
+            open={Boolean(message)}
+            message={message}
+            messageType={messageType}
+            autoHideDuration={MESSAGE_AUTO_HIDE_DURATION}
+            onClose={removeMessage}
+          />
+        </div>
+      </>
     </div>
   );
 }

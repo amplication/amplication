@@ -14,7 +14,7 @@ import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
 import "./EntitiesImport.scss";
 import { CREATE_ENTITIES_FROM_SCHEMA } from "./queries";
-import useUserActionWatchStatus from "./useUserActionWatchStatus";
+import useUserActionWatchStatus from "../../UserAction/useUserActionWatchStatus";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { useStiggContext } from "@stigg/react-sdk";
 import { Button } from "../../Components/Button";

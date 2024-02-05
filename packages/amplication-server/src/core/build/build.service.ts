@@ -51,10 +51,8 @@ import {
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { kebabCase } from "lodash";
 import { CodeGeneratorVersionStrategy } from "../resource/dto";
 

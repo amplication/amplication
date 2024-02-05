@@ -9,10 +9,8 @@ import {
 import { UpsertSubscriptionInput } from "./dto/UpsertSubscriptionInput";
 import { BillingService } from "../billing/billing.service";
 import { UpdateStatusDto } from "./dto/UpdateStatusDto";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";

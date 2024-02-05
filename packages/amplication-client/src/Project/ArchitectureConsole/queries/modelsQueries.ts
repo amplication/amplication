@@ -37,26 +37,40 @@ export const GET_RESOURCES = gql`
   }
 `;
 
-export const CREATE_RESOURCE_ENTITIES = gql`
-  mutation copiedEntities($data: ResourcesCreateCopiedEntitiesInput!) {
-    copiedEntities(data: $data) {
+export const REDESIGN_PROJECT = gql`
+  mutation redesignProject($data: RedesignProjectInput!) {
+    redesignProject(data: $data) {
       id
-      name
-      entities {
+      createdAt
+      actionId
+      status
+      action {
         id
-        displayName
-        resourceId
-        fields {
-          permanentId
-          displayName
-          description
-          properties
-          dataType
-          customAttributes
-          required
-          unique
+        createdAt
+        steps {
+          id
+          name
+          createdAt
+          message
+          status
+          completedAt
+          logs {
+            id
+            createdAt
+            message
+            meta
+            level
+          }
         }
       }
+    }
+  }
+`;
+
+export const START_REDESIGN = gql`
+  mutation startRedesign($where: WhereUniqueInput!) {
+    startRedesign(where: $where) {
+      name
     }
   }
 `;

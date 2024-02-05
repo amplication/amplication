@@ -2,11 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { Account, Prisma } from "../../prisma";
 import { PrismaService } from "../../prisma/prisma.service";
 import { Workspace } from "../../models";
-import {
-  SegmentAnalyticsService,
-  EnumEventType,
-  IdentifyData,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { IdentifyData } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { IdentityProvider, IdentityProviderPreview } from "../auth/auth.types";
 
 @Injectable()
 export class AccountService {
@@ -17,7 +16,7 @@ export class AccountService {
 
   async createAccount(
     args: Prisma.AccountCreateArgs,
-    identityProvider: string
+    identityProvider: IdentityProvider | IdentityProviderPreview
   ): Promise<Account> {
     const account = await this.prisma.account.create(args);
 
@@ -35,7 +34,7 @@ export class AccountService {
       userId: account.id,
       event: EnumEventType.Signup,
       properties: {
-        identityProvider,
+        identityProvider: identityProvider,
       },
       context: {
         traits: userData,

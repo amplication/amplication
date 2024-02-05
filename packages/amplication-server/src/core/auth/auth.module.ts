@@ -23,6 +23,7 @@ import { GitHubStrategy } from "./github.strategy";
 import { GitHubStrategyConfigService } from "./githubStrategyConfig.service";
 import { GitHubAuthGuard } from "./github.guard";
 import { Auth0Middleware } from "./auth0.middleware";
+import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
 
 @Module({
   imports: [
@@ -68,11 +69,11 @@ import { Auth0Middleware } from "./auth0.middleware";
     AuthResolver,
     GitHubStrategyConfigService,
     Auth0Middleware,
+    SegmentAnalyticsModule,
   ],
   controllers: [AuthController],
   exports: [GqlAuthGuard, AuthService, AuthResolver],
 })
-// export class AuthModule {}
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer

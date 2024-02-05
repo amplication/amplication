@@ -13,10 +13,8 @@ import { Env } from "../../env";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStatus";
 import { Subscription } from "../subscription/dto/Subscription";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscriptionResult";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";

@@ -15,19 +15,6 @@ $border-radius: 8px;
     display: flex;
     justify-content: space-between;
     gap: var(--double-spacing);
-    margin: var(--double-spacing);
-  }
-
-  &__box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--default-spacing-small);
-    cursor: pointer;
-    height: $box-height;
-    width: $box-width;
-    border: 1px solid var(--gray-70);
-    border-radius: $border-radius;
+    margin: var(--double-spacing) 0;
   }
 }

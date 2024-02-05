@@ -28,13 +28,14 @@ env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_BRANCH: ${{ github.head_ref || github.ref_name }}
   NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
+  NX_AFFECTED_OR_ALL: ${{ fromJSON('["affected", "run-many --all"]')[ inputs.nx-force-all ] }}
   NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache || false }}
   BASE: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
 
 jobs:
   ci:
     name: Continuous Integration
-    if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.head_ref != 'next' )
+    if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.head_ref != 'next' ) || github.event_name  == 'workflow_dispatch'
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
@@ -53,7 +54,7 @@ jobs:
 
       - name: Cache global node modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -71,21 +72,21 @@ jobs:
         run: npx nx format:check $NX_FORCE_ALL
 
       - name: Lint
-        run: npx nx affected --target=lint --parallel=3 $NX_FORCE_ALL
+        run: npx nx $NX_AFFECTED_OR_ALL --target=lint --parallel=3
 
       - name: Build
         run: |
-          npx nx affected --target=build --parallel=3 $NX_FORCE_ALL
-          npx nx affected --target=postbuild --parallel=3 $NX_FORCE_ALL
+          npx nx $NX_AFFECTED_OR_ALL --target=build --parallel=3
+          npx nx $NX_AFFECTED_OR_ALL --target=postbuild --parallel=3
 
       - name: Get number of CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
+        uses: SimenB/github-actions-cpu-cores@v2
         id: cpu-cores
 
       - name: Test
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
-        run: npx nx affected --target=test --coverage --maxWorkers=${{ steps.cpu-cores.outputs.count }} $NX_FORCE_ALL
+        run: npx nx $NX_AFFECTED_OR_ALL --target=test --coverage --maxWorkers=${{ steps.cpu-cores.outputs.count }}
 
   nx:
     name: Nx
