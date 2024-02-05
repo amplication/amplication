@@ -191,7 +191,8 @@ $split-icon-font-size: 20px;
       color: var(--gray-40);
     }
 
-    &::before {
+    &::after {
+      //use ::after because the "summary" element used in the SelectMenu does not work properly with ::before
       content: "";
       position: absolute;
       box-sizing: border-box;
