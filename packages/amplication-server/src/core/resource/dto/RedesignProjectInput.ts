@@ -3,31 +3,31 @@ import { Field, InputType } from "@nestjs/graphql";
 @InputType({
   isAbstract: true,
 })
-export class ResourcesCreateCopiedEntitiesInput {
+export class RedesignProjectInput {
   @Field(() => String, {
     nullable: false,
   })
   projectId!: string;
 
-  @Field(() => [ModelGroupResource], {
+  @Field(() => [RedesignProjectNewService], {
     nullable: false,
   })
-  modelGroupsResources!: ModelGroupResource[];
+  newServices!: RedesignProjectNewService[];
 
-  @Field(() => [CopiedEntity], {
+  @Field(() => [RedesignProjectMovedEntity], {
     nullable: false,
   })
-  entitiesToCopy!: CopiedEntity[];
+  movedEntities!: RedesignProjectMovedEntity[];
 }
 
 @InputType({
   isAbstract: true,
 })
-export class ModelGroupResource {
+export class RedesignProjectNewService {
   @Field(() => String, {
     nullable: false,
   })
-  tempId!: string;
+  id!: string;
 
   @Field(() => String, {
     nullable: false,
@@ -37,7 +37,7 @@ export class ModelGroupResource {
 @InputType({
   isAbstract: true,
 })
-export class CopiedEntity {
+export class RedesignProjectMovedEntity {
   @Field(() => String, {
     nullable: false,
   })

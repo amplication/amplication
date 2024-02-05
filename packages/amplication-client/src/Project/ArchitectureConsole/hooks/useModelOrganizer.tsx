@@ -10,12 +10,11 @@ import {
 } from "../helpers";
 import { applyAutoLayout } from "../layout";
 import {
-  CREATE_RESOURCE_ENTITIES,
+  REDESIGN_PROJECT,
   GET_RESOURCES,
   START_REDESIGN,
 } from "../queries/modelsQueries";
 import {
-  CopiedEntity,
   EntityNode,
   ModelChanges,
   ModelOrganizerPersistentData,
@@ -25,6 +24,9 @@ import {
 } from "../types";
 
 import useModelOrganizerPersistentData from "./useModelOrganizerPersistentData";
+import { EnumMessageType } from "../../../util/useMessage";
+import useUserActionWatchStatus from "../../../UserAction/useUserActionWatchStatus";
+import { useAppContext } from "../../../context/appContext";
 import { useTracking } from "../../../util/analytics";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
@@ -38,20 +40,19 @@ type TDataStartRedesign = {
   };
 };
 
-type modelChangesData = {
+type Props = {
   projectId: string;
-  modelGroupsResources: {
-    tempId: string;
-    name: string;
-  }[];
-  entitiesToCopy: {
-    targetResourceId: string;
-    entityId: string;
-  }[];
+  onMessage: (message: string, type: EnumMessageType) => void;
 };
 
-const useModelOrganization = (projectId: string) => {
+type RedesignProjectData = {
+  redesignProject: models.UserAction;
+};
+
+const useModelOrganization = ({ projectId, onMessage }: Props) => {
   const { trackEvent } = useTracking();
+  const { reloadResources } = useAppContext();
+
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
   const [currentResourcesData, setCurrentResourcesData] = useState<
@@ -68,6 +69,9 @@ const useModelOrganization = (projectId: string) => {
     useState<Date>(null);
 
   const [redesignMode, setRedesignMode] = useState<boolean>(false);
+
+  const [userAction, setUserAction] = useState<models.UserAction>(null);
+  const { data: applyChangesResults } = useUserActionWatchStatus(userAction);
 
   const [changes, setChanges] = useState<ModelChanges>({
     movedEntities: [],
@@ -111,7 +115,7 @@ const useModelOrganization = (projectId: string) => {
   });
 
   const loadProjectResources = useCallback(
-    (forceRefresh?: boolean) => {
+    (forceRefresh?: boolean, onLoadResourcesCompleted?: () => void) => {
       if (!forceRefresh) {
         //try to load a saved copy of the data from the persistent layer
         const savedData = loadPersistentData();
@@ -138,6 +142,7 @@ const useModelOrganization = (projectId: string) => {
           }, []);
 
           setCurrentResourcesData(resources);
+          onLoadResourcesCompleted && onLoadResourcesCompleted();
           return;
         }
       }
@@ -163,6 +168,7 @@ const useModelOrganization = (projectId: string) => {
           }
 
           saveToPersistentData();
+          onLoadResourcesCompleted && onLoadResourcesCompleted();
         },
       });
     },
@@ -204,24 +210,42 @@ const useModelOrganization = (projectId: string) => {
     saveToPersistentData,
   ]);
 
-  const resetChanges = useCallback(() => {
-    setChanges({
-      movedEntities: [],
-      newServices: [],
-    });
-    if (currentEditableResourceNode) {
-      currentEditableResourceNode.data.isEditable = false;
-    }
-    setCurrentEditableResourceNode(null);
-    setRedesignMode(false);
-    clearPersistentData();
-    loadProjectResources(true);
-  }, [currentEditableResourceNode, clearPersistentData, loadProjectResources]);
+  const resetChanges = useCallback(
+    (showResetMessage = true) => {
+      setChanges({
+        movedEntities: [],
+        newServices: [],
+      });
+      if (currentEditableResourceNode) {
+        currentEditableResourceNode.data.isEditable = false;
+      }
+      setCurrentEditableResourceNode(null);
+      setRedesignMode(false);
+
+      clearPersistentData();
+      loadProjectResources(
+        true,
+        showResetMessage
+          ? () => {
+              onMessage(
+                "Redesign changes were discarded successfully",
+                EnumMessageType.Success
+              );
+            }
+          : undefined
+      );
+    },
+    [
+      currentEditableResourceNode,
+      clearPersistentData,
+      loadProjectResources,
+      onMessage,
+    ]
+  );
 
   const createNewServiceObject = useCallback(
     (serviceName: string, serviceTempId: string) => {
       const newService: models.Resource = {
-        tempId: serviceTempId,
         description: "",
         entities: [],
         id: serviceTempId,
@@ -269,13 +293,18 @@ const useModelOrganization = (projectId: string) => {
         setCurrentEditableResourceNode(selectedResourceNode);
 
         setRedesignMode(true);
+        setUserAction(null); //clear results of previous apply if exists
         saveToPersistentData();
         startRedesign({ variables: { resourceId: resource.id } });
 
         return [...updatedNodes];
       });
+      onMessage(
+        `You can start breaking ${resource.name}, and drag entities to other services`,
+        EnumMessageType.Success
+      );
     },
-    [prepareCurrentEditableResourceNodesData, saveToPersistentData]
+    [prepareCurrentEditableResourceNodesData, saveToPersistentData, onMessage]
   );
 
   const mergeNewResourcesChanges = useCallback(() => {
@@ -293,14 +322,14 @@ const useModelOrganization = (projectId: string) => {
             );
 
             const serviceName = newExistingServiceWithSameName
-              ? newServiceChange.name + "_" + newServiceChange.tempId
+              ? newServiceChange.name + "_" + newServiceChange.id
               : newServiceChange.name;
 
             newServiceChange.name = serviceName;
 
             const newResource = createNewServiceObject(
               serviceName,
-              newServiceChange.tempId
+              newServiceChange.id
             );
             data.resources.push(newResource);
           }
@@ -313,7 +342,7 @@ const useModelOrganization = (projectId: string) => {
             {}
           );
 
-          const newMovedEntities: CopiedEntity[] = [];
+          const newMovedEntities: models.RedesignProjectMovedEntity[] = [];
 
           for (const movedEntity of changes.movedEntities) {
             if (!resourceMapping[movedEntity.originalResourceId]) {
@@ -377,6 +406,10 @@ const useModelOrganization = (projectId: string) => {
             setEdges(newSimpleEdges);
           }
           saveToPersistentData();
+          onMessage(
+            "Updates fetched from the server and applied successfully",
+            EnumMessageType.Success
+          );
         }
       },
     });
@@ -393,6 +426,7 @@ const useModelOrganization = (projectId: string) => {
     createNewServiceObject,
     currentEditableResourceNode,
     setEdges,
+    onMessage,
   ]);
 
   const searchPhraseChanged = useCallback(
@@ -463,9 +497,8 @@ const useModelOrganization = (projectId: string) => {
       nodes.push(newResourceNode);
 
       const newService = {
-        tempId: newResource.tempId,
+        id: newResource.id,
         name: newResource.name,
-        color: newResourceNode.data.groupColor,
       };
 
       changes.newServices.push(newService);
@@ -545,35 +578,28 @@ const useModelOrganization = (projectId: string) => {
   );
 
   const [
-    createResourceEntities,
-    { loading: loadingCreateResourceAndEntities, error: createEntitiesError },
-  ] = useMutation<modelChangesData>(CREATE_RESOURCE_ENTITIES, {});
+    redesignProject,
+    { loading: applyChangesLoading, error: applyChangesError },
+  ] = useMutation<RedesignProjectData>(REDESIGN_PROJECT, {});
 
   const applyChanges = useCallback(async () => {
-    const { newServices, movedEntities } = changes;
-    const mapServices = newServices.map((s) => {
-      return {
-        tempId: s.tempId,
-        name: s.name,
-      };
-    });
-
-    await createResourceEntities({
+    await redesignProject({
       variables: {
         data: {
-          entitiesToCopy: movedEntities,
-          modelGroupsResources: mapServices,
+          ...changes,
           projectId: projectId,
         },
       },
       onCompleted: async (data) => {
-        resetChanges();
+        setUserAction(data.redesignProject);
+        reloadResources();
+        resetChanges(false);
       },
       onError: (error) => {
         //@todo: show Errors
       },
     }).catch(console.error);
-  }, [changes, createResourceEntities, projectId, resetChanges]);
+  }, [changes, redesignProject, projectId, resetChanges]);
 
   useEffect(() => {
     if (projectId) {
@@ -593,12 +619,13 @@ const useModelOrganization = (projectId: string) => {
     resourcesData,
     loadingResources,
     resourcesError,
-    loadingCreateResourceAndEntities,
+    applyChangesLoading,
+    applyChangesError,
+    applyChangesData: applyChangesResults?.userAction,
     setSearchPhrase,
     toggleShowRelationDetails,
     resetChanges,
     changes,
-    createEntitiesError,
     setChanges,
     setCurrentEditableResource,
     applyChanges,

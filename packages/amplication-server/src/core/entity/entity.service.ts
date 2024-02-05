@@ -3034,9 +3034,7 @@ export class EntityService {
    * @throws {NotFoundException} thrown if the field is not found or it relates
    * to a past entity version
    */
-  private async getField(
-    args: Prisma.EntityFieldFindFirstArgs
-  ): Promise<EntityField> {
+  async getField(args: Prisma.EntityFieldFindFirstArgs): Promise<EntityField> {
     const field = await this.prisma.entityField.findFirst({
       ...args,
       where: {

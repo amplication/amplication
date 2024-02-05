@@ -241,3 +241,5 @@ export {
   EnumRestApiOperationTagType,
   EnumGqlApiOperationTagType,
 } from "./components/ApiOperationTag/ApiOperationTag";
+
+export { JumboButton } from "./components/JumboButton/JumboButton";
