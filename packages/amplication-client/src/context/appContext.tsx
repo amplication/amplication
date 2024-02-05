@@ -26,6 +26,7 @@ export interface AppContextInterface {
   projectConfigurationResource: models.Resource | undefined;
   handleSearchChange: (searchResults: string) => void;
   loadingResources: boolean;
+  reloadResources: () => void;
   errorResources: Error | undefined;
   loadingCreateService: boolean;
   errorCreateService: Error | undefined;
@@ -79,6 +80,7 @@ const initialContext: AppContextInterface = {
   handleSearchChange: () => {},
   loadingResources: true,
   errorResources: undefined,
+  reloadResources: () => {},
   loadingCreateService: true,
   errorCreateService: undefined,
   currentResource: undefined,
