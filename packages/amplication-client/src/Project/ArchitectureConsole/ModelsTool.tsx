@@ -6,9 +6,12 @@ import {
   Icon,
   Tooltip,
 } from "@amplication/ui/design-system";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { Resource } from "../../models";
 import CreateResource from "./CreateResource";
+import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { AppContext } from "../../context/appContext";
 
 const DIRECTION = "s";
 const MERGE_CONFIRM_BUTTON = { label: "Fetch updates and merge changes" };
@@ -28,6 +31,7 @@ export default function ModelsTool({
   onCancelChanges,
   mergeNewResourcesChanges,
 }: Props) {
+  const { trackEvent } = useTracking();
   const [newService, setNewService] = useState<boolean>(false);
 
   const [confirmMergeChanges, setConfirmMergeChanges] =
@@ -44,6 +48,11 @@ export default function ModelsTool({
     (newResource: Resource) => {
       setNewService(!newService);
       handleServiceCreated(newResource);
+
+      trackEvent({
+        eventName: AnalyticsEventNames.ModelOrganizer_AddServiceClick,
+        serviceName: newResource.name,
+      });
     },
     [newService, handleServiceCreated, setNewService]
   );
