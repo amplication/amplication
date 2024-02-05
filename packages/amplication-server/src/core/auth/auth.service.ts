@@ -139,11 +139,11 @@ export class AuthService {
     }
 
     try {
-      const existedAccount = await this.accountService.findAccount({
+      /*const existedAccount = await this.accountService.findAccount({
         where: {
           email: emailAddress,
         },
-      });
+      });*/
       let auth0User: JSONApiResponse<SignUpResponse>;
 
       const existedAuth0User = await this.getAuth0UserByEmail(emailAddress);
