@@ -66,3 +66,11 @@ export const REDESIGN_PROJECT = gql`
     }
   }
 `;
+
+export const START_REDESIGN = gql`
+  mutation startRedesign($data: WhereUniqueInput!) {
+    startRedesign(data: $data) {
+      name
+    }
+  }
+`;

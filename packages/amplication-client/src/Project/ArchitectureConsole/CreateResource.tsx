@@ -42,7 +42,7 @@ const CreateResource = ({ onSuccess, title, actionDescription }: Props) => {
       onSuccess({
         builds: [],
         createdAt: new Date(),
-        description: `create service: ${data.name} from architecture model`,
+        description: "",
         entities: [],
         environments: [],
         gitRepositoryOverride: false,
