@@ -25,11 +25,7 @@ import {
   Resource,
 } from "../../models";
 import type { JsonObject } from "type-fest";
-import {
-  getSchemaForDataType,
-  LookupResolvedProperties,
-  types,
-} from "@amplication/code-gen-types";
+import { getSchemaForDataType, types } from "@amplication/code-gen-types";
 import { JsonSchemaValidationService } from "../../services/jsonSchemaValidation.service";
 import { DiffService } from "../../services/diff.service";
 import { SchemaValidationResult } from "../../dto/schemaValidationResult";
