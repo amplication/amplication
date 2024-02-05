@@ -37,7 +37,10 @@ import { prepareDeletedItemName } from "../../util/softDelete";
 import { ActionService } from "../action/action.service";
 import { EnumActionLogLevel } from "../action/dto/EnumActionLogLevel";
 import { BillingService } from "../billing/billing.service";
-import { USER_ENTITY_NAME } from "../entity/constants";
+import {
+  DATA_TYPE_TO_DEFAULT_PROPERTIES,
+  USER_ENTITY_NAME,
+} from "../entity/constants";
 import {
   CreateBulkEntitiesAndFieldsArgs,
   CreateBulkEntitiesInput,
@@ -776,19 +779,18 @@ export class ResourceService {
                     );
                   const fieldProperties =
                     createFieldInput.dataType === EnumDataType.SingleLineText
-                      ? {
-                          maxLength: 255,
-                        }
-                      : {
-                          databaseFieldType: "INT",
-                          minimumValue: -999999999,
-                          maximumValue: 999999999,
-                        };
+                      ? DATA_TYPE_TO_DEFAULT_PROPERTIES[
+                          EnumDataType.SingleLineText
+                        ]
+                      : DATA_TYPE_TO_DEFAULT_PROPERTIES[
+                          EnumDataType.WholeNumber
+                        ];
                   createFieldInput.properties =
                     fieldProperties as unknown as JsonObject;
                 } else {
                   createFieldInput.dataType = EnumDataType.Json;
-                  createFieldInput.properties = {}; //type Json does not have properties
+                  createFieldInput.properties =
+                    DATA_TYPE_TO_DEFAULT_PROPERTIES[EnumDataType.Json]; //type Json does not have properties
                 }
               }
             }

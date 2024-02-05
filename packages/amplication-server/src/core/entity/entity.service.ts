@@ -2893,26 +2893,26 @@ export class EntityService {
                 error
               );
             }
-          } else {
+          } else if (
+            fieldStrategy === EnumRelatedFieldStrategy.UpdateToScalar
+          ) {
             field.dataType = properties.allowMultipleSelection
               ? EnumDataType.Json
               : await this.getRelatedFieldScalarTypeByRelatedEntityIdType(
                   properties.relatedEntityId
                 );
 
-            let fieldProperties = {};
+            let fieldProperties =
+              DATA_TYPE_TO_DEFAULT_PROPERTIES[EnumDataType.Json];
+
             if (field.dataType === EnumDataType.SingleLineText) {
-              fieldProperties = {
-                maxLength: 255,
-              };
+              fieldProperties =
+                DATA_TYPE_TO_DEFAULT_PROPERTIES[EnumDataType.SingleLineText];
             }
 
             if (field.dataType === EnumDataType.WholeNumber) {
-              fieldProperties = {
-                databaseFieldType: "INT",
-                minimumValue: -999999999,
-                maximumValue: 999999999,
-              };
+              fieldProperties =
+                DATA_TYPE_TO_DEFAULT_PROPERTIES[EnumDataType.WholeNumber];
             }
 
             const data: EntityFieldUpdateInput = {
