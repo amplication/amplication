@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { useEdgesState } from "reactflow";
 import * as models from "../../../models";
@@ -9,7 +9,11 @@ import {
   tempResourceToNode,
 } from "../helpers";
 import { applyAutoLayout } from "../layout";
-import { REDESIGN_PROJECT, GET_RESOURCES } from "../queries/modelsQueries";
+import {
+  REDESIGN_PROJECT,
+  GET_RESOURCES,
+  START_REDESIGN,
+} from "../queries/modelsQueries";
 import {
   EntityNode,
   ModelChanges,
@@ -23,9 +27,17 @@ import useModelOrganizerPersistentData from "./useModelOrganizerPersistentData";
 import { EnumMessageType } from "../../../util/useMessage";
 import useUserActionWatchStatus from "../../../UserAction/useUserActionWatchStatus";
 import { useAppContext } from "../../../context/appContext";
+import { useTracking } from "../../../util/analytics";
+import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
 type TData = {
   resources: models.Resource[];
+};
+
+type TDataStartRedesign = {
+  startRedesign: {
+    data: models.Resource;
+  };
 };
 
 type Props = {
@@ -38,6 +50,7 @@ type RedesignProjectData = {
 };
 
 const useModelOrganization = ({ projectId, onMessage }: Props) => {
+  const { trackEvent } = useTracking();
   const { reloadResources } = useAppContext();
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
@@ -67,6 +80,8 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
 
   const { persistData, loadPersistentData, clearPersistentData } =
     useModelOrganizerPersistentData(projectId);
+
+  const [startRedesign] = useMutation<TDataStartRedesign>(START_REDESIGN);
 
   useEffect(() => {
     if (saveDataTimestampTrigger === null) return;
@@ -280,6 +295,8 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         setRedesignMode(true);
         setUserAction(null); //clear results of previous apply if exists
         saveToPersistentData();
+        startRedesign({ variables: { resourceId: resource.id } });
+
         return [...updatedNodes];
       });
       onMessage(
@@ -515,6 +532,10 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       const currentNodes = [...nodes];
 
       let newMovedEntities = [...changes.movedEntities];
+      const sourceParentNodeId = movedNodes.length && movedNodes[0].parentNode;
+      const sourceServiceName = nodes.find(
+        (node) => node.id === sourceParentNodeId
+      ).data.payload.name;
 
       movedNodes.forEach((node) => {
         const currentNode = currentNodes.find((n) => n.id === node.id);
@@ -547,6 +568,11 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         newServices: [...changes.newServices],
       });
       saveToPersistentData();
+
+      trackEvent({
+        eventName: AnalyticsEventNames.ModelOrganizer_MoveEntity,
+        serviceName: sourceServiceName,
+      });
     },
     [nodes, edges, showRelationDetails, changes, saveToPersistentData]
   );
