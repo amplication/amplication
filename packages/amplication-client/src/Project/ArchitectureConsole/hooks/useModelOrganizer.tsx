@@ -25,6 +25,8 @@ import {
 } from "../types";
 
 import useModelOrganizerPersistentData from "./useModelOrganizerPersistentData";
+import { useTracking } from "../../../util/analytics";
+import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
 type TData = {
   resources: models.Resource[];
@@ -49,6 +51,7 @@ type modelChangesData = {
 };
 
 const useModelOrganization = (projectId: string) => {
+  const { trackEvent } = useTracking();
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
   const [currentResourcesData, setCurrentResourcesData] = useState<
@@ -496,6 +499,10 @@ const useModelOrganization = (projectId: string) => {
       const currentNodes = [...nodes];
 
       let newMovedEntities = [...changes.movedEntities];
+      const sourceParentNodeId = movedNodes.length && movedNodes[0].parentNode;
+      const sourceServiceName = nodes.find(
+        (node) => node.id === sourceParentNodeId
+      ).data.payload.name;
 
       movedNodes.forEach((node) => {
         const currentNode = currentNodes.find((n) => n.id === node.id);
@@ -528,6 +535,11 @@ const useModelOrganization = (projectId: string) => {
         newServices: [...changes.newServices],
       });
       saveToPersistentData();
+
+      trackEvent({
+        eventName: AnalyticsEventNames.ModelOrganizer_MoveEntity,
+        serviceName: sourceServiceName,
+      });
     },
     [nodes, edges, showRelationDetails, changes, saveToPersistentData]
   );
