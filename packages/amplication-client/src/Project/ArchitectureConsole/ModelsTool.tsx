@@ -26,7 +26,6 @@ export default function ModelsTool({
   mergeNewResourcesChanges,
 }: Props) {
   const { trackEvent } = useTracking();
-  const { currentWorkspace } = useContext(AppContext);
   const [newService, setNewService] = useState<boolean>(false);
   const handleNewServiceClick = useCallback(() => {
     setNewService(!newService);
@@ -40,7 +39,6 @@ export default function ModelsTool({
       trackEvent({
         eventName: AnalyticsEventNames.ModelOrganizer_AddServiceClick,
         serviceName: newResource.name,
-        plan: currentWorkspace?.subscription?.subscriptionPlan,
       });
     },
     [newService, handleServiceCreated, setNewService]
