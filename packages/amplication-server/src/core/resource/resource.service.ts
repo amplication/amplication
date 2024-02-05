@@ -771,7 +771,7 @@ export class ResourceService {
                   createFieldInput.name = `${createFieldInput.name}Id`;
                   createFieldInput.displayName = `${createFieldInput.displayName} ID`;
                   createFieldInput.dataType =
-                    await this.entityService.updateFieldDataTypeIdByRelatedEntity(
+                    await this.entityService.getRelatedFieldScalarTypeByRelatedEntityIdType(
                       relatedEntityId
                     );
                   const fieldProperties: SingleLineText = {

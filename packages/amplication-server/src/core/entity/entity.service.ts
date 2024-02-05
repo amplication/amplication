@@ -625,7 +625,7 @@ export class EntityService {
     return true;
   }
 
-  async updateFieldDataTypeIdByRelatedEntity(
+  async getRelatedFieldScalarTypeByRelatedEntityIdType(
     relatedEntityId: string
   ): Promise<EnumDataType> {
     const relatedIdField = await this.prisma.entityField.findFirst({
@@ -2896,7 +2896,7 @@ export class EntityService {
           } else {
             field.dataType = properties.allowMultipleSelection
               ? EnumDataType.Json
-              : await this.updateFieldDataTypeIdByRelatedEntity(
+              : await this.getRelatedFieldScalarTypeByRelatedEntityIdType(
                   properties.relatedEntityId
                 );
             const data: EntityFieldUpdateInput = {
