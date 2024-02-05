@@ -777,16 +777,9 @@ export class ResourceService {
                     await this.entityService.getRelatedFieldScalarTypeByRelatedEntityIdType(
                       relatedEntityId
                     );
-                  const fieldProperties =
-                    createFieldInput.dataType === EnumDataType.SingleLineText
-                      ? DATA_TYPE_TO_DEFAULT_PROPERTIES[
-                          EnumDataType.SingleLineText
-                        ]
-                      : DATA_TYPE_TO_DEFAULT_PROPERTIES[
-                          EnumDataType.WholeNumber
-                        ];
+
                   createFieldInput.properties =
-                    fieldProperties as unknown as JsonObject;
+                    DATA_TYPE_TO_DEFAULT_PROPERTIES[createFieldInput.dataType];
                 } else {
                   createFieldInput.dataType = EnumDataType.Json;
                   createFieldInput.properties =

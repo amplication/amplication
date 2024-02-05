@@ -2902,24 +2902,11 @@ export class EntityService {
                   properties.relatedEntityId
                 );
 
-            let fieldProperties =
-              DATA_TYPE_TO_DEFAULT_PROPERTIES[EnumDataType.Json];
-
-            if (field.dataType === EnumDataType.SingleLineText) {
-              fieldProperties =
-                DATA_TYPE_TO_DEFAULT_PROPERTIES[EnumDataType.SingleLineText];
-            }
-
-            if (field.dataType === EnumDataType.WholeNumber) {
-              fieldProperties =
-                DATA_TYPE_TO_DEFAULT_PROPERTIES[EnumDataType.WholeNumber];
-            }
-
             const data: EntityFieldUpdateInput = {
               dataType: field.dataType,
               name: field.name,
               displayName: field.displayName,
-              properties: fieldProperties as unknown as JsonObject,
+              properties: DATA_TYPE_TO_DEFAULT_PROPERTIES[field.dataType],
             };
 
             await this.updateField(
