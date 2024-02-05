@@ -665,6 +665,7 @@ describe("AuthService", () => {
   });
 
   describe("signupWithBusinessEmail", () => {
+    /*
     it("should track the event when a user signs up with a business email", async () => {
       const email = "invalid@invalid.com";
 
@@ -703,7 +704,7 @@ describe("AuthService", () => {
           traits: expect.any(Object),
         },
       });
-    });
+    });*/
 
     it("should fail to signup a preview account when the email is not work email", async () => {
       const email = "invalid@gmail.com";

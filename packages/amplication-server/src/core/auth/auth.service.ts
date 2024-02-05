@@ -161,14 +161,14 @@ export class AuthService {
       if (!resetPassword.data)
         throw Error("Failed to send reset message to new Auth0 user");
 
-      await this.trackStartBusinessEmailSignup(
+      /*await this.trackStartBusinessEmailSignup(
         emailAddress,
         existedAccount
           ? IdentityProvider.GitHub
           : existedAuth0User
           ? IdentityProvider.IdentityPlatform
           : undefined
-      );
+      );*/
 
       return true;
     } catch (error) {
