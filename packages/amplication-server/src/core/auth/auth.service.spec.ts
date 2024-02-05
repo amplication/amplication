@@ -19,6 +19,7 @@ import { AuthUser } from "./types";
 import { IdentityProvider } from "./auth.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { Response } from "express";
 import { Env } from "../../env";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
@@ -153,6 +154,7 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_WORKSPACE: Account & {
 };
 
 const EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME = "business-users-local";
+const expectedDomain = "amplication.com";
 
 jest.mock("auth0", () => {
   return {
@@ -242,6 +244,8 @@ describe("AuthService", () => {
               switch (variable) {
                 case Env.AUTH_ISSUER_CLIENT_DB_CONNECTION:
                   return EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME;
+                case Env.CLIENT_HOST:
+                  return `https://server.${expectedDomain}`;
                 default:
                   return "";
               }
@@ -904,6 +908,54 @@ describe("AuthService", () => {
 
       expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
       expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe("configureJtw", () => {
+    it("should generate a jwt, setup a temporary cookie that client will use to store the jwt and return a redirect 301", async () => {
+      const responseMock = {
+        status: jest.fn((x) => responseMock),
+        cookie: jest.fn(),
+        redirect: jest.fn(),
+      } as unknown as Response;
+
+      await service.configureJtw(
+        responseMock,
+        {
+          account: {
+            id: "test",
+            createdAt: undefined,
+            updatedAt: undefined,
+            email: "",
+            firstName: "",
+            lastName: "",
+            password: "",
+            previewAccountType: "None",
+            previewAccountEmail: "",
+          },
+          id: "",
+          createdAt: undefined,
+          updatedAt: undefined,
+          workspace: new Workspace(),
+          userRoles: [],
+          isOwner: false,
+        },
+        false
+      );
+
+      expect(responseMock.cookie).toHaveBeenCalledWith(
+        "AJWT",
+        expect.any(String),
+        {
+          domain: expectedDomain,
+          secure: true,
+        }
+      );
+
+      expect(responseMock.redirect).toHaveBeenCalledWith(
+        301,
+        "https://server.amplication.com?complete-signup=0"
+      );
     });
   });
 });
