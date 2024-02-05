@@ -2,7 +2,7 @@ import {
   EnumActionStepStatus,
   RedesignProjectMovedEntity,
 } from "@amplication/code-gen-types/models";
-import { Lookup, SingleLineText } from "@amplication/code-gen-types/types";
+import { Lookup } from "@amplication/code-gen-types/types";
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
