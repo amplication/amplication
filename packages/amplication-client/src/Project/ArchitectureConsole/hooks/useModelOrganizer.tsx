@@ -295,7 +295,14 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         setRedesignMode(true);
         setUserAction(null); //clear results of previous apply if exists
         saveToPersistentData();
-        startRedesign({ variables: { resourceId: resource.id } });
+
+        startRedesign({
+          variables: {
+            where: {
+              id: resource.id,
+            },
+          },
+        }).catch(console.error);
 
         return [...updatedNodes];
       });
@@ -304,7 +311,12 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         EnumMessageType.Success
       );
     },
-    [prepareCurrentEditableResourceNodesData, saveToPersistentData, onMessage]
+    [
+      prepareCurrentEditableResourceNodesData,
+      startRedesign,
+      saveToPersistentData,
+      onMessage,
+    ]
   );
 
   const mergeNewResourcesChanges = useCallback(() => {
