@@ -7,19 +7,32 @@ import {
 } from "@amplication/ui/design-system";
 import BreakTheMonolith from "./BreakTheMonolith";
 import { useHistory } from "react-router-dom";
+import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { Resource } from "../../models";
+
+export enum EnumButtonLocation {
+  Project = "Project",
+  Resource = "Resource",
+  EntityList = "EntityList",
+  SchemaUpload = "SchemaUpload",
+}
 
 type Props = {
-  resourceId: string;
+  resource: Resource;
   openInFullScreen: boolean;
+  location: EnumButtonLocation;
   ButtonStyle?: EnumButtonStyle;
 };
 
 export const BtmButton: React.FC<Props> = ({
-  resourceId,
+  resource,
   openInFullScreen,
+  location,
   ButtonStyle = EnumButtonStyle.GradientOutline,
 }) => {
   const history = useHistory();
+  const { trackEvent } = useTracking();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleDialogState = useCallback(() => {
@@ -29,7 +42,13 @@ export const BtmButton: React.FC<Props> = ({
   const handleConfirm = useCallback(() => {
     openInFullScreen && history.push("/"); // TODO: redirect to the architecture page in redesign mode
     setIsOpen(!isOpen);
-  }, [openInFullScreen, history, isOpen]);
+
+    trackEvent({
+      eventName: AnalyticsEventNames.StartBreakTheMonolithClick,
+      serviceName: resource.name,
+      location,
+    });
+  }, [openInFullScreen, history, isOpen, trackEvent, resource.name, location]);
 
   return (
     <>
@@ -45,7 +64,7 @@ export const BtmButton: React.FC<Props> = ({
           showCloseButton
         >
           <BreakTheMonolith
-            resourceId={resourceId}
+            resourceId={resource.id}
             openInFullScreen
             handleConfirmSuggestion={handleConfirm}
           />
@@ -53,7 +72,7 @@ export const BtmButton: React.FC<Props> = ({
       ) : (
         <Dialog isOpen={isOpen} onDismiss={handleDialogState} title="">
           <BreakTheMonolith
-            resourceId={resourceId}
+            resourceId={resource.id}
             handleConfirmSuggestion={handleConfirm}
           />
         </Dialog>

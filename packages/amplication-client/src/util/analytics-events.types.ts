@@ -155,4 +155,7 @@ export enum AnalyticsEventNames {
   // notification
   OpenNotificationCenter = "OpenNotificationCenter",
   ClickNotificationMessage = "ClickNotificationMessage",
+
+  // break the monolith
+  StartBreakTheMonolithClick = "StartBreakTheMonolithClick",
 }
