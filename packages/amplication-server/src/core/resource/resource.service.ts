@@ -71,6 +71,7 @@ import {
 } from "./dto";
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
+import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -769,7 +770,10 @@ export class ResourceService {
                 if (!fieldProperties.allowMultipleSelection) {
                   createFieldInput.name = `${createFieldInput.name}Id`;
                   createFieldInput.displayName = `${createFieldInput.displayName} ID`;
-                  createFieldInput.dataType = EnumDataType.SingleLineText; //@todo: set the new type based on the ID type of the related entity (WholeNumber or SingleLineText)
+                  createFieldInput.dataType =
+                    await this.entityService.updateFieldDataTypeIdByRelatedEntity(
+                      relatedEntityId
+                    );
                   const fieldProperties: SingleLineText = {
                     maxLength: 255,
                   };
@@ -792,15 +796,15 @@ export class ResourceService {
       }
 
       // 3.delete entities from source services
-      //@todo: we should keep the relation fields on the related entities that were not moved
       for (const entity of movedEntities) {
         await actionContext.onEmitUserActionLog(
           `deleting entity ${entity.entityId} from source service`,
           EnumActionLogLevel.Info
         );
-        await this.entityService.deleteEntityFromSource(
+        await this.entityService.deleteOneEntity(
           { where: { id: entity.entityId } },
-          user
+          user,
+          EnumRelatedFieldStrategy.UpdateToScalar
         );
       }
     } catch (error) {
