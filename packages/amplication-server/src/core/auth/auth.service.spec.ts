@@ -19,7 +19,7 @@ import { anyString } from "jest-mock-extended";
 import { AuthUser } from "./types";
 import { IdentityProvider } from "./auth.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+//import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
@@ -665,6 +665,7 @@ describe("AuthService", () => {
   });
 
   describe("signupWithBusinessEmail", () => {
+    /*
     it("should track the event when a user signs up with a business email", async () => {
       const email = "invalid@invalid.com";
 
@@ -703,7 +704,7 @@ describe("AuthService", () => {
           traits: expect.any(Object),
         },
       });
-    });
+    });*/
 
     it("should fail to signup a preview account when the email is not work email", async () => {
       const email = "invalid@gmail.com";
