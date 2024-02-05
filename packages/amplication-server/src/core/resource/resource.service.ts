@@ -774,9 +774,16 @@ export class ResourceService {
                     await this.entityService.getRelatedFieldScalarTypeByRelatedEntityIdType(
                       relatedEntityId
                     );
-                  const fieldProperties: SingleLineText = {
-                    maxLength: 255,
-                  };
+                  const fieldProperties =
+                    createFieldInput.dataType === EnumDataType.SingleLineText
+                      ? {
+                          maxLength: 255,
+                        }
+                      : {
+                          databaseFieldType: "INT",
+                          minimumValue: -999999999,
+                          maximumValue: 999999999,
+                        };
                   createFieldInput.properties =
                     fieldProperties as unknown as JsonObject;
                 } else {

@@ -2899,19 +2899,39 @@ export class EntityService {
               : await this.getRelatedFieldScalarTypeByRelatedEntityIdType(
                   properties.relatedEntityId
                 );
+
+            let fieldProperties = {};
+            if (field.dataType === EnumDataType.SingleLineText) {
+              fieldProperties = {
+                maxLength: 255,
+              };
+            }
+
+            if (field.dataType === EnumDataType.WholeNumber) {
+              fieldProperties = {
+                databaseFieldType: "INT",
+                minimumValue: -999999999,
+                maximumValue: 999999999,
+              };
+            }
+
             const data: EntityFieldUpdateInput = {
               dataType: field.dataType,
               name: field.name,
               displayName: field.displayName,
-              properties: field.properties as unknown as JsonObject,
+              properties: fieldProperties as unknown as JsonObject,
             };
 
-            await this.prisma.entityField.update({
-              data: data,
-              where: {
-                id: args.where.id,
+            await this.updateField(
+              {
+                data,
+                where: {
+                  id: args.where.id,
+                },
               },
-            });
+              user
+            );
+
             return;
           }
         }
