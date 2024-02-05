@@ -788,9 +788,9 @@ describe("AuthService", () => {
     });
   });
 
-  describe("trackCompleteBusinessEmailSignup", () => {
+  describe("trackCompleteEmailSignup", () => {
     it("should track the event only when a user completes the signup with a business email and login for the first time", async () => {
-      service.trackCompleteBusinessEmailSignup(
+      service.trackCompleteEmailSignup(
         EXAMPLE_USER.id,
         EXAMPLE_USER.createdAt,
         {
@@ -825,7 +825,7 @@ describe("AuthService", () => {
     });
 
     it("should not track the event when a user with a business email logs in for the second time forward", async () => {
-      service.trackCompleteBusinessEmailSignup(
+      service.trackCompleteEmailSignup(
         EXAMPLE_USER.id,
         EXAMPLE_USER.createdAt,
         {
@@ -848,7 +848,7 @@ describe("AuthService", () => {
     });
 
     it("should not track the event when a SSO user logs in", async () => {
-      service.trackCompleteBusinessEmailSignup(
+      service.trackCompleteEmailSignup(
         EXAMPLE_USER.id,
         EXAMPLE_USER.createdAt,
         {

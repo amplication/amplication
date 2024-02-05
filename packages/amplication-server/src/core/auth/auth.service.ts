@@ -130,7 +130,7 @@ export class AuthService {
     });
   }
 
-  trackCompleteBusinessEmailSignup(
+  trackCompleteEmailSignup(
     userId: string,
     createdAt: Date,
     profile: AuthProfile,
@@ -150,36 +150,34 @@ export class AuthService {
       lastName: profile.family_name,
     };
 
-    // Check if the identityOrigin is business email or not
-    if (identityOrigin === this.businessEmailDbConnectionName) {
-      void this.analytics.identify(userData).catch((error) => {
+    void this.analytics.identify(userData).catch((error) => {
+      this.logger.error(
+        `Failed to identify user ${userId} in segment analytics`,
+        error
+      );
+    });
+    //we send the userData again to prevent race condition
+    void this.analytics
+      .track({
+        userId: userData.userId,
+        event: EnumEventType.CompleteEmailSignup,
+        properties: {
+          identityProvider: IdentityProvider.IdentityPlatform,
+          identityOrigin,
+          existingUser,
+        },
+        context: {
+          traits: userData,
+        },
+      })
+      .catch((error) => {
         this.logger.error(
-          `Failed to identify user ${userId} in segment analytics`,
+          `Failed to track complete business email signup for user ${userId}`,
           error
         );
       });
-      //we send the userData again to prevent race condition
-      void this.analytics
-        .track({
-          userId: userData.userId,
-          event: EnumEventType.CompleteEmailSignup,
-          properties: {
-            identityProvider: IdentityProvider.IdentityPlatform,
-            identityOrigin,
-            existingUser,
-          },
-          context: {
-            traits: userData,
-          },
-        })
-        .catch((error) => {
-          this.logger.error(
-            `Failed to track complete business email signup for user ${userId}`,
-            error
-          );
-        });
-    }
   }
+
   async signupWithBusinessEmail(
     args: SignupWithBusinessEmailArgs
   ): Promise<boolean> {

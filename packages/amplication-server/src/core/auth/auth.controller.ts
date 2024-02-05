@@ -183,7 +183,7 @@ export class AuthController {
       isNew = false;
     }
 
-    this.authService.trackCompleteBusinessEmailSignup(
+    this.authService.trackCompleteEmailSignup(
       user.id,
       user.createdAt,
       profile,
