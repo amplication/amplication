@@ -3,307 +3,266 @@ export const webStudioPredefinedSchema = `
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["views", "clientExtensions", "jsonProtocol"]
-  // see commands.ts
-  // <output-placeholder-for-migrations>
-  output          = "../src/__generated__"
-  // </output-placeholder-for-migrations>
+    provider        = "prisma-client-js"
+    previewFeatures = ["views"]
 }
 
 datasource db {
-  provider = "postgres"
-  url      = env("DATABASE_URL")
+    provider = "postgres"
+    url      = env("DATABASE_URL")
 }
 
 model Team {
-  id    String @id @default(uuid())
-  users User[]
+    id    String @id @default(uuid())
+    users User[]
 }
 
 enum UploadStatus {
-  UPLOADING
-  UPLOADED
+    UPLOADING
+    UPLOADED
 }
 
 model File {
-  name              String       @id
-  format            String
-  size              Int
-  description       String?
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @default(now()) @updatedAt
-  meta              String       @default("{}")
-  status            UploadStatus @default(UPLOADING)
-  isDeleted         Boolean      @default(false)
-  uploaderProject   Project?     @relation(fields: [uploaderProjectId], references: [id])
-  uploaderProjectId String?
-  assets            Asset[]
+    name              String       @id
+    format            String
+    size              Int
+    description       String?
+    createdAt         DateTime     @default(now())
+    updatedAt         DateTime     @default(now()) @updatedAt
+    meta              String       @default("{}")
+    status            UploadStatus @default(UPLOADING)
+    isDeleted         Boolean      @default(false)
+    uploaderProject   Project?     @relation(fields: [uploaderProjectId], references: [id])
+    uploaderProjectId String?
+    assets            Asset[]
 }
 
 model Asset {
-  id        String @default(uuid()) // not unique!
-  projectId String
-  file      File   @relation(fields: [name], references: [name])
-  name      String
-
-  @@id([id, projectId])
+    id        String @id @default(uuid()) // not unique!
+    projectId String
+    file      File   @relation(fields: [name], references: [name])
+    name      String
 }
 
 model User {
-  id               String             @id @default(uuid())
-  email            String?            @unique
-  provider         String?
-  image            String?
-  username         String?
-  createdAt        DateTime           @default(now())
-  team             Team?              @relation(fields: [teamId], references: [id])
-  teamId           String?
-  projects         Project[]
-  clientReferences ClientReferences[]
-  checkout         TransactionLog[]
-  products         UserProduct[]
+    id               String             @id @default(uuid())
+    email            String?            @unique
+    provider         String?
+    image            String?
+    username         String?
+    createdAt        DateTime           @default(now())
+    team             Team?              @relation(fields: [teamId], references: [id])
+    teamId           String?
+    projects         Project[]
+    clientReferences ClientReferences[]
+    checkout         TransactionLog[]
+    products         UserProduct[]
 }
 
 // User client references in external services like stripe etc
 model ClientReferences {
-  reference String   @default(dbgenerated())
-  service   String
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-
-  @@id([userId, service])
-  @@unique([reference, service])
+    id        String   @id @default(uuid())
+    reference String   @default(dbgenerated())
+    service   String
+    createdAt DateTime @default(now())
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
 }
 
 model Product {
-  id          String   @id
-  name        String
-  description String?
-  features    String[]
-  images      String[]
-  meta        Json
-
-  createdAt    DateTime         @default(now())
-  checkout     TransactionLog[]
-  userProducts UserProduct[]
+    id           String           @id @default(uuid())
+    name         String
+    description  String?
+    features     String[]
+    images       String[]
+    meta         Json
+    createdAt    DateTime         @default(now())
+    checkout     TransactionLog[]
+    userProducts UserProduct[]
 }
 
 model TransactionLog {
-  // Stripe event id (debug and idempotency purposes)
-  eventId String  @id
-  userId  String?
-  user    User?   @relation(fields: [userId], references: [id])
-
-  productId String?
-  product   Product? @relation(fields: [productId], references: [id])
-
-  createdAt DateTime @default(now())
-
-  eventData Json? @default(dbgenerated())
-
-  eventType    String? @default(dbgenerated())
-  eventCreated Int?    @default(dbgenerated())
-
-  // paid
-  status String? @default(dbgenerated())
-
-  customerId    String? @default(dbgenerated())
-  customerEmail String? @default(dbgenerated())
-
-  subscriptionId String? @default(dbgenerated())
-
-  // Used for Refund
-  paymentIntent String? @default(dbgenerated())
-
-  @@unique([eventId, productId])
+    // Stripe event id (debug and idempotency purposes)
+    id             String   @id @default(uuid())
+    eventId        String
+    userId         String?
+    user           User?    @relation(fields: [userId], references: [id])
+    productId      String?
+    product        Product? @relation(fields: [productId], references: [id])
+    createdAt      DateTime @default(now())
+    eventData      Json?    @default(dbgenerated())
+    eventType      String?  @default(dbgenerated())
+    eventCreated   Int?     @default(dbgenerated())
+    // paid
+    status         String?  @default(dbgenerated())
+    customerId     String?  @default(dbgenerated())
+    customerEmail  String?  @default(dbgenerated())
+    subscriptionId String?  @default(dbgenerated())
+    // Used for Refund
+    paymentIntent  String?  @default(dbgenerated())
 }
 
-view UserProduct {
-  userId         String
-  user           User    @relation(fields: [userId], references: [id])
-  productId      String
-  product        Product @relation(fields: [productId], references: [id])
-  // subscriptionId and customerId not null for subscriptions
-  subscriptionId String?
-  customerId     String?
-  // Easier to debug
-  customerEmail  String?
-
-  @@unique([userId, productId])
+model UserProduct {
+    id             String  @id @default(uuid())
+    userId         String
+    user           User    @relation(fields: [userId], references: [id])
+    productId      String
+    product        Product @relation(fields: [productId], references: [id])
+    // subscriptionId and customerId not null for subscriptions
+    subscriptionId String?
+    customerId     String?
+    // Easier to debug
+    customerEmail  String?
 }
 
 model Project {
-  id                 String                 @id @default(uuid())
-  createdAt          DateTime               @default(now())
-  title              String
-  domain             String                 @unique
-  user               User?                  @relation(fields: [userId], references: [id])
-  userId             String?
-  build              Build[]
-  isDeleted          Boolean                @default(false)
-  files              File[]
-  projectDomain      ProjectDomain[]
-  latestBuild        LatestBuildPerProject?
-  authorizationToken AuthorizationToken[]
-
-  @@unique([id, isDeleted])
-  @@unique([domain, isDeleted])
-  @@unique([id, domain])
+    id                 String                 @id @default(uuid())
+    createdAt          DateTime               @default(now())
+    title              String
+    domain             String                 @unique
+    user               User?                  @relation(fields: [userId], references: [id])
+    userId             String?
+    build              Build[]
+    isDeleted          Boolean                @default(false)
+    files              File[]
+    projectDomain      ProjectDomain[]
+    latestBuild        LatestBuildPerProject?
+    authorizationToken AuthorizationToken[]
 }
 
 enum PublishStatus {
-  PENDING
-  PUBLISHED
-  FAILED
+    PENDING
+    PUBLISHED
+    FAILED
 }
 
 model Build {
-  id                String   @unique @default(uuid())
-  version           Int      @default(0)
-  lastTransactionId String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @default(now()) @updatedAt
-  pages             String
+    id                String   @id @default(uuid())
+    version           Int      @default(0)
+    lastTransactionId String?
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @default(now()) @updatedAt
+    pages             String
 
-  project   Project @relation(fields: [projectId], references: [id])
-  projectId String
+    project   Project @relation(fields: [projectId], references: [id])
+    projectId String
 
-  breakpoints           String @default("[]")
-  styles                String @default("[]")
-  styleSources          String @default("[]")
-  styleSourceSelections String @default("[]")
-  props                 String @default("[]")
-  dataSources           String @default("[]")
-  resources             String @default("[]")
-  instances             String @default("[]")
+    breakpoints           String @default("[]")
+    styles                String @default("[]")
+    styleSources          String @default("[]")
+    styleSourceSelections String @default("[]")
+    props                 String @default("[]")
+    dataSources           String @default("[]")
+    resources             String @default("[]")
+    instances             String @default("[]")
 
-  deployment    String?
-  publishStatus PublishStatus @default(PENDING)
-
-  @@id([id, projectId])
+    deployment    String?
+    publishStatus PublishStatus @default(PENDING)
 }
 
 enum AuthorizationRelation {
-  viewers
-  editors
-  builders
-  administrators
+    viewers
+    editors
+    builders
+    administrators
 }
 
 model AuthorizationToken {
-  token     String                @default(uuid())
-  projectId String
-  project   Project               @relation(fields: [projectId], references: [id])
-  name      String                @default("")
-  relation  AuthorizationRelation @default(viewers)
-  createdAt DateTime              @default(now())
-
-  @@id([token, projectId])
-  @@unique([token])
+    id        String                @id @default(uuid())
+    token     String                @default(uuid())
+    projectId String
+    project   Project               @relation(fields: [projectId], references: [id])
+    name      String                @default("")
+    relation  AuthorizationRelation @default(viewers)
+    createdAt DateTime              @default(now())
 }
 
 enum DomainStatus {
-  INITIALIZING
-  ACTIVE
-  ERROR
-  PENDING
+    INITIALIZING
+    ACTIVE
+    ERROR
+    PENDING
 }
 
 // Domains  + last known status and last known txtRecord
 // In the future we can update this table using queue, n8n or temporal workflows.
 // As of now updates are done during UI interactions
 model Domain {
-  id        String   @id @default(uuid())
-  domain    String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  ProjectDomain ProjectDomain[]
-  // Last known txtRecord of the domain (to check domain ownership)
-  txtRecord     String?
-  // create, init, pending, active, error
-  status        DomainStatus    @default(INITIALIZING)
-  // In case of status="error", this will contain the error message
-  error         String?
-
-  projectWithDomain ProjectWithDomain[]
+    id                String              @id @default(uuid())
+    domain            String              @unique
+    createdAt         DateTime            @default(now())
+    updatedAt         DateTime            @default(now()) @updatedAt
+    ProjectDomain     ProjectDomain[]
+    // Last known txtRecord of the domain (to check domain ownership)
+    txtRecord         String?
+    // create, init, pending, active, error
+    status            DomainStatus        @default(INITIALIZING)
+    // In case of status="error", this will contain the error message
+    error             String?
+    projectWithDomain ProjectWithDomain[]
 }
 
 model ProjectDomain {
-  projectId String
-  project   Project  @relation(fields: [projectId], references: [id])
-  domainId  String
-  domain    Domain   @relation(fields: [domainId], references: [id])
-  createdAt DateTime @default(now())
-  // Generated txt record to check domain ownership
-  txtRecord String   @unique @default(uuid())
+    id        String   @id @default(uuid())
+    projectId String
+    project   Project  @relation(fields: [projectId], references: [id])
+    domainId  String
+    domain    Domain   @relation(fields: [domainId], references: [id])
+    createdAt DateTime @default(now())
+    // Generated txt record to check domain ownership
+    txtRecord String   @unique @default(uuid())
+    // CNAME record to point to the domain
+    cname     String
 
-  // CNAME record to point to the domain
-  cname String
-
-  @@id([projectId, domainId])
-  @@index([domainId])
+    @@index([domainId])
 }
 
-view ProjectWithDomain {
-  projectId String
-
-  domainId  String
-  domain    Domain @relation(fields: [domainId], references: [id])
-  txtRecord String
-
-  createdAt DateTime
-
-  // CNAME record to point to the domain
-  cname String
-
-  verified Boolean
-  // To count statistics per user
-  userId   String?
-
-  // We can deploy on per domain basis, here for each project domain we have latest build
-  latestBuid LatestBuildPerProjectDomain?
-
-  @@id([projectId, domainId])
+model ProjectWithDomain {
+    id         String                       @id @default(uuid())
+    projectId  String
+    domainId   String
+    domain     Domain                       @relation(fields: [domainId], references: [id])
+    txtRecord  String
+    createdAt  DateTime
+    // CNAME record to point to the domain
+    cname      String
+    verified   Boolean
+    // To count statistics per user
+    userId     String?
+    // We can deploy on per domain basis, here for each project domain we have latest build
+    latestBuid LatestBuildPerProjectDomain?
 }
 
-view LatestBuildPerProjectDomain {
-  domainId          String
-  buildId           String
-  projectId         String
-  projectWithDomain ProjectWithDomain @relation(fields: [projectId, domainId], references: [projectId, domainId])
-
-  isLatestBuild Boolean
-  publishStatus PublishStatus
-  updatedAt     DateTime
-
-  @@id([projectId, domainId])
+model LatestBuildPerProjectDomain {
+    id                String            @id @default(uuid())
+    domainId          String
+    buildId           String
+    projectId         String            @unique
+    projectWithDomain ProjectWithDomain @relation(fields: [projectId], references: [id])
+    isLatestBuild     Boolean
+    publishStatus     PublishStatus
+    updatedAt         DateTime
 }
 
-view LatestBuildPerProject {
-  buildId String
-
-  projectId String
-  domain    String
-  project   Project @relation(fields: [projectId, domain], references: [id, domain])
-
-  isLatestBuild Boolean
-  publishStatus PublishStatus
-  updatedAt     DateTime
-
-  @@id([projectId, domain])
+model LatestBuildPerProject {
+    id            String        @id @default(uuid())
+    buildId       String
+    projectId     String        @unique
+    domain        String
+    project       Project       @relation(fields: [projectId], references: [id])
+    isLatestBuild Boolean
+    publishStatus PublishStatus
+    updatedAt     DateTime
 }
 
 // Dashboard
-view DashboardProject {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-  title       String
-  domain      String
-  userId      String?
-  isDeleted   Boolean  @default(false)
-  isPublished Boolean
+model DashboardProject {
+    id          String   @id @default(uuid())
+    createdAt   DateTime @default(now())
+    title       String
+    domain      String
+    userId      String?
+    isDeleted   Boolean  @default(false)
+    isPublished Boolean
 }
 `;

@@ -3,11 +3,7 @@
 
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["views", "clientExtensions", "jsonProtocol"]
-    // see commands.ts
-    // <output-placeholder-for-migrations>
-    output          = "../src/__generated__"
-    // </output-placeholder-for-migrations>
+    previewFeatures = ["views"]
 }
 
 datasource db {
@@ -41,12 +37,10 @@ model File {
 }
 
 model Asset {
-    id        String @default(uuid()) // not unique!
+    id        String @id @default(uuid()) // not unique!
     projectId String
     file      File   @relation(fields: [name], references: [name])
     name      String
-
-    @@id([id, projectId])
 }
 
 model User {
@@ -66,24 +60,21 @@ model User {
 
 // User client references in external services like stripe etc
 model ClientReferences {
+    id        String   @id @default(uuid())
     reference String   @default(dbgenerated())
     service   String
     createdAt DateTime @default(now())
     user      User     @relation(fields: [userId], references: [id])
     userId    String
-
-    @@id([userId, service])
-    @@unique([reference, service])
 }
 
 model Product {
-    id          String   @id
-    name        String
-    description String?
-    features    String[]
-    images      String[]
-    meta        Json
-
+    id           String           @id @default(uuid())
+    name         String
+    description  String?
+    features     String[]
+    images       String[]
+    meta         Json
     createdAt    DateTime         @default(now())
     checkout     TransactionLog[]
     userProducts UserProduct[]
@@ -91,35 +82,27 @@ model Product {
 
 model TransactionLog {
     // Stripe event id (debug and idempotency purposes)
-    eventId String  @id
-    userId  String?
-    user    User?   @relation(fields: [userId], references: [id])
-
-    productId String?
-    product   Product? @relation(fields: [productId], references: [id])
-
-    createdAt DateTime @default(now())
-
-    eventData Json? @default(dbgenerated())
-
-    eventType    String? @default(dbgenerated())
-    eventCreated Int?    @default(dbgenerated())
-
+    id             String   @id @default(uuid())
+    eventId        String
+    userId         String?
+    user           User?    @relation(fields: [userId], references: [id])
+    productId      String?
+    product        Product? @relation(fields: [productId], references: [id])
+    createdAt      DateTime @default(now())
+    eventData      Json?    @default(dbgenerated())
+    eventType      String?  @default(dbgenerated())
+    eventCreated   Int?     @default(dbgenerated())
     // paid
-    status String? @default(dbgenerated())
-
-    customerId    String? @default(dbgenerated())
-    customerEmail String? @default(dbgenerated())
-
-    subscriptionId String? @default(dbgenerated())
-
+    status         String?  @default(dbgenerated())
+    customerId     String?  @default(dbgenerated())
+    customerEmail  String?  @default(dbgenerated())
+    subscriptionId String?  @default(dbgenerated())
     // Used for Refund
-    paymentIntent String? @default(dbgenerated())
-
-    @@unique([eventId, productId])
+    paymentIntent  String?  @default(dbgenerated())
 }
 
-view UserProduct {
+model UserProduct {
+    id             String  @id @default(uuid())
     userId         String
     user           User    @relation(fields: [userId], references: [id])
     productId      String
@@ -129,8 +112,6 @@ view UserProduct {
     customerId     String?
     // Easier to debug
     customerEmail  String?
-
-    @@unique([userId, productId])
 }
 
 model Project {
@@ -146,10 +127,6 @@ model Project {
     projectDomain      ProjectDomain[]
     latestBuild        LatestBuildPerProject?
     authorizationToken AuthorizationToken[]
-
-    @@unique([id, isDeleted])
-    @@unique([domain, isDeleted])
-    @@unique([id, domain])
 }
 
 enum PublishStatus {
@@ -159,7 +136,7 @@ enum PublishStatus {
 }
 
 model Build {
-    id                String   @unique @default(uuid())
+    id                String   @id @default(uuid())
     version           Int      @default(0)
     lastTransactionId String?
     createdAt         DateTime @default(now())
@@ -180,8 +157,6 @@ model Build {
 
     deployment    String?
     publishStatus PublishStatus @default(PENDING)
-
-    @@id([id, projectId])
 }
 
 enum AuthorizationRelation {
@@ -192,15 +167,13 @@ enum AuthorizationRelation {
 }
 
 model AuthorizationToken {
+    id        String                @id @default(uuid())
     token     String                @default(uuid())
     projectId String
     project   Project               @relation(fields: [projectId], references: [id])
     name      String                @default("")
     relation  AuthorizationRelation @default(viewers)
     createdAt DateTime              @default(now())
-
-    @@id([token, projectId])
-    @@unique([token])
 }
 
 enum DomainStatus {
@@ -214,23 +187,22 @@ enum DomainStatus {
 // In the future we can update this table using queue, n8n or temporal workflows.
 // As of now updates are done during UI interactions
 model Domain {
-    id        String   @id @default(uuid())
-    domain    String   @unique
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    ProjectDomain ProjectDomain[]
+    id                String              @id @default(uuid())
+    domain            String              @unique
+    createdAt         DateTime            @default(now())
+    updatedAt         DateTime            @default(now()) @updatedAt
+    ProjectDomain     ProjectDomain[]
     // Last known txtRecord of the domain (to check domain ownership)
-    txtRecord     String?
+    txtRecord         String?
     // create, init, pending, active, error
-    status        DomainStatus    @default(INITIALIZING)
+    status            DomainStatus        @default(INITIALIZING)
     // In case of status="error", this will contain the error message
-    error         String?
-
+    error             String?
     projectWithDomain ProjectWithDomain[]
 }
 
 model ProjectDomain {
+    id        String   @id @default(uuid())
     projectId String
     project   Project  @relation(fields: [projectId], references: [id])
     domainId  String
@@ -238,65 +210,52 @@ model ProjectDomain {
     createdAt DateTime @default(now())
     // Generated txt record to check domain ownership
     txtRecord String   @unique @default(uuid())
-
     // CNAME record to point to the domain
-    cname String
+    cname     String
 
-    @@id([projectId, domainId])
     @@index([domainId])
 }
 
-view ProjectWithDomain {
-    projectId String
-
-    domainId  String
-    domain    Domain @relation(fields: [domainId], references: [id])
-    txtRecord String
-
-    createdAt DateTime
-
+model ProjectWithDomain {
+    id         String                       @id @default(uuid())
+    projectId  String
+    domainId   String
+    domain     Domain                       @relation(fields: [domainId], references: [id])
+    txtRecord  String
+    createdAt  DateTime
     // CNAME record to point to the domain
-    cname String
-
-    verified Boolean
+    cname      String
+    verified   Boolean
     // To count statistics per user
-    userId   String?
-
+    userId     String?
     // We can deploy on per domain basis, here for each project domain we have latest build
     latestBuid LatestBuildPerProjectDomain?
-
-    @@id([projectId, domainId])
 }
 
-view LatestBuildPerProjectDomain {
+model LatestBuildPerProjectDomain {
+    id                String            @id @default(uuid())
     domainId          String
     buildId           String
-    projectId         String
-    projectWithDomain ProjectWithDomain @relation(fields: [projectId, domainId], references: [projectId, domainId])
-
-    isLatestBuild Boolean
-    publishStatus PublishStatus
-    updatedAt     DateTime
-
-    @@id([projectId, domainId])
+    projectId         String            @unique
+    projectWithDomain ProjectWithDomain @relation(fields: [projectId], references: [id])
+    isLatestBuild     Boolean
+    publishStatus     PublishStatus
+    updatedAt         DateTime
 }
 
-view LatestBuildPerProject {
-    buildId String
-
-    projectId String
-    domain    String
-    project   Project @relation(fields: [projectId, domain], references: [id, domain])
-
+model LatestBuildPerProject {
+    id            String        @id @default(uuid())
+    buildId       String
+    projectId     String        @unique
+    domain        String
+    project       Project       @relation(fields: [projectId], references: [id])
     isLatestBuild Boolean
     publishStatus PublishStatus
     updatedAt     DateTime
-
-    @@id([projectId, domain])
 }
 
 // Dashboard
-view DashboardProject {
+model DashboardProject {
     id          String   @id @default(uuid())
     createdAt   DateTime @default(now())
     title       String
