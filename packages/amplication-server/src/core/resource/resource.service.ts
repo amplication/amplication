@@ -570,16 +570,10 @@ export class ResourceService {
 
     try {
       // 1. create new resources
-      const projectGitRepository = await this.prisma.gitRepository.findFirst({
+      const currentProjectConfiguration = await this.prisma.resource.findFirst({
         where: {
-          resources: {
-            some: {
-              id: projectId,
-            },
-          },
-        },
-        include: {
-          resources: true,
+          projectId: projectId,
+          resourceType: EnumResourceType.ProjectConfiguration,
         },
       });
 
@@ -597,12 +591,12 @@ export class ResourceService {
             },
             resourceType: EnumResourceType.Service,
             serviceSettings: defaultServiceSettings,
-            gitRepository: projectGitRepository
+            gitRepository: currentProjectConfiguration.gitRepositoryId
               ? {
                   isOverrideGitRepository: false,
-                  name: projectGitRepository?.name,
+                  name: "",
                   resourceId: "",
-                  gitOrganizationId: projectGitRepository?.gitOrganizationId,
+                  gitOrganizationId: "",
                 }
               : null,
           },
