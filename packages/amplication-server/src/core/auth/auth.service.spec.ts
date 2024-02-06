@@ -15,7 +15,7 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Workspace, Project, Resource, Account, User } from "../../models";
 import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
 import { anyString } from "jest-mock-extended";
-import { AuthUser } from "./types";
+import { AuthProfile, AuthUser } from "./types";
 import { IdentityProvider } from "./auth.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
@@ -207,7 +207,7 @@ const hashPasswordMock = jest.fn((password) => {
 
 const validatePasswordMock = jest.fn(() => true);
 
-const findUsersMock = jest.fn(() => [EXAMPLE_OTHER_AUTH_USER]);
+const findUsersMock = jest.fn().mockResolvedValue([EXAMPLE_OTHER_AUTH_USER]);
 
 const createWorkspaceMock = jest.fn(() => ({
   ...EXAMPLE_WORKSPACE,
@@ -231,6 +231,11 @@ const segmentAnalyticsTrackMock = jest.fn().mockResolvedValue(undefined);
 
 describe("AuthService", () => {
   let service: AuthService;
+  const responseMock = {
+    status: jest.fn((x) => responseMock),
+    cookie: jest.fn(),
+    redirect: jest.fn(),
+  } as unknown as Response;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -913,12 +918,6 @@ describe("AuthService", () => {
 
   describe("configureJtw", () => {
     it("should generate a jwt, setup a temporary cookie that client will use to store the jwt and return a redirect 301", async () => {
-      const responseMock = {
-        status: jest.fn((x) => responseMock),
-        cookie: jest.fn(),
-        redirect: jest.fn(),
-      } as unknown as Response;
-
       await service.configureJtw(
         responseMock,
         {
@@ -956,6 +955,78 @@ describe("AuthService", () => {
         301,
         "https://server.amplication.com?complete-signup=0"
       );
+    });
+  });
+
+  describe("when a user logs in through an OpenIdConnect IdP", () => {
+    describe("and an amplication user with the same email already exist", () => {
+      beforeEach(() => {
+        findUsersMock.mockResolvedValue([EXAMPLE_AUTH_USER]);
+      });
+      it("should update the user and track the event", async () => {
+        const authProfile: AuthProfile = {
+          sub: "123",
+          email: "local@invalid.com",
+          nickname: "",
+          identityOrigin: "AnSSOIntegration",
+          loginsCount: 1,
+        };
+        updateAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
+
+        await service.loginOrSignUp(authProfile, responseMock);
+
+        expect(responseMock.cookie).toHaveBeenCalledWith(
+          "AJWT",
+          expect.any(String),
+          {
+            domain: expectedDomain,
+            secure: true,
+          }
+        );
+        expect(createAccountMock).toHaveBeenCalledTimes(0);
+        expect(updateAccountMock).toHaveBeenCalledTimes(1);
+
+        expect(responseMock.redirect).toHaveBeenCalledWith(
+          301,
+          "https://server.amplication.com?complete-signup=0"
+        );
+      });
+    });
+    describe("and an amplication user with the same email does not exist", () => {
+      beforeEach(() => {
+        findUsersMock.mockResolvedValue([]);
+      });
+
+      it("should create a new amplication user and track the event", async () => {
+        const authProfile: AuthProfile = {
+          sub: "123",
+          email: "local@invalid.com",
+          nickname: "",
+          identityOrigin: "AnSSOIntegration",
+          loginsCount: 1,
+        };
+
+        createAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
+        updateAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
+
+        await service.loginOrSignUp(authProfile, responseMock);
+
+        expect(responseMock.cookie).toHaveBeenCalledWith(
+          "AJWT",
+          expect.any(String),
+          {
+            domain: expectedDomain,
+            secure: true,
+          }
+        );
+
+        expect(createAccountMock).toHaveBeenCalledTimes(1);
+        expect(updateAccountMock).toHaveBeenCalledTimes(1);
+        expect(responseMock.redirect).toHaveBeenCalledWith(
+          301,
+          "https://server.amplication.com?complete-signup=0"
+        );
+      });
     });
   });
 });
