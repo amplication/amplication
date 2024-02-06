@@ -104,6 +104,7 @@ const ModuleActions = React.memo(({ match }: Props) => {
     <FeatureIndicatorContainer
       featureId={BillingFeature.CustomActions}
       entitlementType={EntitlementType.Boolean}
+      showTooltip={false}
       render={({ disabled, icon }) => (
         <>
           {disabled ? (
