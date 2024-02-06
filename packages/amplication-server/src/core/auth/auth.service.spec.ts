@@ -696,7 +696,7 @@ describe("AuthService", () => {
       expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(1);
       expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(1);
       expect(segmentAnalyticsTrackMock).toHaveBeenCalledWith({
-        userId: null,
+        userId: expect.any(String),
         event: EnumEventType.StartEmailSignup,
         properties: {
           identityProvider: IdentityProvider.IdentityPlatform,

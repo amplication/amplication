@@ -105,14 +105,15 @@ export class AuthService {
 
   private async trackStartBusinessEmailSignup(
     emailAddress: string,
+    existingAccount: Account | null = null,
     existingUser: IdentityProvider | "No" = "No"
   ) {
     const userData: IdentifyData = {
-      userId: null,
-      createdAt: null,
-      email: emailAddress,
-      firstName: null,
-      lastName: null,
+      userId: existingAccount?.id ?? cuid(),
+      createdAt: existingAccount?.createdAt ?? null,
+      email: existingAccount?.email ?? emailAddress,
+      firstName: existingAccount?.firstName ?? null,
+      lastName: existingAccount?.lastName ?? null,
     };
 
     await this.analytics.identify(userData);
@@ -213,6 +214,7 @@ export class AuthService {
 
       await this.trackStartBusinessEmailSignup(
         emailAddress,
+        existingAccount,
         existingAccount
           ? IdentityProvider.GitHub
           : existedAuth0User
