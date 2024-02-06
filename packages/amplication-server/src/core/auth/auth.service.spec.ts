@@ -720,8 +720,47 @@ describe("AuthService", () => {
       ).rejects.toThrow(WORK_EMAIL_INVALID);
     });
 
-    it("should create only an Auth0 user (not an amplication user) and reset password if the user does not exist on Auth0", async () => {
+    it("when an amplication user already exists, should create only an Auth0 user (not an amplication user) and reset password if the user does not exist on Auth0", async () => {
       const email = "invalid@invalid.com";
+
+      findAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
+
+      mockManagementClientGetByEmail.mockResolvedValueOnce({
+        data: [],
+      });
+
+      mockAuthenticationClientDatabaseSignUp.mockResolvedValueOnce({
+        data: {
+          email,
+        },
+      });
+
+      mockAuthenticationClientDatabaseChangePassword.mockResolvedValueOnce({
+        data: "ok",
+      });
+
+      const result = await service.signupWithBusinessEmail({
+        data: {
+          email,
+        },
+      });
+
+      expect(result).toBeTruthy();
+
+      expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledTimes(1);
+      expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledWith({
+        email,
+        password: expect.any(String),
+        connection: expect.any(String),
+      });
+      expect(
+        mockAuthenticationClientDatabaseChangePassword
+      ).toHaveBeenCalledTimes(1);
+    });
+
+    it("when an amplication user already does not exists, should create only an Auth0 user (not an amplication user) and reset password if the user does not exist on Auth0", async () => {
+      const email = "invalid@invalid.com";
+      findAccountMock.mockResolvedValueOnce(null);
 
       mockManagementClientGetByEmail.mockResolvedValueOnce({
         data: [],
