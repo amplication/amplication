@@ -18,6 +18,7 @@
 
   &__monolith_options {
     margin-top: var(--double-spacing);
+    flex-wrap: wrap;
   }
 
   &__action-button {
