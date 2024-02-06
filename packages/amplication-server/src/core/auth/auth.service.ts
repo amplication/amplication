@@ -283,7 +283,9 @@ export class AuthService {
           githubId: payload.id,
         },
       },
-      IdentityProvider.GitHub
+      {
+        identityProvider: IdentityProvider.GitHub,
+      }
     );
 
     const user = await this.bootstrapUser(account, payload.id);
@@ -319,7 +321,11 @@ export class AuthService {
           previewAccountType: EnumPreviewAccountType.None,
         },
       },
-      IdentityProvider.IdentityPlatform
+      {
+        identityProvider: IdentityProvider.IdentityPlatform,
+        identityOrigin: profile.identityOrigin,
+        identityLoginsCount: profile.loginsCount,
+      }
     );
 
     const user = await this.bootstrapUser(account, profile.email);
@@ -355,7 +361,7 @@ export class AuthService {
           password: hashedPassword,
         },
       },
-      IdentityProvider.Local
+      { identityProvider: IdentityProvider.Local }
     );
 
     const user = await this.bootstrapUser(account, payload.workspaceName);
@@ -435,7 +441,7 @@ export class AuthService {
       {
         data: signupData,
       },
-      identityProvider
+      { identityProvider }
     );
 
     const { user, workspaceId, projectId, resourceId } =

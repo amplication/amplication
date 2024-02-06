@@ -89,9 +89,11 @@ describe("AccountService", () => {
         password: EXAMPLE_PASSWORD,
       },
     };
-    expect(await service.createAccount(args, IdentityProvider.Local)).toEqual(
-      EXAMPLE_ACCOUNT
-    );
+    expect(
+      await service.createAccount(args, {
+        identityProvider: IdentityProvider.Local,
+      })
+    ).toEqual(EXAMPLE_ACCOUNT);
     expect(prismaAccountCreateMock).toBeCalledTimes(1);
     expect(prismaAccountCreateMock).toBeCalledWith(args);
     expect(segmentAnalyticsIdentifyMock).toBeCalledTimes(1);

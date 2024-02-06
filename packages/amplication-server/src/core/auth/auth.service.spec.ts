@@ -343,7 +343,7 @@ describe("AuthService", () => {
           lastName: EXAMPLE_ACCOUNT.lastName,
         },
       },
-      IdentityProvider.Local
+      { identityProvider: IdentityProvider.Local }
     );
     expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
