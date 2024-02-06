@@ -515,16 +515,112 @@ export class ResourceService {
   ): Promise<UserAction> {
     const { movedEntities, newServices, projectId } = args.data;
 
-    const subscription = await this.billingService.getSubscription(
-      user.workspace?.id
-    );
-
     const [firstResource] = await this.resources({
       where: { projectId: projectId },
     });
 
     const resourceId =
       movedEntities[0]?.originalResourceId ?? firstResource?.id;
+    const userAction =
+      await this.userActionService.createUserActionByTypeWithInitialStep(
+        EnumUserActionType.ProjectRedesign,
+        undefined,
+        REDESIGN_PROJECT_INITIAL_STEP_DATA,
+        user.id,
+        resourceId
+      );
+
+    const actionContext = this.actionService.createActionContext(
+      userAction.id,
+      userAction.action.steps[0],
+      KAFKA_TOPICS.USER_ACTION_LOG_TOPIC
+    );
+
+    //data validations
+
+    try {
+      if (movedEntities?.length > 0) {
+        const serviceSettings =
+          await this.serviceSettingsService.getServiceSettingsValues(
+            {
+              where: { id: resourceId },
+            },
+            user
+          );
+        for (const movedEntity of movedEntities) {
+          const currentEntity = await this.entityService.entity({
+            where: {
+              id: movedEntity.entityId,
+            },
+          });
+          //validate authEntity
+          if (
+            serviceSettings.authEntityName &&
+            serviceSettings.authEntityName === currentEntity.name
+          ) {
+            throw new AmplicationError(
+              `cannot move auth entity : ${currentEntity.name}.`
+            );
+          }
+
+          const resourceEntities = await this.entityService.entities({
+            where: {
+              resourceId: movedEntity.targetResourceId,
+            },
+          });
+
+          //validate entities names
+          if (resourceEntities.length > 0) {
+            for (const resourceEntity of resourceEntities) {
+              if (resourceEntity.name === currentEntity.name) {
+                throw new AmplicationError(
+                  `Entity : ${currentEntity.name} is already exist in resource: ${movedEntity.targetResourceId}.`
+                );
+              }
+            }
+          }
+        }
+      }
+
+      //validate services names
+      if (newServices.length > 0) {
+        const projectResources = await this.resources({
+          where: {
+            projectId: projectId,
+          },
+        });
+
+        if (projectResources.length > 0) {
+          for (const newService of newServices) {
+            const duplicateService = projectResources.find(
+              (resource) =>
+                resource.name.toLocaleLowerCase() ===
+                newService.name.toLocaleLowerCase()
+            );
+            if (duplicateService) {
+              throw new AmplicationError(
+                `Resource : ${newService.name} is already exist in project: ${projectId}.`
+              );
+            }
+          }
+        }
+      }
+    } catch (error) {
+      await actionContext.onEmitUserActionLog(
+        error.message,
+        EnumActionLogLevel.Error,
+        EnumActionStepStatus.Failed,
+        true
+      );
+
+      return userAction;
+    }
+
+    // 3. license limitations
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
 
     await this.analytics.track({
       userId: user.id,
@@ -552,21 +648,6 @@ export class ResourceService {
       },
       authProvider: EnumAuthProviderType.Jwt,
     };
-
-    const userAction =
-      await this.userActionService.createUserActionByTypeWithInitialStep(
-        EnumUserActionType.ProjectRedesign,
-        undefined,
-        REDESIGN_PROJECT_INITIAL_STEP_DATA,
-        user.id,
-        resourceId
-      );
-
-    const actionContext = this.actionService.createActionContext(
-      userAction.id,
-      userAction.action.steps[0],
-      KAFKA_TOPICS.USER_ACTION_LOG_TOPIC
-    );
 
     try {
       // 1. create new resources
