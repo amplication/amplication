@@ -1,5 +1,5 @@
 import { Injectable, Inject } from "@nestjs/common";
-import Analytics from "@segment/analytics-node";
+import { Analytics } from "@segment/analytics-node";
 import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 import { RequestContext } from "nestjs-request-context";
 import { IdentifyData, TrackData } from "./segmentAnalytics.types";
