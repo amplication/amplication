@@ -94,7 +94,7 @@ export class PluginInstallationService extends BlockTypeService<
     );
 
     await this.analytics.track({
-      userId: user.account.id,
+      accountId: user.account.id,
       event: EnumEventType.PluginInstall,
       properties: {
         pluginId: newPlugin.pluginId,
@@ -122,7 +122,7 @@ export class PluginInstallationService extends BlockTypeService<
     const updated = await super.update(args, user, ["settings"]);
 
     await this.analytics.track({
-      userId: user.account.id,
+      accountId: user.account.id,
       event: EnumEventType.PluginUpdate,
       properties: {
         pluginId: updated.pluginId,

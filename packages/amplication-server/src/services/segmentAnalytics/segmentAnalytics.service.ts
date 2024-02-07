@@ -34,10 +34,10 @@ export class SegmentAnalyticsService {
   public async identify(data: IdentifyData): Promise<void> {
     if (!this.analytics) return;
 
-    const { userId, ...rest } = data;
+    const { accountId, ...rest } = data;
 
     this.analytics.identify({
-      userId: userId,
+      userId: accountId,
       traits: rest,
     });
   }
@@ -52,6 +52,7 @@ export class SegmentAnalyticsService {
 
     this.analytics.track({
       ...data,
+      userId: data.accountId,
       properties: {
         ...data.properties,
         source: "amplication-server",
@@ -62,6 +63,6 @@ export class SegmentAnalyticsService {
           analyticsSessionId: analyticsSessionId,
         },
       },
-    } as TrackData);
+    });
   }
 }

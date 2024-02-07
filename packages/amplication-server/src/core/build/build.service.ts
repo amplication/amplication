@@ -544,7 +544,7 @@ export class BuildService {
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
 
     await this.analytics.track({
-      userId: build.createdBy.account.id,
+      accountId: build.createdBy.account.id,
       properties: {
         resourceId: build.resource.id,
         projectId: build.resource.project.id,
@@ -576,7 +576,7 @@ export class BuildService {
       });
 
       await this.analytics.track({
-        userId: build.createdBy.account.id,
+        accountId: build.createdBy.account.id,
         properties: {
           resourceId: build.resource.id,
           projectId: build.resource.project.id,

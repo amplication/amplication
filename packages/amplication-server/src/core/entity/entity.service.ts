@@ -402,7 +402,7 @@ export class EntityService {
       });
 
       await this.analytics.track({
-        userId: user.account.id,
+        accountId: user.account.id,
         properties: {
           resourceId: resourceId,
           projectId: resourceWithProject.projectId,
@@ -450,7 +450,7 @@ export class EntityService {
       );
 
     await this.analytics.track({
-      userId: user.account.id,
+      accountId: user.account.id,
       properties: {
         resourceId: resourceId,
         projectId: resourceWithProject.projectId,
@@ -488,7 +488,7 @@ export class EntityService {
 
       if (!valid) {
         await this.analytics.track({
-          userId: user.account.id,
+          accountId: user.account.id,
           properties: {
             resourceId: resourceId,
             projectId: resourceWithProject.projectId,
@@ -539,7 +539,7 @@ export class EntityService {
         );
 
         await this.analytics.track({
-          userId: user.account.id,
+          accountId: user.account.id,
           properties: {
             resourceId: resourceId,
             projectId: resourceWithProject.projectId,
@@ -561,7 +561,7 @@ export class EntityService {
       }
     } catch (error) {
       await this.analytics.track({
-        userId: user.account.id,
+        accountId: user.account.id,
         properties: {
           resourceId: resourceId,
           projectId: resourceWithProject.projectId,
@@ -1066,7 +1066,7 @@ export class EntityService {
       });
 
       await this.analytics.track({
-        userId: user.account.id,
+        accountId: user.account.id,
         properties: {
           resourceId: entity.resourceId,
           projectId: resourceWithProject.projectId,
@@ -2509,7 +2509,7 @@ export class EntityService {
           });
 
           await this.analytics.track({
-            userId: user.account.id,
+            accountId: user.account.id,
             properties: {
               resourceId: entity.resourceId,
               projectId: resourceWithProject.projectId,
@@ -2828,7 +2828,7 @@ export class EntityService {
         });
 
         await this.analytics.track({
-          userId: user.account.id,
+          accountId: user.account.id,
           properties: {
             resourceId: entity.resourceId,
             projectId: resourceWithProject.projectId,

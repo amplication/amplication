@@ -348,7 +348,7 @@ export class ResourceService {
       );
 
     await this.analytics.track({
-      userId: user.account.id,
+      accountId: user.account.id,
       properties: {
         resourceId: resource.id,
         projectId: resource.projectId,
@@ -565,7 +565,7 @@ export class ResourceService {
     );
 
     await this.analytics.track({
-      userId: user.id,
+      accountId: user.id,
       properties: {
         workspaceId: user.workspace?.id,
         projectId,
@@ -1127,7 +1127,7 @@ export class ResourceService {
       data.resource.gitRepository = undefined;
 
       await this.analytics.track({
-        userId: user.account.id,
+        accountId: user.account.id,
         event: EnumEventType.DemoRepoCreate,
         properties: {
           projectId: project.id,
@@ -1279,7 +1279,7 @@ export class ResourceService {
     }, 0);
 
     await this.analytics.track({
-      userId: user.account.id,
+      accountId: user.account.id,
       event: EnumEventType.ServiceWizardServiceGenerated,
       properties: {
         category: "Service Wizard",

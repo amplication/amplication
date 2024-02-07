@@ -219,9 +219,9 @@ export class BillingService {
     intentionType,
     cancelUrl,
     successUrl,
-    userId,
+    accountId,
   }: ProvisionSubscriptionInput & {
-    userId: string;
+    accountId: string;
   }): Promise<ProvisionSubscriptionResult> {
     const stiggClient = await this.getStiggClient();
     const stiggResponse = await stiggClient.provisionSubscription({
@@ -235,11 +235,11 @@ export class BillingService {
         successUrl: new URL(successUrl, this.clientHost).href,
       },
       metadata: {
-        userId: userId,
+        userId: accountId,
       },
     });
     await this.analytics.track({
-      userId,
+      accountId,
       properties: {
         workspaceId,
         $groups: { groupWorkspace: workspaceId },
@@ -416,7 +416,7 @@ export class BillingService {
       } catch (error) {
         if (error instanceof BillingLimitationError) {
           await this.analytics.track({
-            userId: currentUser.account.id,
+            accountId: currentUser.account.id,
             properties: {
               workspaceId,
               reason: error.message,

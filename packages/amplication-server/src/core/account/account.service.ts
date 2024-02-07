@@ -20,7 +20,7 @@ export class AccountService {
     const account = await this.prisma.account.create(args);
 
     const userData: IdentifyData = {
-      userId: account.id,
+      accountId: account.id,
       createdAt: account.createdAt,
       email: account.previewAccountEmail ?? account.email,
       firstName: account.firstName,
@@ -30,7 +30,7 @@ export class AccountService {
     await this.analytics.identify(userData);
     //we send the userData again to prevent race condition
     await this.analytics.track({
-      userId: account.id,
+      accountId: account.id,
       event: EnumEventType.Signup,
       properties: {
         ...trackingMetadata,

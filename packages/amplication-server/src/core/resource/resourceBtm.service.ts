@@ -69,7 +69,7 @@ export class ResourceBtmService {
       );
 
       await this.analyticsService.track({
-        userId: user.id,
+        accountId: user.id,
         properties: {
           workspaceId: user.workspace?.id,
           projectId: resource.project?.id,

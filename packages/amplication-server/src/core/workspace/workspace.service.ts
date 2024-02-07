@@ -421,7 +421,7 @@ export class WorkspaceService {
     );
 
     await this.analytics.track({
-      userId: account.id,
+      accountId: account.id,
       event: EnumEventType.InvitationAcceptance,
       properties: {
         workspaceId: invitation.workspaceId,
@@ -530,7 +530,7 @@ export class WorkspaceService {
       planId: BillingPlan.ProWithTrial,
       cancelUrl: "",
       successUrl: "",
-      userId: account.id,
+      accountId: account.id,
       billingPeriod: BillingPeriod.Monthly,
       intentionType: "UPGRADE_PLAN",
     });
@@ -549,7 +549,7 @@ export class WorkspaceService {
     });
 
     await this.analytics.track({
-      userId: account.id,
+      accountId: account.id,
       event: EnumEventType.RedeemCoupon,
       properties: {
         workspaceId: currentUser.workspace.id,

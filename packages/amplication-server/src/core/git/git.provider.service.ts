@@ -477,7 +477,7 @@ export class GitProviderService {
     const gitRemoteOrganization = await gitClientService.getOrganization();
 
     await this.analytics.track({
-      userId: currentUser.account.id,
+      accountId: currentUser.account.id,
       properties: {
         workspaceId: workspaceId,
         provider: gitProvider,
@@ -673,7 +673,7 @@ export class GitProviderService {
     });
 
     await this.analytics.track({
-      userId: currentUser.account.id,
+      accountId: currentUser.account.id,
       properties: {
         workspaceId: workspaceId,
         provider: gitProvider,

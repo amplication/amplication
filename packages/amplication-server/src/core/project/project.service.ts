@@ -473,7 +473,7 @@ export class ProjectService {
     }
     if (!skipBuild) {
       await this.analytics.track({
-        userId: currentUser.account.id,
+        accountId: currentUser.account.id,
         properties: {
           workspaceId: project.workspaceId,
           projectId: project.id,

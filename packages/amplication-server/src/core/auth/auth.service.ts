@@ -45,10 +45,8 @@ import {
 } from "./auth-utils";
 import { IdentityProvider, IdentityProviderPreview } from "./auth.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import {
-  IdentifyData,
-  EnumEventType,
-} from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { IdentifyData } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEvents.types";
 import { stringifyUrl } from "query-string";
 
 const TOKEN_PREVIEW_LENGTH = 8;
@@ -114,7 +112,7 @@ export class AuthService {
     existingUser: IdentityProvider | "No" = "No"
   ) {
     const userData: IdentifyData = {
-      userId: existingAccount?.id ?? `${cuid()}-not-registered-yet`,
+      accountId: existingAccount?.id ?? `${cuid()}-not-registered-yet`,
       createdAt: existingAccount?.createdAt ?? null,
       email: existingAccount?.email ?? emailAddress,
       firstName: existingAccount?.firstName ?? null,
@@ -124,7 +122,7 @@ export class AuthService {
     await this.analytics.identify(userData);
     //we send the userData again to prevent race condition
     await this.analytics.track({
-      userId: userData.userId,
+      accountId: userData.accountId,
       event: EnumEventType.StartEmailSignup,
       properties: {
         identityProvider: IdentityProvider.IdentityPlatform,
@@ -147,24 +145,24 @@ export class AuthService {
       return;
     }
 
-    const analyticsUserData: IdentifyData = {
-      userId: account.id,
+    const userData: IdentifyData = {
+      accountId: account.id,
       email: profile.email,
       createdAt: account.createdAt,
       firstName: profile.given_name,
       lastName: profile.family_name,
     };
 
-    void this.analytics.identify(analyticsUserData).catch((error) => {
+    void this.analytics.identify(userData).catch((error) => {
       this.logger.error(
-        `Failed to identify user ${analyticsUserData.userId} in segment analytics`,
+        `Failed to identify user ${userData.accountId} in segment analytics`,
         error
       );
     });
-    //we send the analyticsUserData again to prevent race condition
+    //we send the userData again to prevent race condition
     void this.analytics
       .track({
-        userId: analyticsUserData.userId,
+        accountId: userData.accountId,
         event: EnumEventType.CompleteEmailSignup,
         properties: {
           identityProvider: IdentityProvider.IdentityPlatform,
@@ -172,12 +170,12 @@ export class AuthService {
           existingUser,
         },
         context: {
-          traits: analyticsUserData,
+          traits: userData,
         },
       })
       .catch((error) => {
         this.logger.error(
-          `Failed to track complete business email signup for user ${analyticsUserData.userId}`,
+          `Failed to track complete business email signup for user ${userData.accountId}`,
           error
         );
       });
