@@ -45,8 +45,10 @@ import {
 } from "./auth-utils";
 import { IdentityProvider, IdentityProviderPreview } from "./auth.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { IdentifyData } from "../../services/segmentAnalytics/segmentAnalytics.types";
-import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEvents.types";
+import {
+  EnumEventType,
+  IdentifyData,
+} from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { stringifyUrl } from "query-string";
 
 const TOKEN_PREVIEW_LENGTH = 8;

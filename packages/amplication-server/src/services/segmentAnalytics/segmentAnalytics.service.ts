@@ -2,7 +2,12 @@ import { Injectable, Inject } from "@nestjs/common";
 import { Analytics } from "@segment/analytics-node";
 import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 import { RequestContext } from "nestjs-request-context";
-import { IdentifyData, TrackData } from "./segmentAnalytics.types";
+import {
+  EnumEventType,
+  EventTrackData,
+  IdentifyData,
+  TrackData,
+} from "./segmentAnalytics.types";
 import cuid from "cuid";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 @Injectable()

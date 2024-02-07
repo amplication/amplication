@@ -1,6 +1,6 @@
-import { EnumEventType } from "./segmentAnalyticsEvents.types";
+import { EnumEventType } from "./segmentAnalyticsEventType.types";
 
-export { EnumEventType } from "./segmentAnalyticsEvents.types";
+export { EnumEventType } from "./segmentAnalyticsEventType.types";
 
 export type IdentifyData = {
   accountId: string;
