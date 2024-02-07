@@ -1,6 +1,7 @@
 import {
   EnumActionStepStatus,
   RedesignProjectMovedEntity,
+  RedesignProjectNewService,
 } from "@amplication/code-gen-types/models";
 import { Lookup } from "@amplication/code-gen-types/types";
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
@@ -61,7 +62,10 @@ import { UserAction } from "../userAction/dto";
 import { EnumUserActionType } from "../userAction/types";
 import { UserActionService } from "../userAction/userAction.service";
 import { ReservedEntityNameError } from "./ReservedEntityNameError";
-import { REDESIGN_PROJECT_INITIAL_STEP_DATA } from "./constants";
+import {
+  REDESIGN_PROJECT_INITIAL_STEP_DATA,
+  VALIDATE_PROJECT_REDESIGN_CHANGES_DATA,
+} from "./constants";
 import {
   CreateOneResourceArgs,
   FindManyResourceArgs,
@@ -73,6 +77,7 @@ import {
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
 import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
+import { ActionStep } from "../action/dto";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -88,6 +93,12 @@ export const INVALID_DELETE_PROJECT_CONFIGURATION =
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
+
+const SERVICE_LIMITATION_ERROR =
+  "Can not create new services, The workspace reached your plan's resource limitation";
+
+const ENTITIES_PER_SERVICE_LIMITATION_ERROR =
+  "Your current plan permits only one active Service";
 
 export type CreatePreviewServiceArgs = {
   args: CreateOneResourceArgs;
@@ -519,8 +530,27 @@ export class ResourceService {
       where: { projectId: projectId },
     });
 
+    const project = await this.projectService.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
+
+    //prepare moved entities mapping
+    const movedEntitiesByResource = movedEntities.reduce(
+      (entitiesByResource, entity) => {
+        if (!entitiesByResource[entity.targetResourceId]) {
+          entitiesByResource[entity.targetResourceId] = [];
+        }
+        entitiesByResource[entity.targetResourceId].push(entity);
+        return entitiesByResource;
+      },
+      {} as { [resourceId: string]: RedesignProjectMovedEntity[] }
+    );
+
     const resourceId =
       movedEntities[0]?.originalResourceId ?? firstResource?.id;
+
     const userAction =
       await this.userActionService.createUserActionByTypeWithInitialStep(
         EnumUserActionType.ProjectRedesign,
@@ -530,93 +560,30 @@ export class ResourceService {
         resourceId
       );
 
+    const validationStep: ActionStep = {
+      id: "",
+      createdAt: undefined,
+      completedAt: undefined,
+      name: VALIDATE_PROJECT_REDESIGN_CHANGES_DATA,
+      message: "Validate project redesign changes data",
+      status: EnumActionStepStatus.Running,
+      logs: [
+        {
+          id: "",
+          createdAt: undefined,
+          message: "Starting to validate project redesign changes data",
+          level: EnumActionLogLevel.Info,
+          meta: {},
+        },
+      ],
+    };
+    userAction.action.steps.push(validationStep);
+
     const actionContext = this.actionService.createActionContext(
       userAction.id,
       userAction.action.steps[0],
       KAFKA_TOPICS.USER_ACTION_LOG_TOPIC
     );
-
-    //data validations
-
-    try {
-      if (movedEntities?.length > 0) {
-        const serviceSettings =
-          await this.serviceSettingsService.getServiceSettingsValues(
-            {
-              where: { id: resourceId },
-            },
-            user
-          );
-        for (const movedEntity of movedEntities) {
-          const currentEntity = await this.entityService.entity({
-            where: {
-              id: movedEntity.entityId,
-            },
-          });
-          //validate authEntity
-          if (
-            serviceSettings.authEntityName &&
-            serviceSettings.authEntityName === currentEntity.name
-          ) {
-            throw new AmplicationError(
-              `cannot move auth entity : ${currentEntity.name}.`
-            );
-          }
-
-          const resourceEntities = await this.entityService.entities({
-            where: {
-              resourceId: movedEntity.targetResourceId,
-            },
-          });
-
-          //validate entities names
-          if (resourceEntities.length > 0) {
-            for (const resourceEntity of resourceEntities) {
-              if (resourceEntity.name === currentEntity.name) {
-                throw new AmplicationError(
-                  `Entity : ${currentEntity.name} is already exist in resource: ${movedEntity.targetResourceId}.`
-                );
-              }
-            }
-          }
-        }
-      }
-
-      //validate services names
-      if (newServices.length > 0) {
-        const projectResources = await this.resources({
-          where: {
-            projectId: projectId,
-          },
-        });
-
-        if (projectResources.length > 0) {
-          for (const newService of newServices) {
-            const duplicateService = projectResources.find(
-              (resource) =>
-                resource.name.toLocaleLowerCase() ===
-                newService.name.toLocaleLowerCase()
-            );
-            if (duplicateService) {
-              throw new AmplicationError(
-                `Resource : ${newService.name} is already exist in project: ${projectId}.`
-              );
-            }
-          }
-        }
-      }
-    } catch (error) {
-      await actionContext.onEmitUserActionLog(
-        error.message,
-        EnumActionLogLevel.Error,
-        EnumActionStepStatus.Failed,
-        true
-      );
-
-      return userAction;
-    }
-
-    // 3. license limitations
 
     const subscription = await this.billingService.getSubscription(
       user.workspace?.id
@@ -650,6 +617,15 @@ export class ResourceService {
     };
 
     try {
+      //data validationStep before starting the process
+      await this.validateNewResourcesData(newServices, project);
+      await this.validateMovedEntitiesData(
+        movedEntitiesByResource,
+        project,
+        resourceId,
+        user
+      );
+
       // 1. create new resources
       const currentProjectConfiguration = await this.prisma.resource.findFirst({
         where: {
@@ -706,16 +682,6 @@ export class ResourceService {
       }
 
       // 3.group moved entities by target resource
-      const movedEntitiesByResource = movedEntities.reduce(
-        (entitiesByResource, entity) => {
-          if (!entitiesByResource[entity.targetResourceId]) {
-            entitiesByResource[entity.targetResourceId] = [];
-          }
-          entitiesByResource[entity.targetResourceId].push(entity);
-          return entitiesByResource;
-        },
-        {} as { [resourceId: string]: RedesignProjectMovedEntity[] }
-      );
 
       const sourceEntityIdToNewEntityMap = new Map<
         string,
@@ -908,6 +874,123 @@ export class ResourceService {
     return userAction;
   }
 
+  private async validateNewResourcesData(
+    newServices: RedesignProjectNewService[],
+    project: Project
+  ): Promise<void> {
+    const projectResources = await this.prisma.resource.findMany({
+      where: {
+        projectId: project.id,
+        resourceType: EnumResourceType.Service,
+        deletedAt: null,
+      },
+    });
+    if (projectResources.length > 0) {
+      for (const newService of newServices) {
+        // duplicate name validation
+        const duplicateService = projectResources.find(
+          (resource) =>
+            resource.name.toLocaleLowerCase() ===
+            newService.name.toLocaleLowerCase()
+        );
+        if (duplicateService) {
+          throw new AmplicationError(
+            `Resource : ${newService.name} is already exist in project: ${project.name}.`
+          );
+        }
+        //service limitation validation
+        const featureServices = await this.billingService.getMeteredEntitlement(
+          project.workspaceId,
+          BillingFeature.Services
+        );
+
+        if (
+          !featureServices.hasAccess ||
+          (!featureServices.isUnlimited &&
+            featureServices.usageLimit <= projectResources.length)
+        ) {
+          throw new AmplicationError(SERVICE_LIMITATION_ERROR);
+        }
+      }
+    }
+  }
+  private async validateMovedEntitiesData(
+    movedEntitiesByResource: {
+      [resourceId: string]: RedesignProjectMovedEntity[];
+    },
+    project: Project,
+    originalResourceId: string,
+    user: User
+  ): Promise<void> {
+    // entities limitation per service validation
+    const featureEntitiesServices =
+      await this.billingService.getNumericEntitlement(
+        project.workspaceId,
+        BillingFeature.EntitiesPerService
+      );
+
+    const serviceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
+          where: { id: originalResourceId },
+        },
+        user
+      );
+
+    for (const [resourceId, entities] of Object.entries(
+      movedEntitiesByResource
+    )) {
+      for (const movedEntity of entities) {
+        const currentEntity = await this.entityService.entity({
+          where: {
+            id: movedEntity.entityId,
+          },
+        });
+        // authEntity validation
+        if (
+          serviceSettings.authEntityName &&
+          serviceSettings.authEntityName === currentEntity.name
+        ) {
+          throw new AmplicationError(
+            `cannot move auth entity : ${currentEntity.name}.`
+          );
+        }
+
+        const resourceEntities = await this.entityService.entities({
+          where: {
+            resourceId: movedEntity.targetResourceId,
+            deletedAt: null,
+          },
+        });
+
+        //duplicate entities names validation
+        if (resourceEntities.length > 0) {
+          for (const resourceEntity of resourceEntities) {
+            if (resourceEntity.name === currentEntity.name) {
+              throw new AmplicationError(
+                `Entity : ${currentEntity.name} is already exist in resource: ${movedEntity.targetResourceId}.`
+              );
+            }
+          }
+        }
+      }
+
+      //pass limitation validation
+      const currentResource = await this.findOne({
+        where: {
+          id: resourceId,
+        },
+      });
+      if (
+        (!currentResource && !project.licensed) ||
+        (currentResource && !currentResource.licensed) ||
+        !featureEntitiesServices.hasAccess ||
+        featureEntitiesServices.value <= entities.length
+      ) {
+        throw new AmplicationError(ENTITIES_PER_SERVICE_LIMITATION_ERROR);
+      }
+    }
+  }
   async userEntityValidation(
     resourceId: string,
     configurations: JsonValue
