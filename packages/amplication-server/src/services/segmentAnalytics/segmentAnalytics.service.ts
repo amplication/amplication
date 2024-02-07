@@ -2,7 +2,13 @@ import { Injectable, Inject } from "@nestjs/common";
 import { Analytics } from "@segment/analytics-node";
 import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 import { RequestContext } from "nestjs-request-context";
-import { IdentifyData, TrackData } from "./segmentAnalytics.types";
+import {
+  AnonymousTrackData,
+  IdentifyData,
+  KnownUserTrackData,
+  TrackData,
+} from "./segmentAnalytics.types";
+import cuid from "cuid";
 @Injectable()
 export class SegmentAnalyticsService {
   private analytics: Analytics;
@@ -45,6 +51,10 @@ export class SegmentAnalyticsService {
   public async track(data: TrackData): Promise<void> {
     if (!this.analytics) return;
 
+    if (!data.accountId) {
+      return this.trackAnonymous(data);
+    }
+
     const req = RequestContext?.currentContext?.req;
     const analyticsSessionId = this.parseValidUnixTimestampOrUndefined(
       req?.analyticsSessionId
@@ -53,6 +63,30 @@ export class SegmentAnalyticsService {
     this.analytics.track({
       ...data,
       userId: data.accountId,
+      properties: {
+        ...data.properties,
+        source: "amplication-server",
+      },
+      context: {
+        ...data.context,
+        amplication: {
+          analyticsSessionId: analyticsSessionId,
+        },
+      },
+    });
+  }
+
+  public async trackAnonymous(data: TrackData): Promise<void> {
+    if (!this.analytics) return;
+
+    const req = RequestContext?.currentContext?.req;
+    const analyticsSessionId = this.parseValidUnixTimestampOrUndefined(
+      req?.analyticsSessionId
+    );
+
+    this.analytics.track({
+      ...data,
+      anonymousId: cuid(),
       properties: {
         ...data.properties,
         source: "amplication-server",

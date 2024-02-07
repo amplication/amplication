@@ -25,10 +25,3 @@ export interface TrackData {
     };
   };
 }
-
-export interface KnownUserTrackData {
-  userId: string;
-}
-export interface AnonymousTrackData {
-  anonymousId: string;
-}
