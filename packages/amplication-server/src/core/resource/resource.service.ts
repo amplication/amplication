@@ -560,25 +560,6 @@ export class ResourceService {
         resourceId
       );
 
-    const validationStep: ActionStep = {
-      id: "",
-      createdAt: undefined,
-      completedAt: undefined,
-      name: VALIDATE_PROJECT_REDESIGN_CHANGES_DATA,
-      message: "Validate project redesign changes data",
-      status: EnumActionStepStatus.Running,
-      logs: [
-        {
-          id: "",
-          createdAt: undefined,
-          message: "Starting to validate project redesign changes data",
-          level: EnumActionLogLevel.Info,
-          meta: {},
-        },
-      ],
-    };
-    userAction.action.steps.push(validationStep);
-
     const actionContext = this.actionService.createActionContext(
       userAction.id,
       userAction.action.steps[0],
@@ -618,12 +599,21 @@ export class ResourceService {
 
     try {
       //data validationStep before starting the process
+      await actionContext.onEmitUserActionLog(
+        `Starting data validation`,
+        EnumActionLogLevel.Info
+      );
       await this.validateNewResourcesData(newServices, project);
       await this.validateMovedEntitiesData(
         movedEntitiesByResource,
         project,
         resourceId,
         user
+      );
+
+      await actionContext.onEmitUserActionLog(
+        `Data validation ended Successfully`,
+        EnumActionLogLevel.Info
       );
 
       // 1. create new resources
