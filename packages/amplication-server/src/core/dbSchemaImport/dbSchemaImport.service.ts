@@ -21,9 +21,9 @@ import { DBSchemaImportMetadata } from "./types";
 import { CreateDBSchemaImportArgs } from "./dto/CreateDBSchemaImportArgs";
 import { EnumSchemaNames } from "./dto/EnumSchemaNames";
 import { calDotComPredefinedSchema } from "./predefinedSchemes/calDotCom/calDotCom";
-import { nextCrmPredefinedSchema } from "./predefinedSchemes/nextCrm/nextCrm";
+import { formbricksPredefinedSchema } from "./predefinedSchemes/formbricks/formbricks";
 import { abbyPredefinedSchema } from "./predefinedSchemes/abby/abby";
-import { webStudioPredefinedSchema } from "./predefinedSchemes/webStudio/webstudio";
+import { papermarkPredefinedSchema } from "./predefinedSchemes/papermark/papermark";
 
 @Injectable()
 export class DBSchemaImportService {
@@ -149,12 +149,12 @@ export class DBSchemaImportService {
     switch (schemaNames) {
       case EnumSchemaNames.CalDotCom:
         return calDotComPredefinedSchema;
-      case EnumSchemaNames.NextCrmApp:
-        return nextCrmPredefinedSchema;
+      case EnumSchemaNames.Formbricks:
+        return formbricksPredefinedSchema;
       case EnumSchemaNames.Abby:
         return abbyPredefinedSchema;
-      case EnumSchemaNames.WebStudio:
-        return webStudioPredefinedSchema;
+      case EnumSchemaNames.Papermark:
+        return papermarkPredefinedSchema;
       default:
         throw new Error(`Schema name ${schemaNames} is not supported`);
     }

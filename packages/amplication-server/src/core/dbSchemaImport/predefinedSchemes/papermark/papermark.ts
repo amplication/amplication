@@ -1,10 +1,9 @@
-export const webStudioPredefinedSchema = `
+export const papermarkPredefinedSchema = `
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["views"]
 }
 
 datasource db {

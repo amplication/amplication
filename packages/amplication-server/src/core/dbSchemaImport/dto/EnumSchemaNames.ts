@@ -2,9 +2,9 @@ import { registerEnumType } from "@nestjs/graphql";
 
 export enum EnumSchemaNames {
   CalDotCom = "CalDotCom",
-  NextCrmApp = "NextCrmApp",
+  Formbricks = "Formbricks",
   Abby = "Abby",
-  WebStudio = "WebStudio",
+  Papermark = "Papermark",
 }
 
 registerEnumType(EnumSchemaNames, {
