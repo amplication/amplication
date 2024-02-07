@@ -39,6 +39,9 @@ export enum EnumEventType {
 }
 
 export type IdentifyData = {
+  /**
+   * The user's account id
+   */
   userId: string;
   firstName: string;
   lastName: string;
@@ -47,6 +50,9 @@ export type IdentifyData = {
 };
 
 export type TrackData = {
+  /**
+   * The user's account id
+   */
   userId: string;
   event: EnumEventType;
   properties?:

@@ -109,7 +109,7 @@ export class AuthService {
     existingUser: IdentityProvider | "No" = "No"
   ) {
     const userData: IdentifyData = {
-      userId: existingAccount?.id ?? cuid(),
+      userId: existingAccount?.id ?? `${cuid()}-not-registered-yet`,
       createdAt: existingAccount?.createdAt ?? null,
       email: existingAccount?.email ?? emailAddress,
       firstName: existingAccount?.firstName ?? null,
@@ -132,8 +132,7 @@ export class AuthService {
   }
 
   trackCompleteEmailSignup(
-    userId: string,
-    createdAt: Date,
+    account: Account,
     profile: AuthProfile,
     existingUser: boolean
   ): void {
@@ -143,24 +142,24 @@ export class AuthService {
       return;
     }
 
-    const userData: IdentifyData = {
-      userId: userId,
+    const analyticsUserData: IdentifyData = {
+      userId: account.id,
       email: profile.email,
-      createdAt: createdAt,
+      createdAt: account.createdAt,
       firstName: profile.given_name,
       lastName: profile.family_name,
     };
 
-    void this.analytics.identify(userData).catch((error) => {
+    void this.analytics.identify(analyticsUserData).catch((error) => {
       this.logger.error(
-        `Failed to identify user ${userId} in segment analytics`,
+        `Failed to identify user ${analyticsUserData.userId} in segment analytics`,
         error
       );
     });
-    //we send the userData again to prevent race condition
+    //we send the analyticsUserData again to prevent race condition
     void this.analytics
       .track({
-        userId: userData.userId,
+        userId: analyticsUserData.userId,
         event: EnumEventType.CompleteEmailSignup,
         properties: {
           identityProvider: IdentityProvider.IdentityPlatform,
@@ -168,12 +167,12 @@ export class AuthService {
           existingUser,
         },
         context: {
-          traits: userData,
+          traits: analyticsUserData,
         },
       })
       .catch((error) => {
         this.logger.error(
-          `Failed to track complete business email signup for user ${userId}`,
+          `Failed to track complete business email signup for user ${analyticsUserData.userId}`,
           error
         );
       });

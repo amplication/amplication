@@ -830,8 +830,7 @@ describe("AuthService", () => {
   describe("trackCompleteEmailSignup", () => {
     it("should track the event only when a user completes the signup with a business email and login for the first time", async () => {
       service.trackCompleteEmailSignup(
-        EXAMPLE_USER.id,
-        EXAMPLE_USER.createdAt,
+        EXAMPLE_USER.account,
         {
           email: EXAMPLE_ACCOUNT.email,
           sub: "asdadsad",
@@ -850,7 +849,7 @@ describe("AuthService", () => {
       expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(1);
       expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(1);
       expect(segmentAnalyticsTrackMock).toHaveBeenCalledWith({
-        userId: EXAMPLE_USER.id,
+        userId: EXAMPLE_USER.account.id,
         event: EnumEventType.CompleteEmailSignup,
         properties: {
           identityProvider: IdentityProvider.IdentityPlatform,
@@ -865,8 +864,7 @@ describe("AuthService", () => {
 
     it("should not track the event when a user with a business email logs in for the second time forward", async () => {
       service.trackCompleteEmailSignup(
-        EXAMPLE_USER.id,
-        EXAMPLE_USER.createdAt,
+        EXAMPLE_USER.account,
         {
           email: EXAMPLE_ACCOUNT.email,
           sub: "asdadsad",
@@ -888,8 +886,7 @@ describe("AuthService", () => {
 
     it("should not track the event when a SSO user logs in", async () => {
       service.trackCompleteEmailSignup(
-        EXAMPLE_USER.id,
-        EXAMPLE_USER.createdAt,
+        EXAMPLE_USER.account,
         {
           email: EXAMPLE_ACCOUNT.email,
           sub: "asdadsad",

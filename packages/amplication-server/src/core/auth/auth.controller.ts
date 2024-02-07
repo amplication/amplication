@@ -184,8 +184,7 @@ export class AuthController {
     }
 
     this.authService.trackCompleteEmailSignup(
-      user.id,
-      user.createdAt,
+      user.account,
       profile,
       existingUser
     );
