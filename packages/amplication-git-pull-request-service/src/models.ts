@@ -838,8 +838,8 @@ export type EnumResourceTypeFilter = {
 export enum EnumSchemaNames {
   Abby = 'Abby',
   CalDotCom = 'CalDotCom',
-  NextCrmApp = 'NextCrmApp',
-  WebStudio = 'WebStudio'
+  Formbricks = 'Formbricks',
+  Papermark = 'Papermark'
 }
 
 export enum EnumSubscriptionPlan {

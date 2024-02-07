@@ -802,8 +802,8 @@ input EnumResourceTypeFilter {
 enum EnumSchemaNames {
   Abby
   CalDotCom
-  NextCrmApp
-  WebStudio
+  Formbricks
+  Papermark
 }
 
 enum EnumSubscriptionPlan {
