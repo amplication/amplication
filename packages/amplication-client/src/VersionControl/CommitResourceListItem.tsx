@@ -20,6 +20,8 @@ import useBuildWatchStatus from "./useBuildWatchStatus";
 import "./CommitResourceListItem.scss";
 import { resourceThemeMap } from "../Resource/constants";
 import { TruncatedId } from "../Components/TruncatedId";
+import BuildGitLink from "./BuildGitLink";
+import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 
 type Props = {
   build: Build;
@@ -45,26 +47,23 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
   return (
     build &&
     build.resource && (
-      <ListItem gap={EnumGapSize.Default} className={CLASS_NAME}>
+      <ListItem
+        gap={EnumGapSize.None}
+        className={CLASS_NAME}
+        removeDefaultPadding
+      >
         <Link
           to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${build.commitId}/builds/${build.id}`}
-          style={{ width: "100%" }}
+          className={`${CLASS_NAME}__link`}
         >
-          <FlexItem
-            itemsAlign={EnumItemsAlign.Center}
-            className={`${CLASS_NAME}__title-row`}
-          >
-            <FlexItem.FlexStart
-              className={`${CLASS_NAME}__title-row__resource-icon`}
-            >
+          <FlexItem itemsAlign={EnumItemsAlign.Center}>
+            <FlexItem.FlexStart>
               <ResourceCircleBadge
                 type={build.resource.resourceType}
-                size="small"
+                size="xsmall"
               />
             </FlexItem.FlexStart>
-            <Text className={`${CLASS_NAME}__title-row__title`}>
-              {build.resource.name}
-            </Text>
+            <Text textStyle={EnumTextStyle.Normal}>{build.resource.name}</Text>
             <FlexItem.FlexEnd>
               <Icon
                 icon="chevron_right"
@@ -79,11 +78,18 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
           gap={EnumGapSize.Small}
           className={`${CLASS_NAME}__description-row`}
         >
-          <HorizontalRule smallSpacing />
+          {/* <HorizontalRule smallSpacing  /> */}
           <FlexItem
             itemsAlign={EnumItemsAlign.Center}
+            direction={EnumFlexDirection.Row}
             end={
               <FlexItem itemsAlign={EnumItemsAlign.Center}>
+                <BuildGitLink
+                  build={build}
+                  textColor={EnumTextColor.ThemeTurquoise}
+                />
+                <hr className={`${CLASS_NAME}__vertical_border`} />
+
                 <Link
                   to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/changes/${build.commitId}`}
                 >
@@ -94,8 +100,12 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
                     <Icon
                       icon="history_commit_outline"
                       color={EnumTextColor.ThemeTurquoise}
+                      size="xsmall"
                     />
-                    <Text textColor={EnumTextColor.ThemeTurquoise}>
+                    <Text
+                      textColor={EnumTextColor.ThemeTurquoise}
+                      textStyle={EnumTextStyle.Subtle}
+                    >
                       {resourceChangesCount && resourceChangesCount > 0
                         ? resourceChangesCount
                         : 0}{" "}
@@ -104,6 +114,7 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
                   </FlexItem>
                 </Link>
                 <hr className={`${CLASS_NAME}__vertical_border`} />
+
                 <Link
                   to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}`}
                 >
@@ -116,24 +127,24 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
                         resourceThemeMap[build.resource?.resourceType]?.icon
                       }
                       color={EnumTextColor.ThemeTurquoise}
+                      size="xsmall"
                     />
-                    <Text textColor={EnumTextColor.ThemeTurquoise}>
-                      Resource overview
+                    <Text
+                      textColor={EnumTextColor.ThemeTurquoise}
+                      textStyle={EnumTextStyle.Subtle}
+                    >
+                      Go to resource
                     </Text>
                   </FlexItem>
                 </Link>
               </FlexItem>
             }
           >
-            <span>
-              <Text textStyle={EnumTextStyle.Tag}>Build ID </Text>
-              <Text
-                textStyle={EnumTextStyle.Tag}
-                textColor={EnumTextColor.White}
-              >
-                <TruncatedId id={build.id} />
-              </Text>
-            </span>
+            <Text textStyle={EnumTextStyle.Tag}>Build ID </Text>
+            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+              <TruncatedId id={build.id} />
+            </Text>
+            <CommitBuildsStatusIcon commitBuildStatus={data.build.status} />
           </FlexItem>
         </FlexItem>
       </ListItem>
