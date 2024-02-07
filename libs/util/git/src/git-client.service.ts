@@ -291,13 +291,29 @@ export class GitClientService {
     const sha = await gitCli.commit(branchName, commitMessage, preparedFiles);
     this.logger.debug("New commit added", { sha });
 
+    // now calculate the diff (only) between the previous amplication build and the new one
+    const postCommitDiff = await this.calculateDiffAndResetBranch({
+      branchName,
+      gitCli,
+      useBeforeLastCommit: true,
+    });
+
+    // On top of the previous amplication build, apply the patch for the already existing changes that have been in this branch
     if (preCommitDiff.diff) {
-      const userCommits = await this.getUserCommits(tempBranchName, gitCli);
-      // merge and deletes temp branch
-      await gitCli.mergeAndDeleteBranch(
-        tempBranchName,
-        branchName,
-        userCommits
+      await this.applyPostCommit(
+        preCommitDiff.diff,
+        owner,
+        repositoryName,
+        gitCli
+      );
+    }
+    // on top of the already existing changes, apply the diff between the previous amplication build and the new one
+    if (postCommitDiff.diff) {
+      await this.applyPostCommit(
+        postCommitDiff.diff,
+        owner,
+        repositoryName,
+        gitCli
       );
     }
 
