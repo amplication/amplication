@@ -28,7 +28,7 @@ function ProjectFormPage() {
       >
         <FlexItem itemsAlign={EnumItemsAlign.Center}>
           <FlexItem.FlexStart>
-            <Text textStyle={EnumTextStyle.Description}>
+            <Text textColor={enumTextColor.White} textStyle={EnumTextStyle.Description}>
               Once you delete a project, there is no going back. Please be
               certain.
             </Text>
