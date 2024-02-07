@@ -15,11 +15,11 @@ export const monolithOptions: MonolithOption[] = [
     linkToRepository: "https://github.com/calcom/cal.com",
   },
   {
-    name: EnumSchemaNames.NextCrmApp,
-    displayName: "Next CRM App",
+    name: EnumSchemaNames.Formbricks,
+    displayName: "Formbricks",
     description:
-      "NextCRM is a CRM build on top of the Next.JS 14 using TypeScript, great UI library shadcn, Prisma and MongoDB as a database",
-    linkToRepository: "https://github.com/pdovhomilja/nextcrm-app",
+      "Formbricks provides a free and open source surveying platform. Gather feedback at every point in the user journey with beautiful in-app, website, link and email surveys. Build on top of Formbricks or leverage prebuilt data analysis capabilities",
+    linkToRepository: "https://github.com/formbricks/formbricks",
   },
   {
     name: EnumSchemaNames.Abby,
@@ -28,10 +28,10 @@ export const monolithOptions: MonolithOption[] = [
     linkToRepository: "https://github.com/tryabby/abby",
   },
   {
-    name: EnumSchemaNames.WebStudio,
-    displayName: "Web Studio",
+    name: EnumSchemaNames.Papermark,
+    displayName: "Papermark",
     description:
-      "Webstudio is an Open Source Visual Development Platform for developers, designers, and cross-functional teams.",
-    linkToRepository: "https://github.com/webstudio-is/webstudio",
+      "Papermark is the open-source DocSend alternative with built-in analytics and custom domains.",
+    linkToRepository: "https://github.com/mfts/papermark",
   },
 ];
