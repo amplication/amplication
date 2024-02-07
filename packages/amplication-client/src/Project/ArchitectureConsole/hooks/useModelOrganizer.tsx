@@ -298,7 +298,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
 
         startRedesign({
           variables: {
-            where: {
+            data: {
               id: resource.id,
             },
           },
