@@ -43,14 +43,19 @@ export class GitCli {
     return this.git.add(files ?? ["."]);
   }
 
-  async applyPatch(patches: string[], options?: string[]) {
+  async applyPatch(
+    patches: string[],
+    options?: string[],
+    commitMessage?: string
+  ) {
     options = options ?? ["--index", "--3way", "--whitespace=nowarn"];
+    commitMessage = commitMessage ?? "";
 
     this.logger.debug(`Applying patches`, { patches, options });
     await this.git.applyPatch(patches, options);
     this.logger.debug(`Committing Amplication merge conflicts auto-resolution`);
     await this.git.commit(
-      "Amplication merge conflicts auto-resolution",
+      "Amplication merge conflicts auto-resolution" + commitMessage,
       undefined,
       {
         "--author": this.gitConflictsResolverAuthor,

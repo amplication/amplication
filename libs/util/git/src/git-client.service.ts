@@ -300,11 +300,17 @@ export class GitClientService {
 
     // On top of the previous amplication build, apply the patch for the already existing changes that have been in this branch
     if (preCommitDiff.diff) {
+      const userCommitMessages = await this.getUserCommits(
+        tempBranchName,
+        gitCli
+      );
+      await gitCli.checkout(branchName);
       await this.applyPostCommit(
         preCommitDiff.diff,
         owner,
         repositoryName,
-        gitCli
+        gitCli,
+        userCommitMessages
       );
     }
     // on top of the already existing changes, apply the diff between the previous amplication build and the new one
@@ -353,7 +359,13 @@ export class GitClientService {
     return pullRequest.url;
   }
 
-  private async applyPostCommit(diff, owner, repositoryName, gitCli) {
+  private async applyPostCommit(
+    diff,
+    owner,
+    repositoryName,
+    gitCli,
+    commitMessage?: string
+  ) {
     if (diff) {
       const diffFolder = normalize(
         join(
@@ -368,6 +380,7 @@ export class GitClientService {
         diffFolder,
         diff,
         gitCli,
+        commitMessage,
       });
     }
   }
@@ -499,6 +512,7 @@ export class GitClientService {
     diff,
     diffFolder,
     gitCli,
+    commitMessage,
   }: PostCommitProcessArgs) {
     await mkdir(diffFolder, { recursive: true });
     const diffPatchRelativePath = join(diffFolder, "diff.patch");
@@ -510,7 +524,8 @@ export class GitClientService {
     this.logger.debug("Applying diff patch", { diffPatchAbsolutePath });
     await gitCli.applyPatch(
       [diffPatchAbsolutePath],
-      ["--3way", "--whitespace=nowarn"]
+      ["--3way", "--whitespace=nowarn"],
+      commitMessage
     );
     this.logger.debug("Deleting diff patch", { diffPatchAbsolutePath });
     await rm(diffPatchAbsolutePath);
