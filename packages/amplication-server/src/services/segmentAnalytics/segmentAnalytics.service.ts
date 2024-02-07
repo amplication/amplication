@@ -1,5 +1,5 @@
 import { Injectable, Inject } from "@nestjs/common";
-import Analytics from "analytics-node";
+import { Analytics } from "@segment/analytics-node";
 import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 import { RequestContext } from "nestjs-request-context";
 import { IdentifyData, TrackData } from "./segmentAnalytics.types";
@@ -12,7 +12,9 @@ export class SegmentAnalyticsService {
     private options: SegmentAnalyticsOptions
   ) {
     if (options && options.segmentWriteKey && options.segmentWriteKey.length) {
-      this.analytics = new Analytics(this.options.segmentWriteKey);
+      this.analytics = new Analytics({
+        writeKey: options.segmentWriteKey,
+      });
     }
   }
 
