@@ -70,7 +70,7 @@ export class AuthService {
   private readonly auth0: AuthenticationClient;
   private readonly auth0Management: ManagementClient;
   private readonly clientId: string;
-  private readonly dbConnectionName: string;
+  private readonly businessEmailDbConnectionName: string;
 
   constructor(
     configService: ConfigService,
@@ -88,7 +88,7 @@ export class AuthService {
     const clientSecret = configService.get<string>(
       Env.AUTH_ISSUER_CLIENT_SECRET
     );
-    this.dbConnectionName = configService.get<string>(
+    this.businessEmailDbConnectionName = configService.get<string>(
       Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
     );
     this.auth0 = new AuthenticationClient({
@@ -105,14 +105,15 @@ export class AuthService {
 
   private async trackStartBusinessEmailSignup(
     emailAddress: string,
+    existingAccount: Account | null = null,
     existingUser: IdentityProvider | "No" = "No"
   ) {
     const userData: IdentifyData = {
-      userId: null,
-      createdAt: null,
-      email: emailAddress,
-      firstName: null,
-      lastName: null,
+      userId: existingAccount?.id ?? `${cuid()}-not-registered-yet`,
+      createdAt: existingAccount?.createdAt ?? null,
+      email: existingAccount?.email ?? emailAddress,
+      firstName: existingAccount?.firstName ?? null,
+      lastName: existingAccount?.lastName ?? null,
     };
 
     await this.analytics.identify(userData);
@@ -129,6 +130,54 @@ export class AuthService {
       },
     });
   }
+
+  trackCompleteEmailSignup(
+    account: Account,
+    profile: AuthProfile,
+    existingUser: boolean
+  ): void {
+    const { identityOrigin, loginsCount } = profile;
+
+    if (loginsCount != 1) {
+      return;
+    }
+
+    const analyticsUserData: IdentifyData = {
+      userId: account.id,
+      email: profile.email,
+      createdAt: account.createdAt,
+      firstName: profile.given_name,
+      lastName: profile.family_name,
+    };
+
+    void this.analytics.identify(analyticsUserData).catch((error) => {
+      this.logger.error(
+        `Failed to identify user ${analyticsUserData.userId} in segment analytics`,
+        error
+      );
+    });
+    //we send the analyticsUserData again to prevent race condition
+    void this.analytics
+      .track({
+        userId: analyticsUserData.userId,
+        event: EnumEventType.CompleteEmailSignup,
+        properties: {
+          identityProvider: IdentityProvider.IdentityPlatform,
+          identityOrigin,
+          existingUser,
+        },
+        context: {
+          traits: analyticsUserData,
+        },
+      })
+      .catch((error) => {
+        this.logger.error(
+          `Failed to track complete business email signup for user ${analyticsUserData.userId}`,
+          error
+        );
+      });
+  }
+
   async signupWithBusinessEmail(
     args: SignupWithBusinessEmailArgs
   ): Promise<boolean> {
@@ -139,11 +188,12 @@ export class AuthService {
     }
 
     try {
-      /*const existedAccount = await this.accountService.findAccount({
+      const existingAccount = await this.accountService.findAccount({
         where: {
           email: emailAddress,
         },
-      });*/
+      });
+
       let auth0User: JSONApiResponse<SignUpResponse>;
 
       const existedAuth0User = await this.getAuth0UserByEmail(emailAddress);
@@ -161,14 +211,15 @@ export class AuthService {
       if (!resetPassword.data)
         throw Error("Failed to send reset message to new Auth0 user");
 
-      /*await this.trackStartBusinessEmailSignup(
+      await this.trackStartBusinessEmailSignup(
         emailAddress,
-        existedAccount
+        existingAccount,
+        existingAccount
           ? IdentityProvider.GitHub
           : existedAuth0User
           ? IdentityProvider.IdentityPlatform
           : undefined
-      );*/
+      );
 
       return true;
     } catch (error) {
@@ -183,7 +234,7 @@ export class AuthService {
     const data: SignUpRequest = {
       email,
       password: generatePassword(),
-      connection: this.dbConnectionName,
+      connection: this.businessEmailDbConnectionName,
     };
 
     const user = await this.auth0.database.signUp(data);
@@ -196,7 +247,7 @@ export class AuthService {
       email,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       client_id: this.clientId,
-      connection: this.dbConnectionName,
+      connection: this.businessEmailDbConnectionName,
     };
 
     const changePasswordResponse = await this.auth0.database.changePassword(
