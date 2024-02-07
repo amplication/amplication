@@ -27,6 +27,7 @@ $select-menu-max-width: 300px;
       text-decoration: underline;
     }
   }
+
   &__version {
     color: var(--theme-turquoise) !important;
     margin-left: var(--user-badge-spacing);
@@ -110,6 +111,33 @@ $select-menu-max-width: 300px;
     svg {
       width: 16px;
       height: 16px;
+    }
+  }
+
+  &__stars {
+    color: var(--static-black);
+    background-color: var(--theme-turquoise);
+    margin-left: var(--default-spacing-small);
+    padding: 0px, 2px, 0px, 4px;
+    border-radius: 2px;
+    padding-left: var(--icon-spacing);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    i {
+      margin-left: 2px;
+      margin-right: 2px;
+    }
+    ::after {
+      // Arrow icon left of box
+      content: "";
+      position: absolute;
+      right: 100%;
+      top: 32%;
+      margin-left: -6px;
+      border-width: 3px;
+      border-style: solid;
+      border-color: transparent var(--theme-turquoise) transparent transparent;
     }
   }
 }
