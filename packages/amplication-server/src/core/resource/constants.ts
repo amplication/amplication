@@ -25,23 +25,3 @@ export const REDESIGN_PROJECT_INITIAL_STEP_DATA: Prisma.ActionStepCreateWithoutA
       ],
     },
   };
-
-export const VALIDATE_PROJECT_REDESIGN_CHANGES_DATA =
-  "APPLYING_PROJECT_REDESIGN_CHANGES";
-
-export const REDESIGN_PROJECT_VALIDATION_DATA_INITIAL_STEP_DATA: Prisma.ActionStepCreateWithoutActionInput =
-  {
-    name: VALIDATE_PROJECT_REDESIGN_CHANGES_DATA,
-    message: "Validate project redesign changes data",
-    status: EnumActionStepStatus.Running,
-    completedAt: undefined,
-    logs: {
-      create: [
-        {
-          message: "Starting to validate project redesign changes data",
-          level: EnumActionLogLevel.Info,
-          meta: {},
-        },
-      ],
-    },
-  };

@@ -62,10 +62,7 @@ import { UserAction } from "../userAction/dto";
 import { EnumUserActionType } from "../userAction/types";
 import { UserActionService } from "../userAction/userAction.service";
 import { ReservedEntityNameError } from "./ReservedEntityNameError";
-import {
-  REDESIGN_PROJECT_INITIAL_STEP_DATA,
-  VALIDATE_PROJECT_REDESIGN_CHANGES_DATA,
-} from "./constants";
+import { REDESIGN_PROJECT_INITIAL_STEP_DATA } from "./constants";
 import {
   CreateOneResourceArgs,
   FindManyResourceArgs,
@@ -77,7 +74,6 @@ import {
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
 import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
-import { ActionStep } from "../action/dto";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
