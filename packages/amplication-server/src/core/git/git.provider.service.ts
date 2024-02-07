@@ -44,10 +44,8 @@ import { ValidationError } from "../../errors/ValidationError";
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
 const INVALID_GIT_REPOSITORY_ID = "Git Repository does not exist";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { GitRepository, User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "@amplication/util-billing-types";

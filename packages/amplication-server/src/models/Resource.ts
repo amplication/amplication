@@ -16,11 +16,6 @@ export class Resource {
   })
   id!: string;
 
-  @Field(() => String, {
-    nullable: true,
-  })
-  tempId?: string;
-
   @Field(() => Date, {
     nullable: false,
   })

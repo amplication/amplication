@@ -51,6 +51,13 @@ export class UserActionService {
 
     return await this.prisma.userAction.create({
       data,
+      include: {
+        action: {
+          include: {
+            steps: true,
+          },
+        },
+      },
     });
   }
 

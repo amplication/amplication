@@ -58,21 +58,10 @@ export type DetailedRelation = SimpleRelation & {
 };
 
 export type Relation = SimpleRelation | DetailedRelation;
-export type ModelGroupResource = {
-  tempId: string;
-  name: string;
-  color?: string;
-};
-
-export type CopiedEntity = {
-  entityId: string;
-  originalResourceId: string;
-  targetResourceId: string;
-};
 
 export type ModelChanges = {
-  newServices: ModelGroupResource[];
-  movedEntities: CopiedEntity[];
+  newServices: models.RedesignProjectNewService[];
+  movedEntities: models.RedesignProjectMovedEntity[];
 };
 
 export type ModelOrganizerPersistentData = {

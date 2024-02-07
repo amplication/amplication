@@ -6,7 +6,7 @@ import {
   Snackbar,
 } from "@amplication/ui/design-system";
 import { EnumItemsAlign } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Background,
   ConnectionMode,
@@ -76,14 +76,15 @@ export default function ModelOrganizer() {
     resetChanges,
     changes,
     applyChanges,
-    loadingCreateResourceAndEntities,
+    applyChangesLoading,
+    applyChangesError,
+    applyChangesData,
     moveNodeToParent,
     createNewTempService,
     modelGroupFilterChanged,
     searchPhraseChanged,
     setCurrentEditableResource,
     mergeNewResourcesChanges,
-    createEntitiesError,
     redesignMode,
   } = useModelOrganization({
     projectId: currentProject?.id,
@@ -93,6 +94,28 @@ export default function ModelOrganizer() {
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
 
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
+
+  const fitViewTimerRef = useRef(null);
+
+  const fitToView = useCallback(
+    (delayBeforeStart = 100) => {
+      if (reactFlowInstance) {
+        if (delayBeforeStart > 0) {
+          fitViewTimerRef.current = setTimeout(() => {
+            reactFlowInstance.fitView({ duration: 1000 });
+          }, delayBeforeStart);
+        } else {
+          reactFlowInstance.fitView({ duration: 1000 });
+        }
+      }
+    },
+    [reactFlowInstance]
+  );
+
+  useEffect(() => {
+    // Clear the timeout ref when the component unmounts
+    return () => clearTimeout(fitViewTimerRef.current);
+  }, []);
 
   const onNodesChange = useCallback(
     (changes) => {
@@ -133,7 +156,7 @@ export default function ModelOrganizer() {
   );
 
   const handleServiceCreated = useCallback(
-    (newResource: models.Resource) => {
+    async (newResource: models.Resource) => {
       let isValidName = true;
       currentResourcesData.forEach((r) => {
         if (
@@ -146,10 +169,12 @@ export default function ModelOrganizer() {
       });
       if (isValidName) {
         setIsValidResourceName(true);
-        createNewTempService(newResource);
+        await createNewTempService(newResource);
+
+        fitToView();
       }
     },
-    [createNewTempService, setIsValidResourceName, currentResourcesData]
+    [currentResourcesData, createNewTempService, fitToView]
   );
 
   const onNodeDrag = useCallback(
@@ -226,9 +251,8 @@ export default function ModelOrganizer() {
 
   const onToggleShowRelationDetails = useCallback(async () => {
     await toggleShowRelationDetails();
-
-    reactFlowInstance.fitView();
-  }, [toggleShowRelationDetails, reactFlowInstance]);
+    fitToView();
+  }, [fitToView, toggleShowRelationDetails]);
 
   const onArrangeNodes = useCallback(async () => {
     const updatedNodes = await applyAutoLayout(
@@ -237,8 +261,8 @@ export default function ModelOrganizer() {
       showRelationDetails
     );
     setNodes(updatedNodes);
-    reactFlowInstance.fitView();
-  }, [setNodes, showRelationDetails, reactFlowInstance, nodes, edges]);
+    fitToView();
+  }, [nodes, edges, showRelationDetails, setNodes, fitToView]);
 
   return (
     <div className={CLASS_NAME}>
@@ -264,9 +288,7 @@ export default function ModelOrganizer() {
                 changes?.movedEntities?.length > 0 ||
                 changes?.newServices?.length > 0
               }
-              loadingCreateResourceAndEntities={
-                loadingCreateResourceAndEntities
-              }
+              applyChangesLoading={applyChangesLoading}
               resources={currentResourcesData}
               onApplyPlan={onApplyPlanClick}
               searchPhraseChanged={searchPhraseChanged}
@@ -274,7 +296,8 @@ export default function ModelOrganizer() {
               handleServiceCreated={handleServiceCreated}
               onCancelChanges={onCancelChangesClick}
               mergeNewResourcesChanges={mergeNewResourcesChanges}
-              createEntitiesError={Boolean(createEntitiesError)}
+              applyChangesError={applyChangesError}
+              applyChangesData={applyChangesData}
             />
             <Dialog
               isOpen={!isValidResourceName}

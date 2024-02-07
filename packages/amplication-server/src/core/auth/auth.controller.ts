@@ -17,12 +17,10 @@ import { AuthService } from "./auth.service";
 import { GithubAuthExceptionFilter } from "../../filters/github-auth-exception.filter";
 import { GitHubAuthGuard } from "./github.guard";
 import { AuthProfile, AuthUser, GitHubRequest } from "./types";
-import { stringifyUrl } from "query-string";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { AuthExceptionFilter } from "../../filters/auth-exception.filter";
 import { requiresAuth } from "express-openid-connect";
-import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 export const AUTH_LOGIN_PATH = "/auth/login";
 export const AUTH_LOGOUT_PATH = "/auth/logout";
 export const AUTH_CALLBACK_PATH = "/auth/callback";
@@ -65,24 +63,7 @@ export class AuthController {
       `receive login callback from github account_id=${user.account.id}`
     );
 
-    const token = await this.authService.prepareToken(user);
-    const url = stringifyUrl({
-      url: this.clientHost,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      query: { "complete-signup": isNew ? "1" : "0" },
-    });
-    const clientDomain = new URL(url).hostname;
-
-    const cookieDomainParts = clientDomain.split(".");
-    const cookieDomain = cookieDomainParts
-      .slice(Math.max(cookieDomainParts.length - 2, 0))
-      .join(".");
-
-    response.cookie("AJWT", token, {
-      domain: cookieDomain,
-      secure: true,
-    });
-    response.redirect(301, url);
+    await this.authService.configureJtw(response, user, isNew);
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
@@ -157,59 +138,15 @@ export class AuthController {
   @UseInterceptors(MorganInterceptor("combined"))
   @UseFilters(AuthExceptionFilter)
   @Get(AUTH_AFTER_CALLBACK_PATH)
-  async authorisationCode(
+  async authorizationCode(
     @Req() request: GitHubRequest,
     @Res() response: Response
   ): Promise<void> {
     // Populate the request.oidc.user object
     requiresAuth();
 
-    let isNew: boolean;
     const profile = <AuthProfile>request.oidc.user;
 
-    let user = await this.authService.getAuthUser({
-      account: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        OR: [{ githubId: profile.sub }, { email: profile.email }],
-      },
-    });
-
-    if (!user) {
-      user = await this.authService.createUser(profile);
-      isNew = true;
-    }
-    if (!user.account.githubId || user.account.githubId !== profile.sub) {
-      user = await this.authService.updateUser(user, { githubId: profile.sub });
-      isNew = false;
-    }
-
-    if (
-      user.account.previewAccountType === EnumPreviewAccountType.Auth0Signup
-    ) {
-      user = await this.authService.updateUser(user, {
-        previewAccountType: EnumPreviewAccountType.None,
-      });
-      isNew = true;
-    }
-
-    // @todo update the token to include the auth0 expiry / issued at / etc
-    const token = await this.authService.prepareToken(user);
-    const url = stringifyUrl({
-      url: this.clientHost,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      query: { "complete-signup": isNew ? "1" : "0" },
-    });
-    const clientDomain = new URL(url).hostname;
-
-    const cookieDomainParts = clientDomain.split(".");
-    const cookieDomain = cookieDomainParts
-      .slice(Math.max(cookieDomainParts.length - 2, 0))
-      .join(".");
-
-    response.cookie("AJWT", token, {
-      domain: cookieDomain,
-      secure: true,
-    });
-    response.redirect(301, url);
+    await this.authService.loginOrSignUp(profile, response);
   }
 }

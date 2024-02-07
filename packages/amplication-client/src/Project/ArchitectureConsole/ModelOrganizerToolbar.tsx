@@ -21,6 +21,7 @@ import * as models from "../../models";
 import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
+import { formatError } from "../../util/error";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
@@ -36,8 +37,9 @@ type Props = {
   handleServiceCreated: (newResource: models.Resource) => void;
   onCancelChanges: () => void;
   mergeNewResourcesChanges: () => void;
-  loadingCreateResourceAndEntities: boolean;
-  createEntitiesError: boolean;
+  applyChangesLoading: boolean;
+  applyChangesError: any;
+  applyChangesData: models.UserAction;
 };
 
 export default function ModelOrganizerToolbar({
@@ -46,8 +48,9 @@ export default function ModelOrganizerToolbar({
   hasChanges,
   nodes,
   resources,
-  loadingCreateResourceAndEntities,
-  createEntitiesError,
+  applyChangesLoading,
+  applyChangesError,
+  applyChangesData,
   onApplyPlan,
   searchPhraseChanged,
   onRedesign,
@@ -63,16 +66,18 @@ export default function ModelOrganizerToolbar({
   );
   const [confirmChanges, setConfirmChanges] = useState<boolean>(false);
   const [changesDialog, setChangesDialog] = useState<boolean>(false);
-  const [createError, setCreateError] = useState<boolean>(false);
+  const [applyChangesErrorMessage, setApplyChangesErrorMessage] = useState<
+    string | null
+  >(null);
 
   const handleConfirmChangesState = useCallback(() => {
     setConfirmChanges(!confirmChanges);
-    setCreateError(false);
+    setApplyChangesErrorMessage(null);
   }, [confirmChanges, setConfirmChanges]);
 
   useEffect(() => {
-    setCreateError(createEntitiesError);
-  }, [createEntitiesError, setCreateError]);
+    setApplyChangesErrorMessage(formatError(applyChangesError));
+  }, [applyChangesError]);
 
   const handleChangesDialogDismiss = useCallback(() => {
     setChangesDialog(false);
@@ -90,8 +95,9 @@ export default function ModelOrganizerToolbar({
           onConfirmChanges={onApplyPlan}
           onCancelChanges={handleConfirmChangesState}
           changes={changes}
-          createEntitiesError={createError}
-          loadingCreateResourceAndEntities={loadingCreateResourceAndEntities}
+          applyChangesErrorMessage={applyChangesErrorMessage}
+          applyChangesLoading={applyChangesLoading}
+          applyChangesData={applyChangesData}
         ></ModelOrganizerConfirmation>
       </Dialog>
 

@@ -605,6 +605,7 @@ enum EnumGitOrganizationType {
 enum EnumUserActionType {
   DBSchemaImport
   GptConversation
+  ProjectRedesign
 }
 
 enum CodeGeneratorVersionStrategy {
@@ -616,5 +617,4 @@ enum CodeGeneratorVersionStrategy {
 enum PreviewAccountType {
   None
   BreakingTheMonolith
-  Auth0Signup
 }
