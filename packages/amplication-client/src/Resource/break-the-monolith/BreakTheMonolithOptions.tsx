@@ -1,6 +1,10 @@
 import React, { useEffect } from "react";
-import { match, useHistory } from "react-router-dom";
+import * as models from "../../models";
+import { useHistory } from "react-router-dom";
+import useUserActionWatchStatus from "../../UserAction/useUserActionWatchStatus";
 import { useMutation } from "@apollo/client";
+import { CREATE_ENTITIES_FROM_PREDEFINED_SCHEMA } from "../../Entity/ImportPrismaSchema/queries";
+import { MonolithOption, monolithOptions } from "./monolith-options";
 import { CircularProgress } from "@mui/material";
 import {
   Button,
@@ -13,35 +17,25 @@ import {
   Panel,
   Text,
 } from "@amplication/ui/design-system";
-import * as models from "../../../models";
-import { MonolithOption, monolithOptions } from "./monolith-options";
-import useUserActionWatchStatus from "../../../UserAction/useUserActionWatchStatus";
-import { AppRouteProps } from "../../../routes/routesUtil";
-import { CREATE_ENTITIES_FROM_PREDEFINED_SCHEMA } from "../../../Entity/ImportPrismaSchema/queries";
 
-import "./BreakingTheMonolithOptions.scss";
+import "./BreakTheMonolithOptions.scss";
+const CLASS_NAME = "break-the-monolith-options";
 
-const CLASS_NAME = "breaking-the-monolith-options";
+type Props = {
+  workspaceId: string;
+  projectId: string;
+  resourceId: string;
+};
 
 type TData = {
   createEntitiesFromPredefinedSchema: models.UserAction;
 };
 
-type Props = AppRouteProps & {
-  match: match<{
-    workspace: string;
-    project: string;
-    resource: string;
-  }>;
-};
-
-const BreakingTheMonolithOptions: React.FC<Props> = ({ match }) => {
-  const {
-    workspace: workspaceId,
-    project: projectId,
-    resource: resourceId,
-  } = match.params;
-
+export const BreakTheMonolithOptions: React.FC<Props> = ({
+  workspaceId,
+  projectId,
+  resourceId,
+}) => {
   const history = useHistory();
   const [userAction, setUserAction] = React.useState<models.UserAction>(null);
   const { data: userActionData } = useUserActionWatchStatus(userAction);
@@ -60,7 +54,9 @@ const BreakingTheMonolithOptions: React.FC<Props> = ({ match }) => {
     if (
       userActionData.userAction.status === models.EnumUserActionStatus.Completed
     ) {
-      history.push(`/${workspaceId}/${projectId}/${resourceId}/entities`); // TODO: change to the architecture page
+      history.push(
+        `/${workspaceId}/${projectId}/${resourceId}/preview-break-the-monolith-overview`
+      );
     }
   }, [userActionData, history, workspaceId, projectId, resourceId]);
 
@@ -146,5 +142,3 @@ const BreakingTheMonolithOptions: React.FC<Props> = ({ match }) => {
     </>
   );
 };
-
-export default BreakingTheMonolithOptions;

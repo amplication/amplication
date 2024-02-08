@@ -19,15 +19,24 @@ const resourceRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace/:project/:resource/breaking-the-monolith-options",
+    path: "/:workspace/:project/:resource/preview-break-the-monolith-options",
+    Component: lazy(
+      () => import("../Resource/break-the-monolith/BreakTheMonolithOptionsPage")
+    ),
+    moduleName: "breakTheMonolithOptionsPage",
+    moduleClass: "break-the-monolith-options-page",
+    routeTrackType: "",
+    exactPath: true,
+    isAnalytics: true,
+  },
+  {
+    path: "/:workspace/:project/:resource/preview-break-the-monolith-overview",
     Component: lazy(
       () =>
-        import(
-          "../Resource/preview-pages/breaking-the-monolith/BreakingTheMonolithOptionsPage"
-        )
+        import("../Resource/break-the-monolith/BreakTheMonolithOverviewPage")
     ),
-    moduleName: "ChangesPage",
-    moduleClass: "changes-page",
+    moduleName: "breakTheMonolithOverviewPage",
+    moduleClass: "break-the-monolith-overview-page",
     routeTrackType: "",
     exactPath: true,
     isAnalytics: true,
