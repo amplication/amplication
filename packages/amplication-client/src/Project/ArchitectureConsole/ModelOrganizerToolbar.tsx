@@ -37,6 +37,7 @@ type Props = {
   handleServiceCreated: (newResource: models.Resource) => void;
   onCancelChanges: () => void;
   mergeNewResourcesChanges: () => void;
+  resetUserAction: () => void;
   applyChangesLoading: boolean;
   applyChangesError: any;
   applyChangesData: models.UserAction;
@@ -57,6 +58,7 @@ export default function ModelOrganizerToolbar({
   handleServiceCreated,
   onCancelChanges,
   mergeNewResourcesChanges,
+  resetUserAction,
 }: Props) {
   const handleSearchPhraseChanged = useCallback(
     (searchPhrase: string) => {
@@ -73,7 +75,8 @@ export default function ModelOrganizerToolbar({
   const handleConfirmChangesState = useCallback(() => {
     setConfirmChanges(!confirmChanges);
     setApplyChangesErrorMessage(null);
-  }, [confirmChanges, setConfirmChanges]);
+    resetUserAction();
+  }, [confirmChanges, setConfirmChanges, resetUserAction]);
 
   useEffect(() => {
     setApplyChangesErrorMessage(formatError(applyChangesError));
