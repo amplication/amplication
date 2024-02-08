@@ -238,12 +238,7 @@ export class BillingService {
         userId: accountId,
       },
     });
-    await this.analytics.track({
-      accountId,
-      properties: {
-        workspaceId,
-        $groups: { groupWorkspace: workspaceId },
-      },
+    await this.analytics.trackWithContext({
       event:
         intentionType === "DOWNGRADE_PLAN"
           ? EnumEventType.WorkspacePlanDowngradeRequest
@@ -415,14 +410,11 @@ export class BillingService {
         }
       } catch (error) {
         if (error instanceof BillingLimitationError) {
-          await this.analytics.track({
-            accountId: currentUser.account.id,
-            properties: {
-              workspaceId,
-              reason: error.message,
-              $groups: { groupWorkspace: workspaceId },
-            },
+          await this.analytics.trackWithContext({
             event: EnumEventType.SubscriptionLimitPassed,
+            properties: {
+              reason: error.message,
+            },
           });
         }
         throw error;

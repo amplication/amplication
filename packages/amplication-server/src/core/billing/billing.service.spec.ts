@@ -21,6 +21,7 @@ import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../../prisma";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 jest.mock("@stigg/node-server-sdk");
 Stigg.initialize = jest.fn().mockReturnValue(Stigg.prototype);
@@ -38,12 +39,7 @@ describe("BillingService", () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       providers: [
-        {
-          provide: SegmentAnalyticsService,
-          useValue: {
-            track: jest.fn(),
-          },
-        },
+        MockedSegmentAnalyticsProvider(),
         {
           provide: ConfigService,
           useValue: {
