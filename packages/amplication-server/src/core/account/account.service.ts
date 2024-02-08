@@ -29,16 +29,18 @@ export class AccountService {
 
     await this.analytics.identify(userData);
     //we send the userData again to prevent race condition
-    await this.analytics.track({
-      accountId: account.id,
-      event: EnumEventType.Signup,
-      properties: {
-        ...trackingMetadata,
+    await this.analytics.trackManual(
+      {
+        event: EnumEventType.Signup,
+        properties: {
+          ...trackingMetadata,
+        },
+        context: {
+          traits: userData,
+        },
       },
-      context: {
-        traits: userData,
-      },
-    });
+      userData.accountId
+    );
     return account;
   }
 
