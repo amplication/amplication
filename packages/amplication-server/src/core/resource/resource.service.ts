@@ -539,16 +539,35 @@ export class ResourceService {
       event: EnumEventType.ArchitectureRedesignApply,
     });
 
+    const originalResourceId = movedEntities[0]?.originalResourceId;
+
+    const originalResourceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
+          where: {
+            id: originalResourceId,
+          },
+        },
+        user
+      );
+
+    const originalResourceAdminPath =
+      originalResourceSettings &&
+      originalResourceSettings.adminUISettings.adminUIPath;
+    const originalResourceServerPath =
+      originalResourceSettings &&
+      originalResourceSettings.serverSettings.serverPath;
+
     const defaultServiceSettings: ServiceSettingsUpdateInput = {
       adminUISettings: {
-        generateAdminUI: false,
+        generateAdminUI: true,
         adminUIPath: "",
       },
       serverSettings: {
-        generateGraphQL: true, //@todo: take value from original service
-        generateRestApi: false, //@todo: take value from original service
+        generateGraphQL: true,
+        generateRestApi: true,
         generateServer: true,
-        serverPath: "", //@todo: take path from original service and use the same base path
+        serverPath: "",
       },
       authProvider: EnumAuthProviderType.Jwt,
     };
@@ -580,6 +599,30 @@ export class ResourceService {
       const newResourcesMap = new Map<string, Resource>();
 
       for (const newService of newServices) {
+        const adminPathWithoutLastFolder = originalResourceAdminPath?.substring(
+          0,
+          originalResourceAdminPath.lastIndexOf("/") + 1
+        );
+
+        const serverPathWithoutLastFolder =
+          originalResourceServerPath?.substring(
+            0,
+            originalResourceServerPath.lastIndexOf("/") + 1
+          );
+
+        const baseAdminPath =
+          !originalResourceId || !originalResourceAdminPath
+            ? ""
+            : !originalResourceAdminPath.includes("/")
+            ? `${newService.name}-admin`
+            : `${adminPathWithoutLastFolder}${newService.name}-admin`;
+        const baseServerPath =
+          !originalResourceId || !originalResourceServerPath
+            ? ""
+            : !originalResourceServerPath.includes("/")
+            ? newService.name
+            : `${serverPathWithoutLastFolder}${newService.name}`;
+
         const args: CreateOneResourceArgs = {
           data: {
             name: newService.name,
@@ -590,7 +633,25 @@ export class ResourceService {
               },
             },
             resourceType: EnumResourceType.Service,
-            serviceSettings: defaultServiceSettings,
+            serviceSettings: {
+              ...defaultServiceSettings,
+
+              adminUISettings: {
+                adminUIPath: baseAdminPath,
+                generateAdminUI:
+                  defaultServiceSettings.adminUISettings.generateAdminUI,
+              },
+              serverSettings: {
+                serverPath: baseServerPath,
+                generateGraphQL:
+                  defaultServiceSettings.serverSettings.generateGraphQL,
+                generateRestApi:
+                  defaultServiceSettings.serverSettings.generateRestApi,
+                generateServer:
+                  defaultServiceSettings.serverSettings.generateServer,
+              },
+            },
+
             gitRepository: currentProjectConfiguration.gitRepositoryId
               ? {
                   isOverrideGitRepository: false,
