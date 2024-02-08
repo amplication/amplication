@@ -880,7 +880,7 @@ export class ResourceService {
         );
         if (duplicateService) {
           throw new AmplicationError(
-            `Resource : ${newService.name} is already exist in project: ${project.name}.`
+            `Resource : ${newService.name} already exists in project: ${project.name}.`
           );
         }
         //service limitation validation
@@ -937,7 +937,7 @@ export class ResourceService {
           serviceSettings.authEntityName === currentEntity.name
         ) {
           throw new AmplicationError(
-            `cannot move auth entity : ${currentEntity.name}.`
+            `Cannot move Auth entity : ${currentEntity.name}.`
           );
         }
 
@@ -953,7 +953,7 @@ export class ResourceService {
           for (const resourceEntity of resourceEntities) {
             if (resourceEntity.name === currentEntity.name) {
               throw new AmplicationError(
-                `Entity : ${currentEntity.name} is already exist in resource: ${movedEntity.targetResourceId}.`
+                `Entity : ${currentEntity.name} already exists in resource: ${movedEntity.targetResourceId}.`
               );
             }
           }
