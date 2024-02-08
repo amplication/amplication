@@ -61,6 +61,7 @@ export class PullRequestService {
   async createPullRequest({
     resourceId,
     resourceName,
+    resourceUrl,
     oldBuildId,
     newBuildId,
     gitProvider,
@@ -138,6 +139,8 @@ export class PullRequestService {
       gitResourceMeta,
       files: PullRequestService.removeFirstSlashFromPath(changedFiles),
       resourceId,
+      resourceName,
+      resourceUrl,
       buildId: newBuildId,
       baseBranchName,
     });

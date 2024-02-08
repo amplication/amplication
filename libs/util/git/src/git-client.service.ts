@@ -118,6 +118,8 @@ export class GitClientService {
       cloneDirPath,
       buildId,
       resourceId,
+      resourceName,
+      resourceUrl,
       baseBranchName,
     } = createPullRequestArgs;
 
@@ -229,6 +231,8 @@ export class GitClientService {
             baseBranch,
             repositoryGroupName,
             pullRequestTitle,
+            resourceName,
+            resourceUrl,
           });
           break;
         default:
@@ -256,6 +260,8 @@ export class GitClientService {
     baseBranch: string;
     repositoryGroupName?: string;
     pullRequestTitle?: string;
+    resourceName?: string;
+    resourceUrl?: string;
   }): Promise<string> {
     const {
       gitCli,
@@ -268,6 +274,8 @@ export class GitClientService {
       baseBranch,
       repositoryGroupName,
       pullRequestTitle,
+      resourceName,
+      resourceUrl,
     } = options;
 
     await gitCli.clone();
@@ -332,7 +340,10 @@ export class GitClientService {
         repositoryName,
         repositoryGroupName,
         pullRequestTitle: `${accumulativePullRequestTitle} ${pullRequestTitle}`,
-        pullRequestBody: accumulativePullRequestBody,
+        pullRequestBody: accumulativePullRequestBody.replace(
+          "$link_to_service",
+          `[${resourceName}](${resourceUrl})`
+        ),
         branchName,
         baseBranchName: baseBranch,
       });

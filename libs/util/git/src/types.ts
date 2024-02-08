@@ -226,6 +226,8 @@ export interface CreatePullRequestArgs {
   files: File[];
   cloneDirPath: string;
   resourceId: string;
+  resourceName?: string;
+  resourceUrl?: string;
   buildId: string;
   baseBranchName: string;
 }

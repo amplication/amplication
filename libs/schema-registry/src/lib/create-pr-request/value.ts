@@ -51,4 +51,7 @@ export class Value {
   baseBranchName?: string;
   @IsBoolean()
   isBranchPerResource!: boolean;
+  @IsString()
+  @IsOptional()
+  resourceUrl?: string;
 }

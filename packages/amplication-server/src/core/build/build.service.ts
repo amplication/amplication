@@ -747,10 +747,18 @@ export class BuildService {
               BillingFeature.BranchPerResource
             );
 
+          const resourceUrl = [
+            clientHost,
+            project.workspaceId,
+            project.id,
+            resource.id,
+          ].join("/");
+
           const createPullRequestMessage: CreatePrRequest.Value = {
             ...gitSettings,
             resourceId: resource.id,
             resourceName: kebabCase(resource.name),
+            resourceUrl,
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             gitResourceMeta: {
