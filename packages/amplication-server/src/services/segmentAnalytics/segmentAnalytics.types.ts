@@ -25,3 +25,29 @@ export interface TrackData {
     };
   };
 }
+
+export interface EventTrackData {
+  event: EnumEventType;
+  properties?:
+    | {
+        projectId?: string | undefined;
+        resourceId?: string | undefined;
+        [key: string]: unknown;
+      }
+    | undefined;
+  context?: {
+    traits?: IdentifyData;
+  };
+}
+
+export interface ContextEventProperties {
+  workspaceId?: string;
+  $groups?: {
+    /**
+     * The workspace id
+     */
+    groupWorkspace: string;
+  };
+  projectId?: string;
+  resourceId?: string;
+}
