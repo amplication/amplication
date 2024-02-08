@@ -420,13 +420,9 @@ export class WorkspaceService {
       BillingFeature.TeamMembers
     );
 
-    await this.analytics.track({
-      accountId: account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.InvitationAcceptance,
-      properties: {
-        workspaceId: invitation.workspaceId,
-        $groups: { groupWorkspace: invitation.workspaceId },
-      },
+      properties: {},
     });
 
     return workspace;
@@ -548,14 +544,11 @@ export class WorkspaceService {
       },
     });
 
-    await this.analytics.track({
-      accountId: account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.RedeemCoupon,
       properties: {
-        workspaceId: currentUser.workspace.id,
         subscriptionPlan: coupon.subscriptionPlan,
         durationMonths: coupon.durationMonths,
-        $groups: { groupWorkspace: currentUser.workspace.id },
       },
     });
 
