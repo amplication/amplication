@@ -870,6 +870,21 @@ export class ResourceService {
       },
     });
 
+    //service limitation validation
+    const featureServices = await this.billingService.getMeteredEntitlement(
+      project.workspaceId,
+      BillingFeature.Services
+    );
+
+    if (
+      !featureServices.hasAccess ||
+      (!featureServices.isUnlimited &&
+        featureServices.usageLimit <
+          projectResources.length + newServices.length)
+    ) {
+      throw new AmplicationError(SERVICE_LIMITATION_ERROR);
+    }
+
     if (projectResources.length > 0) {
       for (const newService of newServices) {
         // duplicate name validation
@@ -882,20 +897,6 @@ export class ResourceService {
           throw new AmplicationError(
             `Resource : ${newService.name} already exists in project: ${project.name}.`
           );
-        }
-        //service limitation validation
-        const featureServices = await this.billingService.getMeteredEntitlement(
-          project.workspaceId,
-          BillingFeature.Services
-        );
-
-        if (
-          !featureServices.hasAccess ||
-          (!featureServices.isUnlimited &&
-            featureServices.usageLimit <
-              projectResources.length + newServices.length)
-        ) {
-          throw new AmplicationError(SERVICE_LIMITATION_ERROR);
         }
       }
     }
