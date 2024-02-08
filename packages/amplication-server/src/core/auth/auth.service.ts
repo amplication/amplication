@@ -123,17 +123,16 @@ export class AuthService {
 
     await this.analytics.identify(userData);
     //we send the userData again to prevent race condition
-    await this.analytics.track({
-      accountId: userData.accountId,
-      event: EnumEventType.StartEmailSignup,
-      properties: {
-        identityProvider: IdentityProvider.IdentityPlatform,
-        existingUser: existingUser,
+    await this.analytics.trackManual(
+      {
+        event: EnumEventType.StartEmailSignup,
+        properties: {
+          identityProvider: IdentityProvider.IdentityPlatform,
+          existingUser: existingUser,
+        },
       },
-      context: {
-        traits: userData,
-      },
-    });
+      existingAccount?.id
+    );
   }
 
   trackCompleteEmailSignup(
@@ -147,31 +146,22 @@ export class AuthService {
       return;
     }
 
-    const userData: IdentifyData = {
-      accountId: account.id,
-      email: profile.email,
-      createdAt: account.createdAt,
-      firstName: profile.given_name,
-      lastName: profile.family_name,
-    };
-
     //we send the userData again to prevent race condition
     void this.analytics
-      .track({
-        accountId: userData.accountId,
-        event: EnumEventType.CompleteEmailSignup,
-        properties: {
-          identityProvider: IdentityProvider.IdentityPlatform,
-          identityOrigin,
-          existingUser,
+      .trackManual(
+        {
+          event: EnumEventType.CompleteEmailSignup,
+          properties: {
+            identityProvider: IdentityProvider.IdentityPlatform,
+            identityOrigin,
+            existingUser,
+          },
         },
-        context: {
-          traits: userData,
-        },
-      })
+        account.id
+      )
       .catch((error) => {
         this.logger.error(
-          `Failed to track complete business email signup for user ${userData.accountId}`,
+          `Failed to track complete business email signup for user ${account.id}`,
           error
         );
       });
