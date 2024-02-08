@@ -23,7 +23,7 @@ import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { GitOrganization, Project, Resource, User } from "../../models";
+import { Entity, GitOrganization, Project, Resource, User } from "../../models";
 import {
   EnumResourceType,
   GitRepository,
@@ -600,6 +600,7 @@ export class ResourceService {
         `Starting data validation`,
         EnumActionLogLevel.Info
       );
+
       await this.validateNewResourcesData(newServices, project);
       await this.validateMovedEntitiesData(
         movedEntitiesByResource,
@@ -870,6 +871,7 @@ export class ResourceService {
         deletedAt: null,
       },
     });
+
     if (projectResources.length > 0) {
       for (const newService of newServices) {
         // duplicate name validation
@@ -892,7 +894,8 @@ export class ResourceService {
         if (
           !featureServices.hasAccess ||
           (!featureServices.isUnlimited &&
-            featureServices.usageLimit <= projectResources.length)
+            featureServices.usageLimit <=
+              projectResources.length + newServices.length)
         ) {
           throw new AmplicationError(SERVICE_LIMITATION_ERROR);
         }
@@ -922,6 +925,8 @@ export class ResourceService {
         user
       );
 
+    let resourceEntities: Entity[] = [];
+
     for (const [resourceId, entities] of Object.entries(
       movedEntitiesByResource
     )) {
@@ -941,7 +946,7 @@ export class ResourceService {
           );
         }
 
-        const resourceEntities = await this.entityService.entities({
+        resourceEntities = await this.entityService.entities({
           where: {
             resourceId: movedEntity.targetResourceId,
             deletedAt: null,
@@ -966,11 +971,14 @@ export class ResourceService {
           id: resourceId,
         },
       });
+      const entitiesCount = !currentResource
+        ? entities.length
+        : entities.length + resourceEntities?.length;
       if (
-        (!currentResource && !project.licensed) ||
+        !project.licensed ||
         (currentResource && !currentResource.licensed) ||
         !featureEntitiesServices.hasAccess ||
-        featureEntitiesServices.value <= entities.length
+        featureEntitiesServices.value <= entitiesCount
       ) {
         throw new AmplicationError(ENTITIES_PER_SERVICE_LIMITATION_ERROR);
       }
