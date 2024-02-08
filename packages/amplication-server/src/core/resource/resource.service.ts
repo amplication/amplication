@@ -616,8 +616,8 @@ export class ResourceService {
             : !originalResourceAdminPath.includes("/")
             ? `${newService.name}-admin`
             : `${adminPathWithoutLastFolder}${newService.name}-admin`;
-        const baseAServerPath =
-          !originalResourceId || !originalResourceAdminPath
+        const baseServerPath =
+          !originalResourceId || !originalResourceServerPath
             ? ""
             : !originalResourceServerPath.includes("/")
             ? newService.name
@@ -642,7 +642,7 @@ export class ResourceService {
                   defaultServiceSettings.adminUISettings.generateAdminUI,
               },
               serverSettings: {
-                serverPath: baseAServerPath,
+                serverPath: baseServerPath,
                 generateGraphQL:
                   defaultServiceSettings.serverSettings.generateGraphQL,
                 generateRestApi:
