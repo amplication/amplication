@@ -3,13 +3,16 @@ import { EnumEventType } from "./segmentAnalyticsEventType.types";
 export { EnumEventType } from "./segmentAnalyticsEventType.types";
 
 export type IdentifyData = {
-  accountId: string;
+  accountId?: string;
   firstName: string;
   lastName: string;
   email: string;
   createdAt: Date;
 };
 
+/**
+ * @deprecated Use `EventTrackData` for `trackWithContext` or `trackManual` instead
+ */
 export interface TrackData {
   accountId?: string;
   event: EnumEventType;

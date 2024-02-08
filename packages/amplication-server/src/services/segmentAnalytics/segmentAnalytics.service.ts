@@ -1,23 +1,26 @@
 import { Injectable, Inject } from "@nestjs/common";
-import { Analytics } from "@segment/analytics-node";
+import { Analytics, TrackParams } from "@segment/analytics-node";
 import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 import { RequestContext } from "nestjs-request-context";
 import {
-  EnumEventType,
+  ContextEventProperties,
   EventTrackData,
   IdentifyData,
   TrackData,
 } from "./segmentAnalytics.types";
-import cuid from "cuid";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Account, PrismaService, User } from "../../prisma";
+
 @Injectable()
 export class SegmentAnalyticsService {
   private analytics: Analytics;
+  analyticsErrorMessage = "AnalyticsError: Failed to track event";
 
   constructor(
     @Inject("SEGMENT_ANALYTICS_OPTIONS")
-    private options: SegmentAnalyticsOptions,
-    private readonly logger: AmplicationLogger
+    options: SegmentAnalyticsOptions,
+    private readonly logger: AmplicationLogger,
+    private readonly prismaService: PrismaService
   ) {
     if (options && options.segmentWriteKey && options.segmentWriteKey.length) {
       this.analytics = new Analytics({
@@ -58,22 +61,106 @@ export class SegmentAnalyticsService {
     }
   }
 
-  public async track(data: TrackData): Promise<void> {
+  private async getEventProperties(
+    workspaceId: string,
+    properties: EventTrackData["properties"]
+  ): Promise<ContextEventProperties> {
+    let projectId = properties?.projectId;
+    const resourceId = properties?.resourceId;
+
+    if (!projectId && resourceId) {
+      const resource = await this.prismaService.resource.findUnique({
+        where: {
+          id: resourceId,
+        },
+        select: {
+          projectId: true,
+        },
+      });
+      projectId = resource?.projectId;
+    }
+
+    const eventProperties = {
+      workspaceId,
+      $groups: {
+        groupWorkspace: workspaceId,
+      },
+      projectId,
+      resourceId,
+    };
+
+    return eventProperties;
+  }
+
+  /**
+   * Track an event for a user that is logged in
+   * leveraging the current request context to get the user data
+   * and the analytics session ID.
+   * It automatically enriches the event with resource, project and workspace data.
+   */
+  public async trackWithContext(data: EventTrackData): Promise<void> {
     if (!this.analytics) return;
 
-    try {
-      if (!data.accountId) {
-        return this.trackAnonymous(data);
-      }
+    const req = RequestContext?.currentContext?.req;
+    const analyticsSessionId = this.parseValidUnixTimestampOrUndefined(
+      req?.analyticsSessionId
+    );
 
-      const req = RequestContext?.currentContext?.req;
-      const analyticsSessionId = this.parseValidUnixTimestampOrUndefined(
-        req?.analyticsSessionId
+    try {
+      const user: User & {
+        account: Account;
+      } = req?.user;
+      const { accountId, workspaceId } = user;
+
+      const eventProperties = await this.getEventProperties(
+        workspaceId,
+        data.properties
       );
 
-      this.analytics.track({
-        ...data,
-        userId: data.accountId,
+      const trackData: TrackParams = {
+        event: data.event,
+        userId: accountId,
+        // If the user is not logged in, use an anonymous ID from the client to track the event and merge the user on signup
+        anonymousId: analyticsSessionId,
+        properties: {
+          ...eventProperties,
+          ...data.properties,
+          source: "amplication-server",
+        },
+        context: {
+          ...data.context,
+          amplication: {
+            analyticsSessionId: analyticsSessionId,
+          },
+        },
+      };
+
+      this.analytics.track(trackData);
+    } catch (error) {
+      this.logger.error(this.analyticsErrorMessage, error, { data });
+    }
+  }
+
+  /**
+   * Track an event for a user that is not logged in
+   */
+  public async trackManual(
+    data: EventTrackData,
+    accountId?: string
+  ): Promise<void> {
+    if (!this.analytics) return;
+
+    const req = RequestContext?.currentContext?.req;
+    const analyticsSessionId = this.parseValidUnixTimestampOrUndefined(
+      req?.analyticsSessionId
+    );
+
+    try {
+      const trackData: TrackParams = {
+        event: data.event,
+        userId: accountId,
+        // If the user is not logged in, use an anonymous ID from the client to track the event and merge the user on signup
+        anonymousId: analyticsSessionId,
         properties: {
           ...data.properties,
           source: "amplication-server",
@@ -84,14 +171,20 @@ export class SegmentAnalyticsService {
             analyticsSessionId: analyticsSessionId,
           },
         },
-      });
+      };
+
+      this.analytics.track(trackData);
     } catch (error) {
-      this.logger.error("Failed to track event", error, { data });
+      this.logger.error(this.analyticsErrorMessage, error, { data });
     }
   }
 
-  public async trackAnonymous(data: TrackData): Promise<void> {
+  /**
+   * @deprecated Use `trackWithContext` or `trackManual` instead
+   */
+  public async track(data: TrackData): Promise<void> {
     if (!this.analytics) return;
+
     try {
       const req = RequestContext?.currentContext?.req;
       const analyticsSessionId = this.parseValidUnixTimestampOrUndefined(
@@ -100,7 +193,7 @@ export class SegmentAnalyticsService {
 
       this.analytics.track({
         ...data,
-        anonymousId: cuid(),
+        userId: data.accountId,
         properties: {
           ...data.properties,
           source: "amplication-server",
