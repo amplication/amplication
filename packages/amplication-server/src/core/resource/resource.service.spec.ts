@@ -67,6 +67,7 @@ import { SubscriptionService } from "../subscription/subscription.service";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { ActionService } from "../action/action.service";
 import { UserActionService } from "../userAction/userAction.service";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -478,7 +479,6 @@ const entityServiceCreateDefaultEntitiesMock = jest.fn();
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
 const entityServiceBulkCreateFields = jest.fn();
-const analyticServiceTrack = jest.fn();
 
 const mockedUpdateServiceLicensed = jest.fn();
 
@@ -528,12 +528,7 @@ describe("ResourceService", () => {
             create: jest.fn(),
           })),
         },
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            track: analyticServiceTrack,
-          })),
-        },
+        MockedSegmentAnalyticsProvider(),
         {
           provide: SubscriptionService,
           useClass: jest.fn(() => ({

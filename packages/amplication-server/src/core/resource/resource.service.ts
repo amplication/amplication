@@ -347,13 +347,10 @@ export class ResourceService {
         "Feature Unavailable. Please upgrade your plan to access this feature."
       );
 
-    await this.analytics.track({
-      accountId: user.account.id,
+    await this.analytics.trackWithContext({
       properties: {
         resourceId: resource.id,
         projectId: resource.projectId,
-        workspaceId: user.workspace.id,
-        $groups: { groupWorkspace: user.workspace.id },
       },
       event: EnumEventType.CodeGeneratorVersionUpdate,
     });
@@ -564,10 +561,8 @@ export class ResourceService {
       user.workspace?.id
     );
 
-    await this.analytics.track({
-      accountId: user.id,
+    await this.analytics.trackWithContext({
       properties: {
-        workspaceId: user.workspace?.id,
         projectId,
         resourceId: resourceId,
         plan: subscription.subscriptionPlan,
@@ -1115,24 +1110,18 @@ export class ResourceService {
       data.plugins?.plugins?.filter((plugin) => {
         return plugin.configurations["requireAuthenticationEntity"] === "true";
       }).length > 0;
-    const project = await this.projectService.findUnique({
-      where: { id: data.resource.project.connect.id },
-    });
+
+    const projectId = data.resource.project.connect.id;
 
     if (data.connectToDemoRepo) {
-      await this.projectService.createDemoRepo(
-        data.resource.project.connect.id
-      );
+      await this.projectService.createDemoRepo(projectId);
       //do not use any git data when using demo repo
       data.resource.gitRepository = undefined;
 
-      await this.analytics.track({
-        accountId: user.account.id,
+      await this.analytics.trackWithContext({
         event: EnumEventType.DemoRepoCreate,
         properties: {
-          projectId: project.id,
-          workspaceId: project.workspaceId,
-          $groups: { groupWorkspace: project.workspaceId },
+          projectId: projectId,
         },
       });
     }
@@ -1278,8 +1267,7 @@ export class ResourceService {
       return acc + entity.fields.length;
     }, 0);
 
-    await this.analytics.track({
-      accountId: user.account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.ServiceWizardServiceGenerated,
       properties: {
         category: "Service Wizard",
@@ -1294,12 +1282,10 @@ export class ResourceService {
         repoType: data.repoType,
         dbType: data.dbType,
         auth: data.authType,
-        projectId: project.id,
-        workspaceId: project.workspaceId,
+        projectId: projectId,
         totalEntities,
         totalFields,
         gitOrgType: gitOrganization?.type,
-        $groups: { groupWorkspace: project.workspaceId },
       },
     });
 
