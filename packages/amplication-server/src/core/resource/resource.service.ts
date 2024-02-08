@@ -604,6 +604,7 @@ export class ResourceService {
       await this.validateNewResourcesData(newServices, project);
       await this.validateMovedEntitiesData(
         movedEntitiesByResource,
+        newServices,
         project,
         resourceId,
         user
@@ -906,6 +907,7 @@ export class ResourceService {
     movedEntitiesByResource: {
       [resourceId: string]: RedesignProjectMovedEntity[];
     },
+    newServices: RedesignProjectNewService[],
     project: Project,
     originalResourceId: string,
     user: User
@@ -917,6 +919,11 @@ export class ResourceService {
         BillingFeature.EntitiesPerService
       );
 
+    const serviceEntitlement = await this.billingService.getMeteredEntitlement(
+      user.workspace.id,
+      BillingFeature.Services
+    );
+
     const serviceSettings =
       await this.serviceSettingsService.getServiceSettingsValues(
         {
@@ -926,11 +933,18 @@ export class ResourceService {
       );
 
     let resourceEntities: Entity[] = [];
+    let newService: RedesignProjectNewService = null;
 
     for (const [resourceId, entities] of Object.entries(
       movedEntitiesByResource
     )) {
       for (const movedEntity of entities) {
+        if (!newService && newServices.length > 0) {
+          newService = newServices.find(
+            (s) => s.id === movedEntity.targetResourceId
+          );
+        }
+
         const currentEntity = await this.entityService.entity({
           where: {
             id: movedEntity.entityId,
@@ -972,16 +986,25 @@ export class ResourceService {
           id: resourceId,
         },
       });
+      const serviceName = currentResource
+        ? currentResource.name
+        : newService.name;
+
       const entitiesCount = !currentResource
         ? entities.length
         : entities.length + resourceEntities?.length;
+      if (!project.licensed || (currentResource && !currentResource.licensed)) {
+        throw new AmplicationError(
+          `Cannot move entities to service: ${serviceName} due to your plan's limitations number of services: ${serviceEntitlement.usageLimit}`
+        );
+      }
       if (
-        !project.licensed ||
-        (currentResource && !currentResource.licensed) ||
         !featureEntitiesServices.hasAccess ||
         featureEntitiesServices.value < entitiesCount
       ) {
-        throw new AmplicationError(ENTITIES_PER_SERVICE_LIMITATION_ERROR);
+        throw new AmplicationError(
+          `Cannot move entities to service: ${serviceName} due to your plan's limitations number of entities : ${featureEntitiesServices.value}`
+        );
       }
     }
   }
