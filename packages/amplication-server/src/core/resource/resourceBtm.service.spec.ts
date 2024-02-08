@@ -12,12 +12,10 @@ import { ConversationTypeKey } from "../gpt/gpt.types";
 import { BreakServiceToMicroservicesData } from "./dto/BreakServiceToMicroservicesResult";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { Resource, User } from "../../models";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { BillingService } from "../billing/billing.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 
 const resourceIdMock = "resourceId";
 const userIdMock = "userId";

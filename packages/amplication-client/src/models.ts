@@ -821,7 +821,6 @@ export enum EnumPendingChangeOriginType {
 }
 
 export enum EnumPreviewAccountType {
-  Auth0Signup = 'Auth0Signup',
   BreakingTheMonolith = 'BreakingTheMonolith',
   None = 'None'
 }
@@ -840,7 +839,10 @@ export type EnumResourceTypeFilter = {
 };
 
 export enum EnumSchemaNames {
-  CalDotCom = 'CalDotCom'
+  Abby = 'Abby',
+  CalDotCom = 'CalDotCom',
+  Formbricks = 'Formbricks',
+  Papermark = 'Papermark'
 }
 
 export enum EnumSubscriptionPlan {
@@ -867,7 +869,8 @@ export enum EnumUserActionStatus {
 
 export enum EnumUserActionType {
   DbSchemaImport = 'DBSchemaImport',
-  GptConversation = 'GptConversation'
+  GptConversation = 'GptConversation',
+  ProjectRedesign = 'ProjectRedesign'
 }
 
 export enum EnumWorkspaceMemberType {

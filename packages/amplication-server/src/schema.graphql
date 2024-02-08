@@ -782,7 +782,6 @@ enum EnumPendingChangeOriginType {
 }
 
 enum EnumPreviewAccountType {
-  Auth0Signup
   BreakingTheMonolith
   None
 }
@@ -801,7 +800,10 @@ input EnumResourceTypeFilter {
 }
 
 enum EnumSchemaNames {
+  Abby
   CalDotCom
+  Formbricks
+  Papermark
 }
 
 enum EnumSubscriptionPlan {
@@ -829,6 +831,7 @@ enum EnumUserActionStatus {
 enum EnumUserActionType {
   DBSchemaImport
   GptConversation
+  ProjectRedesign
 }
 
 enum EnumWorkspaceMemberType {

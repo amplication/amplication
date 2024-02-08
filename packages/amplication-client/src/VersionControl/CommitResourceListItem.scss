@@ -1,32 +1,22 @@
 @import "../style/index.scss";
 
 .commit-resource-list-item {
-  &__title-row {
-    @include regular-10;
+  &__link {
+    padding: var(--default-spacing);
+    width: 100%;
+    box-sizing: border-box;
 
-    &__resource-icon {
-      .amp-icon {
-        font-size: var(--tag-font-size) !important;
-      }
-    }
-
-    &__title {
-      @include regular-12;
-      @include semiBold;
-      color: var(--static-white);
+    &:hover {
+      background-color: var(--gray-80);
     }
   }
 
   &__description-row {
-    @include regular-10;
-
-    .amp-text {
-      @include regular-10;
-      color: var(--gray-20);
-    }
-    .amp-icon {
-      @include regular-12;
-    }
+    box-sizing: border-box;
+    border-top: 1px solid var(--gray-80);
+    margin: 0 var(--default-spacing);
+    width: calc(100% - var(--default-spacing) * 2);
+    padding: var(--default-spacing);
   }
 
   &__vertical_border {
