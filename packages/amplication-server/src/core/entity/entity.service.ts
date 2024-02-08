@@ -392,23 +392,10 @@ export class EntityService {
     );
 
     if (trackEvent) {
-      const resourceWithProject = await this.prisma.resource.findUnique({
-        where: {
-          id: resourceId,
-        },
-        include: {
-          project: true,
-        },
-      });
-
-      await this.analytics.track({
-        accountId: user.account.id,
+      await this.analytics.trackWithContext({
         properties: {
           resourceId: resourceId,
-          projectId: resourceWithProject.projectId,
-          workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,
-          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.EntityCreate,
       });
@@ -449,14 +436,11 @@ export class EntityService {
         "Feature Unavailable. Your current user permissions doesn't include importing Prisma schemas"
       );
 
-    await this.analytics.track({
-      accountId: user.account.id,
+    await this.analytics.trackWithContext({
       properties: {
         resourceId: resourceId,
         projectId: resourceWithProject.projectId,
-        workspaceId: resourceWithProject.project.workspaceId,
         fileName: fileName,
-        $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
       },
       event: EnumEventType.ImportPrismaSchemaStart,
     });
@@ -487,17 +471,12 @@ export class EntityService {
       );
 
       if (!valid) {
-        await this.analytics.track({
-          accountId: user.account.id,
+        await this.analytics.trackWithContext({
           properties: {
             resourceId: resourceId,
             projectId: resourceWithProject.projectId,
-            workspaceId: resourceWithProject.project.workspaceId,
             fileName: fileName,
             error: "Duplicate entity names",
-            $groups: {
-              groupWorkspace: resourceWithProject.project.workspaceId,
-            },
           },
           event: EnumEventType.ImportPrismaSchemaError,
         });
@@ -538,21 +517,16 @@ export class EntityService {
           true
         );
 
-        await this.analytics.track({
-          accountId: user.account.id,
+        await this.analytics.trackWithContext({
           properties: {
             resourceId: resourceId,
             projectId: resourceWithProject.projectId,
-            workspaceId: resourceWithProject.project.workspaceId,
             fileName: fileName,
             totalEntities: entities.length,
             totalFields: preparedEntitiesWithFields?.reduce(
               (acc, entity) => acc + (entity.fields?.length || 0),
               0
             ),
-            $groups: {
-              groupWorkspace: resourceWithProject.project.workspaceId,
-            },
           },
           event: EnumEventType.ImportPrismaSchemaCompleted,
         });
@@ -560,15 +534,12 @@ export class EntityService {
         return entities;
       }
     } catch (error) {
-      await this.analytics.track({
-        accountId: user.account.id,
+      await this.analytics.trackWithContext({
         properties: {
           resourceId: resourceId,
           projectId: resourceWithProject.projectId,
-          workspaceId: resourceWithProject.project.workspaceId,
           fileName: fileName,
           error: error.message,
-          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.ImportPrismaSchemaError,
       });
@@ -1056,23 +1027,10 @@ export class EntityService {
         throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
       }
 
-      const resourceWithProject = await this.prisma.resource.findUnique({
-        where: {
-          id: entity.resourceId,
-        },
-        include: {
-          project: true,
-        },
-      });
-
-      await this.analytics.track({
-        accountId: user.account.id,
+      await this.analytics.trackWithContext({
         properties: {
           resourceId: entity.resourceId,
-          projectId: resourceWithProject.projectId,
-          workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,
-          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.EntityUpdate,
       });
@@ -2499,26 +2457,11 @@ export class EntityService {
         }
 
         if (trackEvent) {
-          const resourceWithProject = await this.prisma.resource.findUnique({
-            where: {
-              id: entity.resourceId,
-            },
-            include: {
-              project: true,
-            },
-          });
-
-          await this.analytics.track({
-            accountId: user.account.id,
+          await this.analytics.trackWithContext({
             properties: {
               resourceId: entity.resourceId,
-              projectId: resourceWithProject.projectId,
-              workspaceId: resourceWithProject.project.workspaceId,
               entityFieldName: args.data.displayName,
               dataType: args.data.dataType,
-              $groups: {
-                groupWorkspace: resourceWithProject.project.workspaceId,
-              },
             },
             event: EnumEventType.EntityFieldCreate,
           });
@@ -2818,26 +2761,11 @@ export class EntityService {
           });
         }
 
-        const resourceWithProject = await this.prisma.resource.findUnique({
-          where: {
-            id: entity.resourceId,
-          },
-          include: {
-            project: true,
-          },
-        });
-
-        await this.analytics.track({
-          accountId: user.account.id,
+        await this.analytics.trackWithContext({
           properties: {
             resourceId: entity.resourceId,
-            projectId: resourceWithProject.projectId,
-            workspaceId: resourceWithProject.project.workspaceId,
             entityFieldName: args.data.displayName,
             dataType: args.data.dataType,
-            $groups: {
-              groupWorkspace: resourceWithProject.project.workspaceId,
-            },
           },
           event: EnumEventType.EntityFieldUpdate,
         });
