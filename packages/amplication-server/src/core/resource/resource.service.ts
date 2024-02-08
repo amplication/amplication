@@ -93,9 +93,6 @@ const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
 const SERVICE_LIMITATION_ERROR =
   "Can not create new services, The workspace reached your plan's resource limitation";
 
-const ENTITIES_PER_SERVICE_LIMITATION_ERROR =
-  "Your current plan permits only one active Service";
-
 export type CreatePreviewServiceArgs = {
   args: CreateOneResourceArgs;
   user: User;
@@ -919,11 +916,6 @@ export class ResourceService {
         BillingFeature.EntitiesPerService
       );
 
-    const serviceEntitlement = await this.billingService.getMeteredEntitlement(
-      user.workspace.id,
-      BillingFeature.Services
-    );
-
     const serviceSettings =
       await this.serviceSettingsService.getServiceSettingsValues(
         {
@@ -932,19 +924,25 @@ export class ResourceService {
         user
       );
 
-    let resourceEntities: Entity[] = [];
-    let newService: RedesignProjectNewService = null;
-
     for (const [resourceId, entities] of Object.entries(
       movedEntitiesByResource
     )) {
-      for (const movedEntity of entities) {
-        if (!newService && newServices.length > 0) {
-          newService = newServices.find(
-            (s) => s.id === movedEntity.targetResourceId
-          );
-        }
+      let newService: RedesignProjectNewService = null;
 
+      if (newServices.length > 0) {
+        newService = newServices.find(
+          (newService) => newService.id === resourceId
+        );
+      }
+
+      const resourceEntities: Entity[] = await this.entityService.entities({
+        where: {
+          resourceId: resourceId,
+          deletedAt: null,
+        },
+      });
+
+      for (const movedEntity of entities) {
         const currentEntity = await this.entityService.entity({
           where: {
             id: movedEntity.entityId,
@@ -959,13 +957,6 @@ export class ResourceService {
             `Cannot move Auth entity : ${currentEntity.name}.`
           );
         }
-
-        resourceEntities = await this.entityService.entities({
-          where: {
-            resourceId: movedEntity.targetResourceId,
-            deletedAt: null,
-          },
-        });
 
         //duplicate entities names validation
         if (resourceEntities.length > 0) {
@@ -995,7 +986,7 @@ export class ResourceService {
         : entities.length + resourceEntities?.length;
       if (!project.licensed || (currentResource && !currentResource.licensed)) {
         throw new AmplicationError(
-          `Cannot move entities to service: ${serviceName} due to your plan's limitations number of services: ${serviceEntitlement.usageLimit}`
+          `Cannot move entities to service: ${serviceName} due to your plan's limitations (number of services)`
         );
       }
       if (
@@ -1003,7 +994,7 @@ export class ResourceService {
         featureEntitiesServices.value < entitiesCount
       ) {
         throw new AmplicationError(
-          `Cannot move entities to service: ${serviceName} due to your plan's limitations number of entities : ${featureEntitiesServices.value}`
+          `Cannot move entities to service: ${serviceName} due to your plan's limitations (number of entities)`
         );
       }
     }
