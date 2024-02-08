@@ -955,12 +955,13 @@ export class ResourceService {
 
         //duplicate entities names validation
         if (resourceEntities.length > 0) {
-          for (const resourceEntity of resourceEntities) {
-            if (resourceEntity.name === currentEntity.name) {
-              throw new AmplicationError(
-                `Entity : ${currentEntity.name} already exists in resource: ${movedEntity.targetResourceId}.`
-              );
-            }
+          const duplicateEntity = resourceEntities.find(
+            (e) => e.name === currentEntity.name
+          );
+          if (duplicateEntity) {
+            throw new AmplicationError(
+              `Entity : ${currentEntity.name} already exists in resource: ${movedEntity.targetResourceId}.`
+            );
           }
         }
       }
