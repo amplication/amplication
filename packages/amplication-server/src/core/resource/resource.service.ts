@@ -943,6 +943,34 @@ export class ResourceService {
         },
       });
 
+      //pass limitation validation
+      const currentResource = await this.findOne({
+        where: {
+          id: resourceId,
+        },
+      });
+      const serviceName = currentResource
+        ? currentResource.name
+        : newService.name;
+
+      const entitiesCount = !currentResource
+        ? entities.length
+        : entities.length + resourceEntities?.length;
+      if (!project.licensed || (currentResource && !currentResource.licensed)) {
+        throw new AmplicationError(
+          `Cannot move entities to service: ${serviceName} due to your plan's limitations (number of services)`
+        );
+      }
+
+      if (
+        !featureEntitiesServices.hasAccess ||
+        featureEntitiesServices.value < entitiesCount
+      ) {
+        throw new AmplicationError(
+          `Cannot move entities to service: ${serviceName} due to your plan's limitations (number of entities)`
+        );
+      }
+
       for (const movedEntity of entities) {
         const currentEntity = await this.entityService.entity({
           where: {
@@ -970,33 +998,6 @@ export class ResourceService {
             );
           }
         }
-      }
-
-      //pass limitation validation
-      const currentResource = await this.findOne({
-        where: {
-          id: resourceId,
-        },
-      });
-      const serviceName = currentResource
-        ? currentResource.name
-        : newService.name;
-
-      const entitiesCount = !currentResource
-        ? entities.length
-        : entities.length + resourceEntities?.length;
-      if (!project.licensed || (currentResource && !currentResource.licensed)) {
-        throw new AmplicationError(
-          `Cannot move entities to service: ${serviceName} due to your plan's limitations (number of services)`
-        );
-      }
-      if (
-        !featureEntitiesServices.hasAccess ||
-        featureEntitiesServices.value < entitiesCount
-      ) {
-        throw new AmplicationError(
-          `Cannot move entities to service: ${serviceName} due to your plan's limitations (number of entities)`
-        );
       }
     }
   }
