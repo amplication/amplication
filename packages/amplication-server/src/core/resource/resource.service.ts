@@ -876,13 +876,15 @@ export class ResourceService {
       BillingFeature.Services
     );
 
-    if (
-      !featureServices.hasAccess ||
-      (!featureServices.isUnlimited &&
-        featureServices.usageLimit <
-          projectResources.length + newServices.length)
-    ) {
-      throw new AmplicationError(SERVICE_LIMITATION_ERROR);
+    if (newServices.length > 0) {
+      if (
+        !featureServices.hasAccess ||
+        (!featureServices.isUnlimited &&
+          featureServices.usageLimit <
+            projectResources.length + newServices.length)
+      ) {
+        throw new AmplicationError(SERVICE_LIMITATION_ERROR);
+      }
     }
 
     if (projectResources.length > 0) {
