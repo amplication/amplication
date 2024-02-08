@@ -894,7 +894,7 @@ export class ResourceService {
         if (
           !featureServices.hasAccess ||
           (!featureServices.isUnlimited &&
-            featureServices.usageLimit <=
+            featureServices.usageLimit <
               projectResources.length + newServices.length)
         ) {
           throw new AmplicationError(SERVICE_LIMITATION_ERROR);
@@ -979,7 +979,7 @@ export class ResourceService {
         !project.licensed ||
         (currentResource && !currentResource.licensed) ||
         !featureEntitiesServices.hasAccess ||
-        featureEntitiesServices.value <= entitiesCount
+        featureEntitiesServices.value < entitiesCount
       ) {
         throw new AmplicationError(ENTITIES_PER_SERVICE_LIMITATION_ERROR);
       }
