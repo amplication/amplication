@@ -532,7 +532,8 @@ export class ResourceService {
       },
     });
 
-    //prepare moved entities mapping
+    //group moved entities by target resource
+
     const movedEntitiesByResource = movedEntities.reduce(
       (entitiesByResource, entity) => {
         if (!entitiesByResource[entity.targetResourceId]) {
@@ -594,7 +595,7 @@ export class ResourceService {
     };
 
     try {
-      //data validationStep before starting the process
+      // 1. data validationStep before starting the process
       await actionContext.onEmitUserActionLog(
         `Starting data validation`,
         EnumActionLogLevel.Info
@@ -612,7 +613,7 @@ export class ResourceService {
         EnumActionLogLevel.Info
       );
 
-      // 1. create new resources
+      // 2. create new resources
       const currentProjectConfiguration = await this.prisma.resource.findFirst({
         where: {
           projectId: projectId,
@@ -656,7 +657,7 @@ export class ResourceService {
         await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
       }
 
-      // 2. update resourceId in copied entities list
+      // 3. update resourceId in copied entities list
       for (const entityToCopy of movedEntities) {
         const newResource: Resource = newResourcesMap.get(
           entityToCopy.targetResourceId
@@ -666,8 +667,6 @@ export class ResourceService {
           entityToCopy.targetResourceId = newResource.id;
         }
       }
-
-      // 3.group moved entities by target resource
 
       const sourceEntityIdToNewEntityMap = new Map<
         string,
