@@ -2990,6 +2990,131 @@ describe("prismaSchemaParser", () => {
           expect(result).toEqual(expectedEntitiesWithFields);
         });
 
+        it("should create the models and fields properly when the models have relations with name and current field and remote field are named the same", async () => {
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model User {
+            id                   String           @id @default(cuid())
+            createdByUser        CrmOpportunity[] @relation(name: "created_by_user_relation")
+            assignedOpportunity  CrmOpportunity[] @relation(name: "assigned_to_user_relation")
+        }
+          
+          model CrmOpportunity {
+            id               String  @id @default(cuid())
+            assignedTo       String? 
+            createdBy        String? 
+            assignedToUser   User?  @relation(name: "assigned_to_user_relation", fields: [assignedTo], references: [id])
+            createdByUser    User?  @relation(name: "created_by_user_relation", fields: [createdBy], references: [id])
+        }`;
+
+          const existingEntities: ExistingEntitySelect[] = [];
+          const customerFieldPermanentId = expect.any(String);
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "User",
+              displayName: "User",
+              pluralDisplayName: "Users",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "ID",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: true,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
+                },
+              ],
+            },
+            {
+              id: expect.any(String),
+              name: "CrmOpportunity",
+              displayName: "Crm Opportunity",
+              pluralDisplayName: "CrmOpportunities",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "ID",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: true,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
+                },
+                {
+                  permanentId: customerFieldPermanentId,
+                  name: "assignedToUser",
+                  displayName: "Assigned To User",
+                  dataType: EnumDataType.Lookup,
+                  required: false,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    relatedEntityId: expect.any(String),
+                    allowMultipleSelection: false,
+                    fkHolder: customerFieldPermanentId,
+                    fkFieldName: "assignedTo",
+                  },
+                  customAttributes: "",
+                  relatedFieldAllowMultipleSelection: true,
+                  relatedFieldDisplayName: "Assigned Opportunity",
+                  relatedFieldName: "assignedOpportunity",
+                },
+                {
+                  permanentId: customerFieldPermanentId,
+                  name: "createdByUser",
+                  displayName: "Created By User",
+                  dataType: EnumDataType.Lookup,
+                  required: false,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    relatedEntityId: expect.any(String),
+                    allowMultipleSelection: false,
+                    fkHolder: customerFieldPermanentId,
+                    fkFieldName: "createdBy",
+                  },
+                  customAttributes: "",
+                  relatedFieldAllowMultipleSelection: true,
+                  relatedFieldDisplayName: "Created By User",
+                  relatedFieldName: "createdByUser",
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
+
         it("should create the models and fields properly when the models have more than one related field to the same model", async () => {
           const prismaSchema = `datasource db {
             provider = "postgresql"

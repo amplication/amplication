@@ -5,7 +5,6 @@ import { Workspace } from "../../models";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { IdentifyData } from "../../services/segmentAnalytics/segmentAnalytics.types";
-import { IdentityProvider, IdentityProviderPreview } from "../auth/auth.types";
 
 @Injectable()
 export class AccountService {
@@ -16,7 +15,7 @@ export class AccountService {
 
   async createAccount(
     args: Prisma.AccountCreateArgs,
-    identityProvider: IdentityProvider | IdentityProviderPreview
+    trackingMetadata: Record<string, any>
   ): Promise<Account> {
     const account = await this.prisma.account.create(args);
 
@@ -34,7 +33,7 @@ export class AccountService {
       userId: account.id,
       event: EnumEventType.Signup,
       properties: {
-        identityProvider: identityProvider,
+        ...trackingMetadata,
       },
       context: {
         traits: userData,
