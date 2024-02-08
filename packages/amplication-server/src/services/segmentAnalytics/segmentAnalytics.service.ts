@@ -42,12 +42,16 @@ export class SegmentAnalyticsService {
   public async identify(data: IdentifyData): Promise<void> {
     if (!this.analytics) return;
 
-    const { accountId, ...rest } = data;
+    const req = RequestContext?.currentContext?.req;
+    const analyticsSessionId = this.parseValidUnixTimestampOrUndefined(
+      req?.analyticsSessionId
+    );
 
     try {
       this.analytics.identify({
-        userId: accountId,
-        traits: rest,
+        userId: data.accountId,
+        anonymousId: analyticsSessionId,
+        traits: data,
       });
     } catch (error) {
       this.logger.error("Failed to track event", error, { data });

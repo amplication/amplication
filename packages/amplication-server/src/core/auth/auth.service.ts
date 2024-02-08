@@ -114,7 +114,7 @@ export class AuthService {
     existingUser: IdentityProvider | "No" = "No"
   ) {
     const userData: IdentifyData = {
-      accountId: existingAccount?.id ?? `${cuid()}-not-registered-yet`,
+      accountId: existingAccount?.id, // we use the existing account id if it exists or anonymous id from client if not
       createdAt: existingAccount?.createdAt ?? null,
       email: existingAccount?.email ?? emailAddress,
       firstName: existingAccount?.firstName ?? null,
@@ -155,12 +155,6 @@ export class AuthService {
       lastName: profile.family_name,
     };
 
-    void this.analytics.identify(userData).catch((error) => {
-      this.logger.error(
-        `Failed to identify user ${userData.accountId} in segment analytics`,
-        error
-      );
-    });
     //we send the userData again to prevent race condition
     void this.analytics
       .track({
