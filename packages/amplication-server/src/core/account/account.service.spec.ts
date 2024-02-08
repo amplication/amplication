@@ -1,6 +1,5 @@
 import { PrismaService, Account } from "../../prisma";
 import { Test, TestingModule } from "@nestjs/testing";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { AccountService } from "./account.service";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { IdentityProvider } from "../auth/auth.types";

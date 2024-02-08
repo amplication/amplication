@@ -4,7 +4,6 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { EnumResourceType, PrismaService } from "../../prisma";
 import { BillingService } from "../billing/billing.service";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { Project, Resource, Workspace } from "../../models";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 

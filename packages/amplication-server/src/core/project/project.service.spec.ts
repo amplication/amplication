@@ -1,7 +1,6 @@
 import { PrismaService } from "../../prisma/prisma.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ProjectService } from "./project.service";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import {
   Account,
   Block,

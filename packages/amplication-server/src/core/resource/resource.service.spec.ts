@@ -57,7 +57,6 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
 import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";

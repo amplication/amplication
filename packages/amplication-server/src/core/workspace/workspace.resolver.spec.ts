@@ -21,7 +21,6 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { ApolloServerBase } from "apollo-server-core";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { UserService } from "../user/user.service";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 

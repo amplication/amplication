@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { BillingService } from "./billing.service";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
 import {
