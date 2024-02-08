@@ -84,8 +84,7 @@ export class SubscriptionService {
     workspaceId: string
   ): Promise<void> {
     if (plan !== EnumSubscriptionPlan.Free && userId) {
-      await this.analyticsService.track({
-        accountId: userId,
+      await this.analyticsService.trackWithContext({
         properties: {
           workspaceId: workspaceId,
           $groups: { groupWorkspace: workspaceId },
