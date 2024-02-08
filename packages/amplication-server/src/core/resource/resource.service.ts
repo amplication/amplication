@@ -994,7 +994,7 @@ export class ResourceService {
           );
           if (duplicateEntity) {
             throw new AmplicationError(
-              `Entity : ${currentEntity.name} already exists in resource: ${movedEntity.targetResourceId}.`
+              `Entity : ${currentEntity.name} already exists in resource: ${serviceName}.`
             );
           }
         }
