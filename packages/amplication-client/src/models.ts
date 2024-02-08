@@ -839,7 +839,10 @@ export type EnumResourceTypeFilter = {
 };
 
 export enum EnumSchemaNames {
-  CalDotCom = 'CalDotCom'
+  Abby = 'Abby',
+  CalDotCom = 'CalDotCom',
+  Formbricks = 'Formbricks',
+  Papermark = 'Papermark'
 }
 
 export enum EnumSubscriptionPlan {
