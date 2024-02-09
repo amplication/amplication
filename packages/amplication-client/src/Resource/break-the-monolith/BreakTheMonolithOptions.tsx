@@ -5,9 +5,9 @@ import useUserActionWatchStatus from "../../UserAction/useUserActionWatchStatus"
 import { useMutation } from "@apollo/client";
 import { CREATE_ENTITIES_FROM_PREDEFINED_SCHEMA } from "../../Entity/ImportPrismaSchema/queries";
 import { MonolithOption, monolithOptions } from "./monolith-options";
-import { CircularProgress } from "@mui/material";
 import {
   Button,
+  EnumContentAlign,
   EnumFlexDirection,
   EnumItemsAlign,
   EnumTextAlign,
@@ -17,9 +17,12 @@ import {
   Panel,
   Text,
 } from "@amplication/ui/design-system";
+import { BtmLoader } from "./BtmLoader";
 
 import "./BreakTheMonolithOptions.scss";
 const CLASS_NAME = "break-the-monolith-options";
+
+const LOADER_TITLE = "Fetching the chosen monolith's schema";
 
 type Props = {
   workspaceId: string;
@@ -76,69 +79,73 @@ export const BreakTheMonolithOptions: React.FC<Props> = ({
   };
 
   return (
-    <>
+    <FlexItem
+      className={CLASS_NAME}
+      direction={EnumFlexDirection.Column}
+      itemsAlign={EnumItemsAlign.Center}
+      contentAlign={EnumContentAlign.Center}
+    >
       {userActionData?.userAction &&
-        userActionData?.userAction?.status !==
-          models.EnumUserActionStatus.Completed && (
-          <div className={`${CLASS_NAME}__overlay`}>
-            <CircularProgress />
-          </div>
-        )}
-      <FlexItem
-        className={CLASS_NAME}
-        direction={EnumFlexDirection.Column}
-        itemsAlign={EnumItemsAlign.Center}
-      >
-        <Text textStyle={EnumTextStyle.H2}>
-          Select the monolith you want to break
-        </Text>
-        <Text
-          textStyle={EnumTextStyle.Normal}
-          textColor={EnumTextColor.Black20}
-          textAlign={EnumTextAlign.Center}
-        >
-          <div>
-            To illustrate how Amplication can transform legacy systems into a
-            micro-services architecture,
-          </div>
-          <div>
-            choose an open-source monolith, represented by its database schema
-          </div>
-        </Text>
-        <div className={`${CLASS_NAME}__monolith_options`}>
-          {monolithOptions.map((option, index) => (
-            <Panel key={index}>
-              <FlexItem direction={EnumFlexDirection.Column}>
-                <FlexItem>
-                  <Text textStyle={EnumTextStyle.H3}>{option.displayName}</Text>
-                  <Button
-                    onClick={() => handleBreakClicked(option)}
-                    className={`${CLASS_NAME}__action-button`}
-                  >
-                    Break
-                  </Button>
-                </FlexItem>
-                <Text
-                  textStyle={EnumTextStyle.Description}
-                  textColor={EnumTextColor.Black20}
-                >
-                  {option.description}
-                </Text>
-                <Text textStyle={EnumTextStyle.Label}>
-                  <a
-                    className={`${CLASS_NAME}__link`}
-                    href={option.linkToRepository}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Go to the Github repository
-                  </a>
-                </Text>
-              </FlexItem>
-            </Panel>
-          ))}
+      userActionData?.userAction?.status !==
+        models.EnumUserActionStatus.Completed ? (
+        <div className={`${CLASS_NAME}__loader`}>
+          <BtmLoader title={LOADER_TITLE} />
         </div>
-      </FlexItem>
-    </>
+      ) : (
+        <>
+          <Text textStyle={EnumTextStyle.H2}>
+            Select the monolith you want to break
+          </Text>
+          <Text
+            textStyle={EnumTextStyle.Normal}
+            textColor={EnumTextColor.Black20}
+            textAlign={EnumTextAlign.Center}
+          >
+            <div>
+              To illustrate how Amplication can transform legacy systems into a
+              micro-services architecture,
+            </div>
+            <div>
+              choose an open-source monolith, represented by its database schema
+            </div>
+          </Text>
+          <div className={`${CLASS_NAME}__monolith_options`}>
+            {monolithOptions.map((option, index) => (
+              <Panel key={index}>
+                <FlexItem direction={EnumFlexDirection.Column}>
+                  <FlexItem>
+                    <Text textStyle={EnumTextStyle.H3}>
+                      {option.displayName}
+                    </Text>
+                    <Button
+                      onClick={() => handleBreakClicked(option)}
+                      className={`${CLASS_NAME}__action-button`}
+                    >
+                      Break
+                    </Button>
+                  </FlexItem>
+                  <Text
+                    textStyle={EnumTextStyle.Description}
+                    textColor={EnumTextColor.Black20}
+                  >
+                    {option.description}
+                  </Text>
+                  <Text textStyle={EnumTextStyle.Label}>
+                    <a
+                      className={`${CLASS_NAME}__link`}
+                      href={option.linkToRepository}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Go to the Github repository
+                    </a>
+                  </Text>
+                </FlexItem>
+              </Panel>
+            ))}
+          </div>
+        </>
+      )}
+    </FlexItem>
   );
 };
