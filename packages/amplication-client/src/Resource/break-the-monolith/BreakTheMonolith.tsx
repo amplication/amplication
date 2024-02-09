@@ -24,6 +24,10 @@ import { Resource } from "../../models";
 
 const CLASS_NAME = "break-the-monolith";
 
+const LOADER_TITLE = "Experience the Microservices Marvel using Amplication AI";
+const LOADER_SUBTITLE =
+  "Our AI-driven magic is currently at work, suggesting how to elevate your service and its entities into a thriving microservices wonderland";
+
 type Props = {
   resource: Resource;
   handleConfirmSuggestion: () => void;
@@ -50,7 +54,7 @@ const BreakTheMonolith: React.FC<Props> = ({
     >
       {loading ? (
         <div className={`${CLASS_NAME}__loader`}>
-          <BtmLoader />
+          <BtmLoader title={LOADER_TITLE} subtitle={LOADER_SUBTITLE} />
         </div>
       ) : (
         <>
