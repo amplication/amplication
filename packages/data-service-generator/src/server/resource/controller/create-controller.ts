@@ -51,7 +51,7 @@ import {
   createUpdateFunctionId,
 } from "../service/create-service";
 import { setEndpointPermissions } from "../../../utils/set-endpoint-permission";
-import { createControllerCustomActionMethods } from "./create-conroller-custom-actions";
+import { createControllerCustomActionMethods } from "./create-controller-custom-actions";
 
 export type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
