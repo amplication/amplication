@@ -436,13 +436,19 @@ export class EntityService {
         "Feature Unavailable. Your current user permissions doesn't include importing Prisma schemas"
       );
 
-    await this.analytics.trackWithContext({
-      properties: {
-        resourceId: resourceId,
-        projectId: resourceWithProject.projectId,
-        fileName: fileName,
+    await this.analytics.trackManual({
+      user: {
+        accountId: user.account.id,
+        workspaceId: resourceWithProject.project.workspaceId,
       },
-      event: EnumEventType.ImportPrismaSchemaStart,
+      data: {
+        properties: {
+          resourceId: resourceId,
+          projectId: resourceWithProject.projectId,
+          fileName: fileName,
+        },
+        event: EnumEventType.ImportPrismaSchemaStart,
+      },
     });
 
     try {
@@ -471,14 +477,20 @@ export class EntityService {
       );
 
       if (!valid) {
-        await this.analytics.trackWithContext({
-          properties: {
-            resourceId: resourceId,
-            projectId: resourceWithProject.projectId,
-            fileName: fileName,
-            error: "Duplicate entity names",
+        await this.analytics.trackManual({
+          user: {
+            accountId: user.account.id,
+            workspaceId: resourceWithProject.project.workspaceId,
           },
-          event: EnumEventType.ImportPrismaSchemaError,
+          data: {
+            properties: {
+              resourceId: resourceId,
+              projectId: resourceWithProject.projectId,
+              fileName: fileName,
+              error: "Duplicate entity names",
+            },
+            event: EnumEventType.ImportPrismaSchemaError,
+          },
         });
 
         this.logger.error(`Invalid Prisma schema`, null, {
@@ -517,31 +529,43 @@ export class EntityService {
           true
         );
 
-        await this.analytics.trackWithContext({
-          properties: {
-            resourceId: resourceId,
-            projectId: resourceWithProject.projectId,
-            fileName: fileName,
-            totalEntities: entities.length,
-            totalFields: preparedEntitiesWithFields?.reduce(
-              (acc, entity) => acc + (entity.fields?.length || 0),
-              0
-            ),
+        await this.analytics.trackManual({
+          user: {
+            accountId: user.account.id,
+            workspaceId: resourceWithProject.project.workspaceId,
           },
-          event: EnumEventType.ImportPrismaSchemaCompleted,
+          data: {
+            properties: {
+              resourceId: resourceId,
+              projectId: resourceWithProject.projectId,
+              fileName: fileName,
+              totalEntities: entities.length,
+              totalFields: preparedEntitiesWithFields?.reduce(
+                (acc, entity) => acc + (entity.fields?.length || 0),
+                0
+              ),
+            },
+            event: EnumEventType.ImportPrismaSchemaCompleted,
+          },
         });
 
         return entities;
       }
     } catch (error) {
-      await this.analytics.trackWithContext({
-        properties: {
-          resourceId: resourceId,
-          projectId: resourceWithProject.projectId,
-          fileName: fileName,
-          error: error.message,
+      await this.analytics.trackManual({
+        user: {
+          accountId: user.account.id,
+          workspaceId: resourceWithProject.project.workspaceId,
         },
-        event: EnumEventType.ImportPrismaSchemaError,
+        data: {
+          properties: {
+            resourceId: resourceId,
+            projectId: resourceWithProject.projectId,
+            fileName: fileName,
+            error: error.message,
+          },
+          event: EnumEventType.ImportPrismaSchemaError,
+        },
       });
       this.logger.error(error.message, error, {
         resourceId,

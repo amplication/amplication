@@ -543,13 +543,19 @@ export class BuildService {
     );
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
 
-    await this.analytics.trackWithContext({
-      properties: {
-        resourceId: build.resource.id,
-        projectId: build.resource.project.id,
-        message: response.errorMessage,
+    await this.analytics.trackManual({
+      user: {
+        accountId: build.createdBy.account.id,
+        workspaceId: build.resource.project.workspaceId,
       },
-      event: EnumEventType.GitSyncError,
+      data: {
+        properties: {
+          resourceId: build.resource.id,
+          projectId: build.resource.project.id,
+          message: response.errorMessage,
+        },
+        event: EnumEventType.GitSyncError,
+      },
     });
   }
 
@@ -571,20 +577,26 @@ export class BuildService {
               project: {
                 select: {
                   id: true,
+                  workspaceId: true,
                 },
               },
             },
           },
         },
       });
-
-      await this.analytics.trackWithContext({
-        properties: {
-          resourceId: build.resource.id,
-          projectId: build.resource.project.id,
-          message: logEntry.message,
+      await this.analytics.trackManual({
+        user: {
+          accountId: build.createdBy.account.id,
+          workspaceId: build.resource.project.workspaceId,
         },
-        event: EnumEventType.CodeGenerationError,
+        data: {
+          properties: {
+            resourceId: build.resource.id,
+            projectId: build.resource.project.id,
+            message: logEntry.message,
+          },
+          event: EnumEventType.CodeGenerationError,
+        },
       });
     }
   }

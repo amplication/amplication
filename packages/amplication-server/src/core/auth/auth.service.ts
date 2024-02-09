@@ -123,16 +123,18 @@ export class AuthService {
 
     await this.analytics.identify(userData);
     //we send the userData again to prevent race condition
-    await this.analytics.trackManual(
-      {
+    await this.analytics.trackManual({
+      user: {
+        accountId: existingAccount?.id,
+      },
+      data: {
         event: EnumEventType.StartEmailSignup,
         properties: {
           identityProvider: IdentityProvider.IdentityPlatform,
           existingUser: existingUser,
         },
       },
-      existingAccount?.id
-    );
+    });
   }
 
   trackCompleteEmailSignup(
@@ -148,8 +150,11 @@ export class AuthService {
 
     //we send the userData again to prevent race condition
     void this.analytics
-      .trackManual(
-        {
+      .trackManual({
+        user: {
+          accountId: account.id,
+        },
+        data: {
           event: EnumEventType.CompleteEmailSignup,
           properties: {
             identityProvider: IdentityProvider.IdentityPlatform,
@@ -157,8 +162,7 @@ export class AuthService {
             existingUser,
           },
         },
-        account.id
-      )
+      })
       .catch((error) => {
         this.logger.error(
           `Failed to track complete business email signup for user ${account.id}`,

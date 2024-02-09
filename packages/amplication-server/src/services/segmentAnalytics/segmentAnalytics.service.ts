@@ -6,7 +6,6 @@ import {
   ContextEventProperties,
   EventTrackData,
   IdentifyData,
-  TrackData,
 } from "./segmentAnalytics.types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Account, PrismaService, User } from "../../prisma";
@@ -103,25 +102,56 @@ export class SegmentAnalyticsService {
   public async trackWithContext(data: EventTrackData): Promise<void> {
     if (!this.analytics) return;
 
+    try {
+      const req = RequestContext?.currentContext?.req;
+      const user: User & {
+        account: Account;
+      } = req?.user;
+      const { accountId, workspaceId } = user;
+
+      await this.trackManual({
+        user: {
+          accountId,
+          workspaceId,
+        },
+        data,
+      });
+    } catch (error) {
+      this.logger.error(this.analyticsErrorMessage, error, { data });
+    }
+  }
+
+  /**
+   * Track an event for a user that is not logged in.
+   * NOTE: Methods that are called within the context of a request
+   * should prefer using `trackWithContext` instead.
+   * It automatically enriches the event with resource, project and workspace data.
+   */
+  public async trackManual({
+    user,
+    data,
+  }: {
+    /**
+     * The user data to track the event for
+     */
+    user: Partial<Pick<User, "accountId" | "workspaceId">>;
+    data: EventTrackData;
+  }): Promise<void> {
+    if (!this.analytics) return;
+
     const req = RequestContext?.currentContext?.req;
     const analyticsSessionId = this.parseValidUnixTimestampOrUndefined(
       req?.analyticsSessionId
     );
 
     try {
-      const user: User & {
-        account: Account;
-      } = req?.user;
-      const { accountId, workspaceId } = user;
-
-      const eventProperties = await this.getEventProperties(
-        workspaceId,
-        data.properties
-      );
+      const eventProperties = user?.workspaceId
+        ? await this.getEventProperties(user?.workspaceId, data.properties)
+        : {};
 
       const trackData: TrackParams = {
         event: data.event,
-        userId: accountId,
+        userId: user?.accountId,
         // If the user is not logged in, use an anonymous ID from the client to track the event and merge the user on signup
         anonymousId: analyticsSessionId,
         properties: {
@@ -140,77 +170,6 @@ export class SegmentAnalyticsService {
       this.analytics.track(trackData);
     } catch (error) {
       this.logger.error(this.analyticsErrorMessage, error, { data });
-    }
-  }
-
-  /**
-   * Track an event for a user that is not logged in.
-   * NOTE: Methods that are called within the context of a request
-   * should prefer using `trackWithContext` instead.
-   */
-  public async trackManual(
-    data: EventTrackData,
-    accountId?: string
-  ): Promise<void> {
-    if (!this.analytics) return;
-
-    const req = RequestContext?.currentContext?.req;
-    const analyticsSessionId = this.parseValidUnixTimestampOrUndefined(
-      req?.analyticsSessionId
-    );
-
-    try {
-      const trackData: TrackParams = {
-        event: data.event,
-        userId: accountId,
-        // If the user is not logged in, use an anonymous ID from the client to track the event and merge the user on signup
-        anonymousId: analyticsSessionId,
-        properties: {
-          ...data.properties,
-          source: "amplication-server",
-        },
-        context: {
-          ...data.context,
-          amplication: {
-            analyticsSessionId: analyticsSessionId,
-          },
-        },
-      };
-
-      this.analytics.track(trackData);
-    } catch (error) {
-      this.logger.error(this.analyticsErrorMessage, error, { data });
-    }
-  }
-
-  /**
-   * @deprecated Use `trackWithContext` or `trackManual` instead
-   */
-  public async track(data: TrackData): Promise<void> {
-    if (!this.analytics) return;
-
-    try {
-      const req = RequestContext?.currentContext?.req;
-      const analyticsSessionId = this.parseValidUnixTimestampOrUndefined(
-        req?.analyticsSessionId
-      );
-
-      this.analytics.track({
-        ...data,
-        userId: data.accountId,
-        properties: {
-          ...data.properties,
-          source: "amplication-server",
-        },
-        context: {
-          ...data.context,
-          amplication: {
-            analyticsSessionId: analyticsSessionId,
-          },
-        },
-      });
-    } catch (error) {
-      this.logger.error("Failed to track event", error, { data });
     }
   }
 }

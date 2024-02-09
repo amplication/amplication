@@ -10,25 +10,6 @@ export type IdentifyData = {
   createdAt: Date;
 };
 
-/**
- * @deprecated Use `EventTrackData` for `trackWithContext` or `trackManual` instead
- */
-export interface TrackData {
-  accountId?: string;
-  event: EnumEventType;
-  properties?:
-    | {
-        [key: string]: unknown;
-      }
-    | undefined;
-  context?: {
-    traits?: IdentifyData;
-    amplication?: {
-      analyticsSessionId?: string;
-    };
-  };
-}
-
 export interface EventTrackData {
   event: EnumEventType;
   properties?:

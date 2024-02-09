@@ -474,6 +474,9 @@ export class ProjectService {
     if (!skipBuild) {
       await this.analytics.trackWithContext({
         event: EnumEventType.CommitCreate,
+        properties: {
+          projectId,
+        },
       });
     }
 

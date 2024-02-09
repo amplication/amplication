@@ -705,16 +705,16 @@ describe("AuthService", () => {
 
       expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(1);
       expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(1);
-      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledWith(
-        {
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledWith({
+        user: {},
+        data: {
           event: EnumEventType.StartEmailSignup,
           properties: {
             identityProvider: IdentityProvider.IdentityPlatform,
             existingUser: "No",
           },
         },
-        undefined
-      );
+      });
     });
 
     it("should fail to signup a preview account when the email is not work email", async () => {
@@ -857,8 +857,11 @@ describe("AuthService", () => {
 
       expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
       expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(1);
-      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledWith(
-        {
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledWith({
+        user: {
+          accountId: EXAMPLE_ACCOUNT.id,
+        },
+        data: {
           event: EnumEventType.CompleteEmailSignup,
           properties: {
             identityProvider: IdentityProvider.IdentityPlatform,
@@ -866,8 +869,7 @@ describe("AuthService", () => {
             existingUser: false,
           },
         },
-        EXAMPLE_ACCOUNT.id
-      );
+      });
     });
 
     it("should not track the event when a user with a business email logs in for the second time forward", async () => {

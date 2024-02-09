@@ -98,6 +98,7 @@ export class PluginInstallationService extends BlockTypeService<
       properties: {
         pluginId: newPlugin.pluginId,
         pluginType: "official",
+        resourceId: resource.connect.id,
       },
     });
 
