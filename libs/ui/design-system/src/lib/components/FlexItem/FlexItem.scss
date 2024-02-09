@@ -36,8 +36,14 @@ $expandable-transition-duration: 0.1s;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    min-width: 0;
+    min-width: fit-content;
     gap: var(--default-spacing);
+  }
+
+  &__singe-child-with-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &--row {

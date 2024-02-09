@@ -57,7 +57,7 @@ export const ModuleActionLinkList = React.memo(
             {data?.moduleActions.map((action) => (
               <VerticalNavigationItem
                 key={action.id}
-                icon="git_commit"
+                icon="api"
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/actions/${action.id}`}
               >
                 <FlexItem

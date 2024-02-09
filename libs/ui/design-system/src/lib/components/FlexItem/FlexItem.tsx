@@ -46,6 +46,7 @@ export type Props = {
   itemsAlign?: EnumItemsAlign;
   gap?: EnumGapSize;
   wrap?: boolean;
+  singeChildWithEllipsis?: boolean;
 };
 
 const CLASS_NAME = "amp-flex-item";
@@ -61,6 +62,7 @@ export const FlexItem = ({
   itemsAlign = EnumItemsAlign.Start,
   gap = EnumGapSize.Default,
   wrap = false,
+  singeChildWithEllipsis = false,
 }: Props) => {
   const marginClass = getMarginStyle(margin);
   const directionClass = `${CLASS_NAME}--${direction}`;
@@ -82,7 +84,13 @@ export const FlexItem = ({
       }}
     >
       {start && <FlexStart>{start}</FlexStart>}
-      {children}
+      {singeChildWithEllipsis ? (
+        <div className={`${CLASS_NAME}__singe-child-with-ellipsis`}>
+          {children}
+        </div>
+      ) : (
+        children
+      )}
       {end && <FlexEnd>{end}</FlexEnd>}
     </div>
   );

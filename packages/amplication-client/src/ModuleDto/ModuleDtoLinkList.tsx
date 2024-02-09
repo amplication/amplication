@@ -57,12 +57,13 @@ export const ModuleDtoLinkList = React.memo(
             {data?.moduleDtos.map((dto) => (
               <VerticalNavigationItem
                 key={dto.id}
-                icon="git_commit"
+                icon="zap"
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos/${dto.id}`}
               >
                 <FlexItem
                   itemsAlign={EnumItemsAlign.Center}
                   end={<EnabledIndicator enabled={dto.enabled} />}
+                  singeChildWithEllipsis
                 >
                   {dto.name}
                 </FlexItem>
