@@ -1,0 +1,23 @@
+@import "../../style/index.scss";
+
+.break-the-monolith-overview-page {
+  padding: var(--double-spacing);
+
+  &__instructions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--double-spacing) 0;
+    background-color: var(--gray-full);
+    width: 100%;
+
+    border-radius: 8px;
+    border: 1px solid var(--gray-70);
+    gap: 8px;
+  }
+
+  &__break-btn {
+    margin-top: var(--medium-spacing);
+  }
+}
