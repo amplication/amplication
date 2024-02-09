@@ -1025,12 +1025,14 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "admin-ui/src/api/user/User.ts": "import { Organization } from "../organization/Organization";
-import { JsonValue } from "type-fest";
+  "admin-ui/src/api/user/User.ts": "import { JsonValue } from "type-fest";
+import { Organization } from "../organization/Organization";
 import { Profile } from "../profile/Profile";
 
 export type User = {
   id: string;
+  username: string;
+  roles: JsonValue;
   name: string;
   bio: string;
   email: string;
@@ -1054,13 +1056,16 @@ export type UserCountArgs = {
   where?: UserWhereInput;
 };
 ",
-  "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+  "admin-ui/src/api/user/UserCreateInput.ts": "import { InputJsonValue } from "../../types";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserCreateNestedManyWithoutUsersInput } from "./UserCreateNestedManyWithoutUsersInput";
 import { OrganizationCreateNestedManyWithoutUsersInput } from "./OrganizationCreateNestedManyWithoutUsersInput";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserCreateInput = {
+  username: string;
+  roles: InputJsonValue;
+  password: string;
   name: string;
   bio: string;
   email: string;
@@ -1112,6 +1117,9 @@ export type UserListRelationFilter = {
 
 export type UserOrderByInput = {
   id?: SortOrder;
+  username?: SortOrder;
+  roles?: SortOrder;
+  password?: SortOrder;
   name?: SortOrder;
   bio?: SortOrder;
   email?: SortOrder;
@@ -1127,13 +1135,16 @@ export type UserOrderByInput = {
   profileId?: SortOrder;
 };
 ",
-  "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+  "admin-ui/src/api/user/UserUpdateInput.ts": "import { InputJsonValue } from "../../types";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateManyWithoutUsersInput } from "./UserUpdateManyWithoutUsersInput";
 import { OrganizationUpdateManyWithoutUsersInput } from "./OrganizationUpdateManyWithoutUsersInput";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserUpdateInput = {
+  username?: string;
+  roles?: InputJsonValue;
+  password?: string;
   name?: string;
   bio?: string;
   email?: string;
@@ -1170,6 +1181,7 @@ import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserWhereInput = {
   id?: StringFilter;
+  username?: StringFilter;
   name?: StringFilter;
   bio?: StringFilter;
   age?: IntFilter;
@@ -1828,8 +1840,7 @@ export const EmptyTitle = (record: TEmpty): string => {
   "admin-ui/src/index.tsx": "import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-// @ts-ignore
-// eslint-disable-next-line import/no-unresolved
+
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
@@ -2488,8 +2499,7 @@ export type InputJsonValue = Omit<JsonValue, "null">;
   AreaManager = "areaManager",
 }
 ",
-  "admin-ui/src/user/RolesOptions.ts": "//@ts-ignore
-import { ROLES } from "./roles";
+  "admin-ui/src/user/RolesOptions.ts": "import { ROLES } from "./roles";
 
 declare interface Role {
   name: string;
@@ -2508,23 +2518,33 @@ import {
   SimpleForm,
   CreateProps,
   TextInput,
+  SelectArrayInput,
+  PasswordInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
-  SelectArrayInput,
   BooleanInput,
 } from "react-admin";
 
 import { UserTitle } from "./UserTitle";
 import { OrganizationTitle } from "../organization/OrganizationTitle";
 import { ProfileTitle } from "../profile/ProfileTitle";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
+        <TextInput label="Username" source="username" />
+        <SelectArrayInput
+          source="roles"
+          choices={ROLES_OPTIONS}
+          optionText="label"
+          optionValue="value"
+        />
+        <PasswordInput label="Password" source="password" />
         <TextInput label="Name" source="name" />
         <TextInput label="Bio" multiline source="bio" />
         <TextInput label="Email" source="email" type="email" />
@@ -2589,23 +2609,33 @@ import {
   SimpleForm,
   EditProps,
   TextInput,
+  SelectArrayInput,
+  PasswordInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
-  SelectArrayInput,
   BooleanInput,
 } from "react-admin";
 
 import { UserTitle } from "./UserTitle";
 import { OrganizationTitle } from "../organization/OrganizationTitle";
 import { ProfileTitle } from "../profile/ProfileTitle";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
+        <TextInput label="Username" source="username" />
+        <SelectArrayInput
+          source="roles"
+          choices={ROLES_OPTIONS}
+          optionText="label"
+          optionValue="value"
+        />
+        <PasswordInput label="Password" source="password" />
         <TextInput label="Name" source="name" />
         <TextInput label="Bio" multiline source="bio" />
         <TextInput label="Email" source="email" type="email" />
@@ -2687,6 +2717,8 @@ export const UserList = (props: ListProps): React.ReactElement => {
     >
       <Datagrid rowClick="show">
         <TextField label="Id" source="id" />
+        <TextField label="Username" source="username" />
+        <TextField label="Roles" source="roles" />
         <TextField label="Name" source="name" />
         <TextField label="Bio" source="bio" />
         <TextField label="Email" source="email" />
@@ -2726,6 +2758,8 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
     <Show {...props}>
       <SimpleShowLayout>
         <TextField label="Id" source="id" />
+        <TextField label="Username" source="username" />
+        <TextField label="Roles" source="roles" />
         <TextField label="Name" source="name" />
         <TextField label="Bio" source="bio" />
         <TextField label="Email" source="email" />
@@ -2750,10 +2784,10 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 ",
   "admin-ui/src/user/UserTitle.ts": "import { User as TUser } from "../api/user/User";
 
-export const USER_TITLE_FIELD = "name";
+export const USER_TITLE_FIELD = "username";
 
 export const UserTitle = (record: TUser): string => {
-  return record.name?.toString() || String(record.id);
+  return record.username?.toString() || String(record.id);
 };
 ",
   "admin-ui/src/user/roles.ts": "export const ROLES = [
@@ -2974,13 +3008,13 @@ export class StringNullableFilter {
 ",
   "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
-PORT=3000
-DB_URL=postgres://admin:admin@localhost:5432/my-db
-DB_USER=admin
+DB_NAME=my-db
 DB_PASSWORD=admin
 DB_PORT=5432
-DB_NAME=my-db
-GRPC_CLIENT_URL_PATH=localhost:9090",
+DB_URL=postgres://admin:admin@localhost:5432/my-db
+DB_USER=admin
+GRPC_CLIENT_URL_PATH=localhost:9090
+PORT=3000",
   "server/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
@@ -3012,8 +3046,6 @@ services:
       - \${PORT}:3000
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
-      JWT_SECRET_KEY: \${JWT_SECRET_KEY}
-      JWT_EXPIRATION: \${JWT_EXPIRATION}
       DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
     depends_on:
       - migrate
@@ -3148,6 +3180,9 @@ generator client {
 
 model User {
   id                 String              @id @default(cuid())
+  username           String              @unique
+  roles              Json
+  password           String
   name               String              @unique @map("name")
   bio                String
   email              String
@@ -3342,9 +3377,6 @@ export async function connectMicroservices(app: INestApplication) {
   const configService = app.get(ConfigService);
   app.connectMicroservice<MicroserviceOptions>(grpcClientOptions);
 }
-",
-  "server/src/constants.ts": "export const JWT_SECRET_KEY = "JWT_SECRET_KEY";
-export const JWT_EXPIRATION = "JWT_EXPIRATION";
 ",
   "server/src/customer/base/CreateCustomerArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4875,11 +4907,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createCustomer() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  customers: () => FIND_MANY_RESULT,
+  customer: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -5048,11 +5080,10 @@ import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { CustomerService } from "../customer.service";
 import { Public } from "../../decorators/public.decorator";
 import { CustomerCreateInput } from "./CustomerCreateInput";
-import { CustomerWhereInput } from "./CustomerWhereInput";
-import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
-import { CustomerFindManyArgs } from "./CustomerFindManyArgs";
-import { CustomerUpdateInput } from "./CustomerUpdateInput";
 import { Customer } from "./Customer";
+import { CustomerFindManyArgs } from "./CustomerFindManyArgs";
+import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
+import { CustomerUpdateInput } from "./CustomerUpdateInput";
 import { OrderFindManyArgs } from "../../order/base/OrderFindManyArgs";
 import { Order } from "../../order/base/Order";
 import { OrderWhereUniqueInput } from "../../order/base/OrderWhereUniqueInput";
@@ -5061,8 +5092,10 @@ export class CustomerControllerBase {
   constructor(protected readonly service: CustomerService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
-  async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
-    return await this.service.create({
+  async createCustomer(
+    @common.Body() data: CustomerCreateInput
+  ): Promise<Customer> {
+    return await this.service.createCustomer({
       data: {
         ...data,
 
@@ -5112,9 +5145,9 @@ export class CustomerControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
   @ApiNestedQuery(CustomerFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Customer[]> {
+  async customers(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.customers({
       ...args,
       select: {
         id: true,
@@ -5150,10 +5183,10 @@ export class CustomerControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async customer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.customer({
       where: params,
       select: {
         id: true,
@@ -5195,12 +5228,12 @@ export class CustomerControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateCustomer(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() data: CustomerUpdateInput
   ): Promise<Customer | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateCustomer({
         where: params,
         data: {
           ...data,
@@ -5259,11 +5292,11 @@ export class CustomerControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteCustomer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteCustomer({
         where: params,
         select: {
           id: true,
@@ -5307,7 +5340,7 @@ export class CustomerControllerBase {
   @Public()
   @common.Get("/:id/orders")
   @ApiNestedQuery(OrderFindManyArgs)
-  async findManyOrders(
+  async findOrders(
     @common.Req() request: Request,
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Order[]> {
@@ -5347,7 +5380,7 @@ export class CustomerControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5364,7 +5397,7 @@ export class CustomerControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5381,7 +5414,7 @@ export class CustomerControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5424,9 +5457,11 @@ export class CustomerGrpcControllerBase {
   constructor(protected readonly service: CustomerService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
-  @GrpcMethod("CustomerService", "create")
-  async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
-    return await this.service.create({
+  @GrpcMethod("CustomerService", "createCustomer")
+  async createCustomer(
+    @common.Body() data: CustomerCreateInput
+  ): Promise<Customer> {
+    return await this.service.createCustomer({
       data: {
         ...data,
 
@@ -5476,10 +5511,10 @@ export class CustomerGrpcControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
   @ApiNestedQuery(CustomerFindManyArgs)
-  @GrpcMethod("CustomerService", "findMany")
-  async findMany(@common.Req() request: Request): Promise<Customer[]> {
+  @GrpcMethod("CustomerService", "customers")
+  async customers(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.customers({
       ...args,
       select: {
         id: true,
@@ -5515,11 +5550,11 @@ export class CustomerGrpcControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("CustomerService", "findOne")
-  async findOne(
+  @GrpcMethod("CustomerService", "customer")
+  async customer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.customer({
       where: params,
       select: {
         id: true,
@@ -5561,13 +5596,13 @@ export class CustomerGrpcControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("CustomerService", "update")
-  async update(
+  @GrpcMethod("CustomerService", "updateCustomer")
+  async updateCustomer(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() data: CustomerUpdateInput
   ): Promise<Customer | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateCustomer({
         where: params,
         data: {
           ...data,
@@ -5626,12 +5661,12 @@ export class CustomerGrpcControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("CustomerService", "delete")
-  async delete(
+  @GrpcMethod("CustomerService", "deleteCustomer")
+  async deleteCustomer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteCustomer({
         where: params,
         select: {
           id: true,
@@ -5717,7 +5752,7 @@ export class CustomerGrpcControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5735,7 +5770,7 @@ export class CustomerGrpcControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5753,7 +5788,7 @@ export class CustomerGrpcControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5803,27 +5838,27 @@ export class CustomerServiceBase {
     return this.prisma.customer.count(args);
   }
 
-  async findMany<T extends Prisma.CustomerFindManyArgs>(
+  async customers<T extends Prisma.CustomerFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
   ): Promise<Customer[]> {
     return this.prisma.customer.findMany(args);
   }
-  async findOne<T extends Prisma.CustomerFindUniqueArgs>(
+  async customer<T extends Prisma.CustomerFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindUniqueArgs>
   ): Promise<Customer | null> {
     return this.prisma.customer.findUnique(args);
   }
-  async create<T extends Prisma.CustomerCreateArgs>(
+  async createCustomer<T extends Prisma.CustomerCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>
   ): Promise<Customer> {
     return this.prisma.customer.create<T>(args);
   }
-  async update<T extends Prisma.CustomerUpdateArgs>(
+  async updateCustomer<T extends Prisma.CustomerUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerUpdateArgs>
   ): Promise<Customer> {
     return this.prisma.customer.update<T>(args);
   }
-  async delete<T extends Prisma.CustomerDeleteArgs>(
+  async deleteCustomer<T extends Prisma.CustomerDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerDeleteArgs>
   ): Promise<Customer> {
     return this.prisma.customer.delete(args);
@@ -5901,11 +5936,11 @@ export class CustomerModule {}
 
                  package customer;
 service CustomerService {
- rpc create (CustomerCreateInput) returns (Customer) {}
-rpc findMany (findManyParams) returns (stream Customer) {}
-rpc findOne (CustomerWhereUniqueInput) returns (Customer) {}
-rpc update (CustomerUpdateInput) returns (Customer) {}
-rpc delete (CustomerWhereUniqueInput) returns (Customer) {}
+ rpc createCustomer (CustomerCreateInput) returns (Customer) {}
+rpc customers (findManyParams) returns (stream Customer) {}
+rpc customer (CustomerWhereUniqueInput) returns (Customer) {}
+rpc updateCustomer (CustomerUpdateInput) returns (Customer) {}
+rpc deleteCustomer (CustomerWhereUniqueInput) returns (Customer) {}
 rpc findManyCustomer (CustomerWhereUniqueInput) returns (stream Order) {}
 rpc updateCustomer (OrderParams) returns (stream Order) {}
 rpc connectCustomer (OrderParams) returns (Order) {}
@@ -6571,11 +6606,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createEmpty() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  empties: () => FIND_MANY_RESULT,
+  empty: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -6739,18 +6774,17 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { EmptyService } from "../empty.service";
 import { EmptyCreateInput } from "./EmptyCreateInput";
-import { EmptyWhereInput } from "./EmptyWhereInput";
-import { EmptyWhereUniqueInput } from "./EmptyWhereUniqueInput";
-import { EmptyFindManyArgs } from "./EmptyFindManyArgs";
-import { EmptyUpdateInput } from "./EmptyUpdateInput";
 import { Empty } from "./Empty";
+import { EmptyFindManyArgs } from "./EmptyFindManyArgs";
+import { EmptyWhereUniqueInput } from "./EmptyWhereUniqueInput";
+import { EmptyUpdateInput } from "./EmptyUpdateInput";
 
 export class EmptyControllerBase {
   constructor(protected readonly service: EmptyService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
-  async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
-    return await this.service.create({
+  async createEmpty(@common.Body() data: EmptyCreateInput): Promise<Empty> {
+    return await this.service.createEmpty({
       data: data,
       select: {
         id: true,
@@ -6763,9 +6797,9 @@ export class EmptyControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Empty] })
   @ApiNestedQuery(EmptyFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Empty[]> {
+  async empties(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.empties({
       ...args,
       select: {
         id: true,
@@ -6778,10 +6812,10 @@ export class EmptyControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async empty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.empty({
       where: params,
       select: {
         id: true,
@@ -6800,12 +6834,12 @@ export class EmptyControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateEmpty(
     @common.Param() params: EmptyWhereUniqueInput,
     @common.Body() data: EmptyUpdateInput
   ): Promise<Empty | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateEmpty({
         where: params,
         data: data,
         select: {
@@ -6827,11 +6861,11 @@ export class EmptyControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteEmpty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteEmpty({
         where: params,
         select: {
           id: true,
@@ -6881,9 +6915,9 @@ export class EmptyGrpcControllerBase {
   constructor(protected readonly service: EmptyService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
-  @GrpcMethod("EmptyService", "create")
-  async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
-    return await this.service.create({
+  @GrpcMethod("EmptyService", "createEmpty")
+  async createEmpty(@common.Body() data: EmptyCreateInput): Promise<Empty> {
+    return await this.service.createEmpty({
       data: data,
       select: {
         id: true,
@@ -6896,10 +6930,10 @@ export class EmptyGrpcControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Empty] })
   @ApiNestedQuery(EmptyFindManyArgs)
-  @GrpcMethod("EmptyService", "findMany")
-  async findMany(@common.Req() request: Request): Promise<Empty[]> {
+  @GrpcMethod("EmptyService", "empties")
+  async empties(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.empties({
       ...args,
       select: {
         id: true,
@@ -6912,11 +6946,11 @@ export class EmptyGrpcControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("EmptyService", "findOne")
-  async findOne(
+  @GrpcMethod("EmptyService", "empty")
+  async empty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.empty({
       where: params,
       select: {
         id: true,
@@ -6935,13 +6969,13 @@ export class EmptyGrpcControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("EmptyService", "update")
-  async update(
+  @GrpcMethod("EmptyService", "updateEmpty")
+  async updateEmpty(
     @common.Param() params: EmptyWhereUniqueInput,
     @common.Body() data: EmptyUpdateInput
   ): Promise<Empty | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateEmpty({
         where: params,
         data: data,
         select: {
@@ -6963,12 +6997,12 @@ export class EmptyGrpcControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("EmptyService", "delete")
-  async delete(
+  @GrpcMethod("EmptyService", "deleteEmpty")
+  async deleteEmpty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteEmpty({
         where: params,
         select: {
           id: true,
@@ -7029,27 +7063,27 @@ export class EmptyServiceBase {
     return this.prisma.empty.count(args);
   }
 
-  async findMany<T extends Prisma.EmptyFindManyArgs>(
+  async empties<T extends Prisma.EmptyFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
   ): Promise<Empty[]> {
     return this.prisma.empty.findMany(args);
   }
-  async findOne<T extends Prisma.EmptyFindUniqueArgs>(
+  async empty<T extends Prisma.EmptyFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindUniqueArgs>
   ): Promise<Empty | null> {
     return this.prisma.empty.findUnique(args);
   }
-  async create<T extends Prisma.EmptyCreateArgs>(
+  async createEmpty<T extends Prisma.EmptyCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyCreateArgs>
   ): Promise<Empty> {
     return this.prisma.empty.create<T>(args);
   }
-  async update<T extends Prisma.EmptyUpdateArgs>(
+  async updateEmpty<T extends Prisma.EmptyUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyUpdateArgs>
   ): Promise<Empty> {
     return this.prisma.empty.update<T>(args);
   }
-  async delete<T extends Prisma.EmptyDeleteArgs>(
+  async deleteEmpty<T extends Prisma.EmptyDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyDeleteArgs>
   ): Promise<Empty> {
     return this.prisma.empty.delete(args);
@@ -7100,11 +7134,11 @@ export class EmptyModule {}
 
                  package empty;
 service EmptyService {
- rpc create (EmptyCreateInput) returns (Empty) {}
-rpc findMany (findManyParams) returns (stream Empty) {}
-rpc findOne (EmptyWhereUniqueInput) returns (Empty) {}
-rpc update (EmptyUpdateInput) returns (Empty) {}
-rpc delete (EmptyWhereUniqueInput) returns (Empty) {} 
+ rpc createEmpty (EmptyCreateInput) returns (Empty) {}
+rpc empties (findManyParams) returns (stream Empty) {}
+rpc empty (EmptyWhereUniqueInput) returns (Empty) {}
+rpc updateEmpty (EmptyUpdateInput) returns (Empty) {}
+rpc deleteEmpty (EmptyWhereUniqueInput) returns (Empty) {} 
  }
 message EmptyCreateInput {
 string id = 1;
@@ -7250,7 +7284,7 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
   "server/src/grpc.client.options.ts": "import { ClientOptions, Transport } from "@nestjs/microservices";
 import { ConfigService } from "@nestjs/config";
 
-let configService: ConfigService = new ConfigService();
+const configService: ConfigService = new ConfigService();
 
 export const grpcClientOptions: ClientOptions = {
   transport: Transport.GRPC,
@@ -7364,7 +7398,6 @@ async function main() {
 
   //This fix is based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   BigInt.prototype.toJSON = function () {
     return this.toString();
   };
@@ -8172,11 +8205,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createOrder() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  orders: () => FIND_MANY_RESULT,
+  order: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -8341,19 +8374,18 @@ import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { OrderService } from "../order.service";
 import { Public } from "../../decorators/public.decorator";
 import { OrderCreateInput } from "./OrderCreateInput";
-import { OrderWhereInput } from "./OrderWhereInput";
-import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
-import { OrderFindManyArgs } from "./OrderFindManyArgs";
-import { OrderUpdateInput } from "./OrderUpdateInput";
 import { Order } from "./Order";
+import { OrderFindManyArgs } from "./OrderFindManyArgs";
+import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
+import { OrderUpdateInput } from "./OrderUpdateInput";
 
 export class OrderControllerBase {
   constructor(protected readonly service: OrderService) {}
   @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
-  async create(@common.Body() data: OrderCreateInput): Promise<Order> {
-    return await this.service.create({
+  async createOrder(@common.Body() data: OrderCreateInput): Promise<Order> {
+    return await this.service.createOrder({
       data: {
         ...data,
 
@@ -8382,9 +8414,9 @@ export class OrderControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
   @ApiNestedQuery(OrderFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Order[]> {
+  async orders(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.orders({
       ...args,
       select: {
         id: true,
@@ -8407,10 +8439,10 @@ export class OrderControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async order(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.order({
       where: params,
       select: {
         id: true,
@@ -8439,12 +8471,12 @@ export class OrderControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateOrder(
     @common.Param() params: OrderWhereUniqueInput,
     @common.Body() data: OrderUpdateInput
   ): Promise<Order | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrder({
         where: params,
         data: {
           ...data,
@@ -8482,11 +8514,11 @@ export class OrderControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteOrder(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteOrder({
         where: params,
         select: {
           id: true,
@@ -8547,9 +8579,9 @@ export class OrderGrpcControllerBase {
   @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
-  @GrpcMethod("OrderService", "create")
-  async create(@common.Body() data: OrderCreateInput): Promise<Order> {
-    return await this.service.create({
+  @GrpcMethod("OrderService", "createOrder")
+  async createOrder(@common.Body() data: OrderCreateInput): Promise<Order> {
+    return await this.service.createOrder({
       data: {
         ...data,
 
@@ -8578,10 +8610,10 @@ export class OrderGrpcControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
   @ApiNestedQuery(OrderFindManyArgs)
-  @GrpcMethod("OrderService", "findMany")
-  async findMany(@common.Req() request: Request): Promise<Order[]> {
+  @GrpcMethod("OrderService", "orders")
+  async orders(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.orders({
       ...args,
       select: {
         id: true,
@@ -8604,11 +8636,11 @@ export class OrderGrpcControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("OrderService", "findOne")
-  async findOne(
+  @GrpcMethod("OrderService", "order")
+  async order(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.order({
       where: params,
       select: {
         id: true,
@@ -8637,13 +8669,13 @@ export class OrderGrpcControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("OrderService", "update")
-  async update(
+  @GrpcMethod("OrderService", "updateOrder")
+  async updateOrder(
     @common.Param() params: OrderWhereUniqueInput,
     @common.Body() data: OrderUpdateInput
   ): Promise<Order | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrder({
         where: params,
         data: {
           ...data,
@@ -8681,12 +8713,12 @@ export class OrderGrpcControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("OrderService", "delete")
-  async delete(
+  @GrpcMethod("OrderService", "deleteOrder")
+  async deleteOrder(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteOrder({
         where: params,
         select: {
           id: true,
@@ -8756,27 +8788,27 @@ export class OrderServiceBase {
     return this.prisma.order.count(args);
   }
 
-  async findMany<T extends Prisma.OrderFindManyArgs>(
+  async orders<T extends Prisma.OrderFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
   ): Promise<Order[]> {
     return this.prisma.order.findMany(args);
   }
-  async findOne<T extends Prisma.OrderFindUniqueArgs>(
+  async order<T extends Prisma.OrderFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindUniqueArgs>
   ): Promise<Order | null> {
     return this.prisma.order.findUnique(args);
   }
-  async create<T extends Prisma.OrderCreateArgs>(
+  async createOrder<T extends Prisma.OrderCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderCreateArgs>
   ): Promise<Order> {
     return this.prisma.order.create<T>(args);
   }
-  async update<T extends Prisma.OrderUpdateArgs>(
+  async updateOrder<T extends Prisma.OrderUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderUpdateArgs>
   ): Promise<Order> {
     return this.prisma.order.update<T>(args);
   }
-  async delete<T extends Prisma.OrderDeleteArgs>(
+  async deleteOrder<T extends Prisma.OrderDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderDeleteArgs>
   ): Promise<Order> {
     return this.prisma.order.delete(args);
@@ -8835,11 +8867,11 @@ export class OrderModule {}
 
                  package order;
 service OrderService {
- rpc create (OrderCreateInput) returns (Order) {}
-rpc findMany (findManyParams) returns (stream Order) {}
-rpc findOne (OrderWhereUniqueInput) returns (Order) {}
-rpc update (OrderUpdateInput) returns (Order) {}
-rpc delete (OrderWhereUniqueInput) returns (Order) {} 
+ rpc createOrder (OrderCreateInput) returns (Order) {}
+rpc orders (findManyParams) returns (stream Order) {}
+rpc order (OrderWhereUniqueInput) returns (Order) {}
+rpc updateOrder (OrderUpdateInput) returns (Order) {}
+rpc deleteOrder (OrderWhereUniqueInput) returns (Order) {} 
  }
 message OrderCreateInput {
 string id = 1;
@@ -9785,11 +9817,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createOrganization() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  organizations: () => FIND_MANY_RESULT,
+  organization: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -9953,11 +9985,10 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { OrganizationService } from "../organization.service";
 import { OrganizationCreateInput } from "./OrganizationCreateInput";
-import { OrganizationWhereInput } from "./OrganizationWhereInput";
-import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
-import { OrganizationFindManyArgs } from "./OrganizationFindManyArgs";
-import { OrganizationUpdateInput } from "./OrganizationUpdateInput";
 import { Organization } from "./Organization";
+import { OrganizationFindManyArgs } from "./OrganizationFindManyArgs";
+import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
+import { OrganizationUpdateInput } from "./OrganizationUpdateInput";
 import { UserFindManyArgs } from "../../user/base/UserFindManyArgs";
 import { User } from "../../user/base/User";
 import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
@@ -9969,10 +10000,10 @@ export class OrganizationControllerBase {
   constructor(protected readonly service: OrganizationService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Organization })
-  async create(
+  async createOrganization(
     @common.Body() data: OrganizationCreateInput
   ): Promise<Organization> {
-    return await this.service.create({
+    return await this.service.createOrganization({
       data: data,
       select: {
         id: true,
@@ -9986,9 +10017,9 @@ export class OrganizationControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Organization] })
   @ApiNestedQuery(OrganizationFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Organization[]> {
+  async organizations(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.organizations({
       ...args,
       select: {
         id: true,
@@ -10002,10 +10033,10 @@ export class OrganizationControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async organization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.organization({
       where: params,
       select: {
         id: true,
@@ -10025,12 +10056,12 @@ export class OrganizationControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateOrganization(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() data: OrganizationUpdateInput
   ): Promise<Organization | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrganization({
         where: params,
         data: data,
         select: {
@@ -10053,11 +10084,11 @@ export class OrganizationControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteOrganization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteOrganization({
         where: params,
         select: {
           id: true,
@@ -10078,7 +10109,7 @@ export class OrganizationControllerBase {
 
   @common.Get("/:id/users")
   @ApiNestedQuery(UserFindManyArgs)
-  async findManyUsers(
+  async findUsers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<User[]> {
@@ -10087,6 +10118,8 @@ export class OrganizationControllerBase {
       ...query,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -10131,7 +10164,7 @@ export class OrganizationControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10148,7 +10181,7 @@ export class OrganizationControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10165,7 +10198,7 @@ export class OrganizationControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10174,7 +10207,7 @@ export class OrganizationControllerBase {
 
   @common.Get("/:id/customers")
   @ApiNestedQuery(CustomerFindManyArgs)
-  async findManyCustomers(
+  async findCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Customer[]> {
@@ -10228,7 +10261,7 @@ export class OrganizationControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10245,7 +10278,7 @@ export class OrganizationControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10262,7 +10295,7 @@ export class OrganizationControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10271,7 +10304,7 @@ export class OrganizationControllerBase {
 
   @common.Get("/:id/vipCustomers")
   @ApiNestedQuery(CustomerFindManyArgs)
-  async findManyVipCustomers(
+  async findVipCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Customer[]> {
@@ -10325,7 +10358,7 @@ export class OrganizationControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10342,7 +10375,7 @@ export class OrganizationControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10359,7 +10392,7 @@ export class OrganizationControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10404,11 +10437,11 @@ export class OrganizationGrpcControllerBase {
   constructor(protected readonly service: OrganizationService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Organization })
-  @GrpcMethod("OrganizationService", "create")
-  async create(
+  @GrpcMethod("OrganizationService", "createOrganization")
+  async createOrganization(
     @common.Body() data: OrganizationCreateInput
   ): Promise<Organization> {
-    return await this.service.create({
+    return await this.service.createOrganization({
       data: data,
       select: {
         id: true,
@@ -10422,10 +10455,10 @@ export class OrganizationGrpcControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Organization] })
   @ApiNestedQuery(OrganizationFindManyArgs)
-  @GrpcMethod("OrganizationService", "findMany")
-  async findMany(@common.Req() request: Request): Promise<Organization[]> {
+  @GrpcMethod("OrganizationService", "organizations")
+  async organizations(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.organizations({
       ...args,
       select: {
         id: true,
@@ -10439,11 +10472,11 @@ export class OrganizationGrpcControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("OrganizationService", "findOne")
-  async findOne(
+  @GrpcMethod("OrganizationService", "organization")
+  async organization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.organization({
       where: params,
       select: {
         id: true,
@@ -10463,13 +10496,13 @@ export class OrganizationGrpcControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("OrganizationService", "update")
-  async update(
+  @GrpcMethod("OrganizationService", "updateOrganization")
+  async updateOrganization(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() data: OrganizationUpdateInput
   ): Promise<Organization | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrganization({
         where: params,
         data: data,
         select: {
@@ -10492,12 +10525,12 @@ export class OrganizationGrpcControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("OrganizationService", "delete")
-  async delete(
+  @GrpcMethod("OrganizationService", "deleteOrganization")
+  async deleteOrganization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteOrganization({
         where: params,
         select: {
           id: true,
@@ -10528,6 +10561,8 @@ export class OrganizationGrpcControllerBase {
       ...query,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -10573,7 +10608,7 @@ export class OrganizationGrpcControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10591,7 +10626,7 @@ export class OrganizationGrpcControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10609,7 +10644,7 @@ export class OrganizationGrpcControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10674,7 +10709,7 @@ export class OrganizationGrpcControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10692,7 +10727,7 @@ export class OrganizationGrpcControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10710,7 +10745,7 @@ export class OrganizationGrpcControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10775,7 +10810,7 @@ export class OrganizationGrpcControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10793,7 +10828,7 @@ export class OrganizationGrpcControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10811,7 +10846,7 @@ export class OrganizationGrpcControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10861,27 +10896,27 @@ export class OrganizationServiceBase {
     return this.prisma.organization.count(args);
   }
 
-  async findMany<T extends Prisma.OrganizationFindManyArgs>(
+  async organizations<T extends Prisma.OrganizationFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
   ): Promise<Organization[]> {
     return this.prisma.organization.findMany(args);
   }
-  async findOne<T extends Prisma.OrganizationFindUniqueArgs>(
+  async organization<T extends Prisma.OrganizationFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindUniqueArgs>
   ): Promise<Organization | null> {
     return this.prisma.organization.findUnique(args);
   }
-  async create<T extends Prisma.OrganizationCreateArgs>(
+  async createOrganization<T extends Prisma.OrganizationCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationCreateArgs>
   ): Promise<Organization> {
     return this.prisma.organization.create<T>(args);
   }
-  async update<T extends Prisma.OrganizationUpdateArgs>(
+  async updateOrganization<T extends Prisma.OrganizationUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationUpdateArgs>
   ): Promise<Organization> {
     return this.prisma.organization.update<T>(args);
   }
-  async delete<T extends Prisma.OrganizationDeleteArgs>(
+  async deleteOrganization<T extends Prisma.OrganizationDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationDeleteArgs>
   ): Promise<Organization> {
     return this.prisma.organization.delete(args);
@@ -10965,11 +11000,11 @@ export class OrganizationModule {}
 
                  package organization;
 service OrganizationService {
- rpc create (OrganizationCreateInput) returns (Organization) {}
-rpc findMany (findManyParams) returns (stream Organization) {}
-rpc findOne (OrganizationWhereUniqueInput) returns (Organization) {}
-rpc update (OrganizationUpdateInput) returns (Organization) {}
-rpc delete (OrganizationWhereUniqueInput) returns (Organization) {}
+ rpc createOrganization (OrganizationCreateInput) returns (Organization) {}
+rpc organizations (findManyParams) returns (stream Organization) {}
+rpc organization (OrganizationWhereUniqueInput) returns (Organization) {}
+rpc updateOrganization (OrganizationUpdateInput) returns (Organization) {}
+rpc deleteOrganization (OrganizationWhereUniqueInput) returns (Organization) {}
 rpc findManyOrganizations (OrganizationWhereUniqueInput) returns (stream User) {}
 rpc updateOrganizations (UserParams) returns (stream User) {}
 rpc connectOrganizations (UserParams) returns (User) {}
@@ -11024,31 +11059,37 @@ message findManyParams {
 };
 message User {
 string id = 1;
-string name = 2;
-string bio = 3;
-string email = 4;
-int32 age = 5;
-string birthDate = 6;
-int32 score = 7;
-repeated string interests = 8;
-repeated string priority = 9;
-bool isCurious = 10;
-string location = 11;
-string extendedProperties = 12;
+string username = 2;
+repeated string roles = 3;
+string password = 4;
+string name = 5;
+string bio = 6;
+string email = 7;
+int32 age = 8;
+string birthDate = 9;
+int32 score = 10;
+repeated string interests = 11;
+repeated string priority = 12;
+bool isCurious = 13;
+string location = 14;
+string extendedProperties = 15;
 };
 message UserWhereUniqueInput {
 string id = 1;
-string name = 2;
-string bio = 3;
-string email = 4;
-int32 age = 5;
-string birthDate = 6;
-int32 score = 7;
-repeated string interests = 8;
-repeated string priority = 9;
-bool isCurious = 10;
-string location = 11;
-string extendedProperties = 12;
+string username = 2;
+repeated string roles = 3;
+string password = 4;
+string name = 5;
+string bio = 6;
+string email = 7;
+int32 age = 8;
+string birthDate = 9;
+int32 score = 10;
+repeated string interests = 11;
+repeated string priority = 12;
+bool isCurious = 13;
+string location = 14;
+string extendedProperties = 15;
 };
 message UserParams {
 OrganizationWhereUniqueInput organizationWhereUniqueInput = 1;
@@ -11959,11 +12000,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createProfile() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  profiles: () => FIND_MANY_RESULT,
+  profile: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -12135,18 +12176,19 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { ProfileService } from "../profile.service";
 import { ProfileCreateInput } from "./ProfileCreateInput";
-import { ProfileWhereInput } from "./ProfileWhereInput";
-import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
-import { ProfileFindManyArgs } from "./ProfileFindManyArgs";
-import { ProfileUpdateInput } from "./ProfileUpdateInput";
 import { Profile } from "./Profile";
+import { ProfileFindManyArgs } from "./ProfileFindManyArgs";
+import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
+import { ProfileUpdateInput } from "./ProfileUpdateInput";
 
 export class ProfileControllerBase {
   constructor(protected readonly service: ProfileService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Profile })
-  async create(@common.Body() data: ProfileCreateInput): Promise<Profile> {
-    return await this.service.create({
+  async createProfile(
+    @common.Body() data: ProfileCreateInput
+  ): Promise<Profile> {
+    return await this.service.createProfile({
       data: {
         ...data,
 
@@ -12176,9 +12218,9 @@ export class ProfileControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Profile] })
   @ApiNestedQuery(ProfileFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Profile[]> {
+  async profiles(@common.Req() request: Request): Promise<Profile[]> {
     const args = plainToClass(ProfileFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.profiles({
       ...args,
       select: {
         id: true,
@@ -12200,10 +12242,10 @@ export class ProfileControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async profile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.profile({
       where: params,
       select: {
         id: true,
@@ -12231,12 +12273,12 @@ export class ProfileControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateProfile(
     @common.Param() params: ProfileWhereUniqueInput,
     @common.Body() data: ProfileUpdateInput
   ): Promise<Profile | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateProfile({
         where: params,
         data: {
           ...data,
@@ -12275,11 +12317,11 @@ export class ProfileControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteProfile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteProfile({
         where: params,
         select: {
           id: true,
@@ -12338,9 +12380,11 @@ export class ProfileGrpcControllerBase {
   constructor(protected readonly service: ProfileService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Profile })
-  @GrpcMethod("ProfileService", "create")
-  async create(@common.Body() data: ProfileCreateInput): Promise<Profile> {
-    return await this.service.create({
+  @GrpcMethod("ProfileService", "createProfile")
+  async createProfile(
+    @common.Body() data: ProfileCreateInput
+  ): Promise<Profile> {
+    return await this.service.createProfile({
       data: {
         ...data,
 
@@ -12370,10 +12414,10 @@ export class ProfileGrpcControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Profile] })
   @ApiNestedQuery(ProfileFindManyArgs)
-  @GrpcMethod("ProfileService", "findMany")
-  async findMany(@common.Req() request: Request): Promise<Profile[]> {
+  @GrpcMethod("ProfileService", "profiles")
+  async profiles(@common.Req() request: Request): Promise<Profile[]> {
     const args = plainToClass(ProfileFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.profiles({
       ...args,
       select: {
         id: true,
@@ -12395,11 +12439,11 @@ export class ProfileGrpcControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("ProfileService", "findOne")
-  async findOne(
+  @GrpcMethod("ProfileService", "profile")
+  async profile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.profile({
       where: params,
       select: {
         id: true,
@@ -12427,13 +12471,13 @@ export class ProfileGrpcControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("ProfileService", "update")
-  async update(
+  @GrpcMethod("ProfileService", "updateProfile")
+  async updateProfile(
     @common.Param() params: ProfileWhereUniqueInput,
     @common.Body() data: ProfileUpdateInput
   ): Promise<Profile | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateProfile({
         where: params,
         data: {
           ...data,
@@ -12472,12 +12516,12 @@ export class ProfileGrpcControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("ProfileService", "delete")
-  async delete(
+  @GrpcMethod("ProfileService", "deleteProfile")
+  async deleteProfile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteProfile({
         where: params,
         select: {
           id: true,
@@ -12547,27 +12591,27 @@ export class ProfileServiceBase {
     return this.prisma.profile.count(args);
   }
 
-  async findMany<T extends Prisma.ProfileFindManyArgs>(
+  async profiles<T extends Prisma.ProfileFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
   ): Promise<Profile[]> {
     return this.prisma.profile.findMany(args);
   }
-  async findOne<T extends Prisma.ProfileFindUniqueArgs>(
+  async profile<T extends Prisma.ProfileFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindUniqueArgs>
   ): Promise<Profile | null> {
     return this.prisma.profile.findUnique(args);
   }
-  async create<T extends Prisma.ProfileCreateArgs>(
+  async createProfile<T extends Prisma.ProfileCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileCreateArgs>
   ): Promise<Profile> {
     return this.prisma.profile.create<T>(args);
   }
-  async update<T extends Prisma.ProfileUpdateArgs>(
+  async updateProfile<T extends Prisma.ProfileUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileUpdateArgs>
   ): Promise<Profile> {
     return this.prisma.profile.update<T>(args);
   }
-  async delete<T extends Prisma.ProfileDeleteArgs>(
+  async deleteProfile<T extends Prisma.ProfileDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileDeleteArgs>
   ): Promise<Profile> {
     return this.prisma.profile.delete(args);
@@ -12626,11 +12670,11 @@ export class ProfileModule {}
 
                  package profile;
 service ProfileService {
- rpc create (ProfileCreateInput) returns (Profile) {}
-rpc findMany (findManyParams) returns (stream Profile) {}
-rpc findOne (ProfileWhereUniqueInput) returns (Profile) {}
-rpc update (ProfileUpdateInput) returns (Profile) {}
-rpc delete (ProfileWhereUniqueInput) returns (Profile) {} 
+ rpc createProfile (ProfileCreateInput) returns (Profile) {}
+rpc profiles (findManyParams) returns (stream Profile) {}
+rpc profile (ProfileWhereUniqueInput) returns (Profile) {}
+rpc updateProfile (ProfileUpdateInput) returns (Profile) {}
+rpc deleteProfile (ProfileWhereUniqueInput) returns (Profile) {} 
  }
 message ProfileCreateInput {
 int32 id = 1;
@@ -12685,6 +12729,7 @@ export class ProfileService extends ProfileServiceBase {
   "server/src/providers/secrets/base/secretsManager.service.base.spec.ts": "import { ConfigService } from "@nestjs/config";
 import { mock } from "jest-mock-extended";
 import { SecretsManagerServiceBase } from "./secretsManager.service.base";
+import { EnumSecretsNameKey } from "../secretsNameKey.enum";
 
 describe("Testing the secrets manager base class", () => {
   const SECRET_KEY = "SECRET_KEY";
@@ -12700,7 +12745,9 @@ describe("Testing the secrets manager base class", () => {
     //ARRANGE
     configService.get.mockReturnValue(SECRET_VALUE);
     //ACT
-    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    const result = await secretsManagerServiceBase.getSecret(
+      SECRET_KEY as unknown as EnumSecretsNameKey
+    );
     //ASSERT
     expect(result).toBe(SECRET_VALUE);
   });
@@ -12708,33 +12755,30 @@ describe("Testing the secrets manager base class", () => {
     //ARRANGE
     configService.get.mockReturnValue(undefined);
     //ACT
-    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    const result = await secretsManagerServiceBase.getSecret(
+      SECRET_KEY as unknown as EnumSecretsNameKey
+    );
     //ASSERT
     expect(result).toBeNull();
   });
-  it("should throw error if dont get key", () => {
-    return expect(secretsManagerServiceBase.getSecret("")).rejects.toThrow();
-  });
   it("should throw an exception if getting null key", () => {
     return expect(
-      secretsManagerServiceBase.getSecret(null as unknown as string)
+      secretsManagerServiceBase.getSecret(null as unknown as EnumSecretsNameKey)
     ).rejects.toThrow();
   });
 });
 ",
   "server/src/providers/secrets/base/secretsManager.service.base.ts": "import { ConfigService } from "@nestjs/config";
+import { EnumSecretsNameKey } from "../secretsNameKey.enum";
 
 export interface ISecretsManager {
-  getSecret: (key: string) => Promise<any | null>;
+  getSecret: (key: EnumSecretsNameKey) => Promise<any | null>;
 }
 
 export class SecretsManagerServiceBase implements ISecretsManager {
   constructor(protected readonly configService: ConfigService) {}
-  async getSecret<T>(key: string): Promise<T | null> {
-    if (!key) {
-      throw new Error("Didn't got the key");
-    }
-    const value = this.configService.get(key);
+  async getSecret<T>(key: EnumSecretsNameKey): Promise<T | null> {
+    const value = this.configService.get(key.toString());
     if (value) {
       return value;
     }
@@ -12762,6 +12806,7 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
   }
 }
 ",
+  "server/src/providers/secrets/secretsNameKey.enum.ts": "export enum EnumSecretsNameKey {}",
   "server/src/serveStaticOptions.service.ts": "import * as path from "path";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -13113,13 +13158,13 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "../../validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { JsonValue } from "type-fest";
 import { Type } from "class-transformer";
 import { Organization } from "../../organization/base/Organization";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { JsonValue } from "type-fest";
 import { Profile } from "../../profile/base/Profile";
 
 @ObjectType()
@@ -13131,6 +13176,21 @@ class User {
   @IsString()
   @Field(() => String)
   id!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  username!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  roles!: JsonValue;
 
   @ApiProperty({
     required: true,
@@ -13320,19 +13380,42 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "../../validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserCreateNestedManyWithoutUsersInput } from "./UserCreateNestedManyWithoutUsersInput";
 import { OrganizationCreateNestedManyWithoutUsersInput } from "./OrganizationCreateNestedManyWithoutUsersInput";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../../profile/base/ProfileWhereUniqueInput";
 
 @InputType()
 class UserCreateInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  username!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  roles!: InputJsonValue;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  password!: string;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -13698,6 +13781,39 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  username?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  roles?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  password?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   name?: SortOrder;
 
   @ApiProperty({
@@ -13860,19 +13976,51 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "../../validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateManyWithoutUsersInput } from "./UserUpdateManyWithoutUsersInput";
 import { OrganizationUpdateManyWithoutUsersInput } from "./OrganizationUpdateManyWithoutUsersInput";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../../profile/base/ProfileWhereUniqueInput";
 
 @InputType()
 class UserUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  username?: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  roles?: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  password?: string;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -14141,6 +14289,17 @@ class UserWhereInput {
   @Field(() => StringFilter, {
     nullable: true,
   })
+  username?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   name?: StringFilter;
 
   @ApiProperty({
@@ -14308,6 +14467,8 @@ const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
   id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
   name: "exampleName",
   bio: "exampleBio",
   email: "exampleEmail",
@@ -14319,6 +14480,8 @@ const CREATE_INPUT = {
 };
 const CREATE_RESULT = {
   id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
   name: "exampleName",
   bio: "exampleBio",
   email: "exampleEmail",
@@ -14331,6 +14494,8 @@ const CREATE_RESULT = {
 const FIND_MANY_RESULT = [
   {
     id: "exampleId",
+    username: "exampleUsername",
+    password: "examplePassword",
     name: "exampleName",
     bio: "exampleBio",
     email: "exampleEmail",
@@ -14343,6 +14508,8 @@ const FIND_MANY_RESULT = [
 ];
 const FIND_ONE_RESULT = {
   id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
   name: "exampleName",
   bio: "exampleBio",
   email: "exampleEmail",
@@ -14354,11 +14521,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createUser() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  users: () => FIND_MANY_RESULT,
+  user: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -14518,11 +14685,10 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { UserService } from "../user.service";
 import { UserCreateInput } from "./UserCreateInput";
-import { UserWhereInput } from "./UserWhereInput";
-import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-import { UserFindManyArgs } from "./UserFindManyArgs";
-import { UserUpdateInput } from "./UserUpdateInput";
 import { User } from "./User";
+import { UserFindManyArgs } from "./UserFindManyArgs";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+import { UserUpdateInput } from "./UserUpdateInput";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { OrganizationWhereUniqueInput } from "../../organization/base/OrganizationWhereUniqueInput";
@@ -14531,8 +14697,8 @@ export class UserControllerBase {
   constructor(protected readonly service: UserService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
-  async create(@common.Body() data: UserCreateInput): Promise<User> {
-    return await this.service.create({
+  async createUser(@common.Body() data: UserCreateInput): Promise<User> {
+    return await this.service.createUser({
       data: {
         ...data,
 
@@ -14550,6 +14716,8 @@ export class UserControllerBase {
       },
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -14581,12 +14749,14 @@ export class UserControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
   @ApiNestedQuery(UserFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<User[]> {
+  async users(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.users({
       ...args,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -14618,13 +14788,15 @@ export class UserControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async user(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.user({
       where: params,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -14662,12 +14834,12 @@ export class UserControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateUser(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() data: UserUpdateInput
   ): Promise<User | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateUser({
         where: params,
         data: {
           ...data,
@@ -14686,6 +14858,8 @@ export class UserControllerBase {
         },
         select: {
           id: true,
+          username: true,
+          roles: true,
           name: true,
           bio: true,
           email: true,
@@ -14725,14 +14899,16 @@ export class UserControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteUser(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteUser({
         where: params,
         select: {
           id: true,
+          username: true,
+          roles: true,
           name: true,
           bio: true,
           email: true,
@@ -14771,7 +14947,7 @@ export class UserControllerBase {
 
   @common.Get("/:id/employees")
   @ApiNestedQuery(UserFindManyArgs)
-  async findManyEmployees(
+  async findEmployees(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User[]> {
@@ -14780,6 +14956,8 @@ export class UserControllerBase {
       ...query,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -14824,7 +15002,7 @@ export class UserControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -14841,7 +15019,7 @@ export class UserControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -14858,7 +15036,7 @@ export class UserControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -14867,7 +15045,7 @@ export class UserControllerBase {
 
   @common.Get("/:id/organizations")
   @ApiNestedQuery(OrganizationFindManyArgs)
-  async findManyOrganizations(
+  async findOrganizations(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput
   ): Promise<Organization[]> {
@@ -14899,7 +15077,7 @@ export class UserControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -14916,7 +15094,7 @@ export class UserControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -14933,7 +15111,7 @@ export class UserControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -14975,9 +15153,9 @@ export class UserGrpcControllerBase {
   constructor(protected readonly service: UserService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
-  @GrpcMethod("UserService", "create")
-  async create(@common.Body() data: UserCreateInput): Promise<User> {
-    return await this.service.create({
+  @GrpcMethod("UserService", "createUser")
+  async createUser(@common.Body() data: UserCreateInput): Promise<User> {
+    return await this.service.createUser({
       data: {
         ...data,
 
@@ -14995,6 +15173,8 @@ export class UserGrpcControllerBase {
       },
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -15026,13 +15206,15 @@ export class UserGrpcControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
   @ApiNestedQuery(UserFindManyArgs)
-  @GrpcMethod("UserService", "findMany")
-  async findMany(@common.Req() request: Request): Promise<User[]> {
+  @GrpcMethod("UserService", "users")
+  async users(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.users({
       ...args,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -15064,14 +15246,16 @@ export class UserGrpcControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("UserService", "findOne")
-  async findOne(
+  @GrpcMethod("UserService", "user")
+  async user(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.user({
       where: params,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -15109,13 +15293,13 @@ export class UserGrpcControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("UserService", "update")
-  async update(
+  @GrpcMethod("UserService", "updateUser")
+  async updateUser(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() data: UserUpdateInput
   ): Promise<User | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateUser({
         where: params,
         data: {
           ...data,
@@ -15134,6 +15318,8 @@ export class UserGrpcControllerBase {
         },
         select: {
           id: true,
+          username: true,
+          roles: true,
           name: true,
           bio: true,
           email: true,
@@ -15173,15 +15359,17 @@ export class UserGrpcControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @GrpcMethod("UserService", "delete")
-  async delete(
+  @GrpcMethod("UserService", "deleteUser")
+  async deleteUser(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteUser({
         where: params,
         select: {
           id: true,
+          username: true,
+          roles: true,
           name: true,
           bio: true,
           email: true,
@@ -15230,6 +15418,8 @@ export class UserGrpcControllerBase {
       ...query,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -15275,7 +15465,7 @@ export class UserGrpcControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -15293,7 +15483,7 @@ export class UserGrpcControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -15311,7 +15501,7 @@ export class UserGrpcControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -15354,7 +15544,7 @@ export class UserGrpcControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -15372,7 +15562,7 @@ export class UserGrpcControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -15390,7 +15580,7 @@ export class UserGrpcControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -15440,27 +15630,27 @@ export class UserServiceBase {
     return this.prisma.user.count(args);
   }
 
-  async findMany<T extends Prisma.UserFindManyArgs>(
+  async users<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
   ): Promise<User[]> {
     return this.prisma.user.findMany(args);
   }
-  async findOne<T extends Prisma.UserFindUniqueArgs>(
+  async user<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
   ): Promise<User | null> {
     return this.prisma.user.findUnique(args);
   }
-  async create<T extends Prisma.UserCreateArgs>(
+  async createUser<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
   ): Promise<User> {
     return this.prisma.user.create<T>(args);
   }
-  async update<T extends Prisma.UserUpdateArgs>(
+  async updateUser<T extends Prisma.UserUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
   ): Promise<User> {
     return this.prisma.user.update<T>(args);
   }
-  async delete<T extends Prisma.UserDeleteArgs>(
+  async deleteUser<T extends Prisma.UserDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
   ): Promise<User> {
     return this.prisma.user.delete(args);
@@ -15549,11 +15739,11 @@ export class UserModule {}
 
                  package user;
 service UserService {
- rpc create (UserCreateInput) returns (User) {}
-rpc findMany (findManyParams) returns (stream User) {}
-rpc findOne (UserWhereUniqueInput) returns (User) {}
-rpc update (UserUpdateInput) returns (User) {}
-rpc delete (UserWhereUniqueInput) returns (User) {}
+ rpc createUser (UserCreateInput) returns (User) {}
+rpc users (findManyParams) returns (stream User) {}
+rpc user (UserWhereUniqueInput) returns (User) {}
+rpc updateUser (UserUpdateInput) returns (User) {}
+rpc deleteUser (UserWhereUniqueInput) returns (User) {}
 rpc findManyUsers (UserWhereUniqueInput) returns (stream Organization) {}
 rpc updateUsers (OrganizationParams) returns (stream Organization) {}
 rpc connectUsers (OrganizationParams) returns (Organization) {}
@@ -15561,67 +15751,79 @@ rpc disconnectUsers (OrganizationParams) returns (Organization) {}
  }
 message UserCreateInput {
 string id = 1;
-string name = 2;
-string bio = 3;
-string email = 4;
-int32 age = 5;
-string birthDate = 6;
-int32 score = 7;
-repeated User employees = 8;
-repeated Organization organizations = 9;
-repeated string interests = 10;
-repeated string priority = 11;
-bool isCurious = 12;
-string location = 13;
-string extendedProperties = 14;
+string username = 2;
+repeated string roles = 3;
+string password = 4;
+string name = 5;
+string bio = 6;
+string email = 7;
+int32 age = 8;
+string birthDate = 9;
+int32 score = 10;
+repeated User employees = 11;
+repeated Organization organizations = 12;
+repeated string interests = 13;
+repeated string priority = 14;
+bool isCurious = 15;
+string location = 16;
+string extendedProperties = 17;
 };
 message User {
 string id = 1;
-string name = 2;
-string bio = 3;
-string email = 4;
-int32 age = 5;
-string birthDate = 6;
-int32 score = 7;
-repeated User employees = 8;
-repeated Organization organizations = 9;
-repeated string interests = 10;
-repeated string priority = 11;
-bool isCurious = 12;
-string location = 13;
-string extendedProperties = 14;
+string username = 2;
+repeated string roles = 3;
+string password = 4;
+string name = 5;
+string bio = 6;
+string email = 7;
+int32 age = 8;
+string birthDate = 9;
+int32 score = 10;
+repeated User employees = 11;
+repeated Organization organizations = 12;
+repeated string interests = 13;
+repeated string priority = 14;
+bool isCurious = 15;
+string location = 16;
+string extendedProperties = 17;
 };
 message UserWhereUniqueInput {
 string id = 1;
-string name = 2;
-string bio = 3;
-string email = 4;
-int32 age = 5;
-string birthDate = 6;
-int32 score = 7;
-repeated User employees = 8;
-repeated Organization organizations = 9;
-repeated string interests = 10;
-repeated string priority = 11;
-bool isCurious = 12;
-string location = 13;
-string extendedProperties = 14;
+string username = 2;
+repeated string roles = 3;
+string password = 4;
+string name = 5;
+string bio = 6;
+string email = 7;
+int32 age = 8;
+string birthDate = 9;
+int32 score = 10;
+repeated User employees = 11;
+repeated Organization organizations = 12;
+repeated string interests = 13;
+repeated string priority = 14;
+bool isCurious = 15;
+string location = 16;
+string extendedProperties = 17;
 };
 message UserUpdateInput {
 string id = 1;
-string name = 2;
-string bio = 3;
-string email = 4;
-int32 age = 5;
-string birthDate = 6;
-int32 score = 7;
-repeated User employees = 8;
-repeated Organization organizations = 9;
-repeated string interests = 10;
-repeated string priority = 11;
-bool isCurious = 12;
-string location = 13;
-string extendedProperties = 14;
+string username = 2;
+repeated string roles = 3;
+string password = 4;
+string name = 5;
+string bio = 6;
+string email = 7;
+int32 age = 8;
+string birthDate = 9;
+int32 score = 10;
+repeated User employees = 11;
+repeated Organization organizations = 12;
+repeated string interests = 13;
+repeated string priority = 14;
+bool isCurious = 15;
+string location = 16;
+string extendedProperties = 17;
 };
 message findManyParams {
 
@@ -17218,10 +17420,7 @@ export function IsJSONValue(validationOptions?: ValidationOptions) {
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true,
-    "paths": {
-      "@app/custom-validators": ["src/validators"]
-    }
+    "strict": true
   },
   "include": ["src"]
 }

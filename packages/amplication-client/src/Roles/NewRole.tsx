@@ -14,6 +14,10 @@ import {
 } from "../util/formikValidateJsonSchema";
 import "./NewRole.scss";
 import { AppContext } from "../context/appContext";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 
 const INITIAL_VALUES: Partial<models.ResourceRole> = {
   name: "",
@@ -45,7 +49,9 @@ const FORM_SCHEMA = {
 const CLASS_NAME = "new-role";
 
 const NewRole = ({ onRoleAdd, resourceId }: Props) => {
-  const { addEntity } = useContext(AppContext);
+  const { addEntity, currentResource } = useContext(AppContext);
+  const licensed = currentResource?.licensed ?? true;
+
   const [createRole, { error, loading }] = useMutation(CREATE_ROLE, {
     update(cache, { data }) {
       if (!data) return;
@@ -130,14 +136,19 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              className={classNames(`${CLASS_NAME}__add-field__button`, {
-                [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
-                  formik.values.displayName
-                ),
-              })}
-            />
+            <LicenseIndicatorContainer
+              licensedResourceType={LicensedResourceType.Service}
+            >
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                icon="plus"
+                className={classNames(`${CLASS_NAME}__add-field__button`, {
+                  [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
+                    formik.values.displayName
+                  ),
+                })}
+              />
+            </LicenseIndicatorContainer>
           </Form>
         )}
       </Formik>

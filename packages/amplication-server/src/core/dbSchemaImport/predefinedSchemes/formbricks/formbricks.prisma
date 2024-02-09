@@ -1,0 +1,575 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+generator zod {
+    provider      = "zod-prisma"
+    output        = "./zod"
+    imports       = "./zod-utils"
+    relationModel = "default"
+}
+
+generator json {
+    provider = "prisma-json-types-generator"
+}
+
+enum PipelineTriggers {
+    responseCreated
+    responseUpdated
+    responseFinished
+}
+
+enum WebhookSource {
+    user
+    zapier
+    make
+    n8n
+}
+
+model Webhook {
+    id            String             @id @default(cuid())
+    name          String?
+    createdAt     DateTime           @default(now()) @map(name: "created_at")
+    updatedAt     DateTime           @updatedAt @map(name: "updated_at")
+    url           String
+    source        WebhookSource      @default(user)
+    environment   Environment        @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+    environmentId String
+    triggers      PipelineTriggers[]
+    surveyIds     String[]
+
+    @@index([environmentId])
+}
+
+model Attribute {
+    id               String         @id @default(cuid())
+    createdAt        DateTime       @default(now()) @map(name: "created_at")
+    updatedAt        DateTime       @updatedAt @map(name: "updated_at")
+    attributeClass   AttributeClass @relation(fields: [attributeClassId], references: [id], onDelete: Cascade)
+    attributeClassId String
+    person           Person         @relation(fields: [personId], references: [id], onDelete: Cascade)
+    personId         String
+    value            String
+
+    @@unique([attributeClassId, personId])
+}
+
+enum AttributeType {
+    code
+    noCode
+    automatic
+}
+
+model AttributeClass {
+    id               String                  @id @default(cuid())
+    createdAt        DateTime                @default(now()) @map(name: "created_at")
+    updatedAt        DateTime                @updatedAt @map(name: "updated_at")
+    name             String
+    description      String?
+    archived         Boolean                 @default(false)
+    type             AttributeType
+    environment      Environment             @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+    environmentId    String
+    attributes       Attribute[]
+    attributeFilters SurveyAttributeFilter[]
+
+    @@unique([name, environmentId])
+    @@index([environmentId])
+}
+
+model Person {
+    id            String      @id @default(cuid())
+    userId        String
+    createdAt     DateTime    @default(now()) @map(name: "created_at")
+    updatedAt     DateTime    @updatedAt @map(name: "updated_at")
+    environment   Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+    environmentId String
+    responses     Response[]
+    attributes    Attribute[]
+    displays      Display[]
+    actions       Action[]
+
+    @@unique([environmentId, userId])
+    @@index([environmentId])
+}
+
+model Response {
+    id               String            @id @default(cuid())
+    createdAt        DateTime          @default(now()) @map(name: "created_at")
+    updatedAt        DateTime          @updatedAt @map(name: "updated_at")
+    finished         Boolean           @default(false)
+    survey           Survey            @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+    surveyId         String
+    person           Person?           @relation(fields: [personId], references: [id], onDelete: Cascade)
+    personId         String?
+    notes            ResponseNote[]
+    /// @zod.custom(imports.ZResponseData)
+    /// [ResponseData]
+    data             Json              @default("{}")
+    /// @zod.custom(imports.ZResponseTtc)
+    /// [ResponseTtc]
+    ttc              Json              @default("{}")
+    /// @zod.custom(imports.ZResponseMeta)
+    /// [ResponseMeta]
+    meta             Json              @default("{}")
+    tags             TagsOnResponses[]
+    /// @zod.custom(imports.ZResponsePersonAttributes)
+    /// [ResponsePersonAttributes]
+    personAttributes Json?
+    // singleUseId, used to prevent multiple responses
+    singleUseId      String?
+
+    @@unique([surveyId, singleUseId])
+    @@index([surveyId, createdAt]) // to determine monthly response count
+    @@index([surveyId])
+}
+
+model ResponseNote {
+    id         String   @id @default(cuid())
+    createdAt  DateTime @default(now()) @map(name: "created_at")
+    updatedAt  DateTime @updatedAt @map(name: "updated_at")
+    response   Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
+    responseId String
+    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId     String
+    text       String
+    isResolved Boolean  @default(false)
+    isEdited   Boolean  @default(false)
+
+    @@index([responseId])
+}
+
+model Tag {
+    id            String            @id @default(cuid())
+    createdAt     DateTime          @default(now()) @map(name: "created_at")
+    updatedAt     DateTime          @updatedAt @map(name: "updated_at")
+    name          String
+    responses     TagsOnResponses[]
+    environmentId String
+    environment   Environment       @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+
+    @@unique([environmentId, name])
+    @@index([environmentId])
+}
+
+model TagsOnResponses {
+    id         String   @id @default(cuid())
+    responseId String
+    response   Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
+    tagId      String
+    tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+    @@index([responseId])
+}
+
+enum SurveyStatus {
+    draft
+    inProgress
+    paused
+    completed
+}
+
+enum DisplayStatus {
+    seen
+    responded
+}
+
+model Display {
+    id         String         @id @default(cuid())
+    createdAt  DateTime       @default(now()) @map(name: "created_at")
+    updatedAt  DateTime       @updatedAt @map(name: "updated_at")
+    survey     Survey         @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+    surveyId   String
+    person     Person?        @relation(fields: [personId], references: [id], onDelete: Cascade)
+    personId   String?
+    responseId String?        @unique
+    status     DisplayStatus?
+
+    @@index([surveyId])
+    @@index([personId])
+}
+
+model SurveyTrigger {
+    id            String      @id @default(cuid())
+    createdAt     DateTime    @default(now()) @map(name: "created_at")
+    updatedAt     DateTime    @updatedAt @map(name: "updated_at")
+    survey        Survey      @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+    surveyId      String
+    actionClass   ActionClass @relation(fields: [actionClassId], references: [id], onDelete: Cascade)
+    actionClassId String
+
+    @@unique([surveyId, actionClassId])
+    @@index([surveyId])
+}
+
+enum SurveyAttributeFilterCondition {
+    equals
+    notEquals
+}
+
+model SurveyAttributeFilter {
+    id               String                         @id @default(cuid())
+    createdAt        DateTime                       @default(now()) @map(name: "created_at")
+    updatedAt        DateTime                       @updatedAt @map(name: "updated_at")
+    attributeClass   AttributeClass                 @relation(fields: [attributeClassId], references: [id], onDelete: Cascade)
+    attributeClassId String
+    survey           Survey                         @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+    surveyId         String
+    condition        SurveyAttributeFilterCondition
+    value            String
+
+    @@unique([surveyId, attributeClassId])
+    @@index([surveyId])
+    @@index([attributeClassId])
+}
+
+enum SurveyType {
+    email
+    link
+    mobile
+    web
+}
+
+enum displayOptions {
+    displayOnce
+    displayMultiple
+    respondMultiple
+}
+
+model Survey {
+    id                  String                  @id @default(cuid())
+    createdAt           DateTime                @default(now()) @map(name: "created_at")
+    updatedAt           DateTime                @updatedAt @map(name: "updated_at")
+    name                String
+    redirectUrl         String?
+    type                SurveyType              @default(web)
+    environment         Environment             @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+    environmentId       String
+    creator             User?                   @relation(fields: [createdBy], references: [id])
+    createdBy           String?
+    status              SurveyStatus            @default(draft)
+    /// @zod.custom(imports.ZSurveyWelcomeCard)
+    /// [SurveyWelcomeCard]
+    welcomeCard         Json                    @default("{\"enabled\": false}")
+    /// @zod.custom(imports.ZSurveyQuestions)
+    /// [SurveyQuestions]
+    questions           Json                    @default("[]")
+    /// @zod.custom(imports.ZSurveyThankYouCard)
+    /// [SurveyThankYouCard]
+    thankYouCard        Json                    @default("{\"enabled\": false}")
+    /// @zod.custom(imports.ZSurveyHiddenFields)
+    /// [SurveyHiddenFields]
+    hiddenFields        Json                    @default("{\"enabled\": false}")
+    responses           Response[]
+    displayOption       displayOptions          @default(displayOnce)
+    recontactDays       Int?
+    triggers            SurveyTrigger[]
+    attributeFilters    SurveyAttributeFilter[]
+    displays            Display[]
+    autoClose           Int?
+    delay               Int                     @default(0)
+    autoComplete        Int?
+    closeOnDate         DateTime?
+    /// @zod.custom(imports.ZSurveyClosedMessage)
+    /// [SurveyClosedMessage]
+    surveyClosedMessage Json?
+    /// @zod.custom(imports.ZSurveySingleUse)
+    /// [SurveySingleUse]
+
+    /// @zod.custom(imports.ZSurveyProductOverwrites)
+    /// [SurveyProductOverwrites]
+    productOverwrites Json?
+    /// @zod.custom(imports.ZSurveyStyling)
+    /// [SurveyStyling]
+    styling           Json?
+    /// @zod.custom(imports.ZSurveySingleUse)
+    /// [SurveySingleUse]
+    singleUse         Json?   @default("{\"enabled\": false, \"isEncrypted\": true}")
+    /// @zod.custom(imports.ZSurveyVerifyEmail)
+    /// [SurveyVerifyEmail]
+    verifyEmail       Json?
+    pin               String?
+    resultShareKey    String? @unique
+    displayPercentage Int?
+
+    @@index([environmentId])
+}
+
+enum ActionType {
+    code
+    noCode
+    automatic
+}
+
+model ActionClass {
+    id            String          @id @default(cuid())
+    createdAt     DateTime        @default(now()) @map(name: "created_at")
+    updatedAt     DateTime        @updatedAt @map(name: "updated_at")
+    name          String
+    description   String?
+    type          ActionType
+    /// @zod.custom(imports.ZActionClassNoCodeConfig)
+    /// [ActionClassNoCodeConfig]
+    noCodeConfig  Json?
+    environment   Environment     @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+    environmentId String
+    surveys       SurveyTrigger[]
+    actions       Action[]
+
+    @@unique([name, environmentId])
+}
+
+model Action {
+    id            String      @id @default(cuid())
+    createdAt     DateTime    @default(now()) @map(name: "created_at")
+    actionClass   ActionClass @relation(fields: [actionClassId], references: [id], onDelete: Cascade)
+    actionClassId String
+    person        Person      @relation(fields: [personId], references: [id], onDelete: Cascade)
+    personId      String
+    /// @zod.custom(imports.ZActionProperties)
+    /// @zod.custom(imports.ZActionProperties)
+    /// [ActionProperties]
+    properties    Json        @default("{}")
+
+    @@index([personId])
+    @@index([actionClassId])
+}
+
+enum EnvironmentType {
+    production
+    development
+}
+
+enum IntegrationType {
+    googleSheets
+    notion
+    airtable
+}
+
+model Integration {
+    id            String          @id @default(cuid())
+    type          IntegrationType
+    environmentId String
+    /// @zod.custom(imports.ZIntegrationConfig)
+    /// [IntegrationConfig]
+    config        Json
+    environment   Environment     @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+
+    @@unique([type, environmentId])
+    @@index([environmentId])
+}
+
+model Environment {
+    id                   String           @id @default(cuid())
+    createdAt            DateTime         @default(now()) @map(name: "created_at")
+    updatedAt            DateTime         @updatedAt @map(name: "updated_at")
+    type                 EnvironmentType
+    product              Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+    productId            String
+    widgetSetupCompleted Boolean          @default(false)
+    surveys              Survey[]
+    people               Person[]
+    actionClasses        ActionClass[]
+    attributeClasses     AttributeClass[]
+    apiKeys              ApiKey[]
+    webhooks             Webhook[]
+    tags                 Tag[]
+    integration          Integration[]
+
+    @@index([productId])
+}
+
+enum WidgetPlacement {
+    bottomLeft
+    bottomRight
+    topLeft
+    topRight
+    center
+}
+
+model Product {
+    id                   String          @id @default(cuid())
+    createdAt            DateTime        @default(now()) @map(name: "created_at")
+    updatedAt            DateTime        @updatedAt @map(name: "updated_at")
+    name                 String
+    team                 Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId               String
+    environments         Environment[]
+    brandColor           String          @default("#64748b")
+    highlightBorderColor String?
+    recontactDays        Int             @default(7)
+    linkSurveyBranding   Boolean         @default(true) // Determines if the survey branding should be displayed in link surveys
+    inAppSurveyBranding  Boolean         @default(true) // Determines if the survey branding should be displayed in in-app surveys
+    placement            WidgetPlacement @default(bottomRight)
+    clickOutsideClose    Boolean         @default(true)
+    darkOverlay          Boolean         @default(false)
+
+    @@unique([teamId, name])
+    @@index([teamId])
+}
+
+model Team {
+    id          String       @id @default(cuid())
+    createdAt   DateTime     @default(now()) @map(name: "created_at")
+    updatedAt   DateTime     @updatedAt @map(name: "updated_at")
+    name        String
+    memberships Membership[]
+    products    Product[]
+    /// @zod.custom(imports.ZTeamBilling)
+    /// [TeamBilling]
+    billing     Json         @default("{\"stripeCustomerId\": null, \"features\": {\"inAppSurvey\": {\"status\": \"inactive\", \"unlimited\": false}, \"linkSurvey\": {\"status\": \"inactive\", \"unlimited\": false}, \"userTargeting\": {\"status\": \"inactive\", \"unlimited\": false}}}")
+    invites     Invite[]
+}
+
+enum MembershipRole {
+    owner
+    admin
+    editor
+    developer
+    viewer
+}
+
+model Membership {
+    id       String         @id @default(cuid())
+    team     Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId   String
+    user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId   String
+    accepted Boolean        @default(false)
+    role     MembershipRole
+
+    @@index([userId])
+    @@index([teamId])
+}
+
+model Invite {
+    id         String         @id @default(uuid())
+    email      String
+    name       String?
+    team       Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId     String
+    creator    User           @relation("inviteCreatedBy", fields: [creatorId], references: [id])
+    creatorId  String
+    acceptor   User?          @relation("inviteAcceptedBy", fields: [acceptorId], references: [id], onDelete: Cascade)
+    acceptorId String?
+    accepted   Boolean        @default(false)
+    createdAt  DateTime       @default(now())
+    expiresAt  DateTime
+    role       MembershipRole @default(admin)
+
+    @@index([email, teamId])
+    @@index([teamId])
+}
+
+model ApiKey {
+    id            String      @id @unique @default(cuid())
+    createdAt     DateTime    @default(now())
+    lastUsedAt    DateTime?
+    label         String?
+    hashedKey     String      @unique()
+    environment   Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+    environmentId String
+
+    @@index([environmentId])
+}
+
+enum IdentityProvider {
+    email
+    github
+    google
+    azuread
+}
+
+model Account {
+    id                String   @id @default(cuid())
+    createdAt         DateTime @default(now()) @map(name: "created_at")
+    updatedAt         DateTime @updatedAt @map(name: "updated_at")
+    user              User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    access_token      String?  @db.Text
+    refresh_token     String?  @db.Text
+    expires_at        Int?
+    ext_expires_in    Int?
+    token_type        String?
+    scope             String?
+    id_token          String?  @db.Text
+    session_state     String?
+
+    @@unique([provider, providerAccountId])
+    @@index([userId])
+}
+
+enum Role {
+    project_manager
+    engineer
+    founder
+    marketing_specialist
+    other
+}
+
+enum Objective {
+    increase_conversion
+    improve_user_retention
+    increase_user_adoption
+    sharpen_marketing_messaging
+    support_sales
+    other
+}
+
+enum Intention {
+    survey_user_segments
+    survey_at_specific_point_in_user_journey
+    enrich_customer_profiles
+    collect_all_user_feedback_on_one_platform
+    other
+}
+
+model User {
+    id                        String           @id @default(cuid())
+    createdAt                 DateTime         @default(now()) @map(name: "created_at")
+    updatedAt                 DateTime         @updatedAt @map(name: "updated_at")
+    name                      String?
+    email                     String           @unique
+    emailVerified             DateTime?        @map(name: "email_verified")
+    imageUrl                  String?
+    twoFactorSecret           String?
+    twoFactorEnabled          Boolean          @default(false)
+    backupCodes               String?
+    password                  String?
+    onboardingCompleted       Boolean          @default(false)
+    identityProvider          IdentityProvider @default(email)
+    identityProviderAccountId String?
+    memberships               Membership[]
+    accounts                  Account[]
+    responseNotes             ResponseNote[]
+    groupId                   String?
+    invitesCreated            Invite[]         @relation("inviteCreatedBy")
+    invitesAccepted           Invite[]         @relation("inviteAcceptedBy")
+    role                      Role?
+    objective                 Objective?
+    /// @zod.custom(imports.ZUserNotificationSettings)
+    /// @zod.custom(imports.ZUserNotificationSettings)
+    /// [UserNotificationSettings]
+    notificationSettings      Json             @default("{}")
+    surveys                   Survey[]
+
+    @@index([email])
+}
+
+model ShortUrl {
+    id        String   @id // generate nanoId in service
+    createdAt DateTime @default(now()) @map(name: "created_at")
+    updatedAt DateTime @updatedAt @map(name: "updated_at")
+    url       String   @unique
+}

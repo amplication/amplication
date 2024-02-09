@@ -1,6 +1,22 @@
 import { PluginVersion } from "../pluginVersion/base/PluginVersion";
 import { Plugin } from "./base/Plugin";
 
+export interface NpmTags {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  "dist-tags"?: { [key: string]: string };
+  time?: { modified: string; created: string };
+}
+
+export interface NpmDownloads {
+  downloads: number;
+}
+
+export interface PluginData {
+  plugin: PluginYml;
+  npm: NpmTags;
+  downloads: number;
+}
+
 export interface PluginYml {
   id: string;
   name: string;

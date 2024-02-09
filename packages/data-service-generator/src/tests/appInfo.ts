@@ -24,6 +24,7 @@ export const appInfo: AppInfo = {
     serverSettings: {
       generateGraphQL: true,
       generateRestApi: true,
+      generateServer: true,
       serverPath: "",
     },
     adminUISettings: {

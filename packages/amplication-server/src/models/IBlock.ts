@@ -25,6 +25,11 @@ export abstract class IBlock {
   })
   updatedAt!: Date;
 
+  @Field(() => String, {
+    nullable: true,
+  })
+  parentBlockId?: string;
+
   @Field(() => Block, {
     nullable: true,
   })

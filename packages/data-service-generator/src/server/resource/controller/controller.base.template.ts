@@ -1,12 +1,9 @@
 import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
-// @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
-// @ts-ignore
 import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
-// @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 
 declare interface CREATE_INPUT {}
@@ -25,18 +22,27 @@ declare class ENTITY {}
 declare interface Select {}
 
 declare interface SERVICE {
-  create(args: { data: CREATE_INPUT; select: Select }): Promise<ENTITY>;
-  findMany(args: { where: WHERE_INPUT; select: Select }): Promise<ENTITY[]>;
-  findOne(args: {
+  CREATE_FUNCTION(args: {
+    data: CREATE_INPUT;
+    select: Select;
+  }): Promise<ENTITY>;
+  FIND_MANY_FUNCTION(args: {
+    where: WHERE_INPUT;
+    select: Select;
+  }): Promise<ENTITY[]>;
+  FIND_ONE_FUNCTION(args: {
     where: WHERE_UNIQUE_INPUT;
     select: Select;
   }): Promise<ENTITY | null>;
-  update(args: {
+  UPDATE_FUNCTION(args: {
     where: WHERE_UNIQUE_INPUT;
     data: UPDATE_INPUT;
     select: Select;
   }): Promise<ENTITY>;
-  delete(args: { where: WHERE_UNIQUE_INPUT; select: Select }): Promise<ENTITY>;
+  DELETE_FUNCTION(args: {
+    where: WHERE_UNIQUE_INPUT;
+    select: Select;
+  }): Promise<ENTITY>;
 }
 
 declare const RESOURCE: string;
@@ -52,7 +58,7 @@ export class CONTROLLER_BASE {
   async CREATE_ENTITY_FUNCTION(
     @common.Body() data: CREATE_INPUT
   ): Promise<ENTITY> {
-    return await this.service.create({
+    return await this.service.CREATE_FUNCTION({
       data: CREATE_DATA_MAPPING,
       select: SELECT,
     });
@@ -65,7 +71,7 @@ export class CONTROLLER_BASE {
     @common.Req() request: Request
   ): Promise<ENTITY[]> {
     const args = plainToClass(FIND_MANY_ARGS, request.query);
-    return this.service.findMany({
+    return this.service.FIND_MANY_FUNCTION({
       ...args,
       select: SELECT,
     });
@@ -77,7 +83,7 @@ export class CONTROLLER_BASE {
   async FIND_ONE_ENTITY_FUNCTION(
     @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.FIND_ONE_FUNCTION({
       where: params,
       select: SELECT,
     });
@@ -97,7 +103,7 @@ export class CONTROLLER_BASE {
     @common.Body() data: UPDATE_INPUT
   ): Promise<ENTITY | null> {
     try {
-      return await this.service.update({
+      return await this.service.UPDATE_FUNCTION({
         where: params,
         data: UPDATE_DATA_MAPPING,
         select: SELECT,
@@ -119,7 +125,7 @@ export class CONTROLLER_BASE {
     @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
     try {
-      return await this.service.delete({
+      return await this.service.DELETE_FUNCTION({
         where: params,
         select: SELECT,
       });

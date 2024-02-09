@@ -1,8 +1,13 @@
-import React from "react";
+import {
+  EnumTextAlign,
+  EnumTextStyle,
+  Panel,
+  Text,
+} from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
-import "./PageContent.scss";
-import { Panel } from "@amplication/ui/design-system";
+import React from "react";
 import { ReactComponent as DiscordButton } from "../assets/images/discord-button.svg";
+import "./PageContent.scss";
 import "./WelcomePage.scss";
 
 const CLASS_NAME = "welcome-page";
@@ -97,16 +102,32 @@ function WelcomePage({
         <Panel className={`${CLASS_NAME}__panel`} shadow>
           {children}
         </Panel>
-        <div className={`${CLASS_NAME}__form__open-source-message`}>
-          {openSourceMessage}
-          <a
-            href="https://amplication.com/discord"
-            target="discord"
-            className="discord-button"
+        <Text
+          textStyle={EnumTextStyle.Description}
+          textAlign={EnumTextAlign.Center}
+        >
+          By signing up to Amplication, you agree to our <br />
+          <Text
+            textStyle={EnumTextStyle.Description}
+            textAlign={EnumTextAlign.Center}
+            underline
           >
-            <DiscordButton />
-          </a>
-        </div>
+            <a href="https://amplication.com/terms" target="terms">
+              terms of service
+            </a>{" "}
+          </Text>
+          and&nbsp;
+          <Text
+            textStyle={EnumTextStyle.Description}
+            textAlign={EnumTextAlign.Center}
+            underline
+          >
+            <a href="https://amplication.com/privacy" target="privacy">
+              privacy policy
+            </a>
+          </Text>
+          .
+        </Text>
       </div>
     </div>
   );

@@ -2,11 +2,15 @@
 
 $title-padding-bottom: 24px;
 $policy-margin-top: 64px;
-$message-margin-bottom: 40px;
+$message-margin-bottom: 24px;
 
 .login-page {
-  &__sso {
-    text-decoration: underline;
+  &__title {
+    font-size: 24px;
+    font-weight: 600;
+  }
+  &__sso-link {
+    margin-bottom: 0;
   }
 
   &__signup {
@@ -18,12 +22,34 @@ $message-margin-bottom: 40px;
     }
   }
 
+  &__login {
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 50px;
+
+    & a {
+      margin-left: 10px;
+      font-size: 13px;
+    }
+  }
+
   &__message {
     @include body1;
     white-space: normal;
-    color: var(--gray-30);
+    color: var(--gray-base);
+    font-size: 14px;
+    font-weight: 400;
     margin-top: var(--default-spacing);
     margin-bottom: $message-margin-bottom;
+  }
+
+  &.amp-button--primary[disabled] {
+    background-color: #2c3249;
+  }
+
+  &.amp-button {
+    margin-top: 0px;
+    border-radius: 4px;
   }
 
   &__title {
@@ -32,7 +58,6 @@ $message-margin-bottom: 40px;
   }
 
   &__policy {
-    margin-top: $policy-margin-top !important;
     margin-bottom: 0;
     @include body2;
     color: var(--gray-20);

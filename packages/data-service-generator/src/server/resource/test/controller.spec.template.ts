@@ -11,13 +11,9 @@ import {
 } from "@nestjs/common";
 import request from "supertest";
 import { ACGuard } from "nest-access-control";
-// @ts-ignore
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
-// @ts-ignore
 import { ACLModule } from "../../auth/acl.module";
-// @ts-ignore
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
-// @ts-ignore
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { map } from "rxjs";
 
@@ -54,11 +50,11 @@ const FIND_MANY_RESULT = FIND_MANY_RESULT_VALUE;
 const FIND_ONE_RESULT = FIND_ONE_RESULT_VALUE;
 
 const service = {
-  create() {
+  CREATE_ENTITY_FUNCTION() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  FIND_MANY_ENTITY_FUNCTION: () => FIND_MANY_RESULT,
+  FIND_ONE_ENTITY_FUNCTION: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case EXISTING_PARAM_ID:
         return FIND_ONE_RESULT;

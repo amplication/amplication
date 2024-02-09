@@ -12,7 +12,7 @@ import { Snackbar, HorizontalRule } from "@amplication/ui/design-system";
 import "./Topic.scss";
 
 type TData = {
-  Topic: models.Topic;
+  topic: models.Topic;
 };
 
 const CLASS_NAME = "topic";
@@ -62,16 +62,8 @@ const Topic = () => {
         },
       }).catch(console.error);
       trackEvent({
-        eventName: AnalyticsEventNames.TopicNameEdit,
-        topicName: data.name,
-      });
-      trackEvent({
-        eventName: AnalyticsEventNames.TopicDisplayNameEdit,
-        topicDisplayName: data.displayName,
-      });
-      trackEvent({
-        eventName: AnalyticsEventNames.TopicDescriptionEdit,
-        topicDescription: data.description,
+        eventName: AnalyticsEventNames.TopicUpdate,
+        ...data,
       });
     },
     [updateTopic, topicId]
@@ -91,14 +83,14 @@ const Topic = () => {
     <>
       <div className={`${CLASS_NAME}__header`}>
         <h3>Topic Settings</h3>
-        {data?.Topic && (
-          <DeleteTopic topic={data?.Topic} onDelete={handleDeleteField} />
+        {data?.topic && (
+          <DeleteTopic topic={data?.topic} onDelete={handleDeleteField} />
         )}
       </div>
 
       <HorizontalRule />
       {!loading && (
-        <TopicForm onSubmit={handleSubmit} defaultValues={data?.Topic} />
+        <TopicForm onSubmit={handleSubmit} defaultValues={data?.topic} />
       )}
       <Snackbar open={hasError} message={errorMessage} />
     </>
@@ -108,8 +100,8 @@ const Topic = () => {
 export default Topic;
 
 const GET_TOPIC = gql`
-  query Topic($topicId: String!) {
-    Topic(where: { id: $topicId }) {
+  query topic($topicId: String!) {
+    topic(where: { id: $topicId }) {
       id
       name
       displayName

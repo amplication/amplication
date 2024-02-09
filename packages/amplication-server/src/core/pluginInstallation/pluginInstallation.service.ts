@@ -12,10 +12,8 @@ import { PluginOrder } from "./dto/PluginOrder";
 import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
 import { PluginOrderItem } from "./dto/PluginOrderItem";
 import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ResourceService } from "../resource/resource.service";
 
 const reOrderPlugins = (
@@ -101,6 +99,7 @@ export class PluginInstallationService extends BlockTypeService<
       properties: {
         pluginId: newPlugin.pluginId,
         pluginType: "official",
+        $groups: { groupWorkspace: user.workspace.id },
       },
     });
 
@@ -120,7 +119,7 @@ export class PluginInstallationService extends BlockTypeService<
     args.data.pluginId = installation.pluginId;
     args.data.npm = installation.npm;
 
-    const updated = await super.update(args, user);
+    const updated = await super.update(args, user, ["settings"]);
 
     await this.analytics.track({
       userId: user.account.id,
@@ -129,6 +128,7 @@ export class PluginInstallationService extends BlockTypeService<
         pluginId: updated.pluginId,
         pluginType: "official",
         enabled: updated.enabled,
+        $groups: { groupWorkspace: user.workspace.id },
       },
     });
 

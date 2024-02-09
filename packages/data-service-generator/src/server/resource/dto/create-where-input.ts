@@ -1,24 +1,41 @@
 import { builders, namedTypes } from "ast-types";
 import {
-  Entity,
   EntityField,
   NamedClassDeclaration,
 } from "@amplication/code-gen-types";
 import { isScalarListField, isPasswordField } from "../../../utils/field";
-import { createInput } from "./create-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import { createFieldClassProperty } from "./create-field-class-property";
+import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
+import { classDeclaration } from "../../../utils/ast";
 
-export function createWhereInput(entity: Entity): NamedClassDeclaration {
-  const fields = entity.fields.filter((field) => isQueryableField(field));
-  return createInput(
-    createWhereInputID(entity.name),
-    fields,
-    entity,
-    true,
-    true,
-    EntityDtoTypeEnum.WhereInput
-  );
-}
+export const createWhereInput = (entityDTOsFilesObj) => {
+  if (isQueryableField(entityDTOsFilesObj.field)) {
+    const property = createFieldClassProperty(
+      entityDTOsFilesObj.field,
+      entityDTOsFilesObj.entity,
+      true,
+      true,
+      false,
+      EntityDtoTypeEnum.WhereInput
+    );
+    entityDTOsFilesObj.whereInput.properties.push(property);
+  }
+
+  if (entityDTOsFilesObj.fieldsLen - 1 === entityDTOsFilesObj.index) {
+    const decorators = entityDTOsFilesObj.whereInput.properties.length
+      ? [INPUT_TYPE_DECORATOR]
+      : [];
+    entityDTOsFilesObj.whereInput.DTO = classDeclaration(
+      createWhereInputID(entityDTOsFilesObj.entity.name),
+      builders.classBody(entityDTOsFilesObj.whereInput.properties),
+      null,
+      decorators
+    ) as NamedClassDeclaration;
+  }
+
+  return entityDTOsFilesObj;
+};
 
 export function createWhereInputID(entityName: string): namedTypes.Identifier {
   return builders.identifier(`${entityName}WhereInput`);

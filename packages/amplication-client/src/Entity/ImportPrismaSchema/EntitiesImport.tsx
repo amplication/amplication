@@ -14,8 +14,8 @@ import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
 import "./EntitiesImport.scss";
 import { CREATE_ENTITIES_FROM_SCHEMA } from "./queries";
-import useUserActionWatchStatus from "./useUserActionWatchStatus";
-import { BillingFeature } from "../../util/BillingFeature";
+import useUserActionWatchStatus from "../../UserAction/useUserActionWatchStatus";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { useStiggContext } from "@stigg/react-sdk";
 import { Button } from "../../Components/Button";
 
@@ -207,6 +207,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
             <a
               href="https://docs.amplication.com/how-to/import-prisma-schema/"
               target="_blank"
+              rel="noreferrer"
             >
               &nbsp;documentation
             </a>

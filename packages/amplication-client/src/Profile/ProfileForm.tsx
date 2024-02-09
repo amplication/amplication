@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
-import { GET_USER } from "../Components/UserBadge";
+import { GET_USER, UPDATE_ACCOUNT } from "./accountQueries";
 import { Form, Formik } from "formik";
 import {
   validate,
@@ -119,12 +119,3 @@ const ProfileForm = () => {
 };
 
 export default ProfileForm;
-
-const UPDATE_ACCOUNT = gql`
-  mutation updateAccount($data: UpdateAccountInput!) {
-    updateAccount(data: $data) {
-      firstName
-      lastName
-    }
-  }
-`;

@@ -2,7 +2,8 @@ import { PrismaService, Account } from "../../prisma";
 import { Test, TestingModule } from "@nestjs/testing";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { AccountService } from "./account.service";
-import { IDENTITY_PROVIDER_MANUAL } from "../auth/auth.service";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { IdentityProvider } from "../auth/auth.types";
 
 const EXAMPLE_ACCOUNT_ID = "ExampleAccountId",
   EXAMPLE_EMAIL = "example@email.com",
@@ -21,6 +22,8 @@ const EXAMPLE_ACCOUNT: Account = {
   password: EXAMPLE_PASSWORD,
   currentUserId: EXAMPLE_CURRENT_USER_ID,
   githubId: null,
+  previewAccountType: EnumPreviewAccountType.None,
+  previewAccountEmail: null,
 };
 
 const segmentAnalyticsIdentifyMock = jest.fn(() => {
@@ -86,9 +89,11 @@ describe("AccountService", () => {
         password: EXAMPLE_PASSWORD,
       },
     };
-    expect(await service.createAccount(args, IDENTITY_PROVIDER_MANUAL)).toEqual(
-      EXAMPLE_ACCOUNT
-    );
+    expect(
+      await service.createAccount(args, {
+        identityProvider: IdentityProvider.Local,
+      })
+    ).toEqual(EXAMPLE_ACCOUNT);
     expect(prismaAccountCreateMock).toBeCalledTimes(1);
     expect(prismaAccountCreateMock).toBeCalledWith(args);
     expect(segmentAnalyticsIdentifyMock).toBeCalledTimes(1);

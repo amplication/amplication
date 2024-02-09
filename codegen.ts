@@ -6,6 +6,7 @@ const generates = serverProject.targets[
   "graphql:models:generate"
 ].outputs.reduce(
   (acc, curr) => {
+    curr = curr.replace("{workspaceRoot}/", "");
     if (curr === "packages/amplication-client/src/models.ts") {
       acc[curr] = {
         documents: ["packages/amplication-client/src/**/*.query.ts"],
