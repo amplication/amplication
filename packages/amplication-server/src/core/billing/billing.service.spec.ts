@@ -192,6 +192,9 @@ describe("BillingService", () => {
             {
               addonId: BillingAddon.CustomActions,
             },
+            {
+              addonId: BillingAddon.BreakingTheMonolith,
+            },
           ],
         },
       })

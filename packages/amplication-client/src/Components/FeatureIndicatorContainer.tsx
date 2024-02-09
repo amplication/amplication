@@ -112,17 +112,21 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     if (disabled) {
       return limitationText;
     }
-    if (subscription.status !== EnumSubscriptionStatus.Trailing) {
+    if (
+      subscription.subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      subscription.status !== EnumSubscriptionStatus.Trailing
+    ) {
       return fullEnterpriseText;
     }
 
     return featureText;
-  }, [disabled, featureText, subscription, limitationText]);
+  }, [disabled, subscription, featureText, limitationText, fullEnterpriseText]);
 
   const linkText = useMemo(() => {
     if (
       isPreviewPlan(subscriptionPlan) ||
-      subscription.status !== EnumSubscriptionStatus.Trailing
+      (subscription.subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+        subscription.status !== EnumSubscriptionStatus.Trailing)
     ) {
       return ""; // don't show the upgrade link when the plan is preview
     }

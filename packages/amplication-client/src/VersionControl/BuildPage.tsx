@@ -26,6 +26,7 @@ import { BackNavigation } from "../Components/BackNavigation";
 import { AppContext } from "../context/appContext";
 import { resourceThemeMap } from "../Resource/constants";
 import useBreadcrumbs from "../Layout/useBreadcrumbs";
+import BuildGitLink from "./BuildGitLink";
 
 export type LogData = {
   action: models.Action;
@@ -128,36 +129,47 @@ const BuildPage = ({ match, buildId }: Props) => {
                 </Text>
 
                 <FlexItem
-                  direction={EnumFlexDirection.Column}
+                  direction={EnumFlexDirection.Row}
+                  itemsAlign={EnumItemsAlign.End}
                   gap={EnumGapSize.None}
-                >
-                  <Link
-                    to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}`}
-                  >
-                    <FlexItem
-                      itemsAlign={EnumItemsAlign.Center}
-                      gap={EnumGapSize.Small}
-                      className={`${CLASS_NAME}__header__title__service`}
-                    >
-                      <Icon
-                        icon={
-                          resourceThemeMap[currentResource?.resourceType]?.icon
-                        }
-                        size="large"
-                        color={EnumTextColor.ThemeTurquoise}
-                      />
-                      <Text textColor={EnumTextColor.ThemeTurquoise}>
-                        {currentResource?.name}
-                      </Text>
-                    </FlexItem>
-                  </Link>
-                  <h3>
-                    Commit&nbsp;
-                    <span>
-                      <TruncatedId id={commitData.commit.id} />
-                    </span>
-                  </h3>
-                </FlexItem>
+                  end={
+                    <BuildGitLink
+                      build={updatedBuild.build}
+                      textColor={EnumTextColor.ThemeTurquoise}
+                    />
+                  }
+                  start={
+                    <>
+                      <Link
+                        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}`}
+                      >
+                        <FlexItem
+                          itemsAlign={EnumItemsAlign.Center}
+                          gap={EnumGapSize.Small}
+                          className={`${CLASS_NAME}__header__title__service`}
+                        >
+                          <Icon
+                            icon={
+                              resourceThemeMap[currentResource?.resourceType]
+                                ?.icon
+                            }
+                            size="large"
+                            color={EnumTextColor.ThemeTurquoise}
+                          />
+                          <Text textColor={EnumTextColor.ThemeTurquoise}>
+                            {currentResource?.name}
+                          </Text>
+                        </FlexItem>
+                      </Link>
+                      <h3>
+                        Commit&nbsp;
+                        <span>
+                          <TruncatedId id={commitData.commit.id} />
+                        </span>
+                      </h3>
+                    </>
+                  }
+                ></FlexItem>
               </FlexItem>
             )}
             <div className={`${CLASS_NAME}__build-details`}>

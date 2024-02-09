@@ -1,6 +1,7 @@
 import {
   EnumActionStepStatus,
   RedesignProjectMovedEntity,
+  RedesignProjectNewService,
 } from "@amplication/code-gen-types/models";
 import { Lookup } from "@amplication/code-gen-types/types";
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
@@ -22,7 +23,7 @@ import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { GitOrganization, Project, Resource, User } from "../../models";
+import { Entity, GitOrganization, Project, Resource, User } from "../../models";
 import {
   EnumResourceType,
   GitRepository,
@@ -88,6 +89,9 @@ export const INVALID_DELETE_PROJECT_CONFIGURATION =
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
+
+const SERVICE_LIMITATION_ERROR =
+  "Can not create new services, The workspace reached your plan's resource limitation";
 
 export type CreatePreviewServiceArgs = {
   args: CreateOneResourceArgs;
@@ -515,43 +519,31 @@ export class ResourceService {
   ): Promise<UserAction> {
     const { movedEntities, newServices, projectId } = args.data;
 
-    const subscription = await this.billingService.getSubscription(
-      user.workspace?.id
-    );
-
     const [firstResource] = await this.resources({
       where: { projectId: projectId },
     });
 
-    const resourceId =
-      movedEntities[0]?.originalResourceId ?? firstResource?.id;
-
-    await this.analytics.track({
-      userId: user.id,
-      properties: {
-        workspaceId: user.workspace?.id,
-        projectId,
-        resourceId: resourceId,
-        plan: subscription.subscriptionPlan,
-        movedEntities: movedEntities.length,
-        newServices: newServices.length,
+    const project = await this.projectService.findUnique({
+      where: {
+        id: projectId,
       },
-      event: EnumEventType.ArchitectureRedesignApply,
     });
 
-    const defaultServiceSettings: ServiceSettingsUpdateInput = {
-      adminUISettings: {
-        generateAdminUI: false,
-        adminUIPath: "",
+    //group moved entities by target resource
+
+    const movedEntitiesByResource = movedEntities.reduce(
+      (entitiesByResource, entity) => {
+        if (!entitiesByResource[entity.targetResourceId]) {
+          entitiesByResource[entity.targetResourceId] = [];
+        }
+        entitiesByResource[entity.targetResourceId].push(entity);
+        return entitiesByResource;
       },
-      serverSettings: {
-        generateGraphQL: true, //@todo: take value from original service
-        generateRestApi: false, //@todo: take value from original service
-        generateServer: true,
-        serverPath: "", //@todo: take path from original service and use the same base path
-      },
-      authProvider: EnumAuthProviderType.Jwt,
-    };
+      {} as { [resourceId: string]: RedesignProjectMovedEntity[] }
+    );
+
+    const resourceId =
+      movedEntities[0]?.originalResourceId ?? firstResource?.id;
 
     const userAction =
       await this.userActionService.createUserActionByTypeWithInitialStep(
@@ -568,8 +560,78 @@ export class ResourceService {
       KAFKA_TOPICS.USER_ACTION_LOG_TOPIC
     );
 
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.track({
+      userId: user.id,
+      properties: {
+        workspaceId: user.workspace?.id,
+        projectId,
+        resourceId: resourceId,
+        plan: subscription.subscriptionPlan,
+        movedEntities: movedEntities.length,
+        newServices: newServices.length,
+      },
+      event: EnumEventType.ArchitectureRedesignApply,
+    });
+
+    const originalResourceId = movedEntities[0]?.originalResourceId;
+
+    const originalResourceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
+          where: {
+            id: originalResourceId,
+          },
+        },
+        user
+      );
+
+    const originalResourceAdminPath =
+      originalResourceSettings &&
+      originalResourceSettings.adminUISettings.adminUIPath;
+    const originalResourceServerPath =
+      originalResourceSettings &&
+      originalResourceSettings.serverSettings.serverPath;
+
+    const defaultServiceSettings: ServiceSettingsUpdateInput = {
+      adminUISettings: {
+        generateAdminUI: true,
+        adminUIPath: "",
+      },
+      serverSettings: {
+        generateGraphQL: true,
+        generateRestApi: true,
+        generateServer: true,
+        serverPath: "",
+      },
+      authProvider: EnumAuthProviderType.Jwt,
+    };
+
     try {
-      // 1. create new resources
+      // 1. data validationStep before starting the process
+      await actionContext.onEmitUserActionLog(
+        `Starting data validation`,
+        EnumActionLogLevel.Info
+      );
+
+      await this.validateNewResourcesData(newServices, project);
+      await this.validateMovedEntitiesData(
+        movedEntitiesByResource,
+        newServices,
+        project,
+        resourceId,
+        user
+      );
+
+      await actionContext.onEmitUserActionLog(
+        `Data validation ended Successfully`,
+        EnumActionLogLevel.Info
+      );
+
+      // 2. create new resources
       const currentProjectConfiguration = await this.prisma.resource.findFirst({
         where: {
           projectId: projectId,
@@ -580,6 +642,30 @@ export class ResourceService {
       const newResourcesMap = new Map<string, Resource>();
 
       for (const newService of newServices) {
+        const adminPathWithoutLastFolder = originalResourceAdminPath?.substring(
+          0,
+          originalResourceAdminPath.lastIndexOf("/") + 1
+        );
+
+        const serverPathWithoutLastFolder =
+          originalResourceServerPath?.substring(
+            0,
+            originalResourceServerPath.lastIndexOf("/") + 1
+          );
+
+        const baseAdminPath =
+          !originalResourceId || !originalResourceAdminPath
+            ? ""
+            : !originalResourceAdminPath.includes("/")
+            ? `${newService.name}-admin`
+            : `${adminPathWithoutLastFolder}${newService.name}-admin`;
+        const baseServerPath =
+          !originalResourceId || !originalResourceServerPath
+            ? ""
+            : !originalResourceServerPath.includes("/")
+            ? newService.name
+            : `${serverPathWithoutLastFolder}${newService.name}`;
+
         const args: CreateOneResourceArgs = {
           data: {
             name: newService.name,
@@ -590,7 +676,25 @@ export class ResourceService {
               },
             },
             resourceType: EnumResourceType.Service,
-            serviceSettings: defaultServiceSettings,
+            serviceSettings: {
+              ...defaultServiceSettings,
+
+              adminUISettings: {
+                adminUIPath: baseAdminPath,
+                generateAdminUI:
+                  defaultServiceSettings.adminUISettings.generateAdminUI,
+              },
+              serverSettings: {
+                serverPath: baseServerPath,
+                generateGraphQL:
+                  defaultServiceSettings.serverSettings.generateGraphQL,
+                generateRestApi:
+                  defaultServiceSettings.serverSettings.generateRestApi,
+                generateServer:
+                  defaultServiceSettings.serverSettings.generateServer,
+              },
+            },
+
             gitRepository: currentProjectConfiguration.gitRepositoryId
               ? {
                   isOverrideGitRepository: false,
@@ -613,7 +717,7 @@ export class ResourceService {
         await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
       }
 
-      // 2. update resourceId in copied entities list
+      // 3. update resourceId in copied entities list
       for (const entityToCopy of movedEntities) {
         const newResource: Resource = newResourcesMap.get(
           entityToCopy.targetResourceId
@@ -623,18 +727,6 @@ export class ResourceService {
           entityToCopy.targetResourceId = newResource.id;
         }
       }
-
-      // 3.group moved entities by target resource
-      const movedEntitiesByResource = movedEntities.reduce(
-        (entitiesByResource, entity) => {
-          if (!entitiesByResource[entity.targetResourceId]) {
-            entitiesByResource[entity.targetResourceId] = [];
-          }
-          entitiesByResource[entity.targetResourceId].push(entity);
-          return entitiesByResource;
-        },
-        {} as { [resourceId: string]: RedesignProjectMovedEntity[] }
-      );
 
       const sourceEntityIdToNewEntityMap = new Map<
         string,
@@ -827,6 +919,151 @@ export class ResourceService {
     return userAction;
   }
 
+  private async validateNewResourcesData(
+    newServices: RedesignProjectNewService[],
+    project: Project
+  ): Promise<void> {
+    const projectResources = await this.prisma.resource.findMany({
+      where: {
+        projectId: project.id,
+        resourceType: EnumResourceType.Service,
+        deletedAt: null,
+      },
+    });
+
+    //service limitation validation
+    const featureServices = await this.billingService.getMeteredEntitlement(
+      project.workspaceId,
+      BillingFeature.Services
+    );
+
+    if (newServices.length > 0) {
+      if (
+        !featureServices.hasAccess ||
+        (!featureServices.isUnlimited &&
+          featureServices.usageLimit <
+            projectResources.length + newServices.length)
+      ) {
+        throw new AmplicationError(SERVICE_LIMITATION_ERROR);
+      }
+    }
+
+    if (projectResources.length > 0) {
+      for (const newService of newServices) {
+        // duplicate name validation
+        const duplicateService = projectResources.find(
+          (resource) =>
+            resource.name.toLocaleLowerCase() ===
+            newService.name.toLocaleLowerCase()
+        );
+        if (duplicateService) {
+          throw new AmplicationError(
+            `Resource : ${newService.name} already exists in project: ${project.name}.`
+          );
+        }
+      }
+    }
+  }
+  private async validateMovedEntitiesData(
+    movedEntitiesByResource: {
+      [resourceId: string]: RedesignProjectMovedEntity[];
+    },
+    newServices: RedesignProjectNewService[],
+    project: Project,
+    originalResourceId: string,
+    user: User
+  ): Promise<void> {
+    // entities limitation per service validation
+    const featureEntitiesServices =
+      await this.billingService.getNumericEntitlement(
+        project.workspaceId,
+        BillingFeature.EntitiesPerService
+      );
+
+    const serviceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
+          where: { id: originalResourceId },
+        },
+        user
+      );
+
+    for (const [resourceId, entities] of Object.entries(
+      movedEntitiesByResource
+    )) {
+      let newService: RedesignProjectNewService = null;
+
+      if (newServices.length > 0) {
+        newService = newServices.find(
+          (newService) => newService.id === resourceId
+        );
+      }
+
+      const resourceEntities: Entity[] = await this.entityService.entities({
+        where: {
+          resourceId: resourceId,
+          deletedAt: null,
+        },
+      });
+
+      //pass limitation validation
+      const currentResource = await this.findOne({
+        where: {
+          id: resourceId,
+        },
+      });
+      const serviceName = currentResource
+        ? currentResource.name
+        : newService.name;
+
+      const entitiesCount = !currentResource
+        ? entities.length
+        : entities.length + resourceEntities?.length;
+      if (!project.licensed || (currentResource && !currentResource.licensed)) {
+        throw new AmplicationError(
+          `Cannot move entities to service: ${serviceName} due to your plan's limitations (number of services)`
+        );
+      }
+
+      if (
+        !featureEntitiesServices.hasAccess ||
+        featureEntitiesServices.value < entitiesCount
+      ) {
+        throw new AmplicationError(
+          `Cannot move entities to service: ${serviceName} due to your plan's limitations (number of entities)`
+        );
+      }
+
+      for (const movedEntity of entities) {
+        const currentEntity = await this.entityService.entity({
+          where: {
+            id: movedEntity.entityId,
+          },
+        });
+        // authEntity validation
+        if (
+          serviceSettings.authEntityName &&
+          serviceSettings.authEntityName === currentEntity.name
+        ) {
+          throw new AmplicationError(
+            `Cannot move Auth entity : ${currentEntity.name}.`
+          );
+        }
+
+        //duplicate entities names validation
+        if (resourceEntities.length > 0) {
+          const duplicateEntity = resourceEntities.find(
+            (e) => e.name === currentEntity.name
+          );
+          if (duplicateEntity) {
+            throw new AmplicationError(
+              `Entity : ${currentEntity.name} already exists in resource: ${serviceName}.`
+            );
+          }
+        }
+      }
+    }
+  }
   async userEntityValidation(
     resourceId: string,
     configurations: JsonValue

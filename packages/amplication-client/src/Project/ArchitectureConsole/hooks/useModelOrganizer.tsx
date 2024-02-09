@@ -29,6 +29,7 @@ import useUserActionWatchStatus from "../../../UserAction/useUserActionWatchStat
 import { useAppContext } from "../../../context/appContext";
 import { useTracking } from "../../../util/analytics";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
+import { EnumUserActionStatus } from "../../../models";
 
 type TData = {
   resources: models.Resource[];
@@ -264,6 +265,9 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     []
   );
 
+  const resetUserAction = useCallback(() => {
+    setUserAction(null);
+  }, [setUserAction]);
   //return an array with two element - the list of updates nodes and the selected resource node
   const prepareCurrentEditableResourceNodesData = useCallback(
     (nodes: Node[], resource: models.Resource) => {
@@ -604,14 +608,12 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       },
       onCompleted: async (data) => {
         setUserAction(data.redesignProject);
-        reloadResources();
-        resetChanges(false);
       },
       onError: (error) => {
         //@todo: show Errors
       },
     }).catch(console.error);
-  }, [changes, redesignProject, projectId, resetChanges]);
+  }, [redesignProject, changes, projectId]);
 
   useEffect(() => {
     if (projectId) {
@@ -619,6 +621,16 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
+
+  useEffect(() => {
+    if (
+      applyChangesResults?.userAction?.status === EnumUserActionStatus.Completed
+    ) {
+      reloadResources();
+      resetChanges(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [applyChangesResults?.userAction?.status]);
 
   return {
     nodes,
@@ -646,6 +658,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     modelGroupFilterChanged,
     searchPhraseChanged,
     mergeNewResourcesChanges,
+    resetUserAction,
     redesignMode,
   };
 };

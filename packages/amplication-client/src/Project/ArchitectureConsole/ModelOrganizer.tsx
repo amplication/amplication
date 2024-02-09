@@ -86,6 +86,7 @@ export default function ModelOrganizer() {
     setCurrentEditableResource,
     mergeNewResourcesChanges,
     redesignMode,
+    resetUserAction,
   } = useModelOrganization({
     projectId: currentProject?.id,
     onMessage: showMessage,
@@ -298,6 +299,7 @@ export default function ModelOrganizer() {
               mergeNewResourcesChanges={mergeNewResourcesChanges}
               applyChangesError={applyChangesError}
               applyChangesData={applyChangesData}
+              resetUserAction={resetUserAction}
             />
             <Dialog
               isOpen={!isValidResourceName}
