@@ -117,7 +117,7 @@ export type { Props as BreadcrumbsProps } from "./components/Breadcrumbs/Breadcr
 
 export type { ItemProps as BreadcrumbsItemProps } from "./components/Breadcrumbs/Breadcrumbs";
 
-export { Snackbar } from "./components/Snackbar/Snackbar";
+export { Snackbar, EnumMessageType } from "./components/Snackbar/Snackbar";
 
 export type { Props as SnackbarProps } from "./components/Snackbar/Snackbar";
 
@@ -255,3 +255,4 @@ export {
   CollapsibleListItem,
   Props as CollapsibleListItemProps,
 } from "./components/CollapsibleList/CollapsibleListItem";
+export { JumboButton } from "./components/JumboButton/JumboButton";

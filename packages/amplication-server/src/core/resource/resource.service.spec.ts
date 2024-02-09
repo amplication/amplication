@@ -65,6 +65,8 @@ import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { ActionService } from "../action/action.service";
+import { UserActionService } from "../userAction/userAction.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -652,6 +654,15 @@ describe("ResourceService", () => {
             commit: projectServiceFindUniqueMock,
           })),
         },
+        {
+          provide: ActionService,
+          useClass: jest.fn(() => ({})),
+        },
+        {
+          provide: UserActionService,
+          useClass: jest.fn(() => ({})),
+        },
+
         MockedAmplicationLoggerProvider,
       ],
     }).compile();

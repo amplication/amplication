@@ -1,9 +1,9 @@
 import { useContext, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 
-import * as models from "../../models";
+import * as models from "../models";
 import { GET_USER_ACTION } from "./queries";
-import { AppContext } from "../../context/appContext";
+import { AppContext } from "../context/appContext";
 
 const POLL_INTERVAL = 2000;
 
@@ -36,11 +36,12 @@ const useUserActionWatchStatus = (
     } else {
       startPolling(POLL_INTERVAL);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, stopPolling, startPolling]);
 
   useEffect(() => {
     if (userAction) refetch();
-  }, [userAction]);
+  }, [refetch, userAction]);
 
   //cleanup polling
   useEffect(() => {

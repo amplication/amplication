@@ -9,6 +9,7 @@ import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParam
 import { UserAction } from "../userAction/dto";
 import { ResourceBtmService } from "./resourceBtm.service";
 import { BreakServiceToMicroservicesResult } from "./dto/BreakServiceToMicroservicesResult";
+import { StartRedesignArgs } from "./dto/StartRedesignArgs";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -29,7 +30,7 @@ export class ResourceBtmResolver {
   ): Promise<UserAction> {
     return this.resourceBtmService.triggerBreakServiceIntoMicroservices({
       resourceId,
-      userId: user.id,
+      user,
     });
   }
 
@@ -45,5 +46,16 @@ export class ResourceBtmResolver {
     return this.resourceBtmService.finalizeBreakServiceIntoMicroservices(
       userActionId
     );
+  }
+
+  @Mutation(() => Resource, {
+    nullable: true,
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.id")
+  async startRedesign(
+    @UserEntity() user: User,
+    @Args() args: StartRedesignArgs
+  ): Promise<Resource> {
+    return this.resourceBtmService.startRedesign(user, args.data.id);
   }
 }

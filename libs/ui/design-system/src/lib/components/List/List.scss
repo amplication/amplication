@@ -40,6 +40,10 @@ $action-sep-height: $action-sep-gap * 2;
   border-bottom: 1px solid $border-color;
   background-color: $background-color;
 
+  &--no-padding {
+    padding: 0;
+  }
+
   flex: 1;
 }
 

@@ -12,7 +12,7 @@ const moduleMocker = new ModuleMocker(global);
 
 describe("AuthController", () => {
   let authController: AuthController;
-  const mockServicePrepareToken = jest.fn();
+  const mockServiceConfigureJtw = jest.fn();
   const expectedDomain = "amplication.com";
 
   beforeEach(async () => {
@@ -39,7 +39,7 @@ describe("AuthController", () => {
         {
           provide: AuthService,
           useClass: jest.fn(() => ({
-            prepareToken: mockServicePrepareToken,
+            configureJtw: mockServiceConfigureJtw,
           })),
         },
       ],
@@ -59,7 +59,7 @@ describe("AuthController", () => {
     jest.clearAllMocks();
   });
 
-  it("githubCallback should return a redirect 301 setting a token in a temporary AJWT cookie", async () => {
+  it("githubCallback should return a redirect 301 setting a token in a temporary AJWT cookie by calling configureJtw", async () => {
     const fakeRequest = {
       user: {
         account: {
@@ -68,7 +68,6 @@ describe("AuthController", () => {
       },
       isNew: false,
     } as unknown as GitHubRequest;
-    const fakeToken = "secret";
 
     const responseMock = {
       status: jest.fn((x) => responseMock),
@@ -76,18 +75,12 @@ describe("AuthController", () => {
       redirect: jest.fn(),
     } as unknown as Response;
 
-    mockServicePrepareToken.mockResolvedValue(fakeToken);
-
     await authController.githubCallback(fakeRequest, responseMock);
 
-    expect(responseMock.cookie).toHaveBeenCalledWith("AJWT", fakeToken, {
-      domain: expectedDomain,
-      secure: true,
-    });
-
-    expect(responseMock.redirect).toHaveBeenCalledWith(
-      301,
-      "https://server.amplication.com?complete-signup=0"
+    expect(mockServiceConfigureJtw).toHaveBeenCalledWith(
+      responseMock,
+      fakeRequest.user,
+      fakeRequest.isNew
     );
   });
 });

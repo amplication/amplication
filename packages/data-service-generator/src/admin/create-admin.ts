@@ -39,10 +39,10 @@ export function createAdminModules(): Promise<ModuleMap> {
 
 async function createAdminModulesInternal(): Promise<ModuleMap> {
   const context = DsgContext.getInstance;
-  const { entities, roles, clientDirectories } = context;
+  const { entities, roles, clientDirectories, logger } = context;
 
-  await context.logger.info("Creating admin...");
-  await context.logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
+  await logger.info("Creating admin...");
+  await logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
 
   await context.logger.info("Copying static modules...");
   const staticModules = await readStaticModules(

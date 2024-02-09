@@ -36,36 +36,44 @@ const RedesignResourceButton: React.FC<Props> = ({
         featureId={BillingFeature.RedesignArchitecture}
         entitlementType={EntitlementType.Boolean}
         limitationText="Available as part of the Enterprise plan only."
-      >
-        <SelectMenu
-          title="Redesign"
-          buttonStyle={EnumButtonStyle.Primary}
-          hideSelectedItemsIndication
-        >
-          <SelectMenuModal align="right" withCaret>
-            <SelectMenuList>
-              <FlexItem
-                margin={EnumFlexItemMargin.Both}
-                className={`${CLASS_NAME}__list-header`}
+        fullEnterpriseText="Redesign your system architecture by breaking a monolith Service into microservices"
+        render={({ disabled, icon }) => (
+          <>
+            {
+              <SelectMenu
+                icon={icon}
+                title="Redesign"
+                buttonStyle={EnumButtonStyle.Primary}
+                hideSelectedItemsIndication
+                disabled={disabled}
               >
-                <Text
-                  textStyle={EnumTextStyle.Tag}
-                  textColor={EnumTextColor.Black20}
-                >
-                  Select Service to start redesign
-                </Text>
-              </FlexItem>
-              {resources.map((item) => (
-                <RedesignResourceButtonItem
-                  resource={item}
-                  key={item.id}
-                  onSelectResource={onSelectResource}
-                />
-              ))}
-            </SelectMenuList>
-          </SelectMenuModal>
-        </SelectMenu>
-      </FeatureIndicatorContainer>
+                <SelectMenuModal align="right" withCaret>
+                  <SelectMenuList>
+                    <FlexItem
+                      margin={EnumFlexItemMargin.Both}
+                      className={`${CLASS_NAME}__list-header`}
+                    >
+                      <Text
+                        textStyle={EnumTextStyle.Tag}
+                        textColor={EnumTextColor.Black20}
+                      >
+                        Select Service to start redesign
+                      </Text>
+                    </FlexItem>
+                    {resources.map((item) => (
+                      <RedesignResourceButtonItem
+                        resource={item}
+                        key={item.id}
+                        onSelectResource={onSelectResource}
+                      />
+                    ))}
+                  </SelectMenuList>
+                </SelectMenuModal>
+              </SelectMenu>
+            }
+          </>
+        )}
+      ></FeatureIndicatorContainer>
     </div>
   );
 };
