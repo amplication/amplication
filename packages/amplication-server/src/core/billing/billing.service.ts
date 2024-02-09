@@ -45,6 +45,9 @@ export class BillingService {
         {
           addonId: BillingAddon.CustomActions,
         },
+        {
+          addonId: BillingAddon.BreakingTheMonolith,
+        },
       ],
     };
   }
