@@ -96,6 +96,8 @@ export class SegmentAnalyticsService {
    * Track an event for a user that is logged in
    * leveraging the current request context to get the user data
    * and the analytics session ID.
+   * NOTE: Only for methods that are called within the context of a request
+   * (NOT working for methods called from a Kafka event).
    * It automatically enriches the event with resource, project and workspace data.
    */
   public async trackWithContext(data: EventTrackData): Promise<void> {
@@ -142,7 +144,9 @@ export class SegmentAnalyticsService {
   }
 
   /**
-   * Track an event for a user that is not logged in
+   * Track an event for a user that is not logged in.
+   * NOTE: Methods that are called within the context of a request
+   * should prefer using `trackWithContext` instead.
    */
   public async trackManual(
     data: EventTrackData,
