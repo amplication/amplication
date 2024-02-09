@@ -22,6 +22,8 @@ import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
 import { formatError } from "../../util/error";
+import { useAppContext } from "../../context/appContext";
+import { isPreviewPlan } from "../../Components/FeatureIndicatorContainer";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
@@ -60,6 +62,9 @@ export default function ModelOrganizerToolbar({
   mergeNewResourcesChanges,
   resetUserAction,
 }: Props) {
+  const { currentWorkspace } = useAppContext();
+  const workspacePlan = currentWorkspace?.subscription?.subscriptionPlan;
+  const isPreviewSubscriptionPlan = isPreviewPlan(workspacePlan);
   const handleSearchPhraseChanged = useCallback(
     (searchPhrase: string) => {
       searchPhraseChanged(searchPhrase);
@@ -134,16 +139,18 @@ export default function ModelOrganizerToolbar({
           contentAlign={EnumContentAlign.Start}
           direction={EnumFlexDirection.Row}
         >
-          <SearchField
-            label="search"
-            placeholder="search"
-            onChange={handleSearchPhraseChanged}
-          />
+          {!isPreviewSubscriptionPlan && (
+            <SearchField
+              label="search"
+              placeholder="search"
+              onChange={handleSearchPhraseChanged}
+            />
+          )}
         </FlexItem>
 
         <FlexEnd>
           <FlexItem itemsAlign={EnumItemsAlign.Center}>
-            <BetaFeatureTag></BetaFeatureTag>
+            {!isPreviewSubscriptionPlan && <BetaFeatureTag></BetaFeatureTag>}
 
             {redesignMode && (
               <>
@@ -164,7 +171,7 @@ export default function ModelOrganizerToolbar({
                 </Button>
               </>
             )}
-            {!redesignMode && (
+            {!isPreviewSubscriptionPlan && !redesignMode && (
               <RedesignResourceButton
                 resources={resources}
                 onSelectResource={onRedesign}
