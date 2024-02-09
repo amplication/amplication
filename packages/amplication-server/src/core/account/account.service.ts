@@ -35,9 +35,6 @@ export class AccountService {
         properties: {
           ...trackingMetadata,
         },
-        context: {
-          traits: userData,
-        },
       },
       userData.accountId
     );
