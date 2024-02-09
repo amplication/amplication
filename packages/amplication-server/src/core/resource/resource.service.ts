@@ -494,6 +494,18 @@ export class ResourceService {
     return resource;
   }
 
+  private createMovedEntitiesByResourceMapping(movedEntities): {
+    [resourceId: string]: RedesignProjectMovedEntity[];
+  } {
+    return movedEntities.reduce((entitiesByResource, entity) => {
+      if (!entitiesByResource[entity.targetResourceId]) {
+        entitiesByResource[entity.targetResourceId] = [];
+      }
+      entitiesByResource[entity.targetResourceId].push(entity);
+      return entitiesByResource;
+    }, {} as { [resourceId: string]: RedesignProjectMovedEntity[] });
+  }
+
   async installPlugins(
     resourceId: string,
     plugins: PluginInstallationCreateInput[],
@@ -528,16 +540,8 @@ export class ResourceService {
 
     //group moved entities by target resource
 
-    const movedEntitiesByResource = movedEntities.reduce(
-      (entitiesByResource, entity) => {
-        if (!entitiesByResource[entity.targetResourceId]) {
-          entitiesByResource[entity.targetResourceId] = [];
-        }
-        entitiesByResource[entity.targetResourceId].push(entity);
-        return entitiesByResource;
-      },
-      {} as { [resourceId: string]: RedesignProjectMovedEntity[] }
-    );
+    let movedEntitiesByResource =
+      this.createMovedEntitiesByResourceMapping(movedEntities);
 
     const resourceId =
       movedEntities[0]?.originalResourceId ?? firstResource?.id;
@@ -722,6 +726,10 @@ export class ResourceService {
           entityToCopy.targetResourceId = newResource.id;
         }
       }
+
+      // re-update movedEntitiesByResource after all new services were created, and the targetResourceId was updated to a real resourceId
+      movedEntitiesByResource =
+        this.createMovedEntitiesByResourceMapping(movedEntities);
 
       const sourceEntityIdToNewEntityMap = new Map<
         string,
