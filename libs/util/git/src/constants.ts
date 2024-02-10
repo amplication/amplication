@@ -1,7 +1,9 @@
 export const accumulativePullRequestTitle =
   "chore(Amplication): Update Generated Code";
 
-export const accumulativePullRequestBody = `If you're looking to bring in a new data model, tweak existing ones, handle APIs, or spice things up with Amplication plugins, just swing by the Amplication platform at $link_to_service. Tell us what you need, and we'll handle all the coding magic for you.
+export const accumulativePullRequestBody = `This pull request includes multiple commits by Amplication with the latest generated code.
+The pull request may also include commits from several resources and/or projects.
+You can safely merge this pull request to your default branch.
 
 **Note: In case there are any conflicts, please resolve them on this branch before merging the PR.**
 
@@ -13,4 +15,14 @@ The Amplication Team`;
 
 export const getDefaultREADMEFile = (repositoryName: string) => {
   return `# ${repositoryName}`;
+};
+
+export const getServicePullRequestMessage = (
+  serviceName: string | undefined,
+  serviceLink: string | undefined
+) => {
+  return `
+  If you're looking to bring in a new data model, tweak existing ones, handle APIs, or spice things up with Amplication plugins, just swing by the Amplication platform at [${serviceName}](${serviceLink}). Tell us what you need, and we'll handle all the coding magic for you.
+  
+  `;
 };
