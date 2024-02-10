@@ -89,13 +89,13 @@ To get started with Amplication, the hosted version of the product can be used. 
 
 ## Development
 
-Alternatively, instead of using the hosted version of the product, Amplication can be run locally for code generation purposes or contributions - if so, please refer to our [contributing](#contributing_anchor) section.
+Alternatively, instead of using the hosted version of the product, Amplication can run locally for code generation purposes or contributions - if so, please refer to our [contributing](#contributing_anchor) section.
 
 <details open>
 <summary>
 Pre-requisites
 </summary> <br />
-To be able to start development on Amplication, make sure that you have the following prerequisites installed:
+To start development on Amplication, make sure that you have the following prerequisites installed:
 
 ###
 
@@ -167,7 +167,7 @@ npm run serve:plugins
 ```
 
 > **Note**
-> In order to run the Amplication client properly, both the client and server need to be started by the `npm run serve:[application]` command, as well as an additional component for development on a specific component.
+> In order to run the Amplication client properly, both the client and server need to start it using the `npm run serve:[application]` command, as well as an additional component for development on a specific component.
 
 The development environment should now be set up. Additional information on the different application components can be found under packages/`[application]`/README.md file. Happy hacking! 👾
 </details>
