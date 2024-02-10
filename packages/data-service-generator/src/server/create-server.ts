@@ -6,7 +6,7 @@ import {
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../utils/read-static-modules";
 import { formatCode } from "@amplication/code-gen-utils";
-import { createDTOModules, getDTONameToPath } from "./resource/create-dtos";
+import { createDTOModules } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
@@ -44,8 +44,6 @@ async function createServerInternal(
   await context.logger.info(`Server path: ${serverDirectories.baseDirectory}`);
   await context.logger.info("Creating server...");
 
-  const dtoNameToPath = getDTONameToPath(context.DTOs);
-
   await context.logger.info("Copying static modules...");
   const staticModules = await readStaticModules(
     STATIC_DIRECTORY,
@@ -53,7 +51,7 @@ async function createServerInternal(
   );
 
   await context.logger.info("Creating custom DTOs...");
-  const customDtos = await createCustomDtos();
+  const { customDtos, dtoNameToPath } = await createCustomDtos();
 
   await context.logger.info("Creating gitignore...");
   const gitIgnore = await createGitIgnore();
@@ -62,7 +60,7 @@ async function createServerInternal(
   const packageJsonModule = await createServerPackageJson();
 
   await context.logger.info("Creating server DTOs...");
-  const dtoModules = await createDTOModules(context.DTOs);
+  const dtoModules = await createDTOModules(context.DTOs, dtoNameToPath);
 
   await context.logger.info("Creating resources...");
   const resourcesModules = await createResourcesModules(

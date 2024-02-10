@@ -33,9 +33,13 @@ import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relati
 import pluginWrapper from "../../plugin-wrapper";
 import DsgContext from "../../dsg-context";
 
-export async function createDTOModules(dtos: DTOs): Promise<ModuleMap> {
+export async function createDTOModules(
+  dtos: DTOs,
+  dtoNameToPath: Record<string, string>
+): Promise<ModuleMap> {
   return pluginWrapper(createDTOModulesInternal, EventNames.CreateDTOs, {
     dtos,
+    dtoNameToPath,
   });
 }
 
@@ -45,8 +49,8 @@ export async function createDTOModules(dtos: DTOs): Promise<ModuleMap> {
  */
 export async function createDTOModulesInternal({
   dtos,
+  dtoNameToPath,
 }: CreateDTOsParams): Promise<ModuleMap> {
-  const dtoNameToPath = getDTONameToPath(dtos);
   const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
 
   const entityDTOs = Object.values(dtos).flatMap((entityDTOs) =>

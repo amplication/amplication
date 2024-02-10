@@ -21,7 +21,12 @@ export const OBJECT_TYPE_DECORATOR = builders.decorator(
   builders.callExpression(OBJECT_TYPE_ID, [])
 );
 
-export function createCustomDtos() {
+type CustomDtoModuleMapWithAllDtoNameToPath = {
+  customDtos: ModuleMap;
+  dtoNameToPath: Record<string, string>;
+};
+
+export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { moduleActionsAndDtoMap, DTOs } = DsgContext.getInstance;
   const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
@@ -49,18 +54,18 @@ export function createCustomDtos() {
 
   const dtoNameToPath = getDTONameToPath(DTOs);
 
+  const allDtoNameToPath = { ...dtoNameToPath, ...customDtoNameToPath };
+
   const dtoModules = dtos?.map((dto) => {
-    return createDTOModule(
-      dto.dto,
-      { ...dtoNameToPath, ...customDtoNameToPath },
-      dto.path,
-      false
-    );
+    return createDTOModule(dto.dto, allDtoNameToPath, dto.path, false);
   });
 
   dtoModules.forEach((module) => moduleMap.set(module));
 
-  return moduleMap;
+  return {
+    customDtos: moduleMap,
+    dtoNameToPath: allDtoNameToPath,
+  };
 }
 
 export function createDto(dto: ModuleDto): NamedClassDeclaration {

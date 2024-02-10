@@ -302,6 +302,7 @@ export interface CreateSeedParams extends EventParams {
 
 export interface CreateDTOsParams extends EventParams {
   dtos: DTOs;
+  dtoNameToPath: Record<string, string>;
 }
 
 export interface LoadStaticFilesParams extends EventParams {
