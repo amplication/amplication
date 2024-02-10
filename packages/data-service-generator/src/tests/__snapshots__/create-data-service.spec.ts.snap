@@ -14028,10 +14028,7 @@ export class UserControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async promoteUser(
-    @graphql.Args()
-    args: PromoteUserArgs
-  ): Promise<PromoteUserInput[]> {
+  async promoteUser(args: PromoteUserArgs): Promise<PromoteUserInput[]> {
     return this.service.promoteUser(args);
   }
 
@@ -14045,10 +14042,7 @@ export class UserControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async sendPasswordResetEmail(
-    @graphql.Args()
-    args: PromoteUserInput
-  ): Promise<boolean> {
+  async sendPasswordResetEmail(args: PromoteUserInput): Promise<boolean> {
     return this.service.sendPasswordResetEmail(args);
   }
 
@@ -14062,10 +14056,7 @@ export class UserControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async resendInviteEmail(
-    @graphql.Args()
-    args: PromoteUserInput
-  ): Promise<PromoteUserInput> {
+  async resendInviteEmail(args: PromoteUserInput): Promise<PromoteUserInput> {
     return this.service.resendInviteEmail(args);
   }
 
@@ -14079,10 +14070,7 @@ export class UserControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async softDeleteUser(
-    @graphql.Args()
-    args: PromoteUserInput
-  ): Promise<PromoteUserInput> {
+  async softDeleteUser(args: PromoteUserInput): Promise<PromoteUserInput> {
     return this.service.softDeleteUser(args);
   }
 }

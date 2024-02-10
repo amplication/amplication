@@ -24,7 +24,7 @@ export function createResolverCustomActionMethods(
 function generateGraphQLResolverMethod(
   action: ModuleAction
 ): namedTypes.ClassMethod {
-  const method = generateBaseCustomActionMethod(action);
+  const method = generateResolverCustomActionMethod(action);
 
   // Add decorators for GraphQL operation
   const gqlOperationDecorator = createGraphQLOperationDecorator(action);
@@ -34,7 +34,7 @@ function generateGraphQLResolverMethod(
   return method;
 }
 
-export function generateBaseCustomActionMethod(
+export function generateResolverCustomActionMethod(
   action: ModuleAction
 ): namedTypes.ClassMethod {
   const inputType = createPropTypeFromTypeDefList([action.inputType]);
