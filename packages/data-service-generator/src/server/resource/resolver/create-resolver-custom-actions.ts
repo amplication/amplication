@@ -3,6 +3,9 @@ import { builders, namedTypes } from "ast-types";
 import { createPropTypeFromTypeDefList } from "../dto/custom-types/create-property-type";
 import { createGraphQLOperationDecorator } from "./create-graphql-operation-decorator";
 import { PROMISE_ID } from "../../../utils/ast";
+import { createGraphqlArgsDecorator } from "../../../utils/create-graphql-args-decorator";
+
+const SERVICE_ID = builders.identifier("service");
 
 export function createResolverCustomActionMethods(
   actions: ModuleAction[]
@@ -17,8 +20,6 @@ export function createResolverCustomActionMethods(
 
   return methods;
 }
-
-const SERVICE_ID = builders.identifier("service");
 
 function generateGraphQLResolverMethod(
   action: ModuleAction
@@ -41,6 +42,9 @@ export function generateBaseCustomActionMethod(
 
   const inputParam = builders.identifier("args");
   inputParam.typeAnnotation = builders.tsTypeAnnotation(inputType);
+
+  //@ts-ignore
+  inputParam.decorators = [createGraphqlArgsDecorator()];
 
   //generate this code within the function
   //return this.service.[name]](args);
