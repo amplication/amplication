@@ -12030,8 +12030,8 @@ class PromoteUserInput {
         required: true,
         type: () => [String]
     })
-    @Type(() => [String])
-    userId: string[];
+    @Type(() => String)
+    userId!: string[];
 
     @Field(() => Number)
     @ApiProperty({
@@ -12039,7 +12039,7 @@ class PromoteUserInput {
         type: () => Number
     })
     @Type(() => Number)
-    score: number;
+    score!: number;
 
     @Field(() => Boolean)
     @ApiProperty({
@@ -12047,11 +12047,11 @@ class PromoteUserInput {
         type: () => Boolean
     })
     @Type(() => Boolean)
-    isAdmin: boolean;
+    isAdmin!: boolean;
 
     @Field(() => Date)
     @Type(() => Date)
-    lastLogin: Date;
+    lastLogin!: Date;
 
     @Field(() => Number, {
         nullable: true
@@ -12085,7 +12085,7 @@ class PromoteUserInput {
         required: false,
         type: () => [PromoteUserInput]
     })
-    @Type(() => [PromoteUserInput])
+    @Type(() => PromoteUserInput)
     selfReferenceArray?: PromoteUserInput[];
 }
 
@@ -13678,6 +13678,8 @@ import { UserFindManyArgs } from "./UserFindManyArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { OrganizationWhereUniqueInput } from "../../organization/base/OrganizationWhereUniqueInput";
+import { PromoteUserArgs } from "./PromoteUserArgs";
+import { PromoteUserInput } from "./PromoteUserInput";
 
 export class UserControllerBase {
   constructor(protected readonly service: UserService) {}
@@ -14018,7 +14020,7 @@ export class UserControllerBase {
 
   @common.Post("/:id/promote")
   @swagger.ApiOkResponse({
-    type: [PromoteUserInput],
+    type: PromoteUserInput,
   })
   @swagger.ApiNotFoundResponse({
     type: errors.NotFoundException,
@@ -14128,6 +14130,8 @@ import { UserFindManyArgs } from "./UserFindManyArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { Profile } from "../../profile/base/Profile";
+import { PromoteUserArgs } from "./PromoteUserArgs";
+import { PromoteUserInput } from "./PromoteUserInput";
 import { UserService } from "../user.service";
 @graphql.Resolver(() => User)
 export class UserResolverBase {

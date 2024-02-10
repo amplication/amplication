@@ -106,18 +106,28 @@ export function createProperty(
     decorators.push(createApiPropertyDecorator(property));
   decorators.push(createTypeDecorator(property));
 
+  const propId = builders.identifier(property.name);
   const classProperty = builders.classProperty(
-    builders.identifier(property.name),
+    property.isOptional ? propId : builders.tsNonNullExpression(propId),
     null,
     tsTypeAnnotationNode,
     false
   );
 
-  //@ts-ignore
-  classProperty.optional = property.isOptional;
+  if (property.isOptional) {
+    //@ts-ignore - property is missing in ast-types
+    classProperty.optional = true;
+  } else {
+    //this property does not seems to impact the generation ot the "!"" as expected from
+    //the code in the recast library, but we keep it here for future reference/ usage
+    //the actual fix that adds the "!" runs above by using builders.tsNonNullExpression
+    //https://github.com/benjamn/recast/blob/7f441d2c74d2cd61287fc6b498a9060f5597a27c/lib/printer.ts#L1442
+    //@ts-ignore - property is missing in ast-types
+    classProperty.definite = true;
+  }
 
-  //@ts-ignore
-  classProperty.decorators = decorators.filter((decorator) => decorator);
+  //@ts-ignore - property is missing in ast-types
+  classProperty.decorators = decorators.filter((decorator) => decorator); //filter null decorators
 
   return classProperty;
 }
