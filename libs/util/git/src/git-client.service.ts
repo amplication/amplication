@@ -6,6 +6,7 @@ import {
   accumulativePullRequestBody,
   accumulativePullRequestTitle,
   getDefaultREADMEFile,
+  getServicePullRequestMessage,
 } from "./constants";
 import { InvalidPullRequestMode } from "./errors/InvalidPullRequestMode";
 import { NoCommitOnBranch } from "./errors/NoCommitOnBranch";
@@ -226,13 +227,13 @@ export class GitClientService {
             repositoryName,
             branchName,
             commitMessage,
-            pullRequestBody,
             preparedFiles,
             baseBranch,
             repositoryGroupName,
             pullRequestTitle,
-            resourceName,
-            resourceUrl,
+            pullRequestBody:
+              getServicePullRequestMessage(resourceName, resourceUrl) +
+              pullRequestBody,
           });
           break;
         default:
@@ -260,8 +261,6 @@ export class GitClientService {
     baseBranch: string;
     repositoryGroupName?: string;
     pullRequestTitle?: string;
-    resourceName?: string;
-    resourceUrl?: string;
   }): Promise<string> {
     const {
       gitCli,
@@ -274,8 +273,6 @@ export class GitClientService {
       baseBranch,
       repositoryGroupName,
       pullRequestTitle,
-      resourceName,
-      resourceUrl,
     } = options;
 
     await gitCli.clone();
@@ -340,10 +337,7 @@ export class GitClientService {
         repositoryName,
         repositoryGroupName,
         pullRequestTitle: `${accumulativePullRequestTitle} ${pullRequestTitle}`,
-        pullRequestBody: accumulativePullRequestBody.replace(
-          "$link_to_service",
-          `[${resourceName}](${resourceUrl})`
-        ),
+        pullRequestBody: accumulativePullRequestBody,
         branchName,
         baseBranchName: baseBranch,
       });
