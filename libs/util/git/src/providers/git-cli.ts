@@ -73,11 +73,11 @@ export class GitCli {
    * Checkout to branch if exists, otherwise create new branch
    * @param branchName name of the branch to checkout
    */
-  async checkout(branchName: string, isPresent?: boolean): Promise<void> {
+  async checkout(branchName: string): Promise<void> {
     await this.git.fetch();
     const remoteBranches = await this.git.branch(["--remotes"]);
     const remoteOriginBranchName = `origin/${branchName}`;
-    if (!remoteBranches.all.includes(remoteOriginBranchName) && !isPresent) {
+    if (!remoteBranches.all.includes(remoteOriginBranchName)) {
       await this.git.checkoutLocalBranch(branchName);
     } else {
       await this.git.checkout(branchName);
@@ -229,7 +229,11 @@ export class GitCli {
    * @param author Author of commits returned by the log
    * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
    */
-  async log(authors: string[], maxCount?: number): Promise<LogResult> {
+  async log(
+    authors: string[],
+    maxCount?: number,
+    branchName?: string
+  ): Promise<LogResult> {
     const author = authors.join("|");
     const authorEscaped = author
       .replaceAll("[", "\\[")
@@ -238,12 +242,17 @@ export class GitCli {
 
     const authorsRegex = `^(${authorEscaped})$`;
 
-    maxCount = maxCount ?? -1;
-    return this.git.log([
+    const logOptions = [
       "--perl-regexp",
       `--author=${authorsRegex}`,
       `--max-count=${maxCount}`,
-    ]);
+    ];
+    if (!!branchName) {
+      logOptions.unshift(branchName);
+    }
+
+    maxCount = maxCount ?? -1;
+    return this.git.log(logOptions);
   }
 
   async push(options?: string[]) {

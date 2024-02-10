@@ -304,7 +304,6 @@ export class GitClientService {
         tempBranchName,
         gitCli
       );
-      await gitCli.checkout(branchName);
       await this.applyPostCommit(
         preCommitDiff.diff,
         owner,
@@ -389,10 +388,8 @@ export class GitClientService {
     tempBranchName: string,
     gitCli: GitCli
   ): Promise<string> {
-    await gitCli.checkout(tempBranchName, true);
-
     let prevBuildHash = "";
-    const gitLogs = await this.gitLog(gitCli, 1);
+    const gitLogs = await this.gitLog(gitCli, 1, tempBranchName);
     if (gitLogs.total > 0 && gitLogs.latest) {
       prevBuildHash = gitLogs.latest.hash;
     }
@@ -437,7 +434,11 @@ export class GitClientService {
    * @param gitCli Git client
    * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
    */
-  private async gitLog(gitCli: GitCli, maxCount = -1): Promise<LogResult> {
+  private async gitLog(
+    gitCli: GitCli,
+    maxCount = -1,
+    branchName?: string
+  ): Promise<LogResult> {
     const amplicationBot = await this.provider.getAmplicationBotIdentity();
 
     const authors: string[] = [];
@@ -447,7 +448,7 @@ export class GitClientService {
     authors.push(gitCli.gitAuthorUser);
     authors.push(gitCli.gitOldAuthorUser);
 
-    return gitCli.log(authors, maxCount);
+    return gitCli.log(authors, maxCount, branchName);
   }
 
   async createTempBranchFor(branchName, gitCli) {
