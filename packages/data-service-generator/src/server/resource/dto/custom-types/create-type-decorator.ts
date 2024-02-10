@@ -30,8 +30,8 @@ function createType(
   property: ModuleDtoProperty
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
   if (property.isArray) {
-    const itemType = createType({ ...property, isArray: false });
-    return builders.arrayExpression([itemType]);
+    //@type decorator from class-transformer expects the inner type of the array
+    return createType({ ...property, isArray: false });
   }
 
   if (property.propertyTypes.length > 1) {
@@ -49,8 +49,8 @@ export function createTypeFromTypeDef(
   typeDef: PropertyTypeDef
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
   if (typeDef.isArray) {
-    const itemType = createTypeFromTypeDef({ ...typeDef, isArray: false });
-    return builders.arrayExpression([itemType]);
+    //@type decorator from class-transformer expects the inner type of the array
+    return createTypeFromTypeDef({ ...typeDef, isArray: false });
   }
 
   if (typeDef.type === EnumModuleDtoPropertyType.Boolean) {
