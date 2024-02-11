@@ -88,7 +88,7 @@ export default function ModelOrganizer() {
     mergeNewResourcesChanges,
     redesignMode,
     resetUserAction,
-    handleDuplicateNameDialogClicked,
+    clearDuplicateEntityError,
     duplicateEntityError,
   } = useModelOrganization({
     projectId: currentProject?.id,
@@ -322,11 +322,11 @@ export default function ModelOrganizer() {
             <ConfirmationDialog
               btnClassName={`${CLASS_NAME}__confirmationDialog`}
               isOpen={duplicateEntityError}
-              onDismiss={handleDuplicateNameDialogClicked}
+              onDismiss={clearDuplicateEntityError}
               message={`Cannot move entity to service: ${currentDropTarget?.data?.payload?.name}
                because the entity name already exists.`}
               confirmButton={{ label: "I understand" }}
-              onConfirm={handleDuplicateNameDialogClicked}
+              onConfirm={clearDuplicateEntityError}
             ></ConfirmationDialog>
             <div className={REACT_FLOW_CLASS_NAME}>
               <ReactFlow

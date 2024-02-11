@@ -507,9 +507,9 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     [setNodes, setEdges, edges, nodes]
   );
 
-  const handleDuplicateNameDialogClicked = useCallback(() => {
-    setDuplicateEntityError(!duplicateEntityError);
-  }, [setDuplicateEntityError, duplicateEntityError]);
+  const clearDuplicateEntityError = useCallback(() => {
+    setDuplicateEntityError(false);
+  }, [setDuplicateEntityError]);
 
   const createNewTempService = useCallback(
     async (newResource: models.Resource) => {
@@ -541,6 +541,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     },
     [
       nodes,
+
       changes,
       currentResourcesData,
       edges,
@@ -692,7 +693,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     searchPhraseChanged,
     mergeNewResourcesChanges,
     resetUserAction,
-    handleDuplicateNameDialogClicked,
+    clearDuplicateEntityError,
     redesignMode,
     duplicateEntityError,
   };
