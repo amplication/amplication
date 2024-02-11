@@ -1,5 +1,6 @@
 import {
   Button,
+  ConfirmationDialog,
   Dialog,
   EnumFlexDirection,
   FlexItem,
@@ -87,7 +88,7 @@ export default function ModelOrganizer() {
     mergeNewResourcesChanges,
     redesignMode,
     resetUserAction,
-    setDuplicateEntityError,
+    handleDuplicateNameDialogClicked,
     duplicateEntityError,
   } = useModelOrganization({
     projectId: currentProject?.id,
@@ -145,10 +146,6 @@ export default function ModelOrganizer() {
   const onCancelChangesClick = useCallback(() => {
     resetChanges();
   }, [resetChanges]);
-
-  const onDuplicateNameError = useCallback(() => {
-    setDuplicateEntityError(!duplicateEntityError);
-  }, [setDuplicateEntityError, duplicateEntityError]);
 
   const onApplyPlanClick = useCallback(() => {
     applyChanges();
@@ -250,7 +247,7 @@ export default function ModelOrganizer() {
       if (currentDropTarget) {
         currentDropTarget.data.isCurrentDropTarget = false;
       }
-      setCurrentDropTarget(null);
+
       setNodes([...nodes]);
     },
     [nodes, currentDropTarget, setNodes, reactFlowInstance, moveNodeToParent]
@@ -322,18 +319,15 @@ export default function ModelOrganizer() {
                 <Button onClick={handleCreateResourceState}>Ok</Button>
               </FlexItem>
             </Dialog>
-            <Dialog
+            <ConfirmationDialog
+              btnClassName={`${CLASS_NAME}__confirmationDialog`}
               isOpen={duplicateEntityError}
-              onDismiss={onDuplicateNameError}
-            >
-              <FlexItem
-                direction={EnumFlexDirection.Column}
-                itemsAlign={EnumItemsAlign.Center}
-              >
-                <span>The Entity name already exists. Cannot move entity.</span>
-                <Button onClick={onDuplicateNameError}>Ok</Button>
-              </FlexItem>
-            </Dialog>
+              onDismiss={handleDuplicateNameDialogClicked}
+              message={`Cannot move entity to service: ${currentDropTarget?.data?.payload?.name}
+               because the entity name already exists.`}
+              confirmButton={{ label: "I understand" }}
+              onConfirm={handleDuplicateNameDialogClicked}
+            ></ConfirmationDialog>
             <div className={REACT_FLOW_CLASS_NAME}>
               <ReactFlow
                 onInit={onInit}

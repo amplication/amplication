@@ -507,6 +507,10 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     [setNodes, setEdges, edges, nodes]
   );
 
+  const handleDuplicateNameDialogClicked = useCallback(() => {
+    setDuplicateEntityError(!duplicateEntityError);
+  }, [setDuplicateEntityError, duplicateEntityError]);
+
   const createNewTempService = useCallback(
     async (newResource: models.Resource) => {
       const currentIndex =
@@ -564,26 +568,25 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
 
         const duplicatedEntityName =
           currentTargetResource.data.payload.entities.find(
-            (entity) =>
-              entity.displayName === currentNode.data.payload.displayName
+            (entity) => entity.name === currentNode.data.payload.name
           );
 
         currentNode.parentNode = targetParent.id;
+        newMovedEntities = newMovedEntities.filter(
+          (x) => x.entityId !== node.id
+        );
 
         if (
           duplicatedEntityName &&
           currentNode.data.originalParentNode !== currentNode.parentNode
         ) {
           currentNode.parentNode = currentNode.data.originalParentNode;
+
           setDuplicateEntityError(true);
           return;
         } else {
           setDuplicateEntityError(false);
         }
-
-        newMovedEntities = newMovedEntities.filter(
-          (x) => x.entityId !== node.id
-        );
 
         if (currentNode.data.originalParentNode !== currentNode.parentNode) {
           newMovedEntities.push({
@@ -689,8 +692,8 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     searchPhraseChanged,
     mergeNewResourcesChanges,
     resetUserAction,
+    handleDuplicateNameDialogClicked,
     redesignMode,
-    setDuplicateEntityError,
     duplicateEntityError,
   };
 };
