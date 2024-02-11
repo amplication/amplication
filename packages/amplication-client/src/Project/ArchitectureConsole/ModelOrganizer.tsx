@@ -87,6 +87,8 @@ export default function ModelOrganizer() {
     mergeNewResourcesChanges,
     redesignMode,
     resetUserAction,
+    setDuplicateEntityError,
+    duplicateEntityError,
   } = useModelOrganization({
     projectId: currentProject?.id,
     onMessage: showMessage,
@@ -143,6 +145,10 @@ export default function ModelOrganizer() {
   const onCancelChangesClick = useCallback(() => {
     resetChanges();
   }, [resetChanges]);
+
+  const onDuplicateNameError = useCallback(() => {
+    setDuplicateEntityError(!duplicateEntityError);
+  }, [setDuplicateEntityError, duplicateEntityError]);
 
   const onApplyPlanClick = useCallback(() => {
     applyChanges();
@@ -314,6 +320,18 @@ export default function ModelOrganizer() {
                   name.
                 </span>
                 <Button onClick={handleCreateResourceState}>Ok</Button>
+              </FlexItem>
+            </Dialog>
+            <Dialog
+              isOpen={duplicateEntityError}
+              onDismiss={onDuplicateNameError}
+            >
+              <FlexItem
+                direction={EnumFlexDirection.Column}
+                itemsAlign={EnumItemsAlign.Center}
+              >
+                <span>The Entity name already exists. Cannot move entity.</span>
+                <Button onClick={onDuplicateNameError}>Ok</Button>
               </FlexItem>
             </Dialog>
             <div className={REACT_FLOW_CLASS_NAME}>

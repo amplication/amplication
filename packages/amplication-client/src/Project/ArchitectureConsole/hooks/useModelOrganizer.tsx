@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { useEdgesState } from "reactflow";
 import * as models from "../../../models";
@@ -70,6 +70,8 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     useState<Date>(null);
 
   const [redesignMode, setRedesignMode] = useState<boolean>(false);
+  const [duplicateEntityError, setDuplicateEntityError] =
+    useState<boolean>(false);
 
   const [userAction, setUserAction] = useState<models.UserAction>(null);
   const { data: applyChangesResults } = useUserActionWatchStatus(userAction);
@@ -553,10 +555,31 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         (node) => node.id === sourceParentNodeId
       ).data.payload.name;
 
+      const currentTargetResource: ResourceNode = targetParent as ResourceNode;
+
       movedNodes.forEach((node) => {
-        const currentNode = currentNodes.find((n) => n.id === node.id);
+        const currentNode: EntityNode = currentNodes.find(
+          (n) => n.id === node.id
+        ) as EntityNode;
+
+        const duplicatedEntityName =
+          currentTargetResource.data.payload.entities.find(
+            (entity) =>
+              entity.displayName === currentNode.data.payload.displayName
+          );
 
         currentNode.parentNode = targetParent.id;
+
+        if (
+          duplicatedEntityName &&
+          currentNode.data.originalParentNode !== currentNode.parentNode
+        ) {
+          currentNode.parentNode = currentNode.data.originalParentNode;
+          setDuplicateEntityError(true);
+          return;
+        } else {
+          setDuplicateEntityError(false);
+        }
 
         newMovedEntities = newMovedEntities.filter(
           (x) => x.entityId !== node.id
@@ -590,7 +613,14 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         serviceName: sourceServiceName,
       });
     },
-    [nodes, edges, showRelationDetails, changes, saveToPersistentData]
+    [
+      nodes,
+      edges,
+      showRelationDetails,
+      changes,
+      saveToPersistentData,
+      setDuplicateEntityError,
+    ]
   );
 
   const [
@@ -660,6 +690,8 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     mergeNewResourcesChanges,
     resetUserAction,
     redesignMode,
+    setDuplicateEntityError,
+    duplicateEntityError,
   };
 };
 
