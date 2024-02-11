@@ -30,6 +30,7 @@ import { useAppContext } from "../../../context/appContext";
 import { useTracking } from "../../../util/analytics";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { EnumUserActionStatus } from "../../../models";
+import useResource from "../../../Resource/hooks/useResource";
 
 type TData = {
   resources: models.Resource[];
@@ -62,6 +63,8 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
   const [currentEditableResourceNode, setCurrentEditableResourceNode] =
     useState<ResourceNode>(null);
 
+  const { resourceSettings } = useResource(currentEditableResourceNode?.id);
+
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [showRelationDetails, setShowRelationDetails] = useState(false);
   const [currentDetailedEdges, setCurrentDetailedEdges] = useEdgesState([]);
@@ -72,6 +75,9 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
   const [redesignMode, setRedesignMode] = useState<boolean>(false);
   const [duplicateEntityError, setDuplicateEntityError] =
     useState<boolean>(false);
+
+  const [duplicateEntityErrorMessage, setDuplicateEntityErrorMessage] =
+    useState<string>(null);
 
   const [userAction, setUserAction] = useState<models.UserAction>(null);
   const { data: applyChangesResults } = useUserActionWatchStatus(userAction);
@@ -577,11 +583,25 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
           (x) => x.entityId !== node.id
         );
 
+        const authEntity =
+          resourceSettings?.serviceSettings?.authEntityName ===
+          currentNode.data.payload.name;
+
         if (
-          duplicatedEntityName &&
+          (duplicatedEntityName || authEntity) &&
           currentNode.data.originalParentNode !== currentNode.parentNode
         ) {
+          const baseErrorMessage = `Cannot move entity to service: ${currentTargetResource.data.payload?.name}`;
           currentNode.parentNode = currentNode.data.originalParentNode;
+          if (authEntity) {
+            setDuplicateEntityErrorMessage(
+              `${baseErrorMessage} because the authentication entity cannot be deleted.`
+            );
+          } else {
+            setDuplicateEntityErrorMessage(
+              `${baseErrorMessage} because the entity name already exists.`
+            );
+          }
 
           setDuplicateEntityError(true);
           return;
@@ -696,6 +716,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     clearDuplicateEntityError,
     redesignMode,
     duplicateEntityError,
+    duplicateEntityErrorMessage,
   };
 };
 
