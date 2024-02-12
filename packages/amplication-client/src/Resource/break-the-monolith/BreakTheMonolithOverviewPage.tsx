@@ -40,23 +40,25 @@ const BreakTheMonolithOverviewPage: React.FC<Props> = ({ match }) => {
         direction={EnumFlexDirection.Column}
         itemsAlign={EnumItemsAlign.Center}
       >
-        <div className={`${CLASS_NAME}__instructions`}>
-          <Text
-            textStyle={EnumTextStyle.H2}
-            textWeight={EnumTextWeight.Bold}
-            className={`${CLASS_NAME}__title`}
-          >
-            Breaking the chosen monolith
-          </Text>
-          <Text textColor={EnumTextColor.Black20}>
-            Explore the entities of the selected open-source monolith. When
-            ready to transform into microservices architecture, simply press the
-            button.
-          </Text>
-          <Text textColor={EnumTextColor.Black20}>
-            Note that Amplication can then generate the code for the
-            architecture change, and push the code to your git provider"
-          </Text>
+        <div className={`${CLASS_NAME}__instructions-box`}>
+          <div className={`${CLASS_NAME}__instructions-box__content`}>
+            <Text
+              textStyle={EnumTextStyle.H2}
+              textWeight={EnumTextWeight.Bold}
+              className={`${CLASS_NAME}__title`}
+            >
+              Breaking the chosen monolith
+            </Text>
+            <Text textColor={EnumTextColor.Black20}>
+              Explore the entities of the selected open-source monolith. When
+              ready to transform into microservices architecture, simply press
+              the button.
+            </Text>
+            <Text textColor={EnumTextColor.Black20}>
+              Note that Amplication can then generate the code for the
+              architecture change, and push the code to your git provider.
+            </Text>
+          </div>
           <BtmButton
             location={EnumButtonLocation.PreviewBtm}
             openInFullScreen={false}
