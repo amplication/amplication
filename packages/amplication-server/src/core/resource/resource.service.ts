@@ -568,7 +568,7 @@ export class ResourceService {
     await this.analytics.trackWithContext({
       properties: {
         projectId,
-        resourceId: resourceId,
+        resourceId,
         plan: subscription.subscriptionPlan,
         movedEntities: movedEntities.length,
         newServices: newServices.length,
@@ -1129,7 +1129,7 @@ export class ResourceService {
       await this.analytics.trackWithContext({
         event: EnumEventType.DemoRepoCreate,
         properties: {
-          projectId: projectId,
+          projectId,
         },
       });
     }
@@ -1290,7 +1290,7 @@ export class ResourceService {
         repoType: data.repoType,
         dbType: data.dbType,
         auth: data.authType,
-        projectId: projectId,
+        projectId,
         totalEntities,
         totalFields,
         gitOrgType: gitOrganization?.type,
