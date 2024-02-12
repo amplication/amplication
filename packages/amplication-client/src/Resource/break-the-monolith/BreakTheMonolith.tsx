@@ -21,6 +21,9 @@ import { useBtmService } from "./hooks/useBtmService";
 import classNames from "classnames";
 import { formatError } from "../../util/error";
 import { Resource } from "../../models";
+import { useHistory } from "react-router-dom";
+import { useCallback, useEffect } from "react";
+import { useAppContext } from "../../context/appContext";
 
 const CLASS_NAME = "break-the-monolith";
 
@@ -30,21 +33,56 @@ const LOADER_SUBTITLE =
 
 type Props = {
   resource: Resource;
-  handleConfirmSuggestion: () => void;
+  onConfirmSuggestion: () => void;
   openInFullScreen?: boolean;
+  autoRedirectAfterCompletion?: boolean;
 };
 
 const BreakTheMonolith: React.FC<Props> = ({
   resource,
   openInFullScreen = false,
-  handleConfirmSuggestion,
+  autoRedirectAfterCompletion = false,
+  onConfirmSuggestion,
 }) => {
+  const history = useHistory();
+  const { currentWorkspace, currentProject } = useAppContext();
   const { btmResult, loading, error } = useBtmService({
     resourceId: resource?.id,
   });
 
   const hasError = Boolean(error);
   const errorMessage = formatError(error);
+
+  useEffect(() => {
+    if (btmResult) {
+      // TODO: prepare data for architecture page before redirect
+      autoRedirectAfterCompletion &&
+        history.push(
+          `/${currentWorkspace?.id}/${currentProject?.id}/architecture`
+        );
+    }
+  }, [
+    btmResult,
+    autoRedirectAfterCompletion,
+    history,
+    currentWorkspace,
+    currentProject,
+  ]);
+
+  const handleConfirmSuggestion = useCallback(() => {
+    // TODO: prepare data for architecture page before redirect
+    openInFullScreen &&
+      history.push(
+        `/${currentWorkspace?.id}/${currentProject?.id}/architecture`
+      );
+    onConfirmSuggestion();
+  }, [
+    currentProject,
+    currentWorkspace,
+    history,
+    onConfirmSuggestion,
+    openInFullScreen,
+  ]);
 
   return (
     <div

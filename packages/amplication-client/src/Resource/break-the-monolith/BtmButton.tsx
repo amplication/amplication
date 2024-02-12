@@ -3,10 +3,7 @@ import {
   Button,
   Dialog,
   EnumButtonStyle,
-  EnumFlexItemMargin,
   EnumItemsAlign,
-  EnumTextColor,
-  EnumTextStyle,
   FlexItem,
   Icon,
   Modal,
@@ -14,10 +11,8 @@ import {
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
-  Text,
 } from "@amplication/ui/design-system";
 import BreakTheMonolith from "./BreakTheMonolith";
-import { useHistory } from "react-router-dom";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useAppContext } from "../../context/appContext";
@@ -29,22 +24,23 @@ export enum EnumButtonLocation {
   Resource = "Resource",
   EntityList = "EntityList",
   SchemaUpload = "SchemaUpload",
+  PreviewBtm = "PreviewBtm",
 }
 
 type Props = {
   openInFullScreen: boolean;
+  autoRedirectAfterCompletion: boolean;
   location: EnumButtonLocation;
   ButtonStyle?: EnumButtonStyle;
 };
 
 export const BtmButton: React.FC<Props> = ({
   openInFullScreen,
+  autoRedirectAfterCompletion,
   location,
   ButtonStyle = EnumButtonStyle.GradientOutline,
 }) => {
   const { currentResource, resources } = useAppContext();
-
-  const history = useHistory();
   const { trackEvent } = useTracking();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(
@@ -58,33 +54,31 @@ export const BtmButton: React.FC<Props> = ({
   const onButtonSelectResource = useCallback(() => {
     setSelectedResource(currentResource);
     toggleIsOpen();
-  }, [currentResource, toggleIsOpen]);
+
+    trackEvent({
+      eventName: AnalyticsEventNames.StartBreakTheMonolithClick,
+      serviceName: selectedResource?.name ?? currentResource?.name,
+      location,
+    });
+  }, [currentResource, location, selectedResource, toggleIsOpen, trackEvent]);
 
   const onSelectMenuSelectResource = useCallback(
     (itemData: Resource) => {
       setSelectedResource(itemData);
       toggleIsOpen();
+
+      trackEvent({
+        eventName: AnalyticsEventNames.StartBreakTheMonolithClick,
+        serviceName: selectedResource?.name ?? currentResource?.name,
+        location,
+      });
     },
-    [toggleIsOpen]
+    [location, selectedResource, currentResource, toggleIsOpen, trackEvent]
   );
 
   const handleConfirm = useCallback(() => {
-    openInFullScreen && history.push("/"); // TODO: redirect to the architecture page in redesign mode
     setIsOpen(!isOpen);
-
-    trackEvent({
-      eventName: AnalyticsEventNames.StartBreakTheMonolithClick,
-      serviceName: selectedResource.name,
-      location,
-    });
-  }, [
-    selectedResource,
-    history,
-    isOpen,
-    location,
-    openInFullScreen,
-    trackEvent,
-  ]);
+  }, [isOpen]);
 
   return (
     <>
@@ -133,14 +127,16 @@ export const BtmButton: React.FC<Props> = ({
           <BreakTheMonolith
             resource={selectedResource}
             openInFullScreen
-            handleConfirmSuggestion={handleConfirm}
+            onConfirmSuggestion={handleConfirm}
+            autoRedirectAfterCompletion={autoRedirectAfterCompletion}
           />
         </Modal>
       ) : (
         <Dialog isOpen={isOpen} onDismiss={toggleIsOpen} title="">
           <BreakTheMonolith
             resource={selectedResource}
-            handleConfirmSuggestion={handleConfirm}
+            onConfirmSuggestion={handleConfirm}
+            autoRedirectAfterCompletion={autoRedirectAfterCompletion}
           />
         </Dialog>
       )}

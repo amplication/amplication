@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { match } from "react-router-dom";
 import {
   Text,
@@ -9,12 +9,13 @@ import {
   Modal,
   EnumTextColor,
   EnumTextWeight,
-  Button,
+  EnumButtonStyle,
 } from "@amplication/ui/design-system";
 import { AppRouteProps } from "../../routes/routesUtil";
 import ModelOrganizer from "../../Project/ArchitectureConsole/ModelOrganizer";
 
 import "./BreakTheMonolithOverviewPage.scss";
+import { BtmButton, EnumButtonLocation } from "./BtmButton";
 const CLASS_NAME = "break-the-monolith-overview-page";
 
 type Props = AppRouteProps & {
@@ -25,18 +26,12 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const BreakTheMonolithOptionsPage: React.FC<Props> = ({ match }) => {
+const BreakTheMonolithOverviewPage: React.FC<Props> = ({ match }) => {
   const {
     workspace: workspaceId,
     project: projectId,
     resource: resourceId,
   } = match.params;
-
-  const handleBreakTheMonolithClicked = useCallback(() => {
-    // call ai
-    // prepare data for useModelOrganizer
-    // redirect to architecture page in redesign mode
-  }, []);
 
   return (
     <Modal open fullScreen>
@@ -62,12 +57,12 @@ const BreakTheMonolithOptionsPage: React.FC<Props> = ({ match }) => {
             Note that Amplication can then generate the code for the
             architecture change, and push the code to your git provider"
           </Text>
-          <Button
-            className={`${CLASS_NAME}__break-btn`}
-            onClick={handleBreakTheMonolithClicked}
-          >
-            Break the monolith
-          </Button>
+          <BtmButton
+            location={EnumButtonLocation.PreviewBtm}
+            openInFullScreen={false}
+            autoRedirectAfterCompletion
+            ButtonStyle={EnumButtonStyle.GradientFull}
+          />
         </div>
         <ModelOrganizer />
       </FlexItem>
@@ -75,4 +70,4 @@ const BreakTheMonolithOptionsPage: React.FC<Props> = ({ match }) => {
   );
 };
 
-export default BreakTheMonolithOptionsPage;
+export default BreakTheMonolithOverviewPage;
