@@ -19,6 +19,7 @@ export const GET_RESOURCES = gql`
       }
       entities {
         id
+        name
         displayName
         description
         resourceId

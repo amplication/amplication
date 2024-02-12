@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { useEdgesState } from "reactflow";
 import * as models from "../../../models";
@@ -70,6 +70,8 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     useState<Date>(null);
 
   const [redesignMode, setRedesignMode] = useState<boolean>(false);
+  const [duplicateEntityError, setDuplicateEntityError] =
+    useState<boolean>(false);
 
   const [userAction, setUserAction] = useState<models.UserAction>(null);
   const { data: applyChangesResults } = useUserActionWatchStatus(userAction);
@@ -505,6 +507,10 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     [setNodes, setEdges, edges, nodes]
   );
 
+  const clearDuplicateEntityError = useCallback(() => {
+    setDuplicateEntityError(false);
+  }, [setDuplicateEntityError]);
+
   const createNewTempService = useCallback(
     async (newResource: models.Resource) => {
       const currentIndex =
@@ -535,6 +541,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     },
     [
       nodes,
+
       changes,
       currentResourcesData,
       edges,
@@ -553,14 +560,34 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         (node) => node.id === sourceParentNodeId
       ).data.payload.name;
 
+      const currentTargetResource: ResourceNode = targetParent as ResourceNode;
+
       movedNodes.forEach((node) => {
-        const currentNode = currentNodes.find((n) => n.id === node.id);
+        const currentNode: EntityNode = currentNodes.find(
+          (n) => n.id === node.id
+        ) as EntityNode;
+
+        const duplicatedEntityName =
+          currentTargetResource.data.payload.entities.find(
+            (entity) => entity.name === currentNode.data.payload.name
+          );
 
         currentNode.parentNode = targetParent.id;
-
         newMovedEntities = newMovedEntities.filter(
           (x) => x.entityId !== node.id
         );
+
+        if (
+          duplicatedEntityName &&
+          currentNode.data.originalParentNode !== currentNode.parentNode
+        ) {
+          currentNode.parentNode = currentNode.data.originalParentNode;
+
+          setDuplicateEntityError(true);
+          return;
+        } else {
+          setDuplicateEntityError(false);
+        }
 
         if (currentNode.data.originalParentNode !== currentNode.parentNode) {
           newMovedEntities.push({
@@ -590,7 +617,14 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         serviceName: sourceServiceName,
       });
     },
-    [nodes, edges, showRelationDetails, changes, saveToPersistentData]
+    [
+      nodes,
+      edges,
+      showRelationDetails,
+      changes,
+      saveToPersistentData,
+      setDuplicateEntityError,
+    ]
   );
 
   const [
@@ -659,7 +693,9 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     searchPhraseChanged,
     mergeNewResourcesChanges,
     resetUserAction,
+    clearDuplicateEntityError,
     redesignMode,
+    duplicateEntityError,
   };
 };
 
