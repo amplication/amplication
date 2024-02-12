@@ -217,6 +217,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
             <FlexItem direction={EnumFlexDirection.Row}>
               <BtmButton
                 openInFullScreen={true}
+                autoRedirectAfterCompletion={false}
                 location={EnumButtonLocation.EntityList}
               />
               <Link

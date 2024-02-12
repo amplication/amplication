@@ -122,6 +122,7 @@ function ResourceList() {
             >
               <BtmButton
                 openInFullScreen={true}
+                autoRedirectAfterCompletion={false}
                 location={EnumButtonLocation.Project}
                 ButtonStyle={EnumButtonStyle.GradientOutline}
               />
