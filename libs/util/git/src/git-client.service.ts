@@ -6,7 +6,6 @@ import {
   accumulativePullRequestBody,
   accumulativePullRequestTitle,
   getDefaultREADMEFile,
-  getServicePullRequestMessage,
 } from "./constants";
 import { InvalidPullRequestMode } from "./errors/InvalidPullRequestMode";
 import { NoCommitOnBranch } from "./errors/NoCommitOnBranch";
@@ -119,8 +118,6 @@ export class GitClientService {
       cloneDirPath,
       buildId,
       resourceId,
-      resourceName,
-      resourceUrl,
       baseBranchName,
     } = createPullRequestArgs;
 
@@ -226,14 +223,12 @@ export class GitClientService {
             owner,
             repositoryName,
             branchName,
+            pullRequestBody,
             commitMessage,
             preparedFiles,
             baseBranch,
             repositoryGroupName,
             pullRequestTitle,
-            pullRequestBody:
-              getServicePullRequestMessage(resourceName, resourceUrl) +
-              pullRequestBody,
           });
           break;
         default:
