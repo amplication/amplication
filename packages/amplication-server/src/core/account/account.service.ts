@@ -28,7 +28,6 @@ export class AccountService {
     };
 
     await this.analytics.identify(userData);
-    //we send the userData again to prevent race condition
     await this.analytics.trackManual({
       user: {
         accountId: account.id,

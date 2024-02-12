@@ -122,7 +122,6 @@ export class AuthService {
     };
 
     await this.analytics.identify(userData);
-    //we send the userData again to prevent race condition
     await this.analytics.trackManual({
       user: {
         accountId: existingAccount?.id,
@@ -148,7 +147,6 @@ export class AuthService {
       return;
     }
 
-    //we send the userData again to prevent race condition
     void this.analytics
       .trackManual({
         user: {
