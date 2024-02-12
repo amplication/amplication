@@ -1,4 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
+// code owners test
 
 exports[`createDataService when using a numeric user id creates resource as expected 1`] = `
 {
