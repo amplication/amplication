@@ -98,6 +98,12 @@ export default function ModelOrganizer() {
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
 
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
+  const [
+    saveConfirmApplyChangesTampTrigger,
+    setSaveConfirmApplyChangesTampTrigger,
+  ] = useState<Date>(null);
+  const [confirmApplyChangesDialog, setConfirmApplyChangesDialog] =
+    useState<boolean>(false);
 
   const fitViewTimerRef = useRef(null);
 
@@ -121,6 +127,15 @@ export default function ModelOrganizer() {
     return () => clearTimeout(fitViewTimerRef.current);
   }, []);
 
+  useEffect(() => {
+    if (
+      redesignMode &&
+      !saveConfirmApplyChangesTampTrigger &&
+      (changes?.movedEntities?.length > 0 || changes?.newServices?.length > 0)
+    )
+      setConfirmApplyChangesDialog(true);
+  }, [redesignMode, saveConfirmApplyChangesTampTrigger, changes]);
+
   const onNodesChange = useCallback(
     (changes) => {
       const updatedNodes = applyNodeChanges<NodePayloadWithPayloadType>(
@@ -131,6 +146,11 @@ export default function ModelOrganizer() {
     },
     [nodes, setNodes]
   );
+
+  const onApplyChangesConfirmationClicked = useCallback(() => {
+    setConfirmApplyChangesDialog(false);
+    setSaveConfirmApplyChangesTampTrigger(new Date());
+  }, [setConfirmApplyChangesDialog]);
 
   const handleCreateResourceState = useCallback(() => {
     setIsValidResourceName(true);
@@ -284,6 +304,15 @@ export default function ModelOrganizer() {
             />
           </div>
           <div className={`${CLASS_NAME}__body`}>
+            <ConfirmationDialog
+              isOpen={confirmApplyChangesDialog}
+              onDismiss={onApplyChangesConfirmationClicked}
+              message={`Your architecture tweaks are ready to be applied, allowing Amplication to generate its code.
+              To reset or fetch updates not in the current state, use the buttons in the top toolbar.`}
+              confirmButton={{ label: "Got it" }}
+              onConfirm={onApplyChangesConfirmationClicked}
+            ></ConfirmationDialog>
+
             <ModelOrganizerToolbar
               changes={changes}
               nodes={nodes}
@@ -320,7 +349,6 @@ export default function ModelOrganizer() {
               </FlexItem>
             </Dialog>
             <ConfirmationDialog
-              btnClassName={`${CLASS_NAME}__confirmationDialog`}
               isOpen={duplicateEntityError}
               onDismiss={clearDuplicateEntityError}
               message={`Cannot move entity to service: ${currentDropTarget?.data?.payload?.name}
