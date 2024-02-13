@@ -131,17 +131,6 @@ const Commit = ({
     );
   }, [currentWorkspace]);
 
-  const commitChangesData = useCallback(() => {
-    setCommitRunning(true);
-    commit({
-      variables: {
-        message: commitMessage,
-        projectId,
-        bypassLimitations: false,
-      },
-    }).catch(console.error);
-  }, [setCommitRunning, commit, projectId, commitMessage]);
-
   const limitationError = useMemo(() => {
     if (!error) return;
     const limitation = error?.graphQLErrors?.find(
@@ -225,7 +214,7 @@ const Commit = ({
                   <JumboButton
                     text="Generate the code for my new architecture"
                     icon="pending_changes"
-                    onClick={commitChangesData}
+                    onClick={formik.submitForm}
                     circleColor={EnumTextColor.ThemeTurquoise}
                   ></JumboButton>
                 ) : null}
