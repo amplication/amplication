@@ -38,12 +38,12 @@ const useSignupPreviewAccount = (
             signupPreviewAccount;
           setToken(token);
           history.push(
-            `/${workspaceId}/${projectId}/${resourceId}/breaking-the-monolith-options`
+            `/${workspaceId}/${projectId}/${resourceId}/break-the-monolith-preview-environment`
           );
         },
       }).catch(console.error);
     }
-  }, [email, previewAccountType]);
+  }, [email, history, previewAccountType, signupPreviewAccount]);
 
   return { loading, error };
 };

@@ -57,7 +57,11 @@ const edgeTypes = {
   relationSimple: simpleRelationEdge,
 };
 
-export default function ModelOrganizer() {
+type Props = {
+  restrictedMode?: boolean;
+};
+
+export default function ModelOrganizer({ restrictedMode = false }: Props) {
   const { currentProject } = useAppContext();
 
   const [reactFlowInstance, setReactFlowInstance] =
@@ -282,6 +286,7 @@ export default function ModelOrganizer() {
           </div>
           <div className={`${CLASS_NAME}__body`}>
             <ModelOrganizerToolbar
+              restrictedMode={restrictedMode}
               changes={changes}
               nodes={nodes}
               redesignMode={redesignMode}

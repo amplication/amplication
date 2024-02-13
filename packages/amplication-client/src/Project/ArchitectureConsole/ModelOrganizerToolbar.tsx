@@ -26,6 +26,7 @@ import { formatError } from "../../util/error";
 export const CLASS_NAME = "model-organizer-toolbar";
 
 type Props = {
+  restrictedMode: boolean;
   redesignMode: boolean;
   hasChanges: boolean;
   changes: ModelChanges;
@@ -44,6 +45,7 @@ type Props = {
 };
 
 export default function ModelOrganizerToolbar({
+  restrictedMode,
   redesignMode,
   changes,
   hasChanges,
@@ -134,16 +136,18 @@ export default function ModelOrganizerToolbar({
           contentAlign={EnumContentAlign.Start}
           direction={EnumFlexDirection.Row}
         >
-          <SearchField
-            label="search"
-            placeholder="search"
-            onChange={handleSearchPhraseChanged}
-          />
+          {!restrictedMode && (
+            <SearchField
+              label="search"
+              placeholder="search"
+              onChange={handleSearchPhraseChanged}
+            />
+          )}
         </FlexItem>
 
         <FlexEnd>
           <FlexItem itemsAlign={EnumItemsAlign.Center}>
-            <BetaFeatureTag></BetaFeatureTag>
+            {!restrictedMode && <BetaFeatureTag></BetaFeatureTag>}
 
             {redesignMode && (
               <>
@@ -164,7 +168,7 @@ export default function ModelOrganizerToolbar({
                 </Button>
               </>
             )}
-            {!redesignMode && (
+            {!restrictedMode && !redesignMode && (
               <RedesignResourceButton
                 resources={resources}
                 onSelectResource={onRedesign}
