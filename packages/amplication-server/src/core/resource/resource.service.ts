@@ -347,13 +347,10 @@ export class ResourceService {
         "Feature Unavailable. Please upgrade your plan to access this feature."
       );
 
-    await this.analytics.track({
-      userId: user.account.id,
+    await this.analytics.trackWithContext({
       properties: {
         resourceId: resource.id,
         projectId: resource.projectId,
-        workspaceId: user.workspace.id,
-        $groups: { groupWorkspace: user.workspace.id },
       },
       event: EnumEventType.CodeGeneratorVersionUpdate,
     });
@@ -497,6 +494,18 @@ export class ResourceService {
     return resource;
   }
 
+  private createMovedEntitiesByResourceMapping(movedEntities): {
+    [resourceId: string]: RedesignProjectMovedEntity[];
+  } {
+    return movedEntities.reduce((entitiesByResource, entity) => {
+      if (!entitiesByResource[entity.targetResourceId]) {
+        entitiesByResource[entity.targetResourceId] = [];
+      }
+      entitiesByResource[entity.targetResourceId].push(entity);
+      return entitiesByResource;
+    }, {} as { [resourceId: string]: RedesignProjectMovedEntity[] });
+  }
+
   async installPlugins(
     resourceId: string,
     plugins: PluginInstallationCreateInput[],
@@ -531,16 +540,8 @@ export class ResourceService {
 
     //group moved entities by target resource
 
-    const movedEntitiesByResource = movedEntities.reduce(
-      (entitiesByResource, entity) => {
-        if (!entitiesByResource[entity.targetResourceId]) {
-          entitiesByResource[entity.targetResourceId] = [];
-        }
-        entitiesByResource[entity.targetResourceId].push(entity);
-        return entitiesByResource;
-      },
-      {} as { [resourceId: string]: RedesignProjectMovedEntity[] }
-    );
+    let movedEntitiesByResource =
+      this.createMovedEntitiesByResourceMapping(movedEntities);
 
     const resourceId =
       movedEntities[0]?.originalResourceId ?? firstResource?.id;
@@ -564,12 +565,10 @@ export class ResourceService {
       user.workspace?.id
     );
 
-    await this.analytics.track({
-      userId: user.id,
+    await this.analytics.trackWithContext({
       properties: {
-        workspaceId: user.workspace?.id,
         projectId,
-        resourceId: resourceId,
+        resourceId,
         plan: subscription.subscriptionPlan,
         movedEntities: movedEntities.length,
         newServices: newServices.length,
@@ -727,6 +726,10 @@ export class ResourceService {
           entityToCopy.targetResourceId = newResource.id;
         }
       }
+
+      // re-update movedEntitiesByResource after all new services were created, and the targetResourceId was updated to a real resourceId
+      movedEntitiesByResource =
+        this.createMovedEntitiesByResourceMapping(movedEntities);
 
       const sourceEntityIdToNewEntityMap = new Map<
         string,
@@ -1115,24 +1118,18 @@ export class ResourceService {
       data.plugins?.plugins?.filter((plugin) => {
         return plugin.configurations["requireAuthenticationEntity"] === "true";
       }).length > 0;
-    const project = await this.projectService.findUnique({
-      where: { id: data.resource.project.connect.id },
-    });
+
+    const projectId = data.resource.project.connect.id;
 
     if (data.connectToDemoRepo) {
-      await this.projectService.createDemoRepo(
-        data.resource.project.connect.id
-      );
+      await this.projectService.createDemoRepo(projectId);
       //do not use any git data when using demo repo
       data.resource.gitRepository = undefined;
 
-      await this.analytics.track({
-        userId: user.account.id,
+      await this.analytics.trackWithContext({
         event: EnumEventType.DemoRepoCreate,
         properties: {
-          projectId: project.id,
-          workspaceId: project.workspaceId,
-          $groups: { groupWorkspace: project.workspaceId },
+          projectId,
         },
       });
     }
@@ -1278,8 +1275,7 @@ export class ResourceService {
       return acc + entity.fields.length;
     }, 0);
 
-    await this.analytics.track({
-      userId: user.account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.ServiceWizardServiceGenerated,
       properties: {
         category: "Service Wizard",
@@ -1294,12 +1290,10 @@ export class ResourceService {
         repoType: data.repoType,
         dbType: data.dbType,
         auth: data.authType,
-        projectId: project.id,
-        workspaceId: project.workspaceId,
+        projectId,
         totalEntities,
         totalFields,
         gitOrgType: gitOrganization?.type,
-        $groups: { groupWorkspace: project.workspaceId },
       },
     });
 

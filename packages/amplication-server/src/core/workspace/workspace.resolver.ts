@@ -79,12 +79,8 @@ export class WorkspaceResolver {
   async currentWorkspace(
     @UserEntity() currentUser: User
   ): Promise<Workspace | null> {
-    await this.analytics.track({
-      userId: currentUser.account.id,
-      properties: {
-        workspaceId: currentUser.workspace.id,
-        $groups: { groupWorkspace: currentUser.workspace.id },
-      },
+    await this.analytics.trackWithContext({
+      properties: {},
       event: EnumEventType.WorkspaceSelected,
     });
     await this.userService.setLastActivity(currentUser.id);
@@ -211,7 +207,7 @@ export class WorkspaceResolver {
   ): Promise<ProvisionSubscriptionResult | null> {
     return this.billingService.provisionSubscription({
       ...args.data,
-      userId: currentUser.account.id,
+      accountId: currentUser.account.id,
     });
   }
 

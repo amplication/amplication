@@ -47,10 +47,8 @@ export class ResourceBtmService {
         user.workspace?.id
       );
 
-      await this.analyticsService.track({
-        userId: user.id,
+      await this.analyticsService.trackWithContext({
         properties: {
-          workspaceId: user.workspace?.id,
           projectId: resource.project?.id,
           resourceId: resource.id,
           serviceName: resource.name,

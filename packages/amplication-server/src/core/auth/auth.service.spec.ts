@@ -17,10 +17,10 @@ import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
 import { anyString } from "jest-mock-extended";
 import { AuthProfile, AuthUser } from "./types";
 import { IdentityProvider } from "./auth.types";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { Response } from "express";
 import { Env } from "../../env";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
@@ -227,7 +227,10 @@ const createPreviewEnvironmentMock = jest.fn(() => ({
 
 const prismaCreateProjectMock = jest.fn(() => EXAMPLE_PROJECT);
 const segmentAnalyticsIdentifyMock = jest.fn().mockResolvedValue(undefined);
-const segmentAnalyticsTrackMock = jest.fn().mockResolvedValue(undefined);
+const segmentAnalyticsTrackWithContextMock = jest
+  .fn()
+  .mockResolvedValue(undefined);
+const segmentAnalyticsTrackManualMock = jest.fn().mockResolvedValue(undefined);
 
 describe("AuthService", () => {
   let service: AuthService;
@@ -308,13 +311,11 @@ describe("AuthService", () => {
             },
           })),
         },
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            identify: segmentAnalyticsIdentifyMock,
-            track: segmentAnalyticsTrackMock,
-          })),
-        },
+        MockedSegmentAnalyticsProvider({
+          identifyMock: segmentAnalyticsIdentifyMock,
+          trackWithContextMock: segmentAnalyticsTrackWithContextMock,
+          trackManualMock: segmentAnalyticsTrackManualMock,
+        }),
         AuthService,
       ],
       imports: [],
@@ -703,16 +704,15 @@ describe("AuthService", () => {
       expect(result).toBeTruthy();
 
       expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(1);
-      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(1);
-      expect(segmentAnalyticsTrackMock).toHaveBeenCalledWith({
-        userId: expect.any(String),
-        event: EnumEventType.StartEmailSignup,
-        properties: {
-          identityProvider: IdentityProvider.IdentityPlatform,
-          existingUser: "No",
-        },
-        context: {
-          traits: expect.any(Object),
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledWith({
+        user: {},
+        data: {
+          event: EnumEventType.StartEmailSignup,
+          properties: {
+            identityProvider: IdentityProvider.IdentityPlatform,
+            existingUser: "No",
+          },
         },
       });
     });
@@ -855,18 +855,19 @@ describe("AuthService", () => {
         false
       );
 
-      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(1);
-      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(1);
-      expect(segmentAnalyticsTrackMock).toHaveBeenCalledWith({
-        userId: EXAMPLE_USER.account.id,
-        event: EnumEventType.CompleteEmailSignup,
-        properties: {
-          identityProvider: IdentityProvider.IdentityPlatform,
-          identityOrigin: EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME,
-          existingUser: false,
+      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledWith({
+        user: {
+          accountId: EXAMPLE_ACCOUNT.id,
         },
-        context: {
-          traits: expect.any(Object),
+        data: {
+          event: EnumEventType.CompleteEmailSignup,
+          properties: {
+            identityProvider: IdentityProvider.IdentityPlatform,
+            identityOrigin: EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME,
+            existingUser: false,
+          },
         },
       });
     });
@@ -890,7 +891,8 @@ describe("AuthService", () => {
       );
 
       expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
-      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackWithContextMock).toHaveBeenCalledTimes(0);
     });
 
     it("should not track the event when a SSO user logs in", async () => {
@@ -912,7 +914,8 @@ describe("AuthService", () => {
       );
 
       expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
-      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackWithContextMock).toHaveBeenCalledTimes(0);
     });
   });
 

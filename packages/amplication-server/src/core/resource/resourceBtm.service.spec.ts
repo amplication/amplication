@@ -12,10 +12,10 @@ import { ConversationTypeKey } from "../gpt/gpt.types";
 import { BreakServiceToMicroservicesData } from "./dto/BreakServiceToMicroservicesResult";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { Resource, User } from "../../models";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { BillingService } from "../billing/billing.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 const resourceIdMock = "resourceId";
 const userIdMock = "userId";
@@ -28,6 +28,9 @@ const userMock: User = {
   id: userIdMock,
   workspace: {
     id: workspaceIdMock,
+  },
+  account: {
+    id: "accountId",
   },
 } as User;
 
@@ -87,12 +90,9 @@ describe("ResourceBtmService", () => {
             findOne: userActionServiceFindOneMock,
           },
         },
-        {
-          provide: SegmentAnalyticsService,
-          useValue: {
-            track: trackMock,
-          },
-        },
+        MockedSegmentAnalyticsProvider({
+          trackWithContextMock: trackMock,
+        }),
         {
           provide: BillingService,
           useValue: { getSubscription: getSubscriptionMock },
@@ -118,9 +118,7 @@ describe("ResourceBtmService", () => {
     expect(getSubscriptionMock).toHaveBeenCalledWith(userMock.workspace.id);
     expect(trackMock).toHaveBeenCalledTimes(1);
     expect(trackMock).toHaveBeenCalledWith({
-      userId: userMock.id,
       properties: {
-        workspaceId: userMock.workspace.id,
         projectId: resourceMock.project.id,
         resourceId: resourceMock.id,
         serviceName: resourceMock.name,
@@ -1061,9 +1059,7 @@ describe("ResourceBtmService", () => {
       expect(getSubscriptionMock).toHaveBeenCalledWith(userMock.workspace.id);
       expect(trackMock).toHaveBeenCalledTimes(1);
       expect(trackMock).toHaveBeenCalledWith({
-        userId: userMock.id,
         properties: {
-          workspaceId: userMock.workspace.id,
           projectId: resourceMock.project.id,
           resourceId: resourceMock.id,
           serviceName: resourceMock.name,
