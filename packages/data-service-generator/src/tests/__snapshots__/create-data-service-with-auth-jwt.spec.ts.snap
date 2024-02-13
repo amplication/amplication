@@ -3528,8 +3528,7 @@ export function getInvalidAttributes(
 }
 ",
   "server/src/auth/acl.module.ts": "import { AccessControlModule, RolesBuilder } from "nest-access-control";
-// @ts-ignore
-// eslint-disable-next-line import/no-unresolved
+
 import grants from "../grants.json";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -3870,8 +3869,6 @@ export class GqlACGuard<User extends any = any> extends ACGuard<User> {
   "server/src/auth/gqlDefaultAuth.guard.ts": "import { ExecutionContext } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import type { Request } from "express";
-// @ts-ignore
-// eslint-disable-next-line
 import { DefaultAuthGuard } from "./defaultAuth.guard";
 
 export class GqlDefaultAuthGuard extends DefaultAuthGuard {
@@ -4117,10 +4114,8 @@ export function parseSalt(value: string | undefined): Salt {
   return rounds;
 }
 ",
-  "server/src/auth/token.service.ts": "//@ts-ignore
-import { ITokenService } from "./ITokenService";
-// eslint-disable-next-line import/no-unresolved
-//@ts-ignore
+  "server/src/auth/token.service.ts": "import { ITokenService } from "./ITokenService";
+
 import { TokenServiceBase } from "./base/token.service.base";
 
 export class TokenService extends TokenServiceBase implements ITokenService {}

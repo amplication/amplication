@@ -1,4 +1,6 @@
 import {
+  EnumTextColor,
+  JumboButton,
   LimitationDialog,
   Snackbar,
   TextField,
@@ -37,6 +39,9 @@ const INITIAL_VALUES: TCommit = {
 type Props = {
   projectId: string;
   noChanges: boolean;
+  showCommitMessage?: boolean;
+  commitMessage?: string;
+  commitBtnType: CommitBtnType;
 };
 const CLASS_NAME = "commit";
 
@@ -52,6 +57,11 @@ type RouteMatchProps = {
   workspace: string;
 };
 
+export enum CommitBtnType {
+  Button = "button",
+  JumboButton = "jumboButton",
+}
+
 const formatLimitationError = (errorMessage: string) => {
   const LIMITATION_ERROR_PREFIX = "LimitationError: ";
 
@@ -59,7 +69,13 @@ const formatLimitationError = (errorMessage: string) => {
   return limitationError;
 };
 
-const Commit = ({ projectId, noChanges }: Props) => {
+const Commit = ({
+  projectId,
+  noChanges,
+  commitBtnType,
+  showCommitMessage = true,
+  commitMessage,
+}: Props) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
   const match = useRouteMatch<RouteMatchProps>();
@@ -107,6 +123,13 @@ const Commit = ({ projectId, noChanges }: Props) => {
       return history.push(path);
     },
   });
+
+  const bypassLimitations = useMemo(() => {
+    return (
+      currentWorkspace?.subscription?.subscriptionPlan !==
+      EnumSubscriptionPlan.Pro
+    );
+  }, [currentWorkspace]);
 
   const limitationError = useMemo(() => {
     if (!error) return;
@@ -156,47 +179,55 @@ const Commit = ({ projectId, noChanges }: Props) => {
               {!loading && (
                 <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
               )}
-              <TextField
-                rows={3}
-                textarea
-                name="message"
-                label={noChanges ? "Build message" : "Commit message..."}
-                disabled={loading}
-                autoFocus
-                hideLabel
-                placeholder={noChanges ? "Build message" : "Commit message..."}
-                autoComplete="off"
-              />
-
+              {showCommitMessage && (
+                <TextField
+                  rows={3}
+                  textarea
+                  name="message"
+                  label={noChanges ? "Build message" : "Commit message..."}
+                  disabled={loading}
+                  autoFocus
+                  hideLabel
+                  placeholder={
+                    noChanges ? "Build message" : "Commit message..."
+                  }
+                  autoComplete="off"
+                />
+              )}
               <LicenseIndicatorContainer
                 featureId={BillingFeature.BlockBuild}
                 licensedResourceType={LicensedResourceType.Project}
                 licensedTooltipText="The workspace reached your plan's project limitation. "
               >
-                <Button
-                  type="submit"
-                  buttonStyle={EnumButtonStyle.Primary}
-                  eventData={{
-                    eventName: AnalyticsEventNames.CommitClicked,
-                  }}
-                  disabled={loading}
-                >
-                  {noChanges ? "Rebuild" : "Commit changes & build "}
-                </Button>
+                {commitBtnType === CommitBtnType.Button ? (
+                  <Button
+                    type="submit"
+                    buttonStyle={EnumButtonStyle.Primary}
+                    eventData={{
+                      eventName: AnalyticsEventNames.CommitClicked,
+                    }}
+                    disabled={loading}
+                  >
+                    {noChanges ? "Rebuild" : "Commit changes & build "}
+                  </Button>
+                ) : commitBtnType === CommitBtnType.JumboButton ? (
+                  <JumboButton
+                    text="Generate the code for my new architecture"
+                    icon="pending_changes"
+                    onClick={formik.submitForm}
+                    circleColor={EnumTextColor.ThemeTurquoise}
+                  ></JumboButton>
+                ) : null}
               </LicenseIndicatorContainer>
             </Form>
           );
         }}
       </Formik>
-
       {error && isLimitationError ? (
         <LimitationDialog
           isOpen={isOpenLimitationDialog}
           message={limitationError.message}
-          allowBypassLimitation={
-            currentWorkspace?.subscription?.subscriptionPlan !==
-            EnumSubscriptionPlan.Pro
-          }
+          allowBypassLimitation={bypassLimitations}
           onConfirm={() => {
             redirectToPurchase();
             trackEvent({

@@ -476,13 +476,10 @@ export class GitProviderService {
 
     const gitRemoteOrganization = await gitClientService.getOrganization();
 
-    await this.analytics.track({
-      userId: currentUser.account.id,
+    await this.analytics.trackWithContext({
       properties: {
-        workspaceId: workspaceId,
         provider: gitProvider,
         gitOrgType: gitRemoteOrganization.type,
-        $groups: { groupWorkspace: workspaceId },
       },
       event: EnumEventType.GitHubAuthResourceComplete,
     });
@@ -672,13 +669,10 @@ export class GitProviderService {
       },
     });
 
-    await this.analytics.track({
-      userId: currentUser.account.id,
+    await this.analytics.trackWithContext({
       properties: {
-        workspaceId: workspaceId,
         provider: gitProvider,
         gitOrgType: gitOrganization?.type,
-        $groups: { groupWorkspace: workspaceId },
       },
       event: EnumEventType.GitHubAuthResourceComplete,
     });
