@@ -12,6 +12,8 @@ import { encryptString } from "../../util/encryptionUtil";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
 
 @Injectable()
 export class UserService {
@@ -19,7 +21,8 @@ export class UserService {
     private readonly kafkaProducerService: KafkaProducerService,
     private readonly logger: AmplicationLogger,
     private readonly billingService: BillingService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService
   ) {}
 
   findUser(
@@ -210,6 +213,7 @@ export class UserService {
       this.logger.info(
         `Queuing feature notification ${notificationTemplateIdentifier} to user ${user.id} (account: ${user.account?.id})`
       );
+      const firstProject = user.workspace?.projects?.at(0);
       this.kafkaProducerService
         .emitMessage(KAFKA_TOPICS.USER_ANNOUNCEMENT_TOPIC, <
           UserFeatureAnnouncement.KafkaEvent
@@ -218,6 +222,9 @@ export class UserService {
           value: {
             externalId: encryptString(user.id),
             notificationTemplateIdentifier,
+            envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
+            workspaceId: user.workspace?.id,
+            projectId: firstProject?.id,
           },
         })
         .catch((error) =>
