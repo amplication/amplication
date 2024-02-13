@@ -121,6 +121,10 @@ const userModuleCustomActions: ModuleAction[] = [
       type: "Dto",
       dtoId: PROMOTE_USER_ARGS_DTO_ID,
     },
+    restInputSource: "Split",
+    restInputParamPropertyName: "where",
+    restInputBodyPropertyName: "data",
+    restInputQueryPropertyName: "query",
   },
   {
     id: "clraten5x000rc9yh29927zwf",
@@ -214,6 +218,16 @@ const userModuleDefaultDtos: ModuleDto[] = [
     enabled: true,
     properties: [],
   },
+  {
+    id: "UserWhereUniqueInput_ID",
+    description: "",
+    resourceId: "clraten1t0004c9yhz1t3o8bp",
+    parentBlockId: "clraten4g000fc9yhr62nxheo",
+    name: "UserWhereUniqueInput",
+    dtoType: "WhereUniqueInput",
+    enabled: true,
+    properties: [],
+  },
 ];
 
 const userModuleCustomDtos: ModuleDto[] = [
@@ -234,6 +248,30 @@ const userModuleCustomDtos: ModuleDto[] = [
           {
             type: "Dto",
             dtoId: PROMOTE_USER_INPUT_DTO_ID,
+            isArray: false,
+          },
+        ],
+      },
+      {
+        name: "where",
+        isArray: false,
+        isOptional: false,
+        propertyTypes: [
+          {
+            type: "Dto",
+            dtoId: "UserWhereUniqueInput_ID",
+            isArray: false,
+          },
+        ],
+      },
+      {
+        name: "query",
+        isArray: false,
+        isOptional: false,
+        propertyTypes: [
+          {
+            type: "Dto",
+            dtoId: "UserWhereUniqueInput_ID",
             isArray: false,
           },
         ],

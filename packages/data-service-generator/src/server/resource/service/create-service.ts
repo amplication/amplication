@@ -27,6 +27,7 @@ import {
   extractImportDeclarations,
   getClassDeclarationById,
   getMethods,
+  importContainedIdentifiers,
   importNames,
   interpolate,
   removeClassMethodByName,
@@ -41,6 +42,7 @@ import DsgContext from "../../../dsg-context";
 import { getEntityIdType } from "../../../utils/get-entity-id-type";
 import { createCustomActionMethods } from "./create-custom-action";
 import { logger as applicationLogger } from "../../../logging";
+import { getImportableDTOs } from "../dto/create-dto-module";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -55,7 +57,8 @@ export async function createServiceModules(
   entity: Entity,
   serviceId: namedTypes.Identifier,
   serviceBaseId: namedTypes.Identifier,
-  delegateId: namedTypes.Identifier
+  delegateId: namedTypes.Identifier,
+  dtoNameToPath: Record<string, string>
 ): Promise<ModuleMap> {
   const template = await readFile(serviceTemplatePath);
   const templateBase = await readFile(serviceBaseTemplatePath);
@@ -81,7 +84,8 @@ export async function createServiceModules(
       serviceBaseId,
       template,
       entityActions,
-    }),
+      dtoNameToPath,
+    } as CreateEntityServiceParams),
     await pluginWrapper(
       createServiceBaseModule,
       EventNames.CreateEntityServiceBase,
@@ -95,7 +99,8 @@ export async function createServiceModules(
         template: templateBase,
         moduleContainers,
         entityActions,
-      }
+        dtoNameToPath,
+      } as CreateEntityServiceBaseParams
     ),
   ]);
 
@@ -148,6 +153,7 @@ async function createServiceBaseModule({
   template,
   moduleContainers,
   entityActions,
+  dtoNameToPath,
 }: CreateEntityServiceBaseParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
 
@@ -256,6 +262,14 @@ async function createServiceBaseModule({
     template,
     toOneRelations.flatMap((relation) => relation.imports)
   );
+
+  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.service.ts`;
+
+  const dtoImports = importContainedIdentifiers(
+    template,
+    getImportableDTOs(modulePath, dtoNameToPath)
+  );
+  addImports(template, [...dtoImports]);
 
   addAutoGenerationComment(template);
 

@@ -30,6 +30,7 @@ export interface CreateEntityServiceBaseParams extends EventParams {
   template: namedTypes.File;
   moduleContainers: ModuleContainer[];
   entityActions: entityActions;
+  dtoNameToPath: Record<string, string>;
 }
 
 export interface CreateEntityServiceParams extends EventParams {
@@ -40,6 +41,7 @@ export interface CreateEntityServiceParams extends EventParams {
   serviceBaseId: namedTypes.Identifier;
   template: namedTypes.File;
   entityActions: entityActions;
+  dtoNameToPath: Record<string, string>;
 }
 export interface CreateEntityControllerParams extends EventParams {
   template: namedTypes.File;

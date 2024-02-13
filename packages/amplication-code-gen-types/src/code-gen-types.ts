@@ -304,6 +304,10 @@ export type ModuleAction = Omit<
   gqlOperation: keyof typeof models.EnumModuleActionGqlOperation;
   inputType?: PropertyTypeDef;
   outputType?: PropertyTypeDef;
+  restInputSource?: "Query" | "Param" | "Body" | "Split";
+  restInputParamPropertyName?: string;
+  restInputBodyPropertyName?: string;
+  restInputQueryPropertyName?: string;
 };
 
 export type ModuleDtoProperty = Omit<

@@ -12002,6 +12002,7 @@ export { OrganizationUpdateManyWithoutUsersInput as OrganizationUpdateManyWithou
 import { PromoteUserInput } from "./PromoteUserInput";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 
 @ObjectType()
 class PromoteUserArgs {
@@ -12014,6 +12015,22 @@ class PromoteUserArgs {
     })
     @Type(() => PromoteUserInput)
     data?: PromoteUserInput;
+
+    @Field(() => UserWhereUniqueInput)
+    @ApiProperty({
+        required: true,
+        type: () => UserWhereUniqueInput
+    })
+    @Type(() => UserWhereUniqueInput)
+    where!: UserWhereUniqueInput;
+
+    @Field(() => UserWhereUniqueInput)
+    @ApiProperty({
+        required: true,
+        type: () => UserWhereUniqueInput
+    })
+    @Type(() => UserWhereUniqueInput)
+    query!: UserWhereUniqueInput;
 }
 
 export { PromoteUserArgs as PromoteUserArgs };",
@@ -13678,7 +13695,6 @@ import { UserFindManyArgs } from "./UserFindManyArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { OrganizationWhereUniqueInput } from "../../organization/base/OrganizationWhereUniqueInput";
-import { PromoteUserArgs } from "./PromoteUserArgs";
 import { PromoteUserInput } from "./PromoteUserInput";
 
 export class UserControllerBase {
@@ -14028,7 +14044,19 @@ export class UserControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async promoteUser(args: PromoteUserArgs): Promise<PromoteUserInput[]> {
+  async promoteUser(
+    @common.Param()
+    params: UserWhereUniqueInput,
+    @common.Query()
+    query: UserWhereUniqueInput,
+    @common.Body()
+    body: PromoteUserInput
+  ): Promise<PromoteUserInput[]> {
+    const args = {
+      where: params,
+      query: query,
+      data: body,
+    };
     return this.service.promoteUser(args);
   }
 
@@ -14042,8 +14070,11 @@ export class UserControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async sendPasswordResetEmail(args: PromoteUserInput): Promise<boolean> {
-    return this.service.sendPasswordResetEmail(args);
+  async sendPasswordResetEmail(
+    @common.Body()
+    body: PromoteUserInput
+  ): Promise<boolean> {
+    return this.service.promoteUser(body);
   }
 
   @common.Get("/:id/resendInviteEmail")
@@ -14056,8 +14087,11 @@ export class UserControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async resendInviteEmail(args: PromoteUserInput): Promise<PromoteUserInput> {
-    return this.service.resendInviteEmail(args);
+  async resendInviteEmail(
+    @common.Body()
+    body: PromoteUserInput
+  ): Promise<PromoteUserInput> {
+    return this.service.promoteUser(body);
   }
 
   @common.Delete("/:id/softDeleteUser")
@@ -14070,8 +14104,11 @@ export class UserControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async softDeleteUser(args: PromoteUserInput): Promise<PromoteUserInput> {
-    return this.service.softDeleteUser(args);
+  async softDeleteUser(
+    @common.Body()
+    body: PromoteUserInput
+  ): Promise<PromoteUserInput> {
+    return this.service.promoteUser(body);
   }
 }
 ",

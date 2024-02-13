@@ -52,7 +52,8 @@ async function createResourceModules(
     entity,
     serviceId,
     serviceBaseId,
-    delegateId
+    delegateId,
+    dtoNameToPath
   );
 
   const [serviceModule] = serviceModules.modules();

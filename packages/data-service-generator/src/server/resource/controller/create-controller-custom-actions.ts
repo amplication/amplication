@@ -1,4 +1,8 @@
-import { ModuleAction } from "@amplication/code-gen-types";
+import {
+  ModuleAction,
+  ModuleDto,
+  PropertyTypeDef,
+} from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
 import {
   createRestApiResponseTypeDecorator,
@@ -6,9 +10,39 @@ import {
   createStaticDecorators,
 } from "./create-rest-api-decorator";
 import { createPropTypeFromTypeDefList } from "../dto/custom-types/create-property-type";
-import { PROMISE_ID } from "../../../utils/ast";
+import { PROMISE_ID, blockStatement } from "../../../utils/ast";
+import {
+  createControllerParamDecorator,
+  createControllerBodyDecorator,
+  createControllerQueryDecorator,
+} from "../../../utils/create-controller-parameter-decorators";
 
-const SERVICE_ID = builders.identifier("service");
+const PARAMS_PROPERTY_NAME = "params";
+const QUERY_PROPERTY_NAME = "query";
+const BODY_PROPERTY_NAME = "body";
+
+type InputPropertyType = "Query" | "Param" | "Body";
+
+const INPUT_PROPERTY_TYPE_TO_ID_AND_DECORATOR: Record<
+  string,
+  {
+    id: namedTypes.Identifier;
+    decorator: namedTypes.Decorator;
+  }
+> = {
+  Query: {
+    id: builders.identifier(QUERY_PROPERTY_NAME),
+    decorator: createControllerQueryDecorator(),
+  },
+  Param: {
+    id: builders.identifier(PARAMS_PROPERTY_NAME),
+    decorator: createControllerParamDecorator(),
+  },
+  Body: {
+    id: builders.identifier(BODY_PROPERTY_NAME),
+    decorator: createControllerBodyDecorator(),
+  },
+};
 
 export function createControllerCustomActionMethods(
   actions: ModuleAction[]
@@ -41,29 +75,17 @@ function generateRestApiControllerMethod(
 export function generateControllerCustomActionMethod(
   action: ModuleAction
 ): namedTypes.ClassMethod {
-  const inputType = createPropTypeFromTypeDefList([action.inputType]);
   const outputType = createPropTypeFromTypeDefList([action.outputType]);
 
-  const inputParam = builders.identifier("args");
-  inputParam.typeAnnotation = builders.tsTypeAnnotation(inputType);
+  const inputParams = prepareInputParameters(action);
 
   //generate this code within the function
   //return this.service.[name]](args);
   const method = builders.classMethod(
     "method",
     builders.identifier(action.name),
-    [inputParam],
-    builders.blockStatement([
-      builders.returnStatement(
-        builders.callExpression(
-          builders.memberExpression(
-            builders.memberExpression(builders.thisExpression(), SERVICE_ID),
-            builders.identifier(action.name)
-          ),
-          [builders.identifier("args")]
-        )
-      ),
-    ]),
+    inputParams.filter((param) => param !== null),
+    prepareActionBody(action),
     false,
     false
   );
@@ -80,4 +102,131 @@ export function generateControllerCustomActionMethod(
   }
 
   return method;
+}
+
+function prepareInputParameters(action: ModuleAction): namedTypes.Identifier[] {
+  const inputParams: namedTypes.Identifier[] = [];
+
+  if (action.restInputSource === "Split") {
+    inputParams.push(
+      prepareInputParameterSplit(
+        "Param",
+        action.inputType.dto,
+        action.restInputParamPropertyName,
+        action
+      )
+    );
+
+    inputParams.push(
+      prepareInputParameterSplit(
+        "Query",
+        action.inputType.dto,
+        action.restInputQueryPropertyName,
+        action
+      )
+    );
+
+    inputParams.push(
+      prepareInputParameterSplit(
+        "Body",
+        action.inputType.dto,
+        action.restInputBodyPropertyName,
+        action
+      )
+    );
+  } else {
+    inputParams.push(
+      prepareInputParameter(action.restInputSource, [action.inputType])
+    );
+  }
+
+  return inputParams.filter((param) => param !== null);
+}
+
+function prepareInputParameterSplit(
+  inputPropertyType: InputPropertyType,
+  inputDto: ModuleDto,
+  propertyName: string,
+  action: ModuleAction
+): namedTypes.Identifier | null {
+  if (!propertyName) {
+    return null;
+  }
+
+  if (propertyName) {
+    if (!inputDto) {
+      throw new Error(
+        `cannot create action '${action.name}' for controller. DTO not found, but propertyName for ${inputPropertyType} is defined. Check action input settings.`
+      );
+    }
+
+    const property = action.inputType.dto?.properties.find((property) => {
+      return property.name === propertyName;
+    });
+
+    if (!property) {
+      throw new Error(
+        `Cannot create action '${action.name}' for controller. Property '${propertyName}' not found in DTO '${inputDto.name}'. Check action input settings.`
+      );
+    }
+
+    return prepareInputParameter(inputPropertyType, property.propertyTypes);
+  }
+}
+
+function prepareInputParameter(
+  inputPropertyType: InputPropertyType,
+  typeDefs: PropertyTypeDef[]
+): namedTypes.Identifier | null {
+  const parameterType = createPropTypeFromTypeDefList(typeDefs);
+  const parameter =
+    INPUT_PROPERTY_TYPE_TO_ID_AND_DECORATOR[inputPropertyType].id;
+  parameter.typeAnnotation = builders.tsTypeAnnotation(parameterType);
+  const decorators = [
+    INPUT_PROPERTY_TYPE_TO_ID_AND_DECORATOR[inputPropertyType].decorator,
+  ];
+  //@ts-ignore - property is missing in ast-types
+  parameter.decorators = decorators;
+  return parameter;
+}
+
+//Generates the function body.
+//The function return something like this, depends on the restInputSource value
+// const args = {
+//   prop1: params,
+//   prop2: query,
+//   prop3: body,
+// };
+// return this.service.promoteUser(args);
+function prepareActionBody(action: ModuleAction): namedTypes.BlockStatement {
+  const parts = [];
+
+  if (action.restInputSource === "Split") {
+    parts.push("const args = {");
+    if (action.restInputParamPropertyName) {
+      parts.push(
+        `${action.restInputParamPropertyName}: ${PARAMS_PROPERTY_NAME},`
+      );
+    }
+    if (action.restInputQueryPropertyName) {
+      parts.push(
+        `${action.restInputQueryPropertyName}: ${QUERY_PROPERTY_NAME},`
+      );
+    }
+    if (action.restInputBodyPropertyName) {
+      parts.push(`${action.restInputBodyPropertyName}: ${BODY_PROPERTY_NAME},`);
+    }
+    parts.push("};");
+    parts.push("return this.service.promoteUser(args);");
+  } else {
+    const argsPropertyName =
+      action.restInputSource === "Param"
+        ? PARAMS_PROPERTY_NAME
+        : action.restInputSource === "Query"
+        ? QUERY_PROPERTY_NAME
+        : BODY_PROPERTY_NAME;
+    parts.push(`return this.service.promoteUser(${argsPropertyName});`);
+  }
+
+  return blockStatement(parts.join("\n"));
 }

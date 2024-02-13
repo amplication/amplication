@@ -415,6 +415,10 @@ function prepareModuleActionsAndDtos(
 
   //resolve references from action input/output types to dtos
   moduleActions.forEach((moduleAction) => {
+    if (!moduleAction.restInputSource) {
+      moduleAction.restInputSource = "Body"; //set the default as Body in case no value was provided
+    }
+
     const actionInputType = moduleAction.inputType;
     if (actionInputType) {
       const dtoId = actionInputType.dtoId;

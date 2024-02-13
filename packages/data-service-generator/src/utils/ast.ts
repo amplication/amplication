@@ -349,6 +349,15 @@ export function classProperty(
   return property as namedTypes.ClassProperty;
 }
 
+export function blockStatement(bodyString: string): namedTypes.BlockStatement {
+  const code = `function b(){
+      ${bodyString}
+    }`;
+  const ast = parse(code);
+  const [method] = ast.program.body as [namedTypes.ClassMethod];
+  return (method as namedTypes.ClassMethod).body;
+}
+
 export function findContainedIdentifiers2(
   node: ASTNode,
   nameToIdentifier: { [key: string]: namedTypes.Identifier }
