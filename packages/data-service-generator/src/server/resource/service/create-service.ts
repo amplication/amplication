@@ -334,6 +334,7 @@ async function createToOneRelationFile(
     DELEGATE: delegateId,
     PARENT_ID_TYPE: getParentIdType(entity.name),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
+    PRISMA_RELATED_ENTITY: builders.identifier(`Prisma${relatedEntity.name}`),
     PROPERTY: builders.identifier(field.name),
     FIND_ONE: createFieldFindOneFunctionId(field.name),
   });
@@ -356,6 +357,7 @@ async function createToManyRelationFile(
     DELEGATE: delegateId,
     PARENT_ID_TYPE: getParentIdType(entity.name),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
+    PRISMA_RELATED_ENTITY: builders.identifier(`Prisma${relatedEntity.name}`),
     PROPERTY: builders.identifier(field.name),
     FIND_MANY: createFieldFindManyFunctionId(field.name),
     ARGS: relatedEntityDTOs.findManyArgs.id,
@@ -390,6 +392,7 @@ function createTemplateMapping(
     SERVICE: serviceId,
     SERVICE_BASE: serviceBaseId,
     ENTITY: builders.identifier(entityType),
+    PRISMA_ENTITY: builders.identifier(`Prisma${entityType}`),
     COUNT_ARGS: builders.identifier(`${entityType}CountArgs`),
     FIND_MANY_ARGS: builders.identifier(`${entityType}FindManyArgs`),
     FIND_ONE_ARGS: builders.identifier(`${entityType}FindUniqueArgs`),
