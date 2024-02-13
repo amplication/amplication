@@ -1,7 +1,7 @@
 import { defaultTheme } from "react-admin";
-import { createTheme, ThemeOptions } from "@material-ui/core/styles";
 import { merge } from "lodash";
-import createPalette from "@material-ui/core/styles/createPalette";
+import createPalette from "@mui/material/styles/createPalette";
+import { ThemeOptions, createTheme } from "@mui/material";
 
 const palette = createPalette(
   merge({}, defaultTheme.palette, {

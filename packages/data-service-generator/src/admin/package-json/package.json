@@ -4,14 +4,15 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "3.6.9",
-    "@material-ui/core": "4.12.4",
+    "@mui/material": "5.15.9",
+    "final-form-arrays": "^3.1.0",
     "graphql": "15.6.1",
     "lodash": "4.17.21",
     "pluralize": "8.0.0",
     "ra-data-graphql-amplication": "0.0.14",
-    "react": "16.14.0",
-    "react-admin": "3.19.12",
-    "react-dom": "16.14.0",
+    "react": "17.0.2",
+    "react-admin": "4.16.10",
+    "react-dom": "17.0.2",
     "react-scripts": "5.0.0",
     "sass": "^1.39.0",
     "web-vitals": "1.1.2"
@@ -48,8 +49,8 @@
     "@types/jest": "26.0.16",
     "@types/lodash": "4.14.178",
     "@types/node": "12.20.16",
-    "@types/react": "16.14.11",
-    "@types/react-dom": "17.0.0",
+    "@types/react": "17.0.2",
+    "@types/react-dom": "17.0.2",
     "type-fest": "0.13.1",
     "typescript": "4.3.5"
   }

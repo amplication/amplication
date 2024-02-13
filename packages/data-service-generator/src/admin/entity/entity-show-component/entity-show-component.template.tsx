@@ -1,11 +1,11 @@
 import * as React from "react";
-import { Show, SimpleShowLayout, ShowProps } from "react-admin";
+import { Show, SimpleShowLayout } from "react-admin";
 
 declare const FIELDS: React.ReactElement[];
 
-export const ENTITY_SHOW = (props: ShowProps): React.ReactElement => {
+export const ENTITY_SHOW = (): React.ReactElement => {
   return (
-    <Show {...props}>
+    <Show>
       <SimpleShowLayout>{FIELDS}</SimpleShowLayout>
     </Show>
   );
