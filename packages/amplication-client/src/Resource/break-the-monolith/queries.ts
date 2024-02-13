@@ -15,7 +15,7 @@ export const FINALIZE_BREAK_SERVICE_INTO_MICROSERVICES = gql`
         microservices {
           name
           functionality
-          dataModels {
+          tables {
             originalEntityId
             name
           }
