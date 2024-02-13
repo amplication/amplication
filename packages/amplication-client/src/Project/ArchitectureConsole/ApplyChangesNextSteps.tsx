@@ -55,7 +55,7 @@ export const ApplyChangesNextSteps = ({
           projectId={currentProject.id}
           noChanges
           showCommitMessage={false}
-          commitMessage="Generated code with my new architecture"
+          commitMessage="Architecture redesign"
           commitBtnType={CommitBtnType.JumboButton}
         ></Commit>
 
