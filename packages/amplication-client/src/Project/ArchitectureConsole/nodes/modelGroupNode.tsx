@@ -46,13 +46,6 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
           itemsAlign={EnumItemsAlign.Start}
           contentAlign={EnumContentAlign.Start}
           direction={EnumFlexDirection.Column}
-          end={
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              icon="move"
-              className="group-drag-handle"
-            />
-          }
         >
           <Text textStyle={EnumTextStyle.Normal}>{data.payload.name}</Text>
           <Text textStyle={EnumTextStyle.Description}>
