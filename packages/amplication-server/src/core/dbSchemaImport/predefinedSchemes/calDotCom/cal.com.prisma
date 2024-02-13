@@ -8,7 +8,6 @@ datasource db {
 
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["filterJson", "interactiveTransactions"]
 }
 
 generator zod {

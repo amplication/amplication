@@ -84,13 +84,18 @@ export class SubscriptionService {
     workspaceId: string
   ): Promise<void> {
     if (plan !== EnumSubscriptionPlan.Free && userId) {
-      await this.analyticsService.track({
-        userId: userId,
-        properties: {
-          workspaceId: workspaceId,
-          $groups: { groupWorkspace: workspaceId },
+      await this.analyticsService.trackManual({
+        user: {
+          accountId: userId,
+          workspaceId,
         },
-        event: EnumEventType.WorkspacePlanUpgradeCompleted,
+        data: {
+          properties: {
+            workspaceId: workspaceId,
+            $groups: { groupWorkspace: workspaceId },
+          },
+          event: EnumEventType.WorkspacePlanUpgradeCompleted,
+        },
       });
     }
   }

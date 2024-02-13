@@ -1,5 +1,7 @@
 @import "../../../style/index.scss";
 
+$options-max-width: 800px;
+
 .breaking-the-monolith-options {
   padding: var(--double-spacing);
 
@@ -18,6 +20,7 @@
 
   &__monolith_options {
     margin-top: var(--double-spacing);
+    max-width: $options-max-width;
   }
 
   &__action-button {

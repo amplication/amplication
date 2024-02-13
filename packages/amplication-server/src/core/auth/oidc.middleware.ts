@@ -1,22 +1,15 @@
-import { Inject, Injectable, NestMiddleware } from "@nestjs/common";
+import { Injectable, NestMiddleware } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { auth } from "express-openid-connect";
 import { Env } from "../../env";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { AuthService } from "./auth.service";
 
 @Injectable()
-export class Auth0Middleware implements NestMiddleware {
+export class OpenIDConnectAuthMiddleware implements NestMiddleware {
   private middleware: RequestHandler;
   private clientHost: string;
 
-  constructor(
-    configService: ConfigService,
-    @Inject(AmplicationLogger)
-    private readonly logger: AmplicationLogger,
-    private readonly authService: AuthService
-  ) {
+  constructor(configService: ConfigService) {
     this.clientHost = configService.get(Env.CLIENT_HOST);
     const baseURL = `${configService.get(Env.HOST)}`;
 

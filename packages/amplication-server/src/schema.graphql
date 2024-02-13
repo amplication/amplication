@@ -800,7 +800,10 @@ input EnumResourceTypeFilter {
 }
 
 enum EnumSchemaNames {
+  Abby
   CalDotCom
+  Formbricks
+  Papermark
 }
 
 enum EnumSubscriptionPlan {

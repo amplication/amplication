@@ -1,6 +1,7 @@
 import { Injectable, forwardRef, Inject } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { subDays } from "date-fns";
+import { Response } from "express";
 import { ConfigService } from "@nestjs/config";
 import cuid from "cuid";
 import { Env } from "../../env";
@@ -45,9 +46,10 @@ import {
 import { IdentityProvider, IdentityProviderPreview } from "./auth.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import {
-  IdentifyData,
   EnumEventType,
+  IdentifyData,
 } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { stringifyUrl } from "query-string";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
@@ -70,7 +72,8 @@ export class AuthService {
   private readonly auth0: AuthenticationClient;
   private readonly auth0Management: ManagementClient;
   private readonly clientId: string;
-  private readonly dbConnectionName: string;
+  private readonly businessEmailDbConnectionName: string;
+  private clientHost: string;
 
   constructor(
     configService: ConfigService,
@@ -84,11 +87,13 @@ export class AuthService {
     private readonly workspaceService: WorkspaceService,
     private readonly analytics: SegmentAnalyticsService
   ) {
+    this.clientHost = configService.get(Env.CLIENT_HOST);
+
     this.clientId = configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID);
     const clientSecret = configService.get<string>(
       Env.AUTH_ISSUER_CLIENT_SECRET
     );
-    this.dbConnectionName = configService.get<string>(
+    this.businessEmailDbConnectionName = configService.get<string>(
       Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
     );
     this.auth0 = new AuthenticationClient({
@@ -105,30 +110,65 @@ export class AuthService {
 
   private async trackStartBusinessEmailSignup(
     emailAddress: string,
+    existingAccount: Account | null = null,
     existingUser: IdentityProvider | "No" = "No"
   ) {
     const userData: IdentifyData = {
-      userId: null,
-      createdAt: null,
-      email: emailAddress,
-      firstName: null,
-      lastName: null,
+      accountId: existingAccount?.id, // we use the existing account id if it exists or anonymous id from client if not
+      createdAt: existingAccount?.createdAt ?? null,
+      email: existingAccount?.email ?? emailAddress,
+      firstName: existingAccount?.firstName ?? null,
+      lastName: existingAccount?.lastName ?? null,
     };
 
     await this.analytics.identify(userData);
-    //we send the userData again to prevent race condition
-    await this.analytics.track({
-      userId: userData.userId,
-      event: EnumEventType.StartEmailSignup,
-      properties: {
-        identityProvider: IdentityProvider.IdentityPlatform,
-        existingUser: existingUser,
+    await this.analytics.trackManual({
+      user: {
+        accountId: existingAccount?.id,
       },
-      context: {
-        traits: userData,
+      data: {
+        event: EnumEventType.StartEmailSignup,
+        properties: {
+          identityProvider: IdentityProvider.IdentityPlatform,
+          existingUser: existingUser,
+        },
       },
     });
   }
+
+  trackCompleteEmailSignup(
+    account: Account,
+    profile: AuthProfile,
+    existingUser: boolean
+  ): void {
+    const { identityOrigin, loginsCount } = profile;
+
+    if (loginsCount != 1) {
+      return;
+    }
+
+    void this.analytics
+      .trackManual({
+        user: {
+          accountId: account.id,
+        },
+        data: {
+          event: EnumEventType.CompleteEmailSignup,
+          properties: {
+            identityProvider: IdentityProvider.IdentityPlatform,
+            identityOrigin,
+            existingUser,
+          },
+        },
+      })
+      .catch((error) => {
+        this.logger.error(
+          `Failed to track complete business email signup for user ${account.id}`,
+          error
+        );
+      });
+  }
+
   async signupWithBusinessEmail(
     args: SignupWithBusinessEmailArgs
   ): Promise<boolean> {
@@ -139,11 +179,12 @@ export class AuthService {
     }
 
     try {
-      /*const existedAccount = await this.accountService.findAccount({
+      const existingAccount = await this.accountService.findAccount({
         where: {
           email: emailAddress,
         },
-      });*/
+      });
+
       let auth0User: JSONApiResponse<SignUpResponse>;
 
       const existedAuth0User = await this.getAuth0UserByEmail(emailAddress);
@@ -161,14 +202,15 @@ export class AuthService {
       if (!resetPassword.data)
         throw Error("Failed to send reset message to new Auth0 user");
 
-      /*await this.trackStartBusinessEmailSignup(
+      await this.trackStartBusinessEmailSignup(
         emailAddress,
-        existedAccount
+        existingAccount,
+        existingAccount
           ? IdentityProvider.GitHub
           : existedAuth0User
           ? IdentityProvider.IdentityPlatform
           : undefined
-      );*/
+      );
 
       return true;
     } catch (error) {
@@ -183,7 +225,7 @@ export class AuthService {
     const data: SignUpRequest = {
       email,
       password: generatePassword(),
-      connection: this.dbConnectionName,
+      connection: this.businessEmailDbConnectionName,
     };
 
     const user = await this.auth0.database.signUp(data);
@@ -196,7 +238,7 @@ export class AuthService {
       email,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       client_id: this.clientId,
-      connection: this.dbConnectionName,
+      connection: this.businessEmailDbConnectionName,
     };
 
     const changePasswordResponse = await this.auth0.database.changePassword(
@@ -227,7 +269,9 @@ export class AuthService {
           githubId: payload.id,
         },
       },
-      IdentityProvider.GitHub
+      {
+        identityProvider: IdentityProvider.GitHub,
+      }
     );
 
     const user = await this.bootstrapUser(account, payload.id);
@@ -263,7 +307,11 @@ export class AuthService {
           previewAccountType: EnumPreviewAccountType.None,
         },
       },
-      IdentityProvider.IdentityPlatform
+      {
+        identityProvider: IdentityProvider.IdentityPlatform,
+        identityOrigin: profile.identityOrigin,
+        identityLoginsCount: profile.loginsCount,
+      }
     );
 
     const user = await this.bootstrapUser(account, profile.email);
@@ -299,7 +347,7 @@ export class AuthService {
           password: hashedPassword,
         },
       },
-      IdentityProvider.Local
+      { identityProvider: IdentityProvider.Local }
     );
 
     const user = await this.bootstrapUser(account, payload.workspaceName);
@@ -379,7 +427,7 @@ export class AuthService {
       {
         data: signupData,
       },
-      identityProvider
+      { identityProvider }
     );
 
     const { user, workspaceId, projectId, resourceId } =
@@ -710,6 +758,54 @@ export class AuthService {
     });
 
     return workspace as unknown as Workspace & { users: AuthUser[] };
+  }
+
+  async loginOrSignUp(profile: AuthProfile, response: Response): Promise<void> {
+    let user = await this.getAuthUser({
+      account: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        OR: [{ githubId: profile.sub }, { email: profile.email }],
+      },
+    });
+    let isNew: boolean;
+    const existingUser = !!user;
+    if (!user) {
+      user = await this.createUser(profile);
+      isNew = true;
+    }
+    if (!user.account.githubId || user.account.githubId !== profile.sub) {
+      user = await this.updateUser(user, { githubId: profile.sub });
+      isNew = false;
+    }
+
+    this.trackCompleteEmailSignup(user.account, profile, existingUser);
+
+    await this.configureJtw(response, user, isNew);
+  }
+
+  async configureJtw(
+    response: Response,
+    user: AuthUser,
+    isNew: boolean
+  ): Promise<void> {
+    const token = await this.prepareToken(user);
+    const url = stringifyUrl({
+      url: this.clientHost,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      query: { "complete-signup": isNew ? "1" : "0" },
+    });
+    const clientDomain = new URL(url).hostname;
+
+    const cookieDomainParts = clientDomain.split(".");
+    const cookieDomain = cookieDomainParts
+      .slice(Math.max(cookieDomainParts.length - 2, 0))
+      .join(".");
+
+    response.cookie("AJWT", token, {
+      domain: cookieDomain,
+      secure: true,
+    });
+    response.redirect(301, url);
   }
 
   async completeInvitation(

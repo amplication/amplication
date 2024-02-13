@@ -164,6 +164,15 @@ describe("DbSchemaImportService", () => {
       expect(result).toEqual(calDotComPredefinedSchema);
     });
 
+    it.each(Object.values(EnumSchemaNames))(
+      "should not throw and exception for %s",
+      async (schemaName) => {
+        await expect(
+          service.getPredefinedSchema(schemaName)
+        ).resolves.not.toThrow();
+      }
+    );
+
     it("should throw error if schema name is not in EnumSchemaNames", async () => {
       await expect(
         service.getPredefinedSchema("invalidSchemaName" as EnumSchemaNames)
