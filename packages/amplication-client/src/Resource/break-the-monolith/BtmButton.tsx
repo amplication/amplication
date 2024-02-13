@@ -28,16 +28,16 @@ export enum EnumButtonLocation {
 }
 
 type Props = {
-  openInFullScreen: boolean;
-  autoRedirectAfterCompletion: boolean;
   location: EnumButtonLocation;
+  openInFullScreen: boolean;
+  autoRedirectAfterCompletion?: boolean;
   ButtonStyle?: EnumButtonStyle;
 };
 
 export const BtmButton: React.FC<Props> = ({
-  openInFullScreen,
-  autoRedirectAfterCompletion,
   location,
+  openInFullScreen,
+  autoRedirectAfterCompletion = false,
   ButtonStyle = EnumButtonStyle.GradientOutline,
 }) => {
   const { currentResource, resources } = useAppContext();
@@ -127,7 +127,7 @@ export const BtmButton: React.FC<Props> = ({
           <BreakTheMonolith
             resource={selectedResource}
             openInFullScreen
-            onConfirmSuggestion={handleConfirm}
+            onComplete={handleConfirm}
             autoRedirectAfterCompletion={autoRedirectAfterCompletion}
           />
         </Modal>
@@ -135,7 +135,7 @@ export const BtmButton: React.FC<Props> = ({
         <Dialog isOpen={isOpen} onDismiss={toggleIsOpen} title="">
           <BreakTheMonolith
             resource={selectedResource}
-            onConfirmSuggestion={handleConfirm}
+            onComplete={handleConfirm}
             autoRedirectAfterCompletion={autoRedirectAfterCompletion}
           />
         </Dialog>

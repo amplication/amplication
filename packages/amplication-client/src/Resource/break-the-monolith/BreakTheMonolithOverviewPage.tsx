@@ -56,7 +56,7 @@ const BreakTheMonolithOverviewPage: React.FC<Props> = ({ match }) => {
             </Text>
             <Text textColor={EnumTextColor.Black20}>
               Note that Amplication can then generate the code for the
-              architecture change, and push the code to your git provider.
+              architecture change, and push the code to your git repository.
             </Text>
           </div>
           <BtmButton

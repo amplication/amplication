@@ -48,7 +48,6 @@ const ResourceOverview = () => {
         <FlexEnd>
           <BtmButton
             openInFullScreen
-            autoRedirectAfterCompletion={false}
             location={EnumButtonLocation.Resource}
             ButtonStyle={EnumButtonStyle.GradientFull}
           />

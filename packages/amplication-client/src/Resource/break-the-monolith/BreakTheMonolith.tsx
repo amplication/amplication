@@ -33,7 +33,7 @@ const LOADER_SUBTITLE =
 
 type Props = {
   resource: Resource;
-  onConfirmSuggestion: () => void;
+  onComplete: () => void;
   openInFullScreen?: boolean;
   autoRedirectAfterCompletion?: boolean;
 };
@@ -42,7 +42,7 @@ const BreakTheMonolith: React.FC<Props> = ({
   resource,
   openInFullScreen = false,
   autoRedirectAfterCompletion = false,
-  onConfirmSuggestion,
+  onComplete,
 }) => {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useAppContext();
@@ -75,14 +75,8 @@ const BreakTheMonolith: React.FC<Props> = ({
       history.push(
         `/${currentWorkspace?.id}/${currentProject?.id}/architecture`
       );
-    onConfirmSuggestion();
-  }, [
-    currentProject,
-    currentWorkspace,
-    history,
-    onConfirmSuggestion,
-    openInFullScreen,
-  ]);
+    onComplete();
+  }, [currentProject, currentWorkspace, history, onComplete, openInFullScreen]);
 
   return (
     <div
