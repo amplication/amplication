@@ -66,7 +66,7 @@ const BreakTheMonolithPreviewPage: React.FC<Props> = ({ match }) => {
             ButtonStyle={EnumButtonStyle.GradientFull}
           />
         </div>
-        <ModelOrganizer />
+        <ModelOrganizer restrictedMode />
       </FlexItem>
     </Modal>
   );

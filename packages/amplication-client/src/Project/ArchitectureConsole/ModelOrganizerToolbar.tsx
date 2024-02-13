@@ -22,12 +22,11 @@ import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
 import { formatError } from "../../util/error";
-import { useAppContext } from "../../context/appContext";
-import { isPreviewPlan } from "../../Components/FeatureIndicatorContainer";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
 type Props = {
+  restrictedMode: boolean;
   redesignMode: boolean;
   hasChanges: boolean;
   changes: ModelChanges;
@@ -46,6 +45,7 @@ type Props = {
 };
 
 export default function ModelOrganizerToolbar({
+  restrictedMode,
   redesignMode,
   changes,
   hasChanges,
@@ -62,9 +62,6 @@ export default function ModelOrganizerToolbar({
   mergeNewResourcesChanges,
   resetUserAction,
 }: Props) {
-  const { currentWorkspace } = useAppContext();
-  const workspacePlan = currentWorkspace?.subscription?.subscriptionPlan;
-  const isPreviewSubscriptionPlan = isPreviewPlan(workspacePlan);
   const handleSearchPhraseChanged = useCallback(
     (searchPhrase: string) => {
       searchPhraseChanged(searchPhrase);
@@ -139,7 +136,7 @@ export default function ModelOrganizerToolbar({
           contentAlign={EnumContentAlign.Start}
           direction={EnumFlexDirection.Row}
         >
-          {!isPreviewSubscriptionPlan && (
+          {!restrictedMode && (
             <SearchField
               label="search"
               placeholder="search"
@@ -150,7 +147,7 @@ export default function ModelOrganizerToolbar({
 
         <FlexEnd>
           <FlexItem itemsAlign={EnumItemsAlign.Center}>
-            {!isPreviewSubscriptionPlan && <BetaFeatureTag></BetaFeatureTag>}
+            {!restrictedMode && <BetaFeatureTag></BetaFeatureTag>}
 
             {redesignMode && (
               <>
@@ -171,7 +168,7 @@ export default function ModelOrganizerToolbar({
                 </Button>
               </>
             )}
-            {!isPreviewSubscriptionPlan && !redesignMode && (
+            {!restrictedMode && !redesignMode && (
               <RedesignResourceButton
                 resources={resources}
                 onSelectResource={onRedesign}
