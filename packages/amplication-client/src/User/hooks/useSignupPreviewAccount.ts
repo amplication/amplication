@@ -38,7 +38,7 @@ const useSignupPreviewAccount = (
             signupPreviewAccount;
           setToken(token);
           history.push(
-            `/${workspaceId}/${projectId}/${resourceId}/preview-break-the-monolith-options`
+            `/${workspaceId}/${projectId}/${resourceId}/break-the-monolith-preview-environment`
           );
         },
       }).catch(console.error);

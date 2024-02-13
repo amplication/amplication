@@ -19,7 +19,7 @@ import {
 } from "@amplication/ui/design-system";
 import { BtmLoader } from "./BtmLoader";
 
-import "./BreakTheMonolithOptions.scss";
+import "./CreateEntitiesFormPredefinedSchema.scss";
 const CLASS_NAME = "break-the-monolith-options";
 
 const LOADER_TITLE = "Fetching the chosen monolith's schema";
@@ -34,7 +34,7 @@ type TData = {
   createEntitiesFromPredefinedSchema: models.UserAction;
 };
 
-export const BreakTheMonolithOptions: React.FC<Props> = ({
+export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
   workspaceId,
   projectId,
   resourceId,
@@ -58,7 +58,7 @@ export const BreakTheMonolithOptions: React.FC<Props> = ({
       userActionData.userAction.status === models.EnumUserActionStatus.Completed
     ) {
       history.push(
-        `/${workspaceId}/${projectId}/${resourceId}/preview-break-the-monolith-overview`
+        `/${workspaceId}/${projectId}/${resourceId}/break-the-monolith-preview`
       );
     }
   }, [userActionData, history, workspaceId, projectId, resourceId]);

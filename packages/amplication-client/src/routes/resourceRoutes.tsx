@@ -19,24 +19,24 @@ const resourceRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace/:project/:resource/preview-break-the-monolith-options",
+    path: "/:workspace/:project/:resource/break-the-monolith-preview-environment",
     Component: lazy(
-      () => import("../Resource/break-the-monolith/BreakTheMonolithOptionsPage")
+      () =>
+        import("../Resource/break-the-monolith/CreateBTMPreviewEnvironmentPage")
     ),
-    moduleName: "breakTheMonolithOptionsPage",
-    moduleClass: "break-the-monolith-options-page",
+    moduleName: "CreateBTMPreviewEnvironmentPage",
+    moduleClass: "create-btm-preview-environment-page",
     routeTrackType: "",
     exactPath: true,
     isAnalytics: true,
   },
   {
-    path: "/:workspace/:project/:resource/preview-break-the-monolith-overview",
+    path: "/:workspace/:project/:resource/break-the-monolith-preview",
     Component: lazy(
-      () =>
-        import("../Resource/break-the-monolith/BreakTheMonolithOverviewPage")
+      () => import("../Resource/break-the-monolith/BreakTheMonolithPreviewPage")
     ),
-    moduleName: "breakTheMonolithOverviewPage",
-    moduleClass: "break-the-monolith-overview-page",
+    moduleName: "BreakTheMonolithPreviewPage",
+    moduleClass: "break-the-monolith-preview-page",
     routeTrackType: "",
     exactPath: true,
     isAnalytics: true,

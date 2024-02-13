@@ -3,7 +3,7 @@ import { match } from "react-router-dom";
 import { Modal } from "@amplication/ui/design-system";
 import { AppRouteProps } from "../../routes/routesUtil";
 
-import { BreakTheMonolithOptions } from "./BreakTheMonolithOptions";
+import { CreateEntitiesFormPredefinedSchema } from "./CreateEntitiesFormPredefinedSchema";
 type Props = AppRouteProps & {
   match: match<{
     workspace: string;
@@ -12,7 +12,7 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const BreakTheMonolithOverviewPage: React.FC<Props> = ({ match }) => {
+const CreateBTMPreviewEnvironmentPage: React.FC<Props> = ({ match }) => {
   const {
     workspace: workspaceId,
     project: projectId,
@@ -21,7 +21,7 @@ const BreakTheMonolithOverviewPage: React.FC<Props> = ({ match }) => {
 
   return (
     <Modal open fullScreen>
-      <BreakTheMonolithOptions
+      <CreateEntitiesFormPredefinedSchema
         workspaceId={workspaceId}
         projectId={projectId}
         resourceId={resourceId}
@@ -30,4 +30,4 @@ const BreakTheMonolithOverviewPage: React.FC<Props> = ({ match }) => {
   );
 };
 
-export default BreakTheMonolithOverviewPage;
+export default CreateBTMPreviewEnvironmentPage;

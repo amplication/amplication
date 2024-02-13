@@ -13,9 +13,9 @@ import {
 } from "@amplication/ui/design-system";
 import { AppRouteProps } from "../../routes/routesUtil";
 import ModelOrganizer from "../../Project/ArchitectureConsole/ModelOrganizer";
-
-import "./BreakTheMonolithOverviewPage.scss";
 import { BtmButton, EnumButtonLocation } from "./BtmButton";
+
+import "./BreakTheMonolithPreviewPage.scss";
 const CLASS_NAME = "break-the-monolith-overview-page";
 
 type Props = AppRouteProps & {
@@ -26,7 +26,7 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const BreakTheMonolithOverviewPage: React.FC<Props> = ({ match }) => {
+const BreakTheMonolithPreviewPage: React.FC<Props> = ({ match }) => {
   const {
     workspace: workspaceId,
     project: projectId,
@@ -72,4 +72,4 @@ const BreakTheMonolithOverviewPage: React.FC<Props> = ({ match }) => {
   );
 };
 
-export default BreakTheMonolithOverviewPage;
+export default BreakTheMonolithPreviewPage;
