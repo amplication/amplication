@@ -23,6 +23,7 @@ import { Resource, User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { types } from "@amplication/code-gen-types";
 
 @Injectable()
 export class ResourceBtmService {
@@ -161,10 +162,24 @@ export class ResourceBtmService {
         const relationFields = entity.versions[0].fields.filter(
           (field) => field.dataType === EnumDataType.Lookup
         );
-        const entityFields = relationFields.length
-          ? [...new Set(relationFields.map((field) => field.name))]
+
+        const relatedEntityFieldNames = relationFields.length
+          ? [
+              ...new Set(
+                relationFields.map((field) => {
+                  const relatedEntity = (
+                    field.properties as unknown as types.Lookup
+                  ).relatedEntityId;
+                  const relatedEntityName = resource.entities.find(
+                    (entity) => entity.id === relatedEntity
+                  )?.name;
+                  return relatedEntityName;
+                })
+              ),
+            ]
           : [];
-        acc[entity.name] = entityFields;
+
+        acc[entity.name] = relatedEntityFieldNames;
         return acc;
       },
       {} as Record<string, string[]>
