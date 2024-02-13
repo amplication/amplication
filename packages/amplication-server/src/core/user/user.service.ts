@@ -3,7 +3,11 @@ import { ConflictException, Injectable } from "@nestjs/common";
 import { Account, User, UserRole } from "../../models";
 import { UserRoleArgs } from "./dto";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { KAFKA_TOPICS, UserAction } from "@amplication/schema-registry";
+import {
+  KAFKA_TOPICS,
+  UserAction,
+  UserFeatureAnnouncement,
+} from "@amplication/schema-registry";
 import { encryptString } from "../../util/encryptionUtil";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
@@ -187,5 +191,43 @@ export class UserService {
       );
 
     return externalId;
+  }
+
+  async notifyUseFeatureAnnouncement(
+    userActiveDaysBack: number,
+    notificationTemplateIdentifier: string
+  ): Promise<boolean> {
+    const date = new Date();
+    const users = await this.findUsers({
+      where: {
+        lastActive: {
+          gte: new Date(date.setDate(date.getDate() - userActiveDaysBack)),
+        },
+      },
+    });
+
+    for (const user of users) {
+      this.logger.info(
+        `Queuing feature notification ${notificationTemplateIdentifier} to user ${user.id} (account: ${user.account?.id})`
+      );
+      this.kafkaProducerService
+        .emitMessage(KAFKA_TOPICS.USER_ANNOUNCEMENT_TOPIC, <
+          UserFeatureAnnouncement.KafkaEvent
+        >{
+          key: {},
+          value: {
+            externalId: encryptString(user.id),
+            notificationTemplateIdentifier,
+          },
+        })
+        .catch((error) =>
+          this.logger.error(
+            `Failed to send feature notification ${notificationTemplateIdentifier} to user ${user.id}`,
+            error
+          )
+        );
+    }
+
+    return true;
   }
 }
