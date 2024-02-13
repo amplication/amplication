@@ -193,7 +193,7 @@ export class UserService {
     return externalId;
   }
 
-  async notifyUseFeatureAnnouncement(
+  async notifyUserFeatureAnnouncement(
     userActiveDaysBack: number,
     notificationTemplateIdentifier: string
   ): Promise<boolean> {

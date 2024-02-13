@@ -34,7 +34,7 @@ export class UserController {
       this.logger.error("InvalidToken, process aborted");
       return false;
     }
-    return this.userService.notifyUseFeatureAnnouncement(
+    return this.userService.notifyUserFeatureAnnouncement(
       userActiveDaysBack,
       notificationId
     );
