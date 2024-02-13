@@ -27,6 +27,7 @@ import {
   extractImportDeclarations,
   getClassDeclarationById,
   getMethods,
+  importContainedIdentifiers,
   importNames,
   interpolate,
 } from "../../../utils/ast";
@@ -39,6 +40,8 @@ import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
 import { getEntityIdType } from "../../../utils/get-entity-id-type";
 import { logger as applicationLogger } from "../../../logging";
+import { getDTONameToPath } from "../create-dtos";
+import { getImportableDTOs } from "../dto/create-dto-module";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -147,7 +150,8 @@ async function createServiceBaseModule({
   moduleContainers,
   entityActions,
 }: CreateEntityServiceBaseParams): Promise<ModuleMap> {
-  const { serverDirectories } = DsgContext.getInstance;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { serverDirectories, DTOs } = DsgContext.getInstance;
 
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
 
@@ -272,6 +276,13 @@ async function createServiceBaseModule({
     template,
     toOneRelations.flatMap((relation) => relation.imports)
   );
+  const dtoNameToPath = getDTONameToPath(DTOs);
+
+  const dtoImports = importContainedIdentifiers(
+    template,
+    getImportableDTOs(moduleBasePath, dtoNameToPath)
+  );
+  addImports(template, [...dtoImports]);
 
   addAutoGenerationComment(template);
 
