@@ -51,20 +51,9 @@ export const BtmButton: React.FC<Props> = ({
     setIsOpen(!isOpen);
   }, [isOpen]);
 
-  const onButtonSelectResource = useCallback(() => {
-    setSelectedResource(currentResource);
-    toggleIsOpen();
-
-    trackEvent({
-      eventName: AnalyticsEventNames.StartBreakTheMonolithClick,
-      serviceName: selectedResource?.name ?? currentResource?.name,
-      location,
-    });
-  }, [currentResource, location, selectedResource, toggleIsOpen, trackEvent]);
-
-  const onSelectMenuSelectResource = useCallback(
-    (itemData: Resource) => {
-      setSelectedResource(itemData);
+  const selectResourceToBreak = useCallback(
+    (resource: Resource) => {
+      setSelectedResource(resource);
       toggleIsOpen();
 
       trackEvent({
@@ -73,7 +62,18 @@ export const BtmButton: React.FC<Props> = ({
         location,
       });
     },
-    [location, selectedResource, currentResource, toggleIsOpen, trackEvent]
+    [currentResource, location, selectedResource, toggleIsOpen, trackEvent]
+  );
+
+  const onButtonSelectResource = useCallback(() => {
+    selectResourceToBreak(currentResource);
+  }, [currentResource, selectResourceToBreak]);
+
+  const onSelectMenuSelectResource = useCallback(
+    (itemData: Resource) => {
+      selectResourceToBreak(itemData);
+    },
+    [selectResourceToBreak]
   );
 
   const handleConfirm = useCallback(() => {
