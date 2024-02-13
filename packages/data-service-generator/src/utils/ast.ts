@@ -390,6 +390,12 @@ export function findContainedIdentifiers(
   );
   const contained: namedTypes.Identifier[] = [];
   visit(node, {
+    visitImportDeclaration(path) {
+      return false;
+    },
+    visitTSQualifiedName(path) {
+      return false;
+    },
     visitIdentifier(path) {
       if (nameToIdentifier.hasOwnProperty(path.node.name)) {
         contained.push(path.node);
