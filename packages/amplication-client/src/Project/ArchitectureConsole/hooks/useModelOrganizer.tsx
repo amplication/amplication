@@ -456,7 +456,9 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
         const searchModelGroupNodes = nodes.filter(
           (node) =>
             node.type === "modelGroup" &&
-            !node.data.payload.name.includes(searchPhrase) &&
+            !node.data.payload.name
+              .toLowerCase()
+              .includes(searchPhrase.toLowerCase()) &&
             node.id !== currentEditableResourceNode?.id
         );
 
