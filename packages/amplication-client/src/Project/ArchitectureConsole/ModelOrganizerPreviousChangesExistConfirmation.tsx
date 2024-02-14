@@ -7,26 +7,25 @@ type Props = {
   changes: ModelChanges;
 };
 
-const ApplyChangesConfirmationModelOrganizer = ({ changes }: Props) => {
-  const [confirmApplyChangesDialog, setConfirmApplyChangesDialog] = useState<
-    boolean | null
-  >(null);
+const ModelOrganizerPreviousChangesExistConfirmation = ({ changes }: Props) => {
+  const [showDialog, setShowDialog] = useState<boolean | null>(false);
 
   useEffect(() => {
     if (
-      confirmApplyChangesDialog === null &&
+      showDialog === null &&
       (changes?.movedEntities?.length > 0 || changes?.newServices?.length > 0)
-    )
-      setConfirmApplyChangesDialog(true);
-  }, [confirmApplyChangesDialog, changes]);
+    ) {
+      setShowDialog(true);
+    }
+  }, [showDialog, changes]);
 
   const onApplyChangesConfirmationClicked = useCallback(() => {
-    setConfirmApplyChangesDialog(false);
-  }, [setConfirmApplyChangesDialog]);
+    setShowDialog(false);
+  }, [setShowDialog]);
 
   return (
     <ConfirmationDialog
-      isOpen={confirmApplyChangesDialog}
+      isOpen={showDialog}
       onDismiss={onApplyChangesConfirmationClicked}
       message={`Your architecture tweaks are ready to be applied, allowing Amplication to generate its code.
     To reset or fetch updates not in the current state, use the buttons in the top toolbar.`}
@@ -36,4 +35,4 @@ const ApplyChangesConfirmationModelOrganizer = ({ changes }: Props) => {
   );
 };
 
-export default ApplyChangesConfirmationModelOrganizer;
+export default ModelOrganizerPreviousChangesExistConfirmation;

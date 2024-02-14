@@ -38,7 +38,7 @@ import {
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
-import ApplyChangesConfirmationModelOrganizer from "./ApplyChangesConfirmationModelOrganizer";
+import ModelOrganizerPreviousChangesExistConfirmation from "./ModelOrganizerPreviousChangesExistConfirmation";
 
 export const CLASS_NAME = "model-organizer";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -285,9 +285,9 @@ export default function ModelOrganizer() {
             />
           </div>
           <div className={`${CLASS_NAME}__body`}>
-            <ApplyChangesConfirmationModelOrganizer
+            <ModelOrganizerPreviousChangesExistConfirmation
               changes={changes}
-            ></ApplyChangesConfirmationModelOrganizer>
+            ></ModelOrganizerPreviousChangesExistConfirmation>
             <ModelOrganizerToolbar
               changes={changes}
               nodes={nodes}
