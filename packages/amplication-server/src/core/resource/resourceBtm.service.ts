@@ -195,6 +195,16 @@ export class ResourceBtmService {
     return JSON.stringify(prompt);
   }
 
+  /**
+   * This function prepares the AI recommendation for the Break the Monolith result
+   * It filters out the tables that the AI result has that the original resource doesn't have
+   * It makes sure that there are no duplicated tables in the microservices by removing the duplicates and putting them on the microservice with the least amount of tables
+   * It makes sure that the original resource will be added to the microservices result with tables that the AI missed
+   * It makes sure that the result will not includes microservices with no tables
+   * @param promptResult - AI recommendation
+   * @param resourceId
+   * @returns the AI recommendation with some data structure manipulation
+   */
   async prepareBtmRecommendations(
     promptResult: string,
     resourceId: string
@@ -211,44 +221,77 @@ export class ResourceBtmService {
     const usedDuplicatedEntities = new Set<string>();
 
     const originalResource = await this.getResourceDataForBtm(resourceId);
-    const originalResourceEntitiesSet = new Set(
-      originalResource.entities.map((entity) => entity.name)
+    const originalResourceEntityNames = originalResource.entities.map(
+      (entity) => entity.name
+    );
+    const originalResourceEntityNamesSet = new Set(originalResourceEntityNames);
+
+    const { uniqueToAIResult, uniqueToOriginalResource } =
+      this.findUniqueEntities(
+        recommendedResourceEntities,
+        originalResourceEntityNames
+      );
+
+    // filter out the tables that the AI result has that the original resource doesn't have
+    promptResultObj.microservices = promptResultObj.microservices.map(
+      (microservice) => ({
+        ...microservice,
+        tables: microservice.tables.filter(
+          (tableName) => !uniqueToAIResult.includes(tableName)
+        ),
+      })
     );
 
-    return {
-      microservices: promptResultObj.microservices
-        .sort((a, b) => a.tables.length - b.tables.length)
-        .map((microservice) => ({
-          name: microservice.name,
-          functionality: microservice.functionality,
-          tables: microservice.tables
-            .filter((tableName) => {
-              const isDuplicatedAlreadyUsed =
-                usedDuplicatedEntities.has(tableName);
-              if (duplicatedEntities.has(tableName)) {
-                usedDuplicatedEntities.add(tableName);
-              }
-              return (
-                originalResourceEntitiesSet.has(tableName) &&
-                !isDuplicatedAlreadyUsed
-              );
-            })
-            .map((dataModelName) => {
-              const entityNameIdMap = originalResource.entities.reduce(
-                (map, entity) => {
-                  map[entity.name] = entity;
-                  return map;
-                },
-                {} as Record<string, EntityDataForBtm>
-              );
+    // from the original resource, leave only the entities that are in uniqueToOriginalResource
+    const originalResourceTables = originalResource.entities.filter((entity) =>
+      uniqueToOriginalResource.includes(entity.name)
+    );
 
-              return {
-                name: dataModelName,
-                originalEntityId: entityNameIdMap[dataModelName]?.id,
-              };
-            }),
-        }))
-        .filter((microservice) => microservice.tables.length > 0),
+    // remove duplicates and put on the microservice with the least amount of tables
+    promptResultObj.microservices = promptResultObj.microservices
+      .sort((a, b) => a.tables.length - b.tables.length)
+      .map((microservice) => ({
+        name: microservice.name,
+        functionality: microservice.functionality,
+        tables: microservice.tables.filter((tableName) => {
+          const isDuplicatedAlreadyUsed = usedDuplicatedEntities.has(tableName);
+          if (duplicatedEntities.has(tableName)) {
+            usedDuplicatedEntities.add(tableName);
+          }
+          return (
+            originalResourceEntityNamesSet.has(tableName) &&
+            !isDuplicatedAlreadyUsed
+          );
+        }),
+      }))
+      .filter((microservice) => microservice.tables.length > 0);
+
+    // add the original resource to the microservices
+    promptResultObj.microservices.push({
+      name: `${originalResource.name}Original`,
+      functionality: originalResource.description,
+      tables: originalResourceTables.map((table) => table.name),
+    });
+
+    return {
+      microservices: promptResultObj.microservices.map((microservice) => ({
+        name: microservice.name,
+        functionality: microservice.functionality,
+        tables: microservice.tables.map((tableName) => {
+          const entityNameIdMap = originalResource.entities.reduce(
+            (map, entity) => {
+              map[entity.name] = entity;
+              return map;
+            },
+            {} as Record<string, EntityDataForBtm>
+          );
+
+          return {
+            name: tableName,
+            originalEntityId: entityNameIdMap[tableName]?.id,
+          };
+        }),
+      })),
     };
   }
 
@@ -276,12 +319,36 @@ export class ResourceBtmService {
     );
   }
 
+  findUniqueEntities(
+    entitiesFromAIResult: string[],
+    entitiesFromOriginalResource: string[]
+  ) {
+    const entitiesFromAIResultSet = new Set(entitiesFromAIResult);
+    const entitiesFromOriginalResourceSet = new Set(
+      entitiesFromOriginalResource
+    );
+
+    const uniqueToAIResult = Array.from(entitiesFromAIResultSet).filter(
+      (item) => !entitiesFromOriginalResourceSet.has(item)
+    );
+
+    const uniqueToOriginalResource = Array.from(
+      entitiesFromOriginalResourceSet
+    ).filter((item) => !entitiesFromAIResultSet.has(item));
+
+    return {
+      uniqueToAIResult,
+      uniqueToOriginalResource,
+    };
+  }
+
   async getResourceDataForBtm(resourceId: string): Promise<ResourceDataForBtm> {
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },
       select: {
         id: true,
         name: true,
+        description: true,
         project: true,
         entities: {
           where: {

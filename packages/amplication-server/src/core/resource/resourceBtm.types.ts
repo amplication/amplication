@@ -13,7 +13,7 @@ export interface EntityDataForBtm
 }
 
 export interface ResourceDataForBtm
-  extends Pick<Resource, "id" | "name" | "project"> {
+  extends Pick<Resource, "id" | "name" | "description" | "project"> {
   entities: EntityDataForBtm[];
 }
 
