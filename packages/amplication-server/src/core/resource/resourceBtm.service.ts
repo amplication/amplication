@@ -217,19 +217,19 @@ export class ResourceBtmService {
 
     return {
       microservices: promptResultObj.microservices
-        .sort((microservice) => -1 * microservice.tables.length)
+        .sort((a, b) => a.tables.length - b.tables.length)
         .map((microservice) => ({
           name: microservice.name,
           functionality: microservice.functionality,
           tables: microservice.tables
-            .filter((dataModelName) => {
+            .filter((tableName) => {
               const isDuplicatedAlreadyUsed =
-                usedDuplicatedEntities.has(dataModelName);
-              if (duplicatedEntities.has(dataModelName)) {
-                usedDuplicatedEntities.add(dataModelName);
+                usedDuplicatedEntities.has(tableName);
+              if (duplicatedEntities.has(tableName)) {
+                usedDuplicatedEntities.add(tableName);
               }
               return (
-                originalResourceEntitiesSet.has(dataModelName) &&
+                originalResourceEntitiesSet.has(tableName) &&
                 !isDuplicatedAlreadyUsed
               );
             })
@@ -247,8 +247,8 @@ export class ResourceBtmService {
                 originalEntityId: entityNameIdMap[dataModelName]?.id,
               };
             }),
-        }))
-        .filter((microservice) => microservice.tables.length > 0),
+        })),
+      // .filter((microservice) => microservice.tables.length > 0),
     };
   }
 

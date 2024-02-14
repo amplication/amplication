@@ -493,7 +493,7 @@ describe("ResourceBtmService", () => {
       expect(result).toStrictEqual(expectedResult);
     });
 
-    it("should add entities that are duplicated in the prompt result only to new resource with more tables", async () => {
+    it("should add entities that are duplicated in the prompt result only to new resource with less tables", async () => {
       const promptResult: BreakTheMonolithOutput = {
         microservices: [
           {
@@ -592,6 +592,20 @@ describe("ResourceBtmService", () => {
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
+            name: "product",
+            functionality: "manage products",
+            tables: [
+              {
+                name: "product",
+                originalEntityId: "product",
+              },
+              {
+                name: "price",
+                originalEntityId: "price",
+              },
+            ],
+          },
+          {
             name: "order",
             functionality: "manage orders, prices and payments",
             tables: [
@@ -602,20 +616,6 @@ describe("ResourceBtmService", () => {
               {
                 name: "orderItem",
                 originalEntityId: "orderItem",
-              },
-              {
-                name: "price",
-                originalEntityId: "price",
-              },
-            ],
-          },
-          {
-            name: "product",
-            functionality: "manage products",
-            tables: [
-              {
-                name: "product",
-                originalEntityId: "product",
               },
             ],
           },
