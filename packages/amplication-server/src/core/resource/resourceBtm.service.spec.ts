@@ -277,6 +277,16 @@ describe("ResourceBtmService", () => {
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
+            name: "product",
+            functionality: "manage products",
+            tables: [
+              {
+                name: "product",
+                originalEntityId: "product",
+              },
+            ],
+          },
+          {
             name: "order",
             functionality: "manage orders, prices and payments",
             tables: [
@@ -287,16 +297,6 @@ describe("ResourceBtmService", () => {
               {
                 name: "orderItem",
                 originalEntityId: "orderItem",
-              },
-            ],
-          },
-          {
-            name: "product",
-            functionality: "manage products",
-            tables: [
-              {
-                name: "product",
-                originalEntityId: "product",
               },
             ],
           },
@@ -459,6 +459,16 @@ describe("ResourceBtmService", () => {
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
+            name: "product",
+            functionality: "manage products",
+            tables: [
+              {
+                name: "product",
+                originalEntityId: "product",
+              },
+            ],
+          },
+          {
             name: "order",
             functionality: "manage orders, prices and payments",
             tables: [
@@ -469,16 +479,6 @@ describe("ResourceBtmService", () => {
               {
                 name: "orderItem",
                 originalEntityId: "orderItem",
-              },
-            ],
-          },
-          {
-            name: "product",
-            functionality: "manage products",
-            tables: [
-              {
-                name: "product",
-                originalEntityId: "product",
               },
             ],
           },
@@ -783,6 +783,16 @@ describe("ResourceBtmService", () => {
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
+            name: "product",
+            functionality: "manage products",
+            tables: [
+              {
+                name: "product",
+                originalEntityId: "product",
+              },
+            ],
+          },
+          {
             name: "order",
             functionality: "manage orders, prices and payments",
             tables: [
@@ -793,16 +803,6 @@ describe("ResourceBtmService", () => {
               {
                 name: "orderItem",
                 originalEntityId: "orderItem",
-              },
-            ],
-          },
-          {
-            name: "product",
-            functionality: "manage products",
-            tables: [
-              {
-                name: "product",
-                originalEntityId: "product",
               },
             ],
           },
