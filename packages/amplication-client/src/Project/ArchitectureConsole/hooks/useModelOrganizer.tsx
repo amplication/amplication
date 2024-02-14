@@ -73,8 +73,6 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     useState<Date>(null);
 
   const [redesignMode, setRedesignMode] = useState<boolean>(false);
-  const [duplicateEntityError, setDuplicateEntityError] =
-    useState<boolean>(false);
 
   const [errorMessage, setErrorMessage] = useState<string>(null);
 
@@ -514,8 +512,8 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
   );
 
   const clearDuplicateEntityError = useCallback(() => {
-    setDuplicateEntityError(false);
-  }, [setDuplicateEntityError]);
+    setErrorMessage(null);
+  }, [setErrorMessage]);
 
   const createNewTempService = useCallback(
     async (newResource: models.Resource) => {
@@ -603,10 +601,9 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
             );
           }
 
-          setDuplicateEntityError(true);
           return;
         } else {
-          setDuplicateEntityError(false);
+          setErrorMessage(null);
         }
 
         if (currentNode.data.originalParentNode !== currentNode.parentNode) {
@@ -643,7 +640,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       showRelationDetails,
       changes,
       saveToPersistentData,
-      setDuplicateEntityError,
+      setErrorMessage,
     ]
   );
 
@@ -715,7 +712,6 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     resetUserAction,
     clearDuplicateEntityError,
     redesignMode,
-    duplicateEntityError,
     errorMessage,
   };
 };
