@@ -9,6 +9,7 @@ import {
   EnumUserActionStatus,
   UserAction,
 } from "../../../models";
+import { TEMP_RESULT } from "./btm-results-mock";
 
 const POLL_INTERVAL = 3000;
 
@@ -16,16 +17,18 @@ type TTriggerBreakServiceIntoMicroservices = {
   triggerBreakServiceIntoMicroservices: UserAction;
 };
 
-type TBreakServiceToMicroservicesResult = {
+export type TBreakServiceToMicroservicesResult = {
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
 };
 
 type BtmProps = {
   resourceId: string;
+  useFakeData?: boolean;
 };
 
-export const useBtmService = ({ resourceId }: BtmProps) => {
+export const useBtmService = ({ resourceId, useFakeData }: BtmProps) => {
   const [userAction, setUserAction] = useState<UserAction | null>(null);
+  const [fakeDataLoading, setFakeDataLoading] = useState<boolean>(true);
 
   const [
     triggerBreakServiceIntoMicroservices,
@@ -81,7 +84,13 @@ export const useBtmService = ({ resourceId }: BtmProps) => {
   }, [btmResult, stopPolling, startPolling, shouldReload]);
 
   useEffect(() => {
-    triggerBreakServiceIntoMicroservices().catch(console.error);
+    if (useFakeData) {
+      setTimeout(() => {
+        setFakeDataLoading(false);
+      }, 3000);
+    } else {
+      triggerBreakServiceIntoMicroservices().catch(console.error);
+    }
   }, []);
 
   const hasError = Boolean(
@@ -95,9 +104,16 @@ export const useBtmService = ({ resourceId }: BtmProps) => {
       btmResult?.finalizeBreakServiceIntoMicroservices.status ===
         EnumUserActionStatus.Running);
 
+  TEMP_RESULT.finalizeBreakServiceIntoMicroservices.originalResourceId =
+    resourceId;
+
   return {
-    btmResult: btmResult?.finalizeBreakServiceIntoMicroservices,
-    loading: isLoading,
+    btmResult: useFakeData
+      ? fakeDataLoading
+        ? undefined
+        : TEMP_RESULT.finalizeBreakServiceIntoMicroservices
+      : btmResult?.finalizeBreakServiceIntoMicroservices,
+    loading: useFakeData ? fakeDataLoading : isLoading,
     error: triggerBreakServiceIntoMicroservicesError || btmError,
   };
 };
