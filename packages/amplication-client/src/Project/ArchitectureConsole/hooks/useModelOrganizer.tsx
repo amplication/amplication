@@ -76,8 +76,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
   const [duplicateEntityError, setDuplicateEntityError] =
     useState<boolean>(false);
 
-  const [duplicateEntityErrorMessage, setDuplicateEntityErrorMessage] =
-    useState<string>(null);
+  const [errorMessage, setErrorMessage] = useState<string>(null);
 
   const [userAction, setUserAction] = useState<models.UserAction>(null);
   const { data: applyChangesResults } = useUserActionWatchStatus(userAction);
@@ -280,6 +279,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
   const prepareCurrentEditableResourceNodesData = useCallback(
     (nodes: Node[], resource: models.Resource) => {
       let selectedResourceNode: ResourceNode;
+
       nodes.forEach((node) => {
         if (node.data.originalParentNode === resource.id) {
           node.draggable = true;
@@ -594,11 +594,11 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
           const baseErrorMessage = `Cannot move entity to service: ${currentTargetResource.data.payload?.name}`;
           currentNode.parentNode = currentNode.data.originalParentNode;
           if (authEntity) {
-            setDuplicateEntityErrorMessage(
+            setErrorMessage(
               `${baseErrorMessage} because the authentication entity cannot be deleted.`
             );
           } else {
-            setDuplicateEntityErrorMessage(
+            setErrorMessage(
               `${baseErrorMessage} because the entity name already exists.`
             );
           }
@@ -716,7 +716,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     clearDuplicateEntityError,
     redesignMode,
     duplicateEntityError,
-    duplicateEntityErrorMessage,
+    errorMessage,
   };
 };
 

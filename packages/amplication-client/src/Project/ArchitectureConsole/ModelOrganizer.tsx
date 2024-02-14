@@ -90,7 +90,7 @@ export default function ModelOrganizer() {
     resetUserAction,
     clearDuplicateEntityError,
     duplicateEntityError,
-    duplicateEntityErrorMessage,
+    errorMessage,
   } = useModelOrganization({
     projectId: currentProject?.id,
     onMessage: showMessage,
@@ -324,7 +324,7 @@ export default function ModelOrganizer() {
               btnClassName={`${CLASS_NAME}__confirmationDialog`}
               isOpen={duplicateEntityError}
               onDismiss={clearDuplicateEntityError}
-              message={duplicateEntityErrorMessage}
+              message={errorMessage}
               confirmButton={{ label: "I understand" }}
               onConfirm={clearDuplicateEntityError}
             ></ConfirmationDialog>
