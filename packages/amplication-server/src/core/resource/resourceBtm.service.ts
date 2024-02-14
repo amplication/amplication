@@ -23,31 +23,10 @@ import { Resource, User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { types } from "@amplication/code-gen-types";
 
 @Injectable()
 export class ResourceBtmService {
-  /* eslint-disable @typescript-eslint/naming-convention */
-  private dataTypeMap: Record<keyof typeof EnumDataType, string> = {
-    SingleLineText: "string",
-    MultiLineText: "string",
-    Email: "string",
-    WholeNumber: "int",
-    DateTime: "datetime",
-    DecimalNumber: "float",
-    Lookup: "enum",
-    MultiSelectOptionSet: "enum",
-    OptionSet: "enum",
-    Boolean: "bool",
-    GeographicLocation: "string",
-    Id: "int",
-    CreatedAt: "datetime",
-    UpdatedAt: "datetime",
-    Roles: "string",
-    Username: "string",
-    Password: "string",
-    Json: "string",
-  };
-
   constructor(
     private readonly gptService: GptService,
     private readonly prisma: PrismaService,
@@ -176,26 +155,41 @@ export class ResourceBtmService {
   }
 
   generatePromptForBreakTheMonolith(resource: ResourceDataForBtm): string {
-    const entityIdNameMap = resource.entities.reduce((acc, entity) => {
-      acc[entity.id] = entity.name;
-      return acc;
-    });
+    const entityNameToRelatedFieldsMap = resource.entities.reduce(
+      (acc, entity) => {
+        const relationFields = entity.versions[0].fields.filter(
+          (field) => field.dataType === EnumDataType.Lookup
+        );
+
+        const relatedEntityFieldNames = relationFields.length
+          ? [
+              ...new Set(
+                relationFields.map((field) => {
+                  const relatedEntity = (
+                    field.properties as unknown as types.Lookup
+                  ).relatedEntityId;
+                  const relatedEntityName = resource.entities.find(
+                    (entity) => entity.id === relatedEntity
+                  )?.name;
+                  return relatedEntityName;
+                })
+              ),
+            ]
+          : [];
+
+        acc[entity.name] = relatedEntityFieldNames;
+        return acc;
+      },
+      {} as Record<string, string[]>
+    );
 
     const prompt: BreakTheMonolithPromptInput = {
-      dataModels: resource.entities.map((entity) => {
-        return {
-          name: entity.name,
-          fields: entity.versions[0].fields.map((field) => {
-            return {
-              name: field.name,
-              dataType:
-                field.dataType == EnumDataType.Lookup
-                  ? entityIdNameMap[field.properties["relatedEntityId"]]
-                  : this.dataTypeMap[field.dataType],
-            };
-          }),
-        };
-      }),
+      tables: Object.entries(entityNameToRelatedFieldsMap).map(
+        ([name, relations]) => ({
+          name,
+          relations,
+        })
+      ),
     };
 
     return JSON.stringify(prompt);
@@ -208,7 +202,7 @@ export class ResourceBtmService {
     const promptResultObj = this.mapToBreakTheMonolithOutput(promptResult);
 
     const recommendedResourceEntities = promptResultObj.microservices
-      .map((resource) => resource.dataModels)
+      .map((resource) => resource.tables)
       .flat();
 
     const duplicatedEntities = this.findDuplicatedEntities(
@@ -223,11 +217,11 @@ export class ResourceBtmService {
 
     return {
       microservices: promptResultObj.microservices
-        .sort((microservice) => -1 * microservice.dataModels.length)
+        .sort((microservice) => -1 * microservice.tables.length)
         .map((microservice) => ({
           name: microservice.name,
           functionality: microservice.functionality,
-          dataModels: microservice.dataModels
+          tables: microservice.tables
             .filter((dataModelName) => {
               const isDuplicatedAlreadyUsed =
                 usedDuplicatedEntities.has(dataModelName);
@@ -254,7 +248,7 @@ export class ResourceBtmService {
               };
             }),
         }))
-        .filter((microservice) => microservice.dataModels.length > 0),
+        .filter((microservice) => microservice.tables.length > 0),
     };
   }
 
@@ -266,7 +260,7 @@ export class ResourceBtmService {
         microservices: result.microservices.map((microservice) => ({
           name: microservice.name,
           functionality: microservice.functionality,
-          dataModels: microservice.dataModels,
+          tables: microservice.tables,
         })),
       };
     } catch (error) {

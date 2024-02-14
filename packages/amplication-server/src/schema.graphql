@@ -176,9 +176,9 @@ type BreakServiceToMicroservicesData {
 }
 
 type BreakServiceToMicroservicesItem {
-  dataModels: [BreakServiceToMicroservicesItemEntities!]!
   functionality: String!
   name: String!
+  tables: [BreakServiceToMicroservicesItemEntities!]!
 }
 
 type BreakServiceToMicroservicesItemEntities {

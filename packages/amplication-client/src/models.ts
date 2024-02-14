@@ -204,9 +204,9 @@ export type BreakServiceToMicroservicesData = {
 };
 
 export type BreakServiceToMicroservicesItem = {
-  dataModels: Array<BreakServiceToMicroservicesItemEntities>;
   functionality: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  tables: Array<BreakServiceToMicroservicesItemEntities>;
 };
 
 export type BreakServiceToMicroservicesItemEntities = {

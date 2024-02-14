@@ -176,7 +176,7 @@ const BreakTheMonolith: React.FC<Props> = ({
                       <ListItem
                         className={`${CLASS_NAME}__services__service__entities`}
                       >
-                        {item.dataModels.map((entity) => (
+                        {item.tables.map((entity) => (
                           <Text
                             className={`${CLASS_NAME}__services__service__entities__entity`}
                             textStyle={EnumTextStyle.Subtle}

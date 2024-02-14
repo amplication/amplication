@@ -135,12 +135,12 @@ describe("ResourceBtmService", () => {
           {
             name: "product",
             functionality: "manage products",
-            dataModels: ["product"],
+            tables: ["product"],
           },
           {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: ["order", "orderItem"],
+            tables: ["order", "orderItem"],
           },
         ],
       };
@@ -279,7 +279,7 @@ describe("ResourceBtmService", () => {
           {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: [
+            tables: [
               {
                 name: "order",
                 originalEntityId: "order",
@@ -293,7 +293,7 @@ describe("ResourceBtmService", () => {
           {
             name: "product",
             functionality: "manage products",
-            dataModels: [
+            tables: [
               {
                 name: "product",
                 originalEntityId: "product",
@@ -317,12 +317,12 @@ describe("ResourceBtmService", () => {
           {
             name: "product",
             functionality: "manage products",
-            dataModels: ["product"],
+            tables: ["product"],
           },
           {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: ["order", "orderItem"],
+            tables: ["order", "orderItem"],
           },
         ],
       };
@@ -461,7 +461,7 @@ describe("ResourceBtmService", () => {
           {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: [
+            tables: [
               {
                 name: "order",
                 originalEntityId: "order",
@@ -475,7 +475,7 @@ describe("ResourceBtmService", () => {
           {
             name: "product",
             functionality: "manage products",
-            dataModels: [
+            tables: [
               {
                 name: "product",
                 originalEntityId: "product",
@@ -493,18 +493,18 @@ describe("ResourceBtmService", () => {
       expect(result).toStrictEqual(expectedResult);
     });
 
-    it("should add entities that are duplicated in the prompt result only to new resource with more dataModels", async () => {
+    it("should add entities that are duplicated in the prompt result only to new resource with more tables", async () => {
       const promptResult: BreakTheMonolithOutput = {
         microservices: [
           {
             name: "product",
             functionality: "manage products",
-            dataModels: ["product", "price"],
+            tables: ["product", "price"],
           },
           {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: ["order", "orderItem", "price"],
+            tables: ["order", "orderItem", "price"],
           },
         ],
       };
@@ -594,7 +594,7 @@ describe("ResourceBtmService", () => {
           {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: [
+            tables: [
               {
                 name: "order",
                 originalEntityId: "order",
@@ -612,7 +612,7 @@ describe("ResourceBtmService", () => {
           {
             name: "product",
             functionality: "manage products",
-            dataModels: [
+            tables: [
               {
                 name: "product",
                 originalEntityId: "product",
@@ -636,17 +636,17 @@ describe("ResourceBtmService", () => {
           {
             name: "product",
             functionality: "manage products",
-            dataModels: ["product"],
+            tables: ["product"],
           },
           {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: ["order", "orderItem"],
+            tables: ["order", "orderItem"],
           },
           {
             name: "customer",
             functionality: "manage customers",
-            dataModels: [],
+            tables: [],
           },
         ],
       };
@@ -785,7 +785,7 @@ describe("ResourceBtmService", () => {
           {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: [
+            tables: [
               {
                 name: "order",
                 originalEntityId: "order",
@@ -799,7 +799,7 @@ describe("ResourceBtmService", () => {
           {
             name: "product",
             functionality: "manage products",
-            dataModels: [
+            tables: [
               {
                 name: "product",
                 originalEntityId: "product",
@@ -981,87 +981,11 @@ describe("ResourceBtmService", () => {
         ],
       });
       expect(JSON.parse(result)).toStrictEqual({
-        dataModels: [
-          {
-            fields: [
-              {
-                dataType: "address",
-                name: "address",
-              },
-              {
-                dataType: "bool",
-                name: "status",
-              },
-              {
-                dataType: "customer",
-                name: "customer",
-              },
-              {
-                dataType: "string",
-                name: "itemsId",
-              },
-            ],
-            name: "order",
-          },
-          {
-            fields: [
-              {
-                dataType: "string",
-                name: "firstName",
-              },
-              {
-                dataType: "string",
-                name: "lastName",
-              },
-              {
-                dataType: "string",
-                name: "email",
-              },
-              {
-                dataType: "address",
-                name: "address",
-              },
-            ],
-            name: "customer",
-          },
-          {
-            fields: [
-              {
-                dataType: "string",
-                name: "name",
-              },
-              {
-                dataType: "int",
-                name: "price",
-              },
-              {
-                dataType: "string",
-                name: "description",
-              },
-            ],
-            name: "item",
-          },
-          {
-            name: "address",
-            fields: [
-              {
-                dataType: "string",
-                name: "street",
-              },
-              {
-                dataType: "string",
-                name: "city",
-              },
-              {
-                dataType: "string",
-                name: "state",
-              },
-              {
-                dataType: "string",
-                name: "zip",
-              },
-            ],
-          },
+        tables: [
+          { name: "order", relations: ["address", "customer"] },
+          { name: "customer", relations: ["address"] },
+          { name: "item", relations: [] },
+          { name: "address", relations: [] },
         ],
       });
     });
@@ -1070,19 +994,19 @@ describe("ResourceBtmService", () => {
   describe("parsePromptResult", () => {
     it("should return a validated BreakTheMonolithOutput", () => {
       const result = service.mapToBreakTheMonolithOutput(
-        '{"microservices":[{"name":"ecommerce","functionality":"manage orders, prices and payments","dataModels":["order","customer","item","address"]},{"name":"inventory","functionality":"manage inventory","dataModels":["item","address"]}]}'
+        '{"microservices":[{"name":"ecommerce","functionality":"manage orders, prices and payments","tables":["order","customer","item","address"]},{"name":"inventory","functionality":"manage inventory","tables":["item","address"]}]}'
       );
       expect(result).toStrictEqual({
         microservices: [
           {
             name: "ecommerce",
             functionality: "manage orders, prices and payments",
-            dataModels: ["order", "customer", "item", "address"],
+            tables: ["order", "customer", "item", "address"],
           },
           {
             name: "inventory",
             functionality: "manage inventory",
-            dataModels: ["item", "address"],
+            tables: ["item", "address"],
           },
         ],
       });
