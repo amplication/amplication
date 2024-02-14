@@ -8,14 +8,18 @@ type Props = {
 };
 
 const ModelOrganizerPreviousChangesExistConfirmation = ({ changes }: Props) => {
-  const [showDialog, setShowDialog] = useState<boolean | null>(false);
+  const [showDialog, setShowDialog] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (
-      showDialog === null &&
-      (changes?.movedEntities?.length > 0 || changes?.newServices?.length > 0)
-    ) {
-      setShowDialog(true);
+    if (showDialog === null && changes) {
+      if (
+        changes.movedEntities?.length > 0 ||
+        changes.newServices?.length > 0
+      ) {
+        setShowDialog(true);
+      } else {
+        setShowDialog(false);
+      }
     }
   }, [showDialog, changes]);
 
