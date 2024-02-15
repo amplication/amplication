@@ -526,7 +526,7 @@ const useModelOrganizer = ({ projectId, onMessage }: Props) => {
   }, [setDuplicateEntityError]);
 
   const createNewTempService = useCallback(
-    async (newResource: models.Resource): Promise<Node> => {
+    async (newResource: models.Resource) => {
       const currentIndex =
         nodes.filter((x) => x.type === "modelGroup").length + 1;
       const newResourceNode = tempResourceToNode(newResource, currentIndex);
@@ -552,8 +552,6 @@ const useModelOrganizer = ({ projectId, onMessage }: Props) => {
       setNodes(updatedNodes);
       setChanges(changes);
       saveToPersistentData();
-
-      return newResourceNode;
     },
     [
       nodes,
