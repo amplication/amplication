@@ -92,6 +92,7 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     mergeNewResourcesChanges,
     redesignMode,
     resetUserAction,
+    currentEditableResourceNode,
     clearDuplicateEntityError,
     errorMessage,
   } = useModelOrganizer({
@@ -290,6 +291,9 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
           <div className={`${CLASS_NAME}__body`}>
             <ModelOrganizerToolbar
               restrictedMode={restrictedMode}
+              selectedEditableResource={
+                currentEditableResourceNode?.data?.payload
+              }
               changes={changes}
               nodes={nodes}
               redesignMode={redesignMode}

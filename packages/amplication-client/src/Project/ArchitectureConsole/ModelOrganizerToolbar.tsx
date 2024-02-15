@@ -22,11 +22,16 @@ import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
 import { formatError } from "../../util/error";
+import {
+  BtmButton,
+  EnumButtonLocation,
+} from "../../Resource/break-the-monolith/BtmButton";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
 type Props = {
   restrictedMode: boolean;
+  selectedEditableResource: models.Resource | null;
   redesignMode: boolean;
   hasChanges: boolean;
   changes: ModelChanges;
@@ -61,6 +66,7 @@ export default function ModelOrganizerToolbar({
   onCancelChanges,
   mergeNewResourcesChanges,
   resetUserAction,
+  selectedEditableResource,
 }: Props) {
   const handleSearchPhraseChanged = useCallback(
     (searchPhrase: string) => {
@@ -158,7 +164,15 @@ export default function ModelOrganizerToolbar({
                   mergeNewResourcesChanges={mergeNewResourcesChanges}
                 ></ModelsTool>
                 <div className={`${CLASS_NAME}__divider`}></div>
-
+                {!restrictedMode && redesignMode && (
+                  <BtmButton
+                    location={EnumButtonLocation.Architecture}
+                    openInFullScreen={false}
+                    autoRedirectAfterCompletion
+                    buttonText="AI helper"
+                    resource={selectedEditableResource}
+                  />
+                )}
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}
                   onClick={handleConfirmChangesState}
@@ -167,6 +181,14 @@ export default function ModelOrganizerToolbar({
                   Apply Plan
                 </Button>
               </>
+            )}
+            {!restrictedMode && !redesignMode && (
+              <BtmButton
+                location={EnumButtonLocation.Architecture}
+                openInFullScreen={false}
+                autoRedirectAfterCompletion
+                buttonText="AI helper"
+              />
             )}
             {!restrictedMode && !redesignMode && (
               <RedesignResourceButton
