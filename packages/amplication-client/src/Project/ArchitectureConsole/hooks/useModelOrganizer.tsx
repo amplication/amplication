@@ -221,7 +221,7 @@ const useModelOrganizer = ({ projectId, onMessage }: Props) => {
   ]);
 
   const resetChanges = useCallback(
-    (showResetMessage = true, onLoadResourcesCompleted?: () => void) => {
+    (showResetMessage = true) => {
       setChanges({
         movedEntities: [],
         newServices: [],
@@ -235,7 +235,7 @@ const useModelOrganizer = ({ projectId, onMessage }: Props) => {
       clearPersistentData();
       loadProjectResources(
         true,
-        onLoadResourcesCompleted ?? showResetMessage
+        showResetMessage
           ? () => {
               onMessage(
                 "Redesign changes were discarded successfully",
@@ -703,6 +703,10 @@ const useModelOrganizer = ({ projectId, onMessage }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applyChangesResults?.userAction?.status]);
 
+  //This functions accepts the results of the AI BTM process and prepares the new microservice for display
+  //The function directly changes the persistent layer with the new changes received from the server,
+  //and then expects the parent component to reload the data from the persistent layer by using the property refetchChangesOnNextReload
+  //After the hook reloads the changes, it calls the mergeNewResourcesChanges function to merge the new changes into the current state
   const saveBreakTheMonolithResultsIntoState = useCallback(
     async (results: models.BreakServiceToMicroservicesResult) => {
       const btmChanges: ModelChanges = {
