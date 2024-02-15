@@ -398,39 +398,6 @@ describe("ResourceBtmService", () => {
             ],
           },
           {
-            id: "orderItem",
-            name: "orderItem",
-            displayName: "OrderItem",
-            versions: [
-              {
-                fields: [
-                  {
-                    name: "order",
-                    displayName: "Order",
-                    dataType: EnumDataType.Lookup,
-                    properties: {
-                      relatedEntityId: "order",
-                    },
-                  },
-                  {
-                    name: "product",
-                    displayName: "Product",
-                    dataType: EnumDataType.Lookup,
-                    properties: {
-                      relatedEntityId: "product",
-                    },
-                  },
-                  {
-                    name: "quantity",
-                    displayName: "Quantity",
-                    dataType: EnumDataType.DecimalNumber,
-                    properties: {},
-                  },
-                ],
-              },
-            ],
-          },
-          {
             id: "product",
             name: "product",
             displayName: "Product",
@@ -496,16 +463,6 @@ describe("ResourceBtmService", () => {
             ],
           },
           {
-            name: "customer",
-            functionality: "manage customer",
-            tables: [
-              {
-                name: "customer",
-                originalEntityId: "customer",
-              },
-            ],
-          },
-          {
             name: "order",
             functionality: "manage orders, prices and payments",
             tables: [
@@ -513,9 +470,15 @@ describe("ResourceBtmService", () => {
                 name: "order",
                 originalEntityId: "order",
               },
+            ],
+          },
+          {
+            name: "customer",
+            functionality: "manage customer",
+            tables: [
               {
-                name: "orderItem",
-                originalEntityId: "orderItem",
+                name: "customer",
+                originalEntityId: "customer",
               },
             ],
           },
