@@ -456,22 +456,22 @@ describe("ResourceBtmService", () => {
             ],
           },
           {
-            name: "order",
-            functionality: "manage orders, prices and payments",
-            tables: [
-              {
-                name: "order",
-                originalEntityId: "order",
-              },
-            ],
-          },
-          {
             name: "customer",
             functionality: "manage customer",
             tables: [
               {
                 name: "customer",
                 originalEntityId: "customer",
+              },
+            ],
+          },
+          {
+            name: "order",
+            functionality: "manage orders, prices and payments",
+            tables: [
+              {
+                name: "order",
+                originalEntityId: "order",
               },
             ],
           },
