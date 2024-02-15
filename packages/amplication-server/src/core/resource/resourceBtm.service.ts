@@ -309,7 +309,6 @@ export class ResourceBtmService {
       select: {
         id: true,
         name: true,
-        description: true,
         project: true,
         entities: {
           where: {

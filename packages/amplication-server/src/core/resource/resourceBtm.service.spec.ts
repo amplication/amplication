@@ -151,7 +151,6 @@ describe("ResourceBtmService", () => {
       };
       const originalResource: ResourceDataForBtm = {
         name: "order",
-        description: "order service",
         project: resourceMock.project,
         id: resourceIdMock,
         entities: [
@@ -350,7 +349,6 @@ describe("ResourceBtmService", () => {
       const originalResource: ResourceDataForBtm = {
         id: resourceIdMock,
         name: "order",
-        description: "order service",
         project: resourceMock.project,
         entities: [
           {
@@ -506,7 +504,6 @@ describe("ResourceBtmService", () => {
 
       const originalResource: ResourceDataForBtm = {
         name: "order",
-        description: "order service",
         project: resourceMock.project,
         id: resourceIdMock,
         entities: [
@@ -649,7 +646,6 @@ describe("ResourceBtmService", () => {
 
       const originalResource: ResourceDataForBtm = {
         id: resourceIdMock,
-        description: "order service",
         name: "order",
         entities: [
           {
@@ -837,7 +833,6 @@ describe("ResourceBtmService", () => {
     it("should return a prompt", () => {
       const result = service.generatePromptForBreakTheMonolith({
         name: "ecommerce",
-        description: "ecommerce service",
         id: "ecommerce-id",
         entities: [
           {
