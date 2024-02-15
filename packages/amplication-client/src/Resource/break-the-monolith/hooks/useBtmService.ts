@@ -22,7 +22,6 @@ export type TBreakServiceToMicroservicesResult = {
 
 type BtmProps = {
   resourceId: string;
-  useFakeData?: boolean;
 };
 
 export const useBtmService = ({ resourceId }: BtmProps) => {
