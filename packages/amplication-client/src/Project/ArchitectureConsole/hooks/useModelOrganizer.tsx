@@ -538,6 +538,7 @@ const useModelOrganizer = ({ projectId, onMessage }: Props) => {
       const newService = {
         id: newResource.id,
         name: newResource.name,
+        description: newResource.description,
       };
 
       changes.newServices.push(newService);
@@ -738,11 +739,11 @@ const useModelOrganizer = ({ projectId, onMessage }: Props) => {
 
       results.data.microservices.forEach(async (microservice) => {
         const tempId = generatedKey();
-        const newService = createNewServiceObject(
-          microservice.name,
-          tempId,
-          microservice.functionality
-        );
+        const newService = {
+          id: tempId,
+          name: microservice.name,
+          description: microservice.functionality,
+        };
         btmChanges.newServices.push(newService);
 
         microservice.tables.forEach((entity) => {
@@ -786,6 +787,7 @@ const useModelOrganizer = ({ projectId, onMessage }: Props) => {
   return {
     nodes,
     currentResourcesData,
+    currentEditableResourceNode,
     setNodes,
     edges,
     setEdges,
