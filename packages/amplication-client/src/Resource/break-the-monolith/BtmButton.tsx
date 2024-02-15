@@ -25,6 +25,7 @@ export enum EnumButtonLocation {
   EntityList = "EntityList",
   SchemaUpload = "SchemaUpload",
   PreviewBtm = "PreviewBtm",
+  Architecture = "Architecture",
 }
 
 type Props = {
@@ -32,6 +33,8 @@ type Props = {
   openInFullScreen: boolean;
   autoRedirectAfterCompletion?: boolean;
   ButtonStyle?: EnumButtonStyle;
+  buttonText?: string;
+  resource?: Resource;
 };
 
 export const BtmButton: React.FC<Props> = ({
@@ -39,6 +42,8 @@ export const BtmButton: React.FC<Props> = ({
   openInFullScreen,
   autoRedirectAfterCompletion = false,
   ButtonStyle = EnumButtonStyle.GradientOutline,
+  buttonText = "Break the Monolith",
+  resource,
 }) => {
   const { currentResource, resources } = useAppContext();
   const { trackEvent } = useTracking();
@@ -58,7 +63,8 @@ export const BtmButton: React.FC<Props> = ({
 
       trackEvent({
         eventName: AnalyticsEventNames.StartBreakTheMonolithClick,
-        serviceName: selectedResource?.name ?? currentResource?.name,
+        serviceName:
+          selectedResource?.name ?? currentResource?.name ?? resource.name,
         location,
       });
     },
@@ -66,8 +72,8 @@ export const BtmButton: React.FC<Props> = ({
   );
 
   const onButtonSelectResource = useCallback(() => {
-    selectResourceToBreak(currentResource);
-  }, [currentResource, selectResourceToBreak]);
+    selectResourceToBreak(currentResource ?? resource);
+  }, [currentResource, selectResourceToBreak, resource]);
 
   const onSelectMenuSelectResource = useCallback(
     (itemData: Resource) => {
@@ -82,13 +88,13 @@ export const BtmButton: React.FC<Props> = ({
 
   return (
     <>
-      {currentResource ? (
+      {currentResource || resource ? (
         <Button buttonStyle={ButtonStyle} onClick={onButtonSelectResource}>
-          Break the Monolith
+          {buttonText}
         </Button>
       ) : (
         <SelectMenu
-          title="Break the Monolith"
+          title={buttonText}
           buttonStyle={ButtonStyle}
           hideSelectedItemsIndication
         >
