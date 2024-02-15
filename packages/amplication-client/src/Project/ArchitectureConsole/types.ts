@@ -13,6 +13,7 @@ export type NodePayload<T> = {
   height?: number;
   originalParentNode?: string;
   isCurrentDropTarget?: boolean;
+  highlight: boolean;
 };
 
 export type NodePayloadWithPayloadType = NodePayload<
