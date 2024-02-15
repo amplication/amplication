@@ -2188,6 +2188,7 @@ export type RedesignProjectMovedEntity = {
 };
 
 export type RedesignProjectNewService = {
+  description: Scalars['String']['input'];
   id: Scalars['String']['input'];
   name: Scalars['String']['input'];
 };

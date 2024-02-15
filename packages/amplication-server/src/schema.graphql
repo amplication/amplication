@@ -1498,6 +1498,7 @@ input RedesignProjectMovedEntity {
 }
 
 input RedesignProjectNewService {
+  description: String!
   id: String!
   name: String!
 }
