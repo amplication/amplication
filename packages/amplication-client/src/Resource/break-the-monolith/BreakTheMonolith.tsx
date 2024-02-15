@@ -32,8 +32,6 @@ const LOADER_TITLE = "Experience the Microservices Marvel using Amplication AI";
 const LOADER_SUBTITLE =
   "Our AI-driven magic is currently at work, suggesting how to elevate your service and its entities into a thriving microservices wonderland";
 
-const USE_FAKE_DATA = false;
-
 type Props = {
   resource: Resource;
   onComplete: () => void;
@@ -52,7 +50,6 @@ const BreakTheMonolith: React.FC<Props> = ({
   const { currentWorkspace, currentProject } = useAppContext();
   const { btmResult, loading, error } = useBtmService({
     resourceId: resource?.id,
-    useFakeData: USE_FAKE_DATA,
   });
 
   const { saveBreakTheMonolithResultsIntoState } = useModelOrganizer({

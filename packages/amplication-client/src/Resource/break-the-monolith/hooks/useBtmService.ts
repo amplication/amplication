@@ -9,7 +9,6 @@ import {
   EnumUserActionStatus,
   UserAction,
 } from "../../../models";
-import { TEMP_RESULT } from "./btm-results-mock";
 
 const POLL_INTERVAL = 3000;
 
@@ -26,9 +25,8 @@ type BtmProps = {
   useFakeData?: boolean;
 };
 
-export const useBtmService = ({ resourceId, useFakeData }: BtmProps) => {
+export const useBtmService = ({ resourceId }: BtmProps) => {
   const [userAction, setUserAction] = useState<UserAction | null>(null);
-  const [fakeDataLoading, setFakeDataLoading] = useState<boolean>(true);
 
   const [
     triggerBreakServiceIntoMicroservices,
@@ -84,13 +82,7 @@ export const useBtmService = ({ resourceId, useFakeData }: BtmProps) => {
   }, [btmResult, stopPolling, startPolling, shouldReload]);
 
   useEffect(() => {
-    if (useFakeData) {
-      setTimeout(() => {
-        setFakeDataLoading(false);
-      }, 3000);
-    } else {
-      triggerBreakServiceIntoMicroservices().catch(console.error);
-    }
+    triggerBreakServiceIntoMicroservices().catch(console.error);
   }, []);
 
   const hasError = Boolean(
@@ -104,16 +96,9 @@ export const useBtmService = ({ resourceId, useFakeData }: BtmProps) => {
       btmResult?.finalizeBreakServiceIntoMicroservices.status ===
         EnumUserActionStatus.Running);
 
-  TEMP_RESULT.finalizeBreakServiceIntoMicroservices.originalResourceId =
-    resourceId;
-
   return {
-    btmResult: useFakeData
-      ? fakeDataLoading
-        ? undefined
-        : TEMP_RESULT.finalizeBreakServiceIntoMicroservices
-      : btmResult?.finalizeBreakServiceIntoMicroservices,
-    loading: useFakeData ? fakeDataLoading : isLoading,
+    btmResult: btmResult?.finalizeBreakServiceIntoMicroservices,
+    loading: isLoading,
     error: triggerBreakServiceIntoMicroservicesError || btmError,
   };
 };
