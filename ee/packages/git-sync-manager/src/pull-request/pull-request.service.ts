@@ -11,7 +11,7 @@ import { ConfigService } from "@nestjs/config";
 import { DiffService } from "../diff/diff.service";
 import { CreatePrRequest } from "@amplication/schema-registry";
 import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
-import { getServicePullRequestMessage } from "libs/util/git/src/constants";
+import { getServicePullRequestMessage } from "./pull-request.message";
 
 @Traceable()
 @Injectable()
