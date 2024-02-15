@@ -16,7 +16,7 @@ type TTriggerBreakServiceIntoMicroservices = {
   triggerBreakServiceIntoMicroservices: UserAction;
 };
 
-export type TBreakServiceToMicroservicesResult = {
+type TBreakServiceToMicroservicesResult = {
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
 };
 
