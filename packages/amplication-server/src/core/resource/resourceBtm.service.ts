@@ -196,14 +196,13 @@ export class ResourceBtmService {
   }
 
   /**
-   * This function prepares the AI recommendation for the Break the Monolith result
-   * It filters out the tables that the AI result has that the original resource doesn't have
+   * This function prepares the GPT recommendation for the Break the Monolith result
+   * It filters out the tables that the GPT result has that the original resource doesn't have
    * It makes sure that there are no duplicated tables in the microservices by removing the duplicates and putting them on the microservice with the least amount of tables
-   * It makes sure that the original resource will be added to the microservices result with tables that the AI missed
    * It makes sure that the result will not includes microservices with no tables
-   * @param promptResult - AI recommendation
+   * @param promptResult - GPT recommendation
    * @param resourceId
-   * @returns the AI recommendation with some data structure manipulation
+   * @returns the GPT recommendation with some data structure manipulation
    */
   async prepareBtmRecommendations(
     promptResult: string,
@@ -221,30 +220,22 @@ export class ResourceBtmService {
     const usedDuplicatedEntities = new Set<string>();
 
     const originalResource = await this.getResourceDataForBtm(resourceId);
-    const originalResourceEntityNames = originalResource.entities.map(
-      (entity) => entity.name
+    const originalResourceEntityNamesSet = new Set(
+      originalResource.entities.map((entity) => entity.name)
     );
-    const originalResourceEntityNamesSet = new Set(originalResourceEntityNames);
 
-    const { uniqueToAIResult, uniqueToOriginalResource } =
-      this.findUniqueEntities(
-        recommendedResourceEntities,
-        originalResourceEntityNames
-      );
+    const inventedEntitiesByGpt = recommendedResourceEntities.filter(
+      (item) => !originalResourceEntityNamesSet.has(item)
+    );
 
-    // filter out the tables that the AI result has that the original resource doesn't have
+    // filter out the tables that the gpt result has that the original resource doesn't have
     promptResultObj.microservices = promptResultObj.microservices.map(
       (microservice) => ({
         ...microservice,
         tables: microservice.tables.filter(
-          (tableName) => !uniqueToAIResult.includes(tableName)
+          (tableName) => !inventedEntitiesByGpt.includes(tableName)
         ),
       })
-    );
-
-    // from the original resource, leave only the entities that are in uniqueToOriginalResource
-    const originalResourceTables = originalResource.entities.filter((entity) =>
-      uniqueToOriginalResource.includes(entity.name)
     );
 
     // remove duplicates and put on the microservice with the least amount of tables
@@ -255,7 +246,7 @@ export class ResourceBtmService {
         functionality: microservice.functionality,
         tables: microservice.tables.filter((tableName) => {
           const isDuplicatedAlreadyUsed = usedDuplicatedEntities.has(tableName);
-          if (duplicatedEntities.has(tableName)) {
+          if (!isDuplicatedAlreadyUsed && duplicatedEntities.has(tableName)) {
             usedDuplicatedEntities.add(tableName);
           }
           return (
@@ -265,13 +256,6 @@ export class ResourceBtmService {
         }),
       }))
       .filter((microservice) => microservice.tables.length > 0);
-
-    // add the original resource to the microservices
-    promptResultObj.microservices.push({
-      name: `${originalResource.name}Original`,
-      functionality: originalResource.description,
-      tables: originalResourceTables.map((table) => table.name),
-    });
 
     return {
       microservices: promptResultObj.microservices.map((microservice) => ({
@@ -288,7 +272,7 @@ export class ResourceBtmService {
 
           return {
             name: tableName,
-            originalEntityId: entityNameIdMap[tableName]?.id,
+            originalEntityId: entityNameIdMap[tableName].id,
           };
         }),
       })),
@@ -317,29 +301,6 @@ export class ResourceBtmService {
         return entities.indexOf(entity) !== index;
       })
     );
-  }
-
-  findUniqueEntities(
-    entitiesFromAIResult: string[],
-    entitiesFromOriginalResource: string[]
-  ) {
-    const entitiesFromAIResultSet = new Set(entitiesFromAIResult);
-    const entitiesFromOriginalResourceSet = new Set(
-      entitiesFromOriginalResource
-    );
-
-    const uniqueToAIResult = Array.from(entitiesFromAIResultSet).filter(
-      (item) => !entitiesFromOriginalResourceSet.has(item)
-    );
-
-    const uniqueToOriginalResource = Array.from(
-      entitiesFromOriginalResourceSet
-    ).filter((item) => !entitiesFromAIResultSet.has(item));
-
-    return {
-      uniqueToAIResult,
-      uniqueToOriginalResource,
-    };
   }
 
   async getResourceDataForBtm(resourceId: string): Promise<ResourceDataForBtm> {
