@@ -27,7 +27,7 @@ import relationEdge from "./edges/relationEdge";
 import RelationMarkets from "./edges/relationMarkets";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
 import { findGroupByPosition } from "./helpers";
-import useModelOrganization from "./hooks/useModelOrganizer";
+import useModelOrganizer from "./hooks/useModelOrganizer";
 import { applyAutoLayout } from "./layout";
 import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
@@ -94,7 +94,7 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     resetUserAction,
     clearDuplicateEntityError,
     duplicateEntityError,
-  } = useModelOrganization({
+  } = useModelOrganizer({
     projectId: currentProject?.id,
     onMessage: showMessage,
   });

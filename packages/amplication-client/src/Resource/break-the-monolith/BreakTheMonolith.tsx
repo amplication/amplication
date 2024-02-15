@@ -14,7 +14,7 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
-import { EnumResourceType } from "../../models";
+import { EnumResourceType, EnumUserActionStatus } from "../../models";
 import "./BreakTheMonolith.scss";
 import { BtmLoader } from "./BtmLoader";
 import { useBtmService } from "./hooks/useBtmService";
@@ -22,8 +22,9 @@ import classNames from "classnames";
 import { formatError } from "../../util/error";
 import { Resource } from "../../models";
 import { useHistory } from "react-router-dom";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAppContext } from "../../context/appContext";
+import useModelOrganizer from "../../Project/ArchitectureConsole/hooks/useModelOrganizer";
 
 const CLASS_NAME = "break-the-monolith";
 
@@ -45,21 +46,45 @@ const BreakTheMonolith: React.FC<Props> = ({
   onComplete,
 }) => {
   const history = useHistory();
+  const [applyingResults, setApplyingResults] = useState(false);
   const { currentWorkspace, currentProject } = useAppContext();
   const { btmResult, loading, error } = useBtmService({
     resourceId: resource?.id,
   });
 
+  const { saveBreakTheMonolithResultsIntoState } = useModelOrganizer({
+    projectId: currentProject?.id,
+    onMessage: () => {},
+  });
+
   const hasError = Boolean(error);
   const errorMessage = formatError(error);
 
-  useEffect(() => {
-    if (btmResult) {
-      // TODO: prepare data for architecture page before redirect
+  const applyChanges = useCallback(async () => {
+    if (btmResult && !applyingResults) {
+      setApplyingResults(true);
+      saveBreakTheMonolithResultsIntoState(btmResult);
       autoRedirectAfterCompletion &&
         history.push(
           `/${currentWorkspace?.id}/${currentProject?.id}/architecture`
         );
+    }
+  }, [
+    applyingResults,
+    autoRedirectAfterCompletion,
+    btmResult,
+    currentProject?.id,
+    currentWorkspace?.id,
+    history,
+    saveBreakTheMonolithResultsIntoState,
+  ]);
+
+  useEffect(() => {
+    async function applyChangesWrapper() {
+      await applyChanges();
+    }
+    if (btmResult && btmResult.status === EnumUserActionStatus.Completed) {
+      applyChangesWrapper();
     }
   }, [
     btmResult,
@@ -67,10 +92,10 @@ const BreakTheMonolith: React.FC<Props> = ({
     history,
     currentWorkspace,
     currentProject,
+    applyChanges,
   ]);
 
   const handleConfirmSuggestion = useCallback(() => {
-    // TODO: prepare data for architecture page before redirect
     openInFullScreen &&
       history.push(
         `/${currentWorkspace?.id}/${currentProject?.id}/architecture`
@@ -149,8 +174,9 @@ const BreakTheMonolith: React.FC<Props> = ({
               </Panel>
               <div className={`${CLASS_NAME}__content`}>
                 <Panel className={`${CLASS_NAME}__services`}>
-                  {btmResult?.data?.microservices.map((item) => (
+                  {btmResult?.data?.microservices.map((item, index) => (
                     <List
+                      key={index}
                       className={`${CLASS_NAME}__services__service`}
                       listStyle={EnumListStyle.Dark}
                       headerContent={
@@ -178,6 +204,7 @@ const BreakTheMonolith: React.FC<Props> = ({
                       >
                         {item.tables.map((entity) => (
                           <Text
+                            key={entity.originalEntityId}
                             className={`${CLASS_NAME}__services__service__entities__entity`}
                             textStyle={EnumTextStyle.Subtle}
                           >

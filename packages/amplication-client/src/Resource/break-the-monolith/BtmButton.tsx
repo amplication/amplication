@@ -96,6 +96,7 @@ export const BtmButton: React.FC<Props> = ({
             <SelectMenuList>
               {resources.map((resource) => (
                 <SelectMenuItem
+                  key={resource.id}
                   closeAfterSelectionChange
                   itemData={resource}
                   onSelectionChange={onSelectMenuSelectResource}
