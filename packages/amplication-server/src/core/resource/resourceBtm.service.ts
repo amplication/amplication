@@ -235,7 +235,6 @@ export class ResourceBtmService {
           name: microservice.name,
           functionality: microservice.functionality,
           tables: microservice.tables
-            .filter((tableName) => !inventedEntitiesByGpt.includes(tableName))
             .filter((tableName) => {
               const isDuplicatedAlreadyUsed =
                 usedDuplicatedEntities.has(tableName);
@@ -247,7 +246,8 @@ export class ResourceBtmService {
               }
               return (
                 originalResourceEntityNamesSet.has(tableName) &&
-                !isDuplicatedAlreadyUsed
+                !isDuplicatedAlreadyUsed &&
+                !inventedEntitiesByGpt.includes(tableName)
               );
             })
             .map((tableName) => {
