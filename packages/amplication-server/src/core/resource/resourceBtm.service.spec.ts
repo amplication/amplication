@@ -128,7 +128,7 @@ describe("ResourceBtmService", () => {
     });
   });
 
-  describe("translateToBtmRecommendation", () => {
+  describe("prepareBtmRecommendations", () => {
     it("should map the prompt result to a btm recommendation", async () => {
       const promptResult: BreakTheMonolithOutput = {
         microservices: [
@@ -141,6 +141,11 @@ describe("ResourceBtmService", () => {
             name: "order",
             functionality: "manage orders, prices and payments",
             tables: ["order", "orderItem"],
+          },
+          {
+            name: "customer",
+            functionality: "manage customer",
+            tables: ["customer"],
           },
         ],
       };
@@ -277,6 +282,26 @@ describe("ResourceBtmService", () => {
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
+            name: "product",
+            functionality: "manage products",
+            tables: [
+              {
+                name: "product",
+                originalEntityId: "product",
+              },
+            ],
+          },
+          {
+            name: "customer",
+            functionality: "manage customer",
+            tables: [
+              {
+                name: "customer",
+                originalEntityId: "customer",
+              },
+            ],
+          },
+          {
             name: "order",
             functionality: "manage orders, prices and payments",
             tables: [
@@ -287,16 +312,6 @@ describe("ResourceBtmService", () => {
               {
                 name: "orderItem",
                 originalEntityId: "orderItem",
-              },
-            ],
-          },
-          {
-            name: "product",
-            functionality: "manage products",
-            tables: [
-              {
-                name: "product",
-                originalEntityId: "product",
               },
             ],
           },
@@ -324,6 +339,11 @@ describe("ResourceBtmService", () => {
             functionality: "manage orders, prices and payments",
             tables: ["order", "orderItem"],
           },
+          {
+            name: "customer",
+            functionality: "manage customer",
+            tables: ["customer"],
+          },
         ],
       };
       const originalResource: ResourceDataForBtm = {
@@ -364,39 +384,6 @@ describe("ResourceBtmService", () => {
                     name: "itemsId",
                     displayName: "ItemsId",
                     dataType: EnumDataType.SingleLineText,
-                    properties: {},
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            id: "orderItem",
-            name: "orderItem",
-            displayName: "OrderItem",
-            versions: [
-              {
-                fields: [
-                  {
-                    name: "order",
-                    displayName: "Order",
-                    dataType: EnumDataType.Lookup,
-                    properties: {
-                      relatedEntityId: "order",
-                    },
-                  },
-                  {
-                    name: "product",
-                    displayName: "Product",
-                    dataType: EnumDataType.Lookup,
-                    properties: {
-                      relatedEntityId: "product",
-                    },
-                  },
-                  {
-                    name: "quantity",
-                    displayName: "Quantity",
-                    dataType: EnumDataType.DecimalNumber,
                     properties: {},
                   },
                 ],
@@ -459,26 +446,32 @@ describe("ResourceBtmService", () => {
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
-            name: "order",
-            functionality: "manage orders, prices and payments",
-            tables: [
-              {
-                name: "order",
-                originalEntityId: "order",
-              },
-              {
-                name: "orderItem",
-                originalEntityId: "orderItem",
-              },
-            ],
-          },
-          {
             name: "product",
             functionality: "manage products",
             tables: [
               {
                 name: "product",
                 originalEntityId: "product",
+              },
+            ],
+          },
+          {
+            name: "customer",
+            functionality: "manage customer",
+            tables: [
+              {
+                name: "customer",
+                originalEntityId: "customer",
+              },
+            ],
+          },
+          {
+            name: "order",
+            functionality: "manage orders, prices and payments",
+            tables: [
+              {
+                name: "order",
+                originalEntityId: "order",
               },
             ],
           },
@@ -493,7 +486,7 @@ describe("ResourceBtmService", () => {
       expect(result).toStrictEqual(expectedResult);
     });
 
-    it("should add entities that are duplicated in the prompt result only to new resource with more tables", async () => {
+    it("should add entities that are duplicated in the prompt result only to new resource with least amount of tables", async () => {
       const promptResult: BreakTheMonolithOutput = {
         microservices: [
           {
@@ -592,6 +585,20 @@ describe("ResourceBtmService", () => {
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
+            name: "product",
+            functionality: "manage products",
+            tables: [
+              {
+                name: "product",
+                originalEntityId: "product",
+              },
+              {
+                name: "price",
+                originalEntityId: "price",
+              },
+            ],
+          },
+          {
             name: "order",
             functionality: "manage orders, prices and payments",
             tables: [
@@ -602,20 +609,6 @@ describe("ResourceBtmService", () => {
               {
                 name: "orderItem",
                 originalEntityId: "orderItem",
-              },
-              {
-                name: "price",
-                originalEntityId: "price",
-              },
-            ],
-          },
-          {
-            name: "product",
-            functionality: "manage products",
-            tables: [
-              {
-                name: "product",
-                originalEntityId: "product",
               },
             ],
           },
@@ -636,7 +629,7 @@ describe("ResourceBtmService", () => {
           {
             name: "product",
             functionality: "manage products",
-            tables: ["product"],
+            tables: ["product", "customer"],
           },
           {
             name: "order",
@@ -783,6 +776,20 @@ describe("ResourceBtmService", () => {
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
+            name: "product",
+            functionality: "manage products",
+            tables: [
+              {
+                name: "product",
+                originalEntityId: "product",
+              },
+              {
+                name: "customer",
+                originalEntityId: "customer",
+              },
+            ],
+          },
+          {
             name: "order",
             functionality: "manage orders, prices and payments",
             tables: [
@@ -793,16 +800,6 @@ describe("ResourceBtmService", () => {
               {
                 name: "orderItem",
                 originalEntityId: "orderItem",
-              },
-            ],
-          },
-          {
-            name: "product",
-            functionality: "manage products",
-            tables: [
-              {
-                name: "product",
-                originalEntityId: "product",
               },
             ],
           },

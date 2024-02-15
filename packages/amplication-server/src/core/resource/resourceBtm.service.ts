@@ -195,6 +195,15 @@ export class ResourceBtmService {
     return JSON.stringify(prompt);
   }
 
+  /**
+   * This function prepares the GPT recommendation for the Break the Monolith result
+   * It filters out the tables that the GPT result has that the original resource doesn't have
+   * It makes sure that there are no duplicated tables in the microservices by removing the duplicates and putting them on the microservice with the least amount of tables
+   * It makes sure that the result will not includes microservices with no tables
+   * @param promptResult - GPT recommendation
+   * @param resourceId
+   * @returns the GPT recommendation with some data structure manipulation
+   */
   async prepareBtmRecommendations(
     promptResult: string,
     resourceId: string
@@ -211,29 +220,37 @@ export class ResourceBtmService {
     const usedDuplicatedEntities = new Set<string>();
 
     const originalResource = await this.getResourceDataForBtm(resourceId);
-    const originalResourceEntitiesSet = new Set(
+    const originalResourceEntityNamesSet = new Set(
       originalResource.entities.map((entity) => entity.name)
+    );
+
+    const inventedEntitiesByGpt = recommendedResourceEntities.filter(
+      (item) => !originalResourceEntityNamesSet.has(item)
     );
 
     return {
       microservices: promptResultObj.microservices
-        .sort((microservice) => -1 * microservice.tables.length)
+        .sort((a, b) => a.tables.length - b.tables.length)
         .map((microservice) => ({
           name: microservice.name,
           functionality: microservice.functionality,
           tables: microservice.tables
-            .filter((dataModelName) => {
+            .filter((tableName) => {
               const isDuplicatedAlreadyUsed =
-                usedDuplicatedEntities.has(dataModelName);
-              if (duplicatedEntities.has(dataModelName)) {
-                usedDuplicatedEntities.add(dataModelName);
+                usedDuplicatedEntities.has(tableName);
+              if (
+                !isDuplicatedAlreadyUsed &&
+                duplicatedEntities.has(tableName)
+              ) {
+                usedDuplicatedEntities.add(tableName);
               }
               return (
-                originalResourceEntitiesSet.has(dataModelName) &&
-                !isDuplicatedAlreadyUsed
+                originalResourceEntityNamesSet.has(tableName) &&
+                !isDuplicatedAlreadyUsed &&
+                !inventedEntitiesByGpt.includes(tableName)
               );
             })
-            .map((dataModelName) => {
+            .map((tableName) => {
               const entityNameIdMap = originalResource.entities.reduce(
                 (map, entity) => {
                   map[entity.name] = entity;
@@ -243,8 +260,8 @@ export class ResourceBtmService {
               );
 
               return {
-                name: dataModelName,
-                originalEntityId: entityNameIdMap[dataModelName]?.id,
+                name: tableName,
+                originalEntityId: entityNameIdMap[tableName].id,
               };
             }),
         }))
@@ -269,11 +286,18 @@ export class ResourceBtmService {
   }
 
   findDuplicatedEntities(entities: string[]): Set<string> {
-    return new Set(
-      entities.filter((entity, index) => {
-        return entities.indexOf(entity) !== index;
-      })
-    );
+    const duplicates = new Set<string>();
+    const seen = new Set<string>();
+
+    for (const entity of entities) {
+      if (seen.has(entity)) {
+        duplicates.add(entity);
+      } else {
+        seen.add(entity);
+      }
+    }
+
+    return duplicates;
   }
 
   async getResourceDataForBtm(resourceId: string): Promise<ResourceDataForBtm> {
