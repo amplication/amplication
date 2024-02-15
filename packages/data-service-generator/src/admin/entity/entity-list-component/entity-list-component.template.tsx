@@ -8,7 +8,11 @@ declare const CELLS: React.ReactElement[];
 
 export const ENTITY_LIST = (): React.ReactElement => {
   return (
-    <List>
+    <List
+      title={ENTITY_PLURAL_DISPLAY_NAME}
+      perPage={50}
+      pagination={<Pagination />}
+    >
       <Datagrid rowClick="show">{CELLS}</Datagrid>
     </List>
   );
