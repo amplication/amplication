@@ -16,6 +16,11 @@ import { BillingService } from "../billing/billing.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
+import { v4 as uuidv4 } from "uuid";
+
+jest.mock("uuid", () => ({
+  v4: jest.fn().mockReturnValue("123456"),
+}));
 
 const resourceIdMock = "resourceId";
 const userIdMock = "userId";
@@ -56,6 +61,7 @@ const userActionServiceFindOneMock = jest.fn(() =>
 );
 
 const resourceFindUniqueMock = jest.fn(() => Promise.resolve(resourceMock));
+const resourceFindManyMock = jest.fn(() => Promise.resolve([resourceMock]));
 const getSubscriptionMock = jest.fn();
 const trackMock = jest.fn();
 
@@ -81,6 +87,7 @@ describe("ResourceBtmService", () => {
           useValue: {
             resource: {
               findUnique: resourceFindUniqueMock,
+              findMany: resourceFindManyMock,
             },
           },
         },
@@ -783,6 +790,213 @@ describe("ResourceBtmService", () => {
                 name: "product",
                 originalEntityId: "product",
               },
+              {
+                name: "customer",
+                originalEntityId: "customer",
+              },
+            ],
+          },
+          {
+            name: "order",
+            functionality: "manage orders, prices and payments",
+            tables: [
+              {
+                name: "order",
+                originalEntityId: "order",
+              },
+              {
+                name: "orderItem",
+                originalEntityId: "orderItem",
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = await service.prepareBtmRecommendations(
+        JSON.stringify(promptResult),
+        resourceIdMock
+      );
+
+      expect(result).toStrictEqual(expectedResult);
+    });
+
+    it("should rename service name from gpt recommendation if it already exists in the project services", async () => {
+      const suffix = uuidv4();
+      const promptResult: BreakTheMonolithOutput = {
+        microservices: [
+          {
+            name: "product",
+            functionality: "manage products",
+            tables: ["product"],
+          },
+          {
+            name: "order",
+            functionality: "manage orders, prices and payments",
+            tables: ["order", "orderItem"],
+          },
+          {
+            name: "customer",
+            functionality: "manage customer",
+            tables: ["customer"],
+          },
+        ],
+      };
+      const originalResource: ResourceDataForBtm = {
+        name: "order",
+        project: resourceMock.project,
+        id: resourceIdMock,
+        entities: [
+          {
+            id: "order",
+            name: "order",
+            displayName: "Order",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "address",
+                    displayName: "address",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "address",
+                    },
+                  },
+                  {
+                    name: "status",
+                    displayName: "Status",
+                    dataType: EnumDataType.Boolean,
+                    properties: {},
+                  },
+                  {
+                    name: "customer",
+                    displayName: "Customer",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "customer",
+                    },
+                  },
+                  {
+                    name: "itemsId",
+                    displayName: "ItemsId",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "orderItem",
+            name: "orderItem",
+            displayName: "OrderItem",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "order",
+                    displayName: "Order",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "order",
+                    },
+                  },
+                  {
+                    name: "product",
+                    displayName: "Product",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "product",
+                    },
+                  },
+                  {
+                    name: "quantity",
+                    displayName: "Quantity",
+                    dataType: EnumDataType.DecimalNumber,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "product",
+            name: "product",
+            displayName: "Product",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "name",
+                    displayName: "Name",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "price",
+                    displayName: "Price",
+                    dataType: EnumDataType.DecimalNumber,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "customer",
+            name: "customer",
+            displayName: "Customer",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "firstName",
+                    displayName: "First Name",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "lastName",
+                    displayName: "Last Name",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      resourceFindManyMock.mockResolvedValueOnce([
+        resourceMock,
+        {
+          ...resourceMock,
+          id: "otherResourceId",
+          name: "product",
+        },
+      ]);
+
+      jest
+        .spyOn(service, "getResourceDataForBtm")
+        .mockResolvedValue(originalResource);
+
+      const expectedResult: BreakServiceToMicroservicesData = {
+        microservices: [
+          {
+            name: `product_${suffix}`,
+            functionality: "manage products",
+            tables: [
+              {
+                name: "product",
+                originalEntityId: "product",
+              },
+            ],
+          },
+          {
+            name: "customer",
+            functionality: "manage customer",
+            tables: [
               {
                 name: "customer",
                 originalEntityId: "customer",
