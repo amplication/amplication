@@ -195,6 +195,22 @@ export class ResourceBtmService {
     return JSON.stringify(prompt);
   }
 
+  handleProjectServicesCollision(
+    projectServices: { name: string }[],
+    serviceName: string
+  ): string {
+    let validServiceName = serviceName;
+    projectServices.forEach((service) => {
+      const isDuplicated = service.name === serviceName;
+
+      if (isDuplicated) {
+        const suffix = v4().split("-")[0];
+        validServiceName = `${serviceName}_${suffix}`;
+      }
+    });
+    return validServiceName;
+  }
+
   /**
    * This function prepares the GPT recommendation for the Break the Monolith result
    * It filters out the tables that the GPT result has that the original resource doesn't have
