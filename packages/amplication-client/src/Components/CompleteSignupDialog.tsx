@@ -11,12 +11,10 @@ import "./CompleteSignupDialog.scss";
 const CLASS_NAME = "complete-signup-dialog";
 
 type Props = {
-  handleDialogClose: () => void;
+  onConfirm: () => void;
 };
 
-export const CompleteSignupDialog: React.FC<Props> = ({
-  handleDialogClose,
-}) => {
+export const CompleteSignupDialog: React.FC<Props> = ({ onConfirm }) => {
   return (
     <FlexItem direction={EnumFlexDirection.Column} className={CLASS_NAME}>
       <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
@@ -32,10 +30,7 @@ export const CompleteSignupDialog: React.FC<Props> = ({
         existing credentials.
       </Text>
 
-      <Button
-        className={`${CLASS_NAME}__dismiss_button`}
-        onClick={handleDialogClose}
-      >
+      <Button className={`${CLASS_NAME}__dismiss_button`} onClick={onConfirm}>
         Got it!
       </Button>
     </FlexItem>
