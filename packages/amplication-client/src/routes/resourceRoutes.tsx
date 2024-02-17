@@ -19,18 +19,6 @@ const resourceRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace/:project/:resource/break-the-monolith-preview-environment",
-    Component: lazy(
-      () =>
-        import("../Resource/break-the-monolith/CreateBTMPreviewEnvironmentPage")
-    ),
-    moduleName: "CreateBTMPreviewEnvironmentPage",
-    moduleClass: "create-btm-preview-environment-page",
-    routeTrackType: "",
-    exactPath: true,
-    isAnalytics: true,
-  },
-  {
     path: "/:workspace/:project/:resource/break-the-monolith-preview",
     Component: lazy(
       () => import("../Resource/break-the-monolith/BreakTheMonolithPreviewPage")
