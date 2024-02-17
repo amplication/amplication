@@ -313,11 +313,10 @@ export const Routes: RouteDef[] = [
   {
     path: "/select-preview-env",
     Component: lazy(
-      () =>
-        import("../Resource/break-the-monolith/CreateBTMPreviewEnvironmentPage")
+      () => import("../Resource/break-the-monolith/SelectPreviewEnvPage")
     ),
-    moduleName: "CreateBTMPreviewEnvironmentPage",
-    moduleClass: "create-btm-preview-environment-page",
+    moduleName: "SelectPreviewEnvPage",
+    moduleClass: "select-preview-env-page",
     routeTrackType: "",
     exactPath: true,
     isAnalytics: true,

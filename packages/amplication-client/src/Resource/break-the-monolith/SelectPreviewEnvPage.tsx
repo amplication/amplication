@@ -16,7 +16,7 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-const CreateBTMPreviewEnvironmentPage: React.FC<Props> = ({ match }) => {
+const SelectPreviewEnvPage: React.FC<Props> = ({ match }) => {
   const query = useQuery();
 
   const resourceId = query.get("resourceId");
@@ -34,4 +34,4 @@ const CreateBTMPreviewEnvironmentPage: React.FC<Props> = ({ match }) => {
   );
 };
 
-export default CreateBTMPreviewEnvironmentPage;
+export default SelectPreviewEnvPage;
