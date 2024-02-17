@@ -33,6 +33,11 @@ $expandable-transition-duration: 0.1s;
     background-color: var(--gray-90);
   }
 
+  &--error {
+    border: 1px solid var(--theme-red);
+    background: var(--theme-light-red-transparent);
+  }
+
   &--bold {
     background-color: var(--gray-full);
     border: $border-dark;
