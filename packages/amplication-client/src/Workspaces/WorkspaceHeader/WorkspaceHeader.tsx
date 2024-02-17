@@ -53,7 +53,7 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
 import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
 import { FeatureIndicator } from "../../Components/FeatureIndicator";
-import { CompleteSignupButton } from "../../Components/ComplteSignupButton";
+import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -269,7 +269,7 @@ const WorkspaceHeader: React.FC = () => {
                     featureName={BillingFeature.CodeGenerationBuilds}
                     text="Generate production-ready code for this architecture with just a few simple clicks"
                     linkText=""
-                    element={<CompleteSignupButton />}
+                    element={<CompletePreviewSignupButton />}
                   />
                   <Button
                     className={`${CLASS_NAME}__upgrade__btn`}

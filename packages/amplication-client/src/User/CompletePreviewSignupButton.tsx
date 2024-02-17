@@ -9,29 +9,23 @@ import {
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 
-import { CompleteSignupDialog } from "./CompleteSignupDialog";
+import { CompletePreviewSignupDialog } from "./CompletePreviewSignupDialog";
 import { useMutation } from "@apollo/client";
-import { COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL } from "../User/UserQueries";
+import { COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL } from "./UserQueries";
 import { CommitBtnType } from "../VersionControl/Commit";
-
-export enum EnumButtonLocation {
-  Project = "Project",
-  Resource = "Resource",
-  EntityList = "EntityList",
-  SchemaUpload = "SchemaUpload",
-  PreviewBtm = "PreviewBtm",
-  Architecture = "Architecture",
-}
 
 type Props = {
   buttonText?: string;
-  // autoRedirectAfterClick?: boolean;
   buttonType?: CommitBtnType;
 };
 
-export const CompleteSignupButton: React.FC<Props> = ({
+const buttonTypeToAnalyticsEvent: Record<CommitBtnType, AnalyticsEventNames> = {
+  [CommitBtnType.Button]: AnalyticsEventNames.GenerateCode_workspace_header,
+  [CommitBtnType.JumboButton]: AnalyticsEventNames.GenerateCode_apply_redesign,
+};
+
+export const CompletePreviewSignupButton: React.FC<Props> = ({
   buttonText = "Generate the code",
-  // autoRedirectAfterClick = false,
   buttonType = CommitBtnType.Button,
 }) => {
   const { trackEvent } = useTracking();
@@ -48,11 +42,11 @@ export const CompleteSignupButton: React.FC<Props> = ({
     setIsOpen(!isOpen);
 
     trackEvent({
-      eventName: AnalyticsEventNames.HelpMenuItemClick,
+      eventName: buttonTypeToAnalyticsEvent[buttonType],
       action: "Generate code",
       eventOriginLocation: "workspace-header-help-menu",
     });
-  }, [completeSignup, isOpen, trackEvent]);
+  }, [buttonType, completeSignup, isOpen, trackEvent]);
 
   return (
     <>
@@ -74,7 +68,7 @@ export const CompleteSignupButton: React.FC<Props> = ({
           onDismiss={toggleIsOpen}
           title="Generate your Code"
         >
-          <CompleteSignupDialog onConfirm={toggleIsOpen} />
+          <CompletePreviewSignupDialog onConfirm={toggleIsOpen} />
         </Dialog>
       )}
     </>

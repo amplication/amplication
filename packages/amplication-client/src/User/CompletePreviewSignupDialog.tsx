@@ -6,15 +6,15 @@ import {
   FlexItem,
   Text,
 } from "@amplication/ui/design-system";
-import "./CompleteSignupDialog.scss";
+import "./CompletePreviewSignupDialog.scss";
 
-const CLASS_NAME = "complete-signup-dialog";
+const CLASS_NAME = "complete-preview-signup-dialog";
 
 type Props = {
   onConfirm: () => void;
 };
 
-export const CompleteSignupDialog: React.FC<Props> = ({ onConfirm }) => {
+export const CompletePreviewSignupDialog: React.FC<Props> = ({ onConfirm }) => {
   return (
     <FlexItem direction={EnumFlexDirection.Column} className={CLASS_NAME}>
       <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>

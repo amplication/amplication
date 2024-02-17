@@ -25,7 +25,7 @@ import {
   LicenseIndicatorContainer,
   LicensedResourceType,
 } from "../Components/LicenseIndicatorContainer";
-import { CompleteSignupButton } from "../Components/ComplteSignupButton";
+import { CompletePreviewSignupButton } from "../User/CompletePreviewSignupButton";
 
 type TCommit = {
   message: string;
@@ -223,7 +223,7 @@ const Commit = ({
                 ) : null}
               </LicenseIndicatorContainer>
               {commitBtnType === CommitBtnType.JumboButton && isPreviewPlan && (
-                <CompleteSignupButton
+                <CompletePreviewSignupButton
                   buttonText="Generate the code for my new architecture"
                   buttonType={CommitBtnType.JumboButton}
                 />
