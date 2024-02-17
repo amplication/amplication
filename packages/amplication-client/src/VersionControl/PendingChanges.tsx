@@ -15,7 +15,7 @@ import { useCallback, useContext, useState } from "react";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { formatError } from "../util/error";
-import Commit from "./Commit";
+import Commit, { CommitBtnType } from "./Commit";
 import DiscardChanges from "./DiscardChanges";
 
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
@@ -78,7 +78,11 @@ const PendingChanges = ({ projectId }: Props) => {
         margin={EnumFlexItemMargin.Top}
         gap={EnumGapSize.Small}
       >
-        <Commit projectId={projectId} noChanges={noChanges} />
+        <Commit
+          projectId={projectId}
+          noChanges={noChanges}
+          commitBtnType={CommitBtnType.Button}
+        />
 
         <DiscardChanges
           isOpen={discardDialogOpen}

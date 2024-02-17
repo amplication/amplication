@@ -1,5 +1,6 @@
 import {
   Button,
+  ConfirmationDialog,
   Dialog,
   EnumFlexDirection,
   FlexItem,
@@ -87,6 +88,8 @@ export default function ModelOrganizer() {
     mergeNewResourcesChanges,
     redesignMode,
     resetUserAction,
+    clearDuplicateEntityError,
+    errorMessage,
   } = useModelOrganization({
     projectId: currentProject?.id,
     onMessage: showMessage,
@@ -244,7 +247,7 @@ export default function ModelOrganizer() {
       if (currentDropTarget) {
         currentDropTarget.data.isCurrentDropTarget = false;
       }
-      setCurrentDropTarget(null);
+
       setNodes([...nodes]);
     },
     [nodes, currentDropTarget, setNodes, reactFlowInstance, moveNodeToParent]
@@ -316,6 +319,14 @@ export default function ModelOrganizer() {
                 <Button onClick={handleCreateResourceState}>Ok</Button>
               </FlexItem>
             </Dialog>
+            <ConfirmationDialog
+              btnClassName={`${CLASS_NAME}__confirmationDialog`}
+              isOpen={errorMessage !== null}
+              onDismiss={clearDuplicateEntityError}
+              message={errorMessage}
+              confirmButton={{ label: "I understand" }}
+              onConfirm={clearDuplicateEntityError}
+            ></ConfirmationDialog>
             <div className={REACT_FLOW_CLASS_NAME}>
               <ReactFlow
                 onInit={onInit}

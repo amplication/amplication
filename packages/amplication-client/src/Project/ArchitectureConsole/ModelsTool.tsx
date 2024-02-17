@@ -6,15 +6,14 @@ import {
   Icon,
   Tooltip,
 } from "@amplication/ui/design-system";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useState } from "react";
 import { Resource } from "../../models";
 import CreateResource from "./CreateResource";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import { AppContext } from "../../context/appContext";
 
 const DIRECTION = "s";
-const MERGE_CONFIRM_BUTTON = { label: "Fetch updates and merge changes" };
+const MERGE_CONFIRM_BUTTON = { label: "Fetch updates and merge" };
 const MERGE_DISMISS_BUTTON = { label: "Cancel" };
 
 const CONFIRM_DISCARD_BUTTON = { label: "Discard Changes" };
@@ -112,7 +111,7 @@ export default function ModelsTool({
         message={
           <span>
             This action will fetch updates from the server and may override
-            local changes?
+            local changes
           </span>
         }
         onConfirm={handleMergeChangesClick}
