@@ -21,6 +21,10 @@ export const MODULE_ACTION_FIELDS_FRAGMENT = gql`
       isArray
       dtoId
     }
+    restInputSource
+    restInputParamsPropertyName
+    restInputBodyPropertyName
+    restInputQueryPropertyName
     lockedByUserId
     lockedAt
     lockedByUser {

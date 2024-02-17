@@ -19,6 +19,7 @@ import DtoPropertyTypesSelectField from "../ModuleDtoProperty/DtoPropertyTypesSe
 import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
+import ModuleActionRestInputSourceField from "./ModuleActionRestInputSourceField";
 
 type Props = {
   onSubmit: (values: models.ModuleAction) => void;
@@ -120,7 +121,7 @@ const ModuleActionForm = ({
       <Form>
         {!disabled && <FormikAutoSave debounceMS={1000} />}
 
-        <FlexItem>
+        <FlexItem wrap>
           <DisplayNameField
             name="displayName"
             label="Display Name"
@@ -169,7 +170,7 @@ const ModuleActionForm = ({
             subTitle="Settings related to REST API for this action"
           />
 
-          <FlexItem>
+          <FlexItem wrap>
             <RestVerbSelectField
               label={"Method"}
               name={"restVerb"}
@@ -181,6 +182,12 @@ const ModuleActionForm = ({
               disabled={disabled || !isCustomAction}
             />
           </FlexItem>
+          {!(disabled || !isCustomAction) && (
+            <ModuleActionRestInputSourceField
+              isCustomAction={isCustomAction}
+              disabled={disabled}
+            />
+          )}
         </Panel>
 
         <Panel panelStyle={EnumPanelStyle.Transparent}>
