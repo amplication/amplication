@@ -14362,6 +14362,9 @@ import {
   Profile as PrismaProfile,
 } from "@prisma/client";
 
+import { PromoteUserArgs } from "./PromoteUserArgs";
+import { PromoteUserInput } from "./PromoteUserInput";
+
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 

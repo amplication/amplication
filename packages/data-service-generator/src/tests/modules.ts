@@ -122,7 +122,7 @@ const userModuleCustomActions: ModuleAction[] = [
       dtoId: PROMOTE_USER_ARGS_DTO_ID,
     },
     restInputSource: "Split",
-    restInputParamPropertyName: "where",
+    restInputParamsPropertyName: "where",
     restInputBodyPropertyName: "data",
     restInputQueryPropertyName: "query",
   },

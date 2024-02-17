@@ -2,6 +2,7 @@ import {
   ModuleAction,
   ModuleDto,
   PropertyTypeDef,
+  EnumModuleActionRestInputSource,
 } from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
 import {
@@ -21,10 +22,8 @@ const PARAMS_PROPERTY_NAME = "params";
 const QUERY_PROPERTY_NAME = "query";
 const BODY_PROPERTY_NAME = "body";
 
-type InputPropertyType = "Query" | "Param" | "Body";
-
 const INPUT_PROPERTY_TYPE_TO_ID_AND_DECORATOR: Record<
-  string,
+  Exclude<keyof typeof EnumModuleActionRestInputSource, "Split">,
   {
     id: namedTypes.Identifier;
     decorator: namedTypes.Decorator;
@@ -34,7 +33,7 @@ const INPUT_PROPERTY_TYPE_TO_ID_AND_DECORATOR: Record<
     id: builders.identifier(QUERY_PROPERTY_NAME),
     decorator: createControllerQueryDecorator(),
   },
-  Param: {
+  Params: {
     id: builders.identifier(PARAMS_PROPERTY_NAME),
     decorator: createControllerParamDecorator(),
   },
@@ -107,19 +106,19 @@ export function generateControllerCustomActionMethod(
 function prepareInputParameters(action: ModuleAction): namedTypes.Identifier[] {
   const inputParams: namedTypes.Identifier[] = [];
 
-  if (action.restInputSource === "Split") {
+  if (action.restInputSource === EnumModuleActionRestInputSource.Split) {
     inputParams.push(
       prepareInputParameterSplit(
-        "Param",
+        EnumModuleActionRestInputSource.Params,
         action.inputType.dto,
-        action.restInputParamPropertyName,
+        action.restInputParamsPropertyName,
         action
       )
     );
 
     inputParams.push(
       prepareInputParameterSplit(
-        "Query",
+        EnumModuleActionRestInputSource.Query,
         action.inputType.dto,
         action.restInputQueryPropertyName,
         action
@@ -128,7 +127,7 @@ function prepareInputParameters(action: ModuleAction): namedTypes.Identifier[] {
 
     inputParams.push(
       prepareInputParameterSplit(
-        "Body",
+        EnumModuleActionRestInputSource.Body,
         action.inputType.dto,
         action.restInputBodyPropertyName,
         action
@@ -144,7 +143,7 @@ function prepareInputParameters(action: ModuleAction): namedTypes.Identifier[] {
 }
 
 function prepareInputParameterSplit(
-  inputPropertyType: InputPropertyType,
+  inputPropertyType: EnumModuleActionRestInputSource,
   inputDto: ModuleDto,
   propertyName: string,
   action: ModuleAction
@@ -175,7 +174,7 @@ function prepareInputParameterSplit(
 }
 
 function prepareInputParameter(
-  inputPropertyType: InputPropertyType,
+  inputPropertyType: keyof typeof EnumModuleActionRestInputSource,
   typeDefs: PropertyTypeDef[]
 ): namedTypes.Identifier | null {
   const parameterType = createPropTypeFromTypeDefList(typeDefs);
@@ -203,9 +202,9 @@ function prepareActionBody(action: ModuleAction): namedTypes.BlockStatement {
 
   if (action.restInputSource === "Split") {
     parts.push("const args = {");
-    if (action.restInputParamPropertyName) {
+    if (action.restInputParamsPropertyName) {
       parts.push(
-        `${action.restInputParamPropertyName}: ${PARAMS_PROPERTY_NAME},`
+        `${action.restInputParamsPropertyName}: ${PARAMS_PROPERTY_NAME},`
       );
     }
     if (action.restInputQueryPropertyName) {
@@ -220,9 +219,9 @@ function prepareActionBody(action: ModuleAction): namedTypes.BlockStatement {
     parts.push("return this.service.promoteUser(args);");
   } else {
     const argsPropertyName =
-      action.restInputSource === "Param"
+      action.restInputSource === EnumModuleActionRestInputSource.Params
         ? PARAMS_PROPERTY_NAME
-        : action.restInputSource === "Query"
+        : action.restInputSource === EnumModuleActionRestInputSource.Query
         ? QUERY_PROPERTY_NAME
         : BODY_PROPERTY_NAME;
     parts.push(`return this.service.promoteUser(${argsPropertyName});`);
