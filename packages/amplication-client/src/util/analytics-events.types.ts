@@ -109,6 +109,8 @@ export enum AnalyticsEventNames {
   CreateProjectConfiguration = "CreateProjectConfiguration",
   StarUsBannerCTAClick = "StarUsBannerCTAClick",
   StarUsBannerClose = "StarUsBannerClose",
+  MWC2024BannerCTAClick = "MWC2024BannerCTAClick",
+  MWC2024BannerClose = "MWC2024BannerClose",
 
   // Purchase Page
   PricingPageClose = "PricingPageClose",
