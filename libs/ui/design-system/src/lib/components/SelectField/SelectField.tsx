@@ -11,8 +11,10 @@ import Select, {
 } from "react-select";
 import { OptionItem } from "../types";
 import { LABEL_CLASS, LABEL_VALUE_CLASS } from "../constants";
+import { Props as InputToolTipProps } from "../InputTooltip/InputTooltip";
 
 import "./SelectField.scss";
+import { Label } from "../Label/Label";
 
 export type Props = {
   label: string;
@@ -21,6 +23,7 @@ export type Props = {
   isMulti?: boolean;
   isClearable?: boolean;
   disabled?: boolean;
+  inputToolTip?: InputToolTipProps | undefined;
 };
 
 export const SelectField = ({
@@ -30,6 +33,7 @@ export const SelectField = ({
   isMulti,
   isClearable,
   disabled,
+  inputToolTip,
 }: Props) => {
   const [field, meta, { setValue }] = useField<string | string[]>(name);
 
@@ -88,7 +92,7 @@ export const SelectField = ({
       })}
     >
       <label className={LABEL_CLASS}>
-        <span className={LABEL_VALUE_CLASS}>{label}</span>
+        <Label text={label} inputToolTip={inputToolTip} />
         <Select
           components={{ Option: CustomOption }}
           className="select-field__container"
