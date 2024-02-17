@@ -27,12 +27,6 @@ type Props = AppRouteProps & {
 };
 
 const BreakTheMonolithPreviewPage: React.FC<Props> = ({ match }) => {
-  const {
-    workspace: workspaceId,
-    project: projectId,
-    resource: resourceId,
-  } = match.params;
-
   return (
     <Modal open fullScreen>
       <FlexItem

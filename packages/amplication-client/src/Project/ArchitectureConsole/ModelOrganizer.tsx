@@ -98,6 +98,7 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
   } = useModelOrganizer({
     projectId: currentProject?.id,
     onMessage: showMessage,
+    showRelationDetailsOnStartup: restrictedMode,
   });
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);

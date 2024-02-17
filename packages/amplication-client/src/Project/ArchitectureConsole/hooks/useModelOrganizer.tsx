@@ -46,13 +46,18 @@ type TDataStartRedesign = {
 type Props = {
   projectId: string;
   onMessage: (message: string, type: EnumMessageType) => void;
+  showRelationDetailsOnStartup?: boolean;
 };
 
 type RedesignProjectData = {
   redesignProject: models.UserAction;
 };
 
-const useModelOrganizer = ({ projectId, onMessage }: Props) => {
+const useModelOrganizer = ({
+  projectId,
+  onMessage,
+  showRelationDetailsOnStartup = false,
+}: Props) => {
   const { trackEvent } = useTracking();
   const { reloadResources } = useAppContext();
 
@@ -67,7 +72,9 @@ const useModelOrganizer = ({ projectId, onMessage }: Props) => {
   const { resourceSettings } = useResource(currentEditableResourceNode?.id);
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [showRelationDetails, setShowRelationDetails] = useState(false);
+  const [showRelationDetails, setShowRelationDetails] = useState(
+    showRelationDetailsOnStartup
+  );
   const [currentDetailedEdges, setCurrentDetailedEdges] = useEdgesState([]);
   const [currentSimpleEdges, setCurrentSimpleEdges] = useEdgesState([]);
   const [saveDataTimestampTrigger, setSaveDataTimestampTrigger] =
@@ -767,7 +774,7 @@ const useModelOrganizer = ({ projectId, onMessage }: Props) => {
         projectId: projectId,
         nodes: updatedNodes,
         changes: btmChanges,
-        showRelationDetails: false,
+        showRelationDetails: true,
         redesignMode: true,
         refetchChangesOnNextReload: true,
       };
@@ -775,7 +782,6 @@ const useModelOrganizer = ({ projectId, onMessage }: Props) => {
       persistData(savedData);
     },
     [
-      createNewServiceObject,
       currentResourcesData,
       nodes,
       persistData,
