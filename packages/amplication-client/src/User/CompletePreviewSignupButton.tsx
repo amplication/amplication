@@ -38,8 +38,6 @@ export const CompletePreviewSignupButton: React.FC<Props> = ({
 
     trackEvent({
       eventName: AnalyticsEventNames.PreviewUser_GenerateCode,
-      action: "Generate code",
-      eventOriginLocation: "workspace-header-help-menu",
     });
   }, [completeSignup, isOpen, trackEvent]);
 
