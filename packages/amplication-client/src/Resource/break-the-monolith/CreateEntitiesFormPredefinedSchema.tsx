@@ -22,7 +22,8 @@ import { BtmLoader } from "./BtmLoader";
 import "./CreateEntitiesFormPredefinedSchema.scss";
 const CLASS_NAME = "break-the-monolith-options";
 
-const LOADER_TITLE = "Fetching the chosen monolith's schema";
+const LOADER_TITLE =
+  "We are preparing the monolith environment with the selected schema for you.";
 
 type Props = {
   workspaceId: string;
@@ -85,9 +86,7 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
       itemsAlign={EnumItemsAlign.Center}
       contentAlign={EnumContentAlign.Center}
     >
-      {userActionData?.userAction &&
-      userActionData?.userAction?.status !==
-        models.EnumUserActionStatus.Completed ? (
+      {userActionData?.userAction ? (
         <div className={`${CLASS_NAME}__loader`}>
           <BtmLoader title={LOADER_TITLE} />
         </div>
