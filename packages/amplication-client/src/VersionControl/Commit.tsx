@@ -222,12 +222,6 @@ const Commit = ({
                   ></JumboButton>
                 ) : null}
               </LicenseIndicatorContainer>
-              {commitBtnType === CommitBtnType.JumboButton && isPreviewPlan && (
-                <CompletePreviewSignupButton
-                  buttonText="Generate the code for my new architecture"
-                  buttonType={CommitBtnType.JumboButton}
-                />
-              )}
             </Form>
           );
         }}
