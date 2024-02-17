@@ -1,5 +1,5 @@
 import React from "react";
-import { match } from "react-router-dom";
+import { match, useLocation } from "react-router-dom";
 import { Modal } from "@amplication/ui/design-system";
 import { AppRouteProps } from "../../routes/routesUtil";
 
@@ -12,12 +12,16 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const CreateBTMPreviewEnvironmentPage: React.FC<Props> = ({ match }) => {
-  const {
-    workspace: workspaceId,
-    project: projectId,
-    resource: resourceId,
-  } = match.params;
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
+const SelectPreviewEnvPage: React.FC<Props> = ({ match }) => {
+  const query = useQuery();
+
+  const resourceId = query.get("resourceId");
+  const projectId = query.get("projectId");
+  const workspaceId = query.get("workspaceId");
 
   return (
     <Modal open fullScreen>
@@ -30,4 +34,4 @@ const CreateBTMPreviewEnvironmentPage: React.FC<Props> = ({ match }) => {
   );
 };
 
-export default CreateBTMPreviewEnvironmentPage;
+export default SelectPreviewEnvPage;
