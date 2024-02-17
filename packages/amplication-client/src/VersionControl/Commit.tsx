@@ -25,7 +25,6 @@ import {
   LicenseIndicatorContainer,
   LicensedResourceType,
 } from "../Components/LicenseIndicatorContainer";
-import { CompletePreviewSignupButton } from "../User/CompletePreviewSignupButton";
 
 type TCommit = {
   message: string;
@@ -88,7 +87,6 @@ const Commit = ({
     resetPendingChanges,
     setPendingChangesError,
     currentWorkspace,
-    isPreviewPlan,
     currentProject,
     commitUtils,
   } = useContext(AppContext);
@@ -212,8 +210,7 @@ const Commit = ({
                   >
                     {noChanges ? "Rebuild" : "Commit changes & build "}
                   </Button>
-                ) : commitBtnType === CommitBtnType.JumboButton &&
-                  !isPreviewPlan ? (
+                ) : commitBtnType === CommitBtnType.JumboButton ? (
                   <JumboButton
                     text="Generate the code for my new architecture"
                     icon="pending_changes"
