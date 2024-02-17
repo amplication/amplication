@@ -9615,6 +9615,7 @@ export { OrganizationUpdateManyWithoutUsersInput as OrganizationUpdateManyWithou
   "server/src/user/base/PromoteUserArgs.ts": "import { ObjectType, Field } from "@nestjs/graphql";
 import { PromoteUserInput } from "./PromoteUserInput";
 import { Type } from "class-transformer";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 
 @ObjectType()
 class PromoteUserArgs {
@@ -9623,6 +9624,14 @@ class PromoteUserArgs {
     })
     @Type(() => PromoteUserInput)
     data?: PromoteUserInput;
+
+    @Field(() => UserWhereUniqueInput)
+    @Type(() => UserWhereUniqueInput)
+    where!: UserWhereUniqueInput;
+
+    @Field(() => UserWhereUniqueInput)
+    @Type(() => UserWhereUniqueInput)
+    query!: UserWhereUniqueInput;
 }
 
 export { PromoteUserArgs as PromoteUserArgs };",
@@ -9634,20 +9643,20 @@ import { InputJsonValue } from "../../types";
 @ObjectType()
 class PromoteUserInput {
     @Field(() => [String])
-    @Type(() => [String])
-    userId: string[];
+    @Type(() => String)
+    userId!: string[];
 
     @Field(() => Number)
     @Type(() => Number)
-    score: number;
+    score!: number;
 
     @Field(() => Boolean)
     @Type(() => Boolean)
-    isAdmin: boolean;
+    isAdmin!: boolean;
 
     @Field(() => Date)
     @Type(() => Date)
-    lastLogin: Date;
+    lastLogin!: Date;
 
     @Field(() => Number, {
         nullable: true
@@ -9669,7 +9678,7 @@ class PromoteUserInput {
     @Field(() => [PromoteUserInput], {
         nullable: true
     })
-    @Type(() => [PromoteUserInput])
+    @Type(() => PromoteUserInput)
     selfReferenceArray?: PromoteUserInput[];
 }
 
@@ -11071,6 +11080,8 @@ import { UserFindManyArgs } from "./UserFindManyArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { Profile } from "../../profile/base/Profile";
+import { PromoteUserArgs } from "./PromoteUserArgs";
+import { PromoteUserInput } from "./PromoteUserInput";
 import { UserService } from "../user.service";
 @graphql.Resolver(() => User)
 export class UserResolverBase {
@@ -11200,6 +11211,38 @@ export class UserResolverBase {
     }
     return result;
   }
+
+  @graphql.Mutation(() => [PromoteUserInput])
+  async promoteUser(
+    @graphql.Args()
+    args: PromoteUserArgs
+  ): Promise<PromoteUserInput[]> {
+    return this.service.promoteUser(args);
+  }
+
+  @graphql.Mutation(() => Boolean)
+  async sendPasswordResetEmail(
+    @graphql.Args()
+    args: PromoteUserInput
+  ): Promise<boolean> {
+    return this.service.sendPasswordResetEmail(args);
+  }
+
+  @graphql.Query(() => PromoteUserInput)
+  async resendInviteEmail(
+    @graphql.Args()
+    args: PromoteUserInput
+  ): Promise<PromoteUserInput> {
+    return this.service.resendInviteEmail(args);
+  }
+
+  @graphql.Mutation(() => PromoteUserInput)
+  async softDeleteUser(
+    @graphql.Args()
+    args: PromoteUserInput
+  ): Promise<PromoteUserInput> {
+    return this.service.softDeleteUser(args);
+  }
 }
 ",
   "server/src/user/base/user.service.base.ts": "/*
@@ -11221,6 +11264,9 @@ import {
   Organization as PrismaOrganization,
   Profile as PrismaProfile,
 } from "@prisma/client";
+
+import { PromoteUserArgs } from "./PromoteUserArgs";
+import { PromoteUserInput } from "./PromoteUserInput";
 
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -11294,7 +11340,7 @@ export class UserServiceBase {
       })
       .profile();
   }
-  async promoteUser(args: string): Promise<PromoteUserInput[]> {
+  async promoteUser(args: PromoteUserArgs): Promise<PromoteUserInput[]> {
     throw new Error("Not implemented");
   }
   async sendPasswordResetEmail(args: PromoteUserInput): Promise<boolean> {

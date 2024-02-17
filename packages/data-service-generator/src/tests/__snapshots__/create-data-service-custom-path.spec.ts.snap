@@ -12024,6 +12024,7 @@ export { OrganizationUpdateManyWithoutUsersInput as OrganizationUpdateManyWithou
 import { PromoteUserInput } from "./PromoteUserInput";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 
 @ObjectType()
 class PromoteUserArgs {
@@ -12036,6 +12037,22 @@ class PromoteUserArgs {
     })
     @Type(() => PromoteUserInput)
     data?: PromoteUserInput;
+
+    @Field(() => UserWhereUniqueInput)
+    @ApiProperty({
+        required: true,
+        type: () => UserWhereUniqueInput
+    })
+    @Type(() => UserWhereUniqueInput)
+    where!: UserWhereUniqueInput;
+
+    @Field(() => UserWhereUniqueInput)
+    @ApiProperty({
+        required: true,
+        type: () => UserWhereUniqueInput
+    })
+    @Type(() => UserWhereUniqueInput)
+    query!: UserWhereUniqueInput;
 }
 
 export { PromoteUserArgs as PromoteUserArgs };",
@@ -12052,8 +12069,8 @@ class PromoteUserInput {
         required: true,
         type: () => [String]
     })
-    @Type(() => [String])
-    userId: string[];
+    @Type(() => String)
+    userId!: string[];
 
     @Field(() => Number)
     @ApiProperty({
@@ -12061,7 +12078,7 @@ class PromoteUserInput {
         type: () => Number
     })
     @Type(() => Number)
-    score: number;
+    score!: number;
 
     @Field(() => Boolean)
     @ApiProperty({
@@ -12069,11 +12086,11 @@ class PromoteUserInput {
         type: () => Boolean
     })
     @Type(() => Boolean)
-    isAdmin: boolean;
+    isAdmin!: boolean;
 
     @Field(() => Date)
     @Type(() => Date)
-    lastLogin: Date;
+    lastLogin!: Date;
 
     @Field(() => Number, {
         nullable: true
@@ -12107,7 +12124,7 @@ class PromoteUserInput {
         required: false,
         type: () => [PromoteUserInput]
     })
-    @Type(() => [PromoteUserInput])
+    @Type(() => PromoteUserInput)
     selfReferenceArray?: PromoteUserInput[];
 }
 
@@ -13700,6 +13717,7 @@ import { UserFindManyArgs } from "./UserFindManyArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { OrganizationWhereUniqueInput } from "../../organization/base/OrganizationWhereUniqueInput";
+import { PromoteUserInput } from "./PromoteUserInput";
 
 export class UserControllerBase {
   constructor(protected readonly service: UserService) {}
@@ -14037,6 +14055,83 @@ export class UserControllerBase {
       select: { id: true },
     });
   }
+
+  @common.Post("/:id/promote")
+  @swagger.ApiOkResponse({
+    type: PromoteUserInput,
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
+  async promoteUser(
+    @common.Param()
+    params: UserWhereUniqueInput,
+    @common.Query()
+    query: UserWhereUniqueInput,
+    @common.Body()
+    body: PromoteUserInput
+  ): Promise<PromoteUserInput[]> {
+    const args = {
+      where: params,
+      query: query,
+      data: body,
+    };
+    return this.service.promoteUser(args);
+  }
+
+  @common.Patch("/:id/sendPasswordResetEmail")
+  @swagger.ApiOkResponse({
+    type: Boolean,
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
+  async sendPasswordResetEmail(
+    @common.Body()
+    body: PromoteUserInput
+  ): Promise<boolean> {
+    return this.service.promoteUser(body);
+  }
+
+  @common.Get("/:id/resendInviteEmail")
+  @swagger.ApiOkResponse({
+    type: PromoteUserInput,
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
+  async resendInviteEmail(
+    @common.Body()
+    body: PromoteUserInput
+  ): Promise<PromoteUserInput> {
+    return this.service.promoteUser(body);
+  }
+
+  @common.Delete("/:id/softDeleteUser")
+  @swagger.ApiOkResponse({
+    type: PromoteUserInput,
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
+  async softDeleteUser(
+    @common.Body()
+    body: PromoteUserInput
+  ): Promise<PromoteUserInput> {
+    return this.service.promoteUser(body);
+  }
 }
 ",
   "test/src/user/base/user.module.base.ts": "/*
@@ -14082,6 +14177,8 @@ import { UserFindManyArgs } from "./UserFindManyArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { Profile } from "../../profile/base/Profile";
+import { PromoteUserArgs } from "./PromoteUserArgs";
+import { PromoteUserInput } from "./PromoteUserInput";
 import { UserService } from "../user.service";
 @graphql.Resolver(() => User)
 export class UserResolverBase {
@@ -14211,6 +14308,38 @@ export class UserResolverBase {
     }
     return result;
   }
+
+  @graphql.Mutation(() => [PromoteUserInput])
+  async promoteUser(
+    @graphql.Args()
+    args: PromoteUserArgs
+  ): Promise<PromoteUserInput[]> {
+    return this.service.promoteUser(args);
+  }
+
+  @graphql.Mutation(() => Boolean)
+  async sendPasswordResetEmail(
+    @graphql.Args()
+    args: PromoteUserInput
+  ): Promise<boolean> {
+    return this.service.sendPasswordResetEmail(args);
+  }
+
+  @graphql.Query(() => PromoteUserInput)
+  async resendInviteEmail(
+    @graphql.Args()
+    args: PromoteUserInput
+  ): Promise<PromoteUserInput> {
+    return this.service.resendInviteEmail(args);
+  }
+
+  @graphql.Mutation(() => PromoteUserInput)
+  async softDeleteUser(
+    @graphql.Args()
+    args: PromoteUserInput
+  ): Promise<PromoteUserInput> {
+    return this.service.softDeleteUser(args);
+  }
 }
 ",
   "test/src/user/base/user.service.base.ts": "/*
@@ -14232,6 +14361,9 @@ import {
   Organization as PrismaOrganization,
   Profile as PrismaProfile,
 } from "@prisma/client";
+
+import { PromoteUserArgs } from "./PromoteUserArgs";
+import { PromoteUserInput } from "./PromoteUserInput";
 
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -14305,7 +14437,7 @@ export class UserServiceBase {
       })
       .profile();
   }
-  async promoteUser(args: string): Promise<PromoteUserInput[]> {
+  async promoteUser(args: PromoteUserArgs): Promise<PromoteUserInput[]> {
     throw new Error("Not implemented");
   }
   async sendPasswordResetEmail(args: PromoteUserInput): Promise<boolean> {
