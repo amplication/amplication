@@ -9,7 +9,7 @@ import {
   SelectMenuModal,
   Tooltip,
 } from "@amplication/ui/design-system";
-import { useApolloClient, useMutation, useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client";
 import {
   ButtonTypeEnum,
   IMessage,
@@ -53,8 +53,7 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
 import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
 import { FeatureIndicator } from "../../Components/FeatureIndicator";
-import { CompleteSignupDialog } from "../../Components/CompleteSignupDialog";
-import { COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL } from "../../User/UserQueries";
+import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -88,8 +87,6 @@ const WorkspaceHeader: React.FC = () => {
   const { currentWorkspace, currentProject, openHubSpotChat } =
     useContext(AppContext);
   const upgradeButtonData = useUpgradeButtonData(currentWorkspace);
-
-  const [completeSignup] = useMutation(COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL);
 
   const { data } = useQuery(GET_CONTACT_US_LINK, {
     variables: { id: currentWorkspace.id },
@@ -164,16 +161,6 @@ const WorkspaceHeader: React.FC = () => {
       eventOriginLocation: "workspace-header-help-menu",
     });
   }, [openHubSpotChat]);
-
-  const handleGenerateCodeClick = useCallback(() => {
-    completeSignup();
-    setShowCompleteSignupDialog(!showCompleteSignupDialog);
-    trackEvent({
-      eventName: AnalyticsEventNames.HelpMenuItemClick,
-      action: "Generate code",
-      eventOriginLocation: "workspace-header-help-menu",
-    });
-  }, [completeSignup, showCompleteSignupDialog, trackEvent]);
 
   const handleItemDataClicked = useCallback(
     (itemData: ItemDataCommand) => {
@@ -278,29 +265,11 @@ const WorkspaceHeader: React.FC = () => {
               upgradeButtonData.isPreviewPlan &&
               !upgradeButtonData.showUpgradeDefaultButton && (
                 <>
-                  <Dialog
-                    className="new-entity-dialog"
-                    isOpen={showCompleteSignupDialog}
-                    onDismiss={handleShowCompleteSignupDialog}
-                    title="Generate your Code"
-                  >
-                    <CompleteSignupDialog
-                      handleDialogClose={handleShowCompleteSignupDialog}
-                    />
-                  </Dialog>
                   <FeatureIndicator
                     featureName={BillingFeature.CodeGenerationBuilds}
                     text="Generate production-ready code for this architecture with just a few simple clicks"
                     linkText=""
-                    element={
-                      <Button
-                        className={`${CLASS_NAME}__upgrade__btn`}
-                        buttonStyle={EnumButtonStyle.Primary}
-                        onClick={handleGenerateCodeClick}
-                      >
-                        Generate the code
-                      </Button>
-                    }
+                    element={<CompletePreviewSignupButton />}
                   />
                   <Button
                     className={`${CLASS_NAME}__upgrade__btn`}
