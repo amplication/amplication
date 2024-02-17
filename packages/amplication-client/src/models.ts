@@ -784,6 +784,13 @@ export enum EnumModuleActionGqlOperation {
   Query = 'Query'
 }
 
+export enum EnumModuleActionRestInputSource {
+  Body = 'Body',
+  Params = 'Params',
+  Query = 'Query',
+  Split = 'Split'
+}
+
 export enum EnumModuleActionRestVerb {
   Delete = 'Delete',
   Get = 'Get',
@@ -1097,6 +1104,10 @@ export type ModuleAction = IBlock & {
   parentBlockId?: Maybe<Scalars['String']['output']>;
   path?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
+  restInputBodyPropertyName?: Maybe<Scalars['String']['output']>;
+  restInputParamsPropertyName?: Maybe<Scalars['String']['output']>;
+  restInputQueryPropertyName?: Maybe<Scalars['String']['output']>;
+  restInputSource?: Maybe<EnumModuleActionRestInputSource>;
   restVerb: EnumModuleActionRestVerb;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
@@ -1130,6 +1141,10 @@ export type ModuleActionUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   outputType?: InputMaybe<PropertyTypeDefInput>;
   path?: InputMaybe<Scalars['String']['input']>;
+  restInputBodyPropertyName?: InputMaybe<Scalars['String']['input']>;
+  restInputParamsPropertyName?: InputMaybe<Scalars['String']['input']>;
+  restInputQueryPropertyName?: InputMaybe<Scalars['String']['input']>;
+  restInputSource?: InputMaybe<EnumModuleActionRestInputSource>;
   restVerb?: InputMaybe<EnumModuleActionRestVerb>;
 };
 

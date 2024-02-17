@@ -3,6 +3,7 @@ import { BlockUpdateInput } from "../../block/dto/BlockUpdateInput";
 import { EnumModuleActionGqlOperation } from "./EnumModuleActionGqlOperation";
 import { EnumModuleActionRestVerb } from "./EnumModuleActionRestVerb";
 import { PropertyTypeDef } from "../../moduleDto/dto/propertyTypes/PropertyTypeDef";
+import { EnumModuleActionRestInputSource } from "./EnumModuleActionRestInputSource";
 
 @InputType({
   isAbstract: true,
@@ -42,4 +43,24 @@ export class ModuleActionUpdateInput extends BlockUpdateInput {
     nullable: true,
   })
   outputType?: PropertyTypeDef;
+
+  @Field(() => EnumModuleActionRestInputSource, {
+    nullable: true,
+  })
+  restInputSource?: keyof typeof EnumModuleActionRestInputSource;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  restInputParamsPropertyName?: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  restInputBodyPropertyName?: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  restInputQueryPropertyName?: string;
 }

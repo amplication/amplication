@@ -745,6 +745,13 @@ enum EnumModuleActionGqlOperation {
   Query
 }
 
+enum EnumModuleActionRestInputSource {
+  Body
+  Params
+  Query
+  Split
+}
+
 enum EnumModuleActionRestVerb {
   Delete
   Get
@@ -753,6 +760,7 @@ enum EnumModuleActionRestVerb {
   Patch
   Post
   Put
+  Trace
 }
 
 enum EnumModuleActionType {
@@ -1067,6 +1075,10 @@ type ModuleAction implements IBlock {
   parentBlockId: String
   path: String
   resourceId: String
+  restInputBodyPropertyName: String
+  restInputParamsPropertyName: String
+  restInputQueryPropertyName: String
+  restInputSource: EnumModuleActionRestInputSource
   restVerb: EnumModuleActionRestVerb!
   updatedAt: DateTime!
   versionNumber: Float!
@@ -1100,6 +1112,10 @@ input ModuleActionUpdateInput {
   name: String
   outputType: PropertyTypeDefInput
   path: String
+  restInputBodyPropertyName: String
+  restInputParamsPropertyName: String
+  restInputQueryPropertyName: String
+  restInputSource: EnumModuleActionRestInputSource
   restVerb: EnumModuleActionRestVerb
 }
 

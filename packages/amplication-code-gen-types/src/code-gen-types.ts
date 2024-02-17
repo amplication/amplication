@@ -14,6 +14,7 @@ export {
   EnumModuleActionGqlOperation,
   EnumModuleActionRestVerb,
   EnumModuleDtoPropertyType,
+  EnumModuleActionRestInputSource,
 } from "./models";
 
 export type ServiceSettings = Omit<
@@ -294,7 +295,13 @@ export type ModuleContainer = BlockOmittedFields<models.Module>;
 
 export type ModuleAction = Omit<
   BlockOmittedFields<models.ModuleAction>,
-  "id" | "actionType" | "restVerb" | "gqlOperation" | "inputType" | "outputType"
+  | "id"
+  | "actionType"
+  | "restVerb"
+  | "gqlOperation"
+  | "inputType"
+  | "outputType"
+  | "restInputSource"
 > & {
   id?: string;
   displayName: string;
@@ -304,10 +311,7 @@ export type ModuleAction = Omit<
   gqlOperation: keyof typeof models.EnumModuleActionGqlOperation;
   inputType?: PropertyTypeDef;
   outputType?: PropertyTypeDef;
-  restInputSource?: "Query" | "Param" | "Body" | "Split";
-  restInputParamPropertyName?: string;
-  restInputBodyPropertyName?: string;
-  restInputQueryPropertyName?: string;
+  restInputSource?: keyof typeof models.EnumModuleActionRestInputSource;
 };
 
 export type ModuleDtoProperty = Omit<
