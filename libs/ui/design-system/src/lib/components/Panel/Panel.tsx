@@ -15,6 +15,7 @@ export enum EnumPanelStyle {
   Transparent = "transparent",
   Bordered = "bordered",
   Bold = "bold",
+  Surface = "surface",
 }
 
 export type Props = {
@@ -27,6 +28,7 @@ export type Props = {
   clickable?: boolean;
   themeColor?: EnumTextColor;
   onClick?: (event: any) => void;
+  nonClickableFooter?: ReactNode;
 };
 
 export const Panel = React.forwardRef(
@@ -39,31 +41,42 @@ export const Panel = React.forwardRef(
       style,
       clickable,
       themeColor = undefined,
+      nonClickableFooter = undefined,
       onClick,
     }: Props,
     ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
-        onClick={onClick}
         style={{
           ...style,
           "--theme-border-color": themeColor //set the css variable to the theme color to be used from the css file
             ? `var(--${themeColor})`
             : undefined,
         }}
-        role={clickable ? "button" : undefined}
         className={classNames(
           "amp-panel",
           className,
           `amp-panel--${panelStyle}`,
           { "amp-panel--clickable": clickable },
           { "amp-panel--shadow": shadow },
-          { "amp-panel--with-theme-border": !!themeColor }
+          { "amp-panel--with-theme-border": !!themeColor },
+          { "amp-panel--with-non-clickable-footer": !!nonClickableFooter }
         )}
         ref={ref}
       >
-        {children}
+        <div
+          className="amp-panel__content"
+          onClick={onClick}
+          role={clickable ? "button" : undefined}
+        >
+          {children}
+        </div>
+        {nonClickableFooter && (
+          <div className="amp-panel__non-clickable-footer">
+            {nonClickableFooter}
+          </div>
+        )}
       </div>
     );
   }
