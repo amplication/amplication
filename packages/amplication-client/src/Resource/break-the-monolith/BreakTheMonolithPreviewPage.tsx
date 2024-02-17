@@ -61,7 +61,7 @@ const BreakTheMonolithPreviewPage: React.FC<Props> = ({ match }) => {
           </div>
           <BtmButton
             location={EnumButtonLocation.PreviewBtm}
-            openInFullScreen={false}
+            openInFullScreen
             autoRedirectAfterCompletion
             ButtonStyle={EnumButtonStyle.GradientFull}
           />
