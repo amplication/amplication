@@ -2,7 +2,8 @@
 
 $expandable-bottom-max-height: 200px;
 $expandable-transition-duration: 0.1s;
-
+$theme-border-height: 5px;
+$theme-border-expand: 1px;
 .amp-panel {
   background: var(--panel-background);
   border-radius: var(--default-border-radius);
@@ -38,6 +39,21 @@ $expandable-transition-duration: 0.1s;
     padding: var(--large-spacing);
   }
 
+  &--with-theme-border {
+    border-top: $theme-border-height solid var(--border-color);
+    position: relative;
+    &:after {
+      content: "";
+      position: absolute;
+      top: -$theme-border-height;
+      left: -$theme-border-expand;
+      width: calc(100% + 2 * $theme-border-expand);
+      height: $theme-border-height;
+      border-top-left-radius: var(--default-border-radius);
+      border-top-right-radius: var(--default-border-radius);
+      background-color: var(--theme-border-color);
+    }
+  }
   &--clickable {
     cursor: pointer;
     &:hover {
