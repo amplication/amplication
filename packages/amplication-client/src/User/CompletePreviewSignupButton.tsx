@@ -19,11 +19,6 @@ type Props = {
   buttonType?: CommitBtnType;
 };
 
-const buttonTypeToAnalyticsEvent: Record<CommitBtnType, AnalyticsEventNames> = {
-  [CommitBtnType.Button]: AnalyticsEventNames.GenerateCode_workspace_header,
-  [CommitBtnType.JumboButton]: AnalyticsEventNames.GenerateCode_apply_redesign,
-};
-
 export const CompletePreviewSignupButton: React.FC<Props> = ({
   buttonText = "Generate the code",
   buttonType = CommitBtnType.Button,
@@ -42,11 +37,11 @@ export const CompletePreviewSignupButton: React.FC<Props> = ({
     setIsOpen(!isOpen);
 
     trackEvent({
-      eventName: buttonTypeToAnalyticsEvent[buttonType],
+      eventName: AnalyticsEventNames.PreviewUser_GenerateCode,
       action: "Generate code",
       eventOriginLocation: "workspace-header-help-menu",
     });
-  }, [buttonType, completeSignup, isOpen, trackEvent]);
+  }, [completeSignup, isOpen, trackEvent]);
 
   return (
     <>

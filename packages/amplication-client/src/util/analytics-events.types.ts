@@ -162,7 +162,5 @@ export enum AnalyticsEventNames {
   ModelOrganizer_MoveEntity = "ModelOrganizer_MoveEntity",
 
   // break the monolith preview user
-  // TODO: check with Yuval or Paz if these are the correct names
-  GenerateCode_workspace_header = "GenerateCode_workspace_header",
-  GenerateCode_apply_redesign = "GenerateCode_apply_redesign",
+  PreviewUser_GenerateCode = "PreviewUser_GenerateCode",
 }
