@@ -47,6 +47,7 @@ type Props = {
   projectId: string;
   onMessage: (message: string, type: EnumMessageType) => void;
   showRelationDetailsOnStartup?: boolean;
+  headlessMode?: boolean;
 };
 
 type RedesignProjectData = {
@@ -57,6 +58,7 @@ const useModelOrganizer = ({
   projectId,
   onMessage,
   showRelationDetailsOnStartup = false,
+  headlessMode = false,
 }: Props) => {
   const { trackEvent } = useTracking();
   const { reloadResources } = useAppContext();
@@ -681,7 +683,7 @@ const useModelOrganizer = ({
   }, [projectId]);
 
   useEffect(() => {
-    if (refetchAfterLoadingCompleted) {
+    if (refetchAfterLoadingCompleted && !headlessMode) {
       if (
         currentEditableResourceNode &&
         nodes &&
@@ -699,6 +701,7 @@ const useModelOrganizer = ({
     mergeNewResourcesChanges,
     nodes,
     refetchAfterLoadingCompleted,
+    headlessMode,
   ]);
 
   useEffect(() => {
