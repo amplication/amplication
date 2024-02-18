@@ -55,6 +55,7 @@ const BreakTheMonolith: React.FC<Props> = ({
   const { saveBreakTheMonolithResultsIntoState } = useModelOrganizer({
     projectId: currentProject?.id,
     onMessage: () => {},
+    headlessMode: true,
   });
 
   const hasError = Boolean(error);
