@@ -8,6 +8,7 @@ import {
   SelectMenuList,
   SelectMenuModal,
   Text,
+  Button,
 } from "@amplication/ui/design-system";
 import { BillingFeature } from "@amplication/util-billing-types";
 import React from "react";
@@ -39,7 +40,7 @@ const RedesignResourceButton: React.FC<Props> = ({
         fullEnterpriseText="Redesign your system architecture by breaking a monolith Service into microservices"
         render={({ disabled, icon }) => (
           <>
-            {
+            {resources.length > 1 ? (
               <SelectMenu
                 icon={icon}
                 title="Redesign"
@@ -70,7 +71,18 @@ const RedesignResourceButton: React.FC<Props> = ({
                   </SelectMenuList>
                 </SelectMenuModal>
               </SelectMenu>
-            }
+            ) : (
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                icon={icon}
+                disabled={resources.length === 0}
+                onClick={() => {
+                  onSelectResource(resources[0]);
+                }}
+              >
+                Redesign
+              </Button>
+            )}
           </>
         )}
       ></FeatureIndicatorContainer>

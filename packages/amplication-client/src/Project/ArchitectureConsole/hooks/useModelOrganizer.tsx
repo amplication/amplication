@@ -30,6 +30,7 @@ import { useAppContext } from "../../../context/appContext";
 import { useTracking } from "../../../util/analytics";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { EnumUserActionStatus } from "../../../models";
+import useResource from "../../../Resource/hooks/useResource";
 
 type TData = {
   resources: models.Resource[];
@@ -62,6 +63,8 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
   const [currentEditableResourceNode, setCurrentEditableResourceNode] =
     useState<ResourceNode>(null);
 
+  const { resourceSettings } = useResource(currentEditableResourceNode?.id);
+
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [showRelationDetails, setShowRelationDetails] = useState(false);
   const [currentDetailedEdges, setCurrentDetailedEdges] = useEdgesState([]);
@@ -70,8 +73,8 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     useState<Date>(null);
 
   const [redesignMode, setRedesignMode] = useState<boolean>(false);
-  const [duplicateEntityError, setDuplicateEntityError] =
-    useState<boolean>(false);
+
+  const [errorMessage, setErrorMessage] = useState<string>(null);
 
   const [userAction, setUserAction] = useState<models.UserAction>(null);
   const { data: applyChangesResults } = useUserActionWatchStatus(userAction);
@@ -274,6 +277,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
   const prepareCurrentEditableResourceNodesData = useCallback(
     (nodes: Node[], resource: models.Resource) => {
       let selectedResourceNode: ResourceNode;
+
       nodes.forEach((node) => {
         if (node.data.originalParentNode === resource.id) {
           node.draggable = true;
@@ -494,8 +498,8 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
   );
 
   const clearDuplicateEntityError = useCallback(() => {
-    setDuplicateEntityError(false);
-  }, [setDuplicateEntityError]);
+    setErrorMessage(null);
+  }, [setErrorMessage]);
 
   const createNewTempService = useCallback(
     async (newResource: models.Resource) => {
@@ -563,16 +567,29 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
           (x) => x.entityId !== node.id
         );
 
+        const authEntity =
+          resourceSettings?.serviceSettings?.authEntityName ===
+          currentNode.data.payload.name;
+
         if (
-          duplicatedEntityName &&
+          (duplicatedEntityName || authEntity) &&
           currentNode.data.originalParentNode !== currentNode.parentNode
         ) {
+          const baseErrorMessage = `Cannot move entity to service: ${currentTargetResource.data.payload?.name}`;
           currentNode.parentNode = currentNode.data.originalParentNode;
+          if (authEntity) {
+            setErrorMessage(
+              `${baseErrorMessage} because the authentication entity cannot be deleted.`
+            );
+          } else {
+            setErrorMessage(
+              `${baseErrorMessage} because the entity name already exists.`
+            );
+          }
 
-          setDuplicateEntityError(true);
           return;
         } else {
-          setDuplicateEntityError(false);
+          setErrorMessage(null);
         }
 
         if (currentNode.data.originalParentNode !== currentNode.parentNode) {
@@ -609,7 +626,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       showRelationDetails,
       changes,
       saveToPersistentData,
-      setDuplicateEntityError,
+      setErrorMessage,
     ]
   );
 
@@ -681,7 +698,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     resetUserAction,
     clearDuplicateEntityError,
     redesignMode,
-    duplicateEntityError,
+    errorMessage,
   };
 };
 
