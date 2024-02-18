@@ -8,6 +8,7 @@ import {
   EnumItemsAlign,
   FlexItem,
   SearchField,
+  Tooltip,
 } from "@amplication/ui/design-system";
 import {
   EnumFlexDirection,
@@ -142,13 +143,19 @@ export default function ModelOrganizerToolbar({
           contentAlign={EnumContentAlign.Start}
           direction={EnumFlexDirection.Row}
         >
-          {!restrictedMode && (
-            <SearchField
-              label="search"
-              placeholder="search"
-              onChange={handleSearchPhraseChanged}
-            />
-          )}
+          <Tooltip
+            aria-label="search for service and entities. Results are highlighted"
+            noDelay
+            direction="se"
+          >
+            {!restrictedMode && (
+              <SearchField
+                label=""
+                placeholder="search"
+                onChange={handleSearchPhraseChanged}
+              />
+            )}
+          </Tooltip>
         </FlexItem>
 
         <FlexEnd>

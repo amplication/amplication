@@ -473,37 +473,23 @@ const useModelOrganizer = ({
 
   const searchPhraseChanged = useCallback(
     (searchPhrase: string) => {
-      if (searchPhrase === "") {
-        nodes.forEach((x) => (x.hidden = false));
-        edges.forEach((e) => (e.hidden = false));
-      } else {
-        const searchModelGroupNodes = nodes.filter(
-          (node) =>
-            node.type === "modelGroup" &&
-            !node.data.payload.name.includes(searchPhrase) &&
-            node.id !== currentEditableResourceNode?.id
+      nodes.forEach((x) => (x.data.highlight = false));
+
+      if (searchPhrase !== "") {
+        const searchResults = nodes.filter((node) =>
+          node.data.payload.name
+            .toLowerCase()
+            .includes(searchPhrase.toLowerCase())
         );
 
-        searchModelGroupNodes.forEach((x) => {
-          x.hidden = true;
-          const childrenNodes = nodes.filter(
-            (node: EntityNode) => node.parentNode === x.id
-          );
-
-          childrenNodes.forEach((x) => (x.hidden = true));
-
-          const nodeEdges = edges.filter((e) => {
-            return childrenNodes.find((n) => e.source === n.id);
-          });
-
-          nodeEdges.forEach((x) => (x.hidden = true));
+        searchResults.forEach((searchedNode) => {
+          searchedNode.data.highlight = true;
         });
       }
 
       setNodes((nodes) => [...nodes]);
-      setEdges((edges) => [...edges]);
     },
-    [setEdges, nodes, edges, currentEditableResourceNode?.id]
+    [nodes]
   );
 
   const modelGroupFilterChanged = useCallback(

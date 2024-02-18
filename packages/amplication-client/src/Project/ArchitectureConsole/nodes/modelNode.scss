@@ -35,6 +35,14 @@
     border-color: var(--theme-turquoise);
   }
 
+  &--highlight {
+    .model-node__header {
+      .amp-text {
+        color: var(--theme-orange) !important;
+      }
+    }
+  }
+
   &__header {
     border-bottom: $border-dark;
     padding-bottom: var(--default-spacing);
