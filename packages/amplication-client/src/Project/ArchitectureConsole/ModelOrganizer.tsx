@@ -330,7 +330,6 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
               </FlexItem>
             </Dialog>
             <ConfirmationDialog
-              btnClassName={`${CLASS_NAME}__confirmationDialog`}
               isOpen={errorMessage !== null}
               onDismiss={clearDuplicateEntityError}
               message={errorMessage}

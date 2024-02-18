@@ -590,9 +590,10 @@ const useModelOrganizer = ({
           (x) => x.entityId !== node.id
         );
 
+        const currentEntityName = currentNode.data.payload.name;
         const authEntity =
           resourceSettings?.serviceSettings?.authEntityName ===
-          currentNode.data.payload.name;
+          currentEntityName;
 
         if (
           (duplicatedEntityName || authEntity) &&
@@ -602,11 +603,11 @@ const useModelOrganizer = ({
           currentNode.parentNode = currentNode.data.originalParentNode;
           if (authEntity) {
             setErrorMessage(
-              `${baseErrorMessage} because the authentication entity cannot be deleted.`
+              `Cannot move the Service authentication entity: ${currentEntityName}`
             );
           } else {
             setErrorMessage(
-              `${baseErrorMessage} because the entity name already exists.`
+              `${baseErrorMessage} because the entity name already exists`
             );
           }
 
