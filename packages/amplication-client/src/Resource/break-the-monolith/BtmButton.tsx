@@ -34,7 +34,7 @@ type Props = {
   autoRedirectAfterCompletion?: boolean;
   ButtonStyle?: EnumButtonStyle;
   buttonText?: string;
-  resource?: Resource;
+  resourceToBreak?: Resource;
 };
 
 export const BtmButton: React.FC<Props> = ({
@@ -43,7 +43,7 @@ export const BtmButton: React.FC<Props> = ({
   autoRedirectAfterCompletion = false,
   ButtonStyle = EnumButtonStyle.GradientOutline,
   buttonText = "Break the Monolith",
-  resource,
+  resourceToBreak,
 }) => {
   const { currentResource, resources } = useAppContext();
   const { trackEvent } = useTracking();
@@ -64,16 +64,25 @@ export const BtmButton: React.FC<Props> = ({
       trackEvent({
         eventName: AnalyticsEventNames.StartBreakTheMonolithClick,
         serviceName:
-          selectedResource?.name ?? currentResource?.name ?? resource.name,
+          selectedResource?.name ??
+          currentResource?.name ??
+          resourceToBreak?.name,
         location,
       });
     },
-    [currentResource, location, selectedResource, toggleIsOpen, trackEvent]
+    [
+      currentResource?.name,
+      location,
+      resourceToBreak?.name,
+      selectedResource?.name,
+      toggleIsOpen,
+      trackEvent,
+    ]
   );
 
   const onButtonSelectResource = useCallback(() => {
-    selectResourceToBreak(currentResource ?? resource);
-  }, [currentResource, selectResourceToBreak, resource]);
+    selectResourceToBreak(currentResource ?? resourceToBreak);
+  }, [currentResource, selectResourceToBreak, resourceToBreak]);
 
   const onSelectMenuSelectResource = useCallback(
     (itemData: Resource) => {
@@ -88,7 +97,7 @@ export const BtmButton: React.FC<Props> = ({
 
   return (
     <>
-      {currentResource || resource ? (
+      {currentResource || resourceToBreak ? (
         <Button buttonStyle={ButtonStyle} onClick={onButtonSelectResource}>
           {buttonText}
         </Button>
