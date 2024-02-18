@@ -134,7 +134,7 @@ const useModelOrganizer = ({
 
   const loadProjectResources = useCallback(
     (forceRefresh?: boolean, onLoadResourcesCompleted?: () => void) => {
-      if (!forceRefresh) {
+      if (!forceRefresh && !headlessMode) {
         //try to load a saved copy of the data from the persistent layer
         const savedData = loadPersistentData();
 

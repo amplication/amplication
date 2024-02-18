@@ -1,9 +1,11 @@
 import React, { useCallback, useState } from "react";
 import {
   Button,
+  ConfirmationDialog,
   Dialog,
   EnumButtonStyle,
   EnumItemsAlign,
+  EnumTextStyle,
   FlexItem,
   Icon,
   Modal,
@@ -11,6 +13,7 @@ import {
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
+  Text,
 } from "@amplication/ui/design-system";
 import BreakTheMonolith from "./BreakTheMonolith";
 import { useTracking } from "../../util/analytics";
@@ -18,6 +21,7 @@ import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useAppContext } from "../../context/appContext";
 import { Resource } from "../../models";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
+import useModelOrganizerPersistentData from "../../Project/ArchitectureConsole/hooks/useModelOrganizerPersistentData";
 
 export enum EnumButtonLocation {
   Project = "Project",
@@ -37,6 +41,9 @@ type Props = {
   resourceToBreak?: Resource;
 };
 
+const CONFIRM_BUTTON = { icon: "", label: "Override" };
+const DISMISS_BUTTON = { label: "Dismiss" };
+
 export const BtmButton: React.FC<Props> = ({
   location,
   openInFullScreen,
@@ -45,20 +52,34 @@ export const BtmButton: React.FC<Props> = ({
   buttonText = "Break the Monolith",
   resourceToBreak,
 }) => {
-  const { currentResource, resources } = useAppContext();
+  const { currentResource, currentProject, resources } = useAppContext();
   const { trackEvent } = useTracking();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(
     null
   );
+  const { loadPersistentData } = useModelOrganizerPersistentData(
+    currentProject?.id
+  );
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const toggleIsOpen = useCallback(() => {
     setIsOpen(!isOpen);
   }, [isOpen]);
 
   const selectResourceToBreak = useCallback(
-    (resource: Resource) => {
+    (resource: Resource, overrideChangesConfirmed = false) => {
       setSelectedResource(resource);
+
+      if (!overrideChangesConfirmed) {
+        const savedData = loadPersistentData();
+
+        if (savedData && savedData.redesignMode) {
+          setShowConfirmation(true);
+          return;
+        }
+      }
+
       toggleIsOpen();
 
       trackEvent({
@@ -72,6 +93,7 @@ export const BtmButton: React.FC<Props> = ({
     },
     [
       currentResource?.name,
+      loadPersistentData,
       location,
       resourceToBreak?.name,
       selectedResource?.name,
@@ -132,6 +154,32 @@ export const BtmButton: React.FC<Props> = ({
           </SelectMenuModal>
         </SelectMenu>
       )}
+
+      <ConfirmationDialog
+        isOpen={showConfirmation}
+        title={`Override Architecture Changes ?`}
+        confirmButton={CONFIRM_BUTTON}
+        dismissButton={DISMISS_BUTTON}
+        message={
+          <Text textStyle={EnumTextStyle.Tag}>
+            <div>
+              There are changes made in the architecture console. If you
+              continue with the Break the Monolith process, the current changes
+              will be overridden.
+            </div>
+            <div>
+              Are you sure you want to override the current architecture
+              changes?
+            </div>
+          </Text>
+        }
+        onConfirm={() => {
+          selectResourceToBreak(selectedResource, true);
+        }}
+        onDismiss={() => {
+          setShowConfirmation(false);
+        }}
+      />
 
       {openInFullScreen && isOpen ? (
         <Modal
