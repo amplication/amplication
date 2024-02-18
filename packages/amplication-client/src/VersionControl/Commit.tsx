@@ -208,7 +208,7 @@ const Commit = ({
                     }}
                     disabled={loading}
                   >
-                    {noChanges ? "Rebuild" : "Generate the code "}
+                    <>Generate the code </>
                   </Button>
                 ) : commitBtnType === CommitBtnType.JumboButton ? (
                   <JumboButton
