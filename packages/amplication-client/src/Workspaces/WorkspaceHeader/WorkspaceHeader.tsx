@@ -2,12 +2,15 @@ import {
   Breadcrumbs,
   ButtonProgress,
   Dialog,
+  EnumTextColor,
+  EnumTextStyle,
   Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
   Tooltip,
+  Text,
 } from "@amplication/ui/design-system";
 import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import {
@@ -233,8 +236,14 @@ const WorkspaceHeader: React.FC = () => {
         closeEventProps={{}}
       >
         <Icon icon="rss" />
-        Join us at MWC Barcelona 2024 (Feb 26 - 29). Book a meeting, and let's
-        innovate together!
+        Join us at MWC Barcelona 2024 (Feb 26 - 29).{" "}
+        <Text
+          textColor={EnumTextColor.ThemeTurquoise}
+          textStyle={EnumTextStyle.Normal}
+        >
+          Book a meeting
+        </Text>
+        , and let's innovate together!
       </WorkspaceBanner>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__left`}>
