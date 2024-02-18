@@ -58,7 +58,7 @@ import { COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL } from "../../User/UserQueries";
 
 const CLASS_NAME = "workspace-header";
 const MWC_MEETING_URL =
-  "https://meetings-eu1.hubspot.com/oalaluf/meeting-with-oren-30";
+  "https://meetings-eu1.hubspot.com/oalaluf/book-your-demo-mwc";
 
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
