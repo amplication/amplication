@@ -30,9 +30,9 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
     ? { borderTopColor: data.groupColor }
     : { borderColor: data.groupColor };
 
-  const onSelectRelatedEntities = useCallback(async () => {
-    console.log("select all related entities");
-  }, []);
+  const handleSelectRelatedEntitiesClicked = useCallback(() => {
+    data.selectRelatedEntities = !data.selectRelatedEntities;
+  }, [data]);
 
   return (
     data && (
@@ -54,7 +54,8 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
           <FlexItem contentAlign={EnumContentAlign.Space}>
             <Text textStyle={EnumTextStyle.Normal}>{data.payload.name}</Text>
             <EntityContextMenuButton
-              onSelectRelatedEntities={onSelectRelatedEntities}
+              onSelectRelatedEntities={handleSelectRelatedEntitiesClicked}
+              isContextMenuEnable={data.isEditable}
             ></EntityContextMenuButton>
           </FlexItem>
           <Text textStyle={EnumTextStyle.Description}>

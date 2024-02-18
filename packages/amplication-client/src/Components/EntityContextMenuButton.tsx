@@ -11,25 +11,35 @@ import {
   SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
-import React from "react";
 import "./RedesignResourceButton.scss";
+import { useCallback, useState } from "react";
 
-const CLASS_NAME = "redesign-resource-button";
+const CLASS_NAME = "redesign-resource-button"; //todo: create new css file
 
 type Props = {
+  isContextMenuEnable: boolean;
   onSelectRelatedEntities: () => void;
 };
 
-const EntityContextMenuButton: React.FC<Props> = ({
+export default function EntityContextMenuButton({
   onSelectRelatedEntities,
-}) => {
+  isContextMenuEnable,
+}: Props) {
+  const [isSelectedRelatedEntities, setIsSelectedRelatedEntities] =
+    useState<boolean>(false);
+
+  const handleSelectRelatedEntitiesClicked = useCallback(() => {
+    onSelectRelatedEntities();
+    setIsSelectedRelatedEntities(!isSelectedRelatedEntities);
+  }, [isSelectedRelatedEntities, onSelectRelatedEntities]);
+
   return (
-    <div>
+    <div className={CLASS_NAME}>
       <SelectMenu
-        // icon={icon}
         title="..."
-        buttonStyle={EnumButtonStyle.Primary}
+        buttonStyle={EnumButtonStyle.Text}
         hideSelectedItemsIndication={false}
+        disabled={!isContextMenuEnable}
       >
         <SelectMenuModal align="right" withCaret>
           <SelectMenuList>
@@ -41,14 +51,13 @@ const EntityContextMenuButton: React.FC<Props> = ({
                 textStyle={EnumTextStyle.Tag}
                 textColor={EnumTextColor.Black20}
               >
-                Options
+                {"menu"}
               </Text>
             </FlexItem>
             <SelectMenuItem
-              closeAfterSelectionChange={false}
-              //selected={}
-              //itemData={resource}
-              onSelectionChange={onSelectRelatedEntities}
+              selected={isSelectedRelatedEntities}
+              closeAfterSelectionChange
+              onSelectionChange={handleSelectRelatedEntitiesClicked}
             >
               <FlexItem>
                 <Text
@@ -63,37 +72,6 @@ const EntityContextMenuButton: React.FC<Props> = ({
           </SelectMenuList>
         </SelectMenuModal>
       </SelectMenu>
-      {/* <SelectMenu
-        title="..."
-        buttonStyle={EnumButtonStyle.Primary}
-        hideSelectedItemsIndication
-      >
-        <SelectMenuModal align="right" withCaret>
-          <SelectMenuList>
-            <FlexItem
-              margin={EnumFlexItemMargin.Both}
-              className={`${CLASS_NAME}__list-header`}
-            >
-              <Text
-                textStyle={EnumTextStyle.Tag}
-                textColor={EnumTextColor.Black20}
-              >
-                Select Service to start redesign
-              </Text>
-            </FlexItem>
-            <SelectMenuItem
-              closeAfterSelectionChange={false}
-              selected
-              //itemData={resource}
-              onSelectionChange={onSelectRelatedEntities}
-            >
-              <Text>Select all related entities</Text>
-            </SelectMenuItem>
-          </SelectMenuList>
-        </SelectMenuModal>
-      </SelectMenu> */}
     </div>
   );
-};
-
-export default EntityContextMenuButton;
+}

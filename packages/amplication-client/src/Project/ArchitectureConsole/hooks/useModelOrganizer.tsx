@@ -31,6 +31,7 @@ import { useTracking } from "../../../util/analytics";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { EnumUserActionStatus } from "../../../models";
 import useResource from "../../../Resource/hooks/useResource";
+import { EnumDataType } from "@amplication/code-gen-types";
 
 type TData = {
   resources: models.Resource[];
@@ -290,6 +291,27 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       });
 
       return { updatedNodes: [...nodes], selectedResourceNode };
+    },
+    []
+  );
+
+  const selectResourceRelatedEntities = useCallback(
+    (resource: ResourceNode) => {
+      setNodes((nodes) => {
+        nodes.forEach((node: EntityNode) => {
+          if (node.data.originalParentNode === resource.id) {
+            const relatedField = node.data.payload.fields.find(
+              (field) => field.dataType === EnumDataType.Lookup
+            );
+            if (relatedField && node.draggable) {
+              node.selected = !node.selected;
+            }
+          }
+        });
+        resource.data.selectRelatedEntities = false;
+
+        return [...nodes];
+      });
     },
     []
   );
@@ -698,6 +720,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     mergeNewResourcesChanges,
     resetUserAction,
     clearDuplicateEntityError,
+    selectResourceRelatedEntities,
     redesignMode,
     errorMessage,
   };

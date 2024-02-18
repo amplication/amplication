@@ -37,6 +37,7 @@ import {
   NODE_TYPE_MODEL_GROUP,
   Node,
   NodePayloadWithPayloadType,
+  ResourceNode,
 } from "./types";
 
 export const CLASS_NAME = "model-organizer";
@@ -90,6 +91,7 @@ export default function ModelOrganizer() {
     resetUserAction,
     clearDuplicateEntityError,
     errorMessage,
+    selectResourceRelatedEntities,
   } = useModelOrganization({
     projectId: currentProject?.id,
     onMessage: showMessage,
@@ -339,6 +341,10 @@ export default function ModelOrganizer() {
                 onNodeDragStop={onNodeDragStop}
                 onEdgesChange={onEdgesChange}
                 connectionMode={ConnectionMode.Loose}
+                onNodeClick={(event: React.MouseEvent, node: Node) => {
+                  if (!node.data.selectRelatedEntities) return;
+                  selectResourceRelatedEntities(node as ResourceNode);
+                }}
                 proOptions={{ hideAttribution: true }}
                 minZoom={0.1}
                 panOnScroll
