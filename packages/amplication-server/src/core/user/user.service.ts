@@ -211,7 +211,11 @@ export class UserService {
         account: true,
         workspace: {
           include: {
-            projects: true,
+            projects: {
+              where: {
+                deletedAt: null,
+              },
+            },
           },
         },
       },
