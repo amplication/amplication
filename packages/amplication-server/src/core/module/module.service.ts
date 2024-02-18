@@ -59,6 +59,23 @@ export class ModuleService extends BlockTypeService<
   }
 
   async update(args: UpdateModuleArgs, user: User): Promise<Module> {
+    const existingModule = await super.findOne({
+      where: {
+        id: args.where.id,
+      },
+    });
+
+    if (existingModule?.entityId) {
+      if (
+        existingModule.name !== args.data.name &&
+        args.data.name !== undefined
+      ) {
+        throw new AmplicationError(
+          "Cannot update the name of a default Module for entity."
+        );
+      }
+    }
+
     this.validateModuleName(args.data.name);
     return super.update(
       {
