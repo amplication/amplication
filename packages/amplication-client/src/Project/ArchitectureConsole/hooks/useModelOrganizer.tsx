@@ -452,13 +452,13 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       nodes.forEach((x) => (x.data.highlight = false));
 
       if (searchPhrase !== "") {
-        const searchModelGroupNodes = nodes.filter((node) =>
+        const searchResults = nodes.filter((node) =>
           node.data.payload.name
             .toLowerCase()
             .includes(searchPhrase.toLowerCase())
         );
 
-        searchModelGroupNodes.forEach((searchedNode) => {
+        searchResults.forEach((searchedNode) => {
           searchedNode.data.highlight = true;
         });
       }

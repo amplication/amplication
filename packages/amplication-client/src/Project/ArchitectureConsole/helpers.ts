@@ -127,7 +127,6 @@ function entitiesToNodes(
       groupOrder: index,
       groupColor: resourceColorMapping[index],
       isEditable: false,
-      highlight: false,
     },
     selectable: false,
     deletable: false,
@@ -144,7 +143,6 @@ function entitiesToNodes(
   const nodes: EntityNode[] = resources.flatMap((resource) =>
     resource.entities.map((entity) => ({
       data: {
-        highlight: false,
         payload: entity,
         originalParentNode: entity.resourceId,
       },
@@ -174,7 +172,6 @@ export function tempResourceToNode(
       groupOrder: index,
       groupColor: resourceColorMapping[index],
       isEditable: false,
-      highlight: false,
     },
     id: resource.id,
     selectable: false,

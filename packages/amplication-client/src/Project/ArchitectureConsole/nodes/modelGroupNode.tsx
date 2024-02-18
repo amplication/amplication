@@ -5,7 +5,6 @@ import {
   EnumContentAlign,
   EnumFlexDirection,
   EnumItemsAlign,
-  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
