@@ -10,14 +10,12 @@ import {
   JumboButton,
   Text,
 } from "@amplication/ui/design-system";
-import { ApolloError, useMutation } from "@apollo/client";
 import { useCallback, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../../Components/Button";
-import { COMMIT_CHANGES } from "../../VersionControl/Commit";
 import { AppContext } from "../../context/appContext";
-import { Commit, EnumSubscriptionPlan } from "../../models";
 import "./ApplyChangesNextSteps.scss";
+import Commit, { CommitBtnType } from "../../VersionControl/Commit";
 
 const className = "apply-changes-next-steps";
 
@@ -25,50 +23,11 @@ type Props = {
   onDisplayArchitectureClicked: () => void;
 };
 
-type TData = {
-  commit: Commit;
-};
-
 export const ApplyChangesNextSteps = ({
   onDisplayArchitectureClicked,
 }: Props) => {
   const history = useHistory();
-  const {
-    currentWorkspace,
-    currentProject,
-    commitUtils,
-    setCommitRunning,
-    resetPendingChanges,
-    setPendingChangesError,
-  } = useContext(AppContext);
-
-  const [commit, { error, loading }] = useMutation<TData>(COMMIT_CHANGES, {
-    onError: (error: ApolloError) => {
-      setCommitRunning(false);
-      setPendingChangesError(true);
-    },
-    onCompleted: (response) => {
-      setCommitRunning(false);
-      setPendingChangesError(false);
-      resetPendingChanges();
-      commitUtils.refetchCommitsData(true);
-
-      return history.push(`commits/${response.commit.id}`);
-    },
-  });
-
-  const handleGenerateCodeClicked = useCallback(() => {
-    setCommitRunning(true);
-    commit({
-      variables: {
-        message: "Architecture changes Commit",
-        projectId: currentProject.id,
-        bypassLimitations:
-          currentWorkspace?.subscription?.subscriptionPlan !==
-            EnumSubscriptionPlan.Pro ?? false,
-      },
-    }).catch(console.error);
-  }, [setCommitRunning, commit, currentProject, currentWorkspace]);
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const handleProjectOverviewClicked = useCallback(() => {
     history.push(`/${currentWorkspace.id}/${currentProject.id}`);
@@ -92,12 +51,13 @@ export const ApplyChangesNextSteps = ({
         <Text textStyle={EnumTextStyle.H3}>What should we do next?</Text>
       </FlexItem>
       <div className={`${className}__box_container`}>
-        <JumboButton
-          onClick={handleGenerateCodeClicked}
-          text="Generate the code for my new architecture"
-          icon="pending_changes"
-          circleColor={EnumTextColor.ThemeTurquoise}
-        ></JumboButton>
+        <Commit
+          projectId={currentProject.id}
+          noChanges
+          showCommitMessage={false}
+          commitMessage="Architecture redesign"
+          commitBtnType={CommitBtnType.JumboButton}
+        ></Commit>
 
         <JumboButton
           onClick={handleProjectOverviewClicked}

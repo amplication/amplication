@@ -2,7 +2,6 @@ import { memo, type FC, useCallback } from "react";
 import { useStore, type NodeProps } from "reactflow";
 import "./modelGroupNode.scss";
 import {
-  EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
   EnumItemsAlign,
@@ -13,7 +12,6 @@ import {
 } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import { ResourceNode, ResourceNodePayload } from "../types";
-import { Button } from "../../../Components/Button";
 
 type ModelProps = NodeProps & {
   data: ResourceNodePayload;
@@ -37,6 +35,7 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
         className={classNames(`${CLASS_NAME}`, {
           "drop-target": sourceNode.data.isCurrentDropTarget,
           [`${CLASS_NAME}--editable`]: sourceNode.data.isEditable,
+          [`${CLASS_NAME}--highlight`]: data.highlight,
         })}
         tabIndex={0}
         style={style}
@@ -46,13 +45,6 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
           itemsAlign={EnumItemsAlign.Start}
           contentAlign={EnumContentAlign.Start}
           direction={EnumFlexDirection.Column}
-          end={
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              icon="move"
-              className="group-drag-handle"
-            />
-          }
         >
           <Text textStyle={EnumTextStyle.Normal}>{data.payload.name}</Text>
           <Text textStyle={EnumTextStyle.Description}>

@@ -89,7 +89,7 @@ export default function ModelOrganizer() {
     redesignMode,
     resetUserAction,
     clearDuplicateEntityError,
-    duplicateEntityError,
+    errorMessage,
   } = useModelOrganization({
     projectId: currentProject?.id,
     onMessage: showMessage,
@@ -320,11 +320,9 @@ export default function ModelOrganizer() {
               </FlexItem>
             </Dialog>
             <ConfirmationDialog
-              btnClassName={`${CLASS_NAME}__confirmationDialog`}
-              isOpen={duplicateEntityError}
+              isOpen={errorMessage !== null}
               onDismiss={clearDuplicateEntityError}
-              message={`Cannot move entity to service: ${currentDropTarget?.data?.payload?.name}
-               because the entity name already exists.`}
+              message={errorMessage}
               confirmButton={{ label: "I understand" }}
               onConfirm={clearDuplicateEntityError}
             ></ConfirmationDialog>

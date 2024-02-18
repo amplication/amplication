@@ -37,7 +37,8 @@ const ModelNodeBase: FC<Props> = memo(
               data.originalParentNode !== sourceNode.parentNode,
           },
           { [`${CLASS_NAME}--draggable`]: sourceNode.draggable },
-          { [`${CLASS_NAME}--selected`]: sourceNode.selected }
+          { [`${CLASS_NAME}--selected`]: sourceNode.selected },
+          { [`${CLASS_NAME}--highlight`]: data.highlight }
         )}
         tabIndex={0}
         title={data.payload.description}
