@@ -4,7 +4,6 @@ import { useMutation } from "@apollo/client";
 import { CircularProgress } from "@mui/material";
 import {
   Button,
-  EnumContentAlign,
   EnumFlexDirection,
   EnumItemsAlign,
   EnumTextAlign,
@@ -16,7 +15,7 @@ import {
 } from "@amplication/ui/design-system";
 import * as models from "../../../models";
 import { MonolithOption, monolithOptions } from "./monolith-options";
-import useUserActionWatchStatus from "../../../Entity/ImportPrismaSchema/useUserActionWatchStatus";
+import useUserActionWatchStatus from "../../../UserAction/useUserActionWatchStatus";
 import { AppRouteProps } from "../../../routes/routesUtil";
 import { CREATE_ENTITIES_FROM_PREDEFINED_SCHEMA } from "../../../Entity/ImportPrismaSchema/queries";
 
@@ -110,10 +109,7 @@ const BreakingTheMonolithOptions: React.FC<Props> = ({ match }) => {
             choose an open-source monolith, represented by its database schema
           </div>
         </Text>
-        <FlexItem
-          className={`${CLASS_NAME}__monolith_options`}
-          contentAlign={EnumContentAlign.Center}
-        >
+        <div className={`${CLASS_NAME}__monolith_options`}>
           {monolithOptions.map((option, index) => (
             <Panel key={index}>
               <FlexItem direction={EnumFlexDirection.Column}>
@@ -139,13 +135,13 @@ const BreakingTheMonolithOptions: React.FC<Props> = ({ match }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Take me to the Github repository
+                    Go to the Github repository
                   </a>
                 </Text>
               </FlexItem>
             </Panel>
           ))}
-        </FlexItem>
+        </div>
       </FlexItem>
     </>
   );

@@ -15,7 +15,7 @@ import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ApolloServerBase } from "apollo-server-core";
-import { PreviewAccountType } from "./dto/EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_TOKEN = "exampleToken";
@@ -39,7 +39,7 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: PreviewAccountType.None,
+  previewAccountType: EnumPreviewAccountType.None,
   previewAccountEmail: null,
 };
 
@@ -94,9 +94,9 @@ const SIGNUP_MUTATION = gql`
 const SIGNUP_PREVIEW_ACCOUNT_MUTATION = gql`
   mutation (
     $previewAccountEmail: String!
-    $previewAccountType: PreviewAccountType!
+    $previewAccountType: EnumPreviewAccountType!
   ) {
-    signUpWithBusinessEmail(
+    signupPreviewAccount(
       data: {
         previewAccountEmail: $previewAccountEmail
         previewAccountType: $previewAccountType
@@ -260,7 +260,7 @@ describe("AuthResolver", () => {
   it("should signup preview account", async () => {
     const variables = {
       previewAccountEmail: EXAMPLE_PREVIEW_EMAIL,
-      previewAccountType: PreviewAccountType.BreakingTheMonolith,
+      previewAccountType: EnumPreviewAccountType.BreakingTheMonolith,
     };
     const res = await apolloClient.executeOperation({
       query: SIGNUP_PREVIEW_ACCOUNT_MUTATION,
@@ -268,7 +268,7 @@ describe("AuthResolver", () => {
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      signUpWithBusinessEmail: {
+      signupPreviewAccount: {
         ...EXAMPLE_AUTH_PREVIEW_ACCOUNT,
       },
     });

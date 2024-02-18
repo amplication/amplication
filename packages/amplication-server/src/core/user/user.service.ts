@@ -3,11 +3,17 @@ import { ConflictException, Injectable } from "@nestjs/common";
 import { Account, User, UserRole } from "../../models";
 import { UserRoleArgs } from "./dto";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { KAFKA_TOPICS, UserAction } from "@amplication/schema-registry";
+import {
+  KAFKA_TOPICS,
+  UserAction,
+  UserFeatureAnnouncement,
+} from "@amplication/schema-registry";
 import { encryptString } from "../../util/encryptionUtil";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
 
 @Injectable()
 export class UserService {
@@ -15,7 +21,8 @@ export class UserService {
     private readonly kafkaProducerService: KafkaProducerService,
     private readonly logger: AmplicationLogger,
     private readonly billingService: BillingService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService
   ) {}
 
   findUser(
@@ -187,5 +194,47 @@ export class UserService {
       );
 
     return externalId;
+  }
+
+  async notifyUserFeatureAnnouncement(
+    userActiveDaysBack: number,
+    notificationTemplateIdentifier: string
+  ): Promise<boolean> {
+    const date = new Date();
+    const users = await this.findUsers({
+      where: {
+        lastActive: {
+          gte: new Date(date.setDate(date.getDate() - userActiveDaysBack)),
+        },
+      },
+    });
+
+    for (const user of users) {
+      this.logger.info(
+        `Queuing feature notification ${notificationTemplateIdentifier} to user ${user.id} (account: ${user.account?.id})`
+      );
+      const firstProject = user.workspace?.projects?.at(0);
+      this.kafkaProducerService
+        .emitMessage(KAFKA_TOPICS.USER_ANNOUNCEMENT_TOPIC, <
+          UserFeatureAnnouncement.KafkaEvent
+        >{
+          key: {},
+          value: {
+            externalId: encryptString(user.id),
+            notificationTemplateIdentifier,
+            envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
+            workspaceId: user.workspace?.id,
+            projectId: firstProject?.id,
+          },
+        })
+        .catch((error) =>
+          this.logger.error(
+            `Failed to send feature notification ${notificationTemplateIdentifier} to user ${user.id}`,
+            error
+          )
+        );
+    }
+
+    return true;
   }
 }

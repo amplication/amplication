@@ -3,8 +3,8 @@ import { PrismaService } from "../prisma/prisma.service";
 import { TemplateService } from "../template/template.service";
 import { ConversationTypeServiceBase } from "./base/conversationType.service.base";
 import {
-  AiConversationComplete,
-  AiConversationStart,
+  GptConversationComplete,
+  GptConversationStart,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -22,9 +22,9 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
     super(prisma);
   }
 
-  async startConversionSync(message: AiConversationStart.Value): Promise<{
-    success: boolean;
+  async startConversionSync(message: GptConversationStart.Value): Promise<{
     requestUniqueId: string;
+    success: boolean;
     result: string;
   }> {
     const { messageTypeKey, params, requestUniqueId } = message;
@@ -48,41 +48,38 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
       });
 
       return {
-        success: true,
         requestUniqueId,
+        success: true,
         result: result ?? "",
       };
     } catch (error) {
       this.logger.error(error.message, error);
       return {
-        success: false,
         requestUniqueId,
+        success: false,
         result: error.message,
       };
     }
   }
 
-  async startConversion(message: AiConversationStart.Value): Promise<void> {
+  async startConversion(message: GptConversationStart.Value): Promise<void> {
     const result = await this.startConversionSync(message);
     this.emitGptKafkaMessage(
-      message.actionId,
-      result.requestUniqueId,
+      message.requestUniqueId,
       result.success,
       result.result
     );
   }
 
   private emitGptKafkaMessage(
-    actionId: string,
     requestUniqueId: string,
     success: boolean,
     result: string
   ): void {
-    const key: AiConversationComplete.Key = {
+    const key: GptConversationComplete.Key = {
       requestUniqueId,
     };
-    const value: AiConversationComplete.Value = {
-      actionId,
+    const value: GptConversationComplete.Value = {
       requestUniqueId,
       success,
       ...(success ? { result } : { errorMessage: result }),

@@ -4,5 +4,12 @@
   "title": "username",
   "type": "object",
   "additionalProperties": false,
-  "properties": {}
+  "properties": {
+    "maxLength": {
+      "type": "integer",
+      "description": "The maximum length of the field",
+      "minimum": 1,
+      "default": 256
+    }
+  }
 }

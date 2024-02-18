@@ -9,10 +9,8 @@ import {
 import { UpsertSubscriptionInput } from "./dto/UpsertSubscriptionInput";
 import { BillingService } from "../billing/billing.service";
 import { UpdateStatusDto } from "./dto/UpdateStatusDto";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
@@ -86,13 +84,18 @@ export class SubscriptionService {
     workspaceId: string
   ): Promise<void> {
     if (plan !== EnumSubscriptionPlan.Free && userId) {
-      await this.analyticsService.track({
-        userId: userId,
-        properties: {
-          workspaceId: workspaceId,
-          $groups: { groupWorkspace: workspaceId },
+      await this.analyticsService.trackManual({
+        user: {
+          accountId: userId,
+          workspaceId,
         },
-        event: EnumEventType.WorkspacePlanUpgradeCompleted,
+        data: {
+          properties: {
+            workspaceId: workspaceId,
+            $groups: { groupWorkspace: workspaceId },
+          },
+          event: EnumEventType.WorkspacePlanUpgradeCompleted,
+        },
       });
     }
   }

@@ -109,6 +109,8 @@ export enum AnalyticsEventNames {
   CreateProjectConfiguration = "CreateProjectConfiguration",
   StarUsBannerCTAClick = "StarUsBannerCTAClick",
   StarUsBannerClose = "StarUsBannerClose",
+  MWC2024BannerCTAClick = "MWC2024BannerCTAClick",
+  MWC2024BannerClose = "MWC2024BannerClose",
 
   // Purchase Page
   PricingPageClose = "PricingPageClose",
@@ -155,4 +157,9 @@ export enum AnalyticsEventNames {
   // notification
   OpenNotificationCenter = "OpenNotificationCenter",
   ClickNotificationMessage = "ClickNotificationMessage",
+
+  // break the monolith
+  StartBreakTheMonolithClick = "StartBreakTheMonolithClick",
+  ModelOrganizer_AddServiceClick = "ModelOrganizer_AddServiceClick",
+  ModelOrganizer_MoveEntity = "ModelOrganizer_MoveEntity",
 }

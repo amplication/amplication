@@ -1,5 +1,13 @@
 import { ConflictException, Inject, Injectable } from "@nestjs/common";
-import { Entity, EntityField, Resource, User, Workspace } from "../../models";
+import {
+  Account,
+  Entity,
+  EntityField,
+  Project,
+  Resource,
+  User,
+  Workspace,
+} from "../../models";
 import { Prisma, PrismaService } from "../../prisma";
 import {
   CompleteInvitationArgs,
@@ -19,10 +27,8 @@ import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { Role } from "../../enums/Role";
 import { GitOrganization } from "../../models/GitOrganization";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { BillingService } from "../billing/billing.service";
 import { MailService } from "../mail/mail.service";
 import { ProjectService } from "../project/project.service";
@@ -36,6 +42,7 @@ import { BillingPeriod } from "@stigg/node-server-sdk";
 import { Coupon } from "./dto/Coupon";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import {
+  EnumAuthProviderType,
   EnumBlockType,
   EnumDataType,
 } from "@amplication/code-gen-types/models";
@@ -46,9 +53,21 @@ import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { Env } from "../../env";
 import { ConfigService } from "@nestjs/config";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { ResourceService } from "../resource/resource.service";
+import { generateRandomString } from "../auth/auth-utils";
+import { AuthUser, CreatePreviewServiceSettingsArgs } from "../auth/types";
+import { USER_ENTITY_NAME } from "../entity/constants";
 
 const INVITATION_EXPIRATION_DAYS = 7;
+
+type PreviewAccountEnvironment = {
+  workspace: Workspace & {
+    users: AuthUser[];
+  };
+  project: Project;
+  resource: Resource;
+};
 
 @Injectable()
 export class WorkspaceService {
@@ -59,6 +78,7 @@ export class WorkspaceService {
     private readonly mailService: MailService,
     private readonly subscriptionService: SubscriptionService,
     private readonly projectService: ProjectService,
+    private readonly resourceService: ResourceService,
     private readonly billingService: BillingService,
     private analytics: SegmentAnalyticsService,
     private readonly moduleService: ModuleService,
@@ -124,7 +144,7 @@ export class WorkspaceService {
 
     await this.billingService.provisionPreviewCustomer(
       workspace.id,
-      PreviewAccountType[account.previewAccountType]
+      EnumPreviewAccountType[account.previewAccountType]
     );
 
     await this.billingService.reportUsage(
@@ -231,7 +251,9 @@ export class WorkspaceService {
       BillingFeature.TeamMembers
     );
 
-    return workspaceMembers.currentUsage < workspaceMembers.usageLimit;
+    return !workspaceMembers.usageLimit
+      ? true
+      : workspaceMembers.currentUsage < workspaceMembers.usageLimit;
   }
 
   async inviteUser(
@@ -398,13 +420,9 @@ export class WorkspaceService {
       BillingFeature.TeamMembers
     );
 
-    await this.analytics.track({
-      userId: account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.InvitationAcceptance,
-      properties: {
-        workspaceId: invitation.workspaceId,
-        $groups: { groupWorkspace: invitation.workspaceId },
-      },
+      properties: {},
     });
 
     return workspace;
@@ -508,7 +526,7 @@ export class WorkspaceService {
       planId: BillingPlan.ProWithTrial,
       cancelUrl: "",
       successUrl: "",
-      userId: account.id,
+      accountId: account.id,
       billingPeriod: BillingPeriod.Monthly,
       intentionType: "UPGRADE_PLAN",
     });
@@ -526,14 +544,11 @@ export class WorkspaceService {
       },
     });
 
-    await this.analytics.track({
-      userId: account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.RedeemCoupon,
       properties: {
-        workspaceId: currentUser.workspace.id,
         subscriptionPlan: coupon.subscriptionPlan,
         durationMonths: coupon.durationMonths,
-        $groups: { groupWorkspace: currentUser.workspace.id },
       },
     });
 
@@ -615,7 +630,9 @@ export class WorkspaceService {
     return myArray;
   }
 
-  async dataMigrateWorkspacesResourcesCustomActions(): Promise<boolean> {
+  async dataMigrateWorkspacesResourcesCustomActions(
+    quantity: number
+  ): Promise<boolean> {
     const workspaces = await this.prisma.workspace.findMany({
       where: {
         projects: {
@@ -633,7 +650,7 @@ export class WorkspaceService {
           },
         },
       },
-      take: 1000,
+      take: quantity,
       include: {
         users: {
           orderBy: {
@@ -678,7 +695,9 @@ export class WorkspaceService {
     return true;
   }
 
-  async dataMigrateWorkspacesResourcesCustomActionsFix(): Promise<boolean> {
+  async dataMigrateWorkspacesResourcesCustomActionsFix(
+    quantity: number
+  ): Promise<boolean> {
     const workspaces = await this.prisma.workspace.findMany({
       where: {
         projects: {
@@ -696,7 +715,7 @@ export class WorkspaceService {
           },
         },
       },
-      take: 1000,
+      take: quantity,
       include: {
         users: {
           orderBy: {
@@ -1107,5 +1126,123 @@ export class WorkspaceService {
     });
     await Promise.allSettled(promises);
     return hasChanges;
+  }
+
+  /**
+   * workspace, project and service creation for preview account
+   */
+
+  async createPreviewEnvironment(
+    account: Account
+  ): Promise<PreviewAccountEnvironment> {
+    const workspaceName = `Amplication-${generateRandomString()}`;
+    const projectName = account.previewAccountType;
+
+    const workspace = (await this.createPreviewWorkspace(
+      {
+        data: {
+          name: workspaceName,
+        },
+        include: {
+          users: {
+            include: {
+              account: true,
+              userRoles: true,
+              workspace: true,
+            },
+          },
+        },
+      },
+      account.id
+    )) as unknown as Workspace & { users: AuthUser[] };
+    const [user] = workspace.users as AuthUser[];
+
+    const project = await this.projectService.createProject(
+      {
+        data: {
+          name: projectName,
+          workspace: {
+            connect: {
+              id: workspace.id,
+            },
+          },
+        },
+      },
+      user.id
+    );
+
+    const resource = await this.createPreviewServiceWithPredefinedSettings(
+      project.id,
+      user
+    );
+
+    return {
+      workspace,
+      project,
+      resource,
+    };
+  }
+
+  private async createPreviewServiceWithPredefinedSettings(
+    projectId: string,
+    user: User
+  ): Promise<Resource> {
+    const serviceName = "Monolith";
+    const previewServiceSettings = this.createPreviewServiceSettings({
+      projectId: projectId,
+      name: serviceName,
+      description: "Monolith Service",
+      adminUIPath: "",
+      serverPath: `./apps/${serviceName}`,
+      generateAdminUI: false,
+      generateGraphQL: true,
+      generateRestApi: true,
+    });
+
+    const resource = await this.resourceService.createPreviewService({
+      args: previewServiceSettings,
+      user,
+      nonDefaultPluginsToInstall: [],
+      requireAuthenticationEntity: false,
+    });
+
+    return resource;
+  }
+
+  private createPreviewServiceSettings({
+    name,
+    description,
+    adminUIPath,
+    serverPath,
+    generateAdminUI,
+    generateGraphQL,
+    generateRestApi,
+    projectId,
+  }: CreatePreviewServiceSettingsArgs) {
+    return {
+      data: {
+        name,
+        description,
+        resourceType: EnumResourceType.Service,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        serviceSettings: {
+          authProvider: EnumAuthProviderType.Jwt,
+          authEntityName: USER_ENTITY_NAME,
+          adminUISettings: {
+            adminUIPath,
+            generateAdminUI,
+          },
+          serverSettings: {
+            generateGraphQL,
+            generateRestApi,
+            serverPath,
+          },
+        },
+      },
+    };
   }
 }

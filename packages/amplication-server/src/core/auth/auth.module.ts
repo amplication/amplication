@@ -21,10 +21,9 @@ import {
 import { JwtStrategy } from "./jwt.strategy";
 import { GitHubStrategy } from "./github.strategy";
 import { GitHubStrategyConfigService } from "./githubStrategyConfig.service";
-import { ProjectModule } from "../project/project.module";
 import { GitHubAuthGuard } from "./github.guard";
-import { Auth0Middleware } from "./auth0.middleware";
-import { ResourceModule } from "../resource/resource.module";
+import { OpenIDConnectAuthMiddleware } from "./oidc.middleware";
+import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
 
 @Module({
   imports: [
@@ -42,8 +41,6 @@ import { ResourceModule } from "../resource/resource.module";
     ExceptionFiltersModule,
     WorkspaceModule,
     UserModule,
-    ProjectModule,
-    ResourceModule,
   ],
   providers: [
     AuthService,
@@ -71,16 +68,16 @@ import { ResourceModule } from "../resource/resource.module";
     GqlAuthGuard,
     AuthResolver,
     GitHubStrategyConfigService,
-    Auth0Middleware,
+    OpenIDConnectAuthMiddleware,
+    SegmentAnalyticsModule,
   ],
   controllers: [AuthController],
   exports: [GqlAuthGuard, AuthService, AuthResolver],
 })
-// export class AuthModule {}
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(Auth0Middleware)
+      .apply(OpenIDConnectAuthMiddleware)
       .forRoutes(
         AUTH_LOGIN_PATH,
         AUTH_LOGOUT_PATH,

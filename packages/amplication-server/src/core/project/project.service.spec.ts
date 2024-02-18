@@ -1,7 +1,6 @@
 import { PrismaService } from "../../prisma/prisma.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ProjectService } from "./project.service";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import {
   Account,
   Block,
@@ -36,7 +35,8 @@ import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { SubscriptionService } from "../subscription/subscription.service";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -87,7 +87,7 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: PreviewAccountType.None,
+  previewAccountType: EnumPreviewAccountType.None,
   previewAccountEmail: null,
 };
 
@@ -378,14 +378,7 @@ describe("ProjectService", () => {
             archiveProjectResources: jest.fn(() => Promise.resolve([])),
           })),
         },
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            track: jest.fn(() => {
-              return;
-            }),
-          })),
-        },
+        MockedSegmentAnalyticsProvider(),
         {
           provide: GitProviderService,
           useClass: jest.fn(() => ({})),

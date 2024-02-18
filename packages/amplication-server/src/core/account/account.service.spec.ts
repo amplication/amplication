@@ -1,9 +1,9 @@
 import { PrismaService, Account } from "../../prisma";
 import { Test, TestingModule } from "@nestjs/testing";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { AccountService } from "./account.service";
-import { IDENTITY_PROVIDER_MANUAL } from "../auth/auth.service";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { IdentityProvider } from "../auth/auth.types";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 const EXAMPLE_ACCOUNT_ID = "ExampleAccountId",
   EXAMPLE_EMAIL = "example@email.com",
@@ -22,7 +22,7 @@ const EXAMPLE_ACCOUNT: Account = {
   password: EXAMPLE_PASSWORD,
   currentUserId: EXAMPLE_CURRENT_USER_ID,
   githubId: null,
-  previewAccountType: PreviewAccountType.None,
+  previewAccountType: EnumPreviewAccountType.None,
   previewAccountEmail: null,
 };
 
@@ -52,13 +52,11 @@ describe("AccountService", () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            identify: segmentAnalyticsIdentifyMock,
-            track: segmentAnalyticsTrackMock,
-          })),
-        },
+        MockedSegmentAnalyticsProvider({
+          identifyMock: segmentAnalyticsIdentifyMock,
+          trackWithContextMock: segmentAnalyticsTrackMock,
+          trackManualMock: segmentAnalyticsTrackMock,
+        }),
         AccountService,
         {
           provide: PrismaService,
@@ -89,15 +87,17 @@ describe("AccountService", () => {
         password: EXAMPLE_PASSWORD,
       },
     };
-    expect(await service.createAccount(args, IDENTITY_PROVIDER_MANUAL)).toEqual(
-      EXAMPLE_ACCOUNT
-    );
+    expect(
+      await service.createAccount(args, {
+        identityProvider: IdentityProvider.Local,
+      })
+    ).toEqual(EXAMPLE_ACCOUNT);
     expect(prismaAccountCreateMock).toBeCalledTimes(1);
     expect(prismaAccountCreateMock).toBeCalledWith(args);
     expect(segmentAnalyticsIdentifyMock).toBeCalledTimes(1);
     expect(segmentAnalyticsTrackMock).toBeCalledTimes(1);
     expect(segmentAnalyticsIdentifyMock).toBeCalledWith({
-      userId: EXAMPLE_ACCOUNT_ID,
+      accountId: EXAMPLE_ACCOUNT_ID,
       createdAt: expect.any(Date),
       email: EXAMPLE_EMAIL,
       firstName: EXAMPLE_FIRST_NAME,

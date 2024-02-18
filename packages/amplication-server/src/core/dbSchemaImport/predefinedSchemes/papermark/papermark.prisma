@@ -1,0 +1,290 @@
+datasource db {
+    provider          = "postgresql"
+    url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
+    directUrl         = env("POSTGRES_PRISMA_URL_NON_POOLING") // uses a direct connection
+    shadowDatabaseUrl = env("POSTGRES_PRISMA_SHADOW_URL") // used for migrations
+}
+
+generator client {
+    provider        = "prisma-client-js"
+}
+
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id             String         @id @default(cuid())
+    name           String?
+    email          String?        @unique
+    emailVerified  DateTime?
+    image          String?
+    createdAt      DateTime       @default(now())
+    accounts       Account[]
+    sessions       Session[]
+    documents      Document[]
+    teams          UserTeam[]
+    domains        Domain[]
+    conversations  Conversation[]
+    plan           String         @default("free")
+    stripeId       String?        @unique // Stripe subscription / customer ID
+    subscriptionId String?        @unique // Stripe subscription ID
+    startsAt       DateTime? // Stripe subscription start date
+    endsAt         DateTime? // Stripe subscription end date
+}
+
+model Team {
+    id             String       @id @default(cuid())
+    name           String
+    users          UserTeam[]
+    documents      Document[]
+    domains        Domain[]
+    invitations    Invitation[]
+    sentEmails     SentEmail[]
+    brand          Brand?
+    plan           String       @default("free")
+    stripeId       String?      @unique // Stripe subscription / customer ID
+    subscriptionId String?      @unique // Stripe subscription ID
+    startsAt       DateTime? // Stripe subscription start date
+    endsAt         DateTime? // Stripe subscription end date
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @updatedAt
+}
+
+model Brand {
+    id          String  @id @default(cuid())
+    logo        String? // This should be a reference to where the file is stored (S3, Google Cloud Storage, etc.)
+    brandColor  String? // This should be a reference to the brand color
+    accentColor String? // This should be a reference to the accent color
+    teamId      String  @unique
+    team        Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+enum Role {
+    ADMIN
+    MEMBER
+}
+
+model UserTeam {
+    id     String @id @default(cuid())
+    role   Role   @default(MEMBER)
+    userId String
+    teamId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([teamId])
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model Document {
+    id               String            @id @default(cuid())
+    name             String
+    description      String?
+    file             String // This should be a reference to where the file is stored (S3, Google Cloud Storage, etc.)
+    type             String? // This should be a reference to the file type (pdf, docx, etc.)
+    numPages         Int? // This should be a reference to the number of pages in the document
+    owner            User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    teamId           String?
+    team             Team?             @relation(fields: [teamId], references: [id], onDelete: SetNull)
+    ownerId          String // This field holds the foreign key.
+    assistantEnabled Boolean           @default(false) // This indicates if assistant is enabled for this document
+    createdAt        DateTime          @default(now())
+    updatedAt        DateTime          @updatedAt
+    links            Link[]
+    views            View[]
+    versions         DocumentVersion[]
+    conversations    Conversation[]
+
+    @@index([ownerId])
+    @@index([teamId])
+}
+
+model DocumentVersion {
+    id            String         @id @default(cuid())
+    versionNumber Int // e.g., 1, 2, 3 for version control
+    document      Document       @relation(fields: [documentId], references: [id], onDelete: Cascade)
+    documentId    String
+    file          String // This should be a reference to where the file is stored (S3, Google Cloud Storage, etc.)
+    type          String? // This should be a reference to the file type (pdf, docx, etc.)
+    numPages      Int? // This should be a reference to the number of pages in the document
+    isPrimary     Boolean        @default(false) // Indicates if this is the primary version
+    fileId        String? // This is the file ID of the OpenAI File API
+    pages         DocumentPage[]
+    hasPages      Boolean        @default(false) // Indicates if the document has pages
+    createdAt     DateTime       @default(now())
+    updatedAt     DateTime       @updatedAt
+
+    @@unique([versionNumber, documentId])
+    @@index([documentId])
+}
+
+model DocumentPage {
+    id         String          @id @default(cuid())
+    version    DocumentVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+    versionId  String
+    pageNumber Int // e.g., 1, 2, 3 for 
+    file       String // This should be a reference to where the file / page is stored (S3, Google Cloud Storage, etc.)
+    createdAt  DateTime        @default(now())
+    updatedAt  DateTime        @updatedAt
+
+    @@unique([pageNumber, versionId])
+    @@index([versionId])
+}
+
+model Link {
+    id                 String    @id @default(cuid())
+    document           Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+    documentId         String
+    url                String?   @unique
+    name               String? // Link name
+    slug               String? // Link slug for pretty URLs
+    expiresAt          DateTime? // Optional expiration date
+    password           String? // Optional password for link protection
+    allowedEmails      String[] // Array of emails allowed to view the document
+    emailProtected     Boolean   @default(true) // Optional email protection
+    emailAuthenticated Boolean   @default(false) // Optional email authentication flag
+    allowDownload      Boolean?  @default(false) // Optional give user a option to allow to download the document
+    isArchived         Boolean   @default(false) // Indicates if the link is archived
+    views              View[]
+    domain             Domain?   @relation(fields: [domainId], references: [id], onDelete: SetNull)
+    domainId           String? // This can be nullable, representing links without custom domains
+    domainSlug         String? // This will store the domain's slug even if the domain is deleted
+    createdAt          DateTime  @default(now())
+    updatedAt          DateTime  @updatedAt
+    enableNotification Boolean?  @default(true) // Optional give user a option to pause/resume the notifications
+    enableFeedback     Boolean?  @default(true) // Optional give user a option to enable the feedback toolbar
+
+    // custom metatags
+    metaTitle           String? // This will be the meta title of the link
+    metaDescription     String? // This will be the meta description of the link
+    metaImage           String? // This will be the meta image of the link
+    enableCustomMetatag Boolean? @default(false) // Optional give user a option to enable the custom metatag
+
+    @@unique([domainSlug, slug])
+    @@index([documentId])
+}
+
+model Domain {
+    id          String   @id @default(cuid())
+    slug        String   @unique
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId      String
+    teamId      String?
+    Team        Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
+    verified    Boolean  @default(false) // Whether the domain has been verified
+    lastChecked DateTime @default(now())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    links       Link[] // links associated with this domain
+
+    @@index([userId])
+    @@index([teamId])
+}
+
+model View {
+    id          String     @id @default(cuid())
+    link        Link       @relation(fields: [linkId], references: [id])
+    linkId      String
+    document    Document   @relation(fields: [documentId], references: [id], onDelete: Cascade)
+    documentId  String
+    viewerEmail String? // Email of the viewer if known
+    verified    Boolean    @default(false) // Whether the viewer email has been verified
+    viewedAt    DateTime   @default(now())
+    reactions   Reaction[]
+
+    @@index([linkId])
+    @@index([documentId])
+}
+
+model Reaction {
+    id         String   @id @default(cuid())
+    view       View     @relation(fields: [viewId], references: [id], onDelete: Cascade)
+    viewId     String
+    pageNumber Int
+    type       String // e.g., "like", "dislike", "love", "hate", etc.
+    createdAt  DateTime @default(now())
+
+    @@index([viewId])
+}
+
+model Invitation {
+    email     String
+    expires   DateTime
+    teamId    String
+    team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    token     String   @unique
+
+    @@unique([email, teamId])
+}
+
+enum EmailType {
+    FIRST_DAY_DOMAIN_REMINDER_EMAIL
+    FIRST_DOMAIN_INVALID_EMAIL
+    SECOND_DOMAIN_INVALID_EMAIL
+    FIRST_TRIAL_END_REMINDER_EMAIL
+    FINAL_TRIAL_END_REMINDER_EMAIL
+}
+
+model SentEmail {
+    id         String    @id @default(cuid())
+    type       EmailType
+    recipient  String // Email address of the recipient
+    marketing  Boolean   @default(false)
+    createdAt  DateTime  @default(now())
+    team       Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId     String
+    domainSlug String? // Domain that triggered the email. This can be nullable, representing emails not triggered by domains
+
+    @@index([teamId])
+}
+
+model Conversation {
+    id            String    @id @default(cuid())
+    threadId      String    @unique // This is the thread ID from OpenAI Assistant API
+    user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId        String
+    document      Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+    documentId    String
+    createdAt     DateTime  @default(now())
+    lastMessageAt DateTime? // This is the last time a message was sent in the thread
+
+    @@unique([userId, documentId])
+    @@unique([threadId, documentId])
+    @@index([threadId])
+}

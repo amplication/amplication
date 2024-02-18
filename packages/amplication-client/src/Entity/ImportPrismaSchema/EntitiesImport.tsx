@@ -19,9 +19,9 @@ import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
 import { CREATE_ENTITIES_FROM_SCHEMA } from "./queries";
-import useUserActionWatchStatus from "./useUserActionWatchStatus";
 import { UploadSchemaStatus } from "./UploadSchemaStatus";
 import "./EntitiesImport.scss";
+import useUserActionWatchStatus from "../../UserAction/useUserActionWatchStatus";
 
 const PROCESSING_PRISMA_SCHEMA = "PROCESSING_PRISMA_SCHEMA";
 
