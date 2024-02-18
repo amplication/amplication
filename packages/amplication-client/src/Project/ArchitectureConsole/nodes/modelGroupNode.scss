@@ -17,6 +17,10 @@ $border-top-width: 6px;
       color: var(--theme-orange) !important;
     }
   }
+
+  &__context-menu-btn {
+    cursor: pointer;
+  }
   &.drop-target {
     border-left-width: 2px;
     border-right-width: 2px;

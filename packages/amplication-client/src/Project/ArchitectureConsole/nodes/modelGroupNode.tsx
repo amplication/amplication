@@ -2,6 +2,8 @@ import { memo, type FC, useCallback } from "react";
 import { useStore, type NodeProps } from "reactflow";
 import "./modelGroupNode.scss";
 import {
+  Button,
+  EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
   EnumItemsAlign,
@@ -46,7 +48,15 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
           contentAlign={EnumContentAlign.Start}
           direction={EnumFlexDirection.Column}
         >
-          <Text textStyle={EnumTextStyle.Normal}>{data.payload.name}</Text>
+          <FlexItem contentAlign={EnumContentAlign.Space}>
+            <Text textStyle={EnumTextStyle.Normal}>{data.payload.name}</Text>
+            <Button
+              buttonStyle={EnumButtonStyle.Text}
+              className="group-drag-handle"
+            >
+              ...
+            </Button>
+          </FlexItem>
           <Text textStyle={EnumTextStyle.Description}>
             {data.payload.description}
           </Text>
