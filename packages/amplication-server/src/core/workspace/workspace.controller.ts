@@ -3,7 +3,7 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { WorkspaceService } from "./workspace.service";
 import { ApiTags } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
-import { CreateWorkspacesResourcesDefaultCustomActionsMigrationInput } from "./dto/createWorkspacesResourcesDefaultCustomActionsMigrationInput";
+import { CreateWorkspacesResourcesDefaultCustomActionsMigrationInput } from "./dto/CreateWorkspacesResourcesDefaultCustomActionsMigrationInput";
 
 @ApiTags("workspace")
 @Controller("migrate-custom-actions")
