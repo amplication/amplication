@@ -9,6 +9,10 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../Components/Button";
 import { AppContext } from "../../context/appContext";
+import {
+  BtmButton,
+  EnumButtonLocation,
+} from "../../Resource/break-the-monolith/BtmButton";
 
 export const ImportSchemaSuccess = () => {
   const { currentWorkspace, currentProject, currentResource } =
@@ -28,11 +32,10 @@ export const ImportSchemaSuccess = () => {
         </Button>
       </Link>
 
-      <Link to={entitiesUrl}>
-        <Button buttonStyle={EnumButtonStyle.Outline}>
-          Break the monolith
-        </Button>
-      </Link>
+      <BtmButton
+        location={EnumButtonLocation.SchemaUpload}
+        openInFullScreen={false}
+      />
     </FlexItem>
   );
 };
