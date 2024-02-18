@@ -34,7 +34,7 @@ export const ImportSchemaSuccess = () => {
 
       <BtmButton
         location={EnumButtonLocation.SchemaUpload}
-        openInFullScreen={false}
+        openInFullScreen={true}
       />
     </FlexItem>
   );
