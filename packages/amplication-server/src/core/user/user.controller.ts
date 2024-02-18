@@ -1,8 +1,9 @@
-import { Controller, Inject, Param, Post } from "@nestjs/common";
+import { Body, Controller, Inject, Param, Post } from "@nestjs/common";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { UserService } from "./user.service";
 import { ApiTags } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
+import { NotifyUseFeatureAnnouncementInput } from "./dto/NotifyUseFeatureAnnouncementInput";
 
 @ApiTags("user")
 @Controller("announce-new-feature")
@@ -18,9 +19,9 @@ export class UserController {
   @Post(`notifyUseFeatureAnnouncement/:token`)
   async notifyUseFeatureAnnouncement(
     @Param("token") token: string,
-    @Param("user_active_days") userActiveDaysBack: number,
-    @Param("notification_identifier") notificationId: string
+    @Body() data: NotifyUseFeatureAnnouncementInput
   ): Promise<boolean> {
+    const { userActiveDaysBack, notificationId } = data;
     this.logger.info(
       "notifyUseFeatureAnnouncement",
       userActiveDaysBack,

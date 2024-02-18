@@ -207,13 +207,26 @@ export class UserService {
           gte: new Date(date.setDate(date.getDate() - userActiveDaysBack)),
         },
       },
+      include: {
+        account: true,
+        workspace: {
+          include: {
+            projects: {
+              where: {
+                deletedAt: null,
+              },
+            },
+          },
+        },
+      },
     });
 
     for (const user of users) {
-      this.logger.info(
-        `Queuing feature notification ${notificationTemplateIdentifier} to user ${user.id} (account: ${user.account?.id})`
-      );
       const firstProject = user.workspace?.projects?.at(0);
+      this.logger.info(
+        `Queuing feature notification ${notificationTemplateIdentifier} to user ${user.id} (account: ${user.account?.id}, workspace: ${user.workspace?.id}, firstProject: ${firstProject?.id})`
+      );
+
       this.kafkaProducerService
         .emitMessage(KAFKA_TOPICS.USER_ANNOUNCEMENT_TOPIC, <
           UserFeatureAnnouncement.KafkaEvent
