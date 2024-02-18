@@ -2,8 +2,6 @@ import { memo, type FC, useCallback } from "react";
 import { useStore, type NodeProps } from "reactflow";
 import "./modelGroupNode.scss";
 import {
-  Button,
-  EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
   EnumItemsAlign,
@@ -14,6 +12,7 @@ import {
 } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import { ResourceNode, ResourceNodePayload } from "../types";
+import EntityContextMenuButton from "../../../Components/EntityContextMenuButton";
 
 type ModelProps = NodeProps & {
   data: ResourceNodePayload;
@@ -30,6 +29,10 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
   const style = !data.isEditable
     ? { borderTopColor: data.groupColor }
     : { borderColor: data.groupColor };
+
+  const onSelectRelatedEntities = useCallback(async () => {
+    console.log("select all related entities");
+  }, []);
 
   return (
     data && (
@@ -50,12 +53,9 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
         >
           <FlexItem contentAlign={EnumContentAlign.Space}>
             <Text textStyle={EnumTextStyle.Normal}>{data.payload.name}</Text>
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              className="group-drag-handle"
-            >
-              ...
-            </Button>
+            <EntityContextMenuButton
+              onSelectRelatedEntities={onSelectRelatedEntities}
+            ></EntityContextMenuButton>
           </FlexItem>
           <Text textStyle={EnumTextStyle.Description}>
             {data.payload.description}

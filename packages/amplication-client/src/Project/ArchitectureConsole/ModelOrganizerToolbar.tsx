@@ -23,6 +23,7 @@ import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
 import { formatError } from "../../util/error";
+import EntityContextMenuButton from "../../Components/EntityContextMenuButton";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
@@ -78,6 +79,10 @@ export default function ModelOrganizerToolbar({
     setApplyChangesErrorMessage(null);
     resetUserAction();
   }, [confirmChanges, setConfirmChanges, resetUserAction]);
+
+  const onSelectRelatedEntities = useCallback(async () => {
+    console.log("select all related entities");
+  }, []);
 
   useEffect(() => {
     setApplyChangesErrorMessage(formatError(applyChangesError));
@@ -177,6 +182,9 @@ export default function ModelOrganizerToolbar({
                 onSelectResource={onRedesign}
               ></RedesignResourceButton>
             )}
+            <EntityContextMenuButton
+              onSelectRelatedEntities={onSelectRelatedEntities}
+            ></EntityContextMenuButton>
           </FlexItem>
         </FlexEnd>
       </FlexItem>
