@@ -49,6 +49,7 @@ const WorkspaceLayout: React.FC<Props> = ({
   const {
     currentWorkspace,
     subscriptionPlan,
+    subscriptionStatus,
     isPreviewPlan,
     handleSetCurrentWorkspace,
     createWorkspace,
@@ -156,6 +157,7 @@ const WorkspaceLayout: React.FC<Props> = ({
       newVal={{
         currentWorkspace,
         subscriptionPlan,
+        subscriptionStatus,
         isPreviewPlan,
         handleSetCurrentWorkspace,
         createWorkspace,
