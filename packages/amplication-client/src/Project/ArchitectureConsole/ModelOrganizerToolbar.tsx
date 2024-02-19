@@ -177,7 +177,7 @@ export default function ModelOrganizerToolbar({
                     openInFullScreen={false}
                     autoRedirectAfterCompletion
                     buttonText="AI helper"
-                    resourceToBreak={selectedEditableResource}
+                    selectedEditableResource={selectedEditableResource}
                   />
                 )}
                 <Button

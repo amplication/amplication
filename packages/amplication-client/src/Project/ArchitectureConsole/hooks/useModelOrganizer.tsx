@@ -134,8 +134,9 @@ const useModelOrganizer = ({
 
   const loadProjectResources = useCallback(
     (forceRefresh?: boolean, onLoadResourcesCompleted?: () => void) => {
+      // do not load the saved data in headless mode - this will override any saved data when used as headless
+      //try to load a saved copy of the data from the persistent layer
       if (!forceRefresh && !headlessMode) {
-        //try to load a saved copy of the data from the persistent layer
         const savedData = loadPersistentData();
 
         if (savedData && savedData.redesignMode) {

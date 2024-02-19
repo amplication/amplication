@@ -38,7 +38,7 @@ type Props = {
   autoRedirectAfterCompletion?: boolean;
   ButtonStyle?: EnumButtonStyle;
   buttonText?: string;
-  resourceToBreak?: Resource;
+  selectedEditableResource?: Resource;
 };
 
 const CONFIRM_BUTTON = { icon: "", label: "Override" };
@@ -50,7 +50,7 @@ export const BtmButton: React.FC<Props> = ({
   autoRedirectAfterCompletion = false,
   ButtonStyle = EnumButtonStyle.GradientOutline,
   buttonText = "Break the Monolith",
-  resourceToBreak,
+  selectedEditableResource,
 }) => {
   const { currentResource, currentProject, resources } = useAppContext();
   const { trackEvent } = useTracking();
@@ -87,7 +87,7 @@ export const BtmButton: React.FC<Props> = ({
         serviceName:
           selectedResource?.name ??
           currentResource?.name ??
-          resourceToBreak?.name,
+          selectedEditableResource?.name,
         location,
       });
     },
@@ -95,7 +95,7 @@ export const BtmButton: React.FC<Props> = ({
       currentResource?.name,
       loadPersistentData,
       location,
-      resourceToBreak?.name,
+      selectedEditableResource?.name,
       selectedResource?.name,
       toggleIsOpen,
       trackEvent,
@@ -103,8 +103,8 @@ export const BtmButton: React.FC<Props> = ({
   );
 
   const onButtonSelectResource = useCallback(() => {
-    selectResourceToBreak(currentResource ?? resourceToBreak);
-  }, [currentResource, selectResourceToBreak, resourceToBreak]);
+    selectResourceToBreak(currentResource ?? selectedEditableResource);
+  }, [currentResource, selectResourceToBreak, selectedEditableResource]);
 
   const onSelectMenuSelectResource = useCallback(
     (itemData: Resource) => {
@@ -119,7 +119,7 @@ export const BtmButton: React.FC<Props> = ({
 
   return (
     <>
-      {currentResource || resourceToBreak ? (
+      {currentResource || selectedEditableResource ? (
         <Button buttonStyle={ButtonStyle} onClick={onButtonSelectResource}>
           {buttonText}
         </Button>
