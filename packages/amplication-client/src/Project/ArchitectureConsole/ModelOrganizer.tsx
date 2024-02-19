@@ -91,7 +91,7 @@ export default function ModelOrganizer() {
     resetUserAction,
     clearDuplicateEntityError,
     errorMessage,
-    selectResourceRelatedEntities,
+    setSelectResourceRelatedEntities,
   } = useModelOrganization({
     projectId: currentProject?.id,
     onMessage: showMessage,
@@ -270,6 +270,14 @@ export default function ModelOrganizer() {
     fitToView();
   }, [nodes, edges, showRelationDetails, setNodes, fitToView]);
 
+  const onNodeClick = useCallback(
+    async (event: React.MouseEvent, node: Node) => {
+      if (!node.data.selectRelatedEntities) return;
+      setSelectResourceRelatedEntities(node as ResourceNode);
+    },
+    [setSelectResourceRelatedEntities]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <>
@@ -341,10 +349,7 @@ export default function ModelOrganizer() {
                 onNodeDragStop={onNodeDragStop}
                 onEdgesChange={onEdgesChange}
                 connectionMode={ConnectionMode.Loose}
-                onNodeClick={(event: React.MouseEvent, node: Node) => {
-                  if (!node.data.selectRelatedEntities) return;
-                  selectResourceRelatedEntities(node as ResourceNode);
-                }}
+                onNodeClick={onNodeClick}
                 proOptions={{ hideAttribution: true }}
                 minZoom={0.1}
                 panOnScroll

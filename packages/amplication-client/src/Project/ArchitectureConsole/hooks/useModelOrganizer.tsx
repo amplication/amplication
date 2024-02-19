@@ -225,6 +225,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
       });
       if (currentEditableResourceNode) {
         currentEditableResourceNode.data.isEditable = false;
+        currentEditableResourceNode.data.selectRelatedEntities = false;
       }
       setCurrentEditableResourceNode(null);
       setRedesignMode(false);
@@ -295,7 +296,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     []
   );
 
-  const selectResourceRelatedEntities = useCallback(
+  const setSelectResourceRelatedEntities = useCallback(
     (resource: ResourceNode) => {
       setNodes((nodes) => {
         nodes.forEach((node: EntityNode) => {
@@ -309,11 +310,12 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
           }
         });
         resource.data.selectRelatedEntities = false;
+        currentEditableResourceNode.data.selectRelatedEntities = false;
 
         return [...nodes];
       });
     },
-    []
+    [currentEditableResourceNode]
   );
 
   const setCurrentEditableResource = useCallback(
@@ -720,7 +722,7 @@ const useModelOrganization = ({ projectId, onMessage }: Props) => {
     mergeNewResourcesChanges,
     resetUserAction,
     clearDuplicateEntityError,
-    selectResourceRelatedEntities,
+    setSelectResourceRelatedEntities,
     redesignMode,
     errorMessage,
   };
