@@ -178,65 +178,63 @@ export { default as PlanUpgradeConfirmation } from "./components/PlanUpgradeConf
 export type { Props as PlanUpgradeConfirmationProps } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
 
 export { default as Tabs } from "./components/Tabs/Tabs";
-export { Props as TabsProps, TabProps, TabItem } from "./components/Tabs/Tabs";
+export type {
+  Props as TabsProps,
+  TabProps,
+  TabItem,
+} from "./components/Tabs/Tabs";
+
+export type {
+  Props as FlexItemProps,
+  FlexStartProps,
+  FlexEndProps,
+} from "./components/FlexItem/FlexItem";
 
 export {
   FlexItem,
-  Props as FlexItemProps,
   EnumFlexItemMargin,
   EnumFlexDirection,
   EnumContentAlign,
   EnumItemsAlign,
-  FlexStartProps,
-  FlexEndProps,
   EnumGapSize,
 } from "./components/FlexItem/FlexItem";
 
+export type { Props as TextProps } from "./components/Text/Text";
+
 export {
   Text,
-  Props as TextProps,
   EnumTextColor,
   EnumTextStyle,
   EnumTextWeight,
   EnumTextAlign,
 } from "./components/Text/Text";
 
-export {
-  Chip,
-  Props as ChipProps,
-  EnumChipStyle,
-} from "./components/Chip/Chip";
+export type { Props as ChipProps } from "./components/Chip/Chip";
 
-export {
-  List,
-  Props as ListProps,
-  EnumListStyle,
-} from "./components/List/List";
-export { ListItem, Props as ListItemProps } from "./components/List/ListItem";
+export { Chip, EnumChipStyle } from "./components/Chip/Chip";
 
-export {
-  TabContentTitle,
-  Props as TabContentTitleProps,
-} from "./components/TabContentTitle/TabContentTitle";
+export type { Props as ListProps } from "./components/List/List";
 
-export {
-  default as EnabledIndicator,
-  Props as EnabledIndicatorProps,
-} from "./components/EnabledIndicator/EnabledIndicator";
+export { List, EnumListStyle } from "./components/List/List";
 
-export {
-  VerticalNavigation,
-  Props as VerticalNavigationProps,
-} from "./components/VerticalNavigation/VerticalNavigation";
+export type { Props as ListItemProps } from "./components/List/ListItem";
 
-export {
-  VerticalNavigationItem,
-  Props as VerticalNavigationItemProps,
-} from "./components/VerticalNavigation/VerticalNavigationItem";
+export { ListItem } from "./components/List/ListItem";
+
+export type { Props as TabContentTitleProps } from "./components/TabContentTitle/TabContentTitle";
+export { TabContentTitle } from "./components/TabContentTitle/TabContentTitle";
+
+export type { Props as EnabledIndicatorProps } from "./components/EnabledIndicator/EnabledIndicator";
+export { default as EnabledIndicator } from "./components/EnabledIndicator/EnabledIndicator";
+
+export type { Props as VerticalNavigationProps } from "./components/VerticalNavigation/VerticalNavigation";
+export { VerticalNavigation } from "./components/VerticalNavigation/VerticalNavigation";
+
+export type { Props as VerticalNavigationItemProps } from "./components/VerticalNavigation/VerticalNavigationItem";
+export { VerticalNavigationItem } from "./components/VerticalNavigation/VerticalNavigationItem";
 
 export {
   ApiOperationTag,
-  Props as ApiOperationTagProps,
   EnumApiOperationTagStyle,
   EnumRestApiOperationTagType,
   EnumGqlApiOperationTagType,
