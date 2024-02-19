@@ -105,6 +105,7 @@ export const BtmButton: React.FC<Props> = ({
     }
 
     if (
+      hasRedesignArchitectureFeature &&
       subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
       subscriptionStatus !== EnumSubscriptionStatus.Trailing
     ) {
@@ -187,7 +188,7 @@ export const BtmButton: React.FC<Props> = ({
               {buttonText}
             </Button>
           }
-        ></FeatureIndicator>
+        />
       ) : (
         <FeatureIndicator
           featureName={BillingFeature.RedesignArchitecture}
