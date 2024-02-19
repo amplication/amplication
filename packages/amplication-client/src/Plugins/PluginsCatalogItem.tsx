@@ -99,7 +99,7 @@ function PluginsCatalogItem({
                 />
               </FlexItem.FlexStart>
               <FlexItem.FlexEnd>
-                {isDraggable && (
+                {isDraggable ? (
                   <div className={`${CLASS_NAME}__order`}>
                     <Button
                       buttonStyle={EnumButtonStyle.Text}
@@ -113,6 +113,17 @@ function PluginsCatalogItem({
                       icon="arrow_down"
                     />
                   </div>
+                ) : (
+                  <Link
+                    to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/plugins/installed/${pluginInstallation.id}`}
+                  >
+                    <Button
+                      className={`${CLASS_NAME}__install`}
+                      buttonStyle={EnumButtonStyle.Outline}
+                    >
+                      Settings
+                    </Button>
+                  </Link>
                 )}
               </FlexItem.FlexEnd>
             </FlexItem>
@@ -139,16 +150,18 @@ function PluginsCatalogItem({
               Install
             </Button>
           ) : (
-            <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/plugins/installed/${pluginInstallation.id}`}
-            >
-              <Button
-                className={`${CLASS_NAME}__install`}
-                buttonStyle={EnumButtonStyle.Outline}
+            isDraggable && (
+              <Link
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/plugins/installed/${pluginInstallation.id}`}
               >
-                Settings
-              </Button>
-            </Link>
+                <Button
+                  className={`${CLASS_NAME}__install`}
+                  buttonStyle={EnumButtonStyle.Outline}
+                >
+                  Settings
+                </Button>
+              </Link>
+            )
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
