@@ -8,6 +8,8 @@ import { createServer } from "./server/create-server";
 import { ILogger } from "@amplication/util/logging";
 import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
 import { dynamicPackagesInstallations } from "./dynamic-package-installation";
+import { logger } from "./logging";
+import { createDTOs } from "./server/resource/create-dtos";
 
 export async function createDataService(
   dSGResourceData: DSGResourceData,
@@ -20,6 +22,7 @@ export async function createDataService(
 
   await dynamicPackagesInstallations(
     dSGResourceData.pluginInstallations,
+    pluginInstallationPath,
     internalLogger
   );
 
@@ -47,20 +50,29 @@ export async function createDataService(
       buildId: dSGResourceData.buildId,
     });
 
-    const { appInfo } = context;
-    const { settings } = appInfo;
+    await context.logger.info("Creating DTOs...");
+    context.DTOs = await createDTOs(context.entities);
 
-    const serverModules = await createServer();
+    const {
+      appInfo: {
+        settings: {
+          serverSettings: { generateServer },
+          adminUISettings: { generateAdminUI },
+        },
+      },
+    } = context;
 
-    const { adminUISettings } = settings;
-    const { generateAdminUI } = adminUISettings;
+    const modules = new ModuleMap(context.logger);
 
-    const adminUIModules =
-      (generateAdminUI && (await createAdminModules())) ||
-      new ModuleMap(context.logger);
+    if (generateServer ?? true) {
+      logger.debug("Creating server...", { generateServer });
+      await modules.merge(await createServer());
+    }
 
-    const modules = serverModules;
-    await modules.merge(adminUIModules);
+    if (generateAdminUI) {
+      logger.debug("Creating admin...", { generateAdminUI });
+      await modules.merge(await createAdminModules());
+    }
 
     // This code normalizes the path of each module to always use Unix path separator.
     await context.logger.info(

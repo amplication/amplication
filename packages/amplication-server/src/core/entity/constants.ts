@@ -27,7 +27,6 @@ type EntityFieldData = Omit<
 > & { properties: JsonObject };
 
 export const USER_ENTITY_NAME = "User";
-export const USER_ENTITY_FIELDS = ["password", "username"];
 
 export const DEFAULT_PERMISSIONS: Prisma.EntityPermissionCreateWithoutEntityVersionInput[] =
   [
@@ -53,10 +52,7 @@ export const DEFAULT_PERMISSIONS: Prisma.EntityPermissionCreateWithoutEntityVers
     },
   ];
 
-export const SYSTEM_DATA_TYPES: Set<EnumDataType> = new Set([
-  EnumDataType.Id,
-  EnumDataType.Roles,
-]);
+export const SYSTEM_DATA_TYPES: Set<EnumDataType> = new Set([EnumDataType.Id]);
 
 export const INITIAL_ID_TYPE_FIELDS: EntityFieldData = {
   dataType: EnumDataType.Id,
@@ -146,7 +142,7 @@ export const DEFAULT_ENTITIES: EntityData[] = [
         displayName: "Username",
         description:
           "An automatically created field of the username of the user",
-        unique: false,
+        unique: true,
         required: true,
         searchable: true,
         properties: {

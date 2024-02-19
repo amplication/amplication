@@ -3,6 +3,7 @@ import { BuildLogger } from "./build-logger";
 import {
   clientDirectories,
   DTOs,
+  EntityActionsMap,
   ModuleMap,
   serverDirectories,
 } from "./code-gen-types";
@@ -59,6 +60,7 @@ export interface DsgContext extends DSGResourceData {
   userNameFieldName: string;
   userPasswordFieldName: string;
   userRolesFieldName: string;
+  entityActionsMap: EntityActionsMap;
 }
 
 export type PluginWrapper = (args: EventParams, func: () => void) => any;
@@ -112,6 +114,10 @@ export enum EventNames {
   CreateDTOs = "CreateDTOs",
   LoadStaticFiles = "LoadStaticFiles",
   CreateConnectMicroservices = "CreateConnectMicroservices",
+  /**
+   * Event that will allow plugins to add secrets references to the SecretsKeyNames enum
+   */
+  CreateServerSecretsManager = "CreateServerSecretsManager",
 }
 
 export interface AmplicationPlugin {

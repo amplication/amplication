@@ -14,6 +14,7 @@ export enum EnumGitProvider {
   Github = "Github",
   Bitbucket = "Bitbucket",
   AwsCodeCommit = "AwsCodeCommit",
+  GitLab = "GitLab",
 }
 
 export interface BitBucketConfiguration {

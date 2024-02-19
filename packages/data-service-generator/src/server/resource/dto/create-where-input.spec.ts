@@ -6,8 +6,9 @@ import {
   EXAMPLE_NON_SEARCHABLE_SINGLE_LINE_TEXT_FIELD,
 } from "../util/test-data";
 import { createInput } from "./create-input";
-import { createWhereInput, createWhereInputID } from "./create-where-input";
+import { createWhereInputID } from "./create-where-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import { createEntityInputFiles } from "../create-dtos";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -33,7 +34,9 @@ const EXAMPLE_ENTITY_WITH_NON_SEARCHABLE_FIELD: Entity = {
 
 describe("createWhereInput", () => {
   test("creates input", () => {
-    expect(print(createWhereInput(EXAMPLE_ENTITY)).code).toEqual(
+    expect(
+      print(createEntityInputFiles(EXAMPLE_ENTITY).whereInput).code
+    ).toEqual(
       print(
         createInput(
           createWhereInputID(EXAMPLE_ENTITY_NAME),
@@ -49,7 +52,10 @@ describe("createWhereInput", () => {
 
   test("creates input only for searchable fields", () => {
     expect(
-      print(createWhereInput(EXAMPLE_ENTITY_WITH_NON_SEARCHABLE_FIELD)).code
+      print(
+        createEntityInputFiles(EXAMPLE_ENTITY_WITH_NON_SEARCHABLE_FIELD)
+          .whereInput
+      ).code
     ).toEqual(
       print(
         createInput(

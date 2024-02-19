@@ -162,8 +162,15 @@ describe("BlockTypeService", () => {
       data: {},
       where: { id: EXAMPLE_IBLOCK_ID },
     };
-    expect(await service.update(args, EXAMPLE_USER)).toEqual(EXAMPLE_IBLOCK);
+    const excludeArr = [];
+    expect(await service.update(args, EXAMPLE_USER, excludeArr)).toEqual(
+      EXAMPLE_IBLOCK
+    );
     expect(blockServiceUpdateMock).toBeCalledTimes(1);
-    expect(blockServiceUpdateMock).toBeCalledWith(args, EXAMPLE_USER);
+    expect(blockServiceUpdateMock).toBeCalledWith(
+      args,
+      EXAMPLE_USER,
+      excludeArr
+    );
   });
 });

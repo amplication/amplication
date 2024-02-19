@@ -1,9 +1,11 @@
-import { registerEnumType } from "@nestjs/graphql";
 import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
 import { UserActionLog } from "@amplication/schema-registry";
+import { registerEnumType } from "@nestjs/graphql";
 
 export enum EnumUserActionType {
   DBSchemaImport = "DBSchemaImport",
+  GptConversation = "GptConversation",
+  ProjectRedesign = "ProjectRedesign",
 }
 
 registerEnumType(EnumUserActionType, {

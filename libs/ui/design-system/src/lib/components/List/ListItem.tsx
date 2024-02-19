@@ -24,6 +24,7 @@ export type Props = {
   to?: string;
   showDefaultActionIcon?: boolean;
   onClick?: (event: any) => void;
+  removeDefaultPadding?: boolean;
 } & FlexItemProps;
 
 export function ListItem(props: Props) {
@@ -39,7 +40,9 @@ export function ListItem(props: Props) {
     direction = EnumFlexDirection.Column,
     contentAlign = EnumContentAlign.Start,
     itemsAlign = EnumItemsAlign.Start,
+    gap = EnumGapSize.Small,
     margin,
+    removeDefaultPadding = false,
 
     ...rest
   } = props;
@@ -54,6 +57,7 @@ export function ListItem(props: Props) {
       role={clickable ? "button" : undefined}
       className={classNames(CLASS_NAME, className, {
         [`${CLASS_NAME}--clickable`]: clickable,
+        [`${CLASS_NAME}--no-padding`]: removeDefaultPadding,
       })}
       to={to}
       {...rest}
@@ -69,7 +73,7 @@ export function ListItem(props: Props) {
           direction={direction}
           contentAlign={contentAlign}
           itemsAlign={itemsAlign}
-          gap={EnumGapSize.Small}
+          gap={gap}
         >
           {children}
         </FlexItem>

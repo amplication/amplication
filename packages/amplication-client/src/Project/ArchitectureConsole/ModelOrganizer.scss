@@ -1,0 +1,95 @@
+@import "../../style/index.scss";
+
+$feature-tag-padding: 2px 12px;
+$addon-margin-bottom: 44px;
+$addon-feature-tag-border-radius: 32px;
+$addon-feature-tag-gap: 4px;
+$addon-title-line-height: 36px;
+
+.model-organizer {
+  width: 100%;
+  height: 100%;
+
+  &__feature-tag {
+    display: flex;
+    align-items: center;
+    gap: $addon-feature-tag-gap;
+    padding: $feature-tag-padding;
+    border-radius: $addon-feature-tag-border-radius;
+    background-color: var(--feature-indicator);
+  }
+
+  &__confirmationDialog {
+    display: flex;
+    padding: 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  &__addon-section {
+    background-color: var(--gray-full);
+    width: 100%;
+    height: 146px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-70);
+    gap: 8px;
+
+    &__contact-us {
+      & span {
+        color: var(--feature-indicator);
+      }
+    }
+
+    &__title {
+      line-height: $addon-title-line-height;
+    }
+  }
+
+  &__resources {
+    width: 40px;
+    height: 211px;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--gray-80);
+    margin: 8px;
+    background-color: var(--gray-full);
+  }
+
+  &__container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: var(--default-spacing);
+  }
+
+  &__body {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    gap: var(--default-spacing);
+  }
+
+  &__resource {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid var(--gray-80);
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+
+  &__side_toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--default-spacing);
+  }
+
+  .reactflow-wrapper {
+    flex: 1;
+  }
+}

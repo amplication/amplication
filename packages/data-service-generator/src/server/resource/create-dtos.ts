@@ -93,37 +93,97 @@ export async function createDTOs(entities: Entity[]): Promise<DTOs> {
   return Object.fromEntries(entitiesDTOsMap);
 }
 
+const pipe =
+  (...fns) =>
+  (x) =>
+    fns.reduce((y, f) => f(y), x);
+export const createEntityInputFiles = (entity: Entity): Partial<EntityDTOs> => {
+  const fieldsLen = entity.fields.length;
+  const entityDTOsFilesObj = {
+    fieldsLen,
+    index: 0,
+    entity,
+    field: null,
+    entityDTO: {
+      properties: [],
+      DTO: null as NamedClassDeclaration,
+    },
+    createInput: {
+      properties: [],
+      DTO: null as NamedClassDeclaration,
+    },
+    updateInput: {
+      properties: [],
+      DTO: null as NamedClassDeclaration,
+    },
+    whereInput: {
+      properties: [],
+      DTO: null as NamedClassDeclaration,
+    },
+    whereUniqueInput: {
+      properties: [],
+      DTO: null as NamedClassDeclaration,
+    },
+  };
+
+  for (let i = 0; i < fieldsLen; i++) {
+    entityDTOsFilesObj.index = i;
+    entityDTOsFilesObj.field = entity.fields[i];
+    pipe(
+      createEntityDTO,
+      createCreateInput,
+      createUpdateInput,
+      createWhereInput,
+      createWhereUniqueInput
+    )(entityDTOsFilesObj);
+  }
+
+  return {
+    entity: entityDTOsFilesObj.entityDTO.DTO,
+    createInput: entityDTOsFilesObj.createInput.DTO,
+    updateInput: entityDTOsFilesObj.updateInput.DTO,
+    whereInput: entityDTOsFilesObj.whereInput.DTO,
+    whereUniqueInput: entityDTOsFilesObj.whereUniqueInput.DTO,
+  };
+};
+
 async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
-  const entityDTO = createEntityDTO(entity);
-  const createInput = createCreateInput(entity);
-  const updateInput = createUpdateInput(entity);
-  const whereInput = createWhereInput(entity);
-  const whereUniqueInput = createWhereUniqueInput(entity);
-  const createArgs = await createCreateArgs(entity, createInput);
+  const createEntityFiles = createEntityInputFiles(entity);
+  const createArgs = await createCreateArgs(
+    entity,
+    createEntityFiles.createInput
+  );
   const orderByInput = await createOrderByInput(entity);
-  const deleteArgs = await createDeleteArgs(entity, whereUniqueInput);
-  const countArgs = await createCountArgs(entity, whereInput);
+  const deleteArgs = await createDeleteArgs(
+    entity,
+    createEntityFiles.whereUniqueInput
+  );
+  const countArgs = await createCountArgs(entity, createEntityFiles.whereInput);
   const findManyArgs = await createFindManyArgs(
     entity,
-    whereInput,
+    createEntityFiles.whereInput,
     orderByInput
   );
-  const findOneArgs = await createFindOneArgs(entity, whereUniqueInput);
+  const findOneArgs = await createFindOneArgs(
+    entity,
+    createEntityFiles.whereUniqueInput
+  );
   const updateArgs = await createUpdateArgs(
     entity,
-    whereUniqueInput,
-    updateInput
+    createEntityFiles.whereUniqueInput,
+    createEntityFiles.updateInput
   );
   const listRelationFilter = await createEntityListRelationFilter(
     entity,
-    whereInput
+    createEntityFiles.whereInput
   );
+  // end read file
   const dtos: EntityDTOs = {
-    entity: entityDTO,
-    createInput,
-    updateInput,
-    whereInput,
-    whereUniqueInput,
+    entity: createEntityFiles.entity,
+    createInput: createEntityFiles.createInput,
+    updateInput: createEntityFiles.updateInput,
+    whereInput: createEntityFiles.whereInput,
+    whereUniqueInput: createEntityFiles.whereUniqueInput,
     deleteArgs,
     countArgs,
     findManyArgs,

@@ -1,9 +1,7 @@
 import * as common from "@nestjs/common";
 import { Request } from "express";
-// @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { plainToClass } from "class-transformer";
-// @ts-ignore
 import * as errors from "../../errors";
 
 declare interface WHERE_UNIQUE_INPUT {
@@ -23,7 +21,7 @@ declare interface SERVICE {
     args: RELATED_ENTITY_WHERE_INPUT
   ): Promise<RELATED_ENTITY[]>;
 
-  update(args: {
+  UPDATE_FUNCTION(args: {
     where: WHERE_UNIQUE_INPUT;
     data: {
       PROPERTY: {
@@ -76,7 +74,7 @@ export class Mixin {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.UPDATE_FUNCTION({
       where: params,
       data,
       select: { id: true },
@@ -93,7 +91,7 @@ export class Mixin {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.UPDATE_FUNCTION({
       where: params,
       data,
       select: { id: true },
@@ -110,7 +108,7 @@ export class Mixin {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.UPDATE_FUNCTION({
       where: params,
       data,
       select: { id: true },

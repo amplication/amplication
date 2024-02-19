@@ -1,5 +1,5 @@
 import type { StoryFn, Meta } from "@storybook/react";
-import { CircularProgress } from "./CircularProgress";
+import CircularProgress from "./CircularProgress";
 
 const Story: Meta<typeof CircularProgress> = {
   component: CircularProgress,

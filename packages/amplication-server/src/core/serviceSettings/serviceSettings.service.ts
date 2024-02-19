@@ -51,12 +51,17 @@ export class ServiceSettingsService {
         },
         EnumBlockType.ServiceSettings
       );
+
     if (!serviceSettings) {
+      // create default service settings will also set the server settings > generateServer to true
       serviceSettings = await this.createDefaultServiceSettings(
         args.where.id,
         user
       );
     }
+
+    // set the service settings > server settings > generateServer to true by default, as we don't have a UI for it so the client can't set it
+    serviceSettings.serverSettings.generateServer = true;
 
     return {
       ...serviceSettings,
@@ -159,6 +164,7 @@ export class ServiceSettingsService {
     const settings = DEFAULT_SERVICE_SETTINGS;
 
     if (serviceSettings)
+      // for backwards compatibility, we need to update the service settings with the new field (generateServer)
       this.updateServiceGenerationSettings(settings, serviceSettings);
 
     return this.blockService.create<ServiceSettings>(
@@ -181,17 +187,22 @@ export class ServiceSettingsService {
     serviceSettings: ServiceSettingsUpdateInput
   ): void {
     const { generateAdminUI, adminUIPath } = serviceSettings.adminUISettings;
-    const { generateGraphQL, generateRestApi, serverPath } =
-      serviceSettings.serverSettings;
+    const {
+      generateGraphQL,
+      generateRestApi,
+      generateServer = true,
+      serverPath,
+    } = serviceSettings.serverSettings;
 
     (settings.adminUISettings = {
       generateAdminUI: generateAdminUI,
       adminUIPath: adminUIPath,
     }),
       (settings.serverSettings = {
-        generateGraphQL: generateGraphQL,
-        generateRestApi: generateRestApi,
-        serverPath: serverPath,
+        generateGraphQL,
+        generateRestApi,
+        generateServer,
+        serverPath,
       }),
       (settings.authEntityName = serviceSettings.authEntityName);
   }

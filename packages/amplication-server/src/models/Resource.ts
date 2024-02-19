@@ -93,6 +93,9 @@ export class Resource {
   })
   codeGeneratorStrategy?: keyof typeof CodeGeneratorVersionStrategy;
 
+  @Field(() => Boolean, { nullable: false, defaultValue: true })
+  licensed: boolean;
+
   // no need to expose to GraphQL
   deletedAt?: Date;
 }

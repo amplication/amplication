@@ -4,9 +4,8 @@ import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
 } from "../../../util/test-data";
-import { createUpdateInput } from "../../create-update-input";
-import { createWhereUniqueInput } from "../../create-where-unique-input";
 import { createUpdateArgs, createUpdateArgsId } from "./create-update-args";
+import { createEntityInputFiles } from "../../../create-dtos";
 
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
@@ -17,8 +16,9 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [EXAMPLE_ID_FIELD, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],
 };
-const EXAMPLE_WHERE_UNIQUE_INPUT = createWhereUniqueInput(EXAMPLE_ENTITY);
-const EXAMPLE_UPDATE_INPUT = createUpdateInput(EXAMPLE_ENTITY);
+const EXAMPLE_DTO_ENTITY = createEntityInputFiles(EXAMPLE_ENTITY);
+const EXAMPLE_WHERE_UNIQUE_INPUT = EXAMPLE_DTO_ENTITY.whereUniqueInput;
+const EXAMPLE_UPDATE_INPUT = EXAMPLE_DTO_ENTITY.updateInput;
 const EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS: Entity = {
   id: "EXAMPLE_ENTITY_WITHOUT_CREATABLE_FIELDS_ID",
   name: "ExampleEntityWithoutCreatableFields",
@@ -28,9 +28,10 @@ const EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS: Entity = {
   fields: [EXAMPLE_ID_FIELD],
   permissions: [],
 };
-const EXAMPLE_UPDATE_INPUT_WITHOUT_CREATABLE_FIELDS = createUpdateInput(
-  EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS
-);
+const EXAMPLE_UPDATE_INPUT_WITHOUT_CREATABLE_FIELDS_DTO =
+  createEntityInputFiles(EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS);
+const EXAMPLE_UPDATE_INPUT_WITHOUT_CREATABLE_FIELDS =
+  EXAMPLE_UPDATE_INPUT_WITHOUT_CREATABLE_FIELDS_DTO.updateInput;
 
 describe("createUpdateArgs", () => {
   test("creates update args", async () => {
