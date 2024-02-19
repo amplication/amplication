@@ -22,7 +22,7 @@ import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { v4 as uuidv4 } from "uuid";
 
 jest.mock("uuid", () => ({
-  v4: jest.fn().mockReturnValue("123456"),
+  v4: jest.fn(),
 }));
 
 const resourceIdMock = "resourceId";
@@ -61,9 +61,9 @@ const userActionMock = {
 const startConversationMock = jest.fn();
 const userActionServiceFindOneMock = jest.fn();
 const resourceFindUniqueMock = jest.fn();
-const billingServiceIsBillingEnabledMock = jest.fn();
-const resourceFindManyMock = jest.fn(() => Promise.resolve([resourceMock]));
+const resourceFindManyMock = jest.fn();
 
+const billingServiceIsBillingEnabledMock = jest.fn();
 const getSubscriptionMock = jest.fn();
 const billingServiceMock = {
   getSubscription: getSubscriptionMock,
@@ -319,6 +319,8 @@ describe("ResourceBtmService", () => {
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
 
+      resourceFindManyMock.mockResolvedValueOnce([resourceMock]);
+
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
@@ -386,6 +388,7 @@ describe("ResourceBtmService", () => {
           },
         ],
       };
+
       const originalResource: ResourceDataForBtm = {
         id: resourceIdMock,
         name: "order",
@@ -482,6 +485,8 @@ describe("ResourceBtmService", () => {
       jest
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
+
+      resourceFindManyMock.mockResolvedValueOnce([resourceMock]);
 
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
@@ -621,6 +626,8 @@ describe("ResourceBtmService", () => {
       jest
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
+
+      resourceFindManyMock.mockResolvedValueOnce([resourceMock]);
 
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
@@ -813,6 +820,8 @@ describe("ResourceBtmService", () => {
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
 
+      resourceFindManyMock.mockResolvedValueOnce([resourceMock]);
+
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
@@ -1001,6 +1010,10 @@ describe("ResourceBtmService", () => {
         ],
       };
 
+      jest
+        .spyOn(service, "getResourceDataForBtm")
+        .mockResolvedValue(originalResource);
+
       resourceFindManyMock.mockResolvedValueOnce([
         resourceMock,
         {
@@ -1014,10 +1027,6 @@ describe("ResourceBtmService", () => {
           name: "order", // the original service
         },
       ]);
-
-      jest
-        .spyOn(service, "getResourceDataForBtm")
-        .mockResolvedValue(originalResource);
 
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
