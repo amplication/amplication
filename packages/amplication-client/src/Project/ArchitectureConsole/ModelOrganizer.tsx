@@ -59,7 +59,13 @@ const edgeTypes = {
 };
 
 export default function ModelOrganizer() {
-  const { currentProject } = useAppContext();
+  const { currentProject, resetPendingChangesIndicator } = useAppContext();
+
+  useEffect(() => {
+    if (!resetPendingChangesIndicator) return;
+    resetChanges();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetPendingChangesIndicator]);
 
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
