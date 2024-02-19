@@ -845,7 +845,7 @@ describe("ResourceBtmService", () => {
       const originalResource: ResourceDataForBtm = {
         name: "order",
         project: resourceMock.project,
-        id: resourceIdMock,
+        id: "orderServiceId",
         entities: [
           {
             id: "order",
@@ -972,8 +972,13 @@ describe("ResourceBtmService", () => {
         resourceMock,
         {
           ...resourceMock,
-          id: "otherResourceId",
+          id: "productServiceId",
           name: "product",
+        },
+        {
+          ...resourceMock,
+          id: "orderServiceId",
+          name: "order", // the original service
         },
       ]);
 
@@ -1004,7 +1009,7 @@ describe("ResourceBtmService", () => {
             ],
           },
           {
-            name: "order",
+            name: `order_${suffix}`,
             functionality: "manage orders, prices and payments",
             tables: [
               {
