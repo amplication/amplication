@@ -26,6 +26,8 @@ import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.
 import { types } from "@amplication/code-gen-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { EnumResourceType } from "./dto/EnumResourceType";
+import { v4 } from "uuid";
 
 @Injectable()
 export class ResourceBtmService {
@@ -216,11 +218,28 @@ export class ResourceBtmService {
     return JSON.stringify(prompt);
   }
 
+  handleProjectServicesCollision(
+    projectServices: { name: string }[],
+    serviceName: string
+  ): string {
+    let validServiceName = serviceName;
+    projectServices.forEach((service) => {
+      const isDuplicated = service.name === serviceName;
+
+      if (isDuplicated) {
+        const suffix = v4().split("-")[0];
+        validServiceName = `${serviceName}_${suffix}`;
+      }
+    });
+    return validServiceName;
+  }
+
   /**
    * This function prepares the GPT recommendation for the Break the Monolith result
    * It filters out the tables that the GPT result has that the original resource doesn't have
    * It makes sure that there are no duplicated tables in the microservices by removing the duplicates and putting them on the microservice with the least amount of tables
    * It makes sure that the result will not includes microservices with no tables
+   * It renames microservices that have the same name as a service in the project
    * @param promptResult - GPT recommendation
    * @param resourceId
    * @returns the GPT recommendation with some data structure manipulation
@@ -230,63 +249,102 @@ export class ResourceBtmService {
     resourceId: string
   ): Promise<BreakServiceToMicroservicesData> {
     const promptResultObj = this.mapToBreakTheMonolithOutput(promptResult);
-
-    const recommendedResourceEntities = promptResultObj.microservices
-      .map((resource) => resource.tables)
-      .flat();
-
-    const duplicatedEntities = this.findDuplicatedEntities(
-      recommendedResourceEntities
-    );
-    const usedDuplicatedEntities = new Set<string>();
-
     const originalResource = await this.getResourceDataForBtm(resourceId);
     const originalResourceEntityNamesSet = new Set(
       originalResource.entities.map((entity) => entity.name)
     );
+    const recommendedResourceEntities = promptResultObj.microservices
+      .map((resource) => resource.tables)
+      .flat();
 
-    const inventedEntitiesByGpt = recommendedResourceEntities.filter(
-      (item) => !originalResourceEntityNamesSet.has(item)
+    let inventedEntitiesByGpt: string[] = [];
+    let duplicatedEntities = new Set<string>();
+    const usedDuplicatedEntities = new Set<string>();
+
+    const projectServices = await this.prisma.resource.findMany({
+      where: {
+        projectId: originalResource.project?.id,
+        deletedAt: null,
+        resourceType: EnumResourceType.Service,
+      },
+      select: {
+        name: true,
+      },
+    });
+
+    const microserviceNameToTablesMap = promptResultObj.microservices
+      .filter((microservice) => microservice.tables.length > 0)
+      .map((microservice) => {
+        duplicatedEntities = this.findDuplicatedEntities(
+          recommendedResourceEntities
+        );
+        inventedEntitiesByGpt = recommendedResourceEntities.filter(
+          (item) => !originalResourceEntityNamesSet.has(item)
+        );
+        return {
+          name: this.handleProjectServicesCollision(
+            projectServices,
+            microservice.name
+          ),
+          functionality: microservice.functionality,
+          tables: microservice.tables,
+        };
+      })
+      .sort((a, b) => a.tables.length - b.tables.length)
+      .reduce(
+        (
+          acc: Record<string, { functionality: string; tables: string[] }>,
+          microservice
+        ) => {
+          acc[microservice.name] = {
+            functionality: microservice.functionality,
+            tables: microservice.tables,
+          };
+          return acc;
+        },
+        {}
+      );
+
+    const microserviceData = Object.entries(microserviceNameToTablesMap).map(
+      ([microserviceName, { functionality, tables }]) => {
+        const microserviceTables = tables
+          .filter((tableName) => {
+            const isDuplicatedAlreadyUsed =
+              usedDuplicatedEntities.has(tableName);
+            if (!isDuplicatedAlreadyUsed && duplicatedEntities.has(tableName)) {
+              usedDuplicatedEntities.add(tableName);
+            }
+            return (
+              originalResourceEntityNamesSet.has(tableName) &&
+              !isDuplicatedAlreadyUsed &&
+              !inventedEntitiesByGpt.includes(tableName)
+            );
+          })
+          .map((tableName) => {
+            const entityNameIdMap = originalResource.entities.reduce(
+              (map, entity) => {
+                map[entity.name] = entity;
+                return map;
+              },
+              {} as Record<string, EntityDataForBtm>
+            );
+
+            return {
+              name: tableName,
+              originalEntityId: entityNameIdMap[tableName].id,
+            };
+          });
+
+        return {
+          name: microserviceName,
+          functionality: functionality,
+          tables: microserviceTables,
+        };
+      }
     );
 
     return {
-      microservices: promptResultObj.microservices
-        .sort((a, b) => a.tables.length - b.tables.length)
-        .map((microservice) => ({
-          name: microservice.name,
-          functionality: microservice.functionality,
-          tables: microservice.tables
-            .filter((tableName) => {
-              const isDuplicatedAlreadyUsed =
-                usedDuplicatedEntities.has(tableName);
-              if (
-                !isDuplicatedAlreadyUsed &&
-                duplicatedEntities.has(tableName)
-              ) {
-                usedDuplicatedEntities.add(tableName);
-              }
-              return (
-                originalResourceEntityNamesSet.has(tableName) &&
-                !isDuplicatedAlreadyUsed &&
-                !inventedEntitiesByGpt.includes(tableName)
-              );
-            })
-            .map((tableName) => {
-              const entityNameIdMap = originalResource.entities.reduce(
-                (map, entity) => {
-                  map[entity.name] = entity;
-                  return map;
-                },
-                {} as Record<string, EntityDataForBtm>
-              );
-
-              return {
-                name: tableName,
-                originalEntityId: entityNameIdMap[tableName].id,
-              };
-            }),
-        }))
-        .filter((microservice) => microservice.tables.length > 0),
+      microservices: microserviceData,
     };
   }
 
