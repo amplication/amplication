@@ -15,7 +15,7 @@ function FeatureRequestTile() {
 
   return (
     <OverviewSecondaryTile
-      icon="main_logo"
+      icon="logo"
       title="Submit a Feature Request"
       message="If there’s something you’d like to see in Amplication, open a Feature Request on GitHub and tell us about it."
       footer={
