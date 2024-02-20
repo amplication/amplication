@@ -28,7 +28,7 @@ import useModelOrganizer from "../../Project/ArchitectureConsole/hooks/useModelO
 
 const CLASS_NAME = "break-the-monolith";
 
-const LOADER_TITLE = "Experience the Microservices Marvel using Amplication AI";
+const LOADER_TITLE = "Experience the Microservices marvel using Amplication AI";
 const LOADER_SUBTITLE =
   "Our AI-driven magic is currently at work, suggesting how to elevate your service and its entities into a thriving microservices wonderland";
 
