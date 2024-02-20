@@ -32,7 +32,7 @@ const WarningTooltip = styled(
 
 const CLASS_NAME = "amp-feature-indicator";
 
-const tooltipDefaultTextUpgrade = "Upgrade";
+export const tooltipDefaultTextUpgrade = "Upgrade";
 
 export const tooltipDefaultText = `Explore this feature, included in your 14-day Enterprise trial. ${tooltipDefaultTextUpgrade} for continued access.`;
 

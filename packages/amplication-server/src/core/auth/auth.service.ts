@@ -357,7 +357,7 @@ export class AuthService {
 
   async completeSignupPreviewAccount(user: User): Promise<string> {
     let auth0User: JSONApiResponse<SignUpResponse>;
-    const { account: currentAccount, workspace } = user;
+    const { account: currentAccount } = user;
 
     const existingAuth0User = await this.getAuth0UserByEmail(
       currentAccount.previewAccountEmail
@@ -371,11 +371,9 @@ export class AuthService {
         throw Error("Failed to create new Auth0 user");
     }
 
-    const userEmail = existingAuth0User
-      ? currentAccount.previewAccountEmail
-      : auth0User.data.email;
-
-    const resetPassword = await this.resetAuth0UserPassword(userEmail);
+    const resetPassword = await this.resetAuth0UserPassword(
+      currentAccount.previewAccountEmail
+    );
 
     if (!resetPassword.data)
       throw Error("Failed to send reset message to new Auth0 user");
@@ -387,20 +385,14 @@ export class AuthService {
     });
 
     if (!existingAccount) {
-      // the current (preview) account didn't sign up yet, so we update his preview account to a regular account.
-      // His data will be kept.
       await this.accountService.updateAccount({
         where: { id: currentAccount.id },
         data: {
-          email: userEmail,
-          previewAccountEmail: null,
-          previewAccountType: EnumPreviewAccountType.None,
+          // at this stage we only update the email, so in loginOrSignUp we'll have the correct email to find the user
+          // and convert the preview account to a regular account with free trial
+          email: currentAccount.previewAccountEmail,
         },
       });
-
-      await this.workspaceService.convertPreviewSubscriptionToFreeWithTrial(
-        workspace.id
-      );
     }
 
     return resetPassword.data;
@@ -767,20 +759,46 @@ export class AuthService {
         OR: [{ githubId: profile.sub }, { email: profile.email }],
       },
     });
+
     let isNew: boolean;
     const existingUser = !!user;
-    if (!user) {
-      user = await this.createUser(profile);
-      isNew = true;
-    }
-    if (!user.account.githubId || user.account.githubId !== profile.sub) {
-      user = await this.updateUser(user, { githubId: profile.sub });
+
+    // to complete the preview account signup, after the user reset the password in Auth0 we need to update the account type and workspace subscription
+    if (
+      user &&
+      user.account.previewAccountType !== EnumPreviewAccountType.None
+    ) {
+      await this.convertPreviewAccountToRegularAccountWithFreeTrail(user);
       isNew = false;
+    } else {
+      if (!user) {
+        user = await this.createUser(profile);
+        isNew = true;
+      }
+
+      if (!user.account.githubId || user.account.githubId !== profile.sub) {
+        user = await this.updateUser(user, { githubId: profile.sub });
+        isNew = false;
+      }
     }
 
     this.trackCompleteEmailSignup(user.account, profile, existingUser);
 
     await this.configureJtw(response, user, isNew);
+  }
+
+  async convertPreviewAccountToRegularAccountWithFreeTrail(user: User) {
+    await this.accountService.updateAccount({
+      where: { id: user.account.id },
+      data: {
+        previewAccountEmail: null,
+        previewAccountType: EnumPreviewAccountType.None,
+      },
+    });
+
+    await this.workspaceService.convertPreviewSubscriptionToFreeWithTrial(
+      user.workspace.id
+    );
   }
 
   async configureJtw(

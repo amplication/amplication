@@ -310,4 +310,16 @@ export const Routes: RouteDef[] = [
     exactPath: true,
     isAnalytics: true,
   },
+  {
+    path: "/select-preview-env",
+    Component: lazy(
+      () => import("../Resource/break-the-monolith/SelectPreviewEnvPage")
+    ),
+    moduleName: "SelectPreviewEnvPage",
+    moduleClass: "select-preview-env-page",
+    routeTrackType: "",
+    exactPath: true,
+    isAnalytics: true,
+    permission: true,
+  },
 ];

@@ -71,4 +71,5 @@ export type ModelOrganizerPersistentData = {
   changes: ModelChanges;
   showRelationDetails: boolean;
   redesignMode: boolean;
+  refetchChangesOnNextReload?: boolean;
 };

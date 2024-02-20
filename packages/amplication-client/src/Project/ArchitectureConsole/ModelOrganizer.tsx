@@ -27,7 +27,7 @@ import relationEdge from "./edges/relationEdge";
 import RelationMarkets from "./edges/relationMarkets";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
 import { findGroupByPosition } from "./helpers";
-import useModelOrganization from "./hooks/useModelOrganizer";
+import useModelOrganizer from "./hooks/useModelOrganizer";
 import { applyAutoLayout } from "./layout";
 import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
@@ -58,14 +58,12 @@ const edgeTypes = {
   relationSimple: simpleRelationEdge,
 };
 
-export default function ModelOrganizer() {
-  const { currentProject, resetPendingChangesIndicator } = useAppContext();
+type Props = {
+  restrictedMode?: boolean;
+};
 
-  useEffect(() => {
-    if (!resetPendingChangesIndicator) return;
-    resetChanges();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resetPendingChangesIndicator]);
+export default function ModelOrganizer({ restrictedMode = false }: Props) {
+  const { currentProject, resetPendingChangesIndicator } = useAppContext();
 
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
@@ -94,11 +92,13 @@ export default function ModelOrganizer() {
     mergeNewResourcesChanges,
     redesignMode,
     resetUserAction,
+    currentEditableResourceNode,
     clearDuplicateEntityError,
     errorMessage,
-  } = useModelOrganization({
+  } = useModelOrganizer({
     projectId: currentProject?.id,
     onMessage: showMessage,
+    showRelationDetailsOnStartup: restrictedMode,
   });
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
@@ -106,6 +106,12 @@ export default function ModelOrganizer() {
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
 
   const fitViewTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (!resetPendingChangesIndicator) return;
+    resetChanges();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetPendingChangesIndicator]);
 
   const fitToView = useCallback(
     (delayBeforeStart = 100) => {
@@ -291,6 +297,10 @@ export default function ModelOrganizer() {
           </div>
           <div className={`${CLASS_NAME}__body`}>
             <ModelOrganizerToolbar
+              restrictedMode={restrictedMode}
+              selectedEditableResource={
+                currentEditableResourceNode?.data?.payload
+              }
               changes={changes}
               nodes={nodes}
               redesignMode={redesignMode}
