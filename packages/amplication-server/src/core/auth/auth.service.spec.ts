@@ -94,6 +94,7 @@ const EXAMPLE_WORKSPACE: Workspace & { users: User[] } = {
   createdAt: new Date(),
   updatedAt: new Date(),
   users: [EXAMPLE_USER],
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_OTHER_WORKSPACE: Workspace = {
@@ -101,6 +102,7 @@ const EXAMPLE_OTHER_WORKSPACE: Workspace = {
   name: "Example Other Workspace",
   createdAt: new Date(),
   updatedAt: new Date(),
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_USER_ROLE: UserRole = {

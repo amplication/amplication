@@ -40,6 +40,7 @@ const EXAMPLE_USER: User = {
     createdAt: new Date(),
     updatedAt: new Date(),
     name: "example_workspace_name",
+    allowLLMFeatures: true,
   },
   isOwner: true,
 };
