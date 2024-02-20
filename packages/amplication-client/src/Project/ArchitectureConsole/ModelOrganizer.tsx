@@ -33,6 +33,7 @@ import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
 import {
+  EntityNode,
   NODE_TYPE_MODEL,
   NODE_TYPE_MODEL_GROUP,
   Node,
@@ -94,6 +95,7 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     resetUserAction,
     currentEditableResourceNode,
     clearDuplicateEntityError,
+    setSelectResourceRelatedEntities,
     errorMessage,
   } = useModelOrganizer({
     projectId: currentProject?.id,
@@ -280,6 +282,14 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     fitToView();
   }, [nodes, edges, showRelationDetails, setNodes, fitToView]);
 
+  const onNodeClick = useCallback(
+    async (event: React.MouseEvent, node: Node) => {
+      if (!node.data.selectRelatedEntities) return;
+      setSelectResourceRelatedEntities(node as EntityNode);
+    },
+    [setSelectResourceRelatedEntities]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <>
@@ -355,6 +365,7 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
                 onNodeDragStop={onNodeDragStop}
                 onEdgesChange={onEdgesChange}
                 connectionMode={ConnectionMode.Loose}
+                onNodeClick={onNodeClick}
                 proOptions={{ hideAttribution: true }}
                 minZoom={0.1}
                 panOnScroll
