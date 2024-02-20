@@ -63,7 +63,7 @@ type Props = {
 };
 
 export default function ModelOrganizer({ restrictedMode = false }: Props) {
-  const { currentProject } = useAppContext();
+  const { currentProject, resetPendingChangesIndicator } = useAppContext();
 
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
@@ -106,6 +106,12 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
 
   const fitViewTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (!resetPendingChangesIndicator) return;
+    resetChanges();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetPendingChangesIndicator]);
 
   const fitToView = useCallback(
     (delayBeforeStart = 100) => {
