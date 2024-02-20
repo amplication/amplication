@@ -56,6 +56,10 @@ type Props = {
 const CONFIRM_BUTTON = { icon: "", label: "Override" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
+const FULL_ACCESS_TEXT =
+  "Get AI recommendation for breaking a service into micro-services";
+const NO_ACCESS_TEXT = "Available as part of the Enterprise plan only.";
+
 export const BtmButton: React.FC<Props> = ({
   location,
   openInFullScreen,
@@ -84,8 +88,10 @@ export const BtmButton: React.FC<Props> = ({
   );
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const [tooltipText, setTooltipText] = useState<string>("");
-  const [upgradeTooltipText, setUpgradeTooltipText] = useState<string>("");
+  const [tooltipText, setTooltipText] = useState<string>(tooltipDefaultText);
+  const [upgradeTooltipText, setUpgradeTooltipText] = useState<string>(
+    tooltipDefaultTextUpgrade
+  );
 
   const hasRedesignArchitectureFeature = stigg.getBooleanEntitlement({
     featureId: BillingFeature.RedesignArchitecture,
@@ -104,7 +110,7 @@ export const BtmButton: React.FC<Props> = ({
     }
 
     if (!hasRedesignArchitectureFeature) {
-      setTooltipText("Available as part of the Enterprise plan only.");
+      setTooltipText(NO_ACCESS_TEXT);
       setUpgradeTooltipText(tooltipDefaultTextUpgrade);
     }
 
@@ -121,9 +127,7 @@ export const BtmButton: React.FC<Props> = ({
         subscriptionStatus !== EnumSubscriptionStatus.Trailing) ||
         isPreviewPlan)
     ) {
-      setTooltipText(
-        "Get AI recommendation for breaking a service into micro-services"
-      );
+      setTooltipText(FULL_ACCESS_TEXT);
       setUpgradeTooltipText("");
     }
   }, [
@@ -268,6 +272,7 @@ export const BtmButton: React.FC<Props> = ({
         }
         onConfirm={() => {
           selectResourceToBreak(selectedResource, true);
+          setShowConfirmation(false);
         }}
         onDismiss={() => {
           setShowConfirmation(false);
