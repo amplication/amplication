@@ -83,6 +83,7 @@ const GET_WORKSPACE_QUERY = gql`
     workspace(where: { id: $id }) {
       id
       name
+      allowLLMFeatures
       createdAt
       updatedAt
     }
@@ -110,6 +111,7 @@ const DELETE_WORKSPACE_MUTATION = gql`
     deleteWorkspace(where: { id: $id }) {
       id
       name
+      allowLLMFeatures
       createdAt
       updatedAt
     }
@@ -121,6 +123,7 @@ const UPDATE_WORKSPACE_MUTATION = gql`
     updateWorkspace(data: {}, where: { id: $id }) {
       id
       name
+      allowLLMFeatures
       createdAt
       updatedAt
     }
