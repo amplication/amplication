@@ -11,10 +11,10 @@ import {
   SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
-import "./RedesignResourceButton.scss";
+import "./EntityContextMenuButton.scss";
 import { useCallback, useState } from "react";
 
-const CLASS_NAME = "redesign-resource-button"; //todo: create new css file
+const CLASS_NAME = "entity-context-menu-button";
 
 type Props = {
   isContextMenuEnable: boolean;
@@ -51,7 +51,7 @@ export default function EntityContextMenuButton({
                 textStyle={EnumTextStyle.Tag}
                 textColor={EnumTextColor.Black20}
               >
-                {"menu"}
+                {"Options"}
               </Text>
             </FlexItem>
             <SelectMenuItem
