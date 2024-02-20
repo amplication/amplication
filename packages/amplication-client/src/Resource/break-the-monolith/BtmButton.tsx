@@ -134,7 +134,11 @@ export const BtmButton: React.FC<Props> = ({
       if (!overrideChangesConfirmed) {
         const savedData = loadPersistentData();
 
-        if (savedData && savedData.redesignMode) {
+        if (
+          savedData &&
+          (savedData.changes?.movedEntities?.length > 0 ||
+            savedData.changes?.newServices?.length > 0)
+        ) {
           setShowConfirmation(true);
           return;
         }
