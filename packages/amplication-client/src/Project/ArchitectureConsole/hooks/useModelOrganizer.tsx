@@ -348,6 +348,7 @@ const useModelOrganizer = ({
 
   const mergeNewResourcesChanges = useCallback(
     (currentEditableResource?: models.Resource) => {
+      console.log(currentEditableResource, "currentEditableResource");
       loadProjectResourcesInternal({
         variables: {
           projectId: projectId,

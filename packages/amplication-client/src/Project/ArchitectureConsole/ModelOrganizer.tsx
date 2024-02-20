@@ -38,6 +38,7 @@ import {
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
+import { useHistory, useLocation } from "react-router-dom";
 
 export const CLASS_NAME = "model-organizer";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -121,6 +122,20 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     },
     [reactFlowInstance]
   );
+
+  const location = useLocation();
+  const history = useHistory();
+
+  useEffect(() => {
+    if (location.state?.refresh) {
+      console.log("Refresh requested");
+      mergeNewResourcesChanges();
+      history.replace({
+        ...location,
+        state: { ...location.state, refresh: false },
+      });
+    }
+  }, [location, history, mergeNewResourcesChanges]);
 
   useEffect(() => {
     // Clear the timeout ref when the component unmounts

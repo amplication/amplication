@@ -66,9 +66,10 @@ const BreakTheMonolith: React.FC<Props> = ({
       setApplyingResults(true);
       saveBreakTheMonolithResultsIntoState(btmResult);
       autoRedirectAfterCompletion &&
-        history.push(
-          `/${currentWorkspace?.id}/${currentProject?.id}/architecture`
-        );
+        history.push({
+          pathName: `/${currentWorkspace?.id}/${currentProject?.id}/architecture`,
+          state: { refresh: true },
+        });
     }
   }, [
     applyingResults,

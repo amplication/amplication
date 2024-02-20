@@ -17,6 +17,7 @@ const useModelOrganizerPersistentData = (projectId: string) => {
 
   const persistData = useCallback(
     (data: ModelOrganizerPersistentData) => {
+      console.log("persistData", data);
       setPersistentDataInternal(JSON.stringify(data));
     },
     [setPersistentDataInternal]
