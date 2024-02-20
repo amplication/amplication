@@ -258,6 +258,7 @@ export const BtmButton: React.FC<Props> = ({
         }
         onConfirm={() => {
           selectResourceToBreak(selectedResource, true);
+          setShowConfirmation(false);
         }}
         onDismiss={() => {
           setShowConfirmation(false);
