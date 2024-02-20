@@ -70,6 +70,7 @@ export const BtmButton: React.FC<Props> = ({
     resources,
     subscriptionPlan,
     subscriptionStatus,
+    isPreviewPlan,
   } = useAppContext();
   const { trackEvent } = useTracking();
   const { stigg } = useStiggContext();
@@ -106,15 +107,21 @@ export const BtmButton: React.FC<Props> = ({
 
     if (
       hasRedesignArchitectureFeature &&
-      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
-      subscriptionStatus !== EnumSubscriptionStatus.Trailing
+      ((subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+        subscriptionStatus !== EnumSubscriptionStatus.Trailing) ||
+        isPreviewPlan)
     ) {
       setTooltipText(
         "Get AI recommendation for breaking a service into micro-services"
       );
       setUpgradeTooltipText("");
     }
-  }, [hasRedesignArchitectureFeature, subscriptionPlan, subscriptionStatus]);
+  }, [
+    hasRedesignArchitectureFeature,
+    isPreviewPlan,
+    subscriptionPlan,
+    subscriptionStatus,
+  ]);
 
   const toggleIsOpen = useCallback(() => {
     setIsOpen(!isOpen);
