@@ -19,20 +19,17 @@ export interface ResourceDataForBtm
 
 interface DataModel {
   name: string;
-  fields: {
-    name: string;
-    dataType: string;
-  }[];
+  relations: string[];
 }
 
 export interface BreakTheMonolithPromptInput {
-  dataModels: DataModel[];
+  tables: DataModel[];
 }
 
 export interface BreakTheMonolithOutput {
   microservices: {
     name: string;
     functionality: string;
-    dataModels: string[];
+    tables: string[];
   }[];
 }

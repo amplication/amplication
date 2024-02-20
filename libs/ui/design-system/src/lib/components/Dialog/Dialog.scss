@@ -1,7 +1,8 @@
 @import "../../style/index.scss";
 
 $modal-max-width: 50vw;
-$modal-top-position: 20vh;
+$modal-top-position: 10vh;
+$modal-max-height: 80vh;
 
 .amp-dialog {
   box-shadow: none;
@@ -10,10 +11,13 @@ $modal-top-position: 20vh;
   width: max-content !important;
   max-width: $modal-max-width;
   min-width: var(--modal-min-width);
+  max-height: $modal-max-height !important;
+  overflow: auto;
   margin-top: $modal-top-position !important;
   margin-bottom: 0 !important;
   background-color: var(--gray-90) !important;
   padding: var(--double-spacing);
+  box-sizing: border-box;
 
   //mobile
   @media only screen and (max-width: $breakpoint-tablet) {

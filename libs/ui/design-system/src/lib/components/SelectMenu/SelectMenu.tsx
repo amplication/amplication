@@ -13,12 +13,13 @@ import SearchField, {
   Props as SearchFieldProps,
 } from "../SearchField/SearchField";
 
-import { Button, EnumButtonStyle } from "../Button/Button";
+import { Button, EnumButtonStyle, EnumIconPosition } from "../Button/Button";
 
 import "./SelectMenu.scss";
 
 export interface Props extends Omit<SelectMenuProps, "title"> {
   buttonStyle?: EnumButtonStyle;
+  buttonIconPosition?: EnumIconPosition;
   disabled?: boolean;
   title: string | React.ReactNode;
   icon?: string;
@@ -31,6 +32,7 @@ export interface Props extends Omit<SelectMenuProps, "title"> {
 const SelectButton: React.FC<Props> = ({
   disabled,
   buttonStyle,
+  buttonIconPosition = EnumIconPosition.Right,
   title,
   icon,
   openIcon,
@@ -43,6 +45,7 @@ const SelectButton: React.FC<Props> = ({
       {...(disabled ? { disabled } : { as: "summary" })}
       className={className}
       buttonStyle={buttonStyle}
+      iconPosition={buttonIconPosition}
       icon={openIcon ? ((menuContext as any).open ? openIcon : icon) : icon}
       iconSize={"xsmall"}
     >
@@ -62,6 +65,7 @@ export const SelectMenu = ({
   openIcon,
   selectRef,
   hideSelectedItemsIndication = false,
+  buttonIconPosition = EnumIconPosition.Right,
   ...rest
 }: Props) => {
   if (disabled) {
@@ -69,6 +73,7 @@ export const SelectMenu = ({
       <div className={classNames("select-menu", className)}>
         <SelectButton
           disabled={disabled}
+          buttonIconPosition={buttonIconPosition}
           buttonStyle={buttonStyle}
           buttonClassName={buttonClassName}
           icon={icon}
@@ -90,6 +95,7 @@ export const SelectMenu = ({
         <SelectButton
           disabled={disabled}
           buttonStyle={buttonStyle}
+          buttonIconPosition={buttonIconPosition}
           buttonClassName={buttonClassName}
           icon={icon}
           openIcon={openIcon}

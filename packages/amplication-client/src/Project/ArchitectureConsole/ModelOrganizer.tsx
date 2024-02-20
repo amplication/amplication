@@ -27,7 +27,7 @@ import relationEdge from "./edges/relationEdge";
 import RelationMarkets from "./edges/relationMarkets";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
 import { findGroupByPosition } from "./helpers";
-import useModelOrganization from "./hooks/useModelOrganizer";
+import useModelOrganizer from "./hooks/useModelOrganizer";
 import { applyAutoLayout } from "./layout";
 import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
@@ -58,7 +58,11 @@ const edgeTypes = {
   relationSimple: simpleRelationEdge,
 };
 
-export default function ModelOrganizer() {
+type Props = {
+  restrictedMode?: boolean;
+};
+
+export default function ModelOrganizer({ restrictedMode = false }: Props) {
   const { currentProject } = useAppContext();
 
   const [reactFlowInstance, setReactFlowInstance] =
@@ -88,11 +92,13 @@ export default function ModelOrganizer() {
     mergeNewResourcesChanges,
     redesignMode,
     resetUserAction,
+    currentEditableResourceNode,
     clearDuplicateEntityError,
     errorMessage,
-  } = useModelOrganization({
+  } = useModelOrganizer({
     projectId: currentProject?.id,
     onMessage: showMessage,
+    showRelationDetailsOnStartup: restrictedMode,
   });
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
@@ -285,6 +291,10 @@ export default function ModelOrganizer() {
           </div>
           <div className={`${CLASS_NAME}__body`}>
             <ModelOrganizerToolbar
+              restrictedMode={restrictedMode}
+              selectedEditableResource={
+                currentEditableResourceNode?.data?.payload
+              }
               changes={changes}
               nodes={nodes}
               redesignMode={redesignMode}

@@ -16,6 +16,9 @@ import { BillingService } from "../billing/billing.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
+import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 const resourceIdMock = "resourceId";
 const userIdMock = "userId";
@@ -50,13 +53,41 @@ const userActionMock = {
   actionId: actionIdMock,
 } as unknown as UserAction;
 
-const startConversationMock = jest.fn(() => Promise.resolve(userActionMock));
-const userActionServiceFindOneMock = jest.fn(() =>
-  Promise.resolve(userActionMock)
-);
+const startConversationMock = jest.fn();
+const userActionServiceFindOneMock = jest.fn();
+const resourceFindUniqueMock = jest.fn();
+const resourceFindManyMock = jest.fn();
 
-const resourceFindUniqueMock = jest.fn(() => Promise.resolve(resourceMock));
+const billingServiceIsBillingEnabledMock = jest.fn();
 const getSubscriptionMock = jest.fn();
+const billingServiceMock = {
+  getSubscription: getSubscriptionMock,
+  getMeteredEntitlement: jest.fn(() => {
+    return {
+      usageLimit: undefined,
+    } as unknown as MeteredEntitlement;
+  }),
+  getNumericEntitlement: jest.fn(() => {
+    return {};
+  }),
+  getBooleanEntitlement: jest.fn(() => {
+    return {};
+  }),
+  reportUsage: jest.fn(() => {
+    return {};
+  }),
+  provisionCustomer: jest.fn(() => {
+    return {};
+  }),
+  provisionPreviewCustomer: jest.fn(() => {
+    return {};
+  }),
+};
+// This is important to mock the getter!!!
+Object.defineProperty(billingServiceMock, "isBillingEnabled", {
+  get: billingServiceIsBillingEnabledMock,
+});
+
 const trackMock = jest.fn();
 
 describe("ResourceBtmService", () => {
@@ -64,6 +95,7 @@ describe("ResourceBtmService", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   beforeAll(async () => {
@@ -81,6 +113,7 @@ describe("ResourceBtmService", () => {
           useValue: {
             resource: {
               findUnique: resourceFindUniqueMock,
+              findMany: resourceFindManyMock,
             },
           },
         },
@@ -95,7 +128,7 @@ describe("ResourceBtmService", () => {
         }),
         {
           provide: BillingService,
-          useValue: { getSubscription: getSubscriptionMock },
+          useValue: billingServiceMock,
         },
         MockedAmplicationLoggerProvider,
       ],
@@ -111,6 +144,8 @@ describe("ResourceBtmService", () => {
     getSubscriptionMock.mockResolvedValue({
       subscriptionPlan: EnumSubscriptionPlan.Enterprise,
     });
+
+    resourceFindUniqueMock.mockResolvedValue(resourceMock);
 
     await service.startRedesign(userMock, resourceMock.id);
 
@@ -128,19 +163,24 @@ describe("ResourceBtmService", () => {
     });
   });
 
-  describe("translateToBtmRecommendation", () => {
+  describe("prepareBtmRecommendations", () => {
     it("should map the prompt result to a btm recommendation", async () => {
       const promptResult: BreakTheMonolithOutput = {
         microservices: [
           {
             name: "product",
             functionality: "manage products",
-            dataModels: ["product"],
+            tables: ["product"],
           },
           {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: ["order", "orderItem"],
+            tables: ["order", "orderItem"],
+          },
+          {
+            name: "customer",
+            functionality: "manage customer",
+            tables: ["customer"],
           },
         ],
       };
@@ -274,12 +314,34 @@ describe("ResourceBtmService", () => {
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
 
+      resourceFindManyMock.mockResolvedValueOnce([resourceMock]);
+
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
+            name: "product",
+            functionality: "manage products",
+            tables: [
+              {
+                name: "product",
+                originalEntityId: "product",
+              },
+            ],
+          },
+          {
+            name: "customer",
+            functionality: "manage customer",
+            tables: [
+              {
+                name: "customer",
+                originalEntityId: "customer",
+              },
+            ],
+          },
+          {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: [
+            tables: [
               {
                 name: "order",
                 originalEntityId: "order",
@@ -287,16 +349,6 @@ describe("ResourceBtmService", () => {
               {
                 name: "orderItem",
                 originalEntityId: "orderItem",
-              },
-            ],
-          },
-          {
-            name: "product",
-            functionality: "manage products",
-            dataModels: [
-              {
-                name: "product",
-                originalEntityId: "product",
               },
             ],
           },
@@ -317,15 +369,21 @@ describe("ResourceBtmService", () => {
           {
             name: "product",
             functionality: "manage products",
-            dataModels: ["product"],
+            tables: ["product"],
           },
           {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: ["order", "orderItem"],
+            tables: ["order", "orderItem"],
+          },
+          {
+            name: "customer",
+            functionality: "manage customer",
+            tables: ["customer"],
           },
         ],
       };
+
       const originalResource: ResourceDataForBtm = {
         id: resourceIdMock,
         name: "order",
@@ -364,39 +422,6 @@ describe("ResourceBtmService", () => {
                     name: "itemsId",
                     displayName: "ItemsId",
                     dataType: EnumDataType.SingleLineText,
-                    properties: {},
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            id: "orderItem",
-            name: "orderItem",
-            displayName: "OrderItem",
-            versions: [
-              {
-                fields: [
-                  {
-                    name: "order",
-                    displayName: "Order",
-                    dataType: EnumDataType.Lookup,
-                    properties: {
-                      relatedEntityId: "order",
-                    },
-                  },
-                  {
-                    name: "product",
-                    displayName: "Product",
-                    dataType: EnumDataType.Lookup,
-                    properties: {
-                      relatedEntityId: "product",
-                    },
-                  },
-                  {
-                    name: "quantity",
-                    displayName: "Quantity",
-                    dataType: EnumDataType.DecimalNumber,
                     properties: {},
                   },
                 ],
@@ -456,29 +481,37 @@ describe("ResourceBtmService", () => {
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
 
+      resourceFindManyMock.mockResolvedValueOnce([resourceMock]);
+
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
-            name: "order",
-            functionality: "manage orders, prices and payments",
-            dataModels: [
+            name: "product",
+            functionality: "manage products",
+            tables: [
               {
-                name: "order",
-                originalEntityId: "order",
-              },
-              {
-                name: "orderItem",
-                originalEntityId: "orderItem",
+                name: "product",
+                originalEntityId: "product",
               },
             ],
           },
           {
-            name: "product",
-            functionality: "manage products",
-            dataModels: [
+            name: "customer",
+            functionality: "manage customer",
+            tables: [
               {
-                name: "product",
-                originalEntityId: "product",
+                name: "customer",
+                originalEntityId: "customer",
+              },
+            ],
+          },
+          {
+            name: "order",
+            functionality: "manage orders, prices and payments",
+            tables: [
+              {
+                name: "order",
+                originalEntityId: "order",
               },
             ],
           },
@@ -493,18 +526,18 @@ describe("ResourceBtmService", () => {
       expect(result).toStrictEqual(expectedResult);
     });
 
-    it("should add entities that are duplicated in the prompt result only to new resource with more dataModels", async () => {
+    it("should add entities that are duplicated in the prompt result only to new resource with least amount of tables", async () => {
       const promptResult: BreakTheMonolithOutput = {
         microservices: [
           {
             name: "product",
             functionality: "manage products",
-            dataModels: ["product", "price"],
+            tables: ["product", "price"],
           },
           {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: ["order", "orderItem", "price"],
+            tables: ["order", "orderItem", "price"],
           },
         ],
       };
@@ -589,19 +622,17 @@ describe("ResourceBtmService", () => {
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
 
+      resourceFindManyMock.mockResolvedValueOnce([resourceMock]);
+
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
-            name: "order",
-            functionality: "manage orders, prices and payments",
-            dataModels: [
+            name: "product",
+            functionality: "manage products",
+            tables: [
               {
-                name: "order",
-                originalEntityId: "order",
-              },
-              {
-                name: "orderItem",
-                originalEntityId: "orderItem",
+                name: "product",
+                originalEntityId: "product",
               },
               {
                 name: "price",
@@ -610,12 +641,16 @@ describe("ResourceBtmService", () => {
             ],
           },
           {
-            name: "product",
-            functionality: "manage products",
-            dataModels: [
+            name: "order",
+            functionality: "manage orders, prices and payments",
+            tables: [
               {
-                name: "product",
-                originalEntityId: "product",
+                name: "order",
+                originalEntityId: "order",
+              },
+              {
+                name: "orderItem",
+                originalEntityId: "orderItem",
               },
             ],
           },
@@ -636,17 +671,17 @@ describe("ResourceBtmService", () => {
           {
             name: "product",
             functionality: "manage products",
-            dataModels: ["product"],
+            tables: ["product", "customer"],
           },
           {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: ["order", "orderItem"],
+            tables: ["order", "orderItem"],
           },
           {
             name: "customer",
             functionality: "manage customers",
-            dataModels: [],
+            tables: [],
           },
         ],
       };
@@ -780,12 +815,28 @@ describe("ResourceBtmService", () => {
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
 
+      resourceFindManyMock.mockResolvedValueOnce([resourceMock]);
+
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
+            name: "product",
+            functionality: "manage products",
+            tables: [
+              {
+                name: "product",
+                originalEntityId: "product",
+              },
+              {
+                name: "customer",
+                originalEntityId: "customer",
+              },
+            ],
+          },
+          {
             name: "order",
             functionality: "manage orders, prices and payments",
-            dataModels: [
+            tables: [
               {
                 name: "order",
                 originalEntityId: "order",
@@ -796,13 +847,214 @@ describe("ResourceBtmService", () => {
               },
             ],
           },
+        ],
+      };
+
+      const result = await service.prepareBtmRecommendations(
+        JSON.stringify(promptResult),
+        resourceIdMock
+      );
+
+      expect(result).toStrictEqual(expectedResult);
+    });
+
+    it("should rename service name from gpt recommendation if it already exists in the project services", async () => {
+      const promptResult: BreakTheMonolithOutput = {
+        microservices: [
           {
             name: "product",
             functionality: "manage products",
-            dataModels: [
+            tables: ["product"],
+          },
+          {
+            name: "order",
+            functionality: "manage orders, prices and payments",
+            tables: ["order", "orderItem"],
+          },
+          {
+            name: "customer",
+            functionality: "manage customer",
+            tables: ["customer"],
+          },
+        ],
+      };
+      const originalResource: ResourceDataForBtm = {
+        name: "order",
+        project: resourceMock.project,
+        id: "orderServiceId",
+        entities: [
+          {
+            id: "order",
+            name: "order",
+            displayName: "Order",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "address",
+                    displayName: "address",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "address",
+                    },
+                  },
+                  {
+                    name: "status",
+                    displayName: "Status",
+                    dataType: EnumDataType.Boolean,
+                    properties: {},
+                  },
+                  {
+                    name: "customer",
+                    displayName: "Customer",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "customer",
+                    },
+                  },
+                  {
+                    name: "itemsId",
+                    displayName: "ItemsId",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "orderItem",
+            name: "orderItem",
+            displayName: "OrderItem",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "order",
+                    displayName: "Order",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "order",
+                    },
+                  },
+                  {
+                    name: "product",
+                    displayName: "Product",
+                    dataType: EnumDataType.Lookup,
+                    properties: {
+                      relatedEntityId: "product",
+                    },
+                  },
+                  {
+                    name: "quantity",
+                    displayName: "Quantity",
+                    dataType: EnumDataType.DecimalNumber,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "product",
+            name: "product",
+            displayName: "Product",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "name",
+                    displayName: "Name",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "price",
+                    displayName: "Price",
+                    dataType: EnumDataType.DecimalNumber,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "customer",
+            name: "customer",
+            displayName: "Customer",
+            versions: [
+              {
+                fields: [
+                  {
+                    name: "firstName",
+                    displayName: "First Name",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                  {
+                    name: "lastName",
+                    displayName: "Last Name",
+                    dataType: EnumDataType.SingleLineText,
+                    properties: {},
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      jest
+        .spyOn(service, "getResourceDataForBtm")
+        .mockResolvedValue(originalResource);
+
+      resourceFindManyMock.mockResolvedValueOnce([
+        resourceMock,
+        {
+          ...resourceMock,
+          id: "productServiceId",
+          name: "product",
+        },
+        {
+          ...resourceMock,
+          id: "orderServiceId",
+          name: "order", // the original service
+        },
+      ]);
+
+      const expectedResult: BreakServiceToMicroservicesData = {
+        microservices: [
+          {
+            name: expect.stringMatching(/^product_[a-z0-9]{8}$/),
+            functionality: "manage products",
+            tables: [
               {
                 name: "product",
                 originalEntityId: "product",
+              },
+            ],
+          },
+          {
+            name: "customer",
+            functionality: "manage customer",
+            tables: [
+              {
+                name: "customer",
+                originalEntityId: "customer",
+              },
+            ],
+          },
+          {
+            name: expect.stringMatching(/^order_[a-z0-9]{8}$/),
+            functionality: "manage orders, prices and payments",
+            tables: [
+              {
+                name: "order",
+                originalEntityId: "order",
+              },
+              {
+                name: "orderItem",
+                originalEntityId: "orderItem",
               },
             ],
           },
@@ -981,87 +1233,11 @@ describe("ResourceBtmService", () => {
         ],
       });
       expect(JSON.parse(result)).toStrictEqual({
-        dataModels: [
-          {
-            fields: [
-              {
-                dataType: "address",
-                name: "address",
-              },
-              {
-                dataType: "bool",
-                name: "status",
-              },
-              {
-                dataType: "customer",
-                name: "customer",
-              },
-              {
-                dataType: "string",
-                name: "itemsId",
-              },
-            ],
-            name: "order",
-          },
-          {
-            fields: [
-              {
-                dataType: "string",
-                name: "firstName",
-              },
-              {
-                dataType: "string",
-                name: "lastName",
-              },
-              {
-                dataType: "string",
-                name: "email",
-              },
-              {
-                dataType: "address",
-                name: "address",
-              },
-            ],
-            name: "customer",
-          },
-          {
-            fields: [
-              {
-                dataType: "string",
-                name: "name",
-              },
-              {
-                dataType: "int",
-                name: "price",
-              },
-              {
-                dataType: "string",
-                name: "description",
-              },
-            ],
-            name: "item",
-          },
-          {
-            name: "address",
-            fields: [
-              {
-                dataType: "string",
-                name: "street",
-              },
-              {
-                dataType: "string",
-                name: "city",
-              },
-              {
-                dataType: "string",
-                name: "state",
-              },
-              {
-                dataType: "string",
-                name: "zip",
-              },
-            ],
-          },
+        tables: [
+          { name: "order", relations: ["address", "customer"] },
+          { name: "customer", relations: ["address"] },
+          { name: "item", relations: [] },
+          { name: "address", relations: [] },
         ],
       });
     });
@@ -1070,19 +1246,19 @@ describe("ResourceBtmService", () => {
   describe("parsePromptResult", () => {
     it("should return a validated BreakTheMonolithOutput", () => {
       const result = service.mapToBreakTheMonolithOutput(
-        '{"microservices":[{"name":"ecommerce","functionality":"manage orders, prices and payments","dataModels":["order","customer","item","address"]},{"name":"inventory","functionality":"manage inventory","dataModels":["item","address"]}]}'
+        '{"microservices":[{"name":"ecommerce","functionality":"manage orders, prices and payments","tables":["order","customer","item","address"]},{"name":"inventory","functionality":"manage inventory","tables":["item","address"]}]}'
       );
       expect(result).toStrictEqual({
         microservices: [
           {
             name: "ecommerce",
             functionality: "manage orders, prices and payments",
-            dataModels: ["order", "customer", "item", "address"],
+            tables: ["order", "customer", "item", "address"],
           },
           {
             name: "inventory",
             functionality: "manage inventory",
-            dataModels: ["item", "address"],
+            tables: ["item", "address"],
           },
         ],
       });
@@ -1100,50 +1276,155 @@ describe("ResourceBtmService", () => {
 
   describe("triggerBreakServiceIntoMicroservices", () => {
     const mockPromptResult = "prompt-result";
-    it("should start a conversation with the GPT service", async () => {
-      jest
-        .spyOn(service, "getResourceDataForBtm")
-        .mockResolvedValue(resourceMock as ResourceDataForBtm);
 
-      jest
-        .spyOn(service, "generatePromptForBreakTheMonolith")
-        .mockReturnValue(mockPromptResult);
-
-      getSubscriptionMock.mockResolvedValue({
-        subscriptionPlan: EnumSubscriptionPlan.Pro,
+    describe("when billing is disabled", () => {
+      beforeEach(() => {
+        billingServiceIsBillingEnabledMock.mockReturnValue(false);
       });
+      it("should start a conversation with the GPT service", async () => {
+        jest
+          .spyOn(service, "getResourceDataForBtm")
+          .mockResolvedValue(resourceMock as ResourceDataForBtm);
 
-      const result = await service.triggerBreakServiceIntoMicroservices({
-        resourceId: resourceMock.id,
-        user: userMock,
-      });
+        jest
+          .spyOn(service, "generatePromptForBreakTheMonolith")
+          .mockReturnValue(mockPromptResult);
 
-      expect(getSubscriptionMock).toHaveBeenCalledTimes(1);
-      expect(getSubscriptionMock).toHaveBeenCalledWith(userMock.workspace.id);
-      expect(trackMock).toHaveBeenCalledTimes(1);
-      expect(trackMock).toHaveBeenCalledWith({
-        properties: {
-          projectId: resourceMock.project.id,
+        getSubscriptionMock.mockResolvedValue({
+          subscriptionPlan: EnumSubscriptionPlan.Pro,
+        });
+
+        startConversationMock.mockResolvedValue(userActionMock);
+
+        const result = await service.triggerBreakServiceIntoMicroservices({
           resourceId: resourceMock.id,
-          serviceName: resourceMock.name,
-          plan: EnumSubscriptionPlan.Pro,
-        },
-        event: EnumEventType.ArchitectureRedesignStartBreakTheMonolith,
-      });
-      expect(startConversationMock).toHaveBeenCalledTimes(1);
-      expect(startConversationMock).toHaveBeenCalledWith(
-        ConversationTypeKey.BreakTheMonolith,
-        [
-          {
-            name: "userInput",
-            value: mockPromptResult,
-          },
-        ],
-        userIdMock,
-        resourceIdMock
-      );
+          user: userMock,
+        });
 
-      expect(result).toStrictEqual(userActionMock);
+        expect(getSubscriptionMock).toHaveBeenCalledTimes(1);
+        expect(getSubscriptionMock).toHaveBeenCalledWith(userMock.workspace.id);
+        expect(trackMock).toHaveBeenCalledTimes(1);
+        expect(trackMock).toHaveBeenCalledWith({
+          properties: {
+            projectId: resourceMock.project.id,
+            resourceId: resourceMock.id,
+            serviceName: resourceMock.name,
+            plan: EnumSubscriptionPlan.Pro,
+          },
+          event: EnumEventType.ArchitectureRedesignStartBreakTheMonolith,
+        });
+        expect(startConversationMock).toHaveBeenCalledTimes(1);
+        expect(startConversationMock).toHaveBeenCalledWith(
+          ConversationTypeKey.BreakTheMonolith,
+          [
+            {
+              name: "userInput",
+              value: mockPromptResult,
+            },
+          ],
+          userIdMock,
+          resourceIdMock
+        );
+
+        expect(billingServiceMock.getBooleanEntitlement).not.toHaveBeenCalled();
+        expect(result).toStrictEqual(userActionMock);
+      });
+    });
+
+    describe("when billing is enabled", () => {
+      beforeEach(() => {
+        billingServiceIsBillingEnabledMock.mockReturnValue(true);
+      });
+
+      it("should throw a billing limitation error when the user doesn't have the entitlement", async () => {
+        billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+          hasAccess: false,
+        } as unknown as BooleanEntitlement);
+
+        jest
+          .spyOn(service, "getResourceDataForBtm")
+          .mockResolvedValue(resourceMock as ResourceDataForBtm);
+
+        await expect(
+          service.triggerBreakServiceIntoMicroservices({
+            resourceId: resourceMock.id,
+            user: userMock,
+          })
+        ).rejects.toThrowError(
+          new BillingLimitationError(
+            "Available as part of the Enterprise plan only.",
+            BillingFeature.RedesignArchitecture
+          )
+        );
+      });
+
+      it("should throw an error when there are no data models in the service", async () => {
+        billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+          hasAccess: true,
+        } as unknown as BooleanEntitlement);
+
+        jest
+          .spyOn(service, "getResourceDataForBtm")
+          .mockResolvedValue(resourceMock as ResourceDataForBtm);
+
+        await expect(
+          service.triggerBreakServiceIntoMicroservices({
+            resourceId: resourceMock.id,
+            user: userMock,
+          })
+        ).rejects.toThrowError();
+      });
+      it("should start a conversation with the GPT service", async () => {
+        billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+          hasAccess: true,
+        } as unknown as BooleanEntitlement);
+
+        jest
+          .spyOn(service, "getResourceDataForBtm")
+          .mockResolvedValue(resourceMock as ResourceDataForBtm);
+
+        jest
+          .spyOn(service, "generatePromptForBreakTheMonolith")
+          .mockReturnValue(mockPromptResult);
+
+        getSubscriptionMock.mockResolvedValue({
+          subscriptionPlan: EnumSubscriptionPlan.Pro,
+        });
+
+        startConversationMock.mockResolvedValue(userActionMock);
+
+        const result = await service.triggerBreakServiceIntoMicroservices({
+          resourceId: resourceMock.id,
+          user: userMock,
+        });
+
+        expect(getSubscriptionMock).toHaveBeenCalledTimes(1);
+        expect(getSubscriptionMock).toHaveBeenCalledWith(userMock.workspace.id);
+        expect(trackMock).toHaveBeenCalledTimes(1);
+        expect(trackMock).toHaveBeenCalledWith({
+          properties: {
+            projectId: resourceMock.project.id,
+            resourceId: resourceMock.id,
+            serviceName: resourceMock.name,
+            plan: EnumSubscriptionPlan.Pro,
+          },
+          event: EnumEventType.ArchitectureRedesignStartBreakTheMonolith,
+        });
+        expect(startConversationMock).toHaveBeenCalledTimes(1);
+        expect(startConversationMock).toHaveBeenCalledWith(
+          ConversationTypeKey.BreakTheMonolith,
+          [
+            {
+              name: "userInput",
+              value: mockPromptResult,
+            },
+          ],
+          userIdMock,
+          resourceIdMock
+        );
+
+        expect(result).toStrictEqual(userActionMock);
+      });
     });
   });
 });

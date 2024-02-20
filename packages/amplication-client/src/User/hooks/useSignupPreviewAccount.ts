@@ -37,13 +37,14 @@ const useSignupPreviewAccount = (
           const { token, workspaceId, projectId, resourceId } =
             signupPreviewAccount;
           setToken(token);
-          history.push(
-            `/${workspaceId}/${projectId}/${resourceId}/breaking-the-monolith-options`
-          );
+          history.push({
+            pathname: "/select-preview-env",
+            search: `?resourceId=${resourceId}&projectId=${projectId}&workspaceId=${workspaceId}`,
+          });
         },
       }).catch(console.error);
     }
-  }, [email, previewAccountType]);
+  }, [email, history, previewAccountType, signupPreviewAccount]);
 
   return { loading, error };
 };
