@@ -1,8 +1,9 @@
 @import "../style/index.scss";
 
-.complete-preview-signup-dialog {
+.complete-preview-signup {
+  margin-top: 200px;
   &__dismiss_button {
     margin-top: var(--default-spacing);
-    align-self: flex-end;
+    padding: 0 var(--double-spacing);
   }
 }
