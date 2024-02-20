@@ -19,11 +19,6 @@ import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/
 import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { v4 as uuidv4 } from "uuid";
-
-jest.mock("uuid", () => ({
-  v4: jest.fn(),
-}));
 
 const resourceIdMock = "resourceId";
 const userIdMock = "userId";
@@ -864,7 +859,6 @@ describe("ResourceBtmService", () => {
     });
 
     it("should rename service name from gpt recommendation if it already exists in the project services", async () => {
-      const suffix = uuidv4();
       const promptResult: BreakTheMonolithOutput = {
         microservices: [
           {
@@ -1031,7 +1025,7 @@ describe("ResourceBtmService", () => {
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
-            name: `product_${suffix}`,
+            name: expect.stringMatching(/^product_[a-z0-9]{8}$/),
             functionality: "manage products",
             tables: [
               {
@@ -1051,7 +1045,7 @@ describe("ResourceBtmService", () => {
             ],
           },
           {
-            name: `order_${suffix}`,
+            name: expect.stringMatching(/^order_[a-z0-9]{8}$/),
             functionality: "manage orders, prices and payments",
             tables: [
               {
