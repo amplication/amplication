@@ -1,9 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Button,
   ConfirmationDialog,
   Dialog,
   EnumButtonStyle,
+  EnumIconPosition,
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
@@ -19,9 +20,20 @@ import BreakTheMonolith from "./BreakTheMonolith";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useAppContext } from "../../context/appContext";
-import { Resource } from "../../models";
+import {
+  EnumSubscriptionPlan,
+  EnumSubscriptionStatus,
+  Resource,
+} from "../../models";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import useModelOrganizerPersistentData from "../../Project/ArchitectureConsole/hooks/useModelOrganizerPersistentData";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useStiggContext } from "@stigg/react-sdk";
+import {
+  FeatureIndicator,
+  tooltipDefaultText,
+  tooltipDefaultTextUpgrade,
+} from "../../Components/FeatureIndicator";
 
 export enum EnumButtonLocation {
   Project = "Project",
@@ -52,8 +64,15 @@ export const BtmButton: React.FC<Props> = ({
   buttonText = "Break the Monolith",
   selectedEditableResource,
 }) => {
-  const { currentResource, currentProject, resources } = useAppContext();
+  const {
+    currentResource,
+    currentProject,
+    resources,
+    subscriptionPlan,
+    subscriptionStatus,
+  } = useAppContext();
   const { trackEvent } = useTracking();
+  const { stigg } = useStiggContext();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(
     null
@@ -62,6 +81,40 @@ export const BtmButton: React.FC<Props> = ({
     currentProject?.id
   );
   const [showConfirmation, setShowConfirmation] = useState(false);
+
+  const [tooltipText, setTooltipText] = useState<string>("");
+  const [upgradeTooltipText, setUpgradeTooltipText] = useState<string>("");
+
+  const hasRedesignArchitectureFeature = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.RedesignArchitecture,
+  }).hasAccess;
+
+  useEffect(() => {
+    if (
+      hasRedesignArchitectureFeature &&
+      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      subscriptionStatus === EnumSubscriptionStatus.Trailing
+    ) {
+      setTooltipText(tooltipDefaultText);
+      setUpgradeTooltipText(tooltipDefaultTextUpgrade);
+    }
+
+    if (!hasRedesignArchitectureFeature) {
+      setTooltipText("Available as part of the Enterprise plan only.");
+      setUpgradeTooltipText(tooltipDefaultTextUpgrade);
+    }
+
+    if (
+      hasRedesignArchitectureFeature &&
+      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      subscriptionStatus !== EnumSubscriptionStatus.Trailing
+    ) {
+      setTooltipText(
+        "Get AI recommendation for breaking a service into micro-services"
+      );
+      setUpgradeTooltipText("");
+    }
+  }, [hasRedesignArchitectureFeature, subscriptionPlan, subscriptionStatus]);
 
   const toggleIsOpen = useCallback(() => {
     setIsOpen(!isOpen);
@@ -120,39 +173,62 @@ export const BtmButton: React.FC<Props> = ({
   return (
     <>
       {currentResource || selectedEditableResource ? (
-        <Button buttonStyle={ButtonStyle} onClick={onButtonSelectResource}>
-          {buttonText}
-        </Button>
+        <FeatureIndicator
+          featureName={BillingFeature.RedesignArchitecture}
+          text={tooltipText}
+          linkText={upgradeTooltipText}
+          element={
+            <Button
+              iconPosition={EnumIconPosition.Left}
+              buttonStyle={ButtonStyle}
+              onClick={onButtonSelectResource}
+              disabled={!hasRedesignArchitectureFeature}
+              icon={"ai"}
+            >
+              {buttonText}
+            </Button>
+          }
+        />
       ) : (
-        <SelectMenu
-          title={buttonText}
-          buttonStyle={ButtonStyle}
-          hideSelectedItemsIndication
-        >
-          <SelectMenuModal align="right" withCaret>
-            <SelectMenuList>
-              {resources.map((resource) => (
-                <SelectMenuItem
-                  key={resource.id}
-                  closeAfterSelectionChange
-                  itemData={resource}
-                  onSelectionChange={onSelectMenuSelectResource}
-                >
-                  <FlexItem
-                    itemsAlign={EnumItemsAlign.Center}
-                    end={<Icon icon={"app-settings"} size="xsmall"></Icon>}
-                  >
-                    <ResourceCircleBadge
-                      type={resource.resourceType}
-                      size="small"
-                    />
-                    <span>{resource.name}</span>
-                  </FlexItem>
-                </SelectMenuItem>
-              ))}
-            </SelectMenuList>
-          </SelectMenuModal>
-        </SelectMenu>
+        <FeatureIndicator
+          featureName={BillingFeature.RedesignArchitecture}
+          text={tooltipText}
+          linkText={upgradeTooltipText}
+          element={
+            <SelectMenu
+              title={buttonText}
+              buttonStyle={ButtonStyle}
+              hideSelectedItemsIndication
+              disabled={!hasRedesignArchitectureFeature}
+              icon={"ai"}
+              buttonIconPosition={EnumIconPosition.Left}
+            >
+              <SelectMenuModal align="right" withCaret>
+                <SelectMenuList>
+                  {resources.map((resource) => (
+                    <SelectMenuItem
+                      key={resource.id}
+                      closeAfterSelectionChange
+                      itemData={resource}
+                      onSelectionChange={onSelectMenuSelectResource}
+                    >
+                      <FlexItem
+                        itemsAlign={EnumItemsAlign.Center}
+                        end={<Icon icon={"app-settings"} size="xsmall"></Icon>}
+                      >
+                        <ResourceCircleBadge
+                          type={resource.resourceType}
+                          size="small"
+                        />
+                        <span>{resource.name}</span>
+                      </FlexItem>
+                    </SelectMenuItem>
+                  ))}
+                </SelectMenuList>
+              </SelectMenuModal>
+            </SelectMenu>
+          }
+        />
       )}
 
       <ConfirmationDialog

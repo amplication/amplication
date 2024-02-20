@@ -11,6 +11,7 @@ export interface AppContextInterface {
   handleSetCurrentWorkspace: (workspaceId: string) => void;
   createWorkspace: (data: CreateWorkspaceType) => void;
   subscriptionPlan: models.EnumSubscriptionPlan;
+  subscriptionStatus: models.EnumSubscriptionStatus;
   isPreviewPlan: boolean;
   createNewWorkspaceError: ApolloError | undefined;
   loadingCreateNewWorkspace: boolean;
@@ -67,6 +68,7 @@ export interface AppContextInterface {
 const initialContext: AppContextInterface = {
   currentWorkspace: undefined,
   subscriptionPlan: models.EnumSubscriptionPlan.Free,
+  subscriptionStatus: models.EnumSubscriptionStatus.Active,
   isPreviewPlan: false,
   handleSetCurrentWorkspace: () => {},
   createWorkspace: () => {},
