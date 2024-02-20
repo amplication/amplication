@@ -70,7 +70,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   } = usePlugins(resource);
 
   const filteredCatalog = useMemo(() => {
-    if (category === "catalog") return Object.values(pluginCatalog);
+    if (category === "undefined") return Object.values(pluginCatalog);
 
     return Object.values(pluginCatalog).reduce(
       (pluginsCatalogArr: Plugin[], plugin: Plugin) => {

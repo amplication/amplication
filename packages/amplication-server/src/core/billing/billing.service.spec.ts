@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { BillingService } from "./billing.service";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
 import {
@@ -20,7 +19,8 @@ import { GitOrganization, GitRepository, Project, User } from "../../models";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../../prisma";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 jest.mock("@stigg/node-server-sdk");
 Stigg.initialize = jest.fn().mockReturnValue(Stigg.prototype);
@@ -38,12 +38,7 @@ describe("BillingService", () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       providers: [
-        {
-          provide: SegmentAnalyticsService,
-          useValue: {
-            track: jest.fn(),
-          },
-        },
+        MockedSegmentAnalyticsProvider(),
         {
           provide: ConfigService,
           useValue: {
@@ -192,6 +187,9 @@ describe("BillingService", () => {
             {
               addonId: BillingAddon.CustomActions,
             },
+            {
+              addonId: BillingAddon.BreakingTheMonolith,
+            },
           ],
         },
       })
@@ -227,7 +225,7 @@ describe("BillingService", () => {
           firstName: "first-name",
           lastName: "last-name",
           password: "password",
-          previewAccountType: PreviewAccountType.None,
+          previewAccountType: EnumPreviewAccountType.None,
           previewAccountEmail: null,
         },
         createdAt: new Date(),
@@ -356,7 +354,7 @@ describe("BillingService", () => {
           firstName: "first-name",
           lastName: "last-name",
           password: "password",
-          previewAccountType: PreviewAccountType.None,
+          previewAccountType: EnumPreviewAccountType.None,
           previewAccountEmail: null,
         },
         createdAt: new Date(),
@@ -479,7 +477,7 @@ describe("BillingService", () => {
             firstName: "first-name",
             lastName: "last-name",
             password: "password",
-            previewAccountType: PreviewAccountType.None,
+            previewAccountType: EnumPreviewAccountType.None,
             previewAccountEmail: null,
           },
           createdAt: new Date(),
@@ -580,7 +578,7 @@ describe("BillingService", () => {
             firstName: "first-name",
             lastName: "last-name",
             password: "password",
-            previewAccountType: PreviewAccountType.None,
+            previewAccountType: EnumPreviewAccountType.None,
             previewAccountEmail: null,
           },
           createdAt: new Date(),

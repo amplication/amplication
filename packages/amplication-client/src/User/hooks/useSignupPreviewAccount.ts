@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW } from "../UserQueries";
+import { SIGNUP_PREVIEW_ACCOUNT } from "../UserQueries";
 import { setToken } from "../../authentication/authentication";
-import { PreviewAccountType } from "../../models";
+import { EnumPreviewAccountType } from "../../models";
 import { useHistory } from "react-router-dom";
 
 type TData = {
-  signUpWithBusinessEmail: {
+  signupPreviewAccount: {
     token: string;
     workspaceId: string;
     resourceId: string;
@@ -16,28 +16,30 @@ type TData = {
 
 const useSignupPreviewAccount = (
   email: string,
-  previewAccountType: PreviewAccountType
+  previewAccountType: EnumPreviewAccountType
 ) => {
   const history = useHistory();
 
-  const [signUpWithBusinessEmail, { loading, error }] = useMutation<TData>(
-    SIGNUP_WITH_BUSINESS_EMAIL_PREVIEW
+  const [signupPreviewAccount, { loading, error }] = useMutation<TData>(
+    SIGNUP_PREVIEW_ACCOUNT
   );
 
   useEffect(() => {
     if (email && previewAccountType) {
-      signUpWithBusinessEmail({
+      signupPreviewAccount({
         variables: {
           data: {
             previewAccountEmail: email,
             previewAccountType,
           },
         },
-        onCompleted: ({ signUpWithBusinessEmail }) => {
+        onCompleted: ({ signupPreviewAccount }) => {
           const { token, workspaceId, projectId, resourceId } =
-            signUpWithBusinessEmail;
+            signupPreviewAccount;
           setToken(token);
-          history.push(`/${workspaceId}/${projectId}/${resourceId}`);
+          history.push(
+            `/${workspaceId}/${projectId}/${resourceId}/breaking-the-monolith-options`
+          );
         },
       }).catch(console.error);
     }

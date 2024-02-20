@@ -4,9 +4,12 @@ import {
   SegmentAnalyticsAsyncOptions,
   SegmentAnalyticsOptionsFactory,
 } from "./segmentAnalytics.interfaces";
+import { PrismaModule } from "../../prisma";
 
 @Global()
-@Module({})
+@Module({
+  imports: [PrismaModule],
+})
 export class SegmentAnalyticsModule {
   /**
    *  public static register( ... )

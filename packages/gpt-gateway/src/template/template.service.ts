@@ -6,7 +6,7 @@ import {
   CreateChatCompletionRequestSettings,
   ChatCompletionMessageParam,
 } from "../../providers/openai/openai.service";
-import { AiConversationStart } from "@amplication/schema-registry";
+import { GptConversationStart } from "@amplication/schema-registry";
 import { ProcessTemplateInput } from "./dto/ProcessTemplateInput";
 import { ContentLengthExceededError } from "../errors/ContentLengthExceededError";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -26,7 +26,7 @@ export class TemplateService extends TemplateServiceBase {
   //e.g. {{name}} will be replaced with params.name
   prepareMessage(
     message: string,
-    params: AiConversationStart.Value["params"]
+    params: GptConversationStart.Value["params"]
   ): string {
     const paramsObj = params.reduce((acc, param) => {
       acc[param.name] = param.value;

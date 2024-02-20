@@ -6,7 +6,6 @@ import PendingChange from "./PendingChange";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import {
   CircularProgress,
-  EnumContentAlign,
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumGapSize,
@@ -17,7 +16,7 @@ import {
   Text,
   Tooltip,
 } from "@amplication/ui/design-system";
-import Commit from "./Commit";
+import Commit, { CommitBtnType } from "./Commit";
 import DiscardChanges from "./DiscardChanges";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
@@ -76,7 +75,11 @@ const PendingChanges = ({ projectId }: Props) => {
         margin={EnumFlexItemMargin.Top}
         gap={EnumGapSize.Small}
       >
-        <Commit projectId={projectId} noChanges={noChanges} />
+        <Commit
+          projectId={projectId}
+          noChanges={noChanges}
+          commitBtnType={CommitBtnType.Button}
+        />
 
         <DiscardChanges
           isOpen={discardDialogOpen}

@@ -35,7 +35,7 @@ import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { Build } from "../build/dto/Build";
 import { Environment } from "../environment/dto";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
 import { BillingService } from "../billing/billing.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
@@ -44,7 +44,7 @@ import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
-import { PreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -293,7 +293,7 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: PreviewAccountType.None,
+  previewAccountType: EnumPreviewAccountType.None,
   previewAccountEmail: null,
 };
 
@@ -455,14 +455,7 @@ describe("EntityService", () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [JsonSchemaValidationModule, DiffModule],
       providers: [
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            track: jest.fn(() => {
-              return;
-            }),
-          })),
-        },
+        MockedSegmentAnalyticsProvider(),
         {
           provide: BillingService,
           useValue: billingServiceMock,

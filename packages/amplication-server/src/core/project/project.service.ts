@@ -23,10 +23,8 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { GitProviderService } from "../git/git.provider.service";
 
 export const INVALID_PROJECT_ID = "Invalid projectId";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import dockerNames from "docker-names";
 import { EntityPendingChange } from "../entity/entity.service";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
@@ -474,14 +472,11 @@ export class ProjectService {
       await Promise.all(promises);
     }
     if (!skipBuild) {
-      await this.analytics.track({
-        userId: currentUser.account.id,
-        properties: {
-          workspaceId: project.workspaceId,
-          projectId: project.id,
-          $groups: { groupWorkspace: project.workspaceId },
-        },
+      await this.analytics.trackWithContext({
         event: EnumEventType.CommitCreate,
+        properties: {
+          projectId,
+        },
       });
     }
 
