@@ -314,25 +314,26 @@ const useModelOrganizer = ({
   );
 
   const setSelectResourceRelatedEntities = useCallback(
-    (resource: ResourceNode) => {
-      setNodes((nodes) => {
-        nodes.forEach((node: EntityNode) => {
-          if (node.data.originalParentNode === resource.id) {
-            const relatedField = node.data.payload.fields.find(
-              (field) => field.dataType === EnumDataType.Lookup
-            );
-            if (relatedField && node.draggable) {
-              node.selected = !node.selected;
-            }
-          }
-        });
-        resource.data.selectRelatedEntities = false;
-        currentEditableResourceNode.data.selectRelatedEntities = false;
+    (entity: EntityNode) => {
+      const fields = entity.data.payload.fields;
 
-        return [...nodes];
+      const relatedEntitiesIds = fields
+        .filter((field) => field.dataType === EnumDataType.Lookup)
+        .map((relationField) => {
+          return relationField.properties.relatedEntityId;
+        });
+
+      if (relatedEntitiesIds.length === 0) return;
+
+      relatedEntitiesIds.forEach((relatedEntityId) => {
+        const currentNode = nodes.find((node) => node.id === relatedEntityId);
+        currentNode.selected = !currentNode.selected;
       });
+
+      entity.data.selectRelatedEntities = false;
+      setNodes((nodes) => [...nodes]);
     },
-    [currentEditableResourceNode]
+    [nodes]
   );
 
   const setCurrentEditableResource = useCallback(

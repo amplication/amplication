@@ -33,11 +33,11 @@ import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
 import {
+  EntityNode,
   NODE_TYPE_MODEL,
   NODE_TYPE_MODEL_GROUP,
   Node,
   NodePayloadWithPayloadType,
-  ResourceNode,
 } from "./types";
 
 export const CLASS_NAME = "model-organizer";
@@ -279,7 +279,7 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
   const onNodeClick = useCallback(
     async (event: React.MouseEvent, node: Node) => {
       if (!node.data.selectRelatedEntities) return;
-      setSelectResourceRelatedEntities(node as ResourceNode);
+      setSelectResourceRelatedEntities(node as EntityNode);
     },
     [setSelectResourceRelatedEntities]
   );
