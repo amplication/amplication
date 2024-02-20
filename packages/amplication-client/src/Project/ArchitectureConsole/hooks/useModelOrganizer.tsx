@@ -32,6 +32,7 @@ import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { EnumUserActionStatus } from "../../../models";
 import { generatedKey } from "../../../Plugins/InstalledPluginSettings";
 import useResource from "../../../Resource/hooks/useResource";
+import { EnumDataType } from "@amplication/code-gen-types";
 
 type TData = {
   resources: models.Resource[];
@@ -240,6 +241,7 @@ const useModelOrganizer = ({
       });
       if (currentEditableResourceNode) {
         currentEditableResourceNode.data.isEditable = false;
+        currentEditableResourceNode.data.selectRelatedEntities = false;
       }
       setCurrentEditableResourceNode(null);
       setRedesignMode(false);
@@ -309,6 +311,28 @@ const useModelOrganizer = ({
       return { updatedNodes: [...nodes], selectedResourceNode };
     },
     []
+  );
+
+  const setSelectResourceRelatedEntities = useCallback(
+    (resource: ResourceNode) => {
+      setNodes((nodes) => {
+        nodes.forEach((node: EntityNode) => {
+          if (node.data.originalParentNode === resource.id) {
+            const relatedField = node.data.payload.fields.find(
+              (field) => field.dataType === EnumDataType.Lookup
+            );
+            if (relatedField && node.draggable) {
+              node.selected = !node.selected;
+            }
+          }
+        });
+        resource.data.selectRelatedEntities = false;
+        currentEditableResourceNode.data.selectRelatedEntities = false;
+
+        return [...nodes];
+      });
+    },
+    [currentEditableResourceNode]
   );
 
   const setCurrentEditableResource = useCallback(
@@ -810,6 +834,7 @@ const useModelOrganizer = ({
     mergeNewResourcesChanges,
     resetUserAction,
     clearDuplicateEntityError,
+    setSelectResourceRelatedEntities,
     redesignMode,
     saveBreakTheMonolithResultsIntoState,
     errorMessage,

@@ -12,6 +12,7 @@ import {
 } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import { ResourceNode, ResourceNodePayload } from "../types";
+import EntityContextMenuButton from "../../../Components/EntityContextMenuButton";
 
 type ModelProps = NodeProps & {
   data: ResourceNodePayload;
@@ -28,6 +29,10 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
   const style = !data.isEditable
     ? { borderTopColor: data.groupColor }
     : { borderColor: data.groupColor };
+
+  const handleSelectRelatedEntitiesClicked = useCallback(() => {
+    data.selectRelatedEntities = !data.selectRelatedEntities;
+  }, [data]);
 
   return (
     data && (
@@ -46,7 +51,13 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
           contentAlign={EnumContentAlign.Start}
           direction={EnumFlexDirection.Column}
         >
-          <Text textStyle={EnumTextStyle.Normal}>{data.payload.name}</Text>
+          <FlexItem contentAlign={EnumContentAlign.Space}>
+            <Text textStyle={EnumTextStyle.Normal}>{data.payload.name}</Text>
+            <EntityContextMenuButton
+              onSelectRelatedEntities={handleSelectRelatedEntitiesClicked}
+              isContextMenuEnable={data.isEditable}
+            ></EntityContextMenuButton>
+          </FlexItem>
           <Text textStyle={EnumTextStyle.Description}>
             {data.payload.description}
           </Text>
