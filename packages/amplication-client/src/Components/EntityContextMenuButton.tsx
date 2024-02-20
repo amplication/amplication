@@ -2,7 +2,6 @@ import {
   EnumButtonStyle,
   EnumFlexItemMargin,
   EnumTextAlign,
-  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   SelectMenu,
@@ -17,13 +16,11 @@ import { useCallback, useState } from "react";
 const CLASS_NAME = "entity-context-menu-button";
 
 type Props = {
-  isContextMenuEnable: boolean;
   onSelectRelatedEntities: () => void;
 };
 
 export default function EntityContextMenuButton({
   onSelectRelatedEntities,
-  isContextMenuEnable,
 }: Props) {
   const [isSelectedRelatedEntities, setIsSelectedRelatedEntities] =
     useState<boolean>(false);
@@ -39,35 +36,30 @@ export default function EntityContextMenuButton({
         title="..."
         buttonStyle={EnumButtonStyle.Text}
         hideSelectedItemsIndication={false}
-        disabled={!isContextMenuEnable}
+        className={`${CLASS_NAME}__menu`}
       >
+        {" "}
         <SelectMenuModal align="right" withCaret>
           <SelectMenuList>
             <FlexItem
               margin={EnumFlexItemMargin.Both}
               className={`${CLASS_NAME}__list-header`}
             >
-              <Text
-                textStyle={EnumTextStyle.Tag}
-                textColor={EnumTextColor.Black20}
-              >
-                {"Options"}
-              </Text>
+              {" "}
+              <span className={`${CLASS_NAME}__menu-title`}>{"Options"}</span>
             </FlexItem>
             <SelectMenuItem
               selected={isSelectedRelatedEntities}
               closeAfterSelectionChange
               onSelectionChange={handleSelectRelatedEntitiesClicked}
             >
-              <FlexItem>
-                <Text
-                  key={"selectRelatedEntities"}
-                  textStyle={EnumTextStyle.Normal}
-                  textAlign={EnumTextAlign.Left}
-                >
-                  Select all related entities
-                </Text>
-              </FlexItem>
+              <Text
+                key={"selectRelatedEntities"}
+                textStyle={EnumTextStyle.Normal}
+                textAlign={EnumTextAlign.Left}
+              >
+                Select all related entities
+              </Text>
             </SelectMenuItem>
           </SelectMenuList>
         </SelectMenuModal>

@@ -64,12 +64,12 @@ const ModelNodeBase: FC<Props> = memo(
         )}
 
         <div className={`${CLASS_NAME}__header`}>
-          <FlexItem contentAlign={EnumContentAlign.Space}>
-            <Text textStyle={EnumTextStyle.H4}>{data.payload.displayName}</Text>
-            <EntityContextMenuButton
-              onSelectRelatedEntities={handleSelectRelatedEntitiesClicked}
-            ></EntityContextMenuButton>
-          </FlexItem>
+          <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
+            {data.payload.displayName}
+          </Text>
+          <EntityContextMenuButton
+            onSelectRelatedEntities={handleSelectRelatedEntitiesClicked}
+          ></EntityContextMenuButton>
         </div>
         {includeModelHandles && (
           <Handle
