@@ -16,11 +16,9 @@ import { BillingService } from "../billing/billing.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
-import { v4 as uuidv4 } from "uuid";
-
-jest.mock("uuid", () => ({
-  v4: jest.fn().mockReturnValue("123456"),
-}));
+import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 const resourceIdMock = "resourceId";
 const userIdMock = "userId";
@@ -55,14 +53,41 @@ const userActionMock = {
   actionId: actionIdMock,
 } as unknown as UserAction;
 
-const startConversationMock = jest.fn(() => Promise.resolve(userActionMock));
-const userActionServiceFindOneMock = jest.fn(() =>
-  Promise.resolve(userActionMock)
-);
+const startConversationMock = jest.fn();
+const userActionServiceFindOneMock = jest.fn();
+const resourceFindUniqueMock = jest.fn();
+const resourceFindManyMock = jest.fn();
 
-const resourceFindUniqueMock = jest.fn(() => Promise.resolve(resourceMock));
-const resourceFindManyMock = jest.fn(() => Promise.resolve([resourceMock]));
+const billingServiceIsBillingEnabledMock = jest.fn();
 const getSubscriptionMock = jest.fn();
+const billingServiceMock = {
+  getSubscription: getSubscriptionMock,
+  getMeteredEntitlement: jest.fn(() => {
+    return {
+      usageLimit: undefined,
+    } as unknown as MeteredEntitlement;
+  }),
+  getNumericEntitlement: jest.fn(() => {
+    return {};
+  }),
+  getBooleanEntitlement: jest.fn(() => {
+    return {};
+  }),
+  reportUsage: jest.fn(() => {
+    return {};
+  }),
+  provisionCustomer: jest.fn(() => {
+    return {};
+  }),
+  provisionPreviewCustomer: jest.fn(() => {
+    return {};
+  }),
+};
+// This is important to mock the getter!!!
+Object.defineProperty(billingServiceMock, "isBillingEnabled", {
+  get: billingServiceIsBillingEnabledMock,
+});
+
 const trackMock = jest.fn();
 
 describe("ResourceBtmService", () => {
@@ -70,6 +95,7 @@ describe("ResourceBtmService", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   beforeAll(async () => {
@@ -102,7 +128,7 @@ describe("ResourceBtmService", () => {
         }),
         {
           provide: BillingService,
-          useValue: { getSubscription: getSubscriptionMock },
+          useValue: billingServiceMock,
         },
         MockedAmplicationLoggerProvider,
       ],
@@ -118,6 +144,8 @@ describe("ResourceBtmService", () => {
     getSubscriptionMock.mockResolvedValue({
       subscriptionPlan: EnumSubscriptionPlan.Enterprise,
     });
+
+    resourceFindUniqueMock.mockResolvedValue(resourceMock);
 
     await service.startRedesign(userMock, resourceMock.id);
 
@@ -286,6 +314,8 @@ describe("ResourceBtmService", () => {
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
 
+      resourceFindManyMock.mockResolvedValueOnce([resourceMock]);
+
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
@@ -353,6 +383,7 @@ describe("ResourceBtmService", () => {
           },
         ],
       };
+
       const originalResource: ResourceDataForBtm = {
         id: resourceIdMock,
         name: "order",
@@ -449,6 +480,8 @@ describe("ResourceBtmService", () => {
       jest
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
+
+      resourceFindManyMock.mockResolvedValueOnce([resourceMock]);
 
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
@@ -588,6 +621,8 @@ describe("ResourceBtmService", () => {
       jest
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
+
+      resourceFindManyMock.mockResolvedValueOnce([resourceMock]);
 
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
@@ -780,6 +815,8 @@ describe("ResourceBtmService", () => {
         .spyOn(service, "getResourceDataForBtm")
         .mockResolvedValue(originalResource);
 
+      resourceFindManyMock.mockResolvedValueOnce([resourceMock]);
+
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
@@ -822,7 +859,6 @@ describe("ResourceBtmService", () => {
     });
 
     it("should rename service name from gpt recommendation if it already exists in the project services", async () => {
-      const suffix = uuidv4();
       const promptResult: BreakTheMonolithOutput = {
         microservices: [
           {
@@ -968,6 +1004,10 @@ describe("ResourceBtmService", () => {
         ],
       };
 
+      jest
+        .spyOn(service, "getResourceDataForBtm")
+        .mockResolvedValue(originalResource);
+
       resourceFindManyMock.mockResolvedValueOnce([
         resourceMock,
         {
@@ -982,14 +1022,10 @@ describe("ResourceBtmService", () => {
         },
       ]);
 
-      jest
-        .spyOn(service, "getResourceDataForBtm")
-        .mockResolvedValue(originalResource);
-
       const expectedResult: BreakServiceToMicroservicesData = {
         microservices: [
           {
-            name: `product_${suffix}`,
+            name: expect.stringMatching(/^product_[a-z0-9]{8}$/),
             functionality: "manage products",
             tables: [
               {
@@ -1009,7 +1045,7 @@ describe("ResourceBtmService", () => {
             ],
           },
           {
-            name: `order_${suffix}`,
+            name: expect.stringMatching(/^order_[a-z0-9]{8}$/),
             functionality: "manage orders, prices and payments",
             tables: [
               {
@@ -1241,62 +1277,154 @@ describe("ResourceBtmService", () => {
   describe("triggerBreakServiceIntoMicroservices", () => {
     const mockPromptResult = "prompt-result";
 
-    it("should throw an error when there are no data models in the service", async () => {
-      jest
-        .spyOn(service, "getResourceDataForBtm")
-        .mockResolvedValue({} as ResourceDataForBtm);
+    describe("when billing is disabled", () => {
+      beforeEach(() => {
+        billingServiceIsBillingEnabledMock.mockReturnValue(false);
+      });
+      it("should start a conversation with the GPT service", async () => {
+        jest
+          .spyOn(service, "getResourceDataForBtm")
+          .mockResolvedValue(resourceMock as ResourceDataForBtm);
 
-      await expect(
-        service.triggerBreakServiceIntoMicroservices({
+        jest
+          .spyOn(service, "generatePromptForBreakTheMonolith")
+          .mockReturnValue(mockPromptResult);
+
+        getSubscriptionMock.mockResolvedValue({
+          subscriptionPlan: EnumSubscriptionPlan.Pro,
+        });
+
+        startConversationMock.mockResolvedValue(userActionMock);
+
+        const result = await service.triggerBreakServiceIntoMicroservices({
           resourceId: resourceMock.id,
           user: userMock,
-        })
-      ).rejects.toThrowError();
-    });
-    it("should start a conversation with the GPT service", async () => {
-      jest
-        .spyOn(service, "getResourceDataForBtm")
-        .mockResolvedValue(resourceMock as ResourceDataForBtm);
+        });
 
-      jest
-        .spyOn(service, "generatePromptForBreakTheMonolith")
-        .mockReturnValue(mockPromptResult);
-
-      getSubscriptionMock.mockResolvedValue({
-        subscriptionPlan: EnumSubscriptionPlan.Pro,
-      });
-
-      const result = await service.triggerBreakServiceIntoMicroservices({
-        resourceId: resourceMock.id,
-        user: userMock,
-      });
-
-      expect(getSubscriptionMock).toHaveBeenCalledTimes(1);
-      expect(getSubscriptionMock).toHaveBeenCalledWith(userMock.workspace.id);
-      expect(trackMock).toHaveBeenCalledTimes(1);
-      expect(trackMock).toHaveBeenCalledWith({
-        properties: {
-          projectId: resourceMock.project.id,
-          resourceId: resourceMock.id,
-          serviceName: resourceMock.name,
-          plan: EnumSubscriptionPlan.Pro,
-        },
-        event: EnumEventType.ArchitectureRedesignStartBreakTheMonolith,
-      });
-      expect(startConversationMock).toHaveBeenCalledTimes(1);
-      expect(startConversationMock).toHaveBeenCalledWith(
-        ConversationTypeKey.BreakTheMonolith,
-        [
-          {
-            name: "userInput",
-            value: mockPromptResult,
+        expect(getSubscriptionMock).toHaveBeenCalledTimes(1);
+        expect(getSubscriptionMock).toHaveBeenCalledWith(userMock.workspace.id);
+        expect(trackMock).toHaveBeenCalledTimes(1);
+        expect(trackMock).toHaveBeenCalledWith({
+          properties: {
+            projectId: resourceMock.project.id,
+            resourceId: resourceMock.id,
+            serviceName: resourceMock.name,
+            plan: EnumSubscriptionPlan.Pro,
           },
-        ],
-        userIdMock,
-        resourceIdMock
-      );
+          event: EnumEventType.ArchitectureRedesignStartBreakTheMonolith,
+        });
+        expect(startConversationMock).toHaveBeenCalledTimes(1);
+        expect(startConversationMock).toHaveBeenCalledWith(
+          ConversationTypeKey.BreakTheMonolith,
+          [
+            {
+              name: "userInput",
+              value: mockPromptResult,
+            },
+          ],
+          userIdMock,
+          resourceIdMock
+        );
 
-      expect(result).toStrictEqual(userActionMock);
+        expect(billingServiceMock.getBooleanEntitlement).not.toHaveBeenCalled();
+        expect(result).toStrictEqual(userActionMock);
+      });
+    });
+
+    describe("when billing is enabled", () => {
+      beforeEach(() => {
+        billingServiceIsBillingEnabledMock.mockReturnValue(true);
+      });
+
+      it("should throw a billing limitation error when the user doesn't have the entitlement", async () => {
+        billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+          hasAccess: false,
+        } as unknown as BooleanEntitlement);
+
+        jest
+          .spyOn(service, "getResourceDataForBtm")
+          .mockResolvedValue(resourceMock as ResourceDataForBtm);
+
+        await expect(
+          service.triggerBreakServiceIntoMicroservices({
+            resourceId: resourceMock.id,
+            user: userMock,
+          })
+        ).rejects.toThrowError(
+          new BillingLimitationError(
+            "Available as part of the Enterprise plan only.",
+            BillingFeature.RedesignArchitecture
+          )
+        );
+      });
+
+      it("should throw an error when there are no data models in the service", async () => {
+        billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+          hasAccess: true,
+        } as unknown as BooleanEntitlement);
+
+        jest
+          .spyOn(service, "getResourceDataForBtm")
+          .mockResolvedValue(resourceMock as ResourceDataForBtm);
+
+        await expect(
+          service.triggerBreakServiceIntoMicroservices({
+            resourceId: resourceMock.id,
+            user: userMock,
+          })
+        ).rejects.toThrowError();
+      });
+      it("should start a conversation with the GPT service", async () => {
+        billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+          hasAccess: true,
+        } as unknown as BooleanEntitlement);
+
+        jest
+          .spyOn(service, "getResourceDataForBtm")
+          .mockResolvedValue(resourceMock as ResourceDataForBtm);
+
+        jest
+          .spyOn(service, "generatePromptForBreakTheMonolith")
+          .mockReturnValue(mockPromptResult);
+
+        getSubscriptionMock.mockResolvedValue({
+          subscriptionPlan: EnumSubscriptionPlan.Pro,
+        });
+
+        startConversationMock.mockResolvedValue(userActionMock);
+
+        const result = await service.triggerBreakServiceIntoMicroservices({
+          resourceId: resourceMock.id,
+          user: userMock,
+        });
+
+        expect(getSubscriptionMock).toHaveBeenCalledTimes(1);
+        expect(getSubscriptionMock).toHaveBeenCalledWith(userMock.workspace.id);
+        expect(trackMock).toHaveBeenCalledTimes(1);
+        expect(trackMock).toHaveBeenCalledWith({
+          properties: {
+            projectId: resourceMock.project.id,
+            resourceId: resourceMock.id,
+            serviceName: resourceMock.name,
+            plan: EnumSubscriptionPlan.Pro,
+          },
+          event: EnumEventType.ArchitectureRedesignStartBreakTheMonolith,
+        });
+        expect(startConversationMock).toHaveBeenCalledTimes(1);
+        expect(startConversationMock).toHaveBeenCalledWith(
+          ConversationTypeKey.BreakTheMonolith,
+          [
+            {
+              name: "userInput",
+              value: mockPromptResult,
+            },
+          ],
+          userIdMock,
+          resourceIdMock
+        );
+
+        expect(result).toStrictEqual(userActionMock);
+      });
     });
   });
 });

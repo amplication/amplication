@@ -24,6 +24,8 @@ import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { types } from "@amplication/code-gen-types";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { EnumResourceType } from "./dto/EnumResourceType";
 import { v4 } from "uuid";
 
@@ -69,6 +71,24 @@ export class ResourceBtmService {
     }
   }
 
+  private async checkAccessToBreakTheMonolithWithGpt(user: User) {
+    if (this.billingService.isBillingEnabled) {
+      const btmWithGpt = (
+        await this.billingService.getBooleanEntitlement(
+          user.workspace?.id,
+          BillingFeature.RedesignArchitecture
+        )
+      ).hasAccess;
+
+      if (!btmWithGpt) {
+        throw new BillingLimitationError(
+          "Available as part of the Enterprise plan only.",
+          BillingFeature.RedesignArchitecture
+        );
+      }
+    }
+  }
+
   async startRedesign(user: User, resourceId: string): Promise<Resource> {
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },
@@ -93,6 +113,7 @@ export class ResourceBtmService {
     resourceId: string;
     user: User;
   }): Promise<UserAction> {
+    await this.checkAccessToBreakTheMonolithWithGpt(user);
     const resource = await this.getResourceDataForBtm(resourceId);
 
     if (resource.entities && resource.entities.length === 0) {
