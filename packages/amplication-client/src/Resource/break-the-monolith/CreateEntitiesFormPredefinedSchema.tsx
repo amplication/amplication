@@ -9,6 +9,7 @@ import {
   Button,
   EnumContentAlign,
   EnumFlexDirection,
+  EnumGapSize,
   EnumItemsAlign,
   EnumTextAlign,
   EnumTextColor,
@@ -92,39 +93,46 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
         </div>
       ) : (
         <>
-          <Text textStyle={EnumTextStyle.H2}>
-            Break the Monolith with Amplication: A Journey of Transformation!
-            <span role="img" aria-label="rocket">
-              {" "}
-              🚀✨
-            </span>
-          </Text>
-          <Text
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            gap={EnumGapSize.Large}
             className={`${CLASS_NAME}__description`}
-            textStyle={EnumTextStyle.Normal}
-            textColor={EnumTextColor.Black20}
-            // textAlign={EnumTextAlign.Center}
+            itemsAlign={EnumItemsAlign.Center}
           >
-            <div>
-              Dive into a transformable journey by selecting an open-source
-              monolith, defined by its database schema. With Amplication, this
-              is where innovation begins. We import the monolith’s schema and
-              meticulously dissect it, preparing for a groundbreaking
-              transformation.
-            </div>
-            <div>
-              Witness the magic as Amplication proposes a new, streamlined
-              architecture of microservices, designed for scalability and
-              efficiency. You're not just observing; you’re part of the process,
-              reviewing the suggested microservices architecture, understanding
-              its dynamics, and visualizing the future.
-            </div>
-            <div>
-              Embrace this collaborative adventure with Amplication, where
-              breaking the monolith opens a world of possibilities and showcases
-              the true potential of technological innovation.
-            </div>
-          </Text>
+            <Text textStyle={EnumTextStyle.H1} textAlign={EnumTextAlign.Center}>
+              Break the Monolith with Amplication: <br />A Journey of
+              Transformation!
+              <span role="img" aria-label="rocket">
+                {" "}
+                🚀✨
+              </span>
+            </Text>
+            <Text
+              textStyle={EnumTextStyle.Normal}
+              textColor={EnumTextColor.Black20}
+              textAlign={EnumTextAlign.Center}
+            >
+              We've collected a few open-source projects to showcase how you can
+              use Amplication to break down a monolith.
+            </Text>
+            <Text
+              textStyle={EnumTextStyle.Normal}
+              textColor={EnumTextColor.Black20}
+              textAlign={EnumTextAlign.Center}
+            >
+              Select one of the projects, and we will create an environment with
+              the full database schema for you. This will enable you to start
+              transitioning it into a modern microservices architecture with the
+              help of Amplication AI.
+            </Text>
+            <Text
+              textStyle={EnumTextStyle.Normal}
+              textColor={EnumTextColor.Black20}
+              textAlign={EnumTextAlign.Center}
+            >
+              Ready? Let's go!
+            </Text>
+          </FlexItem>
           <div className={`${CLASS_NAME}__monolith_options`}>
             {monolithOptions.map((option, index) => (
               <Panel key={index}>
