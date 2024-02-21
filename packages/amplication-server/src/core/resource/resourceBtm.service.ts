@@ -73,6 +73,11 @@ export class ResourceBtmService {
 
   private async checkAccessToBreakTheMonolithWithGpt(user: User) {
     if (this.billingService.isBillingEnabled) {
+      const userWorkspace = await this.prisma.workspace.findUnique({
+        where: {
+          id: user.workspace?.id,
+        },
+      });
       const btmWithGpt = (
         await this.billingService.getBooleanEntitlement(
           user.workspace?.id,
@@ -84,6 +89,10 @@ export class ResourceBtmService {
         throw new BillingLimitationError(
           "Available as part of the Enterprise plan only.",
           BillingFeature.RedesignArchitecture
+        );
+      } else if (!userWorkspace.allowLLMFeatures) {
+        throw new AmplicationError(
+          "your workspace settings forbid LLM features use."
         );
       }
     }
