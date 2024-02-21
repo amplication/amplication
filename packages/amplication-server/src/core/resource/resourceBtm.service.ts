@@ -153,7 +153,7 @@ export class ResourceBtmService {
       },
     });
 
-    const userActionStatus = await this.userActionService.calcUserActionStatus(
+    const userActionStatus = await this.userActionService.evalUserActionStatus(
       userActionId
     );
 
