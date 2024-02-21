@@ -71,6 +71,9 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
 
   const { message, messageType, showMessage, removeMessage } = useMessage();
 
+  const location = useLocation();
+  const history = useHistory();
+
   const {
     nodes,
     currentResourcesData,
@@ -96,6 +99,7 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     currentEditableResourceNode,
     clearDuplicateEntityError,
     errorMessage,
+    setMultipleChanges,
   } = useModelOrganizer({
     projectId: currentProject?.id,
     onMessage: showMessage,
@@ -123,19 +127,15 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     [reactFlowInstance]
   );
 
-  const location = useLocation();
-  const history = useHistory();
-
   useEffect(() => {
-    if (location.state?.refresh) {
-      console.log("Refresh requested");
-      mergeNewResourcesChanges();
+    if (location.state?.changes) {
+      setMultipleChanges(location.state?.changes);
       history.replace({
         ...location,
-        state: { ...location.state, refresh: false },
+        state: { ...location.state, changes: undefined },
       });
     }
-  }, [location, history, mergeNewResourcesChanges]);
+  }, [location, history, setMultipleChanges]);
 
   useEffect(() => {
     // Clear the timeout ref when the component unmounts

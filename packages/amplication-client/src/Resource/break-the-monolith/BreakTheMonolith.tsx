@@ -20,11 +20,15 @@ import { BtmLoader } from "./BtmLoader";
 import { useBtmService } from "./hooks/useBtmService";
 import classNames from "classnames";
 import { formatError } from "../../util/error";
-import { Resource } from "../../models";
+import * as models from "../../models";
 import { useHistory } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useAppContext } from "../../context/appContext";
-import useModelOrganizer from "../../Project/ArchitectureConsole/hooks/useModelOrganizer";
+import {
+  ModelChanges,
+  OverrideChanges,
+} from "../../Project/ArchitectureConsole/types";
+import { generatedKey } from "../../Plugins/InstalledPluginSettings";
 
 const CLASS_NAME = "break-the-monolith";
 
@@ -33,7 +37,7 @@ const LOADER_SUBTITLE =
   "Our AI-driven magic is currently at work, suggesting how to elevate your service and its entities into a thriving microservices wonderland";
 
 type Props = {
-  resource: Resource;
+  resource: models.Resource;
   onComplete: () => void;
   openInFullScreen?: boolean;
   autoRedirectAfterCompletion?: boolean;
@@ -46,64 +50,42 @@ const BreakTheMonolith: React.FC<Props> = ({
   onComplete,
 }) => {
   const history = useHistory();
-  const [applyingResults, setApplyingResults] = useState(false);
   const { currentWorkspace, currentProject } = useAppContext();
   const { btmResult, loading, error } = useBtmService({
     resourceId: resource?.id,
   });
 
-  const { saveBreakTheMonolithResultsIntoState } = useModelOrganizer({
-    projectId: currentProject?.id,
-    onMessage: () => {},
-    headlessMode: true,
-  });
-
   const hasError = Boolean(error);
   const errorMessage = formatError(error);
 
-  const applyChanges = useCallback(async () => {
-    if (btmResult && !applyingResults) {
-      setApplyingResults(true);
-      saveBreakTheMonolithResultsIntoState(btmResult);
-      autoRedirectAfterCompletion &&
-        history.push({
-          pathName: `/${currentWorkspace?.id}/${currentProject?.id}/architecture`,
-          state: { refresh: true },
-        });
-    }
+  const redirectToArchitectureAndComplete = useCallback(() => {
+    const url = `/${currentWorkspace?.id}/${currentProject?.id}/architecture`;
+
+    //convert the result to the model organizer changes format
+    const changes = convertBtmChangesToModelOrganizerChanges(btmResult);
+
+    history.push({
+      pathname: url,
+      state: { changes },
+    });
+    onComplete && onComplete();
   }, [
-    applyingResults,
-    autoRedirectAfterCompletion,
     btmResult,
     currentProject?.id,
     currentWorkspace?.id,
     history,
-    saveBreakTheMonolithResultsIntoState,
+    onComplete,
   ]);
 
   useEffect(() => {
-    async function applyChangesWrapper() {
-      await applyChanges();
-    }
     if (btmResult && btmResult.status === EnumUserActionStatus.Completed) {
-      applyChangesWrapper();
+      autoRedirectAfterCompletion && redirectToArchitectureAndComplete();
     }
   }, [
     btmResult,
     autoRedirectAfterCompletion,
-    history,
-    currentWorkspace,
-    currentProject,
-    applyChanges,
+    redirectToArchitectureAndComplete,
   ]);
-
-  const handleConfirmSuggestion = useCallback(() => {
-    openInFullScreen &&
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/architecture`
-      );
-    onComplete();
-  }, [currentProject, currentWorkspace, history, onComplete, openInFullScreen]);
 
   return (
     <div
@@ -169,7 +151,7 @@ const BreakTheMonolith: React.FC<Props> = ({
                 </Text>
                 <Button
                   className={`${CLASS_NAME}__continue_button`}
-                  onClick={handleConfirmSuggestion}
+                  onClick={redirectToArchitectureAndComplete}
                 >
                   Let's go!
                 </Button>
@@ -227,3 +209,33 @@ const BreakTheMonolith: React.FC<Props> = ({
 };
 
 export default BreakTheMonolith;
+
+const convertBtmChangesToModelOrganizerChanges = (
+  results: models.BreakServiceToMicroservicesResult
+): OverrideChanges => {
+  const btmChanges: ModelChanges = {
+    movedEntities: [],
+    newServices: [],
+  };
+
+  results.data.microservices.forEach(async (microservice) => {
+    const tempId = generatedKey();
+    const newService = {
+      id: tempId,
+      name: microservice.name,
+      description: microservice.functionality,
+    };
+    btmChanges.newServices.push(newService);
+
+    microservice.tables.forEach((entity) => {
+      const movedEntity = {
+        entityId: entity.originalEntityId,
+        targetResourceId: tempId,
+        originalResourceId: results.originalResourceId,
+      };
+      btmChanges.movedEntities.push(movedEntity);
+    });
+  });
+
+  return { changes: btmChanges, resourceId: results.originalResourceId };
+};

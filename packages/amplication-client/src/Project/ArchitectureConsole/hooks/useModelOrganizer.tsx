@@ -17,6 +17,7 @@ import {
 import {
   EntityNode,
   ModelChanges,
+  OverrideChanges,
   ModelOrganizerPersistentData,
   NODE_TYPE_MODEL_GROUP,
   Node,
@@ -30,8 +31,8 @@ import { useAppContext } from "../../../context/appContext";
 import { useTracking } from "../../../util/analytics";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { EnumUserActionStatus } from "../../../models";
-import { generatedKey } from "../../../Plugins/InstalledPluginSettings";
 import useResource from "../../../Resource/hooks/useResource";
+import { set } from "lodash";
 
 type TData = {
   resources: models.Resource[];
@@ -71,6 +72,10 @@ const useModelOrganizer = ({
   const [currentEditableResourceNode, setCurrentEditableResourceNode] =
     useState<ResourceNode>(null);
 
+  const [pendingChanges, setPendingChanges] = useState<
+    OverrideChanges | undefined
+  >(undefined);
+
   const { resourceSettings } = useResource(currentEditableResourceNode?.id);
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -82,8 +87,6 @@ const useModelOrganizer = ({
   const [saveDataTimestampTrigger, setSaveDataTimestampTrigger] =
     useState<Date>(null);
 
-  const [refetchAfterLoadingCompleted, setRefetchAfterLoadingCompleted] =
-    useState<boolean>(false);
   const [redesignMode, setRedesignMode] = useState<boolean>(false);
 
   const [errorMessage, setErrorMessage] = useState<string>(null);
@@ -163,8 +166,6 @@ const useModelOrganizer = ({
           setCurrentResourcesData(resources);
           onLoadResourcesCompleted && onLoadResourcesCompleted();
 
-          setRefetchAfterLoadingCompleted(savedData.refetchChangesOnNextReload);
-
           return;
         }
       }
@@ -195,14 +196,15 @@ const useModelOrganizer = ({
       });
     },
     [
-      loadPersistentData,
+      headlessMode,
       loadProjectResourcesInternal,
       projectId,
-      setCurrentDetailedEdges,
+      loadPersistentData,
       setCurrentSimpleEdges,
+      setCurrentDetailedEdges,
+      setEdges,
       showRelationDetails,
       saveToPersistentData,
-      setEdges,
     ]
   );
 
@@ -292,15 +294,15 @@ const useModelOrganizer = ({
 
   //return an array with two element - the list of updates nodes and the selected resource node
   const prepareCurrentEditableResourceNodesData = useCallback(
-    (nodes: Node[], resource: models.Resource) => {
+    (nodes: Node[], editableResourceId: string) => {
       let selectedResourceNode: ResourceNode;
 
       nodes.forEach((node) => {
-        if (node.data.originalParentNode === resource.id) {
+        if (node.data.originalParentNode === editableResourceId) {
           node.draggable = true;
           node.selectable = true;
         }
-        if (node.id === resource.id) {
+        if (node.id === editableResourceId) {
           selectedResourceNode = node as ResourceNode;
           selectedResourceNode.data.isEditable = true;
         }
@@ -315,7 +317,7 @@ const useModelOrganizer = ({
     (resource: models.Resource) => {
       setNodes((nodes) => {
         const { updatedNodes, selectedResourceNode } =
-          prepareCurrentEditableResourceNodesData(nodes, resource);
+          prepareCurrentEditableResourceNodesData(nodes, resource.id);
 
         setCurrentEditableResourceNode(selectedResourceNode);
 
@@ -347,16 +349,21 @@ const useModelOrganizer = ({
   );
 
   const mergeNewResourcesChanges = useCallback(
-    (currentEditableResource?: models.Resource) => {
-      console.log(currentEditableResource, "currentEditableResource");
+    (overrideCurrentChanges?: OverrideChanges) => {
       loadProjectResourcesInternal({
         variables: {
           projectId: projectId,
         },
         onCompleted: async (data) => {
           if (data?.resources) {
+            const { changes: changesToApply, resourceId: editableResourceId } =
+              overrideCurrentChanges || {
+                changes,
+                resourceId: currentEditableResourceNode?.id,
+              };
+
             //add the new services into the list of resources returned from the server
-            for (const newServiceChange of changes.newServices) {
+            for (const newServiceChange of changesToApply.newServices) {
               //check if the service name already exists in the list of resources
               const newExistingServiceWithSameName = data.resources.find(
                 (x) => x.name === newServiceChange.name
@@ -385,7 +392,7 @@ const useModelOrganizer = ({
 
             const newMovedEntities: models.RedesignProjectMovedEntity[] = [];
 
-            for (const movedEntity of changes.movedEntities) {
+            for (const movedEntity of changesToApply.movedEntities) {
               if (!resourceMapping[movedEntity.originalResourceId]) {
                 //do not take this change because the original resource was deleted
                 continue;
@@ -413,20 +420,13 @@ const useModelOrganizer = ({
               movedNode.parentNode = newMovedEntitiesChange.targetResourceId;
             }
 
-            //if not provided, find the current editable resource and update the nodes
-            currentEditableResource =
-              currentEditableResource ||
-              data.resources.find(
-                (x) => x.id === currentEditableResourceNode.id
-              );
-
             const { updatedNodes, selectedResourceNode } =
               prepareCurrentEditableResourceNodesData(
                 newNodes,
-                currentEditableResource
+                editableResourceId
               );
             setCurrentEditableResourceNode(selectedResourceNode);
-
+            setRedesignMode(true);
             setCurrentResourcesData(data.resources);
 
             setCurrentDetailedEdges(newDetailedEdges);
@@ -461,17 +461,16 @@ const useModelOrganizer = ({
     [
       loadProjectResourcesInternal,
       projectId,
+      changes,
       showRelationDetails,
       prepareCurrentEditableResourceNodesData,
       setCurrentDetailedEdges,
       setCurrentSimpleEdges,
-      changes.newServices,
-      changes.movedEntities,
       saveToPersistentData,
+      onMessage,
       createNewServiceObject,
       currentEditableResourceNode,
       setEdges,
-      onMessage,
     ]
   );
 
@@ -648,11 +647,12 @@ const useModelOrganizer = ({
     },
     [
       nodes,
+      changes,
       edges,
       showRelationDetails,
-      changes,
       saveToPersistentData,
-      setErrorMessage,
+      trackEvent,
+      resourceSettings,
     ]
   );
 
@@ -685,17 +685,18 @@ const useModelOrganizer = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
+  //check if there are pending changes and apply them once all the data is loaded
   useEffect(() => {
-    if (refetchAfterLoadingCompleted && !headlessMode) {
+    if (pendingChanges) {
       if (
-        currentEditableResourceNode &&
         nodes &&
         nodes.length > 0 &&
         currentResourcesData &&
         currentResourcesData.length > 0
       ) {
-        setRefetchAfterLoadingCompleted(false);
-        mergeNewResourcesChanges();
+        const overrideCurrentChanges = pendingChanges;
+        setPendingChanges(undefined);
+        mergeNewResourcesChanges(overrideCurrentChanges);
       }
     }
   }, [
@@ -703,10 +704,11 @@ const useModelOrganizer = ({
     currentResourcesData,
     mergeNewResourcesChanges,
     nodes,
-    refetchAfterLoadingCompleted,
     headlessMode,
+    pendingChanges,
   ]);
 
+  //watch the status of the apply operation, and reset the changes once it is completed
   useEffect(() => {
     if (
       applyChangesResults?.userAction?.status === EnumUserActionStatus.Completed
@@ -717,70 +719,9 @@ const useModelOrganizer = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applyChangesResults?.userAction?.status]);
 
-  //This functions accepts the results of the AI BTM process and prepares the new microservice for display
-  //The function directly changes the persistent layer with the new changes received from the server,
-  //and then expects the parent component to reload the data from the persistent layer by using the property refetchChangesOnNextReload
-  //After the hook reloads the changes, it calls the mergeNewResourcesChanges function to merge the new changes into the current state
-  const saveBreakTheMonolithResultsIntoState = useCallback(
-    async (results: models.BreakServiceToMicroservicesResult) => {
-      const btmChanges: ModelChanges = {
-        movedEntities: [],
-        newServices: [],
-      };
-
-      const currentResource = currentResourcesData.find(
-        (resource) => resource.id === results.originalResourceId
-      );
-
-      if (!currentResource) {
-        throw new Error("Resource not found");
-      }
-
-      results.data.microservices.forEach(async (microservice) => {
-        const tempId = generatedKey();
-        const newService = {
-          id: tempId,
-          name: microservice.name,
-          description: microservice.functionality,
-        };
-        btmChanges.newServices.push(newService);
-
-        microservice.tables.forEach((entity) => {
-          const movedEntity = {
-            entityId: entity.originalEntityId,
-            targetResourceId: tempId,
-            originalResourceId: results.originalResourceId,
-          };
-          btmChanges.movedEntities.push(movedEntity);
-        });
-      });
-
-      //prepare the nodes with the current editable resource, do not use the hook because the async save may not be
-      const { updatedNodes } = prepareCurrentEditableResourceNodesData(
-        nodes,
-        currentResource
-      );
-
-      //save directly to the persistent layer - do not use the hook because the async save may not be
-      const savedData: ModelOrganizerPersistentData = {
-        projectId: projectId,
-        nodes: updatedNodes,
-        changes: btmChanges,
-        showRelationDetails: true,
-        redesignMode: true,
-        refetchChangesOnNextReload: true,
-      };
-
-      persistData(savedData);
-    },
-    [
-      currentResourcesData,
-      nodes,
-      persistData,
-      prepareCurrentEditableResourceNodesData,
-      projectId,
-    ]
-  );
+  const setMultipleChanges = useCallback((overrideChanges: OverrideChanges) => {
+    setPendingChanges(overrideChanges);
+  }, []);
 
   return {
     nodes,
@@ -812,7 +753,7 @@ const useModelOrganizer = ({
     resetUserAction,
     clearDuplicateEntityError,
     redesignMode,
-    saveBreakTheMonolithResultsIntoState,
+    setMultipleChanges,
     errorMessage,
   };
 };
