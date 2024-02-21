@@ -11,7 +11,6 @@ export enum AnalyticsEventNames {
   SignInWithGitHub = "signInWithGitHub",
   SignInWithUserName = "signInWithUserName",
   ContinueWithSSOClick = "continueWithSSOClick",
-  SignUpWithEmailPassword = "SignUpWithEmailPassword",
   EmailLogin = "EmailLogin",
 
   // account
