@@ -42,7 +42,9 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
   resourceId,
 }) => {
   const history = useHistory();
+  const [canNavigate, setCanNavigate] = React.useState(true);
   const [userAction, setUserAction] = React.useState<models.UserAction>(null);
+  const [disableBreakButton, setDisableBreakButton] = React.useState(false);
   const { data: userActionData } = useUserActionWatchStatus(userAction);
 
   const [createEntitiesFormPredefinedSchema] = useMutation<TData>(
@@ -50,9 +52,26 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
     {
       onCompleted: (data) => {
         setUserAction(data.createEntitiesFromPredefinedSchema);
+        localStorage.setItem(
+          "disableSelectPreviewEnvPage",
+          JSON.stringify(true)
+        );
+        setCanNavigate(false);
       },
     }
   );
+
+  useEffect(() => {
+    const foundItem = Boolean(
+      localStorage.getItem("disableSelectPreviewEnvPage")
+    );
+    setCanNavigate(!foundItem);
+    if (!canNavigate) {
+      history.push(
+        `/${workspaceId}/${projectId}/${resourceId}/break-the-monolith-preview`
+      );
+    }
+  }, [canNavigate, history, projectId, resourceId, workspaceId]);
 
   useEffect(() => {
     if (!userActionData || !userActionData.userAction) return;
@@ -66,6 +85,7 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
   }, [userActionData, history, workspaceId, projectId, resourceId]);
 
   const handleBreakClicked = (selectedMonolithToBreak: MonolithOption) => {
+    setDisableBreakButton(true);
     createEntitiesFormPredefinedSchema({
       variables: {
         data: {
@@ -144,6 +164,7 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
                     <Button
                       onClick={() => handleBreakClicked(option)}
                       className={`${CLASS_NAME}__action-button`}
+                      disabled={disableBreakButton}
                     >
                       Break
                     </Button>

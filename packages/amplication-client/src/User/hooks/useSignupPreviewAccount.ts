@@ -34,6 +34,7 @@ const useSignupPreviewAccount = (
           },
         },
         onCompleted: ({ signupPreviewAccount }) => {
+          localStorage.removeItem("disableSelectPreviewEnvPage");
           const { token, workspaceId, projectId, resourceId } =
             signupPreviewAccount;
           setToken(token);
