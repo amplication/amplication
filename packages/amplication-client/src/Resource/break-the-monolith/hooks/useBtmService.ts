@@ -73,12 +73,15 @@ export const useBtmService = ({ resourceId }: BtmProps) => {
 
   useEffect(() => {
     if (!btmResult) return;
-    if (!shouldReload(btmResult?.finalizeBreakServiceIntoMicroservices)) {
+    if (
+      !shouldReload(btmResult?.finalizeBreakServiceIntoMicroservices) ||
+      btmError
+    ) {
       stopPolling();
     } else {
       startPolling(POLL_INTERVAL);
     }
-  }, [btmResult, stopPolling, startPolling, shouldReload]);
+  }, [btmResult, btmError, stopPolling, startPolling, shouldReload]);
 
   useEffect(() => {
     triggerBreakServiceIntoMicroservices().catch(console.error);
