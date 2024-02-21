@@ -38,11 +38,15 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
         By initiating this journey, you've sparked an innovative transformation
         in your backend code generation.
       </Text>
-      <Text textStyle={EnumTextStyle.H3} textColor={EnumTextColor.Primary}>
+      <Text
+        textStyle={EnumTextStyle.H3}
+        textColor={EnumTextColor.Primary}
+        className={`${CLASS_NAME}__toast`}
+      >
         Let's toast to the endless opportunities ahead!
       </Text>
       <Text textStyle={EnumTextStyle.Normal} textColor={EnumTextColor.Black20}>
-        But our adventure doesn't stop here! Your next move is crucial:{" "}
+        But our adventure doesn't stop here! Your next move is crucial.{" "}
         <Text
           textStyle={EnumTextStyle.Normal}
           textColor={EnumTextColor.ThemeOrange}
@@ -53,11 +57,27 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
 
       <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
         If you're already an Amplication user, simply sign in using your
-        existing credentials. Here's to you and the exciting path ahead! Cheers!
+        existing credentials.
       </Text>
 
-      <Button className={`${CLASS_NAME}__dismiss_button`} onClick={onConfirm}>
-        Got it!
+      <Text
+        textStyle={EnumTextStyle.Normal}
+        textColor={EnumTextColor.ThemeBlue}
+        className={`${CLASS_NAME}__cheers`}
+      >
+        Here's to you and the exciting path ahead! Cheers!
+      </Text>
+
+      <Button className={`${CLASS_NAME}__confirm-button`} onClick={onConfirm}>
+        Let's go!
+        <span
+          className={`${CLASS_NAME}__confirm-button__rocket`}
+          role="img"
+          aria-label="rocket"
+        >
+          {" "}
+          🚀
+        </span>
       </Button>
     </FlexItem>
   );

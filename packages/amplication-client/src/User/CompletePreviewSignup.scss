@@ -2,8 +2,17 @@
 
 .complete-preview-signup {
   margin-top: 200px;
-  &__dismiss_button {
-    margin-top: var(--default-spacing);
-    padding: 0 var(--double-spacing);
+  &__toast {
+    margin: var(--double-spacing) 0;
+  }
+  &__cheers {
+    margin-top: var(--double-spacing);
+  }
+  &__confirm-button {
+    margin-top: var(--double-spacing);
+
+    &__rocket {
+      padding-left: 2px;
+    }
   }
 }
