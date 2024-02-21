@@ -33,6 +33,7 @@ import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
 import {
+  EntityNode,
   NODE_TYPE_MODEL,
   NODE_TYPE_MODEL_GROUP,
   Node,
@@ -64,7 +65,7 @@ type Props = {
 };
 
 export default function ModelOrganizer({ restrictedMode = false }: Props) {
-  const { currentProject } = useAppContext();
+  const { currentProject, resetPendingChangesIndicator } = useAppContext();
 
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
@@ -98,6 +99,7 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     resetUserAction,
     currentEditableResourceNode,
     clearDuplicateEntityError,
+    setSelectResourceRelatedEntities,
     errorMessage,
     setMultipleChanges,
   } = useModelOrganizer({
@@ -111,6 +113,12 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
 
   const fitViewTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (!resetPendingChangesIndicator) return;
+    resetChanges();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetPendingChangesIndicator]);
 
   const fitToView = useCallback(
     (delayBeforeStart = 100) => {
@@ -289,6 +297,14 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     fitToView();
   }, [nodes, edges, showRelationDetails, setNodes, fitToView]);
 
+  const onNodeClick = useCallback(
+    async (event: React.MouseEvent, node: Node) => {
+      if (!node.data.selectRelatedEntities) return;
+      setSelectResourceRelatedEntities(node as EntityNode);
+    },
+    [setSelectResourceRelatedEntities]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <>
@@ -364,6 +380,7 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
                 onNodeDragStop={onNodeDragStop}
                 onEdgesChange={onEdgesChange}
                 connectionMode={ConnectionMode.Loose}
+                onNodeClick={onNodeClick}
                 proOptions={{ hideAttribution: true }}
                 minZoom={0.1}
                 panOnScroll
