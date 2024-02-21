@@ -69,7 +69,7 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
       </Text>
 
       <Button className={`${CLASS_NAME}__confirm-button`} onClick={onConfirm}>
-        Let's go!
+        Got it!
         <span
           className={`${CLASS_NAME}__confirm-button__rocket`}
           role="img"
