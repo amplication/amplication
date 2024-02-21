@@ -11,7 +11,7 @@ import { EnumUserActionType } from "../userAction/types";
 import { ConversationTypeKey } from "../gpt/gpt.types";
 import { BreakServiceToMicroservicesData } from "./dto/BreakServiceToMicroservicesResult";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { Resource, User } from "../../models";
+import { Resource, User, Workspace } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
@@ -53,10 +53,22 @@ const userActionMock = {
   actionId: actionIdMock,
 } as unknown as UserAction;
 
+const EXAMPLE_WORKSPACE: Workspace = {
+  id: workspaceIdMock,
+  name: "Example Other Workspace",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  allowLLMFeatures: true,
+};
+
 const startConversationMock = jest.fn();
 const userActionServiceFindOneMock = jest.fn();
 const resourceFindUniqueMock = jest.fn();
 const resourceFindManyMock = jest.fn();
+
+const workspaceFindUniqueMock = jest.fn(() => {
+  return EXAMPLE_WORKSPACE;
+});
 
 const billingServiceIsBillingEnabledMock = jest.fn();
 const getSubscriptionMock = jest.fn();
@@ -110,12 +122,15 @@ describe("ResourceBtmService", () => {
         },
         {
           provide: PrismaService,
-          useValue: {
+          useClass: jest.fn(() => ({
+            workspace: {
+              findUnique: workspaceFindUniqueMock,
+            },
             resource: {
               findUnique: resourceFindUniqueMock,
               findMany: resourceFindManyMock,
             },
-          },
+          })),
         },
         {
           provide: UserActionService,
