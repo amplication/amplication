@@ -1,6 +1,7 @@
 import {
   Button,
   EnumFlexDirection,
+  EnumGapSize,
   EnumItemsAlign,
   EnumListStyle,
   EnumPanelStyle,
@@ -157,7 +158,10 @@ const BreakTheMonolith: React.FC<Props> = ({
                 </Button>
               </Panel>
               <div className={`${CLASS_NAME}__content`}>
-                <Panel className={`${CLASS_NAME}__services`}>
+                <Panel
+                  className={`${CLASS_NAME}__services`}
+                  panelStyle={EnumPanelStyle.Transparent}
+                >
                   {btmResult?.data?.microservices.map((item, index) => (
                     <List
                       key={index}
@@ -165,7 +169,7 @@ const BreakTheMonolith: React.FC<Props> = ({
                       listStyle={EnumListStyle.Dark}
                       headerContent={
                         <FlexItem
-                          itemsAlign={EnumItemsAlign.Center}
+                          itemsAlign={EnumItemsAlign.Start}
                           className={`${CLASS_NAME}__services__service__header`}
                           start={
                             <ResourceCircleBadge
@@ -174,12 +178,24 @@ const BreakTheMonolith: React.FC<Props> = ({
                             />
                           }
                         >
-                          <Text
-                            textStyle={EnumTextStyle.Tag}
-                            textColor={EnumTextColor.White}
+                          <FlexItem
+                            itemsAlign={EnumItemsAlign.Start}
+                            direction={EnumFlexDirection.Column}
+                            gap={EnumGapSize.Small}
                           >
-                            {item.name}
-                          </Text>
+                            <Text
+                              textStyle={EnumTextStyle.Tag}
+                              textColor={EnumTextColor.White}
+                            >
+                              {item.name}
+                            </Text>
+                            <Text
+                              textStyle={EnumTextStyle.Tag}
+                              className={`${CLASS_NAME}__services__service__description`}
+                            >
+                              {item.functionality}
+                            </Text>
+                          </FlexItem>
                         </FlexItem>
                       }
                     >
