@@ -186,6 +186,7 @@ const BreakTheMonolith: React.FC<Props> = ({
                             <Text
                               textStyle={EnumTextStyle.Tag}
                               textColor={EnumTextColor.White}
+                              className={`${CLASS_NAME}__services__service__description`}
                             >
                               {item.name}
                             </Text>
