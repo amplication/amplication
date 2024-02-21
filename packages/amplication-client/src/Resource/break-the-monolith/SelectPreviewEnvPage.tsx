@@ -24,7 +24,7 @@ const SelectPreviewEnvPage: React.FC<Props> = ({ match }) => {
   const workspaceId = query.get("workspaceId");
 
   return (
-    <Modal open fullScreen>
+    <Modal open fullScreen showCloseButton={false}>
       <CreateEntitiesFormPredefinedSchema
         workspaceId={workspaceId}
         projectId={projectId}

@@ -33,11 +33,13 @@ import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
 import {
+  EntityNode,
   NODE_TYPE_MODEL,
   NODE_TYPE_MODEL_GROUP,
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
+import { useHistory, useLocation } from "react-router-dom";
 
 export const CLASS_NAME = "model-organizer";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -63,12 +65,15 @@ type Props = {
 };
 
 export default function ModelOrganizer({ restrictedMode = false }: Props) {
-  const { currentProject } = useAppContext();
+  const { currentProject, resetPendingChangesIndicator } = useAppContext();
 
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
 
   const { message, messageType, showMessage, removeMessage } = useMessage();
+
+  const location = useLocation();
+  const history = useHistory();
 
   const {
     nodes,
@@ -94,7 +99,9 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     resetUserAction,
     currentEditableResourceNode,
     clearDuplicateEntityError,
+    setSelectResourceRelatedEntities,
     errorMessage,
+    setMultipleChanges,
   } = useModelOrganizer({
     projectId: currentProject?.id,
     onMessage: showMessage,
@@ -106,6 +113,12 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
 
   const fitViewTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (!resetPendingChangesIndicator) return;
+    resetChanges();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetPendingChangesIndicator]);
 
   const fitToView = useCallback(
     (delayBeforeStart = 100) => {
@@ -121,6 +134,16 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     },
     [reactFlowInstance]
   );
+
+  useEffect(() => {
+    if (location.state?.changes) {
+      setMultipleChanges(location.state?.changes);
+      history.replace({
+        ...location,
+        state: { ...location.state, changes: undefined },
+      });
+    }
+  }, [location, history, setMultipleChanges]);
 
   useEffect(() => {
     // Clear the timeout ref when the component unmounts
@@ -274,6 +297,14 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     fitToView();
   }, [nodes, edges, showRelationDetails, setNodes, fitToView]);
 
+  const onNodeClick = useCallback(
+    async (event: React.MouseEvent, node: Node) => {
+      if (!node.data.selectRelatedEntities) return;
+      setSelectResourceRelatedEntities(node as EntityNode);
+    },
+    [setSelectResourceRelatedEntities]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <>
@@ -349,6 +380,7 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
                 onNodeDragStop={onNodeDragStop}
                 onEdgesChange={onEdgesChange}
                 connectionMode={ConnectionMode.Loose}
+                onNodeClick={onNodeClick}
                 proOptions={{ hideAttribution: true }}
                 minZoom={0.1}
                 panOnScroll
