@@ -57,6 +57,7 @@ $button-width: 100px;
     &__service {
       overflow-y: auto;
       min-width: $service-min-width;
+      max-width: $service-min-width;
       max-height: $service-max-height;
 
       .amp-list-item:first-child {
@@ -65,6 +66,13 @@ $button-width: 100px;
 
       &__header {
         overflow: hidden;
+      }
+
+      &__description {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
       }
     }
   }
