@@ -437,7 +437,7 @@ const useModelOrganizer = ({
             setNodes(updatedNodesWithLayout);
             setChanges({
               movedEntities: newMovedEntities,
-              newServices: changes.newServices,
+              newServices: changesToApply.newServices,
             });
 
             if (showRelationDetails) {
