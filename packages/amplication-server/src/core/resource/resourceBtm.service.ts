@@ -165,16 +165,20 @@ export class ResourceBtmService {
       };
     }
 
-    const recommendations = await this.prepareBtmRecommendations(
-      JSON.stringify(metadata),
-      resourceId
-    );
+    try {
+      const recommendations = await this.prepareBtmRecommendations(
+        metadata.data,
+        resourceId
+      );
 
-    return {
-      status: EnumUserActionStatus.Completed,
-      originalResourceId: resourceId,
-      data: recommendations,
-    };
+      return {
+        status: EnumUserActionStatus.Completed,
+        originalResourceId: resourceId,
+        data: recommendations,
+      };
+    } catch (error) {
+      throw new AmplicationError(BREAK_THE_MONOLITH_AI_ERROR_MESSAGE);
+    }
   }
 
   generatePromptForBreakTheMonolith(resource: ResourceDataForBtm): string {
@@ -360,7 +364,7 @@ export class ResourceBtmService {
         })),
       };
     } catch (error) {
-      throw new GptBadFormatResponseError(JSON.stringify(promptResult), error);
+      throw new GptBadFormatResponseError(promptResult);
     }
   }
 

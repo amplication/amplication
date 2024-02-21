@@ -1,8 +1,10 @@
 import { Test } from "@nestjs/testing";
 import { ResourceBtmService } from "./resourceBtm.service";
-import { BreakTheMonolithOutput } from "./resourceBtm.types";
 import { EnumDataType } from "../../enums/EnumDataType";
-import { ResourceDataForBtm } from "./resourceBtm.types";
+import {
+  BreakTheMonolithOutput,
+  ResourceDataForBtm,
+} from "./resourceBtm.types";
 import { GptService } from "../gpt/gpt.service";
 import { PrismaService } from "../../prisma";
 import { UserActionService } from "../userAction/userAction.service";
