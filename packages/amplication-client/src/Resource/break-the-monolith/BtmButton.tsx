@@ -278,7 +278,7 @@ export const BtmButton: React.FC<Props> = ({
           open
           onCloseEvent={toggleIsOpen}
           fullScreen={true}
-          showCloseButton
+          showCloseButton={!isPreviewPlan}
         >
           <BreakTheMonolith
             resource={selectedResource}
