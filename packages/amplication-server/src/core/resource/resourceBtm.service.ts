@@ -16,7 +16,6 @@ import {
   BreakServiceToMicroservicesResult,
   BreakServiceToMicroservicesData,
 } from "./dto/BreakServiceToMicroservicesResult";
-import { UserActionService } from "../userAction/userAction.service";
 import { GptBadFormatResponseError } from "./errors/GptBadFormatResponseError";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { Resource, User } from "../../models";
@@ -28,13 +27,14 @@ import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { EnumResourceType } from "./dto/EnumResourceType";
 import { v4 } from "uuid";
+import { BREAK_THE_MONOLITH_AI_ERROR_MESSAGE } from "./constants";
+import { validate } from "class-validator";
 
 @Injectable()
 export class ResourceBtmService {
   constructor(
     private readonly gptService: GptService,
     private readonly prisma: PrismaService,
-    private readonly userActionService: UserActionService,
     private readonly billingService: BillingService,
     private readonly analyticsService: SegmentAnalyticsService,
     private readonly logger: AmplicationLogger
@@ -147,15 +147,11 @@ export class ResourceBtmService {
   async finalizeBreakServiceIntoMicroservices(
     userActionId: string
   ): Promise<BreakServiceToMicroservicesResult> {
-    const { resourceId, metadata } = await this.userActionService.findOne({
-      where: {
-        id: userActionId,
-      },
-    });
-
-    const userActionStatus = await this.userActionService.evalUserActionStatus(
-      userActionId
-    );
+    const {
+      status: userActionStatus,
+      resourceId,
+      metadata,
+    } = await this.gptService.getConversationUserAction(userActionId);
 
     if (userActionStatus !== EnumUserActionStatus.Completed) {
       return {
