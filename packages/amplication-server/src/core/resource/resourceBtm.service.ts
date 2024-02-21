@@ -28,7 +28,6 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { EnumResourceType } from "./dto/EnumResourceType";
 import { v4 } from "uuid";
 import { BREAK_THE_MONOLITH_AI_ERROR_MESSAGE } from "./constants";
-import { validate } from "class-validator";
 
 @Injectable()
 export class ResourceBtmService {

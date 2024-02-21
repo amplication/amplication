@@ -10,9 +10,6 @@ import { UserAction } from "../userAction/dto";
 import { ResourceBtmService } from "./resourceBtm.service";
 import { BreakServiceToMicroservicesResult } from "./dto/BreakServiceToMicroservicesResult";
 import { StartRedesignArgs } from "./dto/StartRedesignArgs";
-import { GptBadFormatResponseError } from "./errors/GptBadFormatResponseError";
-import { AmplicationError } from "../../errors/AmplicationError";
-import { BREAK_THE_MONOLITH_AI_ERROR_MESSAGE } from "./constants";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
