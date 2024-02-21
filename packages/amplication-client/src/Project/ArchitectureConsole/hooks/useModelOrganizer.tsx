@@ -48,7 +48,6 @@ type Props = {
   projectId: string;
   onMessage: (message: string, type: EnumMessageType) => void;
   showRelationDetailsOnStartup?: boolean;
-  headlessMode?: boolean;
 };
 
 type RedesignProjectData = {
@@ -59,7 +58,6 @@ const useModelOrganizer = ({
   projectId,
   onMessage,
   showRelationDetailsOnStartup = false,
-  headlessMode = false,
 }: Props) => {
   const { trackEvent } = useTracking();
   const { reloadResources } = useAppContext();
@@ -137,9 +135,8 @@ const useModelOrganizer = ({
 
   const loadProjectResources = useCallback(
     (forceRefresh?: boolean, onLoadResourcesCompleted?: () => void) => {
-      // do not load the saved data in headless mode - this will override any saved data when used as headless
       //try to load a saved copy of the data from the persistent layer
-      if (!forceRefresh && !headlessMode) {
+      if (!forceRefresh) {
         const savedData = loadPersistentData();
 
         if (savedData && savedData.redesignMode) {
@@ -196,7 +193,6 @@ const useModelOrganizer = ({
       });
     },
     [
-      headlessMode,
       loadProjectResourcesInternal,
       projectId,
       loadPersistentData,
@@ -704,7 +700,6 @@ const useModelOrganizer = ({
     currentResourcesData,
     mergeNewResourcesChanges,
     nodes,
-    headlessMode,
     pendingChanges,
   ]);
 
