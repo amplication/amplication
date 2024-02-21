@@ -41,6 +41,7 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
   resourceId,
 }) => {
   const history = useHistory();
+  const [canNavigate, setCanNavigate] = React.useState(true);
   const [userAction, setUserAction] = React.useState<models.UserAction>(null);
   const [disableBreakButton, setDisableBreakButton] = React.useState(false);
   const { data: userActionData } = useUserActionWatchStatus(userAction);
@@ -50,9 +51,26 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
     {
       onCompleted: (data) => {
         setUserAction(data.createEntitiesFromPredefinedSchema);
+        localStorage.setItem(
+          "disableSelectPreviewEnvPage",
+          JSON.stringify(true)
+        );
+        setCanNavigate(false);
       },
     }
   );
+
+  useEffect(() => {
+    const foundItem = Boolean(
+      localStorage.getItem("disableSelectPreviewEnvPage")
+    );
+    setCanNavigate(!foundItem);
+    if (!canNavigate) {
+      history.push(
+        `/${workspaceId}/${projectId}/${resourceId}/break-the-monolith-preview`
+      );
+    }
+  }, [canNavigate, history, projectId, resourceId, workspaceId]);
 
   useEffect(() => {
     if (!userActionData || !userActionData.userAction) return;
