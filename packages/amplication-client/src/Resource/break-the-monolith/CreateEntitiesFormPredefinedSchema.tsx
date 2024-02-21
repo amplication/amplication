@@ -42,6 +42,7 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
 }) => {
   const history = useHistory();
   const [userAction, setUserAction] = React.useState<models.UserAction>(null);
+  const [disableBreakButton, setDisableBreakButton] = React.useState(false);
   const { data: userActionData } = useUserActionWatchStatus(userAction);
 
   const [createEntitiesFormPredefinedSchema] = useMutation<TData>(
@@ -65,6 +66,7 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
   }, [userActionData, history, workspaceId, projectId, resourceId]);
 
   const handleBreakClicked = (selectedMonolithToBreak: MonolithOption) => {
+    setDisableBreakButton(true);
     createEntitiesFormPredefinedSchema({
       variables: {
         data: {
@@ -119,6 +121,7 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
                     <Button
                       onClick={() => handleBreakClicked(option)}
                       className={`${CLASS_NAME}__action-button`}
+                      disabled={disableBreakButton}
                     >
                       Break
                     </Button>
