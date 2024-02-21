@@ -66,6 +66,11 @@ export type ModelChanges = {
   movedEntities: models.RedesignProjectMovedEntity[];
 };
 
+export type OverrideChanges = {
+  resourceId: string;
+  changes: ModelChanges;
+};
+
 export type ModelOrganizerPersistentData = {
   projectId: string;
   nodes: Node[];
