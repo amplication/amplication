@@ -14,6 +14,7 @@ export type NodePayload<T> = {
   originalParentNode?: string;
   isCurrentDropTarget?: boolean;
   highlight?: boolean;
+  selectRelatedEntities?: boolean;
 };
 
 export type NodePayloadWithPayloadType = NodePayload<

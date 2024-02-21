@@ -32,7 +32,7 @@ import { generatedKey } from "../../Plugins/InstalledPluginSettings";
 
 const CLASS_NAME = "break-the-monolith";
 
-const LOADER_TITLE = "Experience the Microservices Marvel using Amplication AI";
+const LOADER_TITLE = "Experience the microservices marvel using Amplication AI";
 const LOADER_SUBTITLE =
   "Our AI-driven magic is currently at work, suggesting how to elevate your service and its entities into a thriving microservices wonderland";
 
