@@ -18,6 +18,17 @@ $options-max-width: 800px;
     z-index: 1000;
   }
 
+  &__description {
+    max-width: 860px;
+    gap: 8px;
+    & > div {
+      line-height: normal;
+      &:not(:last-child) {
+        margin-bottom: var(--default-spacing);
+      }
+    }
+  }
+
   &__monolith_options {
     margin-top: var(--double-spacing);
     max-width: $options-max-width;

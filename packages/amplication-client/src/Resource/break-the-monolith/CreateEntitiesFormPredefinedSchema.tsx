@@ -93,19 +93,36 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
       ) : (
         <>
           <Text textStyle={EnumTextStyle.H2}>
-            Select the monolith you want to break
+            Break the Monolith with Amplication: A Journey of Transformation!
+            <span role="img" aria-label="rocket">
+              {" "}
+              🚀✨
+            </span>
           </Text>
           <Text
+            className={`${CLASS_NAME}__description`}
             textStyle={EnumTextStyle.Normal}
             textColor={EnumTextColor.Black20}
-            textAlign={EnumTextAlign.Center}
+            // textAlign={EnumTextAlign.Center}
           >
             <div>
-              To illustrate how Amplication can transform legacy systems into a
-              micro-services architecture,
+              Dive into a transformable journey by selecting an open-source
+              monolith, defined by its database schema. With Amplication, this
+              is where innovation begins. We import the monolith’s schema and
+              meticulously dissect it, preparing for a groundbreaking
+              transformation.
             </div>
             <div>
-              choose an open-source monolith, represented by its database schema
+              Witness the magic as Amplication proposes a new, streamlined
+              architecture of microservices, designed for scalability and
+              efficiency. You're not just observing; you’re part of the process,
+              reviewing the suggested microservices architecture, understanding
+              its dynamics, and visualizing the future.
+            </div>
+            <div>
+              Embrace this collaborative adventure with Amplication, where
+              breaking the monolith opens a world of possibilities and showcases
+              the true potential of technological innovation.
             </div>
           </Text>
           <div className={`${CLASS_NAME}__monolith_options`}>
