@@ -27,14 +27,15 @@ export const CompletePreviewSignupButton: React.FC<Props> = ({
   const [completeSignup] = useMutation(COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL);
 
   const handleGenerateCodeClicked = useCallback(() => {
-    completeSignup();
-    history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/complete-preview-signup`
-    );
-
     trackEvent({
       eventName: AnalyticsEventNames.PreviewUser_GenerateCode,
     });
+
+    completeSignup().catch(console.error);
+
+    history.push(
+      `/${currentWorkspace?.id}/${currentProject?.id}/complete-preview-signup`
+    );
   }, [completeSignup, history, currentWorkspace, currentProject, trackEvent]);
 
   return (

@@ -1,10 +1,14 @@
 import {
   Button,
+  EnumContentAlign,
   EnumFlexDirection,
+  EnumGapSize,
   EnumItemsAlign,
+  EnumTextAlign,
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
+  HorizontalRule,
   Text,
 } from "@amplication/ui/design-system";
 import "./CompletePreviewSignup.scss";
@@ -22,48 +26,67 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
       direction={EnumFlexDirection.Column}
       className={CLASS_NAME}
       itemsAlign={EnumItemsAlign.Center}
+      contentAlign={EnumContentAlign.Center}
+      gap={EnumGapSize.Default}
     >
       <Text textStyle={EnumTextStyle.H1}>
-        Unleash the Magic of Amplication!
+        Ready to take it to the next level?
         <span role="img" aria-label="celebrate">
           {" "}
           🎉
         </span>
       </Text>
       <Realistic autorun={{ speed: 1, duration: 7 }} />
-      <Text textStyle={EnumTextStyle.H4} textColor={EnumTextColor.Black20}>
-        We're thrilled for the monumental leap you've taken with Amplication!
-      </Text>
-      <Text textStyle={EnumTextStyle.Normal} textColor={EnumTextColor.Black20}>
-        By initiating this journey, you've sparked an innovative transformation
-        in your backend code generation.
-      </Text>
       <Text
-        textStyle={EnumTextStyle.H3}
-        textColor={EnumTextColor.Primary}
-        className={`${CLASS_NAME}__toast`}
+        textAlign={EnumTextAlign.Center}
+        textStyle={EnumTextStyle.Tag}
+        textColor={EnumTextColor.ThemeTurquoise}
       >
-        Let's toast to the endless opportunities ahead!
+        We have a 14-day trial with full access to the Enterprise edition for
+        you!
       </Text>
-      <Text textStyle={EnumTextStyle.Normal} textColor={EnumTextColor.Black20}>
-        But our adventure doesn't stop here! Your next move is crucial.{" "}
-        <Text
-          textStyle={EnumTextStyle.Normal}
-          textColor={EnumTextColor.ThemeOrange}
-        >
-          follow the signup process in your email to set your password.
-        </Text>
+      <HorizontalRule />
+      <Text
+        textAlign={EnumTextAlign.Center}
+        textStyle={EnumTextStyle.Normal}
+        textColor={EnumTextColor.White}
+      >
+        You've just completed the first step to building your next big thing.
+        You're now part of a community of creators and innovators who are
+        changing the world, one app at a time.
       </Text>
 
-      <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+      <Text
+        textAlign={EnumTextAlign.Center}
+        textStyle={EnumTextStyle.Normal}
+        textColor={EnumTextColor.White}
+      >
+        To continue your journey, you need to complete your registration by
+        setting your password.
+      </Text>
+      <Text
+        textAlign={EnumTextAlign.Center}
+        textStyle={EnumTextStyle.Normal}
+        textColor={EnumTextColor.White}
+      >
+        Follow the link in your email to complete your registration and gain
+        full access for a 14-day trial of the Enterprise edition.
+      </Text>
+
+      <Text
+        textAlign={EnumTextAlign.Center}
+        textStyle={EnumTextStyle.Tag}
+        textColor={EnumTextColor.Black20}
+      >
         If you're already an Amplication user, simply sign in using your
         existing credentials.
       </Text>
+      <HorizontalRule />
 
       <Text
-        textStyle={EnumTextStyle.Normal}
-        textColor={EnumTextColor.ThemeBlue}
-        className={`${CLASS_NAME}__cheers`}
+        textAlign={EnumTextAlign.Center}
+        textStyle={EnumTextStyle.Tag}
+        textColor={EnumTextColor.ThemeTurquoise}
       >
         Here's to you and the exciting path ahead! Cheers!
       </Text>
@@ -75,7 +98,7 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
           role="img"
           aria-label="rocket"
         >
-          {" "}
+          {"   "}
           🚀
         </span>
       </Button>
