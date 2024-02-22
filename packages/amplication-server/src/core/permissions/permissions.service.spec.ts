@@ -19,6 +19,7 @@ const EXAMPLE_WORKSPACE: Workspace = {
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_WORKSPACE_NAME,
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_COUNT = 1;

@@ -69,6 +69,7 @@ export const BtmButton: React.FC<Props> = ({
   selectedEditableResource,
 }) => {
   const {
+    currentWorkspace,
     currentResource,
     currentProject,
     resources,
@@ -96,6 +97,8 @@ export const BtmButton: React.FC<Props> = ({
     featureId: BillingFeature.RedesignArchitecture,
   }).hasAccess;
 
+  const allowLLMFeature = currentWorkspace?.allowLLMFeatures;
+
   useEffect(() => {
     if (
       hasRedesignArchitectureFeature &&
@@ -109,6 +112,13 @@ export const BtmButton: React.FC<Props> = ({
     if (!hasRedesignArchitectureFeature) {
       setTooltipText(NO_ACCESS_TEXT);
       setUpgradeTooltipText(tooltipDefaultTextUpgrade);
+    }
+
+    if (hasRedesignArchitectureFeature && !allowLLMFeature) {
+      setTooltipText(
+        "This feature is turned off because it relies on LLMs, and your workspace settings forbid their use."
+      );
+      setUpgradeTooltipText("");
     }
 
     if (
@@ -197,7 +207,7 @@ export const BtmButton: React.FC<Props> = ({
               iconPosition={EnumIconPosition.Left}
               buttonStyle={ButtonStyle}
               onClick={onButtonSelectResource}
-              disabled={!hasRedesignArchitectureFeature}
+              disabled={!hasRedesignArchitectureFeature || !allowLLMFeature}
               icon={"ai"}
             >
               {buttonText}
@@ -214,7 +224,7 @@ export const BtmButton: React.FC<Props> = ({
               title={buttonText}
               buttonStyle={ButtonStyle}
               hideSelectedItemsIndication
-              disabled={!hasRedesignArchitectureFeature}
+              disabled={!hasRedesignArchitectureFeature || !allowLLMFeature}
               icon={"ai"}
               buttonIconPosition={EnumIconPosition.Left}
             >

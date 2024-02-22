@@ -2629,6 +2629,7 @@ export type WhereUniqueInput = {
 };
 
 export type Workspace = {
+  allowLLMFeatures: Scalars['Boolean']['output'];
   createdAt: Scalars['DateTime']['output'];
   externalId?: Maybe<Scalars['String']['output']>;
   gitOrganizations?: Maybe<Array<GitOrganization>>;
@@ -2652,5 +2653,6 @@ export type WorkspaceMember = {
 export type WorkspaceMemberType = Invitation | User;
 
 export type WorkspaceUpdateInput = {
+  allowLLMFeatures?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };

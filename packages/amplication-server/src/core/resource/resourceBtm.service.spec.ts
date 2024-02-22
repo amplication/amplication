@@ -11,7 +11,7 @@ import { EnumUserActionType } from "../userAction/types";
 import { ConversationTypeKey } from "../gpt/gpt.types";
 import { BreakServiceToMicroservicesData } from "./dto/BreakServiceToMicroservicesResult";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { Resource, User } from "../../models";
+import { Resource, User, Workspace } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
@@ -53,10 +53,20 @@ const userActionMock = {
   actionId: actionIdMock,
 } as unknown as UserAction;
 
+const workspaceMock: Workspace = {
+  id: workspaceIdMock,
+  name: "Example Other Workspace",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  allowLLMFeatures: true,
+};
+
 const startConversationMock = jest.fn();
 const userActionServiceFindOneMock = jest.fn();
 const resourceFindUniqueMock = jest.fn();
 const resourceFindManyMock = jest.fn();
+
+const workspaceFindUniqueMock = jest.fn();
 
 const billingServiceIsBillingEnabledMock = jest.fn();
 const getSubscriptionMock = jest.fn();
@@ -111,6 +121,9 @@ describe("ResourceBtmService", () => {
         {
           provide: PrismaService,
           useValue: {
+            workspace: {
+              findUnique: workspaceFindUniqueMock,
+            },
             resource: {
               findUnique: resourceFindUniqueMock,
               findMany: resourceFindManyMock,
@@ -1274,7 +1287,7 @@ describe("ResourceBtmService", () => {
     );
   });
 
-  describe("triggerBreakServiceIntoMicroservices", () => {
+  describe("BreakServiceIntoMicroservices", () => {
     const mockPromptResult = "prompt-result";
 
     describe("when billing is disabled", () => {
@@ -1334,6 +1347,7 @@ describe("ResourceBtmService", () => {
     describe("when billing is enabled", () => {
       beforeEach(() => {
         billingServiceIsBillingEnabledMock.mockReturnValue(true);
+        workspaceFindUniqueMock.mockReturnValue(workspaceMock);
       });
 
       it("should throw a billing limitation error when the user doesn't have the entitlement", async () => {

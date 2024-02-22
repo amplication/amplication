@@ -20,7 +20,7 @@ type TData = {
   };
 };
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["firstName", "lastName"],
@@ -36,8 +36,8 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      firstName: AT_LEAST_TWO_CHARARCTERS,
-      lastName: AT_LEAST_TWO_CHARARCTERS,
+      firstName: AT_LEAST_TWO_CHARACTERS,
+      lastName: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };

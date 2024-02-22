@@ -1931,6 +1931,7 @@ input WhereUniqueInput {
 }
 
 type Workspace {
+  allowLLMFeatures: Boolean!
   createdAt: DateTime!
   externalId: String
   gitOrganizations: [GitOrganization!]
@@ -1954,5 +1955,6 @@ type WorkspaceMember {
 union WorkspaceMemberType = Invitation | User
 
 input WorkspaceUpdateInput {
+  allowLLMFeatures: Boolean
   name: String
 }
