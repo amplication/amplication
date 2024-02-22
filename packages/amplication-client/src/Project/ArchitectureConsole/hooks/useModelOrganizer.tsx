@@ -397,7 +397,8 @@ const useModelOrganizer = ({
 
               const newResource = createNewServiceObject(
                 serviceName,
-                newServiceChange.id
+                newServiceChange.id,
+                newServiceChange.description
               );
               data.resources.push(newResource);
             }
