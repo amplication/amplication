@@ -61,7 +61,12 @@ export class UserActionService {
     });
   }
 
-  async calcUserActionStatus(
+  /**
+   * Evaluate the status of a user action based on the status of its steps
+   * @param userActionId
+   * @returns the status of the user action
+   */
+  async evalUserActionStatus(
     userActionId: string
   ): Promise<EnumUserActionStatus> {
     const userAction = await this.prisma.userAction.findUnique({
