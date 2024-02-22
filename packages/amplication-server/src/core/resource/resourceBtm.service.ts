@@ -172,6 +172,7 @@ export class ResourceBtmService {
         data: recommendations,
       };
     } catch (error) {
+      this.logger.error(error.message, error, { userActionId });
       throw new AmplicationError(BREAK_THE_MONOLITH_AI_ERROR_MESSAGE);
     }
   }
@@ -359,7 +360,7 @@ export class ResourceBtmService {
         })),
       };
     } catch (error) {
-      throw new GptBadFormatResponseError(promptResult);
+      throw new GptBadFormatResponseError(promptResult, error);
     }
   }
 
