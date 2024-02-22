@@ -53,7 +53,7 @@ const userActionMock = {
   actionId: actionIdMock,
 } as unknown as UserAction;
 
-const EXAMPLE_WORKSPACE: Workspace = {
+const workspaceMock: Workspace = {
   id: workspaceIdMock,
   name: "Example Other Workspace",
   createdAt: new Date(),
@@ -66,9 +66,7 @@ const userActionServiceFindOneMock = jest.fn();
 const resourceFindUniqueMock = jest.fn();
 const resourceFindManyMock = jest.fn();
 
-const workspaceFindUniqueMock = jest.fn(() => {
-  return EXAMPLE_WORKSPACE;
-});
+const workspaceFindUniqueMock = jest.fn();
 
 const billingServiceIsBillingEnabledMock = jest.fn();
 const getSubscriptionMock = jest.fn();
@@ -122,7 +120,7 @@ describe("ResourceBtmService", () => {
         },
         {
           provide: PrismaService,
-          useClass: jest.fn(() => ({
+          useValue: {
             workspace: {
               findUnique: workspaceFindUniqueMock,
             },
@@ -130,7 +128,7 @@ describe("ResourceBtmService", () => {
               findUnique: resourceFindUniqueMock,
               findMany: resourceFindManyMock,
             },
-          })),
+          },
         },
         {
           provide: UserActionService,
@@ -1289,7 +1287,7 @@ describe("ResourceBtmService", () => {
     );
   });
 
-  describe("triggerBreakServiceIntoMicroservices", () => {
+  describe("BreakServiceIntoMicroservices", () => {
     const mockPromptResult = "prompt-result";
 
     describe("when billing is disabled", () => {
@@ -1349,6 +1347,7 @@ describe("ResourceBtmService", () => {
     describe("when billing is enabled", () => {
       beforeEach(() => {
         billingServiceIsBillingEnabledMock.mockReturnValue(true);
+        workspaceFindUniqueMock.mockReturnValue(workspaceMock);
       });
 
       it("should throw a billing limitation error when the user doesn't have the entitlement", async () => {
