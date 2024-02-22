@@ -218,6 +218,17 @@ export const Routes: RouteDef[] = [
                 isAnalytics: true,
               },
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/complete-preview-signup",
+                Component: lazy(
+                  () => import("../User/CompletePreviewSignupPage")
+                ),
+                moduleName: "CompletePreviewSignupPage",
+                moduleClass: "complete-preview-signup-page",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
                 Component: lazy(() => import("../Resource/ResourceHome")),
                 moduleName: "",

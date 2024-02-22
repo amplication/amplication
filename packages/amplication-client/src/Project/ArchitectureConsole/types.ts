@@ -14,6 +14,7 @@ export type NodePayload<T> = {
   originalParentNode?: string;
   isCurrentDropTarget?: boolean;
   highlight?: boolean;
+  selectRelatedEntities?: boolean;
 };
 
 export type NodePayloadWithPayloadType = NodePayload<
@@ -63,6 +64,11 @@ export type Relation = SimpleRelation | DetailedRelation;
 export type ModelChanges = {
   newServices: models.RedesignProjectNewService[];
   movedEntities: models.RedesignProjectMovedEntity[];
+};
+
+export type OverrideChanges = {
+  resourceId: string;
+  changes: ModelChanges;
 };
 
 export type ModelOrganizerPersistentData = {
