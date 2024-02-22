@@ -22,10 +22,19 @@ import "./ModelOrganizerConfirmation.scss";
 import { EntityNode, ModelChanges, NODE_TYPE_MODEL, Node } from "./types";
 import ActionLog from "../../VersionControl/ActionLog";
 import * as models from "../../models";
+import { useAppContext } from "../../context/appContext";
+import { useHistory } from "react-router-dom";
+import { useMutation } from "@apollo/client";
+import { COMMIT_CHANGES } from "../../VersionControl/Commit";
+import { commitPath } from "../../util/paths";
 
 type movedEntitiesData = {
   id: string;
   name: string;
+};
+
+type TData = {
+  commit: models.Commit;
 };
 export const CLASS_NAME = "model-organizer-confirmation";
 const MIN_TIME_OUT_LOADER = 2000;
@@ -49,8 +58,35 @@ export default function ModelOrganizerConfirmation({
   applyChangesErrorMessage,
   applyChangesData,
 }: Props) {
+  const {
+    currentWorkspace,
+    setCommitRunning,
+    resetPendingChanges,
+    currentProject,
+    commitUtils,
+  } = useAppContext();
   const [applyChangesSteps, setApplyChangesSteps] = useState<boolean>(false);
+
   const [keepLoadingChanges, setKeepLoadingChanges] = useState<boolean>(false);
+
+  const [commitChangesError, setCommitChangesError] = useState<boolean>(false);
+  const history = useHistory();
+
+  const handleCommitChangesError = useCallback(() => {
+    setCommitChangesError(true);
+  }, [setCommitChangesError]);
+
+  const bypassLimitations = useMemo(() => {
+    return (
+      currentWorkspace?.subscription?.subscriptionPlan !==
+      models.EnumSubscriptionPlan.Pro
+    );
+  }, [currentWorkspace]);
+
+  const redirectToPurchase = () => {
+    const path = `/${currentWorkspace?.id}/purchase`;
+    history.push(path, { from: { pathname: history.location.pathname } });
+  };
 
   const movedEntities = useMemo(() => {
     const movedEntities: movedEntitiesData[] = [];
@@ -77,6 +113,32 @@ export default function ModelOrganizerConfirmation({
     setKeepLoadingChanges(false);
     setApplyChangesSteps(true);
   }, [setKeepLoadingChanges, setApplyChangesSteps]);
+
+  const [commit] = useMutation<TData>(COMMIT_CHANGES, {
+    onCompleted: (response) => {
+      setCommitRunning(false);
+      setCommitChangesError(false);
+      resetPendingChanges();
+      commitUtils.refetchCommitsData(true);
+      const path = commitPath(
+        currentWorkspace?.id,
+        currentProject?.id,
+        response.commit.id
+      );
+      return history.push(path);
+    },
+  });
+
+  const handleOnBypassClicked = useCallback(() => {
+    setCommitRunning(true);
+    commit({
+      variables: {
+        message: "Architecture redesign",
+        projectId: currentProject?.id,
+        bypassLimitations: true,
+      },
+    }).catch(console.error);
+  }, [setCommitRunning, commit, currentProject?.id]);
 
   const ActionStep = applyChangesData?.action?.steps?.length
     ? applyChangesData?.action?.steps[0]
@@ -142,8 +204,48 @@ export default function ModelOrganizerConfirmation({
             </Button>
           </FlexItem>
         </>
-      ) : applyChangesSteps ? (
-        <ApplyChangesNextSteps onDisplayArchitectureClicked={onCancelChanges} />
+      ) : applyChangesSteps && !commitChangesError ? (
+        <ApplyChangesNextSteps
+          onDisplayArchitectureClicked={onCancelChanges}
+          onCommitChangesError={handleCommitChangesError}
+        />
+      ) : commitChangesError ? (
+        <>
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            itemsAlign={EnumItemsAlign.Center}
+            gap={EnumGapSize.Default}
+          >
+            <Text textStyle={EnumTextStyle.H3}>
+              Your workspace exceeds its resource limitation. Please contact us
+              to upgrade
+            </Text>
+            <Text textStyle={EnumTextStyle.Normal}>
+              Please contact us to upgrade
+            </Text>
+          </FlexItem>
+          <FlexItem contentAlign={EnumContentAlign.Center}>
+            <Button
+              className={`${CLASS_NAME}__upgrade_button`}
+              buttonStyle={EnumButtonStyle.Primary}
+              onClick={() => {
+                setCommitChangesError(false);
+                redirectToPurchase();
+              }}
+            >
+              Upgrade
+            </Button>
+            {bypassLimitations && (
+              <Button
+                className={`${CLASS_NAME}__upgrade_button`}
+                buttonStyle={EnumButtonStyle.Outline}
+                onClick={handleOnBypassClicked}
+              >
+                Later
+              </Button>
+            )}
+          </FlexItem>
+        </>
       ) : !applyChangesSteps ? (
         <>
           {changes?.newServices?.length > 0 && (
