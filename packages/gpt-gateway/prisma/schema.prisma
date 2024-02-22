@@ -21,11 +21,12 @@ model User {
 }
 
 model Model {
-  createdAt DateTime   @default(now())
-  id        String     @id @default(cuid())
-  name      String     @unique
+  createdAt         DateTime   @default(now())
+  id                String     @id @default(cuid())
+  name              String     @unique
   templates Template[]
-  updatedAt DateTime   @updatedAt
+  updatedAt         DateTime   @updatedAt
+  template_Fallback Template[] @relation(name: "Template_FallbackModel")
 }
 
 model ConversationType {
@@ -38,15 +39,17 @@ model ConversationType {
 }
 
 model Template {
-  createdAt    DateTime           @default(now())
-  id           String             @id @default(cuid())
-  messages     Message[]
-  messageTypes ConversationType[]
-  model        Model              @relation(fields: [modelId], references: [id])
-  modelId      String
-  name         String             @unique
-  params       String?
-  updatedAt    DateTime           @updatedAt
+  createdAt       DateTime           @default(now())
+  id              String             @id @default(cuid())
+  messages        Message[]
+  messageTypes    ConversationType[]
+  model           Model              @relation(fields: [modelId], references: [id])
+  modelId         String
+  fallbackModel   Model?             @relation(name: "Template_FallbackModel", fields: [fallbackModelId], references: [id])
+  fallbackModelId String?
+  name            String             @unique
+  params          String?
+  updatedAt       DateTime           @updatedAt
 }
 
 model Message {
