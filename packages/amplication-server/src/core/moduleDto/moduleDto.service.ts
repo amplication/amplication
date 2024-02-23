@@ -23,6 +23,8 @@ import { UpdateModuleDtoArgs } from "./dto/UpdateModuleDtoArgs";
 import { EnumModuleDtoPropertyType } from "./dto/propertyTypes/EnumModuleDtoPropertyType";
 import { UpdateModuleDtoPropertyArgs } from "./dto/UpdateModuleDtoPropertyArgs";
 import { DeleteModuleDtoPropertyArgs } from "./dto/DeleteModuleDtoPropertyArgs";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -45,11 +47,19 @@ export class ModuleDtoService extends BlockTypeService<
 > {
   blockType = EnumBlockType.ModuleDto;
 
+  customActionsEnabled: boolean;
+
   constructor(
     protected readonly blockService: BlockService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private configService: ConfigService
   ) {
     super(blockService);
+
+    this.customActionsEnabled = Boolean(
+      this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===
+        "true"
+    );
   }
 
   async availableDtosForResource(
@@ -68,6 +78,10 @@ export class ModuleDtoService extends BlockTypeService<
   }
 
   async create(args: CreateModuleDtoArgs, user: User): Promise<ModuleDto> {
+    if (!this.customActionsEnabled) {
+      return null;
+    }
+
     this.validateModuleDtoName(args.data.name);
 
     return super.create(
@@ -127,6 +141,10 @@ export class ModuleDtoService extends BlockTypeService<
     module: Module,
     user: User
   ): Promise<ModuleDto[]> {
+    if (!this.customActionsEnabled) {
+      return [];
+    }
+
     const defaultDtos = await getDefaultDtosForEntity(
       entity as unknown as CodeGenTypes.Entity
     );
@@ -168,6 +186,10 @@ export class ModuleDtoService extends BlockTypeService<
     module: Module,
     user: User
   ): Promise<ModuleDto[]> {
+    if (!this.customActionsEnabled) {
+      return [];
+    }
+
     //get the updated default dtos (with updated names)
     const defaultDtos = await getDefaultDtosForEntity(
       entity as unknown as CodeGenTypes.Entity
@@ -220,6 +242,10 @@ export class ModuleDtoService extends BlockTypeService<
     moduleId: string,
     user: User
   ): Promise<ModuleDto[]> {
+    if (!this.customActionsEnabled) {
+      return [];
+    }
+
     // Cast the field properties as Lookup properties
     const properties =
       relatedField.properties as unknown as CodeGenTypes.types.Lookup;
@@ -289,6 +315,10 @@ export class ModuleDtoService extends BlockTypeService<
     moduleId: string,
     user: User
   ): Promise<ModuleDto[]> {
+    if (!this.customActionsEnabled) {
+      return [];
+    }
+
     const properties =
       relatedField.properties as unknown as CodeGenTypes.types.Lookup;
 
