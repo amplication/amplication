@@ -19,6 +19,7 @@ import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import useModuleAction from "./hooks/useModuleAction";
 import { useModulesContext } from "../Modules/modulesContext";
+import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 
 type Props = {
   resourceId: string;
@@ -158,14 +159,16 @@ const NewModuleAction = ({
         </Formik>
       </Dialog>
 
-      <Button
-        buttonStyle={buttonStyle}
-        onClick={handleDialogStateChange}
-        disabled={!customActionsLicenseEnabled}
-        icon="api"
-      >
-        Add Action
-      </Button>
+      {REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED === "true" && (
+        <Button
+          buttonStyle={buttonStyle}
+          onClick={handleDialogStateChange}
+          disabled={!customActionsLicenseEnabled}
+          icon="api"
+        >
+          Add Action
+        </Button>
+      )}
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
