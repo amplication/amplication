@@ -421,6 +421,19 @@ const prismaEntityPermissionFindManyMock = jest.fn(() => []);
 const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
 const prismaEntityPermissionFieldFindManyMock = jest.fn(() => null);
 const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
+const dtoServiceUpdateDefaultDtoForEnumFieldMock = jest.fn(() => {
+  return {};
+});
+const dtoServiceDeleteDefaultDtoForEnumFieldMock = jest.fn(() => {
+  return {};
+});
+
+const moduleServiceUpdateDefaultModuleForEntityMock = jest.fn(() => {
+  return {};
+});
+const moduleServiceCreateDefaultModuleForEntityMock = jest.fn(() => {
+  return {};
+});
 
 const areDifferentMock = jest.fn(() => true);
 
@@ -472,15 +485,13 @@ describe("EntityService", () => {
         {
           provide: ModuleService,
           useClass: jest.fn(() => ({
-            createDefaultModuleForEntity: jest.fn(() => {
-              return {};
-            }),
+            createDefaultModuleForEntity:
+              moduleServiceCreateDefaultModuleForEntityMock,
             deleteDefaultModuleForEntity: jest.fn(() => {
               return {};
             }),
-            updateDefaultModuleForEntity: jest.fn(() => {
-              return {};
-            }),
+            updateDefaultModuleForEntity:
+              moduleServiceUpdateDefaultModuleForEntityMock,
             getDefaultModuleIdForEntity: jest.fn(() => {
               return "exampleModuleId";
             }),
@@ -507,6 +518,11 @@ describe("EntityService", () => {
             deleteDefaultDtosForRelatedEntity: jest.fn(() => {
               return [];
             }),
+            deleteDefaultDtoForEnumField:
+              dtoServiceDeleteDefaultDtoForEnumFieldMock,
+
+            updateDefaultDtoForEnumField:
+              dtoServiceUpdateDefaultDtoForEnumFieldMock,
           })),
         },
         {
@@ -671,6 +687,7 @@ describe("EntityService", () => {
     expect(prismaEntityCreateMock).toBeCalledTimes(1);
     expect(prismaEntityCreateMock).toBeCalledWith(newEntityArgs);
     expect(prismaEntityFieldCreateMock).toBeCalledTimes(3);
+    expect(moduleServiceCreateDefaultModuleForEntityMock).toBeCalledTimes(1);
   });
 
   describe("service license", () => {
@@ -1357,6 +1374,7 @@ describe("EntityService", () => {
     );
     expect(prismaEntityFieldUpdateMock).toBeCalledTimes(1);
     expect(prismaEntityFieldUpdateMock).toBeCalledWith(args);
+    expect(dtoServiceDeleteDefaultDtoForEnumFieldMock).toBeCalledTimes(0);
   });
 
   it('should throw a "Record not found" error', async () => {
@@ -1703,5 +1721,49 @@ describe("EntityService", () => {
   });
   it("should send a reserved name to a function that checks if its a reserved name", async () => {
     expect(isReservedName(RESERVED_NAME)).toBe(true);
+  });
+
+  it("should update default module and enum DTOs when updating entity name", async () => {
+    const updateArgs = {
+      args: {
+        where: { id: EXAMPLE_ENTITY_ID },
+        data: {
+          name: "changed name",
+          displayName: EXAMPLE_ENTITY.displayName,
+          pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
+          description: EXAMPLE_ENTITY.description,
+        },
+      },
+      user: EXAMPLE_USER,
+    };
+
+    expect(
+      await service.updateOneEntity(updateArgs.args, updateArgs.user)
+    ).toEqual(EXAMPLE_ENTITY);
+    expect(dtoServiceUpdateDefaultDtoForEnumFieldMock).toBeCalledTimes(1);
+    expect(moduleServiceUpdateDefaultModuleForEntityMock).toBeCalledTimes(1);
+  });
+
+  it("should delete Enum DTO when updating entity field type from OptionSet to other type", async () => {
+    prismaEntityFieldFindFirstMock.mockImplementationOnce(
+      (args: Prisma.EntityFieldFindUniqueArgs) => {
+        return {
+          ...EXAMPLE_ENTITY_FIELD,
+          dataType: EnumDataType.OptionSet,
+          entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION,
+        };
+      }
+    );
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id },
+      data: EXAMPLE_ENTITY_FIELD_DATA,
+    };
+    expect(await service.updateField(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_ENTITY_FIELD
+    );
+    expect(prismaEntityFieldUpdateMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldUpdateMock).toBeCalledWith(args);
+    expect(dtoServiceDeleteDefaultDtoForEnumFieldMock).toBeCalledTimes(1);
   });
 });
