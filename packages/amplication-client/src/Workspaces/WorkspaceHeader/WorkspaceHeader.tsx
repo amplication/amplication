@@ -61,6 +61,7 @@ import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupBut
 const CLASS_NAME = "workspace-header";
 const MWC_MEETING_URL =
   "https://meetings-eu1.hubspot.com/oalaluf/book-your-demo-mwc";
+const MWC_LOCAL_STORAGE_KEY = "showMwcBanner";
 
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
@@ -221,6 +222,7 @@ const WorkspaceHeader: React.FC = () => {
         clickEventProps={{}}
         closeEventName={AnalyticsEventNames.MWC2024BannerClose}
         closeEventProps={{}}
+        localStorageKey={MWC_LOCAL_STORAGE_KEY}
       >
         <Icon icon="rss" />
         Join us at MWC Barcelona 2024 (Feb 26 - 29).{" "}
