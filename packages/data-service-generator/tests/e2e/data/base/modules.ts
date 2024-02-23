@@ -4,7 +4,6 @@ import {
   ModuleDto,
 } from "@amplication/code-gen-types";
 import { USER_ID as USER_ENTITY_ID } from "./entities";
-
 const USER_MODULE_ID = "clraten4g000fc9yhr62nxheo";
 const PROMOTE_USER_INPUT_DTO_ID = "promoteUserInputDtoId";
 const PROMOTE_USER_ARGS_DTO_ID = "promoteUserArgsDtoId";
@@ -105,7 +104,7 @@ const userModuleCustomActions: ModuleAction[] = [
     description: "Promote one User to admin",
     resourceId: "clraten1t0004c9yhz1t3o8bp",
     parentBlockId: USER_MODULE_ID,
-    name: "promoteUser2",
+    name: "promoteUser",
     path: "/:id/promote",
     enabled: true,
     restVerb: "Post",
@@ -121,6 +120,10 @@ const userModuleCustomActions: ModuleAction[] = [
       type: "Dto",
       dtoId: PROMOTE_USER_ARGS_DTO_ID,
     },
+    restInputSource: "Split",
+    restInputParamsPropertyName: "where",
+    restInputBodyPropertyName: "data",
+    restInputQueryPropertyName: "query",
   },
   {
     id: "clraten5x000rc9yh29927zwf",
@@ -214,6 +217,16 @@ const userModuleDefaultDtos: ModuleDto[] = [
     enabled: true,
     properties: [],
   },
+  {
+    id: "UserWhereUniqueInput_ID",
+    description: "",
+    resourceId: "clraten1t0004c9yhz1t3o8bp",
+    parentBlockId: "clraten4g000fc9yhr62nxheo",
+    name: "UserWhereUniqueInput",
+    dtoType: "WhereUniqueInput",
+    enabled: true,
+    properties: [],
+  },
 ];
 
 const userModuleCustomDtos: ModuleDto[] = [
@@ -234,6 +247,30 @@ const userModuleCustomDtos: ModuleDto[] = [
           {
             type: "Dto",
             dtoId: PROMOTE_USER_INPUT_DTO_ID,
+            isArray: false,
+          },
+        ],
+      },
+      {
+        name: "where",
+        isArray: false,
+        isOptional: false,
+        propertyTypes: [
+          {
+            type: "Dto",
+            dtoId: "UserWhereUniqueInput_ID",
+            isArray: false,
+          },
+        ],
+      },
+      {
+        name: "query",
+        isArray: false,
+        isOptional: false,
+        propertyTypes: [
+          {
+            type: "Dto",
+            dtoId: "UserWhereUniqueInput_ID",
             isArray: false,
           },
         ],
