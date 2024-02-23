@@ -21,6 +21,7 @@ export default function ArchitectureConsole() {
       <FeatureIndicatorContainer
         featureId={BillingFeature.RedesignArchitecture}
         entitlementType={EntitlementType.Boolean}
+        showTooltip={false}
         render={({ disabled, icon }) => (
           <>{disabled && <ModuleOrganizerDisabled icon={icon} />}</>
         )}

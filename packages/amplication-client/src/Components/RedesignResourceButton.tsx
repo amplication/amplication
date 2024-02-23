@@ -8,6 +8,7 @@ import {
   SelectMenuList,
   SelectMenuModal,
   Text,
+  Button,
 } from "@amplication/ui/design-system";
 import { BillingFeature } from "@amplication/util-billing-types";
 import React from "react";
@@ -18,7 +19,6 @@ import {
 } from "./FeatureIndicatorContainer";
 import "./RedesignResourceButton.scss";
 import RedesignResourceButtonItem from "./RedesignResourceButtonItem";
-import { FeatureIndicator } from "./FeatureIndicator";
 
 const CLASS_NAME = "redesign-resource-button";
 
@@ -37,46 +37,52 @@ const RedesignResourceButton: React.FC<Props> = ({
         featureId={BillingFeature.RedesignArchitecture}
         entitlementType={EntitlementType.Boolean}
         limitationText="Available as part of the Enterprise plan only."
+        fullEnterpriseText="Redesign your system architecture by breaking a monolith Service into microservices"
         render={({ disabled, icon }) => (
           <>
-            {
-              <FeatureIndicator
-                featureName={"RedesignArchitecture"}
-                text={"Available as part of the Enterprise plan only."}
-                element={
-                  <SelectMenu
-                    icon={icon}
-                    title="Redesign"
-                    buttonStyle={EnumButtonStyle.Primary}
-                    hideSelectedItemsIndication
-                    disabled={disabled}
-                  >
-                    <SelectMenuModal align="right" withCaret>
-                      <SelectMenuList>
-                        <FlexItem
-                          margin={EnumFlexItemMargin.Both}
-                          className={`${CLASS_NAME}__list-header`}
-                        >
-                          <Text
-                            textStyle={EnumTextStyle.Tag}
-                            textColor={EnumTextColor.Black20}
-                          >
-                            Select Service to start redesign
-                          </Text>
-                        </FlexItem>
-                        {resources.map((item) => (
-                          <RedesignResourceButtonItem
-                            resource={item}
-                            key={item.id}
-                            onSelectResource={onSelectResource}
-                          />
-                        ))}
-                      </SelectMenuList>
-                    </SelectMenuModal>
-                  </SelectMenu>
-                }
-              ></FeatureIndicator>
-            }
+            {resources.length > 1 ? (
+              <SelectMenu
+                icon={icon}
+                title="Redesign"
+                buttonStyle={EnumButtonStyle.Primary}
+                hideSelectedItemsIndication
+                disabled={disabled}
+              >
+                <SelectMenuModal align="right" withCaret>
+                  <SelectMenuList>
+                    <FlexItem
+                      margin={EnumFlexItemMargin.Both}
+                      className={`${CLASS_NAME}__list-header`}
+                    >
+                      <Text
+                        textStyle={EnumTextStyle.Tag}
+                        textColor={EnumTextColor.Black20}
+                      >
+                        Select Service to start redesign
+                      </Text>
+                    </FlexItem>
+                    {resources.map((item) => (
+                      <RedesignResourceButtonItem
+                        resource={item}
+                        key={item.id}
+                        onSelectResource={onSelectResource}
+                      />
+                    ))}
+                  </SelectMenuList>
+                </SelectMenuModal>
+              </SelectMenu>
+            ) : (
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                icon={icon}
+                disabled={resources.length === 0}
+                onClick={() => {
+                  onSelectResource(resources[0]);
+                }}
+              >
+                Redesign
+              </Button>
+            )}
           </>
         )}
       ></FeatureIndicatorContainer>

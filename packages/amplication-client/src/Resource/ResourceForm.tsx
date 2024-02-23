@@ -32,7 +32,7 @@ type TData = {
   updateResource: models.Resource;
 };
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["name"],
@@ -47,7 +47,7 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      name: AT_LEAST_TWO_CHARARCTERS,
+      name: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };

@@ -12,6 +12,12 @@ $border-top-width: 6px;
   border-radius: var(--default-button-radius);
   padding: var(--default-spacing);
 
+  &--highlight {
+    .amp-text {
+      color: var(--theme-orange) !important;
+    }
+  }
+
   &.drop-target {
     border-left-width: 2px;
     border-right-width: 2px;

@@ -20,7 +20,7 @@ const INITIAL_VALUES: CreateProjectType = {
   name: "",
 };
 
-const { AT_LEAST_TWO_CHARARCTERS, AT_MOST_SIXTY_CHARACTERS } =
+const { AT_LEAST_TWO_CHARACTERS, AT_MOST_SIXTY_CHARACTERS } =
   validationErrorMessages;
 
 const FORM_SCHEMA = {
@@ -83,7 +83,7 @@ const NewProject = ({ onProjectCreated }: Props) => {
         validate={(values: CreateProjectType) => {
           const errors: { [key: string]: string } = {};
           if (values.name.length < FORM_SCHEMA.properties.name.minLength) {
-            errors.name = AT_LEAST_TWO_CHARARCTERS;
+            errors.name = AT_LEAST_TWO_CHARACTERS;
           }
           if (values.name.length > FORM_SCHEMA.properties.name.maxLength) {
             errors.name = AT_MOST_SIXTY_CHARACTERS;

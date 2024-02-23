@@ -204,9 +204,9 @@ export type BreakServiceToMicroservicesData = {
 };
 
 export type BreakServiceToMicroservicesItem = {
-  dataModels: Array<BreakServiceToMicroservicesItemEntities>;
   functionality: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  tables: Array<BreakServiceToMicroservicesItemEntities>;
 };
 
 export type BreakServiceToMicroservicesItemEntities = {
@@ -821,7 +821,6 @@ export enum EnumPendingChangeOriginType {
 }
 
 export enum EnumPreviewAccountType {
-  Auth0Signup = 'Auth0Signup',
   BreakingTheMonolith = 'BreakingTheMonolith',
   None = 'None'
 }
@@ -840,7 +839,10 @@ export type EnumResourceTypeFilter = {
 };
 
 export enum EnumSchemaNames {
-  CalDotCom = 'CalDotCom'
+  Abby = 'Abby',
+  CalDotCom = 'CalDotCom',
+  Formbricks = 'Formbricks',
+  Papermark = 'Papermark'
 }
 
 export enum EnumSubscriptionPlan {
@@ -867,7 +869,8 @@ export enum EnumUserActionStatus {
 
 export enum EnumUserActionType {
   DbSchemaImport = 'DBSchemaImport',
-  GptConversation = 'GptConversation'
+  GptConversation = 'GptConversation',
+  ProjectRedesign = 'ProjectRedesign'
 }
 
 export enum EnumWorkspaceMemberType {
@@ -2185,6 +2188,7 @@ export type RedesignProjectMovedEntity = {
 };
 
 export type RedesignProjectNewService = {
+  description: Scalars['String']['input'];
   id: Scalars['String']['input'];
   name: Scalars['String']['input'];
 };
@@ -2628,6 +2632,7 @@ export type WhereUniqueInput = {
 };
 
 export type Workspace = {
+  allowLLMFeatures: Scalars['Boolean']['output'];
   createdAt: Scalars['DateTime']['output'];
   externalId?: Maybe<Scalars['String']['output']>;
   gitOrganizations?: Maybe<Array<GitOrganization>>;
@@ -2651,6 +2656,7 @@ export type WorkspaceMember = {
 export type WorkspaceMemberType = Invitation | User;
 
 export type WorkspaceUpdateInput = {
+  allowLLMFeatures?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 

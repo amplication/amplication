@@ -19,6 +19,7 @@ export const GET_RESOURCES = gql`
       }
       entities {
         id
+        name
         displayName
         description
         resourceId
@@ -63,6 +64,14 @@ export const REDESIGN_PROJECT = gql`
           }
         }
       }
+    }
+  }
+`;
+
+export const START_REDESIGN = gql`
+  mutation startRedesign($data: WhereUniqueInput!) {
+    startRedesign(data: $data) {
+      name
     }
   }
 `;

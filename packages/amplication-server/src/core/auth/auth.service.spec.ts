@@ -6,18 +6,21 @@ import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
 import { UserService } from "../user/user.service";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { AuthService, IDENTITY_PROVIDER_MANUAL } from "./auth.service";
+import { AuthService } from "./auth.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { EnumTokenType } from "./dto";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { ConfigService } from "@nestjs/config";
-import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Workspace, Project, Resource, Account, User } from "../../models";
 import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
 import { anyString } from "jest-mock-extended";
-import { AuthUser } from "./types";
+import { AuthProfile, AuthUser } from "./types";
+import { IdentityProvider } from "./auth.types";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { Response } from "express";
+import { Env } from "../../env";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
@@ -36,7 +39,7 @@ const EXAMPLE_ACCOUNT: Account = {
 
 const EXAMPLE_PREVIEW_ACCOUNT: Account = {
   id: "alice",
-  email: "example@amplication.com",
+  email: "fake+example@amplication.com",
   password: "PASSWORD",
   firstName: "Alice",
   lastName: "Appleseed",
@@ -91,6 +94,7 @@ const EXAMPLE_WORKSPACE: Workspace & { users: User[] } = {
   createdAt: new Date(),
   updatedAt: new Date(),
   users: [EXAMPLE_USER],
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_OTHER_WORKSPACE: Workspace = {
@@ -98,6 +102,7 @@ const EXAMPLE_OTHER_WORKSPACE: Workspace = {
   name: "Example Other Workspace",
   createdAt: new Date(),
   updatedAt: new Date(),
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_USER_ROLE: UserRole = {
@@ -150,9 +155,9 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_WORKSPACE: Account & {
   currentUser: EXAMPLE_AUTH_USER,
 };
 
-const mockManagementClientGetByEmail = jest.fn();
-const mockAuthenticationClientDatabaseChangePassword = jest.fn();
-const mockAuthenticationClientDatabaseSignUp = jest.fn();
+const EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME = "business-users-local";
+const expectedDomain = "amplication.com";
+
 jest.mock("auth0", () => {
   return {
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -174,6 +179,10 @@ jest.mock("auth0", () => {
     }),
   };
 });
+
+const mockManagementClientGetByEmail = jest.fn();
+const mockAuthenticationClientDatabaseChangePassword = jest.fn();
+const mockAuthenticationClientDatabaseSignUp = jest.fn();
 
 const signMock = jest.fn(() => EXAMPLE_TOKEN);
 
@@ -200,7 +209,7 @@ const hashPasswordMock = jest.fn((password) => {
 
 const validatePasswordMock = jest.fn(() => true);
 
-const findUsersMock = jest.fn(() => [EXAMPLE_OTHER_AUTH_USER]);
+const findUsersMock = jest.fn().mockResolvedValue([EXAMPLE_OTHER_AUTH_USER]);
 
 const createWorkspaceMock = jest.fn(() => ({
   ...EXAMPLE_WORKSPACE,
@@ -219,9 +228,19 @@ const createPreviewEnvironmentMock = jest.fn(() => ({
 }));
 
 const prismaCreateProjectMock = jest.fn(() => EXAMPLE_PROJECT);
+const segmentAnalyticsIdentifyMock = jest.fn().mockResolvedValue(undefined);
+const segmentAnalyticsTrackWithContextMock = jest
+  .fn()
+  .mockResolvedValue(undefined);
+const segmentAnalyticsTrackManualMock = jest.fn().mockResolvedValue(undefined);
 
 describe("AuthService", () => {
   let service: AuthService;
+  const responseMock = {
+    status: jest.fn((x) => responseMock),
+    cookie: jest.fn(),
+    redirect: jest.fn(),
+  } as unknown as Response;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -233,8 +252,10 @@ describe("AuthService", () => {
           useValue: {
             get: (variable) => {
               switch (variable) {
-                case KAFKA_TOPICS.USER_ACTION_TOPIC:
-                  return "user_action_topic";
+                case Env.AUTH_ISSUER_CLIENT_DB_CONNECTION:
+                  return EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME;
+                case Env.CLIENT_HOST:
+                  return `https://server.${expectedDomain}`;
                 default:
                   return "";
               }
@@ -282,12 +303,6 @@ describe("AuthService", () => {
           })),
         },
         {
-          provide: KafkaProducerService,
-          useClass: jest.fn(() => ({
-            emitMessage: jest.fn(() => Promise.resolve("error")),
-          })),
-        },
-        {
           provide: PrismaService,
           useClass: jest.fn(() => ({
             account: {
@@ -298,6 +313,11 @@ describe("AuthService", () => {
             },
           })),
         },
+        MockedSegmentAnalyticsProvider({
+          identifyMock: segmentAnalyticsIdentifyMock,
+          trackWithContextMock: segmentAnalyticsTrackWithContextMock,
+          trackManualMock: segmentAnalyticsTrackManualMock,
+        }),
         AuthService,
       ],
       imports: [],
@@ -331,7 +351,7 @@ describe("AuthService", () => {
           lastName: EXAMPLE_ACCOUNT.lastName,
         },
       },
-      IDENTITY_PROVIDER_MANUAL
+      { identityProvider: IdentityProvider.Local }
     );
     expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
@@ -624,12 +644,6 @@ describe("AuthService", () => {
 
         expect(result).toEqual(resetPasswordDataMocked);
         expect(updateAccountMock).toHaveBeenCalledTimes(1);
-        expect(
-          convertPreviewSubscriptionToFreeWithTrialMock
-        ).toHaveBeenCalledTimes(1);
-        expect(
-          convertPreviewSubscriptionToFreeWithTrialMock
-        ).toHaveBeenCalledWith(exampleUser.workspace.id);
       });
 
       it("should not update the preview account to a regular account with free trial if there is account with the preview email", async () => {
@@ -660,28 +674,17 @@ describe("AuthService", () => {
   });
 
   describe("signupWithBusinessEmail", () => {
-    it("should fail to signup a preview account when the email is not work email", async () => {
-      const email = "invalid@gmail.com";
-
-      await expect(
-        service.signupWithBusinessEmail({
-          data: {
-            email,
-          },
-        })
-      ).rejects.toThrow(WORK_EMAIL_INVALID);
-    });
-
-    it("should signs up for correct data with preview account", async () => {
+    it("should track the event when a user signs up with a business email", async () => {
       const email = "invalid@invalid.com";
-      findAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
 
       mockManagementClientGetByEmail.mockResolvedValueOnce({
-        data: [
-          {
-            email,
-          },
-        ],
+        data: [],
+      });
+
+      mockAuthenticationClientDatabaseSignUp.mockResolvedValueOnce({
+        data: {
+          email,
+        },
       });
 
       mockAuthenticationClientDatabaseChangePassword.mockResolvedValueOnce({
@@ -695,20 +698,36 @@ describe("AuthService", () => {
       });
 
       expect(result).toBeTruthy();
-      expect(findAccountMock).toHaveBeenCalledTimes(1);
-      expect(
-        mockAuthenticationClientDatabaseChangePassword
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        mockAuthenticationClientDatabaseChangePassword
-      ).toHaveBeenCalledWith({
-        email,
-        connection: expect.any(String),
+
+      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledWith({
+        user: {},
+        data: {
+          event: EnumEventType.StartEmailSignup,
+          properties: {
+            identityProvider: IdentityProvider.IdentityPlatform,
+            existingUser: "No",
+          },
+        },
       });
     });
 
-    it("should create an Auth0 user and reset password if the user does not exist on Auth0", async () => {
+    it("should fail to signup a preview account when the email is not work email", async () => {
+      const email = "invalid@gmail.com";
+
+      await expect(
+        service.signupWithBusinessEmail({
+          data: {
+            email,
+          },
+        })
+      ).rejects.toThrow(WORK_EMAIL_INVALID);
+    });
+
+    it("when an amplication user already exists, should create only an Auth0 user (not an amplication user) and reset password if the user does not exist on Auth0", async () => {
       const email = "invalid@invalid.com";
+
       findAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
 
       mockManagementClientGetByEmail.mockResolvedValueOnce({
@@ -732,13 +751,47 @@ describe("AuthService", () => {
       });
 
       expect(result).toBeTruthy();
-      expect(findAccountMock).toHaveBeenCalledTimes(1);
 
       expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledTimes(1);
       expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledWith({
         email,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        email_verified: true,
+        password: expect.any(String),
+        connection: expect.any(String),
+      });
+      expect(
+        mockAuthenticationClientDatabaseChangePassword
+      ).toHaveBeenCalledTimes(1);
+    });
+
+    it("when an amplication user already does not exists, should create only an Auth0 user (not an amplication user) and reset password if the user does not exist on Auth0", async () => {
+      const email = "invalid@invalid.com";
+      findAccountMock.mockResolvedValueOnce(null);
+
+      mockManagementClientGetByEmail.mockResolvedValueOnce({
+        data: [],
+      });
+
+      mockAuthenticationClientDatabaseSignUp.mockResolvedValueOnce({
+        data: {
+          email,
+        },
+      });
+
+      mockAuthenticationClientDatabaseChangePassword.mockResolvedValueOnce({
+        data: "ok",
+      });
+
+      const result = await service.signupWithBusinessEmail({
+        data: {
+          email,
+        },
+      });
+
+      expect(result).toBeTruthy();
+
+      expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledTimes(1);
+      expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledWith({
+        email,
         password: expect.any(String),
         connection: expect.any(String),
       });
@@ -749,7 +802,6 @@ describe("AuthService", () => {
 
     it("should not create an Auth0 user, but only reset password if the user already exists on Auth0", async () => {
       const email = "invalid@invalid.com";
-      findAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
 
       mockManagementClientGetByEmail.mockResolvedValueOnce({
         data: [{ email }],
@@ -772,12 +824,267 @@ describe("AuthService", () => {
       });
 
       expect(result).toBeTruthy();
-      expect(findAccountMock).toHaveBeenCalledTimes(1);
 
       expect(mockAuthenticationClientDatabaseSignUp).toHaveBeenCalledTimes(0);
       expect(
         mockAuthenticationClientDatabaseChangePassword
       ).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("trackCompleteEmailSignup", () => {
+    it("should track the event only when a user completes the signup with a business email and login for the first time", async () => {
+      service.trackCompleteEmailSignup(
+        EXAMPLE_USER.account,
+        {
+          email: EXAMPLE_ACCOUNT.email,
+          sub: "asdadsad",
+          nickname: "asdasd",
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          given_name: EXAMPLE_ACCOUNT.firstName,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          family_name: EXAMPLE_ACCOUNT.lastName,
+          identityOrigin: EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME,
+          loginsCount: 1,
+          name: EXAMPLE_ACCOUNT.firstName,
+        },
+        false
+      );
+
+      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledWith({
+        user: {
+          accountId: EXAMPLE_ACCOUNT.id,
+        },
+        data: {
+          event: EnumEventType.CompleteEmailSignup,
+          properties: {
+            identityProvider: IdentityProvider.IdentityPlatform,
+            identityOrigin: EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME,
+            existingUser: false,
+          },
+        },
+      });
+    });
+
+    it("should not track the event when a user with a business email logs in for the second time forward", async () => {
+      service.trackCompleteEmailSignup(
+        EXAMPLE_USER.account,
+        {
+          email: EXAMPLE_ACCOUNT.email,
+          sub: "asdadsad",
+          nickname: "asdasd",
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          given_name: EXAMPLE_ACCOUNT.firstName,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          family_name: EXAMPLE_ACCOUNT.lastName,
+          identityOrigin: EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME,
+          loginsCount: 2,
+          name: EXAMPLE_ACCOUNT.firstName,
+        },
+        false
+      );
+
+      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackWithContextMock).toHaveBeenCalledTimes(0);
+    });
+
+    it("should not track the event when a SSO user logs in", async () => {
+      service.trackCompleteEmailSignup(
+        EXAMPLE_USER.account,
+        {
+          email: EXAMPLE_ACCOUNT.email,
+          sub: "asdadsad",
+          nickname: "asdasd",
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          given_name: EXAMPLE_ACCOUNT.firstName,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          family_name: EXAMPLE_ACCOUNT.lastName,
+          identityOrigin: "AnSSOIntegration",
+          loginsCount: 2,
+          name: EXAMPLE_ACCOUNT.firstName,
+        },
+        false
+      );
+
+      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackWithContextMock).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe("configureJtw", () => {
+    it("should generate a jwt, setup a temporary cookie that client will use to store the jwt and return a redirect 301", async () => {
+      await service.configureJtw(
+        responseMock,
+        {
+          account: {
+            id: "test",
+            createdAt: undefined,
+            updatedAt: undefined,
+            email: "",
+            firstName: "",
+            lastName: "",
+            password: "",
+            previewAccountType: "None",
+            previewAccountEmail: "",
+          },
+          id: "",
+          createdAt: undefined,
+          updatedAt: undefined,
+          workspace: new Workspace(),
+          userRoles: [],
+          isOwner: false,
+        },
+        false
+      );
+
+      expect(responseMock.cookie).toHaveBeenCalledWith(
+        "AJWT",
+        expect.any(String),
+        {
+          domain: expectedDomain,
+          secure: true,
+        }
+      );
+
+      expect(responseMock.redirect).toHaveBeenCalledWith(
+        301,
+        "https://server.amplication.com?complete-signup=0"
+      );
+    });
+  });
+
+  describe("when a user logs in through an OpenIdConnect IdP", () => {
+    describe("and an amplication user with the same email already exist", () => {
+      beforeEach(() => {
+        findUsersMock.mockResolvedValue([EXAMPLE_AUTH_USER]);
+      });
+      it("should update the user and track the event", async () => {
+        const authProfile: AuthProfile = {
+          sub: "123",
+          email: "local@invalid.com",
+          nickname: "",
+          identityOrigin: "AnSSOIntegration",
+          loginsCount: 1,
+        };
+        updateAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
+
+        await service.loginOrSignUp(authProfile, responseMock);
+
+        expect(responseMock.cookie).toHaveBeenCalledWith(
+          "AJWT",
+          expect.any(String),
+          {
+            domain: expectedDomain,
+            secure: true,
+          }
+        );
+        expect(createAccountMock).toHaveBeenCalledTimes(0);
+        expect(updateAccountMock).toHaveBeenCalledTimes(1);
+
+        expect(responseMock.redirect).toHaveBeenCalledWith(
+          301,
+          "https://server.amplication.com?complete-signup=0"
+        );
+      });
+
+      it("should update preview user and track the event", async () => {
+        const exampleUser = {
+          ...EXAMPLE_USER,
+          account: {
+            ...EXAMPLE_USER.account,
+            ...EXAMPLE_PREVIEW_ACCOUNT,
+          },
+          workspace: EXAMPLE_WORKSPACE,
+        };
+
+        jest.spyOn(service, "getAuthUser").mockResolvedValueOnce({
+          ...EXAMPLE_AUTH_USER,
+          account: {
+            ...EXAMPLE_ACCOUNT,
+            ...EXAMPLE_PREVIEW_ACCOUNT,
+          },
+        });
+
+        const authProfile: AuthProfile = {
+          sub: "123",
+          email: exampleUser.account.previewAccountEmail,
+          nickname: "",
+          identityOrigin: "AnSSOIntegration",
+          loginsCount: 1,
+        };
+
+        await service.loginOrSignUp(authProfile, responseMock);
+
+        expect(responseMock.cookie).toHaveBeenCalledWith(
+          "AJWT",
+          expect.any(String),
+          {
+            domain: expectedDomain,
+            secure: true,
+          }
+        );
+        expect(createAccountMock).toHaveBeenCalledTimes(0);
+        expect(updateAccountMock).toHaveBeenCalledTimes(1);
+        expect(updateAccountMock).toHaveBeenCalledWith({
+          where: { id: exampleUser.account.id },
+          data: {
+            previewAccountEmail: null,
+            previewAccountType: EnumPreviewAccountType.None,
+          },
+        });
+
+        expect(
+          convertPreviewSubscriptionToFreeWithTrialMock
+        ).toHaveBeenCalledTimes(1);
+        expect(
+          convertPreviewSubscriptionToFreeWithTrialMock
+        ).toHaveBeenCalledWith(exampleUser.workspace.id);
+
+        expect(responseMock.redirect).toHaveBeenCalledWith(
+          301,
+          "https://server.amplication.com?complete-signup=0"
+        );
+      });
+    });
+    describe("and an amplication user with the same email does not exist", () => {
+      beforeEach(() => {
+        findUsersMock.mockResolvedValue([]);
+      });
+
+      it("should create a new amplication user and track the event", async () => {
+        const authProfile: AuthProfile = {
+          sub: "123",
+          email: "local@invalid.com",
+          nickname: "",
+          identityOrigin: "AnSSOIntegration",
+          loginsCount: 1,
+        };
+
+        createAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
+        updateAccountMock.mockResolvedValueOnce(EXAMPLE_ACCOUNT);
+
+        await service.loginOrSignUp(authProfile, responseMock);
+
+        expect(responseMock.cookie).toHaveBeenCalledWith(
+          "AJWT",
+          expect.any(String),
+          {
+            domain: expectedDomain,
+            secure: true,
+          }
+        );
+
+        expect(createAccountMock).toHaveBeenCalledTimes(1);
+        expect(updateAccountMock).toHaveBeenCalledTimes(1);
+        expect(responseMock.redirect).toHaveBeenCalledWith(
+          301,
+          "https://server.amplication.com?complete-signup=0"
+        );
+      });
     });
   });
 });

@@ -19,13 +19,6 @@ $addon-title-line-height: 36px;
     background-color: var(--feature-indicator);
   }
 
-  &__confirmationDialog {
-    display: flex;
-    padding: 24px;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-  }
   &__addon-section {
     background-color: var(--gray-full);
     width: 100%;

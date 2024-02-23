@@ -2,11 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { Account, Prisma } from "../../prisma";
 import { PrismaService } from "../../prisma/prisma.service";
 import { Workspace } from "../../models";
-import {
-  SegmentAnalyticsService,
-  EnumEventType,
-  IdentifyData,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { IdentifyData } from "../../services/segmentAnalytics/segmentAnalytics.types";
 
 @Injectable()
 export class AccountService {
@@ -17,12 +15,12 @@ export class AccountService {
 
   async createAccount(
     args: Prisma.AccountCreateArgs,
-    identityProvider: string
+    trackingMetadata: Record<string, any>
   ): Promise<Account> {
     const account = await this.prisma.account.create(args);
 
     const userData: IdentifyData = {
-      userId: account.id,
+      accountId: account.id,
       createdAt: account.createdAt,
       email: account.previewAccountEmail ?? account.email,
       firstName: account.firstName,
@@ -30,15 +28,15 @@ export class AccountService {
     };
 
     await this.analytics.identify(userData);
-    //we send the userData again to prevent race condition
-    await this.analytics.track({
-      userId: account.id,
-      event: EnumEventType.Signup,
-      properties: {
-        identityProvider,
+    await this.analytics.trackManual({
+      user: {
+        accountId: account.id,
       },
-      context: {
-        traits: userData,
+      data: {
+        event: EnumEventType.Signup,
+        properties: {
+          ...trackingMetadata,
+        },
       },
     });
     return account;

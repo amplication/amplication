@@ -42,7 +42,7 @@ const CreateResource = ({ onSuccess, title, actionDescription }: Props) => {
       onSuccess({
         builds: [],
         createdAt: new Date(),
-        description: `create service: ${data.name} from architecture model`,
+        description: "",
         entities: [],
         environments: [],
         gitRepositoryOverride: false,
@@ -58,8 +58,12 @@ const CreateResource = ({ onSuccess, title, actionDescription }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
+      <Text textAlign={EnumTextAlign.Right}>
+        {" "}
+        The service will be created and added to the project only after applying
+        the Redesign changes
+      </Text>
       <Text textAlign={EnumTextAlign.Right}>{actionDescription}</Text>
-
       <Formik
         initialValues={INITIAL_VALUES}
         validate={(values) => validate(values, FORM_SCHEMA)}

@@ -44,10 +44,8 @@ import { ValidationError } from "../../errors/ValidationError";
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
 const INVALID_GIT_REPOSITORY_ID = "Git Repository does not exist";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { GitRepository, User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "@amplication/util-billing-types";
@@ -478,13 +476,10 @@ export class GitProviderService {
 
     const gitRemoteOrganization = await gitClientService.getOrganization();
 
-    await this.analytics.track({
-      userId: currentUser.account.id,
+    await this.analytics.trackWithContext({
       properties: {
-        workspaceId: workspaceId,
         provider: gitProvider,
         gitOrgType: gitRemoteOrganization.type,
-        $groups: { groupWorkspace: workspaceId },
       },
       event: EnumEventType.GitHubAuthResourceComplete,
     });
@@ -674,13 +669,10 @@ export class GitProviderService {
       },
     });
 
-    await this.analytics.track({
-      userId: currentUser.account.id,
+    await this.analytics.trackWithContext({
       properties: {
-        workspaceId: workspaceId,
         provider: gitProvider,
         gitOrgType: gitOrganization?.type,
-        $groups: { groupWorkspace: workspaceId },
       },
       event: EnumEventType.GitHubAuthResourceComplete,
     });

@@ -20,7 +20,7 @@ export default {
   coverageThreshold: {
     global: {
       branches: 84,
-      lines: 54,
+      lines: 54.5,
     },
   },
 };

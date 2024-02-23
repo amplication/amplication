@@ -8,6 +8,7 @@ import {
   EnumItemsAlign,
   FlexItem,
   SearchField,
+  Tooltip,
 } from "@amplication/ui/design-system";
 import {
   EnumFlexDirection,
@@ -22,10 +23,16 @@ import ModelOrganizerConfirmation from "./ModelOrganizerConfirmation";
 import ModelsTool from "./ModelsTool";
 import { ModelChanges, Node } from "./types";
 import { formatError } from "../../util/error";
+import {
+  BtmButton,
+  EnumButtonLocation,
+} from "../../Resource/break-the-monolith/BtmButton";
 
 export const CLASS_NAME = "model-organizer-toolbar";
 
 type Props = {
+  restrictedMode: boolean;
+  selectedEditableResource: models.Resource | null;
   redesignMode: boolean;
   hasChanges: boolean;
   changes: ModelChanges;
@@ -37,12 +44,14 @@ type Props = {
   handleServiceCreated: (newResource: models.Resource) => void;
   onCancelChanges: () => void;
   mergeNewResourcesChanges: () => void;
+  resetUserAction: () => void;
   applyChangesLoading: boolean;
   applyChangesError: any;
   applyChangesData: models.UserAction;
 };
 
 export default function ModelOrganizerToolbar({
+  restrictedMode,
   redesignMode,
   changes,
   hasChanges,
@@ -57,6 +66,8 @@ export default function ModelOrganizerToolbar({
   handleServiceCreated,
   onCancelChanges,
   mergeNewResourcesChanges,
+  resetUserAction,
+  selectedEditableResource,
 }: Props) {
   const handleSearchPhraseChanged = useCallback(
     (searchPhrase: string) => {
@@ -73,7 +84,8 @@ export default function ModelOrganizerToolbar({
   const handleConfirmChangesState = useCallback(() => {
     setConfirmChanges(!confirmChanges);
     setApplyChangesErrorMessage(null);
-  }, [confirmChanges, setConfirmChanges]);
+    resetUserAction();
+  }, [confirmChanges, setConfirmChanges, resetUserAction]);
 
   useEffect(() => {
     setApplyChangesErrorMessage(formatError(applyChangesError));
@@ -131,16 +143,24 @@ export default function ModelOrganizerToolbar({
           contentAlign={EnumContentAlign.Start}
           direction={EnumFlexDirection.Row}
         >
-          <SearchField
-            label="search"
-            placeholder="search"
-            onChange={handleSearchPhraseChanged}
-          />
+          <Tooltip
+            aria-label="search for service and entities. Results are highlighted"
+            noDelay
+            direction="se"
+          >
+            {!restrictedMode && (
+              <SearchField
+                label=""
+                placeholder="search"
+                onChange={handleSearchPhraseChanged}
+              />
+            )}
+          </Tooltip>
         </FlexItem>
 
         <FlexEnd>
           <FlexItem itemsAlign={EnumItemsAlign.Center}>
-            <BetaFeatureTag></BetaFeatureTag>
+            {!restrictedMode && <BetaFeatureTag></BetaFeatureTag>}
 
             {redesignMode && (
               <>
@@ -151,7 +171,15 @@ export default function ModelOrganizerToolbar({
                   mergeNewResourcesChanges={mergeNewResourcesChanges}
                 ></ModelsTool>
                 <div className={`${CLASS_NAME}__divider`}></div>
-
+                {!restrictedMode && redesignMode && (
+                  <BtmButton
+                    location={EnumButtonLocation.Architecture}
+                    openInFullScreen={false}
+                    autoRedirectAfterCompletion
+                    buttonText="AI helper"
+                    selectedEditableResource={selectedEditableResource}
+                  />
+                )}
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}
                   onClick={handleConfirmChangesState}
@@ -161,7 +189,15 @@ export default function ModelOrganizerToolbar({
                 </Button>
               </>
             )}
-            {!redesignMode && (
+            {!restrictedMode && !redesignMode && (
+              <BtmButton
+                location={EnumButtonLocation.Architecture}
+                openInFullScreen={false}
+                autoRedirectAfterCompletion
+                buttonText="AI helper"
+              />
+            )}
+            {!restrictedMode && !redesignMode && (
               <RedesignResourceButton
                 resources={resources}
                 onSelectResource={onRedesign}

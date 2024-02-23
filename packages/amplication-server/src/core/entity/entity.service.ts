@@ -25,11 +25,7 @@ import {
   Resource,
 } from "../../models";
 import type { JsonObject } from "type-fest";
-import {
-  getSchemaForDataType,
-  LookupResolvedProperties,
-  types,
-} from "@amplication/code-gen-types";
+import { getSchemaForDataType, types } from "@amplication/code-gen-types";
 import { JsonSchemaValidationService } from "../../services/jsonSchemaValidation.service";
 import { DiffService } from "../../services/diff.service";
 import { SchemaValidationResult } from "../../dto/schemaValidationResult";
@@ -80,10 +76,8 @@ import {
 } from "./dto";
 import { ReservedNameError } from "../resource/ReservedNameError";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
 import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
 import { BillingService } from "../billing/billing.service";
@@ -96,6 +90,7 @@ import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { pascalCase } from "pascal-case";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { EnumRelatedFieldStrategy } from "./dto/EnumRelatedFieldStrategy";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -397,23 +392,10 @@ export class EntityService {
     );
 
     if (trackEvent) {
-      const resourceWithProject = await this.prisma.resource.findUnique({
-        where: {
-          id: resourceId,
-        },
-        include: {
-          project: true,
-        },
-      });
-
-      await this.analytics.track({
-        userId: user.account.id,
+      await this.analytics.trackWithContext({
         properties: {
           resourceId: resourceId,
-          projectId: resourceWithProject.projectId,
-          workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,
-          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.EntityCreate,
       });
@@ -454,16 +436,19 @@ export class EntityService {
         "Feature Unavailable. Your current user permissions doesn't include importing Prisma schemas"
       );
 
-    await this.analytics.track({
-      userId: user.account.id,
-      properties: {
-        resourceId: resourceId,
-        projectId: resourceWithProject.projectId,
+    await this.analytics.trackManual({
+      user: {
+        accountId: user.account.id,
         workspaceId: resourceWithProject.project.workspaceId,
-        fileName: fileName,
-        $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
       },
-      event: EnumEventType.ImportPrismaSchemaStart,
+      data: {
+        properties: {
+          resourceId: resourceId,
+          projectId: resourceWithProject.projectId,
+          fileName: fileName,
+        },
+        event: EnumEventType.ImportPrismaSchemaStart,
+      },
     });
 
     try {
@@ -492,19 +477,20 @@ export class EntityService {
       );
 
       if (!valid) {
-        await this.analytics.track({
-          userId: user.account.id,
-          properties: {
-            resourceId: resourceId,
-            projectId: resourceWithProject.projectId,
+        await this.analytics.trackManual({
+          user: {
+            accountId: user.account.id,
             workspaceId: resourceWithProject.project.workspaceId,
-            fileName: fileName,
-            error: "Duplicate entity names",
-            $groups: {
-              groupWorkspace: resourceWithProject.project.workspaceId,
-            },
           },
-          event: EnumEventType.ImportPrismaSchemaError,
+          data: {
+            properties: {
+              resourceId: resourceId,
+              projectId: resourceWithProject.projectId,
+              fileName: fileName,
+              error: "Duplicate entity names",
+            },
+            event: EnumEventType.ImportPrismaSchemaError,
+          },
         });
 
         this.logger.error(`Invalid Prisma schema`, null, {
@@ -543,39 +529,43 @@ export class EntityService {
           true
         );
 
-        await this.analytics.track({
-          userId: user.account.id,
-          properties: {
-            resourceId: resourceId,
-            projectId: resourceWithProject.projectId,
+        await this.analytics.trackManual({
+          user: {
+            accountId: user.account.id,
             workspaceId: resourceWithProject.project.workspaceId,
-            fileName: fileName,
-            totalEntities: entities.length,
-            totalFields: preparedEntitiesWithFields?.reduce(
-              (acc, entity) => acc + (entity.fields?.length || 0),
-              0
-            ),
-            $groups: {
-              groupWorkspace: resourceWithProject.project.workspaceId,
-            },
           },
-          event: EnumEventType.ImportPrismaSchemaCompleted,
+          data: {
+            properties: {
+              resourceId: resourceId,
+              projectId: resourceWithProject.projectId,
+              fileName: fileName,
+              totalEntities: entities.length,
+              totalFields: preparedEntitiesWithFields?.reduce(
+                (acc, entity) => acc + (entity.fields?.length || 0),
+                0
+              ),
+            },
+            event: EnumEventType.ImportPrismaSchemaCompleted,
+          },
         });
 
         return entities;
       }
     } catch (error) {
-      await this.analytics.track({
-        userId: user.account.id,
-        properties: {
-          resourceId: resourceId,
-          projectId: resourceWithProject.projectId,
+      await this.analytics.trackManual({
+        user: {
+          accountId: user.account.id,
           workspaceId: resourceWithProject.project.workspaceId,
-          fileName: fileName,
-          error: error.message,
-          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
-        event: EnumEventType.ImportPrismaSchemaError,
+        data: {
+          properties: {
+            resourceId: resourceId,
+            projectId: resourceWithProject.projectId,
+            fileName: fileName,
+            error: error.message,
+          },
+          event: EnumEventType.ImportPrismaSchemaError,
+        },
       });
       this.logger.error(error.message, error, {
         resourceId,
@@ -628,10 +618,9 @@ export class EntityService {
     return true;
   }
 
-  async updateFieldDataTypeIdByRelatedEntity(
-    field: EntityField,
+  async getRelatedFieldScalarTypeByRelatedEntityIdType(
     relatedEntityId: string
-  ): Promise<EntityField> {
+  ): Promise<EnumDataType> {
     const relatedIdField = await this.prisma.entityField.findFirst({
       where: {
         dataType: EnumDataType.Id,
@@ -651,11 +640,7 @@ export class EntityService {
     const idTypeProp =
       relatedIdField.properties as unknown as types.Id["idType"];
 
-    field.dataType = idTypeMap[idTypeProp];
-
-    field.name = `${field.name}Id`;
-
-    return field;
+    return idTypeMap[idTypeProp["idType"]];
   }
 
   async createBulkEntitiesAndFields(
@@ -821,7 +806,8 @@ export class EntityService {
    */
   async deleteOneEntity(
     args: DeleteOneEntityArgs,
-    user: User
+    user: User,
+    fieldStrategy = EnumRelatedFieldStrategy.Delete
   ): Promise<Entity | null> {
     return await this.useLocking(args.where.id, user, async (entity) => {
       const relatedEntityFields = await this.prisma.entityField.findMany({
@@ -848,102 +834,11 @@ export class EntityService {
       }
 
       for (const relatedEntityField of relatedEntityFields) {
-        await this.deleteField({ where: { id: relatedEntityField.id } }, user);
-      }
-
-      try {
-        await this.moduleService.deleteDefaultModuleForEntity(
-          entity.resourceId,
-          entity.id,
-          user
+        await this.deleteField(
+          { where: { id: relatedEntityField.id } },
+          user,
+          fieldStrategy
         );
-      } catch (error) {
-        //continue to delete the entity even if the deletion of the default module failed.
-        //This is done in order to allow the user to workaround issues in any case when a default module is missing
-        this.logger.error(
-          "Continue with EntityDelete even though the default entity could not be deleted or was not found ",
-          error
-        );
-      }
-
-      return this.prisma.entity.update({
-        where: args.where,
-        data: {
-          name: prepareDeletedItemName(entity.name, entity.id),
-          displayName: prepareDeletedItemName(entity.displayName, entity.id),
-          pluralDisplayName: prepareDeletedItemName(
-            entity.pluralDisplayName,
-            entity.id
-          ),
-          deletedAt: new Date(),
-          versions: {
-            update: {
-              where: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                entityId_versionNumber: {
-                  entityId: args.where.id,
-                  versionNumber: CURRENT_VERSION_NUMBER,
-                },
-              },
-              data: {
-                deleted: true,
-              },
-            },
-          },
-        },
-      });
-    });
-  }
-
-  async deleteEntityFromSource(
-    args: DeleteOneEntityArgs,
-    user: User
-  ): Promise<Entity | null> {
-    return await this.useLocking(args.where.id, user, async (entity) => {
-      const relatedEntityFields = await this.prisma.entityField.findMany({
-        where: {
-          dataType: EnumDataType.Lookup,
-          properties: { path: ["relatedEntityId"], equals: args.where.id },
-          entityVersion: { versionNumber: CURRENT_VERSION_NUMBER },
-        },
-        include: { entityVersion: true },
-      });
-
-      const serviceSettings =
-        await this.serviceSettingsService.getServiceSettingsValues(
-          {
-            where: { id: entity.resourceId },
-          },
-          user
-        );
-
-      if (serviceSettings.authEntityName === entity.name) {
-        throw new AmplicationError(
-          `cannot delete auth entity : ${entity.name}.`
-        );
-      }
-
-      for (const relatedEntityField of relatedEntityFields) {
-        const { properties, entityVersion } = relatedEntityField;
-        const { allowMultipleSelection, relatedEntityId } =
-          properties as unknown as LookupResolvedProperties;
-
-        //one to one relation or one to many relation
-        //update related field to the id field by the idType
-        if (!allowMultipleSelection) {
-          await this.updateFieldDataTypeIdByRelatedEntity(
-            relatedEntityField,
-            relatedEntityId
-          );
-
-          await this.createCopiedEntityFieldByDisplayName(
-            entityVersion.entityId,
-            relatedEntityField,
-            user
-          );
-        }
-
-        await this.deleteField({ where: { id: relatedEntityField.id } }, user);
       }
 
       try {
@@ -1156,23 +1051,10 @@ export class EntityService {
         throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
       }
 
-      const resourceWithProject = await this.prisma.resource.findUnique({
-        where: {
-          id: entity.resourceId,
-        },
-        include: {
-          project: true,
-        },
-      });
-
-      await this.analytics.track({
-        userId: user.account.id,
+      await this.analytics.trackWithContext({
         properties: {
           resourceId: entity.resourceId,
-          projectId: resourceWithProject.projectId,
-          workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,
-          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.EntityUpdate,
       });
@@ -2599,26 +2481,11 @@ export class EntityService {
         }
 
         if (trackEvent) {
-          const resourceWithProject = await this.prisma.resource.findUnique({
-            where: {
-              id: entity.resourceId,
-            },
-            include: {
-              project: true,
-            },
-          });
-
-          await this.analytics.track({
-            userId: user.account.id,
+          await this.analytics.trackWithContext({
             properties: {
               resourceId: entity.resourceId,
-              projectId: resourceWithProject.projectId,
-              workspaceId: resourceWithProject.project.workspaceId,
               entityFieldName: args.data.displayName,
               dataType: args.data.dataType,
-              $groups: {
-                groupWorkspace: resourceWithProject.project.workspaceId,
-              },
             },
             event: EnumEventType.EntityFieldCreate,
           });
@@ -2918,26 +2785,11 @@ export class EntityService {
           });
         }
 
-        const resourceWithProject = await this.prisma.resource.findUnique({
-          where: {
-            id: entity.resourceId,
-          },
-          include: {
-            project: true,
-          },
-        });
-
-        await this.analytics.track({
-          userId: user.account.id,
+        await this.analytics.trackWithContext({
           properties: {
             resourceId: entity.resourceId,
-            projectId: resourceWithProject.projectId,
-            workspaceId: resourceWithProject.project.workspaceId,
             entityFieldName: args.data.displayName,
             dataType: args.data.dataType,
-            $groups: {
-              groupWorkspace: resourceWithProject.project.workspaceId,
-            },
           },
           event: EnumEventType.EntityFieldUpdate,
         });
@@ -2949,7 +2801,8 @@ export class EntityService {
 
   async deleteField(
     args: DeleteEntityFieldArgs,
-    user: User
+    user: User,
+    fieldStrategy = EnumRelatedFieldStrategy.Delete
   ): Promise<EntityField | null> {
     const field = await this.getField({
       ...args,
@@ -2975,24 +2828,61 @@ export class EntityService {
         if (field.dataType === EnumDataType.Lookup) {
           // Cast the field properties as Lookup properties
           const properties = field.properties as unknown as types.Lookup;
-          try {
-            await this.deleteRelatedField(
-              properties.relatedFieldId,
-              properties.relatedEntityId,
+          if (fieldStrategy === EnumRelatedFieldStrategy.Delete) {
+            try {
+              await this.deleteRelatedField(
+                properties.relatedFieldId,
+                properties.relatedEntityId,
+                user
+              );
+            } catch (error) {
+              //continue to delete the field even if the deletion of the related field failed.
+              //This is done in order to allow the user to workaround issues in any case when a related field is missing
+              this.logger.error(
+                "Continue with FieldDelete even though the related field could not be deleted or was not found ",
+                error
+              );
+            }
+          } else if (
+            fieldStrategy === EnumRelatedFieldStrategy.UpdateToScalar
+          ) {
+            const allowMultipleSelection = properties.allowMultipleSelection;
+
+            field.dataType = allowMultipleSelection
+              ? EnumDataType.Json
+              : await this.getRelatedFieldScalarTypeByRelatedEntityIdType(
+                  properties.relatedEntityId
+                );
+
+            const data: EntityFieldUpdateInput = {
+              dataType: field.dataType,
+              name: allowMultipleSelection ? field.name : `${field.name}Id`,
+              displayName: allowMultipleSelection
+                ? field.displayName
+                : `${field.displayName} ID`,
+              properties: DATA_TYPE_TO_DEFAULT_PROPERTIES[field.dataType],
+            };
+
+            await this.updateField(
+              {
+                data,
+                where: {
+                  id: args.where.id,
+                },
+              },
               user
             );
-          } catch (error) {
-            //continue to delete the field even if the deletion of the related field failed.
-            //This is done in order to allow the user to workaround issues in any case when a related field is missing
-            this.logger.error(
-              "Continue with FieldDelete even though the related field could not be deleted or was not found ",
-              error
-            );
+
+            return;
           }
         }
 
         const deletedField = await this.prisma.entityField
-          .delete(args)
+          .delete({
+            where: {
+              id: args.where.id,
+            },
+          })
           // Continue with the rest of the delete even if the field was not found
           // This is done in order to allow the user to workaround issues in any case when a field has been deleted before
           // Currently deleteIfExists doesn't exist. Tracking issue :- https://github.com/prisma/prisma/issues/4072
