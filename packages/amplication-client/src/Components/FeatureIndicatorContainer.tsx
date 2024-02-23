@@ -113,7 +113,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       return limitationText;
     }
     if (
-      subscription.subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
       subscription.status !== EnumSubscriptionStatus.Trailing
     ) {
       return fullEnterpriseText;
@@ -125,7 +125,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   const linkText = useMemo(() => {
     if (
       isPreviewPlan(subscriptionPlan) ||
-      (subscription.subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
         subscription.status !== EnumSubscriptionStatus.Trailing)
     ) {
       return ""; // don't show the upgrade link when the plan is preview
