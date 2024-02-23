@@ -722,4 +722,25 @@ export class ModuleDtoService extends BlockTypeService<
       )
     );
   }
+
+  async createEnum(args: CreateModuleDtoArgs, user: User): Promise<ModuleDto> {
+    if (!this.customActionsEnabled) {
+      return null;
+    }
+
+    this.validateModuleDtoName(args.data.name);
+
+    return super.create(
+      {
+        ...args,
+        data: {
+          ...args.data,
+          properties: [],
+          enabled: true,
+          dtoType: EnumModuleDtoType.CustomEnum,
+        },
+      },
+      user
+    );
+  }
 }
