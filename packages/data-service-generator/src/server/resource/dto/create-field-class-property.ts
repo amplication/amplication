@@ -13,10 +13,7 @@ import {
   isOneToOneRelationField,
   isToManyRelationField,
 } from "../../../utils/field";
-import {
-  createEnumName,
-  createPrismaFields,
-} from "../../prisma/create-prisma-schema-fields";
+import { createPrismaFields } from "../../prisma/create-prisma-schema-fields";
 import { ApiPropertyDecoratorBuilder } from "./api-property-decorator";
 import * as classTransformerUtil from "./class-transformer.util";
 import {
@@ -47,6 +44,7 @@ import { createCreateNestedManyWithoutInputID } from "./nested-input-dto/create-
 import { createUpdateManyWithoutInputID } from "./nested-input-dto/update-nested";
 import { JSON_VALUE_ID } from "./type-fest.util";
 import { createEntityListRelationFilterID } from "./graphql/entity-list-relation-filter/create-entity-list-relation-filter";
+import { createEnumName } from "@amplication/dsg-utils";
 
 export const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {
