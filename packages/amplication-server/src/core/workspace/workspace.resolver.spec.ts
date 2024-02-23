@@ -47,6 +47,7 @@ const EXAMPLE_WORKSPACE: Workspace = {
   name: EXAMPLE_WORKSPACE_NAME,
   createdAt: timeNow,
   updatedAt: timeNow,
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_INVITATION: Invitation = {
@@ -82,6 +83,7 @@ const GET_WORKSPACE_QUERY = gql`
     workspace(where: { id: $id }) {
       id
       name
+      allowLLMFeatures
       createdAt
       updatedAt
     }
@@ -109,6 +111,7 @@ const DELETE_WORKSPACE_MUTATION = gql`
     deleteWorkspace(where: { id: $id }) {
       id
       name
+      allowLLMFeatures
       createdAt
       updatedAt
     }
@@ -120,6 +123,7 @@ const UPDATE_WORKSPACE_MUTATION = gql`
     updateWorkspace(data: {}, where: { id: $id }) {
       id
       name
+      allowLLMFeatures
       createdAt
       updatedAt
     }

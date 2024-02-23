@@ -25,7 +25,7 @@ export const WORKSPACE_INITIAL_VALUES: CreateWorkspaceType = {
   name: "",
 };
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 export const WORKSPACE_FORM_SCHEMA = {
   required: ["name"],
@@ -37,7 +37,7 @@ export const WORKSPACE_FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      name: AT_LEAST_TWO_CHARARCTERS,
+      name: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };

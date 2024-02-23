@@ -7,20 +7,11 @@ $theme-border-expand: 1px;
 .amp-panel {
   background: var(--panel-background);
   border-radius: var(--default-border-radius);
-  border: 1px solid transparent;
+  border: none;
   box-sizing: border-box;
+  padding: var(--default-spacing) var(--large-spacing);
   margin-top: 0;
   margin-bottom: var(--double-spacing);
-
-  &__content {
-    padding: var(--default-spacing) var(--large-spacing);
-  }
-
-  &__non-clickable-footer {
-    padding: var(--default-spacing) 0;
-    margin: 0 var(--large-spacing);
-    border-top: $border-dark;
-  }
 
   > hr.panel-divider {
     margin: var(--default-spacing) calc(var(--default-spacing) * -1);
@@ -48,17 +39,10 @@ $theme-border-expand: 1px;
     background: var(--theme-light-red-transparent);
   }
 
-  &--surface {
-    background: var(--surface-background);
-    border: $border-dark;
-  }
-
   &--bold {
     background-color: var(--gray-full);
     border: $border-dark;
-    &__content {
-      padding: var(--large-spacing);
-    }
+    padding: var(--large-spacing);
   }
 
   &--with-theme-border {
@@ -77,14 +61,13 @@ $theme-border-expand: 1px;
     }
   }
   &--clickable {
-    .amp-panel__content {
-      cursor: pointer;
-      &:hover {
-        background: var(--panel-hover-background);
+    cursor: pointer;
+    &:hover {
+      background: var(--panel-hover-background);
+      border: $border-dark;
 
-        .amp-horizontal-rule {
-          border-top: $border-dark;
-        }
+      .amp-horizontal-rule {
+        border-top: $border-dark;
       }
     }
   }

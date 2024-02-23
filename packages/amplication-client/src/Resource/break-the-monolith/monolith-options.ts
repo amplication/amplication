@@ -1,4 +1,4 @@
-import { EnumSchemaNames } from "../../../models";
+import { EnumSchemaNames } from "../../models";
 
 export type MonolithOption = {
   name: EnumSchemaNames;

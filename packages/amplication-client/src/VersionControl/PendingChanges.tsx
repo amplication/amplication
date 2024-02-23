@@ -32,8 +32,13 @@ type Props = {
 const PendingChanges = ({ projectId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
   const history = useHistory();
-  const { currentWorkspace, currentProject, pendingChanges, currentResource } =
-    useContext(AppContext);
+  const {
+    currentWorkspace,
+    currentProject,
+    pendingChanges,
+    currentResource,
+    isPreviewPlan,
+  } = useContext(AppContext);
 
   const entityMatch = useRouteMatch<{
     workspace: string;
@@ -78,11 +83,13 @@ const PendingChanges = ({ projectId }: Props) => {
         margin={EnumFlexItemMargin.Top}
         gap={EnumGapSize.Small}
       >
-        <Commit
-          projectId={projectId}
-          noChanges={noChanges}
-          commitBtnType={CommitBtnType.Button}
-        />
+        {!isPreviewPlan && (
+          <Commit
+            projectId={projectId}
+            noChanges={noChanges}
+            commitBtnType={CommitBtnType.Button}
+          />
+        )}
 
         <DiscardChanges
           isOpen={discardDialogOpen}

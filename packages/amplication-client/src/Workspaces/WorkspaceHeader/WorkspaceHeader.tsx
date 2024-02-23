@@ -2,14 +2,17 @@ import {
   Breadcrumbs,
   ButtonProgress,
   Dialog,
+  EnumTextColor,
+  EnumTextStyle,
   Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
   Tooltip,
+  Text,
 } from "@amplication/ui/design-system";
-import { useApolloClient, useMutation, useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client";
 import {
   ButtonTypeEnum,
   IMessage,
@@ -53,12 +56,11 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
 import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
 import { FeatureIndicator } from "../../Components/FeatureIndicator";
-import { CompleteSignupDialog } from "../../Components/CompleteSignupDialog";
-import { COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL } from "../../User/UserQueries";
-import useFetchGithubStars from "../hooks/useFetchGithubStars";
+import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
 
 const CLASS_NAME = "workspace-header";
-const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
+const MWC_MEETING_URL =
+  "https://meetings-eu1.hubspot.com/oalaluf/book-your-demo-mwc";
 
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
@@ -92,8 +94,6 @@ const WorkspaceHeader: React.FC = () => {
     useContext(AppContext);
   const upgradeButtonData = useUpgradeButtonData(currentWorkspace);
 
-  const [completeSignup] = useMutation(COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL);
-
   const { data } = useQuery(GET_CONTACT_US_LINK, {
     variables: { id: currentWorkspace.id },
   });
@@ -103,7 +103,6 @@ const WorkspaceHeader: React.FC = () => {
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
   const novuBellRef = useRef(null);
-  const stars = useFetchGithubStars();
 
   const daysLeftText = useMemo(() => {
     return `${upgradeButtonData.trialDaysLeft} day${
@@ -169,16 +168,6 @@ const WorkspaceHeader: React.FC = () => {
     });
   }, [openHubSpotChat]);
 
-  const handleGenerateCodeClick = useCallback(() => {
-    completeSignup();
-    setShowCompleteSignupDialog(!showCompleteSignupDialog);
-    trackEvent({
-      eventName: AnalyticsEventNames.HelpMenuItemClick,
-      action: "Generate code",
-      eventOriginLocation: "workspace-header-help-menu",
-    });
-  }, [completeSignup, showCompleteSignupDialog, trackEvent]);
-
   const handleItemDataClicked = useCallback(
     (itemData: ItemDataCommand) => {
       if (itemData === ItemDataCommand.COMMAND_CONTACT_US) {
@@ -227,17 +216,21 @@ const WorkspaceHeader: React.FC = () => {
         <ProfileForm />
       </Dialog>
       <WorkspaceBanner
-        to={AMP_GITHUB_URL}
-        clickEventName={AnalyticsEventNames.StarUsBannerCTAClick}
+        to={MWC_MEETING_URL}
+        clickEventName={AnalyticsEventNames.MWC2024BannerCTAClick}
         clickEventProps={{}}
-        closeEventName={AnalyticsEventNames.StarUsBannerClose}
+        closeEventName={AnalyticsEventNames.MWC2024BannerClose}
         closeEventProps={{}}
       >
-        <Icon icon="github" />
-        Star us on GitHub{" "}
-        <span className={`${CLASS_NAME}__stars`}>
-          {stars} <Icon icon="star" />
-        </span>
+        <Icon icon="rss" />
+        Join us at MWC Barcelona 2024 (Feb 26 - 29).{" "}
+        <Text
+          textColor={EnumTextColor.ThemeTurquoise}
+          textStyle={EnumTextStyle.Normal}
+        >
+          Book a meeting
+        </Text>
+        , and let's innovate together!
       </WorkspaceBanner>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__left`}>
@@ -294,29 +287,11 @@ const WorkspaceHeader: React.FC = () => {
               upgradeButtonData.isPreviewPlan &&
               !upgradeButtonData.showUpgradeDefaultButton && (
                 <>
-                  <Dialog
-                    className="new-entity-dialog"
-                    isOpen={showCompleteSignupDialog}
-                    onDismiss={handleShowCompleteSignupDialog}
-                    title="Generate your Code"
-                  >
-                    <CompleteSignupDialog
-                      handleDialogClose={handleShowCompleteSignupDialog}
-                    />
-                  </Dialog>
                   <FeatureIndicator
                     featureName={BillingFeature.CodeGenerationBuilds}
                     text="Generate production-ready code for this architecture with just a few simple clicks"
                     linkText=""
-                    element={
-                      <Button
-                        className={`${CLASS_NAME}__upgrade__btn`}
-                        buttonStyle={EnumButtonStyle.Primary}
-                        onClick={handleGenerateCodeClick}
-                      >
-                        Generate the code
-                      </Button>
-                    }
+                    element={<CompletePreviewSignupButton />}
                   />
                   <Button
                     className={`${CLASS_NAME}__upgrade__btn`}

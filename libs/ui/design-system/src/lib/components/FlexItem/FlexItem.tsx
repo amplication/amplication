@@ -25,6 +25,7 @@ export enum EnumContentAlign {
   Center = "center",
   Start = "flex-start",
   End = "flex-end",
+  Space = "space-between",
 }
 
 export enum EnumItemsAlign {
