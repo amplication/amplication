@@ -138,7 +138,7 @@
           "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
         },
         "dev": {
-          "file": "./Dockerfile.dev"
+          "file": "packages/data-service-generator/Dockerfile.dev"
         }
       }
     }
