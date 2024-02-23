@@ -44,7 +44,7 @@ export function createPropTypeFromTypeDefList(
   const types = typeDefs.map((typeDef) => createPropTypeFromTypeDef(typeDef));
 
   if (types?.length > 1) {
-    builders.tsUnionType(types);
+    return builders.tsUnionType(types);
   }
 
   return types[0];
