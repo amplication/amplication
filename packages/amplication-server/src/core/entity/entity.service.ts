@@ -1087,14 +1087,46 @@ export class EntityService {
       });
 
       try {
-        await this.moduleService.updateDefaultModuleForEntity(
-          {
-            name: args.data.name,
-            displayName: args.data.name,
-          },
-          updatedEntity,
-          user
-        );
+        if (
+          entity.name !== args.data.name ||
+          entity.displayName !== args.data.displayName
+        ) {
+          //update the module name and display name in case the entity name or display name was changed
+          await this.moduleService.updateDefaultModuleForEntity(
+            {
+              name: args.data.name,
+              displayName: args.data.name,
+            },
+            updatedEntity,
+            user
+          );
+
+          const enumFields = await this.getFields(updatedEntity.id, {
+            where: {
+              OR: [
+                { dataType: { equals: EnumDataType.OptionSet } },
+                { dataType: { equals: EnumDataType.MultiLineText } },
+              ],
+            },
+          });
+
+          await Promise.all(
+            enumFields.map(async (field) => {
+              const moduleId =
+                await this.moduleService.getDefaultModuleIdForEntity(
+                  entity.resourceId,
+                  entity.id
+                );
+
+              return this.moduleDtoService.updateDefaultDtoForEnumField(
+                updatedEntity,
+                field,
+                moduleId,
+                user
+              );
+            })
+          );
+        }
       } catch (error) {
         if (error instanceof DefaultModuleForEntityNotFoundError) {
           //create a default module if it does not exist
@@ -2542,6 +2574,23 @@ export class EntityService {
           );
         }
 
+        if (
+          args.data.dataType === EnumDataType.OptionSet ||
+          args.data.dataType === EnumDataType.MultiSelectOptionSet
+        ) {
+          const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
+            entity.resourceId,
+            entity.id
+          );
+
+          await this.moduleDtoService.createDefaultDtoForEnumField(
+            entity,
+            newField,
+            moduleId,
+            user
+          );
+        }
+
         return newField;
       }
     );
@@ -2806,6 +2855,23 @@ export class EntityService {
           );
         }
 
+        if (
+          args.data.dataType === EnumDataType.OptionSet ||
+          args.data.dataType === EnumDataType.MultiSelectOptionSet
+        ) {
+          const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
+            entity.resourceId,
+            entity.id
+          );
+
+          await this.moduleDtoService.updateDefaultDtoForEnumField(
+            entity,
+            updatedField,
+            moduleId,
+            user
+          );
+        }
+
         const updateFieldProperties =
           updatedField.properties as unknown as types.Lookup;
 
@@ -2961,19 +3027,30 @@ export class EntityService {
             entity.resourceId,
             entity.id
           );
+          if (deletedField.dataType === EnumDataType.Lookup) {
+            await this.moduleActionService.deleteDefaultActionsForRelationField(
+              deletedField,
+              moduleId,
+              user
+            );
 
-          await this.moduleActionService.deleteDefaultActionsForRelationField(
-            deletedField,
-            moduleId,
-            user
-          );
-
-          await this.moduleDtoService.deleteDefaultDtosForRelatedEntity(
-            field,
-            field.entityVersion.entity,
-            moduleId,
-            user
-          );
+            await this.moduleDtoService.deleteDefaultDtosForRelatedEntity(
+              field,
+              field.entityVersion.entity,
+              moduleId,
+              user
+            );
+          }
+          if (
+            deletedField.dataType === EnumDataType.OptionSet ||
+            deletedField.dataType === EnumDataType.MultiSelectOptionSet
+          ) {
+            await this.moduleDtoService.deleteDefaultDtoForEnumField(
+              deletedField,
+              moduleId,
+              user
+            );
+          }
         }
 
         return deletedField;

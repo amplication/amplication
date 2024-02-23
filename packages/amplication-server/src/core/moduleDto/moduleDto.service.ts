@@ -1,6 +1,7 @@
 import * as CodeGenTypes from "@amplication/code-gen-types";
 import {
   getDefaultDtosForEntity,
+  getDefaultDtosForEnumField,
   getDefaultDtosForRelatedEntity,
 } from "@amplication/dsg-utils";
 import { Injectable } from "@nestjs/common";
@@ -574,5 +575,151 @@ export class ModuleDtoService extends BlockTypeService<
     );
 
     return deleted;
+  }
+
+  async createDefaultDtoForEnumField(
+    entity: Entity,
+    enumField: EntityField,
+    moduleId: string,
+    user: User
+  ): Promise<ModuleDto> {
+    if (!this.customActionsEnabled) {
+      return null;
+    }
+
+    //Check if a default dto already exists for this relation
+    const existingDefaultDto = await this.findManyBySettings(
+      {
+        where: {
+          parentBlock: {
+            id: moduleId,
+          },
+        },
+      },
+      {
+        path: ["relatedFieldId"], //we currently only using DTO for the enum, in case we may have multiple DTOs for the same entity, we need to filter by type also
+        equals: enumField.permanentId,
+      }
+    );
+
+    if (existingDefaultDto.length > 0) {
+      return existingDefaultDto[0];
+    }
+
+    const defaultDto = await getDefaultDtosForEnumField(
+      entity as unknown as CodeGenTypes.Entity,
+      enumField as unknown as CodeGenTypes.EntityField
+    );
+
+    return await super.create(
+      {
+        data: {
+          ...defaultDto,
+          displayName: defaultDto.name,
+          relatedFieldId: enumField.permanentId,
+          properties: [], //default DTOs do not have properties
+          parentBlock: {
+            connect: {
+              id: moduleId,
+            },
+          },
+          resource: {
+            connect: {
+              id: entity.resourceId,
+            },
+          },
+        },
+      },
+      user
+    );
+  }
+
+  async updateDefaultDtoForEnumField(
+    entity: Entity,
+    enumField: EntityField,
+    moduleId: string,
+    user: User
+  ): Promise<ModuleDto> {
+    if (!this.customActionsEnabled) {
+      return null;
+    }
+    const defaultDto = await getDefaultDtosForEnumField(
+      entity as unknown as CodeGenTypes.Entity,
+      enumField as unknown as CodeGenTypes.EntityField
+    );
+
+    //get the current default DTO for this field
+    const [existingDefaultDto] = await this.findManyBySettings(
+      {
+        where: {
+          parentBlock: {
+            id: moduleId,
+          },
+        },
+      },
+      {
+        path: ["relatedFieldId"], //we currently only using DTO for the enum, in case we may have multiple DTOs for the same entity, we need to filter by type also
+        equals: enumField.permanentId,
+      }
+    );
+
+    //if the default dtos does not exist, it may happen if the relation type was changed to one-to-many
+    if (!existingDefaultDto) {
+      return await this.createDefaultDtoForEnumField(
+        entity,
+        enumField,
+        moduleId,
+        user
+      );
+    }
+
+    await super.update(
+      {
+        where: {
+          id: existingDefaultDto.id,
+        },
+        data: {
+          ...defaultDto,
+          properties: [], //default DTOs do not have properties
+          displayName: defaultDto.name,
+          enabled: defaultDto.enabled,
+        },
+      },
+      user
+    );
+  }
+
+  async deleteDefaultDtoForEnumField(
+    enumField: EntityField,
+    moduleId: string,
+    user: User
+  ): Promise<Module[]> {
+    //get the current default dtos
+    const existingDefaultDtos = await this.findManyBySettings(
+      {
+        where: {
+          parentBlock: {
+            id: moduleId,
+          },
+        },
+      },
+      {
+        path: ["relatedFieldId"], //we currently only using DTO for the enum, in case we may have multiple DTOs for the same entity, we need to filter by type also
+        equals: enumField.permanentId,
+      }
+    );
+    return await Promise.all(
+      existingDefaultDtos.map((dto) =>
+        super.delete(
+          {
+            where: {
+              id: dto.id,
+            },
+          },
+          user,
+          true
+        )
+      )
+    );
   }
 }
