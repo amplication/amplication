@@ -2870,6 +2870,23 @@ export class EntityService {
             moduleId,
             user
           );
+        } else {
+          if (
+            field.dataType === EnumDataType.OptionSet ||
+            field.dataType === EnumDataType.MultiSelectOptionSet
+          ) {
+            const moduleId =
+              await this.moduleService.getDefaultModuleIdForEntity(
+                entity.resourceId,
+                entity.id
+              );
+
+            await this.moduleDtoService.deleteDefaultDtoForEnumField(
+              field,
+              moduleId,
+              user
+            );
+          }
         }
 
         const updateFieldProperties =
