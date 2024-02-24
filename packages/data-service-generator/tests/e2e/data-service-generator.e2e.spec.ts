@@ -20,9 +20,9 @@ import { omit } from "lodash";
 import env from "./env";
 import entities from "./data/base/entities";
 import {
-  moduleActions,
+  defaultActions,
+  defaultDtos,
   moduleContainers,
-  moduleDtos,
 } from "./data/base/modules";
 import { resourceInfo } from "./data/base/resourceInfo";
 import roles from "./data/base/roles";
@@ -112,8 +112,8 @@ describe("Data Service Generator", () => {
           buildId: "example_build_id",
           resourceType: EnumResourceType.Service,
           pluginInstallations: plugins,
-          moduleActions: moduleActions,
-          moduleDtos: moduleDtos,
+          moduleActions: defaultActions,
+          moduleDtos: defaultDtos,
           moduleContainers: moduleContainers,
         };
 
