@@ -447,7 +447,7 @@ export class ModuleDtoService extends BlockTypeService<
       throw new AmplicationError("Cannot add properties on default DTOs");
     }
 
-    const existingProperty = dto.properties.find(
+    const existingProperty = dto.properties?.find(
       (property) => property.name === args.data.name
     );
     if (existingProperty) {
@@ -467,7 +467,7 @@ export class ModuleDtoService extends BlockTypeService<
         data: {
           name: dto.name,
           enabled: dto.enabled,
-          properties: [...dto.properties, newProperty],
+          properties: [...(dto.properties || []), newProperty],
         },
       },
       user
@@ -493,7 +493,7 @@ export class ModuleDtoService extends BlockTypeService<
       throw new AmplicationError("Cannot update properties on default DTOs");
     }
 
-    const existingPropertyIndex = dto.properties.findIndex(
+    const existingPropertyIndex = dto.properties?.findIndex(
       (property) => property.name === args.where.propertyName
     );
 
@@ -554,7 +554,7 @@ export class ModuleDtoService extends BlockTypeService<
       throw new AmplicationError("Cannot delete properties from default DTOs");
     }
 
-    const existingPropertyIndex = dto.properties.findIndex(
+    const existingPropertyIndex = dto.properties?.findIndex(
       (property) => property.name === args.where.propertyName
     );
 
@@ -777,7 +777,7 @@ export class ModuleDtoService extends BlockTypeService<
       );
     }
 
-    const existingMember = dto.members.find(
+    const existingMember = dto.members?.find(
       (member) => member.name === args.data.name
     );
     if (existingMember) {
@@ -797,7 +797,7 @@ export class ModuleDtoService extends BlockTypeService<
         data: {
           name: dto.name,
           enabled: dto.enabled,
-          members: [...dto.members, newMember],
+          members: [...(dto.members || []), newMember],
         },
       },
       user
@@ -827,7 +827,7 @@ export class ModuleDtoService extends BlockTypeService<
       );
     }
 
-    const existingMemberIndex = dto.members.findIndex(
+    const existingMemberIndex = dto.members?.findIndex(
       (member) => member.name === args.where.enumMemberName
     );
 
@@ -885,7 +885,7 @@ export class ModuleDtoService extends BlockTypeService<
       );
     }
 
-    const existingEnumMemberIndex = dto.members.findIndex(
+    const existingEnumMemberIndex = dto.members?.findIndex(
       (enumMember) => enumMember.name === args.where.enumMemberName
     );
 
