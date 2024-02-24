@@ -873,6 +873,59 @@ describe("ModuleDtoService", () => {
     expect(blockServiceUpdateMock).toBeCalledTimes(1);
   });
 
+  it("createDtoProperty should throw an exception when dto not found", async () => {
+    blockServiceFindOneMock.mockReturnValueOnce(null);
+
+    await expect(
+      service.createDtoProperty(
+        {
+          data: {
+            moduleDto: {
+              connect: {
+                id: EXAMPLE_DTO_ID,
+              },
+            },
+            name: "propertyName",
+          },
+        },
+        EXAMPLE_USER
+      )
+    ).rejects.toThrow(
+      new AmplicationError(`Module DTO not found, ID: ${EXAMPLE_DTO_ID}`)
+    );
+  });
+
+  it("createDtoProperty should throw an exception when property name already being used", async () => {
+    blockServiceFindOneMock.mockReturnValueOnce({
+      ...EXAMPLE_DTO,
+      properties: [
+        {
+          name: "existingPropertyName",
+          propertyTypes: [],
+          isOptional: false,
+          isArray: false,
+        },
+      ],
+    });
+
+    const args = {
+      data: {
+        moduleDto: {
+          connect: {
+            id: EXAMPLE_DTO_ID,
+          },
+        },
+        name: "existingPropertyName",
+      },
+    };
+
+    await expect(service.createDtoProperty(args, EXAMPLE_USER)).rejects.toThrow(
+      new AmplicationError(
+        `Property already exists, name: ${args.data.name}, DTO ID: ${args.data.moduleDto.connect.id}`
+      )
+    );
+  });
+
   it("should throw an error when adding a property on default DTOs", async () => {
     blockServiceFindOneMock.mockReturnValueOnce({
       ...EXAMPLE_DTO,
