@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { MODULE_DTO_ENUM_MEMBER_FIELDS_FRAGMENT } from "../../ModuleDtoEnumMember/queries/moduleDtosEnumMemberQueries";
 
 export const MODULE_DTO_PROPERTY_FIELDS_FRAGMENT = gql`
   fragment ModuleDtoPropertyFields on ModuleDtoProperty {
@@ -15,6 +16,7 @@ export const MODULE_DTO_PROPERTY_FIELDS_FRAGMENT = gql`
 
 export const MODULE_DTO_FIELDS_FRAGMENT = gql`
   ${MODULE_DTO_PROPERTY_FIELDS_FRAGMENT}
+  ${MODULE_DTO_ENUM_MEMBER_FIELDS_FRAGMENT}
   fragment ModuleDtoFields on ModuleDto {
     id
     name
@@ -28,6 +30,9 @@ export const MODULE_DTO_FIELDS_FRAGMENT = gql`
     relatedEntityId
     properties {
       ...ModuleDtoPropertyFields
+    }
+    members {
+      ...ModuleDtoEnumMemberFields
     }
     lockedByUser {
       account {

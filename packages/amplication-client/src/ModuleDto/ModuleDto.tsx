@@ -13,6 +13,7 @@ import {
 } from "@amplication/ui/design-system";
 import { useCallback, useContext, useEffect } from "react";
 import { match } from "react-router-dom";
+import ModuleDtoEnumMemberList from "../ModuleDtoEnumMember/ModuleDtoEnumMemberList";
 import ModuleDtoPropertyList from "../ModuleDtoProperty/ModuleDtoPropertyList";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
@@ -103,6 +104,10 @@ const ModuleDto = ({ match }: Props) => {
     refetch();
   }, [refetch]);
 
+  const onEnumMemberListChanged = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
   const hasError = Boolean(error) || Boolean(updateModuleDtoError);
 
   const errorMessage = formatError(error) || formatError(updateModuleDtoError);
@@ -149,7 +154,7 @@ const ModuleDto = ({ match }: Props) => {
       )}
       <HorizontalRule doubleSpacing />
 
-      <TabContentTitle title="Properties" />
+      <TabContentTitle title={isCustomEnum ? "Members" : "Properties"} />
       {!isCustomDto ? (
         <Panel panelStyle={EnumPanelStyle.Bordered}>
           <Text textStyle={EnumTextStyle.Tag}>
@@ -157,7 +162,11 @@ const ModuleDto = ({ match }: Props) => {
           </Text>
         </Panel>
       ) : isCustomEnum ? (
-        <span>Custom Enum</span>
+        <ModuleDtoEnumMemberList
+          moduleDto={data?.moduleDto}
+          onEnumMemberDelete={onEnumMemberListChanged}
+          onEnumMemberAdd={onEnumMemberListChanged}
+        />
       ) : (
         <ModuleDtoPropertyList
           moduleDto={data?.moduleDto}
