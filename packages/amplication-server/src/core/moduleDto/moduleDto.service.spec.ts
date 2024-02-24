@@ -368,6 +368,24 @@ describe("ModuleDtoService", () => {
     );
   });
 
+  it("should throw an error when updating missing DTO", async () => {
+    blockServiceFindOneMock.mockReturnValueOnce(null);
+
+    const args: UpdateModuleDtoArgs = {
+      where: {
+        id: EXAMPLE_DTO_ID,
+      },
+      data: {
+        displayName: EXAMPLE_DTO_DISPLAY_NAME,
+        name: EXAMPLE_DTO_NAME,
+        enabled: true,
+      },
+    };
+    await expect(service.update(args, EXAMPLE_USER)).rejects.toThrow(
+      new AmplicationError(`Module DTO not found, ID: ${args.where.id}`)
+    );
+  });
+
   it("should delete custom dto", async () => {
     const args: DeleteModuleDtoArgs = {
       where: {
@@ -761,6 +779,48 @@ describe("ModuleDtoService", () => {
     ]);
 
     expect(blockServiceCreateMock).toBeCalledTimes(2);
+  });
+
+  it("should not create default dtos for relation field when it is not one-to-many ", async () => {
+    const entityField: EntityField = {
+      ...EXAMPLE_ENTITY_FIELD,
+      properties: {
+        relatedEntityId: "exampleRelatedEntityId",
+        allowMultipleSelection: false,
+        relatedFieldId: "relatedFieldId",
+      },
+    };
+
+    expect(
+      await service.createDefaultDtosForRelatedEntity(
+        EXAMPLE_ENTITY,
+        entityField,
+        { ...EXAMPLE_ENTITY, id: "relatedEntityId" },
+        EXAMPLE_MODULE.id,
+        EXAMPLE_USER
+      )
+    ).toEqual(null);
+  });
+
+  it("should not update default dtos for relation field when it is not one-to-many ", async () => {
+    const entityField: EntityField = {
+      ...EXAMPLE_ENTITY_FIELD,
+      properties: {
+        relatedEntityId: "exampleRelatedEntityId",
+        allowMultipleSelection: false,
+        relatedFieldId: "relatedFieldId",
+      },
+    };
+
+    expect(
+      await service.updateDefaultDtosForRelatedEntity(
+        EXAMPLE_ENTITY,
+        entityField,
+        { ...EXAMPLE_ENTITY, id: "relatedEntityId" },
+        EXAMPLE_MODULE.id,
+        EXAMPLE_USER
+      )
+    ).toEqual(null);
   });
 
   it("should delete default dtos for relation field", async () => {
