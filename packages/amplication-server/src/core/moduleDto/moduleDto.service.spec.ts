@@ -1044,6 +1044,7 @@ describe("ModuleDtoService", () => {
           dtoType: "Enum",
           name: "EnumExampleEntityExampleEntityFieldName",
           properties: [],
+          members: [],
         },
       },
       EXAMPLE_USER,
