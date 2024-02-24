@@ -4,6 +4,7 @@ import { ModuleActionLinkList } from "../ModuleActions/ModuleActionLinkList";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { ModuleDtoLinkList } from "../ModuleDto/ModuleDtoLinkList";
+import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 
 type Props = {
   module: models.Module;
@@ -41,19 +42,21 @@ export const ModuleNavigationListItem = ({
               >
                 Actions
               </VerticalNavigationItem>
-              <VerticalNavigationItem
-                expandable
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/dtos`}
-                icon="zap"
-                childItems={
-                  <ModuleDtoLinkList
-                    resourceId={currentResource?.id}
-                    moduleId={module.id}
-                  />
-                }
-              >
-                DTOs
-              </VerticalNavigationItem>
+              {REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED === "true" && (
+                <VerticalNavigationItem
+                  expandable
+                  to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/dtos`}
+                  icon="zap"
+                  childItems={
+                    <ModuleDtoLinkList
+                      resourceId={currentResource?.id}
+                      moduleId={module.id}
+                    />
+                  }
+                >
+                  DTOs
+                </VerticalNavigationItem>
+              )}
             </>
           }
         >

@@ -18,6 +18,8 @@ import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
 import { ModuleActionService } from "./moduleAction.service";
 import { kebabCase } from "lodash";
 import { EnumModuleDtoPropertyType } from "../moduleDto/dto/propertyTypes/EnumModuleDtoPropertyType";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
@@ -205,6 +207,19 @@ describe("ModuleActionService", () => {
         {
           provide: EntityService,
           useValue: {},
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: (variable) => {
+              switch (variable) {
+                case Env.FEATURE_CUSTOM_ACTIONS_ENABLED:
+                  return "true";
+                default:
+                  return "";
+              }
+            },
+          },
         },
         ModuleActionService,
       ],

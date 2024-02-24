@@ -14,6 +14,8 @@ import { FindManyModuleArgs } from "./dto/FindManyModuleArgs";
 import { Module } from "./dto/Module";
 import { ModuleUpdateInput } from "./dto/ModuleUpdateInput";
 import { UpdateModuleArgs } from "./dto/UpdateModuleArgs";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
 
@@ -27,12 +29,20 @@ export class ModuleService extends BlockTypeService<
 > {
   blockType = EnumBlockType.Module;
 
+  customActionsEnabled: boolean;
+
   constructor(
     protected readonly blockService: BlockService,
     private readonly moduleActionService: ModuleActionService,
-    private readonly moduleDtoService: ModuleDtoService
+    private readonly moduleDtoService: ModuleDtoService,
+    private configService: ConfigService
   ) {
     super(blockService);
+
+    this.customActionsEnabled = Boolean(
+      this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===
+        "true"
+    );
   }
 
   validateModuleName(moduleName: string): void {
@@ -43,6 +53,10 @@ export class ModuleService extends BlockTypeService<
   }
 
   async create(args: CreateModuleArgs, user: User): Promise<Module> {
+    if (!args.data.entityId && !this.customActionsEnabled) {
+      return null;
+    }
+
     this.validateModuleName(args.data.name);
 
     return super.create(
@@ -170,7 +184,7 @@ export class ModuleService extends BlockTypeService<
       entity.id
     );
 
-    const module = await this.update(
+    const module = await super.update(
       {
         where: {
           id: moduleId,

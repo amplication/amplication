@@ -22,6 +22,8 @@ import { kebabCase } from "lodash";
 import { EnumModuleDtoPropertyType } from "../moduleDto/dto/propertyTypes/EnumModuleDtoPropertyType";
 import { EnumModuleActionGqlOperation } from "./dto/EnumModuleActionGqlOperation";
 import { EnumModuleActionRestVerb } from "./dto/EnumModuleActionRestVerb";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
@@ -33,11 +35,19 @@ export class ModuleActionService extends BlockTypeService<
 > {
   blockType = EnumBlockType.ModuleAction;
 
+  customActionsEnabled: boolean;
+
   constructor(
     protected readonly blockService: BlockService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private configService: ConfigService
   ) {
     super(blockService);
+
+    this.customActionsEnabled = Boolean(
+      this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===
+        "true"
+    );
   }
 
   validateModuleActionName(moduleActionName: string): void {
@@ -52,6 +62,10 @@ export class ModuleActionService extends BlockTypeService<
     user: User
   ): Promise<ModuleAction> {
     this.validateModuleActionName(args.data.name);
+
+    if (!this.customActionsEnabled) {
+      return null;
+    }
 
     return super.create(
       {

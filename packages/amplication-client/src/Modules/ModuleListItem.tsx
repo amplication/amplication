@@ -12,6 +12,7 @@ import { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
+import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 
 type Props = {
   module: models.Module;
@@ -38,11 +39,13 @@ export const ModuleListItem = ({ module }: Props) => {
               <Icon icon="api" size="xsmall" />
             </Button>
           </NavLink>
-          <NavLink to={dtosUrl}>
-            <Button buttonStyle={EnumButtonStyle.Text}>
-              <Icon icon="zap" size="xsmall" />
-            </Button>
-          </NavLink>
+          {REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED === "true" && (
+            <NavLink to={dtosUrl}>
+              <Button buttonStyle={EnumButtonStyle.Text}>
+                <Icon icon="zap" size="xsmall" />
+              </Button>
+            </NavLink>
+          )}
         </FlexItem>
       }
     >
