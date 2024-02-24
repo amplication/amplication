@@ -16,6 +16,7 @@ import { UpdateModuleDtoArgs } from "./dto/UpdateModuleDtoArgs";
 import { ModuleDtoService } from "./moduleDto.service";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { DeleteModuleDtoArgs } from "./dto/DeleteModuleDtoArgs";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
@@ -322,6 +323,22 @@ describe("ModuleDtoService", () => {
     );
   });
 
+  it("should delete custom dto", async () => {
+    const args: DeleteModuleDtoArgs = {
+      where: {
+        id: EXAMPLE_DTO_ID,
+      },
+    };
+    expect(await service.delete(args, EXAMPLE_USER)).toEqual(EXAMPLE_DTO);
+    expect(blockServiceDeleteMock).toBeCalledTimes(1);
+    expect(blockServiceDeleteMock).toBeCalledWith(
+      args,
+      EXAMPLE_USER,
+      false,
+      true
+    );
+  });
+
   it("should throw an error when updating a dto with invalid name", async () => {
     const args: UpdateModuleDtoArgs = {
       where: {
@@ -338,9 +355,29 @@ describe("ModuleDtoService", () => {
     );
   });
 
+  it("should throw an error when deleting a default dto", async () => {
+    //return a default dto
+    blockServiceFindOneMock.mockReturnValueOnce({
+      ...EXAMPLE_DTO,
+      dtoType: EnumModuleDtoType.CreateInput,
+    });
+
+    const args: DeleteModuleDtoArgs = {
+      where: {
+        id: EXAMPLE_DTO_ID,
+      },
+    };
+
+    await expect(service.delete(args, EXAMPLE_USER)).rejects.toThrow(
+      new AmplicationError(
+        "Cannot delete a default DTO. To delete it, you must delete the entity"
+      )
+    );
+  });
+
   it("should throw an error when updating the name of a default dto", async () => {
     //return a default dto
-    blockServiceFindOneMock.mockReturnValue({
+    blockServiceFindOneMock.mockReturnValueOnce({
       ...EXAMPLE_DTO,
       dtoType: EnumModuleDtoType.CreateInput,
     });
@@ -591,7 +628,7 @@ describe("ModuleDtoService", () => {
   });
 
   it("should update default dtos for relation field", async () => {
-    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValue([
+    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValueOnce([
       {
         ...EXAMPLE_DTO,
         id: "shouldBeUpdated",
@@ -626,6 +663,189 @@ describe("ModuleDtoService", () => {
       },
       EXAMPLE_USER,
       undefined
+    );
+  });
+
+  it("should create default dtos for relation field", async () => {
+    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValueOnce([]);
+
+    expect(
+      await service.createDefaultDtosForRelatedEntity(
+        EXAMPLE_ENTITY,
+        EXAMPLE_ENTITY_FIELD,
+        { ...EXAMPLE_ENTITY, id: "relatedEntityId" },
+        EXAMPLE_MODULE.id,
+        EXAMPLE_USER
+      )
+    ).toEqual([
+      {
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        description:
+          "Input type for Example entity creation with related ExampleEntity",
+        displayName: "ExampleEntityCreateNestedManyWithoutExampleEntitiesInput",
+        dtoType: "Custom",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "ExampleEntityCreateNestedManyWithoutExampleEntitiesInput",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        updatedAt: expect.any(Date),
+        versionNumber: 0,
+        relatedEntityId: "relatedEntityId",
+      },
+      {
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        description: "Input type for Example entity retrieval",
+        displayName: "ExampleEntityUpdateManyWithoutExampleEntitiesInput",
+        dtoType: "Custom",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "ExampleEntityUpdateManyWithoutExampleEntitiesInput",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        updatedAt: expect.any(Date),
+        versionNumber: 0,
+        relatedEntityId: "relatedEntityId",
+      },
+    ]);
+
+    expect(blockServiceCreateMock).toBeCalledTimes(2);
+  });
+
+  it("should delete default dtos for relation field", async () => {
+    const dtoToBeDeleted = {
+      ...EXAMPLE_DTO,
+      id: "shouldBeDeleted",
+      name: "shouldBeDeleted",
+      dtoType: EnumModuleDtoType.CreateNestedManyInput,
+    };
+
+    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValueOnce([
+      dtoToBeDeleted,
+    ]);
+
+    const args: DeleteModuleDtoArgs = {
+      where: {
+        id: "shouldBeDeleted",
+      },
+    };
+    await service.deleteDefaultDtosForRelatedEntity(
+      EXAMPLE_ENTITY_FIELD,
+      { ...EXAMPLE_ENTITY, id: "relatedEntityId" },
+      EXAMPLE_MODULE.id,
+      EXAMPLE_USER
+    );
+    expect(blockServiceDeleteMock).toBeCalledTimes(1);
+    expect(blockServiceDeleteMock).toBeCalledWith(
+      args,
+      EXAMPLE_USER,
+      true,
+      true
+    );
+  });
+
+  it("should create dto property", async () => {
+    await service.createDtoProperty(
+      {
+        data: {
+          moduleDto: {
+            connect: {
+              id: EXAMPLE_DTO_ID,
+            },
+          },
+          name: "propertyName",
+        },
+      },
+      EXAMPLE_USER
+    );
+
+    expect(blockServiceUpdateMock).toBeCalledTimes(1);
+  });
+
+  it("should throw an error when adding a property on default DTOs", async () => {
+    blockServiceFindOneMock.mockReturnValueOnce({
+      ...EXAMPLE_DTO,
+      dtoType: EnumModuleDtoType.CreateArgs,
+    });
+    await expect(
+      service.createDtoProperty(
+        {
+          data: {
+            moduleDto: {
+              connect: {
+                id: EXAMPLE_DTO_ID,
+              },
+            },
+            name: "propertyName",
+          },
+        },
+        EXAMPLE_USER
+      )
+    ).rejects.toThrow(
+      new AmplicationError("Cannot add properties on default DTOs")
+    );
+  });
+
+  it("should update dto property", async () => {
+    blockServiceFindOneMock.mockReturnValueOnce({
+      ...EXAMPLE_DTO,
+      properties: [
+        {
+          name: "propertyName",
+          propertyTypes: [],
+          isOptional: false,
+          isArray: false,
+        },
+      ],
+    });
+
+    await service.updateDtoProperty(
+      {
+        where: {
+          moduleDto: {
+            id: EXAMPLE_DTO_ID,
+          },
+          propertyName: "propertyName",
+        },
+        data: {
+          name: "propertyName",
+          propertyTypes: [],
+          isOptional: false,
+          isArray: false,
+        },
+      },
+      EXAMPLE_USER
+    );
+
+    expect(blockServiceUpdateMock).toBeCalledTimes(1);
+  });
+
+  it("should throw an error when updating a missing property", async () => {
+    const args = {
+      where: {
+        moduleDto: {
+          id: EXAMPLE_DTO_ID,
+        },
+        propertyName: "propertyName",
+      },
+      data: {
+        name: "propertyName",
+        propertyTypes: [],
+        isOptional: false,
+        isArray: false,
+      },
+    };
+
+    await expect(service.updateDtoProperty(args, EXAMPLE_USER)).rejects.toThrow(
+      new AmplicationError(
+        `Property not found, name: ${args.where.propertyName}, DTO ID: ${args.where.moduleDto.id}`
+      )
     );
   });
 });
