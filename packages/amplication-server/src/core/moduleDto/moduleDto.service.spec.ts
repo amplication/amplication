@@ -118,6 +118,33 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   },
 };
 
+const EXAMPLE_ENTITY_ENUM_FIELD: EntityField = {
+  id: "exampleEntityFieldId",
+  permanentId: "examplePermanentId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: "exampleEntityFieldName",
+  displayName: "exampleEntityFieldDisplayName",
+  dataType: EnumDataType.OptionSet,
+  required: false,
+  unique: false,
+  searchable: true,
+  description: "exampleDescription",
+  customAttributes: "ExampleCustomAttributes",
+  properties: {
+    options: [
+      {
+        value: "option1",
+        label: "Option 1",
+      },
+      {
+        value: "option2",
+        label: "Option 2",
+      },
+    ],
+  },
+};
+
 const blockServiceFindOneMock = jest.fn(() => {
   return EXAMPLE_DTO;
 });
@@ -290,6 +317,24 @@ describe("ModuleDtoService", () => {
       new AmplicationError("Invalid moduleDto name")
     );
   });
+
+  it("should throw an error when creating an enum with invalid name", async () => {
+    const args: CreateModuleDtoArgs = {
+      data: {
+        resource: {
+          connect: {
+            id: EXAMPLE_RESOURCE_ID,
+          },
+        },
+        displayName: EXAMPLE_DTO_DISPLAY_NAME,
+        name: EXAMPLE_INVALID_DTO_NAME,
+      },
+    };
+    await expect(service.createEnum(args, EXAMPLE_USER)).rejects.toThrow(
+      new AmplicationError("Invalid moduleDto name")
+    );
+  });
+
   it("should get one dto", async () => {
     const args: FindOneArgs = {
       where: {
@@ -846,6 +891,134 @@ describe("ModuleDtoService", () => {
       new AmplicationError(
         `Property not found, name: ${args.where.propertyName}, DTO ID: ${args.where.moduleDto.id}`
       )
+    );
+  });
+
+  it("should delete dto property", async () => {
+    blockServiceFindOneMock.mockReturnValueOnce({
+      ...EXAMPLE_DTO,
+      properties: [
+        {
+          name: "propertyName",
+          propertyTypes: [],
+          isOptional: false,
+          isArray: false,
+        },
+      ],
+    });
+
+    await service.deleteDtoProperty(
+      {
+        where: {
+          moduleDto: {
+            id: EXAMPLE_DTO_ID,
+          },
+          propertyName: "propertyName",
+        },
+      },
+      EXAMPLE_USER
+    );
+
+    expect(blockServiceUpdateMock).toBeCalledTimes(1);
+  });
+
+  it("should create default dto for enum field", async () => {
+    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValueOnce([]);
+
+    expect(
+      await service.createDefaultDtoForEnumField(
+        EXAMPLE_ENTITY,
+        EXAMPLE_ENTITY_ENUM_FIELD,
+        EXAMPLE_MODULE.id,
+        EXAMPLE_USER
+      )
+    ).toEqual({
+      blockType: "ModuleDto",
+      createdAt: expect.any(Date),
+      description:
+        "Enum type for field exampleEntityFieldName of Example entity model",
+      displayName: "EnumExampleEntityExampleEntityFieldName",
+      dtoType: "Custom",
+      enabled: true,
+      id: "exampleDtoId",
+      inputParameters: null,
+      name: "EnumExampleEntityExampleEntityFieldName",
+      outputParameters: null,
+      parentBlock: null,
+      properties: [],
+      updatedAt: expect.any(Date),
+      versionNumber: 0,
+      relatedFieldId: "examplePermanentId",
+    });
+
+    expect(blockServiceCreateMock).toBeCalledTimes(1);
+  });
+
+  it("should update default dto for enum field", async () => {
+    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValueOnce([
+      {
+        ...EXAMPLE_DTO,
+        id: "shouldBeUpdated",
+        name: "shouldBeUpdated",
+        dtoType: EnumModuleDtoType.CreateNestedManyInput,
+      },
+    ]);
+
+    await service.updateDefaultDtoForEnumField(
+      EXAMPLE_ENTITY,
+      EXAMPLE_ENTITY_ENUM_FIELD,
+      EXAMPLE_MODULE.id,
+      EXAMPLE_USER
+    );
+    expect(blockServiceUpdateMock).toBeCalledTimes(1);
+    expect(blockServiceUpdateMock).toBeCalledWith(
+      {
+        where: {
+          id: "shouldBeUpdated",
+        },
+        data: {
+          description:
+            "Enum type for field exampleEntityFieldName of Example entity model",
+          displayName: "EnumExampleEntityExampleEntityFieldName",
+          enabled: true,
+          dtoType: "Enum",
+          name: "EnumExampleEntityExampleEntityFieldName",
+          properties: [],
+        },
+      },
+      EXAMPLE_USER,
+      undefined
+    );
+  });
+
+  it("should delete default dto for enum field", async () => {
+    const dtoToBeDeleted = {
+      ...EXAMPLE_DTO,
+      id: "shouldBeDeleted",
+      name: "shouldBeDeleted",
+      dtoType: EnumModuleDtoType.CreateNestedManyInput,
+    };
+
+    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValueOnce([
+      dtoToBeDeleted,
+    ]);
+
+    const args: DeleteModuleDtoArgs = {
+      where: {
+        id: "shouldBeDeleted",
+      },
+    };
+    await service.deleteDefaultDtoForEnumField(
+      EXAMPLE_ENTITY_ENUM_FIELD,
+      EXAMPLE_MODULE.id,
+      EXAMPLE_USER
+    );
+    expect(blockServiceDeleteMock).toBeCalledTimes(1);
+    expect(blockServiceDeleteMock).toBeCalledWith(
+      args,
+      EXAMPLE_USER,
+      true,
+      true
     );
   });
 });
