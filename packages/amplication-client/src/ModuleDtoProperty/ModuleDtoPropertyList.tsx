@@ -25,7 +25,7 @@ const ModuleDtoPropertyList = React.memo(
             />
           }
         >
-          {moduleDto?.properties.map((property, index) => (
+          {moduleDto?.properties?.map((property, index) => (
             <ModuleDtoProperty
               key={index}
               moduleDto={moduleDto}
