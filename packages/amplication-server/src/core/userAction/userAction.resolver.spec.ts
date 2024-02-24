@@ -82,7 +82,7 @@ const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 const actionServiceFindOneMock = jest.fn(() => EXAMPLE_ACTION);
 const resourceServiceFindOneMock = jest.fn(() => EXAMPLE_RESOURCE);
 
-const userActionServiceCalcUserActionStatusMock = jest.fn(() => {
+const userActionServiceEvalUserActionStatusMock = jest.fn(() => {
   return EnumUserActionStatus.Completed;
 });
 
@@ -143,7 +143,7 @@ describe("userActionResolver", () => {
           provide: UserActionService,
           useClass: jest.fn(() => ({
             findOne: userActionServiceFindOneMock,
-            calcUserActionStatus: userActionServiceCalcUserActionStatusMock,
+            evalUserActionStatus: userActionServiceEvalUserActionStatusMock,
           })),
         },
         {
@@ -211,8 +211,8 @@ describe("userActionResolver", () => {
         status: EnumUserActionStatus.Completed,
       },
     });
-    expect(userActionServiceCalcUserActionStatusMock).toBeCalledTimes(1);
-    expect(userActionServiceCalcUserActionStatusMock).toBeCalledWith(
+    expect(userActionServiceEvalUserActionStatusMock).toBeCalledTimes(1);
+    expect(userActionServiceEvalUserActionStatusMock).toBeCalledWith(
       EXAMPLE_USER_ACTION_ID
     );
   });

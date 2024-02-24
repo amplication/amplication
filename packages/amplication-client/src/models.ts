@@ -31,6 +31,8 @@ export type Account = {
   id: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
   password: Scalars['String']['output'];
+  previewAccountEmail?: Maybe<Scalars['String']['output']>;
+  previewAccountType: EnumPreviewAccountType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -86,6 +88,13 @@ export type ApiTokenCreateInput = {
 export type Auth = {
   /** JWT Bearer token */
   token: Scalars['String']['output'];
+};
+
+export type AuthPreviewAccount = {
+  projectId: Scalars['String']['output'];
+  resourceId: Scalars['String']['output'];
+  token: Scalars['String']['output'];
+  workspaceId: Scalars['String']['output'];
 };
 
 export type AuthorizeResourceWithGitResult = {
@@ -188,6 +197,30 @@ export type BlockWhereInput = {
 export type BooleanFilter = {
   equals?: InputMaybe<Scalars['Boolean']['input']>;
   not?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type BreakServiceToMicroservicesData = {
+  microservices: Array<BreakServiceToMicroservicesItem>;
+};
+
+export type BreakServiceToMicroservicesItem = {
+  functionality: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  tables: Array<BreakServiceToMicroservicesItemEntities>;
+};
+
+export type BreakServiceToMicroservicesItemEntities = {
+  name: Scalars['String']['output'];
+  originalEntityId: Scalars['String']['output'];
+};
+
+export type BreakServiceToMicroservicesResult = {
+  /** Prompt result with some data structure manipulation */
+  data?: Maybe<BreakServiceToMicroservicesData>;
+  /** The original resource ID */
+  originalResourceId: Scalars['String']['output'];
+  /** The status of the user action */
+  status: EnumUserActionStatus;
 };
 
 export type Build = {
@@ -309,16 +342,17 @@ export type ConnectGitRepositoryInput = {
   resourceId: Scalars['String']['input'];
 };
 
-export type CopiedEntities = {
-  shouldDeleteFromSource: Scalars['Boolean']['input'];
-};
-
 export type Coupon = {
   code: Scalars['String']['output'];
   couponType?: Maybe<Scalars['String']['output']>;
   durationMonths: Scalars['Int']['output'];
   id: Scalars['String']['output'];
   subscriptionPlan: EnumSubscriptionPlan;
+};
+
+export type CreateEntitiesFromPredefinedSchemaInput = {
+  resource: WhereParentIdInput;
+  schemaName: EnumSchemaNames;
 };
 
 export type CreateGitRepositoryBaseInput = {
@@ -786,6 +820,11 @@ export enum EnumPendingChangeOriginType {
   Entity = 'Entity'
 }
 
+export enum EnumPreviewAccountType {
+  BreakingTheMonolith = 'BreakingTheMonolith',
+  None = 'None'
+}
+
 export enum EnumResourceType {
   MessageBroker = 'MessageBroker',
   ProjectConfiguration = 'ProjectConfiguration',
@@ -799,9 +838,17 @@ export type EnumResourceTypeFilter = {
   notIn?: InputMaybe<Array<EnumResourceType>>;
 };
 
+export enum EnumSchemaNames {
+  Abby = 'Abby',
+  CalDotCom = 'CalDotCom',
+  Formbricks = 'Formbricks',
+  Papermark = 'Papermark'
+}
+
 export enum EnumSubscriptionPlan {
   Enterprise = 'Enterprise',
   Free = 'Free',
+  PreviewBreakTheMonolith = 'PreviewBreakTheMonolith',
   Pro = 'Pro'
 }
 
@@ -821,7 +868,9 @@ export enum EnumUserActionStatus {
 }
 
 export enum EnumUserActionType {
-  DbSchemaImport = 'DBSchemaImport'
+  DbSchemaImport = 'DBSchemaImport',
+  GptConversation = 'GptConversation',
+  ProjectRedesign = 'ProjectRedesign'
 }
 
 export enum EnumWorkspaceMemberType {
@@ -1102,12 +1151,14 @@ export type Mutation = {
   commit?: Maybe<Commit>;
   completeGitOAuth2Flow: GitOrganization;
   completeInvitation: Auth;
+  completeSignupWithBusinessEmail: Scalars['String']['output'];
   connectGitRepository: Resource;
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
+  createEntitiesFromPredefinedSchema: UserAction;
   createEntitiesFromPrismaSchema: UserAction;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
@@ -1119,7 +1170,6 @@ export type Mutation = {
   createPluginInstallation: PluginInstallation;
   createProject: Project;
   createRemoteGitRepository: RemoteGitRepository;
-  createResourceEntitiesFromExistingResource: Resource;
   createResourceRole: ResourceRole;
   createService: Resource;
   createServiceTopics: ServiceTopics;
@@ -1150,11 +1200,17 @@ export type Mutation = {
   login: Auth;
   provisionSubscription?: Maybe<ProvisionSubscriptionResult>;
   redeemCoupon: Coupon;
+  redesignProject: UserAction;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
   signup: Auth;
+  signupPreviewAccount: AuthPreviewAccount;
+  signupWithBusinessEmail: Scalars['Boolean']['output'];
+  startRedesign?: Maybe<Resource>;
+  /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
+  triggerBreakServiceIntoMicroservices?: Maybe<UserAction>;
   updateAccount: Account;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
@@ -1237,6 +1293,11 @@ export type MutationCreateDefaultEntitiesArgs = {
 };
 
 
+export type MutationCreateEntitiesFromPredefinedSchemaArgs = {
+  data: CreateEntitiesFromPredefinedSchemaInput;
+};
+
+
 export type MutationCreateEntitiesFromPrismaSchemaArgs = {
   data: DbSchemaImportCreateInput;
   file: Scalars['Upload']['input'];
@@ -1293,11 +1354,6 @@ export type MutationCreateProjectArgs = {
 
 export type MutationCreateRemoteGitRepositoryArgs = {
   data: CreateGitRepositoryBaseInput;
-};
-
-
-export type MutationCreateResourceEntitiesFromExistingResourceArgs = {
-  data: ResourceCreateCopiedEntitiesInput;
 };
 
 
@@ -1452,6 +1508,11 @@ export type MutationRedeemCouponArgs = {
 };
 
 
+export type MutationRedesignProjectArgs = {
+  data: RedesignProjectInput;
+};
+
+
 export type MutationResendInvitationArgs = {
   where: WhereUniqueInput;
 };
@@ -1475,6 +1536,26 @@ export type MutationSetPluginOrderArgs = {
 
 export type MutationSignupArgs = {
   data: SignupInput;
+};
+
+
+export type MutationSignupPreviewAccountArgs = {
+  data: SignupPreviewAccountInput;
+};
+
+
+export type MutationSignupWithBusinessEmailArgs = {
+  data: SignupWithBusinessEmailInput;
+};
+
+
+export type MutationStartRedesignArgs = {
+  data: WhereUniqueInput;
+};
+
+
+export type MutationTriggerBreakServiceIntoMicroservicesArgs = {
+  resourceId: Scalars['String']['input'];
 };
 
 
@@ -1820,6 +1901,8 @@ export type Query = {
   currentWorkspace?: Maybe<Workspace>;
   entities: Array<Entity>;
   entity?: Maybe<Entity>;
+  /** Get the changes to apply to the model in order to break a resource into microservices */
+  finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
   gitGroups: PaginatedGitGroup;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
@@ -1842,7 +1925,8 @@ export type Query = {
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
-  serviceTopics: Array<ServiceTopics>;
+  serviceTopics?: Maybe<ServiceTopics>;
+  serviceTopicsList: Array<ServiceTopics>;
   topic?: Maybe<Topic>;
   topics: Array<Topic>;
   userAction: UserAction;
@@ -1913,6 +1997,11 @@ export type QueryEntitiesArgs = {
 
 export type QueryEntityArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
+  userActionId: Scalars['String']['input'];
 };
 
 
@@ -2043,6 +2132,11 @@ export type QueryServiceSettingsArgs = {
 
 
 export type QueryServiceTopicsArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryServiceTopicsListArgs = {
   orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -2079,6 +2173,24 @@ export enum QueryMode {
 
 export type RedeemCouponInput = {
   code: Scalars['String']['input'];
+};
+
+export type RedesignProjectInput = {
+  movedEntities: Array<RedesignProjectMovedEntity>;
+  newServices: Array<RedesignProjectNewService>;
+  projectId: Scalars['String']['input'];
+};
+
+export type RedesignProjectMovedEntity = {
+  entityId: Scalars['String']['input'];
+  originalResourceId: Scalars['String']['input'];
+  targetResourceId: Scalars['String']['input'];
+};
+
+export type RedesignProjectNewService = {
+  description: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type RemoteGitRepos = {
@@ -2143,11 +2255,6 @@ export type ResourceEntitiesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<EntityWhereInput>;
-};
-
-export type ResourceCreateCopiedEntitiesInput = {
-  entitiesToCopy: Array<CopiedEntities>;
-  targetResourceId: Scalars['String']['input'];
 };
 
 export type ResourceCreateInput = {
@@ -2380,6 +2487,15 @@ export type SignupInput = {
   workspaceName: Scalars['String']['input'];
 };
 
+export type SignupPreviewAccountInput = {
+  previewAccountEmail: Scalars['String']['input'];
+  previewAccountType: EnumPreviewAccountType;
+};
+
+export type SignupWithBusinessEmailInput = {
+  email: Scalars['String']['input'];
+};
+
 export enum SortOrder {
   Asc = 'Asc',
   Desc = 'Desc'
@@ -2516,6 +2632,7 @@ export type WhereUniqueInput = {
 };
 
 export type Workspace = {
+  allowLLMFeatures: Scalars['Boolean']['output'];
   createdAt: Scalars['DateTime']['output'];
   externalId?: Maybe<Scalars['String']['output']>;
   gitOrganizations?: Maybe<Array<GitOrganization>>;
@@ -2539,6 +2656,7 @@ export type WorkspaceMember = {
 export type WorkspaceMemberType = Invitation | User;
 
 export type WorkspaceUpdateInput = {
+  allowLLMFeatures?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 

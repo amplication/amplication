@@ -19,6 +19,11 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { UserActionService } from "../userAction/userAction.service";
 import { DBSchemaImportMetadata } from "./types";
 import { CreateDBSchemaImportArgs } from "./dto/CreateDBSchemaImportArgs";
+import { EnumSchemaNames } from "./dto/EnumSchemaNames";
+import { calDotComPredefinedSchema } from "./predefinedSchemes/calDotCom/calDotCom";
+import { formbricksPredefinedSchema } from "./predefinedSchemes/formbricks/formbricks";
+import { abbyPredefinedSchema } from "./predefinedSchemes/abby/abby";
+import { papermarkPredefinedSchema } from "./predefinedSchemes/papermark/papermark";
 
 @Injectable()
 export class DBSchemaImportService {
@@ -138,5 +143,20 @@ export class DBSchemaImportService {
       });
 
     return dbSchemaImportStep;
+  }
+
+  async getPredefinedSchema(schemaNames: EnumSchemaNames): Promise<string> {
+    switch (schemaNames) {
+      case EnumSchemaNames.CalDotCom:
+        return calDotComPredefinedSchema;
+      case EnumSchemaNames.Formbricks:
+        return formbricksPredefinedSchema;
+      case EnumSchemaNames.Abby:
+        return abbyPredefinedSchema;
+      case EnumSchemaNames.Papermark:
+        return papermarkPredefinedSchema;
+      default:
+        throw new Error(`Schema name ${schemaNames} is not supported`);
+    }
   }
 }

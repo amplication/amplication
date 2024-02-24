@@ -6,6 +6,8 @@ import { UserService } from "./user.service";
 import { BillingService } from "../billing/billing.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { ConfigService } from "@nestjs/config";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_ROLE_ID = "exampleRoleId";
@@ -22,6 +24,7 @@ const EXAMPLE_FIRST_NAME = "ExampleFirstName";
 const EXAMPLE_LAST_NAME = "ExampleLastName";
 const EXAMPLE_PASSWORD = "ExamplePassword";
 const EXAMPLE_EMAIL = "email@example.com";
+const EXAMPLE_PREVIEW_EMAIL = "email@amplication.com";
 const EXAMPLE_ID = "ExampleId";
 
 const EXAMPLE_ACCOUNT: Account = {
@@ -33,6 +36,8 @@ const EXAMPLE_ACCOUNT: Account = {
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
   githubId: null,
+  previewAccountType: EnumPreviewAccountType.None,
+  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -81,13 +86,22 @@ const prismaUserRoleDeleteMock = jest.fn(() => {
 describe("UserService", () => {
   let service: UserService;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
           provide: KafkaProducerService,
           useClass: jest.fn(),
+        },
+        {
+          provide: ConfigService,
+          useClass: jest.fn(() => ({
+            get: jest.fn(),
+          })),
         },
         UserService,
         {
@@ -120,6 +134,21 @@ describe("UserService", () => {
 
   it("should be defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("should return the preview email as account email when account preview email is not null", async () => {
+    prismaUserFindOneMock.mockImplementationOnce(() => ({
+      then: (resolve) => resolve(EXAMPLE_USER),
+      account: () => ({
+        ...EXAMPLE_ACCOUNT,
+        previewAccountType: EnumPreviewAccountType.BreakingTheMonolith,
+        previewAccountEmail: EXAMPLE_PREVIEW_EMAIL,
+      }),
+    }));
+
+    const account = await service.getAccount(EXAMPLE_USER_ID);
+
+    expect(account.email).toEqual(EXAMPLE_PREVIEW_EMAIL);
   });
 
   it("should find one", async () => {

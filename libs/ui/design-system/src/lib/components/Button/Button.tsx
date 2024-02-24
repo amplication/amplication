@@ -12,6 +12,8 @@ export enum EnumButtonStyle {
   Primary = "primary",
   Outline = "outline",
   Text = "text",
+  GradientFull = "gradient-full",
+  GradientOutline = "gradient-outline",
 }
 
 export enum EnumButtonState {

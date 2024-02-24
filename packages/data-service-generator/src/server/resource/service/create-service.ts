@@ -27,9 +27,9 @@ import {
   extractImportDeclarations,
   getClassDeclarationById,
   getMethods,
+  importContainedIdentifiers,
   importNames,
   interpolate,
-  removeClassMethodByName,
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,
@@ -39,6 +39,9 @@ import { relativeImportPath } from "../../../utils/module";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
 import { getEntityIdType } from "../../../utils/get-entity-id-type";
+import { logger as applicationLogger } from "../../../logging";
+import { getDTONameToPath } from "../create-dtos";
+import { getImportableDTOs } from "../dto/create-dto-module";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -147,7 +150,8 @@ async function createServiceBaseModule({
   moduleContainers,
   entityActions,
 }: CreateEntityServiceBaseParams): Promise<ModuleMap> {
-  const { serverDirectories } = DsgContext.getInstance;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { serverDirectories, DTOs } = DsgContext.getInstance;
 
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
 
@@ -217,7 +221,10 @@ async function createServiceBaseModule({
           (moduleContainer && !moduleContainer?.enabled && action) ||
           (action && !action.enabled)
         ) {
-          removeClassMethodByName(classDeclaration, action.name);
+          applicationLogger.debug(
+            `Removing ${action.name} from ${entityName} - not implemented yet`
+          );
+          // removeClassMethodByName(classDeclaration, action.name);
         }
       }
     )
@@ -233,7 +240,10 @@ async function createServiceBaseModule({
           (moduleContainer && !moduleContainer?.enabled && action) ||
           (action && !action.enabled)
         ) {
-          removeClassMethodByName(classDeclaration, action.name);
+          applicationLogger.debug(
+            `Removing ${action.name} from ${entityName} - not implemented yet`
+          );
+          // removeClassMethodByName(classDeclaration, action.name);
         }
       }
     )
@@ -245,7 +255,10 @@ async function createServiceBaseModule({
       (moduleContainer && !moduleContainer?.enabled && action) ||
       (action && !action.enabled)
     ) {
-      removeClassMethodByName(classDeclaration, action.name);
+      applicationLogger.debug(
+        `Removing ${action.name} from ${entityName} - not implemented yet`
+      );
+      // removeClassMethodByName(classDeclaration, action.name);
     }
   });
 
@@ -263,6 +276,13 @@ async function createServiceBaseModule({
     template,
     toOneRelations.flatMap((relation) => relation.imports)
   );
+  const dtoNameToPath = getDTONameToPath(DTOs);
+
+  const dtoImports = importContainedIdentifiers(
+    template,
+    getImportableDTOs(moduleBasePath, dtoNameToPath)
+  );
+  addImports(template, [...dtoImports]);
 
   addAutoGenerationComment(template);
 
@@ -325,6 +345,7 @@ async function createToOneRelationFile(
     DELEGATE: delegateId,
     PARENT_ID_TYPE: getParentIdType(entity.name),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
+    PRISMA_RELATED_ENTITY: builders.identifier(`Prisma${relatedEntity.name}`),
     PROPERTY: builders.identifier(field.name),
     FIND_ONE: createFieldFindOneFunctionId(field.name),
   });
@@ -347,6 +368,7 @@ async function createToManyRelationFile(
     DELEGATE: delegateId,
     PARENT_ID_TYPE: getParentIdType(entity.name),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
+    PRISMA_RELATED_ENTITY: builders.identifier(`Prisma${relatedEntity.name}`),
     PROPERTY: builders.identifier(field.name),
     FIND_MANY: createFieldFindManyFunctionId(field.name),
     ARGS: relatedEntityDTOs.findManyArgs.id,
@@ -381,6 +403,7 @@ function createTemplateMapping(
     SERVICE: serviceId,
     SERVICE_BASE: serviceBaseId,
     ENTITY: builders.identifier(entityType),
+    PRISMA_ENTITY: builders.identifier(`Prisma${entityType}`),
     COUNT_ARGS: builders.identifier(`${entityType}CountArgs`),
     FIND_MANY_ARGS: builders.identifier(`${entityType}FindManyArgs`),
     FIND_ONE_ARGS: builders.identifier(`${entityType}FindUniqueArgs`),

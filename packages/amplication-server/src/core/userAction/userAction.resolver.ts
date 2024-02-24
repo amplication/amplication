@@ -33,7 +33,7 @@ export class UserActionResolver {
 
   @ResolveField()
   status(@Parent() userAction: UserAction): Promise<EnumUserActionStatus> {
-    return this.userActionService.calcUserActionStatus(userAction.id);
+    return this.userActionService.evalUserActionStatus(userAction.id);
   }
 
   @ResolveField()

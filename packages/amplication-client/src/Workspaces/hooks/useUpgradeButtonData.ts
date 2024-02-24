@@ -1,8 +1,4 @@
-import {
-  PricingType,
-  SubscriptionStatus,
-  useStiggContext,
-} from "@stigg/react-sdk";
+import { useStiggContext } from "@stigg/react-sdk";
 import { Workspace } from "../../models";
 import { BillingPlan } from "@amplication/util-billing-types";
 import { useEffect, useState } from "react";
@@ -17,6 +13,7 @@ interface UpgradeButtonData {
   showUpgradeTrialButton: boolean;
   showUpgradeDefaultButton: boolean;
   isCompleted?: boolean;
+  isPreviewPlan?: boolean;
 }
 
 export const useUpgradeButtonData = (
@@ -28,6 +25,7 @@ export const useUpgradeButtonData = (
     {
       showUpgradeTrialButton: false,
       showUpgradeDefaultButton: true,
+      isPreviewPlan: false,
     }
   );
 
@@ -44,6 +42,16 @@ export const useUpgradeButtonData = (
 
       await stigg.setCustomerId(currentWorkspace.id);
       const [subscription] = await stigg.getActiveSubscriptions();
+
+      if (isPreviewPlan(subscription.plan.id)) {
+        setUpgradeButtonData({
+          showUpgradeTrialButton: false,
+          showUpgradeDefaultButton: false,
+          isCompleted: true,
+          isPreviewPlan: true,
+        });
+        return;
+      }
 
       if (subscription.plan.id === BillingPlan.Free) {
         const daysSinceStartOfPlan = Math.abs(
@@ -105,3 +113,7 @@ export const useUpgradeButtonData = (
 
   return upgradeButtonData;
 };
+
+function isPreviewPlan(planId: string) {
+  return planId.includes("preview");
+}
