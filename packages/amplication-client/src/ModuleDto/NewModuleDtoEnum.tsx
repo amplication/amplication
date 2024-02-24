@@ -90,10 +90,10 @@ const NewModuleDtoEnum = ({
         .then((result) => {
           if (result && result.data) {
             if (onDtoCreated && result && result.data) {
-              onDtoCreated(result.data.createModuleDto);
+              onDtoCreated(result.data.createModuleDtoEnum);
             }
             history.push(
-              `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos/${result.data.createModuleDto.id}`
+              `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos/${result.data.createModuleDtoEnum.id}`
             );
           }
         });

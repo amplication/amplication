@@ -44,12 +44,12 @@ const ModuleDtos = React.memo(({ match, innerRoutes }: Props) => {
         <Text textStyle={EnumTextStyle.H4}>DTOs</Text>
         <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
           <NewModuleDto
-            moduleId={module.id}
+            moduleId={moduleId}
             resourceId={resourceId}
             buttonStyle={EnumButtonStyle.Outline}
           />
           <NewModuleDtoEnum
-            moduleId={module.id}
+            moduleId={moduleId}
             resourceId={resourceId}
             buttonStyle={EnumButtonStyle.Outline}
           />

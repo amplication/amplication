@@ -35,6 +35,10 @@ type TCreateData = {
   createModuleDto: models.ModuleDto;
 };
 
+type createModuleDtoEnum = {
+  createModuleDtoEnum: models.ModuleDto;
+};
+
 type TCreatePropertyData = {
   createModuleDtoProperty: models.ModuleDtoProperty;
 };
@@ -139,11 +143,11 @@ const useModuleDto = () => {
       error: createModuleDtoEnumError,
       loading: createModuleDtoEnumLoading,
     },
-  ] = useMutation<TCreateData>(CREATE_MODULE_DTO_ENUM, {
+  ] = useMutation<createModuleDtoEnum>(CREATE_MODULE_DTO_ENUM, {
     update(cache, { data }) {
       if (!data) return;
 
-      const newModuleDto = data.createModuleDto;
+      const newModuleDto = data.createModuleDtoEnum;
 
       cache.modify({
         fields: {
@@ -169,7 +173,7 @@ const useModuleDto = () => {
       });
     },
     onCompleted: (data) => {
-      addBlock(data.createModuleDto.id);
+      addBlock(data.createModuleDtoEnum.id);
       getAvailableDtosForResourceRefetch();
     },
   });
