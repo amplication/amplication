@@ -144,7 +144,7 @@ const NewModuleDto = ({
                   buttonStyle={EnumButtonStyle.Primary}
                   disabled={!formik.isValid || loading}
                 >
-                  Create Dto
+                  Create DTO
                 </Button>
               </Form>
             );
@@ -158,7 +158,7 @@ const NewModuleDto = ({
           disabled={!customActionsLicenseEnabled}
           icon="zap"
         >
-          Add Dto
+          Add DTO
         </Button>
       )}
       <Snackbar open={Boolean(error)} message={errorMessage} />
