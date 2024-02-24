@@ -1152,11 +1152,12 @@ type ModuleDto implements IBlock {
   lockedAt: DateTime
   lockedByUser: User
   lockedByUserId: String
+  members: [ModuleDtoEnumMember!]
   name: String!
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
   parentBlockId: String
-  properties: [ModuleDtoProperty!]!
+  properties: [ModuleDtoProperty!]
   relatedEntityId: String
   resourceId: String
   updatedAt: DateTime!
@@ -1171,6 +1172,21 @@ input ModuleDtoCreateInput {
   outputParameters: [BlockInputOutputInput!]
   parentBlock: WhereParentIdInput
   resource: WhereParentIdInput!
+}
+
+type ModuleDtoEnumMember {
+  name: String!
+  value: String!
+}
+
+input ModuleDtoEnumMemberCreateInput {
+  moduleDto: WhereParentIdInput!
+  name: String
+}
+
+input ModuleDtoEnumMemberUpdateInput {
+  name: String!
+  value: String!
 }
 
 input ModuleDtoOrderByInput {
@@ -1267,6 +1283,7 @@ type Mutation {
   createModuleAction(data: ModuleActionCreateInput!): ModuleAction!
   createModuleDto(data: ModuleDtoCreateInput!): ModuleDto!
   createModuleDtoEnum(data: ModuleDtoCreateInput!): ModuleDto!
+  createModuleDtoEnumMember(data: ModuleDtoEnumMemberCreateInput!): ModuleDtoEnumMember!
   createModuleDtoProperty(data: ModuleDtoPropertyCreateInput!): ModuleDtoProperty!
   createOneEntity(data: EntityCreateInput!): Entity!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
@@ -1288,6 +1305,7 @@ type Mutation {
   deleteModule(where: WhereUniqueInput!): Module!
   deleteModuleAction(where: WhereUniqueInput!): ModuleAction!
   deleteModuleDto(where: WhereUniqueInput!): ModuleDto!
+  deleteModuleDtoEnumMember(where: WhereEnumMemberUniqueInput!): ModuleDtoEnumMember!
   deleteModuleDtoProperty(where: WherePropertyUniqueInput!): ModuleDtoProperty!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   deleteProject(where: WhereUniqueInput!): Project
@@ -1330,6 +1348,7 @@ type Mutation {
   updateModule(data: ModuleUpdateInput!, where: WhereUniqueInput!): Module!
   updateModuleAction(data: ModuleActionUpdateInput!, where: WhereUniqueInput!): ModuleAction!
   updateModuleDto(data: ModuleDtoUpdateInput!, where: WhereUniqueInput!): ModuleDto!
+  updateModuleDtoEnumMember(data: ModuleDtoEnumMemberUpdateInput!, where: WhereEnumMemberUniqueInput!): ModuleDtoEnumMember!
   updateModuleDtoProperty(data: ModuleDtoPropertyUpdateInput!, where: WherePropertyUniqueInput!): ModuleDtoProperty!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
@@ -2071,6 +2090,11 @@ type UserRole {
   id: String!
   role: Role!
   updatedAt: DateTime!
+}
+
+input WhereEnumMemberUniqueInput {
+  enumMemberName: String!
+  moduleDto: WhereUniqueInput!
 }
 
 input WhereParentIdInput {

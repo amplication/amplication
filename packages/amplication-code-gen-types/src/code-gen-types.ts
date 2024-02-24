@@ -328,7 +328,7 @@ export type ModuleDto = Omit<
   id?: string;
   description: string;
   dtoType: keyof typeof models.EnumModuleDtoType;
-  properties: ModuleDtoProperty[];
+  properties?: ModuleDtoProperty[];
 };
 
 export type ModuleActionDefaultTypesNestedOnly = Extract<

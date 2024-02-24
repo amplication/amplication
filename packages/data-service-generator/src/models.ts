@@ -1178,11 +1178,12 @@ export type ModuleDto = IBlock & {
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
   lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
+  members?: Maybe<Array<ModuleDtoEnumMember>>;
   name: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['String']['output']>;
-  properties: Array<ModuleDtoProperty>;
+  properties?: Maybe<Array<ModuleDtoProperty>>;
   relatedEntityId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
@@ -1197,6 +1198,21 @@ export type ModuleDtoCreateInput = {
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
   resource: WhereParentIdInput;
+};
+
+export type ModuleDtoEnumMember = {
+  name: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
+
+export type ModuleDtoEnumMemberCreateInput = {
+  moduleDto: WhereParentIdInput;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ModuleDtoEnumMemberUpdateInput = {
+  name: Scalars['String']['input'];
+  value: Scalars['String']['input'];
 };
 
 export type ModuleDtoOrderByInput = {
@@ -1293,6 +1309,7 @@ export type Mutation = {
   createModuleAction: ModuleAction;
   createModuleDto: ModuleDto;
   createModuleDtoEnum: ModuleDto;
+  createModuleDtoEnumMember: ModuleDtoEnumMember;
   createModuleDtoProperty: ModuleDtoProperty;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
@@ -1314,6 +1331,7 @@ export type Mutation = {
   deleteModule: Module;
   deleteModuleAction: ModuleAction;
   deleteModuleDto: ModuleDto;
+  deleteModuleDtoEnumMember: ModuleDtoEnumMember;
   deleteModuleDtoProperty: ModuleDtoProperty;
   deletePluginInstallation: PluginInstallation;
   deleteProject?: Maybe<Project>;
@@ -1353,6 +1371,7 @@ export type Mutation = {
   updateModule: Module;
   updateModuleAction: ModuleAction;
   updateModuleDto: ModuleDto;
+  updateModuleDtoEnumMember: ModuleDtoEnumMember;
   updateModuleDtoProperty: ModuleDtoProperty;
   updatePluginInstallation: PluginInstallation;
   updateProject: Project;
@@ -1475,6 +1494,11 @@ export type MutationCreateModuleDtoEnumArgs = {
 };
 
 
+export type MutationCreateModuleDtoEnumMemberArgs = {
+  data: ModuleDtoEnumMemberCreateInput;
+};
+
+
 export type MutationCreateModuleDtoPropertyArgs = {
   data: ModuleDtoPropertyCreateInput;
 };
@@ -1578,6 +1602,11 @@ export type MutationDeleteModuleActionArgs = {
 
 export type MutationDeleteModuleDtoArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteModuleDtoEnumMemberArgs = {
+  where: WhereEnumMemberUniqueInput;
 };
 
 
@@ -1780,6 +1809,12 @@ export type MutationUpdateModuleActionArgs = {
 export type MutationUpdateModuleDtoArgs = {
   data: ModuleDtoUpdateInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateModuleDtoEnumMemberArgs = {
+  data: ModuleDtoEnumMemberUpdateInput;
+  where: WhereEnumMemberUniqueInput;
 };
 
 
@@ -2827,6 +2862,11 @@ export type UserRole = {
   id: Scalars['String']['output'];
   role: Role;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type WhereEnumMemberUniqueInput = {
+  enumMemberName: Scalars['String']['input'];
+  moduleDto: WhereUniqueInput;
 };
 
 export type WhereParentIdInput = {
