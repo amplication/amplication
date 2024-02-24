@@ -45,6 +45,20 @@ export class ModuleDtoResolver extends BlockTypeResolver(
     return this.service.availableDtosForResource(args);
   }
 
+  @Mutation(() => ModuleDto, {
+    nullable: false,
+  })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "data.resource.connect.id"
+  )
+  async createModuleDtoEnum(
+    @UserEntity() user: User,
+    @Args() args: CreateModuleDtoArgs
+  ): Promise<ModuleDto> {
+    return this.service.createEnum(args, user);
+  }
+
   @Mutation(() => ModuleDtoProperty, {
     nullable: false,
   })

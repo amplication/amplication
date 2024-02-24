@@ -833,6 +833,7 @@ export enum EnumModuleDtoType {
   CreateInput = 'CreateInput',
   CreateNestedManyInput = 'CreateNestedManyInput',
   Custom = 'Custom',
+  CustomEnum = 'CustomEnum',
   DeleteArgs = 'DeleteArgs',
   Entity = 'Entity',
   Enum = 'Enum',
@@ -1291,6 +1292,7 @@ export type Mutation = {
   createModule: Module;
   createModuleAction: ModuleAction;
   createModuleDto: ModuleDto;
+  createModuleDtoEnum: ModuleDto;
   createModuleDtoProperty: ModuleDtoProperty;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
@@ -1464,6 +1466,11 @@ export type MutationCreateModuleActionArgs = {
 
 
 export type MutationCreateModuleDtoArgs = {
+  data: ModuleDtoCreateInput;
+};
+
+
+export type MutationCreateModuleDtoEnumArgs = {
   data: ModuleDtoCreateInput;
 };
 

@@ -18,6 +18,7 @@ export enum EnumModuleDtoType {
   UpdateArgs = "UpdateArgs",
   Custom = "Custom",
   Enum = "Enum",
+  CustomEnum = "CustomEnum",
 }
 
 registerEnumType(EnumModuleDtoType, {

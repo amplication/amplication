@@ -356,6 +356,7 @@ export type entityDefaultActions = {
 type defaultDtoTypes = Exclude<
   models.EnumModuleDtoType,
   | models.EnumModuleDtoType.Custom
+  | models.EnumModuleDtoType.CustomEnum
   | models.EnumModuleDtoType.Enum
   | models.EnumModuleDtoType.CreateNestedManyInput
   | models.EnumModuleDtoType.UpdateNestedManyInput

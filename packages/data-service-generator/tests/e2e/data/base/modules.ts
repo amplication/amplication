@@ -4,7 +4,6 @@ import {
   ModuleDto,
 } from "@amplication/code-gen-types";
 import { USER_ID as USER_ENTITY_ID } from "./entities";
-
 const USER_MODULE_ID = "clraten4g000fc9yhr62nxheo";
 const PROMOTE_USER_INPUT_DTO_ID = "promoteUserInputDtoId";
 const PROMOTE_USER_ARGS_DTO_ID = "promoteUserArgsDtoId";
