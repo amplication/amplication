@@ -14,10 +14,11 @@ import ModuleDtoList from "../ModuleDto/ModuleDtoList";
 import ModuleActionList from "./ModuleActionList";
 import NewModuleDto from "../ModuleDto/NewModuleDto";
 import {
+  EnumFlexDirection,
   EnumItemsAlign,
-  FlexEnd,
-} from "@amplication/ui/design-system/components/FlexItem/FlexItem";
+} from "@amplication/ui/design-system";
 import NewModuleAction from "./NewModuleAction";
+import NewModuleDtoEnum from "../ModuleDto/NewModuleDtoEnum";
 
 type Props = {
   module: models.Module;
@@ -34,13 +35,13 @@ const ModuleActionsAndTypes = React.memo(
           itemsAlign={EnumItemsAlign.Center}
         >
           <Text textStyle={EnumTextStyle.H4}>Actions</Text>
-          <FlexEnd>
+          <FlexItem.FlexEnd>
             <NewModuleAction
               moduleId={module.id}
               resourceId={module.resourceId}
               buttonStyle={EnumButtonStyle.Outline}
             />
-          </FlexEnd>
+          </FlexItem.FlexEnd>
         </FlexItem>
 
         <FlexItem margin={EnumFlexItemMargin.Top}>
@@ -54,13 +55,18 @@ const ModuleActionsAndTypes = React.memo(
         <HorizontalRule doubleSpacing />
         <FlexItem margin={EnumFlexItemMargin.Top}>
           <Text textStyle={EnumTextStyle.H4}>DTOs</Text>
-          <FlexEnd>
+          <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
             <NewModuleDto
               moduleId={module.id}
               resourceId={module.resourceId}
               buttonStyle={EnumButtonStyle.Outline}
             />
-          </FlexEnd>
+            <NewModuleDtoEnum
+              moduleId={module.id}
+              resourceId={module.resourceId}
+              buttonStyle={EnumButtonStyle.Outline}
+            />
+          </FlexItem.FlexEnd>
         </FlexItem>
         <FlexItem margin={EnumFlexItemMargin.Both}>
           <ModuleDtoList

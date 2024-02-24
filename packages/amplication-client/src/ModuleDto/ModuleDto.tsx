@@ -107,8 +107,11 @@ const ModuleDto = ({ match }: Props) => {
 
   const errorMessage = formatError(error) || formatError(updateModuleDtoError);
 
+  const isCustomEnum =
+    data?.moduleDto.dtoType === models.EnumModuleDtoType.CustomEnum;
+
   const isCustomDto =
-    data?.moduleDto.dtoType === models.EnumModuleDtoType.Custom;
+    isCustomEnum || data?.moduleDto.dtoType === models.EnumModuleDtoType.Custom;
 
   return (
     <>
@@ -153,6 +156,8 @@ const ModuleDto = ({ match }: Props) => {
             {DEFAULT_DTO_PROPERTIES_MESSAGE}
           </Text>
         </Panel>
+      ) : isCustomEnum ? (
+        <span>Custom Enum</span>
       ) : (
         <ModuleDtoPropertyList
           moduleDto={data?.moduleDto}

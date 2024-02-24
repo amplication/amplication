@@ -4,6 +4,7 @@ import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import {
   CREATE_MODULE_DTO,
+  CREATE_MODULE_DTO_ENUM,
   CREATE_MODULE_DTO_PROPERTY,
   DELETE_MODULE_DTO,
   DELETE_MODULE_DTO_PROPERTY,
@@ -32,6 +33,10 @@ type TGetData = {
 
 type TCreateData = {
   createModuleDto: models.ModuleDto;
+};
+
+type createModuleDtoEnum = {
+  createModuleDtoEnum: models.ModuleDto;
 };
 
 type TCreatePropertyData = {
@@ -127,6 +132,48 @@ const useModuleDto = () => {
     },
     onCompleted: (data) => {
       addBlock(data.createModuleDto.id);
+      getAvailableDtosForResourceRefetch();
+    },
+  });
+
+  const [
+    createModuleDtoEnum,
+    {
+      data: createModuleDtoEnumData,
+      error: createModuleDtoEnumError,
+      loading: createModuleDtoEnumLoading,
+    },
+  ] = useMutation<createModuleDtoEnum>(CREATE_MODULE_DTO_ENUM, {
+    update(cache, { data }) {
+      if (!data) return;
+
+      const newModuleDto = data.createModuleDtoEnum;
+
+      cache.modify({
+        fields: {
+          moduleDtos(existingModuleDtoRefs = [], { readField }) {
+            const newModuleDtoRef = cache.writeFragment({
+              data: newModuleDto,
+              fragment: MODULE_DTO_FIELDS_FRAGMENT,
+              fragmentName: "ModuleDtoFields",
+            });
+
+            if (
+              existingModuleDtoRefs.some(
+                (moduleRef: Reference) =>
+                  readField("id", moduleRef) === newModuleDto.id
+              )
+            ) {
+              return existingModuleDtoRefs;
+            }
+
+            return [...existingModuleDtoRefs, newModuleDtoRef];
+          },
+        },
+      });
+    },
+    onCompleted: (data) => {
+      addBlock(data.createModuleDtoEnum.id);
       getAvailableDtosForResourceRefetch();
     },
   });
@@ -259,6 +306,10 @@ const useModuleDto = () => {
     deleteModuleDtoProperty,
     deleteModuleDtoPropertyError,
     deleteModuleDtoPropertyLoading,
+    createModuleDtoEnum,
+    createModuleDtoEnumData,
+    createModuleDtoEnumError,
+    createModuleDtoEnumLoading,
   };
 };
 

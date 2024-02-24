@@ -48,7 +48,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const NewModuleDto = ({
+const NewModuleDtoEnum = ({
   resourceId,
   moduleId,
   onDtoCreated,
@@ -60,10 +60,10 @@ const NewModuleDto = ({
   const { customActionsLicenseEnabled } = useModulesContext();
 
   const {
-    createModuleDto,
-    createModuleDtoData: data,
-    createModuleDtoError: error,
-    createModuleDtoLoading: loading,
+    createModuleDtoEnum,
+    createModuleDtoEnumData: data,
+    createModuleDtoEnumError: error,
+    createModuleDtoEnumLoading: loading,
   } = useModuleDto();
 
   const handleDialogStateChange = useCallback(() => {
@@ -75,7 +75,7 @@ const NewModuleDto = ({
       const displayName = data.displayName.trim();
       const name = pascalCase(displayName);
 
-      createModuleDto({
+      createModuleDtoEnum({
         variables: {
           data: {
             ...data,
@@ -90,16 +90,24 @@ const NewModuleDto = ({
         .then((result) => {
           if (result && result.data) {
             if (onDtoCreated && result && result.data) {
-              onDtoCreated(result.data.createModuleDto);
+              onDtoCreated(result.data.createModuleDtoEnum);
             }
             history.push(
-              `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos/${result.data.createModuleDto.id}`
+              `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos/${result.data.createModuleDtoEnum.id}`
             );
           }
         });
       setDialogOpen(false);
     },
-    [createModuleDto, resourceId, moduleId]
+    [
+      createModuleDtoEnum,
+      resourceId,
+      moduleId,
+      onDtoCreated,
+      history,
+      currentWorkspace?.id,
+      currentProject?.id,
+    ]
   );
 
   const errorMessage = formatError(error);
@@ -113,7 +121,7 @@ const NewModuleDto = ({
       >
         <SvgThemeImage image={EnumImages.Entities} />
         <Text textAlign={EnumTextAlign.Center}>
-          Give your new Dto a descriptive name. <br />
+          Give your new Enum a descriptive name. <br />
           For example: Get Customer, Find Orders, Create Ticket...
         </Text>
 
@@ -132,11 +140,11 @@ const NewModuleDto = ({
                 <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
                 <TextField
                   name="displayName"
-                  label="New Dto Name"
+                  label="New Enum Name"
                   disabled={loading}
                   autoFocus
                   hideLabel
-                  placeholder="Type New Dto Name"
+                  placeholder="Type New Enum Name"
                   autoComplete="off"
                 />
                 <Button
@@ -144,7 +152,7 @@ const NewModuleDto = ({
                   buttonStyle={EnumButtonStyle.Primary}
                   disabled={!formik.isValid || loading}
                 >
-                  Create DTO
+                  Create Enum
                 </Button>
               </Form>
             );
@@ -158,7 +166,7 @@ const NewModuleDto = ({
           disabled={!customActionsLicenseEnabled}
           icon="zap"
         >
-          Add DTO
+          Add Enum
         </Button>
       )}
       <Snackbar open={Boolean(error)} message={errorMessage} />
@@ -166,4 +174,4 @@ const NewModuleDto = ({
   );
 };
 
-export default NewModuleDto;
+export default NewModuleDtoEnum;

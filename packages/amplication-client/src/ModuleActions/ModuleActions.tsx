@@ -7,6 +7,14 @@ import { useModulesContext } from "../Modules/modulesContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import ModuleActionList from "./ModuleActionList";
 import NewModuleAction from "./NewModuleAction";
+import {
+  EnumButtonStyle,
+  EnumFlexItemMargin,
+  EnumItemsAlign,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+} from "@amplication/ui/design-system";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -30,11 +38,20 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
               moduleData?.module.description ||
               "Create, update, and manage actions and types"
             }
-            actions={
-              <NewModuleAction moduleId={moduleId} resourceId={resourceId} />
-            }
           />
-
+          <FlexItem
+            margin={EnumFlexItemMargin.Both}
+            itemsAlign={EnumItemsAlign.Center}
+          >
+            <Text textStyle={EnumTextStyle.H4}>Actions</Text>
+            <FlexItem.FlexEnd>
+              <NewModuleAction
+                moduleId={moduleId}
+                resourceId={resourceId}
+                buttonStyle={EnumButtonStyle.Outline}
+              />
+            </FlexItem.FlexEnd>
+          </FlexItem>
           <ModuleActionList
             module={moduleData?.module}
             searchPhrase={searchPhrase}

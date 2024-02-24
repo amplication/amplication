@@ -5,8 +5,8 @@ import {
   EnumFlexDirection,
   FlexItem,
   Snackbar,
+  EnumItemsAlign,
 } from "@amplication/ui/design-system";
-import { EnumItemsAlign } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Background,

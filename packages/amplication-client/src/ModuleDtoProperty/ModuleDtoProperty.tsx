@@ -5,11 +5,8 @@ import {
   FlexItem,
   ListItem,
   Snackbar,
-} from "@amplication/ui/design-system";
-import {
   EnumFlexDirection,
-  FlexEnd,
-} from "@amplication/ui/design-system/components/FlexItem/FlexItem";
+} from "@amplication/ui/design-system";
 import { useCallback, useContext, useState } from "react";
 import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 import { AppContext } from "../context/appContext";
@@ -91,7 +88,7 @@ const ModuleDtoProperty = ({
       >
         <FlexItem gap={EnumGapSize.Small}>
           <ModuleDtoPropertyPreview dtoProperty={moduleDtoProperty} />
-          <FlexEnd direction={EnumFlexDirection.Row}>
+          <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
             <DeleteModuleDtoProperty
               moduleDto={moduleDto}
               moduleDtoProperty={moduleDtoProperty}
@@ -104,7 +101,7 @@ const ModuleDtoProperty = ({
               }}
               icon="edit"
             />
-          </FlexEnd>
+          </FlexItem.FlexEnd>
         </FlexItem>
       </ListItem>
       {editMode && (
