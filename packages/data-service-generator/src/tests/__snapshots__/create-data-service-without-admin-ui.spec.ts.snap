@@ -2680,7 +2680,7 @@ export class CustomerServiceBase {
   }
 
   async findOrders(
-    parentId: number,
+    parentId: bigint,
     args: Prisma.OrderFindManyArgs
   ): Promise<PrismaOrder[]> {
     return this.prisma.customer
@@ -2690,7 +2690,7 @@ export class CustomerServiceBase {
       .orders(args);
   }
 
-  async getOrganization(parentId: number): Promise<PrismaOrganization | null> {
+  async getOrganization(parentId: bigint): Promise<PrismaOrganization | null> {
     return this.prisma.customer
       .findUnique({
         where: { id: parentId },
@@ -2699,7 +2699,7 @@ export class CustomerServiceBase {
   }
 
   async getVipOrganization(
-    parentId: number
+    parentId: bigint
   ): Promise<PrismaOrganization | null> {
     return this.prisma.customer
       .findUnique({
