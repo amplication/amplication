@@ -17,6 +17,10 @@ import { UpdateModuleDtoArgs } from "./dto/UpdateModuleDtoArgs";
 import { UpdateModuleDtoPropertyArgs } from "./dto/UpdateModuleDtoPropertyArgs";
 import { ModuleDtoService } from "./moduleDto.service";
 import { DeleteModuleDtoPropertyArgs } from "./dto/DeleteModuleDtoPropertyArgs";
+import { ModuleDtoEnumMember } from "./dto/ModuleDtoEnumMember";
+import { CreateModuleDtoEnumMemberArgs } from "./dto/CreateModuleDtoEnumMemberArgs";
+import { UpdateModuleDtoEnumMemberArgs } from "./dto/UpdateModuleDtoEnumMemberArgs";
+import { DeleteModuleDtoEnumMemberArgs } from "./dto/DeleteModuleDtoEnumMemberArgs";
 
 @Resolver(() => ModuleDto)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -93,5 +97,41 @@ export class ModuleDtoResolver extends BlockTypeResolver(
     @Args() args: DeleteModuleDtoPropertyArgs
   ): Promise<ModuleDtoProperty> {
     return this.service.deleteDtoProperty(args, user);
+  }
+
+  @Mutation(() => ModuleDtoEnumMember, {
+    nullable: false,
+  })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlockId,
+    "data.moduleDto.connect.id"
+  )
+  async createModuleDtoEnumMember(
+    @UserEntity() user: User,
+    @Args() args: CreateModuleDtoEnumMemberArgs
+  ): Promise<ModuleDtoEnumMember> {
+    return this.service.createDtoEnumMember(args, user);
+  }
+
+  @Mutation(() => ModuleDtoEnumMember, {
+    nullable: false,
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.moduleDto.id")
+  async updateModuleDtoEnumMember(
+    @UserEntity() user: User,
+    @Args() args: UpdateModuleDtoEnumMemberArgs
+  ): Promise<ModuleDtoEnumMember> {
+    return this.service.updateDtoEnumMember(args, user);
+  }
+
+  @Mutation(() => ModuleDtoEnumMember, {
+    nullable: false,
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.moduleDto.id")
+  async deleteModuleDtoEnumMember(
+    @UserEntity() user: User,
+    @Args() args: DeleteModuleDtoEnumMemberArgs
+  ): Promise<ModuleDtoEnumMember> {
+    return this.service.deleteDtoEnumMember(args, user);
   }
 }

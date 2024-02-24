@@ -26,6 +26,10 @@ import { UpdateModuleDtoPropertyArgs } from "./dto/UpdateModuleDtoPropertyArgs";
 import { DeleteModuleDtoPropertyArgs } from "./dto/DeleteModuleDtoPropertyArgs";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { CreateModuleDtoEnumMemberArgs } from "./dto/CreateModuleDtoEnumMemberArgs";
+import { ModuleDtoEnumMember } from "./dto/ModuleDtoEnumMember";
+import { UpdateModuleDtoEnumMemberArgs } from "./dto/UpdateModuleDtoEnumMemberArgs";
+import { DeleteModuleDtoEnumMemberArgs } from "./dto/DeleteModuleDtoEnumMemberArgs";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -443,7 +447,7 @@ export class ModuleDtoService extends BlockTypeService<
       throw new AmplicationError("Cannot add properties on default DTOs");
     }
 
-    const existingProperty = dto.properties.find(
+    const existingProperty = dto.properties?.find(
       (property) => property.name === args.data.name
     );
     if (existingProperty) {
@@ -463,7 +467,7 @@ export class ModuleDtoService extends BlockTypeService<
         data: {
           name: dto.name,
           enabled: dto.enabled,
-          properties: [...dto.properties, newProperty],
+          properties: [...(dto.properties || []), newProperty],
         },
       },
       user
@@ -489,7 +493,7 @@ export class ModuleDtoService extends BlockTypeService<
       throw new AmplicationError("Cannot update properties on default DTOs");
     }
 
-    const existingPropertyIndex = dto.properties.findIndex(
+    const existingPropertyIndex = dto.properties?.findIndex(
       (property) => property.name === args.where.propertyName
     );
 
@@ -550,7 +554,7 @@ export class ModuleDtoService extends BlockTypeService<
       throw new AmplicationError("Cannot delete properties from default DTOs");
     }
 
-    const existingPropertyIndex = dto.properties.findIndex(
+    const existingPropertyIndex = dto.properties?.findIndex(
       (property) => property.name === args.where.propertyName
     );
 
@@ -681,6 +685,7 @@ export class ModuleDtoService extends BlockTypeService<
         data: {
           ...defaultDto,
           properties: [], //default DTOs do not have properties
+          members: [], //default DTOs do not have members
           displayName: defaultDto.name,
           enabled: defaultDto.enabled,
         },
@@ -742,5 +747,168 @@ export class ModuleDtoService extends BlockTypeService<
       },
       user
     );
+  }
+
+  validateEnumMemberName(name: string): void {
+    const regex = /^[a-zA-Z0-9._-]{1,249}$/;
+    if (!regex.test(name)) {
+      throw new AmplicationError("Invalid Enum member name");
+    }
+  }
+
+  async createDtoEnumMember(
+    args: CreateModuleDtoEnumMemberArgs,
+    user: User
+  ): Promise<ModuleDtoEnumMember> {
+    this.validateEnumMemberName(args.data.name);
+
+    const dto = await super.findOne({
+      where: { id: args.data.moduleDto.connect.id },
+    });
+    if (!dto) {
+      throw new AmplicationError(
+        `Module DTO not found, ID: ${args.data.moduleDto.connect.id}`
+      );
+    }
+
+    if (dto.dtoType !== EnumModuleDtoType.CustomEnum) {
+      throw new AmplicationError(
+        "Enum members can only be added to custom Enum DTOs"
+      );
+    }
+
+    const existingMember = dto.members?.find(
+      (member) => member.name === args.data.name
+    );
+    if (existingMember) {
+      throw new AmplicationError(
+        `Member already exists, name: ${args.data.name}, DTO ID: ${args.data.moduleDto.connect.id}`
+      );
+    }
+
+    const newMember = {
+      name: args.data.name,
+      value: args.data.name,
+    };
+
+    await super.update(
+      {
+        where: { id: dto.id },
+        data: {
+          name: dto.name,
+          enabled: dto.enabled,
+          members: [...(dto.members || []), newMember],
+        },
+      },
+      user
+    );
+
+    return newMember;
+  }
+
+  async updateDtoEnumMember(
+    args: UpdateModuleDtoEnumMemberArgs,
+    user: User
+  ): Promise<ModuleDtoEnumMember> {
+    this.validateEnumMemberName(args.data.name);
+
+    const dto = await super.findOne({
+      where: { id: args.where.moduleDto.id },
+    });
+    if (!dto) {
+      throw new AmplicationError(
+        `Module DTO not found, ID: ${args.where.moduleDto.id}`
+      );
+    }
+
+    if (dto.dtoType !== EnumModuleDtoType.CustomEnum) {
+      throw new AmplicationError(
+        "Enum members can only be added to custom Enum DTOs"
+      );
+    }
+
+    const existingMemberIndex = dto.members?.findIndex(
+      (member) => member.name === args.where.enumMemberName
+    );
+
+    if (existingMemberIndex === -1) {
+      throw new AmplicationError(
+        `Enum member not found, name: ${args.where.enumMemberName}, DTO ID: ${args.where.moduleDto.id}`
+      );
+    }
+
+    if (args.data.name !== args.where.enumMemberName) {
+      const existingMemberWithNewName = dto.members.find(
+        (member) => member.name === args.data.name
+      );
+      if (existingMemberWithNewName) {
+        throw new AmplicationError(
+          `Enum member already exists, name: ${args.data.name}, DTO ID: ${args.where.moduleDto.id}`
+        );
+      }
+    }
+
+    const existingMember = dto.members[existingMemberIndex];
+
+    const newMember = {
+      ...existingMember,
+      ...args.data,
+    };
+
+    dto.members[existingMemberIndex] = newMember;
+
+    await super.update(
+      {
+        where: { id: dto.id },
+        data: {
+          name: dto.name,
+          enabled: dto.enabled,
+          members: dto.members,
+        },
+      },
+      user
+    );
+
+    return newMember;
+  }
+
+  async deleteDtoEnumMember(
+    args: DeleteModuleDtoEnumMemberArgs,
+    user: User
+  ): Promise<ModuleDtoEnumMember> {
+    const dto = await super.findOne({
+      where: { id: args.where.moduleDto.id },
+    });
+    if (!dto) {
+      throw new AmplicationError(
+        `Module DTO not found, ID: ${args.where.moduleDto.id}`
+      );
+    }
+
+    const existingEnumMemberIndex = dto.members?.findIndex(
+      (enumMember) => enumMember.name === args.where.enumMemberName
+    );
+
+    if (existingEnumMemberIndex === -1) {
+      throw new AmplicationError(
+        `Enum Member not found, name: ${args.where.enumMemberName}, DTO ID: ${args.where.moduleDto.id}`
+      );
+    }
+
+    const [deleted] = dto.members.splice(existingEnumMemberIndex, 1);
+
+    await super.update(
+      {
+        where: { id: dto.id },
+        data: {
+          name: dto.name,
+          enabled: dto.enabled,
+          members: dto.members,
+        },
+      },
+      user
+    );
+
+    return deleted;
   }
 }
