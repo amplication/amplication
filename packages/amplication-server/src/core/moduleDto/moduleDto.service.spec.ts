@@ -1081,4 +1081,71 @@ describe("ModuleDtoService", () => {
       true
     );
   });
+
+  it("should not allow manipulating custom actions the feature is disabled", async () => {
+    service.customActionsEnabled = false;
+
+    const args: CreateModuleDtoArgs = {
+      data: {
+        resource: {
+          connect: {
+            id: EXAMPLE_RESOURCE_ID,
+          },
+        },
+        description: EXAMPLE_DTO_DESCRIPTION,
+        displayName: EXAMPLE_DTO_DISPLAY_NAME,
+        name: EXAMPLE_DTO_NAME,
+      },
+    };
+    expect(await service.create(args, EXAMPLE_USER)).toEqual(null);
+    expect(
+      await service.createDefaultDtosForEntityModule(
+        EXAMPLE_ENTITY,
+        EXAMPLE_MODULE,
+        EXAMPLE_USER
+      )
+    ).toEqual([]);
+    expect(
+      await service.updateDefaultDtosForEntityModule(
+        EXAMPLE_ENTITY,
+        EXAMPLE_MODULE,
+        EXAMPLE_USER
+      )
+    ).toEqual([]);
+    expect(
+      await service.createDefaultDtosForRelatedEntity(
+        EXAMPLE_ENTITY,
+        EXAMPLE_ENTITY_FIELD,
+        { ...EXAMPLE_ENTITY, id: "relatedEntityId" },
+        EXAMPLE_MODULE.id,
+        EXAMPLE_USER
+      )
+    ).toEqual([]);
+    expect(
+      await service.updateDefaultDtosForRelatedEntity(
+        EXAMPLE_ENTITY,
+        EXAMPLE_ENTITY_FIELD,
+        { ...EXAMPLE_ENTITY, id: "relatedEntityId" },
+        EXAMPLE_MODULE.id,
+        EXAMPLE_USER
+      )
+    ).toEqual([]);
+    expect(
+      await service.createDefaultDtoForEnumField(
+        EXAMPLE_ENTITY,
+        EXAMPLE_ENTITY_ENUM_FIELD,
+        EXAMPLE_MODULE.id,
+        EXAMPLE_USER
+      )
+    ).toEqual(null);
+    expect(
+      await service.updateDefaultDtoForEnumField(
+        EXAMPLE_ENTITY,
+        EXAMPLE_ENTITY_ENUM_FIELD,
+        EXAMPLE_MODULE.id,
+        EXAMPLE_USER
+      )
+    ).toEqual(null);
+    expect(await service.createEnum(args, EXAMPLE_USER)).toEqual(null);
+  });
 });
