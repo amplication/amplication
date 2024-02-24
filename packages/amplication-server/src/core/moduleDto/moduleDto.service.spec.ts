@@ -823,6 +823,22 @@ describe("ModuleDtoService", () => {
     ).toEqual(null);
   });
 
+  it("should create the dtos for related entity when trying to update the field but the DTOs are missing ", async () => {
+    //we set the mock twice to make sure it will return an empty array in the update and create functions
+    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValueOnce([]);
+    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValueOnce([]);
+
+    await service.updateDefaultDtosForRelatedEntity(
+      EXAMPLE_ENTITY,
+      EXAMPLE_ENTITY_FIELD,
+      { ...EXAMPLE_ENTITY, id: "relatedEntityId" },
+      EXAMPLE_MODULE.id,
+      EXAMPLE_USER
+    );
+
+    expect(blockServiceCreateMock).toBeCalledTimes(2);
+  });
+
   it("should delete default dtos for relation field", async () => {
     const dtoToBeDeleted = {
       ...EXAMPLE_DTO,
