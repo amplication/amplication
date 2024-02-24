@@ -216,7 +216,7 @@ function prepareActionBody(action: ModuleAction): namedTypes.BlockStatement {
       parts.push(`${action.restInputBodyPropertyName}: ${BODY_PROPERTY_NAME},`);
     }
     parts.push("};");
-    parts.push("return this.service.promoteUser(args);");
+    parts.push(`return this.service.${action.name}(args);`);
   } else {
     const argsPropertyName =
       action.restInputSource === EnumModuleActionRestInputSource.Params
@@ -224,7 +224,7 @@ function prepareActionBody(action: ModuleAction): namedTypes.BlockStatement {
         : action.restInputSource === EnumModuleActionRestInputSource.Query
         ? QUERY_PROPERTY_NAME
         : BODY_PROPERTY_NAME;
-    parts.push(`return this.service.promoteUser(${argsPropertyName});`);
+    parts.push(`return this.service.${action.name}(${argsPropertyName});`);
   }
 
   return blockStatement(parts.join("\n"));
