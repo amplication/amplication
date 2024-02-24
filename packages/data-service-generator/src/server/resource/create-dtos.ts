@@ -11,7 +11,6 @@ import {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { getEnumFields } from "../../utils/entity";
-import { createEnumName } from "../prisma/create-prisma-schema-fields";
 import { createCreateInput } from "./dto/create-create-input";
 import { createDTOModule, createDTOModulePath } from "./dto/create-dto-module";
 import { createEntityDTO } from "./dto/create-entity-dto";
@@ -32,6 +31,7 @@ import { createUpdateManyWithoutInputDTOs } from "./dto/nested-input-dto/update-
 import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 import pluginWrapper from "../../plugin-wrapper";
 import DsgContext from "../../dsg-context";
+import { createEnumName } from "@amplication/dsg-utils";
 
 export async function createDTOModules(
   dtos: DTOs,

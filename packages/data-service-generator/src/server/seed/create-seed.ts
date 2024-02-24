@@ -23,10 +23,10 @@ import {
 } from "../../utils/ast";
 import { getImportableDTOs } from "../resource/dto/create-dto-module";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
-import { createEnumName } from "../prisma/create-prisma-schema-fields";
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
 import { USER_AUTH_FIELDS } from "../user-entity/user-entity";
+import { createEnumName } from "@amplication/dsg-utils";
 
 type SeedProperties = {
   userNameFieldName: string;

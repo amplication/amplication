@@ -1,6 +1,8 @@
 import {
   Entity,
+  EntityField,
   EnumModuleDtoType,
+  ModuleDto,
   entityDefaultDtos,
   entityDefaultNestedDtos,
 } from "@amplication/code-gen-types";
@@ -133,3 +135,20 @@ export const getDefaultDtosForRelatedEntity = (
     },
   };
 };
+
+export const getDefaultDtosForEnumField = (
+  entity: Entity,
+  enumField: EntityField
+): ModuleDto => {
+  return {
+    dtoType: EnumModuleDtoType.Enum,
+    name: createEnumName(enumField, entity),
+    description: `Enum type for field ${enumField.name} of ${entity.displayName} model`,
+    enabled: true,
+    properties: [],
+  };
+};
+
+export function createEnumName(field: EntityField, entity: Entity): string {
+  return `Enum${pascalCase(entity.name)}${pascalCase(field.name)}`;
+}
