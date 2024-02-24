@@ -133,3 +133,12 @@ export const DELETE_MODULE_DTO_PROPERTY = gql`
     }
   }
 `;
+
+export const CREATE_MODULE_DTO_ENUM = gql`
+  ${MODULE_DTO_FIELDS_FRAGMENT}
+  mutation createModuleDtoEnum($data: ModuleDtoCreateInput!) {
+    createModuleDto(data: $data) {
+      ...ModuleDtoFields
+    }
+  }
+`;

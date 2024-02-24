@@ -15,10 +15,7 @@ import {
 } from "@amplication/ui/design-system";
 import React, { useCallback } from "react";
 import { useModulesContext } from "./modulesContext";
-import {
-  FlexEnd,
-  FlexStart,
-} from "@amplication/ui/design-system/components/FlexItem/FlexItem";
+
 import "./ModulesHeader.scss";
 
 type Props = {
@@ -65,7 +62,7 @@ const ModulesHeader = React.memo(
     return (
       <>
         <FlexItem start={<TabContentTitle title={title} subTitle={subTitle} />}>
-          <FlexEnd direction={EnumFlexDirection.Row}>
+          <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
             <FlexItem itemsAlign={EnumItemsAlign.Center}>
               {actions}
 
@@ -75,10 +72,10 @@ const ModulesHeader = React.memo(
                 onChange={handleSearchChange}
               />
             </FlexItem>
-          </FlexEnd>
+          </FlexItem.FlexEnd>
         </FlexItem>
         <FlexItem>
-          <FlexStart>
+          <FlexItem.FlexStart>
             {showApiToggle && (
               <FlexItem
                 direction={EnumFlexDirection.Row}
@@ -113,7 +110,7 @@ const ModulesHeader = React.memo(
                 </Text>
               </FlexItem>
             )}
-          </FlexStart>
+          </FlexItem.FlexStart>
         </FlexItem>
         <HorizontalRule />
       </>

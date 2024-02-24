@@ -8,6 +8,15 @@ import "./ModuleDtos.scss";
 import ModulesHeader from "../Modules/ModulesHeader";
 import useModule from "../Modules/hooks/useModule";
 import NewModuleDto from "./NewModuleDto";
+import NewModuleDtoEnum from "./NewModuleDtoEnum";
+import {
+  EnumFlexItemMargin,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+  EnumFlexDirection,
+  EnumButtonStyle,
+} from "@amplication/ui/design-system";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -30,9 +39,22 @@ const ModuleDtos = React.memo(({ match, innerRoutes }: Props) => {
           moduleData?.module.description ||
           "Create, update, and manage actions and types"
         }
-        actions={<NewModuleDto moduleId={moduleId} resourceId={resourceId} />}
       />
-
+      <FlexItem margin={EnumFlexItemMargin.Both}>
+        <Text textStyle={EnumTextStyle.H4}>DTOs</Text>
+        <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
+          <NewModuleDto
+            moduleId={module.id}
+            resourceId={resourceId}
+            buttonStyle={EnumButtonStyle.Outline}
+          />
+          <NewModuleDtoEnum
+            moduleId={module.id}
+            resourceId={resourceId}
+            buttonStyle={EnumButtonStyle.Outline}
+          />
+        </FlexItem.FlexEnd>
+      </FlexItem>
       <ModuleDtoList
         moduleId={moduleId}
         resourceId={resourceId}

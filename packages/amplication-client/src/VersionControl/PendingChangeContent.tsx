@@ -11,7 +11,6 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
-import { FlexStart } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 
 type Props = {
   change: models.PendingChange;
@@ -44,12 +43,12 @@ const PendingChangeContent = ({
 
   const nameElement = (
     <FlexItem itemsAlign={EnumItemsAlign.Center} className={CLASS_NAME}>
-      <FlexStart className={`${CLASS_NAME}__indicator-wrapper`}>
+      <FlexItem.FlexStart className={`${CLASS_NAME}__indicator-wrapper`}>
         <Icon
           className={`${CLASS_NAME}__indicator ${CLASS_NAME}__indicator--${change.action}`}
           icon={icon}
         />
-      </FlexStart>
+      </FlexItem.FlexStart>
 
       <Tooltip
         wrap

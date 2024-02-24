@@ -4,6 +4,7 @@ import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import {
   CREATE_MODULE_DTO,
+  CREATE_MODULE_DTO_ENUM,
   CREATE_MODULE_DTO_PROPERTY,
   DELETE_MODULE_DTO,
   DELETE_MODULE_DTO_PROPERTY,
@@ -97,6 +98,48 @@ const useModuleDto = () => {
       loading: createModuleDtoLoading,
     },
   ] = useMutation<TCreateData>(CREATE_MODULE_DTO, {
+    update(cache, { data }) {
+      if (!data) return;
+
+      const newModuleDto = data.createModuleDto;
+
+      cache.modify({
+        fields: {
+          moduleDtos(existingModuleDtoRefs = [], { readField }) {
+            const newModuleDtoRef = cache.writeFragment({
+              data: newModuleDto,
+              fragment: MODULE_DTO_FIELDS_FRAGMENT,
+              fragmentName: "ModuleDtoFields",
+            });
+
+            if (
+              existingModuleDtoRefs.some(
+                (moduleRef: Reference) =>
+                  readField("id", moduleRef) === newModuleDto.id
+              )
+            ) {
+              return existingModuleDtoRefs;
+            }
+
+            return [...existingModuleDtoRefs, newModuleDtoRef];
+          },
+        },
+      });
+    },
+    onCompleted: (data) => {
+      addBlock(data.createModuleDto.id);
+      getAvailableDtosForResourceRefetch();
+    },
+  });
+
+  const [
+    createModuleDtoEnum,
+    {
+      data: createModuleDtoEnumData,
+      error: createModuleDtoEnumError,
+      loading: createModuleDtoEnumLoading,
+    },
+  ] = useMutation<TCreateData>(CREATE_MODULE_DTO_ENUM, {
     update(cache, { data }) {
       if (!data) return;
 
@@ -259,6 +302,10 @@ const useModuleDto = () => {
     deleteModuleDtoProperty,
     deleteModuleDtoPropertyError,
     deleteModuleDtoPropertyLoading,
+    createModuleDtoEnum,
+    createModuleDtoEnumData,
+    createModuleDtoEnumError,
+    createModuleDtoEnumLoading,
   };
 };
 
