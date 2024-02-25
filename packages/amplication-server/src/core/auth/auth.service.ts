@@ -765,9 +765,9 @@ export class AuthService {
     const existingUser = !!user;
 
     const isFromPreviewUser =
-      user.account.previewAccountType !== EnumPreviewAccountType.None;
+      user && user.account.previewAccountType !== EnumPreviewAccountType.None;
     // to complete the preview account signup, after the user reset the password in Auth0 we need to update the account type and workspace subscription
-    if (user && isFromPreviewUser) {
+    if (isFromPreviewUser) {
       await this.convertPreviewAccountToRegularAccountWithFreeTrail(user);
       isNew = false;
     } else {
