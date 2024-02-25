@@ -2,6 +2,7 @@ import { ConfirmationDialog } from "@amplication/ui/design-system";
 import { useCallback, useEffect, useState } from "react";
 import "./CreateApplyChangesLoader.scss";
 import { ModelChanges } from "./types";
+import { expireCookie, getCookie } from "../../util/cookie";
 
 type Props = {
   changes: ModelChanges;
@@ -11,11 +12,13 @@ const ModelOrganizerPreviousChangesExistConfirmation = ({ changes }: Props) => {
   const [showDialog, setShowDialog] = useState<boolean | null>(null);
 
   useEffect(() => {
+    const architectureRoute = getCookie("architectureRoute");
     if (
-      showDialog === null &&
+      architectureRoute === "true" &&
       (changes.movedEntities?.length > 0 || changes.newServices?.length > 0)
     ) {
       setShowDialog(true);
+      expireCookie("architectureRoute");
     }
   }, [showDialog, changes]);
 
