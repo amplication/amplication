@@ -1,7 +1,9 @@
 @import "../style/index.scss";
+$line-height: 24px;
+
 .project-page {
   .amp-text {
-    line-height: 24px;
+    line-height: $line-height;
   }
 }
 
