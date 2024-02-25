@@ -40,11 +40,13 @@ export class ResourceBtmResolver {
   })
   @AuthorizeContext(AuthorizableOriginParameter.UserActionId, "userActionId")
   async finalizeBreakServiceIntoMicroservices(
+    @UserEntity() user: User,
     @Args({ name: "userActionId", type: () => String })
     userActionId: string
   ): Promise<BreakServiceToMicroservicesResult> {
     return this.resourceBtmService.finalizeBreakServiceIntoMicroservices(
-      userActionId
+      userActionId,
+      user
     );
   }
 

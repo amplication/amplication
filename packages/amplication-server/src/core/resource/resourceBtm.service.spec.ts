@@ -21,6 +21,7 @@ import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/
 import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 
 const resourceIdMock = "resourceId";
 const userIdMock = "userId";
@@ -67,6 +68,11 @@ const startConversationMock = jest.fn();
 const userActionServiceFindOneMock = jest.fn();
 const resourceFindUniqueMock = jest.fn();
 const resourceFindManyMock = jest.fn();
+const serviceSettingsMock = {
+  getServiceSettingsValues: jest.fn(() => {
+    return {};
+  }),
+};
 
 const workspaceFindUniqueMock = jest.fn();
 
@@ -137,6 +143,10 @@ describe("ResourceBtmService", () => {
           useValue: {
             findOne: userActionServiceFindOneMock,
           },
+        },
+        {
+          provide: ServiceSettingsService,
+          useValue: serviceSettingsMock,
         },
         MockedSegmentAnalyticsProvider({
           trackWithContextMock: trackMock,
@@ -372,7 +382,8 @@ describe("ResourceBtmService", () => {
 
       const result = await service.prepareBtmRecommendations(
         JSON.stringify(promptResult),
-        resourceIdMock
+        resourceIdMock,
+        userMock
       );
 
       expect(result).toStrictEqual(expectedResult);
@@ -535,7 +546,8 @@ describe("ResourceBtmService", () => {
 
       const result = await service.prepareBtmRecommendations(
         JSON.stringify(promptResult),
-        resourceIdMock
+        resourceIdMock,
+        userMock
       );
 
       expect(result).toStrictEqual(expectedResult);
@@ -674,7 +686,8 @@ describe("ResourceBtmService", () => {
 
       const result = await service.prepareBtmRecommendations(
         JSON.stringify(promptResult),
-        resourceIdMock
+        resourceIdMock,
+        userMock
       );
 
       expect(result).toStrictEqual(expectedResult);
@@ -867,7 +880,8 @@ describe("ResourceBtmService", () => {
 
       const result = await service.prepareBtmRecommendations(
         JSON.stringify(promptResult),
-        resourceIdMock
+        resourceIdMock,
+        userMock
       );
 
       expect(result).toStrictEqual(expectedResult);
@@ -1078,7 +1092,8 @@ describe("ResourceBtmService", () => {
 
       const result = await service.prepareBtmRecommendations(
         JSON.stringify(promptResult),
-        resourceIdMock
+        resourceIdMock,
+        userMock
       );
 
       expect(result).toStrictEqual(expectedResult);
