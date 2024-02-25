@@ -79,6 +79,9 @@ const EXAMPLE_NEW_HASHED_PASSWORD = "NEW HASHED PASSWORD";
 
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
 
+const urlQueryParamExample =
+  "https://server.amplication.com?complete-signup=0&preview-user-login=0";
+
 const EXAMPLE_USER: User = {
   id: "exampleUser",
   createdAt: new Date(),
@@ -952,7 +955,7 @@ describe("AuthService", () => {
 
       expect(responseMock.redirect).toHaveBeenCalledWith(
         301,
-        "https://server.amplication.com?complete-signup=0"
+        urlQueryParamExample
       );
     });
   });
@@ -987,7 +990,7 @@ describe("AuthService", () => {
 
         expect(responseMock.redirect).toHaveBeenCalledWith(
           301,
-          "https://server.amplication.com?complete-signup=0"
+          urlQueryParamExample
         );
       });
 
@@ -1046,7 +1049,7 @@ describe("AuthService", () => {
 
         expect(responseMock.redirect).toHaveBeenCalledWith(
           301,
-          "https://server.amplication.com?complete-signup=0"
+          "https://server.amplication.com?complete-signup=0&preview-user-login=1"
         );
       });
     });
@@ -1082,7 +1085,7 @@ describe("AuthService", () => {
         expect(updateAccountMock).toHaveBeenCalledTimes(1);
         expect(responseMock.redirect).toHaveBeenCalledWith(
           301,
-          "https://server.amplication.com?complete-signup=0"
+          urlQueryParamExample
         );
       });
     });
