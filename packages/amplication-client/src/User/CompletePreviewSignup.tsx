@@ -8,7 +8,6 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
-  HorizontalRule,
   Text,
 } from "@amplication/ui/design-system";
 import { REACT_APP_SHOW_CONFETTI } from "../env";
@@ -29,7 +28,7 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
       className={CLASS_NAME}
       itemsAlign={EnumItemsAlign.Center}
       contentAlign={EnumContentAlign.Center}
-      gap={EnumGapSize.Default}
+      gap={EnumGapSize.XLarge}
     >
       <Text textStyle={EnumTextStyle.H1}>
         Unleash the Magic of Amplication!
@@ -39,51 +38,53 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
         </span>
       </Text>
       {showConfetti && <Realistic autorun={{ speed: 1, duration: 7 }} />}
-      <Text
-        textAlign={EnumTextAlign.Center}
-        textStyle={EnumTextStyle.Tag}
-        textColor={EnumTextColor.White}
-      >
-        We're thrilled for the monumental leap you've taken with Amplication!
+      <Text textAlign={EnumTextAlign.Center} textStyle={EnumTextStyle.Normal}>
+        <Text>
+          We're thrilled for the monumental leap you've taken with Amplication!
+        </Text>
+        <br />
+        <Text>
+          By initiating this journey, you've sparked an innovative
+          transformation in your backend code generation.{" "}
+        </Text>
       </Text>
-      <HorizontalRule />
-      <Text
-        textAlign={EnumTextAlign.Center}
-        textStyle={EnumTextStyle.Normal}
-        textColor={EnumTextColor.White}
-      >
-        By initiating this journey, you've sparked an innovative transformation
-        in your backend code generation.
+      <Text textAlign={EnumTextAlign.Center} textStyle={EnumTextStyle.Normal}>
+        <Text
+          textAlign={EnumTextAlign.Center}
+          textStyle={EnumTextStyle.Normal}
+          textColor={EnumTextColor.White}
+        >
+          But our adventure doesn't stop here! Your next move is crucial:{" "}
+        </Text>
+        <br />
+        <Text
+          textAlign={EnumTextAlign.Center}
+          textStyle={EnumTextStyle.Normal}
+          textColor={EnumTextColor.Primary}
+        >
+          Follow the signup process in your email{" "}
+        </Text>
+        <Text
+          textAlign={EnumTextAlign.Center}
+          textStyle={EnumTextStyle.Normal}
+          textColor={EnumTextColor.White}
+        >
+          to set your password.
+        </Text>
+        <br />
+        <Text
+          textAlign={EnumTextAlign.Center}
+          textStyle={EnumTextStyle.Normal}
+          textColor={EnumTextColor.White}
+        >
+          If you're already an Amplication user, simply sign in using your
+          existing credentials.
+        </Text>
       </Text>
 
       <Text
         textAlign={EnumTextAlign.Center}
         textStyle={EnumTextStyle.Normal}
-        textColor={EnumTextColor.White}
-      >
-        But our adventure doesn't stop here! Your next move is crucial:
-      </Text>
-      <Text
-        textAlign={EnumTextAlign.Center}
-        textStyle={EnumTextStyle.Normal}
-        textColor={EnumTextColor.Primary}
-      >
-        follow the signup process in your email to set your password.
-      </Text>
-      <Text
-        textAlign={EnumTextAlign.Center}
-        textStyle={EnumTextStyle.Normal}
-        textColor={EnumTextColor.White}
-      >
-        If you're already an Amplication user, simply sign in using your
-        existing credentials.
-      </Text>
-
-      <HorizontalRule />
-
-      <Text
-        textAlign={EnumTextAlign.Center}
-        textStyle={EnumTextStyle.Tag}
         textColor={EnumTextColor.White}
       >
         Here's to you and the exciting path ahead! Cheers!
