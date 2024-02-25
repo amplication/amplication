@@ -67,11 +67,9 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
     );
     setCanNavigate(!foundItem);
     if (!canNavigate) {
-      history.push(
-        `/${workspaceId}/${projectId}/${resourceId}/break-the-monolith-preview`
-      );
+      window.history.forward();
     }
-  }, [canNavigate, history, projectId, resourceId, workspaceId]);
+  }, [canNavigate]);
 
   useEffect(() => {
     if (!userActionData || !userActionData.userAction) return;
