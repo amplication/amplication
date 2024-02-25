@@ -77,6 +77,7 @@ const EXAMPLE_WORKSPACE: Workspace = {
   updatedAt: new Date(),
   name: EXAMPLE_WORKSPACE_NAME,
   users: [EXAMPLE_USER],
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_PROJECT: Project = {

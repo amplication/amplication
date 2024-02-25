@@ -14,6 +14,7 @@ export enum EnumGapSize {
   Small = "small",
   Default = "default",
   Large = "large",
+  XLarge = "xlarge",
 }
 
 export enum EnumFlexDirection {
@@ -25,6 +26,7 @@ export enum EnumContentAlign {
   Center = "center",
   Start = "flex-start",
   End = "flex-end",
+  Space = "space-between",
 }
 
 export enum EnumItemsAlign {

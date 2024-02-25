@@ -2,7 +2,7 @@ import React from "react";
 import { Meta } from "@storybook/react";
 import { Panel, EnumPanelStyle, PanelHeader } from "./Panel";
 import { Button, EnumButtonStyle } from "../Button/Button";
-import { boolean } from "@amplication/code-gen-types/schemas";
+import { EnumTextColor } from "../Text/Text";
 
 export default {
   title: "Panel",
@@ -15,6 +15,10 @@ export default {
     panelStyle: {
       control: "inline-radio",
       options: EnumPanelStyle,
+    },
+    themeColor: {
+      control: "inline-radio",
+      options: EnumTextColor,
     },
     shadow: {
       control: "boolean",
@@ -57,7 +61,7 @@ export const WithStringHeader = {
   render: (props: any) => {
     return (
       <>
-        <Panel>
+        <Panel {...props}>
           <PanelHeader>Default Panel Header</PanelHeader>
           <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
@@ -69,7 +73,7 @@ export const WithStringHeader = {
             culpa qui officia deserunt mollit anim id est laborum.
           </p>
         </Panel>
-        <Panel panelStyle={EnumPanelStyle.Bordered}>
+        <Panel {...props} panelStyle={EnumPanelStyle.Bordered}>
           <PanelHeader>Bordered Panel Header</PanelHeader>
           <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
@@ -81,7 +85,7 @@ export const WithStringHeader = {
             culpa qui officia deserunt mollit anim id est laborum.
           </p>
         </Panel>
-        <Panel panelStyle={EnumPanelStyle.Transparent}>
+        <Panel {...props} panelStyle={EnumPanelStyle.Transparent}>
           <PanelHeader>Transparent Panel Header</PanelHeader>
           <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
@@ -101,7 +105,7 @@ export const WithStringHeader = {
 export const WithContentHeader = {
   render: (props: any) => {
     return (
-      <Panel>
+      <Panel {...props}>
         <PanelHeader>
           <h3>Panel Title</h3>
           <Button buttonStyle={EnumButtonStyle.Text} icon="edit" />

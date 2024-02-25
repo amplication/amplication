@@ -2846,7 +2846,9 @@ export class EntityService {
           } else if (
             fieldStrategy === EnumRelatedFieldStrategy.UpdateToScalar
           ) {
-            field.dataType = properties.allowMultipleSelection
+            const allowMultipleSelection = properties.allowMultipleSelection;
+
+            field.dataType = allowMultipleSelection
               ? EnumDataType.Json
               : await this.getRelatedFieldScalarTypeByRelatedEntityIdType(
                   properties.relatedEntityId
@@ -2854,8 +2856,10 @@ export class EntityService {
 
             const data: EntityFieldUpdateInput = {
               dataType: field.dataType,
-              name: field.name,
-              displayName: field.displayName,
+              name: allowMultipleSelection ? field.name : `${field.name}Id`,
+              displayName: allowMultipleSelection
+                ? field.displayName
+                : `${field.displayName} ID`,
               properties: DATA_TYPE_TO_DEFAULT_PROPERTIES[field.dataType],
             };
 
