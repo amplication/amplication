@@ -39,6 +39,7 @@ import {
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
+import ModelOrganizerPreviousChangesExistConfirmation from "./ModelOrganizerPreviousChangesExistConfirmation";
 import { useHistory, useLocation } from "react-router-dom";
 import PreviewUserBTMModal from "./PreviewUserBTMModal";
 import { expireCookie, getCookie } from "../../util/cookie";
@@ -338,6 +339,9 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
             />
           </div>
           <div className={`${CLASS_NAME}__body`}>
+            <ModelOrganizerPreviousChangesExistConfirmation
+              changes={changes}
+            ></ModelOrganizerPreviousChangesExistConfirmation>
             <ModelOrganizerToolbar
               restrictedMode={restrictedMode}
               selectedEditableResource={
