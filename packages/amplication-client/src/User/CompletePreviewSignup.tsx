@@ -8,13 +8,14 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
-  HorizontalRule,
   Text,
 } from "@amplication/ui/design-system";
+import { REACT_APP_SHOW_CONFETTI } from "../env";
 import "./CompletePreviewSignup.scss";
 import Realistic from "react-canvas-confetti/dist/presets/realistic";
 
 const CLASS_NAME = "complete-preview-signup";
+const showConfetti = REACT_APP_SHOW_CONFETTI === "true";
 
 type Props = {
   onConfirm: () => void;
@@ -27,66 +28,64 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
       className={CLASS_NAME}
       itemsAlign={EnumItemsAlign.Center}
       contentAlign={EnumContentAlign.Center}
-      gap={EnumGapSize.Default}
+      gap={EnumGapSize.XLarge}
     >
       <Text textStyle={EnumTextStyle.H1}>
-        Ready to take it to the next level?
+        Unleash the Magic of Amplication!
         <span role="img" aria-label="celebrate">
           {" "}
           🎉
         </span>
       </Text>
-      <Realistic autorun={{ speed: 1, duration: 7 }} />
-      <Text
-        textAlign={EnumTextAlign.Center}
-        textStyle={EnumTextStyle.Tag}
-        textColor={EnumTextColor.ThemeTurquoise}
-      >
-        We have a 14-day trial with full access to the Enterprise edition for
-        you!
+      {showConfetti && <Realistic autorun={{ speed: 1, duration: 7 }} />}
+      <Text textAlign={EnumTextAlign.Center} textStyle={EnumTextStyle.Normal}>
+        <Text>
+          We're thrilled for the monumental leap you've taken with Amplication!
+        </Text>
+        <br />
+        <Text>
+          By initiating this journey, you've sparked an innovative
+          transformation in your backend code generation.{" "}
+        </Text>
       </Text>
-      <HorizontalRule />
-      <Text
-        textAlign={EnumTextAlign.Center}
-        textStyle={EnumTextStyle.Normal}
-        textColor={EnumTextColor.White}
-      >
-        You've just completed the first step to building your next big thing.
-        You're now part of a community of creators and innovators who are
-        changing the world, one app at a time.
+      <Text textAlign={EnumTextAlign.Center} textStyle={EnumTextStyle.Normal}>
+        <Text
+          textAlign={EnumTextAlign.Center}
+          textStyle={EnumTextStyle.Normal}
+          textColor={EnumTextColor.White}
+        >
+          But our adventure doesn't stop here! Your next move is crucial:{" "}
+        </Text>
+        <br />
+        <Text
+          textAlign={EnumTextAlign.Center}
+          textStyle={EnumTextStyle.Normal}
+          textColor={EnumTextColor.Primary}
+        >
+          Follow the signup process in your email{" "}
+        </Text>
+        <Text
+          textAlign={EnumTextAlign.Center}
+          textStyle={EnumTextStyle.Normal}
+          textColor={EnumTextColor.White}
+        >
+          to set your password.
+        </Text>
+        <br />
+        <Text
+          textAlign={EnumTextAlign.Center}
+          textStyle={EnumTextStyle.Normal}
+          textColor={EnumTextColor.White}
+        >
+          If you're already an Amplication user, simply sign in using your
+          existing credentials.
+        </Text>
       </Text>
 
       <Text
         textAlign={EnumTextAlign.Center}
         textStyle={EnumTextStyle.Normal}
         textColor={EnumTextColor.White}
-      >
-        To continue your journey, you need to complete your registration by
-        setting your password.
-      </Text>
-      <Text
-        textAlign={EnumTextAlign.Center}
-        textStyle={EnumTextStyle.Normal}
-        textColor={EnumTextColor.White}
-      >
-        Follow the link in your email to complete your registration and gain
-        full access for a 14-day trial of the Enterprise edition.
-      </Text>
-
-      <Text
-        textAlign={EnumTextAlign.Center}
-        textStyle={EnumTextStyle.Tag}
-        textColor={EnumTextColor.Black20}
-      >
-        If you're already an Amplication user, simply sign in using your
-        existing credentials.
-      </Text>
-      <HorizontalRule />
-
-      <Text
-        textAlign={EnumTextAlign.Center}
-        textStyle={EnumTextStyle.Tag}
-        textColor={EnumTextColor.ThemeTurquoise}
       >
         Here's to you and the exciting path ahead! Cheers!
       </Text>
