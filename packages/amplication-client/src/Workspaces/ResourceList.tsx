@@ -1,6 +1,7 @@
 import {
   CircleBadge,
   CircularProgress,
+  EnumButtonStyle,
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumGapSize,
@@ -30,6 +31,10 @@ import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import ResourceListItem from "./ResourceListItem";
 import { useStiggContext } from "@stigg/react-sdk";
+import {
+  BtmButton,
+  EnumButtonLocation,
+} from "../Resource/break-the-monolith/BtmButton";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
@@ -109,7 +114,21 @@ function ResourceList() {
             onChange={handleSearchChange}
           />
         }
-        end={<CreateResourceButton resourcesLength={resources.length} />}
+        end={
+          <>
+            <FlexItem
+              itemsAlign={EnumItemsAlign.Center}
+              direction={EnumFlexDirection.Row}
+            >
+              <BtmButton
+                openInFullScreen={true}
+                location={EnumButtonLocation.Project}
+                ButtonStyle={EnumButtonStyle.GradientOutline}
+              />
+              <CreateResourceButton resourcesLength={resources.length} />
+            </FlexItem>
+          </>
+        }
       />
       <HorizontalRule doubleSpacing />
 

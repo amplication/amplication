@@ -1,5 +1,10 @@
 @import "../style/index.scss";
+$line-height: 24px;
+
 .project-page {
+  .amp-text {
+    line-height: $line-height;
+  }
 }
 
 .delete__panel {

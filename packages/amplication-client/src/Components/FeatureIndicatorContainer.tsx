@@ -89,12 +89,22 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
 
     if (entitlementType === EntitlementType.Boolean) {
+      if (isPreviewPlan(subscriptionPlan) && hasBooleanAccess) {
+        setDisabled(null);
+        setIcon(null);
+        return;
+      }
       setDisabled(!hasBooleanAccess);
     }
 
     if (entitlementType === EntitlementType.Metered) {
       const usageExceeded = usageLimit && currentUsage >= usageLimit;
       const isDisabled = usageExceeded ?? !hasMeteredAccess;
+      if (isPreviewPlan(subscriptionPlan) && !isDisabled) {
+        setDisabled(null);
+        setIcon(null);
+        return;
+      }
       setDisabled(isDisabled);
     }
   }, [
@@ -139,10 +149,8 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       setIcon(null);
       return;
     }
-    if (
-      (subscriptionPlan === EnumSubscriptionPlan.Free && disabled) ||
-      (isPreviewPlan(subscriptionPlan) && disabled)
-    ) {
+
+    if (disabled) {
       setIcon(IconType.Lock);
     }
 

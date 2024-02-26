@@ -12,7 +12,6 @@ export type ChatCompletionMessageParam = OpenAI.Chat.ChatCompletionMessageParam;
 const CREATE_CHAT_COMPLETION_DEFAULT_SETTINGS: CreateChatCompletionRequestSettings =
   {
     temperature: 1,
-    max_tokens: 2048,
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,

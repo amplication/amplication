@@ -40,7 +40,7 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["name", "displayName", "pluralDisplayName"],
@@ -60,9 +60,9 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      displayName: AT_LEAST_TWO_CHARARCTERS,
-      name: AT_LEAST_TWO_CHARARCTERS,
-      pluralDisplayName: AT_LEAST_TWO_CHARARCTERS,
+      displayName: AT_LEAST_TWO_CHARACTERS,
+      name: AT_LEAST_TWO_CHARACTERS,
+      pluralDisplayName: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };
