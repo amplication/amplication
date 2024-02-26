@@ -6,6 +6,7 @@ import { EnumTextStyle, Text } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import * as models from "../../../models";
 import { EntityNode, NodePayload } from "../types";
+import EntityContextMenuButton from "../../../Components/EntityContextMenuButton";
 
 type Props = {
   className?: string;
@@ -25,6 +26,10 @@ const ModelNodeBase: FC<Props> = memo(
       )
     );
     const data = sourceNode?.data;
+
+    const handleSelectRelatedEntitiesClicked = useCallback(() => {
+      data.selectRelatedEntities = !data.selectRelatedEntities;
+    }, [data]);
 
     return (
       <div
@@ -54,7 +59,14 @@ const ModelNodeBase: FC<Props> = memo(
         )}
 
         <div className={`${CLASS_NAME}__header`}>
-          <Text textStyle={EnumTextStyle.H4}>{data.payload.displayName}</Text>
+          <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
+            {data.payload.displayName}
+          </Text>
+          {sourceNode?.draggable && (
+            <EntityContextMenuButton
+              onSelectRelatedEntities={handleSelectRelatedEntitiesClicked}
+            ></EntityContextMenuButton>
+          )}
         </div>
         {includeModelHandles && (
           <Handle

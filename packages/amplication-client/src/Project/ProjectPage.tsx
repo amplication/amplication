@@ -1,5 +1,11 @@
-import { TabItem } from "@amplication/ui/design-system";
-import React, { useContext, useMemo } from "react";
+import { Dialog, TabItem } from "@amplication/ui/design-system";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
 import useBreadcrumbs from "../Layout/useBreadcrumbs";
@@ -8,6 +14,8 @@ import ResourceList from "../Workspaces/ResourceList";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import "./ProjectPage.scss";
+import { expireCookie, getCookie } from "../util/cookie";
+import PreviewUserLoginModal from "./ArchitectureConsole/PreviewUserLoginModal";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -25,6 +33,22 @@ const ProjectPage: React.FC<Props> = ({
   tabRoutesDef,
 }) => {
   const { currentProject, pendingChanges } = useContext(AppContext);
+  const [fromPreviewUserDialog, setFromPreviewUserDialog] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    const isFromPreviewPlanCookieExist = getCookie("isFromPreviewPlan");
+
+    if (isFromPreviewPlanCookieExist === "1") {
+      setFromPreviewUserDialog(true);
+    }
+
+    isFromPreviewPlanCookieExist && expireCookie("isFromPreviewPlan");
+  }, []);
+
+  const handleFromPreviewUserDialogDismiss = useCallback(() => {
+    setFromPreviewUserDialog(false);
+  }, [setFromPreviewUserDialog]);
 
   useBreadcrumbs(currentProject?.name, match.url);
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
@@ -54,7 +78,20 @@ const ProjectPage: React.FC<Props> = ({
   return match.isExact || currentRouteIsTab ? (
     <>
       <PageLayout className={moduleClass} tabs={tabItems}>
-        {match.isExact ? <ResourceList /> : tabRoutes}
+        {match.isExact ? (
+          <>
+            <Dialog
+              isOpen={fromPreviewUserDialog}
+              onDismiss={handleFromPreviewUserDialogDismiss}
+              title={"Welcome Aboard! 🚀"}
+            >
+              <PreviewUserLoginModal />
+            </Dialog>
+            <ResourceList />
+          </>
+        ) : (
+          tabRoutes
+        )}
       </PageLayout>
     </>
   ) : (

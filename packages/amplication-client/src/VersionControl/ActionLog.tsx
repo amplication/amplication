@@ -14,6 +14,7 @@ import {
   CircularProgress,
 } from "@amplication/ui/design-system";
 import { STEP_STATUS_TO_STYLE, STEP_STATUS_TO_ICON } from "./constants";
+import classNames from "classnames";
 
 const MIN_HEIGHT = 60;
 
@@ -104,7 +105,12 @@ const ActionLog = ({
   }, [logData, actionStatus]);
 
   return (
-    <div className={`${CLASS_NAME}`}>
+    <div
+      className={classNames(
+        CLASS_NAME,
+        `${CLASS_NAME}__${actionStatus.toLowerCase()}`
+      )}
+    >
       <div className={`${CLASS_NAME}__header`}>
         <Icon icon="option_set" />
         {!action ? (

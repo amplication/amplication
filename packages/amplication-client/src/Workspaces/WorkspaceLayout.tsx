@@ -48,6 +48,9 @@ const WorkspaceLayout: React.FC<Props> = ({
   const authenticated = useAuthenticated();
   const {
     currentWorkspace,
+    subscriptionPlan,
+    subscriptionStatus,
+    isPreviewPlan,
     handleSetCurrentWorkspace,
     createWorkspace,
     createNewWorkspaceError,
@@ -153,6 +156,9 @@ const WorkspaceLayout: React.FC<Props> = ({
     <AppContextProvider
       newVal={{
         currentWorkspace,
+        subscriptionPlan,
+        subscriptionStatus,
+        isPreviewPlan,
         handleSetCurrentWorkspace,
         createWorkspace,
         currentProjectConfiguration,

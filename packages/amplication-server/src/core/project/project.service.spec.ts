@@ -209,6 +209,7 @@ const EXAMPLE_WORKSPACE: Workspace = {
   updatedAt: new Date(),
   name: EXAMPLE_NAME,
   projects: [EXAMPLE_PROJECT_2],
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_PROJECT: Project = {

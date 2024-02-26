@@ -57,7 +57,6 @@ import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { ResourceService } from "../resource/resource.service";
 import { generateRandomString } from "../auth/auth-utils";
 import { AuthUser, CreatePreviewServiceSettingsArgs } from "../auth/types";
-import { USER_ENTITY_NAME } from "../entity/constants";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -1231,7 +1230,6 @@ export class WorkspaceService {
         },
         serviceSettings: {
           authProvider: EnumAuthProviderType.Jwt,
-          authEntityName: USER_ENTITY_NAME,
           adminUISettings: {
             adminUIPath,
             generateAdminUI,

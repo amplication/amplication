@@ -5,7 +5,7 @@ import {
   Modal,
   Snackbar,
 } from "@amplication/ui/design-system";
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { match, useHistory } from "react-router-dom";
 import { useTracking } from "../../util/analytics";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
@@ -38,6 +38,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
   const { trackEvent } = useTracking();
 
   const errorMessage = formatError(errorCreateMessageBroker);
+  const [isCreatingMessageBroker, setIsCreatingMessageBroker] = useState(false);
 
   useEffect(() => {
     if (!errorCreateMessageBroker) {
@@ -62,6 +63,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
 
   const handleCreateServiceClick = () => {
     if (currentProject) {
+      setIsCreatingMessageBroker(true);
       const resource = prepareMessageBrokerObject(currentProject.id);
       createStarterResource(resource, "createMessageBroker");
     }
@@ -69,7 +71,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
 
   return (
     <Modal open fullScreen css={moduleClass}>
-      {loadingCreateMessageBroker ? (
+      {loadingCreateMessageBroker || isCreatingMessageBroker ? (
         <div className={`${moduleClass}__processing`}>
           <div
             className={`${moduleClass}__processing__message_title_container`}
@@ -120,6 +122,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
         <Button
           buttonStyle={EnumButtonStyle.Primary}
           onClick={handleCreateServiceClick}
+          disabled={isCreatingMessageBroker}
         >
           <label>Create Message broker</label>
         </Button>
