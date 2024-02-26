@@ -100,6 +100,16 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
     };
   }, [data, loading, userActionData]);
 
+  const importErrorMessage = useMemo(() => {
+    const errorLevelLogs = actionLog.steps[0]?.logs.filter(
+      (log) => log.level === models.EnumActionLogLevel.Error
+    );
+
+    const lastErrorLog = errorLevelLogs[errorLevelLogs.length - 1];
+
+    return lastErrorLog?.message;
+  }, [actionLog.steps]);
+
   const errorMessage = formatError(error);
 
   const onFilesSelected = useCallback(
@@ -139,10 +149,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
       >
         <UploadSchemaStatus
           userAction={userActionData?.userAction}
-          logMessage={
-            actionLog.steps[0]?.logs[actionLog.steps[0]?.logs.length - 1]
-              ?.message
-          }
+          logMessage={importErrorMessage}
         />
         <div>
           {loading || (data && data.createEntitiesFromPrismaSchema) ? (
