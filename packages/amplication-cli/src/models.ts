@@ -201,9 +201,9 @@ export type BreakServiceToMicroservicesData = {
 };
 
 export type BreakServiceToMicroservicesItem = {
-  dataModels: Array<BreakServiceToMicroservicesItemEntities>;
   functionality: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  tables: Array<BreakServiceToMicroservicesItemEntities>;
 };
 
 export type BreakServiceToMicroservicesItemEntities = {
@@ -2185,6 +2185,7 @@ export type RedesignProjectMovedEntity = {
 };
 
 export type RedesignProjectNewService = {
+  description: Scalars['String']['input'];
   id: Scalars['String']['input'];
   name: Scalars['String']['input'];
 };
@@ -2628,6 +2629,7 @@ export type WhereUniqueInput = {
 };
 
 export type Workspace = {
+  allowLLMFeatures: Scalars['Boolean']['output'];
   createdAt: Scalars['DateTime']['output'];
   externalId?: Maybe<Scalars['String']['output']>;
   gitOrganizations?: Maybe<Array<GitOrganization>>;
@@ -2651,5 +2653,6 @@ export type WorkspaceMember = {
 export type WorkspaceMemberType = Invitation | User;
 
 export type WorkspaceUpdateInput = {
+  allowLLMFeatures?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };

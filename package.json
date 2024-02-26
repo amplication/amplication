@@ -156,6 +156,7 @@
     "rc": "^1.2.8",
     "react-animate-height": "^3.0.4",
     "react-beautiful-dnd": "^13.1.1",
+    "react-canvas-confetti": "^2.0.5",
     "react-command-palette": "^0.22.1",
     "react-device-detect": "^2.2.2",
     "react-dnd": "^16.0.1",
