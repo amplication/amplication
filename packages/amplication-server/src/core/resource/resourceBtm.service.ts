@@ -28,6 +28,7 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { EnumResourceType } from "./dto/EnumResourceType";
 import { v4 } from "uuid";
 import { BREAK_THE_MONOLITH_AI_ERROR_MESSAGE } from "./constants";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 
 @Injectable()
 export class ResourceBtmService {
@@ -36,6 +37,7 @@ export class ResourceBtmService {
     private readonly prisma: PrismaService,
     private readonly billingService: BillingService,
     private readonly analyticsService: SegmentAnalyticsService,
+    private readonly serviceSettingsService: ServiceSettingsService,
     private readonly logger: AmplicationLogger
   ) {}
 
@@ -153,7 +155,8 @@ export class ResourceBtmService {
   }
 
   async finalizeBreakServiceIntoMicroservices(
-    userActionId: string
+    userActionId: string,
+    user: User
   ): Promise<BreakServiceToMicroservicesResult> {
     const {
       status: userActionStatus,
@@ -172,7 +175,8 @@ export class ResourceBtmService {
     try {
       const recommendations = await this.prepareBtmRecommendations(
         metadata.data,
-        resourceId
+        resourceId,
+        user
       );
 
       return {
@@ -255,13 +259,21 @@ export class ResourceBtmService {
    */
   async prepareBtmRecommendations(
     promptResult: string,
-    resourceId: string
+    resourceId: string,
+    user: User
   ): Promise<BreakServiceToMicroservicesData> {
     const promptResultObj = this.mapToBreakTheMonolithOutput(promptResult);
     const originalResource = await this.getResourceDataForBtm(resourceId);
     const originalResourceEntityNamesSet = new Set(
       originalResource.entities.map((entity) => entity.name)
     );
+    const serviceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
+          where: { id: resourceId },
+        },
+        user
+      );
     const recommendedResourceEntities = promptResultObj.microservices
       .map((resource) => resource.tables)
       .flat();
@@ -326,7 +338,11 @@ export class ResourceBtmService {
             return (
               originalResourceEntityNamesSet.has(tableName) &&
               !isDuplicatedAlreadyUsed &&
-              !inventedEntitiesByGpt.includes(tableName)
+              !inventedEntitiesByGpt.includes(tableName) &&
+              !(
+                serviceSettings?.authEntityName &&
+                serviceSettings.authEntityName === tableName
+              )
             );
           })
           .map((tableName) => {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Injectable, forwardRef, Inject } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { subDays } from "date-fns";
@@ -763,11 +764,10 @@ export class AuthService {
     let isNew: boolean;
     const existingUser = !!user;
 
+    const isFromPreviewUser =
+      user && user.account.previewAccountType !== EnumPreviewAccountType.None;
     // to complete the preview account signup, after the user reset the password in Auth0 we need to update the account type and workspace subscription
-    if (
-      user &&
-      user.account.previewAccountType !== EnumPreviewAccountType.None
-    ) {
+    if (isFromPreviewUser) {
       await this.convertPreviewAccountToRegularAccountWithFreeTrail(user);
       isNew = false;
     } else {
@@ -784,14 +784,13 @@ export class AuthService {
 
     this.trackCompleteEmailSignup(user.account, profile, existingUser);
 
-    await this.configureJtw(response, user, isNew);
+    await this.configureJtw(response, user, isNew, isFromPreviewUser);
   }
 
   async convertPreviewAccountToRegularAccountWithFreeTrail(user: User) {
     await this.accountService.updateAccount({
       where: { id: user.account.id },
       data: {
-        previewAccountEmail: null,
         previewAccountType: EnumPreviewAccountType.None,
       },
     });
@@ -804,13 +803,16 @@ export class AuthService {
   async configureJtw(
     response: Response,
     user: AuthUser,
-    isNew: boolean
+    isNew: boolean,
+    isFromPreviewUser = false
   ): Promise<void> {
     const token = await this.prepareToken(user);
     const url = stringifyUrl({
       url: this.clientHost,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      query: { "complete-signup": isNew ? "1" : "0" },
+      query: {
+        "complete-signup": isNew ? "1" : "0",
+        "preview-user-login": isFromPreviewUser ? "1" : "0",
+      },
     });
     const clientDomain = new URL(url).hostname;
 
