@@ -1035,7 +1035,6 @@ describe("AuthService", () => {
         expect(updateAccountMock).toHaveBeenCalledWith({
           where: { id: exampleUser.account.id },
           data: {
-            previewAccountEmail: null,
             previewAccountType: EnumPreviewAccountType.None,
           },
         });

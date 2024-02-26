@@ -791,7 +791,6 @@ export class AuthService {
     await this.accountService.updateAccount({
       where: { id: user.account.id },
       data: {
-        previewAccountEmail: null,
         previewAccountType: EnumPreviewAccountType.None,
       },
     });
