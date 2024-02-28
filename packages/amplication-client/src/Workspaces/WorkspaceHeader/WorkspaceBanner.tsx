@@ -15,7 +15,7 @@ export type Props = {
   clickEventProps: Record<string, string>;
   closeEventName: AnalyticsEventNames;
   closeEventProps: Record<string, string>;
-  localStorageKey: string;
+  localStorageKey?: string;
 };
 
 export default function WorkspaceBanner({
