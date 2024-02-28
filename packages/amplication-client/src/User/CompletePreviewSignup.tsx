@@ -39,11 +39,11 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
       </Text>
       {showConfetti && <Realistic autorun={{ speed: 1, duration: 7 }} />}
       <Text textAlign={EnumTextAlign.Center} textStyle={EnumTextStyle.Normal}>
-        <Text>
+        <Text textColor={EnumTextColor.Black20}>
           We're thrilled for the monumental leap you've taken with Amplication!
         </Text>
         <br />
-        <Text>
+        <Text textColor={EnumTextColor.Black20}>
           By initiating this journey, you've sparked an innovative
           transformation in your backend code generation.{" "}
         </Text>
@@ -52,7 +52,7 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
         <Text
           textAlign={EnumTextAlign.Center}
           textStyle={EnumTextStyle.Normal}
-          textColor={EnumTextColor.White}
+          textColor={EnumTextColor.Black20}
         >
           But our adventure doesn't stop here! Your next move is crucial:{" "}
         </Text>
@@ -67,7 +67,7 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
         <Text
           textAlign={EnumTextAlign.Center}
           textStyle={EnumTextStyle.Normal}
-          textColor={EnumTextColor.White}
+          textColor={EnumTextColor.Black20}
         >
           to set your password.
         </Text>
@@ -75,7 +75,7 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
         <Text
           textAlign={EnumTextAlign.Center}
           textStyle={EnumTextStyle.Normal}
-          textColor={EnumTextColor.White}
+          textColor={EnumTextColor.Black20}
         >
           If you're already an Amplication user, simply sign in using your
           existing credentials.
@@ -85,7 +85,7 @@ export const CompletePreviewSignup: React.FC<Props> = ({ onConfirm }) => {
       <Text
         textAlign={EnumTextAlign.Center}
         textStyle={EnumTextStyle.Normal}
-        textColor={EnumTextColor.White}
+        textColor={EnumTextColor.Black20}
       >
         Here's to you and the exciting path ahead! Cheers!
       </Text>
