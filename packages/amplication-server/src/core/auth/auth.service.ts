@@ -444,8 +444,8 @@ export class AuthService {
     return {
       signupData: {
         email: generateRandomEmail(),
-        firstName: "Amplication Preview Account",
-        lastName: previewAccountType,
+        firstName: previewAccountEmail,
+        lastName: "",
         password: generateRandomString(),
         previewAccountType,
         previewAccountEmail,

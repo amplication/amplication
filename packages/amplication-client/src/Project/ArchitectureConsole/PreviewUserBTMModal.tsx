@@ -8,6 +8,7 @@ import {
   FlexItem,
   List,
   ListItem,
+  EnumTextColor,
 } from "@amplication/ui/design-system";
 import { ModelChanges } from "./types";
 import { CLASS_NAME } from "./ModelOrganizer";
@@ -29,11 +30,11 @@ const PreviewUserBTMModal = ({ changes }: Props) => {
           {"Congratulations on Breaking the Monolith! 🌟"}
         </Text>
         <FlexItem direction={EnumFlexDirection.Column} gap={EnumGapSize.Small}>
-          <Text>
+          <Text textColor={EnumTextColor.Black20}>
             {`With the open-source monolith successfully broken, we've
       crafted ${changes.newServices?.length} microservices for the project.`}
           </Text>
-          <Text>
+          <Text textColor={EnumTextColor.Black20}>
             Now you can explore, refine and optimize the suggested architecture
             by-
           </Text>
@@ -44,17 +45,21 @@ const PreviewUserBTMModal = ({ changes }: Props) => {
           listStyle={EnumListStyle.Dark}
         >
           <ListItem>
-            <Text>Rearrange entities</Text>
-            <Text>Create new services</Text>
-            <Text>Optimize entity relations</Text>
+            <Text textColor={EnumTextColor.Black20}>Rearrange entities</Text>
+            <Text textColor={EnumTextColor.Black20}>Create new services</Text>
+            <Text textColor={EnumTextColor.Black20}>
+              Optimize entity relations
+            </Text>
           </ListItem>
         </List>
         <FlexItem direction={EnumFlexDirection.Column} gap={EnumGapSize.Small}>
-          <Text>
+          <Text textColor={EnumTextColor.Black20}>
             Once satisfied, apply the changes and generate the code for the new
             architecture in one click.
           </Text>
-          <Text>Your project's future starts now!</Text>
+          <Text textColor={EnumTextColor.Black20}>
+            Your project's future starts now!
+          </Text>
         </FlexItem>
       </FlexItem>
     </>

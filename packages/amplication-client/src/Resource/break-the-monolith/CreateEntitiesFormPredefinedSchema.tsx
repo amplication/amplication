@@ -21,6 +21,7 @@ import {
 import { BtmLoader } from "./BtmLoader";
 
 import "./CreateEntitiesFormPredefinedSchema.scss";
+import { setCookie } from "../../util/cookie";
 const CLASS_NAME = "break-the-monolith-options";
 
 const LOADER_TITLE =
@@ -83,6 +84,7 @@ export const CreateEntitiesFormPredefinedSchema: React.FC<Props> = ({
   }, [userActionData, history, workspaceId, projectId, resourceId]);
 
   const handleBreakClicked = (selectedMonolithToBreak: MonolithOption) => {
+    setCookie("preview-user-break-monolith", "true");
     setDisableBreakButton(true);
     createEntitiesFormPredefinedSchema({
       variables: {
