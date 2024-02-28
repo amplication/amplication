@@ -34,6 +34,7 @@ import {
   tooltipDefaultText,
   tooltipDefaultTextUpgrade,
 } from "../../Components/FeatureIndicator";
+import { getCookie, setCookie } from "../../util/cookie";
 
 export enum EnumButtonLocation {
   Project = "Project",
@@ -187,6 +188,9 @@ export const BtmButton: React.FC<Props> = ({
   const onSelectMenuSelectResource = useCallback(
     (itemData: Resource) => {
       selectResourceToBreak(itemData);
+      const previewPlanCookie = getCookie("preview-user-break-monolith");
+      !previewPlanCookie &&
+        setCookie("changesConfirmationMessageType", "aiProcess");
     },
     [selectResourceToBreak]
   );

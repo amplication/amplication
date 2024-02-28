@@ -30,7 +30,6 @@ import {
   OverrideChanges,
 } from "../../Project/ArchitectureConsole/types";
 import { generatedKey } from "../../Plugins/InstalledPluginSettings";
-import { setCookie } from "../../util/cookie";
 
 const CLASS_NAME = "break-the-monolith";
 
@@ -61,7 +60,6 @@ const BreakTheMonolith: React.FC<Props> = ({
   const errorMessage = formatError(error);
 
   const redirectToArchitectureAndComplete = useCallback(() => {
-    setCookie("preview-user-break-monolith", "true");
     const url = `/${currentWorkspace?.id}/${currentProject?.id}/architecture`;
 
     //convert the result to the model organizer changes format
