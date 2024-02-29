@@ -475,6 +475,8 @@ export class BuildService {
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find((step) => step.name === PUSH_TO_GIT_STEP_NAME);
 
+    this.logger.debug("Create PR Success", response);
+
     try {
       await this.resourceService.reportSyncMessage(
         build.resourceId,
