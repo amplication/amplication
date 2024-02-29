@@ -127,12 +127,16 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
   }, [resetPendingChangesIndicator]);
 
   useEffect(() => {
-    if (!isPreviewPlan || !getCookie("preview-user-break-monolith")) return;
+    if (!isPreviewPlan) return;
+    //is preview user from demo schema
+    else {
+      if (getCookie("preview-user-break-monolith") && !restrictedMode) {
+        expireCookie("preview-user-break-monolith");
 
-    expireCookie("preview-user-break-monolith");
-
-    setShowPreviewUserDialog(true);
-  }, [isPreviewPlan, setShowPreviewUserDialog]);
+        setShowPreviewUserDialog(true);
+      }
+    }
+  }, [isPreviewPlan, setShowPreviewUserDialog, restrictedMode]);
 
   const fitToView = useCallback(
     (delayBeforeStart = 100) => {
