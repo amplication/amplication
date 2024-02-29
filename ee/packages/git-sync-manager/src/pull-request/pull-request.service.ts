@@ -73,7 +73,7 @@ export class PullRequestService {
     repositoryGroupName,
     baseBranchName,
     isBranchPerResource,
-  }: CreatePrRequest.Value): Promise<string> {
+  }: CreatePrRequest.Value): Promise<{ prUrl: string; diffStat: any }> {
     const logger = this.logger.child({ resourceId, buildId: newBuildId });
     const { body, title } = commit;
 
@@ -125,7 +125,7 @@ export class PullRequestService {
     );
     const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
 
-    const prUrl = await gitClientService.createPullRequest({
+    const { prUrl, diffStat } = await gitClientService.createPullRequest({
       owner,
       cloneDirPath,
       repositoryName: repo,
@@ -143,7 +143,10 @@ export class PullRequestService {
     });
 
     logger.info("Opened a new pull request", { prUrl });
-    return prUrl;
+    return {
+      prUrl,
+      diffStat,
+    };
   }
 
   private static removeFirstSlashFromPath(changedFiles: File[]): File[] {

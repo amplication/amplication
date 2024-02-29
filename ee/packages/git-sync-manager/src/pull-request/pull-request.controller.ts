@@ -85,10 +85,10 @@ export class PullRequestController {
     });
 
     try {
-      const pullRequest = await KafkaPacemaker.wrapLongRunningMethod<string>(
-        context,
-        () => this.pullRequestService.createPullRequest(validArgs)
-      );
+      const { prUrl, diffStat } = await KafkaPacemaker.wrapLongRunningMethod<{
+        prUrl: string;
+        diffStat: any;
+      }>(context, () => this.pullRequestService.createPullRequest(validArgs));
 
       logger.info(`Finish process, committing`, {
         topic,
@@ -102,7 +102,8 @@ export class PullRequestController {
           resourceRepositoryId: eventKey.resourceRepositoryId,
         },
         value: {
-          url: pullRequest,
+          url: prUrl,
+          diffStat,
           gitProvider: validArgs.gitProvider,
           buildId: validArgs.newBuildId,
         },
