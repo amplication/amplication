@@ -5,11 +5,12 @@ import { GitOrganizationModule } from './git-organization/git-organization.modul
 import { HealthModule } from './health/health.module';
 import { AmplicationLoggerModule } from '@amplication/util/nestjs/logging';
 import { WebhookModule } from './webhook/webhook.module';
+import { TracingModule } from '@amplication/util/nestjs/tracing';
 
 @Module({
   imports: [
     AmplicationLoggerModule.forRoot({
-      component: 'amplication-git-pull-service',
+      component: 'amplication-git-push-webhook-service',
     }),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -19,6 +20,7 @@ import { WebhookModule } from './webhook/webhook.module';
     GitOrganizationModule,
     WebhookModule,
     HealthModule,
+    TracingModule.forRoot(),
   ],
 })
 export class AppModule {}
