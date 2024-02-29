@@ -248,4 +248,22 @@ export class GitCli {
   async resetState() {
     await this.git.reset(ResetMode.HARD).clean(CleanOptions.FORCE);
   }
+
+  async getShortStat(
+    baseBranchName: string,
+    branchName: string
+  ): Promise<string> {
+    const remoteName = await this.git.remote(["show"]);
+
+    // const remoteName = await this.git.raw([
+    //   "config",
+    //   `branch.${branchName}.remote`,
+    // ]);
+
+    return this.git.raw([
+      "diff",
+      "--shortstat",
+      `${remoteName}/${baseBranchName}..${branchName}`,
+    ]);
+  }
 }

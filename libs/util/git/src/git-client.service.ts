@@ -103,7 +103,7 @@ export class GitClientService {
 
   async createPullRequest(
     createPullRequestArgs: CreatePullRequestArgs
-  ): Promise<string> {
+  ): Promise<{ prUrl: string; diffStat: any }> {
     const {
       owner,
       repositoryName,
@@ -237,7 +237,12 @@ export class GitClientService {
 
       await gitCli.deleteRepositoryDir();
 
-      return pullRequestUrl;
+      const diffStat = await gitCli.getShortStat(baseBranchName, branchName);
+
+      return {
+        prUrl: pullRequestUrl,
+        diffStat,
+      };
     } catch (error) {
       await gitCli.deleteRepositoryDir();
 
