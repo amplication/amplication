@@ -5,6 +5,8 @@ export class Value {
   @IsString()
   buildId!: string;
 
+  diffStat!: string;
+
   @IsEnum(EnumGitProvider)
   gitProvider!: EnumGitProvider;
 
