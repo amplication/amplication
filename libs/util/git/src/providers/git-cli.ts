@@ -253,17 +253,19 @@ export class GitCli {
     baseBranchName: string,
     branchName: string
   ): Promise<string> {
+    await this.checkout(branchName);
+
     const remoteName = await this.git.remote(["show"]);
 
-    // const remoteName = await this.git.raw([
-    //   "config",
-    //   `branch.${branchName}.remote`,
-    // ]);
+    if (!remoteName) {
+      throw new Error("Remote name not found");
+    }
 
-    return this.git.raw([
-      "diff",
-      "--shortstat",
-      `${remoteName}/${baseBranchName}..${branchName}`,
-    ]);
+    return (
+      await this.git.diff([
+        "--shortstat",
+        `${remoteName.trim()}/${baseBranchName}..${branchName}`,
+      ])
+    ).trim();
   }
 }

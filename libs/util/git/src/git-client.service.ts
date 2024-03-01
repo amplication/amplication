@@ -235,9 +235,9 @@ export class GitClientService {
           throw new InvalidPullRequestMode();
       }
 
-      await gitCli.deleteRepositoryDir();
+      const diffStat = await gitCli.getShortStat(baseBranch, branchName);
 
-      const diffStat = await gitCli.getShortStat(baseBranchName, branchName);
+      await gitCli.deleteRepositoryDir();
 
       return {
         prUrl: pullRequestUrl,
