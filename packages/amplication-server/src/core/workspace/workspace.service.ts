@@ -57,7 +57,6 @@ import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { ResourceService } from "../resource/resource.service";
 import { generateRandomString } from "../auth/auth-utils";
 import { AuthUser, CreatePreviewServiceSettingsArgs } from "../auth/types";
-import { USER_ENTITY_NAME } from "../entity/constants";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -420,13 +419,9 @@ export class WorkspaceService {
       BillingFeature.TeamMembers
     );
 
-    await this.analytics.track({
-      userId: account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.InvitationAcceptance,
-      properties: {
-        workspaceId: invitation.workspaceId,
-        $groups: { groupWorkspace: invitation.workspaceId },
-      },
+      properties: {},
     });
 
     return workspace;
@@ -530,7 +525,7 @@ export class WorkspaceService {
       planId: BillingPlan.ProWithTrial,
       cancelUrl: "",
       successUrl: "",
-      userId: account.id,
+      accountId: account.id,
       billingPeriod: BillingPeriod.Monthly,
       intentionType: "UPGRADE_PLAN",
     });
@@ -548,14 +543,11 @@ export class WorkspaceService {
       },
     });
 
-    await this.analytics.track({
-      userId: account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.RedeemCoupon,
       properties: {
-        workspaceId: currentUser.workspace.id,
         subscriptionPlan: coupon.subscriptionPlan,
         durationMonths: coupon.durationMonths,
-        $groups: { groupWorkspace: currentUser.workspace.id },
       },
     });
 
@@ -1238,7 +1230,6 @@ export class WorkspaceService {
         },
         serviceSettings: {
           authProvider: EnumAuthProviderType.Jwt,
-          authEntityName: USER_ENTITY_NAME,
           adminUISettings: {
             adminUIPath,
             generateAdminUI,

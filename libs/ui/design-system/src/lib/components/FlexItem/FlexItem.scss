@@ -1,8 +1,5 @@
 @import "../../style/index.scss";
 
-$expandable-bottom-max-height: 200px;
-$expandable-transition-duration: 0.1s;
-
 .amp-flex-item {
   display: flex;
   flex-direction: row;
@@ -28,6 +25,10 @@ $expandable-transition-duration: 0.1s;
 
   &--gap-large {
     gap: var(--large-spacing);
+  }
+
+  &--gap-xlarge {
+    gap: var(--double-spacing);
   }
 
   &__start,

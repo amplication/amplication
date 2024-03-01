@@ -1,9 +1,9 @@
 import { PrismaService, Account } from "../../prisma";
 import { Test, TestingModule } from "@nestjs/testing";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { AccountService } from "./account.service";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { IdentityProvider } from "../auth/auth.types";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 const EXAMPLE_ACCOUNT_ID = "ExampleAccountId",
   EXAMPLE_EMAIL = "example@email.com",
@@ -52,13 +52,11 @@ describe("AccountService", () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            identify: segmentAnalyticsIdentifyMock,
-            track: segmentAnalyticsTrackMock,
-          })),
-        },
+        MockedSegmentAnalyticsProvider({
+          identifyMock: segmentAnalyticsIdentifyMock,
+          trackWithContextMock: segmentAnalyticsTrackMock,
+          trackManualMock: segmentAnalyticsTrackMock,
+        }),
         AccountService,
         {
           provide: PrismaService,
@@ -99,7 +97,7 @@ describe("AccountService", () => {
     expect(segmentAnalyticsIdentifyMock).toBeCalledTimes(1);
     expect(segmentAnalyticsTrackMock).toBeCalledTimes(1);
     expect(segmentAnalyticsIdentifyMock).toBeCalledWith({
-      userId: EXAMPLE_ACCOUNT_ID,
+      accountId: EXAMPLE_ACCOUNT_ID,
       createdAt: expect.any(Date),
       email: EXAMPLE_EMAIL,
       firstName: EXAMPLE_FIRST_NAME,

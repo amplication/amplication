@@ -17,10 +17,10 @@ import { JSONApiResponse, SignUpResponse, TextApiResponse } from "auth0";
 import { anyString } from "jest-mock-extended";
 import { AuthProfile, AuthUser } from "./types";
 import { IdentityProvider } from "./auth.types";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { Response } from "express";
 import { Env } from "../../env";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
@@ -39,7 +39,7 @@ const EXAMPLE_ACCOUNT: Account = {
 
 const EXAMPLE_PREVIEW_ACCOUNT: Account = {
   id: "alice",
-  email: "example@amplication.com",
+  email: "fake+example@amplication.com",
   password: "PASSWORD",
   firstName: "Alice",
   lastName: "Appleseed",
@@ -79,6 +79,9 @@ const EXAMPLE_NEW_HASHED_PASSWORD = "NEW HASHED PASSWORD";
 
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
 
+const urlQueryParamExample =
+  "https://server.amplication.com?complete-signup=0&preview-user-login=0";
+
 const EXAMPLE_USER: User = {
   id: "exampleUser",
   createdAt: new Date(),
@@ -94,6 +97,7 @@ const EXAMPLE_WORKSPACE: Workspace & { users: User[] } = {
   createdAt: new Date(),
   updatedAt: new Date(),
   users: [EXAMPLE_USER],
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_OTHER_WORKSPACE: Workspace = {
@@ -101,6 +105,7 @@ const EXAMPLE_OTHER_WORKSPACE: Workspace = {
   name: "Example Other Workspace",
   createdAt: new Date(),
   updatedAt: new Date(),
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_USER_ROLE: UserRole = {
@@ -227,7 +232,10 @@ const createPreviewEnvironmentMock = jest.fn(() => ({
 
 const prismaCreateProjectMock = jest.fn(() => EXAMPLE_PROJECT);
 const segmentAnalyticsIdentifyMock = jest.fn().mockResolvedValue(undefined);
-const segmentAnalyticsTrackMock = jest.fn().mockResolvedValue(undefined);
+const segmentAnalyticsTrackWithContextMock = jest
+  .fn()
+  .mockResolvedValue(undefined);
+const segmentAnalyticsTrackManualMock = jest.fn().mockResolvedValue(undefined);
 
 describe("AuthService", () => {
   let service: AuthService;
@@ -308,13 +316,11 @@ describe("AuthService", () => {
             },
           })),
         },
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            identify: segmentAnalyticsIdentifyMock,
-            track: segmentAnalyticsTrackMock,
-          })),
-        },
+        MockedSegmentAnalyticsProvider({
+          identifyMock: segmentAnalyticsIdentifyMock,
+          trackWithContextMock: segmentAnalyticsTrackWithContextMock,
+          trackManualMock: segmentAnalyticsTrackManualMock,
+        }),
         AuthService,
       ],
       imports: [],
@@ -641,12 +647,6 @@ describe("AuthService", () => {
 
         expect(result).toEqual(resetPasswordDataMocked);
         expect(updateAccountMock).toHaveBeenCalledTimes(1);
-        expect(
-          convertPreviewSubscriptionToFreeWithTrialMock
-        ).toHaveBeenCalledTimes(1);
-        expect(
-          convertPreviewSubscriptionToFreeWithTrialMock
-        ).toHaveBeenCalledWith(exampleUser.workspace.id);
       });
 
       it("should not update the preview account to a regular account with free trial if there is account with the preview email", async () => {
@@ -703,16 +703,15 @@ describe("AuthService", () => {
       expect(result).toBeTruthy();
 
       expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(1);
-      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(1);
-      expect(segmentAnalyticsTrackMock).toHaveBeenCalledWith({
-        userId: expect.any(String),
-        event: EnumEventType.StartEmailSignup,
-        properties: {
-          identityProvider: IdentityProvider.IdentityPlatform,
-          existingUser: "No",
-        },
-        context: {
-          traits: expect.any(Object),
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledWith({
+        user: {},
+        data: {
+          event: EnumEventType.StartEmailSignup,
+          properties: {
+            identityProvider: IdentityProvider.IdentityPlatform,
+            existingUser: "No",
+          },
         },
       });
     });
@@ -855,18 +854,19 @@ describe("AuthService", () => {
         false
       );
 
-      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(1);
-      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(1);
-      expect(segmentAnalyticsTrackMock).toHaveBeenCalledWith({
-        userId: EXAMPLE_USER.account.id,
-        event: EnumEventType.CompleteEmailSignup,
-        properties: {
-          identityProvider: IdentityProvider.IdentityPlatform,
-          identityOrigin: EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME,
-          existingUser: false,
+      expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(1);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledWith({
+        user: {
+          accountId: EXAMPLE_ACCOUNT.id,
         },
-        context: {
-          traits: expect.any(Object),
+        data: {
+          event: EnumEventType.CompleteEmailSignup,
+          properties: {
+            identityProvider: IdentityProvider.IdentityPlatform,
+            identityOrigin: EXAMPLE_BUSINESS_EMAIL_IDP_CONNECTION_NAME,
+            existingUser: false,
+          },
         },
       });
     });
@@ -890,7 +890,8 @@ describe("AuthService", () => {
       );
 
       expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
-      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackWithContextMock).toHaveBeenCalledTimes(0);
     });
 
     it("should not track the event when a SSO user logs in", async () => {
@@ -912,7 +913,8 @@ describe("AuthService", () => {
       );
 
       expect(segmentAnalyticsIdentifyMock).toHaveBeenCalledTimes(0);
-      expect(segmentAnalyticsTrackMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackManualMock).toHaveBeenCalledTimes(0);
+      expect(segmentAnalyticsTrackWithContextMock).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -953,7 +955,7 @@ describe("AuthService", () => {
 
       expect(responseMock.redirect).toHaveBeenCalledWith(
         301,
-        "https://server.amplication.com?complete-signup=0"
+        urlQueryParamExample
       );
     });
   });
@@ -988,7 +990,65 @@ describe("AuthService", () => {
 
         expect(responseMock.redirect).toHaveBeenCalledWith(
           301,
-          "https://server.amplication.com?complete-signup=0"
+          urlQueryParamExample
+        );
+      });
+
+      it("should update preview user and track the event", async () => {
+        const exampleUser = {
+          ...EXAMPLE_USER,
+          account: {
+            ...EXAMPLE_USER.account,
+            ...EXAMPLE_PREVIEW_ACCOUNT,
+          },
+          workspace: EXAMPLE_WORKSPACE,
+        };
+
+        jest.spyOn(service, "getAuthUser").mockResolvedValueOnce({
+          ...EXAMPLE_AUTH_USER,
+          account: {
+            ...EXAMPLE_ACCOUNT,
+            ...EXAMPLE_PREVIEW_ACCOUNT,
+          },
+        });
+
+        const authProfile: AuthProfile = {
+          sub: "123",
+          email: exampleUser.account.previewAccountEmail,
+          nickname: "",
+          identityOrigin: "AnSSOIntegration",
+          loginsCount: 1,
+        };
+
+        await service.loginOrSignUp(authProfile, responseMock);
+
+        expect(responseMock.cookie).toHaveBeenCalledWith(
+          "AJWT",
+          expect.any(String),
+          {
+            domain: expectedDomain,
+            secure: true,
+          }
+        );
+        expect(createAccountMock).toHaveBeenCalledTimes(0);
+        expect(updateAccountMock).toHaveBeenCalledTimes(1);
+        expect(updateAccountMock).toHaveBeenCalledWith({
+          where: { id: exampleUser.account.id },
+          data: {
+            previewAccountType: EnumPreviewAccountType.None,
+          },
+        });
+
+        expect(
+          convertPreviewSubscriptionToFreeWithTrialMock
+        ).toHaveBeenCalledTimes(1);
+        expect(
+          convertPreviewSubscriptionToFreeWithTrialMock
+        ).toHaveBeenCalledWith(exampleUser.workspace.id);
+
+        expect(responseMock.redirect).toHaveBeenCalledWith(
+          301,
+          "https://server.amplication.com?complete-signup=0&preview-user-login=1"
         );
       });
     });
@@ -1024,7 +1084,7 @@ describe("AuthService", () => {
         expect(updateAccountMock).toHaveBeenCalledTimes(1);
         expect(responseMock.redirect).toHaveBeenCalledWith(
           301,
-          "https://server.amplication.com?complete-signup=0"
+          urlQueryParamExample
         );
       });
     });

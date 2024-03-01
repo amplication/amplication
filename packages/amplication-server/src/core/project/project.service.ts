@@ -472,14 +472,11 @@ export class ProjectService {
       await Promise.all(promises);
     }
     if (!skipBuild) {
-      await this.analytics.track({
-        userId: currentUser.account.id,
-        properties: {
-          workspaceId: project.workspaceId,
-          projectId: project.id,
-          $groups: { groupWorkspace: project.workspaceId },
-        },
+      await this.analytics.trackWithContext({
         event: EnumEventType.CommitCreate,
+        properties: {
+          projectId,
+        },
       });
     }
 

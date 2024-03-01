@@ -392,23 +392,10 @@ export class EntityService {
     );
 
     if (trackEvent) {
-      const resourceWithProject = await this.prisma.resource.findUnique({
-        where: {
-          id: resourceId,
-        },
-        include: {
-          project: true,
-        },
-      });
-
-      await this.analytics.track({
-        userId: user.account.id,
+      await this.analytics.trackWithContext({
         properties: {
           resourceId: resourceId,
-          projectId: resourceWithProject.projectId,
-          workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,
-          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.EntityCreate,
       });
@@ -449,16 +436,19 @@ export class EntityService {
         "Feature Unavailable. Your current user permissions doesn't include importing Prisma schemas"
       );
 
-    await this.analytics.track({
-      userId: user.account.id,
-      properties: {
-        resourceId: resourceId,
-        projectId: resourceWithProject.projectId,
+    await this.analytics.trackManual({
+      user: {
+        accountId: user.account.id,
         workspaceId: resourceWithProject.project.workspaceId,
-        fileName: fileName,
-        $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
       },
-      event: EnumEventType.ImportPrismaSchemaStart,
+      data: {
+        properties: {
+          resourceId: resourceId,
+          projectId: resourceWithProject.projectId,
+          fileName: fileName,
+        },
+        event: EnumEventType.ImportPrismaSchemaStart,
+      },
     });
 
     try {
@@ -487,19 +477,20 @@ export class EntityService {
       );
 
       if (!valid) {
-        await this.analytics.track({
-          userId: user.account.id,
-          properties: {
-            resourceId: resourceId,
-            projectId: resourceWithProject.projectId,
+        await this.analytics.trackManual({
+          user: {
+            accountId: user.account.id,
             workspaceId: resourceWithProject.project.workspaceId,
-            fileName: fileName,
-            error: "Duplicate entity names",
-            $groups: {
-              groupWorkspace: resourceWithProject.project.workspaceId,
-            },
           },
-          event: EnumEventType.ImportPrismaSchemaError,
+          data: {
+            properties: {
+              resourceId: resourceId,
+              projectId: resourceWithProject.projectId,
+              fileName: fileName,
+              error: "Duplicate entity names",
+            },
+            event: EnumEventType.ImportPrismaSchemaError,
+          },
         });
 
         this.logger.error(`Invalid Prisma schema`, null, {
@@ -538,39 +529,43 @@ export class EntityService {
           true
         );
 
-        await this.analytics.track({
-          userId: user.account.id,
-          properties: {
-            resourceId: resourceId,
-            projectId: resourceWithProject.projectId,
+        await this.analytics.trackManual({
+          user: {
+            accountId: user.account.id,
             workspaceId: resourceWithProject.project.workspaceId,
-            fileName: fileName,
-            totalEntities: entities.length,
-            totalFields: preparedEntitiesWithFields?.reduce(
-              (acc, entity) => acc + (entity.fields?.length || 0),
-              0
-            ),
-            $groups: {
-              groupWorkspace: resourceWithProject.project.workspaceId,
-            },
           },
-          event: EnumEventType.ImportPrismaSchemaCompleted,
+          data: {
+            properties: {
+              resourceId: resourceId,
+              projectId: resourceWithProject.projectId,
+              fileName: fileName,
+              totalEntities: entities.length,
+              totalFields: preparedEntitiesWithFields?.reduce(
+                (acc, entity) => acc + (entity.fields?.length || 0),
+                0
+              ),
+            },
+            event: EnumEventType.ImportPrismaSchemaCompleted,
+          },
         });
 
         return entities;
       }
     } catch (error) {
-      await this.analytics.track({
-        userId: user.account.id,
-        properties: {
-          resourceId: resourceId,
-          projectId: resourceWithProject.projectId,
+      await this.analytics.trackManual({
+        user: {
+          accountId: user.account.id,
           workspaceId: resourceWithProject.project.workspaceId,
-          fileName: fileName,
-          error: error.message,
-          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
-        event: EnumEventType.ImportPrismaSchemaError,
+        data: {
+          properties: {
+            resourceId: resourceId,
+            projectId: resourceWithProject.projectId,
+            fileName: fileName,
+            error: error.message,
+          },
+          event: EnumEventType.ImportPrismaSchemaError,
+        },
       });
       this.logger.error(error.message, error, {
         resourceId,
@@ -1056,23 +1051,10 @@ export class EntityService {
         throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
       }
 
-      const resourceWithProject = await this.prisma.resource.findUnique({
-        where: {
-          id: entity.resourceId,
-        },
-        include: {
-          project: true,
-        },
-      });
-
-      await this.analytics.track({
-        userId: user.account.id,
+      await this.analytics.trackWithContext({
         properties: {
           resourceId: entity.resourceId,
-          projectId: resourceWithProject.projectId,
-          workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,
-          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.EntityUpdate,
       });
@@ -1663,7 +1645,7 @@ export class EntityService {
     const entities = await this.prisma.entity.findMany({
       where: {
         ...args.where,
-        resourceId: args.where.resource.id,
+        resourceId: args.where.resourceId,
         deletedAt: null,
       },
       select: {
@@ -2499,26 +2481,11 @@ export class EntityService {
         }
 
         if (trackEvent) {
-          const resourceWithProject = await this.prisma.resource.findUnique({
-            where: {
-              id: entity.resourceId,
-            },
-            include: {
-              project: true,
-            },
-          });
-
-          await this.analytics.track({
-            userId: user.account.id,
+          await this.analytics.trackWithContext({
             properties: {
               resourceId: entity.resourceId,
-              projectId: resourceWithProject.projectId,
-              workspaceId: resourceWithProject.project.workspaceId,
               entityFieldName: args.data.displayName,
               dataType: args.data.dataType,
-              $groups: {
-                groupWorkspace: resourceWithProject.project.workspaceId,
-              },
             },
             event: EnumEventType.EntityFieldCreate,
           });
@@ -2818,26 +2785,11 @@ export class EntityService {
           });
         }
 
-        const resourceWithProject = await this.prisma.resource.findUnique({
-          where: {
-            id: entity.resourceId,
-          },
-          include: {
-            project: true,
-          },
-        });
-
-        await this.analytics.track({
-          userId: user.account.id,
+        await this.analytics.trackWithContext({
           properties: {
             resourceId: entity.resourceId,
-            projectId: resourceWithProject.projectId,
-            workspaceId: resourceWithProject.project.workspaceId,
             entityFieldName: args.data.displayName,
             dataType: args.data.dataType,
-            $groups: {
-              groupWorkspace: resourceWithProject.project.workspaceId,
-            },
           },
           event: EnumEventType.EntityFieldUpdate,
         });
@@ -2894,7 +2846,9 @@ export class EntityService {
           } else if (
             fieldStrategy === EnumRelatedFieldStrategy.UpdateToScalar
           ) {
-            field.dataType = properties.allowMultipleSelection
+            const allowMultipleSelection = properties.allowMultipleSelection;
+
+            field.dataType = allowMultipleSelection
               ? EnumDataType.Json
               : await this.getRelatedFieldScalarTypeByRelatedEntityIdType(
                   properties.relatedEntityId
@@ -2902,8 +2856,10 @@ export class EntityService {
 
             const data: EntityFieldUpdateInput = {
               dataType: field.dataType,
-              name: field.name,
-              displayName: field.displayName,
+              name: allowMultipleSelection ? field.name : `${field.name}Id`,
+              displayName: allowMultipleSelection
+                ? field.displayName
+                : `${field.displayName} ID`,
               properties: DATA_TYPE_TO_DEFAULT_PROPERTIES[field.dataType],
             };
 

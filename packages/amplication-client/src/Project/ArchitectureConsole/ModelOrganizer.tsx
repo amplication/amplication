@@ -1,5 +1,6 @@
 import {
   Button,
+  ConfirmationDialog,
   Dialog,
   EnumFlexDirection,
   FlexItem,
@@ -26,17 +27,22 @@ import relationEdge from "./edges/relationEdge";
 import RelationMarkets from "./edges/relationMarkets";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
 import { findGroupByPosition } from "./helpers";
-import useModelOrganization from "./hooks/useModelOrganizer";
+import useModelOrganizer from "./hooks/useModelOrganizer";
 import { applyAutoLayout } from "./layout";
 import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
 import {
+  EntityNode,
   NODE_TYPE_MODEL,
   NODE_TYPE_MODEL_GROUP,
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
+import ModelOrganizerPreviousChangesExistConfirmation from "./ModelOrganizerPreviousChangesExistConfirmation";
+import { useHistory, useLocation } from "react-router-dom";
+import PreviewUserBTMModal from "./PreviewUserBTMModal";
+import { expireCookie, getCookie } from "../../util/cookie";
 
 export const CLASS_NAME = "model-organizer";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -57,13 +63,21 @@ const edgeTypes = {
   relationSimple: simpleRelationEdge,
 };
 
-export default function ModelOrganizer() {
-  const { currentProject } = useAppContext();
+type Props = {
+  restrictedMode?: boolean;
+};
+
+export default function ModelOrganizer({ restrictedMode = false }: Props) {
+  const { currentProject, resetPendingChangesIndicator, isPreviewPlan } =
+    useAppContext();
 
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
 
   const { message, messageType, showMessage, removeMessage } = useMessage();
+
+  const location = useLocation();
+  const history = useHistory();
 
   const {
     nodes,
@@ -87,16 +101,42 @@ export default function ModelOrganizer() {
     mergeNewResourcesChanges,
     redesignMode,
     resetUserAction,
-  } = useModelOrganization({
+    currentEditableResourceNode,
+    clearDuplicateEntityError,
+    setSelectResourceRelatedEntities,
+    errorMessage,
+    setMultipleChanges,
+  } = useModelOrganizer({
     projectId: currentProject?.id,
     onMessage: showMessage,
+    showRelationDetailsOnStartup: restrictedMode,
   });
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
 
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
+  const [showPreviewUserDialog, setShowPreviewUserDialog] =
+    useState<boolean>(false);
 
   const fitViewTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (!resetPendingChangesIndicator) return;
+    resetChanges();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetPendingChangesIndicator]);
+
+  useEffect(() => {
+    if (!isPreviewPlan) return;
+    //is preview user from demo schema
+    else {
+      if (getCookie("preview-user-break-monolith") && !restrictedMode) {
+        expireCookie("preview-user-break-monolith");
+
+        setShowPreviewUserDialog(true);
+      }
+    }
+  }, [isPreviewPlan, setShowPreviewUserDialog, restrictedMode]);
 
   const fitToView = useCallback(
     (delayBeforeStart = 100) => {
@@ -112,6 +152,16 @@ export default function ModelOrganizer() {
     },
     [reactFlowInstance]
   );
+
+  useEffect(() => {
+    if (location.state?.changes) {
+      setMultipleChanges(location.state?.changes);
+      history.replace({
+        ...location,
+        state: { ...location.state, changes: undefined },
+      });
+    }
+  }, [location, history, setMultipleChanges]);
 
   useEffect(() => {
     // Clear the timeout ref when the component unmounts
@@ -132,6 +182,10 @@ export default function ModelOrganizer() {
   const handleCreateResourceState = useCallback(() => {
     setIsValidResourceName(true);
   }, [setIsValidResourceName]);
+
+  const handleShowPreviewUserDismiss = useCallback(() => {
+    setShowPreviewUserDialog(false);
+  }, [setShowPreviewUserDialog]);
 
   const onRedesignClick = useCallback(
     (resource: models.Resource) => {
@@ -244,7 +298,7 @@ export default function ModelOrganizer() {
       if (currentDropTarget) {
         currentDropTarget.data.isCurrentDropTarget = false;
       }
-      setCurrentDropTarget(null);
+
       setNodes([...nodes]);
     },
     [nodes, currentDropTarget, setNodes, reactFlowInstance, moveNodeToParent]
@@ -265,6 +319,14 @@ export default function ModelOrganizer() {
     fitToView();
   }, [nodes, edges, showRelationDetails, setNodes, fitToView]);
 
+  const onNodeClick = useCallback(
+    async (event: React.MouseEvent, node: Node) => {
+      if (!node.data.selectRelatedEntities) return;
+      setSelectResourceRelatedEntities(node as EntityNode);
+    },
+    [setSelectResourceRelatedEntities]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <>
@@ -281,7 +343,14 @@ export default function ModelOrganizer() {
             />
           </div>
           <div className={`${CLASS_NAME}__body`}>
+            <ModelOrganizerPreviousChangesExistConfirmation
+              changes={changes}
+            ></ModelOrganizerPreviousChangesExistConfirmation>
             <ModelOrganizerToolbar
+              restrictedMode={restrictedMode}
+              selectedEditableResource={
+                currentEditableResourceNode?.data?.payload
+              }
               changes={changes}
               nodes={nodes}
               redesignMode={redesignMode}
@@ -316,6 +385,20 @@ export default function ModelOrganizer() {
                 <Button onClick={handleCreateResourceState}>Ok</Button>
               </FlexItem>
             </Dialog>
+
+            <Dialog
+              isOpen={showPreviewUserDialog}
+              onDismiss={handleShowPreviewUserDismiss}
+            >
+              <PreviewUserBTMModal changes={changes}></PreviewUserBTMModal>
+            </Dialog>
+            <ConfirmationDialog
+              isOpen={errorMessage !== null}
+              onDismiss={clearDuplicateEntityError}
+              message={errorMessage}
+              confirmButton={{ label: "I understand" }}
+              onConfirm={clearDuplicateEntityError}
+            ></ConfirmationDialog>
             <div className={REACT_FLOW_CLASS_NAME}>
               <ReactFlow
                 onInit={onInit}
@@ -329,6 +412,7 @@ export default function ModelOrganizer() {
                 onNodeDragStop={onNodeDragStop}
                 onEdgesChange={onEdgesChange}
                 connectionMode={ConnectionMode.Loose}
+                onNodeClick={onNodeClick}
                 proOptions={{ hideAttribution: true }}
                 minZoom={0.1}
                 panOnScroll

@@ -17,9 +17,7 @@ import { NovuService } from "./util/novuService";
     AmplicationLoggerModule.forRoot({
       component: Env.SERVICE_NAME,
     }),
-    TracingModule.forRoot({
-      serviceName: Env.SERVICE_NAME,
-    }),
+    TracingModule.forRoot(),
     HealthModule,
   ],
   controllers: [AppController],

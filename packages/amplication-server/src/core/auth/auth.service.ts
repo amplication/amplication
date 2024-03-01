@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Injectable, forwardRef, Inject } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { subDays } from "date-fns";
@@ -46,8 +47,8 @@ import {
 import { IdentityProvider, IdentityProviderPreview } from "./auth.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import {
-  IdentifyData,
   EnumEventType,
+  IdentifyData,
 } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { stringifyUrl } from "query-string";
 
@@ -114,7 +115,7 @@ export class AuthService {
     existingUser: IdentityProvider | "No" = "No"
   ) {
     const userData: IdentifyData = {
-      userId: existingAccount?.id ?? `${cuid()}-not-registered-yet`,
+      accountId: existingAccount?.id, // we use the existing account id if it exists or anonymous id from client if not
       createdAt: existingAccount?.createdAt ?? null,
       email: existingAccount?.email ?? emailAddress,
       firstName: existingAccount?.firstName ?? null,
@@ -122,16 +123,16 @@ export class AuthService {
     };
 
     await this.analytics.identify(userData);
-    //we send the userData again to prevent race condition
-    await this.analytics.track({
-      userId: userData.userId,
-      event: EnumEventType.StartEmailSignup,
-      properties: {
-        identityProvider: IdentityProvider.IdentityPlatform,
-        existingUser: existingUser,
+    await this.analytics.trackManual({
+      user: {
+        accountId: existingAccount?.id,
       },
-      context: {
-        traits: userData,
+      data: {
+        event: EnumEventType.StartEmailSignup,
+        properties: {
+          identityProvider: IdentityProvider.IdentityPlatform,
+          existingUser: existingUser,
+        },
       },
     });
   }
@@ -147,37 +148,23 @@ export class AuthService {
       return;
     }
 
-    const analyticsUserData: IdentifyData = {
-      userId: account.id,
-      email: profile.email,
-      createdAt: account.createdAt,
-      firstName: profile.given_name,
-      lastName: profile.family_name,
-    };
-
-    void this.analytics.identify(analyticsUserData).catch((error) => {
-      this.logger.error(
-        `Failed to identify user ${analyticsUserData.userId} in segment analytics`,
-        error
-      );
-    });
-    //we send the analyticsUserData again to prevent race condition
     void this.analytics
-      .track({
-        userId: analyticsUserData.userId,
-        event: EnumEventType.CompleteEmailSignup,
-        properties: {
-          identityProvider: IdentityProvider.IdentityPlatform,
-          identityOrigin,
-          existingUser,
+      .trackManual({
+        user: {
+          accountId: account.id,
         },
-        context: {
-          traits: analyticsUserData,
+        data: {
+          event: EnumEventType.CompleteEmailSignup,
+          properties: {
+            identityProvider: IdentityProvider.IdentityPlatform,
+            identityOrigin,
+            existingUser,
+          },
         },
       })
       .catch((error) => {
         this.logger.error(
-          `Failed to track complete business email signup for user ${analyticsUserData.userId}`,
+          `Failed to track complete business email signup for user ${account.id}`,
           error
         );
       });
@@ -371,7 +358,7 @@ export class AuthService {
 
   async completeSignupPreviewAccount(user: User): Promise<string> {
     let auth0User: JSONApiResponse<SignUpResponse>;
-    const { account: currentAccount, workspace } = user;
+    const { account: currentAccount } = user;
 
     const existingAuth0User = await this.getAuth0UserByEmail(
       currentAccount.previewAccountEmail
@@ -385,11 +372,9 @@ export class AuthService {
         throw Error("Failed to create new Auth0 user");
     }
 
-    const userEmail = existingAuth0User
-      ? currentAccount.previewAccountEmail
-      : auth0User.data.email;
-
-    const resetPassword = await this.resetAuth0UserPassword(userEmail);
+    const resetPassword = await this.resetAuth0UserPassword(
+      currentAccount.previewAccountEmail
+    );
 
     if (!resetPassword.data)
       throw Error("Failed to send reset message to new Auth0 user");
@@ -401,20 +386,14 @@ export class AuthService {
     });
 
     if (!existingAccount) {
-      // the current (preview) account didn't sign up yet, so we update his preview account to a regular account.
-      // His data will be kept.
       await this.accountService.updateAccount({
         where: { id: currentAccount.id },
         data: {
-          email: userEmail,
-          previewAccountEmail: null,
-          previewAccountType: EnumPreviewAccountType.None,
+          // at this stage we only update the email, so in loginOrSignUp we'll have the correct email to find the user
+          // and convert the preview account to a regular account with free trial
+          email: currentAccount.previewAccountEmail,
         },
       });
-
-      await this.workspaceService.convertPreviewSubscriptionToFreeWithTrial(
-        workspace.id
-      );
     }
 
     return resetPassword.data;
@@ -465,8 +444,8 @@ export class AuthService {
     return {
       signupData: {
         email: generateRandomEmail(),
-        firstName: "Amplication Preview Account",
-        lastName: previewAccountType,
+        firstName: previewAccountEmail,
+        lastName: "",
         password: generateRandomString(),
         previewAccountType,
         previewAccountEmail,
@@ -781,32 +760,59 @@ export class AuthService {
         OR: [{ githubId: profile.sub }, { email: profile.email }],
       },
     });
+
     let isNew: boolean;
     const existingUser = !!user;
-    if (!user) {
-      user = await this.createUser(profile);
-      isNew = true;
-    }
-    if (!user.account.githubId || user.account.githubId !== profile.sub) {
-      user = await this.updateUser(user, { githubId: profile.sub });
+
+    const isFromPreviewUser =
+      user && user.account.previewAccountType !== EnumPreviewAccountType.None;
+    // to complete the preview account signup, after the user reset the password in Auth0 we need to update the account type and workspace subscription
+    if (isFromPreviewUser) {
+      await this.convertPreviewAccountToRegularAccountWithFreeTrail(user);
       isNew = false;
+    } else {
+      if (!user) {
+        user = await this.createUser(profile);
+        isNew = true;
+      }
+
+      if (!user.account.githubId || user.account.githubId !== profile.sub) {
+        user = await this.updateUser(user, { githubId: profile.sub });
+        isNew = false;
+      }
     }
 
     this.trackCompleteEmailSignup(user.account, profile, existingUser);
 
-    await this.configureJtw(response, user, isNew);
+    await this.configureJtw(response, user, isNew, isFromPreviewUser);
+  }
+
+  async convertPreviewAccountToRegularAccountWithFreeTrail(user: User) {
+    await this.accountService.updateAccount({
+      where: { id: user.account.id },
+      data: {
+        previewAccountType: EnumPreviewAccountType.None,
+      },
+    });
+
+    await this.workspaceService.convertPreviewSubscriptionToFreeWithTrial(
+      user.workspace.id
+    );
   }
 
   async configureJtw(
     response: Response,
     user: AuthUser,
-    isNew: boolean
+    isNew: boolean,
+    isFromPreviewUser = false
   ): Promise<void> {
     const token = await this.prepareToken(user);
     const url = stringifyUrl({
       url: this.clientHost,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      query: { "complete-signup": isNew ? "1" : "0" },
+      query: {
+        "complete-signup": isNew ? "1" : "0",
+        "preview-user-login": isFromPreviewUser ? "1" : "0",
+      },
     });
     const clientDomain = new URL(url).hostname;
 
