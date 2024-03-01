@@ -69,7 +69,7 @@ export class Tracing extends OtelTracing {
       // }),
     ];
     const sdkConfig =
-      process.env.NODE_ENV !== "production"
+      process.env.NODE_ENV === "production"
         ? addAwsXRayConfiguration(configuration)
         : addLocalConfiguration(configuration);
 
