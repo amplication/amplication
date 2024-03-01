@@ -23,7 +23,7 @@ class BreakServiceToMicroservicesItem {
   functionality: string;
 
   @Field(() => [BreakServiceToMicroservicesItemEntities])
-  dataModels: BreakServiceToMicroservicesItemEntities[];
+  tables: BreakServiceToMicroservicesItemEntities[];
 }
 
 @ObjectType({

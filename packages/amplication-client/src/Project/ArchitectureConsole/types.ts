@@ -14,6 +14,7 @@ export type NodePayload<T> = {
   originalParentNode?: string;
   isCurrentDropTarget?: boolean;
   highlight?: boolean;
+  selectRelatedEntities?: boolean;
 };
 
 export type NodePayloadWithPayloadType = NodePayload<
@@ -65,10 +66,16 @@ export type ModelChanges = {
   movedEntities: models.RedesignProjectMovedEntity[];
 };
 
+export type OverrideChanges = {
+  resourceId: string;
+  changes: ModelChanges;
+};
+
 export type ModelOrganizerPersistentData = {
   projectId: string;
   nodes: Node[];
   changes: ModelChanges;
   showRelationDetails: boolean;
   redesignMode: boolean;
+  refetchChangesOnNextReload?: boolean;
 };

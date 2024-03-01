@@ -176,9 +176,9 @@ type BreakServiceToMicroservicesData {
 }
 
 type BreakServiceToMicroservicesItem {
-  dataModels: [BreakServiceToMicroservicesItemEntities!]!
   functionality: String!
   name: String!
+  tables: [BreakServiceToMicroservicesItemEntities!]!
 }
 
 type BreakServiceToMicroservicesItemEntities {
@@ -294,7 +294,7 @@ input CommitWhereInput {
 }
 
 input CommitWhereUniqueInput {
-  id: String
+  id: String!
 }
 
 input CompleteInvitationInput {
@@ -1498,6 +1498,7 @@ input RedesignProjectMovedEntity {
 }
 
 input RedesignProjectNewService {
+  description: String!
   id: String!
   name: String!
 }
@@ -1930,6 +1931,7 @@ input WhereUniqueInput {
 }
 
 type Workspace {
+  allowLLMFeatures: Boolean!
   createdAt: DateTime!
   externalId: String
   gitOrganizations: [GitOrganization!]
@@ -1953,5 +1955,6 @@ type WorkspaceMember {
 union WorkspaceMemberType = Invitation | User
 
 input WorkspaceUpdateInput {
+  allowLLMFeatures: Boolean
   name: String
 }

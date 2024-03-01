@@ -1,12 +1,14 @@
 import { EnumResourceType } from "@amplication/code-gen-types/models";
 import {
   CircleBadge,
+  EnumButtonStyle,
   EnumFlexDirection,
   EnumGapSize,
   EnumItemsAlign,
   EnumPanelStyle,
   EnumTextStyle,
   FlexItem,
+  HorizontalRule,
   List,
   Panel,
   Text,
@@ -25,6 +27,8 @@ import ViewCodeViewTile from "./ViewCodeViewTile";
 import { resourceThemeMap } from "./constants";
 import PluginsTile from "./PluginsTile";
 import { useStiggContext } from "@stigg/react-sdk";
+import { BtmButton, EnumButtonLocation } from "./break-the-monolith/BtmButton";
+import { FlexEnd } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -40,6 +44,18 @@ const ResourceOverview = () => {
 
   return (
     <PageContent pageTitle={PAGE_TITLE}>
+      <FlexItem>
+        <FlexEnd>
+          <BtmButton
+            openInFullScreen
+            location={EnumButtonLocation.Resource}
+            ButtonStyle={EnumButtonStyle.GradientFull}
+          />
+        </FlexEnd>
+      </FlexItem>
+
+      <HorizontalRule doubleSpacing />
+
       <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem
           itemsAlign={EnumItemsAlign.Center}

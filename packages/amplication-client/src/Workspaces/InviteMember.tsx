@@ -102,11 +102,7 @@ const InviteMember = () => {
                 entitlementType={EntitlementType.Metered}
                 limitationText="The workspace reached your plan's team members limitation. "
               >
-                <Button
-                  buttonStyle={EnumButtonStyle.Primary}
-                  disabled={!formik.isValid || loading}
-                  type="submit"
-                >
+                <Button buttonStyle={EnumButtonStyle.Primary} type="submit">
                   Invite
                 </Button>
               </FeatureIndicatorContainer>

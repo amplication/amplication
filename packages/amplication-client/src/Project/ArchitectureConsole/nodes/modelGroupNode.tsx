@@ -46,7 +46,9 @@ const ModelGroupNode: FC<ModelProps> = memo(({ id }) => {
           contentAlign={EnumContentAlign.Start}
           direction={EnumFlexDirection.Column}
         >
-          <Text textStyle={EnumTextStyle.Normal}>{data.payload.name}</Text>
+          <FlexItem contentAlign={EnumContentAlign.Space}>
+            <Text textStyle={EnumTextStyle.Normal}>{data.payload.name}</Text>
+          </FlexItem>
           <Text textStyle={EnumTextStyle.Description}>
             {data.payload.description}
           </Text>

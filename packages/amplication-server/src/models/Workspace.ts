@@ -27,6 +27,11 @@ export class Workspace {
   })
   name!: string;
 
+  @Field(() => Boolean, {
+    nullable: false,
+  })
+  allowLLMFeatures!: boolean;
+
   @Field(() => [Project])
   projects?: Project[];
 

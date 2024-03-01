@@ -39,7 +39,7 @@ const EXAMPLE_ACCOUNT: Account = {
 
 const EXAMPLE_PREVIEW_ACCOUNT: Account = {
   id: "alice",
-  email: "example@amplication.com",
+  email: "fake+example@amplication.com",
   password: "PASSWORD",
   firstName: "Alice",
   lastName: "Appleseed",
@@ -79,6 +79,9 @@ const EXAMPLE_NEW_HASHED_PASSWORD = "NEW HASHED PASSWORD";
 
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
 
+const urlQueryParamExample =
+  "https://server.amplication.com?complete-signup=0&preview-user-login=0";
+
 const EXAMPLE_USER: User = {
   id: "exampleUser",
   createdAt: new Date(),
@@ -94,6 +97,7 @@ const EXAMPLE_WORKSPACE: Workspace & { users: User[] } = {
   createdAt: new Date(),
   updatedAt: new Date(),
   users: [EXAMPLE_USER],
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_OTHER_WORKSPACE: Workspace = {
@@ -101,6 +105,7 @@ const EXAMPLE_OTHER_WORKSPACE: Workspace = {
   name: "Example Other Workspace",
   createdAt: new Date(),
   updatedAt: new Date(),
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_USER_ROLE: UserRole = {
@@ -642,12 +647,6 @@ describe("AuthService", () => {
 
         expect(result).toEqual(resetPasswordDataMocked);
         expect(updateAccountMock).toHaveBeenCalledTimes(1);
-        expect(
-          convertPreviewSubscriptionToFreeWithTrialMock
-        ).toHaveBeenCalledTimes(1);
-        expect(
-          convertPreviewSubscriptionToFreeWithTrialMock
-        ).toHaveBeenCalledWith(exampleUser.workspace.id);
       });
 
       it("should not update the preview account to a regular account with free trial if there is account with the preview email", async () => {
@@ -956,7 +955,7 @@ describe("AuthService", () => {
 
       expect(responseMock.redirect).toHaveBeenCalledWith(
         301,
-        "https://server.amplication.com?complete-signup=0"
+        urlQueryParamExample
       );
     });
   });
@@ -991,7 +990,65 @@ describe("AuthService", () => {
 
         expect(responseMock.redirect).toHaveBeenCalledWith(
           301,
-          "https://server.amplication.com?complete-signup=0"
+          urlQueryParamExample
+        );
+      });
+
+      it("should update preview user and track the event", async () => {
+        const exampleUser = {
+          ...EXAMPLE_USER,
+          account: {
+            ...EXAMPLE_USER.account,
+            ...EXAMPLE_PREVIEW_ACCOUNT,
+          },
+          workspace: EXAMPLE_WORKSPACE,
+        };
+
+        jest.spyOn(service, "getAuthUser").mockResolvedValueOnce({
+          ...EXAMPLE_AUTH_USER,
+          account: {
+            ...EXAMPLE_ACCOUNT,
+            ...EXAMPLE_PREVIEW_ACCOUNT,
+          },
+        });
+
+        const authProfile: AuthProfile = {
+          sub: "123",
+          email: exampleUser.account.previewAccountEmail,
+          nickname: "",
+          identityOrigin: "AnSSOIntegration",
+          loginsCount: 1,
+        };
+
+        await service.loginOrSignUp(authProfile, responseMock);
+
+        expect(responseMock.cookie).toHaveBeenCalledWith(
+          "AJWT",
+          expect.any(String),
+          {
+            domain: expectedDomain,
+            secure: true,
+          }
+        );
+        expect(createAccountMock).toHaveBeenCalledTimes(0);
+        expect(updateAccountMock).toHaveBeenCalledTimes(1);
+        expect(updateAccountMock).toHaveBeenCalledWith({
+          where: { id: exampleUser.account.id },
+          data: {
+            previewAccountType: EnumPreviewAccountType.None,
+          },
+        });
+
+        expect(
+          convertPreviewSubscriptionToFreeWithTrialMock
+        ).toHaveBeenCalledTimes(1);
+        expect(
+          convertPreviewSubscriptionToFreeWithTrialMock
+        ).toHaveBeenCalledWith(exampleUser.workspace.id);
+
+        expect(responseMock.redirect).toHaveBeenCalledWith(
+          301,
+          "https://server.amplication.com?complete-signup=0&preview-user-login=1"
         );
       });
     });
@@ -1027,7 +1084,7 @@ describe("AuthService", () => {
         expect(updateAccountMock).toHaveBeenCalledTimes(1);
         expect(responseMock.redirect).toHaveBeenCalledWith(
           301,
-          "https://server.amplication.com?complete-signup=0"
+          urlQueryParamExample
         );
       });
     });
