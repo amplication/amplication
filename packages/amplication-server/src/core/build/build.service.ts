@@ -485,6 +485,7 @@ export class BuildService {
 
       await this.actionService.logInfo(step, response.url, {
         githubUrl: response.url,
+        diffStat: response.diffStat,
       });
       await this.actionService.logInfo(
         step,
