@@ -1645,7 +1645,7 @@ export class EntityService {
     const entities = await this.prisma.entity.findMany({
       where: {
         ...args.where,
-        resourceId: args.where.resource.id,
+        resourceId: args.where.resourceId,
         deletedAt: null,
       },
       select: {
