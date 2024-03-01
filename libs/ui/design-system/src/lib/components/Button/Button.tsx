@@ -24,6 +24,7 @@ export enum EnumButtonState {
 export enum EnumIconPosition {
   Left = "left",
   Right = "right",
+  None = "none",
 }
 export interface Props extends PrimerButtonProps {
   /** The display style of the button */

@@ -57,10 +57,10 @@ import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
 import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
 import { FeatureIndicator } from "../../Components/FeatureIndicator";
 import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
+import useFetchGithubStars from "../hooks/useFetchGithubStars";
 
 const CLASS_NAME = "workspace-header";
-const MWC_MEETING_URL =
-  "https://meetings-eu1.hubspot.com/oalaluf/book-your-demo-mwc";
+const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
 
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
@@ -103,6 +103,7 @@ const WorkspaceHeader: React.FC = () => {
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
   const novuBellRef = useRef(null);
+  const stars = useFetchGithubStars();
 
   const daysLeftText = useMemo(() => {
     return `${upgradeButtonData.trialDaysLeft} day${
@@ -216,21 +217,17 @@ const WorkspaceHeader: React.FC = () => {
         <ProfileForm />
       </Dialog>
       <WorkspaceBanner
-        to={MWC_MEETING_URL}
-        clickEventName={AnalyticsEventNames.MWC2024BannerCTAClick}
+        to={AMP_GITHUB_URL}
+        clickEventName={AnalyticsEventNames.StarUsBannerCTAClick}
         clickEventProps={{}}
-        closeEventName={AnalyticsEventNames.MWC2024BannerClose}
+        closeEventName={AnalyticsEventNames.StarUsBannerClose}
         closeEventProps={{}}
       >
-        <Icon icon="rss" />
-        Join us at MWC Barcelona 2024 (Feb 26 - 29).{" "}
-        <Text
-          textColor={EnumTextColor.ThemeTurquoise}
-          textStyle={EnumTextStyle.Normal}
-        >
-          Book a meeting
-        </Text>
-        , and let's innovate together!
+        <Icon icon="github" />
+        Star us on GitHub{" "}
+        <span className={`${CLASS_NAME}__stars`}>
+          {stars} <Icon icon="star" />
+        </span>
       </WorkspaceBanner>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__left`}>

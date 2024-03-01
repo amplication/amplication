@@ -294,7 +294,7 @@ input CommitWhereInput {
 }
 
 input CommitWhereUniqueInput {
-  id: String
+  id: String!
 }
 
 input CompleteInvitationInput {

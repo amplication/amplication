@@ -2,12 +2,7 @@ import { ReactElement, memo, useCallback, type FC } from "react";
 import { Handle, Position, useStore } from "reactflow";
 import "./modelNode.scss";
 
-import {
-  EnumContentAlign,
-  EnumTextStyle,
-  FlexItem,
-  Text,
-} from "@amplication/ui/design-system";
+import { EnumTextStyle, Text } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import * as models from "../../../models";
 import { EntityNode, NodePayload } from "../types";
@@ -67,9 +62,11 @@ const ModelNodeBase: FC<Props> = memo(
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
             {data.payload.displayName}
           </Text>
-          <EntityContextMenuButton
-            onSelectRelatedEntities={handleSelectRelatedEntitiesClicked}
-          ></EntityContextMenuButton>
+          {sourceNode?.draggable && (
+            <EntityContextMenuButton
+              onSelectRelatedEntities={handleSelectRelatedEntitiesClicked}
+            ></EntityContextMenuButton>
+          )}
         </div>
         {includeModelHandles && (
           <Handle
