@@ -1,0 +1,33 @@
+version: "3"
+services:
+  # tracing:
+  #   image: jaegertracing/all-in-one:latest
+  #   ports:
+  #     - 6831:6831/udp
+  #     - 6832:6832/udp
+  #     - 5778:5778
+  #     - 16686:16686
+  #     - 4317:4317
+  #     - 4318:4318
+  #     - 14250:14250
+  #     - 14268:14268
+  #     - 14269:14269
+  #     - 9411:9411
+
+  xray:
+    image: amazon/aws-otel-collector:latest
+    command: ["--config=/etc/otel-agent-config.yaml"]
+    environment:
+      - AWS_REGION=us-east-1
+      - AWS_PROFILE=amplication-sandbox-admin
+    volumes:
+      - ./aws-opendistro.config.yml:/etc/otel-agent-config.yaml
+      - ~/.aws:/home/aoc/.aws
+    ports:
+      - "1777:1777" # pprof extension
+      - "55679:55679" # zpages extension
+      - "4317:4317" # OTLP receiver
+      - "13133" # health_check
+
+volumes:
+  postgres: ~

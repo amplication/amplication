@@ -55,9 +55,7 @@ import { TracingModule } from "@amplication/util/nestjs/tracing";
     AmplicationLoggerModule.forRoot({
       component: SERVICE_NAME,
     }),
-    TracingModule.forRoot({
-      serviceName: SERVICE_NAME,
-    }),
+    TracingModule.forRoot(),
   ],
   providers: [
     {
