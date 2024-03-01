@@ -5,7 +5,10 @@ import * as models from "../models";
 const PUSH_TO_GIT_STEP_NAME = "PUSH_TO_";
 
 const useBuildGitUrl = (build?: models.Build) => {
-  const gitUrl = useMemo<string | null>(() => {
+  const metadata = useMemo<{
+    githubUrl: string | null;
+    diffStat: string;
+  } | null>(() => {
     if (!build?.action?.steps?.length) {
       return null;
     }
@@ -17,10 +20,13 @@ const useBuildGitUrl = (build?: models.Build) => {
       (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
     );
 
-    return log?.meta?.githubUrl || null;
+    return log?.meta;
   }, [build?.action]);
 
-  return gitUrl;
+  return {
+    gitUrl: metadata?.githubUrl || null,
+    diffStat: metadata?.diffStat || "",
+  };
 };
 
 export default useBuildGitUrl;

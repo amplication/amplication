@@ -15,16 +15,26 @@ const BuildGitLink = ({
   build,
   textColor = EnumTextColor.ThemeTurquoise,
 }: Props) => {
-  const buildGitUrl = useBuildGitUrl(build);
+  const { gitUrl, diffStat } = useBuildGitUrl(build);
 
   return (
-    buildGitUrl && (
-      <a href={buildGitUrl} target={"git"}>
-        <Text textStyle={EnumTextStyle.Subtle} textColor={textColor}>
-          {buildGitUrl}
+    <>
+      {gitUrl && (
+        <a href={gitUrl} target={"git"}>
+          <Text textStyle={EnumTextStyle.Subtle} textColor={textColor}>
+            {gitUrl}
+          </Text>
+        </a>
+      )}
+      {diffStat && (
+        <Text
+          textStyle={EnumTextStyle.Subtle}
+          textColor={EnumTextColor.ThemeOrange}
+        >
+          {diffStat}
         </Text>
-      </a>
-    )
+      )}
+    </>
   );
 };
 
