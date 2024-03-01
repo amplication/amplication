@@ -1,5 +1,4 @@
 import { AwsRum, AwsRumConfig } from "aws-rum-web";
-
 import {
   REACT_APP_RUM_ROLE_ID,
   REACT_APP_RUM_POOL_ID,
@@ -7,7 +6,7 @@ import {
   REACT_APP_RUM_SAMPLE_RATE,
 } from "../env";
 
-let awsRum: AwsRum | null = null;
+let monitoring: AwsRum | null = null;
 
 if (REACT_APP_RUM_APP_ID) {
   try {
@@ -16,16 +15,20 @@ if (REACT_APP_RUM_APP_ID) {
       guestRoleArn: REACT_APP_RUM_ROLE_ID,
       identityPoolId: REACT_APP_RUM_POOL_ID,
       endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
-      telemetries: ["performance", "errors", "http"],
+      telemetries: [
+        "performance",
+        "errors",
+        ["http", { addXRayTraceIdHeader: [/amplication.com/, /localhost/] }],
+      ],
       allowCookies: true,
-      enableXRay: false,
+      enableXRay: true,
       disableAutoPageView: true,
       sessionEventLimit: 0,
     };
     const APPLICATION_VERSION = "1.0.0";
     const APPLICATION_REGION = "us-east-1";
 
-    awsRum = new AwsRum(
+    monitoring = new AwsRum(
       REACT_APP_RUM_APP_ID,
       APPLICATION_VERSION,
       APPLICATION_REGION,
@@ -36,13 +39,13 @@ if (REACT_APP_RUM_APP_ID) {
   }
 
   window.addEventListener("error", (event) => {
-    awsRum.recordError(event);
+    monitoring.recordError(event);
   });
 } else {
-  awsRum = {
+  monitoring = {
     enable: () => {},
     recordPageView: () => {},
   } as unknown as AwsRum;
 }
 
-export { awsRum };
+export { monitoring };

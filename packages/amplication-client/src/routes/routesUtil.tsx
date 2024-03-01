@@ -3,7 +3,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { RouteDef } from "./appRoutes";
 import useAuthenticated from "../authentication/use-authenticated";
 import * as analytics from "../util/analytics";
-import { awsRum } from "../util/rum";
+import { monitoring } from "../util/monitoring";
 
 //use lazy loading imports to prevent inclusion of the components CSS in the main bundle
 const CircularProgress = lazy(
@@ -135,7 +135,7 @@ const pageTracking = (path: string, url: string, params: any) => {
   });
 
   const cleanPath = path.replaceAll("([A-Za-z0-9-]{20,})", "");
-  awsRum.recordPageView({
+  monitoring.recordPageView({
     pageId: cleanPath,
     pageAttributes: params,
   });
