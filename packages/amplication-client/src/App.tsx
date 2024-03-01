@@ -1,5 +1,4 @@
 import React, { lazy, useCallback, useState, useEffect, useMemo } from "react";
-import { monitoring } from "./util/monitoring";
 import { useLocation } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
@@ -55,8 +54,6 @@ export const enhance = track<keyof typeof context>(
     dispatch,
   }
 );
-
-monitoring.enable();
 
 function App() {
   const authenticated = useAuthenticated();
