@@ -18,10 +18,11 @@ if (REACT_APP_RUM_APP_ID) {
       telemetries: [
         "performance",
         "errors",
-        ["http", { addXRayTraceIdHeader: [/amplication.com/, /localhost/] }],
+        "http",
+        // ["http", { addXRayTraceIdHeader: [/amplication.com/, /localhost/] }],
       ],
       allowCookies: true,
-      enableXRay: true,
+      enableXRay: false,
       disableAutoPageView: true,
       sessionEventLimit: 0,
     };
