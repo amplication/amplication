@@ -182,7 +182,7 @@
     "rooks": "^7.14.1",
     "rxjs": "^7.5.7",
     "sentence-case": "^3.0.4",
-    "simple-git": "^3.14.1",
+    "simple-git": "^3.22.0",
     "skeleton-screen-css": "^1.1.0",
     "tar-stream": "^2.2.0",
     "ts-morph": "^17.0.1",
