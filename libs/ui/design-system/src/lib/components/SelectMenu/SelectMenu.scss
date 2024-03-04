@@ -15,7 +15,7 @@ $caret-width: 7px;
 
   & &__item {
     border-bottom: none;
-    color: var(--gray-20);
+    color: var(--gray-base);
     background-color: var(--gray-90);
     flex-direction: row-reverse;
     justify-content: space-between;
@@ -59,6 +59,7 @@ $caret-width: 7px;
 
     > div {
       border: $border-dark;
+      border-color: #444b66;
       box-shadow: $dropdown-box-shadow;
       border-radius: var(--default-border-radius);
       position: relative;

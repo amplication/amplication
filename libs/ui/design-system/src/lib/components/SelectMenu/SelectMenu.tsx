@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 
 import { SelectMenu as PrimerSelectMenu } from "@primer/react/deprecated";
 import type {
@@ -68,6 +68,13 @@ export const SelectMenu = ({
   buttonIconPosition = EnumIconPosition.Right,
   ...rest
 }: Props) => {
+  const selectMenuRef = useRef(null);
+  useEffect(() => {
+    if (selectMenuRef.current) {
+      selectMenuRef.current.lastChild.lastChild.style.width =
+        selectMenuRef.current.offsetWidth.toString() + "px";
+    }
+  }, []);
   if (disabled) {
     return (
       <div className={classNames("select-menu", className)}>
@@ -77,7 +84,7 @@ export const SelectMenu = ({
           buttonStyle={buttonStyle}
           buttonClassName={buttonClassName}
           icon={icon}
-          openIcon={openIcon}
+          openIcon={openIcon ? openIcon : "chevron_up"}
           title={title}
         />
       </div>
@@ -90,6 +97,7 @@ export const SelectMenu = ({
             hideSelectedItemsIndication,
         })}
         {...(selectRef ? { ref: selectRef } : {})}
+        ref={selectMenuRef}
         {...rest}
       >
         <SelectButton
@@ -98,7 +106,7 @@ export const SelectMenu = ({
           buttonIconPosition={buttonIconPosition}
           buttonClassName={buttonClassName}
           icon={icon}
-          openIcon={openIcon}
+          openIcon={openIcon ? openIcon : "chevron_up"}
           title={title}
         />
         {children}
