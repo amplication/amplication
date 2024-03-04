@@ -4,12 +4,23 @@ import {
   EnumDataType,
   EnumModuleDtoType,
 } from "@amplication/code-gen-types";
-import { getDefaultDtosForEntity } from "./dto-util";
+import {
+  createEnumName,
+  getDefaultDtosForEntity,
+  getDefaultDtosForEnumField,
+  getDefaultDtosForRelatedEntity,
+} from "./dto-util";
 
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
+const EXAMPLE_RELATED_ENTITY_NAME = "ExampleRelatedEntityName";
+
 const EXAMPLE_ENTITY_PLURAL_NAME = "exampleEntityNames";
+const EXAMPLE_RELATED_ENTITY_PLURAL_NAME = "exampleRelatedEntityNames";
+const EXAMPLE_ENTITY_PLURAL_NAME_PASCAL = "ExampleEntityNames";
+
 const EXAMPLE_ENTITY_DISPLAY_NAME = "Example Entity Name";
 const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = "Example Entity Names";
+const EXAMPLE_RELATED_ENTITY_PLURAL_DISPLAY_NAME = "Example Entity Names";
 
 const EXAMPLE_FIELD_NAME_TO_MANY = "ExampleFieldNames";
 const EXAMPLE_FIELD_NAME_TO_MANY_KEBAB = "example-field-names";
@@ -17,6 +28,8 @@ const EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY = "Example Field Names";
 const EXAMPLE_FIELD_NAME_TO_ONE = "ExampleFieldName";
 const EXAMPLE_FIELD_NAME_TO_ONE_KEBAB = "example-field-name";
 const EXAMPLE_FIELD_DISPLAY_NAME_TO_ONE = "Example Field Name";
+const EXAMPLE_ENUM_FIELD_NAME = "ExampleEnumFieldName";
+const EXAMPLE_ENUM_FIELD_DISPLAY_NAME = "Example Enum Field Name";
 
 const EXAMPLE_FIELD_RELATED_TO_MANY: EntityField = {
   id: "EXAMPLE_FIELD_ID",
@@ -56,6 +69,21 @@ const EXAMPLE_FIELD_RELATED_TO_ONE: EntityField = {
   searchable: true,
 };
 
+const EXAMPLE_ENUM_FIELD: EntityField = {
+  id: "EXAMPLE_ENUM_FIELD_ID",
+  permanentId: "EXAMPLE_PERMANENT_ENUM_FIELD_ID",
+  name: EXAMPLE_ENUM_FIELD_NAME,
+  dataType: EnumDataType.OptionSet,
+  properties: {
+    allowMultipleSelection: false,
+  },
+  required: true,
+  unique: false,
+  description: "",
+  displayName: EXAMPLE_ENUM_FIELD_DISPLAY_NAME,
+  searchable: true,
+};
+
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
@@ -63,6 +91,16 @@ const EXAMPLE_ENTITY: Entity = {
   pluralName: EXAMPLE_ENTITY_PLURAL_NAME,
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_FIELD_RELATED_TO_MANY, EXAMPLE_FIELD_RELATED_TO_ONE],
+  permissions: [],
+};
+
+const EXAMPLE_RELATED_ENTITY: Entity = {
+  id: "RelatedEntityId",
+  displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
+  pluralDisplayName: EXAMPLE_RELATED_ENTITY_PLURAL_DISPLAY_NAME,
+  pluralName: EXAMPLE_RELATED_ENTITY_PLURAL_NAME,
+  name: EXAMPLE_RELATED_ENTITY_NAME,
+  fields: [EXAMPLE_FIELD_RELATED_TO_ONE],
   permissions: [],
 };
 
@@ -160,6 +198,43 @@ describe("getDefaultDtosForEntity", () => {
         enabled: true,
         properties: [],
       },
+    });
+  });
+});
+
+describe("getDefaultDtosForRelatedEntity", () => {
+  it("should return a list of default dtos for related entity", () => {
+    expect(
+      getDefaultDtosForRelatedEntity(EXAMPLE_ENTITY, EXAMPLE_RELATED_ENTITY)
+    ).toEqual({
+      [EnumModuleDtoType.CreateNestedManyInput]: {
+        dtoType: EnumModuleDtoType.CreateNestedManyInput,
+        name: `${EXAMPLE_RELATED_ENTITY_NAME}CreateNestedManyWithout${EXAMPLE_ENTITY_PLURAL_NAME_PASCAL}Input`,
+        description: `Input type for ${EXAMPLE_ENTITY_DISPLAY_NAME} creation with related ${EXAMPLE_RELATED_ENTITY_NAME}`,
+        enabled: true,
+        properties: [],
+      },
+      [EnumModuleDtoType.UpdateNestedManyInput]: {
+        dtoType: EnumModuleDtoType.UpdateNestedManyInput,
+        name: `${EXAMPLE_RELATED_ENTITY_NAME}UpdateManyWithout${EXAMPLE_ENTITY_PLURAL_NAME_PASCAL}Input`,
+        description: `Input type for ${EXAMPLE_ENTITY_DISPLAY_NAME} retrieval`,
+        enabled: true,
+        properties: [],
+      },
+    });
+  });
+});
+
+describe("getDefaultDtosForEnumField", () => {
+  it("should return a default dto for enum field", () => {
+    expect(
+      getDefaultDtosForEnumField(EXAMPLE_ENTITY, EXAMPLE_ENUM_FIELD)
+    ).toEqual({
+      dtoType: EnumModuleDtoType.Enum,
+      name: createEnumName(EXAMPLE_ENUM_FIELD, EXAMPLE_ENTITY),
+      description: `Enum type for field ${EXAMPLE_ENUM_FIELD_NAME} of ${EXAMPLE_ENTITY_DISPLAY_NAME} model`,
+      enabled: true,
+      properties: [],
     });
   });
 });
