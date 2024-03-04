@@ -326,7 +326,7 @@ export type CommitWhereInput = {
 };
 
 export type CommitWhereUniqueInput = {
-  id?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
 };
 
 export type CompleteInvitationInput = {

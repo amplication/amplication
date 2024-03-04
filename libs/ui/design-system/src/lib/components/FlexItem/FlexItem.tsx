@@ -14,6 +14,7 @@ export enum EnumGapSize {
   Small = "small",
   Default = "default",
   Large = "large",
+  XLarge = "xlarge",
 }
 
 export enum EnumFlexDirection {

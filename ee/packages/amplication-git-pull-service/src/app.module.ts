@@ -3,6 +3,7 @@ import { GitPullEventModule } from "./git-pull-event/git-pull-event.module";
 import { HealthModule } from "./health/health.module";
 import { ConfigModule } from "@nestjs/config";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
 
 @Module({
   controllers: [],
@@ -16,6 +17,7 @@ import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
       isGlobal: true,
       envFilePath: [".env.local", ".env"],
     }),
+    TracingModule.forRoot(),
   ],
   providers: [],
 })

@@ -236,7 +236,7 @@ export class BuildService {
     const version = commitId.slice(commitId.length - 8);
 
     const latestEntityVersions = await this.entityService.getLatestVersions({
-      where: { resource: { id: resourceId } },
+      where: { resourceId: resourceId },
     });
 
     const build = await this.prisma.build.create({

@@ -122,6 +122,14 @@ const BreakTheMonolith: React.FC<Props> = ({
                 you. Check out the suggested breakdown and start streamlining
                 your system.
               </Text>
+              <Text
+                textAlign={EnumTextAlign.Center}
+                textColor={EnumTextColor.Black20}
+              >
+                All suggestions can be edited and customized on the next step.
+                You can move entities between services, add new services, and
+                more.
+              </Text>
             </FlexItem>
           </div>
           {hasError ? (
@@ -139,24 +147,22 @@ const BreakTheMonolith: React.FC<Props> = ({
           ) : (
             <>
               <Panel
-                panelStyle={EnumPanelStyle.Default}
+                panelStyle={EnumPanelStyle.Transparent}
                 className={`${CLASS_NAME}__confirmation`}
               >
-                <Text
-                  textStyle={EnumTextStyle.Tag}
-                  textColor={EnumTextColor.White}
+                <FlexItem
+                  direction={EnumFlexDirection.Column}
+                  itemsAlign={EnumItemsAlign.Start}
                 >
-                  All suggestions can be edited and customized on the next step.
-                  You can move entities between services, add new services, and
-                  more.
-                </Text>
-                <Button
-                  className={`${CLASS_NAME}__continue_button`}
-                  onClick={redirectToArchitectureAndComplete}
-                >
-                  Let's go!
-                </Button>
+                  <Button
+                    className={`${CLASS_NAME}__continue_button`}
+                    onClick={redirectToArchitectureAndComplete}
+                  >
+                    Let's go!
+                  </Button>
+                </FlexItem>
               </Panel>
+
               <div className={`${CLASS_NAME}__content`}>
                 <Panel
                   className={`${CLASS_NAME}__services`}
