@@ -10,6 +10,19 @@ export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
 
+export type PendingChangesType = keyof typeof models.EnumBlockType | "Entity";
+
+export type PendingChangesByType = {
+  type: PendingChangesType;
+
+  typeChanges: PendingChangeItem[];
+};
+
+export type PendingChangesByResourceAndType = {
+  resource: models.Resource;
+  changes: PendingChangesByType[];
+};
+
 const usePendingChanges = (currentProject: models.Project | undefined) => {
   const [pendingChangesMap, setPendingChangesMap] = useState<string[]>([]);
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
@@ -105,6 +118,31 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
     });
   }, [pendingChanges]);
 
+  const pendingChangesByResourceAndType: PendingChangesByResourceAndType[] =
+    useMemo(() => {
+      return pendingChangesByResource.map((resourceChanges) => {
+        const groupedChangesByType = groupBy(
+          resourceChanges.changes,
+          (change) =>
+            change.originType === models.EnumPendingChangeOriginType.Block
+              ? (change.origin as models.Block).blockType
+              : "Entity"
+        );
+        const changesByType = Object.entries(groupedChangesByType).map(
+          ([type, typeChanges]) =>
+            ({
+              type,
+              typeChanges,
+            } as PendingChangesByType)
+        );
+
+        return {
+          resource: resourceChanges.resource,
+          changes: changesByType,
+        };
+      });
+    }, [pendingChangesByResource]);
+
   return {
     pendingChanges,
     commitRunning,
@@ -120,6 +158,7 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
     pendingChangesByResource,
     resetPendingChangesIndicator,
     setResetPendingChangesIndicator,
+    pendingChangesByResourceAndType,
   };
 };
 

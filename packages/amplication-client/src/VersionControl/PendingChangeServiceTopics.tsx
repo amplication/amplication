@@ -33,6 +33,8 @@ const PendingChangeServiceTopics = ({ change, linkToOrigin }: Props) => {
       relativeUrl={url}
       name={connectedBroker?.name || ""}
       linkToOrigin={linkToOrigin}
+      icon="topics_outline"
+      type="Service Topics"
     />
   );
 };
