@@ -295,7 +295,7 @@ export const CREATE_SERVICE_DEFAULT_VALUES: models.ResourceCreateWithEntitiesInp
     plugins: {
       plugins: [],
     },
-    wizardType: "Create Service",
+    wizardType: "onboarding",
     repoType: "Mono",
     dbType: "postgres",
     authType: "core",
