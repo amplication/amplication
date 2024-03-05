@@ -20,7 +20,7 @@ const PreviewUserLoginModal = () => {
         </Text>
         <Text>
           Now, let's dive into your application journey. Explore our intuitive
-          interface, craft solutions effortlessly, and enjoy a free 14-day trial
+          interface, craft solutions effortlessly, and enjoy a free 7-day trial
           with unlocked Enterprise features.
         </Text>
 
