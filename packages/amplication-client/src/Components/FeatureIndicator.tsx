@@ -34,7 +34,7 @@ const CLASS_NAME = "amp-feature-indicator";
 
 export const tooltipDefaultTextUpgrade = "Upgrade";
 
-export const tooltipDefaultText = `Explore this feature, included in your 14-day Enterprise trial. ${tooltipDefaultTextUpgrade} for continued access.`;
+export const tooltipDefaultText = `Explore this feature, included in your 7-day Enterprise trial. ${tooltipDefaultTextUpgrade} for continued access.`;
 
 type Props = {
   featureName: string;
