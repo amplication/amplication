@@ -11,6 +11,6 @@ export class AuthPreviewAccount {
   @Field(() => String, { nullable: false })
   projectId!: string;
 
-  @Field(() => String, { nullable: false })
-  resourceId!: string;
+  @Field(() => String, { nullable: true })
+  resourceId?: string;
 }

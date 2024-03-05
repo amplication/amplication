@@ -479,7 +479,7 @@ export class AuthService {
       user,
       workspaceId: workspace.id,
       projectId: project.id,
-      resourceId: resource.id,
+      resourceId: resource?.id,
     };
   }
 
