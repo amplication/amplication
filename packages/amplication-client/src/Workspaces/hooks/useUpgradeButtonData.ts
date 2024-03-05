@@ -4,7 +4,7 @@ import { BillingPlan } from "@amplication/util-billing-types";
 import { useEffect, useState } from "react";
 import { REACT_APP_BILLING_ENABLED } from "../../env";
 
-const DAYS_TO_SHOW_VERSION_ALERT_SINCE_END_OF_TRIAL = 14;
+const DAYS_TO_SHOW_VERSION_ALERT_SINCE_END_OF_TRIAL = 7;
 const ONE_DAY = 1000 * 60 * 60 * 24;
 
 interface UpgradeButtonData {
