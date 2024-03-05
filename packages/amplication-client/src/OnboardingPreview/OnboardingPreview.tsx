@@ -13,227 +13,104 @@ import {
 } from "@amplication/ui/design-system";
 import React, { useCallback, useMemo, useState } from "react";
 import "./OnboardingPreview.scss";
-// import useOnboardingPreview from "./hooks/useOnboardingPreview";
-import imgAdminUI from "../assets/images/admin-ui.svg";
-import imgGraphql from "../assets/images/graphql.svg";
-import imgSwagger from "../assets/images/swagger.svg";
-import { ReactComponent as LogoTextual } from "../assets/logo-amplication-white.svg";
+import * as models from "../models";
 
-const PLUGIN_LOGO_BASE_URL =
-  "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
+import { ReactComponent as LogoTextual } from "../assets/logo-amplication-white.svg";
+import { merge } from "lodash";
+import {
+  CONFIRMATION_PAGE,
+  CREATE_SERVICE_DEFAULT_VALUES,
+  PAGES_DATA,
+  PAGE_KEYS,
+} from "./constants";
+import usePlugins from "../Plugins/hooks/usePlugins";
+import useOnboardingPreview from "./hooks/useOnboardingPreview";
 
 type Props = {
   workspaceId: string;
   projectId: string;
 };
 
-type SelectionItem = {
-  icon: string;
-  title: string;
-  selected?: boolean;
-};
-
-type Page = {
-  title: string;
-  subTitle: string;
-  allowMultipleSelection: boolean;
-  items: SelectionItem[];
-};
-
-type Pages = {
-  [key: string]: Page;
-};
-
-const DATA: Pages = {
-  database: {
-    title: "Database",
-    subTitle: "Select the type of DB for your service",
-    allowMultipleSelection: false,
-    items: [
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}db-postgres.png`,
-        title: "PostgreSQL DB",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}db-mongo.png`,
-        title: "Mongo DB",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}db-mysql.png`,
-        title: "MySQL DB",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}db-mssql.png`,
-        title: "MS SQL Server",
-      },
-    ],
-  },
-  apis: {
-    title: "APIs",
-    subTitle: "Select the type of APIs for your service",
-    allowMultipleSelection: true,
-    items: [
-      {
-        icon: imgSwagger,
-        title: "REST API",
-      },
-      {
-        icon: imgGraphql,
-        title: "GraphQL",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}transport-grpc.png`,
-        title: "gRpc",
-      },
-    ],
-  },
-  adminUi: {
-    title: "Admin UI",
-    subTitle:
-      "Would you like to generate a React client application with forms to use your API?",
-    allowMultipleSelection: false,
-    items: [
-      {
-        icon: imgAdminUI,
-        title: "Generate React Admin UI",
-      },
-      {
-        icon: imgGraphql,
-        title: "Generate APIs only",
-      },
-    ],
-  },
-  authentication: {
-    title: "Authentication",
-    subTitle:
-      "Select the type of authentication you want to use for your service",
-    allowMultipleSelection: false,
-    items: [
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}auth-supertokens.png`,
-        title: "Supertokens",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}auth-keycloak.png`,
-        title: "Keycloak",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}auth-auth0.png`,
-        title: "Auth0",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}auth-jwt.png`,
-        title: "Local JWT Provider",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}auth-basic.png`,
-        title: "None",
-      },
-    ],
-  },
-  eventDriven: {
-    title: "Event-Driven",
-    subTitle:
-      "Would you like to use a message broker to create an event driven architecture",
-    allowMultipleSelection: false,
-    items: [
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}kafka.png`,
-        title: "Kafka",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}broker-mqtt.png`,
-        title: "MQTT",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}broker-nats.png`,
-        title: "NATS",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}broker-rabbitmq.png`,
-        title: "RabbitMQ",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}auth-basic.png`,
-        title: "None",
-      },
-    ],
-  },
-  deployment: {
-    title: "Deployment",
-    subTitle: "How would you like to deploy your service?",
-    allowMultipleSelection: false,
-    items: [
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}deployment-helm-chart.png`,
-        title: "Helm Chart",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}provisioning-terraform-aws-core.png`,
-        title: "AWS ECS + RDS (Tarraform)",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}provisioning-terraform-gcp-core.png`,
-        title: "GCP xxx (Tarraform)",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}auth-basic.png`,
-        title: "None",
-      },
-    ],
-  },
-  more: {
-    title: "More",
-    subTitle: "What else do you want to include in your service?",
-    allowMultipleSelection: true,
-    items: [
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}formatter-prettier.png`,
-        title: "Prettier",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}linter-eslint.png`,
-        title: "ESLint",
-      },
-      {
-        icon: `${PLUGIN_LOGO_BASE_URL}observability-opentelemetry.png`,
-        title: "Open-telemetry",
-      },
-    ],
-  },
-};
-
-const confirmationPage: Page = {
-  title: "Done!",
-  subTitle: "",
-  allowMultipleSelection: false,
-  items: [],
-};
-
-const pageKeys = [
-  "database",
-  "apis",
-  "adminUi",
-  "authentication",
-  "eventDriven",
-  "deployment",
-  "more",
-];
-
 const CLASS_NAME = "onboarding-preview";
 
 const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
   const [currentPage, setCurrentPage] = useState(0);
-  const [pagesData, setPagesData] = useState(DATA);
+  const [pagesData, setPagesData] = useState(PAGES_DATA);
   const [done, setDone] = useState(false);
 
+  const { pluginCatalog } = usePlugins(null, null);
+
+  const { createService, errorCreateService, loadingCreateService } =
+    useOnboardingPreview();
+
+  const prepareAndCreateService = useCallback(() => {
+    setDone(true);
+
+    const data = CREATE_SERVICE_DEFAULT_VALUES;
+
+    data.resource.project = { connect: { id: projectId } };
+
+    const values = Object.values(pagesData).flatMap((page) =>
+      page.items.filter((item) => item.selected).map((item) => item.value)
+    );
+
+    merge(data, ...values);
+
+    const pluginIds = new Set(
+      Object.values(pagesData).flatMap((page) =>
+        page.items
+          .filter((item) => item.selected && item.pluginsIds)
+          .flatMap((item) => item.pluginsIds)
+      )
+    );
+
+    const selectedPlugins = Array.from(pluginIds).map(
+      (id) => pluginCatalog[id]
+    );
+
+    console.log({ selectedPlugins });
+
+    const plugins: models.PluginInstallationCreateInput[] = selectedPlugins.map(
+      (plugin) => {
+        const version = plugin.versions.find((version) => version.isLatest);
+
+        const pluginCreateInput: models.PluginInstallationCreateInput = {
+          pluginId: plugin.pluginId,
+          version: version.version,
+          settings: version.settings,
+          configurations: version.configurations,
+          npm: plugin.npm,
+          displayName: plugin.name,
+          enabled: true,
+          resource: {
+            connect: {
+              id: "",
+            },
+          },
+        };
+
+        return pluginCreateInput;
+      }
+    );
+
+    data.plugins = {
+      plugins,
+    };
+
+    createService({
+      variables: {
+        data,
+      },
+    });
+  }, [createService, pagesData, pluginCatalog]);
+
   const handleContinueClick = useCallback(() => {
-    if (currentPage < pageKeys.length - 1) {
+    if (currentPage < PAGE_KEYS.length - 1) {
       setCurrentPage(currentPage + 1);
     } else {
-      setDone(true);
+      prepareAndCreateService();
     }
-  }, [currentPage]);
+  }, [prepareAndCreateService, currentPage]);
 
   const handleBackClick = useCallback(() => {
     if (currentPage > 0) {
@@ -242,11 +119,10 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
   }, [currentPage]);
 
   const handleItemClick = useCallback(
-    (item: SelectionItem, itemIndex: number) => {
-      const currentPageKey = pageKeys[currentPage];
+    (itemIndex: number) => {
+      const currentPageKey = PAGE_KEYS[currentPage];
       const newPagesData = { ...pagesData };
       const newItems = [...newPagesData[currentPageKey].items];
-      const currentItem = newItems[itemIndex];
 
       if (!newPagesData[currentPageKey].allowMultipleSelection) {
         newItems.forEach((i, index) => {
@@ -273,7 +149,7 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
   );
 
   const canContinue = useMemo(() => {
-    const currentPageKey = pageKeys[currentPage];
+    const currentPageKey = PAGE_KEYS[currentPage];
     const currentPageData = pagesData[currentPageKey];
     const selectedItems = currentPageData.items.filter((item) => item.selected);
     return selectedItems.length > 0;
@@ -281,11 +157,8 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
 
   const canGoBack = currentPage > 0;
 
-  // const { createService, errorCreateService, loadingCreateService } =
-  //   useOnboardingPreview();
-
-  const currentPageKey = pageKeys[currentPage];
-  const currentPageData = done ? confirmationPage : pagesData[currentPageKey];
+  const currentPageKey = PAGE_KEYS[currentPage];
+  const currentPageData = done ? CONFIRMATION_PAGE : pagesData[currentPageKey];
 
   return (
     <FlexItem
@@ -365,7 +238,7 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
                   : EnumButtonStyle.Outline
               }
               onClick={() => {
-                handleItemClick(item, index);
+                handleItemClick(index);
               }}
             >
               <img src={item.icon} alt={item.title} />
@@ -395,7 +268,7 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
                 onClick={handleContinueClick}
                 disabled={!canContinue}
               >
-                {currentPage === pageKeys.length - 1 ? "Done" : "Continue"}
+                {currentPage === PAGE_KEYS.length - 1 ? "Done" : "Continue"}
               </Button>
             </FlexItem.FlexEnd>
           </FlexItem>
