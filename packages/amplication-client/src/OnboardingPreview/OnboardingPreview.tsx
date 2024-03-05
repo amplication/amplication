@@ -25,6 +25,7 @@ import {
 } from "./constants";
 import usePlugins from "../Plugins/hooks/usePlugins";
 import useOnboardingPreview from "./hooks/useOnboardingPreview";
+import ProgressBar from "../Components/ProgressBar";
 
 type Props = {
   workspaceId: string;
@@ -67,8 +68,6 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
     const selectedPlugins = Array.from(pluginIds).map(
       (id) => pluginCatalog[id]
     );
-
-    console.log({ selectedPlugins });
 
     const plugins: models.PluginInstallationCreateInput[] = selectedPlugins.map(
       (plugin) => {
@@ -210,23 +209,46 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
             itemsAlign={EnumItemsAlign.Center}
             margin={EnumFlexItemMargin.Both}
           >
-            <Text textStyle={EnumTextStyle.H3} textAlign={EnumTextAlign.Center}>
-              We are generating your service.
-            </Text>
-            <Text
-              textStyle={EnumTextStyle.Description}
-              textAlign={EnumTextAlign.Center}
-            >
-              You will get an email with a link to a GitHub repo with the
-              generated code of your service.
-            </Text>
-            <span
-              role="img"
-              aria-label="party emoji"
-              className={`${CLASS_NAME}__party`}
-            >
-              🎉
-            </span>
+            {loadingCreateService ? (
+              <ProgressBar message="Please wait while we are preparing a few last things..." />
+            ) : (
+              <>
+                <Text
+                  textStyle={EnumTextStyle.H3}
+                  textAlign={EnumTextAlign.Center}
+                >
+                  The code for your service is on its way{" "}
+                  <span role="img" aria-label="rocket emoji">
+                    🚀
+                  </span>
+                </Text>
+                <Text
+                  textStyle={EnumTextStyle.Description}
+                  textAlign={EnumTextAlign.Center}
+                  textColor={EnumTextColor.White}
+                >
+                  You will soon receive an email with a link to a GitHub repo
+                  with the code for your service.
+                </Text>
+
+                <span
+                  role="img"
+                  aria-label="party emoji"
+                  className={`${CLASS_NAME}__party`}
+                >
+                  🎉
+                </span>
+                <Text
+                  textStyle={EnumTextStyle.Normal}
+                  textAlign={EnumTextAlign.Center}
+                  textColor={EnumTextColor.ThemeTurquoise}
+                >
+                  With no vendor lock-in and no black-boxing, you are the owner
+                  of the code and you've got the freedom to customize the code
+                  to your needs. Enjoy!
+                </Text>
+              </>
+            )}
           </FlexItem>
         ) : (
           currentPageData.items.map((item, index) => (

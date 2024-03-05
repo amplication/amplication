@@ -29,6 +29,11 @@
     margin: auto;
     padding: 0 var(--default-spacing);
 
+    .amp-progress-bar__details {
+      justify-content: center;
+      text-align: center;
+    }
+
     .amp-button {
       height: 90px;
       width: 100%;
