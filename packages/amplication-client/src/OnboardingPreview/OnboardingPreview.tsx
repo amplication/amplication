@@ -152,7 +152,7 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
     const currentPageKey = PAGE_KEYS[currentPage];
     const currentPageData = pagesData[currentPageKey];
     const selectedItems = currentPageData.items.filter((item) => item.selected);
-    return selectedItems.length > 0;
+    return !currentPageData.selectionRequired || selectedItems.length > 0;
   }, [currentPage, pagesData]);
 
   const canGoBack = currentPage > 0;

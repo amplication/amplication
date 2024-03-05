@@ -17,6 +17,7 @@ type Page = {
   title: string;
   subTitle: string;
   allowMultipleSelection: boolean;
+  selectionRequired: boolean;
   items: SelectionItem[];
 };
 
@@ -28,6 +29,7 @@ export const CONFIRMATION_PAGE: Page = {
   title: "Done!",
   subTitle: "",
   allowMultipleSelection: false,
+  selectionRequired: false,
   items: [],
 };
 
@@ -46,6 +48,7 @@ export const PAGES_DATA: Pages = {
     title: "Database",
     subTitle: "Select the type of DB for your service",
     allowMultipleSelection: false,
+    selectionRequired: true,
     items: [
       {
         icon: `${PLUGIN_LOGO_BASE_URL}db-postgres.png`,
@@ -73,6 +76,7 @@ export const PAGES_DATA: Pages = {
     title: "APIs",
     subTitle: "Select the type of APIs for your service",
     allowMultipleSelection: true,
+    selectionRequired: true,
     items: [
       {
         icon: imgSwagger,
@@ -112,6 +116,7 @@ export const PAGES_DATA: Pages = {
     subTitle:
       "Would you like to generate a React client application with forms to use your API?",
     allowMultipleSelection: false,
+    selectionRequired: true,
     items: [
       {
         icon: imgAdminUI,
@@ -146,6 +151,7 @@ export const PAGES_DATA: Pages = {
     subTitle:
       "Select the type of authentication you want to use for your service",
     allowMultipleSelection: false,
+    selectionRequired: true,
     items: [
       {
         icon: `${PLUGIN_LOGO_BASE_URL}auth-supertokens.png`,
@@ -178,6 +184,7 @@ export const PAGES_DATA: Pages = {
     subTitle:
       "Would you like to use a message broker to create an event driven architecture",
     allowMultipleSelection: false,
+    selectionRequired: true,
     items: [
       {
         icon: `${PLUGIN_LOGO_BASE_URL}kafka.png`,
@@ -209,6 +216,7 @@ export const PAGES_DATA: Pages = {
     title: "Deployment",
     subTitle: "How would you like to deploy your service?",
     allowMultipleSelection: false,
+    selectionRequired: true,
     items: [
       {
         icon: `${PLUGIN_LOGO_BASE_URL}deployment-helm-chart.png`,
@@ -244,6 +252,7 @@ export const PAGES_DATA: Pages = {
     title: "More",
     subTitle: "What else do you want to include in your service?",
     allowMultipleSelection: true,
+    selectionRequired: false,
     items: [
       {
         icon: `${PLUGIN_LOGO_BASE_URL}cache-redis.png`,
