@@ -6,6 +6,7 @@ import { Build } from "../build/dto/Build";
 import { PrismaService } from "../../prisma";
 
 const buildFindManyMock = jest.fn();
+const buildAggregateMock = jest.fn();
 
 describe("AnalyticsService", () => {
   let service: AnalyticsService;
@@ -25,6 +26,7 @@ describe("AnalyticsService", () => {
           useValue: {
             build: {
               findMany: buildFindManyMock,
+              aggregate: buildAggregateMock,
             },
           },
         },
@@ -38,8 +40,100 @@ describe("AnalyticsService", () => {
     expect(service).toBeDefined();
   });
 
-  xit("should count the lines of code added/updated for a given build", () => {
-    // Not implemented
+  describe("countLinesOfCodeAddedOrUpdatedForBuild", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.restoreAllMocks();
+    });
+
+    const now = new Date();
+
+    it("should count the lines of code added/updated for a given project", async () => {
+      const startDate = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        now.getDate()
+      );
+      const endDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+      );
+      buildAggregateMock.mockResolvedValueOnce({
+        _sum: {
+          linesOfCode: 10,
+        },
+      });
+      const result = await service.countLinesOfCodeAddedOrUpdatedForBuild({
+        workspaceId: "workspace-id",
+        projectId: "project-id",
+        startDate,
+        endDate,
+      });
+
+      expect(buildAggregateMock).toBeCalledWith({
+        where: {
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+          resource: {
+            project: {
+              workspaceId: "workspace-id",
+              id: "project-id",
+            },
+          },
+        },
+        _sum: {
+          linesOfCode: true,
+        },
+      });
+
+      expect(result).toEqual(10);
+    });
+
+    it("should count the lines of code added/updated for all projects", async () => {
+      const startDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() - 14
+      );
+      const endDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+      );
+      buildAggregateMock.mockResolvedValueOnce({
+        _sum: {
+          linesOfCode: 10,
+        },
+      });
+      const result = await service.countLinesOfCodeAddedOrUpdatedForBuild({
+        workspaceId: "workspace-id",
+        startDate,
+        endDate,
+      });
+
+      expect(buildAggregateMock).toBeCalledWith({
+        where: {
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+          resource: {
+            project: {
+              workspaceId: "workspace-id",
+              id: undefined,
+            },
+          },
+        },
+        _sum: {
+          linesOfCode: true,
+        },
+      });
+
+      expect(result).toEqual(10);
+    });
   });
 
   describe("when calculating project analytics", () => {
@@ -59,7 +153,6 @@ describe("AnalyticsService", () => {
       actionId: "",
       commitId: "",
     };
-
     const resourceMock: Resource = {
       id: "resource-id",
       createdAt: new Date(),
