@@ -29,6 +29,19 @@
     margin: auto;
     padding: 0 var(--default-spacing);
 
+    li {
+      list-style: none;
+      margin-bottom: var(--default-spacing-small);
+
+      [role="img"] {
+        margin-right: var(--default-spacing);
+      }
+
+      strong {
+        color: var(--theme-turquoise);
+      }
+    }
+
     .amp-progress-bar__details {
       justify-content: center;
       text-align: center;
