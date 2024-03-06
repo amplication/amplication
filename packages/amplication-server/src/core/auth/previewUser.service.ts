@@ -13,7 +13,8 @@ import { AccountService } from "../account/account.service";
 import { SignupPreviewAccountInput } from "./dto/SignupPreviewAccountInput";
 import { EnumTokenType, JwtDto } from "./dto";
 import { JwtService } from "@nestjs/jwt";
-import { Auth0Service, Auth0User } from "../idp/auth0.service";
+import { Auth0Service } from "../idp/auth0.service";
+import { Auth0User } from "../idp/types";
 
 @Injectable()
 export class PreviewUserService {
@@ -110,19 +111,19 @@ export class PreviewUserService {
     let auth0User: Auth0User;
     const { account: currentAccount } = user;
 
-    const existingAuth0User = await this.auth0Service.getAuth0UserByEmail(
+    const existingAuth0User = await this.auth0Service.getUserByEmail(
       currentAccount.previewAccountEmail
     );
 
     if (!existingAuth0User) {
-      auth0User = await this.auth0Service.createAuth0User(
+      auth0User = await this.auth0Service.createUser(
         currentAccount.previewAccountEmail
       );
       if (!auth0User?.data?.email)
         throw Error("Failed to create new Auth0 user");
     }
 
-    const resetPassword = await this.auth0Service.resetAuth0UserPassword(
+    const resetPassword = await this.auth0Service.resetUserPassword(
       currentAccount.previewAccountEmail
     );
 
