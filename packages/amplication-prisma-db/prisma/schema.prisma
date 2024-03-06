@@ -402,6 +402,8 @@ model Build {
   blockVersions            BlockVersion[]
   entityVersions           EntityVersion[]
   codeGeneratorVersion     String?
+  linesOfCode              Int?
+  filesChanged             Int?
 
   @@unique([resourceId, version], map: "Build.resourceId_version_unique")
 }
