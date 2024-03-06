@@ -1,5 +1,12 @@
 @import "../style/index.scss";
 
+$party-font-size: 140px;
+$footer-height: 52px;
+$logo-width: 150px;
+$body-max-width: 400px;
+$item-height: 90px;
+$item-image-size: 40px;
+
 .onboarding-preview {
   &__header,
   &__footer {
@@ -10,22 +17,22 @@
   }
 
   &__party {
-    font-size: 140px;
+    font-size: $party-font-size;
   }
 
   &__footer {
-    height: 52px;
+    height: $footer-height;
   }
   &__header {
     &__logo {
-      width: 150px;
+      width: $logo-width;
     }
   }
 
   &__body {
     flex: 1;
     overflow: auto;
-    max-width: 400px;
+    max-width: $body-max-width;
     margin: auto;
     padding: 0 var(--default-spacing);
 
@@ -48,7 +55,7 @@
     }
 
     .amp-button {
-      height: 90px;
+      height: $item-height;
       width: 100%;
       border-color: var(--gray-70);
 
@@ -58,9 +65,9 @@
       gap: var(--double-spacing);
 
       img {
-        width: 40px;
-        height: 40px;
-        border-radius: 4px;
+        width: $item-image-size;
+        height: $item-image-size;
+        border-radius: var(--default-border-radius);
         overflow: hidden;
       }
     }
