@@ -9,9 +9,9 @@ import { Response } from "express";
 import { Profile as GitHubProfile } from "passport-github2";
 import { stringifyUrl } from "query-string";
 import { FindOneArgs } from "../../dto";
+import { Env } from "../../env";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { Account, User, Workspace } from "../../models";
-import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
 import { Prisma, PrismaService } from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import {
@@ -20,11 +20,12 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
+import { Auth0Service, Auth0User } from "../idp/auth0.service";
 import { UserService } from "../user/user.service";
 import { CompleteInvitationArgs } from "../workspace/dto";
 import { WorkspaceService } from "../workspace/workspace.service";
-import { generateRandomEmail, generateRandomString } from "./auth-utils";
-import { IdentityProvider, IdentityProviderPreview } from "./auth.types";
+import { validateWorkEmail } from "./auth-utils";
+import { IdentityProvider } from "./auth.types";
 import {
   ApiToken,
   CreateApiTokenArgs,
@@ -33,16 +34,12 @@ import {
   SignupInput,
 } from "./dto";
 import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
-import { SignupPreviewAccountInput } from "./dto/SignupPreviewAccountInput";
 import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
-import { PUBLIC_DOMAINS } from "./publicDomains";
-import { AuthProfile, AuthUser, BootstrapPreviewUser } from "./types";
-import { Auth0Service, Auth0User } from "../idp/auth0.service";
-import { Env } from "../../env";
+import { AuthProfile, AuthUser } from "./types";
+import { PreviewUserService } from "./previewUser.service";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
-const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
 const AUTH_USER_INCLUDE = {
   account: true,
@@ -71,7 +68,8 @@ export class AuthService {
     @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly auth0Service: Auth0Service
+    private readonly auth0Service: Auth0Service,
+    private readonly previewUserService: PreviewUserService
   ) {
     this.clientHost = configService.get(Env.CLIENT_HOST);
   }
@@ -142,9 +140,7 @@ export class AuthService {
   ): Promise<boolean> {
     const emailAddress = args.data.email.toLowerCase();
 
-    if (!this.isValidWorkEmail(emailAddress)) {
-      throw new AmplicationError(WORK_EMAIL_INVALID);
-    }
+    validateWorkEmail(emailAddress);
 
     try {
       const existingAccount = await this.accountService.findAccount({
@@ -289,104 +285,6 @@ export class AuthService {
     return this.prepareToken(user);
   }
 
-  async completeSignupPreviewAccount(user: User): Promise<string> {
-    let auth0User: Auth0User;
-    const { account: currentAccount } = user;
-
-    const existingAuth0User = await this.auth0Service.getAuth0UserByEmail(
-      currentAccount.previewAccountEmail
-    );
-
-    if (!existingAuth0User) {
-      auth0User = await this.auth0Service.createAuth0User(
-        currentAccount.previewAccountEmail
-      );
-      if (!auth0User?.data?.email)
-        throw Error("Failed to create new Auth0 user");
-    }
-
-    const resetPassword = await this.auth0Service.resetAuth0UserPassword(
-      currentAccount.previewAccountEmail
-    );
-
-    if (!resetPassword.data)
-      throw Error("Failed to send reset message to new Auth0 user");
-
-    const existingAccount = await this.accountService.findAccount({
-      where: {
-        email: currentAccount.previewAccountEmail,
-      },
-    });
-
-    if (!existingAccount) {
-      await this.accountService.updateAccount({
-        where: { id: currentAccount.id },
-        data: {
-          // at this stage we only update the email, so in loginOrSignUp we'll have the correct email to find the user
-          // and convert the preview account to a regular account with free trial
-          email: currentAccount.previewAccountEmail,
-        },
-      });
-    }
-
-    return resetPassword.data;
-  }
-
-  private isValidWorkEmail(email: string): boolean {
-    const domain = email.split("@")[1];
-    return !PUBLIC_DOMAINS.includes(domain);
-  }
-
-  async signupPreviewAccount({
-    previewAccountEmail,
-    previewAccountType,
-  }: SignupPreviewAccountInput): Promise<AuthPreviewAccount> {
-    if (!this.isValidWorkEmail(previewAccountEmail)) {
-      throw new AmplicationError(WORK_EMAIL_INVALID);
-    }
-    const { signupData, identityProvider } = this.generateDataForPreviewAccount(
-      previewAccountEmail,
-      previewAccountType
-    );
-
-    const account = await this.accountService.createAccount(
-      {
-        data: signupData,
-      },
-      { identityProvider }
-    );
-
-    const { user, workspaceId, projectId, resourceId } =
-      await this.bootstrapPreviewUser(account);
-
-    const token = await this.prepareTokenForPreviewAccount(user);
-
-    return {
-      token,
-      workspaceId,
-      projectId,
-      resourceId,
-    };
-  }
-
-  private generateDataForPreviewAccount(
-    previewAccountEmail: string,
-    previewAccountType: EnumPreviewAccountType
-  ) {
-    const identityProvider: IdentityProviderPreview = `${IdentityProvider.PreviewAccount}_${previewAccountType}`;
-    return {
-      signupData: {
-        email: generateRandomEmail(),
-        firstName: previewAccountEmail,
-        lastName: "",
-        password: generateRandomString(),
-        previewAccountType,
-        previewAccountEmail,
-      },
-      identityProvider,
-    };
-  }
-
   private async bootstrapUser(
     account: Account,
     workspaceName: string
@@ -396,24 +294,6 @@ export class AuthService {
     await this.accountService.setCurrentUser(account.id, user.id);
 
     return user;
-  }
-
-  private async bootstrapPreviewUser(
-    account: Account
-  ): Promise<BootstrapPreviewUser> {
-    const { workspace, project, resource } =
-      await this.workspaceService.createPreviewEnvironment(account);
-
-    const [user] = workspace.users;
-
-    await this.accountService.setCurrentUser(account.id, user.id);
-
-    return {
-      user,
-      workspaceId: workspace.id,
-      projectId: project.id,
-      resourceId: resource?.id,
-    };
   }
 
   async login(email: string, password: string): Promise<string> {
@@ -621,20 +501,6 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  async prepareTokenForPreviewAccount(user: AuthUser): Promise<string> {
-    const roles = user.userRoles.map((role) => role.role);
-
-    const payload: JwtDto = {
-      accountId: user.account.id,
-      userId: user.id,
-      roles,
-      workspaceId: user.workspace.id,
-      type: EnumTokenType.User,
-    };
-
-    return this.jwtService.sign(payload);
-  }
-
   /**
    * Creates an API token from given user
    * @param user to create token for
@@ -701,7 +567,9 @@ export class AuthService {
       user && user.account.previewAccountType !== EnumPreviewAccountType.None;
     // to complete the preview account signup, after the user reset the password in Auth0 we need to update the account type and workspace subscription
     if (isFromPreviewUser) {
-      await this.convertPreviewAccountToRegularAccountWithFreeTrail(user);
+      await this.previewUserService.convertPreviewAccountToRegularAccountWithFreeTrail(
+        user
+      );
       isNew = false;
     } else {
       if (!user) {
@@ -718,19 +586,6 @@ export class AuthService {
     this.trackCompleteEmailSignup(user.account, profile, existingUser);
 
     await this.configureJtw(response, user, isNew, isFromPreviewUser);
-  }
-
-  async convertPreviewAccountToRegularAccountWithFreeTrail(user: User) {
-    await this.accountService.updateAccount({
-      where: { id: user.account.id },
-      data: {
-        previewAccountType: EnumPreviewAccountType.None,
-      },
-    });
-
-    await this.workspaceService.convertPreviewSubscriptionToFreeWithTrial(
-      user.workspace.id
-    );
   }
 
   async configureJtw(

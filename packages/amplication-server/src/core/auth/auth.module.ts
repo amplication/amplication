@@ -25,6 +25,7 @@ import { GitHubAuthGuard } from "./github.guard";
 import { OpenIDConnectAuthMiddleware } from "./oidc.middleware";
 import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
 import { IdpModule } from "../idp/idp.module";
+import { PreviewUserService } from "./previewUser.service";
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { IdpModule } from "../idp/idp.module";
   ],
   providers: [
     AuthService,
+    PreviewUserService,
     JwtStrategy,
     GitHubAuthGuard,
     {
@@ -74,7 +76,7 @@ import { IdpModule } from "../idp/idp.module";
     SegmentAnalyticsModule,
   ],
   controllers: [AuthController],
-  exports: [GqlAuthGuard, AuthService, AuthResolver],
+  exports: [GqlAuthGuard, AuthResolver, PreviewUserService],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
