@@ -10,6 +10,33 @@ export class AnalyticsService {
     private readonly prisma: PrismaService
   ) {}
 
+  async countLinesOfCodeAddedOrUpdatedForBuild({
+    workspaceId,
+    projectId,
+    startDate,
+    endDate,
+  }: ProjectBuildsArgs): Promise<number> {
+    const aggregatedLoc = await this.prisma.build.aggregate({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        resource: {
+          project: {
+            workspaceId: workspaceId,
+            id: projectId,
+          },
+        },
+      },
+      _sum: {
+        linesOfCode: true,
+      },
+    });
+
+    return aggregatedLoc._sum.linesOfCode;
+  }
+
   async countProjectBuilds({
     workspaceId,
     startDate,
