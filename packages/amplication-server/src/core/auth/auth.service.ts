@@ -20,7 +20,7 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
-import { Auth0Service, Auth0User } from "../idp/auth0.service";
+import { Auth0Service } from "../idp/auth0.service";
 import { UserService } from "../user/user.service";
 import { CompleteInvitationArgs } from "../workspace/dto";
 import { WorkspaceService } from "../workspace/workspace.service";
@@ -37,6 +37,7 @@ import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
 import { AuthProfile, AuthUser } from "./types";
 import { PreviewUserService } from "./previewUser.service";
+import { Auth0User } from "../idp/types";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
@@ -151,18 +152,18 @@ export class AuthService {
 
       let auth0User: Auth0User;
 
-      const existedAuth0User = await this.auth0Service.getAuth0UserByEmail(
+      const existedAuth0User = await this.auth0Service.getUserByEmail(
         emailAddress
       );
 
       if (!existedAuth0User) {
-        auth0User = await this.auth0Service.createAuth0User(emailAddress);
+        auth0User = await this.auth0Service.createUser(emailAddress);
 
         if (!auth0User.data.email)
           throw Error("Failed to create new Auth0 user");
       }
 
-      const resetPassword = await this.auth0Service.resetAuth0UserPassword(
+      const resetPassword = await this.auth0Service.resetUserPassword(
         existedAuth0User ? emailAddress : auth0User.data.email
       );
       if (!resetPassword.data)

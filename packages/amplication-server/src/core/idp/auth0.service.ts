@@ -11,12 +11,7 @@ import {
 } from "auth0";
 import { Env } from "../../env";
 import { generatePassword } from "../auth/auth-utils";
-
-export type Auth0User = {
-  data: {
-    email: string;
-  };
-};
+import { Auth0User } from "./types";
 
 @Injectable()
 export class Auth0Service {
@@ -45,7 +40,7 @@ export class Auth0Service {
     });
   }
 
-  async createAuth0User(email: string): Promise<Auth0User> {
+  async createUser(email: string): Promise<Auth0User> {
     const data: SignUpRequest = {
       email,
       password: generatePassword(),
@@ -58,7 +53,7 @@ export class Auth0Service {
     return user;
   }
 
-  async resetAuth0UserPassword(email: string): Promise<TextApiResponse> {
+  async resetUserPassword(email: string): Promise<TextApiResponse> {
     const data: ChangePasswordRequest = {
       email,
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -73,7 +68,7 @@ export class Auth0Service {
     return changePasswordResponse;
   }
 
-  async getAuth0UserByEmail(email: string): Promise<boolean> {
+  async getUserByEmail(email: string): Promise<boolean> {
     const user = await this.auth0Management.usersByEmail.getByEmail({ email });
     if (!user.data.length) return false;
 
