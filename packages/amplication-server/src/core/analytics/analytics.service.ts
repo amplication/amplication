@@ -10,7 +10,7 @@ export class AnalyticsService {
     private readonly prisma: PrismaService
   ) {}
 
-  async countLinesOfCodeAddedOrUpdatedForBuild({
+  async countLinesOfCode({
     workspaceId,
     projectId,
     startDate,

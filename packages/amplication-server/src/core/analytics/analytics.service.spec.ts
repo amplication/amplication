@@ -64,7 +64,7 @@ describe("AnalyticsService", () => {
           linesOfCode: 10,
         },
       });
-      const result = await service.countLinesOfCodeAddedOrUpdatedForBuild({
+      const result = await service.countLinesOfCode({
         workspaceId: "workspace-id",
         projectId: "project-id",
         startDate,
@@ -108,7 +108,7 @@ describe("AnalyticsService", () => {
           linesOfCode: 10,
         },
       });
-      const result = await service.countLinesOfCodeAddedOrUpdatedForBuild({
+      const result = await service.countLinesOfCode({
         workspaceId: "workspace-id",
         startDate,
         endDate,
