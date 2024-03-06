@@ -24,11 +24,8 @@ export class Auth0Service {
   private readonly auth0Management: ManagementClient;
   private readonly clientId: string;
   private readonly businessEmailDbConnectionName: string;
-  private clientHost: string;
 
   constructor(configService: ConfigService) {
-    this.clientHost = configService.get(Env.CLIENT_HOST);
-
     this.clientId = configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID);
     const clientSecret = configService.get<string>(
       Env.AUTH_ISSUER_CLIENT_SECRET

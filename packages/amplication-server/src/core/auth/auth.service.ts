@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import cuid from "cuid";
 import { subDays } from "date-fns";
@@ -37,6 +38,7 @@ import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
 import { PUBLIC_DOMAINS } from "./publicDomains";
 import { AuthProfile, AuthUser, BootstrapPreviewUser } from "./types";
 import { Auth0Service, Auth0User } from "../idp/auth0.service";
+import { Env } from "../../env";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
@@ -56,7 +58,10 @@ const WORKSPACE_INCLUDE = {
 
 @Injectable()
 export class AuthService {
+  private clientHost: string;
+
   constructor(
+    configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly passwordService: PasswordService,
     private readonly prismaService: PrismaService,
@@ -67,7 +72,9 @@ export class AuthService {
     private readonly workspaceService: WorkspaceService,
     private readonly analytics: SegmentAnalyticsService,
     private readonly auth0Service: Auth0Service
-  ) {}
+  ) {
+    this.clientHost = configService.get(Env.CLIENT_HOST);
+  }
 
   private async trackStartBusinessEmailSignup(
     emailAddress: string,
