@@ -470,6 +470,24 @@ export class BuildService {
     });
   }
 
+  formatDiffStat(diffStat: string): {
+    filesChanged: number;
+    insertions: number;
+    deletions: number;
+  } {
+    const diffStatRegex =
+      /(\d+) files? changed, (\d+) insertions?\(\+\), (\d+) deletions?\(-\)/;
+    const match = diffStat.match(diffStatRegex);
+    if (!match) {
+      throw new Error(`Invalid diff stat: ${diffStat}`);
+    }
+    return {
+      filesChanged: parseInt(match[1]),
+      insertions: parseInt(match[2]),
+      deletions: parseInt(match[3]),
+    };
+  }
+
   public async onCreatePRSuccess(
     response: CreatePrSuccess.Value
   ): Promise<void> {
@@ -485,6 +503,7 @@ export class BuildService {
 
       await this.actionService.logInfo(step, response.url, {
         githubUrl: response.url,
+        diffStat: this.formatDiffStat(response.diffStat),
       });
       await this.actionService.logInfo(
         step,
