@@ -185,6 +185,11 @@ export function createInitialStepData(
 
 const PREVIEW_PR_BODY = `Welcome to your first sync with Amplication's Preview Repo! 🚀 \n\nYou’ve taken the first step in supercharging your development. This Preview Repo is a sandbox for you to see what Amplication can do.\n\nRemember, by connecting to your own repository, you’ll have even more power - like customizing the code to fit your needs.\n\nNow, head back to Amplication, connect to your own repo and keep building! Define data entities, set up roles, and extend your service’s functionality with our versatile plugin system. The possibilities are endless.\n\n[link]\n\nThank you, and let's build something amazing together! 🚀\n\n`;
 
+type DiffStatObject = {
+  filesChanged: number;
+  insertions: number;
+  deletions: number;
+};
 @Injectable()
 export class BuildService {
   constructor(
@@ -470,11 +475,7 @@ export class BuildService {
     });
   }
 
-  formatDiffStat(diffStat: string): {
-    filesChanged: number;
-    insertions: number;
-    deletions: number;
-  } {
+  formatDiffStat(diffStat: string): DiffStatObject {
     const diffStatRegex =
       /(\d+) files? changed, (\d+) insertions?\(\+\), (\d+) deletions?\(-\)/;
     const match = diffStat.match(diffStatRegex);
@@ -488,6 +489,19 @@ export class BuildService {
     };
   }
 
+  async updateBuildLoc(
+    buildId: string,
+    diffStat: DiffStatObject
+  ): Promise<void> {
+    await this.prisma.build.update({
+      where: { id: buildId },
+      data: {
+        linesOfCode: diffStat.insertions + diffStat.deletions,
+        filesChanged: diffStat.filesChanged,
+      },
+    });
+  }
+
   public async onCreatePRSuccess(
     response: CreatePrSuccess.Value
   ): Promise<void> {
@@ -499,6 +513,11 @@ export class BuildService {
       await this.resourceService.reportSyncMessage(
         build.resourceId,
         "Sync Completed Successfully"
+      );
+
+      await this.updateBuildLoc(
+        response.buildId,
+        this.formatDiffStat(response.diffStat)
       );
 
       await this.actionService.logInfo(step, response.url, {
