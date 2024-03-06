@@ -24,6 +24,7 @@ import { GitHubStrategyConfigService } from "./githubStrategyConfig.service";
 import { GitHubAuthGuard } from "./github.guard";
 import { OpenIDConnectAuthMiddleware } from "./oidc.middleware";
 import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
+import { IdpModule } from "../idp/idp.module";
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentA
     ExceptionFiltersModule,
     WorkspaceModule,
     UserModule,
+    IdpModule,
   ],
   providers: [
     AuthService,

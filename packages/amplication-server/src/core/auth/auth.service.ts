@@ -1,56 +1,42 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Injectable, forwardRef, Inject } from "@nestjs/common";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import cuid from "cuid";
 import { subDays } from "date-fns";
 import { Response } from "express";
-import { ConfigService } from "@nestjs/config";
-import cuid from "cuid";
-import { Env } from "../../env";
-import { Prisma, PrismaService } from "../../prisma";
 import { Profile as GitHubProfile } from "passport-github2";
-import { Account, User, Workspace } from "../../models";
-import { AccountService } from "../account/account.service";
-import { WorkspaceService } from "../workspace/workspace.service";
-import { PasswordService } from "../account/password.service";
-import { UserService } from "../user/user.service";
-import {
-  SignupInput,
-  ApiToken,
-  CreateApiTokenArgs,
-  JwtDto,
-  EnumTokenType,
-} from "./dto";
-import { AmplicationError } from "../../errors/AmplicationError";
+import { stringifyUrl } from "query-string";
 import { FindOneArgs } from "../../dto";
-import { CompleteInvitationArgs } from "../workspace/dto";
-import { AuthProfile, AuthUser, BootstrapPreviewUser } from "./types";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import {
-  AuthenticationClient,
-  ChangePasswordRequest,
-  JSONApiResponse,
-  ManagementClient,
-  SignUpRequest,
-  SignUpResponse,
-  TextApiResponse,
-} from "auth0";
-import { SignupPreviewAccountInput } from "./dto/SignupPreviewAccountInput";
-import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { Account, User, Workspace } from "../../models";
 import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
-import { PUBLIC_DOMAINS } from "./publicDomains";
-import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
-import {
-  generatePassword,
-  generateRandomEmail,
-  generateRandomString,
-} from "./auth-utils";
-import { IdentityProvider, IdentityProviderPreview } from "./auth.types";
+import { Prisma, PrismaService } from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import {
   EnumEventType,
   IdentifyData,
 } from "../../services/segmentAnalytics/segmentAnalytics.types";
-import { stringifyUrl } from "query-string";
+import { AccountService } from "../account/account.service";
+import { PasswordService } from "../account/password.service";
+import { UserService } from "../user/user.service";
+import { CompleteInvitationArgs } from "../workspace/dto";
+import { WorkspaceService } from "../workspace/workspace.service";
+import { generateRandomEmail, generateRandomString } from "./auth-utils";
+import { IdentityProvider, IdentityProviderPreview } from "./auth.types";
+import {
+  ApiToken,
+  CreateApiTokenArgs,
+  EnumTokenType,
+  JwtDto,
+  SignupInput,
+} from "./dto";
+import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
+import { SignupPreviewAccountInput } from "./dto/SignupPreviewAccountInput";
+import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
+import { PUBLIC_DOMAINS } from "./publicDomains";
+import { AuthProfile, AuthUser, BootstrapPreviewUser } from "./types";
+import { Auth0Service, Auth0User } from "../idp/auth0.service";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
@@ -70,14 +56,7 @@ const WORKSPACE_INCLUDE = {
 
 @Injectable()
 export class AuthService {
-  private readonly auth0: AuthenticationClient;
-  private readonly auth0Management: ManagementClient;
-  private readonly clientId: string;
-  private readonly businessEmailDbConnectionName: string;
-  private clientHost: string;
-
   constructor(
-    configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly passwordService: PasswordService,
     private readonly prismaService: PrismaService,
@@ -86,28 +65,9 @@ export class AuthService {
     private readonly userService: UserService,
     @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService,
-    private readonly analytics: SegmentAnalyticsService
-  ) {
-    this.clientHost = configService.get(Env.CLIENT_HOST);
-
-    this.clientId = configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID);
-    const clientSecret = configService.get<string>(
-      Env.AUTH_ISSUER_CLIENT_SECRET
-    );
-    this.businessEmailDbConnectionName = configService.get<string>(
-      Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
-    );
-    this.auth0 = new AuthenticationClient({
-      domain: configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
-      clientId: this.clientId,
-      clientSecret,
-    });
-    this.auth0Management = new ManagementClient({
-      domain: configService.get<string>(Env.AUTH_ISSUER_MANAGEMENT_BASE_URL),
-      clientId: this.clientId,
-      clientSecret: clientSecret,
-    });
-  }
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly auth0Service: Auth0Service
+  ) {}
 
   private async trackStartBusinessEmailSignup(
     emailAddress: string,
@@ -186,18 +146,20 @@ export class AuthService {
         },
       });
 
-      let auth0User: JSONApiResponse<SignUpResponse>;
+      let auth0User: Auth0User;
 
-      const existedAuth0User = await this.getAuth0UserByEmail(emailAddress);
+      const existedAuth0User = await this.auth0Service.getAuth0UserByEmail(
+        emailAddress
+      );
 
       if (!existedAuth0User) {
-        auth0User = await this.createAuth0User(emailAddress);
+        auth0User = await this.auth0Service.createAuth0User(emailAddress);
 
         if (!auth0User.data.email)
           throw Error("Failed to create new Auth0 user");
       }
 
-      const resetPassword = await this.resetAuth0UserPassword(
+      const resetPassword = await this.auth0Service.resetAuth0UserPassword(
         existedAuth0User ? emailAddress : auth0User.data.email
       );
       if (!resetPassword.data)
@@ -218,42 +180,6 @@ export class AuthService {
       this.logger.error(error.message, error);
       throw new AmplicationError("Sign up failed, please try again later.");
     }
-  }
-
-  async createAuth0User(
-    email: string
-  ): Promise<JSONApiResponse<SignUpResponse>> {
-    const data: SignUpRequest = {
-      email,
-      password: generatePassword(),
-      connection: this.businessEmailDbConnectionName,
-    };
-
-    const user = await this.auth0.database.signUp(data);
-
-    return user;
-  }
-
-  async resetAuth0UserPassword(email: string): Promise<TextApiResponse> {
-    const data: ChangePasswordRequest = {
-      email,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      client_id: this.clientId,
-      connection: this.businessEmailDbConnectionName,
-    };
-
-    const changePasswordResponse = await this.auth0.database.changePassword(
-      data
-    );
-
-    return changePasswordResponse;
-  }
-
-  async getAuth0UserByEmail(email: string): Promise<boolean> {
-    const user = await this.auth0Management.usersByEmail.getByEmail({ email });
-    if (!user.data.length) return false;
-
-    return user.data[0].email === email;
   }
 
   async createGitHubUser(
@@ -357,22 +283,22 @@ export class AuthService {
   }
 
   async completeSignupPreviewAccount(user: User): Promise<string> {
-    let auth0User: JSONApiResponse<SignUpResponse>;
+    let auth0User: Auth0User;
     const { account: currentAccount } = user;
 
-    const existingAuth0User = await this.getAuth0UserByEmail(
+    const existingAuth0User = await this.auth0Service.getAuth0UserByEmail(
       currentAccount.previewAccountEmail
     );
 
     if (!existingAuth0User) {
-      auth0User = await this.createAuth0User(
+      auth0User = await this.auth0Service.createAuth0User(
         currentAccount.previewAccountEmail
       );
       if (!auth0User?.data?.email)
         throw Error("Failed to create new Auth0 user");
     }
 
-    const resetPassword = await this.resetAuth0UserPassword(
+    const resetPassword = await this.auth0Service.resetAuth0UserPassword(
       currentAccount.previewAccountEmail
     );
 
