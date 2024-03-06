@@ -28,7 +28,6 @@ import { resourceThemeMap } from "./constants";
 import PluginsTile from "./PluginsTile";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BtmButton, EnumButtonLocation } from "./break-the-monolith/BtmButton";
-import { FlexEnd } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -45,13 +44,13 @@ const ResourceOverview = () => {
   return (
     <PageContent pageTitle={PAGE_TITLE}>
       <FlexItem>
-        <FlexEnd>
+        <FlexItem.FlexEnd>
           <BtmButton
             openInFullScreen
             location={EnumButtonLocation.Resource}
             ButtonStyle={EnumButtonStyle.GradientFull}
           />
-        </FlexEnd>
+        </FlexItem.FlexEnd>
       </FlexItem>
 
       <HorizontalRule doubleSpacing />

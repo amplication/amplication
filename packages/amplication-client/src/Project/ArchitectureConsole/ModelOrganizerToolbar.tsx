@@ -9,11 +9,8 @@ import {
   FlexItem,
   SearchField,
   Tooltip,
-} from "@amplication/ui/design-system";
-import {
   EnumFlexDirection,
-  FlexEnd,
-} from "@amplication/ui/design-system/components/FlexItem/FlexItem";
+} from "@amplication/ui/design-system";
 import { useCallback, useEffect, useState } from "react";
 import BetaFeatureTag from "../../Components/BetaFeatureTag";
 import { Button } from "../../Components/Button";
@@ -158,7 +155,7 @@ export default function ModelOrganizerToolbar({
           </Tooltip>
         </FlexItem>
 
-        <FlexEnd>
+        <FlexItem.FlexEnd>
           <FlexItem itemsAlign={EnumItemsAlign.Center}>
             {!restrictedMode && <BetaFeatureTag></BetaFeatureTag>}
 
@@ -204,7 +201,7 @@ export default function ModelOrganizerToolbar({
               ></RedesignResourceButton>
             )}
           </FlexItem>
-        </FlexEnd>
+        </FlexItem.FlexEnd>
       </FlexItem>
     </div>
   );

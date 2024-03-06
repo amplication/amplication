@@ -30,6 +30,7 @@ export interface CreateEntityServiceBaseParams extends EventParams {
   template: namedTypes.File;
   moduleContainers: ModuleContainer[];
   entityActions: entityActions;
+  dtoNameToPath: Record<string, string>;
 }
 
 export interface CreateEntityServiceParams extends EventParams {
@@ -40,6 +41,7 @@ export interface CreateEntityServiceParams extends EventParams {
   serviceBaseId: namedTypes.Identifier;
   template: namedTypes.File;
   entityActions: entityActions;
+  dtoNameToPath: Record<string, string>;
 }
 export interface CreateEntityControllerParams extends EventParams {
   template: namedTypes.File;
@@ -61,6 +63,7 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   serviceId: namedTypes.Identifier;
   moduleContainers: ModuleContainer[];
   entityActions: entityActions;
+  dtoNameToPath: Record<string, string>;
 }
 
 export interface CreateEntityGrpcControllerParams extends EventParams {
@@ -80,6 +83,7 @@ export interface CreateEntityGrpcControllerBaseParams extends EventParams {
   templateMapping: { [key: string]: any };
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
+  dtoNameToPath: Record<string, string>;
 }
 
 export interface CreateEntityControllerToManyRelationMethodsParams
@@ -263,6 +267,7 @@ export interface CreateEntityResolverParams extends EventParams {
   resolverBaseId: namedTypes.Identifier;
   templateMapping: { [key: string]: any };
   entityActions: entityActions;
+  dtoNameToPath: Record<string, string>;
 }
 
 export interface CreateEntityResolverBaseParams extends EventParams {
@@ -280,6 +285,7 @@ export interface CreateEntityResolverBaseParams extends EventParams {
   templateMapping: { [key: string]: any };
   moduleContainers: ModuleContainer[];
   entityActions: entityActions;
+  dtoNameToPath: Record<string, string>;
 }
 export interface CreateSwaggerParams extends EventParams {
   template: namedTypes.File;
@@ -293,10 +299,12 @@ export interface CreateSeedParams extends EventParams {
   templateMapping: { [key: string]: any };
   fileDir: string;
   outputFileName: string;
+  dtoNameToPath: Record<string, string>;
 }
 
 export interface CreateDTOsParams extends EventParams {
   dtos: DTOs;
+  dtoNameToPath: Record<string, string>;
 }
 
 export interface LoadStaticFilesParams extends EventParams {

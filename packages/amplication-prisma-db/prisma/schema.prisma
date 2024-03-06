@@ -505,6 +505,7 @@ enum EnumBlockType {
   PluginOrder
   Module
   ModuleAction
+  ModuleDto
 }
 
 enum ActionStepStatus {

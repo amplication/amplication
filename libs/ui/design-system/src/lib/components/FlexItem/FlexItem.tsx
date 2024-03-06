@@ -48,6 +48,7 @@ export type Props = {
   itemsAlign?: EnumItemsAlign;
   gap?: EnumGapSize;
   wrap?: boolean;
+  singeChildWithEllipsis?: boolean;
 };
 
 const CLASS_NAME = "amp-flex-item";
@@ -63,6 +64,7 @@ export const FlexItem = ({
   itemsAlign = EnumItemsAlign.Start,
   gap = EnumGapSize.Default,
   wrap = false,
+  singeChildWithEllipsis = false,
 }: Props) => {
   const marginClass = getMarginStyle(margin);
   const directionClass = `${CLASS_NAME}--${direction}`;
@@ -84,7 +86,13 @@ export const FlexItem = ({
       }}
     >
       {start && <FlexStart>{start}</FlexStart>}
-      {children}
+      {singeChildWithEllipsis ? (
+        <div className={`${CLASS_NAME}__singe-child-with-ellipsis`}>
+          {children}
+        </div>
+      ) : (
+        children
+      )}
       {end && <FlexEnd>{end}</FlexEnd>}
     </div>
   );
@@ -95,12 +103,14 @@ export type FlexStartProps = {
   children?: ReactNode;
   alignSelf?: EnumContentAlign;
   minWidthAuto?: boolean;
+  direction?: EnumFlexDirection;
 };
 
 export const FlexStart = ({
   children,
   className,
   alignSelf,
+  direction = EnumFlexDirection.Column,
   minWidthAuto = false,
 }: FlexStartProps) => {
   return (
@@ -108,6 +118,7 @@ export const FlexStart = ({
       style={{
         alignSelf: alignSelf,
         minWidth: minWidthAuto ? "auto" : undefined,
+        flexDirection: direction,
       }}
       className={classNames(`${CLASS_NAME}__start`, className)}
     >
@@ -121,12 +132,14 @@ export type FlexEndProps = {
   children?: ReactNode;
   alignSelf?: EnumContentAlign;
   minWidthAuto?: boolean;
+  direction?: EnumFlexDirection;
 };
 
 export const FlexEnd = ({
   children,
   className,
   alignSelf,
+  direction = EnumFlexDirection.Column,
   minWidthAuto = false,
 }: FlexEndProps) => {
   return (
@@ -134,6 +147,7 @@ export const FlexEnd = ({
       style={{
         alignSelf: alignSelf,
         minWidth: minWidthAuto ? "auto" : undefined,
+        flexDirection: direction,
       }}
       className={classNames(`${CLASS_NAME}__end`, className)}
     >

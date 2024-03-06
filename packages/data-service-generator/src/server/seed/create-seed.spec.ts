@@ -14,8 +14,8 @@ import {
 } from "./create-seed";
 import { DEFAULT_USER_ENTITY } from "../user-entity/user-entity";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
-import { createEnumName } from "../prisma/create-prisma-schema-fields";
 import { memberExpression } from "../../utils/ast";
+import { createEnumName } from "@amplication/dsg-utils";
 
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityField";
 const EXAMPLE_FIELD_BASE: Pick<

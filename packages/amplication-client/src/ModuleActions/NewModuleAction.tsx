@@ -7,7 +7,7 @@ import {
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
 import { pascalCase } from "pascal-case";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -18,11 +18,14 @@ import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import useModuleAction from "./hooks/useModuleAction";
-import { kebabCase } from "lodash";
+import { useModulesContext } from "../Modules/modulesContext";
+import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 
 type Props = {
   resourceId: string;
   moduleId: string;
+  onActionCreated?: (moduleAction: models.ModuleAction) => void;
+  buttonStyle?: EnumButtonStyle;
 };
 
 const FORM_SCHEMA = {
@@ -45,14 +48,20 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const NewModuleAction = ({ resourceId, moduleId }: Props) => {
+const NewModuleAction = ({
+  resourceId,
+  moduleId,
+  onActionCreated,
+  buttonStyle = EnumButtonStyle.Primary,
+}: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
+  const { customActionsLicenseEnabled } = useModulesContext();
+
   const {
     createModuleAction,
-    createModuleActionData: data,
     createModuleActionError: error,
     createModuleActionLoading: loading,
   } = useModuleAction();
@@ -69,33 +78,41 @@ const NewModuleAction = ({ resourceId, moduleId }: Props) => {
       createModuleAction({
         variables: {
           data: {
-            ...data,
             displayName,
             name,
-            gqlOperation: models.EnumModuleActionGqlOperation.Query,
-            restVerb: models.EnumModuleActionRestVerb.Get,
-            path: `/:id/${kebabCase(name)}`,
             resource: { connect: { id: resourceId } },
             parentBlock: { connect: { id: moduleId } },
           },
         },
-      }).catch(console.error);
+      })
+        .catch(console.error)
+        .then((result) => {
+          if (result && result.data) {
+            if (onActionCreated) {
+              onActionCreated(result.data.createModuleAction);
+            }
+            history.push(
+              `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/actions/${result.data.createModuleAction.id}`
+            );
+          }
+        });
+      setDialogOpen(false);
     },
-    [createModuleAction, resourceId]
+    [
+      createModuleAction,
+      resourceId,
+      moduleId,
+      onActionCreated,
+      history,
+      currentWorkspace?.id,
+      currentProject?.id,
+    ]
   );
-
-  useEffect(() => {
-    if (data) {
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/actions/${data.createModuleAction.id}`
-      );
-    }
-  }, [history, data, resourceId, currentWorkspace, currentProject]);
 
   const errorMessage = formatError(error);
 
   return (
-    <>
+    <div>
       <Dialog
         isOpen={dialogOpen}
         onDismiss={handleDialogStateChange}
@@ -141,15 +158,20 @@ const NewModuleAction = ({ resourceId, moduleId }: Props) => {
           }}
         </Formik>
       </Dialog>
-      <Button
-        buttonStyle={EnumButtonStyle.Primary}
-        onClick={handleDialogStateChange}
-        disabled={true}
-      >
-        Add Action
-      </Button>
+
+      {REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED === "true" && (
+        <Button
+          buttonStyle={buttonStyle}
+          onClick={handleDialogStateChange}
+          disabled={!customActionsLicenseEnabled}
+          icon="api"
+        >
+          Add Action
+        </Button>
+      )}
+
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </>
+    </div>
   );
 };
 

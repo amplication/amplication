@@ -6,7 +6,7 @@ $addon-feature-tag-border-radius: 32px;
 $addon-feature-tag-gap: 4px;
 $addon-title-line-height: 36px;
 
-.module-actions {
+.module-dtos {
   &__search-field {
     display: flex;
     margin-bottom: var(--double-spacing);
@@ -18,7 +18,7 @@ $addon-title-line-height: 36px;
     gap: $addon-feature-tag-gap;
     padding: $feature-tag-padding;
     border-radius: $addon-feature-tag-border-radius;
-    background-color: var(--feature-indicator);
+    background-color: var(--theme-turquoise);
   }
 
   &__addon-section {
@@ -26,7 +26,7 @@ $addon-title-line-height: 36px;
 
     &__contact-us {
       & span {
-        color: var(--feature-indicator);
+        color: var(--theme-turquoise);
       }
     }
 

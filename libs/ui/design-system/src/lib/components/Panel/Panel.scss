@@ -31,6 +31,12 @@ $theme-border-expand: 1px;
   &--bordered {
     border: $border-dark;
     margin-bottom: var(--double-spacing);
+    background-color: var(--gray-90);
+  }
+
+  &--error {
+    border: 1px solid var(--theme-red);
+    background: var(--theme-light-red-transparent);
   }
 
   &--bold {
