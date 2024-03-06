@@ -250,8 +250,10 @@ export class GitCli {
   }
 
   async getShortStat(): Promise<string> {
-    const currentRef = await this.git.raw(["rev-parse", "HEAD"]);
-    const prevRef = await this.git.raw(["rev-parse", `${currentRef}^`]);
+    const currentRef = (await this.git.raw(["rev-parse", "HEAD"])).trim();
+    const prevRef = (
+      await this.git.raw(["rev-parse", `${currentRef}^`])
+    ).trim();
 
     return (
       await this.git.diff(["--shortstat", `${currentRef}..${prevRef}`])
