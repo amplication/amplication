@@ -6,9 +6,10 @@ export type Props = {
   label: string;
   placeholder: string;
   onChange: (searchPhrase: string) => void;
+  value?: string;
 };
 
-const SearchField = ({ label, placeholder, onChange }: Props) => {
+const SearchField = ({ label, placeholder, onChange, value }: Props) => {
   /**@todo: add timer to raise event only after minimal idle time  */
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

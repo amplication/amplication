@@ -29,9 +29,7 @@ import { SERVICE_NAME } from "./constants";
     AmplicationLoggerModule.forRoot({
       component: SERVICE_NAME,
     }),
-    TracingModule.forRoot({
-      serviceName: SERVICE_NAME,
-    }),
+    TracingModule.forRoot(),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       useFactory: (configService) => {

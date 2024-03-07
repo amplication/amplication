@@ -1,13 +1,11 @@
 import { MockedLogger } from "@amplication/util/logging/test-utils";
-import { createDataService } from "../create-data-service";
-import { EnumResourceType } from "../models";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import entities from "./entities";
-import roles from "./roles";
-import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
-import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 import { rm } from "fs/promises";
+import { createDataService } from "../create-data-service";
+import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
+import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 import { plugins } from "./mock-data-plugin-installations";
+import { TEST_DATA } from "./test-data";
 
 jest.setTimeout(100000);
 
@@ -26,9 +24,7 @@ describe("createDataService", () => {
     test("creates resource as expected", async () => {
       const modules = await createDataService(
         {
-          entities,
-          roles,
-          buildId: "example_build_id",
+          ...TEST_DATA,
           resourceInfo: {
             ...appInfo,
             settings: {
@@ -36,7 +32,6 @@ describe("createDataService", () => {
               authEntityName: USER_ENTITY_NAME,
             },
           },
-          resourceType: EnumResourceType.Service,
           pluginInstallations: [plugins.authCore, plugins.authJwt],
         },
         MockedLogger,

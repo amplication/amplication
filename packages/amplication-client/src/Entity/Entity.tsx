@@ -17,7 +17,7 @@ import { ENTITY_ACTIONS } from "./constants";
 
 import { AppContext } from "../context/appContext";
 import useModule from "../Modules/hooks/useModule";
-import { DATE_CREATED_FIELD } from "../Modules/ModuleList";
+import { DATE_CREATED_FIELD } from "../Modules/ModuleNavigationList";
 import useBreadcrumbs from "../Layout/useBreadcrumbs";
 
 type Props = {

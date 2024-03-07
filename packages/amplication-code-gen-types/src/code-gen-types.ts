@@ -10,8 +10,11 @@ export {
   EnumEntityPermissionType,
   EnumMessagePatternConnectionOptions,
   EnumModuleActionType,
+  EnumModuleDtoType,
   EnumModuleActionGqlOperation,
   EnumModuleActionRestVerb,
+  EnumModuleDtoPropertyType,
+  EnumModuleActionRestInputSource,
 } from "./models";
 
 export type ServiceSettings = Omit<
@@ -281,12 +284,24 @@ export type ResourceGenerationConfig = {
   appInfo: AppInfo;
 };
 
+export type PropertyTypeDef = Omit<models.PropertyTypeDef, "type"> & {
+  type: keyof typeof models.EnumModuleDtoPropertyType;
+  dto?: ModuleDto;
+};
+
 export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
 
 export type ModuleContainer = BlockOmittedFields<models.Module>;
+
 export type ModuleAction = Omit<
   BlockOmittedFields<models.ModuleAction>,
-  "id" | "actionType" | "restVerb" | "gqlOperation"
+  | "id"
+  | "actionType"
+  | "restVerb"
+  | "gqlOperation"
+  | "inputType"
+  | "outputType"
+  | "restInputSource"
 > & {
   id?: string;
   displayName: string;
@@ -294,23 +309,71 @@ export type ModuleAction = Omit<
   actionType: keyof typeof models.EnumModuleActionType;
   restVerb: keyof typeof models.EnumModuleActionRestVerb;
   gqlOperation: keyof typeof models.EnumModuleActionGqlOperation;
+  inputType?: PropertyTypeDef;
+  outputType?: PropertyTypeDef;
+  restInputSource?: keyof typeof models.EnumModuleActionRestInputSource;
+};
+
+export type ModuleDtoProperty = Omit<
+  models.ModuleDtoProperty,
+  "propertyTypes"
+> & {
+  propertyTypes: PropertyTypeDef[];
+};
+
+export type ModuleDto = Omit<
+  BlockOmittedFields<models.ModuleDto>,
+  "id" | "dtoType" | "properties"
+> & {
+  id?: string;
+  description: string;
+  dtoType: keyof typeof models.EnumModuleDtoType;
+  properties?: ModuleDtoProperty[];
+};
+
+export type ModuleActionDefaultTypesNestedOnly = Extract<
+  models.EnumModuleActionType,
+  | models.EnumModuleActionType.ChildrenConnect
+  | models.EnumModuleActionType.ChildrenDisconnect
+  | models.EnumModuleActionType.ChildrenFind
+  | models.EnumModuleActionType.ChildrenUpdate
+  | models.EnumModuleActionType.ParentGet
+>;
+
+export type ModuleActionDefaultTypesWithoutNested = Exclude<
+  models.EnumModuleActionType,
+  ModuleActionDefaultTypesNestedOnly | models.EnumModuleActionType.Custom
+>;
+
+export type entityRelatedFieldDefaultActions = {
+  [key in ModuleActionDefaultTypesNestedOnly]?: ModuleAction | undefined;
 };
 
 export type entityDefaultActions = {
-  [models.EnumModuleActionType.Create]: ModuleAction | undefined;
-  [models.EnumModuleActionType.Delete]: ModuleAction | undefined;
-  [models.EnumModuleActionType.Find]: ModuleAction | undefined;
-  [models.EnumModuleActionType.Meta]: ModuleAction | undefined;
-  [models.EnumModuleActionType.Read]: ModuleAction | undefined;
-  [models.EnumModuleActionType.Update]: ModuleAction | undefined;
+  [key in ModuleActionDefaultTypesWithoutNested]?: ModuleAction | undefined;
 };
 
-export type entityRelatedFieldDefaultActions = {
-  [models.EnumModuleActionType.ChildrenConnect]?: ModuleAction | undefined;
-  [models.EnumModuleActionType.ChildrenDisconnect]?: ModuleAction | undefined;
-  [models.EnumModuleActionType.ChildrenFind]?: ModuleAction | undefined;
-  [models.EnumModuleActionType.ChildrenUpdate]?: ModuleAction | undefined;
-  [models.EnumModuleActionType.ParentGet]?: ModuleAction | undefined;
+type defaultDtoTypes = Exclude<
+  models.EnumModuleDtoType,
+  | models.EnumModuleDtoType.Custom
+  | models.EnumModuleDtoType.CustomEnum
+  | models.EnumModuleDtoType.Enum
+  | models.EnumModuleDtoType.CreateNestedManyInput
+  | models.EnumModuleDtoType.UpdateNestedManyInput
+>;
+
+type defaultDtoNestedTypes = Extract<
+  models.EnumModuleDtoType,
+  | models.EnumModuleDtoType.CreateNestedManyInput
+  | models.EnumModuleDtoType.UpdateNestedManyInput
+>;
+
+export type entityDefaultDtos = {
+  [key in defaultDtoTypes]: ModuleDto | undefined;
+};
+
+export type entityDefaultNestedDtos = {
+  [key in defaultDtoNestedTypes]: ModuleDto | undefined;
 };
 
 export type entityActions = {
@@ -325,6 +388,17 @@ export type entityActions = {
 export type EntityActionsMap = Record<
   string, //module name/ entity name
   entityActions
+>;
+
+export type ModuleActionsAndDtos = {
+  moduleContainer: ModuleContainer;
+  actions: ModuleAction[];
+  dtos: ModuleDto[];
+};
+
+export type ModuleActionsAndDtosMap = Record<
+  string, //module name
+  ModuleActionsAndDtos
 >;
 
 type BlockOmittedFields<T> = Omit<

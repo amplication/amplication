@@ -1,3 +1,9 @@
+import { SERVICE_NAME } from "./constants";
+import { Tracing } from "@amplication/util/nestjs/tracing";
+Tracing.init({
+  serviceName: SERVICE_NAME,
+});
+
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { graphqlUploadExpress } from "graphql-upload";
@@ -6,7 +12,6 @@ import { sendServerLoadEvent } from "./util/sendServerLoadEvent";
 import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
 import { MicroserviceOptions } from "@nestjs/microservices";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { SERVICE_NAME } from "./constants";
 import { Logger } from "@amplication/util/logging";
 import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 import {
@@ -30,7 +35,6 @@ async function bootstrap() {
   ) {
     sendServerLoadEvent();
   }
-
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(AmplicationLogger));
 
