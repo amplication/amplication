@@ -88,7 +88,7 @@ export class PullRequestController {
       const { pullRequestUrl, diffStat } =
         await KafkaPacemaker.wrapLongRunningMethod<{
           pullRequestUrl: string;
-          diffStat: any;
+          diffStat: string;
         }>(context, () => this.pullRequestService.createPullRequest(validArgs));
 
       logger.info(`Finish process, committing`, {
