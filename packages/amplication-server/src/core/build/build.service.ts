@@ -489,7 +489,7 @@ export class BuildService {
     };
   }
 
-  async updateBuildLoc(
+  async updateBuildLOC(
     buildId: string,
     diffStat: DiffStatObject
   ): Promise<void> {
@@ -515,7 +515,7 @@ export class BuildService {
         "Sync Completed Successfully"
       );
 
-      await this.updateBuildLoc(
+      await this.updateBuildLOC(
         response.buildId,
         this.formatDiffStat(response.diffStat)
       );
