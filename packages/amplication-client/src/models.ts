@@ -232,7 +232,9 @@ export type Build = {
   commitId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   createdBy?: Maybe<User>;
+  filesChanged?: Maybe<Scalars['Float']['output']>;
   id: Scalars['String']['output'];
+  linesOfCode?: Maybe<Scalars['Float']['output']>;
   message?: Maybe<Scalars['String']['output']>;
   resource?: Maybe<Resource>;
   resourceId: Scalars['String']['output'];

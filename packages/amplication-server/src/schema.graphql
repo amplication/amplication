@@ -206,7 +206,9 @@ type Build {
   commitId: String!
   createdAt: DateTime!
   createdBy: User
+  filesChanged: Float
   id: String!
+  linesOfCode: Float
   message: String
   resource: Resource
   resourceId: String!
