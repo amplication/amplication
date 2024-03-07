@@ -118,7 +118,6 @@
         "{workspaceRoot}/packages/amplication-client/src/models.ts",
         "{workspaceRoot}/packages/amplication-code-gen-types/src/models.ts",
         "{workspaceRoot}/ee/packages/git-sync-manager/src/models.ts",
-        "{workspaceRoot}/packages/amplication-git-pull-request-service/src/models.ts",
         "{workspaceRoot}/packages/data-service-generator/src/models.ts"
       ],
       "dependsOn": ["graphql:schema:generate"],
