@@ -135,7 +135,8 @@
               "@amplication/util/logging",
               "@amplication/dsg-utils"
             ],
-            "includeTransitiveDependencies": true
+            "includeTransitiveDependencies": true,
+            "ignoredFiles": ["src/**/*.template.*", "src/**/static/**/*"]
           }
         ]
       }
