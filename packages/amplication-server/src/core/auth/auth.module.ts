@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  forwardRef,
+} from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -41,8 +46,8 @@ import { PreviewUserService } from "./previewUser.service";
     PrismaModule,
     PermissionsModule,
     ExceptionFiltersModule,
-    WorkspaceModule,
-    UserModule,
+    forwardRef(() => WorkspaceModule),
+    forwardRef(() => UserModule),
     IdpModule,
   ],
   providers: [

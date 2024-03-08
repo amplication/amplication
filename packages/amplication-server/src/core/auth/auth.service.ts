@@ -523,20 +523,7 @@ export class AuthService {
   }
 
   async getAuthUser(where: Prisma.UserWhereInput): Promise<AuthUser | null> {
-    const matchingUsers = await this.userService.findUsers({
-      where,
-      include: {
-        account: true,
-        userRoles: true,
-        workspace: true,
-      },
-      take: 1,
-    });
-    if (matchingUsers.length === 0) {
-      return null;
-    }
-    const [user] = matchingUsers;
-    return user as AuthUser;
+    return this.userService.getAuthUser(where);
   }
 
   private async createWorkspace(
