@@ -159,7 +159,7 @@ npm run serve:client
 # running the data-service-generator component
 npm run serve:dsg
 
-# running the git-pull-request-service component
+# running the git-sync-manager component
 npm run serve:git
 
 # running the plugin-api component
