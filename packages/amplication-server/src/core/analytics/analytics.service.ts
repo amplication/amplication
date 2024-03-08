@@ -43,22 +43,20 @@ export class AnalyticsService {
     endDate,
     projectId,
   }: BaseAnalyticsArgs): Promise<number> {
-    return (
-      await this.prisma.build.findMany({
-        where: {
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-          resource: {
-            project: {
-              id: projectId,
-              workspaceId: workspaceId,
-            },
+    return this.prisma.build.count({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        resource: {
+          project: {
+            id: projectId,
+            workspaceId: workspaceId,
           },
         },
-      })
-    )?.length;
+      },
+    });
   }
 
   async countEntityChanges({
@@ -67,56 +65,54 @@ export class AnalyticsService {
     startDate,
     endDate,
   }: BaseAnalyticsArgs): Promise<number> {
-    return (
-      await this.prisma.entity.findMany({
-        where: {
-          resource: {
-            project: {
-              id: projectId,
-              workspaceId: workspaceId,
+    return this.prisma.entity.count({
+      where: {
+        resource: {
+          project: {
+            id: projectId,
+            workspaceId: workspaceId,
+          },
+        },
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        OR: [
+          {
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
             },
           },
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          OR: [
-            {
-              createdAt: {
-                gte: startDate,
-                lte: endDate,
-              },
+          {
+            updatedAt: {
+              gte: startDate,
+              lte: endDate,
             },
-            {
-              updatedAt: {
-                gte: startDate,
-                lte: endDate,
-              },
-            },
-          ],
-          versions: {
-            every: {
-              fields: {
-                every: {
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  OR: [
-                    {
-                      createdAt: {
-                        gte: startDate,
-                        lte: endDate,
-                      },
+          },
+        ],
+        versions: {
+          every: {
+            fields: {
+              every: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                OR: [
+                  {
+                    createdAt: {
+                      gte: startDate,
+                      lte: endDate,
                     },
-                    {
-                      updatedAt: {
-                        gte: startDate,
-                        lte: endDate,
-                      },
+                  },
+                  {
+                    updatedAt: {
+                      gte: startDate,
+                      lte: endDate,
                     },
-                  ],
-                },
+                  },
+                ],
               },
             },
           },
         },
-      })
-    )?.length;
+      },
+    });
   }
 
   async countBlockChanges({
@@ -126,33 +122,31 @@ export class AnalyticsService {
     endDate,
     blockType,
   }: BlockChangesArgs): Promise<number> {
-    return (
-      await this.prisma.block.findMany({
-        where: {
-          blockType: blockType, // EnumBlockType.PluginInstallation, EnumBlockType.ModuleAction
-          resource: {
-            project: {
-              id: projectId,
-              workspaceId: workspaceId,
+    return this.prisma.block.count({
+      where: {
+        blockType: blockType, // EnumBlockType.PluginInstallation, EnumBlockType.ModuleAction
+        resource: {
+          project: {
+            id: projectId,
+            workspaceId: workspaceId,
+          },
+        },
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        OR: [
+          {
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
             },
           },
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          OR: [
-            {
-              createdAt: {
-                gte: startDate,
-                lte: endDate,
-              },
+          {
+            updatedAt: {
+              gte: startDate,
+              lte: endDate,
             },
-            {
-              updatedAt: {
-                gte: startDate,
-                lte: endDate,
-              },
-            },
-          ],
-        },
-      })
-    )?.length;
+          },
+        ],
+      },
+    });
   }
 }
