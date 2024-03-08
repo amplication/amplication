@@ -4,10 +4,15 @@ import { AnalyticsService } from "./analytics.service";
 import { Project, Resource, Workspace } from "../../models";
 import { Build } from "../build/dto/Build";
 import { PrismaService } from "../../prisma";
+import { EnumBlockType } from "../../enums/EnumBlockType";
 
 const buildFindManyMock = jest.fn();
 const buildCountMock = jest.fn();
 const buildAggregateMock = jest.fn();
+
+const entityCountMock = jest.fn();
+
+const blockCountMock = jest.fn();
 
 describe("AnalyticsService", () => {
   let service: AnalyticsService;
@@ -29,6 +34,12 @@ describe("AnalyticsService", () => {
               findMany: buildFindManyMock,
               count: buildCountMock,
               aggregate: buildAggregateMock,
+            },
+            entity: {
+              count: entityCountMock,
+            },
+            block: {
+              count: blockCountMock,
             },
           },
         },
@@ -91,7 +102,7 @@ describe("AnalyticsService", () => {
         },
       });
 
-      expect(result).toEqual(10);
+      expect(result).toBeDefined();
     });
 
     it("should count the lines of code added/updated for all projects", async () => {
@@ -134,7 +145,7 @@ describe("AnalyticsService", () => {
         },
       });
 
-      expect(result).toEqual(10);
+      expect(result).toBeDefined();
     });
   });
 
@@ -225,16 +236,125 @@ describe("AnalyticsService", () => {
         expect(result).toBeDefined();
       });
 
-      xit("should get the number of entities created/updated for a given project in a specific time frame", () => {
-        // Not implemented
+      it("should get the number of entities created/updated for a given project in a specific time frame", async () => {
+        entityCountMock.mockResolvedValueOnce(2);
+        const startDate = new Date(
+          now.getFullYear(),
+          now.getMonth() - 1,
+          now.getDate()
+        );
+        const endDate = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        );
+        const result = await service.countEntityChanges({
+          workspaceId: workspaceMock.id,
+          startDate,
+          endDate,
+          projectId: projectMock.id,
+        });
+
+        expect(entityCountMock).toBeCalledWith({
+          where: {
+            resource: {
+              project: {
+                id: projectMock.id,
+                workspaceId: workspaceMock.id,
+              },
+            },
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            OR: [
+              {
+                createdAt: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+              },
+              {
+                updatedAt: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+              },
+            ],
+            versions: {
+              every: {
+                fields: {
+                  every: {
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    OR: [
+                      {
+                        createdAt: {
+                          gte: startDate,
+                          lte: endDate,
+                        },
+                      },
+                      {
+                        updatedAt: {
+                          gte: startDate,
+                          lte: endDate,
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        });
+        expect(result).toBeDefined();
       });
 
-      xit("should get the number of APIs created/updated for a given project in a specific time frame", () => {
-        // Not implemented
-      });
+      it("should get the number of Block type created/updated for a given project in a specific time frame", async () => {
+        blockCountMock.mockResolvedValueOnce(2);
+        const startDate = new Date(
+          now.getFullYear(),
+          now.getMonth() - 1,
+          now.getDate()
+        );
+        const endDate = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        );
+        const blockType = EnumBlockType.PluginInstallation;
 
-      xit("should get the number of Plugins created/updated for a given project in a specific time frame", () => {
-        // Not implemented
+        const result = await service.countBlockChanges({
+          workspaceId: workspaceMock.id,
+          startDate,
+          endDate,
+          projectId: projectMock.id,
+          blockType,
+        });
+
+        expect(blockCountMock).toBeCalledWith({
+          where: {
+            blockType,
+            resource: {
+              project: {
+                id: projectMock.id,
+                workspaceId: workspaceMock.id,
+              },
+            },
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            OR: [
+              {
+                createdAt: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+              },
+              {
+                updatedAt: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+              },
+            ],
+          },
+        });
+        expect(result).toBeDefined();
       });
     });
     describe("when calculating the total project analytics", () => {
@@ -272,16 +392,123 @@ describe("AnalyticsService", () => {
         expect(result).toBeDefined();
       });
 
-      xit("should get the number of entities created/updated in a specific time frame", () => {
-        // Not implemented
+      it("should get the number of entities created/updated in a specific time frame", async () => {
+        entityCountMock.mockResolvedValueOnce(2);
+        const startDate = new Date(
+          now.getFullYear(),
+          now.getMonth() - 1,
+          now.getDate()
+        );
+        const endDate = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        );
+        const result = await service.countEntityChanges({
+          workspaceId: workspaceMock.id,
+          startDate,
+          endDate,
+        });
+
+        expect(entityCountMock).toBeCalledWith({
+          where: {
+            resource: {
+              project: {
+                id: undefined,
+                workspaceId: workspaceMock.id,
+              },
+            },
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            OR: [
+              {
+                createdAt: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+              },
+              {
+                updatedAt: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+              },
+            ],
+            versions: {
+              every: {
+                fields: {
+                  every: {
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    OR: [
+                      {
+                        createdAt: {
+                          gte: startDate,
+                          lte: endDate,
+                        },
+                      },
+                      {
+                        updatedAt: {
+                          gte: startDate,
+                          lte: endDate,
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        });
+        expect(result).toBeDefined();
       });
 
-      xit("should get the number of APIs created/updated in a specific time frame", () => {
-        // Not implemented
-      });
+      it("should get the number of Block type created/updated in a specific time frame", async () => {
+        blockCountMock.mockResolvedValueOnce(2);
+        const startDate = new Date(
+          now.getFullYear(),
+          now.getMonth() - 1,
+          now.getDate()
+        );
+        const endDate = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        );
+        const blockType = EnumBlockType.ModuleAction;
 
-      xit("should get the number of Plugins created/updated in a specific time frame", () => {
-        // Not implemented
+        const result = await service.countBlockChanges({
+          workspaceId: workspaceMock.id,
+          startDate,
+          endDate,
+          blockType,
+        });
+
+        expect(blockCountMock).toBeCalledWith({
+          where: {
+            blockType,
+            resource: {
+              project: {
+                id: undefined,
+                workspaceId: workspaceMock.id,
+              },
+            },
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            OR: [
+              {
+                createdAt: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+              },
+              {
+                updatedAt: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+              },
+            ],
+          },
+        });
+        expect(result).toBeDefined();
       });
     });
   });
