@@ -8,6 +8,7 @@ import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { ConfigService } from "@nestjs/config";
+import { PreviewUserService } from "../auth/previewUser.service";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_ROLE_ID = "exampleRoleId";
@@ -123,6 +124,10 @@ describe("UserService", () => {
         },
         {
           provide: BillingService,
+          useClass: jest.fn(),
+        },
+        {
+          provide: PreviewUserService,
           useClass: jest.fn(),
         },
         MockedAmplicationLoggerProvider,
