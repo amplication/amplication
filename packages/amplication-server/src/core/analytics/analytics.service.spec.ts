@@ -6,6 +6,7 @@ import { Build } from "../build/dto/Build";
 import { PrismaService } from "../../prisma";
 
 const buildFindManyMock = jest.fn();
+const buildCountMock = jest.fn();
 const buildAggregateMock = jest.fn();
 
 describe("AnalyticsService", () => {
@@ -26,6 +27,7 @@ describe("AnalyticsService", () => {
           useValue: {
             build: {
               findMany: buildFindManyMock,
+              count: buildCountMock,
               aggregate: buildAggregateMock,
             },
           },
@@ -189,7 +191,7 @@ describe("AnalyticsService", () => {
     };
     describe("when calculating a specific project analytics", () => {
       it("should get the number of builds for a given project in a specific time frame", async () => {
-        buildFindManyMock.mockResolvedValueOnce([buildMock]);
+        buildCountMock.mockResolvedValueOnce(1);
         const result = await service.countProjectBuilds({
           workspaceId: workspaceMock.id,
           startDate: new Date(
@@ -201,7 +203,7 @@ describe("AnalyticsService", () => {
           projectId: projectMock.id,
         });
 
-        expect(buildFindManyMock).toBeCalledWith({
+        expect(buildCountMock).toBeCalledWith({
           where: {
             createdAt: {
               gte: new Date(
@@ -237,7 +239,7 @@ describe("AnalyticsService", () => {
     });
     describe("when calculating the total project analytics", () => {
       it("should get the number of builds in a specific time frame", async () => {
-        buildFindManyMock.mockResolvedValueOnce([buildMock]);
+        buildCountMock.mockResolvedValueOnce(1);
         const result = await service.countProjectBuilds({
           workspaceId: workspaceMock.id,
           startDate: new Date(
@@ -248,7 +250,7 @@ describe("AnalyticsService", () => {
           endDate: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
         });
 
-        expect(buildFindManyMock).toBeCalledWith({
+        expect(buildCountMock).toBeCalledWith({
           where: {
             createdAt: {
               gte: new Date(
