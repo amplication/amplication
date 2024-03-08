@@ -133,10 +133,10 @@
           {
             "ignoredDependencies": [
               "@amplication/util/logging",
-              "@amplication/dsg-utils"
+              "@amplication/dsg-utils",
+              "web-vitals"
             ],
-            "includeTransitiveDependencies": true,
-            "ignoredFiles": ["src/**/*.template.*", "src/**/static/**/*"]
+            "includeTransitiveDependencies": true
           }
         ]
       }
