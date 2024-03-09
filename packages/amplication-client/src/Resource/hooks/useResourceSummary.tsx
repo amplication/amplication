@@ -120,10 +120,10 @@ export const useResourceSummary = (currentResource: models.Resource) => {
   }, [pluginInstallations, categoriesData]);
 
   useEffect(() => {
-    const models = currentResource?.entities.length;
-    const modules = findModulesData?.modules.length;
-    const installedPlugins = pluginInstallations?.length;
-    const roles = rolesData?.resourceRoles.length;
+    const models = currentResource?.entities?.length || 0;
+    const modules = findModulesData?.modules?.length || 0;
+    const installedPlugins = pluginInstallations?.length || 0;
+    const roles = rolesData?.resourceRoles?.length || 0;
     if (
       summaryData.models !== models ||
       summaryData.apis !== modules ||
