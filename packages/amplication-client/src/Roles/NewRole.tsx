@@ -30,7 +30,7 @@ type Props = {
   onRoleAdd?: (role: models.ResourceRole) => void;
 };
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["displayName"],
@@ -42,7 +42,7 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      displayName: AT_LEAST_TWO_CHARARCTERS,
+      displayName: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };

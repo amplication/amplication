@@ -63,6 +63,7 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.GitLab]: "GitLab",
 };
 import { encryptString } from "../../util/encryptionUtil";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -202,6 +203,7 @@ export class BuildService {
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly moduleActionService: ModuleActionService,
+    private readonly moduleDtoService: ModuleDtoService,
     private readonly moduleService: ModuleService,
     private readonly billingService: BillingService,
     private readonly gitProviderService: GitProviderService,
@@ -234,7 +236,7 @@ export class BuildService {
     const version = commitId.slice(commitId.length - 8);
 
     const latestEntityVersions = await this.entityService.getLatestVersions({
-      where: { resource: { id: resourceId } },
+      where: { resourceId: resourceId },
     });
 
     const build = await this.prisma.build.create({
@@ -857,6 +859,10 @@ export class BuildService {
       where: { resource: { id: resourceId } },
     });
 
+    const moduleDtos = await this.moduleDtoService.findMany({
+      where: { resource: { id: resourceId } },
+    });
+
     const modules = await this.moduleService.findMany({
       where: { resource: { id: resourceId } },
     });
@@ -893,6 +899,7 @@ export class BuildService {
       pluginInstallations: plugins,
       moduleContainers: modules,
       moduleActions: moduleActions,
+      moduleDtos: moduleDtos,
       resourceType: resource.resourceType,
       topics: await this.topicService.findMany({
         where: { resource: { id: resourceId } },

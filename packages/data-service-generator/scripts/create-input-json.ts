@@ -7,6 +7,11 @@ import roles from "../src/tests/roles";
 import { join } from "path";
 import { format } from "prettier";
 import { plugins } from "../src/tests/mock-data-plugin-installations";
+import {
+  moduleActions,
+  moduleContainers,
+  moduleDtos,
+} from "../src/tests/modules";
 
 async function createInputJsonFile() {
   const object = {
@@ -15,6 +20,9 @@ async function createInputJsonFile() {
     resourceInfo: appInfo,
     resourceType: EnumResourceType.Service,
     pluginInstallations: [plugins.postgres],
+    moduleActions,
+    moduleContainers,
+    moduleDtos,
   };
 
   const buildSpecPath = process.env.BUILD_SPEC_PATH;

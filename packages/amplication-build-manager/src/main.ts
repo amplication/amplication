@@ -1,3 +1,8 @@
+import { Env } from "./env";
+import { Tracing } from "@amplication/util/nestjs/tracing";
+Tracing.init({
+  serviceName: Env.SERVICE_NAME,
+});
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
 import { ConfigService } from "@nestjs/config";
@@ -6,7 +11,6 @@ import { NestFactory } from "@nestjs/core";
 import { MicroserviceOptions } from "@nestjs/microservices";
 
 import { AppModule } from "./app.module";
-import { Env } from "./env";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });

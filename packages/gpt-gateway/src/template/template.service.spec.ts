@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { TemplateService } from "./template.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { OpenaiService } from "../../providers/openai/openai.service";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
 describe("TemplateService", () => {
   let service: TemplateService;
@@ -18,6 +19,7 @@ describe("TemplateService", () => {
           provide: OpenaiService,
           useValue: {},
         },
+        MockedAmplicationLoggerProvider,
       ],
     }).compile();
     service = module.get<TemplateService>(TemplateService);

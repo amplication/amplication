@@ -17,9 +17,7 @@ import { Env } from "./env";
     AmplicationLoggerModule.forRoot({
       component: Env.SERVICE_NAME,
     }),
-    TracingModule.forRoot({
-      serviceName: Env.SERVICE_NAME,
-    }),
+    TracingModule.forRoot(),
   ],
 })
 export class AppModule {}

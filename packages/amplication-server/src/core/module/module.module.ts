@@ -6,6 +6,7 @@ import { PermissionsModule } from "../permissions/permissions.module";
 import { PrismaModule } from "../../prisma";
 import { UserModule } from "../user/user.module";
 import { ModuleActionModule } from "../moduleAction/moduleAction.module";
+import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
 @Module({
   imports: [
     UserModule,
@@ -13,6 +14,7 @@ import { ModuleActionModule } from "../moduleAction/moduleAction.module";
     PermissionsModule,
     PrismaModule,
     ModuleActionModule,
+    ModuleDtoModule,
   ],
   providers: [ModuleService, ModuleResolver],
   exports: [ModuleService, ModuleResolver],

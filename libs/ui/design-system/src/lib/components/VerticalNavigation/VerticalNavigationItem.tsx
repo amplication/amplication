@@ -33,6 +33,7 @@ export function VerticalNavigationItem({
   const handleExpand = useCallback(
     (e: any) => {
       e.preventDefault();
+      e.stopPropagation();
       setExpanded((expanded) => !expanded);
       onExpand && onExpand();
     },
@@ -44,6 +45,7 @@ export function VerticalNavigationItem({
       <NavLink
         to={to}
         exact
+        onClick={() => setExpanded(true)}
         className={classNames(CLASS_NAME, className, {
           [`${CLASS_NAME}--expanded`]: expanded,
         })}

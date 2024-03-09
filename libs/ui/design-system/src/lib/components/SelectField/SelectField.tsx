@@ -11,8 +11,10 @@ import Select, {
 } from "react-select";
 import { OptionItem } from "../types";
 import { LABEL_CLASS, LABEL_VALUE_CLASS } from "../constants";
+import { Props as InputToolTipProps } from "../InputTooltip/InputTooltip";
 
 import "./SelectField.scss";
+import { Label } from "../Label/Label";
 
 export type Props = {
   label: string;
@@ -21,6 +23,7 @@ export type Props = {
   isMulti?: boolean;
   isClearable?: boolean;
   disabled?: boolean;
+  inputToolTip?: InputToolTipProps | undefined;
 };
 
 export const SelectField = ({
@@ -30,6 +33,7 @@ export const SelectField = ({
   isMulti,
   isClearable,
   disabled,
+  inputToolTip,
 }: Props) => {
   const [field, meta, { setValue }] = useField<string | string[]>(name);
 
@@ -56,6 +60,31 @@ export const SelectField = ({
       : options.find((option) => option.value === values);
   }, [field, isMulti, options]);
 
+  const groupedOptions = useMemo(() => {
+    if (!options || options.length === 0) {
+      return [];
+    }
+    if (!options[0].group) {
+      return options;
+    }
+
+    options.sort((a, b) => a.label.localeCompare(b.label));
+
+    const optionsWithGroups = options.reduce((acc, option) => {
+      const group = option.group || "Other";
+      acc[group] = acc[group] || [];
+      acc[group].push(option);
+      return acc;
+    }, {} as { [key: string]: OptionItem[] });
+
+    return Object.entries(optionsWithGroups)
+      .map(([label, options]) => ({
+        label,
+        options,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [options]);
+
   return (
     <div
       className={classNames("select-field", {
@@ -63,7 +92,7 @@ export const SelectField = ({
       })}
     >
       <label className={LABEL_CLASS}>
-        <span className={LABEL_VALUE_CLASS}>{label}</span>
+        <Label text={label} inputToolTip={inputToolTip} />
         <Select
           components={{ Option: CustomOption }}
           className="select-field__container"
@@ -73,7 +102,7 @@ export const SelectField = ({
           isClearable={isClearable}
           value={value}
           onChange={handleChange}
-          options={options}
+          options={groupedOptions}
           isDisabled={disabled}
         />
       </label>

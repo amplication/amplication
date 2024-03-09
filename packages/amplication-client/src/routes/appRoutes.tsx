@@ -218,6 +218,17 @@ export const Routes: RouteDef[] = [
                 isAnalytics: true,
               },
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/complete-preview-signup",
+                Component: lazy(
+                  () => import("../User/CompletePreviewSignupPage")
+                ),
+                moduleName: "CompletePreviewSignupPage",
+                moduleClass: "complete-preview-signup-page",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
                 Component: lazy(() => import("../Resource/ResourceHome")),
                 moduleName: "",
@@ -309,5 +320,27 @@ export const Routes: RouteDef[] = [
     routeTrackType: "signupPreviewAccount",
     exactPath: true,
     isAnalytics: true,
+  },
+  {
+    path: "/select-preview-env",
+    Component: lazy(
+      () => import("../Resource/break-the-monolith/SelectPreviewEnvPage")
+    ),
+    moduleName: "SelectPreviewEnvPage",
+    moduleClass: "select-preview-env-page",
+    routeTrackType: "",
+    exactPath: true,
+    isAnalytics: true,
+    permission: true,
+  },
+  {
+    path: "/onboarding-preview",
+    Component: lazy(() => import("../OnboardingPreview/OnboardingPreviewPage")),
+    moduleName: "OnboardingPreview",
+    moduleClass: "onboarding-preview",
+    routeTrackType: "",
+    exactPath: true,
+    isAnalytics: true,
+    permission: true,
   },
 ];

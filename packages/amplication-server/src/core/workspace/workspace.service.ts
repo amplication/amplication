@@ -57,7 +57,6 @@ import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { ResourceService } from "../resource/resource.service";
 import { generateRandomString } from "../auth/auth-utils";
 import { AuthUser, CreatePreviewServiceSettingsArgs } from "../auth/types";
-import { USER_ENTITY_NAME } from "../entity/constants";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -66,7 +65,7 @@ type PreviewAccountEnvironment = {
     users: AuthUser[];
   };
   project: Project;
-  resource: Resource;
+  resource?: Resource;
 };
 
 @Injectable()
@@ -1171,10 +1170,16 @@ export class WorkspaceService {
       user.id
     );
 
-    const resource = await this.createPreviewServiceWithPredefinedSettings(
-      project.id,
-      user
-    );
+    let resource: Resource | undefined;
+
+    if (
+      account.previewAccountType === EnumPreviewAccountType.BreakingTheMonolith
+    ) {
+      resource = await this.createPreviewServiceWithPredefinedSettings(
+        project.id,
+        user
+      );
+    }
 
     return {
       workspace,
@@ -1231,7 +1236,6 @@ export class WorkspaceService {
         },
         serviceSettings: {
           authProvider: EnumAuthProviderType.Jwt,
-          authEntityName: USER_ENTITY_NAME,
           adminUISettings: {
             adminUIPath,
             generateAdminUI,

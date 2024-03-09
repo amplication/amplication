@@ -34,4 +34,7 @@ export class Env {
 
   static readonly USER_LAST_ACTIVE_DAYS = "USER_LAST_ACTIVE_DAYS";
   static readonly CRON_SECRET_KEY = "CRON_SECRET_KEY";
+
+  static readonly FEATURE_CUSTOM_ACTIONS_ENABLED =
+    "FEATURE_CUSTOM_ACTIONS_ENABLED";
 }

@@ -25,3 +25,6 @@ export const REDESIGN_PROJECT_INITIAL_STEP_DATA: Prisma.ActionStepCreateWithoutA
       ],
     },
   };
+
+export const BREAK_THE_MONOLITH_AI_ERROR_MESSAGE =
+  "Oops! Looks like our microservices suggestion feature hit a snag. Sorry for the hiccup! Please try again.";

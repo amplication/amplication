@@ -43,6 +43,10 @@ import {
   LicenseIndicatorContainer,
   LicensedResourceType,
 } from "../Components/LicenseIndicatorContainer";
+import {
+  BtmButton,
+  EnumButtonLocation,
+} from "../Resource/break-the-monolith/BtmButton";
 
 type TData = {
   entities: models.Entity[];
@@ -211,6 +215,10 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           </FlexItem>
           <FlexItem.FlexEnd>
             <FlexItem direction={EnumFlexDirection.Row}>
+              <BtmButton
+                openInFullScreen={true}
+                location={EnumButtonLocation.EntityList}
+              />
               <Link
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
               >

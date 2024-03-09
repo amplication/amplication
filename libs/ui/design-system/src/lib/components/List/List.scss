@@ -4,6 +4,9 @@ $border-color: var(--gray-80);
 $background-color: var(--gray-90);
 $hover-background-color: var(--gray-80);
 
+$action-sep-gap: 6px;
+$action-sep-height: $action-sep-gap * 2;
+
 .amp-list {
   border: 1px solid $border-color;
   display: flex;
@@ -21,7 +24,8 @@ $hover-background-color: var(--gray-80);
 
   &--transparent,
   &--dark {
-    .amp-list-item {
+    .amp-list-item,
+    .amp-list-item-with-inner-actions {
       background-color: transparent;
     }
   }
@@ -46,4 +50,55 @@ $hover-background-color: var(--gray-80);
 
 .amp-list-item:last-child {
   border-bottom: none;
+}
+
+.amp-list-item-with-inner-actions {
+  border-bottom: 1px solid $border-color;
+  background-color: $background-color;
+
+  &__end_action {
+    padding: 0 var(--default-spacing);
+  }
+
+  &__start_action {
+    padding: 0 var(--default-spacing);
+  }
+
+  &__clickable-area {
+    padding: var(--default-spacing);
+    position: relative;
+    flex: 1;
+
+    &--with-start {
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        display: inline-block;
+        width: 1px;
+        height: calc(100% - $action-sep-height);
+        top: $action-sep-gap;
+        background-color: $border-color;
+      }
+    }
+
+    &--with-end {
+      &::before {
+        content: "";
+        position: absolute;
+        right: 0;
+        display: inline-block;
+        width: 1px;
+        height: calc(100% - $action-sep-height);
+        top: $action-sep-gap;
+        background-color: $border-color;
+      }
+    }
+
+    &:hover {
+      background-color: $hover-background-color;
+    }
+  }
+
+  flex: 1;
 }
