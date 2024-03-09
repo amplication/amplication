@@ -1,11 +1,13 @@
 import {
   EnumFlexDirection,
+  EnumGapSize,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
   Snackbar,
   Text,
   TextField,
+  ToggleField,
 } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
@@ -21,12 +23,15 @@ import {
   validate,
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useStiggContext } from "@stigg/react-sdk";
+import "./WorkspaceForm.scss";
 
 type TData = {
   updateWorkspace: models.Workspace;
 };
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["name"],
@@ -35,10 +40,13 @@ const FORM_SCHEMA = {
       type: "string",
       minLength: 2,
     },
+    allowLLMFeatures: {
+      type: "boolean",
+    },
   },
   errorMessage: {
     properties: {
-      name: AT_LEAST_TWO_CHARARCTERS,
+      name: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };
@@ -51,13 +59,18 @@ function WorkspaceForm() {
   const { currentWorkspace } = useContext(AppContext);
 
   const { trackEvent } = useTracking();
+  const { stigg } = useStiggContext();
+
+  const hasRedesignArchitectureFeature = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.RedesignArchitecture,
+  }).hasAccess;
 
   const [updateWorkspace, { error: updateError }] =
     useMutation<TData>(UPDATE_WORKSPACE);
 
   const handleSubmit = useCallback(
     (newData) => {
-      const { name } = newData;
+      const { name, allowLLMFeatures } = newData;
       trackEvent({
         eventName: AnalyticsEventNames.WorkspaceInfoUpdate,
       });
@@ -66,6 +79,7 @@ function WorkspaceForm() {
           variables: {
             data: {
               name,
+              allowLLMFeatures,
             },
             workspaceId: currentWorkspace.id,
           },
@@ -94,6 +108,16 @@ function WorkspaceForm() {
               <Form>
                 <FormikAutoSave debounceMS={1000} />
                 <TextField name="name" label="Workspace Name" />
+                <FlexItem
+                  gap={EnumGapSize.Default}
+                  direction={EnumFlexDirection.Column}
+                >
+                  <ToggleField
+                    name="allowLLMFeatures"
+                    label="allow LLM features"
+                    disabled={!hasRedesignArchitectureFeature}
+                  />
+                </FlexItem>
               </Form>
             );
           }}
@@ -104,7 +128,6 @@ function WorkspaceForm() {
         <Text textStyle={EnumTextStyle.Label}>Workspace ID</Text>
         <Text textStyle={EnumTextStyle.Normal}>{currentWorkspace?.id}</Text>
       </FlexItem>
-
       <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
     </PageContent>
   );
@@ -120,6 +143,7 @@ const UPDATE_WORKSPACE = gql`
     updateWorkspace(data: $data, where: { id: $workspaceId }) {
       id
       name
+      allowLLMFeatures
     }
   }
 `;

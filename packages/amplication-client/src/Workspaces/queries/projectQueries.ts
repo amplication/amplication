@@ -14,6 +14,7 @@ export const GET_PROJECTS = gql`
         name
         resourceType
         licensed
+        gitRepositoryOverride
         gitRepository {
           id
           name
@@ -22,6 +23,7 @@ export const GET_PROJECTS = gql`
           gitOrganizationId
           gitOrganization {
             provider
+            name
           }
         }
       }
@@ -64,6 +66,10 @@ export const GET_PENDING_CHANGES_STATUS = gql`
           displayName
           updatedAt
           blockType
+          parentBlock {
+            id
+            displayName
+          }
         }
       }
       resource {

@@ -1,4 +1,4 @@
-import { Entity, EntityField, Resource } from "../../prisma";
+import { Entity, EntityField, Resource } from "../../models";
 
 type EntityFieldPartial = Pick<
   EntityField,
@@ -12,26 +12,24 @@ export interface EntityDataForBtm
   }[];
 }
 
-export interface ResourceDataForBtm extends Pick<Resource, "id" | "name"> {
+export interface ResourceDataForBtm
+  extends Pick<Resource, "id" | "name" | "project"> {
   entities: EntityDataForBtm[];
 }
 
 interface DataModel {
   name: string;
-  fields: {
-    name: string;
-    dataType: string;
-  }[];
+  relations: string[];
 }
 
 export interface BreakTheMonolithPromptInput {
-  dataModels: DataModel[];
+  tables: DataModel[];
 }
 
 export interface BreakTheMonolithOutput {
   microservices: {
     name: string;
     functionality: string;
-    dataModels: string[];
+    tables: string[];
   }[];
 }

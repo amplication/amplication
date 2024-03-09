@@ -56,6 +56,7 @@ const RepositoryForm = ({ onSubmit, defaultValues }: Props) => {
     <FeatureIndicatorContainer
       featureId={BillingFeature.ChangeGitBaseBranch}
       entitlementType={EntitlementType.Boolean}
+      showTooltip={false}
       render={({ disabled, icon }) => (
         <>
           <FlexItem

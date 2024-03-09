@@ -2,14 +2,17 @@ import {
   Breadcrumbs,
   ButtonProgress,
   Dialog,
+  EnumTextColor,
+  EnumTextStyle,
   Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
   Tooltip,
+  Text,
 } from "@amplication/ui/design-system";
-import { useApolloClient, useMutation, useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client";
 import {
   ButtonTypeEnum,
   IMessage,
@@ -45,7 +48,7 @@ import {
   AMPLICATION_DOC_URL,
 } from "../../util/constants";
 import { version } from "../../util/version";
-import GitHubBanner from "./GitHubBanner";
+import WorkspaceBanner from "./WorkspaceBanner";
 import styles from "./notificationStyle";
 import NoNotifications from "../../assets/images/no-notification.svg";
 import "./WorkspaceHeader.scss";
@@ -53,10 +56,12 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
 import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
 import { FeatureIndicator } from "../../Components/FeatureIndicator";
-import { CompleteSignupDialog } from "../../Components/CompleteSignupDialog";
-import { COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL } from "../../User/UserQueries";
+import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
+import useFetchGithubStars from "../hooks/useFetchGithubStars";
 
 const CLASS_NAME = "workspace-header";
+const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
+
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
@@ -89,8 +94,6 @@ const WorkspaceHeader: React.FC = () => {
     useContext(AppContext);
   const upgradeButtonData = useUpgradeButtonData(currentWorkspace);
 
-  const [completeSignup] = useMutation(COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL);
-
   const { data } = useQuery(GET_CONTACT_US_LINK, {
     variables: { id: currentWorkspace.id },
   });
@@ -100,6 +103,7 @@ const WorkspaceHeader: React.FC = () => {
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
   const novuBellRef = useRef(null);
+  const stars = useFetchGithubStars();
 
   const daysLeftText = useMemo(() => {
     return `${upgradeButtonData.trialDaysLeft} day${
@@ -140,9 +144,7 @@ const WorkspaceHeader: React.FC = () => {
 
   const onBuildNotificationClick = useCallback(
     (templateIdentifier: string, type: ButtonTypeEnum, message: IMessage) => {
-      if (templateIdentifier === "build-completed") {
-        window.location.href = message.cta.data.url;
-      }
+      window.location.href = message.cta.data.url;
     },
     []
   );
@@ -166,16 +168,6 @@ const WorkspaceHeader: React.FC = () => {
       eventOriginLocation: "workspace-header-help-menu",
     });
   }, [openHubSpotChat]);
-
-  const handleGenerateCodeClick = useCallback(() => {
-    completeSignup({ onCompleted: () => unsetToken() });
-    setShowCompleteSignupDialog(!showCompleteSignupDialog);
-    trackEvent({
-      eventName: AnalyticsEventNames.HelpMenuItemClick,
-      action: "Generate code",
-      eventOriginLocation: "workspace-header-help-menu",
-    });
-  }, [completeSignup, showCompleteSignupDialog, trackEvent]);
 
   const handleItemDataClicked = useCallback(
     (itemData: ItemDataCommand) => {
@@ -224,7 +216,19 @@ const WorkspaceHeader: React.FC = () => {
       >
         <ProfileForm />
       </Dialog>
-      <GitHubBanner />
+      <WorkspaceBanner
+        to={AMP_GITHUB_URL}
+        clickEventName={AnalyticsEventNames.StarUsBannerCTAClick}
+        clickEventProps={{}}
+        closeEventName={AnalyticsEventNames.StarUsBannerClose}
+        closeEventProps={{}}
+      >
+        <Icon icon="github" />
+        Star us on GitHub{" "}
+        <span className={`${CLASS_NAME}__stars`}>
+          {stars} <Icon icon="star" />
+        </span>
+      </WorkspaceBanner>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__left`}>
           <div className={`${CLASS_NAME}__logo`}>
@@ -280,29 +284,11 @@ const WorkspaceHeader: React.FC = () => {
               upgradeButtonData.isPreviewPlan &&
               !upgradeButtonData.showUpgradeDefaultButton && (
                 <>
-                  <Dialog
-                    className="new-entity-dialog"
-                    isOpen={showCompleteSignupDialog}
-                    onDismiss={handleShowCompleteSignupDialog}
-                    title="Generate your Code"
-                  >
-                    <CompleteSignupDialog
-                      handleDialogClose={handleShowCompleteSignupDialog}
-                    />
-                  </Dialog>
                   <FeatureIndicator
                     featureName={BillingFeature.CodeGenerationBuilds}
-                    text="in order to “Create the ready-to-production code for this architecture in a few simple clicks"
+                    text="Generate production-ready code for this architecture with just a few simple clicks"
                     linkText=""
-                    element={
-                      <Button
-                        className={`${CLASS_NAME}__upgrade__btn`}
-                        buttonStyle={EnumButtonStyle.Primary}
-                        onClick={handleGenerateCodeClick}
-                      >
-                        Generate the code
-                      </Button>
-                    }
+                    element={<CompletePreviewSignupButton />}
                   />
                   <Button
                     className={`${CLASS_NAME}__upgrade__btn`}

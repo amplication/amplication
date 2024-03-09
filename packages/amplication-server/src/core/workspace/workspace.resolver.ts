@@ -34,10 +34,8 @@ import { ProvisionSubscriptionArgs } from "./dto/ProvisionSubscriptionArgs";
 import { ProvisionSubscriptionResult } from "./dto/ProvisionSubscriptionResult";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { UserService } from "../user/user.service";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 import { Coupon } from "./dto/Coupon";
 import { ConfigService } from "@nestjs/config";
@@ -81,12 +79,8 @@ export class WorkspaceResolver {
   async currentWorkspace(
     @UserEntity() currentUser: User
   ): Promise<Workspace | null> {
-    await this.analytics.track({
-      userId: currentUser.account.id,
-      properties: {
-        workspaceId: currentUser.workspace.id,
-        $groups: { groupWorkspace: currentUser.workspace.id },
-      },
+    await this.analytics.trackWithContext({
+      properties: {},
       event: EnumEventType.WorkspaceSelected,
     });
     await this.userService.setLastActivity(currentUser.id);
@@ -213,7 +207,7 @@ export class WorkspaceResolver {
   ): Promise<ProvisionSubscriptionResult | null> {
     return this.billingService.provisionSubscription({
       ...args.data,
-      userId: currentUser.account.id,
+      accountId: currentUser.account.id,
     });
   }
 

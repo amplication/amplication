@@ -25,6 +25,7 @@ import { UserActionModule } from "./userAction/userAction.module";
 import { DBSchemaImportModule } from "./dbSchemaImport/dbSchemaImport.module";
 import { ModuleModule } from "./module/module.module";
 import { ModuleActionModule } from "./moduleAction/moduleAction.module";
+import { ModuleDtoModule } from "./moduleDto/moduleDto.module";
 import { AdministratorModule } from "./administrator/administrator.module";
 import { GptModule } from "./gpt/gpt.module";
 
@@ -58,6 +59,7 @@ import { GptModule } from "./gpt/gpt.module";
     DBSchemaImportModule,
     ModuleModule,
     ModuleActionModule,
+    ModuleDtoModule,
     GptModule,
   ],
   exports: [
@@ -86,6 +88,7 @@ import { GptModule } from "./gpt/gpt.module";
     DBSchemaImportModule,
     ModuleModule,
     ModuleActionModule,
+    ModuleDtoModule,
     GptModule,
   ],
 })

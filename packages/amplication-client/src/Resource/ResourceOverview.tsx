@@ -10,6 +10,8 @@ import {
   EnumTextStyle,
   FlexItem,
   Icon,
+  HorizontalRule,
+  List,
   Panel,
   SelectMenu,
   SelectMenuList,
@@ -26,6 +28,7 @@ import { FlexEnd } from "@amplication/ui/design-system/components/FlexItem/FlexI
 import { Link, useHistory } from "react-router-dom";
 import "./ResourceOverview.scss";
 import { getGitRepositoryDetails } from "../util/git-repository-details";
+import { BtmButton, EnumButtonLocation } from "./break-the-monolith/BtmButton";
 
 const PAGE_TITLE = "Resource Overview";
 const PAGE_OVERVIEW_CSS = "resource_overview";
@@ -216,6 +219,18 @@ const ResourceOverview = () => {
         panelStyle={EnumPanelStyle.Bold}
         className={`${PAGE_OVERVIEW_CSS}_resource_panel`}
       >
+        <FlexItem>
+          <FlexItem.FlexEnd>
+            <BtmButton
+              openInFullScreen
+              location={EnumButtonLocation.Resource}
+              ButtonStyle={EnumButtonStyle.GradientFull}
+            />
+          </FlexItem.FlexEnd>
+        </FlexItem>
+
+        <HorizontalRule doubleSpacing />
+
         <FlexItem
           direction={EnumFlexDirection.Row}
           itemsAlign={EnumItemsAlign.Center}

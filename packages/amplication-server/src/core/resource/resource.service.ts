@@ -1,43 +1,79 @@
 import {
-  PrismaService,
-  GitRepository,
-  Prisma,
-  EnumResourceType,
-} from "../../prisma";
+  EnumActionStepStatus,
+  RedesignProjectMovedEntity,
+  RedesignProjectNewService,
+} from "@amplication/code-gen-types/models";
+import { Lookup } from "@amplication/code-gen-types/types";
+import { KAFKA_TOPICS } from "@amplication/schema-registry";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   ConflictException,
-  forwardRef,
   Inject,
   Injectable,
+  forwardRef,
 } from "@nestjs/common";
+import cuid from "cuid";
 import { isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
 import pluralize from "pluralize";
+import { JsonObject, JsonValue } from "type-fest";
 import { FindOneArgs } from "../../dto";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
-import { Project, Resource, User, GitOrganization, Entity } from "../../models";
-import { prepareDeletedItemName } from "../../util/softDelete";
-import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { Entity, GitOrganization, Project, Resource, User } from "../../models";
 import {
-  CURRENT_VERSION_NUMBER,
-  INITIAL_ENTITY_FIELDS,
+  EnumResourceType,
+  GitRepository,
+  Prisma,
+  PrismaService,
+} from "../../prisma";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { prepareDeletedItemName } from "../../util/softDelete";
+import { ActionService } from "../action/action.service";
+import { EnumActionLogLevel } from "../action/dto/EnumActionLogLevel";
+import { BillingService } from "../billing/billing.service";
+import {
+  DATA_TYPE_TO_DEFAULT_PROPERTIES,
   USER_ENTITY_NAME,
 } from "../entity/constants";
-import { EntityService } from "../entity/entity.service";
+import {
+  CreateBulkEntitiesAndFieldsArgs,
+  CreateBulkEntitiesInput,
+  CreateBulkFieldsInput,
+  EntityService,
+} from "../entity/entity.service";
 import { EnvironmentService } from "../environment/environment.service";
+import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
+import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ProjectService } from "../project/project.service";
+import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
+import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
+import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { TopicService } from "../topic/topic.service";
+import { UserAction } from "../userAction/dto";
+import { EnumUserActionType } from "../userAction/types";
+import { UserActionService } from "../userAction/userAction.service";
+import { ReservedEntityNameError } from "./ReservedEntityNameError";
+import { REDESIGN_PROJECT_INITIAL_STEP_DATA } from "./constants";
 import {
   CreateOneResourceArgs,
   FindManyResourceArgs,
   ResourceCreateWithEntitiesInput,
-  UpdateOneResourceArgs,
   ResourceCreateWithEntitiesResult,
   UpdateCodeGeneratorVersionArgs,
+  UpdateOneResourceArgs,
 } from "./dto";
-import { ReservedEntityNameError } from "./ReservedEntityNameError";
+import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
-import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
-import { AmplicationError } from "../../errors/AmplicationError";
+import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -50,27 +86,12 @@ export const INITIAL_COMMIT_MESSAGE = "Initial Commit";
 export const INVALID_RESOURCE_ID = "Invalid resourceId";
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
   "The resource of type `ProjectConfiguration` cannot be deleted";
-import { ProjectService } from "../project/project.service";
-import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
-import { TopicService } from "../topic/topic.service";
-import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
-import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { JsonValue } from "type-fest";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { CreateResourceEntitiesArgs } from "./dto/CreateResourceEntitiesArgs";
-import { LookupResolvedProperties } from "@amplication/code-gen-types";
-import { SubscriptionService } from "../subscription/subscription.service";
-import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
+
+const SERVICE_LIMITATION_ERROR =
+  "Can not create new services, The workspace reached your plan's resource limitation";
 
 export type CreatePreviewServiceArgs = {
   args: CreateOneResourceArgs;
@@ -78,6 +99,34 @@ export type CreatePreviewServiceArgs = {
   nonDefaultPluginsToInstall: PluginInstallationCreateInput[];
   requireAuthenticationEntity: boolean;
 };
+
+const DEFAULT_DB_PLUGIN: PluginInstallationCreateInput = {
+  pluginId: "db-postgres",
+  enabled: true,
+  npm: "@amplication/plugin-db-postgres",
+  version: "latest",
+  displayName: "db-postgres",
+  resource: undefined,
+};
+
+const DEFAULT_AUTH_PLUGINS: PluginInstallationCreateInput[] = [
+  {
+    displayName: "Auth-core",
+    pluginId: "auth-core",
+    npm: "@amplication/plugin-auth-core",
+    version: "latest",
+    enabled: true,
+    resource: undefined,
+  },
+  {
+    displayName: "Auth-jwt",
+    pluginId: "auth-jwt",
+    npm: "@amplication/plugin-auth-jwt",
+    version: "latest",
+    enabled: true,
+    resource: undefined,
+  },
+];
 
 @Injectable()
 export class ResourceService {
@@ -95,7 +144,9 @@ export class ResourceService {
     private readonly billingService: BillingService,
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly subscriptionService: SubscriptionService
+    private readonly subscriptionService: SubscriptionService,
+    private readonly actionService: ActionService,
+    private readonly userActionService: UserActionService
   ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
@@ -266,7 +317,8 @@ export class ResourceService {
       data: {
         ...args.data,
         gitRepository: gitRepository,
-        gitRepositoryOverride: gitRepositoryToCreate?.isOverrideGitRepository,
+        gitRepositoryOverride:
+          gitRepositoryToCreate?.isOverrideGitRepository ?? false,
       },
     });
   }
@@ -295,13 +347,10 @@ export class ResourceService {
         "Feature Unavailable. Please upgrade your plan to access this feature."
       );
 
-    await this.analytics.track({
-      userId: user.account.id,
+    await this.analytics.trackWithContext({
       properties: {
         resourceId: resource.id,
         projectId: resource.projectId,
-        workspaceId: user.workspace.id,
-        $groups: { groupWorkspace: user.workspace.id },
       },
       event: EnumEventType.CodeGeneratorVersionUpdate,
     });
@@ -423,48 +472,13 @@ export class ResourceService {
       serviceSettings
     );
 
-    const defaultAuthPlugins: PluginInstallationCreateInput[] = [
-      {
-        displayName: "Auth-core",
-        pluginId: "auth-core",
-        npm: "@amplication/plugin-auth-core",
-        version: "latest",
-        enabled: true,
-        resource: { connect: { id: resource.id } },
-      },
-      {
-        displayName: "Auth-jwt",
-        pluginId: "auth-jwt",
-        npm: "@amplication/plugin-auth-jwt",
-        version: "latest",
-        enabled: true,
-        resource: { connect: { id: resource.id } },
-      },
-    ];
-
-    const defaultDBPlugin: PluginInstallationCreateInput = {
-      displayName: "postgres",
-      pluginId: "db-postgres",
-      npm: "@amplication/plugin-db-postgres",
-      version: "latest",
-      enabled: true,
-      resource: { connect: { id: resource.id } },
-    };
-
     const plugins = [
-      defaultDBPlugin,
-      ...(requireAuthenticationEntity ? defaultAuthPlugins : []),
+      DEFAULT_DB_PLUGIN,
+      ...(requireAuthenticationEntity ? DEFAULT_AUTH_PLUGINS : []),
       ...nonDefaultPluginsToInstall,
     ];
 
-    for (const plugin of plugins) {
-      await this.pluginInstallationService.create(
-        {
-          data: plugin,
-        },
-        user
-      );
-    }
+    await this.installPlugins(resource.id, plugins, user);
 
     await this.environmentService.createDefaultEnvironment(resource.id);
 
@@ -480,192 +494,579 @@ export class ResourceService {
     return resource;
   }
 
-  async createResourceEntitiesFromExistingResource(
-    args: CreateResourceEntitiesArgs,
+  private createMovedEntitiesByResourceMapping(movedEntities): {
+    [resourceId: string]: RedesignProjectMovedEntity[];
+  } {
+    return movedEntities.reduce((entitiesByResource, entity) => {
+      if (!entitiesByResource[entity.targetResourceId]) {
+        entitiesByResource[entity.targetResourceId] = [];
+      }
+      entitiesByResource[entity.targetResourceId].push(entity);
+      return entitiesByResource;
+    }, {} as { [resourceId: string]: RedesignProjectMovedEntity[] });
+  }
+
+  async installPlugins(
+    resourceId: string,
+    plugins: PluginInstallationCreateInput[],
     user: User
-  ): Promise<Resource> {
-    const { targetResourceId, entitiesToCopy } = args.data;
-    const resource = await this.prisma.resource.findUnique({
+  ): Promise<void> {
+    for (const plugin of plugins) {
+      plugin.resource = { connect: { id: resourceId } };
+      const isvValidEntityUser = await this.userEntityValidation(
+        resourceId,
+        plugin.configurations
+      );
+      isvValidEntityUser &&
+        (await this.pluginInstallationService.create({ data: plugin }, user));
+    }
+  }
+
+  async redesignProject(
+    args: RedesignProjectArgs,
+    user: User
+  ): Promise<UserAction> {
+    const { movedEntities, newServices, projectId } = args.data;
+
+    const [firstResource] = await this.resources({
+      where: { projectId: projectId },
+    });
+
+    const project = await this.projectService.findUnique({
       where: {
-        id: targetResourceId,
+        id: projectId,
       },
-      include: {
-        entities: {
+    });
+
+    //group moved entities by target resource
+
+    let movedEntitiesByResource =
+      this.createMovedEntitiesByResourceMapping(movedEntities);
+
+    const resourceId =
+      movedEntities[0]?.originalResourceId ?? firstResource?.id;
+
+    const userAction =
+      await this.userActionService.createUserActionByTypeWithInitialStep(
+        EnumUserActionType.ProjectRedesign,
+        undefined,
+        REDESIGN_PROJECT_INITIAL_STEP_DATA,
+        user.id,
+        resourceId
+      );
+
+    const actionContext = this.actionService.createActionContext(
+      userAction.id,
+      userAction.action.steps[0],
+      KAFKA_TOPICS.USER_ACTION_LOG_TOPIC
+    );
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        projectId,
+        resourceId,
+        plan: subscription.subscriptionPlan,
+        movedEntities: movedEntities.length,
+        newServices: newServices.length,
+      },
+      event: EnumEventType.ArchitectureRedesignApply,
+    });
+
+    const originalResourceId = movedEntities[0]?.originalResourceId;
+
+    const originalResourceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
           where: {
-            deletedAt: null,
+            id: originalResourceId,
           },
         },
+        user
+      );
+
+    const originalResourceAdminPath =
+      originalResourceSettings &&
+      originalResourceSettings.adminUISettings.adminUIPath;
+    const originalResourceServerPath =
+      originalResourceSettings &&
+      originalResourceSettings.serverSettings.serverPath;
+
+    const defaultServiceSettings: ServiceSettingsUpdateInput = {
+      adminUISettings: {
+        generateAdminUI: true,
+        adminUIPath: "",
       },
-    });
+      serverSettings: {
+        generateGraphQL: true,
+        generateRestApi: true,
+        generateServer: true,
+        serverPath: "",
+      },
+      authProvider: EnumAuthProviderType.Jwt,
+    };
 
-    if (!resource) throw new AmplicationError("Target Resource doesn't exist");
+    try {
+      // 1. data validationStep before starting the process
+      await actionContext.onEmitUserActionLog(
+        `Starting data validation`,
+        EnumActionLogLevel.Info
+      );
 
-    entitiesToCopy.map((entity) => {
-      if (resource.entities.find((x) => x.name === entity.name)) {
-        throw new AmplicationError(
-          `Entity ${entity.name} is already exist in resourceId: ${resource.id}, process abort`
+      await this.validateNewResourcesData(newServices, project);
+      await this.validateMovedEntitiesData(
+        movedEntitiesByResource,
+        newServices,
+        project,
+        resourceId,
+        user
+      );
+
+      await actionContext.onEmitUserActionLog(
+        `Data validation ended Successfully`,
+        EnumActionLogLevel.Info
+      );
+
+      // 2. create new resources
+      const currentProjectConfiguration = await this.prisma.resource.findFirst({
+        where: {
+          projectId: projectId,
+          resourceType: EnumResourceType.ProjectConfiguration,
+        },
+      });
+
+      const newResourcesMap = new Map<string, Resource>();
+
+      for (const newService of newServices) {
+        const adminPathWithoutLastFolder = originalResourceAdminPath?.substring(
+          0,
+          originalResourceAdminPath.lastIndexOf("/") + 1
         );
+
+        const serverPathWithoutLastFolder =
+          originalResourceServerPath?.substring(
+            0,
+            originalResourceServerPath.lastIndexOf("/") + 1
+          );
+
+        const baseAdminPath =
+          !originalResourceId || !originalResourceAdminPath
+            ? ""
+            : !originalResourceAdminPath.includes("/")
+            ? `${newService.name}-admin`
+            : `${adminPathWithoutLastFolder}${newService.name}-admin`;
+        const baseServerPath =
+          !originalResourceId || !originalResourceServerPath
+            ? ""
+            : !originalResourceServerPath.includes("/")
+            ? newService.name
+            : `${serverPathWithoutLastFolder}${newService.name}`;
+
+        const args: CreateOneResourceArgs = {
+          data: {
+            name: newService.name,
+            description: "",
+            project: {
+              connect: {
+                id: projectId,
+              },
+            },
+            resourceType: EnumResourceType.Service,
+            serviceSettings: {
+              ...defaultServiceSettings,
+
+              adminUISettings: {
+                adminUIPath: baseAdminPath,
+                generateAdminUI:
+                  defaultServiceSettings.adminUISettings.generateAdminUI,
+              },
+              serverSettings: {
+                serverPath: baseServerPath,
+                generateGraphQL:
+                  defaultServiceSettings.serverSettings.generateGraphQL,
+                generateRestApi:
+                  defaultServiceSettings.serverSettings.generateRestApi,
+                generateServer:
+                  defaultServiceSettings.serverSettings.generateServer,
+              },
+            },
+
+            gitRepository: currentProjectConfiguration.gitRepositoryId
+              ? {
+                  isOverrideGitRepository: false,
+                  name: "",
+                  resourceId: "",
+                  gitOrganizationId: "",
+                }
+              : null,
+          },
+        };
+
+        const resource = await this.createService(args, user);
+        await actionContext.onEmitUserActionLog(
+          `Successfully created service ${resource.name} with id ${resource.id}`,
+          EnumActionLogLevel.Info
+        );
+
+        newResourcesMap.set(newService.id, resource);
+
+        await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
       }
-    });
 
-    // 1.create resource entities
+      // 3. update resourceId in copied entities list
+      for (const entityToCopy of movedEntities) {
+        const newResource: Resource = newResourcesMap.get(
+          entityToCopy.targetResourceId
+        );
 
-    const copiedEntities: Entity[] = await this.createResourceCopiedEntities(
-      entitiesToCopy,
-      targetResourceId,
-      user
-    );
-
-    const entitiesWithFieldsMap = entitiesToCopy.reduce(
-      (entitiesObj, entity) => {
-        entitiesObj[entity.name] = entity;
-        return entitiesObj;
-      },
-      {}
-    );
-
-    // 2.create entities fields
-
-    for (const copiedEntity of copiedEntities) {
-      const currentEntity: Entity = entitiesWithFieldsMap[copiedEntity.name];
-
-      for (const field of currentEntity.versions[0].fields) {
-        const { dataType, properties } = field;
-        const { allowMultipleSelection, relatedEntityId } =
-          properties as unknown as LookupResolvedProperties;
-
-        if (dataType === EnumDataType.Id) {
-          await this.createCopiedEntityIdField(copiedEntity.id);
-          continue;
+        if (newResource) {
+          entityToCopy.targetResourceId = newResource.id;
         }
-        if (dataType === EnumDataType.Lookup) {
-          const isFieldExist = await this.isEntityFieldExist(
-            pascalCase(field.name),
-            copiedEntity.id
+      }
+
+      // re-update movedEntitiesByResource after all new services were created, and the targetResourceId was updated to a real resourceId
+      movedEntitiesByResource =
+        this.createMovedEntitiesByResourceMapping(movedEntities);
+
+      const sourceEntityIdToNewEntityMap = new Map<
+        string,
+        CreateBulkEntitiesInput
+      >();
+
+      // 4. create entities per resource
+      for (const [resourceId, entities] of Object.entries(
+        movedEntitiesByResource
+      )) {
+        await actionContext.onEmitUserActionLog(
+          `starting to move entities to resource ${resourceId}`,
+          EnumActionLogLevel.Info
+        );
+
+        const createBulkData: CreateBulkEntitiesAndFieldsArgs = {
+          resourceId: resourceId,
+          preparedEntitiesWithFields: [],
+          user: user,
+        };
+
+        //First create all entities, so we have the IDs for the relations
+        for (const movedEntity of entities) {
+          const entity = await this.entityService.entity({
+            where: {
+              id: movedEntity.entityId,
+            },
+          });
+
+          const createEntityInput: CreateBulkEntitiesInput = {
+            id: cuid(), // creating here the entity id because we need it for the relation
+            name: entity.name,
+            displayName: entity.displayName,
+            pluralDisplayName: entity.pluralDisplayName,
+            description: entity.description,
+            customAttributes: entity.customAttributes,
+            fields: [],
+          };
+          sourceEntityIdToNewEntityMap.set(entity.id, createEntityInput);
+          createBulkData.preparedEntitiesWithFields.push(createEntityInput);
+        }
+
+        const lookupFieldsToSkip = new Set<string>();
+
+        //run again on all entities to create the fields
+        for (const movedEntity of entities) {
+          const currentEntityCreateInput = sourceEntityIdToNewEntityMap.get(
+            movedEntity.entityId
           );
 
-          if (isFieldExist) continue;
-
-          const currentRelatedEntity = entitiesToCopy.find(
-            (entity) => entity.id === relatedEntityId
+          //get the list of fields of the source entity
+          const fields = await this.entityService.getFields(
+            movedEntity.entityId,
+            {}
           );
 
-          if (!currentRelatedEntity) {
-            if (allowMultipleSelection) continue;
-
-            //one to one relation or one to many relation
-            //create id field by the idType and field name
-
-            await this.entityService.updateFieldDataTypeIdByRelatedEntity(
-              field,
-              relatedEntityId
+          for (const field of fields) {
+            await actionContext.onEmitUserActionLog(
+              `Preparing data to move field ${field.name} to entity ${currentEntityCreateInput.name} `,
+              EnumActionLogLevel.Info
             );
+
+            const createFieldInput: CreateBulkFieldsInput = {
+              permanentId: cuid(),
+              name: field.name,
+              displayName: field.displayName,
+              dataType: field.dataType,
+              required: field.required,
+              unique: field.unique,
+              searchable: field.searchable,
+              description: field.description,
+              properties: field.properties as JsonObject,
+              customAttributes: field.customAttributes,
+            };
+
+            if (field.dataType === EnumDataType.Lookup) {
+              const relatedEntityId = (field.properties as unknown as Lookup)
+                .relatedEntityId;
+
+              const fieldProperties = field.properties as unknown as Lookup;
+
+              //If the related entity is moved to the SAME RESOURCE - we should keep the relation
+              if (
+                entities.find((entity) => entity.entityId === relatedEntityId)
+              ) {
+                if (lookupFieldsToSkip.has(field.permanentId)) {
+                  //The other side of this relation field was already moved
+                  continue;
+                }
+
+                const relatedField = await this.entityService.getField({
+                  where: {
+                    permanentId: fieldProperties.relatedFieldId,
+                  },
+                });
+
+                await actionContext.onEmitUserActionLog(
+                  `moving relation field ${field.name} to entity ${currentEntityCreateInput.name} - related field ${relatedField.name} is in the same resource`,
+                  EnumActionLogLevel.Info
+                );
+
+                //@todo: what about the rest of the properties of the related field (like searchable, unique, required, description, customAttributes etc.)
+                createFieldInput.relatedFieldName = relatedField.name;
+                createFieldInput.relatedFieldDisplayName =
+                  relatedField.displayName;
+                createFieldInput.relatedFieldAllowMultipleSelection = (
+                  relatedField.properties as unknown as Lookup
+                ).allowMultipleSelection;
+
+                (
+                  createFieldInput.properties as unknown as Lookup
+                ).relatedFieldId = undefined; //clear the related field id, because it will be set later
+
+                (
+                  createFieldInput.properties as unknown as Lookup
+                ).relatedEntityId = sourceEntityIdToNewEntityMap.get(
+                  fieldProperties.relatedEntityId
+                ).id; //the new entity Id of the related entity
+
+                lookupFieldsToSkip.add(relatedField.permanentId);
+              } else {
+                await actionContext.onEmitUserActionLog(
+                  `moving relation field ${field.name} to resource ${resourceId} - related entity ${relatedEntityId} is in a different resource`,
+                  EnumActionLogLevel.Info
+                );
+
+                //if the related entity is moved to a different resource - we should remove the relation
+                if (!fieldProperties.allowMultipleSelection) {
+                  createFieldInput.name = `${createFieldInput.name}Id`;
+                  createFieldInput.displayName = `${createFieldInput.displayName} ID`;
+                  createFieldInput.dataType =
+                    await this.entityService.getRelatedFieldScalarTypeByRelatedEntityIdType(
+                      relatedEntityId
+                    );
+
+                  createFieldInput.properties =
+                    DATA_TYPE_TO_DEFAULT_PROPERTIES[createFieldInput.dataType];
+                } else {
+                  createFieldInput.dataType = EnumDataType.Json;
+                  createFieldInput.properties =
+                    DATA_TYPE_TO_DEFAULT_PROPERTIES[EnumDataType.Json]; //type Json does not have properties
+                }
+              }
+            }
+            currentEntityCreateInput.fields.push(createFieldInput);
           }
         }
 
-        await this.entityService.createCopiedEntityFieldByDisplayName(
-          copiedEntity.id,
-          field,
-          user
+        await this.entityService.createBulkEntitiesAndFields(
+          createBulkData,
+          actionContext
         );
       }
-    }
 
-    // 3.delete entity from source service by flag
-    for (const entity of entitiesToCopy) {
-      if (entity.shouldDeleteFromSource) {
-        await this.entityService.deleteEntityFromSource(
-          { where: { id: entity.id } },
-          user
+      // 3.delete entities from source services
+      for (const entity of movedEntities) {
+        await actionContext.onEmitUserActionLog(
+          `deleting entity ${entity.entityId} from source service`,
+          EnumActionLogLevel.Info
         );
-      }
-    }
-
-    return resource;
-  }
-
-  async createResourceCopiedEntities(
-    entitiesToCopy: Entity[],
-    targetResourceId: string,
-    user: User
-  ): Promise<Entity[]> {
-    const copiedEntities: Entity[] = [];
-
-    for (const entity of entitiesToCopy) {
-      const {
-        name,
-        displayName,
-        pluralDisplayName,
-        description,
-        customAttributes,
-      } = entity;
-
-      try {
-        const copiedEntity = await this.entityService.createOneEntity(
-          {
-            data: {
-              resource: {
-                connect: {
-                  id: targetResourceId,
-                },
-              },
-              name,
-              displayName,
-              pluralDisplayName,
-              description,
-              customAttributes,
-            },
-          },
+        await this.entityService.deleteOneEntity(
+          { where: { id: entity.entityId } },
           user,
-          false,
-          false,
-          false
+          EnumRelatedFieldStrategy.UpdateToScalar
         );
-        copiedEntities.push(copiedEntity);
-      } catch (error) {
-        this.logger.error(error.message, error, { entity: entity.name });
-        throw new Error(
-          `Failed to create entity "${entity.name}" due to ${error.message}`
-        );
+      }
+    } catch (error) {
+      await actionContext.onEmitUserActionLog(
+        error.message,
+        EnumActionLogLevel.Error
+      );
+
+      await actionContext.onEmitUserActionLog(
+        `Failed to move entities to new resources. See previous logs for more details`,
+        EnumActionLogLevel.Error,
+        EnumActionStepStatus.Failed,
+        true
+      );
+
+      return userAction;
+    }
+
+    await actionContext.onEmitUserActionLog(
+      `Successfully moved all entities to new resources`,
+      EnumActionLogLevel.Info,
+      EnumActionStepStatus.Success,
+      true
+    );
+
+    return userAction;
+  }
+
+  private async validateNewResourcesData(
+    newServices: RedesignProjectNewService[],
+    project: Project
+  ): Promise<void> {
+    const projectResources = await this.prisma.resource.findMany({
+      where: {
+        projectId: project.id,
+        resourceType: EnumResourceType.Service,
+        deletedAt: null,
+      },
+    });
+
+    //service limitation validation
+    const featureServices = await this.billingService.getMeteredEntitlement(
+      project.workspaceId,
+      BillingFeature.Services
+    );
+
+    if (newServices.length > 0) {
+      if (
+        !featureServices.hasAccess ||
+        (!featureServices.isUnlimited &&
+          featureServices.usageLimit <
+            projectResources.length + newServices.length)
+      ) {
+        throw new AmplicationError(SERVICE_LIMITATION_ERROR);
       }
     }
 
-    return copiedEntities;
+    if (projectResources.length > 0) {
+      for (const newService of newServices) {
+        // duplicate name validation
+        const duplicateService = projectResources.find(
+          (resource) =>
+            resource.name.toLocaleLowerCase() ===
+            newService.name.toLocaleLowerCase()
+        );
+        if (duplicateService) {
+          throw new AmplicationError(
+            `Resource : ${newService.name} already exists in project: ${project.name}.`
+          );
+        }
+      }
+    }
   }
+  private async validateMovedEntitiesData(
+    movedEntitiesByResource: {
+      [resourceId: string]: RedesignProjectMovedEntity[];
+    },
+    newServices: RedesignProjectNewService[],
+    project: Project,
+    originalResourceId: string,
+    user: User
+  ): Promise<void> {
+    // entities limitation per service validation
+    const featureEntitiesServices =
+      await this.billingService.getNumericEntitlement(
+        project.workspaceId,
+        BillingFeature.EntitiesPerService
+      );
 
-  async createCopiedEntityIdField(copiedEntityId: string): Promise<void> {
-    await this.prisma.entityField.create({
-      data: {
-        ...INITIAL_ENTITY_FIELDS[0],
-        entityVersion: {
-          connect: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityId_versionNumber: {
-              entityId: copiedEntityId,
-              versionNumber: CURRENT_VERSION_NUMBER,
-            },
+    const serviceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
+          where: { id: originalResourceId },
+        },
+        user
+      );
+
+    for (const [resourceId, entities] of Object.entries(
+      movedEntitiesByResource
+    )) {
+      let newService: RedesignProjectNewService = null;
+
+      if (newServices.length > 0) {
+        newService = newServices.find(
+          (newService) => newService.id === resourceId
+        );
+      }
+
+      const resourceEntities: Entity[] = await this.entityService.entities({
+        where: {
+          resourceId: resourceId,
+          deletedAt: null,
+        },
+      });
+
+      //pass limitation validation
+      const currentResource = await this.findOne({
+        where: {
+          id: resourceId,
+        },
+      });
+      const serviceName = currentResource
+        ? currentResource.name
+        : newService.name;
+
+      const entitiesCount = !currentResource
+        ? entities.length
+        : entities.length + resourceEntities?.length;
+      if (!project.licensed || (currentResource && !currentResource.licensed)) {
+        throw new AmplicationError(
+          `Cannot move entities to service: ${serviceName} due to your plan's limitations (number of services)`
+        );
+      }
+
+      if (
+        !featureEntitiesServices.hasAccess ||
+        featureEntitiesServices.value < entitiesCount
+      ) {
+        throw new AmplicationError(
+          `Cannot move entities to service: ${serviceName} due to your plan's limitations (number of entities)`
+        );
+      }
+
+      for (const movedEntity of entities) {
+        const currentEntity = await this.entityService.entity({
+          where: {
+            id: movedEntity.entityId,
           },
-        },
-      },
-    });
+        });
+        // authEntity validation
+        if (
+          serviceSettings.authEntityName &&
+          serviceSettings.authEntityName === currentEntity.name
+        ) {
+          throw new AmplicationError(
+            `Cannot move Auth entity : ${currentEntity.name}.`
+          );
+        }
+
+        //duplicate entities names validation
+        if (resourceEntities.length > 0) {
+          const duplicateEntity = resourceEntities.find(
+            (e) => e.name === currentEntity.name
+          );
+          if (duplicateEntity) {
+            throw new AmplicationError(
+              `Entity : ${currentEntity.name} already exists in resource: ${serviceName}.`
+            );
+          }
+        }
+      }
+    }
   }
-
-  async isEntityFieldExist(
-    fieldDisplayName: string,
-    entityId: string
-  ): Promise<boolean> {
-    const field = await this.prisma.entityField.findFirst({
-      where: {
-        displayName: fieldDisplayName,
-        entityVersion: {
-          entityId: entityId,
-        },
-      },
-    });
-
-    return field ? true : false;
-  }
-
   async userEntityValidation(
     resourceId: string,
     configurations: JsonValue
@@ -717,24 +1118,18 @@ export class ResourceService {
       data.plugins?.plugins?.filter((plugin) => {
         return plugin.configurations["requireAuthenticationEntity"] === "true";
       }).length > 0;
-    const project = await this.projectService.findUnique({
-      where: { id: data.resource.project.connect.id },
-    });
+
+    const projectId = data.resource.project.connect.id;
 
     if (data.connectToDemoRepo) {
-      await this.projectService.createDemoRepo(
-        data.resource.project.connect.id
-      );
+      await this.projectService.createDemoRepo(projectId);
       //do not use any git data when using demo repo
       data.resource.gitRepository = undefined;
 
-      await this.analytics.track({
-        userId: user.account.id,
+      await this.analytics.trackWithContext({
         event: EnumEventType.DemoRepoCreate,
         properties: {
-          projectId: project.id,
-          workspaceId: project.workspaceId,
-          $groups: { groupWorkspace: project.workspaceId },
+          projectId,
         },
       });
     }
@@ -827,20 +1222,7 @@ export class ResourceService {
     }
 
     if (data.plugins?.plugins) {
-      for (let index = 0; index < data.plugins.plugins.length; index++) {
-        const currentPlugin = data.plugins.plugins[index];
-
-        currentPlugin.resource = { connect: { id: resource.id } };
-        const isvValidEntityUser = await this.userEntityValidation(
-          resource.id,
-          currentPlugin.configurations
-        );
-        isvValidEntityUser &&
-          (await this.pluginInstallationService.create(
-            { data: currentPlugin },
-            user
-          ));
-      }
+      await this.installPlugins(resource.id, data.plugins.plugins, user);
     }
 
     const isOnboarding = data.wizardType.trim().toLowerCase() === "onboarding";
@@ -893,8 +1275,7 @@ export class ResourceService {
       return acc + entity.fields.length;
     }, 0);
 
-    await this.analytics.track({
-      userId: user.account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.ServiceWizardServiceGenerated,
       properties: {
         category: "Service Wizard",
@@ -909,12 +1290,10 @@ export class ResourceService {
         repoType: data.repoType,
         dbType: data.dbType,
         auth: data.authType,
-        projectId: project.id,
-        workspaceId: project.workspaceId,
+        projectId,
         totalEntities,
         totalFields,
         gitOrgType: gitOrganization?.type,
-        $groups: { groupWorkspace: project.workspaceId },
       },
     });
 

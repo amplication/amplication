@@ -27,10 +27,8 @@ import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { Role } from "../../enums/Role";
 import { GitOrganization } from "../../models/GitOrganization";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { BillingService } from "../billing/billing.service";
 import { MailService } from "../mail/mail.service";
 import { ProjectService } from "../project/project.service";
@@ -59,7 +57,6 @@ import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { ResourceService } from "../resource/resource.service";
 import { generateRandomString } from "../auth/auth-utils";
 import { AuthUser, CreatePreviewServiceSettingsArgs } from "../auth/types";
-import { USER_ENTITY_NAME } from "../entity/constants";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -68,7 +65,7 @@ type PreviewAccountEnvironment = {
     users: AuthUser[];
   };
   project: Project;
-  resource: Resource;
+  resource?: Resource;
 };
 
 @Injectable()
@@ -422,13 +419,9 @@ export class WorkspaceService {
       BillingFeature.TeamMembers
     );
 
-    await this.analytics.track({
-      userId: account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.InvitationAcceptance,
-      properties: {
-        workspaceId: invitation.workspaceId,
-        $groups: { groupWorkspace: invitation.workspaceId },
-      },
+      properties: {},
     });
 
     return workspace;
@@ -532,7 +525,7 @@ export class WorkspaceService {
       planId: BillingPlan.ProWithTrial,
       cancelUrl: "",
       successUrl: "",
-      userId: account.id,
+      accountId: account.id,
       billingPeriod: BillingPeriod.Monthly,
       intentionType: "UPGRADE_PLAN",
     });
@@ -550,14 +543,11 @@ export class WorkspaceService {
       },
     });
 
-    await this.analytics.track({
-      userId: account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.RedeemCoupon,
       properties: {
-        workspaceId: currentUser.workspace.id,
         subscriptionPlan: coupon.subscriptionPlan,
         durationMonths: coupon.durationMonths,
-        $groups: { groupWorkspace: currentUser.workspace.id },
       },
     });
 
@@ -639,7 +629,9 @@ export class WorkspaceService {
     return myArray;
   }
 
-  async dataMigrateWorkspacesResourcesCustomActions(): Promise<boolean> {
+  async dataMigrateWorkspacesResourcesCustomActions(
+    quantity: number
+  ): Promise<boolean> {
     const workspaces = await this.prisma.workspace.findMany({
       where: {
         projects: {
@@ -657,7 +649,7 @@ export class WorkspaceService {
           },
         },
       },
-      take: 1000,
+      take: quantity,
       include: {
         users: {
           orderBy: {
@@ -702,7 +694,9 @@ export class WorkspaceService {
     return true;
   }
 
-  async dataMigrateWorkspacesResourcesCustomActionsFix(): Promise<boolean> {
+  async dataMigrateWorkspacesResourcesCustomActionsFix(
+    quantity: number
+  ): Promise<boolean> {
     const workspaces = await this.prisma.workspace.findMany({
       where: {
         projects: {
@@ -720,7 +714,7 @@ export class WorkspaceService {
           },
         },
       },
-      take: 1000,
+      take: quantity,
       include: {
         users: {
           orderBy: {
@@ -1176,10 +1170,16 @@ export class WorkspaceService {
       user.id
     );
 
-    const resource = await this.createPreviewServiceWithPredefinedSettings(
-      project.id,
-      user
-    );
+    let resource: Resource | undefined;
+
+    if (
+      account.previewAccountType === EnumPreviewAccountType.BreakingTheMonolith
+    ) {
+      resource = await this.createPreviewServiceWithPredefinedSettings(
+        project.id,
+        user
+      );
+    }
 
     return {
       workspace,
@@ -1236,7 +1236,6 @@ export class WorkspaceService {
         },
         serviceSettings: {
           authProvider: EnumAuthProviderType.Jwt,
-          authEntityName: USER_ENTITY_NAME,
           adminUISettings: {
             adminUIPath,
             generateAdminUI,

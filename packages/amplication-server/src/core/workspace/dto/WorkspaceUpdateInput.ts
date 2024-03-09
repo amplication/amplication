@@ -8,4 +8,9 @@ export class WorkspaceUpdateInput {
     nullable: true,
   })
   name?: string | null;
+
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  allowLLMFeatures?: boolean;
 }

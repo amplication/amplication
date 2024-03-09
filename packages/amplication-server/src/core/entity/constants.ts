@@ -142,7 +142,7 @@ export const DEFAULT_ENTITIES: EntityData[] = [
         displayName: "Username",
         description:
           "An automatically created field of the username of the user",
-        unique: false,
+        unique: true,
         required: true,
         searchable: true,
         properties: {

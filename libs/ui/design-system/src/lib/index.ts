@@ -78,7 +78,7 @@ export { ToggleButton } from "./components/ToggleButton/ToggleButton";
 
 export type { Props as ToggleButtonProps } from "./components/ToggleButton/ToggleButton";
 
-export { Toggle } from "./components/Toggle/Toggle";
+export { Toggle, EnumToggleStyle } from "./components/Toggle/Toggle";
 export type { Props as ToggleProps } from "./components/Toggle/Toggle";
 
 export { ToggleField } from "./components/Toggle/ToggleField";
@@ -117,7 +117,7 @@ export type { Props as BreadcrumbsProps } from "./components/Breadcrumbs/Breadcr
 
 export type { ItemProps as BreadcrumbsItemProps } from "./components/Breadcrumbs/Breadcrumbs";
 
-export { Snackbar } from "./components/Snackbar/Snackbar";
+export { Snackbar, EnumMessageType } from "./components/Snackbar/Snackbar";
 
 export type { Props as SnackbarProps } from "./components/Snackbar/Snackbar";
 
@@ -213,6 +213,10 @@ export {
   EnumListStyle,
 } from "./components/List/List";
 export { ListItem, Props as ListItemProps } from "./components/List/ListItem";
+export {
+  ClickableListItemWithInnerActions,
+  Props as ClickableListItemWithInnerActionsProps,
+} from "./components/List/ClickableListItemWithActions";
 
 export {
   TabContentTitle,
@@ -241,3 +245,14 @@ export {
   EnumRestApiOperationTagType,
   EnumGqlApiOperationTagType,
 } from "./components/ApiOperationTag/ApiOperationTag";
+
+export {
+  CollapsibleList,
+  Props as CollapsibleListProps,
+} from "./components/CollapsibleList/CollapsibleList";
+
+export {
+  CollapsibleListItem,
+  Props as CollapsibleListItemProps,
+} from "./components/CollapsibleList/CollapsibleListItem";
+export { JumboButton } from "./components/JumboButton/JumboButton";

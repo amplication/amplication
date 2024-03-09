@@ -51,10 +51,8 @@ import {
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { kebabCase } from "lodash";
 import { CodeGeneratorVersionStrategy } from "../resource/dto";
 
@@ -65,6 +63,7 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.GitLab]: "GitLab",
 };
 import { encryptString } from "../../util/encryptionUtil";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -204,6 +203,7 @@ export class BuildService {
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly moduleActionService: ModuleActionService,
+    private readonly moduleDtoService: ModuleDtoService,
     private readonly moduleService: ModuleService,
     private readonly billingService: BillingService,
     private readonly gitProviderService: GitProviderService,
@@ -236,7 +236,7 @@ export class BuildService {
     const version = commitId.slice(commitId.length - 8);
 
     const latestEntityVersions = await this.entityService.getLatestVersions({
-      where: { resource: { id: resourceId } },
+      where: { resourceId: resourceId },
     });
 
     const build = await this.prisma.build.create({
@@ -545,16 +545,19 @@ export class BuildService {
     );
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
 
-    await this.analytics.track({
-      userId: build.createdBy.account.id,
-      properties: {
-        resourceId: build.resource.id,
-        projectId: build.resource.project.id,
+    await this.analytics.trackManual({
+      user: {
+        accountId: build.createdBy.account.id,
         workspaceId: build.resource.project.workspaceId,
-        message: response.errorMessage,
-        $groups: { groupWorkspace: build.resource.project.workspaceId },
       },
-      event: EnumEventType.GitSyncError,
+      data: {
+        properties: {
+          resourceId: build.resource.id,
+          projectId: build.resource.project.id,
+          message: response.errorMessage,
+        },
+        event: EnumEventType.GitSyncError,
+      },
     });
   }
 
@@ -572,21 +575,30 @@ export class BuildService {
         include: {
           createdBy: { include: { account: true } },
           resource: {
-            include: { project: true },
+            include: {
+              project: {
+                select: {
+                  id: true,
+                  workspaceId: true,
+                },
+              },
+            },
           },
         },
       });
-
-      await this.analytics.track({
-        userId: build.createdBy.account.id,
-        properties: {
-          resourceId: build.resource.id,
-          projectId: build.resource.project.id,
+      await this.analytics.trackManual({
+        user: {
+          accountId: build.createdBy.account.id,
           workspaceId: build.resource.project.workspaceId,
-          message: logEntry.message,
-          $groups: { groupWorkspace: build.resource.project.workspaceId },
         },
-        event: EnumEventType.CodeGenerationError,
+        data: {
+          properties: {
+            resourceId: build.resource.id,
+            projectId: build.resource.project.id,
+            message: logEntry.message,
+          },
+          event: EnumEventType.CodeGenerationError,
+        },
       });
     }
   }
@@ -847,6 +859,10 @@ export class BuildService {
       where: { resource: { id: resourceId } },
     });
 
+    const moduleDtos = await this.moduleDtoService.findMany({
+      where: { resource: { id: resourceId } },
+    });
+
     const modules = await this.moduleService.findMany({
       where: { resource: { id: resourceId } },
     });
@@ -883,6 +899,7 @@ export class BuildService {
       pluginInstallations: plugins,
       moduleContainers: modules,
       moduleActions: moduleActions,
+      moduleDtos: moduleDtos,
       resourceType: resource.resourceType,
       topics: await this.topicService.findMany({
         where: { resource: { id: resourceId } },
