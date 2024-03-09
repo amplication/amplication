@@ -32,6 +32,7 @@ import { BtmButton, EnumButtonLocation } from "./break-the-monolith/BtmButton";
 import { resourceThemeMap } from "./constants";
 import AppGitStatusPanel from "./git/AppGitStatusPanel";
 import { useResourceSummary } from "./hooks/useResourceSummary";
+import AddResourceFunctionalityButton from "./AddResourceFunctionalityButton";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -86,12 +87,13 @@ const ResourceOverview = () => {
   return (
     <PageContent pageTitle={PAGE_TITLE}>
       <FlexItem>
-        <FlexItem.FlexEnd>
+        <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
           <BtmButton
             openInFullScreen
             location={EnumButtonLocation.Resource}
             ButtonStyle={EnumButtonStyle.GradientFull}
           />
+          <AddResourceFunctionalityButton rankedCategories={rankedCategories} />
         </FlexItem.FlexEnd>
       </FlexItem>
 
@@ -122,7 +124,11 @@ const ResourceOverview = () => {
                   gap={EnumGapSize.Default}
                   itemsAlign={EnumItemsAlign.Center}
                 >
-                  <Icon icon={item.icon} size={"small"} />
+                  <Icon
+                    color={EnumTextColor.White}
+                    icon={item.icon}
+                    size={"small"}
+                  />
                   <Text
                     textStyle={EnumTextStyle.Tag}
                     textColor={EnumTextColor.White}
