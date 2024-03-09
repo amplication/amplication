@@ -47,7 +47,8 @@ const ResourceOverview = () => {
   const { currentResource, currentProject, currentWorkspace } = useAppContext();
   const { refreshData } = useStiggContext();
 
-  const { summaryData, rankedCategories } = useResourceSummary(currentResource);
+  const { summaryData, availableCategories } =
+    useResourceSummary(currentResource);
 
   const resourceId = currentResource?.id;
 
@@ -93,7 +94,11 @@ const ResourceOverview = () => {
             location={EnumButtonLocation.Resource}
             ButtonStyle={EnumButtonStyle.GradientFull}
           />
-          <AddResourceFunctionalityButton rankedCategories={rankedCategories} />
+          {currentResource?.resourceType === EnumResourceType.Service && (
+            <AddResourceFunctionalityButton
+              availableCategories={availableCategories}
+            />
+          )}
         </FlexItem.FlexEnd>
       </FlexItem>
 

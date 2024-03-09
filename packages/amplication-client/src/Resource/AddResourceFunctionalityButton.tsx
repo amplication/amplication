@@ -18,11 +18,13 @@ import { useAppContext } from "../context/appContext";
 import { PluginCategory } from "./hooks/useResourceSummary";
 
 type Props = {
-  rankedCategories: PluginCategory[];
+  availableCategories: PluginCategory[];
 };
 
-const AddResourceFunctionalityButton = ({ rankedCategories }: Props) => {
+const AddResourceFunctionalityButton = ({ availableCategories }: Props) => {
   const { currentProject, currentResource, currentWorkspace } = useAppContext();
+
+  const categories = availableCategories.slice(0, 4);
 
   return (
     <SelectMenu
@@ -32,7 +34,7 @@ const AddResourceFunctionalityButton = ({ rankedCategories }: Props) => {
     >
       <SelectMenuModal align="right">
         <SelectMenuList>
-          {rankedCategories.map((category) => (
+          {categories.map((category) => (
             <Link
               to={`/${currentWorkspace.id}/${currentProject.id}/${
                 currentResource.id

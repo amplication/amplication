@@ -5,7 +5,9 @@ import { DATE_CREATED_FIELD } from "../../Modules/ModuleNavigationList";
 import * as models from "../../models";
 import { useEffect, useState } from "react";
 import { GET_CATEGORIES } from "./categoriesQueries";
-import usePlugins from "../../Plugins/hooks/usePlugins";
+import usePlugins, {
+  SortedPluginInstallation,
+} from "../../Plugins/hooks/usePlugins";
 
 type TData = {
   resourceRoles: models.ResourceRole[];
@@ -26,10 +28,19 @@ export type PluginCategory = {
   icon: string;
 };
 
+type UsedCategory = {
+  category: PluginCategory;
+  installedPlugin: SortedPluginInstallation[];
+};
+
 export const useResourceSummary = (currentResource: models.Resource) => {
-  const [rankedCategories, setRankedCategories] = useState<PluginCategory[]>(
-    []
-  );
+  const [usedCategories, setUsedCategories] = useState<{
+    [key: string]: UsedCategory;
+  }>({});
+
+  const [availableCategories, setAvailableCategories] = useState<
+    PluginCategory[]
+  >([]);
 
   const [summaryData, setSummaryData] = useState<SummaryData>({
     models: 0,
@@ -65,11 +76,35 @@ export const useResourceSummary = (currentResource: models.Resource) => {
     if (!pluginInstallations && !pluginInstallations?.length) return;
     if (!categoriesData && !categoriesData?.categories.length) return;
 
-    const sortedCategories = categoriesData.categories.sort(
-      (a, b) => a.rank - b.rank
+    const sortedCategories = categoriesData.categories.sort((a, b) => {
+      // Check if either rank is null, and sort accordingly
+      if (a.rank === null) return 1; // a is greater, as we want nulls at the end
+      if (b.rank === null) return -1; // b is greater, for the same reason
+
+      // If neither rank is null, proceed with numerical comparison
+      return a.rank - b.rank;
+    });
+
+    const installedCategories = pluginInstallations.reduce((acc, plugin) => {
+      const categories = plugin.categories || [];
+      categories.forEach((category) => {
+        acc[category] = acc[category] || {
+          category: sortedCategories.find((c) => c.id === category),
+          installedPlugin: [],
+        };
+        acc[category].installedPlugin.push(plugin);
+      });
+
+      return acc;
+    }, {} as { [key: string]: UsedCategory });
+
+    const availableCategories = sortedCategories.filter(
+      (category) =>
+        !installedCategories[category.name] && category.rank !== null
     );
 
-    setRankedCategories(sortedCategories.slice(0, 4));
+    setUsedCategories(installedCategories);
+    setAvailableCategories(availableCategories);
   }, [pluginInstallations, categoriesData]);
 
   useEffect(() => {
@@ -111,6 +146,7 @@ export const useResourceSummary = (currentResource: models.Resource) => {
 
   return {
     summaryData,
-    rankedCategories,
+    usedCategories,
+    availableCategories,
   };
 };
