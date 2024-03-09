@@ -14,7 +14,6 @@ import { ProjectConfigurationSettingsModule } from "../projectConfigurationSetti
 import { ServiceSettingsModule } from "../serviceSettings/serviceSettings.module";
 import { ServiceTopicsModule } from "../serviceTopics/serviceTopics.module";
 import { SubscriptionModule } from "../subscription/subscription.module";
-import { ResourceRoleModule } from "../resourceRole/resourceRole.module";
 import { TopicModule } from "../topic/topic.module";
 import { UserModule } from "../user/user.module";
 import { ResourceResolver } from "./resource.resolver";
@@ -38,7 +37,6 @@ import { ActionModule } from "../action/action.module";
     EnvironmentModule,
     CommitModule,
     BlockModule,
-    ResourceRoleModule,
     ProjectConfigurationSettingsModule,
     forwardRef(() => ProjectModule),
     BillingModule,
