@@ -15,23 +15,23 @@ import {
   Panel,
   Text,
 } from "@amplication/ui/design-system";
-import { useContext, useEffect, useMemo } from "react";
+import { useStiggContext } from "@stigg/react-sdk";
+import { useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 import PageContent from "../Layout/PageContent";
-import { AppContext, useAppContext } from "../context/appContext";
+import { useAppContext } from "../context/appContext";
 import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
 import FeatureRequestTile from "./FeatureRequestTile";
+import PluginsTile from "./PluginsTile";
 import RolesTile from "./RolesTile";
 import { ServicesTile } from "./ServicesTile";
-import SyncWithGithubTile from "./SyncWithGithubTile";
 import { TopicsTile } from "./TopicsTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
-import { resourceThemeMap } from "./constants";
-import PluginsTile from "./PluginsTile";
-import { useStiggContext } from "@stigg/react-sdk";
 import { BtmButton, EnumButtonLocation } from "./break-the-monolith/BtmButton";
+import { resourceThemeMap } from "./constants";
+import AppGitStatusPanel from "./git/AppGitStatusPanel";
 import { useResourceSummary } from "./hooks/useResourceSummary";
-import { Link } from "react-router-dom";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -98,27 +98,22 @@ const ResourceOverview = () => {
       <HorizontalRule doubleSpacing />
 
       <Panel panelStyle={EnumPanelStyle.Bold}>
-        <FlexItem
-          itemsAlign={EnumItemsAlign.Center}
-          start={
+        <FlexItem itemsAlign={EnumItemsAlign.Center}>
+          <FlexItem.FlexStart direction={EnumFlexDirection.Column}>
             <CircleBadge
+              size="large"
               name={currentResource?.name || ""}
               color={
                 resourceThemeMap[currentResource?.resourceType].color ||
                 "transparent"
               }
             />
-          }
-        >
-          <FlexItem
-            direction={EnumFlexDirection.Column}
-            gap={EnumGapSize.Small}
-          >
             <Text textStyle={EnumTextStyle.H3}>{currentResource?.name}</Text>
             <Text textStyle={EnumTextStyle.Description}>
               {currentResource?.description}
             </Text>
-          </FlexItem>
+            <AppGitStatusPanel resource={currentResource} />
+          </FlexItem.FlexStart>
           <FlexItem.FlexEnd>
             {resourceUsageData.map((item) => (
               <Link to={item.link} key={item.title}>
@@ -150,7 +145,6 @@ const ResourceOverview = () => {
       </Panel>
 
       <List>
-        <SyncWithGithubTile resourceId={resourceId} />
         {currentResource?.resourceType === EnumResourceType.Service && (
           <>
             <EntitiesTile resourceId={resourceId} />
