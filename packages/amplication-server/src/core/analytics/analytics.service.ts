@@ -124,7 +124,7 @@ export class AnalyticsService {
   }: BlockChangesArgs): Promise<number> {
     return this.prisma.block.count({
       where: {
-        blockType: blockType, // EnumBlockType.PluginInstallation, EnumBlockType.ModuleAction
+        blockType: blockType,
         resource: {
           project: {
             id: projectId,

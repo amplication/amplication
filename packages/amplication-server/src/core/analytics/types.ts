@@ -9,5 +9,5 @@ export type BaseAnalyticsArgs = {
 };
 
 export type BlockChangesArgs = BaseAnalyticsArgs & {
-  blockType: EnumBlockType;
+  blockType: keyof typeof EnumBlockType;
 };
