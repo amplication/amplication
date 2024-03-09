@@ -18,13 +18,19 @@ interface SummaryData {
   roles: number;
 }
 
+export type PluginCategory = {
+  id: string;
+  name: string;
+  description: string;
+  rank: number;
+  icon: string;
+};
+
 export const useResourceSummary = (currentResource: models.Resource) => {
-  const [rankedCategories, setRankedCategories] = useState<
-    { name: string; description: string }[]
-  >([]);
-  const [rankedInstalledCategories, setRankedInstalledCategories] = useState<
-    { name: string; icon?: string; pluginsIcons?: string[] }[]
-  >([]);
+  const [rankedCategories, setRankedCategories] = useState<PluginCategory[]>(
+    []
+  );
+
   const [summaryData, setSummaryData] = useState<SummaryData>({
     models: 0,
     apis: 0,
@@ -34,7 +40,7 @@ export const useResourceSummary = (currentResource: models.Resource) => {
   const { pluginInstallations } = usePlugins(currentResource.id);
 
   const { data: categoriesData } = useQuery<{
-    categories: { name: string; rank: number }[];
+    categories: PluginCategory[];
   }>(GET_CATEGORIES, {
     context: {
       clientName: "pluginApiHttpLink",
@@ -59,39 +65,11 @@ export const useResourceSummary = (currentResource: models.Resource) => {
     if (!pluginInstallations && !pluginInstallations?.length) return;
     if (!categoriesData && !categoriesData?.categories.length) return;
 
-    const installedPluginsMap = pluginInstallations.reduce(
-      (pluginObj, plugin) => {
-        if (!plugin.categories) return pluginObj;
-
-        plugin.categories.forEach((category) => {
-          if (!Object.prototype.hasOwnProperty.call(pluginObj, category))
-            pluginObj[category] = true;
-        });
-
-        return pluginObj;
-      },
-      {}
+    const sortedCategories = categoriesData.categories.sort(
+      (a, b) => a.rank - b.rank
     );
 
-    const tempRankedCategory = categoriesData.categories.reduce(
-      (rankedArr, category) => {
-        if (
-          !Object.prototype.hasOwnProperty.call(
-            installedPluginsMap,
-            category.name
-          )
-        )
-          rankedArr.push({
-            ...category,
-            description:
-              "Connect and manage message queues for efficient data transfer.",
-          });
-        return rankedArr;
-      },
-      []
-    );
-
-    setRankedCategories(tempRankedCategory.slice(0, 4));
+    setRankedCategories(sortedCategories.slice(0, 4));
   }, [pluginInstallations, categoriesData]);
 
   useEffect(() => {
