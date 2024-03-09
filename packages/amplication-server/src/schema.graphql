@@ -1613,6 +1613,10 @@ type Query {
   Get the changes to apply to the model in order to break a resource into microservices
   """
   finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
+  getBlockChangesCount(blockType: EnumBlockType!, endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): Float!
+  getEntityChangesCount(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): Float!
+  getLOCSum(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): Float!
+  getProjectBuildsCount(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): Float!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!

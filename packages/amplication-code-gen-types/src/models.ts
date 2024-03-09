@@ -2123,6 +2123,10 @@ export type Query = {
   entity?: Maybe<Entity>;
   /** Get the changes to apply to the model in order to break a resource into microservices */
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
+  getBlockChangesCount: Scalars['Float']['output'];
+  getEntityChangesCount: Scalars['Float']['output'];
+  getLOCSum: Scalars['Float']['output'];
+  getProjectBuildsCount: Scalars['Float']['output'];
   gitGroups: PaginatedGitGroup;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
@@ -2232,6 +2236,43 @@ export type QueryEntityArgs = {
 
 export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
   userActionId: Scalars['String']['input'];
+};
+
+
+export type QueryGetBlockChangesCountArgs = {
+  blockType: EnumBlockType;
+  endDate: Scalars['DateTime']['input'];
+  projectId?: InputMaybe<Scalars['String']['input']>;
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetEntityChangesCountArgs = {
+  endDate: Scalars['DateTime']['input'];
+  projectId?: InputMaybe<Scalars['String']['input']>;
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetLocSumArgs = {
+  endDate: Scalars['DateTime']['input'];
+  projectId?: InputMaybe<Scalars['String']['input']>;
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetProjectBuildsCountArgs = {
+  endDate: Scalars['DateTime']['input'];
+  projectId?: InputMaybe<Scalars['String']['input']>;
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 
