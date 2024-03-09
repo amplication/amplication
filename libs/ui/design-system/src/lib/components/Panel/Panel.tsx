@@ -30,6 +30,7 @@ export type Props = {
   themeColor?: EnumTextColor;
   onClick?: (event: any) => void;
   nonClickableFooter?: ReactNode;
+  removePadding?: boolean;
 };
 
 export const Panel = React.forwardRef(
@@ -44,6 +45,7 @@ export const Panel = React.forwardRef(
       themeColor = undefined,
       nonClickableFooter = undefined,
       onClick,
+      removePadding = false,
     }: Props,
     ref: React.Ref<HTMLDivElement>
   ) => {
@@ -56,10 +58,13 @@ export const Panel = React.forwardRef(
       role: clickable ? "button" : undefined,
     };
 
+    const paddingStyle = removePadding ? { padding: 0 } : {};
+
     return (
       <div
         style={{
           ...style,
+          ...paddingStyle,
           "--theme-border-color": themeColor //set the css variable to the theme color to be used from the css file
             ? `var(--${themeColor})`
             : undefined,

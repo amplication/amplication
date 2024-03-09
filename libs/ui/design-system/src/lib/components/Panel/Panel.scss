@@ -82,6 +82,14 @@ $theme-border-expand: 1px;
     }
   }
   &--clickable {
+    cursor: pointer;
+    &:hover {
+      background: var(--panel-hover-background);
+
+      .amp-horizontal-rule {
+        border-top: $border-dark;
+      }
+    }
     .amp-panel__content-wrapper {
       cursor: pointer;
       &:hover {
