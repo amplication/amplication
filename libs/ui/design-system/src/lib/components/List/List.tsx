@@ -17,6 +17,7 @@ export type Props = {
   listStyle?: EnumListStyle;
   collapsible?: boolean;
   headerContent?: ReactNode;
+  style?: React.CSSProperties;
 };
 
 export function List({
@@ -25,9 +26,11 @@ export function List({
   listStyle = EnumListStyle.Default,
   collapsible = false,
   headerContent,
+  style = undefined,
 }: Props) {
   return (
     <div
+      style={style}
       className={classNames(
         CLASS_NAME,
         `${CLASS_NAME}--${listStyle}`,
