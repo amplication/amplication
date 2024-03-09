@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import useModule from "../../Modules/hooks/useModule";
 import { GET_ROLES } from "../../Roles/RoleList";
-import { DATE_CREATED_FIELD } from "../../Modules/ModuleList";
+import { DATE_CREATED_FIELD } from "../../Modules/ModuleNavigationList";
 import * as models from "../../models";
 import { useEffect, useState } from "react";
 import { GET_CATEGORIES } from "./categoriesQueries";
@@ -18,7 +18,7 @@ interface SummaryData {
   roles: number;
 }
 
-export const useSummary = (currentResource: models.Resource) => {
+export const useResourceSummary = (currentResource: models.Resource) => {
   const [rankedCategories, setRankedCategories] = useState<
     { name: string; description: string }[]
   >([]);
