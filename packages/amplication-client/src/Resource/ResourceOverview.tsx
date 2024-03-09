@@ -31,6 +31,7 @@ import { BtmButton, EnumButtonLocation } from "./break-the-monolith/BtmButton";
 import { resourceThemeMap } from "./constants";
 import AppGitStatusPanel from "./git/AppGitStatusPanel";
 import { useResourceSummary } from "./hooks/useResourceSummary";
+import { PluginsTile } from "./PluginsTile";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -47,7 +48,7 @@ const ResourceOverview = () => {
   const { currentResource, currentProject, currentWorkspace } = useAppContext();
   const { refreshData } = useStiggContext();
 
-  const { summaryData, availableCategories } =
+  const { summaryData, usedCategories, availableCategories } =
     useResourceSummary(currentResource);
 
   const resourceId = currentResource?.id;
@@ -158,10 +159,16 @@ const ResourceOverview = () => {
       </Panel>
 
       {currentResource?.resourceType === EnumResourceType.Service && (
-        <div className={`${CLASS_NAME}__split`}>
-          <EntitiesTile resourceId={resourceId} />
-          <APIsTile resourceId={resourceId} />
-        </div>
+        <>
+          <div className={`${CLASS_NAME}__split`}>
+            <EntitiesTile resourceId={resourceId} />
+            <APIsTile resourceId={resourceId} />
+          </div>
+          <PluginsTile
+            usedCategories={usedCategories}
+            availableCategories={availableCategories}
+          />
+        </>
       )}
 
       {currentResource?.resourceType === EnumResourceType.MessageBroker && (
@@ -171,11 +178,6 @@ const ResourceOverview = () => {
           <ServicesTile resourceId={resourceId} />
         </div>
       )}
-      <div className={`${CLASS_NAME}__split`}>
-        <ViewCodeViewTile resourceId={resourceId} />
-
-        <DocsTile />
-      </div>
     </PageContent>
   );
 };

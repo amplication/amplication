@@ -41,14 +41,16 @@ const OverviewSecondaryTile: React.FC<Props> = ({
         to={to}
         onClick={onClick}
         direction={EnumFlexDirection.Column}
-        gap={EnumGapSize.Large}
+        gap={EnumGapSize.Default}
       >
         <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.Small}>
           <Icon icon={icon} color={EnumTextColor.White} />
-          <Text textStyle={EnumTextStyle.H4}>{title}</Text>
+          <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+            {title}
+          </Text>
         </FlexItem>
 
-        <Text textStyle={EnumTextStyle.Description}>{message}</Text>
+        <Text textStyle={EnumTextStyle.Subtle}>{message}</Text>
       </ListItem>
     </List>
   );
