@@ -48,8 +48,8 @@ const AppGitStatusPanel = ({ resource }: Props) => {
           textStyle={EnumTextStyle.Tag}
           textColor={EnumTextColor.ThemeTurquoise}
         >
-          Connect to a git provider to create a Pull Request with the generated
-          code
+          Click here to connect to a git provider to get a Pull Request with the
+          generated code
         </Text>
       </FlexItem>
     </Link>
