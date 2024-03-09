@@ -1,0 +1,9 @@
+@import "../style/index.scss";
+
+.resource-overview {
+  &__split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--default-spacing);
+  }
+}

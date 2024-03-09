@@ -5,6 +5,7 @@ import {
   EnumFlexDirection,
   EnumGapSize,
   EnumItemsAlign,
+  EnumListStyle,
   EnumPanelStyle,
   EnumTextColor,
   EnumTextStyle,
@@ -12,6 +13,7 @@ import {
   HorizontalRule,
   Icon,
   List,
+  ListItem,
   Panel,
   Text,
 } from "@amplication/ui/design-system";
@@ -20,10 +22,12 @@ import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import PageContent from "../Layout/PageContent";
 import { useAppContext } from "../context/appContext";
+import AddResourceFunctionalityButton from "./AddResourceFunctionalityButton";
 import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
 import FeatureRequestTile from "./FeatureRequestTile";
 import PluginsTile from "./PluginsTile";
+import "./ResourceOverview.scss";
 import RolesTile from "./RolesTile";
 import { ServicesTile } from "./ServicesTile";
 import { TopicsTile } from "./TopicsTile";
@@ -32,7 +36,6 @@ import { BtmButton, EnumButtonLocation } from "./break-the-monolith/BtmButton";
 import { resourceThemeMap } from "./constants";
 import AppGitStatusPanel from "./git/AppGitStatusPanel";
 import { useResourceSummary } from "./hooks/useResourceSummary";
-import AddResourceFunctionalityButton from "./AddResourceFunctionalityButton";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -42,6 +45,8 @@ type usageDataItem = {
   link: string;
   value: number;
 };
+
+const CLASS_NAME = "resource-overview";
 
 const ResourceOverview = () => {
   const { currentResource, currentProject, currentWorkspace } = useAppContext();
@@ -149,6 +154,63 @@ const ResourceOverview = () => {
           </FlexItem.FlexEnd>
         </FlexItem>
       </Panel>
+
+      <div className={`${CLASS_NAME}__split`}>
+        <Panel
+          removePadding
+          panelStyle={EnumPanelStyle.Default}
+          themeColor={EnumTextColor.ThemePink}
+        >
+          <List listStyle={EnumListStyle.Default}>
+            <ListItem
+              showDefaultActionIcon
+              to={`/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/entities`}
+              direction={EnumFlexDirection.Column}
+              gap={EnumGapSize.Large}
+            >
+              <FlexItem
+                itemsAlign={EnumItemsAlign.Center}
+                gap={EnumGapSize.Small}
+              >
+                <Icon icon="database" color={EnumTextColor.White} />
+                <Text textStyle={EnumTextStyle.H4}>Entities</Text>
+              </FlexItem>
+
+              <Text textStyle={EnumTextStyle.Description}>
+                Use Amplication's simple and intuitive user interface to define
+                your data model.
+              </Text>
+            </ListItem>
+          </List>
+        </Panel>
+        <Panel
+          removePadding
+          panelStyle={EnumPanelStyle.Default}
+          themeColor={EnumTextColor.ThemeBlue}
+        >
+          <List listStyle={EnumListStyle.Default}>
+            <ListItem
+              showDefaultActionIcon
+              to={`/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/modules/all`}
+              direction={EnumFlexDirection.Column}
+              gap={EnumGapSize.Large}
+            >
+              <FlexItem
+                itemsAlign={EnumItemsAlign.Center}
+                gap={EnumGapSize.Small}
+              >
+                <Icon icon="api" color={EnumTextColor.White} />
+                <Text textStyle={EnumTextStyle.H4}>APIs</Text>
+              </FlexItem>
+
+              <Text textStyle={EnumTextStyle.Description}>
+                Manage your application's API. Create and update API endpoints
+                and types.
+              </Text>
+            </ListItem>
+          </List>
+        </Panel>
+      </div>
 
       <List>
         {currentResource?.resourceType === EnumResourceType.Service && (
