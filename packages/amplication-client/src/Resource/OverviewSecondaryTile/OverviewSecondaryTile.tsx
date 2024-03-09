@@ -3,14 +3,12 @@ import {
   EnumGapSize,
   EnumItemsAlign,
   EnumListStyle,
-  EnumPanelStyle,
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Icon,
   List,
   ListItem,
-  Panel,
   Text,
 } from "@amplication/ui/design-system";
 
@@ -33,28 +31,26 @@ const OverviewSecondaryTile: React.FC<Props> = ({
   onClick,
 }) => {
   return (
-    <Panel
-      removePadding
-      panelStyle={EnumPanelStyle.Default}
+    <List
+      listStyle={EnumListStyle.Transparent}
+      style={{ height: "100%" }}
       themeColor={themeColor}
     >
-      <List listStyle={EnumListStyle.Default} style={{ height: "100%" }}>
-        <ListItem
-          showDefaultActionIcon
-          to={to}
-          onClick={onClick}
-          direction={EnumFlexDirection.Column}
-          gap={EnumGapSize.Large}
-        >
-          <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.Small}>
-            <Icon icon={icon} color={EnumTextColor.White} />
-            <Text textStyle={EnumTextStyle.H4}>{title}</Text>
-          </FlexItem>
+      <ListItem
+        showDefaultActionIcon
+        to={to}
+        onClick={onClick}
+        direction={EnumFlexDirection.Column}
+        gap={EnumGapSize.Large}
+      >
+        <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.Small}>
+          <Icon icon={icon} color={EnumTextColor.White} />
+          <Text textStyle={EnumTextStyle.H4}>{title}</Text>
+        </FlexItem>
 
-          <Text textStyle={EnumTextStyle.Description}>{message}</Text>
-        </ListItem>
-      </List>
-    </Panel>
+        <Text textStyle={EnumTextStyle.Description}>{message}</Text>
+      </ListItem>
+    </List>
   );
 };
 
