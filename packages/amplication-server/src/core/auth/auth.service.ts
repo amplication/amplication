@@ -65,11 +65,13 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly accountService: AccountService,
     private readonly logger: AmplicationLogger,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService,
     private readonly analytics: SegmentAnalyticsService,
     private readonly auth0Service: Auth0Service,
+    @Inject(forwardRef(() => PreviewUserService))
     private readonly previewUserService: PreviewUserService
   ) {
     this.clientHost = configService.get(Env.CLIENT_HOST);
