@@ -28,15 +28,19 @@ export type PluginCategory = {
   icon: string;
 };
 
-type UsedCategory = {
+export type UsedCategory = {
   category: PluginCategory;
   installedPlugin: SortedPluginInstallation[];
 };
 
+export type usedPluginCategories = {
+  [key: string]: UsedCategory;
+};
+
 export const useResourceSummary = (currentResource: models.Resource) => {
-  const [usedCategories, setUsedCategories] = useState<{
-    [key: string]: UsedCategory;
-  }>({});
+  const [usedCategories, setUsedCategories] = useState<usedPluginCategories>(
+    {}
+  );
 
   const [availableCategories, setAvailableCategories] = useState<
     PluginCategory[]
@@ -88,8 +92,16 @@ export const useResourceSummary = (currentResource: models.Resource) => {
     const installedCategories = pluginInstallations.reduce((acc, plugin) => {
       const categories = plugin.categories || [];
       categories.forEach((category) => {
+        if (!category) return;
+        const categoryObj =
+          acc[category]?.category ||
+          sortedCategories.find((c) => c.name === category);
+
+        //do not collect un-ranked categories
+        if (!categoryObj.rank) return acc;
+
         acc[category] = acc[category] || {
-          category: sortedCategories.find((c) => c.id === category),
+          category: categoryObj,
           installedPlugin: [],
         };
         acc[category].installedPlugin.push(plugin);
