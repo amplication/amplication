@@ -7,7 +7,7 @@ import {
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
 import { pascalCase } from "pascal-case";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -18,13 +18,12 @@ import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import useModuleDto from "./hooks/useModuleDto";
-import { useModulesContext } from "../Modules/modulesContext";
-import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 
 type Props = {
   resourceId: string;
   moduleId: string;
   onDtoCreated?: (moduleAction: models.ModuleDto) => void;
+  onDismiss?: () => void;
   buttonStyle?: EnumButtonStyle;
 };
 
@@ -52,12 +51,10 @@ const NewModuleDtoEnum = ({
   resourceId,
   moduleId,
   onDtoCreated,
-  buttonStyle = EnumButtonStyle.Primary,
+  onDismiss,
 }: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const { customActionsLicenseEnabled } = useModulesContext();
 
   const {
     createModuleDtoEnum,
@@ -65,10 +62,6 @@ const NewModuleDtoEnum = ({
     createModuleDtoEnumError: error,
     createModuleDtoEnumLoading: loading,
   } = useModuleDto();
-
-  const handleDialogStateChange = useCallback(() => {
-    setDialogOpen(!dialogOpen);
-  }, [dialogOpen, setDialogOpen]);
 
   const handleSubmit = useCallback(
     (data) => {
@@ -97,7 +90,6 @@ const NewModuleDtoEnum = ({
             );
           }
         });
-      setDialogOpen(false);
     },
     [
       createModuleDtoEnum,
@@ -114,11 +106,7 @@ const NewModuleDtoEnum = ({
 
   return (
     <div>
-      <Dialog
-        isOpen={dialogOpen}
-        onDismiss={handleDialogStateChange}
-        title="New Dto"
-      >
+      <Dialog isOpen={true} onDismiss={onDismiss} title="New Enum">
         <SvgThemeImage image={EnumImages.Entities} />
         <Text textAlign={EnumTextAlign.Center}>
           Give your new Enum a descriptive name. <br />
@@ -159,16 +147,7 @@ const NewModuleDtoEnum = ({
           }}
         </Formik>
       </Dialog>
-      {REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED === "true" && (
-        <Button
-          buttonStyle={buttonStyle}
-          onClick={handleDialogStateChange}
-          disabled={!customActionsLicenseEnabled}
-          icon="zap"
-        >
-          Add Enum
-        </Button>
-      )}
+
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );

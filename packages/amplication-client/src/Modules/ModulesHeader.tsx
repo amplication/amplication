@@ -29,24 +29,8 @@ const CLASS_NAME = "modules-header";
 
 const ModulesHeader = React.memo(
   ({ title, subTitle, hideApiToggle, actions }: Props) => {
-    const {
-      displayMode,
-      graphQlEnabled,
-      restEnabled,
-      setSearchPhrase,
-      setDisplayMode,
-    } = useModulesContext();
-
-    let timeout;
-    const handleSearchChange = useCallback(
-      (value) => {
-        if (timeout) clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          setSearchPhrase(value);
-        }, 750);
-      },
-      [setSearchPhrase, timeout]
-    );
+    const { displayMode, graphQlEnabled, restEnabled, setDisplayMode } =
+      useModulesContext();
 
     const handleDisplayModeChange = useCallback(
       (value: boolean) => {
@@ -63,15 +47,7 @@ const ModulesHeader = React.memo(
       <>
         <FlexItem start={<TabContentTitle title={title} subTitle={subTitle} />}>
           <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
-            <FlexItem itemsAlign={EnumItemsAlign.Center}>
-              {actions}
-
-              <SearchField
-                label="search"
-                placeholder="Search"
-                onChange={handleSearchChange}
-              />
-            </FlexItem>
+            <FlexItem itemsAlign={EnumItemsAlign.Center}>{actions}</FlexItem>
           </FlexItem.FlexEnd>
         </FlexItem>
         <FlexItem>
