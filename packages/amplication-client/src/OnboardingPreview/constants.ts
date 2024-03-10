@@ -46,7 +46,7 @@ export const PAGE_KEYS = [
 export const PAGES_DATA: Pages = {
   database: {
     title: "Database",
-    subTitle: "Select the type of DB for your service",
+    subTitle: "Select the type of database for your service",
     allowMultipleSelection: false,
     selectionRequired: true,
     items: [
@@ -113,14 +113,13 @@ export const PAGES_DATA: Pages = {
   },
   adminUi: {
     title: "Admin UI",
-    subTitle:
-      "Would you like to generate a React client application with forms to use your API?",
+    subTitle: "Select the client application to use your APIs",
     allowMultipleSelection: false,
     selectionRequired: true,
     items: [
       {
         icon: imgAdminUI,
-        title: "Generate React Admin UI",
+        title: "React Admin UI",
         value: {
           resource: {
             serviceSettings: {
@@ -182,7 +181,7 @@ export const PAGES_DATA: Pages = {
   eventDriven: {
     title: "Event-Driven",
     subTitle:
-      "Would you like to use a message broker to create an event driven architecture",
+      "Select the type of message broker to create an event-driven architecture",
     allowMultipleSelection: false,
     selectionRequired: true,
     items: [
@@ -214,7 +213,7 @@ export const PAGES_DATA: Pages = {
   },
   deployment: {
     title: "Deployment",
-    subTitle: "How would you like to deploy your service?",
+    subTitle: "Select the deployment type for your service",
     allowMultipleSelection: false,
     selectionRequired: true,
     items: [
@@ -250,7 +249,7 @@ export const PAGES_DATA: Pages = {
   },
   more: {
     title: "More",
-    subTitle: "What else do you want to include in your service?",
+    subTitle: "Select additional functionality to include in your service",
     allowMultipleSelection: true,
     selectionRequired: false,
     items: [

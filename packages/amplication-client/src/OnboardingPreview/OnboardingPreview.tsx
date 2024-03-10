@@ -188,6 +188,7 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
             <Text
               textStyle={EnumTextStyle.Description}
               textAlign={EnumTextAlign.Center}
+              textColor={EnumTextColor.ThemeTurquoise}
             >
               {currentPageData.subTitle}
             </Text>
@@ -211,7 +212,7 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
             margin={EnumFlexItemMargin.Both}
           >
             {loadingCreateService ? (
-              <ProgressBar message="Please wait while we are preparing a few last things..." />
+              <ProgressBar message="Please wait while we generate the code for your service..." />
             ) : (
               <OnboardingPreviewSuccess />
             )}
