@@ -15,7 +15,6 @@ import {
   FlexEnd,
 } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import { useCallback, useEffect, useState } from "react";
-import BetaFeatureTag from "../../Components/BetaFeatureTag";
 import { Button } from "../../Components/Button";
 import RedesignResourceButton from "../../Components/RedesignResourceButton";
 import * as models from "../../models";
@@ -160,8 +159,6 @@ export default function ModelOrganizerToolbar({
 
         <FlexEnd>
           <FlexItem itemsAlign={EnumItemsAlign.Center}>
-            {!restrictedMode && <BetaFeatureTag></BetaFeatureTag>}
-
             {redesignMode && (
               <>
                 <div className={`${CLASS_NAME}__divider`}></div>
