@@ -107,7 +107,11 @@ export class PreviewUserService {
     };
   }
 
-  async completeSignupPreviewAccount(user: User): Promise<string> {
+  //If automaticallySendResetPasswordEmail is true, we'll send the reset password email, otherwise we'll return the reset password link
+  async completeSignupPreviewAccount(
+    user: User,
+    automaticallySendResetPasswordEmail = true
+  ): Promise<string> {
     let auth0User: Auth0User;
     const { account: currentAccount } = user;
 
@@ -123,12 +127,22 @@ export class PreviewUserService {
         throw Error("Failed to create new Auth0 user");
     }
 
-    const resetPassword = await this.auth0Service.resetUserPassword(
-      currentAccount.previewAccountEmail
-    );
+    let results: string;
 
-    if (!resetPassword.data)
-      throw Error("Failed to send reset message to new Auth0 user");
+    if (automaticallySendResetPasswordEmail) {
+      const resetPassword = await this.auth0Service.resetUserPassword(
+        currentAccount.previewAccountEmail
+      );
+
+      if (!resetPassword.data)
+        throw Error("Failed to send reset message to new Auth0 user");
+
+      results = resetPassword.data;
+    } else {
+      results = await this.auth0Service.generateResetUserPasswordLink(
+        currentAccount.previewAccountEmail
+      );
+    }
 
     const existingAccount = await this.accountService.findAccount({
       where: {
@@ -147,7 +161,7 @@ export class PreviewUserService {
       });
     }
 
-    return resetPassword.data;
+    return results;
   }
 
   async convertPreviewAccountToRegularAccountWithFreeTrail(user: User) {

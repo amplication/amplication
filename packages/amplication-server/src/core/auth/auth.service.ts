@@ -65,11 +65,13 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly accountService: AccountService,
     private readonly logger: AmplicationLogger,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService,
     private readonly analytics: SegmentAnalyticsService,
     private readonly auth0Service: Auth0Service,
+    @Inject(forwardRef(() => PreviewUserService))
     private readonly previewUserService: PreviewUserService
   ) {
     this.clientHost = configService.get(Env.CLIENT_HOST);
@@ -523,20 +525,7 @@ export class AuthService {
   }
 
   async getAuthUser(where: Prisma.UserWhereInput): Promise<AuthUser | null> {
-    const matchingUsers = await this.userService.findUsers({
-      where,
-      include: {
-        account: true,
-        userRoles: true,
-        workspace: true,
-      },
-      take: 1,
-    });
-    if (matchingUsers.length === 0) {
-      return null;
-    }
-    const [user] = matchingUsers;
-    return user as AuthUser;
+    return this.userService.getAuthUser(where);
   }
 
   private async createWorkspace(
