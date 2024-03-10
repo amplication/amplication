@@ -44,8 +44,8 @@ const OnboardingPreviewSuccess: React.FC = () => {
             textAlign={EnumTextAlign.Center}
             textColor={EnumTextColor.White}
           >
-            <strong>Add data models, configure your API, and more:</strong> A
-            link to access your service will be in your email.
+            <strong>Add data models, configure your API, and more:</strong>{" "}
+            Follow the link in your email to to manage your service.
           </Text>
         </li>
         <li>

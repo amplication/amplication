@@ -9,6 +9,7 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
+  Icon,
   Text,
 } from "@amplication/ui/design-system";
 import React, { useCallback, useMemo, useState } from "react";
@@ -27,6 +28,7 @@ import usePlugins from "../Plugins/hooks/usePlugins";
 import useOnboardingPreview from "./hooks/useOnboardingPreview";
 import ProgressBar from "../Components/ProgressBar";
 import OnboardingPreviewSuccess from "./OnboardingPreviewSuccess";
+import classNames from "classnames";
 
 type Props = {
   workspaceId: string;
@@ -221,16 +223,22 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
           currentPageData.items.map((item, index) => (
             <Button
               key={`${currentPage}${item.title}`}
-              buttonStyle={
-                item.selected
-                  ? EnumButtonStyle.Primary
-                  : EnumButtonStyle.Outline
-              }
+              buttonStyle={EnumButtonStyle.Outline}
+              className={classNames({ selected: item.selected })}
               onClick={() => {
                 handleItemClick(index);
               }}
             >
-              <img src={item.icon} alt={item.title} />
+              {item.defaultIcon === "none" ? (
+                <Icon size="xlarge" icon="close" />
+              ) : (
+                <img
+                  src={item.icon}
+                  alt={item.title}
+                  className={item.iconClassName}
+                />
+              )}
+
               <Text textStyle={EnumTextStyle.H3}>{item.title}</Text>
             </Button>
           ))

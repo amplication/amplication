@@ -7,6 +7,8 @@ const PLUGIN_LOGO_BASE_URL =
 
 type SelectionItem = {
   icon: string;
+  iconClassName?: string;
+  defaultIcon?: "none";
   title: string;
   selected?: boolean;
   value?: any;
@@ -80,6 +82,7 @@ export const PAGES_DATA: Pages = {
     items: [
       {
         icon: imgSwagger,
+        iconClassName: "with-padding",
         title: "REST API",
         value: {
           resource: {
@@ -93,6 +96,7 @@ export const PAGES_DATA: Pages = {
       },
       {
         icon: imgGraphql,
+        iconClassName: "with-padding",
         title: "GraphQL",
         value: {
           resource: {
@@ -119,6 +123,7 @@ export const PAGES_DATA: Pages = {
     items: [
       {
         icon: imgAdminUI,
+        iconClassName: "with-padding",
         title: "React Admin UI",
         value: {
           resource: {
@@ -132,6 +137,7 @@ export const PAGES_DATA: Pages = {
       },
       {
         icon: imgGraphql,
+        iconClassName: "with-padding",
         title: "Generate APIs only",
         value: {
           resource: {
@@ -173,7 +179,8 @@ export const PAGES_DATA: Pages = {
         pluginsIds: ["auth-core", "auth-jwt"],
       },
       {
-        icon: `${PLUGIN_LOGO_BASE_URL}auth-basic.png`,
+        icon: "",
+        defaultIcon: "none",
         title: "None",
       },
     ],
@@ -206,7 +213,8 @@ export const PAGES_DATA: Pages = {
         pluginsIds: ["broker-rabbitmq"],
       },
       {
-        icon: `${PLUGIN_LOGO_BASE_URL}auth-basic.png`,
+        icon: "",
+        defaultIcon: "none",
         title: "None",
       },
     ],
@@ -242,7 +250,8 @@ export const PAGES_DATA: Pages = {
         ],
       },
       {
-        icon: `${PLUGIN_LOGO_BASE_URL}auth-basic.png`,
+        icon: "",
+        defaultIcon: "none",
         title: "None",
       },
     ],
