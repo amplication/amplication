@@ -1,18 +1,20 @@
 import {
   Dialog,
   EnumTextAlign,
+  SelectField,
   Snackbar,
   Text,
   TextField,
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
-import { ReactNode, useCallback } from "react";
+import { ReactNode, useCallback, useMemo } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewModuleChild.scss";
+import useModule from "./hooks/useModule";
 
 type Props<T> = {
   resourceId: string;
@@ -23,7 +25,7 @@ type Props<T> = {
   errorMessage: string | undefined;
   typeName: string;
   description: string | ReactNode;
-  onCreate?: (data: T) => void;
+  onCreate?: (data: T, moduleId: string) => void;
   onDismiss?: () => void;
 };
 
@@ -47,10 +49,32 @@ const NewModuleChild = <T,>({
 }: Props<T>) => {
   const handleSubmit = useCallback(
     (data) => {
-      onCreate && onCreate(data);
+      const { moduleId, ...rest } = data;
+      onCreate && onCreate(rest, moduleId);
     },
     [onCreate]
   );
+
+  const { findModulesData } = useModule();
+
+  const options = useMemo(() => {
+    if (findModulesData) {
+      return findModulesData.modules.map((module) => ({
+        label: `${module.displayName}`,
+        value: module.id,
+      }));
+    }
+    return [];
+  }, [findModulesData]);
+
+  const initialValueWithModuleId = useMemo(() => {
+    const firstModule = findModulesData?.modules[0].id;
+
+    return {
+      ...initialValues,
+      moduleId: moduleId || firstModule,
+    };
+  }, [findModulesData?.modules, initialValues, moduleId]);
 
   return (
     <div>
@@ -60,10 +84,9 @@ const NewModuleChild = <T,>({
           <Text textAlign={EnumTextAlign.Center}>{description}</Text>
 
           <Formik
-            initialValues={initialValues}
+            initialValues={initialValueWithModuleId}
             validate={(values) => validate(values, validationSchema)}
             onSubmit={handleSubmit}
-            validateOnMount
           >
             {(formik) => {
               const handlers = {
@@ -72,12 +95,18 @@ const NewModuleChild = <T,>({
               return (
                 <Form>
                   <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+                  <div>
+                    <SelectField
+                      options={options}
+                      label="Module"
+                      name="moduleId"
+                    />
+                  </div>
                   <TextField
                     name="displayName"
                     label={`New ${typeName} Name`}
                     disabled={loading}
                     autoFocus
-                    hideLabel
                     placeholder={`Type New ${typeName} Name`}
                     autoComplete="off"
                   />
@@ -86,7 +115,7 @@ const NewModuleChild = <T,>({
                     buttonStyle={EnumButtonStyle.Primary}
                     disabled={!formik.isValid || loading}
                   >
-                    Create ${typeName}
+                    Create {typeName}
                   </Button>
                 </Form>
               );
