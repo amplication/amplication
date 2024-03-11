@@ -40,9 +40,6 @@ import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 import { Coupon } from "./dto/Coupon";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
-import { AnalyticsService } from "../analytics/analytics.service";
-import { BaseAnalyticsArgs } from "./dto/BaseAnalytics.args";
-import { BlockChangesArgs } from "./dto/BlockChanges.args";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -55,8 +52,7 @@ export class WorkspaceResolver {
     private readonly subscriptionService: SubscriptionService,
     private readonly analytics: SegmentAnalyticsService,
     private readonly userService: UserService,
-    private readonly configService: ConfigService,
-    private readonly analyticsService: AnalyticsService
+    private readonly configService: ConfigService
   ) {}
 
   @Query(() => String, {
@@ -222,33 +218,5 @@ export class WorkspaceResolver {
     @Args() args: RedeemCouponArgs
   ): Promise<Coupon> {
     return this.workspaceService.redeemCoupon(user, args);
-  }
-
-  @Query(() => Number)
-  @UseGuards(GqlAuthGuard)
-  async getLOCSum(@Args() args: BaseAnalyticsArgs): Promise<number> {
-    return this.analyticsService.countLinesOfCode(args);
-  }
-
-  @Query(() => Number)
-  @UseGuards(GqlAuthGuard)
-  async getProjectBuildsCount(
-    @Args() args: BaseAnalyticsArgs
-  ): Promise<number> {
-    return this.analyticsService.countProjectBuilds(args);
-  }
-
-  @Query(() => Number)
-  @UseGuards(GqlAuthGuard)
-  async getEntityChangesCount(
-    @Args() args: BaseAnalyticsArgs
-  ): Promise<number> {
-    return this.analyticsService.countEntityChanges(args);
-  }
-
-  @Query(() => Number)
-  @UseGuards(GqlAuthGuard)
-  async getBlockChangesCount(@Args() args: BlockChangesArgs): Promise<number> {
-    return this.analyticsService.countBlockChanges(args);
   }
 }

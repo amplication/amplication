@@ -23,7 +23,6 @@ import { SubscriptionService } from "../subscription/subscription.service";
 import { ApolloServerBase } from "apollo-server-core";
 import { UserService } from "../user/user.service";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
-import { AnalyticsService } from "../analytics/analytics.service";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
@@ -224,15 +223,6 @@ describe("WorkspaceResolver", () => {
           useClass: jest.fn(() => ({
             get: jest.fn(),
           })),
-        },
-        {
-          provide: AnalyticsService,
-          useValue: {
-            countLinesOfCode: jest.fn(),
-            countProjectBuilds: jest.fn(),
-            countEntityChanges: jest.fn(),
-            countBlockChanges: jest.fn(),
-          },
         },
       ],
       imports: [

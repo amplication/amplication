@@ -13,7 +13,6 @@ import { ModuleModule } from "../module/module.module";
 import { ModuleActionModule } from "../moduleAction/moduleAction.module";
 import { WorkspaceController } from "./workspace.controller";
 import { ResourceModule } from "../resource/resource.module";
-import { AnalyticsModule } from "../analytics/analytics.module";
 
 @Module({
   imports: [
@@ -28,7 +27,6 @@ import { AnalyticsModule } from "../analytics/analytics.module";
     BillingModule,
     ModuleModule,
     ModuleActionModule,
-    AnalyticsModule,
   ],
   controllers: [WorkspaceController],
   providers: [WorkspaceService, WorkspaceResolver],
