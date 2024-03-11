@@ -18,6 +18,9 @@ export class AnalyticsService {
   }: BaseAnalyticsArgs): Promise<number> {
     const aggregatedLoc = await this.prisma.build.aggregate({
       where: {
+        linesOfCode: {
+          not: null,
+        },
         createdAt: {
           gte: startDate,
           lte: endDate,
