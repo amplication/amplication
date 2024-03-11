@@ -38,6 +38,10 @@ $theme-border-expand: 1px;
     border: 1px solid var(--theme-red);
     background: var(--theme-light-red-transparent);
   }
+  &--surface {
+    background: var(--surface-background);
+    border: $border-dark;
+  }
 
   &--bold {
     background-color: var(--gray-full);

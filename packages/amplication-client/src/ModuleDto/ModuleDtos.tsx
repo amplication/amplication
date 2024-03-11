@@ -42,18 +42,6 @@ const ModuleDtos = React.memo(({ match, innerRoutes }: Props) => {
       />
       <FlexItem margin={EnumFlexItemMargin.Both}>
         <Text textStyle={EnumTextStyle.H4}>DTOs</Text>
-        <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
-          <NewModuleDto
-            moduleId={moduleId}
-            resourceId={resourceId}
-            buttonStyle={EnumButtonStyle.Outline}
-          />
-          <NewModuleDtoEnum
-            moduleId={moduleId}
-            resourceId={resourceId}
-            buttonStyle={EnumButtonStyle.Outline}
-          />
-        </FlexItem.FlexEnd>
       </FlexItem>
       <ModuleDtoList
         moduleId={moduleId}
