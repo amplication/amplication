@@ -33,7 +33,7 @@ export abstract class BlockTypeService<
 
   async findManyBySettings(
     args: FindManyArgs,
-    settingsFilter: JsonFilter
+    settingsFilter: JsonFilter | JsonFilter[]
   ): Promise<T[]> {
     return this.blockService.findManyByBlockTypeAndSettings(
       args,

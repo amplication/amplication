@@ -1126,6 +1126,8 @@ input ModuleActionWhereInput {
   description: StringFilter
   displayName: StringFilter
   id: StringFilter
+  includeCustomActions: Boolean
+  includeDefaultActions: Boolean
   parentBlock: WhereUniqueInput
   resource: ResourceWhereInput
   updatedAt: DateTimeFilter

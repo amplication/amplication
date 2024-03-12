@@ -329,8 +329,18 @@ export class BlockService {
   async findManyByBlockTypeAndSettings<T extends IBlock>(
     args: FindManyBlockTypeArgs,
     blockType: EnumBlockType,
-    settingsFilter?: JsonFilter
+    settingsFilter?: JsonFilter | JsonFilter[]
   ): Promise<T[]> {
+    const filter = Array.isArray(settingsFilter)
+      ? settingsFilter.map((filter) => ({
+          settings: filter,
+        }))
+      : [
+          {
+            settings: settingsFilter,
+          },
+        ];
+
     const blocks = this.prisma.block.findMany({
       ...args,
       where: {
@@ -340,7 +350,8 @@ export class BlockService {
         versions: {
           some: {
             versionNumber: CURRENT_VERSION_NUMBER,
-            settings: settingsFilter,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            OR: filter,
           },
         },
       },
