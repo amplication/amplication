@@ -9,5 +9,11 @@ export type BaseAnalyticsArgs = {
 };
 
 export type BlockChangesArgs = BaseAnalyticsArgs & {
-  blockType: keyof typeof EnumBlockType;
+  blockType: EnumBlockType;
+};
+
+export type BuildCountQueryResult = {
+  year: string;
+  timeGroup: string;
+  count: number;
 };

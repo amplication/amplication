@@ -1,7 +1,12 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma";
-import { BaseAnalyticsArgs, BlockChangesArgs } from "./types";
+import {
+  BaseAnalyticsArgs,
+  BlockChangesArgs,
+  BuildCountQueryResult,
+} from "./types";
+import { AnalyticsResults } from "./dtos/AnalyticsResult.object";
 
 @Injectable()
 export class AnalyticsService {
@@ -45,21 +50,37 @@ export class AnalyticsService {
     startDate,
     endDate,
     projectId,
-  }: BaseAnalyticsArgs): Promise<number> {
-    return this.prisma.build.count({
-      where: {
-        createdAt: {
-          gte: startDate,
-          lte: endDate,
-        },
-        resource: {
-          project: {
-            id: projectId,
-            workspaceId: workspaceId,
-          },
-        },
-      },
-    });
+  }: BaseAnalyticsArgs): Promise<AnalyticsResults> {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    let results: { year: number; time_group: number; count: bigint }[];
+    if (projectId) {
+      results = await this.prisma.$queryRaw`
+      SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+      FROM "Build" b
+      JOIN "Resource" r ON b."resourceId" = r."id"
+      WHERE b."createdAt" >= ${startDate}
+      AND b."createdAt" <= ${endDate}
+      AND r."projectId" = ${projectId}
+      GROUP BY year, time_group
+      ORDER BY year, time_group;
+    `;
+    } else {
+      results = await this.prisma.$queryRaw`
+      SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+      FROM "Build" b
+      JOIN "Resource" r ON b."resourceId" = r."id"
+      JOIN "Project" p ON r."projectId" = p."id"
+      WHERE b."createdAt" >= ${startDate}
+      AND b."createdAt" <= ${endDate}
+      AND p."workspaceId" = ${workspaceId} 
+      GROUP BY year, time_group
+      ORDER BY year, time_group;
+    `;
+    }
+
+    return {
+      results: Object.values(this.translateToAnalyticsResults(results)),
+    };
   }
 
   async countEntityChanges({
@@ -124,32 +145,56 @@ export class AnalyticsService {
     startDate,
     endDate,
     blockType,
-  }: BlockChangesArgs): Promise<number> {
-    return this.prisma.block.count({
-      where: {
-        blockType: blockType,
-        resource: {
-          project: {
-            id: projectId,
-            workspaceId: workspaceId,
-          },
-        },
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        OR: [
-          {
-            createdAt: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-          {
-            updatedAt: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-        ],
-      },
+  }: BlockChangesArgs): Promise<AnalyticsResults> {
+    this.logger.debug("blockType", { blockType });
+    // const safeBlockType = `"${blockType}"`;
+    const results: any = await this.prisma.$queryRaw`
+      SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+      FROM "Block" b
+      JOIN "Resource" r ON b."resourceId" = r."id"
+      WHERE r."projectId" = ${projectId}
+      AND b."blockType" = "EnumBlockType".${blockType}
+      AND b."createdAt" >= ${startDate}
+      AND b."createdAt" <= ${endDate}
+      OR b."updatedAt" >= ${startDate}
+      AND b."updatedAt" <= ${endDate}
+      GROUP BY year, time_group
+      ORDER BY year, time_group;
+    `;
+
+    return {
+      results: Object.values(this.translateToAnalyticsResults(results)),
+    };
+  }
+
+  private translateToAnalyticsResults(
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    results: { year: number; time_group: number; count: bigint }[]
+  ) {
+    const parsedResults: BuildCountQueryResult[] = results.map((result) => {
+      return {
+        year: String(result.year),
+        timeGroup: String(result.time_group),
+        count: Number(result.count),
+      };
     });
+
+    const groupedResults = parsedResults.reduce((acc, result) => {
+      const year = result.year;
+      if (!acc[year]) {
+        acc[year] = {
+          year,
+          metrics: [],
+        };
+      }
+      acc[year].metrics.push({
+        timeGroup: result.timeGroup,
+        count: result.count,
+      });
+      return acc;
+    }, {});
+
+    this.logger.debug("groupedResults", { groupedResults });
+    return groupedResults;
   }
 }
