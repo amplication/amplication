@@ -40,13 +40,15 @@ export const ModuleDtoLinkList = React.memo(
             parentBlock: { id: moduleId },
             resource: { id: resourceId },
             displayName: undefined,
+            includeDefaultDtos: filters.showDefaultObjects,
+            includeCustomDtos: filters.showCustomObjects,
           },
           orderBy: {
             [DATE_CREATED_FIELD]: models.SortOrder.Asc,
           },
         },
       });
-    }, [moduleId, findModuleDtos, resourceId]);
+    }, [moduleId, findModuleDtos, resourceId, filters]);
 
     const errorMessage = formatError(errorLoading);
 
