@@ -70,6 +70,10 @@ export type AdminUiSettingsUpdateInput = {
   generateAdminUI?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type AnalyticsResults = {
+  results: Array<MetricsGroupedByYear>;
+};
+
 export type ApiToken = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
@@ -1062,6 +1066,11 @@ export type MessagePattern = {
 export type MessagePatternCreateInput = {
   topicId: Scalars['String']['input'];
   type: EnumMessagePatternConnectionOptions;
+};
+
+export type MetricsGroupedByYear = {
+  metrics: Array<TimeGroupCount>;
+  year: Scalars['String']['output'];
 };
 
 export type Module = IBlock & {
@@ -2126,10 +2135,9 @@ export type Query = {
   entity?: Maybe<Entity>;
   /** Get the changes to apply to the model in order to break a resource into microservices */
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
-  getBlockChangesCount: Scalars['Float']['output'];
-  getEntityChangesCount: Scalars['Float']['output'];
+  getBlockChangesCount: AnalyticsResults;
   getLOCSum: Scalars['Float']['output'];
-  getProjectBuildsCount: Scalars['Float']['output'];
+  getProjectBuildsCount: AnalyticsResults;
   gitGroups: PaginatedGitGroup;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
@@ -2244,15 +2252,6 @@ export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
 
 export type QueryGetBlockChangesCountArgs = {
   blockType: EnumBlockType;
-  endDate: Scalars['DateTime']['input'];
-  projectId?: InputMaybe<Scalars['String']['input']>;
-  resourceId?: InputMaybe<Scalars['String']['input']>;
-  startDate: Scalars['DateTime']['input'];
-  workspaceId: Scalars['String']['input'];
-};
-
-
-export type QueryGetEntityChangesCountArgs = {
   endDate: Scalars['DateTime']['input'];
   projectId?: InputMaybe<Scalars['String']['input']>;
   resourceId?: InputMaybe<Scalars['String']['input']>;
@@ -2816,6 +2815,11 @@ export type Subscription = {
   updatedAt: Scalars['DateTime']['output'];
   workspace?: Maybe<Workspace>;
   workspaceId: Scalars['String']['output'];
+};
+
+export type TimeGroupCount = {
+  count: Scalars['Int']['output'];
+  timeGroup: Scalars['String']['output'];
 };
 
 export type Topic = IBlock & {

@@ -49,6 +49,10 @@ input AdminUISettingsUpdateInput {
   generateAdminUI: Boolean
 }
 
+type AnalyticsResults {
+  results: [MetricsGroupedByYear!]!
+}
+
 type ApiToken {
   createdAt: DateTime!
   id: String!
@@ -1035,6 +1039,11 @@ input MessagePatternCreateInput {
   type: EnumMessagePatternConnectionOptions!
 }
 
+type MetricsGroupedByYear {
+  metrics: [TimeGroupCount!]!
+  year: String!
+}
+
 type Module implements IBlock {
   blockType: EnumBlockType!
   createdAt: DateTime!
@@ -1613,10 +1622,9 @@ type Query {
   Get the changes to apply to the model in order to break a resource into microservices
   """
   finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
-  getBlockChangesCount(blockType: EnumBlockType!, endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): Float!
-  getEntityChangesCount(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): Float!
+  getBlockChangesCount(blockType: EnumBlockType!, endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): AnalyticsResults!
   getLOCSum(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): Float!
-  getProjectBuildsCount(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): Float!
+  getProjectBuildsCount(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): AnalyticsResults!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!
@@ -2001,6 +2009,11 @@ type Subscription {
   updatedAt: DateTime!
   workspace: Workspace
   workspaceId: String!
+}
+
+type TimeGroupCount {
+  count: Int!
+  timeGroup: String!
 }
 
 type Topic implements IBlock {
