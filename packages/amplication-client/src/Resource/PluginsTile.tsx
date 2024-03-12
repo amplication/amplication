@@ -28,7 +28,7 @@ import usePlugins, {
 } from "../Plugins/hooks/usePlugins";
 import { useAppContext } from "../context/appContext";
 import { PluginLogo } from "../Plugins/PluginLogo";
-import { use } from "ast-types";
+import { TitleAndIcon } from "../Components/TitleAndIcon";
 
 type Props = {
   usedCategories: usedPluginCategories;
@@ -72,12 +72,8 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
         margin={EnumFlexItemMargin.Bottom}
         direction={EnumFlexDirection.Column}
       >
-        <FlexItem.FlexStart direction={EnumFlexDirection.Row}>
-          <Icon icon={"plugin"} color={EnumTextColor.White} />
-          <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-            Plugins
-          </Text>
-        </FlexItem.FlexStart>
+        <TitleAndIcon icon={"plugin"} title={"Plugins"} />
+
         <Text textStyle={EnumTextStyle.Subtle}>
           Enhance your service with additional functionality and accelerate
           development with Amplication's wide range of plugins and integrations.
@@ -137,13 +133,7 @@ function AvailableCategory({ category }: AvailableCategoryProps) {
           </Text>
         }
       >
-        <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.Small}>
-          <Icon icon={category.icon} color={EnumTextColor.White} />
-          <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-            {category.name}
-          </Text>
-        </FlexItem>
-
+        <TitleAndIcon icon={category.icon} title={category.name} />
         <Text
           className={`${CLASS_NAME}__description`}
           textStyle={EnumTextStyle.Subtle}
@@ -177,10 +167,7 @@ function InstalledCategory({
       >
         <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.Small}>
           <EnabledIndicator enabled={true} />
-          <Icon icon={category.icon} color={EnumTextColor.White} />
-          <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-            {category.name}
-          </Text>
+          <TitleAndIcon icon={category.icon} title={category.name} />
         </FlexItem>
       </ListItem>
     </List>
