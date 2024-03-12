@@ -12,16 +12,18 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import useModuleDto from "./hooks/useModuleDto";
+import { ModulesFilter } from "../Modules/ModuleNavigationList";
 
 const DATE_CREATED_FIELD = "createdAt";
 
 type Props = {
   moduleId: string;
   resourceId: string;
+  filters: ModulesFilter;
 };
 
 export const ModuleDtoLinkList = React.memo(
-  ({ moduleId, resourceId }: Props) => {
+  ({ moduleId, resourceId, filters }: Props) => {
     const { currentWorkspace, currentProject } = useContext(AppContext);
 
     const {
