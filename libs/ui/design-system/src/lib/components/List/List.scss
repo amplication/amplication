@@ -13,6 +13,7 @@ $action-sep-height: $action-sep-gap * 2;
   flex-direction: column;
   border-radius: var(--default-border-radius);
   flex: 1;
+  box-sizing: border-box;
 
   &--dark {
     background-color: var(--gray-full);
@@ -28,6 +29,10 @@ $action-sep-height: $action-sep-gap * 2;
     .amp-list-item-with-inner-actions {
       background-color: transparent;
     }
+  }
+
+  &--with-theme-border {
+    @include themeTopBorder;
   }
 }
 

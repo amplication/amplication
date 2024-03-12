@@ -13,7 +13,6 @@ import {
   resourceMenuLayout,
   setResourceUrlLink,
 } from "./resourceMenuUtils";
-import { useStiggContext } from "@stigg/react-sdk";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -34,8 +33,6 @@ const ResourceHome = ({
 }: Props) => {
   const { currentResource, currentWorkspace, currentProject, pendingChanges } =
     useContext(AppContext);
-
-  const { stigg } = useStiggContext();
 
   const tabs: TabItem[] = useMemo(() => {
     const fixedRoutes = resourceMenuLayout[currentResource?.resourceType]?.map(

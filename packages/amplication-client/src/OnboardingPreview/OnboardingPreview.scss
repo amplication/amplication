@@ -64,11 +64,31 @@ $item-image-size: 40px;
       justify-content: flex-start;
       gap: var(--double-spacing);
 
-      img {
+      &.selected {
+        background-color: var(--gray-full);
+        border-color: var(--primary);
+      }
+
+      img,
+      .amp-icon {
         width: $item-image-size;
         height: $item-image-size;
         border-radius: var(--default-border-radius);
         overflow: hidden;
+        box-sizing: border-box;
+        background-color: var(--gray-70);
+
+        &.with-padding {
+          padding: var(--icon-spacing);
+          background-color: var(--gray-70);
+        }
+      }
+
+      .amp-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gray-base);
       }
     }
   }
