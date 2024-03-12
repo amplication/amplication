@@ -41,7 +41,11 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
         dtos
           ?.filter((dto) => dto.dtoType === EnumModuleDtoType.Custom)
           .map((dto) => {
-            const path = createDTOModulePath(camelCase(moduleName), dto.name);
+            const path = createDTOModulePath(
+              camelCase(moduleName),
+              dto.name,
+              true
+            );
             customDtoNameToPath[dto.name] = path;
             return {
               path,

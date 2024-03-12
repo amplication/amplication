@@ -10,6 +10,7 @@ import {
   NamedClassDeclaration,
   entityActions,
   ModuleContainer,
+  ModuleAction,
 } from "./code-gen-types";
 import { EventParams } from "./plugins.types";
 import type {
@@ -43,6 +44,15 @@ export interface CreateEntityServiceParams extends EventParams {
   entityActions: entityActions;
   dtoNameToPath: Record<string, string>;
 }
+
+export interface CreateCustomModuleServiceParams extends EventParams {
+  customModuleName: string;
+  templateMapping: { [key: string]: any };
+  serviceId: namedTypes.Identifier;
+  template: namedTypes.File;
+  moduleActions: ModuleAction[];
+  dtoNameToPath: Record<string, string>;
+}
 export interface CreateEntityControllerParams extends EventParams {
   template: namedTypes.File;
   entityName: string;
@@ -51,6 +61,17 @@ export interface CreateEntityControllerParams extends EventParams {
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
   entityActions: entityActions;
+}
+
+export interface CreateCustomModuleControllerParams extends EventParams {
+  template: namedTypes.File;
+  customModuleName: string;
+  templateMapping: { [key: string]: any };
+  controllerId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
+  moduleActions: ModuleAction[];
+  customModuleServiceModule: string;
+  dtoNameToPath: Record<string, string>;
 }
 export interface CreateEntityControllerBaseParams extends EventParams {
   template: namedTypes.File;
@@ -252,6 +273,18 @@ export interface CreateEntityModuleParams extends EventParams {
   templateMapping: { [key: string]: any };
 }
 
+export interface CreateCustomModuleModuleParams extends EventParams {
+  customModuleName: string;
+  entityServiceModule: string;
+  entityControllerModule: string | undefined;
+  entityResolverModule: string | undefined;
+  controllerId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
+  resolverId: namedTypes.Identifier;
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+}
+
 export interface CreateEntityModuleBaseParams extends EventParams {
   entityName: string;
   moduleBaseId: namedTypes.Identifier;
@@ -267,6 +300,17 @@ export interface CreateEntityResolverParams extends EventParams {
   resolverBaseId: namedTypes.Identifier;
   templateMapping: { [key: string]: any };
   entityActions: entityActions;
+  dtoNameToPath: Record<string, string>;
+}
+
+export interface CreateCustomModuleResolverParams extends EventParams {
+  template: namedTypes.File;
+  customModuleName: string;
+  resolverId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
+  templateMapping: { [key: string]: any };
+  moduleActions: ModuleAction[];
+  customModuleServiceModule: string;
   dtoNameToPath: Record<string, string>;
 }
 
