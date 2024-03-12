@@ -29,6 +29,7 @@ import usePlugins, {
 import { useAppContext } from "../context/appContext";
 import { PluginLogo } from "../Plugins/PluginLogo";
 import { TitleAndIcon } from "../Components/TitleAndIcon";
+import { Link } from "react-router-dom";
 
 type Props = {
   usedCategories: usedPluginCategories;
@@ -40,6 +41,11 @@ const PLUGIN_LOGOS_CLASS_NAME = "plugin-logos";
 const TOOLTIP_DIRECTION = "n";
 
 function PluginsTile({ usedCategories, availableCategories }: Props) {
+  const { currentWorkspace, currentProject, currentResource } = useAppContext();
+
+  const catalogUrl = `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/catalog`;
+  const installedUrl = `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/installed`;
+
   const installedCategories = useMemo(() => {
     if (!usedCategories) {
       return [];
@@ -79,24 +85,49 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
           development with Amplication's wide range of plugins and integrations.
         </Text>
       </FlexItem>
-      <HorizontalRule />
-      <FlexItem margin={EnumFlexItemMargin.Both}>
-        <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-          Available Plugins
-        </Text>
-      </FlexItem>
+      {availableCategoriesList && availableCategoriesList.length > 0 && (
+        <>
+          <HorizontalRule />
+          <FlexItem
+            margin={EnumFlexItemMargin.Both}
+            itemsAlign={EnumItemsAlign.Center}
+          >
+            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+              Available Plugins
+            </Text>
+            <Link to={catalogUrl}>
+              <Text
+                textStyle={EnumTextStyle.Subtle}
+                textColor={EnumTextColor.ThemeTurquoise}
+              >
+                Check the full catalog
+              </Text>
+            </Link>
+          </FlexItem>
 
-      <div className={CLASS_NAME}>
-        {availableCategoriesList.map((category) => (
-          <AvailableCategory key={category.name} category={category} />
-        ))}
-      </div>
-
+          <div className={CLASS_NAME}>
+            {availableCategoriesList.map((category) => (
+              <AvailableCategory key={category.name} category={category} />
+            ))}
+          </div>
+        </>
+      )}
       <HorizontalRule />
-      <FlexItem margin={EnumFlexItemMargin.Both}>
+      <FlexItem
+        margin={EnumFlexItemMargin.Both}
+        itemsAlign={EnumItemsAlign.Center}
+      >
         <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
           Installed Plugins
         </Text>
+        <Link to={installedUrl}>
+          <Text
+            textStyle={EnumTextStyle.Subtle}
+            textColor={EnumTextColor.ThemeTurquoise}
+          >
+            Manage installed plugins
+          </Text>
+        </Link>
       </FlexItem>
 
       <div className={CLASS_NAME}>

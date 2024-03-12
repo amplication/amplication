@@ -52,9 +52,11 @@ export const useResourceSummary = (currentResource: models.Resource) => {
     installedPlugins: 0,
     roles: 0,
   });
-  const { pluginInstallations } = usePlugins(currentResource.id);
+  const { pluginInstallations, loadingPluginInstallation } = usePlugins(
+    currentResource.id
+  );
 
-  const { data: categoriesData } = useQuery<{
+  const { data: categoriesData, loading: categoriesLoading } = useQuery<{
     categories: PluginCategory[];
   }>(GET_CATEGORIES, {
     context: {
@@ -160,5 +162,6 @@ export const useResourceSummary = (currentResource: models.Resource) => {
     summaryData,
     usedCategories,
     availableCategories,
+    pluginsDataLoading: loadingPluginInstallation || categoriesLoading,
   };
 };
