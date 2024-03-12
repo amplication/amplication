@@ -35,7 +35,7 @@ import { PluginsTile } from "./PluginsTile";
 
 const PAGE_TITLE = "Resource Overview";
 
-type usageDataItem = {
+type UsageDataItem = {
   icon: string;
   title: string;
   link: string;
@@ -53,7 +53,7 @@ const ResourceOverview = () => {
 
   const resourceId = currentResource?.id;
 
-  const resourceUsageData = useMemo((): usageDataItem[] => {
+  const resourceUsageData = useMemo((): UsageDataItem[] => {
     return [
       {
         icon: "database",
