@@ -1,22 +1,11 @@
-import {
-  Dialog,
-  EnumTextAlign,
-  Snackbar,
-  Text,
-  TextField,
-} from "@amplication/ui/design-system";
-import { Form, Formik } from "formik";
 import { pascalCase } from "pascal-case";
-import { useCallback, useContext, useState } from "react";
-import { GlobalHotKeys } from "react-hotkeys";
+import { useCallback, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
+import { EnumButtonStyle } from "../Components/Button";
+import NewModuleChild from "../Modules/NewModuleChild";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
-import { validate } from "../util/formikValidateJsonSchema";
-import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import useModuleDto from "./hooks/useModuleDto";
 
 type Props = {
@@ -43,10 +32,6 @@ const INITIAL_VALUES: Partial<models.ModuleDto> = {
   description: "",
 };
 
-const keyMap = {
-  SUBMIT: CROSS_OS_CTRL_ENTER,
-};
-
 const NewModuleDto = ({
   resourceId,
   moduleId,
@@ -56,7 +41,6 @@ const NewModuleDto = ({
 }: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
   const {
     createModuleDto,
@@ -107,51 +91,23 @@ const NewModuleDto = ({
   const errorMessage = formatError(error);
 
   return (
-    <div>
-      <Dialog isOpen={true} onDismiss={onDismiss} title="New DTO">
-        <SvgThemeImage image={EnumImages.Entities} />
-        <Text textAlign={EnumTextAlign.Center}>
-          Give your new Dto a descriptive name. <br />
-          For example: Get Customer, Find Orders, Create Ticket...
-        </Text>
-
-        <Formik
-          initialValues={INITIAL_VALUES}
-          validate={(values) => validate(values, FORM_SCHEMA)}
-          onSubmit={handleSubmit}
-          validateOnMount
-        >
-          {(formik) => {
-            const handlers = {
-              SUBMIT: formik.submitForm,
-            };
-            return (
-              <Form>
-                <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-                <TextField
-                  name="displayName"
-                  label="New Dto Name"
-                  disabled={loading}
-                  autoFocus
-                  hideLabel
-                  placeholder="Type New Dto Name"
-                  autoComplete="off"
-                />
-                <Button
-                  type="submit"
-                  buttonStyle={EnumButtonStyle.Primary}
-                  disabled={!formik.isValid || loading}
-                >
-                  Create DTO
-                </Button>
-              </Form>
-            );
-          }}
-        </Formik>
-      </Dialog>
-
-      <Snackbar open={Boolean(error)} message={errorMessage} />
-    </div>
+    <NewModuleChild<models.ModuleDto>
+      resourceId={resourceId}
+      moduleId={moduleId}
+      validationSchema={FORM_SCHEMA}
+      initialValues={INITIAL_VALUES}
+      loading={loading}
+      errorMessage={errorMessage}
+      typeName={"DTO"}
+      description={
+        <>
+          Give your new DTO a descriptive name. <br />
+          For example: CustomerCreateInput, OrderFindArgs
+        </>
+      }
+      onCreate={handleSubmit}
+      onDismiss={onDismiss}
+    />
   );
 };
 

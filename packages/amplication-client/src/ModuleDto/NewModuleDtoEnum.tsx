@@ -1,22 +1,11 @@
-import {
-  Dialog,
-  EnumTextAlign,
-  Snackbar,
-  Text,
-  TextField,
-} from "@amplication/ui/design-system";
-import { Form, Formik } from "formik";
 import { pascalCase } from "pascal-case";
 import { useCallback, useContext } from "react";
-import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory } from "react-router-dom";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
+import { EnumButtonStyle } from "../Components/Button";
+import NewModuleChild from "../Modules/NewModuleChild";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
-import { validate } from "../util/formikValidateJsonSchema";
-import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import useModuleDto from "./hooks/useModuleDto";
 
 type Props = {
@@ -41,10 +30,6 @@ const INITIAL_VALUES: Partial<models.ModuleDto> = {
   name: "",
   displayName: "",
   description: "",
-};
-
-const keyMap = {
-  SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
 const NewModuleDtoEnum = ({
@@ -106,49 +91,23 @@ const NewModuleDtoEnum = ({
 
   return (
     <div>
-      <Dialog isOpen={true} onDismiss={onDismiss} title="New Enum">
-        <SvgThemeImage image={EnumImages.Entities} />
-        <Text textAlign={EnumTextAlign.Center}>
-          Give your new Enum a descriptive name. <br />
-          For example: Get Customer, Find Orders, Create Ticket...
-        </Text>
-
-        <Formik
-          initialValues={INITIAL_VALUES}
-          validate={(values) => validate(values, FORM_SCHEMA)}
-          onSubmit={handleSubmit}
-          validateOnMount
-        >
-          {(formik) => {
-            const handlers = {
-              SUBMIT: formik.submitForm,
-            };
-            return (
-              <Form>
-                <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-                <TextField
-                  name="displayName"
-                  label="New Enum Name"
-                  disabled={loading}
-                  autoFocus
-                  hideLabel
-                  placeholder="Type New Enum Name"
-                  autoComplete="off"
-                />
-                <Button
-                  type="submit"
-                  buttonStyle={EnumButtonStyle.Primary}
-                  disabled={!formik.isValid || loading}
-                >
-                  Create Enum
-                </Button>
-              </Form>
-            );
-          }}
-        </Formik>
-      </Dialog>
-
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <NewModuleChild<models.ModuleDto>
+        resourceId={resourceId}
+        moduleId={moduleId}
+        validationSchema={FORM_SCHEMA}
+        initialValues={INITIAL_VALUES}
+        loading={loading}
+        errorMessage={errorMessage}
+        typeName={"Enum"}
+        description={
+          <>
+            Give your new Enum a descriptive name. <br />
+            For example: EnumCustomerLevel, EnumOrderStatus
+          </>
+        }
+        onCreate={handleSubmit}
+        onDismiss={onDismiss}
+      />
     </div>
   );
 };

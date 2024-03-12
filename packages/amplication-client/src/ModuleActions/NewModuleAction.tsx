@@ -1,25 +1,15 @@
-import {
-  Dialog,
-  EnumTextAlign,
-  Snackbar,
-  Text,
-  TextField,
-} from "@amplication/ui/design-system";
-import { Form, Formik } from "formik";
+import { Snackbar } from "@amplication/ui/design-system";
 import { pascalCase } from "pascal-case";
 import { useCallback, useContext, useState } from "react";
-import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
+import NewModuleChild from "../Modules/NewModuleChild";
+import { useModulesContext } from "../Modules/modulesContext";
 import { AppContext } from "../context/appContext";
+import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 import * as models from "../models";
 import { formatError } from "../util/error";
-import { validate } from "../util/formikValidateJsonSchema";
-import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import useModuleAction from "./hooks/useModuleAction";
-import { useModulesContext } from "../Modules/modulesContext";
-import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 
 type Props = {
   resourceId: string;
@@ -42,10 +32,6 @@ const INITIAL_VALUES: Partial<models.ModuleAction> = {
   name: "",
   displayName: "",
   description: "",
-};
-
-const keyMap = {
-  SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
 const NewModuleAction = ({
@@ -113,52 +99,25 @@ const NewModuleAction = ({
 
   return (
     <div>
-      <Dialog
-        isOpen={dialogOpen}
-        onDismiss={handleDialogStateChange}
-        title="New Action"
-      >
-        <SvgThemeImage image={EnumImages.Entities} />
-        <Text textAlign={EnumTextAlign.Center}>
-          Give your new Action a descriptive name. <br />
-          For example: Get Customer, Find Orders, Create Ticket...
-        </Text>
-
-        <Formik
+      {dialogOpen && (
+        <NewModuleChild<models.ModuleAction>
+          resourceId={resourceId}
+          moduleId={moduleId}
+          validationSchema={FORM_SCHEMA}
           initialValues={INITIAL_VALUES}
-          validate={(values) => validate(values, FORM_SCHEMA)}
-          onSubmit={handleSubmit}
-          validateOnMount
-        >
-          {(formik) => {
-            const handlers = {
-              SUBMIT: formik.submitForm,
-            };
-            return (
-              <Form>
-                <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-                <TextField
-                  name="displayName"
-                  label="New Action Name"
-                  disabled={loading}
-                  autoFocus
-                  hideLabel
-                  placeholder="Type New Action Name"
-                  autoComplete="off"
-                />
-                <Button
-                  type="submit"
-                  buttonStyle={EnumButtonStyle.Primary}
-                  disabled={!formik.isValid || loading}
-                >
-                  Create Action
-                </Button>
-              </Form>
-            );
-          }}
-        </Formik>
-      </Dialog>
-
+          loading={loading}
+          errorMessage={errorMessage}
+          typeName={"Action"}
+          description={
+            <>
+              Give your new Action a descriptive name. <br />
+              For example: Create Customer, Update Order
+            </>
+          }
+          onCreate={handleSubmit}
+          onDismiss={handleDialogStateChange}
+        />
+      )}
       {REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED === "true" && (
         <Button
           buttonStyle={buttonStyle}
