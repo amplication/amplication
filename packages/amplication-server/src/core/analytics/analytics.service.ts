@@ -7,6 +7,7 @@ import {
   BuildCountQueryResult,
 } from "./types";
 import { AnalyticsResults } from "./dtos/AnalyticsResult.object";
+import { EnumBlockType } from "../../enums/EnumBlockType";
 
 @Injectable()
 export class AnalyticsService {
@@ -146,21 +147,74 @@ export class AnalyticsService {
     endDate,
     blockType,
   }: BlockChangesArgs): Promise<AnalyticsResults> {
+    let results;
     this.logger.debug("blockType", { blockType });
-    // const safeBlockType = `"${blockType}"`;
-    const results: any = await this.prisma.$queryRaw`
-      SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
-      FROM "Block" b
-      JOIN "Resource" r ON b."resourceId" = r."id"
-      WHERE r."projectId" = ${projectId}
-      AND b."blockType" = "EnumBlockType".${blockType}
-      AND b."createdAt" >= ${startDate}
-      AND b."createdAt" <= ${endDate}
-      OR b."updatedAt" >= ${startDate}
-      AND b."updatedAt" <= ${endDate}
-      GROUP BY year, time_group
-      ORDER BY year, time_group;
-    `;
+    switch (blockType) {
+      case EnumBlockType.ModuleAction:
+        if (projectId) {
+          results = await this.prisma.$queryRaw`
+          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+          FROM "Block" b
+          JOIN "Resource" r ON b."resourceId" = r."id"
+          WHERE r."projectId" = ${projectId}
+          AND b."blockType" = 'ModuleAction'
+          AND (
+              (b."createdAt" >= ${startDate} AND b."createdAt" <= ${endDate})
+              OR (b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate})
+          )
+          GROUP BY year, time_group
+          ORDER BY year, time_group;
+        `;
+        } else {
+          results = await this.prisma.$queryRaw`
+            SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+            FROM "Block" b
+            JOIN "Resource" r ON b."resourceId" = r."id"
+            JOIN "Project" p ON r."projectId" = p."id"
+            WHERE p."workspaceId" = ${workspaceId}
+            AND b."blockType" = 'ModuleAction'
+            AND (
+                (b."createdAt" >= ${startDate} AND b."createdAt" <= ${endDate})
+                OR (b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate})
+            )
+            GROUP BY year, time_group
+            ORDER BY year, time_group;
+          `;
+        }
+        break;
+      case EnumBlockType.PluginInstallation:
+        if (projectId) {
+          results = await this.prisma.$queryRaw`
+          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+          FROM "Block" b
+          JOIN "Resource" r ON b."resourceId" = r."id"
+          WHERE r."projectId" = ${projectId}
+          AND b."blockType" = 'PluginInstallation'
+          AND (
+              (b."createdAt" >= ${startDate} AND b."createdAt" <= ${endDate})
+              OR (b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate})
+          )
+          GROUP BY year, time_group
+          ORDER BY year, time_group;
+        `;
+        } else {
+          results = await this.prisma.$queryRaw`
+          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+          FROM "Block" b
+          JOIN "Resource" r ON b."resourceId" = r."id"
+          JOIN "Project" p ON r."projectId" = p."id"
+          WHERE p."workspaceId" = ${workspaceId}
+          AND b."blockType" = 'PluginInstallation'
+          AND (
+              (b."createdAt" >= ${startDate} AND b."createdAt" <= ${endDate})
+              OR (b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate})
+          )
+          GROUP BY year, time_group
+          ORDER BY year, time_group;
+        `;
+        }
+        break;
+    }
 
     return {
       results: Object.values(this.translateToAnalyticsResults(results)),
@@ -171,7 +225,7 @@ export class AnalyticsService {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     results: { year: number; time_group: number; count: bigint }[]
   ) {
-    const parsedResults: BuildCountQueryResult[] = results.map((result) => {
+    const parsedResults: BuildCountQueryResult[] = results?.map((result) => {
       return {
         year: String(result.year),
         timeGroup: String(result.time_group),
