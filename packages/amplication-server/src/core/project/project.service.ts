@@ -23,13 +23,12 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { GitProviderService } from "../git/git.provider.service";
 
 export const INVALID_PROJECT_ID = "Invalid projectId";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import dockerNames from "docker-names";
 import { EntityPendingChange } from "../entity/entity.service";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { SubscriptionService } from "../subscription/subscription.service";
 
 @Injectable()
 export class ProjectService {
@@ -41,7 +40,8 @@ export class ProjectService {
     private readonly entityService: EntityService,
     private readonly billingService: BillingService,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly gitProviderService: GitProviderService
+    private readonly gitProviderService: GitProviderService,
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -140,6 +140,9 @@ export class ProjectService {
       -1
     );
 
+    await this.subscriptionService.updateProjectLicensed(project.workspaceId);
+    await this.subscriptionService.updateServiceLicensed(project.workspaceId);
+
     return updatedProject;
   }
 
@@ -150,36 +153,6 @@ export class ProjectService {
         ...args.data,
       },
     });
-  }
-
-  async isUnderLimitation(
-    workspaceId: string,
-    projectId: string
-  ): Promise<boolean> {
-    if (!this.billingService.isBillingEnabled) {
-      return false;
-    }
-
-    const featureProjects = await this.billingService.getMeteredEntitlement(
-      workspaceId,
-      BillingFeature.Projects
-    );
-    if (!featureProjects.usageLimit) {
-      return false;
-    }
-
-    const projects = await this.prisma.project.findMany({
-      where: {
-        workspaceId,
-        deletedAt: null,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-      skip: featureProjects.usageLimit,
-    });
-
-    return projects.some((project) => project.id === projectId);
   }
 
   /**
@@ -288,6 +261,28 @@ export class ProjectService {
     };
   }
 
+  private async shouldBlockBuild(userId: string): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
+    const workspace = await this.prisma.user
+      .findUnique({
+        where: {
+          id: userId,
+        },
+      })
+      .workspace();
+
+    const blockBuildEntitlement =
+      await this.billingService.getBooleanEntitlement(
+        workspace.id,
+        BillingFeature.BlockBuild
+      );
+
+    return blockBuildEntitlement.hasAccess;
+  }
+
   async commit(
     args: CreateCommitArgs,
     currentUser: User,
@@ -295,6 +290,11 @@ export class ProjectService {
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
+
+    if (await this.shouldBlockBuild(userId)) {
+      const message = "Your current plan does not allow code generation.";
+      throw new BillingLimitationError(message, BillingFeature.BlockBuild);
+    }
 
     const resources = await this.prisma.resource.findMany({
       where: {
@@ -472,14 +472,11 @@ export class ProjectService {
       await Promise.all(promises);
     }
     if (!skipBuild) {
-      await this.analytics.track({
-        userId: currentUser.account.id,
-        properties: {
-          workspaceId: project.workspaceId,
-          projectId: project.id,
-          $groups: { groupWorkspace: project.workspaceId },
-        },
+      await this.analytics.trackWithContext({
         event: EnumEventType.CommitCreate,
+        properties: {
+          projectId,
+        },
       });
     }
 

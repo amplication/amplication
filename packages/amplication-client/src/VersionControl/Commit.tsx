@@ -1,4 +1,6 @@
 import {
+  EnumTextColor,
+  JumboButton,
   LimitationDialog,
   Snackbar,
   TextField,
@@ -19,7 +21,10 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { commitPath } from "../util/paths";
 import "./Commit.scss";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { FeatureIndicator } from "../Components/FeatureIndicator";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 
 type TCommit = {
   message: string;
@@ -34,6 +39,9 @@ const INITIAL_VALUES: TCommit = {
 type Props = {
   projectId: string;
   noChanges: boolean;
+  showCommitMessage?: boolean;
+  commitMessage?: string;
+  commitBtnType: CommitBtnType;
 };
 const CLASS_NAME = "commit";
 
@@ -49,6 +57,11 @@ type RouteMatchProps = {
   workspace: string;
 };
 
+export enum CommitBtnType {
+  Button = "button",
+  JumboButton = "jumboButton",
+}
+
 const formatLimitationError = (errorMessage: string) => {
   const LIMITATION_ERROR_PREFIX = "LimitationError: ";
 
@@ -56,7 +69,13 @@ const formatLimitationError = (errorMessage: string) => {
   return limitationError;
 };
 
-const Commit = ({ projectId, noChanges }: Props) => {
+const Commit = ({
+  projectId,
+  noChanges,
+  commitBtnType,
+  showCommitMessage = true,
+  commitMessage,
+}: Props) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
   const match = useRouteMatch<RouteMatchProps>();
@@ -72,7 +91,6 @@ const Commit = ({ projectId, noChanges }: Props) => {
     commitUtils,
   } = useContext(AppContext);
 
-  const isProjectUnderLimitation = currentProject?.isUnderLimitation ?? false;
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
     history.push(path, { from: { pathname: history.location.pathname } });
@@ -105,6 +123,13 @@ const Commit = ({ projectId, noChanges }: Props) => {
       return history.push(path);
     },
   });
+
+  const bypassLimitations = useMemo(() => {
+    return (
+      currentWorkspace?.subscription?.subscriptionPlan !==
+      EnumSubscriptionPlan.Pro
+    );
+  }, [currentWorkspace]);
 
   const limitationError = useMemo(() => {
     if (!error) return;
@@ -154,61 +179,55 @@ const Commit = ({ projectId, noChanges }: Props) => {
               {!loading && (
                 <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
               )}
-              <TextField
-                rows={3}
-                textarea
-                name="message"
-                label={noChanges ? "Build message" : "Commit message..."}
-                disabled={loading}
-                autoFocus
-                hideLabel
-                placeholder={noChanges ? "Build message" : "Commit message..."}
-                autoComplete="off"
-              />
-
-              {isProjectUnderLimitation ? (
-                <FeatureIndicator
-                  featureName={BillingFeature.Projects}
-                  text="The workspace reached your plan's project limitation."
-                  element={
-                    <Button
-                      type="submit"
-                      icon="locked"
-                      buttonStyle={EnumButtonStyle.Primary}
-                      eventData={{
-                        eventName: AnalyticsEventNames.CommitClicked,
-                      }}
-                      disabled={loading || isProjectUnderLimitation}
-                    >
-                      {noChanges ? "Rebuild" : "Commit changes & build "}
-                    </Button>
+              {showCommitMessage && (
+                <TextField
+                  rows={3}
+                  textarea
+                  name="message"
+                  label={noChanges ? "Build message" : "Commit message..."}
+                  disabled={loading}
+                  autoFocus
+                  hideLabel
+                  placeholder={
+                    noChanges ? "Build message" : "Commit message..."
                   }
+                  autoComplete="off"
                 />
-              ) : (
-                <Button
-                  type="submit"
-                  buttonStyle={EnumButtonStyle.Primary}
-                  eventData={{
-                    eventName: AnalyticsEventNames.CommitClicked,
-                  }}
-                  disabled={loading || isProjectUnderLimitation}
-                >
-                  {noChanges ? "Rebuild" : "Commit changes & build "}
-                </Button>
               )}
+              <LicenseIndicatorContainer
+                featureId={BillingFeature.BlockBuild}
+                licensedResourceType={LicensedResourceType.Project}
+                licensedTooltipText="The workspace reached your plan's project limitation. "
+              >
+                {commitBtnType === CommitBtnType.Button ? (
+                  <Button
+                    type="submit"
+                    buttonStyle={EnumButtonStyle.Primary}
+                    eventData={{
+                      eventName: AnalyticsEventNames.CommitClicked,
+                    }}
+                    disabled={loading}
+                  >
+                    <>Generate the code </>
+                  </Button>
+                ) : commitBtnType === CommitBtnType.JumboButton ? (
+                  <JumboButton
+                    text="Generate the code for my new architecture"
+                    icon="pending_changes"
+                    onClick={formik.submitForm}
+                    circleColor={EnumTextColor.ThemeTurquoise}
+                  ></JumboButton>
+                ) : null}
+              </LicenseIndicatorContainer>
             </Form>
           );
         }}
       </Formik>
-
       {error && isLimitationError ? (
         <LimitationDialog
           isOpen={isOpenLimitationDialog}
           message={limitationError.message}
-          allowBypassLimitation={
-            currentWorkspace?.subscription?.subscriptionPlan !==
-            EnumSubscriptionPlan.Pro
-          }
+          allowBypassLimitation={bypassLimitations}
           onConfirm={() => {
             redirectToPurchase();
             trackEvent({

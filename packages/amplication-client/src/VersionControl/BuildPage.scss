@@ -4,6 +4,25 @@ $log-min-width: 360px;
 $icon-size: 20px;
 
 .build-page {
+  &__header {
+    gap: var(--double-spacing);
+    margin-bottom: var(--large-spacing);
+
+    &__title__service {
+      .amp-icon {
+        @include regular-12;
+      }
+      .amp-text {
+        @include regular-10;
+      }
+    }
+    h3 {
+      margin: 0;
+      @include bold-14;
+      color: #ffffff;
+    }
+  }
+
   &__build-details {
     display: flex;
     direction: row;

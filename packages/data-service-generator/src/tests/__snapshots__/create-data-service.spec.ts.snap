@@ -1840,8 +1840,7 @@ export const EmptyTitle = (record: TEmpty): string => {
   "admin-ui/src/index.tsx": "import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-// @ts-ignore
-// eslint-disable-next-line import/no-unresolved
+
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
@@ -2500,8 +2499,7 @@ export type InputJsonValue = Omit<JsonValue, "null">;
   AreaManager = "areaManager",
 }
 ",
-  "admin-ui/src/user/RolesOptions.ts": "//@ts-ignore
-import { ROLES } from "./roles";
+  "admin-ui/src/user/RolesOptions.ts": "import { ROLES } from "./roles";
 
 declare interface Role {
   name: string;
@@ -3010,12 +3008,12 @@ export class StringNullableFilter {
 ",
   "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
-PORT=3000
-DB_URL=postgres://admin:admin@localhost:5432/my-db
-DB_USER=admin
+DB_NAME=my-db
 DB_PASSWORD=admin
 DB_PORT=5432
-DB_NAME=my-db",
+DB_URL=postgres://admin:admin@localhost:5432/my-db
+DB_USER=admin
+PORT=3000",
   "server/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
@@ -3158,7 +3156,7 @@ volumes:
     "prisma": "^5.4.2",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
-    "typescript": "^5.2.2"
+    "typescript": "5.3.*"
   },
   "jest": {
     "preset": "ts-jest",
@@ -5645,9 +5643,9 @@ import { PrismaService } from "../../prisma/prisma.service";
 
 import {
   Prisma,
-  Customer, // @ts-ignore
-  Order, // @ts-ignore
-  Organization,
+  Customer as PrismaCustomer,
+  Order as PrismaOrder,
+  Organization as PrismaOrganization,
 } from "@prisma/client";
 
 export class CustomerServiceBase {
@@ -5661,34 +5659,34 @@ export class CustomerServiceBase {
 
   async customers<T extends Prisma.CustomerFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
-  ): Promise<Customer[]> {
+  ): Promise<PrismaCustomer[]> {
     return this.prisma.customer.findMany(args);
   }
   async customer<T extends Prisma.CustomerFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindUniqueArgs>
-  ): Promise<Customer | null> {
+  ): Promise<PrismaCustomer | null> {
     return this.prisma.customer.findUnique(args);
   }
   async createCustomer<T extends Prisma.CustomerCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>
-  ): Promise<Customer> {
+  ): Promise<PrismaCustomer> {
     return this.prisma.customer.create<T>(args);
   }
   async updateCustomer<T extends Prisma.CustomerUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerUpdateArgs>
-  ): Promise<Customer> {
+  ): Promise<PrismaCustomer> {
     return this.prisma.customer.update<T>(args);
   }
   async deleteCustomer<T extends Prisma.CustomerDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerDeleteArgs>
-  ): Promise<Customer> {
+  ): Promise<PrismaCustomer> {
     return this.prisma.customer.delete(args);
   }
 
   async findOrders(
     parentId: number,
     args: Prisma.OrderFindManyArgs
-  ): Promise<Order[]> {
+  ): Promise<PrismaOrder[]> {
     return this.prisma.customer
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -5696,7 +5694,7 @@ export class CustomerServiceBase {
       .orders(args);
   }
 
-  async getOrganization(parentId: number): Promise<Organization | null> {
+  async getOrganization(parentId: number): Promise<PrismaOrganization | null> {
     return this.prisma.customer
       .findUnique({
         where: { id: parentId },
@@ -5704,7 +5702,9 @@ export class CustomerServiceBase {
       .organization();
   }
 
-  async getVipOrganization(parentId: number): Promise<Organization | null> {
+  async getVipOrganization(
+    parentId: number
+  ): Promise<PrismaOrganization | null> {
     return this.prisma.customer
       .findUnique({
         where: { id: parentId },
@@ -6699,7 +6699,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Empty } from "@prisma/client";
+import { Prisma, Empty as PrismaEmpty } from "@prisma/client";
 
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -6712,27 +6712,27 @@ export class EmptyServiceBase {
 
   async empties<T extends Prisma.EmptyFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
-  ): Promise<Empty[]> {
+  ): Promise<PrismaEmpty[]> {
     return this.prisma.empty.findMany(args);
   }
   async empty<T extends Prisma.EmptyFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindUniqueArgs>
-  ): Promise<Empty | null> {
+  ): Promise<PrismaEmpty | null> {
     return this.prisma.empty.findUnique(args);
   }
   async createEmpty<T extends Prisma.EmptyCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyCreateArgs>
-  ): Promise<Empty> {
+  ): Promise<PrismaEmpty> {
     return this.prisma.empty.create<T>(args);
   }
   async updateEmpty<T extends Prisma.EmptyUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyUpdateArgs>
-  ): Promise<Empty> {
+  ): Promise<PrismaEmpty> {
     return this.prisma.empty.update<T>(args);
   }
   async deleteEmpty<T extends Prisma.EmptyDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyDeleteArgs>
-  ): Promise<Empty> {
+  ): Promise<PrismaEmpty> {
     return this.prisma.empty.delete(args);
   }
 }
@@ -6990,7 +6990,6 @@ async function main() {
 
   //This fix is based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   BigInt.prototype.toJSON = function () {
     return this.toString();
   };
@@ -8298,11 +8297,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-
 import {
   Prisma,
-  Order, // @ts-ignore
-  Customer,
+  Order as PrismaOrder,
+  Customer as PrismaCustomer,
 } from "@prisma/client";
 
 export class OrderServiceBase {
@@ -8316,31 +8314,31 @@ export class OrderServiceBase {
 
   async orders<T extends Prisma.OrderFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
-  ): Promise<Order[]> {
+  ): Promise<PrismaOrder[]> {
     return this.prisma.order.findMany(args);
   }
   async order<T extends Prisma.OrderFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindUniqueArgs>
-  ): Promise<Order | null> {
+  ): Promise<PrismaOrder | null> {
     return this.prisma.order.findUnique(args);
   }
   async createOrder<T extends Prisma.OrderCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderCreateArgs>
-  ): Promise<Order> {
+  ): Promise<PrismaOrder> {
     return this.prisma.order.create<T>(args);
   }
   async updateOrder<T extends Prisma.OrderUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderUpdateArgs>
-  ): Promise<Order> {
+  ): Promise<PrismaOrder> {
     return this.prisma.order.update<T>(args);
   }
   async deleteOrder<T extends Prisma.OrderDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderDeleteArgs>
-  ): Promise<Order> {
+  ): Promise<PrismaOrder> {
     return this.prisma.order.delete(args);
   }
 
-  async getCustomer(parentId: string): Promise<Customer | null> {
+  async getCustomer(parentId: string): Promise<PrismaCustomer | null> {
     return this.prisma.order
       .findUnique({
         where: { id: parentId },
@@ -10064,9 +10062,9 @@ import { PrismaService } from "../../prisma/prisma.service";
 
 import {
   Prisma,
-  Organization, // @ts-ignore
-  User, // @ts-ignore
-  Customer,
+  Organization as PrismaOrganization,
+  User as PrismaUser,
+  Customer as PrismaCustomer,
 } from "@prisma/client";
 
 export class OrganizationServiceBase {
@@ -10080,34 +10078,34 @@ export class OrganizationServiceBase {
 
   async organizations<T extends Prisma.OrganizationFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
-  ): Promise<Organization[]> {
+  ): Promise<PrismaOrganization[]> {
     return this.prisma.organization.findMany(args);
   }
   async organization<T extends Prisma.OrganizationFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindUniqueArgs>
-  ): Promise<Organization | null> {
+  ): Promise<PrismaOrganization | null> {
     return this.prisma.organization.findUnique(args);
   }
   async createOrganization<T extends Prisma.OrganizationCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationCreateArgs>
-  ): Promise<Organization> {
+  ): Promise<PrismaOrganization> {
     return this.prisma.organization.create<T>(args);
   }
   async updateOrganization<T extends Prisma.OrganizationUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationUpdateArgs>
-  ): Promise<Organization> {
+  ): Promise<PrismaOrganization> {
     return this.prisma.organization.update<T>(args);
   }
   async deleteOrganization<T extends Prisma.OrganizationDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationDeleteArgs>
-  ): Promise<Organization> {
+  ): Promise<PrismaOrganization> {
     return this.prisma.organization.delete(args);
   }
 
   async findUsers(
     parentId: string,
     args: Prisma.UserFindManyArgs
-  ): Promise<User[]> {
+  ): Promise<PrismaUser[]> {
     return this.prisma.organization
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -10118,7 +10116,7 @@ export class OrganizationServiceBase {
   async findCustomers(
     parentId: string,
     args: Prisma.CustomerFindManyArgs
-  ): Promise<Customer[]> {
+  ): Promise<PrismaCustomer[]> {
     return this.prisma.organization
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -10129,7 +10127,7 @@ export class OrganizationServiceBase {
   async findVipCustomers(
     parentId: string,
     args: Prisma.CustomerFindManyArgs
-  ): Promise<Customer[]> {
+  ): Promise<PrismaCustomer[]> {
     return this.prisma.organization
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -11556,11 +11554,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-
 import {
   Prisma,
-  Profile, // @ts-ignore
-  User,
+  Profile as PrismaProfile,
+  User as PrismaUser,
 } from "@prisma/client";
 
 export class ProfileServiceBase {
@@ -11574,31 +11571,31 @@ export class ProfileServiceBase {
 
   async profiles<T extends Prisma.ProfileFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
-  ): Promise<Profile[]> {
+  ): Promise<PrismaProfile[]> {
     return this.prisma.profile.findMany(args);
   }
   async profile<T extends Prisma.ProfileFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindUniqueArgs>
-  ): Promise<Profile | null> {
+  ): Promise<PrismaProfile | null> {
     return this.prisma.profile.findUnique(args);
   }
   async createProfile<T extends Prisma.ProfileCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileCreateArgs>
-  ): Promise<Profile> {
+  ): Promise<PrismaProfile> {
     return this.prisma.profile.create<T>(args);
   }
   async updateProfile<T extends Prisma.ProfileUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileUpdateArgs>
-  ): Promise<Profile> {
+  ): Promise<PrismaProfile> {
     return this.prisma.profile.update<T>(args);
   }
   async deleteProfile<T extends Prisma.ProfileDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileDeleteArgs>
-  ): Promise<Profile> {
+  ): Promise<PrismaProfile> {
     return this.prisma.profile.delete(args);
   }
 
-  async getUser(parentId: number): Promise<User | null> {
+  async getUser(parentId: number): Promise<PrismaUser | null> {
     return this.prisma.profile
       .findUnique({
         where: { id: parentId },
@@ -14259,9 +14256,9 @@ import { PrismaService } from "../../prisma/prisma.service";
 
 import {
   Prisma,
-  User, // @ts-ignore
-  Organization, // @ts-ignore
-  Profile,
+  User as PrismaUser,
+  Organization as PrismaOrganization,
+  Profile as PrismaProfile,
 } from "@prisma/client";
 
 export class UserServiceBase {
@@ -14275,34 +14272,34 @@ export class UserServiceBase {
 
   async users<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
-  ): Promise<User[]> {
+  ): Promise<PrismaUser[]> {
     return this.prisma.user.findMany(args);
   }
   async user<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
-  ): Promise<User | null> {
+  ): Promise<PrismaUser | null> {
     return this.prisma.user.findUnique(args);
   }
   async createUser<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
-  ): Promise<User> {
+  ): Promise<PrismaUser> {
     return this.prisma.user.create<T>(args);
   }
   async updateUser<T extends Prisma.UserUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
-  ): Promise<User> {
+  ): Promise<PrismaUser> {
     return this.prisma.user.update<T>(args);
   }
   async deleteUser<T extends Prisma.UserDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
-  ): Promise<User> {
+  ): Promise<PrismaUser> {
     return this.prisma.user.delete(args);
   }
 
   async findEmployees(
     parentId: string,
     args: Prisma.UserFindManyArgs
-  ): Promise<User[]> {
+  ): Promise<PrismaUser[]> {
     return this.prisma.user
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -14313,7 +14310,7 @@ export class UserServiceBase {
   async findOrganizations(
     parentId: string,
     args: Prisma.OrganizationFindManyArgs
-  ): Promise<Organization[]> {
+  ): Promise<PrismaOrganization[]> {
     return this.prisma.user
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -14321,7 +14318,7 @@ export class UserServiceBase {
       .organizations(args);
   }
 
-  async getManager(parentId: string): Promise<User | null> {
+  async getManager(parentId: string): Promise<PrismaUser | null> {
     return this.prisma.user
       .findUnique({
         where: { id: parentId },
@@ -14329,7 +14326,7 @@ export class UserServiceBase {
       .manager();
   }
 
-  async getProfile(parentId: string): Promise<Profile | null> {
+  async getProfile(parentId: string): Promise<PrismaProfile | null> {
     return this.prisma.user
       .findUnique({
         where: { id: parentId },

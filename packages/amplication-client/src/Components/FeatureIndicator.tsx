@@ -1,7 +1,7 @@
 import { EnumTextColor, Icon } from "@amplication/ui/design-system";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import { styled } from "@mui/material/styles";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { useTracking } from "react-tracking";
 import { AppContext } from "../context/appContext";
@@ -20,7 +20,7 @@ const WarningTooltip = styled(
   [`& .${tooltipClasses.tooltip}`]: {
     backgroundColor: "#15192C",
     color: "#ffffff",
-    maxWidth: 360,
+    maxWidth: 500,
     border: "1px solid #53dbee",
     borderRadius: "4px",
     padding: "6px 8px",
@@ -31,6 +31,10 @@ const WarningTooltip = styled(
 }));
 
 const CLASS_NAME = "amp-feature-indicator";
+
+export const tooltipDefaultTextUpgrade = "Upgrade";
+
+export const tooltipDefaultText = `Explore this feature, included in your 7-day Enterprise trial. ${tooltipDefaultTextUpgrade} for continued access.`;
 
 type Props = {
   featureName: string;
@@ -50,8 +54,8 @@ export const FeatureIndicator = ({
   comingSoon = false,
   tooltipIcon,
   placement = "top-start",
-  text = "Available as part of the Enterprise plan only.",
-  linkText = "Upgrade",
+  text = tooltipDefaultText,
+  linkText = tooltipDefaultTextUpgrade,
 }: Props) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
@@ -68,6 +72,38 @@ export const FeatureIndicator = ({
     });
   }, [currentWorkspace, window.location.pathname]);
 
+  const renderEnterpriseTrialTooltipText = useMemo(() => {
+    const textArray = text.split(tooltipDefaultTextUpgrade);
+    return (
+      <>
+        {textArray[0]}
+        <Link
+          onClick={handleViewPlansClick}
+          style={{ color: "#53dbee" }}
+          to={{}}
+        >
+          {tooltipDefaultTextUpgrade}
+        </Link>
+        {textArray[1]}
+      </>
+    );
+  }, [text, tooltipDefaultTextUpgrade, handleViewPlansClick]);
+
+  const renderTooltipTextWithUpgradeLink = useMemo(() => {
+    return (
+      <>
+        <span>{text}</span>{" "}
+        <Link
+          onClick={handleViewPlansClick}
+          style={{ color: "#53dbee" }}
+          to={{}}
+        >
+          {linkText}
+        </Link>
+      </>
+    );
+  }, [text, linkText, handleViewPlansClick]);
+
   return (
     <WarningTooltip
       placement={placement}
@@ -76,14 +112,9 @@ export const FeatureIndicator = ({
           {tooltipIcon && <Icon icon={tooltipIcon} />}
           {!comingSoon ? (
             <div className={`${CLASS_NAME}__tooltip__window__info`}>
-              <span>{text}</span>{" "}
-              <Link
-                onClick={handleViewPlansClick}
-                style={{ color: "#53dbee" }}
-                to={{}}
-              >
-                {linkText}
-              </Link>
+              {icon === IconType.Diamond
+                ? renderEnterpriseTrialTooltipText
+                : renderTooltipTextWithUpgradeLink}
             </div>
           ) : (
             <div className={`${CLASS_NAME}__tooltip__window__info`}>

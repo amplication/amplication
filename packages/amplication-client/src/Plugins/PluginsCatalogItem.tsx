@@ -1,6 +1,6 @@
 import { useCallback, useContext } from "react";
 import * as models from "../models";
-
+import Chip from "@mui/material/Chip";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
 import {
@@ -13,7 +13,7 @@ import {
   Text,
   Toggle,
 } from "@amplication/ui/design-system";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import { REACT_APP_PLUGIN_VERSION_USE_LATEST } from "../env";
 import { PluginLogo } from "./PluginLogo";
@@ -44,6 +44,7 @@ function PluginsCatalogItem({
   isDraggable,
 }: Props) {
   const { name, description } = plugin || {};
+  const history = useHistory();
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
@@ -77,6 +78,12 @@ function PluginsCatalogItem({
   const handleEnableStateChange = useCallback(() => {
     onEnableStateChange && onEnableStateChange(pluginInstallation);
   }, [onEnableStateChange, pluginInstallation]);
+
+  const handleChipClick = useCallback((category) => {
+    history.push(
+      `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/catalog/${category}`
+    );
+  }, []);
 
   return (
     <ListItem>
@@ -148,11 +155,25 @@ function PluginsCatalogItem({
       <FlexItem margin={EnumFlexItemMargin.Top}>
         <FlexItem.FlexStart>
           <a href={plugin?.github} target="github_plugin">
-            <Text textStyle={EnumTextStyle.Description}>View on GitHub</Text>
+            <Text
+              textStyle={EnumTextStyle.Description}
+              textColor={EnumTextColor.ThemeTurquoise}
+            >
+              View on GitHub
+            </Text>
           </a>
         </FlexItem.FlexStart>
         <FlexItem.FlexEnd className={`${CLASS_NAME}__category`}>
-          Categories: {plugin.categories.join(", ")}
+          {plugin &&
+            plugin.categories.map((category: string) => (
+              <Chip
+                className={`${CLASS_NAME}__category_chip`}
+                label={category}
+                key={category}
+                variant="filled"
+                onClick={() => handleChipClick(category)}
+              />
+            ))}
         </FlexItem.FlexEnd>
       </FlexItem>
     </ListItem>

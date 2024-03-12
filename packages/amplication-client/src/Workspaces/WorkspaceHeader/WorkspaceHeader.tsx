@@ -2,14 +2,17 @@ import {
   Breadcrumbs,
   ButtonProgress,
   Dialog,
+  EnumTextColor,
+  EnumTextStyle,
   Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
   Tooltip,
+  Text,
 } from "@amplication/ui/design-system";
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client";
 import {
   ButtonTypeEnum,
   IMessage,
@@ -18,7 +21,13 @@ import {
   PopoverNotificationCenter,
 } from "@novu/notification-center";
 import { useStiggContext } from "@stigg/react-sdk";
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory } from "react-router-dom";
 import CommandPalette from "../../CommandPalette/CommandPalette";
@@ -29,8 +38,8 @@ import ProfileForm from "../../Profile/ProfileForm";
 import { unsetToken } from "../../authentication/authentication";
 import { AppContext } from "../../context/appContext";
 import {
-  NX_REACT_APP_AUTH_LOGOUT_URI,
-  NX_REACT_APP_NOVU_IDENTIFIER,
+  REACT_APP_AUTH_LOGOUT_URI,
+  REACT_APP_NOVU_IDENTIFIER,
 } from "../../env";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
@@ -39,14 +48,20 @@ import {
   AMPLICATION_DOC_URL,
 } from "../../util/constants";
 import { version } from "../../util/version";
-import GitHubBanner from "./GitHubBanner";
+import WorkspaceBanner from "./WorkspaceBanner";
 import styles from "./notificationStyle";
 import NoNotifications from "../../assets/images/no-notification.svg";
 import "./WorkspaceHeader.scss";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
+import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
+import { FeatureIndicator } from "../../Components/FeatureIndicator";
+import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
+import useFetchGithubStars from "../hooks/useFetchGithubStars";
 
 const CLASS_NAME = "workspace-header";
+const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
+
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
@@ -79,10 +94,16 @@ const WorkspaceHeader: React.FC = () => {
     useContext(AppContext);
   const upgradeButtonData = useUpgradeButtonData(currentWorkspace);
 
+  const { data } = useQuery(GET_CONTACT_US_LINK, {
+    variables: { id: currentWorkspace.id },
+  });
+
   const apolloClient = useApolloClient();
   const history = useHistory();
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
+  const novuBellRef = useRef(null);
+  const stars = useFetchGithubStars();
 
   const daysLeftText = useMemo(() => {
     return `${upgradeButtonData.trialDaysLeft} day${
@@ -92,8 +113,7 @@ const WorkspaceHeader: React.FC = () => {
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
-  const [versionAlert, setVersionAlert] = useState(false);
-
+  const [novuCenterState, setNovuCenterState] = useState(false);
   const canShowNotification = stigg.getBooleanEntitlement({
     featureId: BillingFeature.Notification,
   }).hasAccess;
@@ -101,25 +121,30 @@ const WorkspaceHeader: React.FC = () => {
   const [showProfileFormDialog, setShowProfileFormDialog] =
     useState<boolean>(false);
 
+  const [showCompleteSignupDialog, setShowCompleteSignupDialog] =
+    useState<boolean>(false);
+
   const handleSignOut = useCallback(() => {
     unsetToken();
     apolloClient.clearStore();
 
-    window.location.replace(NX_REACT_APP_AUTH_LOGOUT_URI);
+    window.location.replace(REACT_APP_AUTH_LOGOUT_URI);
   }, [history, apolloClient]);
 
   const onNotificationClick = useCallback((message: IMessage) => {
-    // your logic to handle the notification click
+    trackEvent({
+      eventName: AnalyticsEventNames.ClickNotificationMessage,
+      messageType: message.templateIdentifier,
+    });
+
     if (message?.cta?.data?.url) {
-      window.location.href = message.cta.data.url;
+      // window.location.href = message.cta.data.url;
     }
   }, []);
 
   const onBuildNotificationClick = useCallback(
     (templateIdentifier: string, type: ButtonTypeEnum, message: IMessage) => {
-      if (templateIdentifier === "build-completed") {
-        window.location.href = message.cta.data.url;
-      }
+      window.location.href = message.cta.data.url;
     },
     []
   );
@@ -136,9 +161,7 @@ const WorkspaceHeader: React.FC = () => {
   }, [currentWorkspace, window.location.pathname]);
 
   const handleContactUsClick = useCallback(() => {
-    // This query param is used to open HubSpot chat with the downgrade flow
-    history.push("?contact-us=true");
-    openHubSpotChat();
+    window.open(data?.contactUsLink, "_blank");
     trackEvent({
       eventName: AnalyticsEventNames.HelpMenuItemClick,
       action: "Contact Us",
@@ -158,6 +181,19 @@ const WorkspaceHeader: React.FC = () => {
   const handleShowProfileForm = useCallback(() => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
+
+  const handleShowCompleteSignupDialog = useCallback(() => {
+    setShowCompleteSignupDialog(!showCompleteSignupDialog);
+  }, [showCompleteSignupDialog]);
+
+  const handleBellClick = useCallback(() => {
+    if (!novuCenterState) {
+      trackEvent({
+        eventName: AnalyticsEventNames.OpenNotificationCenter,
+      });
+    }
+    setNovuCenterState(!novuCenterState);
+  }, [novuBellRef, novuCenterState]);
 
   const Footer = () => <div></div>;
 
@@ -180,7 +216,19 @@ const WorkspaceHeader: React.FC = () => {
       >
         <ProfileForm />
       </Dialog>
-      <GitHubBanner />
+      <WorkspaceBanner
+        to={AMP_GITHUB_URL}
+        clickEventName={AnalyticsEventNames.StarUsBannerCTAClick}
+        clickEventProps={{}}
+        closeEventName={AnalyticsEventNames.StarUsBannerClose}
+        closeEventProps={{}}
+      >
+        <Icon icon="github" />
+        Star us on GitHub{" "}
+        <span className={`${CLASS_NAME}__stars`}>
+          {stars} <Icon icon="star" />
+        </span>
+      </WorkspaceBanner>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__left`}>
           <div className={`${CLASS_NAME}__logo`}>
@@ -231,6 +279,25 @@ const WorkspaceHeader: React.FC = () => {
                 >
                   Upgrade
                 </Button>
+              )}
+            {upgradeButtonData.isCompleted &&
+              upgradeButtonData.isPreviewPlan &&
+              !upgradeButtonData.showUpgradeDefaultButton && (
+                <>
+                  <FeatureIndicator
+                    featureName={BillingFeature.CodeGenerationBuilds}
+                    text="Generate production-ready code for this architecture with just a few simple clicks"
+                    linkText=""
+                    element={<CompletePreviewSignupButton />}
+                  />
+                  <Button
+                    className={`${CLASS_NAME}__upgrade__btn`}
+                    buttonStyle={EnumButtonStyle.Outline}
+                    onClick={handleContactUsClick}
+                  >
+                    Contact us
+                  </Button>
+                </>
               )}
           </div>
           <hr className={`${CLASS_NAME}__vertical_border`} />
@@ -292,7 +359,7 @@ const WorkspaceHeader: React.FC = () => {
               <div className={`${CLASS_NAME}__notification_bell`}>
                 <NovuProvider
                   subscriberId={currentWorkspace.externalId}
-                  applicationIdentifier={NX_REACT_APP_NOVU_IDENTIFIER}
+                  applicationIdentifier={REACT_APP_NOVU_IDENTIFIER}
                   styles={styles}
                 >
                   <PopoverNotificationCenter
@@ -305,7 +372,9 @@ const WorkspaceHeader: React.FC = () => {
                     emptyState={<EmptyState />}
                   >
                     {({ unseenCount }) => (
-                      <NotificationBell unseenCount={unseenCount} />
+                      <div onClick={handleBellClick}>
+                        <NotificationBell unseenCount={unseenCount} />
+                      </div>
                     )}
                   </PopoverNotificationCenter>
                 </NovuProvider>

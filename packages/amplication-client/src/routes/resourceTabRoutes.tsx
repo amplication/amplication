@@ -12,14 +12,6 @@ const resourceTabRoutes = [
     routes: resourceEntitiesRoutes,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/freePlan",
-    Component: lazy(() => import("../ModuleActions/ModuleActionsFreePlan")),
-    moduleName: "",
-    routeTrackType: "",
-    exactPath: true,
-    isAnalytics: true,
-  },
-  {
     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules",
     Component: lazy(() => import("../Modules/ModulesPage")),
     moduleName: "",
@@ -162,7 +154,16 @@ const resourceTabRoutes = [
     exactPath: false,
     routes: [
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins/:category",
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins/installed",
+        Component: lazy(() => import("../Plugins/InstalledPlugins")),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        routes: [],
+        isAnalytics: true,
+      },
+      {
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins/catalog",
         Component: lazy(() => import("../Plugins/PluginsCatalog")),
         moduleName: "",
         routeTrackType: "",
@@ -171,8 +172,8 @@ const resourceTabRoutes = [
         isAnalytics: true,
       },
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins/installed",
-        Component: lazy(() => import("../Plugins/InstalledPlugins")),
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins/catalog/:category",
+        Component: lazy(() => import("../Plugins/PluginsCatalog")),
         moduleName: "",
         routeTrackType: "",
         exactPath: true,

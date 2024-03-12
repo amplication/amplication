@@ -2,16 +2,17 @@ import {
   Children,
   FC,
   ReactElement,
-  useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useState,
 } from "react";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../models";
 import { AppContext } from "../context/appContext";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
 import React from "react";
-import { FeatureIndicator } from "./FeatureIndicator";
+import { FeatureIndicator, tooltipDefaultText } from "./FeatureIndicator";
 import "./FeatureIndicatorContainer.scss";
 import { omit } from "lodash";
 import { EnumTextColor, Icon } from "@amplication/ui/design-system";
@@ -37,28 +38,36 @@ export type Props = {
   featureId: BillingFeature;
   entitlementType: EntitlementType;
   featureIndicatorPlacement?: FeatureIndicatorPlacement;
-  disabled?: boolean;
   icon?: IconType | null;
-  tooltipText?: string;
+  featureText?: string;
+  fullEnterpriseText?: string;
+  limitationText?: string;
   children?: React.ReactElement;
   render?: (props: { disabled: boolean; icon?: IconType }) => ReactElement;
   reversePosition?: boolean;
+  showTooltip?: boolean;
 };
 
 export const FeatureIndicatorContainer: FC<Props> = ({
   featureId,
   entitlementType,
   featureIndicatorPlacement = FeatureIndicatorPlacement.Inside,
-  disabled,
   children,
-  tooltipText,
+  featureText = tooltipDefaultText,
+  limitationText,
+  fullEnterpriseText,
   render,
   reversePosition,
+  showTooltip = true,
 }) => {
   const { stigg } = useStiggContext();
   const { currentWorkspace } = useContext(AppContext);
   const { subscription } = currentWorkspace;
-  const { subscriptionPlan, status } = subscription;
+  const subscriptionPlan = subscription?.subscriptionPlan;
+  const status = subscription?.status;
+
+  const [disabled, setDisabled] = useState<boolean>(false);
+  const [icon, setIcon] = useState<IconType | null>(null);
 
   const {
     usageLimit,
@@ -72,58 +81,113 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     featureId,
   }).hasAccess;
 
-  const isFeatureDisabled = useCallback(() => {
-    if (!featureId) {
-      return false;
+  useEffect(() => {
+    if (!subscriptionPlan || !status || !featureId) {
+      setDisabled(false);
+      setIcon(null);
+      return;
     }
 
     if (entitlementType === EntitlementType.Boolean) {
-      return !hasBooleanAccess;
+      if (isPreviewPlan(subscriptionPlan) && hasBooleanAccess) {
+        setDisabled(null);
+        setIcon(null);
+        return;
+      }
+      setDisabled(!hasBooleanAccess);
     }
 
     if (entitlementType === EntitlementType.Metered) {
       const usageExceeded = usageLimit && currentUsage >= usageLimit;
-      return usageExceeded ?? !hasMeteredAccess;
+      const isDisabled = usageExceeded ?? !hasMeteredAccess;
+      if (isPreviewPlan(subscriptionPlan) && !isDisabled) {
+        setDisabled(null);
+        setIcon(null);
+        return;
+      }
+      setDisabled(isDisabled);
+    }
+  }, [
+    featureId,
+    usageLimit,
+    currentUsage,
+    hasMeteredAccess,
+    hasBooleanAccess,
+    subscriptionPlan,
+    status,
+    entitlementType,
+  ]);
+
+  const text = useMemo(() => {
+    if (disabled) {
+      return limitationText;
+    }
+    if (
+      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      subscription.status !== EnumSubscriptionStatus.Trailing
+    ) {
+      return fullEnterpriseText;
     }
 
-    return false;
-  }, [featureId, usageLimit, currentUsage, hasMeteredAccess, hasBooleanAccess]);
+    return featureText;
+  }, [disabled, subscription, featureText, limitationText, fullEnterpriseText]);
 
-  const iconType = useMemo(() => {
-    if (!featureId) {
-      return null;
+  const linkText = useMemo(() => {
+    if (
+      isPreviewPlan(subscriptionPlan) ||
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+        subscription.status !== EnumSubscriptionStatus.Trailing)
+    ) {
+      return ""; // don't show the upgrade link when the plan is preview
     }
-    if (subscriptionPlan === EnumSubscriptionPlan.Free && isFeatureDisabled()) {
-      return IconType.Lock;
+
+    return undefined; // in case of null, it falls back to the default link text
+  }, [subscriptionPlan, subscription]);
+
+  useEffect(() => {
+    if (!subscriptionPlan || !status || !featureId) {
+      setIcon(null);
+      return;
     }
+
+    if (disabled) {
+      setIcon(IconType.Lock);
+    }
+
     if (
       subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
       status === EnumSubscriptionStatus.Trailing
     ) {
-      return IconType.Diamond;
+      setIcon(IconType.Diamond);
     }
-  }, [featureId, subscriptionPlan, status, isFeatureDisabled]);
+  }, [featureId, subscriptionPlan, status, disabled]);
 
   const renderProps = {
-    disabled: disabled ?? isFeatureDisabled(),
-    icon: iconType,
+    disabled: disabled,
+    icon: icon,
     reversePosition,
   };
 
   return (
     <div className={CLASS_NAME}>
-      {render && render(renderProps)}
+      {render && !showTooltip && render(renderProps)}
+      {render && showTooltip && (
+        <FeatureIndicator
+          featureName={featureId}
+          element={render(renderProps)}
+          icon={icon}
+          text={text}
+          linkText={linkText}
+        ></FeatureIndicator>
+      )}
       {!render &&
-        iconType &&
+        icon &&
         Children.map(children, (child) => (
           <FeatureIndicator
             featureName={featureId}
-            icon={iconType}
-            text={
-              isFeatureDisabled()
-                ? tooltipText
-                : "Available as part of the Enterprise plan only."
-            }
+            icon={icon}
+            text={text}
+            linkText={linkText}
             element={
               featureIndicatorPlacement ===
               FeatureIndicatorPlacement.Outside ? (
@@ -134,7 +198,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
                 >
                   {React.cloneElement(child, omit(renderProps, "icon"))}{" "}
                   <Icon
-                    icon={iconType}
+                    icon={icon}
                     color={EnumTextColor.Black20}
                     size="xsmall"
                   />
@@ -145,7 +209,12 @@ export const FeatureIndicatorContainer: FC<Props> = ({
             }
           />
         ))}
-      {!render && !iconType && children}
+      {!render && !icon && children}
     </div>
   );
 };
+
+export function isPreviewPlan(plan: EnumSubscriptionPlan) {
+  const previewPlans = [EnumSubscriptionPlan.PreviewBreakTheMonolith];
+  return previewPlans.includes(plan);
+}

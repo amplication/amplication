@@ -13,10 +13,8 @@ import { Env } from "../../env";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStatus";
 import { Subscription } from "../subscription/dto/Subscription";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscriptionResult";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
@@ -28,6 +26,7 @@ import {
 } from "@amplication/util-billing-types";
 import { ValidateSubscriptionPlanLimitationsArgs } from "./billing.service.types";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 @Injectable()
 export class BillingService {
@@ -45,6 +44,9 @@ export class BillingService {
       addons: [
         {
           addonId: BillingAddon.CustomActions,
+        },
+        {
+          addonId: BillingAddon.BreakingTheMonolith,
         },
       ],
     };
@@ -217,9 +219,9 @@ export class BillingService {
     intentionType,
     cancelUrl,
     successUrl,
-    userId,
+    accountId,
   }: ProvisionSubscriptionInput & {
-    userId: string;
+    accountId: string;
   }): Promise<ProvisionSubscriptionResult> {
     const stiggClient = await this.getStiggClient();
     const stiggResponse = await stiggClient.provisionSubscription({
@@ -233,15 +235,10 @@ export class BillingService {
         successUrl: new URL(successUrl, this.clientHost).href,
       },
       metadata: {
-        userId: userId,
+        userId: accountId,
       },
     });
-    await this.analytics.track({
-      userId,
-      properties: {
-        workspaceId,
-        $groups: { groupWorkspace: workspaceId },
-      },
+    await this.analytics.trackWithContext({
       event:
         intentionType === "DOWNGRADE_PLAN"
           ? EnumEventType.WorkspacePlanDowngradeRequest
@@ -292,6 +289,40 @@ export class BillingService {
       });
     }
     return;
+  }
+
+  async provisionPreviewCustomer(
+    workspaceId: string,
+    previewAccountType: EnumPreviewAccountType
+  ): Promise<null> {
+    if (!this.isBillingEnabled) {
+      return;
+    }
+
+    await this.stiggClient.provisionCustomer({
+      customerId: workspaceId,
+      subscriptionParams: null,
+    });
+
+    await this.stiggClient.provisionSubscription({
+      customerId: workspaceId,
+      planId: this.mapPreviewAccountTypeToSubscriptionPlan(previewAccountType),
+      skipTrial: true,
+    });
+  }
+
+  async provisionNewSubscriptionForPreviewAccount(
+    workspaceId: string
+  ): Promise<null> {
+    if (!this.isBillingEnabled) {
+      return;
+    }
+
+    await this.stiggClient.provisionSubscription({
+      customerId: workspaceId,
+      planId: this.defaultSubscriptionPlan.planId,
+      addons: this.defaultSubscriptionPlan.addons,
+    });
   }
 
   //todo: wrap with a try catch and return an object with the details about the limitations
@@ -379,14 +410,11 @@ export class BillingService {
         }
       } catch (error) {
         if (error instanceof BillingLimitationError) {
-          await this.analytics.track({
-            userId: currentUser.account.id,
-            properties: {
-              workspaceId,
-              reason: error.message,
-              $groups: { groupWorkspace: workspaceId },
-            },
+          await this.analytics.trackWithContext({
             event: EnumEventType.SubscriptionLimitPassed,
+            properties: {
+              reason: error.message,
+            },
           });
         }
         throw error;
@@ -450,8 +478,23 @@ export class BillingService {
         return EnumSubscriptionPlan.Pro;
       case BillingPlan.Enterprise:
         return EnumSubscriptionPlan.Enterprise;
+      case BillingPlan.PreviewBreakTheMonolith:
+        return EnumSubscriptionPlan.PreviewBreakTheMonolith;
       default:
         throw new Error(`Unknown plan id: ${planId}`);
+    }
+  }
+
+  mapPreviewAccountTypeToSubscriptionPlan(
+    previewAccountType: EnumPreviewAccountType
+  ): BillingPlan {
+    switch (previewAccountType) {
+      case EnumPreviewAccountType.BreakingTheMonolith:
+        return BillingPlan.PreviewBreakTheMonolith;
+      case EnumPreviewAccountType.None:
+        throw new Error(`${previewAccountType} is not a preview account type`);
+      default:
+        throw new Error(`Unknown preview account type: ${previewAccountType}`);
     }
   }
 }

@@ -14,8 +14,10 @@ import {
 } from "../util/formikValidateJsonSchema";
 import "./NewRole.scss";
 import { AppContext } from "../context/appContext";
-import { FeatureIndicator } from "../Components/FeatureIndicator";
-import { BillingFeature } from "@amplication/util-billing-types";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 
 const INITIAL_VALUES: Partial<models.ResourceRole> = {
   name: "",
@@ -28,7 +30,7 @@ type Props = {
   onRoleAdd?: (role: models.ResourceRole) => void;
 };
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["displayName"],
@@ -40,7 +42,7 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      displayName: AT_LEAST_TWO_CHARARCTERS,
+      displayName: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };
@@ -48,7 +50,8 @@ const CLASS_NAME = "new-role";
 
 const NewRole = ({ onRoleAdd, resourceId }: Props) => {
   const { addEntity, currentResource } = useContext(AppContext);
-  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
+  const licensed = currentResource?.licensed ?? true;
+
   const [createRole, { error, loading }] = useMutation(CREATE_ROLE, {
     update(cache, { data }) {
       if (!data) return;
@@ -133,25 +136,9 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            {isResourceUnderLimitation ? (
-              <FeatureIndicator
-                featureName={BillingFeature.Services}
-                text="Your current plan permits only one active resource."
-                linkText="Please contact us to upgrade."
-                element={
-                  <Button
-                    buttonStyle={EnumButtonStyle.Text}
-                    disabled={isResourceUnderLimitation}
-                    icon="locked"
-                    className={classNames(`${CLASS_NAME}__add-field__button`, {
-                      [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
-                        formik.values.displayName
-                      ),
-                    })}
-                  />
-                }
-              />
-            ) : (
+            <LicenseIndicatorContainer
+              licensedResourceType={LicensedResourceType.Service}
+            >
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 icon="plus"
@@ -161,7 +148,7 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
                   ),
                 })}
               />
-            )}
+            </LicenseIndicatorContainer>
           </Form>
         )}
       </Formik>

@@ -1,11 +1,10 @@
 import React, { useMemo } from "react";
 import { Formik } from "formik";
-import { Form } from "../Components/Form";
 import { omit } from "lodash";
 import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
-import { TextField } from "@amplication/ui/design-system";
+import { TextField, Form } from "@amplication/ui/design-system";
 import {
   validate,
   validationErrorMessages,
@@ -31,7 +30,7 @@ export const INITIAL_VALUES: Partial<models.ResourceRole> = {
   description: "",
 };
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["displayName", "name"],
@@ -47,8 +46,8 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      displayName: AT_LEAST_TWO_CHARARCTERS,
-      name: AT_LEAST_TWO_CHARARCTERS,
+      displayName: AT_LEAST_TWO_CHARACTERS,
+      name: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };

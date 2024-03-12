@@ -1,7 +1,10 @@
-import { HorizontalRule, ToggleField } from "@amplication/ui/design-system";
+import {
+  HorizontalRule,
+  ToggleField,
+  Form,
+} from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import React, { useMemo } from "react";
-import { Form } from "../Components/Form";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { EnumResourceType, ServiceTopics, Resource } from "../models";
 import FormikAutoSave from "../util/formikAutoSave";

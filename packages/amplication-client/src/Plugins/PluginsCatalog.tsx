@@ -1,13 +1,7 @@
 import { List, Snackbar, TabContentTitle } from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { keyBy } from "lodash";
-import React, {
-  useCallback,
-  useContext,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { match } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import { USER_ENTITY } from "../Entity/constants";
@@ -45,7 +39,8 @@ const SUB_TITLE =
   "Extend and customize your services by using plugins for various technologies and integrations.";
 
 const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
-  const { resource, category } = match.params;
+  const { resource, category: encodedCategory } = match.params;
+  const category = decodeURIComponent(encodedCategory);
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
   const [isCreatePluginInstallation, setIsCreatePluginInstallation] =
     useState<boolean>(false);
@@ -75,7 +70,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   } = usePlugins(resource);
 
   const filteredCatalog = useMemo(() => {
-    if (category === "catalog") return Object.values(pluginCatalog);
+    if (category === "undefined") return Object.values(pluginCatalog);
 
     return Object.values(pluginCatalog).reduce(
       (pluginsCatalogArr: Plugin[], plugin: Plugin) => {
@@ -155,7 +150,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
       const requireAuthenticationEntity = configurations
         ? configurations[REQUIRE_AUTH_ENTITY]
         : null;
-      console.log("onEnableStateChange", userEntity);
+
       if (requireAuthenticationEntity === "true" && !userEntity && !enabled) {
         setIsCreatePluginInstallation(false);
         setPluginInstallationUpdateData(pluginInstallation);

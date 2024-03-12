@@ -15,6 +15,14 @@ $step-status-width: 20px;
   align-items: stretch;
   box-sizing: border-box;
 
+  &__success {
+    border: 1px solid var(--color-positive);
+  }
+
+  &__failed {
+    border: 1px solid var(--color-negative);
+  }
+
   &__empty-state {
     @include sectionTitle;
     position: relative;

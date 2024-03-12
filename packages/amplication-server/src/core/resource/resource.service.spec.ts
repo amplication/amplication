@@ -57,12 +57,16 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
 import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { ActionService } from "../action/action.service";
+import { UserActionService } from "../userAction/userAction.service";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -119,7 +123,7 @@ const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   description: "Sample Service for task management",
   name: "My sample service",
   resourceType: EnumResourceType.Service,
-  project: { connect: { id: "exampleProjectId" } },
+  project: { connect: { id: EXAMPLE_PROJECT_ID } },
   serviceSettings: EXAMPLE_SERVICE_SETTINGS,
   gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
 };
@@ -132,7 +136,11 @@ const EXAMPLE_RESOURCE: Resource = {
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
+  licensed: true,
   gitRepositoryOverride: false,
+  project: {
+    workspaceId: EXAMPLE_WORKSPACE_ID,
+  } as unknown as Project,
   builds: [
     {
       id: EXAMPLE_BUILD_ID,
@@ -157,6 +165,7 @@ const EXAMPLE_RESOURCE_MESSAGE_BROKER: Resource = {
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
@@ -168,6 +177,7 @@ const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -178,6 +188,7 @@ const EXAMPLE_PROJECT: Project = {
   workspaceId: EXAMPLE_WORKSPACE_ID,
   useDemoRepo: false,
   demoRepoName: undefined,
+  licensed: true,
 };
 
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -196,6 +207,8 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
+  previewAccountType: EnumPreviewAccountType.None,
+  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -207,6 +220,7 @@ const EXAMPLE_USER: User = {
     createdAt: new Date(),
     updatedAt: new Date(),
     name: "example_workspace_name",
+    allowLLMFeatures: true,
   },
   account: EXAMPLE_ACCOUNT,
   isOwner: true,
@@ -419,6 +433,7 @@ const prismaResourceUpdateMock = jest.fn(() => {
 const prismaEntityFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY];
 });
+
 const prismaCommitCreateMock = jest.fn(() => {
   return EXAMPLE_COMMIT;
 });
@@ -433,7 +448,11 @@ const prismaGitRepositoryCreateMock = jest.fn(() => {
 const entityServiceCreateVersionMock = jest.fn(
   async () => EXAMPLE_ENTITY_VERSION
 );
-const entityServiceCreateOneEntityMock = jest.fn(async () => EXAMPLE_ENTITY);
+
+const entityServiceCreateOneEntityMock = jest.fn(async () => {
+  return EXAMPLE_ENTITY;
+});
+
 const entityServiceCreateFieldByDisplayNameMock = jest.fn(
   async () => EXAMPLE_ENTITY_FIELD
 );
@@ -460,7 +479,8 @@ const entityServiceCreateDefaultEntitiesMock = jest.fn();
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
 const entityServiceBulkCreateFields = jest.fn();
-const analyticServiceTrack = jest.fn();
+
+const mockedUpdateServiceLicensed = jest.fn();
 
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
@@ -504,11 +524,15 @@ describe("ResourceService", () => {
         {
           provide: PluginInstallationService,
           useValue: { get: () => "" },
-        },
-        {
-          provide: SegmentAnalyticsService,
           useClass: jest.fn(() => ({
-            track: analyticServiceTrack,
+            create: jest.fn(),
+          })),
+        },
+        MockedSegmentAnalyticsProvider(),
+        {
+          provide: SubscriptionService,
+          useClass: jest.fn(() => ({
+            updateServiceLicensed: mockedUpdateServiceLicensed,
           })),
         },
         {
@@ -625,6 +649,15 @@ describe("ResourceService", () => {
             commit: projectServiceFindUniqueMock,
           })),
         },
+        {
+          provide: ActionService,
+          useClass: jest.fn(() => ({})),
+        },
+        {
+          provide: UserActionService,
+          useClass: jest.fn(() => ({})),
+        },
+
         MockedAmplicationLoggerProvider,
       ],
     }).compile();
@@ -679,6 +712,47 @@ describe("ResourceService", () => {
     expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID
     );
+  });
+
+  describe("createPreviewService", () => {
+    it("should create a preview service", async () => {
+      const createResourceArgs = {
+        args: {
+          data: {
+            name: EXAMPLE_RESOURCE_NAME,
+            description: EXAMPLE_RESOURCE_DESCRIPTION,
+            color: DEFAULT_RESOURCE_COLORS.service,
+            resourceType: EnumResourceType.Service,
+            wizardType: "create resource",
+            project: {
+              connect: {
+                id: EXAMPLE_PROJECT_ID,
+              },
+            },
+            serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+            gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+          },
+        },
+        user: EXAMPLE_USER,
+      };
+      const user = EXAMPLE_USER;
+      const nonDefaultPluginsToInstall = [];
+      const requireAuthenticationEntity = true;
+
+      const result = await service.createPreviewService({
+        args: createResourceArgs.args,
+        user,
+        nonDefaultPluginsToInstall,
+        requireAuthenticationEntity,
+      });
+
+      expect(result).toEqual(EXAMPLE_RESOURCE);
+      expect(prismaResourceCreateMock).toBeCalledTimes(1);
+      expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledTimes(1);
+      expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
+        EXAMPLE_RESOURCE_ID
+      );
+    });
   });
 
   it("should throw an error while trying to create a service when the user exceeded the limit of services in his project", async () => {
@@ -889,6 +963,8 @@ describe("ResourceService", () => {
     expect(await service.deleteResource(args, EXAMPLE_USER)).toEqual(
       EXAMPLE_RESOURCE
     );
+    expect(mockedUpdateServiceLicensed).toBeCalledTimes(1);
+    expect(mockedUpdateServiceLicensed).toBeCalledWith(EXAMPLE_WORKSPACE_ID);
     expect(prismaResourceUpdateMock).toBeCalledTimes(1);
     expect(prismaResourceUpdateMock).toBeCalledWith({
       ...args,
@@ -1056,17 +1132,6 @@ describe("ResourceService", () => {
       await expect(service.updateResource(args)).rejects.toThrow(
         new Error(INVALID_RESOURCE_ID)
       );
-    });
-  });
-
-  describe("isUnderLimitation", () => {
-    it("should always return false (for now) - no limitation around resource apart from creation", async () => {
-      expect(
-        await service.isUnderLimitation(
-          EXAMPLE_WORKSPACE_ID,
-          EXAMPLE_RESOURCE_ID
-        )
-      ).toEqual(false);
     });
   });
 });

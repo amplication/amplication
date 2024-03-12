@@ -1,0 +1,14 @@
+@import "../../style/index.scss";
+
+.model-organizer-controls {
+  display: flex;
+  height: auto;
+  padding: var(--default-spacing-small);
+  flex-direction: column;
+  align-items: center;
+  border-radius: var(--default-border-radius);
+  border: $border-dark;
+  background: var(--gray-full);
+  box-sizing: border-box;
+  gap: var(--default-spacing-small);
+}

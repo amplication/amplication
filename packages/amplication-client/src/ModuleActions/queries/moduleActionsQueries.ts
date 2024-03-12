@@ -31,8 +31,8 @@ export const DELETE_MODULE_ACTION = gql`
 
 export const GET_MODULE_ACTION = gql`
   ${MODULE_ACTION_FIELDS_FRAGMENT}
-  query ModuleAction($moduleActionId: String!) {
-    ModuleAction(where: { id: $moduleActionId }) {
+  query moduleAction($moduleActionId: String!) {
+    moduleAction(where: { id: $moduleActionId }) {
       ...ModuleActionFields
     }
   }
@@ -61,11 +61,11 @@ export const CREATE_MODULE_ACTION = gql`
 
 export const FIND_MODULE_ACTIONS = gql`
   ${MODULE_ACTION_FIELDS_FRAGMENT}
-  query ModuleActions(
+  query moduleActions(
     $where: ModuleActionWhereInput
     $orderBy: ModuleActionOrderByInput
   ) {
-    ModuleActions(where: $where, orderBy: $orderBy) {
+    moduleActions(where: $where, orderBy: $orderBy) {
       ...ModuleActionFields
     }
   }

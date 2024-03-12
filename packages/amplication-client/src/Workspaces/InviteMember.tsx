@@ -100,13 +100,9 @@ const InviteMember = () => {
               <FeatureIndicatorContainer
                 featureId={BillingFeature.TeamMembers}
                 entitlementType={EntitlementType.Metered}
-                tooltipText="The workspace reached your plan's team members limitation."
+                limitationText="The workspace reached your plan's team members limitation. "
               >
-                <Button
-                  buttonStyle={EnumButtonStyle.Primary}
-                  disabled={!formik.isValid || loading}
-                  type="submit"
-                >
+                <Button buttonStyle={EnumButtonStyle.Primary} type="submit">
                   Invite
                 </Button>
               </FeatureIndicatorContainer>

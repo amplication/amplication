@@ -1,3 +1,29 @@
 @import "../../style/index.scss";
 .amp-snackbar {
+  background-color: var(--gray-90);
+  &--success {
+    .MuiSnackbarContent-root {
+      background-color: var(--theme-turquoise-transparent);
+      color: var(--theme-green);
+    }
+  }
+
+  &--error {
+    .MuiSnackbarContent-root {
+      background-color: var(--theme-light-red-transparent);
+      color: var(--theme-red);
+    }
+  }
+
+  &--warning {
+    .MuiSnackbarContent-root {
+      color: var(--theme-orange);
+    }
+  }
+
+  &--info {
+    .MuiSnackbarContent-root {
+      color: var(--theme-blue);
+    }
+  }
 }

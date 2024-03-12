@@ -52,9 +52,7 @@ import { RequestContextModule } from "nestjs-request-context";
     AmplicationLoggerModule.forRoot({
       component: SERVICE_NAME,
     }),
-    TracingModule.forRoot({
-      serviceName: SERVICE_NAME,
-    }),
+    TracingModule.forRoot(),
     MorganModule,
     SegmentAnalyticsModule.registerAsync({
       useClass: SegmentAnalyticsOptionsService,

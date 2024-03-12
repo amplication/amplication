@@ -1,8 +1,14 @@
 import {
   Button,
   CircularProgress,
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
   HorizontalRule,
   Label,
+  Text,
   TextField,
   Toggle,
 } from "@amplication/ui/design-system";
@@ -16,6 +22,7 @@ import { GET_GROUPS } from "../../queries/gitProvider";
 import { GitSelectMenu } from "../../select/GitSelectMenu";
 import { GitRepositoryCreatedData } from "../GitRepos/GithubRepos";
 import "./GitCreateRepo.scss";
+import { GIT_REPO_CREATION_MESSAGE, GIT_REPO_NAME_RULES } from "./constants";
 
 type createRepositoryInput = {
   name: string;
@@ -78,13 +85,16 @@ export default function WizardGitCreateRepo({
 
   const handleNameChange = useCallback(
     (event) => {
+      const processedName = event.target.value
+        .replace(/[^a-zA-Z0-9.\-_]/g, "-") // Replace characters other than ASCII letters, digits, ., -, and _ with -
+        .replace(/-{2,}/g, "-"); // Replace consecutive dashes with a single dash
       setCreateRepositoryInput({
         ...createRepositoryInput,
-        name: event.target.value,
+        name: processedName,
       });
       const gitRepositoryUrl = getGitRepositoryDetails({
         organization: gitOrganization,
-        repositoryName: event.target.value,
+        repositoryName: processedName,
         groupName: createRepositoryInput.groupName,
       }).repositoryUrl;
       setGitRepositoryUrl(gitRepositoryUrl);
@@ -155,6 +165,23 @@ export default function WizardGitCreateRepo({
         showError={false}
         onChange={handleNameChange}
       />
+
+      {!!createRepositoryInput.name && (
+        <FlexItem
+          direction={EnumFlexDirection.Column}
+          gap={EnumGapSize.Default}
+        >
+          <Text
+            textStyle={EnumTextStyle.Subtle}
+            textColor={EnumTextColor.ThemeGreen}
+          >
+            {GIT_REPO_CREATION_MESSAGE}
+            {createRepositoryInput.name}.
+          </Text>
+
+          <Text textStyle={EnumTextStyle.Label}>{GIT_REPO_NAME_RULES}</Text>
+        </FlexItem>
+      )}
 
       <HorizontalRule />
 

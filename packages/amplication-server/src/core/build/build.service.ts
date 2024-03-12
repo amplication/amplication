@@ -51,10 +51,8 @@ import {
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { kebabCase } from "lodash";
 import { CodeGeneratorVersionStrategy } from "../resource/dto";
 
@@ -368,6 +366,11 @@ export class BuildService {
     const commitWithAccount = await this.prisma.build.findUnique({
       where: { id: buildId },
       include: {
+        resource: {
+          select: {
+            name: true,
+          },
+        },
         commit: {
           include: {
             user: true,
@@ -385,6 +388,7 @@ export class BuildService {
             commitId: commitWithAccount.commit.id,
             commitMessage: commitWithAccount.commit.message,
             resourceId: commitWithAccount.resourceId,
+            resourceName: commitWithAccount.resource.name,
             workspaceId: commitWithAccount.commit.project.workspaceId,
             projectId: commitWithAccount.commit.projectId,
             buildId: buildId,
@@ -539,16 +543,19 @@ export class BuildService {
     );
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
 
-    await this.analytics.track({
-      userId: build.createdBy.account.id,
-      properties: {
-        resourceId: build.resource.id,
-        projectId: build.resource.project.id,
+    await this.analytics.trackManual({
+      user: {
+        accountId: build.createdBy.account.id,
         workspaceId: build.resource.project.workspaceId,
-        message: response.errorMessage,
-        $groups: { groupWorkspace: build.resource.project.workspaceId },
       },
-      event: EnumEventType.GitSyncError,
+      data: {
+        properties: {
+          resourceId: build.resource.id,
+          projectId: build.resource.project.id,
+          message: response.errorMessage,
+        },
+        event: EnumEventType.GitSyncError,
+      },
     });
   }
 
@@ -566,21 +573,30 @@ export class BuildService {
         include: {
           createdBy: { include: { account: true } },
           resource: {
-            include: { project: true },
+            include: {
+              project: {
+                select: {
+                  id: true,
+                  workspaceId: true,
+                },
+              },
+            },
           },
         },
       });
-
-      await this.analytics.track({
-        userId: build.createdBy.account.id,
-        properties: {
-          resourceId: build.resource.id,
-          projectId: build.resource.project.id,
+      await this.analytics.trackManual({
+        user: {
+          accountId: build.createdBy.account.id,
           workspaceId: build.resource.project.workspaceId,
-          message: logEntry.message,
-          $groups: { groupWorkspace: build.resource.project.workspaceId },
         },
-        event: EnumEventType.CodeGenerationError,
+        data: {
+          properties: {
+            resourceId: build.resource.id,
+            projectId: build.resource.project.id,
+            message: logEntry.message,
+          },
+          event: EnumEventType.CodeGenerationError,
+        },
       });
     }
   }
@@ -872,7 +888,7 @@ export class BuildService {
       : undefined;
 
     return {
-      entities: await this.getOrderedEntities(buildId),
+      entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: plugins,
       moduleContainers: modules,

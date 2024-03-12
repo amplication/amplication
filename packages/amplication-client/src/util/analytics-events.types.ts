@@ -11,6 +11,7 @@ export enum AnalyticsEventNames {
   SignInWithGitHub = "signInWithGitHub",
   SignInWithUserName = "signInWithUserName",
   ContinueWithSSOClick = "continueWithSSOClick",
+  EmailLogin = "EmailLogin",
 
   // account
   AccountInfoUpdate = "updateAccountInfo",
@@ -107,6 +108,8 @@ export enum AnalyticsEventNames {
   CreateProjectConfiguration = "CreateProjectConfiguration",
   StarUsBannerCTAClick = "StarUsBannerCTAClick",
   StarUsBannerClose = "StarUsBannerClose",
+  MWC2024BannerCTAClick = "MWC2024BannerCTAClick",
+  MWC2024BannerClose = "MWC2024BannerClose",
 
   // Purchase Page
   PricingPageClose = "PricingPageClose",
@@ -149,4 +152,16 @@ export enum AnalyticsEventNames {
   ViewServiceWizardError = "ViewServiceWizardError",
   ServiceWizardError_TryAgain = "ServiceWizardError_TryAgain",
   ServiceWizardError_Continue = "ServiceWizardError_Continue",
+
+  // notification
+  OpenNotificationCenter = "OpenNotificationCenter",
+  ClickNotificationMessage = "ClickNotificationMessage",
+
+  // break the monolith
+  StartBreakTheMonolithClick = "StartBreakTheMonolithClick",
+  ModelOrganizer_AddServiceClick = "ModelOrganizer_AddServiceClick",
+  ModelOrganizer_MoveEntity = "ModelOrganizer_MoveEntity",
+
+  // break the monolith preview user
+  PreviewUser_GenerateCode = "PreviewUser_GenerateCode",
 }

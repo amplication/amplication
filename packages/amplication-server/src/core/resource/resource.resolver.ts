@@ -31,6 +31,8 @@ import {
   ResourceCreateWithEntitiesResult,
   UpdateCodeGeneratorVersionArgs,
 } from "./dto";
+import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
+import { UserAction } from "../userAction/dto";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -68,17 +70,6 @@ export class ResourceResolver {
     @Args() args: FindOneArgs
   ): Promise<Resource[]> {
     return this.resourceService.messageBrokerConnectedServices(args);
-  }
-
-  @ResolveField(() => Boolean)
-  async isUnderLimitation(
-    @UserEntity() user: User,
-    @Parent() resource: Resource
-  ): Promise<boolean> {
-    return this.resourceService.isUnderLimitation(
-      user.workspace.id,
-      resource.id
-    );
   }
 
   @ResolveField(() => [Entity])
@@ -168,6 +159,16 @@ export class ResourceResolver {
     @Args() args: UpdateOneResourceArgs
   ): Promise<Resource | null> {
     return this.resourceService.updateResource(args);
+  }
+
+  @Mutation(() => UserAction, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "data.projectId")
+  async redesignProject(
+    @Args() args: RedesignProjectArgs,
+    @UserEntity() user: User
+  ): Promise<UserAction> {
+    return this.resourceService.redesignProject(args, user);
   }
 
   @Mutation(() => Resource, {

@@ -1,13 +1,10 @@
-import {
-  PricingType,
-  SubscriptionStatus,
-  useStiggContext,
-} from "@stigg/react-sdk";
+import { useStiggContext } from "@stigg/react-sdk";
 import { Workspace } from "../../models";
 import { BillingPlan } from "@amplication/util-billing-types";
 import { useEffect, useState } from "react";
+import { REACT_APP_BILLING_ENABLED } from "../../env";
 
-const DAYS_TO_SHOW_VERSION_ALERT_SINCE_END_OF_TRIAL = 14;
+const DAYS_TO_SHOW_VERSION_ALERT_SINCE_END_OF_TRIAL = 7;
 const ONE_DAY = 1000 * 60 * 60 * 24;
 
 interface UpgradeButtonData {
@@ -16,6 +13,7 @@ interface UpgradeButtonData {
   showUpgradeTrialButton: boolean;
   showUpgradeDefaultButton: boolean;
   isCompleted?: boolean;
+  isPreviewPlan?: boolean;
 }
 
 export const useUpgradeButtonData = (
@@ -27,13 +25,33 @@ export const useUpgradeButtonData = (
     {
       showUpgradeTrialButton: false,
       showUpgradeDefaultButton: true,
+      isPreviewPlan: false,
     }
   );
 
   useEffect(() => {
     (async () => {
+      if (REACT_APP_BILLING_ENABLED === "false") {
+        setUpgradeButtonData({
+          showUpgradeTrialButton: false,
+          showUpgradeDefaultButton: true,
+          isCompleted: true,
+        });
+        return;
+      }
+
       await stigg.setCustomerId(currentWorkspace.id);
       const [subscription] = await stigg.getActiveSubscriptions();
+
+      if (isPreviewPlan(subscription.plan.id)) {
+        setUpgradeButtonData({
+          showUpgradeTrialButton: false,
+          showUpgradeDefaultButton: false,
+          isCompleted: true,
+          isPreviewPlan: true,
+        });
+        return;
+      }
 
       if (subscription.plan.id === BillingPlan.Free) {
         const daysSinceStartOfPlan = Math.abs(
@@ -95,3 +113,7 @@ export const useUpgradeButtonData = (
 
   return upgradeButtonData;
 };
+
+function isPreviewPlan(planId: string) {
+  return planId.includes("preview");
+}

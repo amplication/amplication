@@ -26,7 +26,6 @@ import { formatError } from "../util/error";
 import { EntityListItem } from "./EntityListItem";
 import NewEntity from "./NewEntity";
 
-import { useStiggContext } from "@stigg/react-sdk";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import usePlugins from "../Plugins/hooks/usePlugins";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
@@ -40,7 +39,14 @@ import {
   EntitlementType,
   FeatureIndicatorContainer,
 } from "../Components/FeatureIndicatorContainer";
-import { FeatureIndicator } from "../Components/FeatureIndicator";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
+import {
+  BtmButton,
+  EnumButtonLocation,
+} from "../Resource/break-the-monolith/BtmButton";
 
 type TData = {
   entities: models.Entity[];
@@ -76,12 +82,11 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
-  const isResourceUnderLimitation = currentResource?.isUnderLimitation ?? false;
   const isUserEntityMandatory =
     pluginInstallations?.filter(
       (x) =>
-        x.configurations?.requireAuthenticationEntity === "true" && x.enabled
-    ).length > 0;
+        x?.configurations?.requireAuthenticationEntity === "true" && x.enabled
+    )?.length > 0;
 
   const handleNewEntityClick = useCallback(() => {
     setNewEntity(!newEntity);
@@ -133,11 +138,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
     GET_CURRENT_WORKSPACE
   );
-
-  const { stigg } = useStiggContext();
-  const hideNotifications = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.HideNotifications,
-  });
 
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
@@ -215,12 +215,17 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           </FlexItem>
           <FlexItem.FlexEnd>
             <FlexItem direction={EnumFlexDirection.Row}>
+              <BtmButton
+                openInFullScreen={true}
+                location={EnumButtonLocation.EntityList}
+              />
               <Link
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
               >
                 <FeatureIndicatorContainer
                   featureId={BillingFeature.ImportDBSchema}
                   entitlementType={EntitlementType.Boolean}
+                  limitationText="Available in Enterprise plans only. "
                   reversePosition={true}
                 >
                   <Button
@@ -234,33 +239,17 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                   </Button>
                 </FeatureIndicatorContainer>
               </Link>
-              {isResourceUnderLimitation ? (
-                <FeatureIndicator
-                  featureName={BillingFeature.Services}
-                  text="Your current plan permits only one active resource"
-                  linkText="Please contact us to upgrade"
-                  element={
-                    <Button
-                      className={`${CLASS_NAME}__add-button`}
-                      buttonStyle={EnumButtonStyle.Primary}
-                      onClick={handleNewEntityClick}
-                      disabled={isResourceUnderLimitation}
-                      icon="locked"
-                    >
-                      Add entity
-                    </Button>
-                  }
-                ></FeatureIndicator>
-              ) : (
+              <LicenseIndicatorContainer
+                licensedResourceType={LicensedResourceType.Service}
+              >
                 <Button
                   className={`${CLASS_NAME}__add-button`}
                   buttonStyle={EnumButtonStyle.Primary}
                   onClick={handleNewEntityClick}
-                  disabled={isResourceUnderLimitation}
                 >
                   Add entity
                 </Button>
-              )}
+              </LicenseIndicatorContainer>
             </FlexItem>
           </FlexItem.FlexEnd>
         </FlexItem>
@@ -277,14 +266,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                   {pluralize(data?.entities.length, "Entity", "Entities")}
                 </Text>
               </FlexItem>
-
-              {!hideNotifications.hasAccess && (
-                <LimitationNotification
-                  description="With the current plan, you can use to 7 entities per service."
-                  link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
-                  handleClick={handleEntityClick}
-                />
-              )}
 
               <List>
                 {data?.entities.map((entity) => (
