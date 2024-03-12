@@ -57,14 +57,14 @@ const ResourceOverview = () => {
     return [
       {
         icon: "database",
-        title: "Data Models",
+        title: "Entities",
         link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/entities`,
         value: summaryData.models,
       },
       {
         icon: "api",
         title: "APIs",
-        link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/modules/all`,
+        link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/modules`,
         value: summaryData.apis,
       },
       {
