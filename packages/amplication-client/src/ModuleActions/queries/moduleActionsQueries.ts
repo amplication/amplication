@@ -10,6 +10,21 @@ export const MODULE_ACTION_FIELDS_FRAGMENT = gql`
     gqlOperation
     restVerb
     path
+    actionType
+    inputType {
+      type
+      isArray
+      dtoId
+    }
+    outputType {
+      type
+      isArray
+      dtoId
+    }
+    restInputSource
+    restInputParamsPropertyName
+    restInputBodyPropertyName
+    restInputQueryPropertyName
     lockedByUserId
     lockedAt
     lockedByUser {

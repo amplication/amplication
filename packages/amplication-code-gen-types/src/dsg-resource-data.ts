@@ -2,6 +2,7 @@ import {
   AppInfo,
   Entity,
   ModuleAction,
+  ModuleDto,
   ModuleContainer,
   PluginInstallation,
   Role,
@@ -20,6 +21,7 @@ export class DSGResourceData {
   pluginInstallations!: PluginInstallation[];
   moduleContainers?: ModuleContainer[];
   moduleActions?: ModuleAction[];
+  moduleDtos?: ModuleDto[];
 
   //#region Blocks
   serviceTopics?: ServiceTopics[];

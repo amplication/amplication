@@ -21,13 +21,12 @@ import {
   interpolate,
   memberExpression,
 } from "../../utils/ast";
-import { getDTONameToPath } from "../resource/create-dtos";
 import { getImportableDTOs } from "../resource/dto/create-dto-module";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
-import { createEnumName } from "../prisma/create-prisma-schema-fields";
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
 import { USER_AUTH_FIELDS } from "../user-entity/user-entity";
+import { createEnumName } from "@amplication/dsg-utils";
 
 type SeedProperties = {
   userNameFieldName: string;
@@ -79,7 +78,9 @@ export const createDefaultAuthProperties = ({
   ),
 ];
 
-export async function createSeed(): Promise<ModuleMap> {
+export async function createSeed(
+  dtoNameToPath: Record<string, string>
+): Promise<ModuleMap> {
   const {
     serverDirectories,
     entities,
@@ -118,7 +119,8 @@ export async function createSeed(): Promise<ModuleMap> {
     templateMapping,
     fileDir,
     outputFileName,
-  });
+    dtoNameToPath,
+  } as CreateSeedParams);
 }
 
 async function createSeedInternal({
@@ -126,15 +128,14 @@ async function createSeedInternal({
   templateMapping,
   fileDir,
   outputFileName,
+  dtoNameToPath,
 }: CreateSeedParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { DTOs } = DsgContext.getInstance;
 
   interpolate(template, templateMapping);
 
   removeTSVariableDeclares(template);
 
-  const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     template,
     getImportableDTOs(`${fileDir}/${outputFileName}`, dtoNameToPath)

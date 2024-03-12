@@ -15,8 +15,6 @@ import { useQuery } from "@apollo/client";
 import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
 
 type Props = {
-  icon: IconType;
-  handleSearchChange: (value: string) => void;
   className: string;
 };
 

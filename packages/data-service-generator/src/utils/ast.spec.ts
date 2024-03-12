@@ -162,6 +162,38 @@ class A {
     const containedIds = findContainedIdentifiers(file, ids);
     expect(containedIds.map((id) => id.name)).toEqual(ids.map((id) => id.name));
   });
+  test("skip contained identifier in import declaration", () => {
+    const file = parse(`
+import { z, y } from "./file";
+class A {
+  @x
+  b: string;
+}
+    `);
+    const ids = [
+      builders.identifier("x"),
+      builders.identifier("y"),
+      builders.identifier("z"),
+    ];
+
+    const containedIds = findContainedIdentifiers(file, ids);
+    expect(containedIds.map((id) => id.name)).toEqual(["x"]);
+  });
+  test("skip qualified names", () => {
+    const file = parse(`
+class A {
+  f(x): y.z {}
+}
+    `);
+    const ids = [
+      builders.identifier("x"),
+      builders.identifier("y"),
+      builders.identifier("z"),
+    ];
+
+    const containedIds = findContainedIdentifiers(file, ids);
+    expect(containedIds.map((id) => id.name)).toEqual(["x"]);
+  });
 });
 
 describe("importContainedIdentifiers", () => {

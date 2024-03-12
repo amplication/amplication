@@ -11,18 +11,6 @@ import { Icon } from "../Icon/Icon";
 import classNames from "classnames";
 import { useCallback } from "react";
 
-const CircleColorToIconColor: Record<EnumTextColor, EnumTextColor> = {
-  [EnumTextColor.Black20]: EnumTextColor.Black,
-  [EnumTextColor.Black]: EnumTextColor.White,
-  [EnumTextColor.White]: EnumTextColor.Black,
-  [EnumTextColor.ThemeTurquoise]: EnumTextColor.Black,
-  [EnumTextColor.ThemeBlue]: EnumTextColor.Black,
-  [EnumTextColor.ThemeGreen]: EnumTextColor.Black,
-  [EnumTextColor.ThemeRed]: EnumTextColor.White,
-  [EnumTextColor.ThemeOrange]: EnumTextColor.Black,
-  [EnumTextColor.Primary]: EnumTextColor.White,
-};
-
 export type Props = {
   icon: string;
   text: string;
@@ -63,11 +51,7 @@ export const JumboButton = ({
       onClick={handleClick}
     >
       <CircleBadge color={bgColorVar} size="medium">
-        <Icon
-          icon={icon}
-          size="small"
-          color={CircleColorToIconColor[circleColor]}
-        />
+        <Icon icon={icon} size="small" color={circleColor} />
       </CircleBadge>
       <Text textStyle={EnumTextStyle.H3} textAlign={EnumTextAlign.Center}>
         {text}

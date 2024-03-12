@@ -89,12 +89,22 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
 
     if (entitlementType === EntitlementType.Boolean) {
+      if (isPreviewPlan(subscriptionPlan) && hasBooleanAccess) {
+        setDisabled(null);
+        setIcon(null);
+        return;
+      }
       setDisabled(!hasBooleanAccess);
     }
 
     if (entitlementType === EntitlementType.Metered) {
       const usageExceeded = usageLimit && currentUsage >= usageLimit;
       const isDisabled = usageExceeded ?? !hasMeteredAccess;
+      if (isPreviewPlan(subscriptionPlan) && !isDisabled) {
+        setDisabled(null);
+        setIcon(null);
+        return;
+      }
       setDisabled(isDisabled);
     }
   }, [
@@ -113,7 +123,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       return limitationText;
     }
     if (
-      subscription.subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
       subscription.status !== EnumSubscriptionStatus.Trailing
     ) {
       return fullEnterpriseText;
@@ -125,7 +135,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   const linkText = useMemo(() => {
     if (
       isPreviewPlan(subscriptionPlan) ||
-      (subscription.subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
         subscription.status !== EnumSubscriptionStatus.Trailing)
     ) {
       return ""; // don't show the upgrade link when the plan is preview
@@ -139,10 +149,8 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       setIcon(null);
       return;
     }
-    if (
-      (subscriptionPlan === EnumSubscriptionPlan.Free && disabled) ||
-      (isPreviewPlan(subscriptionPlan) && disabled)
-    ) {
+
+    if (disabled) {
       setIcon(IconType.Lock);
     }
 

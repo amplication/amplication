@@ -6,6 +6,7 @@ import {
   Text,
   HorizontalRule,
   Icon,
+  EnumIconPosition,
 } from "@amplication/ui/design-system";
 import { NODE_TYPE_MODEL_GROUP, Node, ResourceNode } from "./types";
 import "./ModelsGroupList.scss";
@@ -77,6 +78,7 @@ export default function ModelsGroupsList({
                   key={model.id}
                   icon="services"
                   iconSize="small"
+                  iconPosition={EnumIconPosition.None}
                   buttonStyle={EnumButtonStyle.Text}
                   onClick={(event) =>
                     handleModelGroupFilterChanged(event, model)

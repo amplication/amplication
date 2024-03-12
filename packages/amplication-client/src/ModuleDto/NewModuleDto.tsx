@@ -1,0 +1,113 @@
+import { pascalCase } from "pascal-case";
+import { useCallback, useContext } from "react";
+import { useHistory } from "react-router-dom";
+import { EnumButtonStyle } from "../Components/Button";
+import NewModuleChild from "../Modules/NewModuleChild";
+import { AppContext } from "../context/appContext";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import useModuleDto from "./hooks/useModuleDto";
+
+type Props = {
+  resourceId: string;
+  moduleId: string;
+  onDtoCreated?: (moduleAction: models.ModuleDto) => void;
+  buttonStyle?: EnumButtonStyle;
+  onDismiss?: () => void;
+};
+
+const FORM_SCHEMA = {
+  required: ["displayName"],
+  properties: {
+    displayName: {
+      type: "string",
+      minLength: 2,
+    },
+  },
+};
+
+const INITIAL_VALUES: Partial<models.ModuleDto> = {
+  name: "",
+  displayName: "",
+  description: "",
+};
+
+const NewModuleDto = ({
+  resourceId,
+  moduleId,
+  onDtoCreated,
+  buttonStyle = EnumButtonStyle.Primary,
+  onDismiss,
+}: Props) => {
+  const history = useHistory();
+  const { currentWorkspace, currentProject } = useContext(AppContext);
+
+  const {
+    createModuleDto,
+    createModuleDtoData: data,
+    createModuleDtoError: error,
+    createModuleDtoLoading: loading,
+  } = useModuleDto();
+
+  const handleSubmit = useCallback(
+    (data, moduleId: string) => {
+      const displayName = data.displayName.trim();
+      const name = pascalCase(displayName);
+
+      createModuleDto({
+        variables: {
+          data: {
+            ...data,
+            displayName,
+            name,
+            resource: { connect: { id: resourceId } },
+            parentBlock: { connect: { id: moduleId } },
+          },
+        },
+      })
+        .catch(console.error)
+        .then((result) => {
+          if (result && result.data) {
+            if (onDtoCreated && result && result.data) {
+              onDtoCreated(result.data.createModuleDto);
+            }
+            history.push(
+              `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos/${result.data.createModuleDto.id}`
+            );
+          }
+        });
+    },
+    [
+      createModuleDto,
+      resourceId,
+      onDtoCreated,
+      history,
+      currentWorkspace?.id,
+      currentProject?.id,
+    ]
+  );
+
+  const errorMessage = formatError(error);
+
+  return (
+    <NewModuleChild<models.ModuleDto>
+      resourceId={resourceId}
+      moduleId={moduleId}
+      validationSchema={FORM_SCHEMA}
+      initialValues={INITIAL_VALUES}
+      loading={loading}
+      errorMessage={errorMessage}
+      typeName={"DTO"}
+      description={
+        <>
+          Give your new DTO a descriptive name. <br />
+          For example: CustomerCreateInput, OrderFindArgs
+        </>
+      }
+      onCreate={handleSubmit}
+      onDismiss={onDismiss}
+    />
+  );
+};
+
+export default NewModuleDto;

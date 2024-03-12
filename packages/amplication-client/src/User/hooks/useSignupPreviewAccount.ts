@@ -14,6 +14,11 @@ type TData = {
   };
 };
 
+const PREVIEW_ACCOUNT_TYPE_TO_URL = {
+  [EnumPreviewAccountType.BreakingTheMonolith]: "/select-preview-env",
+  [EnumPreviewAccountType.PreviewOnboarding]: "/onboarding-preview",
+};
+
 const useSignupPreviewAccount = (
   email: string,
   previewAccountType: EnumPreviewAccountType
@@ -34,16 +39,19 @@ const useSignupPreviewAccount = (
           },
         },
         onCompleted: ({ signupPreviewAccount }) => {
+          localStorage.removeItem("disableSelectPreviewEnvPage");
           const { token, workspaceId, projectId, resourceId } =
             signupPreviewAccount;
           setToken(token);
-          history.push(
-            `/${workspaceId}/${projectId}/${resourceId}/breaking-the-monolith-options`
-          );
+
+          history.push({
+            pathname: PREVIEW_ACCOUNT_TYPE_TO_URL[previewAccountType],
+            search: `?resourceId=${resourceId}&projectId=${projectId}&workspaceId=${workspaceId}`,
+          });
         },
       }).catch(console.error);
     }
-  }, [email, previewAccountType]);
+  }, [email, history, previewAccountType, signupPreviewAccount]);
 
   return { loading, error };
 };

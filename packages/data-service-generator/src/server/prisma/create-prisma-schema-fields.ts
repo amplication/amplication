@@ -7,6 +7,7 @@ import {
   LookupResolvedProperties,
   types,
 } from "@amplication/code-gen-types";
+import { createEnumName } from "@amplication/dsg-utils";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
@@ -560,8 +561,4 @@ export function createRelationName(
   // Sort parts for deterministic results regardless of entity and related order
   parts.sort();
   return pascalCase(parts.join(" "));
-}
-
-export function createEnumName(field: EntityField, entity: Entity): string {
-  return `Enum${pascalCase(entity.name)}${pascalCase(field.name)}`;
 }

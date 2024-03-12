@@ -1,69 +1,37 @@
-export enum EnumEventType {
-  Signup = "Signup",
-  StartEmailSignup = "StartEmailSignup",
-  CompleteEmailSignup = "CompleteEmailSignup",
-  WorkspacePlanUpgradeRequest = "WorkspacePlanUpgradeRequest",
-  WorkspacePlanUpgradeCompleted = "WorkspacePlanUpgradeCompleted",
-  WorkspacePlanDowngradeRequest = "WorkspacePlanDowngradeRequest",
-  CommitCreate = "commit",
-  WorkspaceSelected = "selectWorkspace",
-  GitHubAuthResourceComplete = "completeAuthResourceWithGitHub",
-  ServiceWizardServiceGenerated = "ServiceWizard_ServiceGenerated",
-  SubscriptionLimitPassed = "SubscriptionLimitPassed",
-  EntityCreate = "createEntity",
-  EntityUpdate = "updateEntity",
-  EntityFieldCreate = "createEntityField",
-  EntityFieldUpdate = "updateEntityField",
-  EntityFieldFromImportPrismaSchemaCreate = "EntityFieldFromImportPrismaSchemaCreate",
-  PluginInstall = "installPlugin",
-  PluginUpdate = "updatePlugin",
-  DemoRepoCreate = "CreateDemoRepo",
-  InvitationAcceptance = "invitationAcceptance",
+import { EnumEventType } from "./segmentAnalyticsEventType.types";
 
-  //Import Prisma Schema
-  ImportPrismaSchemaStart = "importPrismaSchemaStart",
-  ImportPrismaSchemaError = "importPrismaSchemaError",
-  ImportPrismaSchemaCompleted = "importPrismaSchemaCompleted",
-
-  GitSyncError = "gitSyncError",
-  CodeGenerationError = "codeGenerationError",
-
-  CodeGeneratorVersionUpdate = "codeGeneratorVersionUpdate",
-
-  RedeemCoupon = "RedeemCoupon",
-
-  // break the monolith
-  ArchitectureRedesignStartRedesign = " architectureRedesign_StartRedesign",
-  ArchitectureRedesignApply = "architectureRedesign__Apply",
-  ArchitectureRedesignStartBreakTheMonolith = "architectureRedesign__StartBreakTheMonolith",
-}
+export { EnumEventType } from "./segmentAnalyticsEventType.types";
 
 export type IdentifyData = {
-  /**
-   * The user's account id
-   */
-  userId: string;
+  accountId?: string;
   firstName: string;
   lastName: string;
   email: string;
   createdAt: Date;
 };
 
-export type TrackData = {
-  /**
-   * The user's account id
-   */
-  userId: string;
+export interface EventTrackData {
   event: EnumEventType;
   properties?:
     | {
+        projectId?: string | undefined;
+        resourceId?: string | undefined;
         [key: string]: unknown;
       }
     | undefined;
   context?: {
     traits?: IdentifyData;
-    amplication?: {
-      analyticsSessionId?: string;
-    };
   };
-};
+}
+
+export interface ContextEventProperties {
+  workspaceId?: string;
+  $groups?: {
+    /**
+     * The workspace id
+     */
+    groupWorkspace: string;
+  };
+  projectId?: string;
+  resourceId?: string;
+}

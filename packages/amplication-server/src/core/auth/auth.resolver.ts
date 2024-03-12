@@ -22,11 +22,15 @@ import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParam
 import { SignupPreviewAccountArgs } from "./dto/SignupPreviewAccountArgs";
 import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
 import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
+import { PreviewUserService } from "./previewUser.service";
 
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly previewUserService: PreviewUserService
+  ) {}
 
   @Query(() => User)
   @UseGuards(GqlAuthGuard)
@@ -51,7 +55,7 @@ export class AuthResolver {
 
     const previewAccountEmailToLower = previewAccountEmail.toLowerCase();
 
-    return this.authService.signupPreviewAccount({
+    return this.previewUserService.signupPreviewAccount({
       previewAccountEmail: previewAccountEmailToLower,
       previewAccountType,
     });
@@ -62,7 +66,7 @@ export class AuthResolver {
   async completeSignupWithBusinessEmail(
     @UserEntity() user: User
   ): Promise<string> {
-    return this.authService.completeSignupPreviewAccount(user);
+    return this.previewUserService.completeSignupPreviewAccount(user);
   }
 
   @Mutation(() => Auth)
