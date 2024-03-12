@@ -49,7 +49,7 @@ const NewModuleDtoEnum = ({
   } = useModuleDto();
 
   const handleSubmit = useCallback(
-    (data) => {
+    (data, moduleId: string) => {
       const displayName = data.displayName.trim();
       const name = pascalCase(displayName);
 
@@ -79,7 +79,6 @@ const NewModuleDtoEnum = ({
     [
       createModuleDtoEnum,
       resourceId,
-      moduleId,
       onDtoCreated,
       history,
       currentWorkspace?.id,

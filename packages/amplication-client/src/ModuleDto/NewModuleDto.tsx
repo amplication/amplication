@@ -50,7 +50,7 @@ const NewModuleDto = ({
   } = useModuleDto();
 
   const handleSubmit = useCallback(
-    (data) => {
+    (data, moduleId: string) => {
       const displayName = data.displayName.trim();
       const name = pascalCase(displayName);
 
@@ -80,7 +80,6 @@ const NewModuleDto = ({
     [
       createModuleDto,
       resourceId,
-      moduleId,
       onDtoCreated,
       history,
       currentWorkspace?.id,

@@ -57,7 +57,7 @@ const NewModuleAction = ({
   }, [dialogOpen, setDialogOpen]);
 
   const handleSubmit = useCallback(
-    (data) => {
+    (data, moduleId: string) => {
       const displayName = data.displayName.trim();
       const name = pascalCase(displayName);
 

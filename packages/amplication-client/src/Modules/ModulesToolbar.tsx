@@ -49,16 +49,14 @@ const ModulesToolbar: React.FC<Props> = ({ moduleId, resourceId }) => {
         }
       >
         <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
-          {moduleId && (
-            <>
-              <NewModuleDtoButton resourceId={resourceId} moduleId={moduleId} />
-              <NewModuleAction
-                resourceId={resourceId}
-                moduleId={moduleId}
-                buttonStyle={EnumButtonStyle.Primary}
-              />
-            </>
-          )}
+          <>
+            <NewModuleDtoButton resourceId={resourceId} moduleId={moduleId} />
+            <NewModuleAction
+              resourceId={resourceId}
+              moduleId={moduleId}
+              buttonStyle={EnumButtonStyle.Primary}
+            />
+          </>
         </FlexItem.FlexEnd>
       </FlexItem>
     </Panel>
