@@ -1232,6 +1232,8 @@ input ModuleDtoWhereInput {
   description: StringFilter
   displayName: StringFilter
   id: StringFilter
+  includeCustomDtos: Boolean
+  includeDefaultDtos: Boolean
   parentBlock: WhereUniqueInput
   resource: ResourceWhereInput
   updatedAt: DateTimeFilter

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { FindOneArgs } from "../../dto";
 import { IBlock, User } from "../../models";
 import { EnumBlockType } from "../../enums/EnumBlockType";
-import { BlockService } from "../block/block.service";
+import { BlockService, SettingsFilterOperator } from "../block/block.service";
 import {
   CreateBlockArgs,
   FindManyBlockTypeArgs,
@@ -33,12 +33,14 @@ export abstract class BlockTypeService<
 
   async findManyBySettings(
     args: FindManyArgs,
-    settingsFilter: JsonFilter | JsonFilter[]
+    settingsFilter: JsonFilter | JsonFilter[],
+    settingsFilterOperator?: SettingsFilterOperator
   ): Promise<T[]> {
     return this.blockService.findManyByBlockTypeAndSettings(
       args,
       this.blockType,
-      settingsFilter
+      settingsFilter,
+      settingsFilterOperator
     );
   }
 
