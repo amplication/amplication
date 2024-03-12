@@ -145,7 +145,7 @@ const NewModule = ({ resourceId, onModuleCreated }: Props) => {
       </Dialog>
       {REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED === "true" && (
         <Button
-          buttonStyle={EnumButtonStyle.Primary}
+          buttonStyle={EnumButtonStyle.Outline}
           onClick={handleDialogStateChange}
           disabled={!customActionsLicenseEnabled}
           icon="box"

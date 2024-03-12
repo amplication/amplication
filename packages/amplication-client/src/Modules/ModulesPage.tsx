@@ -3,7 +3,7 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { useQuery } from "@apollo/client";
 import { useStiggContext } from "@stigg/react-sdk";
 import React, { useEffect, useState } from "react";
-import { match } from "react-router-dom";
+import { match, useRouteMatch } from "react-router-dom";
 import {
   EntitlementType,
   FeatureIndicatorContainer,
@@ -16,11 +16,12 @@ import { AppRouteProps } from "../routes/routesUtil";
 import ModuleList from "./ModuleList";
 import ModuleNavigationList from "./ModuleNavigationList";
 import ModulesHeader from "./ModulesHeader";
+import ModulesToolbar from "./ModulesToolbar";
+import NewModule from "./NewModule";
 import {
   ModulesContextInterface,
   ModulesContextProvider,
 } from "./modulesContext";
-import NewModule from "./NewModule";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -34,6 +35,13 @@ const ModulesPage: React.FC<Props> = ({
   ...rest
 }: Props) => {
   const { resource } = match.params;
+
+  const moduleMatch = useRouteMatch<{
+    resource: string;
+    module: string;
+  }>("/:workspace/:project/:resource/modules/:module");
+
+  const { module: moduleId } = moduleMatch?.params ?? {};
 
   const { stigg } = useStiggContext();
 
@@ -98,7 +106,9 @@ const ModulesPage: React.FC<Props> = ({
           </>
         )}
       />
+
       <ModulesContextProvider newVal={context}>
+        <ModulesToolbar resourceId={resource} moduleId={moduleId} />
         {match.isExact ? (
           <>
             <ModulesHeader

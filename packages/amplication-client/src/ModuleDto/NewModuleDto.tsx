@@ -18,14 +18,13 @@ import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import useModuleDto from "./hooks/useModuleDto";
-import { useModulesContext } from "../Modules/modulesContext";
-import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 
 type Props = {
   resourceId: string;
   moduleId: string;
   onDtoCreated?: (moduleAction: models.ModuleDto) => void;
   buttonStyle?: EnumButtonStyle;
+  onDismiss?: () => void;
 };
 
 const FORM_SCHEMA = {
@@ -53,11 +52,11 @@ const NewModuleDto = ({
   moduleId,
   onDtoCreated,
   buttonStyle = EnumButtonStyle.Primary,
+  onDismiss,
 }: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const { customActionsLicenseEnabled } = useModulesContext();
 
   const {
     createModuleDto,
@@ -65,10 +64,6 @@ const NewModuleDto = ({
     createModuleDtoError: error,
     createModuleDtoLoading: loading,
   } = useModuleDto();
-
-  const handleDialogStateChange = useCallback(() => {
-    setDialogOpen(!dialogOpen);
-  }, [dialogOpen, setDialogOpen]);
 
   const handleSubmit = useCallback(
     (data) => {
@@ -97,20 +92,23 @@ const NewModuleDto = ({
             );
           }
         });
-      setDialogOpen(false);
     },
-    [createModuleDto, resourceId, moduleId]
+    [
+      createModuleDto,
+      resourceId,
+      moduleId,
+      onDtoCreated,
+      history,
+      currentWorkspace?.id,
+      currentProject?.id,
+    ]
   );
 
   const errorMessage = formatError(error);
 
   return (
     <div>
-      <Dialog
-        isOpen={dialogOpen}
-        onDismiss={handleDialogStateChange}
-        title="New Dto"
-      >
+      <Dialog isOpen={true} onDismiss={onDismiss} title="New DTO">
         <SvgThemeImage image={EnumImages.Entities} />
         <Text textAlign={EnumTextAlign.Center}>
           Give your new Dto a descriptive name. <br />
@@ -151,16 +149,7 @@ const NewModuleDto = ({
           }}
         </Formik>
       </Dialog>
-      {REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED === "true" && (
-        <Button
-          buttonStyle={buttonStyle}
-          onClick={handleDialogStateChange}
-          disabled={!customActionsLicenseEnabled}
-          icon="zap"
-        >
-          Add DTO
-        </Button>
-      )}
+
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );

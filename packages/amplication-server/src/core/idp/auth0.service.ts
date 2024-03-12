@@ -5,6 +5,7 @@ import {
   ChangePasswordRequest,
   JSONApiResponse,
   ManagementClient,
+  PostPasswordChangeRequest,
   SignUpRequest,
   SignUpResponse,
   TextApiResponse,
@@ -19,6 +20,7 @@ export class Auth0Service {
   private readonly auth0Management: ManagementClient;
   private readonly clientId: string;
   private readonly businessEmailDbConnectionName: string;
+  private readonly clientDbConnectionId: string;
 
   constructor(configService: ConfigService) {
     this.clientId = configService.get<string>(Env.AUTH_ISSUER_CLIENT_ID);
@@ -27,6 +29,9 @@ export class Auth0Service {
     );
     this.businessEmailDbConnectionName = configService.get<string>(
       Env.AUTH_ISSUER_CLIENT_DB_CONNECTION
+    );
+    this.clientDbConnectionId = configService.get<string>(
+      Env.AUTH_ISSUER_CLIENT_DB_CONNECTION_ID
     );
     this.auth0 = new AuthenticationClient({
       domain: configService.get<string>(Env.AUTH_ISSUER_BASE_URL),
@@ -66,6 +71,21 @@ export class Auth0Service {
     );
 
     return changePasswordResponse;
+  }
+
+  async generateResetUserPasswordLink(email: string): Promise<string> {
+    const data: PostPasswordChangeRequest = {
+      email,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      client_id: this.clientId,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      connection_id: this.clientDbConnectionId,
+    };
+
+    const changePasswordResponse =
+      await this.auth0Management.tickets.changePassword(data);
+
+    return changePasswordResponse.data.ticket;
   }
 
   async getUserByEmail(email: string): Promise<boolean> {

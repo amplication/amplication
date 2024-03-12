@@ -186,6 +186,12 @@ const hashPasswordMock = jest.fn((password) => {
 
 const validatePasswordMock = jest.fn(() => true);
 
+const getAuthUserMock = jest.fn().mockResolvedValue({
+  ...EXAMPLE_AUTH_USER,
+  account: {
+    ...EXAMPLE_ACCOUNT,
+  },
+});
 const findUsersMock = jest.fn().mockResolvedValue([EXAMPLE_OTHER_AUTH_USER]);
 const previewUserConvertPreviewAccountToRegularAccountWithFreeTrailMock =
   jest.fn();
@@ -273,6 +279,7 @@ describe("AuthService", () => {
           provide: UserService,
           useClass: jest.fn(() => ({
             findUsers: findUsersMock,
+            getAuthUser: getAuthUserMock,
           })),
         },
         {
@@ -743,7 +750,7 @@ describe("AuthService", () => {
           workspace: EXAMPLE_WORKSPACE,
         };
 
-        jest.spyOn(service, "getAuthUser").mockResolvedValueOnce({
+        getAuthUserMock.mockResolvedValueOnce({
           ...EXAMPLE_AUTH_USER,
           account: {
             ...EXAMPLE_ACCOUNT,
@@ -792,6 +799,7 @@ describe("AuthService", () => {
     describe("and an amplication user with the same email does not exist", () => {
       beforeEach(() => {
         findUsersMock.mockResolvedValue([]);
+        getAuthUserMock.mockResolvedValue(null);
       });
 
       it("should create a new amplication user and track the event", async () => {

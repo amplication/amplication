@@ -51,6 +51,10 @@ $expandable-transition-duration: 0.1s;
     border: 1px solid var(--theme-red);
     background: var(--theme-light-red-transparent);
   }
+  &--surface {
+    background: var(--surface-background);
+    border: $border-dark;
+  }
 
   &--surface {
     background: var(--surface-background);
