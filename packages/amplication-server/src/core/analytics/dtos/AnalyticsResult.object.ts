@@ -39,6 +39,9 @@ export class AllAnalyticsResults {
   moduleActions: AnalyticsResults;
 
   @Field(() => Number)
+  loc: number;
+
+  @Field(() => Number)
   timeSaved: number;
 
   @Field(() => Number)

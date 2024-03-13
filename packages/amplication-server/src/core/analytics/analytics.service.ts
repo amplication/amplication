@@ -243,6 +243,7 @@ export class AnalyticsService {
     });
 
     return {
+      loc,
       timeSaved,
       coastSaved,
       codeQuality,
