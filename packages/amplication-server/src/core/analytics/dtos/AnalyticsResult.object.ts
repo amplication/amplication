@@ -23,3 +23,27 @@ export class AnalyticsResults {
   @Field(() => [MetricsGroupedByYear])
   results: MetricsGroupedByYear[];
 }
+
+@ObjectType()
+export class AllAnalyticsResults {
+  @Field(() => AnalyticsResults)
+  builds: AnalyticsResults;
+
+  @Field(() => AnalyticsResults)
+  entities: AnalyticsResults;
+
+  @Field(() => AnalyticsResults)
+  plugins: AnalyticsResults;
+
+  @Field(() => AnalyticsResults)
+  moduleActions: AnalyticsResults;
+
+  @Field(() => Number)
+  timeSaved: number;
+
+  @Field(() => Number)
+  coastSaved: number;
+
+  @Field(() => Number)
+  codeQuality: number;
+}

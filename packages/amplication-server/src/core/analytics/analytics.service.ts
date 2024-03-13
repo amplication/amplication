@@ -6,7 +6,10 @@ import {
   BlockChangesArgs,
   BuildCountQueryResult,
 } from "./types";
-import { AnalyticsResults } from "./dtos/AnalyticsResult.object";
+import {
+  AllAnalyticsResults,
+  AnalyticsResults,
+} from "./dtos/AnalyticsResult.object";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 
 @Injectable()
@@ -218,6 +221,56 @@ export class AnalyticsService {
     return {
       results: Object.values(this.translateToAnalyticsResults(results)),
     };
+  }
+
+  async getAllAnalyticsResults(
+    args: BaseAnalyticsArgs
+  ): Promise<AllAnalyticsResults> {
+    const loc = await this.countLinesOfCode(args);
+    const timeSaved = await this.evaluateTimeSaved(loc);
+    const coastSaved = await this.evaluateCoastSaved(loc);
+    const codeQuality = await this.evaluateCodeQuality(loc);
+
+    const builds = await this.countProjectBuilds(args);
+    const entities = await this.countEntityChanges(args);
+    const moduleActions = await this.countBlockChanges({
+      ...args,
+      blockType: EnumBlockType.ModuleAction,
+    });
+    const plugins = await this.countBlockChanges({
+      ...args,
+      blockType: EnumBlockType.PluginInstallation,
+    });
+
+    return {
+      timeSaved,
+      coastSaved,
+      codeQuality,
+      builds,
+      entities,
+      moduleActions,
+      plugins,
+    };
+  }
+
+  private async evaluateTimeSaved(linesOfCode: number) {
+    const divisor = 10.41;
+    const timeSaved = linesOfCode / divisor;
+    return Math.round(timeSaved);
+  }
+
+  private async evaluateCoastSaved(linesOfCode: number) {
+    const multiplier = 12;
+    const coastSaved = multiplier * linesOfCode;
+    return Math.round(coastSaved);
+  }
+
+  private async evaluateCodeQuality(linesOfCode: number) {
+    const multiplier = 14;
+    const divisor = 10.41;
+    const bugsPrevented = (multiplier * linesOfCode) / divisor;
+
+    return Math.round(bugsPrevented);
   }
 
   private translateToAnalyticsResults(

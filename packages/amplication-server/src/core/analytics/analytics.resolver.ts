@@ -4,7 +4,10 @@ import { AnalyticsService } from "./analytics.service";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { BaseAnalyticsArgs } from "./dtos/BaseAnalytics.args";
 import { BlockChangesArgs } from "./dtos/BlockChanges.args";
-import { AnalyticsResults } from "./dtos/AnalyticsResult.object";
+import {
+  AllAnalyticsResults,
+  AnalyticsResults,
+} from "./dtos/AnalyticsResult.object";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 
@@ -45,5 +48,13 @@ export class AnalyticsResolver {
       ...args,
       blockType: EnumBlockType[args.blockType],
     });
+  }
+
+  @Query(() => AllAnalyticsResults)
+  @UseGuards(GqlAuthGuard)
+  async getAllAnalyticsResults(
+    @Args() args: BaseAnalyticsArgs
+  ): Promise<AllAnalyticsResults> {
+    return this.analyticsService.getAllAnalyticsResults(args);
   }
 }
