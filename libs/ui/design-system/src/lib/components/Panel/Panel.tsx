@@ -15,6 +15,8 @@ export enum EnumPanelStyle {
   Transparent = "transparent",
   Bordered = "bordered",
   Bold = "bold",
+  Error = "error",
+  Surface = "surface",
 }
 
 export type Props = {
@@ -27,6 +29,8 @@ export type Props = {
   clickable?: boolean;
   themeColor?: EnumTextColor;
   onClick?: (event: any) => void;
+  nonClickableFooter?: ReactNode;
+  removePadding?: boolean;
 };
 
 export const Panel = React.forwardRef(
@@ -39,31 +43,57 @@ export const Panel = React.forwardRef(
       style,
       clickable,
       themeColor = undefined,
+      nonClickableFooter = undefined,
       onClick,
+      removePadding = false,
     }: Props,
     ref: React.Ref<HTMLDivElement>
   ) => {
+    const withContentWrapper = !!nonClickableFooter;
+
+    //When used with nonClickableFooter, we add a wrapper to the content to allow a click on the content only
+    //the clickableProps are added to the wrapper, not the main div
+    const clickableProps = {
+      onClick: onClick,
+      role: clickable ? "button" : undefined,
+    };
+
+    const paddingStyle = removePadding ? { padding: 0 } : {};
+
     return (
       <div
-        onClick={onClick}
         style={{
           ...style,
+          ...paddingStyle,
           "--theme-border-color": themeColor //set the css variable to the theme color to be used from the css file
             ? `var(--${themeColor})`
             : undefined,
         }}
-        role={clickable ? "button" : undefined}
         className={classNames(
           "amp-panel",
           className,
           `amp-panel--${panelStyle}`,
           { "amp-panel--clickable": clickable },
           { "amp-panel--shadow": shadow },
-          { "amp-panel--with-theme-border": !!themeColor }
+          { "amp-panel--with-theme-border": !!themeColor },
+          { "amp-panel--with-content-wrapper": withContentWrapper }
         )}
+        {...(!withContentWrapper ? clickableProps : {})}
         ref={ref}
       >
-        {children}
+        {withContentWrapper ? (
+          <div className="amp-panel__content-wrapper" {...clickableProps}>
+            {children}
+          </div>
+        ) : (
+          children
+        )}
+
+        {nonClickableFooter && (
+          <div className="amp-panel__non-clickable-footer">
+            {nonClickableFooter}
+          </div>
+        )}
       </div>
     );
   }

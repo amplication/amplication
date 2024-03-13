@@ -8,10 +8,10 @@ export class BuildLogger implements IBuildLogger {
     try {
       const logContext = { buildId: process.env.BUILD_ID, ...log };
       if (process.env.REMOTE_ENV !== "true") {
-        applicationLogger.info(
-          "Running locally, skipping log reporting",
-          logContext
-        );
+        // applicationLogger.info(
+        //   "Running locally, skipping log reporting",
+        //   logContext
+        // );
         return;
       }
       await httpClient.post(

@@ -39,6 +39,7 @@ export enum AnalyticsEventNames {
   FeatureRequestTileClick = "featureRequestTileClick",
   NewVersionTileFixEntitiesClick = "newVersionTileClick-fixEntities",
   RolesTileClick = "rolesTileClick",
+  PluginCategoryTileClick = "pluginCategoryTileClick",
 
   // project & project configuration
   ProjectConfigurationsSettingsUpdate = "updateProjectConfigurationsSettings",
@@ -64,6 +65,7 @@ export enum AnalyticsEventNames {
 
   RelatedEntityFix = "fixRelatedEntity",
   EntitiesTileClick = "entitiesTileClick",
+  APIsTileClick = "apisTileClick",
   PluginsTileClick = "pluginsTileClick",
   ImportPrismaSchemaClick = "importPrismaSchemaClick",
   ImportPrismaSchemaJoinBetaClick = "importPrismaSchemaJoinBetaClick",

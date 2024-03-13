@@ -7,4 +7,15 @@
       margin-bottom: var(--large-spacing);
     }
   }
+
+  .text-input,
+  .select-field {
+    min-width: var(--form-field-long);
+  }
+
+  .text-input {
+    &--textarea {
+      width: 100%;
+    }
+  }
 }

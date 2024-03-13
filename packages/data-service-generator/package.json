@@ -17,7 +17,7 @@
     "@nestjs/serve-static": "^3.0.1",
     "@nestjs/swagger": "^6.2.1",
     "@nestjs/testing": "^9.4.0",
-    "@prisma/client": "^4.16.2",
+    "@prisma/client": "^5.10.2",
     "@testing-library/jest-dom": "5.17.0",
     "ast-types": "^0.14.2",
     "axios": "^0.28.0",

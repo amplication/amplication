@@ -505,6 +505,7 @@ enum EnumBlockType {
   PluginOrder
   Module
   ModuleAction
+  ModuleDto
 }
 
 enum ActionStepStatus {
@@ -618,4 +619,5 @@ enum CodeGeneratorVersionStrategy {
 enum PreviewAccountType {
   None
   BreakingTheMonolith
+  PreviewOnboarding
 }

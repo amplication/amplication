@@ -47,7 +47,7 @@ export class DBSchemaImportService {
       await this.userActionService.createUserActionByTypeWithInitialStep(
         EnumUserActionType.DBSchemaImport,
         metadata,
-        initialStepData,
+        initialStepData(),
         user.id,
         args.data.resource.connect.id
       );
