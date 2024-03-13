@@ -17,7 +17,7 @@ import {
   Text,
   Tooltip,
 } from "@amplication/ui/design-system";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import "./PluginsTile.scss";
 import {
   PluginCategory,
@@ -30,6 +30,8 @@ import { useAppContext } from "../context/appContext";
 import { PluginLogo } from "../Plugins/PluginLogo";
 import { TitleAndIcon } from "../Components/TitleAndIcon";
 import { Link } from "react-router-dom";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useTracking } from "../util/analytics";
 
 type Props = {
   usedCategories: usedPluginCategories;
@@ -40,8 +42,12 @@ const CLASS_NAME = "plugins-tile";
 const PLUGIN_LOGOS_CLASS_NAME = "plugin-logos";
 const TOOLTIP_DIRECTION = "n";
 
+const AVAILABLE_CATEGORIES = "AvailableCategories";
+const INSTALLED_CATEGORIES = "InstalledCategories";
+
 function PluginsTile({ usedCategories, availableCategories }: Props) {
   const { currentWorkspace, currentProject, currentResource } = useAppContext();
+  const { trackEvent } = useTracking();
 
   const catalogUrl = `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/catalog`;
   const installedUrl = `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/installed`;
@@ -64,6 +70,17 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
       };
     });
   }, [usedCategories]);
+
+  const handleCategoryClick = useCallback(
+    (location: string, category: PluginCategory) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.PluginCategoryTileClick,
+        location,
+        category: category.name,
+      });
+    },
+    [trackEvent]
+  );
 
   const availableCategoriesList = availableCategories.slice(0, 4);
 
@@ -107,7 +124,11 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
 
           <div className={CLASS_NAME}>
             {availableCategoriesList.map((category) => (
-              <AvailableCategory key={category.name} category={category} />
+              <AvailableCategory
+                key={category.name}
+                category={category}
+                onClick={handleCategoryClick}
+              />
             ))}
           </div>
         </>
@@ -132,7 +153,11 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
 
       <div className={CLASS_NAME}>
         {installedCategories.map((category) => (
-          <InstalledCategory key={category.category.name} {...category} />
+          <InstalledCategory
+            key={category.category.name}
+            {...category}
+            onClick={handleCategoryClick}
+          />
         ))}
       </div>
     </Panel>
@@ -141,8 +166,9 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
 
 type AvailableCategoryProps = {
   category: PluginCategory;
+  onClick?: (location: string, category: PluginCategory) => void;
 };
-function AvailableCategory({ category }: AvailableCategoryProps) {
+function AvailableCategory({ category, onClick }: AvailableCategoryProps) {
   const { currentWorkspace, currentProject, currentResource } = useAppContext();
 
   const url = `/${currentWorkspace.id}/${currentProject.id}/${
@@ -153,6 +179,7 @@ function AvailableCategory({ category }: AvailableCategoryProps) {
     <List listStyle={EnumListStyle.Dark}>
       <ListItem
         to={url}
+        onClick={() => onClick(AVAILABLE_CATEGORIES, category)}
         direction={EnumFlexDirection.Column}
         gap={EnumGapSize.Large}
         end={
@@ -179,10 +206,12 @@ function AvailableCategory({ category }: AvailableCategoryProps) {
 type InstalledCategoryProps = {
   category: PluginCategory;
   installedPlugins: SortedPluginInstallation[];
+  onClick?: (location: string, category: PluginCategory) => void;
 };
 function InstalledCategory({
   category,
   installedPlugins,
+  onClick,
 }: InstalledCategoryProps) {
   const { currentWorkspace, currentProject, currentResource } = useAppContext();
 
@@ -192,6 +221,9 @@ function InstalledCategory({
     <List listStyle={EnumListStyle.Default}>
       <ListItem
         to={url}
+        onClick={() => {
+          onClick(INSTALLED_CATEGORIES, category);
+        }}
         direction={EnumFlexDirection.Column}
         gap={EnumGapSize.Large}
         end={<PluginLogos installedPlugins={installedPlugins} />}

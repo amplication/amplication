@@ -1,12 +1,9 @@
 import {
   EnumFlexDirection,
   EnumGapSize,
-  EnumItemsAlign,
   EnumListStyle,
   EnumTextColor,
   EnumTextStyle,
-  FlexItem,
-  Icon,
   List,
   ListItem,
   Text,

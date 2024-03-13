@@ -16,13 +16,30 @@ import {
 import { Link } from "react-router-dom";
 import { useAppContext } from "../context/appContext";
 import { PluginCategory } from "./hooks/useResourceSummary";
+import { useCallback } from "react";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useTracking } from "../util/analytics";
 
 type Props = {
   availableCategories: PluginCategory[];
 };
 
+const EVENT_LOCATION = "AddFunctionalityButton";
+
 const AddResourceFunctionalityButton = ({ availableCategories }: Props) => {
   const { currentProject, currentResource, currentWorkspace } = useAppContext();
+  const { trackEvent } = useTracking();
+
+  const handleClick = useCallback(
+    (category: PluginCategory) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.PluginCategoryTileClick,
+        location: EVENT_LOCATION,
+        category: category.name,
+      });
+    },
+    [trackEvent]
+  );
 
   const categories = availableCategories.slice(0, 4);
 
@@ -36,6 +53,9 @@ const AddResourceFunctionalityButton = ({ availableCategories }: Props) => {
         <SelectMenuList>
           {categories.map((category) => (
             <Link
+              onClick={() => {
+                handleClick(category);
+              }}
               to={`/${currentWorkspace.id}/${currentProject.id}/${
                 currentResource.id
               }/plugins/catalog/${encodeURIComponent(category.name)}`}

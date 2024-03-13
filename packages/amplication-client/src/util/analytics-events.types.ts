@@ -39,6 +39,7 @@ export enum AnalyticsEventNames {
   FeatureRequestTileClick = "featureRequestTileClick",
   NewVersionTileFixEntitiesClick = "newVersionTileClick-fixEntities",
   RolesTileClick = "rolesTileClick",
+  PluginCategoryTileClick = "pluginCategoryTileClick",
 
   // project & project configuration
   ProjectConfigurationsSettingsUpdate = "updateProjectConfigurationsSettings",
