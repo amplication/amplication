@@ -49,6 +49,17 @@ input AdminUISettingsUpdateInput {
   generateAdminUI: Boolean
 }
 
+type AllAnalyticsResults {
+  builds: AnalyticsResults!
+  codeQuality: Float!
+  costSaved: Float!
+  entities: AnalyticsResults!
+  loc: Float!
+  moduleActions: AnalyticsResults!
+  plugins: AnalyticsResults!
+  timeSaved: Float!
+}
+
 type AnalyticsResults {
   results: [MetricsGroupedByYear!]!
 }
@@ -1622,7 +1633,9 @@ type Query {
   Get the changes to apply to the model in order to break a resource into microservices
   """
   finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
+  getAllAnalyticsResults(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): AllAnalyticsResults!
   getBlockChangesCount(blockType: EnumBlockType!, endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): AnalyticsResults!
+  getEntityChangesCount(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): AnalyticsResults!
   getLOCSum(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): Float!
   getProjectBuildsCount(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): AnalyticsResults!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!

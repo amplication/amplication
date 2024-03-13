@@ -70,6 +70,17 @@ export type AdminUiSettingsUpdateInput = {
   generateAdminUI?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type AllAnalyticsResults = {
+  builds: AnalyticsResults;
+  codeQuality: Scalars['Float']['output'];
+  costSaved: Scalars['Float']['output'];
+  entities: AnalyticsResults;
+  loc: Scalars['Float']['output'];
+  moduleActions: AnalyticsResults;
+  plugins: AnalyticsResults;
+  timeSaved: Scalars['Float']['output'];
+};
+
 export type AnalyticsResults = {
   results: Array<MetricsGroupedByYear>;
 };
@@ -2135,7 +2146,9 @@ export type Query = {
   entity?: Maybe<Entity>;
   /** Get the changes to apply to the model in order to break a resource into microservices */
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
+  getAllAnalyticsResults: AllAnalyticsResults;
   getBlockChangesCount: AnalyticsResults;
+  getEntityChangesCount: AnalyticsResults;
   getLOCSum: Scalars['Float']['output'];
   getProjectBuildsCount: AnalyticsResults;
   gitGroups: PaginatedGitGroup;
@@ -2250,8 +2263,26 @@ export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
 };
 
 
+export type QueryGetAllAnalyticsResultsArgs = {
+  endDate: Scalars['DateTime']['input'];
+  projectId?: InputMaybe<Scalars['String']['input']>;
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
 export type QueryGetBlockChangesCountArgs = {
   blockType: EnumBlockType;
+  endDate: Scalars['DateTime']['input'];
+  projectId?: InputMaybe<Scalars['String']['input']>;
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetEntityChangesCountArgs = {
   endDate: Scalars['DateTime']['input'];
   projectId?: InputMaybe<Scalars['String']['input']>;
   resourceId?: InputMaybe<Scalars['String']['input']>;
