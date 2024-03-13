@@ -46,7 +46,7 @@ export class AnalyticsService {
       },
     });
 
-    return aggregatedLoc._sum.linesOfCode;
+    return aggregatedLoc._sum.linesOfCode ?? 0;
   }
 
   async countProjectBuilds({
