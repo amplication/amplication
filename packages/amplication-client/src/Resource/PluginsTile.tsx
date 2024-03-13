@@ -112,14 +112,16 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
             <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
               Available Plugins
             </Text>
-            <Link to={catalogUrl}>
-              <Text
-                textStyle={EnumTextStyle.Subtle}
-                textColor={EnumTextColor.ThemeTurquoise}
-              >
-                Check the full catalog
-              </Text>
-            </Link>
+            <FlexItem.FlexEnd>
+              <Link to={catalogUrl}>
+                <Text
+                  textStyle={EnumTextStyle.Subtle}
+                  textColor={EnumTextColor.ThemeTurquoise}
+                >
+                  Check the full catalog
+                </Text>
+              </Link>
+            </FlexItem.FlexEnd>
           </FlexItem>
 
           <div className={CLASS_NAME}>
@@ -141,14 +143,16 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
         <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
           Installed Plugins
         </Text>
-        <Link to={installedUrl}>
-          <Text
-            textStyle={EnumTextStyle.Subtle}
-            textColor={EnumTextColor.ThemeTurquoise}
-          >
-            Manage installed plugins
-          </Text>
-        </Link>
+        <FlexItem.FlexEnd>
+          <Link to={installedUrl}>
+            <Text
+              textStyle={EnumTextStyle.Subtle}
+              textColor={EnumTextColor.ThemeTurquoise}
+            >
+              Manage installed plugins
+            </Text>
+          </Link>
+        </FlexItem.FlexEnd>
       </FlexItem>
 
       <div className={CLASS_NAME}>
