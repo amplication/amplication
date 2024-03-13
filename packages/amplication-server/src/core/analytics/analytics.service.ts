@@ -216,6 +216,8 @@ export class AnalyticsService {
         `;
         }
         break;
+      default:
+        throw new Error(`Block type ${blockType} is not supported`);
     }
 
     return {
@@ -228,7 +230,7 @@ export class AnalyticsService {
   ): Promise<AllAnalyticsResults> {
     const loc = await this.countLinesOfCode(args);
     const timeSaved = await this.evaluateTimeSaved(loc);
-    const coastSaved = await this.evaluateCoastSaved(loc);
+    const costSaved = await this.evaluateCostSaved(loc);
     const codeQuality = await this.evaluateCodeQuality(loc);
 
     const builds = await this.countProjectBuilds(args);
@@ -245,7 +247,7 @@ export class AnalyticsService {
     return {
       loc,
       timeSaved,
-      coastSaved,
+      costSaved,
       codeQuality,
       builds,
       entities,
@@ -260,7 +262,7 @@ export class AnalyticsService {
     return Math.round(timeSaved);
   }
 
-  private async evaluateCoastSaved(linesOfCode: number) {
+  private async evaluateCostSaved(linesOfCode: number) {
     const multiplier = 12;
     const coastSaved = multiplier * linesOfCode;
     return Math.round(coastSaved);
@@ -268,7 +270,7 @@ export class AnalyticsService {
 
   private async evaluateCodeQuality(linesOfCode: number) {
     const multiplier = 14;
-    const divisor = 10.41;
+    const divisor = 1000;
     const bugsPrevented = (multiplier * linesOfCode) / divisor;
 
     return Math.round(bugsPrevented);
@@ -278,7 +280,10 @@ export class AnalyticsService {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     results: { year: number; time_group: number; count: bigint }[]
   ) {
-    const parsedResults: BuildCountQueryResult[] = results?.map((result) => {
+    if (!results) {
+      return {};
+    }
+    const parsedResults: BuildCountQueryResult[] = results.map((result) => {
       return {
         year: String(result.year),
         timeGroup: String(result.time_group),

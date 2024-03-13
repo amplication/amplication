@@ -45,7 +45,7 @@ export class AllAnalyticsResults {
   timeSaved: number;
 
   @Field(() => Number)
-  coastSaved: number;
+  costSaved: number;
 
   @Field(() => Number)
   codeQuality: number;
