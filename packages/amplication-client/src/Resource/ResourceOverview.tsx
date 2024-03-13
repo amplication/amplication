@@ -21,17 +21,15 @@ import PageContent from "../Layout/PageContent";
 import { useAppContext } from "../context/appContext";
 import APIsTile from "./APIsTile";
 import AddResourceFunctionalityButton from "./AddResourceFunctionalityButton";
-import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
+import { PluginsTile } from "./PluginsTile";
 import "./ResourceOverview.scss";
 import { ServicesTile } from "./ServicesTile";
 import { TopicsTile } from "./TopicsTile";
-import ViewCodeViewTile from "./ViewCodeViewTile";
 import { BtmButton, EnumButtonLocation } from "./break-the-monolith/BtmButton";
 import { resourceThemeMap } from "./constants";
 import AppGitStatusPanel from "./git/AppGitStatusPanel";
 import { useResourceSummary } from "./hooks/useResourceSummary";
-import { PluginsTile } from "./PluginsTile";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -48,8 +46,12 @@ const ResourceOverview = () => {
   const { currentResource, currentProject, currentWorkspace } = useAppContext();
   const { refreshData } = useStiggContext();
 
-  const { summaryData, usedCategories, availableCategories } =
-    useResourceSummary(currentResource);
+  const {
+    summaryData,
+    usedCategories,
+    availableCategories,
+    pluginsDataLoading,
+  } = useResourceSummary(currentResource);
 
   const resourceId = currentResource?.id;
 
@@ -57,14 +59,14 @@ const ResourceOverview = () => {
     return [
       {
         icon: "database",
-        title: "Data Models",
+        title: "Entities",
         link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/entities`,
         value: summaryData.models,
       },
       {
         icon: "api",
         title: "APIs",
-        link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/modules/all`,
+        link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/modules`,
         value: summaryData.apis,
       },
       {
@@ -164,10 +166,12 @@ const ResourceOverview = () => {
             <EntitiesTile resourceId={resourceId} />
             <APIsTile resourceId={resourceId} />
           </div>
-          <PluginsTile
-            usedCategories={usedCategories}
-            availableCategories={availableCategories}
-          />
+          {!pluginsDataLoading && (
+            <PluginsTile
+              usedCategories={usedCategories}
+              availableCategories={availableCategories}
+            />
+          )}
         </>
       )}
 
