@@ -56,7 +56,7 @@ export class AnalyticsService {
     let results: { year: number; time_group: number; count: bigint }[];
     if (projectId) {
       results = await this.prisma.$queryRaw`
-      SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+      SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
       FROM "Build" b
       JOIN "Resource" r ON b."resourceId" = r."id"
       WHERE b."createdAt" >= ${startDate}
@@ -67,7 +67,7 @@ export class AnalyticsService {
     `;
     } else {
       results = await this.prisma.$queryRaw`
-      SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+      SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
       FROM "Build" b
       JOIN "Resource" r ON b."resourceId" = r."id"
       JOIN "Project" p ON r."projectId" = p."id"
@@ -89,55 +89,54 @@ export class AnalyticsService {
     projectId,
     startDate,
     endDate,
-  }: BaseAnalyticsArgs): Promise<number> {
-    return this.prisma.entity.count({
-      where: {
-        resource: {
-          project: {
-            id: projectId,
-            workspaceId: workspaceId,
-          },
-        },
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        OR: [
-          {
-            createdAt: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-          {
-            updatedAt: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-        ],
-        versions: {
-          every: {
-            fields: {
-              every: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                OR: [
-                  {
-                    createdAt: {
-                      gte: startDate,
-                      lte: endDate,
-                    },
-                  },
-                  {
-                    updatedAt: {
-                      gte: startDate,
-                      lte: endDate,
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        },
-      },
-    });
+  }: BaseAnalyticsArgs): Promise<AnalyticsResults> {
+    let results;
+    if (projectId) {
+      results = await this.prisma.$queryRaw`
+      SELECT DATE_PART('year', e."createdAt") as year, DATE_PART('month', e."createdAt") as time_group, count(distinct ef."id") as count
+      FROM "Entity" e
+      JOIN "Resource" r ON e."resourceId" = r."id"
+      JOIN "EntityVersion" ev ON e."id" = ev."entityId"
+      JOIN "EntityField" ef ON ev."id" = ef."entityVersionId"
+      WHERE r."projectId" = ${projectId}
+      AND ev."versionNumber" = '0'
+      AND ((
+          (e."createdAt" >= ${startDate} AND e."createdAt" <= ${endDate})
+          OR (e."updatedAt" >= ${startDate} AND e."updatedAt" <= ${endDate})
+      )
+      OR (
+          (ef."createdAt" >= ${startDate} AND ef."createdAt" <= ${endDate})
+          OR (ef."updatedAt" >= ${startDate} AND ef."updatedAt" <= ${endDate})
+      ))
+      GROUP BY year, time_group
+      ORDER BY year, time_group;
+    `;
+    } else {
+      results = await this.prisma.$queryRaw`
+      SELECT DATE_PART('year', e."createdAt") as year, DATE_PART('month', e."createdAt") as time_group, count(distinct ef."id") as count
+      FROM "Entity" e
+      JOIN "Resource" r ON e."resourceId" = r."id"
+      JOIN "EntityVersion" ev ON e."id" = ev."entityId"
+      JOIN "EntityField" ef ON ev."id" = ef."entityVersionId"
+      JOIN "Project" p ON r."projectId" = p."id"
+      WHERE p."workspaceId" = ${workspaceId}
+      AND ev."versionNumber" = '0'
+      AND ((
+          (e."createdAt" >= ${startDate} AND e."createdAt" <= ${endDate})
+          OR (e."updatedAt" >= ${startDate} AND e."updatedAt" <= ${endDate})
+      )
+      OR (
+          (ef."createdAt" >= ${startDate} AND ef."createdAt" <= ${endDate})
+          OR (ef."updatedAt" >= ${startDate} AND ef."updatedAt" <= ${endDate})
+      ))
+      GROUP BY year, time_group
+      ORDER BY year, time_group;
+    `;
+    }
+
+    return {
+      results: Object.values(this.translateToAnalyticsResults(results)),
+    };
   }
 
   async countBlockChanges({
@@ -153,7 +152,7 @@ export class AnalyticsService {
       case EnumBlockType.ModuleAction:
         if (projectId) {
           results = await this.prisma.$queryRaw`
-          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
           FROM "Block" b
           JOIN "Resource" r ON b."resourceId" = r."id"
           WHERE r."projectId" = ${projectId}
@@ -167,7 +166,7 @@ export class AnalyticsService {
         `;
         } else {
           results = await this.prisma.$queryRaw`
-            SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+            SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
             FROM "Block" b
             JOIN "Resource" r ON b."resourceId" = r."id"
             JOIN "Project" p ON r."projectId" = p."id"
@@ -185,7 +184,7 @@ export class AnalyticsService {
       case EnumBlockType.PluginInstallation:
         if (projectId) {
           results = await this.prisma.$queryRaw`
-          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
           FROM "Block" b
           JOIN "Resource" r ON b."resourceId" = r."id"
           WHERE r."projectId" = ${projectId}
@@ -199,7 +198,7 @@ export class AnalyticsService {
         `;
         } else {
           results = await this.prisma.$queryRaw`
-          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(b."id") as count
+          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
           FROM "Block" b
           JOIN "Resource" r ON b."resourceId" = r."id"
           JOIN "Project" p ON r."projectId" = p."id"

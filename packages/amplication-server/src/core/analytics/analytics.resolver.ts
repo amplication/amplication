@@ -28,13 +28,13 @@ export class AnalyticsResolver {
     return this.analyticsService.countProjectBuilds(args);
   }
 
-  // @Query(() => Number)
-  // @UseGuards(GqlAuthGuard)
-  // async getEntityChangesCount(
-  //   @Args() args: BaseAnalyticsArgs
-  // ): Promise<number> {
-  //   return this.analyticsService.countEntityChanges(args);
-  // }
+  @Query(() => AnalyticsResults)
+  @UseGuards(GqlAuthGuard)
+  async getEntityChangesCount(
+    @Args() args: BaseAnalyticsArgs
+  ): Promise<AnalyticsResults> {
+    return this.analyticsService.countEntityChanges(args);
+  }
 
   @Query(() => AnalyticsResults)
   @UseGuards(GqlAuthGuard)
