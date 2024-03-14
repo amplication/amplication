@@ -166,7 +166,13 @@ export const PAGES_DATA: Pages = {
       {
         icon: `${PLUGIN_LOGO_BASE_URL}auth-supertokens.png`,
         title: "Supertokens",
-        plugins: [{ pluginId: "auth-core" }, { pluginId: "auth-supertokens" }],
+        plugins: [
+          { pluginId: "auth-core" },
+          {
+            pluginId: "auth-supertokens",
+            pluginSettingsOverrides: { supertokensIdFieldName: "username" },
+          },
+        ],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}auth-keycloak.png`,
