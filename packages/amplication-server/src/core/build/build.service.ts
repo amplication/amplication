@@ -480,7 +480,11 @@ export class BuildService {
       /(\d+) files? changed, (\d+) insertions?\(\+\), (\d+) deletions?\(-\)/;
     const match = diffStat.match(diffStatRegex);
     if (!match) {
-      throw new Error(`Invalid diff stat: ${diffStat}`);
+      return {
+        filesChanged: 0,
+        insertions: 0,
+        deletions: 0,
+      };
     }
     return {
       filesChanged: parseInt(match[1]),
