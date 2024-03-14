@@ -7,7 +7,7 @@ import { QueryRawResult } from "./types";
 const buildAggregateMock = jest.fn();
 const prismaQueryRawMock = jest.fn();
 
-describe("AnalyticsService", () => {
+describe("UsageInsightsService", () => {
   let service: UsageInsightsService;
 
   beforeEach(() => {
@@ -142,7 +142,7 @@ describe("AnalyticsService", () => {
   });
 
   describe("getAllAnalyticsResults", () => {
-    it("should return all analytics results", async () => {
+    it("should return usage insights", async () => {
       const mockedQueryRawResult: QueryRawResult[] = [
         {
           year: 2021,
@@ -261,6 +261,42 @@ describe("AnalyticsService", () => {
             },
           ],
         },
+      };
+
+      expect(result).toEqual(expectedResults);
+    });
+
+    it("should return evaluation insights", async () => {
+      const mockedQueryRawResult: QueryRawResult[] = [
+        {
+          year: 2021,
+          count: 4n,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          time_group: 3,
+        },
+        {
+          year: 2022,
+          count: 7n,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          time_group: 5,
+        },
+      ];
+
+      prismaQueryRawMock.mockResolvedValue(mockedQueryRawResult);
+
+      const startDate = new Date();
+      const endDate = new Date();
+
+      jest.spyOn(service, "countLinesOfCode").mockResolvedValueOnce(100);
+
+      const result = await service.getEvaluationInsights({
+        workspaceId: "workspace-id",
+        projectId: "project-id",
+        startDate,
+        endDate,
+      });
+
+      const expectedResults = {
         costSaved: 1200,
         codeQuality: 1,
         timeSaved: 10,
