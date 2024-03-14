@@ -621,4 +621,5 @@ enum CodeGeneratorVersionStrategy {
 enum PreviewAccountType {
   None
   BreakingTheMonolith
+  PreviewOnboarding
 }

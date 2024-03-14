@@ -82,7 +82,7 @@ type Auth {
 
 type AuthPreviewAccount {
   projectId: String!
-  resourceId: String!
+  resourceId: String
   token: String!
   workspaceId: String!
 }
@@ -839,6 +839,7 @@ enum EnumPendingChangeOriginType {
 enum EnumPreviewAccountType {
   BreakingTheMonolith
   None
+  PreviewOnboarding
 }
 
 enum EnumResourceType {

@@ -1,4 +1,7 @@
 import * as crypto from "crypto";
+import { PUBLIC_DOMAINS } from "./publicDomains";
+import { AmplicationError } from "../../errors/AmplicationError";
+const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
 export function generateRandomString(): string {
   return crypto.randomBytes(10).toString("hex");
@@ -45,4 +48,15 @@ export function generatePassword() {
   });
 
   return password;
+}
+
+export function validateWorkEmail(email: string) {
+  if (!isValidWorkEmail(email)) {
+    throw new AmplicationError(WORK_EMAIL_INVALID);
+  }
+}
+
+export function isValidWorkEmail(email: string): boolean {
+  const domain = email.split("@")[1];
+  return !PUBLIC_DOMAINS.includes(domain);
 }

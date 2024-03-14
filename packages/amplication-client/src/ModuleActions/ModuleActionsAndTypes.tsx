@@ -35,13 +35,6 @@ const ModuleActionsAndTypes = React.memo(
           itemsAlign={EnumItemsAlign.Center}
         >
           <Text textStyle={EnumTextStyle.H4}>Actions</Text>
-          <FlexItem.FlexEnd>
-            <NewModuleAction
-              moduleId={module.id}
-              resourceId={module.resourceId}
-              buttonStyle={EnumButtonStyle.Outline}
-            />
-          </FlexItem.FlexEnd>
         </FlexItem>
 
         <FlexItem margin={EnumFlexItemMargin.Top}>
@@ -55,18 +48,6 @@ const ModuleActionsAndTypes = React.memo(
         <HorizontalRule doubleSpacing />
         <FlexItem margin={EnumFlexItemMargin.Top}>
           <Text textStyle={EnumTextStyle.H4}>DTOs</Text>
-          <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
-            <NewModuleDto
-              moduleId={module.id}
-              resourceId={module.resourceId}
-              buttonStyle={EnumButtonStyle.Outline}
-            />
-            <NewModuleDtoEnum
-              moduleId={module.id}
-              resourceId={module.resourceId}
-              buttonStyle={EnumButtonStyle.Outline}
-            />
-          </FlexItem.FlexEnd>
         </FlexItem>
         <FlexItem margin={EnumFlexItemMargin.Both}>
           <ModuleDtoList
