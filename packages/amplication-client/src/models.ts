@@ -70,15 +70,11 @@ export type AdminUiSettingsUpdateInput = {
   generateAdminUI?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type AllAnalyticsResults = {
+export type AnalyticsResults = {
   builds: UsageInsights;
-  codeQuality: Scalars['Float']['output'];
-  costSaved: Scalars['Float']['output'];
   entities: UsageInsights;
-  loc: Scalars['Float']['output'];
   moduleActions: UsageInsights;
   plugins: UsageInsights;
-  timeSaved: Scalars['Float']['output'];
 };
 
 export type ApiToken = {
@@ -943,6 +939,13 @@ export type Environment = {
   resource: Resource;
   resourceId: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type EvaluationInsights = {
+  codeQuality: Scalars['Float']['output'];
+  costSaved: Scalars['Float']['output'];
+  loc: Scalars['Float']['output'];
+  timeSaved: Scalars['Float']['output'];
 };
 
 export type GitGetInstallationUrlInput = {
@@ -2148,7 +2151,8 @@ export type Query = {
   entity?: Maybe<Entity>;
   /** Get the changes to apply to the model in order to break a resource into microservices */
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
-  getUsageInsights: AllAnalyticsResults;
+  getEvaluationInsights: EvaluationInsights;
+  getUsageInsights: AnalyticsResults;
   gitGroups: PaginatedGitGroup;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
@@ -2258,6 +2262,15 @@ export type QueryEntityArgs = {
 
 export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
   userActionId: Scalars['String']['input'];
+};
+
+
+export type QueryGetEvaluationInsightsArgs = {
+  endDate: Scalars['DateTime']['input'];
+  projectId?: InputMaybe<Scalars['String']['input']>;
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 
