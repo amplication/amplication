@@ -1,13 +1,14 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { AnalyticsService } from "./analytics.service";
+import { UsageInsightsService } from "./usageInsights.service";
 import { PrismaService } from "../../prisma";
+import { QueryRawResult } from "./types";
 
 const buildAggregateMock = jest.fn();
 const prismaQueryRawMock = jest.fn();
 
 describe("AnalyticsService", () => {
-  let service: AnalyticsService;
+  let service: UsageInsightsService;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -17,7 +18,7 @@ describe("AnalyticsService", () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AnalyticsService,
+        UsageInsightsService,
         MockedAmplicationLoggerProvider,
         {
           provide: PrismaService,
@@ -31,7 +32,7 @@ describe("AnalyticsService", () => {
       ],
     }).compile();
 
-    service = module.get<AnalyticsService>(AnalyticsService);
+    service = module.get<UsageInsightsService>(UsageInsightsService);
   });
 
   it("should be defined", () => {
@@ -142,7 +143,7 @@ describe("AnalyticsService", () => {
 
   describe("getAllAnalyticsResults", () => {
     it("should return all analytics results", async () => {
-      const mockedQueryRawResult = [
+      const mockedQueryRawResult: QueryRawResult[] = [
         {
           year: 2021,
           count: 4n,
@@ -164,7 +165,7 @@ describe("AnalyticsService", () => {
 
       jest.spyOn(service, "countLinesOfCode").mockResolvedValueOnce(100);
 
-      const result = await service.getAllAnalyticsResults({
+      const result = await service.getUsageInsights({
         workspaceId: "workspace-id",
         projectId: "project-id",
         startDate,

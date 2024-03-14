@@ -1,7 +1,7 @@
 import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
-export class BaseAnalyticsArgs {
+export class BaseUsageInsightsArgs {
   @Field(() => String, { nullable: false })
   workspaceId!: string;
 

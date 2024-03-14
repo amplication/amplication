@@ -1,7 +1,7 @@
 import { ObjectType, Field, Int } from "@nestjs/graphql";
 
 @ObjectType()
-class TimeGroupCount {
+class Metrics {
   @Field(() => String)
   timeGroup: string;
 
@@ -14,29 +14,29 @@ export class MetricsGroupedByYear {
   @Field(() => String)
   year: string;
 
-  @Field(() => [TimeGroupCount])
-  metrics: TimeGroupCount[];
+  @Field(() => [Metrics])
+  metrics: Metrics[];
 }
 
 @ObjectType()
-export class AnalyticsResults {
+export class UsageInsights {
   @Field(() => [MetricsGroupedByYear])
   results: MetricsGroupedByYear[];
 }
 
 @ObjectType()
 export class AllAnalyticsResults {
-  @Field(() => AnalyticsResults)
-  builds: AnalyticsResults;
+  @Field(() => UsageInsights)
+  builds: UsageInsights;
 
-  @Field(() => AnalyticsResults)
-  entities: AnalyticsResults;
+  @Field(() => UsageInsights)
+  entities: UsageInsights;
 
-  @Field(() => AnalyticsResults)
-  plugins: AnalyticsResults;
+  @Field(() => UsageInsights)
+  plugins: UsageInsights;
 
-  @Field(() => AnalyticsResults)
-  moduleActions: AnalyticsResults;
+  @Field(() => UsageInsights)
+  moduleActions: UsageInsights;
 
   @Field(() => Number)
   loc: number;

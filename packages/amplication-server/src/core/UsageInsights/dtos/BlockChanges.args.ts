@@ -1,9 +1,9 @@
 import { EnumBlockType } from "../../../enums/EnumBlockType";
-import { BaseAnalyticsArgs } from "./BaseAnalytics.args";
+import { BaseUsageInsightsArgs } from "./BaseUsageInsightsArgs.args";
 import { ArgsType, Field } from "@nestjs/graphql";
 
 @ArgsType()
-export class BlockChangesArgs extends BaseAnalyticsArgs {
+export class BlockChangesArgs extends BaseUsageInsightsArgs {
   @Field(() => EnumBlockType, { nullable: false })
   blockType!: keyof typeof EnumBlockType;
 }

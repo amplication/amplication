@@ -2,18 +2,20 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma";
 import {
-  BaseAnalyticsArgs,
+  BaseUsageInsightsArgs,
   BlockChangesArgs,
-  BuildCountQueryResult,
+  ParsedQueryRowResult,
+  QueryRawResult,
 } from "./types";
 import {
   AllAnalyticsResults,
-  AnalyticsResults,
-} from "./dtos/AnalyticsResult.object";
+  MetricsGroupedByYear,
+  UsageInsights,
+} from "./dtos/UsageInsights.object";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 
 @Injectable()
-export class AnalyticsService {
+export class UsageInsightsService {
   constructor(
     private readonly logger: AmplicationLogger,
     private readonly prisma: PrismaService
@@ -24,7 +26,7 @@ export class AnalyticsService {
     projectId,
     startDate,
     endDate,
-  }: BaseAnalyticsArgs): Promise<number> {
+  }: BaseUsageInsightsArgs): Promise<number> {
     const aggregatedLoc = await this.prisma.build.aggregate({
       where: {
         linesOfCode: {
@@ -54,9 +56,8 @@ export class AnalyticsService {
     startDate,
     endDate,
     projectId,
-  }: BaseAnalyticsArgs): Promise<AnalyticsResults> {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    let results: { year: number; time_group: number; count: bigint }[];
+  }: BaseUsageInsightsArgs): Promise<UsageInsights> {
+    let results: QueryRawResult[];
     if (projectId) {
       results = await this.prisma.$queryRaw`
       SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
@@ -92,8 +93,8 @@ export class AnalyticsService {
     projectId,
     startDate,
     endDate,
-  }: BaseAnalyticsArgs): Promise<AnalyticsResults> {
-    let results;
+  }: BaseUsageInsightsArgs): Promise<UsageInsights> {
+    let results: QueryRawResult[];
     if (projectId) {
       results = await this.prisma.$queryRaw`
       SELECT DATE_PART('year', e."createdAt") as year, DATE_PART('month', e."createdAt") as time_group, count(distinct ef."id") as count
@@ -148,8 +149,8 @@ export class AnalyticsService {
     startDate,
     endDate,
     blockType,
-  }: BlockChangesArgs): Promise<AnalyticsResults> {
-    let results;
+  }: BlockChangesArgs): Promise<UsageInsights> {
+    let results: QueryRawResult[];
     this.logger.debug("blockType", { blockType });
     switch (blockType) {
       case EnumBlockType.ModuleAction:
@@ -225,8 +226,8 @@ export class AnalyticsService {
     };
   }
 
-  async getAllAnalyticsResults(
-    args: BaseAnalyticsArgs
+  async getUsageInsights(
+    args: BaseUsageInsightsArgs
   ): Promise<AllAnalyticsResults> {
     const loc = await this.countLinesOfCode(args);
     const timeSaved = await this.evaluateTimeSaved(loc);
@@ -277,13 +278,12 @@ export class AnalyticsService {
   }
 
   private translateToAnalyticsResults(
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    results: { year: number; time_group: number; count: bigint }[]
-  ) {
+    results: QueryRawResult[]
+  ): Record<string, MetricsGroupedByYear> {
     if (!results) {
       return {};
     }
-    const parsedResults: BuildCountQueryResult[] = results.map((result) => {
+    const parsedResults: ParsedQueryRowResult[] = results.map((result) => {
       return {
         year: String(result.year),
         timeGroup: String(result.time_group),
