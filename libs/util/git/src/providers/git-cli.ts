@@ -255,8 +255,12 @@ export class GitCli {
       await this.git.raw(["rev-parse", `${currentRef}^`])
     ).trim();
 
-    return (
+    const diffStat = (
       await this.git.diff(["--shortstat", `${currentRef}..${prevRef}`])
     ).trim();
+
+    this.logger.debug("get short stat", { currentRef, prevRef, diffStat });
+
+    return diffStat;
   }
 }
