@@ -27,7 +27,7 @@ import ConfirmationDialogFieldList from "./ConfirmationDialogFieldList";
 import "./EntityListItem.scss";
 import { USER_ENTITY } from "./constants";
 import useModule from "../Modules/hooks/useModule";
-import { DATE_CREATED_FIELD } from "../Modules/ModuleList";
+import { DATE_CREATED_FIELD } from "../Modules/ModuleNavigationList";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };

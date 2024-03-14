@@ -40,7 +40,8 @@ const CreateServiceCodeGeneration: React.FC<
   const { data } = useBuildWatchStatus(build);
 
   const history = useHistory();
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { currentWorkspace, currentProject, commitUtils } =
+    useContext(AppContext);
 
   const [buildCompleted, setBuildCompleted] = React.useState(false);
 
@@ -59,6 +60,7 @@ const CreateServiceCodeGeneration: React.FC<
       data?.build?.status === models.EnumBuildStatus.Completed
     ) {
       setBuildCompleted(true);
+      commitUtils.refetchLastCommit();
       trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CodeReady);
     }
   }, [data?.build?.status]);

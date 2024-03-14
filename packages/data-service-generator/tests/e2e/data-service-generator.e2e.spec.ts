@@ -19,6 +19,11 @@ import { Logger, LogLevel } from "@amplication/util/logging";
 import { omit } from "lodash";
 import env from "./env";
 import entities from "./data/base/entities";
+import {
+  defaultActions,
+  defaultDtos,
+  moduleContainers,
+} from "./data/base/modules";
 import { resourceInfo } from "./data/base/resourceInfo";
 import roles from "./data/base/roles";
 import { basicAuth, mongo, mysql, postgres } from "./plugins";
@@ -107,8 +112,9 @@ describe("Data Service Generator", () => {
           buildId: "example_build_id",
           resourceType: EnumResourceType.Service,
           pluginInstallations: plugins,
-          moduleActions: [],
-          moduleContainers: [],
+          moduleActions: defaultActions,
+          moduleDtos: defaultDtos,
+          moduleContainers: moduleContainers,
         };
 
         logger.info("Starting code generation", {

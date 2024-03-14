@@ -1,50 +1,51 @@
 import {
-  EnumItemsAlign,
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumListStyle,
   EnumTextColor,
   EnumTextStyle,
-  FlexItem,
-  Icon,
+  List,
   ListItem,
   Text,
-  EnumFlexItemMargin,
-  EnumGapSize,
-  EnumFlexDirection,
 } from "@amplication/ui/design-system";
 
 import React from "react";
+import { TitleAndIcon } from "../../Components/TitleAndIcon";
 
 interface Props {
   title: string;
   icon: string;
   message: string;
-  footer?: React.ReactNode;
-  headerExtra?: React.ReactNode;
+  to: string;
   onClick?: (e) => void;
+  themeColor?: EnumTextColor;
 }
 const OverviewSecondaryTile: React.FC<Props> = ({
   title,
   icon,
   message,
-  footer,
-  headerExtra,
+  to,
+  themeColor,
   onClick,
 }) => {
   return (
-    <ListItem onClick={onClick} end={footer}>
-      <FlexItem direction={EnumFlexDirection.Column} gap={EnumGapSize.Default}>
-        <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-          <FlexItem itemsAlign={EnumItemsAlign.Center}>
-            <Icon icon={icon} size="small" />
-            {title}
-          </FlexItem>
-        </Text>
+    <List
+      listStyle={EnumListStyle.Transparent}
+      style={{ height: "100%" }}
+      themeColor={themeColor}
+    >
+      <ListItem
+        showDefaultActionIcon
+        to={to}
+        onClick={onClick}
+        direction={EnumFlexDirection.Column}
+        gap={EnumGapSize.Default}
+      >
+        <TitleAndIcon icon={icon} title={title} />
 
-        <Text textStyle={EnumTextStyle.Description}>{message}</Text>
-      </FlexItem>
-      {headerExtra && (
-        <FlexItem margin={EnumFlexItemMargin.Top}>{headerExtra}</FlexItem>
-      )}
-    </ListItem>
+        <Text textStyle={EnumTextStyle.Subtle}>{message}</Text>
+      </ListItem>
+    </List>
   );
 };
 

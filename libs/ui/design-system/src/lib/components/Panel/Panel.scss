@@ -2,16 +2,29 @@
 
 $expandable-bottom-max-height: 200px;
 $expandable-transition-duration: 0.1s;
-$theme-border-height: 5px;
-$theme-border-expand: 1px;
+
 .amp-panel {
   background: var(--panel-background);
   border-radius: var(--default-border-radius);
-  border: none;
+  border: 1px solid transparent;
   box-sizing: border-box;
   padding: var(--default-spacing) var(--large-spacing);
   margin-top: 0;
   margin-bottom: var(--double-spacing);
+
+  &--with-content-wrapper {
+    padding: 0;
+  }
+
+  &__content-wrapper {
+    padding: var(--default-spacing) var(--large-spacing);
+  }
+
+  &__non-clickable-footer {
+    padding: var(--default-spacing) 0;
+    margin: 0 var(--large-spacing);
+    border-top: $border-dark;
+  }
 
   > hr.panel-divider {
     margin: var(--default-spacing) calc(var(--default-spacing) * -1);
@@ -31,37 +44,51 @@ $theme-border-expand: 1px;
   &--bordered {
     border: $border-dark;
     margin-bottom: var(--double-spacing);
+    background-color: var(--gray-90);
+  }
+
+  &--error {
+    border: 1px solid var(--theme-red);
+    background: var(--theme-light-red-transparent);
+  }
+  &--surface {
+    background: var(--surface-background);
+    border: $border-dark;
+  }
+
+  &--surface {
+    background: var(--surface-background);
+    border: $border-dark;
   }
 
   &--bold {
     background-color: var(--gray-full);
     border: $border-dark;
-    padding: var(--large-spacing);
+    &__content-wrapper {
+      padding: var(--large-spacing);
+    }
   }
 
   &--with-theme-border {
-    border-top: $theme-border-height solid var(--border-color);
-    position: relative;
-    &:after {
-      content: "";
-      position: absolute;
-      top: -$theme-border-height;
-      left: -$theme-border-expand;
-      width: calc(100% + 2 * $theme-border-expand);
-      height: $theme-border-height;
-      border-top-left-radius: var(--default-border-radius);
-      border-top-right-radius: var(--default-border-radius);
-      background-color: var(--theme-border-color);
-    }
+    @include themeTopBorder;
   }
   &--clickable {
     cursor: pointer;
     &:hover {
       background: var(--panel-hover-background);
-      border: $border-dark;
 
       .amp-horizontal-rule {
         border-top: $border-dark;
+      }
+    }
+    .amp-panel__content-wrapper {
+      cursor: pointer;
+      &:hover {
+        background: var(--panel-hover-background);
+
+        .amp-horizontal-rule {
+          border-top: $border-dark;
+        }
       }
     }
   }

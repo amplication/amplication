@@ -65,7 +65,7 @@ type PreviewAccountEnvironment = {
     users: AuthUser[];
   };
   project: Project;
-  resource: Resource;
+  resource?: Resource;
 };
 
 @Injectable()
@@ -1170,10 +1170,16 @@ export class WorkspaceService {
       user.id
     );
 
-    const resource = await this.createPreviewServiceWithPredefinedSettings(
-      project.id,
-      user
-    );
+    let resource: Resource | undefined;
+
+    if (
+      account.previewAccountType === EnumPreviewAccountType.BreakingTheMonolith
+    ) {
+      resource = await this.createPreviewServiceWithPredefinedSettings(
+        project.id,
+        user
+      );
+    }
 
     return {
       workspace,

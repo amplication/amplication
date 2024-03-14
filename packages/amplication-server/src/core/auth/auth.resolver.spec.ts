@@ -16,6 +16,7 @@ import { AuthService } from "./auth.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ApolloServerBase } from "apollo-server-core";
 import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
+import { PreviewUserService } from "./previewUser.service";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_TOKEN = "exampleToken";
@@ -185,6 +186,11 @@ describe("AuthResolver", () => {
             login: authServiceLoginMock,
             changePassword: authServiceChangePasswordMock,
             setCurrentWorkspace: setCurrentWorkspaceMock,
+          })),
+        },
+        {
+          provide: PreviewUserService,
+          useClass: jest.fn(() => ({
             signupPreviewAccount: signupPreviewAccountMock,
             completeSignupPreviewAccount: completeSignupPreviewAccountMock,
           })),

@@ -35,6 +35,7 @@ export function TextInput({
     <div
       className={classNames(`${CLASS_NAME}`, className, {
         [`${CLASS_NAME}--has-error`]: hasError,
+        [`${CLASS_NAME}--textarea`]: textarea,
       })}
     >
       <div className={`${CLASS_NAME}__inner-wrapper`}>

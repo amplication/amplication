@@ -6,7 +6,6 @@ import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-node";
 import { CompositePropagator } from "@opentelemetry/core";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-grpc";
 // import { KafkaJsInstrumentation } from "opentelemetry-instrumentation-kafkajs";
-// import { PrismaInstrumentation } from "@prisma/instrumentation";
 import {
   Tracing as OtelTracing,
   TracingDefaultConfig,
@@ -64,12 +63,9 @@ export class Tracing extends OtelTracing {
   static init(configuration: TracingConfig): void {
     configuration.instrumentations = [
       // new KafkaJsInstrumentation({}),
-      // new PrismaInstrumentation({
-      //   middleware: false,
-      // }),
     ];
     const sdkConfig =
-      process.env.NODE_ENV === "production"
+      process.env.NODE_ENV === "production" || process.env.DEBUG_XRAY
         ? addAwsXRayConfiguration(configuration)
         : addLocalConfiguration(configuration);
 

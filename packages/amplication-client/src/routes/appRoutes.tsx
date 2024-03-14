@@ -333,4 +333,14 @@ export const Routes: RouteDef[] = [
     isAnalytics: true,
     permission: true,
   },
+  {
+    path: "/onboarding-preview",
+    Component: lazy(() => import("../OnboardingPreview/OnboardingPreviewPage")),
+    moduleName: "OnboardingPreview",
+    moduleClass: "onboarding-preview",
+    routeTrackType: "",
+    exactPath: true,
+    isAnalytics: true,
+    permission: true,
+  },
 ];

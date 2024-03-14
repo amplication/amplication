@@ -71,7 +71,7 @@ type Auth {
 
 type AuthPreviewAccount {
   projectId: String!
-  resourceId: String!
+  resourceId: String
   token: String!
   workspaceId: String!
 }
@@ -656,6 +656,7 @@ enum EnumAuthProviderType {
 enum EnumBlockType {
   Module
   ModuleAction
+  ModuleDto
   PluginInstallation
   PluginOrder
   ProjectConfigurationSettings
@@ -744,6 +745,13 @@ enum EnumModuleActionGqlOperation {
   Query
 }
 
+enum EnumModuleActionRestInputSource {
+  Body
+  Params
+  Query
+  Split
+}
+
 enum EnumModuleActionRestVerb {
   Delete
   Get
@@ -770,6 +778,40 @@ enum EnumModuleActionType {
   Update
 }
 
+enum EnumModuleDtoPropertyType {
+  Boolean
+  DateTime
+  Dto
+  Enum
+  Float
+  Integer
+  Json
+  Null
+  String
+  Undefined
+}
+
+enum EnumModuleDtoType {
+  CountArgs
+  CreateArgs
+  CreateInput
+  CreateNestedManyInput
+  Custom
+  CustomEnum
+  DeleteArgs
+  Entity
+  Enum
+  FindManyArgs
+  FindOneArgs
+  ListRelationFilter
+  OrderByInput
+  UpdateArgs
+  UpdateInput
+  UpdateNestedManyInput
+  WhereInput
+  WhereUniqueInput
+}
+
 enum EnumPendingChangeAction {
   Create
   Delete
@@ -784,6 +826,7 @@ enum EnumPendingChangeOriginType {
 enum EnumPreviewAccountType {
   BreakingTheMonolith
   None
+  PreviewOnboarding
 }
 
 enum EnumResourceType {
@@ -1023,15 +1066,21 @@ type ModuleAction implements IBlock {
   gqlOperation: EnumModuleActionGqlOperation!
   id: String!
   inputParameters: [BlockInputOutput!]!
+  inputType: PropertyTypeDef
   lockedAt: DateTime
   lockedByUser: User
   lockedByUserId: String
   name: String!
   outputParameters: [BlockInputOutput!]!
+  outputType: PropertyTypeDef
   parentBlock: Block
   parentBlockId: String
   path: String
   resourceId: String
+  restInputBodyPropertyName: String
+  restInputParamsPropertyName: String
+  restInputQueryPropertyName: String
+  restInputSource: EnumModuleActionRestInputSource
   restVerb: EnumModuleActionRestVerb!
   updatedAt: DateTime!
   versionNumber: Float!
@@ -1040,14 +1089,11 @@ type ModuleAction implements IBlock {
 input ModuleActionCreateInput {
   description: String
   displayName: String!
-  gqlOperation: EnumModuleActionGqlOperation!
   inputParameters: [BlockInputOutputInput!]
   name: String
   outputParameters: [BlockInputOutputInput!]
   parentBlock: WhereParentIdInput
-  path: String
   resource: WhereParentIdInput!
-  restVerb: EnumModuleActionRestVerb!
 }
 
 input ModuleActionOrderByInput {
@@ -1062,11 +1108,17 @@ input ModuleActionOrderByInput {
 input ModuleActionUpdateInput {
   description: String
   displayName: String
-  enabled: Boolean!
-  gqlOperation: EnumModuleActionGqlOperation!
+  enabled: Boolean
+  gqlOperation: EnumModuleActionGqlOperation
+  inputType: PropertyTypeDefInput
   name: String
+  outputType: PropertyTypeDefInput
   path: String
-  restVerb: EnumModuleActionRestVerb!
+  restInputBodyPropertyName: String
+  restInputParamsPropertyName: String
+  restInputQueryPropertyName: String
+  restInputSource: EnumModuleActionRestInputSource
+  restVerb: EnumModuleActionRestVerb
 }
 
 input ModuleActionWhereInput {
@@ -1087,6 +1139,100 @@ input ModuleCreateInput {
   outputParameters: [BlockInputOutputInput!]
   parentBlock: WhereParentIdInput
   resource: WhereParentIdInput!
+}
+
+type ModuleDto implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  dtoType: EnumModuleDtoType!
+  enabled: Boolean!
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  members: [ModuleDtoEnumMember!]
+  name: String!
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  properties: [ModuleDtoProperty!]
+  relatedEntityId: String
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input ModuleDtoCreateInput {
+  description: String
+  displayName: String!
+  inputParameters: [BlockInputOutputInput!]
+  name: String
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  resource: WhereParentIdInput!
+}
+
+type ModuleDtoEnumMember {
+  name: String!
+  value: String!
+}
+
+input ModuleDtoEnumMemberCreateInput {
+  moduleDto: WhereParentIdInput!
+  name: String
+}
+
+input ModuleDtoEnumMemberUpdateInput {
+  name: String!
+  value: String!
+}
+
+input ModuleDtoOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+type ModuleDtoProperty {
+  isArray: Boolean!
+  isOptional: Boolean!
+  name: String!
+  propertyTypes: [PropertyTypeDef!]!
+}
+
+input ModuleDtoPropertyCreateInput {
+  moduleDto: WhereParentIdInput!
+  name: String
+}
+
+input ModuleDtoPropertyUpdateInput {
+  isArray: Boolean!
+  isOptional: Boolean!
+  name: String!
+  propertyTypes: [PropertyTypeDefInput!]!
+}
+
+input ModuleDtoUpdateInput {
+  description: String
+  displayName: String
+  enabled: Boolean!
+  name: String
+}
+
+input ModuleDtoWhereInput {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
 }
 
 input ModuleOrderByInput {
@@ -1136,6 +1282,10 @@ type Mutation {
   createMessageBroker(data: ResourceCreateInput!): Resource!
   createModule(data: ModuleCreateInput!): Module!
   createModuleAction(data: ModuleActionCreateInput!): ModuleAction!
+  createModuleDto(data: ModuleDtoCreateInput!): ModuleDto!
+  createModuleDtoEnum(data: ModuleDtoCreateInput!): ModuleDto!
+  createModuleDtoEnumMember(data: ModuleDtoEnumMemberCreateInput!): ModuleDtoEnumMember!
+  createModuleDtoProperty(data: ModuleDtoPropertyCreateInput!): ModuleDtoProperty!
   createOneEntity(data: EntityCreateInput!): Entity!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
@@ -1155,6 +1305,9 @@ type Mutation {
   deleteGitRepository(gitRepositoryId: String!): Resource!
   deleteModule(where: WhereUniqueInput!): Module!
   deleteModuleAction(where: WhereUniqueInput!): ModuleAction!
+  deleteModuleDto(where: WhereUniqueInput!): ModuleDto!
+  deleteModuleDtoEnumMember(where: WhereEnumMemberUniqueInput!): ModuleDtoEnumMember!
+  deleteModuleDtoProperty(where: WherePropertyUniqueInput!): ModuleDtoProperty!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   deleteProject(where: WhereUniqueInput!): Project
   deleteResource(where: WhereUniqueInput!): Resource
@@ -1195,6 +1348,9 @@ type Mutation {
   updateGitRepository(data: GitRepositoryUpdateInput!, where: WhereUniqueInput!): GitRepository!
   updateModule(data: ModuleUpdateInput!, where: WhereUniqueInput!): Module!
   updateModuleAction(data: ModuleActionUpdateInput!, where: WhereUniqueInput!): ModuleAction!
+  updateModuleDto(data: ModuleDtoUpdateInput!, where: WhereUniqueInput!): ModuleDto!
+  updateModuleDtoEnumMember(data: ModuleDtoEnumMemberUpdateInput!, where: WhereEnumMemberUniqueInput!): ModuleDtoEnumMember!
+  updateModuleDtoProperty(data: ModuleDtoPropertyUpdateInput!, where: WherePropertyUniqueInput!): ModuleDtoProperty!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
@@ -1411,6 +1567,18 @@ input PropertySelectorInput {
   propertyName: String!
 }
 
+type PropertyTypeDef {
+  dtoId: String
+  isArray: Boolean!
+  type: EnumModuleDtoPropertyType!
+}
+
+input PropertyTypeDefInput {
+  dtoId: String
+  isArray: Boolean!
+  type: EnumModuleDtoPropertyType!
+}
+
 input ProvisionSubscriptionInput {
   billingPeriod: String!
   cancelUrl: String
@@ -1428,6 +1596,7 @@ type ProvisionSubscriptionResult {
 type Query {
   account: Account!
   action(where: WhereUniqueInput!): Action!
+  availableDtosForResource(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
   block(where: WhereUniqueInput!): Block!
   blocks(orderBy: BlockOrderByInput, skip: Int, take: Int, where: BlockWhereInput): [Block!]!
   build(where: WhereUniqueInput!): Build!
@@ -1451,6 +1620,8 @@ type Query {
   module(where: WhereUniqueInput!): Module
   moduleAction(where: WhereUniqueInput!): ModuleAction
   moduleActions(orderBy: ModuleActionOrderByInput, skip: Int, take: Int, where: ModuleActionWhereInput): [ModuleAction!]!
+  moduleDto(where: WhereUniqueInput!): ModuleDto
+  moduleDtos(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
   modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   pluginInstallation(where: WhereUniqueInput!): PluginInstallation
@@ -1922,8 +2093,18 @@ type UserRole {
   updatedAt: DateTime!
 }
 
+input WhereEnumMemberUniqueInput {
+  enumMemberName: String!
+  moduleDto: WhereUniqueInput!
+}
+
 input WhereParentIdInput {
   connect: WhereUniqueInput!
+}
+
+input WherePropertyUniqueInput {
+  moduleDto: WhereUniqueInput!
+  propertyName: String!
 }
 
 input WhereUniqueInput {

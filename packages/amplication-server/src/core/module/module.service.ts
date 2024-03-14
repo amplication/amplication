@@ -1,18 +1,21 @@
 import { Injectable } from "@nestjs/common";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
+import { AmplicationError } from "../../errors/AmplicationError";
 import { Entity, User } from "../../models";
 import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
+import { DefaultModuleForEntityNotFoundError } from "./DefaultModuleForEntityNotFoundError";
 import { CreateModuleArgs } from "./dto/CreateModuleArgs";
 import { DeleteModuleArgs } from "./dto/DeleteModuleArgs";
 import { FindManyModuleArgs } from "./dto/FindManyModuleArgs";
 import { Module } from "./dto/Module";
-import { UpdateModuleArgs } from "./dto/UpdateModuleArgs";
 import { ModuleUpdateInput } from "./dto/ModuleUpdateInput";
-import { DefaultModuleForEntityNotFoundError } from "./DefaultModuleForEntityNotFoundError";
-import { ModuleActionService } from "../moduleAction/moduleAction.service";
-import { AmplicationError } from "../../errors/AmplicationError";
+import { UpdateModuleArgs } from "./dto/UpdateModuleArgs";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
 
@@ -26,11 +29,20 @@ export class ModuleService extends BlockTypeService<
 > {
   blockType = EnumBlockType.Module;
 
+  customActionsEnabled: boolean;
+
   constructor(
     protected readonly blockService: BlockService,
-    private readonly moduleActionService: ModuleActionService
+    private readonly moduleActionService: ModuleActionService,
+    private readonly moduleDtoService: ModuleDtoService,
+    private configService: ConfigService
   ) {
     super(blockService);
+
+    this.customActionsEnabled = Boolean(
+      this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===
+        "true"
+    );
   }
 
   validateModuleName(moduleName: string): void {
@@ -41,6 +53,10 @@ export class ModuleService extends BlockTypeService<
   }
 
   async create(args: CreateModuleArgs, user: User): Promise<Module> {
+    if (!args.data.entityId && !this.customActionsEnabled) {
+      return null;
+    }
+
     this.validateModuleName(args.data.name);
 
     return super.create(
@@ -57,6 +73,23 @@ export class ModuleService extends BlockTypeService<
   }
 
   async update(args: UpdateModuleArgs, user: User): Promise<Module> {
+    const existingModule = await super.findOne({
+      where: {
+        id: args.where.id,
+      },
+    });
+
+    if (existingModule?.entityId) {
+      if (
+        existingModule.name !== args.data.name &&
+        args.data.name !== undefined
+      ) {
+        throw new AmplicationError(
+          "Cannot update the name of a default Module for entity."
+        );
+      }
+    }
+
     this.validateModuleName(args.data.name);
     return super.update(
       {
@@ -81,7 +114,7 @@ export class ModuleService extends BlockTypeService<
         "Cannot delete the default module for entity. To delete it, you must delete the entity"
       );
     }
-    return super.delete(args, user);
+    return super.delete(args, user, true, true);
   }
 
   async createDefaultModuleForEntity(
@@ -102,6 +135,12 @@ export class ModuleService extends BlockTypeService<
     );
 
     await this.moduleActionService.createDefaultActionsForEntityModule(
+      entity,
+      module,
+      user
+    );
+
+    await this.moduleDtoService.createDefaultDtosForEntityModule(
       entity,
       module,
       user
@@ -145,7 +184,7 @@ export class ModuleService extends BlockTypeService<
       entity.id
     );
 
-    const module = await this.update(
+    const module = await super.update(
       {
         where: {
           id: moduleId,
@@ -156,6 +195,12 @@ export class ModuleService extends BlockTypeService<
     );
 
     await this.moduleActionService.updateDefaultActionsForEntityModule(
+      entity,
+      module,
+      user
+    );
+
+    await this.moduleDtoService.updateDefaultDtosForEntityModule(
       entity,
       module,
       user
