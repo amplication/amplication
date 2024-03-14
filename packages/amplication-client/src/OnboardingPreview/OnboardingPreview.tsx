@@ -60,29 +60,33 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
 
     merge(data, ...values);
 
-    const pluginIds = new Set(
+    const pluginsSelectedInWizard = new Set(
       Object.values(pagesData).flatMap((page) =>
         page.items
-          .filter((item) => item.selected && item.pluginsIds)
-          .flatMap((item) => item.pluginsIds)
+          .filter((item) => item.selected && item.plugins)
+          .flatMap((item) => item.plugins)
       )
     );
 
-    const selectedPlugins = Array.from(pluginIds).map(
-      (id) => pluginCatalog[id]
-    );
+    const selectedPluginsArray = Array.from(pluginsSelectedInWizard);
 
-    const plugins: models.PluginInstallationCreateInput[] = selectedPlugins.map(
-      (plugin) => {
-        const version = plugin.versions.find((version) => version.isLatest);
+    const plugins: models.PluginInstallationCreateInput[] =
+      selectedPluginsArray.map((plugin) => {
+        const pluginCatalogItem = pluginCatalog[plugin.pluginId];
+        const version = pluginCatalogItem.versions.find(
+          (version) => version.isLatest
+        );
 
         const pluginCreateInput: models.PluginInstallationCreateInput = {
-          pluginId: plugin.pluginId,
+          pluginId: pluginCatalogItem.pluginId,
           version: version.version,
-          settings: version.settings,
+          settings: {
+            ...JSON.parse(version.settings),
+            ...plugin.pluginSettingsOverrides,
+          },
           configurations: version.configurations,
-          npm: plugin.npm,
-          displayName: plugin.name,
+          npm: pluginCatalogItem.npm,
+          displayName: pluginCatalogItem.name,
           enabled: true,
           resource: {
             connect: {
@@ -92,8 +96,7 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
         };
 
         return pluginCreateInput;
-      }
-    );
+      });
 
     data.plugins = {
       plugins,

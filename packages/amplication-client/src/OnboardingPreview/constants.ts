@@ -5,6 +5,11 @@ import imgSwagger from "../assets/images/swagger.svg";
 const PLUGIN_LOGO_BASE_URL =
   "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 
+type PluginInstallation = {
+  pluginId: string;
+  pluginSettingsOverrides?: object;
+};
+
 type SelectionItem = {
   icon: string;
   iconClassName?: string;
@@ -12,7 +17,7 @@ type SelectionItem = {
   title: string;
   selected?: boolean;
   value?: any;
-  pluginsIds?: string[];
+  plugins?: PluginInstallation[];
 };
 
 type Page = {
@@ -55,22 +60,22 @@ export const PAGES_DATA: Pages = {
       {
         icon: `${PLUGIN_LOGO_BASE_URL}db-postgres.png`,
         title: "PostgreSQL DB",
-        pluginsIds: ["db-postgres"],
+        plugins: [{ pluginId: "db-postgres" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}db-mongo.png`,
         title: "Mongo DB",
-        pluginsIds: ["db-mongo"],
+        plugins: [{ pluginId: "db-mongo" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}db-mysql.png`,
         title: "MySQL DB",
-        pluginsIds: ["db-mysql"],
+        plugins: [{ pluginId: "db-mysql" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}db-mssql.png`,
         title: "MS SQL Server",
-        pluginsIds: ["db-mssql"],
+        plugins: [{ pluginId: "db-mssql" }],
       },
     ],
   },
@@ -111,7 +116,7 @@ export const PAGES_DATA: Pages = {
       {
         icon: `${PLUGIN_LOGO_BASE_URL}transport-grpc.png`,
         title: "gRpc",
-        pluginsIds: ["transport-grpc"],
+        plugins: [{ pluginId: "transport-grpc" }],
       },
     ],
   },
@@ -161,22 +166,22 @@ export const PAGES_DATA: Pages = {
       {
         icon: `${PLUGIN_LOGO_BASE_URL}auth-supertokens.png`,
         title: "Supertokens",
-        pluginsIds: ["auth-core", "auth-supertokens"],
+        plugins: [{ pluginId: "auth-core" }, { pluginId: "auth-supertokens" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}auth-keycloak.png`,
         title: "Keycloak",
-        pluginsIds: ["auth-core", "auth-keycloak"],
+        plugins: [{ pluginId: "auth-core" }, { pluginId: "auth-keycloak" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}auth-auth0.png`,
         title: "Auth0",
-        pluginsIds: ["auth-core", "auth-auth0"],
+        plugins: [{ pluginId: "auth-core" }, { pluginId: "auth-auth0" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}auth-jwt.png`,
         title: "Local JWT Provider",
-        pluginsIds: ["auth-core", "auth-jwt"],
+        plugins: [{ pluginId: "auth-core" }, { pluginId: "auth-jwt" }],
       },
       {
         icon: "",
@@ -195,22 +200,22 @@ export const PAGES_DATA: Pages = {
       {
         icon: `${PLUGIN_LOGO_BASE_URL}kafka.png`,
         title: "Kafka",
-        pluginsIds: ["broker-kafka"],
+        plugins: [{ pluginId: "broker-kafka" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}broker-mqtt.png`,
         title: "MQTT",
-        pluginsIds: ["broker-mqtt"],
+        plugins: [{ pluginId: "broker-mqtt" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}broker-nats.png`,
         title: "NATS",
-        pluginsIds: ["broker-nats"],
+        plugins: [{ pluginId: "broker-nats" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}broker-rabbitmq.png`,
         title: "RabbitMQ",
-        pluginsIds: ["broker-rabbitmq"],
+        plugins: [{ pluginId: "broker-rabbitmq" }],
       },
       {
         icon: "",
@@ -228,25 +233,25 @@ export const PAGES_DATA: Pages = {
       {
         icon: `${PLUGIN_LOGO_BASE_URL}deployment-helm-chart.png`,
         title: "Helm Chart",
-        pluginsIds: ["deployment-helm-chart"],
+        plugins: [{ pluginId: "deployment-helm-chart" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}provisioning-terraform-aws-core.png`,
         title: "AWS ECS + RDS (Tarraform)",
-        pluginsIds: [
-          "provisioning-terraform-aws-core",
-          "provisioning-terraform-aws-database-rds",
-          "provisioning-terraform-aws-deployment-ecs",
-          "provisioning-terraform-aws-repository-ecr",
+        plugins: [
+          { pluginId: "provisioning-terraform-aws-core" },
+          { pluginId: "provisioning-terraform-aws-database-rds" },
+          { pluginId: "provisioning-terraform-aws-deployment-ecs" },
+          { pluginId: "provisioning-terraform-aws-repository-ecr" },
         ],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}provisioning-terraform-gcp-core.png`,
         title: "GCP xxx (Tarraform)",
-        pluginsIds: [
-          "provisioning-terraform-gcp-core",
-          "provisioning-terraform-gcp-database-csql",
-          "provisioning-terraform-gcp-repository-ar",
+        plugins: [
+          { pluginId: "provisioning-terraform-gcp-core" },
+          { pluginId: "provisioning-terraform-gcp-database-csql" },
+          { pluginId: "provisioning-terraform-gcp-repository-ar" },
         ],
       },
       {
@@ -265,22 +270,22 @@ export const PAGES_DATA: Pages = {
       {
         icon: `${PLUGIN_LOGO_BASE_URL}cache-redis.png`,
         title: "Redis Cache",
-        pluginsIds: ["cache-redis"],
+        plugins: [{ pluginId: "cache-redis" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}observability-opentelemetry.png`,
         title: "Open-telemetry",
-        pluginsIds: ["observability-opentelemetry"],
+        plugins: [{ pluginId: "observability-opentelemetry" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}formatter-prettier.png`,
         title: "Prettier",
-        pluginsIds: ["formatter-prettier"],
+        plugins: [{ pluginId: "formatter-prettier" }],
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}linter-eslint.png`,
         title: "ESLint",
-        pluginsIds: ["linter-eslint"],
+        plugins: [{ pluginId: "linter-eslint" }],
       },
     ],
   },
