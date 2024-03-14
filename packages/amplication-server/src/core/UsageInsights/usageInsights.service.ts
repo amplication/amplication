@@ -8,7 +8,8 @@ import {
   QueryRawResult,
 } from "./types";
 import {
-  AllAnalyticsResults,
+  AnalyticsResults,
+  EvaluationInsights,
   MetricsGroupedByYear,
   UsageInsights,
 } from "./dtos/UsageInsights.object";
@@ -228,12 +229,7 @@ export class UsageInsightsService {
 
   async getUsageInsights(
     args: BaseUsageInsightsArgs
-  ): Promise<AllAnalyticsResults> {
-    const loc = await this.countLinesOfCode(args);
-    const timeSaved = await this.evaluateTimeSaved(loc);
-    const costSaved = await this.evaluateCostSaved(loc);
-    const codeQuality = await this.evaluateCodeQuality(loc);
-
+  ): Promise<AnalyticsResults> {
     const builds = await this.countProjectBuilds(args);
     const entities = await this.countEntityChanges(args);
     const moduleActions = await this.countBlockChanges({
@@ -246,14 +242,26 @@ export class UsageInsightsService {
     });
 
     return {
-      loc,
-      timeSaved,
-      costSaved,
-      codeQuality,
       builds,
       entities,
       moduleActions,
       plugins,
+    };
+  }
+
+  async getEvaluationInsights(
+    args: BaseUsageInsightsArgs
+  ): Promise<EvaluationInsights> {
+    const loc = await this.countLinesOfCode(args);
+    const timeSaved = await this.evaluateTimeSaved(loc);
+    const costSaved = await this.evaluateCostSaved(loc);
+    const codeQuality = await this.evaluateCodeQuality(loc);
+
+    return {
+      loc,
+      timeSaved,
+      costSaved,
+      codeQuality,
     };
   }
 

@@ -3,7 +3,10 @@ import { UseFilters, UseGuards } from "@nestjs/common";
 import { UsageInsightsService } from "./usageInsights.service";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { BaseUsageInsightsArgs } from "./dtos/BaseUsageInsightsArgs.args";
-import { AllAnalyticsResults } from "./dtos/UsageInsights.object";
+import {
+  AnalyticsResults,
+  EvaluationInsights,
+} from "./dtos/UsageInsights.object";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 
 @Resolver()
@@ -12,11 +15,19 @@ import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions
 export class UsageInsightsResolver {
   constructor(private readonly analyticsService: UsageInsightsService) {}
 
-  @Query(() => AllAnalyticsResults)
+  @Query(() => AnalyticsResults)
   @UseGuards(GqlAuthGuard)
   async getUsageInsights(
     @Args() args: BaseUsageInsightsArgs
-  ): Promise<AllAnalyticsResults> {
+  ): Promise<AnalyticsResults> {
     return this.analyticsService.getUsageInsights(args);
+  }
+
+  @Query(() => EvaluationInsights)
+  @UseGuards(GqlAuthGuard)
+  async getEvaluationInsights(
+    @Args() args: BaseUsageInsightsArgs
+  ): Promise<EvaluationInsights> {
+    return this.analyticsService.getEvaluationInsights(args);
   }
 }

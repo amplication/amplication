@@ -25,7 +25,7 @@ export class UsageInsights {
 }
 
 @ObjectType()
-export class AllAnalyticsResults {
+export class AnalyticsResults {
   @Field(() => UsageInsights)
   builds: UsageInsights;
 
@@ -37,7 +37,10 @@ export class AllAnalyticsResults {
 
   @Field(() => UsageInsights)
   moduleActions: UsageInsights;
+}
 
+@ObjectType()
+export class EvaluationInsights {
   @Field(() => Number)
   loc: number;
 
