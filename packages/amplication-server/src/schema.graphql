@@ -50,18 +50,14 @@ input AdminUISettingsUpdateInput {
 }
 
 type AllAnalyticsResults {
-  builds: AnalyticsResults!
+  builds: UsageInsights!
   codeQuality: Float!
   costSaved: Float!
-  entities: AnalyticsResults!
+  entities: UsageInsights!
   loc: Float!
-  moduleActions: AnalyticsResults!
-  plugins: AnalyticsResults!
+  moduleActions: UsageInsights!
+  plugins: UsageInsights!
   timeSaved: Float!
-}
-
-type AnalyticsResults {
-  results: [MetricsGroupedByYear!]!
 }
 
 type ApiToken {
@@ -1050,8 +1046,13 @@ input MessagePatternCreateInput {
   type: EnumMessagePatternConnectionOptions!
 }
 
+type Metrics {
+  count: Int!
+  timeGroup: String!
+}
+
 type MetricsGroupedByYear {
-  metrics: [TimeGroupCount!]!
+  metrics: [Metrics!]!
   year: String!
 }
 
@@ -1633,11 +1634,7 @@ type Query {
   Get the changes to apply to the model in order to break a resource into microservices
   """
   finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
-  getAllAnalyticsResults(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): AllAnalyticsResults!
-  getBlockChangesCount(blockType: EnumBlockType!, endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): AnalyticsResults!
-  getEntityChangesCount(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): AnalyticsResults!
-  getLOCSum(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): Float!
-  getProjectBuildsCount(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): AnalyticsResults!
+  getUsageInsights(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): AllAnalyticsResults!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!
@@ -2024,11 +2021,6 @@ type Subscription {
   workspaceId: String!
 }
 
-type TimeGroupCount {
-  count: Int!
-  timeGroup: String!
-}
-
 type Topic implements IBlock {
   blockType: EnumBlockType!
   createdAt: DateTime!
@@ -2090,6 +2082,10 @@ input UpdateAccountInput {
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
+
+type UsageInsights {
+  results: [MetricsGroupedByYear!]!
+}
 
 type User {
   account: Account

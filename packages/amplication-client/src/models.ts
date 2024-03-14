@@ -71,18 +71,14 @@ export type AdminUiSettingsUpdateInput = {
 };
 
 export type AllAnalyticsResults = {
-  builds: AnalyticsResults;
+  builds: UsageInsights;
   codeQuality: Scalars['Float']['output'];
   costSaved: Scalars['Float']['output'];
-  entities: AnalyticsResults;
+  entities: UsageInsights;
   loc: Scalars['Float']['output'];
-  moduleActions: AnalyticsResults;
-  plugins: AnalyticsResults;
+  moduleActions: UsageInsights;
+  plugins: UsageInsights;
   timeSaved: Scalars['Float']['output'];
-};
-
-export type AnalyticsResults = {
-  results: Array<MetricsGroupedByYear>;
 };
 
 export type ApiToken = {
@@ -1079,8 +1075,13 @@ export type MessagePatternCreateInput = {
   type: EnumMessagePatternConnectionOptions;
 };
 
+export type Metrics = {
+  count: Scalars['Int']['output'];
+  timeGroup: Scalars['String']['output'];
+};
+
 export type MetricsGroupedByYear = {
-  metrics: Array<TimeGroupCount>;
+  metrics: Array<Metrics>;
   year: Scalars['String']['output'];
 };
 
@@ -2146,11 +2147,7 @@ export type Query = {
   entity?: Maybe<Entity>;
   /** Get the changes to apply to the model in order to break a resource into microservices */
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
-  getAllAnalyticsResults: AllAnalyticsResults;
-  getBlockChangesCount: AnalyticsResults;
-  getEntityChangesCount: AnalyticsResults;
-  getLOCSum: Scalars['Float']['output'];
-  getProjectBuildsCount: AnalyticsResults;
+  getUsageInsights: AllAnalyticsResults;
   gitGroups: PaginatedGitGroup;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
@@ -2263,44 +2260,7 @@ export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
 };
 
 
-export type QueryGetAllAnalyticsResultsArgs = {
-  endDate: Scalars['DateTime']['input'];
-  projectId?: InputMaybe<Scalars['String']['input']>;
-  resourceId?: InputMaybe<Scalars['String']['input']>;
-  startDate: Scalars['DateTime']['input'];
-  workspaceId: Scalars['String']['input'];
-};
-
-
-export type QueryGetBlockChangesCountArgs = {
-  blockType: EnumBlockType;
-  endDate: Scalars['DateTime']['input'];
-  projectId?: InputMaybe<Scalars['String']['input']>;
-  resourceId?: InputMaybe<Scalars['String']['input']>;
-  startDate: Scalars['DateTime']['input'];
-  workspaceId: Scalars['String']['input'];
-};
-
-
-export type QueryGetEntityChangesCountArgs = {
-  endDate: Scalars['DateTime']['input'];
-  projectId?: InputMaybe<Scalars['String']['input']>;
-  resourceId?: InputMaybe<Scalars['String']['input']>;
-  startDate: Scalars['DateTime']['input'];
-  workspaceId: Scalars['String']['input'];
-};
-
-
-export type QueryGetLocSumArgs = {
-  endDate: Scalars['DateTime']['input'];
-  projectId?: InputMaybe<Scalars['String']['input']>;
-  resourceId?: InputMaybe<Scalars['String']['input']>;
-  startDate: Scalars['DateTime']['input'];
-  workspaceId: Scalars['String']['input'];
-};
-
-
-export type QueryGetProjectBuildsCountArgs = {
+export type QueryGetUsageInsightsArgs = {
   endDate: Scalars['DateTime']['input'];
   projectId?: InputMaybe<Scalars['String']['input']>;
   resourceId?: InputMaybe<Scalars['String']['input']>;
@@ -2848,11 +2808,6 @@ export type Subscription = {
   workspaceId: Scalars['String']['output'];
 };
 
-export type TimeGroupCount = {
-  count: Scalars['Int']['output'];
-  timeGroup: Scalars['String']['output'];
-};
-
 export type Topic = IBlock & {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -2910,6 +2865,10 @@ export type TopicWhereInput = {
 export type UpdateAccountInput = {
   firstName?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UsageInsights = {
+  results: Array<MetricsGroupedByYear>;
 };
 
 export type User = {
