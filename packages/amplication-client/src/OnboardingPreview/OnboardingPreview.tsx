@@ -81,7 +81,7 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
           pluginId: pluginCatalogItem.pluginId,
           version: version.version,
           settings: {
-            ...JSON.parse(version.settings),
+            ...version.settings,
             ...plugin.pluginSettingsOverrides,
           },
           configurations: version.configurations,
