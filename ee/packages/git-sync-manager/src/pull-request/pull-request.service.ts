@@ -11,6 +11,7 @@ import { ConfigService } from "@nestjs/config";
 import { DiffService } from "../diff/diff.service";
 import { CreatePrRequest } from "@amplication/schema-registry";
 import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
+import { getServicePullRequestMessage } from "./pull-request.message";
 
 @Traceable()
 @Injectable()
@@ -61,6 +62,7 @@ export class PullRequestService {
   async createPullRequest({
     resourceId,
     resourceName,
+    resourceUrl,
     oldBuildId,
     newBuildId,
     gitProvider,
@@ -133,7 +135,8 @@ export class PullRequestService {
       branchName: head,
       commitMessage: body,
       pullRequestTitle: pullRequestTitle || title,
-      pullRequestBody: body,
+      pullRequestBody:
+        getServicePullRequestMessage(resourceName, resourceUrl) + body,
       pullRequestMode,
       gitResourceMeta,
       files: PullRequestService.removeFirstSlashFromPath(changedFiles),
