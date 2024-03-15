@@ -39,7 +39,7 @@ describe("UsageInsightsService", () => {
     expect(service).toBeDefined();
   });
 
-  describe("countLinesOfCodeAddedOrUpdatedForBuild", () => {
+  describe("Count lines of code added orUpdated for builds", () => {
     beforeEach(() => {
       jest.clearAllMocks();
       jest.restoreAllMocks();
@@ -141,7 +141,7 @@ describe("UsageInsightsService", () => {
     });
   });
 
-  describe("getAllAnalyticsResults", () => {
+  describe("Get all usage and evaluation insights", () => {
     it("should return usage insights", async () => {
       const mockedQueryRawResult: QueryRawResult[] = [
         {
