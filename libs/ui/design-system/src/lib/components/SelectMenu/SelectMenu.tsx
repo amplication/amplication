@@ -16,6 +16,7 @@ import SearchField, {
 import { Button, EnumButtonStyle, EnumIconPosition } from "../Button/Button";
 
 import "./SelectMenu.scss";
+import { Label } from "../Label/Label";
 
 export interface Props extends Omit<SelectMenuProps, "title"> {
   buttonStyle?: EnumButtonStyle;
@@ -27,7 +28,8 @@ export interface Props extends Omit<SelectMenuProps, "title"> {
   buttonClassName?: string;
   selectRef?: React.Ref<HTMLDetailsElement> | undefined;
   hideSelectedItemsIndication?: boolean;
-  renderChildren?: () => ReactNode;
+  buttonAsTextBox?: boolean;
+  buttonAsTextBoxLabel?: string;
 }
 
 const SelectButton: React.FC<Props> = ({
@@ -55,6 +57,26 @@ const SelectButton: React.FC<Props> = ({
   );
 };
 
+type SelectTextboxProps = {
+  title: string | React.ReactNode;
+  buttonClassName?: string;
+  label?: string;
+};
+
+const SelectTextbox: React.FC<SelectTextboxProps> = ({
+  title,
+  buttonClassName,
+  label,
+}) => {
+  const className = `select-menu__summary text-input  ${buttonClassName}`;
+  return (
+    <summary className={className}>
+      <Label className="select-menu__textbox-label" text={label || ""} />
+      <span className="select-menu__textbox">{title}</span>
+    </summary>
+  );
+};
+
 export const SelectMenu = ({
   disabled = false,
   children,
@@ -67,6 +89,8 @@ export const SelectMenu = ({
   selectRef,
   hideSelectedItemsIndication = false,
   buttonIconPosition = EnumIconPosition.Right,
+  buttonAsTextBox = false,
+  buttonAsTextBoxLabel,
   ...rest
 }: Props) => {
   if (disabled) {
@@ -93,15 +117,24 @@ export const SelectMenu = ({
         {...(selectRef ? { ref: selectRef } : {})}
         {...rest}
       >
-        <SelectButton
-          disabled={disabled}
-          buttonStyle={buttonStyle}
-          buttonIconPosition={buttonIconPosition}
-          buttonClassName={buttonClassName}
-          icon={icon}
-          openIcon={openIcon}
-          title={title}
-        />
+        {buttonAsTextBox ? (
+          <SelectTextbox
+            buttonClassName={buttonClassName}
+            title={title}
+            label={buttonAsTextBoxLabel}
+          />
+        ) : (
+          <SelectButton
+            disabled={disabled}
+            buttonStyle={buttonStyle}
+            buttonIconPosition={buttonIconPosition}
+            buttonClassName={buttonClassName}
+            icon={icon}
+            openIcon={openIcon}
+            title={title}
+          />
+        )}
+
         <SelectMenuChildren>{children}</SelectMenuChildren>
       </PrimerSelectMenu>
     );
