@@ -1,15 +1,64 @@
 @import "../style/index.scss";
 
+$modal-width: 400px;
+
 .dto-property-types-select-field {
-  .toggle-field {
+  margin-bottom: var(--default-spacing-small);
+
+  &__modal-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: $modal-width;
+
+    .SelectMenu-icon {
+      margin-right: 0 !important;
+      margin-left: var(--default-spacing);
+    }
+  }
+
+  &__label {
+    @include label;
     margin-bottom: 0;
   }
 
-  .amp-name-field,
-  .select-field,
-  .text-input {
-    flex: 1;
-
+  .amp-button {
+    @include textField;
+    width: auto;
+    min-width: var(--form-field-long);
+    text-align: left;
+    justify-content: space-between;
     max-width: var(--form-field-long);
+
+    &:hover {
+      border-color: var(--primary);
+    }
+  }
+
+  &__header {
+    padding: var(--default-spacing);
+    background: var(--gray-full);
+  }
+
+  &__sub_header {
+    padding: var(--default-spacing);
+    background-color: var(--gray-90);
+  }
+
+  &__container {
+    border-top: 1px solid var(--border-color);
+    flex: 1;
+    overflow: auto;
+  }
+  &__group {
+    background-color: var(--gray-90);
+    margin-left: var(--default-spacing);
+  }
+  &__group-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--default-spacing);
+    padding: var(--icon-spacing);
   }
 }

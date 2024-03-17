@@ -15,7 +15,7 @@ import GqlOperationSelectField from "../Components/GqlOperationSelectField";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import RestVerbSelectField from "../Components/RestVerbSelectField";
-import DtoPropertyTypesSelectField from "../ModuleDtoProperty/DtoPropertyTypesSelectField2";
+import DtoPropertyTypesSelectField from "../ModuleDtoProperty/DtoPropertyTypesSelectField";
 import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
