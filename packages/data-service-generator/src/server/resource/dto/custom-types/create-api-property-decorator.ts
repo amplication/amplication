@@ -78,12 +78,9 @@ function getTypeDefApiPropertyType(
   if (typeDef.type === EnumModuleDtoPropertyType.Dto) {
     return [builders.identifier(typeDef.dto.name), false];
   }
+  if (typeDef.type === EnumModuleDtoPropertyType.Enum) {
+    return [builders.identifier(typeDef.dto.name), false];
+  }
 
-  //@todo: complete support for enum, null, undefined
   //@todo: check if we need to add support for float and bigInt
-
-  // if (isEnum) {
-  //   const enumId = builders.identifier(createEnumName(field, entity));
-  //   return enumId;
-  // }
 }

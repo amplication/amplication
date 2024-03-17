@@ -93,7 +93,11 @@ export function convertTypeDefToGraphQLType(
   if (typeDef.type === EnumModuleDtoPropertyType.Json) {
     return GRAPHQL_JSON_ID;
   }
+
   if (typeDef.type === EnumModuleDtoPropertyType.Dto) {
+    return builders.identifier(typeDef.dto.name);
+  }
+  if (typeDef.type === EnumModuleDtoPropertyType.Enum) {
     return builders.identifier(typeDef.dto.name);
   }
 
