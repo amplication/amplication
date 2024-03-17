@@ -3,8 +3,6 @@
 $modal-width: 400px;
 
 .dto-property-types-select-field {
-  margin-bottom: var(--default-spacing-small);
-
   &__modal-wrapper {
     display: flex;
     flex-direction: column;
@@ -15,11 +13,6 @@ $modal-width: 400px;
       margin-right: 0 !important;
       margin-left: var(--default-spacing);
     }
-  }
-
-  &__label {
-    @include label;
-    margin-bottom: 0;
   }
 
   .amp-button {

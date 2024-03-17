@@ -280,12 +280,13 @@ const DtoPropertyTypesSelectField = ({ name, label }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <Label htmlFor={name} text={label} className={`${CLASS_NAME}__label`} />
       <SelectMenu
         title={selectedValue}
         buttonStyle={EnumButtonStyle.Outline}
         className={`${CLASS_NAME}__menu`}
         icon="chevron_down"
+        buttonAsTextBox
+        buttonAsTextBoxLabel={label}
       >
         <SelectMenuModal>
           <SelectMenuList className={`${CLASS_NAME}__modal-wrapper`}>
