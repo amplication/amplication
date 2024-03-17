@@ -1,12 +1,12 @@
-import React, { useCallback, useContext } from "react";
+import React, { ReactNode, useCallback, useContext } from "react";
 
-import { SelectMenu as PrimerSelectMenu } from "@primer/react/deprecated";
 import type {
-  SelectMenuProps,
-  SelectMenuModalProps as PrimerSelectMenuModalProps,
   SelectMenuItemProps as PrimerSelectMenuItemProps,
   SelectMenuListProps as PrimerSelectMenuListProps,
+  SelectMenuModalProps as PrimerSelectMenuModalProps,
+  SelectMenuProps,
 } from "@primer/react/deprecated";
+import { SelectMenu as PrimerSelectMenu } from "@primer/react/deprecated";
 
 import classNames from "classnames";
 import SearchField, {
@@ -27,6 +27,7 @@ export interface Props extends Omit<SelectMenuProps, "title"> {
   buttonClassName?: string;
   selectRef?: React.Ref<HTMLDetailsElement> | undefined;
   hideSelectedItemsIndication?: boolean;
+  renderChildren?: () => ReactNode;
 }
 
 const SelectButton: React.FC<Props> = ({
@@ -101,9 +102,20 @@ export const SelectMenu = ({
           openIcon={openIcon}
           title={title}
         />
-        {children}
+        <SelectMenuChildren>{children}</SelectMenuChildren>
       </PrimerSelectMenu>
     );
+};
+
+type SelectMenuChildrenProps = {
+  children: React.ReactNode;
+};
+
+export const SelectMenuChildren = ({ children }: SelectMenuChildrenProps) => {
+  const menuContext = useContext(PrimerSelectMenu.MenuContext);
+  const isOpen = menuContext.open;
+
+  return <>{isOpen && children}</>;
 };
 
 export type SelectMenuModalProps = PrimerSelectMenuModalProps & {
