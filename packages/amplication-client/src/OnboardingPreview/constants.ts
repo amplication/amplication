@@ -253,7 +253,7 @@ export const PAGES_DATA: Pages = {
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}provisioning-terraform-gcp-core.png`,
-        title: "GCP CSQL + Registry (Tarraform)",
+        title: "GCP (Tarraform)",
         plugins: [
           { pluginId: "provisioning-terraform-gcp-core" },
           { pluginId: "provisioning-terraform-gcp-database-csql" },
