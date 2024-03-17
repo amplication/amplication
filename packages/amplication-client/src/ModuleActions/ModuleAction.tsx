@@ -21,6 +21,7 @@ import { formatError } from "../util/error";
 import { DeleteModuleAction } from "./DeleteModuleAction";
 import ModuleActionForm from "./ModuleActionForm";
 import useModuleAction from "./hooks/useModuleAction";
+import { useModulesContext } from "../Modules/modulesContext";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -35,6 +36,7 @@ type Props = AppRouteProps & {
 const ModuleAction = ({ match }: Props) => {
   const { moduleAction: moduleActionId } = match?.params ?? {};
 
+  const { customActionsLicenseEnabled } = useModulesContext();
   const {
     addEntity,
     resetPendingChangesIndicator,
@@ -116,6 +118,7 @@ const ModuleAction = ({ match }: Props) => {
             name={"enabled"}
             onValueChange={onEnableChanged}
             checked={data?.moduleAction?.enabled}
+            disabled={!customActionsLicenseEnabled}
           ></Toggle>
           {data?.moduleAction && isCustomAction && (
             <DeleteModuleAction moduleAction={data?.moduleAction} />
@@ -139,6 +142,7 @@ const ModuleAction = ({ match }: Props) => {
           isCustomAction={isCustomAction}
           onSubmit={handleSubmit}
           defaultValues={data?.moduleAction}
+          disabled={!customActionsLicenseEnabled}
         />
       )}
       <Snackbar open={hasError} message={errorMessage} />
