@@ -8,6 +8,7 @@ import { namedTypes } from "ast-types/gen/namedTypes";
 import { ApiPropertyDecoratorBuilder } from "../api-property-decorator";
 import {
   BOOLEAN_ID,
+  ENUM_ID,
   NUMBER_ID,
   STRING_ID,
 } from "../create-field-class-property";
@@ -79,7 +80,7 @@ function getTypeDefApiPropertyType(
     return [builders.identifier(typeDef.dto.name), false];
   }
   if (typeDef.type === EnumModuleDtoPropertyType.Enum) {
-    return [builders.identifier(typeDef.dto.name), false];
+    return [ENUM_ID, false];
   }
 
   //@todo: check if we need to add support for float and bigInt

@@ -13,6 +13,7 @@ import {
   STRING_ID,
   TRUE_LITERAL,
   NUMBER_ID,
+  ENUM_ID,
 } from "../create-field-class-property";
 import { GRAPHQL_JSON_ID } from "../graphql-type-json.util";
 
@@ -98,7 +99,7 @@ export function convertTypeDefToGraphQLType(
     return builders.identifier(typeDef.dto.name);
   }
   if (typeDef.type === EnumModuleDtoPropertyType.Enum) {
-    return builders.identifier(typeDef.dto.name);
+    return ENUM_ID;
   }
 
   //@todo: complete support for enum, null, undefined

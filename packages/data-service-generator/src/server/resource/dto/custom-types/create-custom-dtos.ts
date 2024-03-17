@@ -17,6 +17,11 @@ import { createGraphQLFieldDecorator } from "./create-graphql-field-decorator";
 import { createPropTypeFromTypeDefList } from "./create-property-type";
 import { createTypeDecorator } from "./create-type-decorator";
 
+import {
+  StringLiteralEnumMember,
+  createEnumMemberName,
+} from "../create-enum-dto";
+
 export const OBJECT_TYPE_DECORATOR = builders.decorator(
   builders.callExpression(OBJECT_TYPE_ID, [])
 );
@@ -39,7 +44,11 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
       const { dtos } = module;
       return (
         dtos
-          ?.filter((dto) => dto.dtoType === EnumModuleDtoType.Custom)
+          ?.filter(
+            (dto) =>
+              dto.dtoType === EnumModuleDtoType.Custom ||
+              dto.dtoType === EnumModuleDtoType.CustomEnum
+          )
           .map((dto) => {
             const path = createDTOModulePath(
               camelCase(moduleName),
@@ -49,7 +58,10 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
             customDtoNameToPath[dto.name] = path;
             return {
               path,
-              dto: createDto(dto),
+              dto:
+                dto.dtoType === EnumModuleDtoType.CustomEnum
+                  ? createEnumDTO(dto)
+                  : createDto(dto),
             };
           }) || []
       );
@@ -85,6 +97,20 @@ export function createDto(dto: ModuleDto): NamedClassDeclaration {
   ) as NamedClassDeclaration;
 
   return dtoClass;
+}
+
+export function createEnumDTO(dto: ModuleDto): namedTypes.TSEnumDeclaration {
+  const membersToTsEnumMember = dto.members.map(
+    (member) =>
+      builders.tsEnumMember(
+        builders.identifier(createEnumMemberName(member.name)),
+        builders.stringLiteral(member.value)
+      ) as StringLiteralEnumMember
+  );
+  return builders.tsEnumDeclaration(
+    builders.identifier(dto.name),
+    membersToTsEnumMember
+  );
 }
 
 export function createProperties(
