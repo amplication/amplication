@@ -491,6 +491,8 @@ export class BillingService {
     switch (previewAccountType) {
       case EnumPreviewAccountType.BreakingTheMonolith:
         return BillingPlan.PreviewBreakTheMonolith;
+      case EnumPreviewAccountType.PreviewOnboarding:
+        return BillingPlan.Free;
       case EnumPreviewAccountType.None:
         throw new Error(`${previewAccountType} is not a preview account type`);
       default:

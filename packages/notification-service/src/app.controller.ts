@@ -40,4 +40,14 @@ export class AppController {
     const messageTopic = context.getTopic();
     return this.appService.notificationService(message, messageTopic);
   }
+
+  @EventPattern("user-preview-generation-completed.internal.1")
+  previewUserGenerationCompleted(
+    @Payload() message: { [key: string]: any },
+    @Ctx() context: KafkaContext
+  ) {
+    // validate message
+    const messageTopic = context.getTopic();
+    return this.appService.notificationService(message, messageTopic);
+  }
 }

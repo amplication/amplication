@@ -39,7 +39,7 @@ const ModuleOverview = React.memo(({ match, innerRoutes }: Props) => {
                 }
                 actions={
                   <NavLink to={moduleUrl}>
-                    <Button buttonStyle={EnumButtonStyle.Primary} icon="edit">
+                    <Button buttonStyle={EnumButtonStyle.Outline} icon="edit">
                       Edit Module
                     </Button>
                   </NavLink>

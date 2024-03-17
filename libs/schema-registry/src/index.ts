@@ -5,6 +5,7 @@ export * as CodeGenerationSuccess from "./lib/code-generation-success";
 export * as CreatePrFailure from "./lib/create-pr-failure";
 export * as CreatePrRequest from "./lib/create-pr-request";
 export * as CreatePrSuccess from "./lib/create-pr-success";
+export * as CreatePrProcessCompleted from "./lib/create-pr-process-completed";
 export * as CreatePrLog from "./lib/create-pr-log";
 export * as CanUserAccessBuild from "./lib/can-user-access-build";
 export * as DBSchemaImportRequest from "./lib/db-schema-import-request";
@@ -37,6 +38,8 @@ export enum KAFKA_TOPICS {
   USER_ACTION_TOPIC = "user-action.internal.1",
   USER_BUILD_TOPIC = "user-build.internal.1",
   USER_ANNOUNCEMENT_TOPIC = "user-announcement.internal.1",
+  USER_PREVIEW_GENERATION_COMPLETED_TOPIC = "user-preview-generation-completed.internal.1",
+
   /// ai
   AI_CONVERSATION_START_TOPIC = "ai.internal.conversation.start.1",
   AI_CONVERSATION_COMPLETED_TOPIC = "ai.internal.conversation.completed.1",

@@ -6,36 +6,83 @@ import {
   EnumGapSize,
   EnumItemsAlign,
   EnumPanelStyle,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
-  List,
+  Icon,
   Panel,
   Text,
 } from "@amplication/ui/design-system";
-import { useContext, useEffect } from "react";
-import PageContent from "../Layout/PageContent";
-import { AppContext } from "../context/appContext";
-import DocsTile from "./DocsTile";
-import EntitiesTile from "./EntitiesTile";
-import FeatureRequestTile from "./FeatureRequestTile";
-import RolesTile from "./RolesTile";
-import { ServicesTile } from "./ServicesTile";
-import SyncWithGithubTile from "./SyncWithGithubTile";
-import { TopicsTile } from "./TopicsTile";
-import ViewCodeViewTile from "./ViewCodeViewTile";
-import { resourceThemeMap } from "./constants";
-import PluginsTile from "./PluginsTile";
 import { useStiggContext } from "@stigg/react-sdk";
+import { useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
+import PageContent from "../Layout/PageContent";
+import { useAppContext } from "../context/appContext";
+import APIsTile from "./APIsTile";
+import AddResourceFunctionalityButton from "./AddResourceFunctionalityButton";
+import EntitiesTile from "./EntitiesTile";
+import { PluginsTile } from "./PluginsTile";
+import "./ResourceOverview.scss";
+import { ServicesTile } from "./ServicesTile";
+import { TopicsTile } from "./TopicsTile";
 import { BtmButton, EnumButtonLocation } from "./break-the-monolith/BtmButton";
+import { resourceThemeMap } from "./constants";
+import AppGitStatusPanel from "./git/AppGitStatusPanel";
+import { useResourceSummary } from "./hooks/useResourceSummary";
 
 const PAGE_TITLE = "Resource Overview";
 
+type UsageDataItem = {
+  icon: string;
+  title: string;
+  link: string;
+  value: number;
+};
+
+const CLASS_NAME = "resource-overview";
+
 const ResourceOverview = () => {
-  const { currentResource } = useContext(AppContext);
+  const { currentResource, currentProject, currentWorkspace } = useAppContext();
   const { refreshData } = useStiggContext();
 
+  const {
+    summaryData,
+    usedCategories,
+    availableCategories,
+    pluginsDataLoading,
+  } = useResourceSummary(currentResource);
+
   const resourceId = currentResource?.id;
+
+  const resourceUsageData = useMemo((): UsageDataItem[] => {
+    return [
+      {
+        icon: "database",
+        title: "Entities",
+        link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/entities`,
+        value: summaryData.models,
+      },
+      {
+        icon: "api",
+        title: "APIs",
+        link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/modules`,
+        value: summaryData.apis,
+      },
+      {
+        icon: "plugin",
+        title: "Installed Plugins",
+        link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/installed`,
+        value: summaryData.installedPlugins,
+      },
+      {
+        icon: "roles_outline",
+        title: "Roles",
+        link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/roles`,
+        value: summaryData.roles,
+      },
+    ];
+  }, [currentProject.id, currentResource, currentWorkspace, summaryData]);
 
   useEffect(() => {
     refreshData();
@@ -44,64 +91,97 @@ const ResourceOverview = () => {
   return (
     <PageContent pageTitle={PAGE_TITLE}>
       <FlexItem>
-        <FlexItem.FlexEnd>
+        <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
           <BtmButton
             openInFullScreen
             location={EnumButtonLocation.Resource}
             ButtonStyle={EnumButtonStyle.GradientFull}
           />
+          {currentResource?.resourceType === EnumResourceType.Service && (
+            <AddResourceFunctionalityButton
+              availableCategories={availableCategories}
+            />
+          )}
         </FlexItem.FlexEnd>
       </FlexItem>
 
       <HorizontalRule doubleSpacing />
 
       <Panel panelStyle={EnumPanelStyle.Bold}>
-        <FlexItem
-          itemsAlign={EnumItemsAlign.Center}
-          start={
+        <FlexItem itemsAlign={EnumItemsAlign.Center}>
+          <FlexItem.FlexStart direction={EnumFlexDirection.Column}>
             <CircleBadge
+              size="large"
               name={currentResource?.name || ""}
               color={
                 resourceThemeMap[currentResource?.resourceType].color ||
                 "transparent"
               }
             />
-          }
-        >
-          <FlexItem
-            direction={EnumFlexDirection.Column}
-            gap={EnumGapSize.Small}
-          >
             <Text textStyle={EnumTextStyle.H3}>{currentResource?.name}</Text>
             <Text textStyle={EnumTextStyle.Description}>
               {currentResource?.description}
             </Text>
-          </FlexItem>
+            <AppGitStatusPanel resource={currentResource} />
+          </FlexItem.FlexStart>
+          {currentResource?.resourceType === EnumResourceType.Service && (
+            <FlexItem.FlexEnd>
+              {resourceUsageData.map((item) => (
+                <Link to={item.link} key={item.title}>
+                  <FlexItem
+                    direction={EnumFlexDirection.Row}
+                    gap={EnumGapSize.Default}
+                    itemsAlign={EnumItemsAlign.Center}
+                  >
+                    <Icon
+                      color={EnumTextColor.White}
+                      icon={item.icon}
+                      size={"small"}
+                    />
+                    <Text
+                      textStyle={EnumTextStyle.Tag}
+                      textColor={EnumTextColor.White}
+                    >
+                      {item.title}
+                    </Text>
+                    {item.value && (
+                      <Text
+                        textStyle={EnumTextStyle.Tag}
+                        textColor={EnumTextColor.ThemeTurquoise}
+                      >
+                        {item.value}
+                      </Text>
+                    )}
+                  </FlexItem>
+                </Link>
+              ))}
+            </FlexItem.FlexEnd>
+          )}
         </FlexItem>
       </Panel>
 
-      <List>
-        <SyncWithGithubTile resourceId={resourceId} />
-        {currentResource?.resourceType === EnumResourceType.Service && (
-          <>
+      {currentResource?.resourceType === EnumResourceType.Service && (
+        <>
+          <div className={`${CLASS_NAME}__split`}>
             <EntitiesTile resourceId={resourceId} />
-            <PluginsTile resourceId={resourceId} />
+            <APIsTile resourceId={resourceId} />
+          </div>
+          {!pluginsDataLoading && (
+            <PluginsTile
+              usedCategories={usedCategories}
+              availableCategories={availableCategories}
+            />
+          )}
+        </>
+      )}
 
-            <RolesTile resourceId={resourceId} />
-          </>
-        )}
-        {currentResource?.resourceType === EnumResourceType.MessageBroker && (
-          <>
-            <TopicsTile resourceId={resourceId} />
+      {currentResource?.resourceType === EnumResourceType.MessageBroker && (
+        <div className={`${CLASS_NAME}__split`}>
+          <TopicsTile resourceId={resourceId} />
 
-            <ServicesTile resourceId={resourceId} />
-          </>
-        )}
-        <ViewCodeViewTile resourceId={resourceId} />
-
-        <DocsTile />
-        <FeatureRequestTile />
-      </List>
+          <ServicesTile resourceId={resourceId} />
+        </div>
+      )}
     </PageContent>
   );
 };

@@ -36,7 +36,7 @@ export const basicAuth: PluginInstallation[] = [
     pluginId: "auth-core",
     npm: "@amplication/plugin-auth-core",
     enabled: true,
-    version: "2.0.3-beta.0",
+    version: "latest",
   },
   {
     id: "auth-basic-id",

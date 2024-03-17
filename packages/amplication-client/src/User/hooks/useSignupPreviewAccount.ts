@@ -14,6 +14,11 @@ type TData = {
   };
 };
 
+const PREVIEW_ACCOUNT_TYPE_TO_URL = {
+  [EnumPreviewAccountType.BreakingTheMonolith]: "/select-preview-env",
+  [EnumPreviewAccountType.PreviewOnboarding]: "/onboarding-preview",
+};
+
 const useSignupPreviewAccount = (
   email: string,
   previewAccountType: EnumPreviewAccountType
@@ -38,8 +43,9 @@ const useSignupPreviewAccount = (
           const { token, workspaceId, projectId, resourceId } =
             signupPreviewAccount;
           setToken(token);
+
           history.push({
-            pathname: "/select-preview-env",
+            pathname: PREVIEW_ACCOUNT_TYPE_TO_URL[previewAccountType],
             search: `?resourceId=${resourceId}&projectId=${projectId}&workspaceId=${workspaceId}`,
           });
         },

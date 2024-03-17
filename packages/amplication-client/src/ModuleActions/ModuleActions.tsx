@@ -44,13 +44,6 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
             itemsAlign={EnumItemsAlign.Center}
           >
             <Text textStyle={EnumTextStyle.H4}>Actions</Text>
-            <FlexItem.FlexEnd>
-              <NewModuleAction
-                moduleId={moduleId}
-                resourceId={resourceId}
-                buttonStyle={EnumButtonStyle.Outline}
-              />
-            </FlexItem.FlexEnd>
           </FlexItem>
           <ModuleActionList
             module={moduleData?.module}

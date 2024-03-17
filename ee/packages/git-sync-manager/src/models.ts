@@ -89,7 +89,7 @@ export type Auth = {
 
 export type AuthPreviewAccount = {
   projectId: Scalars['String']['output'];
-  resourceId: Scalars['String']['output'];
+  resourceId?: Maybe<Scalars['String']['output']>;
   token: Scalars['String']['output'];
   workspaceId: Scalars['String']['output'];
 };
@@ -861,7 +861,8 @@ export enum EnumPendingChangeOriginType {
 
 export enum EnumPreviewAccountType {
   BreakingTheMonolith = 'BreakingTheMonolith',
-  None = 'None'
+  None = 'None',
+  PreviewOnboarding = 'PreviewOnboarding'
 }
 
 export enum EnumResourceType {
