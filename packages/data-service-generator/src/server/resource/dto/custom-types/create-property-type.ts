@@ -63,9 +63,7 @@ export function createPropTypeFromTypeDef(
     }
 
     baseType = builders.tsTypeReference(builders.identifier(typeDef.dto.name));
-  } else if (typeDef.type === EnumModuleDtoPropertyType.Enum) {
-    baseType = builders.tsTypeReference(builders.identifier("enumName"));
-  } else {
+  } else if (typeDef.type !== EnumModuleDtoPropertyType.Enum) {
     baseType = TYPE_DEF_TO_TYPE[typeDef.type];
   }
 
