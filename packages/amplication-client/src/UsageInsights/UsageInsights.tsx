@@ -1,19 +1,19 @@
-import React, { useCallback, useEffect } from "react";
-import { useUsageInsights } from "./hooks/useUsageInsights";
-import { BarChart } from "@mui/x-charts/BarChart";
-import { axisClasses } from "@mui/x-charts";
-import "./UsageInsights.scss";
 import {
-  EnumContentAlign,
   EnumFlexDirection,
-  EnumItemsAlign,
+  EnumFlexItemMargin,
+  EnumPanelStyle,
+  EnumTextColor,
+  EnumTextStyle,
   FlexItem,
-  Icon,
   MultiStateToggle,
   Panel,
-  Popover,
   Text,
 } from "@amplication/ui/design-system";
+import { BarChart } from "@mui/x-charts/BarChart";
+import React, { useCallback, useEffect } from "react";
+import "./UsageInsights.scss";
+import { UsageInsightsDataBox } from "./UsageInsightsDataBox";
+import { useUsageInsights } from "./hooks/useUsageInsights";
 
 const CLASS_NAME = "usage-insights";
 
@@ -24,14 +24,21 @@ enum EnumTimeFrame {
 }
 
 const OPTIONS = [
-  { value: EnumTimeFrame.LAST_YEAR, label: "Last year" },
   { value: EnumTimeFrame.LAST_MONTH, label: "Last month" },
   { value: EnumTimeFrame.LAST_3_MONTHS, label: "Last 3 months" },
+  { value: EnumTimeFrame.LAST_YEAR, label: "Last year" },
 ];
 
 type Props = {
   workspaceId: string;
   projectId?: string;
+};
+
+const chartColors: { [key: number]: string } = {
+  0: "#31C587",
+  1: "#F85B6E",
+  2: "#20A4F3",
+  3: "#f685a1",
 };
 
 export const UsageInsights: React.FC<Props> = ({ workspaceId, projectId }) => {
@@ -88,133 +95,131 @@ export const UsageInsights: React.FC<Props> = ({ workspaceId, projectId }) => {
   useEffect(() => {
     // set default time frame to last year when component is mounted
     getLastYear();
-  }, [getLastYear]);
+  }, []);
 
-  const chartSetting = {
-    yAxis: [
-      {
-        label: "amount",
-      },
-    ],
-    width: 700,
-    height: 300,
-    sx: {
-      [`.${axisClasses.left} .${axisClasses.label}`]: {
-        transform: "translate(-10px, 0)",
-      },
-    },
-  };
   const valueFormatter = (value: number) => `${value}`;
 
-  if (usageInsightsLoading || !usageInsightsDataset) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <>
-      <MultiStateToggle
-        label=""
-        name="usageInsightsTimeFrame"
-        options={OPTIONS}
-        onChange={handleChangeTimeFrame}
-        selectedValue={timeFrame}
-      />
-      <div className={CLASS_NAME}>
-        <Text>Usage Insights</Text>
-
-        <BarChart
-          dataset={usageInsightsDataset}
-          xAxis={[{ scaleType: "band", dataKey: "month" }]}
-          series={[
-            { dataKey: "entities", label: "Entities", valueFormatter },
-            { dataKey: "builds", label: "Builds", valueFormatter },
-            { dataKey: "plugins", label: "Plugins", valueFormatter },
-            { dataKey: "moduleActions", label: "APIs", valueFormatter },
-          ]}
-          {...chartSetting}
+    <Panel
+      panelStyle={EnumPanelStyle.Default}
+      themeColor={EnumTextColor.ThemeTurquoise}
+      className={CLASS_NAME}
+    >
+      <FlexItem>
+        <MultiStateToggle
+          label="Select Time Frame"
+          name="usageInsightsTimeFrame"
+          options={OPTIONS}
+          onChange={handleChangeTimeFrame}
+          selectedValue={timeFrame}
+          className={`${CLASS_NAME}__toggle`}
         />
-      </div>
+      </FlexItem>
+      <FlexItem margin={EnumFlexItemMargin.Both}>
+        <Text textStyle={EnumTextStyle.H4}>Productivity Metrics</Text>
+      </FlexItem>
+      <FlexItem
+        direction={EnumFlexDirection.Row}
+        className={`${CLASS_NAME}__chart-container`}
+      >
+        {usageInsightsDataset && (
+          <Panel panelStyle={EnumPanelStyle.Bold} style={{ width: "100%" }}>
+            <BarChart
+              height={300}
+              dataset={usageInsightsDataset}
+              yAxis={[
+                {
+                  label: "Total",
+                },
+              ]}
+              xAxis={[
+                {
+                  scaleType: "band",
+                  dataKey: "month",
+                  classes: {
+                    root: "axis-class-name",
+                  },
+                },
+              ]}
+              series={[
+                {
+                  dataKey: "entities",
+                  label: "Entities",
+                  valueFormatter,
+                  color: chartColors[0],
+                },
+                {
+                  dataKey: "builds",
+                  label: "Builds",
+                  valueFormatter,
+                  color: chartColors[1],
+                },
+                {
+                  dataKey: "plugins",
+                  label: "Plugins",
+                  valueFormatter,
+                  color: chartColors[2],
+                },
+                {
+                  dataKey: "moduleActions",
+                  label: "APIs",
+                  valueFormatter,
+                  color: chartColors[3],
+                },
+              ]}
+            />
+          </Panel>
+        )}
+        <FlexItem
+          direction={EnumFlexDirection.Column}
+          className={`${CLASS_NAME}__chart-side`}
+        >
+          {evaluationInsights && (
+            <>
+              <UsageInsightsDataBox
+                label="Lines of code"
+                value={evaluationInsights.loc}
+                color={EnumTextColor.ThemeTurquoise}
+                icon="code"
+              />
+
+              <UsageInsightsDataBox
+                label="Time saved"
+                value={evaluationInsights.timeSaved}
+                color={EnumTextColor.ThemeBlue}
+                icon="clock"
+                units="hours"
+              />
+            </>
+          )}
+        </FlexItem>
+      </FlexItem>
+
       {evaluationInsightsLoading ||
         (!evaluationInsights && <div>Loading...</div>)}
       {evaluationInsights && (
         <>
-          <FlexItem>
-            <Panel>
-              <FlexItem
-                direction={EnumFlexDirection.Column}
-                itemsAlign={EnumItemsAlign.Center}
-                contentAlign={EnumContentAlign.Center}
-              >
-                <div>
-                  <Icon icon="code" />
-                  <span>Lines of code: {evaluationInsights.loc}</span>
-                </div>
-                <div className={`${CLASS_NAME}__tooltip`}>
-                  <Popover content={"bla bla bla"} placement="right">
-                    <Icon icon="info_circle" />
-                  </Popover>
-                </div>
-              </FlexItem>
-            </Panel>
-            <Panel>
-              <FlexItem
-                direction={EnumFlexDirection.Column}
-                itemsAlign={EnumItemsAlign.Center}
-                contentAlign={EnumContentAlign.Center}
-              >
-                <div>
-                  <Icon icon="clock" />
-                  <span>Time saved: {evaluationInsights.timeSaved}</span>
-                </div>
-                <div className={`${CLASS_NAME}__tooltip`}>
-                  <Popover content={"bla bla bla"} placement="right">
-                    <Icon icon="info_circle" />
-                  </Popover>
-                </div>
-              </FlexItem>
-            </Panel>
+          <FlexItem margin={EnumFlexItemMargin.Both}>
+            <Text textStyle={EnumTextStyle.H4}>Efficiency Metrics</Text>
           </FlexItem>
+
           <FlexItem>
-            <Panel>
-              <FlexItem
-                direction={EnumFlexDirection.Column}
-                itemsAlign={EnumItemsAlign.Center}
-                contentAlign={EnumContentAlign.Center}
-              >
-                <div>
-                  <Icon icon="dollar-sign" />
-                  <span>Cost saved: {evaluationInsights.costSaved}</span>
-                </div>
-                <div className={`${CLASS_NAME}__tooltip`}>
-                  <Popover content={"bla bla bla"} placement="right">
-                    <Icon icon="info_circle" />
-                  </Popover>
-                </div>
-              </FlexItem>
-            </Panel>
-            <Panel>
-              <FlexItem
-                direction={EnumFlexDirection.Column}
-                itemsAlign={EnumItemsAlign.Center}
-                contentAlign={EnumContentAlign.Center}
-              >
-                <div>
-                  <span>
-                    <Icon icon="check" />
-                    Code quality - bugs prevented:
-                    {evaluationInsights.codeQuality}
-                  </span>
-                </div>
-                <div className={`${CLASS_NAME}__tooltip`}>
-                  <Popover content={"bla bla bla"} placement="right">
-                    <Icon icon="info_circle" />
-                  </Popover>
-                </div>
-              </FlexItem>
-            </Panel>
+            <UsageInsightsDataBox
+              label="Cost saved"
+              value={evaluationInsights.costSaved}
+              color={EnumTextColor.ThemeGreen}
+              icon="dollar-sign"
+            />
+
+            <UsageInsightsDataBox
+              label="Code quality - bugs prevented"
+              value={evaluationInsights.codeQuality}
+              color={EnumTextColor.ThemePink}
+              icon="check"
+            />
           </FlexItem>
         </>
       )}
-    </>
+    </Panel>
   );
 };

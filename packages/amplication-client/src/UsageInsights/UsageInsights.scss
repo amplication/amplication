@@ -1,20 +1,42 @@
 @import "../style/index.scss";
 
+$chart-side-width: 250px;
+
 .usage-insights {
-  background-color: var(--gray-70);
-  padding: var(--default-spacing);
-  border-radius: var(--default-border-radius);
-  margin-bottom: var(--default-spacing);
+  flex: 1;
+
+  &__chart-container {
+    flex: 1;
+  }
+  &__chart-side {
+    min-width: $chart-side-width;
+  }
 
   &__tooltip {
     align-self: flex-end;
   }
-}
 
-.amp-panel {
-  min-height: 100px;
-  min-width: 350px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  &__toggle {
+    white-space: nowrap;
+
+    .multi-state-toggle__states__state {
+      padding-right: var(--default-spacing);
+      padding-left: var(--default-spacing);
+    }
+  }
+
+  .MuiChartsAxis-tickLabel {
+    fill: var(--gray-base);
+  }
+  .MuiChartsAxis-tick {
+    stroke: var(--gray-base);
+  }
+  .MuiChartsAxis-line {
+    stroke: var(--gray-base);
+  }
+  .MuiChartsLegend-series {
+    text {
+      fill: var(--gray-10) !important;
+    }
+  }
 }
