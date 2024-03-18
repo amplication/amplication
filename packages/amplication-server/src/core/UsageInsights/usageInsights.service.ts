@@ -98,42 +98,55 @@ export class UsageInsightsService {
     let results: QueryRawResult[];
     if (projectId) {
       results = await this.prisma.$queryRaw`
-      SELECT DATE_PART('year', e."createdAt") as year, DATE_PART('month', e."createdAt") as time_group, count(distinct ef."id") as count
-      FROM "Entity" e
-      JOIN "Resource" r ON e."resourceId" = r."id"
-      JOIN "EntityVersion" ev ON e."id" = ev."entityId"
-      JOIN "EntityField" ef ON ev."id" = ef."entityVersionId"
-      WHERE r."projectId" = ${projectId}
-      AND ev."versionNumber" = '0'
-      AND ((
-          (e."createdAt" >= ${startDate} AND e."createdAt" <= ${endDate})
-          OR (e."updatedAt" >= ${startDate} AND e."updatedAt" <= ${endDate})
-      )
-      OR (
-          (ef."createdAt" >= ${startDate} AND ef."createdAt" <= ${endDate})
-          OR (ef."updatedAt" >= ${startDate} AND ef."updatedAt" <= ${endDate})
-      ))
+      SELECT year, time_group, SUM(count) AS total_count
+      FROM (
+        SELECT DATE_PART('year', e."updatedAt") AS year, DATE_PART('month', e."updatedAt") AS time_group, COUNT(*) AS count
+        FROM "Entity" e
+        JOIN "Resource" r ON e."resourceId" = r."id"
+        WHERE r."projectId" = ${projectId}
+        AND e."updatedAt" >= ${startDate} AND e."updatedAt" <= ${endDate}
+        GROUP BY DATE_PART('year', e."updatedAt"), DATE_PART('month', e."updatedAt")
+
+        UNION ALL
+
+        SELECT DATE_PART('year', ef."updatedAt") AS year, DATE_PART('month', ef."updatedAt") AS time_group, COUNT(*) AS count
+        FROM "EntityField" ef
+        JOIN "EntityVersion" ev ON ef."entityVersionId" = ev."id"
+        JOIN "Entity" e ON ev."entityId" = e."id"
+        JOIN "Resource" r ON e."resourceId" = r."id"
+        WHERE r."projectId" = ${projectId}
+        AND ev."versionNumber" = '0'
+        AND e."updatedAt" >= ${startDate} AND e."updatedAt" <= ${endDate}
+        GROUP BY DATE_PART('year', ef."updatedAt"), DATE_PART('month', ef."updatedAt")
+      ) AS combined
       GROUP BY year, time_group
       ORDER BY year, time_group;
     `;
     } else {
       results = await this.prisma.$queryRaw`
-      SELECT DATE_PART('year', e."createdAt") as year, DATE_PART('month', e."createdAt") as time_group, count(distinct ef."id") as count
-      FROM "Entity" e
-      JOIN "Resource" r ON e."resourceId" = r."id"
-      JOIN "EntityVersion" ev ON e."id" = ev."entityId"
-      JOIN "EntityField" ef ON ev."id" = ef."entityVersionId"
-      JOIN "Project" p ON r."projectId" = p."id"
-      WHERE p."workspaceId" = ${workspaceId}
-      AND ev."versionNumber" = '0'
-      AND ((
-          (e."createdAt" >= ${startDate} AND e."createdAt" <= ${endDate})
-          OR (e."updatedAt" >= ${startDate} AND e."updatedAt" <= ${endDate})
-      )
-      OR (
-          (ef."createdAt" >= ${startDate} AND ef."createdAt" <= ${endDate})
-          OR (ef."updatedAt" >= ${startDate} AND ef."updatedAt" <= ${endDate})
-      ))
+      SELECT year, time_group, SUM(count) AS total_count
+      FROM (
+        SELECT DATE_PART('year', e."updatedAt") AS year, DATE_PART('month', e."updatedAt") AS time_group, COUNT(*) AS count
+        FROM "Entity" e
+        JOIN "Resource" r ON e."resourceId" = r."id"
+        JOIN "Project" p ON r."projectId" = p."id"
+        WHERE p."workspaceId" = ${workspaceId}
+        AND e."updatedAt" >= ${startDate} AND e."updatedAt" <= ${endDate}
+        GROUP BY DATE_PART('year', e."updatedAt"), DATE_PART('month', e."updatedAt")
+        
+        UNION ALL
+
+        SELECT DATE_PART('year', ef."updatedAt") AS year, DATE_PART('month', ef."updatedAt") AS time_group, COUNT(*) AS count
+        FROM "EntityField" ef
+        JOIN "EntityVersion" ev ON ef."entityVersionId" = ev."id"
+        JOIN "Entity" e ON ev."entityId" = e."id"
+        JOIN "Resource" r ON e."resourceId" = r."id"
+        JOIN "Project" p ON r."projectId" = p."id"
+        WHERE p."workspaceId" = ${workspaceId}
+        AND ev."versionNumber" = '0'
+        AND e."updatedAt" >= ${startDate} AND e."updatedAt" <= ${endDate}
+        GROUP BY DATE_PART('year', ef."updatedAt"), DATE_PART('month', ef."updatedAt")
+      ) AS combined
       GROUP BY year, time_group
       ORDER BY year, time_group;
     `;
