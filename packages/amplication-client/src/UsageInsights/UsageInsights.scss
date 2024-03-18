@@ -25,8 +25,16 @@ $chart-side-width: 250px;
     }
   }
 
+  .MuiChartsAxis-label {
+    fill: var(--gray-base);
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Roboto",
+      "Helvetica Neue", sans-serif !important;
+  }
+
   .MuiChartsAxis-tickLabel {
     fill: var(--gray-base);
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Roboto",
+      "Helvetica Neue", sans-serif !important;
   }
   .MuiChartsAxis-tick {
     stroke: var(--gray-base);
@@ -36,6 +44,8 @@ $chart-side-width: 250px;
   }
   .MuiChartsLegend-series {
     text {
+      font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Roboto",
+        "Helvetica Neue", sans-serif !important;
       fill: var(--gray-10) !important;
     }
   }
