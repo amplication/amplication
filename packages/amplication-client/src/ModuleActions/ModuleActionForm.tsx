@@ -151,7 +151,7 @@ const ModuleActionForm = ({
           />
 
           {isCustomAction && (
-            <FlexItem wrap>
+            <>
               <DtoPropertyTypesSelectField
                 name="inputType"
                 label="Input Type"
@@ -160,7 +160,7 @@ const ModuleActionForm = ({
                 name="outputType"
                 label="Output Type"
               />
-            </FlexItem>
+            </>
           )}
         </Panel>
 
