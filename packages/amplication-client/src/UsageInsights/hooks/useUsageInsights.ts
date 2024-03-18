@@ -63,8 +63,10 @@ export const useUsageInsights = ({
 
   useEffect(() => {
     getUsageInsights();
+    console.log("start date", startDate);
+    console.log("end date", endDate);
     getEvaluationInsights();
-  }, [getEvaluationInsights, getUsageInsights]);
+  }, [endDate, getEvaluationInsights, getUsageInsights, startDate]);
 
   return {
     usageInsightsDataset,

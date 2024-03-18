@@ -5,4 +5,16 @@
   padding: var(--default-spacing);
   border-radius: var(--default-border-radius);
   margin-bottom: var(--default-spacing);
+
+  &__tooltip {
+    align-self: flex-end;
+  }
+}
+
+.amp-panel {
+  min-height: 100px;
+  min-width: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
