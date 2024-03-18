@@ -15,19 +15,6 @@ $modal-width: 400px;
     }
   }
 
-  .amp-button {
-    @include textField;
-    width: auto;
-    min-width: var(--form-field-long);
-    text-align: left;
-    justify-content: space-between;
-    max-width: var(--form-field-long);
-
-    &:hover {
-      border-color: var(--primary);
-    }
-  }
-
   &__header {
     padding: var(--default-spacing);
     background: var(--gray-full);
