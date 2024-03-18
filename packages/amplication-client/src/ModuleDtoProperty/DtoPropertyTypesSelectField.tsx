@@ -295,6 +295,7 @@ const DtoPropertyTypesSelectField = ({ name, label }: Props) => {
                 label="search"
                 placeholder="Search"
                 onChange={handleSearchChange}
+                value={searchPhrase}
               />
 
               <MultiStateToggle
