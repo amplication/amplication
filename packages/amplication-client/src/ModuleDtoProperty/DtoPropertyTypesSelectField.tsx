@@ -1,9 +1,9 @@
 import {
   EnumButtonStyle,
   EnumItemsAlign,
+  EnumTextColor,
   FlexItem,
   Icon,
-  Label,
   MultiStateToggle,
   SearchField,
   SelectMenu,
@@ -11,8 +11,9 @@ import {
   SelectMenuList,
   SelectMenuModal,
   ToggleField,
+  Tooltip,
 } from "@amplication/ui/design-system";
-import { useField } from "formik";
+import { FieldMetaProps, useField } from "formik";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 import { AppContext } from "../context/appContext";
@@ -21,11 +22,15 @@ import {
   EnumModuleDtoType,
   EnumResourceType,
   ModuleDto,
+  PropertyTypeDef,
   Resource,
 } from "../models";
 
+import { Link, useRouteMatch } from "react-router-dom";
 import ProgressBar from "../Components/ProgressBar";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import NewModuleDtoButton from "../ModuleDto/NewModuleDtoButton";
+import NewModuleDtoEnumButton from "../ModuleDto/NewModuleDtoEnumButton";
 import "./DtoPropertyTypesSelectField.scss";
 
 type PrimitiveTypes = Exclude<
@@ -110,13 +115,124 @@ const OPTIONS: { value: EnumTypeGroup; label: string }[] = [
 const CLASS_NAME = "dto-property-types-select-field";
 
 const DtoPropertyTypesSelectField = ({ name, label }: Props) => {
-  const { resources } = useContext(AppContext);
+  const moduleMatch = useRouteMatch<{
+    module: string;
+  }>("/:workspace/:project/:resource/modules/:module");
 
+  const { module: moduleId } = moduleMatch?.params ?? {};
+
+  const [field, meta] = useField<PropertyTypeDef>(name);
+
+  const {
+    availableDtosForCurrentResource: data,
+    availableDtosForCurrentResourceError: error,
+    availableDtosForCurrentResourceLoading: loading,
+    getModuleDtoUrl,
+  } = useModuleDto();
+
+  const onDtoSelected = useCallback(
+    (dto: ModuleDto) => {
+      field.onChange({
+        target: {
+          name: name,
+          value: {
+            type: EnumModuleDtoPropertyType.Dto,
+            isArray: field.value.isArray,
+            dtoId: dto.id,
+          },
+        },
+      });
+    },
+    [field, name]
+  );
+
+  const onPrimitiveSelected = useCallback(
+    (type: EnumModuleDtoPropertyType) => {
+      field.onChange({
+        target: {
+          name: name,
+          value: {
+            type,
+            isArray: field.value.isArray,
+          },
+        },
+      });
+    },
+    [field, name]
+  );
+
+  const selectedValue = useMemo(() => {
+    if (meta.value?.type === EnumModuleDtoPropertyType.Dto) {
+      const dto = data?.moduleDtos.find((dto) => dto.id === meta.value?.dtoId);
+      return field.value.isArray ? `${dto?.name}[]` : dto?.name;
+    } else {
+      return field.value.isArray ? `${meta.value?.type}[]` : meta.value?.type;
+    }
+  }, [meta.value, data?.moduleDtos, field.value?.isArray]);
+
+  const selectedDtoUrl = useMemo(() => {
+    if (meta.value?.type === EnumModuleDtoPropertyType.Dto) {
+      const dto = data?.moduleDtos.find((dto) => dto.id === meta.value?.dtoId);
+      return dto && getModuleDtoUrl(dto);
+    }
+  }, [data?.moduleDtos, getModuleDtoUrl, meta.value?.dtoId, meta.value?.type]);
+
+  return (
+    <FlexItem className={CLASS_NAME} itemsAlign={EnumItemsAlign.End}>
+      <SelectMenu
+        title={selectedValue}
+        buttonStyle={EnumButtonStyle.Outline}
+        className={`${CLASS_NAME}__menu`}
+        icon="chevron_down"
+        buttonAsTextBox
+        buttonAsTextBoxLabel={label}
+      >
+        <ModalContent
+          meta={meta}
+          name={name}
+          moduleId={moduleId}
+          moduleDtos={data?.moduleDtos}
+          loading={loading}
+          onDtoSelected={onDtoSelected}
+          onPrimitiveSelected={onPrimitiveSelected}
+        />
+      </SelectMenu>
+      {selectedDtoUrl && (
+        <Link to={selectedDtoUrl} className={`${CLASS_NAME}__go-to`}>
+          <Tooltip aria-label="Go to DTO" direction="n" noDelay>
+            <Icon icon="arrow-right-circle" color={EnumTextColor.Black20} />
+          </Tooltip>
+        </Link>
+      )}
+    </FlexItem>
+  );
+};
+
+type ModalContentProps = {
+  meta: FieldMetaProps<PropertyTypeDef>;
+  name: string;
+  moduleId: string;
+  moduleDtos: ModuleDto[];
+  loading: boolean;
+  onDtoSelected: (dto: ModuleDto) => void;
+  onPrimitiveSelected: (type: EnumModuleDtoPropertyType) => void;
+};
+
+const ModalContent = ({
+  meta,
+  name,
+  moduleDtos,
+  moduleId,
+  loading,
+  onDtoSelected,
+  onPrimitiveSelected,
+}: ModalContentProps) => {
   const [selectedGroup, setSelectedGroup] = React.useState<EnumTypeGroup>(
     EnumTypeGroup.DTO
   );
+  const { resources, currentResource } = useContext(AppContext);
 
-  const [field, meta] = useField(name);
+  const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const resourceDictionary = useMemo(() => {
     if (!resources) return {};
@@ -126,28 +242,20 @@ const DtoPropertyTypesSelectField = ({ name, label }: Props) => {
     }, {});
   }, [resources]);
 
-  const {
-    availableDtosForCurrentResource: data,
-    availableDtosForCurrentResourceError: error,
-    availableDtosForCurrentResourceLoading: loading,
-  } = useModuleDto();
-
-  const [searchPhrase, setSearchPhrase] = useState<string>("");
-
   const filteredDtos = useMemo(() => {
-    if (data && data.moduleDtos) {
-      return data.moduleDtos.filter((dto) => {
+    if (moduleDtos) {
+      return moduleDtos.filter((dto) => {
         return dto.name.toLowerCase().includes(searchPhrase.toLowerCase());
       });
     }
     return [];
-  }, [data, searchPhrase]);
+  }, [moduleDtos, searchPhrase]);
 
   const dtoList = useMemo((): {
     groups: DtoListGroupedByResourceAndModule;
     count: number;
   } => {
-    if (data && data.moduleDtos) {
+    if (moduleDtos) {
       const filteredList = filteredDtos.filter(
         (dto) =>
           ![EnumModuleDtoType.Enum, EnumModuleDtoType.CustomEnum].includes(
@@ -178,13 +286,13 @@ const DtoPropertyTypesSelectField = ({ name, label }: Props) => {
       };
     }
     return undefined;
-  }, [data, filteredDtos, resourceDictionary]);
+  }, [moduleDtos, filteredDtos, resourceDictionary]);
 
   const enumList = useMemo((): {
     groups: DtoListGroupedByResourceAndModule;
     count: number;
   } => {
-    if (data && data.moduleDtos) {
+    if (moduleDtos) {
       const filteredList = filteredDtos.filter((dto) =>
         [EnumModuleDtoType.Enum, EnumModuleDtoType.CustomEnum].includes(
           dto.dtoType
@@ -222,7 +330,14 @@ const DtoPropertyTypesSelectField = ({ name, label }: Props) => {
       };
     }
     return undefined;
-  }, [data, filteredDtos, resourceDictionary]);
+  }, [moduleDtos, filteredDtos, resourceDictionary]);
+
+  const handleSearchChange = useCallback(
+    (value) => {
+      setSearchPhrase(value);
+    },
+    [setSearchPhrase]
+  );
 
   const optionsWithCount = useMemo(() => {
     return OPTIONS.map((option) => {
@@ -246,118 +361,81 @@ const DtoPropertyTypesSelectField = ({ name, label }: Props) => {
     });
   }, [dtoList?.count, enumList?.count]);
 
-  const handleSearchChange = useCallback(
-    (value) => {
-      setSearchPhrase(value);
-    },
-    [setSearchPhrase]
-  );
-
-  const onDtoSelected = useCallback(
-    (dto: ModuleDto) => {
-      field.onChange({
-        target: {
-          name: name,
-          value: {
-            type: EnumModuleDtoPropertyType.Dto,
-            isArray: field.value.isArray,
-            dtoId: dto.id,
-          },
-        },
-      });
-    },
-    [field, name]
-  );
-
-  const selectedValue = useMemo(() => {
-    if (meta.value?.type === EnumModuleDtoPropertyType.Dto) {
-      const dto = data?.moduleDtos.find((dto) => dto.id === meta.value?.dtoId);
-      return field.value.isArray ? `${dto?.name}[]` : dto?.name;
-    } else {
-      return field.value.isArray ? `${meta.value?.type}[]` : meta.value?.type;
-    }
-  }, [meta.value, data?.moduleDtos, field.value?.isArray]);
-
   return (
-    <div className={CLASS_NAME}>
-      <SelectMenu
-        title={selectedValue}
-        buttonStyle={EnumButtonStyle.Outline}
-        className={`${CLASS_NAME}__menu`}
-        icon="chevron_down"
-        buttonAsTextBox
-        buttonAsTextBoxLabel={label}
-      >
-        <SelectMenuModal>
-          <SelectMenuList className={`${CLASS_NAME}__modal-wrapper`}>
-            <div className={`${CLASS_NAME}__header`}>
-              <SearchField
-                label="search"
-                placeholder="Search"
-                onChange={handleSearchChange}
-                value={searchPhrase}
-              />
+    <SelectMenuModal>
+      <SelectMenuList className={`${CLASS_NAME}__modal-wrapper`}>
+        <div className={`${CLASS_NAME}__header`}>
+          <SearchField
+            label="search"
+            placeholder="Search"
+            onChange={handleSearchChange}
+            value={searchPhrase}
+          />
 
-              <MultiStateToggle
-                label=""
-                name="action_"
-                options={optionsWithCount}
-                onChange={(group) => {
-                  setSelectedGroup(EnumTypeGroup[group]);
-                }}
-                selectedValue={selectedGroup}
-              />
-            </div>
-            <div className={`${CLASS_NAME}__sub_header`}>
-              <ToggleField name={`${name}.isArray`} label="Array" />
-            </div>
-            <div className={`${CLASS_NAME}__container`}>
-              {selectedGroup === EnumTypeGroup.Primitive && (
-                <>
-                  {TYPE_OPTIONS.map((option) => (
-                    <SelectMenuItem
-                      closeAfterSelectionChange
-                      key={option.value}
-                      onSelectionChange={() => {
-                        field.onChange({
-                          target: {
-                            name: `${name}.type`,
-                            value: option.value,
-                          },
-                        });
-                      }}
-                      selected={option.value === meta.value?.type}
-                    >
-                      {option.label}
-                    </SelectMenuItem>
-                  ))}
-                </>
-              )}
-              {selectedGroup === EnumTypeGroup.DTO && dtoList && (
-                <TypeGroup
-                  group={dtoList?.groups}
-                  onSelectionChange={onDtoSelected}
-                  selectedDtoId={meta.value?.dtoId}
-                  loading={loading}
-                />
-              )}
-              {selectedGroup === EnumTypeGroup.Enum && enumList && (
-                <TypeGroup
-                  group={enumList.groups}
-                  onSelectionChange={onDtoSelected}
-                  selectedDtoId={meta.value?.dtoId}
-                  loading={loading}
-                />
-              )}
-            </div>
-          </SelectMenuList>
-        </SelectMenuModal>
-      </SelectMenu>
-    </div>
+          <MultiStateToggle
+            label=""
+            name="action_"
+            options={optionsWithCount}
+            onChange={(group) => {
+              setSelectedGroup(EnumTypeGroup[group]);
+            }}
+            selectedValue={selectedGroup}
+          />
+          <FlexItem itemsAlign={EnumItemsAlign.Center}>
+            <NewModuleDtoButton
+              resourceId={currentResource?.id}
+              moduleId={moduleId}
+              navigateToDtoOnCreate={false}
+              onDtoCreated={onDtoSelected}
+            />
+            |
+            <NewModuleDtoEnumButton
+              resourceId={currentResource?.id}
+              moduleId={moduleId}
+              navigateToDtoOnCreate={false}
+              onDtoCreated={onDtoSelected}
+            />
+          </FlexItem>
+        </div>
+        <div className={`${CLASS_NAME}__sub_header`}>
+          <ToggleField name={`${name}.isArray`} label="Array" />
+        </div>
+        <div className={`${CLASS_NAME}__container`}>
+          {selectedGroup === EnumTypeGroup.Primitive && (
+            <>
+              {TYPE_OPTIONS.map((option) => (
+                <SelectMenuItem
+                  closeAfterSelectionChange
+                  key={option.value}
+                  onSelectionChange={onPrimitiveSelected}
+                  selected={option.value === meta.value?.type}
+                >
+                  {option.label}
+                </SelectMenuItem>
+              ))}
+            </>
+          )}
+          {selectedGroup === EnumTypeGroup.DTO && dtoList && (
+            <TypeGroup
+              group={dtoList?.groups}
+              onSelectionChange={onDtoSelected}
+              selectedDtoId={meta.value?.dtoId}
+              loading={loading}
+            />
+          )}
+          {selectedGroup === EnumTypeGroup.Enum && enumList && (
+            <TypeGroup
+              group={enumList.groups}
+              onSelectionChange={onDtoSelected}
+              selectedDtoId={meta.value?.dtoId}
+              loading={loading}
+            />
+          )}
+        </div>
+      </SelectMenuList>
+    </SelectMenuModal>
   );
 };
-
-export default DtoPropertyTypesSelectField;
 
 type TypeGroupProps = {
   group: DtoListGroupedByResourceAndModule;
@@ -376,14 +454,17 @@ const TypeGroup = ({
     <>
       {loading && <ProgressBar />}
       {Object.values(group).map((resourceGroup) => (
-        <div className={`${CLASS_NAME}__group`}>
+        <div className={`${CLASS_NAME}__group`} key={resourceGroup.resource.id}>
           <div className={`${CLASS_NAME}__group-name`}>
             <ResourceCircleBadge type={EnumResourceType.Service} size="small" />
 
             {resourceGroup.resource.name}
           </div>
           {Object.values(resourceGroup.modules).map((moduleGroup) => (
-            <div className={`${CLASS_NAME}__group`}>
+            <div
+              className={`${CLASS_NAME}__group`}
+              key={moduleGroup.moduleName}
+            >
               <div className={`${CLASS_NAME}__group-name`}>
                 <Icon icon="box" />
                 {moduleGroup.moduleName}
@@ -416,3 +497,5 @@ const TypeGroup = ({
     </>
   );
 };
+
+export default DtoPropertyTypesSelectField;
