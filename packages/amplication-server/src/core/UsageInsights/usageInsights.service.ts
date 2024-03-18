@@ -170,30 +170,24 @@ export class UsageInsightsService {
       case EnumBlockType.ModuleAction:
         if (projectId) {
           results = await this.prisma.$queryRaw`
-          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
+          SELECT DATE_PART('year', b."updatedAt") as year, DATE_PART('month', b."updatedAt") as time_group, count(distinct b."id") as count
           FROM "Block" b
           JOIN "Resource" r ON b."resourceId" = r."id"
           WHERE r."projectId" = ${projectId}
           AND b."blockType" = 'ModuleAction'
-          AND (
-              (b."createdAt" >= ${startDate} AND b."createdAt" <= ${endDate})
-              OR (b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate})
-          )
+          AND b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate}
           GROUP BY year, time_group
           ORDER BY year, time_group;
         `;
         } else {
           results = await this.prisma.$queryRaw`
-            SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
+            SELECT DATE_PART('year', b."updatedAt") as year, DATE_PART('month', b."updatedAt") as time_group, count(distinct b."id") as count
             FROM "Block" b
             JOIN "Resource" r ON b."resourceId" = r."id"
             JOIN "Project" p ON r."projectId" = p."id"
             WHERE p."workspaceId" = ${workspaceId}
             AND b."blockType" = 'ModuleAction'
-            AND (
-                (b."createdAt" >= ${startDate} AND b."createdAt" <= ${endDate})
-                OR (b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate})
-            )
+            AND b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate}
             GROUP BY year, time_group
             ORDER BY year, time_group;
           `;
@@ -202,30 +196,24 @@ export class UsageInsightsService {
       case EnumBlockType.PluginInstallation:
         if (projectId) {
           results = await this.prisma.$queryRaw`
-          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
+          SELECT DATE_PART('year', b."updatedAt") as year, DATE_PART('month', b."updatedAt") as time_group, count(distinct b."id") as count
           FROM "Block" b
           JOIN "Resource" r ON b."resourceId" = r."id"
           WHERE r."projectId" = ${projectId}
           AND b."blockType" = 'PluginInstallation'
-          AND (
-              (b."createdAt" >= ${startDate} AND b."createdAt" <= ${endDate})
-              OR (b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate})
-          )
+          AND b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate}
           GROUP BY year, time_group
           ORDER BY year, time_group;
         `;
         } else {
           results = await this.prisma.$queryRaw`
-          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
+          SELECT DATE_PART('year', b."updatedAt") as year, DATE_PART('month', b."updatedAt") as time_group, count(distinct b."id") as count
           FROM "Block" b
           JOIN "Resource" r ON b."resourceId" = r."id"
           JOIN "Project" p ON r."projectId" = p."id"
           WHERE p."workspaceId" = ${workspaceId}
           AND b."blockType" = 'PluginInstallation'
-          AND (
-              (b."createdAt" >= ${startDate} AND b."createdAt" <= ${endDate})
-              OR (b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate})
-          )
+          AND b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate}
           GROUP BY year, time_group
           ORDER BY year, time_group;
         `;
