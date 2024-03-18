@@ -5,6 +5,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--default-spacing);
-    margin-bottom: var(--double-spacing);
+    margin-bottom: var(--triple-spacing);
+    margin-top: var(--triple-spacing);
   }
 }

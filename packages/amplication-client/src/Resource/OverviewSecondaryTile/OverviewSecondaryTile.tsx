@@ -1,18 +1,16 @@
 import {
   EnumFlexDirection,
   EnumGapSize,
-  EnumItemsAlign,
   EnumListStyle,
   EnumTextColor,
   EnumTextStyle,
-  FlexItem,
-  Icon,
   List,
   ListItem,
   Text,
 } from "@amplication/ui/design-system";
 
 import React from "react";
+import { TitleAndIcon } from "../../Components/TitleAndIcon";
 
 interface Props {
   title: string;
@@ -43,12 +41,7 @@ const OverviewSecondaryTile: React.FC<Props> = ({
         direction={EnumFlexDirection.Column}
         gap={EnumGapSize.Default}
       >
-        <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.Small}>
-          <Icon icon={icon} color={EnumTextColor.White} />
-          <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-            {title}
-          </Text>
-        </FlexItem>
+        <TitleAndIcon icon={icon} title={title} />
 
         <Text textStyle={EnumTextStyle.Subtle}>{message}</Text>
       </ListItem>
