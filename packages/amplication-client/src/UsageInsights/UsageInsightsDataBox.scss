@@ -1,0 +1,12 @@
+@import "../style/index.scss";
+
+$max-width: 400px;
+
+.usage-insights-data-box {
+  width: 100%;
+
+  h1,
+  h3 {
+    display: inline;
+  }
+}
