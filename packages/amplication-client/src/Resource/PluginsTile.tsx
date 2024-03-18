@@ -17,7 +17,7 @@ import {
   Text,
   Tooltip,
 } from "@amplication/ui/design-system";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import "./PluginsTile.scss";
 import {
   PluginCategory,
@@ -28,7 +28,10 @@ import usePlugins, {
 } from "../Plugins/hooks/usePlugins";
 import { useAppContext } from "../context/appContext";
 import { PluginLogo } from "../Plugins/PluginLogo";
-import { use } from "ast-types";
+import { TitleAndIcon } from "../Components/TitleAndIcon";
+import { Link } from "react-router-dom";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useTracking } from "../util/analytics";
 
 type Props = {
   usedCategories: usedPluginCategories;
@@ -39,7 +42,16 @@ const CLASS_NAME = "plugins-tile";
 const PLUGIN_LOGOS_CLASS_NAME = "plugin-logos";
 const TOOLTIP_DIRECTION = "n";
 
+const AVAILABLE_CATEGORIES = "AvailableCategories";
+const INSTALLED_CATEGORIES = "InstalledCategories";
+
 function PluginsTile({ usedCategories, availableCategories }: Props) {
+  const { currentWorkspace, currentProject, currentResource } = useAppContext();
+  const { trackEvent } = useTracking();
+
+  const catalogUrl = `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/catalog`;
+  const installedUrl = `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/installed`;
+
   const installedCategories = useMemo(() => {
     if (!usedCategories) {
       return [];
@@ -59,6 +71,17 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
     });
   }, [usedCategories]);
 
+  const handleCategoryClick = useCallback(
+    (location: string, category: PluginCategory) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.PluginCategoryTileClick,
+        location,
+        category: category.name,
+      });
+    },
+    [trackEvent]
+  );
+
   const availableCategoriesList = availableCategories.slice(0, 4);
 
   return (
@@ -72,40 +95,73 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
         margin={EnumFlexItemMargin.Bottom}
         direction={EnumFlexDirection.Column}
       >
-        <FlexItem.FlexStart direction={EnumFlexDirection.Row}>
-          <Icon icon={"plugin"} color={EnumTextColor.White} />
-          <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-            Plugins
-          </Text>
-        </FlexItem.FlexStart>
+        <TitleAndIcon icon={"plugin"} title={"Plugins"} />
+
         <Text textStyle={EnumTextStyle.Subtle}>
           Enhance your service with additional functionality and accelerate
           development with Amplication's wide range of plugins and integrations.
         </Text>
       </FlexItem>
-      <HorizontalRule />
-      <FlexItem margin={EnumFlexItemMargin.Both}>
-        <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-          Available Plugins
-        </Text>
-      </FlexItem>
+      {availableCategoriesList && availableCategoriesList.length > 0 && (
+        <>
+          <HorizontalRule />
+          <FlexItem
+            margin={EnumFlexItemMargin.Both}
+            itemsAlign={EnumItemsAlign.Center}
+          >
+            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+              Available Plugins
+            </Text>
+            <FlexItem.FlexEnd>
+              <Link to={catalogUrl}>
+                <Text
+                  textStyle={EnumTextStyle.Subtle}
+                  textColor={EnumTextColor.ThemeTurquoise}
+                >
+                  Check the full catalog
+                </Text>
+              </Link>
+            </FlexItem.FlexEnd>
+          </FlexItem>
 
-      <div className={CLASS_NAME}>
-        {availableCategoriesList.map((category) => (
-          <AvailableCategory key={category.name} category={category} />
-        ))}
-      </div>
-
+          <div className={CLASS_NAME}>
+            {availableCategoriesList.map((category) => (
+              <AvailableCategory
+                key={category.name}
+                category={category}
+                onClick={handleCategoryClick}
+              />
+            ))}
+          </div>
+        </>
+      )}
       <HorizontalRule />
-      <FlexItem margin={EnumFlexItemMargin.Both}>
+      <FlexItem
+        margin={EnumFlexItemMargin.Both}
+        itemsAlign={EnumItemsAlign.Center}
+      >
         <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
           Installed Plugins
         </Text>
+        <FlexItem.FlexEnd>
+          <Link to={installedUrl}>
+            <Text
+              textStyle={EnumTextStyle.Subtle}
+              textColor={EnumTextColor.ThemeTurquoise}
+            >
+              Manage installed plugins
+            </Text>
+          </Link>
+        </FlexItem.FlexEnd>
       </FlexItem>
 
       <div className={CLASS_NAME}>
         {installedCategories.map((category) => (
-          <InstalledCategory key={category.category.name} {...category} />
+          <InstalledCategory
+            key={category.category.name}
+            {...category}
+            onClick={handleCategoryClick}
+          />
         ))}
       </div>
     </Panel>
@@ -114,8 +170,9 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
 
 type AvailableCategoryProps = {
   category: PluginCategory;
+  onClick?: (location: string, category: PluginCategory) => void;
 };
-function AvailableCategory({ category }: AvailableCategoryProps) {
+function AvailableCategory({ category, onClick }: AvailableCategoryProps) {
   const { currentWorkspace, currentProject, currentResource } = useAppContext();
 
   const url = `/${currentWorkspace.id}/${currentProject.id}/${
@@ -126,6 +183,7 @@ function AvailableCategory({ category }: AvailableCategoryProps) {
     <List listStyle={EnumListStyle.Dark}>
       <ListItem
         to={url}
+        onClick={() => onClick(AVAILABLE_CATEGORIES, category)}
         direction={EnumFlexDirection.Column}
         gap={EnumGapSize.Large}
         end={
@@ -137,13 +195,7 @@ function AvailableCategory({ category }: AvailableCategoryProps) {
           </Text>
         }
       >
-        <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.Small}>
-          <Icon icon={category.icon} color={EnumTextColor.White} />
-          <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-            {category.name}
-          </Text>
-        </FlexItem>
-
+        <TitleAndIcon icon={category.icon} title={category.name} />
         <Text
           className={`${CLASS_NAME}__description`}
           textStyle={EnumTextStyle.Subtle}
@@ -158,10 +210,12 @@ function AvailableCategory({ category }: AvailableCategoryProps) {
 type InstalledCategoryProps = {
   category: PluginCategory;
   installedPlugins: SortedPluginInstallation[];
+  onClick?: (location: string, category: PluginCategory) => void;
 };
 function InstalledCategory({
   category,
   installedPlugins,
+  onClick,
 }: InstalledCategoryProps) {
   const { currentWorkspace, currentProject, currentResource } = useAppContext();
 
@@ -171,16 +225,16 @@ function InstalledCategory({
     <List listStyle={EnumListStyle.Default}>
       <ListItem
         to={url}
+        onClick={() => {
+          onClick(INSTALLED_CATEGORIES, category);
+        }}
         direction={EnumFlexDirection.Column}
         gap={EnumGapSize.Large}
         end={<PluginLogos installedPlugins={installedPlugins} />}
       >
         <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.Small}>
           <EnabledIndicator enabled={true} />
-          <Icon icon={category.icon} color={EnumTextColor.White} />
-          <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-            {category.name}
-          </Text>
+          <TitleAndIcon icon={category.icon} title={category.name} />
         </FlexItem>
       </ListItem>
     </List>

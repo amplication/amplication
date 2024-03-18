@@ -1,13 +1,13 @@
 import { useQuery } from "@apollo/client";
-import useModule from "../../Modules/hooks/useModule";
-import { GET_ROLES } from "../../Roles/RoleList";
-import { DATE_CREATED_FIELD } from "../../Modules/ModuleNavigationList";
-import * as models from "../../models";
 import { useEffect, useState } from "react";
-import { GET_CATEGORIES } from "./categoriesQueries";
+import useModuleAction from "../../ModuleActions/hooks/useModuleAction";
+import { DATE_CREATED_FIELD } from "../../Modules/ModuleNavigationList";
 import usePlugins, {
   SortedPluginInstallation,
 } from "../../Plugins/hooks/usePlugins";
+import { GET_ROLES } from "../../Roles/RoleList";
+import * as models from "../../models";
+import { GET_CATEGORIES } from "./categoriesQueries";
 
 type TData = {
   resourceRoles: models.ResourceRole[];
@@ -52,9 +52,11 @@ export const useResourceSummary = (currentResource: models.Resource) => {
     installedPlugins: 0,
     roles: 0,
   });
-  const { pluginInstallations } = usePlugins(currentResource.id);
+  const { pluginInstallations, loadingPluginInstallation } = usePlugins(
+    currentResource.id
+  );
 
-  const { data: categoriesData } = useQuery<{
+  const { data: categoriesData, loading: categoriesLoading } = useQuery<{
     categories: PluginCategory[];
   }>(GET_CATEGORIES, {
     context: {
@@ -64,7 +66,7 @@ export const useResourceSummary = (currentResource: models.Resource) => {
     skip: !currentResource.id,
   });
 
-  const { findModulesData } = useModule();
+  const { findModuleActions, findModuleActionsData } = useModuleAction();
 
   const { data: rolesData } = useQuery<TData>(GET_ROLES, {
     variables: {
@@ -121,7 +123,7 @@ export const useResourceSummary = (currentResource: models.Resource) => {
 
   useEffect(() => {
     const models = currentResource?.entities?.length || 0;
-    const modules = findModulesData?.modules?.length || 0;
+    const modules = findModuleActionsData?.moduleActions?.length || 0;
     const installedPlugins = pluginInstallations?.length || 0;
     const roles = rolesData?.resourceRoles?.length || 0;
     if (
@@ -135,9 +137,9 @@ export const useResourceSummary = (currentResource: models.Resource) => {
         ...(summaryData.models !== currentResource.entities.length
           ? { models: currentResource.entities.length }
           : {}),
-        ...(findModulesData &&
-        findModulesData.modules.length !== summaryData.apis
-          ? { apis: findModulesData.modules.length }
+        ...(findModuleActionsData &&
+        findModuleActionsData.moduleActions.length !== summaryData.apis
+          ? { apis: findModuleActionsData.moduleActions.length }
           : {}),
         ...(pluginInstallations &&
         pluginInstallations.length !== summaryData.installedPlugins
@@ -152,13 +154,25 @@ export const useResourceSummary = (currentResource: models.Resource) => {
     currentResource,
     summaryData,
     pluginInstallations,
-    findModulesData,
+    findModuleActionsData,
     rolesData,
   ]);
+
+  useEffect(() => {
+    findModuleActions({
+      variables: {
+        where: {
+          resource: { id: currentResource.id },
+        },
+      },
+      fetchPolicy: "cache-and-network",
+    });
+  }, [currentResource, findModuleActions]);
 
   return {
     summaryData,
     usedCategories,
     availableCategories,
+    pluginsDataLoading: loadingPluginInstallation || categoriesLoading,
   };
 };
