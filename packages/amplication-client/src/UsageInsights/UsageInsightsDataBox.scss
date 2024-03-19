@@ -4,6 +4,12 @@ $max-width: 400px;
 
 .usage-insights-data-box {
   width: 100%;
+  flex: 1;
+  margin-bottom: 0;
+
+  &__content {
+    height: 100%;
+  }
 
   h1,
   h3 {

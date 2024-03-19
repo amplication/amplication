@@ -4,13 +4,15 @@ import { ProjectListItem } from "./ProjectListItem";
 import ProjectEmptyState from "./ProjectEmptyState";
 import {
   EnumFlexItemMargin,
+  EnumPanelStyle,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   List,
+  Panel,
   Text,
 } from "@amplication/ui/design-system";
 import { pluralize } from "../util/pluralize";
-import { UsageInsights } from "../UsageInsights/UsageInsights";
 
 const CLASS_NAME = "project-list";
 
@@ -21,8 +23,11 @@ type Props = {
 
 export const ProjectList = ({ projects, workspaceId }: Props) => {
   return (
-    <div className={CLASS_NAME}>
-      <UsageInsights workspaceId={workspaceId} />
+    <Panel
+      panelStyle={EnumPanelStyle.Bordered}
+      className={CLASS_NAME}
+      themeColor={EnumTextColor.ThemeBlue}
+    >
       <FlexItem margin={EnumFlexItemMargin.Bottom}>
         <Text textStyle={EnumTextStyle.Tag}>
           {projects.length} {pluralize(projects.length, "Project", "Projects")}
@@ -41,7 +46,7 @@ export const ProjectList = ({ projects, workspaceId }: Props) => {
           <ProjectEmptyState />
         )}
       </List>
-    </div>
+    </Panel>
   );
 };
 

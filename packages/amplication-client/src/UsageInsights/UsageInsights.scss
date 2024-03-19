@@ -24,6 +24,11 @@ $chart-side-width: 250px;
       padding-left: var(--default-spacing);
     }
   }
+  &__chart {
+    margin-bottom: 0;
+    width: 100%;
+    border-color: var(--theme-orange);
+  }
 
   .MuiChartsAxis-label {
     fill: var(--gray-base);
@@ -47,6 +52,7 @@ $chart-side-width: 250px;
       font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Roboto",
         "Helvetica Neue", sans-serif !important;
       fill: var(--gray-10) !important;
+      font-size: var(--tag-font-size) !important;
     }
   }
 }

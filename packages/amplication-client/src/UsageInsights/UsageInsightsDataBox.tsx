@@ -32,9 +32,16 @@ export const UsageInsightsDataBox: React.FC<Props> = ({
   units,
 }) => {
   return (
-    <Panel panelStyle={EnumPanelStyle.Bold} className={`${CLASS_NAME}`}>
+    <Panel
+      panelStyle={EnumPanelStyle.Bold}
+      className={`${CLASS_NAME}`}
+      style={{
+        borderColor: `var(--${color})`,
+      }}
+    >
       <FlexItem
-        itemsAlign={EnumItemsAlign.Center}
+        itemsAlign={EnumItemsAlign.Stretch}
+        className={`${CLASS_NAME}__content`}
         start={
           <CircleBadge size={"medium"} themeColor={color}>
             <Icon icon={icon} size="xlarge" />
@@ -46,7 +53,9 @@ export const UsageInsightsDataBox: React.FC<Props> = ({
           itemsAlign={EnumItemsAlign.Center}
           contentAlign={EnumContentAlign.Center}
         >
-          <Text textStyle={EnumTextStyle.Tag}>{label}</Text>
+          <Text textStyle={EnumTextStyle.H4} textColor={color}>
+            {label}
+          </Text>
           <span>
             <Text textStyle={EnumTextStyle.H1}>{value}</Text>
             {units && (

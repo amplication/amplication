@@ -27,6 +27,7 @@ import * as models from "../models";
 import { EnumSubscriptionPlan } from "../models";
 import { GET_WORKSPACE_MEMBERS, TData as MemberListData } from "./MemberList";
 import WorkspaceSelector, { getWorkspaceColor } from "./WorkspaceSelector";
+import { UsageInsights } from "../UsageInsights/UsageInsights";
 
 const CLASS_NAME = "workspace-overview";
 const PAGE_TITLE = "Workspace Overview";
@@ -109,7 +110,17 @@ export const WorkspaceOverview = () => {
           </FlexItem.FlexEnd>
         </FlexItem>
       </Panel>
-      <ProjectList projects={projectsList} workspaceId={currentWorkspace.id} />
+      <FlexItem
+        direction={EnumFlexDirection.Row}
+        itemsAlign={EnumItemsAlign.Stretch}
+      >
+        <UsageInsights workspaceId={currentWorkspace.id} />
+
+        <ProjectList
+          projects={projectsList}
+          workspaceId={currentWorkspace.id}
+        />
+      </FlexItem>
     </PageContent>
   );
 };

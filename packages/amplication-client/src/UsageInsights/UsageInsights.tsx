@@ -1,6 +1,8 @@
 import {
   EnumFlexDirection,
   EnumFlexItemMargin,
+  EnumGapSize,
+  EnumItemsAlign,
   EnumPanelStyle,
   EnumTextColor,
   EnumTextStyle,
@@ -121,9 +123,14 @@ export const UsageInsights: React.FC<Props> = ({ workspaceId, projectId }) => {
       <FlexItem
         direction={EnumFlexDirection.Row}
         className={`${CLASS_NAME}__chart-container`}
+        itemsAlign={EnumItemsAlign.Stretch}
+        gap={EnumGapSize.Large}
       >
         {usageInsightsDataset && (
-          <Panel panelStyle={EnumPanelStyle.Bold} style={{ width: "100%" }}>
+          <Panel
+            className={`${CLASS_NAME}__chart`}
+            panelStyle={EnumPanelStyle.Bold}
+          >
             <BarChart
               height={300}
               dataset={usageInsightsDataset}
@@ -173,6 +180,7 @@ export const UsageInsights: React.FC<Props> = ({ workspaceId, projectId }) => {
         <FlexItem
           direction={EnumFlexDirection.Column}
           className={`${CLASS_NAME}__chart-side`}
+          gap={EnumGapSize.Large}
         >
           {evaluationInsights && (
             <>
@@ -203,7 +211,7 @@ export const UsageInsights: React.FC<Props> = ({ workspaceId, projectId }) => {
             <Text textStyle={EnumTextStyle.H4}>Efficiency Metrics</Text>
           </FlexItem>
 
-          <FlexItem>
+          <FlexItem gap={EnumGapSize.Large}>
             <UsageInsightsDataBox
               label="Cost saved"
               value={evaluationInsights.costSaved}
