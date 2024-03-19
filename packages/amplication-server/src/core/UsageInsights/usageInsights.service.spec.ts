@@ -3,6 +3,7 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { UsageInsightsService } from "./usageInsights.service";
 import { PrismaService } from "../../prisma";
 import { QueryRawResult } from "./types";
+import { UsageInsightsResult } from "./dtos/UsageInsights.object";
 
 const buildAggregateMock = jest.fn();
 const prismaQueryRawMock = jest.fn();
@@ -46,6 +47,7 @@ describe("UsageInsightsService", () => {
     });
 
     const now = new Date();
+    const projectIds = ["project-id"];
 
     it("should count the lines of code added/updated for a given project", async () => {
       const startDate = new Date(
@@ -64,8 +66,7 @@ describe("UsageInsightsService", () => {
         },
       });
       const result = await service.countLinesOfCode({
-        workspaceId: "workspace-id",
-        projectId: "project-id",
+        projectIds,
         startDate,
         endDate,
       });
@@ -81,8 +82,9 @@ describe("UsageInsightsService", () => {
           },
           resource: {
             project: {
-              workspaceId: "workspace-id",
-              id: "project-id",
+              id: {
+                in: projectIds,
+              },
             },
           },
         },
@@ -111,7 +113,7 @@ describe("UsageInsightsService", () => {
         },
       });
       const result = await service.countLinesOfCode({
-        workspaceId: "workspace-id",
+        projectIds,
         startDate,
         endDate,
       });
@@ -127,8 +129,9 @@ describe("UsageInsightsService", () => {
           },
           resource: {
             project: {
-              workspaceId: "workspace-id",
-              id: undefined,
+              id: {
+                in: projectIds,
+              },
             },
           },
         },
@@ -146,15 +149,17 @@ describe("UsageInsightsService", () => {
       const mockedQueryRawResult: QueryRawResult[] = [
         {
           year: 2021,
-          count: 4n,
+          month: 3,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           time_group: 3,
+          count: 4n,
         },
         {
           year: 2022,
-          count: 7n,
+          month: 5,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           time_group: 5,
+          count: 7n,
         },
       ];
 
@@ -162,102 +167,78 @@ describe("UsageInsightsService", () => {
 
       const startDate = new Date();
       const endDate = new Date();
+      const projectIds = ["project-id"];
 
       jest.spyOn(service, "countLinesOfCode").mockResolvedValueOnce(100);
 
       const result = await service.getUsageInsights({
-        workspaceId: "workspace-id",
-        projectId: "project-id",
+        projectIds,
         startDate,
         endDate,
       });
 
-      const expectedResults = {
+      const expectedResults: UsageInsightsResult = {
         builds: {
           results: [
             {
-              metrics: [
-                {
-                  count: 4,
-                  timeGroup: "3",
-                },
-              ],
-              year: "2021",
+              year: 2021,
+              month: "Mar",
+              timeGroup: "Mar 2021",
+              count: 4,
             },
             {
-              metrics: [
-                {
-                  count: 7,
-                  timeGroup: "5",
-                },
-              ],
-              year: "2022",
+              year: 2022,
+              month: "May",
+              timeGroup: "May 2022",
+              count: 7,
             },
           ],
         },
         entities: {
           results: [
             {
-              metrics: [
-                {
-                  count: 4,
-                  timeGroup: "3",
-                },
-              ],
-              year: "2021",
+              year: 2021,
+              month: "Mar",
+              timeGroup: "Mar 2021",
+              count: 4,
             },
             {
-              metrics: [
-                {
-                  count: 7,
-                  timeGroup: "5",
-                },
-              ],
-              year: "2022",
+              year: 2022,
+              month: "May",
+              timeGroup: "May 2022",
+              count: 7,
             },
           ],
         },
         plugins: {
           results: [
             {
-              metrics: [
-                {
-                  count: 4,
-                  timeGroup: "3",
-                },
-              ],
-              year: "2021",
+              year: 2021,
+              month: "Mar",
+              timeGroup: "Mar 2021",
+              count: 4,
             },
             {
-              metrics: [
-                {
-                  count: 7,
-                  timeGroup: "5",
-                },
-              ],
-              year: "2022",
+              year: 2022,
+              month: "May",
+              timeGroup: "May 2022",
+              count: 7,
             },
           ],
         },
         moduleActions: {
           results: [
             {
-              metrics: [
-                {
-                  count: 4,
-                  timeGroup: "3",
-                },
-              ],
-              year: "2021",
+              year: 2021,
+              month: "Mar",
+              timeGroup: "Mar 2021",
+              count: 4,
             },
             {
-              metrics: [
-                {
-                  count: 7,
-                  timeGroup: "5",
-                },
-              ],
-              year: "2022",
+              year: 2022,
+              month: "May",
+              timeGroup: "May 2022",
+              count: 7,
             },
           ],
         },
@@ -270,15 +251,17 @@ describe("UsageInsightsService", () => {
       const mockedQueryRawResult: QueryRawResult[] = [
         {
           year: 2021,
-          count: 4n,
+          month: 3,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           time_group: 3,
+          count: 4n,
         },
         {
           year: 2022,
-          count: 7n,
+          month: 5,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           time_group: 5,
+          count: 7n,
         },
       ];
 
@@ -286,12 +269,12 @@ describe("UsageInsightsService", () => {
 
       const startDate = new Date();
       const endDate = new Date();
+      const projectIds = ["project-id"];
 
       jest.spyOn(service, "countLinesOfCode").mockResolvedValueOnce(100);
 
       const result = await service.getEvaluationInsights({
-        workspaceId: "workspace-id",
-        projectId: "project-id",
+        projectIds,
         startDate,
         endDate,
       });
