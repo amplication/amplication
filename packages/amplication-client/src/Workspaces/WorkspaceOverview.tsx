@@ -43,6 +43,10 @@ const SUBSCRIPTION_TO_CHIP_STYLE: {
 
 export const WorkspaceOverview = () => {
   const { currentWorkspace, projectsList } = useContext(AppContext);
+  const projectIds = useMemo(
+    () => projectsList.map((project) => project.id),
+    [projectsList]
+  );
 
   const { data: membersData } = useQuery<MemberListData>(GET_WORKSPACE_MEMBERS);
 
@@ -114,7 +118,7 @@ export const WorkspaceOverview = () => {
         direction={EnumFlexDirection.Row}
         itemsAlign={EnumItemsAlign.Stretch}
       >
-        <UsageInsights workspaceId={currentWorkspace.id} />
+        <UsageInsights projectIds={projectIds} />
 
         <ProjectList
           projects={projectsList}

@@ -1,52 +1,48 @@
 import { gql } from "@apollo/client";
 
 export const GET_USAGE_INSIGHTS = gql`
-  query getUsageInsights(
+  query GetUsageInsights(
     $endDate: DateTime!
+    $projectIds: [String!]!
     $startDate: DateTime!
-    $workspaceId: String!
-    $projectId: String
+    $timeGroup: EnumTimeGroup
   ) {
     getUsageInsights(
       endDate: $endDate
+      projectIds: $projectIds
       startDate: $startDate
-      workspaceId: $workspaceId
-      projectId: $projectId
+      timeGroup: $timeGroup
     ) {
       builds {
         results {
-          metrics {
-            count
-            timeGroup
-          }
+          count
+          month
+          timeGroup
           year
         }
       }
       entities {
         results {
-          metrics {
-            count
-            timeGroup
-          }
+          count
+          month
+          timeGroup
           year
         }
       }
       plugins {
         results {
+          count
+          month
+          timeGroup
           year
-          metrics {
-            timeGroup
-            count
-          }
         }
       }
       moduleActions {
         results {
+          count
+          month
+          timeGroup
           year
-          metrics {
-            timeGroup
-            count
-          }
         }
       }
     }
@@ -54,17 +50,15 @@ export const GET_USAGE_INSIGHTS = gql`
 `;
 
 export const GET_EVALUATION_INSIGHTS = gql`
-  query getEvaluationInsights(
+  query GetEvaluationInsights(
     $endDate: DateTime!
+    $projectIds: [String!]!
     $startDate: DateTime!
-    $workspaceId: String!
-    $projectId: String
   ) {
     getEvaluationInsights(
       endDate: $endDate
+      projectIds: $projectIds
       startDate: $startDate
-      workspaceId: $workspaceId
-      projectId: $projectId
     ) {
       codeQuality
       costSaved

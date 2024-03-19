@@ -32,8 +32,7 @@ const OPTIONS = [
 ];
 
 type Props = {
-  workspaceId: string;
-  projectId?: string;
+  projectIds: string[];
 };
 
 const chartColors: { [key: number]: string } = {
@@ -43,7 +42,7 @@ const chartColors: { [key: number]: string } = {
   3: "#f685a1",
 };
 
-export const UsageInsights: React.FC<Props> = ({ workspaceId, projectId }) => {
+export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
   const [startDate, setStartDate] = React.useState(new Date());
   const [endDate, setEndDate] = React.useState(new Date());
   const [timeFrame, setTimeFrame] = React.useState<EnumTimeFrame>(
@@ -52,14 +51,12 @@ export const UsageInsights: React.FC<Props> = ({ workspaceId, projectId }) => {
 
   const {
     usageInsightsDataset,
-    usageInsightsLoading,
     evaluationInsights,
     evaluationInsightsLoading,
   } = useUsageInsights({
-    workspaceId,
     startDate,
     endDate,
-    projectId,
+    projectIds,
   });
 
   const getLastYear = useCallback(() => {

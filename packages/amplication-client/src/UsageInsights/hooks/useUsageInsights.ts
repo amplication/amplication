@@ -1,10 +1,11 @@
 import { useLazyQuery } from "@apollo/client";
 import { GET_EVALUATION_INSIGHTS, GET_USAGE_INSIGHTS } from "../queries";
 import { useEffect, useState } from "react";
-import { AnalyticsResults, EvaluationInsights } from "../../models";
+import { UsageInsightsResult, EvaluationInsights } from "../../models";
+import { error } from "node:console";
 
 type TUsageInsightsData = {
-  getUsageInsights: AnalyticsResults;
+  getUsageInsights: UsageInsightsResult;
 };
 
 type TEvaluationInsightsData = {
@@ -12,11 +13,9 @@ type TEvaluationInsightsData = {
 };
 
 export type BaseUsageInsightsArgs = {
-  workspaceId: string;
   startDate: Date;
   endDate: Date;
-  projectId?: string;
-  resourceId?: string;
+  projectIds: string[];
 };
 
 type DatasetEntry = {
@@ -28,10 +27,9 @@ type DatasetEntry = {
 };
 
 export const useUsageInsights = ({
-  workspaceId,
   startDate,
   endDate,
-  projectId,
+  projectIds,
 }: BaseUsageInsightsArgs) => {
   const [evaluationInsights, setEvaluationInsights] =
     useState<EvaluationInsights | null>(null);
@@ -44,7 +42,7 @@ export const useUsageInsights = ({
     getUsageInsights,
     { error: usageInsightsError, loading: usageInsightsLoading },
   ] = useLazyQuery<TUsageInsightsData>(GET_USAGE_INSIGHTS, {
-    variables: { workspaceId, startDate, endDate, projectId },
+    variables: { startDate, endDate, projectIds },
     onCompleted: (data) => {
       const dataset = transformInsightsToDataset(data);
       setUsageInsightsDataset(dataset);
@@ -55,18 +53,16 @@ export const useUsageInsights = ({
     getEvaluationInsights,
     { error: evaluationInsightsError, loading: evaluationInsightsLoading },
   ] = useLazyQuery<TEvaluationInsightsData>(GET_EVALUATION_INSIGHTS, {
-    variables: { workspaceId, startDate, endDate, projectId },
+    variables: { startDate, endDate, projectIds },
     onCompleted: (data) => {
       setEvaluationInsights(data.getEvaluationInsights);
     },
   });
 
   useEffect(() => {
-    getUsageInsights();
-    console.log("start date", startDate);
-    console.log("end date", endDate);
-    getEvaluationInsights();
-  }, [endDate, getEvaluationInsights, getUsageInsights, startDate]);
+    getUsageInsights().catch((error) => console.error(error));
+    getEvaluationInsights().catch((error) => console.error(error));
+  }, [getEvaluationInsights, getUsageInsights]);
 
   return {
     usageInsightsDataset,
@@ -109,12 +105,10 @@ function transformInsightsToDataset(
   )) {
     if (category === "__typename") continue; // apollo adds __typename to the results so we need to skip it
 
-    for (const result of results) {
-      for (const metric of result.metrics) {
-        const monthIndex = parseInt(metric.timeGroup, 10) - 1;
-        if (monthIndex >= 0 && monthIndex < 12) {
-          dataset[monthIndex][category] += metric.count;
-        }
+    for (const metric of results) {
+      const monthIndex = metric.timeGroup - 1;
+      if (monthIndex >= 0 && monthIndex < 12) {
+        dataset[monthIndex][category] += metric.count;
       }
     }
   }
