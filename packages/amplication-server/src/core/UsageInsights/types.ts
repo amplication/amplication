@@ -14,7 +14,7 @@ export type BlockChangesArgs = BaseUsageInsightsArgs & {
 
 export type ParsedQueryRowResult = {
   year: number;
-  month: string;
+  month: number;
   timeGroup: number;
   count: number;
 };

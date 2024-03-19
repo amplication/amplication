@@ -5,8 +5,8 @@ class Metrics {
   @Field(() => Int)
   year: number;
 
-  @Field(() => String)
-  month: string;
+  @Field(() => Int)
+  month: number;
 
   @Field(() => Int)
   timeGroup: number;
