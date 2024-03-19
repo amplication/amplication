@@ -96,7 +96,7 @@ export function BlockTypeResolver<
       @Args({ type: () => createArgsRef }) args: CreateArgs,
       @UserEntity() user: User
     ): Promise<T> {
-      return this.service.create(args, user);
+      return this.service.create(args, user, true);
     }
 
     @Mutation(() => classRef, {
@@ -108,7 +108,7 @@ export function BlockTypeResolver<
       @Args({ type: () => updateArgsRef }) args: UpdateArgs,
       @UserEntity() user: User
     ): Promise<T> {
-      return this.service.update(args, user);
+      return this.service.update(args, user, [], true);
     }
 
     @ResolveField(() => User, { nullable: true })
@@ -133,7 +133,7 @@ export function BlockTypeResolver<
       @Args({ type: () => deleteArgsRef }) args: DeleteArgs,
       @UserEntity() user: User
     ): Promise<T> {
-      return this.service.delete(args, user);
+      return this.service.delete(args, user, true);
     }
   }
   return BaseResolverHost;

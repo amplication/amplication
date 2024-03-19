@@ -11,6 +11,7 @@ import {
 import { UserEntity } from "../../decorators/user.decorator";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 import { JsonFilter } from "../../dto/JsonFilter";
+import { validateEntitlement } from "./block.util";
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
@@ -42,7 +43,13 @@ export abstract class BlockTypeService<
     );
   }
 
-  async create(args: CreateArgs, @UserEntity() user: User): Promise<T> {
+  async create(
+    args: CreateArgs,
+    @UserEntity() user: User,
+    forceEntitlementValidation = false
+  ): Promise<T> {
+    if (forceEntitlementValidation)
+      await validateEntitlement(this.blockType, user.workspace.id);
     return this.blockService.create<T>(
       {
         ...args,
@@ -58,8 +65,11 @@ export abstract class BlockTypeService<
   async update(
     args: UpdateArgs,
     @UserEntity() user: User,
-    keysToNotMerge?: string[]
+    keysToNotMerge?: string[],
+    forceEntitlementValidation = false
   ): Promise<T> {
+    if (forceEntitlementValidation)
+      await validateEntitlement(this.blockType, user.workspace.id);
     return this.blockService.update<T>(
       {
         ...args,
@@ -73,8 +83,11 @@ export abstract class BlockTypeService<
     args: DeleteArgs,
     @UserEntity() user: User,
     deleteChildBlocks = false,
-    deleteChildBlocksRecursive = true
+    deleteChildBlocksRecursive = true,
+    forceEntitlementValidation = false
   ): Promise<T> {
+    if (forceEntitlementValidation)
+      await validateEntitlement(this.blockType, user.workspace.id);
     return await this.blockService.delete(
       args,
       user,
