@@ -124,6 +124,8 @@ export function createProperty(
 ): namedTypes.ClassProperty {
   const { appInfo } = DsgContext.getInstance;
 
+  const isEnum = property.propertyTypes[0].dto?.dtoType === "CustomEnum";
+
   const type = createPropTypeFromTypeDefList(property.propertyTypes);
   const tsTypeAnnotationNode = builders.tsTypeAnnotation(type);
 
@@ -134,7 +136,8 @@ export function createProperty(
 
   appInfo.settings.serverSettings.generateRestApi &&
     decorators.push(createApiPropertyDecorator(property));
-  decorators.push(createTypeDecorator(property));
+
+  !isEnum && decorators.push(createTypeDecorator(property));
 
   const propId = builders.identifier(property.name);
   const classProperty = builders.classProperty(
