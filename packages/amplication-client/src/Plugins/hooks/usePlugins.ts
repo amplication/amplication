@@ -22,7 +22,7 @@ import { LATEST_VERSION_TAG } from "../constant";
 export type PluginVersion = {
   version: string;
   isLatest: boolean;
-  settings: string;
+  settings: Record<string, unknown>;
   configurations: string;
   id: string;
   pluginId: string;

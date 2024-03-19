@@ -15,6 +15,7 @@ export interface NovuService {
     subscriberId: string;
     eventName: string;
     payload?: { [key: string]: any };
+    overrides?: { [key: string]: any };
   }) => Promise<void>;
   broadCastEventToAll: (obj: {
     eventName: string;
@@ -36,6 +37,7 @@ export interface Notification {
   eventName?: string;
   topicKey?: string;
   payload?: { [key: string]: any } | ISubscriberPayload;
+  overrides?: { [key: string]: any };
 }
 
 export interface NotificationContext {
