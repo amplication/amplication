@@ -866,6 +866,13 @@ enum EnumSubscriptionStatus {
   Trailing
 }
 
+enum EnumTimeGroup {
+  Day
+  Month
+  Week
+  Year
+}
+
 enum EnumUserActionStatus {
   Completed
   Failed
@@ -1046,7 +1053,7 @@ input MessagePatternCreateInput {
 type Metrics {
   count: Int!
   month: String!
-  timeGroup: String!
+  timeGroup: Int!
   year: Int!
 }
 
@@ -1628,8 +1635,8 @@ type Query {
   Get the changes to apply to the model in order to break a resource into microservices
   """
   finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
-  getEvaluationInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!): EvaluationInsights!
-  getUsageInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!): UsageInsightsResult!
+  getEvaluationInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!, timeGroup: EnumTimeGroup = Month): EvaluationInsights!
+  getUsageInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!, timeGroup: EnumTimeGroup = Month): UsageInsightsResult!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!
