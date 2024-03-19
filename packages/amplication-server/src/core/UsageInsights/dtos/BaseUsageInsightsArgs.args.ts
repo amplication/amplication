@@ -1,4 +1,5 @@
 import { ArgsType, Field } from "@nestjs/graphql";
+import { EnumTimeGroup } from "./EnumTimeGroup";
 
 @ArgsType()
 export class BaseUsageInsightsArgs {
@@ -10,4 +11,10 @@ export class BaseUsageInsightsArgs {
 
   @Field(() => [String], { nullable: false })
   projectIds!: string[];
+
+  @Field(() => EnumTimeGroup, {
+    nullable: true,
+    defaultValue: EnumTimeGroup.Month,
+  })
+  timeGroup?: EnumTimeGroup;
 }
