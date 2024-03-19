@@ -1,6 +1,6 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../prisma";
+import { Prisma, PrismaService } from "../../prisma";
 import {
   BaseUsageInsightsArgs,
   BlockChangesArgs,
@@ -8,9 +8,8 @@ import {
   QueryRawResult,
 } from "./types";
 import {
-  AnalyticsResults,
+  UsageInsightsResult,
   EvaluationInsights,
-  MetricsGroupedByYear,
   UsageInsights,
 } from "./dtos/UsageInsights.object";
 import { EnumBlockType } from "../../enums/EnumBlockType";
@@ -23,8 +22,7 @@ export class UsageInsightsService {
   ) {}
 
   async countLinesOfCode({
-    workspaceId,
-    projectId,
+    projectIds,
     startDate,
     endDate,
   }: BaseUsageInsightsArgs): Promise<number> {
@@ -39,8 +37,9 @@ export class UsageInsightsService {
         },
         resource: {
           project: {
-            workspaceId: workspaceId,
-            id: projectId,
+            id: {
+              in: projectIds,
+            },
           },
         },
       },
@@ -52,37 +51,21 @@ export class UsageInsightsService {
     return aggregatedLoc._sum.linesOfCode ?? 0;
   }
 
-  async countProjectBuilds({
-    workspaceId,
+  async countBuilds({
     startDate,
     endDate,
-    projectId,
+    projectIds,
   }: BaseUsageInsightsArgs): Promise<UsageInsights> {
-    let results: QueryRawResult[];
-    if (projectId) {
-      results = await this.prisma.$queryRaw`
-      SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
-      FROM "Build" b
-      JOIN "Resource" r ON b."resourceId" = r."id"
-      WHERE b."createdAt" >= ${startDate}
-      AND b."createdAt" <= ${endDate}
-      AND r."projectId" = ${projectId}
-      GROUP BY year, time_group
-      ORDER BY year, time_group;
-    `;
-    } else {
-      results = await this.prisma.$queryRaw`
-      SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
-      FROM "Build" b
-      JOIN "Resource" r ON b."resourceId" = r."id"
-      JOIN "Project" p ON r."projectId" = p."id"
-      WHERE b."createdAt" >= ${startDate}
-      AND b."createdAt" <= ${endDate}
-      AND p."workspaceId" = ${workspaceId} 
-      GROUP BY year, time_group
-      ORDER BY year, time_group;
-    `;
-    }
+    const results: QueryRawResult[] = await this.prisma.$queryRaw`
+    SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as month, DATE_PART('month', b."createdAt") as time_group, COUNT(b.*) AS count
+    FROM "Build" b
+    JOIN "Resource" r ON b."resourceId" = r."id"
+    WHERE b."createdAt" >= ${startDate}
+    AND b."createdAt" <= ${endDate}
+    AND r."projectId" IN (${Prisma.join(projectIds)})
+    GROUP BY year, month, time_group
+    ORDER BY year, month, time_group;
+  `;
 
     return {
       results: Object.values(this.translateToAnalyticsResults(results)),
@@ -90,54 +73,20 @@ export class UsageInsightsService {
   }
 
   async countEntityChanges({
-    workspaceId,
-    projectId,
+    projectIds,
     startDate,
     endDate,
   }: BaseUsageInsightsArgs): Promise<UsageInsights> {
-    let results: QueryRawResult[];
-    if (projectId) {
-      results = await this.prisma.$queryRaw`
-      SELECT DATE_PART('year', e."createdAt") as year, DATE_PART('month', e."createdAt") as time_group, count(distinct ef."id") as count
-      FROM "Entity" e
-      JOIN "Resource" r ON e."resourceId" = r."id"
-      JOIN "EntityVersion" ev ON e."id" = ev."entityId"
-      JOIN "EntityField" ef ON ev."id" = ef."entityVersionId"
-      WHERE r."projectId" = ${projectId}
-      AND ev."versionNumber" = '0'
-      AND ((
-          (e."createdAt" >= ${startDate} AND e."createdAt" <= ${endDate})
-          OR (e."updatedAt" >= ${startDate} AND e."updatedAt" <= ${endDate})
-      )
-      OR (
-          (ef."createdAt" >= ${startDate} AND ef."createdAt" <= ${endDate})
-          OR (ef."updatedAt" >= ${startDate} AND ef."updatedAt" <= ${endDate})
-      ))
-      GROUP BY year, time_group
-      ORDER BY year, time_group;
-    `;
-    } else {
-      results = await this.prisma.$queryRaw`
-      SELECT DATE_PART('year', e."createdAt") as year, DATE_PART('month', e."createdAt") as time_group, count(distinct ef."id") as count
-      FROM "Entity" e
-      JOIN "Resource" r ON e."resourceId" = r."id"
-      JOIN "EntityVersion" ev ON e."id" = ev."entityId"
-      JOIN "EntityField" ef ON ev."id" = ef."entityVersionId"
-      JOIN "Project" p ON r."projectId" = p."id"
-      WHERE p."workspaceId" = ${workspaceId}
-      AND ev."versionNumber" = '0'
-      AND ((
-          (e."createdAt" >= ${startDate} AND e."createdAt" <= ${endDate})
-          OR (e."updatedAt" >= ${startDate} AND e."updatedAt" <= ${endDate})
-      )
-      OR (
-          (ef."createdAt" >= ${startDate} AND ef."createdAt" <= ${endDate})
-          OR (ef."updatedAt" >= ${startDate} AND ef."updatedAt" <= ${endDate})
-      ))
-      GROUP BY year, time_group
-      ORDER BY year, time_group;
-    `;
-    }
+    const results: QueryRawResult[] = await this.prisma.$queryRaw`
+    SELECT DATE_PART('year', ev."updatedAt") as year, DATE_PART('month', ev."updatedAt") as month, DATE_PART('month', ev."updatedAt") as time_group, COUNT(ev.*) AS count
+    FROM "EntityVersion" ev
+    JOIN "Entity" e ON ev."entityId" = e."id"
+    JOIN "Resource" r ON e."resourceId" = r."id"
+    WHERE r."projectId" IN (${Prisma.join(projectIds)})
+    AND ev."updatedAt" >= ${startDate} AND ev."updatedAt" <= ${endDate}
+    GROUP BY year, month, time_group
+    ORDER BY year, month, time_group;
+  `;
 
     return {
       results: Object.values(this.translateToAnalyticsResults(results)),
@@ -145,78 +94,38 @@ export class UsageInsightsService {
   }
 
   async countBlockChanges({
-    workspaceId,
-    projectId,
+    projectIds,
     startDate,
     endDate,
     blockType,
   }: BlockChangesArgs): Promise<UsageInsights> {
     let results: QueryRawResult[];
-    this.logger.debug("blockType", { blockType });
     switch (blockType) {
       case EnumBlockType.ModuleAction:
-        if (projectId) {
-          results = await this.prisma.$queryRaw`
-          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
-          FROM "Block" b
+        results = await this.prisma.$queryRaw`
+          SELECT DATE_PART('year', bv."updatedAt") as year, DATE_PART('month', bv."updatedAt") as month, DATE_PART('month', bv."updatedAt") as time_group, COUNT(bv.*) AS count
+          FROM "BlockVersion" bv
+          JOIN "Block" b ON bv."blockId" = b."id"
           JOIN "Resource" r ON b."resourceId" = r."id"
-          WHERE r."projectId" = ${projectId}
-          AND b."blockType" = 'ModuleAction'
-          AND (
-              (b."createdAt" >= ${startDate} AND b."createdAt" <= ${endDate})
-              OR (b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate})
-          )
-          GROUP BY year, time_group
-          ORDER BY year, time_group;
+          WHERE b."blockType" = 'ModuleAction'
+          AND r."projectId" IN (${Prisma.join(projectIds)})
+          AND bv."updatedAt" >= ${startDate} AND bv."updatedAt" <= ${endDate}
+          GROUP BY year, month, time_group
+          ORDER BY year, month, time_group;
         `;
-        } else {
-          results = await this.prisma.$queryRaw`
-            SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
-            FROM "Block" b
-            JOIN "Resource" r ON b."resourceId" = r."id"
-            JOIN "Project" p ON r."projectId" = p."id"
-            WHERE p."workspaceId" = ${workspaceId}
-            AND b."blockType" = 'ModuleAction'
-            AND (
-                (b."createdAt" >= ${startDate} AND b."createdAt" <= ${endDate})
-                OR (b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate})
-            )
-            GROUP BY year, time_group
-            ORDER BY year, time_group;
-          `;
-        }
         break;
       case EnumBlockType.PluginInstallation:
-        if (projectId) {
-          results = await this.prisma.$queryRaw`
-          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
-          FROM "Block" b
+        results = await this.prisma.$queryRaw`
+          SELECT DATE_PART('year', bv."updatedAt") as year, DATE_PART('month', bv."updatedAt") as month, DATE_PART('month', bv."updatedAt") as time_group, COUNT(bv.*) AS count
+          FROM "BlockVersion" bv
+          JOIN "Block" b ON bv."blockId" = b."id"
           JOIN "Resource" r ON b."resourceId" = r."id"
-          WHERE r."projectId" = ${projectId}
-          AND b."blockType" = 'PluginInstallation'
-          AND (
-              (b."createdAt" >= ${startDate} AND b."createdAt" <= ${endDate})
-              OR (b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate})
-          )
-          GROUP BY year, time_group
-          ORDER BY year, time_group;
+          WHERE b."blockType" = 'PluginInstallation'
+          AND r."projectId" IN (${Prisma.join(projectIds)})
+          AND bv."updatedAt" >= ${startDate} AND bv."updatedAt" <= ${endDate}
+          GROUP BY year, month, time_group
+          ORDER BY year, month, time_group;
         `;
-        } else {
-          results = await this.prisma.$queryRaw`
-          SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as time_group, count(distinct b."id") as count
-          FROM "Block" b
-          JOIN "Resource" r ON b."resourceId" = r."id"
-          JOIN "Project" p ON r."projectId" = p."id"
-          WHERE p."workspaceId" = ${workspaceId}
-          AND b."blockType" = 'PluginInstallation'
-          AND (
-              (b."createdAt" >= ${startDate} AND b."createdAt" <= ${endDate})
-              OR (b."updatedAt" >= ${startDate} AND b."updatedAt" <= ${endDate})
-          )
-          GROUP BY year, time_group
-          ORDER BY year, time_group;
-        `;
-        }
         break;
       default:
         throw new Error(`Block type ${blockType} is not supported`);
@@ -229,8 +138,8 @@ export class UsageInsightsService {
 
   async getUsageInsights(
     args: BaseUsageInsightsArgs
-  ): Promise<AnalyticsResults> {
-    const builds = await this.countProjectBuilds(args);
+  ): Promise<UsageInsightsResult> {
+    const builds = await this.countBuilds(args);
     const entities = await this.countEntityChanges(args);
     const moduleActions = await this.countBlockChanges({
       ...args,
@@ -239,6 +148,13 @@ export class UsageInsightsService {
     const plugins = await this.countBlockChanges({
       ...args,
       blockType: EnumBlockType.PluginInstallation,
+    });
+
+    this.logger.debug("Usage insights result", {
+      builds,
+      entities,
+      moduleActions,
+      plugins,
     });
 
     return {
@@ -256,6 +172,13 @@ export class UsageInsightsService {
     const timeSaved = await this.evaluateTimeSaved(loc);
     const costSaved = await this.evaluateCostSaved(loc);
     const codeQuality = await this.evaluateCodeQuality(loc);
+
+    this.logger.debug("Evaluation insights result", {
+      loc,
+      timeSaved,
+      costSaved,
+      codeQuality,
+    });
 
     return {
       loc,
@@ -285,36 +208,40 @@ export class UsageInsightsService {
     return Math.round(bugsPrevented);
   }
 
-  private translateToAnalyticsResults(
-    results: QueryRawResult[]
-  ): Record<string, MetricsGroupedByYear> {
+  private translateToAnalyticsResults(results: QueryRawResult[]) {
     if (!results) {
       return {};
     }
+
+    this.logger.debug("translateToAnalyticsResults", { results });
+
+    const mapMonthNumberToName = (month: number) => {
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      return months[month - 1];
+    };
+
     const parsedResults: ParsedQueryRowResult[] = results.map((result) => {
       return {
-        year: String(result.year),
-        timeGroup: String(result.time_group),
+        year: result.year,
+        month: mapMonthNumberToName(result.month),
+        timeGroup: mapMonthNumberToName(result.month) + " " + result.year,
         count: Number(result.count),
       };
     });
 
-    const groupedResults = parsedResults.reduce((acc, result) => {
-      const year = result.year;
-      if (!acc[year]) {
-        acc[year] = {
-          year,
-          metrics: [],
-        };
-      }
-      acc[year].metrics.push({
-        timeGroup: result.timeGroup,
-        count: result.count,
-      });
-      return acc;
-    }, {});
-
-    this.logger.debug("groupedResults", { groupedResults });
-    return groupedResults;
+    return parsedResults;
   }
 }

@@ -1,11 +1,9 @@
 import { EnumBlockType } from "../../enums/EnumBlockType";
 
 export type BaseUsageInsightsArgs = {
-  workspaceId: string;
   startDate: Date;
   endDate: Date;
-  projectId?: string;
-  resourceId?: string;
+  projectIds: string[];
 };
 
 export type BlockChangesArgs = BaseUsageInsightsArgs & {
@@ -13,13 +11,15 @@ export type BlockChangesArgs = BaseUsageInsightsArgs & {
 };
 
 export type ParsedQueryRowResult = {
-  year: string;
+  year: number;
+  month: string;
   timeGroup: string;
   count: number;
 };
 
 export type QueryRawResult = {
   year: number;
+  month: number;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   time_group: number;
   count: bigint;

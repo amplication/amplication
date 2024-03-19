@@ -4,7 +4,7 @@ import { UsageInsightsService } from "./usageInsights.service";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { BaseUsageInsightsArgs } from "./dtos/BaseUsageInsightsArgs.args";
 import {
-  AnalyticsResults,
+  UsageInsightsResult,
   EvaluationInsights,
 } from "./dtos/UsageInsights.object";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
@@ -15,11 +15,11 @@ import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions
 export class UsageInsightsResolver {
   constructor(private readonly analyticsService: UsageInsightsService) {}
 
-  @Query(() => AnalyticsResults)
+  @Query(() => UsageInsightsResult)
   @UseGuards(GqlAuthGuard)
   async getUsageInsights(
     @Args() args: BaseUsageInsightsArgs
-  ): Promise<AnalyticsResults> {
+  ): Promise<UsageInsightsResult> {
     return this.analyticsService.getUsageInsights(args);
   }
 

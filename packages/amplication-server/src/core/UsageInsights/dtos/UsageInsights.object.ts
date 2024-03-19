@@ -2,6 +2,12 @@ import { ObjectType, Field, Int } from "@nestjs/graphql";
 
 @ObjectType()
 class Metrics {
+  @Field(() => Int)
+  year: number;
+
+  @Field(() => String)
+  month: string;
+
   @Field(() => String)
   timeGroup: string;
 
@@ -10,22 +16,13 @@ class Metrics {
 }
 
 @ObjectType()
-export class MetricsGroupedByYear {
-  @Field(() => String)
-  year: string;
-
-  @Field(() => [Metrics])
-  metrics: Metrics[];
-}
-
-@ObjectType()
 export class UsageInsights {
-  @Field(() => [MetricsGroupedByYear])
-  results: MetricsGroupedByYear[];
+  @Field(() => [Metrics])
+  results: Metrics[];
 }
 
 @ObjectType()
-export class AnalyticsResults {
+export class UsageInsightsResult {
   @Field(() => UsageInsights)
   builds: UsageInsights;
 
@@ -41,15 +38,15 @@ export class AnalyticsResults {
 
 @ObjectType()
 export class EvaluationInsights {
-  @Field(() => Number)
+  @Field(() => Int)
   loc: number;
 
-  @Field(() => Number)
+  @Field(() => Int)
   timeSaved: number;
 
-  @Field(() => Number)
+  @Field(() => Int)
   costSaved: number;
 
-  @Field(() => Number)
+  @Field(() => Int)
   codeQuality: number;
 }
