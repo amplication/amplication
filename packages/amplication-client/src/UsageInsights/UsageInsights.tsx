@@ -16,6 +16,7 @@ import React, { useCallback, useEffect } from "react";
 import "./UsageInsights.scss";
 import { UsageInsightsDataBox } from "./UsageInsightsDataBox";
 import { useUsageInsights } from "./hooks/useUsageInsights";
+import { EnumTimeGroup } from "../models";
 
 const CLASS_NAME = "usage-insights";
 
@@ -48,6 +49,9 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
   const [timeFrame, setTimeFrame] = React.useState<EnumTimeFrame>(
     EnumTimeFrame.LAST_YEAR
   );
+  const [timeGroup, setTimeGroup] = React.useState<EnumTimeGroup>(
+    EnumTimeGroup.Month
+  );
 
   const {
     usageInsightsDataset,
@@ -57,6 +61,7 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
     startDate,
     endDate,
     projectIds,
+    timeGroup,
   });
 
   const getLastYear = useCallback(() => {
@@ -94,6 +99,7 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
   useEffect(() => {
     // set default time frame to last year when component is mounted
     getLastYear();
+    setTimeGroup(EnumTimeGroup.Month);
   }, []);
 
   const valueFormatter = (value: number) => `${value}`;
@@ -139,7 +145,7 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
               xAxis={[
                 {
                   scaleType: "band",
-                  dataKey: "month",
+                  dataKey: timeGroup.toLowerCase(),
                   classes: {
                     root: "axis-class-name",
                   },

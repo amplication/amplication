@@ -54,11 +54,13 @@ export const GET_EVALUATION_INSIGHTS = gql`
     $endDate: DateTime!
     $projectIds: [String!]!
     $startDate: DateTime!
+    $timeGroup: EnumTimeGroup
   ) {
     getEvaluationInsights(
       endDate: $endDate
       projectIds: $projectIds
       startDate: $startDate
+      timeGroup: $timeGroup
     ) {
       codeQuality
       costSaved

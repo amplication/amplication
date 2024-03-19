@@ -1,8 +1,11 @@
 import { useLazyQuery } from "@apollo/client";
 import { GET_EVALUATION_INSIGHTS, GET_USAGE_INSIGHTS } from "../queries";
 import { useEffect, useState } from "react";
-import { UsageInsightsResult, EvaluationInsights } from "../../models";
-import { error } from "node:console";
+import {
+  UsageInsightsResult,
+  EvaluationInsights,
+  EnumTimeGroup,
+} from "../../models";
 
 type TUsageInsightsData = {
   getUsageInsights: UsageInsightsResult;
@@ -16,6 +19,7 @@ export type BaseUsageInsightsArgs = {
   startDate: Date;
   endDate: Date;
   projectIds: string[];
+  timeGroup?: EnumTimeGroup;
 };
 
 type DatasetEntry = {
@@ -30,6 +34,7 @@ export const useUsageInsights = ({
   startDate,
   endDate,
   projectIds,
+  timeGroup,
 }: BaseUsageInsightsArgs) => {
   const [evaluationInsights, setEvaluationInsights] =
     useState<EvaluationInsights | null>(null);
@@ -42,7 +47,7 @@ export const useUsageInsights = ({
     getUsageInsights,
     { error: usageInsightsError, loading: usageInsightsLoading },
   ] = useLazyQuery<TUsageInsightsData>(GET_USAGE_INSIGHTS, {
-    variables: { startDate, endDate, projectIds },
+    variables: { startDate, endDate, projectIds, timeGroup },
     onCompleted: (data) => {
       const dataset = transformInsightsToDataset(data);
       setUsageInsightsDataset(dataset);
@@ -53,7 +58,7 @@ export const useUsageInsights = ({
     getEvaluationInsights,
     { error: evaluationInsightsError, loading: evaluationInsightsLoading },
   ] = useLazyQuery<TEvaluationInsightsData>(GET_EVALUATION_INSIGHTS, {
-    variables: { startDate, endDate, projectIds },
+    variables: { startDate, endDate, projectIds, timeGroup },
     onCompleted: (data) => {
       setEvaluationInsights(data.getEvaluationInsights);
     },
