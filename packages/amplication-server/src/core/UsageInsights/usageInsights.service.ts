@@ -216,30 +216,10 @@ export class UsageInsightsService {
       return {};
     }
 
-    this.logger.debug("translateToAnalyticsResults", { results });
-
-    const mapMonthNumberToName = (month: number) => {
-      const months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ];
-      return months[month - 1];
-    };
-
     const parsedResults: ParsedQueryRowResult[] = results.map((result) => {
       return {
         year: result.year,
-        month: mapMonthNumberToName(result.month),
+        month: result.month,
         timeGroup: result.time_group,
         count: Number(result.count),
       };

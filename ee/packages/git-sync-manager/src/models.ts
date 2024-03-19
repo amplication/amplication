@@ -1078,7 +1078,7 @@ export type MessagePatternCreateInput = {
 
 export type Metrics = {
   count: Scalars['Int']['output'];
-  month: Scalars['String']['output'];
+  month: Scalars['Int']['output'];
   timeGroup: Scalars['Int']['output'];
   year: Scalars['Int']['output'];
 };
