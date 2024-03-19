@@ -1,9 +1,11 @@
 import { EnumBlockType } from "../../enums/EnumBlockType";
+import { EnumTimeGroup } from "./dtos/EnumTimeGroup";
 
 export type BaseUsageInsightsArgs = {
   startDate: Date;
   endDate: Date;
   projectIds: string[];
+  timeGroup?: EnumTimeGroup;
 };
 
 export type BlockChangesArgs = BaseUsageInsightsArgs & {
@@ -13,7 +15,7 @@ export type BlockChangesArgs = BaseUsageInsightsArgs & {
 export type ParsedQueryRowResult = {
   year: number;
   month: string;
-  timeGroup: string;
+  timeGroup: number;
   count: number;
 };
 

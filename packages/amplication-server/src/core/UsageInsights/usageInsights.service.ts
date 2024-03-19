@@ -55,9 +55,10 @@ export class UsageInsightsService {
     startDate,
     endDate,
     projectIds,
+    timeGroup,
   }: BaseUsageInsightsArgs): Promise<UsageInsights> {
     const results: QueryRawResult[] = await this.prisma.$queryRaw`
-    SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as month, DATE_PART('month', b."createdAt") as time_group, COUNT(b.*) AS count
+    SELECT DATE_PART('year', b."createdAt") as year, DATE_PART('month', b."createdAt") as month, DATE_PART(${timeGroup}, b."createdAt") as time_group, COUNT(b.*) AS count
     FROM "Build" b
     JOIN "Resource" r ON b."resourceId" = r."id"
     WHERE b."createdAt" >= ${startDate}
@@ -76,9 +77,10 @@ export class UsageInsightsService {
     projectIds,
     startDate,
     endDate,
+    timeGroup,
   }: BaseUsageInsightsArgs): Promise<UsageInsights> {
     const results: QueryRawResult[] = await this.prisma.$queryRaw`
-    SELECT DATE_PART('year', ev."updatedAt") as year, DATE_PART('month', ev."updatedAt") as month, DATE_PART('month', ev."updatedAt") as time_group, COUNT(ev.*) AS count
+    SELECT DATE_PART('year', ev."updatedAt") as year, DATE_PART('month', ev."updatedAt") as month, DATE_PART(${timeGroup}, ev."updatedAt") as time_group, COUNT(ev.*) AS count
     FROM "EntityVersion" ev
     JOIN "Entity" e ON ev."entityId" = e."id"
     JOIN "Resource" r ON e."resourceId" = r."id"
@@ -98,12 +100,13 @@ export class UsageInsightsService {
     startDate,
     endDate,
     blockType,
+    timeGroup,
   }: BlockChangesArgs): Promise<UsageInsights> {
     let results: QueryRawResult[];
     switch (blockType) {
       case EnumBlockType.ModuleAction:
         results = await this.prisma.$queryRaw`
-          SELECT DATE_PART('year', bv."updatedAt") as year, DATE_PART('month', bv."updatedAt") as month, DATE_PART('month', bv."updatedAt") as time_group, COUNT(bv.*) AS count
+          SELECT DATE_PART('year', bv."updatedAt") as year, DATE_PART('month', bv."updatedAt") as month, DATE_PART(${timeGroup}, bv."updatedAt") as time_group, COUNT(bv.*) AS count
           FROM "BlockVersion" bv
           JOIN "Block" b ON bv."blockId" = b."id"
           JOIN "Resource" r ON b."resourceId" = r."id"
@@ -237,7 +240,7 @@ export class UsageInsightsService {
       return {
         year: result.year,
         month: mapMonthNumberToName(result.month),
-        timeGroup: mapMonthNumberToName(result.month) + " " + result.year,
+        timeGroup: result.time_group,
         count: Number(result.count),
       };
     });

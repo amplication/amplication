@@ -8,8 +8,8 @@ class Metrics {
   @Field(() => String)
   month: string;
 
-  @Field(() => String)
-  timeGroup: string;
+  @Field(() => Int)
+  timeGroup: number;
 
   @Field(() => Int)
   count: number;

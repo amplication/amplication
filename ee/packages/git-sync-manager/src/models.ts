@@ -902,6 +902,13 @@ export enum EnumSubscriptionStatus {
   Trailing = 'Trailing'
 }
 
+export enum EnumTimeGroup {
+  Day = 'Day',
+  Month = 'Month',
+  Week = 'Week',
+  Year = 'Year'
+}
+
 export enum EnumUserActionStatus {
   Completed = 'Completed',
   Failed = 'Failed',
@@ -1072,7 +1079,7 @@ export type MessagePatternCreateInput = {
 export type Metrics = {
   count: Scalars['Int']['output'];
   month: Scalars['String']['output'];
-  timeGroup: Scalars['String']['output'];
+  timeGroup: Scalars['Int']['output'];
   year: Scalars['Int']['output'];
 };
 
@@ -2256,6 +2263,7 @@ export type QueryGetEvaluationInsightsArgs = {
   endDate: Scalars['DateTime']['input'];
   projectIds: Array<Scalars['String']['input']>;
   startDate: Scalars['DateTime']['input'];
+  timeGroup?: InputMaybe<EnumTimeGroup>;
 };
 
 
@@ -2263,6 +2271,7 @@ export type QueryGetUsageInsightsArgs = {
   endDate: Scalars['DateTime']['input'];
   projectIds: Array<Scalars['String']['input']>;
   startDate: Scalars['DateTime']['input'];
+  timeGroup?: InputMaybe<EnumTimeGroup>;
 };
 
 
