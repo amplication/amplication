@@ -182,13 +182,13 @@ describe("UsageInsightsService", () => {
           results: [
             {
               year: 2021,
-              month: "Mar",
+              month: 3,
               timeGroup: 3,
               count: 4,
             },
             {
               year: 2022,
-              month: "May",
+              month: 5,
               timeGroup: 5,
               count: 7,
             },
@@ -198,13 +198,13 @@ describe("UsageInsightsService", () => {
           results: [
             {
               year: 2021,
-              month: "Mar",
+              month: 3,
               timeGroup: 3,
               count: 4,
             },
             {
               year: 2022,
-              month: "May",
+              month: 5,
               timeGroup: 5,
               count: 7,
             },
@@ -214,13 +214,13 @@ describe("UsageInsightsService", () => {
           results: [
             {
               year: 2021,
-              month: "Mar",
+              month: 3,
               timeGroup: 3,
               count: 4,
             },
             {
               year: 2022,
-              month: "May",
+              month: 5,
               timeGroup: 5,
               count: 7,
             },
@@ -230,13 +230,13 @@ describe("UsageInsightsService", () => {
           results: [
             {
               year: 2021,
-              month: "Mar",
+              month: 3,
               timeGroup: 3,
               count: 4,
             },
             {
               year: 2022,
-              month: "May",
+              month: 5,
               timeGroup: 5,
               count: 7,
             },
