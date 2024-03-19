@@ -49,13 +49,6 @@ input AdminUISettingsUpdateInput {
   generateAdminUI: Boolean
 }
 
-type AnalyticsResults {
-  builds: UsageInsights!
-  entities: UsageInsights!
-  moduleActions: UsageInsights!
-  plugins: UsageInsights!
-}
-
 type ApiToken {
   createdAt: DateTime!
   id: String!
@@ -903,10 +896,10 @@ type Environment {
 }
 
 type EvaluationInsights {
-  codeQuality: Float!
-  costSaved: Float!
-  loc: Float!
-  timeSaved: Float!
+  codeQuality: Int!
+  costSaved: Int!
+  loc: Int!
+  timeSaved: Int!
 }
 
 input GitGetInstallationUrlInput {
@@ -1052,12 +1045,9 @@ input MessagePatternCreateInput {
 
 type Metrics {
   count: Int!
+  month: String!
   timeGroup: String!
-}
-
-type MetricsGroupedByYear {
-  metrics: [Metrics!]!
-  year: String!
+  year: Int!
 }
 
 type Module implements IBlock {
@@ -1638,8 +1628,8 @@ type Query {
   Get the changes to apply to the model in order to break a resource into microservices
   """
   finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
-  getEvaluationInsights(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): EvaluationInsights!
-  getUsageInsights(endDate: DateTime!, projectId: String, resourceId: String, startDate: DateTime!, workspaceId: String!): AnalyticsResults!
+  getEvaluationInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!): EvaluationInsights!
+  getUsageInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!): UsageInsightsResult!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!
@@ -2089,7 +2079,14 @@ input UpdateAccountInput {
 scalar Upload
 
 type UsageInsights {
-  results: [MetricsGroupedByYear!]!
+  results: [Metrics!]!
+}
+
+type UsageInsightsResult {
+  builds: UsageInsights!
+  entities: UsageInsights!
+  moduleActions: UsageInsights!
+  plugins: UsageInsights!
 }
 
 type User {

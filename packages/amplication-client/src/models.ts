@@ -70,13 +70,6 @@ export type AdminUiSettingsUpdateInput = {
   generateAdminUI?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type AnalyticsResults = {
-  builds: UsageInsights;
-  entities: UsageInsights;
-  moduleActions: UsageInsights;
-  plugins: UsageInsights;
-};
-
 export type ApiToken = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
@@ -942,10 +935,10 @@ export type Environment = {
 };
 
 export type EvaluationInsights = {
-  codeQuality: Scalars['Float']['output'];
-  costSaved: Scalars['Float']['output'];
-  loc: Scalars['Float']['output'];
-  timeSaved: Scalars['Float']['output'];
+  codeQuality: Scalars['Int']['output'];
+  costSaved: Scalars['Int']['output'];
+  loc: Scalars['Int']['output'];
+  timeSaved: Scalars['Int']['output'];
 };
 
 export type GitGetInstallationUrlInput = {
@@ -1081,12 +1074,9 @@ export type MessagePatternCreateInput = {
 
 export type Metrics = {
   count: Scalars['Int']['output'];
+  month: Scalars['String']['output'];
   timeGroup: Scalars['String']['output'];
-};
-
-export type MetricsGroupedByYear = {
-  metrics: Array<Metrics>;
-  year: Scalars['String']['output'];
+  year: Scalars['Int']['output'];
 };
 
 export type Module = IBlock & {
@@ -2152,7 +2142,7 @@ export type Query = {
   /** Get the changes to apply to the model in order to break a resource into microservices */
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
   getEvaluationInsights: EvaluationInsights;
-  getUsageInsights: AnalyticsResults;
+  getUsageInsights: UsageInsightsResult;
   gitGroups: PaginatedGitGroup;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
@@ -2267,19 +2257,15 @@ export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
 
 export type QueryGetEvaluationInsightsArgs = {
   endDate: Scalars['DateTime']['input'];
-  projectId?: InputMaybe<Scalars['String']['input']>;
-  resourceId?: InputMaybe<Scalars['String']['input']>;
+  projectIds: Array<Scalars['String']['input']>;
   startDate: Scalars['DateTime']['input'];
-  workspaceId: Scalars['String']['input'];
 };
 
 
 export type QueryGetUsageInsightsArgs = {
   endDate: Scalars['DateTime']['input'];
-  projectId?: InputMaybe<Scalars['String']['input']>;
-  resourceId?: InputMaybe<Scalars['String']['input']>;
+  projectIds: Array<Scalars['String']['input']>;
   startDate: Scalars['DateTime']['input'];
-  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -2882,7 +2868,14 @@ export type UpdateAccountInput = {
 };
 
 export type UsageInsights = {
-  results: Array<MetricsGroupedByYear>;
+  results: Array<Metrics>;
+};
+
+export type UsageInsightsResult = {
+  builds: UsageInsights;
+  entities: UsageInsights;
+  moduleActions: UsageInsights;
+  plugins: UsageInsights;
 };
 
 export type User = {
