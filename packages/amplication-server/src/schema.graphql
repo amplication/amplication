@@ -1052,7 +1052,7 @@ input MessagePatternCreateInput {
 
 type Metrics {
   count: Int!
-  month: String!
+  month: Int!
   timeGroup: Int!
   year: Int!
 }
