@@ -69,7 +69,7 @@ export class UsageInsightsService {
   `;
 
     return {
-      results: Object.values(this.translateToAnalyticsResults(results)),
+      results: Object.values(this.parseQueryRaw(results)),
     };
   }
 
@@ -91,7 +91,7 @@ export class UsageInsightsService {
   `;
 
     return {
-      results: Object.values(this.translateToAnalyticsResults(results)),
+      results: Object.values(this.parseQueryRaw(results)),
     };
   }
 
@@ -103,6 +103,7 @@ export class UsageInsightsService {
     timeGroup,
   }: BlockChangesArgs): Promise<UsageInsights> {
     let results: QueryRawResult[];
+    // Prisma query row doesn't work as expected with enums, so we use switch case instead of one query with ${blokType}
     switch (blockType) {
       case EnumBlockType.ModuleAction:
         results = await this.prisma.$queryRaw`
@@ -135,7 +136,7 @@ export class UsageInsightsService {
     }
 
     return {
-      results: Object.values(this.translateToAnalyticsResults(results)),
+      results: Object.values(this.parseQueryRaw(results)),
     };
   }
 
@@ -211,7 +212,7 @@ export class UsageInsightsService {
     return Math.round(bugsPrevented);
   }
 
-  private translateToAnalyticsResults(results: QueryRawResult[]) {
+  private parseQueryRaw(results: QueryRawResult[]) {
     if (!results) {
       return {};
     }

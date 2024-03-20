@@ -2,6 +2,7 @@ import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { NotificationContext } from "../util/novuTypes";
 
 const NOTIFICATION_KEY = "complete-preview-onboarding";
+const SENDGRID_TEMPLATE_ID = "d-f8d34551e2c7436681b34f8af0782788";
 
 export const previewUserGenerationCompleted = async (
   notificationCtx: NotificationContext
@@ -21,9 +22,17 @@ export const previewUserGenerationCompleted = async (
         notificationCtx.novuService.triggerNotificationToSubscriber,
       subscriberId: externalId,
       eventName: NOTIFICATION_KEY,
-      payload: {
-        payload: {
-          ...restParams,
+      payload: {},
+      overrides: {
+        sendgrid: {
+          customData: {
+            // sendgrid template templateId
+            templateId: SENDGRID_TEMPLATE_ID,
+            // sendgrid template variables
+            dynamicTemplateData: {
+              ...restParams,
+            },
+          },
         },
       },
     });
