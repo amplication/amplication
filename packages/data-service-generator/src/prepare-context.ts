@@ -17,6 +17,7 @@ import {
   entityRelatedFieldDefaultActions,
   serverDirectories,
   types,
+  EnumModuleDtoPropertyType,
 } from "@amplication/code-gen-types";
 import {
   getDefaultActionsForEntity,
@@ -33,6 +34,7 @@ import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { resolveTopicNames } from "./utils/message-broker";
+import { EnumModuleDtoDecoratorType } from "@amplication/code-gen-types/models";
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
@@ -426,6 +428,26 @@ function prepareModuleActionsAndDtos(
         const dto = dtosMap[dtoId];
         if (dto) {
           actionInputType.dto = dto;
+          if (dto.properties.length > 0) {
+            //todo: write an helper function that will calculate the decorators types
+            if (!dto.decorators) dto.decorators = [];
+            dto.decorators.push(EnumModuleDtoDecoratorType.ArgsType);
+            dto.properties.forEach((prop) => {
+              if (prop.propertyTypes) {
+                const propType = prop.propertyTypes[0];
+                if (propType.type === EnumModuleDtoPropertyType.Dto) {
+                  if (!propType.dto.decorators) propType.dto.decorators = [];
+                  propType.dto.decorators.push(
+                    EnumModuleDtoDecoratorType.InputType
+                  );
+                  if (propType.dto.properties.length > 0) {
+                    //todo: need to write a recursive function to calculate all children props
+                    console.log("dto.properties: ", propType.dto.properties);
+                  }
+                }
+              }
+            });
+          }
         } else {
           throw new Error(
             `Could not find dto with the ID ${dtoId} referenced in action ${moduleAction.name} input type`

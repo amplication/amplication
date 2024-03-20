@@ -3,6 +3,7 @@ import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { DSGResourceData } from "./dsg-resource-data";
 import { BuildLogger } from "./build-logger";
+import { EnumModuleDtoDecoratorType } from "./models";
 
 export {
   EnumDataType,
@@ -329,6 +330,7 @@ export type ModuleDto = Omit<
   description: string;
   dtoType: keyof typeof models.EnumModuleDtoType;
   properties?: ModuleDtoProperty[];
+  decorators?: EnumModuleDtoDecoratorType[];
 };
 
 export type ModuleActionDefaultTypesNestedOnly = Extract<

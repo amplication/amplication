@@ -11,7 +11,11 @@ import DsgContext from "../../../../dsg-context";
 import { classDeclaration } from "../../../../utils/ast";
 import { getDTONameToPath } from "../../create-dtos";
 import { createDTOModule, createDTOModulePath } from "../create-dto-module";
-import { OBJECT_TYPE_ID } from "../nestjs-graphql.util";
+import {
+  ARGS_TYPE_ID,
+  INPUT_TYPE_ID,
+  OBJECT_TYPE_ID,
+} from "../nestjs-graphql.util";
 import { createApiPropertyDecorator } from "./create-api-property-decorator";
 import { createGraphQLFieldDecorator } from "./create-graphql-field-decorator";
 import { createPropTypeFromTypeDefList } from "./create-property-type";
@@ -21,9 +25,18 @@ import {
   StringLiteralEnumMember,
   createEnumMemberName,
 } from "../create-enum-dto";
+import { EnumModuleDtoDecoratorType } from "@amplication/code-gen-types/models";
 
 export const OBJECT_TYPE_DECORATOR = builders.decorator(
   builders.callExpression(OBJECT_TYPE_ID, [])
+);
+
+export const INPUT_TYPE_DECORATOR = builders.decorator(
+  builders.callExpression(INPUT_TYPE_ID, [])
+);
+
+export const ARGS_TYPE_DECORATOR = builders.decorator(
+  builders.callExpression(ARGS_TYPE_ID, [])
 );
 
 type CustomDtoModuleMapWithAllDtoNameToPath = {
@@ -86,14 +99,24 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
 
 export function createDto(dto: ModuleDto): NamedClassDeclaration {
   const dtoProperties = createProperties(dto.properties);
+  const isInput = dto.decorators?.find(
+    (decorator) => decorator === EnumModuleDtoDecoratorType.InputType
+  );
+  const isArgs = dto.decorators?.find(
+    (decorator) => decorator === EnumModuleDtoDecoratorType.ArgsType
+  );
 
   const dtoClass = classDeclaration(
     builders.identifier(dto.name),
     builders.classBody(dtoProperties),
     null,
-    //@todo: replace ObjectType with InputType or ArgsType when needed
+    //@todo: replace ObjectType with InputType or ArgsType when needed, add here the object type with the dto name
     // check whether a DTO is used as ArgsType or ObjectType and whetherGraphQL is enabled
-    [OBJECT_TYPE_DECORATOR]
+    [
+      OBJECT_TYPE_DECORATOR,
+      isInput && INPUT_TYPE_DECORATOR,
+      isArgs && ARGS_TYPE_DECORATOR,
+    ]
   ) as NamedClassDeclaration;
 
   return dtoClass;
