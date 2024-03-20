@@ -82,20 +82,8 @@ export const useUsageInsights = ({
 function transformInsightsToDataset(
   insights: TUsageInsightsData
 ): DatasetEntry[] {
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+  const currentMonth = new Date().getMonth() + 1;
+  const months = createMonthArray();
 
   const dataset: DatasetEntry[] = months.map((month) => ({
     builds: 0,
@@ -111,7 +99,7 @@ function transformInsightsToDataset(
     if (category === "__typename") continue; // apollo adds __typename to the results so we need to skip it
 
     for (const metric of results) {
-      const monthIndex = metric.timeGroup - 1;
+      const monthIndex = (metric.timeGroup - currentMonth - 1 + 12) % 12;
       if (monthIndex >= 0 && monthIndex < 12) {
         dataset[monthIndex][category] += metric.count;
       }
@@ -119,4 +107,21 @@ function transformInsightsToDataset(
   }
 
   return dataset;
+}
+
+function createMonthArray() {
+  const months = new Array(12).fill(null).map((_, i) => {
+    const date = new Date(0, i, 1);
+    return date.toLocaleString("default", { month: "short" });
+  });
+
+  const currentMonthIndex = new Date().getMonth();
+  const orderedMonths = [];
+
+  for (let i = months.length - 1; i >= 0; i--) {
+    const index = (currentMonthIndex - i + 12) % 12;
+    orderedMonths.push(months[index]);
+  }
+
+  return orderedMonths;
 }
