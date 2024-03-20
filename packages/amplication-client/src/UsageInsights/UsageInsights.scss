@@ -37,15 +37,15 @@ $chart-side-width: 250px;
   }
 
   .MuiChartsAxis-tickLabel {
-    fill: var(--gray-base);
+    fill: var(--gray-base) !important;
     font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Roboto",
       "Helvetica Neue", sans-serif !important;
   }
   .MuiChartsAxis-tick {
-    stroke: var(--gray-base);
+    stroke: var(--gray-base) !important;
   }
   .MuiChartsAxis-line {
-    stroke: var(--gray-base);
+    stroke: var(--gray-base) !important;
   }
   .MuiChartsLegend-series {
     text {

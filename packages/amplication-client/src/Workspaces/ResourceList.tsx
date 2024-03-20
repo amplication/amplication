@@ -35,6 +35,7 @@ import {
   BtmButton,
   EnumButtonLocation,
 } from "../Resource/break-the-monolith/BtmButton";
+import { UsageInsights } from "../UsageInsights/UsageInsights";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
@@ -150,31 +151,40 @@ function ResourceList() {
           </FlexItem>
         </FlexItem>
       </Panel>
-      <FlexItem margin={EnumFlexItemMargin.Bottom}>
-        <Text textStyle={EnumTextStyle.Tag}>
-          {resources.length}{" "}
-          {pluralize(resources.length, "Resource", "Resources")}
-        </Text>
-      </FlexItem>
-      {loadingResources && <CircularProgress centerToParent />}
 
-      {isEmpty(resources) && !loadingResources ? (
-        <EmptyState
-          message="There are no resources to show"
-          image={EnumImages.AddResource}
-        />
-      ) : (
-        <List>
-          {!loadingResources &&
-            resources.map((resource) => (
-              <ResourceListItem
-                key={resource.id}
-                resource={resource}
-                onDelete={handleResourceDelete}
-              />
-            ))}
-        </List>
-      )}
+      <FlexItem
+        direction={EnumFlexDirection.Row}
+        itemsAlign={EnumItemsAlign.Stretch}
+      >
+        <UsageInsights projectIds={[currentProject?.id]} />
+        <div>
+          <FlexItem margin={EnumFlexItemMargin.Bottom}>
+            <Text textStyle={EnumTextStyle.Tag}>
+              {resources.length}{" "}
+              {pluralize(resources.length, "Resource", "Resources")}
+            </Text>
+          </FlexItem>
+          {loadingResources && <CircularProgress centerToParent />}
+
+          {isEmpty(resources) && !loadingResources ? (
+            <EmptyState
+              message="There are no resources to show"
+              image={EnumImages.AddResource}
+            />
+          ) : (
+            <List>
+              {!loadingResources &&
+                resources.map((resource) => (
+                  <ResourceListItem
+                    key={resource.id}
+                    resource={resource}
+                    onDelete={handleResourceDelete}
+                  />
+                ))}
+            </List>
+          )}
+        </div>
+      </FlexItem>
 
       <Snackbar
         open={Boolean(error || errorResources)}
