@@ -42,6 +42,7 @@ type Props = {
   showCommitMessage?: boolean;
   commitMessage?: string;
   commitBtnType: CommitBtnType;
+  onCommitChangesError?: () => void;
 };
 const CLASS_NAME = "commit";
 
@@ -75,6 +76,7 @@ const Commit = ({
   commitBtnType,
   showCommitMessage = true,
   commitMessage,
+  onCommitChangesError,
 }: Props) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
@@ -100,6 +102,10 @@ const Commit = ({
     onError: (error: ApolloError) => {
       setCommitRunning(false);
       setPendingChangesError(true);
+      if (onCommitChangesError) {
+        onCommitChangesError();
+        return;
+      }
 
       setOpenLimitationDialog(
         error?.graphQLErrors?.some(

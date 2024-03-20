@@ -22,10 +22,12 @@ const className = "apply-changes-next-steps";
 
 type Props = {
   onDisplayArchitectureClicked: () => void;
+  onCommitChangesError: () => void;
 };
 
 export const ApplyChangesNextSteps = ({
   onDisplayArchitectureClicked,
+  onCommitChangesError,
 }: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject, isPreviewPlan } =
@@ -65,9 +67,9 @@ export const ApplyChangesNextSteps = ({
             showCommitMessage={false}
             commitMessage="Architecture redesign"
             commitBtnType={CommitBtnType.JumboButton}
+            onCommitChangesError={onCommitChangesError}
           ></Commit>
         )}
-
         <JumboButton
           onClick={handleProjectOverviewClicked}
           text="Show my updated project overview"
