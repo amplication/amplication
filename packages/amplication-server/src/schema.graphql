@@ -206,7 +206,9 @@ type Build {
   commitId: String!
   createdAt: DateTime!
   createdBy: User
+  filesChanged: Float
   id: String!
+  linesOfCode: Float
   message: String
   resource: Resource
   resourceId: String!
@@ -864,6 +866,13 @@ enum EnumSubscriptionStatus {
   Trailing
 }
 
+enum EnumTimeGroup {
+  Day
+  Month
+  Week
+  Year
+}
+
 enum EnumUserActionStatus {
   Completed
   Failed
@@ -891,6 +900,13 @@ type Environment {
   resource: Resource!
   resourceId: String!
   updatedAt: DateTime!
+}
+
+type EvaluationInsights {
+  codeQuality: Int!
+  costSaved: Int!
+  loc: Int!
+  timeSaved: Int!
 }
 
 input GitGetInstallationUrlInput {
@@ -1032,6 +1048,13 @@ type MessagePattern {
 input MessagePatternCreateInput {
   topicId: String!
   type: EnumMessagePatternConnectionOptions!
+}
+
+type Metrics {
+  count: Int!
+  month: Int!
+  timeGroup: Int!
+  year: Int!
 }
 
 type Module implements IBlock {
@@ -1612,6 +1635,8 @@ type Query {
   Get the changes to apply to the model in order to break a resource into microservices
   """
   finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
+  getEvaluationInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!, timeGroup: EnumTimeGroup = Month): EvaluationInsights!
+  getUsageInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!, timeGroup: EnumTimeGroup = Month): UsageInsightsResult!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!
@@ -2059,6 +2084,17 @@ input UpdateAccountInput {
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
+
+type UsageInsights {
+  results: [Metrics!]!
+}
+
+type UsageInsightsResult {
+  builds: UsageInsights!
+  entities: UsageInsights!
+  moduleActions: UsageInsights!
+  plugins: UsageInsights!
+}
 
 type User {
   account: Account
