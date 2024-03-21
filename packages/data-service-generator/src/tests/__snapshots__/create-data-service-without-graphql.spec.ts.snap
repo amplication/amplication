@@ -11108,13 +11108,11 @@ describe("Testing the HealthServiceBase", () => {
 
 export type InputJsonValue = Omit<JsonValue, "null">;
 ",
-  "server/src/user/PromoteUserArgs.ts": "import { ArgsType } from "@nestjs/graphql";
-import { ApiProperty } from "@nestjs/swagger";
+  "server/src/user/PromoteUserArgs.ts": "import { ApiProperty } from "@nestjs/swagger";
 import { PromoteUserInput } from "./PromoteUserInput";
 import { Type } from "class-transformer";
 import { UserWhereUniqueInput } from "./base/UserWhereUniqueInput";
 
-@ArgsType()
 class PromoteUserArgs {
     @ApiProperty({
         required: false,
@@ -11139,14 +11137,10 @@ class PromoteUserArgs {
 }
 
 export { PromoteUserArgs as PromoteUserArgs };",
-  "server/src/user/PromoteUserInput.ts": "import { ArgsType, InputType, ObjectType } from "@nestjs/graphql";
-import { ApiProperty } from "@nestjs/swagger";
+  "server/src/user/PromoteUserInput.ts": "import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { InputJsonValue } from "../../types";
 
-@ArgsType()
-@InputType("PromoteUserInputInput")
-@ObjectType("PromoteUserInputObject")
 class PromoteUserInput {
     @ApiProperty({
         required: true,
