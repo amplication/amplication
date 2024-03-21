@@ -31,7 +31,7 @@ $chart-side-width: 250px;
   }
 
   .MuiChartsAxis-label {
-    fill: var(--gray-base);
+    fill: var(--gray-base) !important;
     font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Roboto",
       "Helvetica Neue", sans-serif !important;
   }
