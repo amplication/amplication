@@ -816,12 +816,6 @@ export enum EnumModuleActionType {
   Update = 'Update'
 }
 
-export enum EnumModuleDtoDecoratorType {
-  ObjectType = 'ObjectType',
-  InputType = 'InputType',
-  ArgsType = 'ArgsType',
-}
-
 export enum EnumModuleDtoPropertyType {
   Boolean = 'Boolean',
   DateTime = 'DateTime',
