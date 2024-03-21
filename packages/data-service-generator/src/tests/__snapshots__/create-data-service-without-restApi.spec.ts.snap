@@ -9430,12 +9430,12 @@ describe("Testing the HealthServiceBase", () => {
 
 export type InputJsonValue = Omit<JsonValue, "null">;
 ",
-  "server/src/user/PromoteUserArgs.ts": "import { ObjectType, Field } from "@nestjs/graphql";
+  "server/src/user/PromoteUserArgs.ts": "import { ArgsType, Field } from "@nestjs/graphql";
 import { PromoteUserInput } from "./PromoteUserInput";
 import { Type } from "class-transformer";
 import { UserWhereUniqueInput } from "./base/UserWhereUniqueInput";
 
-@ObjectType()
+@ArgsType()
 class PromoteUserArgs {
     @Field(() => PromoteUserInput, {
         nullable: true
@@ -9453,12 +9453,14 @@ class PromoteUserArgs {
 }
 
 export { PromoteUserArgs as PromoteUserArgs };",
-  "server/src/user/PromoteUserInput.ts": "import { ObjectType, Field } from "@nestjs/graphql";
+  "server/src/user/PromoteUserInput.ts": "import { ArgsType, InputType, ObjectType, Field } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
 
-@ObjectType()
+@ArgsType()
+@InputType("PromoteUserInputInput")
+@ObjectType("PromoteUserInputObject")
 class PromoteUserInput {
     @Field(() => [String])
     @Type(() => String)

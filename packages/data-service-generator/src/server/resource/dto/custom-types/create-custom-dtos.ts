@@ -27,15 +27,7 @@ import {
 } from "../create-enum-dto";
 import { EnumModuleDtoDecoratorType } from "@amplication/code-gen-types/models";
 
-export const OBJECT_TYPE_DECORATOR = builders.decorator(
-  builders.callExpression(OBJECT_TYPE_ID, [])
-);
-
-export const INPUT_TYPE_DECORATOR = builders.decorator(
-  builders.callExpression(INPUT_TYPE_ID, [])
-);
-
-export const ARGS_TYPE_DECORATOR = builders.decorator(
+const ARGS_TYPE_DECORATOR = builders.decorator(
   builders.callExpression(ARGS_TYPE_ID, [])
 );
 
@@ -100,30 +92,46 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
 export function createDto(dto: ModuleDto): NamedClassDeclaration {
   const dtoProperties = createProperties(dto.properties);
 
+  //@todo: check if we are adding the @Field decorator to each property of the DTO and add as needed if not
+  //@todo: check if graphql is even enabled otherwise don't add the decorators
   const dtoDecorators = [];
-  const hasArgsDecorator = dto.decorators?.find(
-    (decorator) => decorator === EnumModuleDtoDecoratorType.ArgsType
-  );
-  const hasInputDecorator = dto.decorators?.find(
-    (decorator) => decorator === EnumModuleDtoDecoratorType.InputType
-  );
-  const hasObjectDecorator = dto.decorators?.find(
-    (decorator) => decorator === EnumModuleDtoDecoratorType.ObjectType
-  );
-  //@todo: change the ObjectType and InputType decorators to be named (with the DTO name and suffix)
-  if (/*graphQL is enabled &&*/ hasArgsDecorator)
+  if (
+    dto.decorators?.find(
+      (decorator) => decorator === EnumModuleDtoDecoratorType.ArgsType
+    ) != undefined
+  ) {
     dtoDecorators.push(ARGS_TYPE_DECORATOR);
-  if (/*graphQL is enabled &&*/ hasInputDecorator)
+  }
+  if (
+    dto.decorators?.find(
+      (decorator) => decorator === EnumModuleDtoDecoratorType.InputType
+    ) != undefined
+  ) {
+    const INPUT_TYPE_DECORATOR = builders.decorator(
+      builders.callExpression(INPUT_TYPE_ID, [
+        builders.stringLiteral(`${dto.name}Input`),
+      ])
+    );
     dtoDecorators.push(INPUT_TYPE_DECORATOR);
-  if (/*graphQL is enabled &&*/ hasObjectDecorator)
+  }
+  if (
+    dto.decorators?.find(
+      (decorator) => decorator === EnumModuleDtoDecoratorType.ObjectType
+    ) != undefined
+  ) {
+    const OBJECT_TYPE_DECORATOR = builders.decorator(
+      builders.callExpression(OBJECT_TYPE_ID, [
+        builders.stringLiteral(`${dto.name}Object`),
+      ])
+    );
     dtoDecorators.push(OBJECT_TYPE_DECORATOR);
+  }
 
   const dtoClass = classDeclaration(
     builders.identifier(dto.name),
     builders.classBody(dtoProperties),
     null,
-    // dtoDecorators
-    [OBJECT_TYPE_DECORATOR]
+    dtoDecorators
   ) as NamedClassDeclaration;
 
   return dtoClass;
