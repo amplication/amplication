@@ -13,24 +13,36 @@ import {
 } from "@amplication/ui/design-system";
 import React from "react";
 import "./UsageInsightsDataBox.scss";
+import { InfoButton } from "../Components/InfoButton";
+import { useQuery } from "@apollo/client";
+import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
+import { useAppContext } from "../context/appContext";
 
 const CLASS_NAME = "usage-insights-data-box";
 
-type Props = {
+export type UsageInsightsDataBoxProps = {
   icon: string;
   color: EnumTextColor;
   label: string;
-  value: string | number;
+  info: string;
+  linkText?: string;
+  endnotes?: string;
   units?: string;
 };
 
-export const UsageInsightsDataBox: React.FC<Props> = ({
-  icon,
-  color,
-  label,
-  value,
-  units,
-}) => {
+type Props = {
+  value: string | number;
+  rawData: UsageInsightsDataBoxProps;
+};
+
+export const UsageInsightsDataBox: React.FC<Props> = ({ rawData, value }) => {
+  const { icon, color, label, info, units, endnotes } = rawData;
+  const { currentWorkspace } = useAppContext();
+
+  const { data } = useQuery(GET_CONTACT_US_LINK, {
+    variables: { id: currentWorkspace.id },
+  });
+
   return (
     <Panel
       panelStyle={EnumPanelStyle.Bold}
@@ -41,6 +53,7 @@ export const UsageInsightsDataBox: React.FC<Props> = ({
     >
       <FlexItem
         itemsAlign={EnumItemsAlign.Stretch}
+        contentAlign={EnumContentAlign.Center}
         className={`${CLASS_NAME}__content`}
         start={
           <CircleBadge size={"medium"} themeColor={color}>
@@ -69,6 +82,15 @@ export const UsageInsightsDataBox: React.FC<Props> = ({
             )}
           </span>
         </FlexItem>
+        <div className={`${CLASS_NAME}__tooltip`}>
+          <InfoButton
+            title={label}
+            explanation={info}
+            endnotes={endnotes}
+            linkUrl={data?.contactUsLink}
+            linkPlaceHolder="{{contactUsLink}}"
+          />
+        </div>
       </FlexItem>
     </Panel>
   );

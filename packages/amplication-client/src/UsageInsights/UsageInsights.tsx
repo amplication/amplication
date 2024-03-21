@@ -17,6 +17,7 @@ import "./UsageInsights.scss";
 import { UsageInsightsDataBox } from "./UsageInsightsDataBox";
 import { useUsageInsights } from "./hooks/useUsageInsights";
 import { EnumTimeGroup } from "../models";
+import { USAGE_INSIGHTS_DATA_BOX_DATA } from "./UsageInsightsDataBoxData";
 
 const CLASS_NAME = "usage-insights";
 
@@ -180,35 +181,31 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
             />
           </Panel>
         )}
-        <FlexItem
-          direction={EnumFlexDirection.Column}
-          className={`${CLASS_NAME}__chart-side`}
-          gap={EnumGapSize.Large}
-        >
-          {evaluationInsights && (
+
+        {evaluationInsights && evaluationInsights.loc !== 0 && (
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            className={`${CLASS_NAME}__chart-side`}
+            gap={EnumGapSize.Large}
+          >
             <>
               <UsageInsightsDataBox
-                label="Lines of code"
                 value={evaluationInsights.loc}
-                color={EnumTextColor.ThemeTurquoise}
-                icon="code"
+                rawData={USAGE_INSIGHTS_DATA_BOX_DATA[0]}
               />
 
               <UsageInsightsDataBox
-                label="Time saved"
                 value={evaluationInsights.timeSaved}
-                color={EnumTextColor.ThemeBlue}
-                icon="clock"
-                units="hours"
+                rawData={USAGE_INSIGHTS_DATA_BOX_DATA[1]}
               />
             </>
-          )}
-        </FlexItem>
+          </FlexItem>
+        )}
       </FlexItem>
 
       {evaluationInsightsLoading ||
         (!evaluationInsights && <div>Loading...</div>)}
-      {evaluationInsights && (
+      {evaluationInsights && evaluationInsights.loc !== 0 && (
         <>
           <FlexItem margin={EnumFlexItemMargin.Both}>
             <Text textStyle={EnumTextStyle.H4}>Efficiency Metrics</Text>
@@ -216,17 +213,13 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
 
           <FlexItem gap={EnumGapSize.Large}>
             <UsageInsightsDataBox
-              label="Cost saved"
               value={evaluationInsights.costSaved}
-              color={EnumTextColor.ThemeGreen}
-              icon="dollar-sign"
+              rawData={USAGE_INSIGHTS_DATA_BOX_DATA[2]}
             />
 
             <UsageInsightsDataBox
-              label="Code quality - bugs prevented"
               value={evaluationInsights.codeQuality}
-              color={EnumTextColor.ThemePink}
-              icon="check"
+              rawData={USAGE_INSIGHTS_DATA_BOX_DATA[3]}
             />
           </FlexItem>
         </>

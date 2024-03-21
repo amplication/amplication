@@ -11,6 +11,10 @@ $max-width: 400px;
     height: 100%;
   }
 
+  &__tooltip {
+    align-self: flex-end;
+  }
+
   h1,
   h3 {
     display: inline;
