@@ -18,6 +18,7 @@ import {
   serverDirectories,
   types,
   EnumModuleDtoPropertyType,
+  PropertyTypeDef,
 } from "@amplication/code-gen-types";
 import {
   getDefaultActionsForEntity,
@@ -423,51 +424,40 @@ function prepareModuleActionsAndDtos(
 
     const actionInputType = moduleAction.inputType;
     if (actionInputType) {
-      const dtoId = actionInputType.dtoId;
-      if (dtoId) {
-        const dto = dtosMap[dtoId];
-        if (dto) {
-          actionInputType.dto = dto;
-          if (dto.properties.length > 0) {
-            //todo: write an helper function that will calculate the decorators types
-            if (!dto.decorators) dto.decorators = [];
-            dto.decorators.push(EnumModuleDtoDecoratorType.ArgsType);
-            dto.properties.forEach((prop) => {
-              if (prop.propertyTypes) {
-                const propType = prop.propertyTypes[0];
-                if (propType.type === EnumModuleDtoPropertyType.Dto) {
-                  if (!propType.dto.decorators) propType.dto.decorators = [];
-                  propType.dto.decorators.push(
-                    EnumModuleDtoDecoratorType.InputType
-                  );
-                  if (propType.dto.properties.length > 0) {
-                    //todo: need to write a recursive function to calculate all children props
-                    console.log("dto.properties: ", propType.dto.properties);
-                  }
-                }
-              }
-            });
-          }
-        } else {
-          throw new Error(
-            `Could not find dto with the ID ${dtoId} referenced in action ${moduleAction.name} input type`
-          );
-        }
+      if (
+        resolvePropTypeDtoFromDtoId(
+          actionInputType,
+          dtosMap,
+          `action ${moduleAction.name} input type`
+        )
+      ) {
+        addDecoratorToDto(
+          actionInputType.dto,
+          EnumModuleDtoDecoratorType.ArgsType
+        );
+        setDtoNestedDecorator(
+          actionInputType.dto,
+          EnumModuleDtoDecoratorType.InputType,
+          dtosMap,
+          true // the top level DTO has ArgsType and doesn't also need InputType
+        );
       }
     }
 
     const actionOutputType = moduleAction.outputType;
     if (actionOutputType) {
-      const dtoId = actionOutputType.dtoId;
-      if (dtoId) {
-        const dto = dtosMap[dtoId];
-        if (dto) {
-          actionOutputType.dto = dto;
-        } else {
-          throw new Error(
-            `Could not find dto with the ID ${dtoId} referenced in action ${moduleAction.name} output type`
-          );
-        }
+      if (
+        resolvePropTypeDtoFromDtoId(
+          actionOutputType,
+          dtosMap,
+          `action ${moduleAction.name} output type`
+        )
+      ) {
+        setDtoNestedDecorator(
+          actionOutputType.dto,
+          EnumModuleDtoDecoratorType.ObjectType,
+          dtosMap
+        );
       }
     }
   });
@@ -493,4 +483,69 @@ function prepareModuleActionsAndDtos(
       return [moduleContainer.name, moduleActionsAndDtos];
     })
   );
+}
+
+function setDtoNestedDecorator(
+  dto: ModuleDto,
+  decorator: EnumModuleDtoDecoratorType,
+  dtosMap: { [k: string]: ModuleDto },
+  decorateOnlySubProperties = false
+) {
+  //console.log(`adding decorator: ${decorator} to DTO: ${dto.name}`);
+  if (dto.decorators && dto.decorators.find((dec) => dec === decorator)) return;
+
+  if (!decorateOnlySubProperties) {
+    addDecoratorToDto(dto, decorator);
+  }
+
+  if (dto.properties) {
+    dto.properties.forEach((prop) => {
+      if (prop.propertyTypes) {
+        prop.propertyTypes.forEach((propType) => {
+          if (propType.type === EnumModuleDtoPropertyType.Dto) {
+            if (
+              resolvePropTypeDtoFromDtoId(
+                propType,
+                dtosMap,
+                `DTO ${dto.name} in property ${prop.name}`
+              )
+            ) {
+              /*console.log(
+                `nested adding decorator: ${decorator} from DTO: ${dto.name} into property: ${prop.name} for DTO: ${propType.dto.name}`
+              );*/
+              setDtoNestedDecorator(propType.dto, decorator, dtosMap);
+            }
+          }
+        });
+      }
+    });
+  }
+}
+
+function addDecoratorToDto(
+  dto: ModuleDto,
+  decorator: EnumModuleDtoDecoratorType
+) {
+  if (!dto.decorators) dto.decorators = [];
+  dto.decorators.push(decorator);
+}
+
+function resolvePropTypeDtoFromDtoId(
+  propertyType: PropertyTypeDef,
+  dtosMap: { [k: string]: ModuleDto },
+  referencedIn: string
+): boolean {
+  const dtoId = propertyType.dtoId;
+  if (dtoId) {
+    const dto = dtosMap[dtoId];
+    if (dto) {
+      propertyType.dto = dto;
+      return true;
+    } else {
+      throw new Error(
+        `Could not find dto with the ID ${dtoId} referenced in ${referencedIn}`
+      );
+    }
+  }
+  return false;
 }

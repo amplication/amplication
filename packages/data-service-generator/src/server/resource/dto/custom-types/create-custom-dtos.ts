@@ -99,24 +99,31 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
 
 export function createDto(dto: ModuleDto): NamedClassDeclaration {
   const dtoProperties = createProperties(dto.properties);
-  const isInput = dto.decorators?.find(
-    (decorator) => decorator === EnumModuleDtoDecoratorType.InputType
-  );
-  const isArgs = dto.decorators?.find(
+
+  const dtoDecorators = [];
+  const hasArgsDecorator = dto.decorators?.find(
     (decorator) => decorator === EnumModuleDtoDecoratorType.ArgsType
   );
+  const hasInputDecorator = dto.decorators?.find(
+    (decorator) => decorator === EnumModuleDtoDecoratorType.InputType
+  );
+  const hasObjectDecorator = dto.decorators?.find(
+    (decorator) => decorator === EnumModuleDtoDecoratorType.ObjectType
+  );
+  //@todo: change the ObjectType and InputType decorators to be named (with the DTO name and suffix)
+  if (/*graphQL is enabled &&*/ hasArgsDecorator)
+    dtoDecorators.push(ARGS_TYPE_DECORATOR);
+  if (/*graphQL is enabled &&*/ hasInputDecorator)
+    dtoDecorators.push(INPUT_TYPE_DECORATOR);
+  if (/*graphQL is enabled &&*/ hasObjectDecorator)
+    dtoDecorators.push(OBJECT_TYPE_DECORATOR);
 
   const dtoClass = classDeclaration(
     builders.identifier(dto.name),
     builders.classBody(dtoProperties),
     null,
-    //@todo: replace ObjectType with InputType or ArgsType when needed, add here the object type with the dto name
-    // check whether a DTO is used as ArgsType or ObjectType and whetherGraphQL is enabled
-    [
-      OBJECT_TYPE_DECORATOR,
-      isInput && INPUT_TYPE_DECORATOR,
-      isArgs && ARGS_TYPE_DECORATOR,
-    ]
+    // dtoDecorators
+    [OBJECT_TYPE_DECORATOR]
   ) as NamedClassDeclaration;
 
   return dtoClass;
