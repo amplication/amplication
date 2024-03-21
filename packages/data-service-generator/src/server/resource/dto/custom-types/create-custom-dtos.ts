@@ -92,8 +92,6 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
 export function createDto(dto: ModuleDto): NamedClassDeclaration {
   const dtoProperties = createProperties(dto.properties);
 
-  //@todo: check if we are adding the @Field decorator to each property of the DTO and add as needed if not
-  //@todo: check if graphql is even enabled otherwise don't add the decorators
   const dtoDecorators = [];
   if (
     dto.decorators?.find(

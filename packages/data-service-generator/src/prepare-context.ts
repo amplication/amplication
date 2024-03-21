@@ -85,7 +85,8 @@ export async function prepareContext(
   context.moduleActionsAndDtoMap = prepareModuleActionsAndDtos(
     moduleContainers,
     moduleActions,
-    moduleDtos
+    moduleDtos,
+    context.appInfo.settings.serverSettings.generateGraphQL
   );
 
   context.entityActionsMap = prepareEntityActions(
@@ -383,7 +384,8 @@ function prepareEntityActions(
 function prepareModuleActionsAndDtos(
   moduleContainers: ModuleContainer[],
   moduleActions: ModuleAction[],
-  moduleDtos: ModuleDto[]
+  moduleDtos: ModuleDto[],
+  generateGraphQL: boolean
 ): ModuleActionsAndDtosMap {
   const dtosMap = Object.fromEntries(
     moduleDtos.map((moduleDto) => {
@@ -399,17 +401,11 @@ function prepareModuleActionsAndDtos(
         const propertyTypes = property.propertyTypes;
         if (propertyTypes) {
           propertyTypes.forEach((propertyType) => {
-            const dtoId = propertyType.dtoId;
-            if (dtoId) {
-              const dto = dtosMap[dtoId];
-              if (dto) {
-                propertyType.dto = dto;
-              } else {
-                throw new Error(
-                  `Could not find dto with the ID ${dtoId} referenced in dto property ${property.name}`
-                );
-              }
-            }
+            resolvePropTypeDtoFromDtoId(
+              propertyType,
+              dtosMap,
+              `dto property ${property.name} of moduleDto ${moduleDto.name}`
+            );
           });
         }
       });
@@ -431,16 +427,18 @@ function prepareModuleActionsAndDtos(
           `action ${moduleAction.name} input type`
         )
       ) {
-        addDecoratorToDto(
-          actionInputType.dto,
-          EnumModuleDtoDecoratorType.ArgsType
-        );
-        setDtoNestedDecorator(
-          actionInputType.dto,
-          EnumModuleDtoDecoratorType.InputType,
-          dtosMap,
-          true // the top level DTO has ArgsType and doesn't also need InputType
-        );
+        if (generateGraphQL) {
+          addDecoratorToDto(
+            actionInputType.dto,
+            EnumModuleDtoDecoratorType.ArgsType
+          );
+          setDtoNestedDecorator(
+            actionInputType.dto,
+            EnumModuleDtoDecoratorType.InputType,
+            dtosMap,
+            true // the top level DTO has ArgsType and doesn't also need InputType
+          );
+        }
       }
     }
 
@@ -453,11 +451,13 @@ function prepareModuleActionsAndDtos(
           `action ${moduleAction.name} output type`
         )
       ) {
-        setDtoNestedDecorator(
-          actionOutputType.dto,
-          EnumModuleDtoDecoratorType.ObjectType,
-          dtosMap
-        );
+        if (generateGraphQL) {
+          setDtoNestedDecorator(
+            actionOutputType.dto,
+            EnumModuleDtoDecoratorType.ObjectType,
+            dtosMap
+          );
+        }
       }
     }
   });
@@ -491,7 +491,6 @@ function setDtoNestedDecorator(
   dtosMap: { [k: string]: ModuleDto },
   decorateOnlySubProperties = false
 ) {
-  //console.log(`adding decorator: ${decorator} to DTO: ${dto.name}`);
   if (dto.decorators && dto.decorators.find((dec) => dec === decorator)) return;
 
   if (!decorateOnlySubProperties) {
@@ -510,9 +509,6 @@ function setDtoNestedDecorator(
                 `DTO ${dto.name} in property ${prop.name}`
               )
             ) {
-              /*console.log(
-                `nested adding decorator: ${decorator} from DTO: ${dto.name} into property: ${prop.name} for DTO: ${propType.dto.name}`
-              );*/
               setDtoNestedDecorator(propType.dto, decorator, dtosMap);
             }
           }
