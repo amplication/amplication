@@ -25,7 +25,7 @@ import {
   StringLiteralEnumMember,
   createEnumMemberName,
 } from "../create-enum-dto";
-import { EnumModuleDtoDecoratorType } from "@amplication/code-gen-types/models";
+import { EnumModuleDtoDecoratorType } from "@amplication/code-gen-types";
 
 const ARGS_TYPE_DECORATOR = builders.decorator(
   builders.callExpression(ARGS_TYPE_ID, [])
