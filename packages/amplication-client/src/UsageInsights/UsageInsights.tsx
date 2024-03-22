@@ -100,6 +100,7 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
   useEffect(() => {
     // set default time frame to last year when component is mounted
     getLastYear();
+    // set default time group to month when component is mounted
     setTimeGroup(EnumTimeGroup.Month);
   }, []);
 
@@ -155,7 +156,7 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
               series={[
                 {
                   dataKey: "entities",
-                  label: "Entities",
+                  label: "Entities changed",
                   valueFormatter,
                   color: chartColors[0],
                 },
@@ -173,7 +174,7 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
                 },
                 {
                   dataKey: "moduleActions",
-                  label: "APIs",
+                  label: "APIs changed",
                   valueFormatter,
                   color: chartColors[3],
                 },
@@ -205,12 +206,19 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
 
       {evaluationInsightsLoading ||
         (!evaluationInsights && <div>Loading...</div>)}
+      <FlexItem margin={EnumFlexItemMargin.Both}>
+        <Text textStyle={EnumTextStyle.H4}>Efficiency Metrics</Text>
+      </FlexItem>
+      {evaluationInsights && evaluationInsights.loc === 0 && (
+        <FlexItem>
+          <Text textStyle={EnumTextStyle.Tag}>
+            Generate the code for your Services to expose here the productivity
+            and efficiency metrics of your projects
+          </Text>
+        </FlexItem>
+      )}
       {evaluationInsights && evaluationInsights.loc !== 0 && (
         <>
-          <FlexItem margin={EnumFlexItemMargin.Both}>
-            <Text textStyle={EnumTextStyle.H4}>Efficiency Metrics</Text>
-          </FlexItem>
-
           <FlexItem gap={EnumGapSize.Large}>
             <UsageInsightsDataBox
               value={evaluationInsights.costSaved}
