@@ -3165,6 +3165,9 @@ volumes:
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
+    "moduleNameMapper": {
+      "@app/custom-validators": "<rootDir>/src/validators"
+    },
     "modulePathIgnorePatterns": ["<rootDir>/dist/"]
   }
 }
