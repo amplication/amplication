@@ -26,9 +26,9 @@ export class UsageInsightsService {
     startDate,
     endDate,
   }: BaseUsageInsightsArgs): Promise<number> {
-    const aggregatedLoc = await this.prisma.build.aggregate({
+    const linesOfCodeAddedSum = await this.prisma.build.aggregate({
       where: {
-        linesOfCode: {
+        linesOfCodeAdded: {
           not: null,
         },
         createdAt: {
@@ -44,11 +44,37 @@ export class UsageInsightsService {
         },
       },
       _sum: {
-        linesOfCode: true,
+        linesOfCodeAdded: true,
       },
     });
 
-    return aggregatedLoc._sum.linesOfCode ?? 0;
+    const linesOfCodeDeletedSum = await this.prisma.build.aggregate({
+      where: {
+        linesOfCodeDeleted: {
+          not: null,
+        },
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        resource: {
+          project: {
+            id: {
+              in: projectIds,
+            },
+          },
+        },
+      },
+      _sum: {
+        linesOfCodeDeleted: true,
+      },
+    });
+
+    const linesOfCodeAdded = linesOfCodeAddedSum._sum.linesOfCodeAdded ?? 0;
+    const linesOfCodeDeleted =
+      linesOfCodeDeletedSum._sum.linesOfCodeDeleted ?? 0;
+
+    return linesOfCodeAdded + linesOfCodeDeleted;
   }
 
   async countBuilds({

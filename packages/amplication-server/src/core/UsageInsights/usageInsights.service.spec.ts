@@ -49,7 +49,7 @@ describe("UsageInsightsService", () => {
     const now = new Date();
     const projectIds = ["project-id"];
 
-    it("should count the lines of code added/updated for a given project", async () => {
+    it("should count the lines of code added/updated", async () => {
       const startDate = new Date(
         now.getFullYear(),
         now.getMonth() - 1,
@@ -62,54 +62,12 @@ describe("UsageInsightsService", () => {
       );
       buildAggregateMock.mockResolvedValueOnce({
         _sum: {
-          linesOfCode: 10,
+          linesOfCodeAdded: 10,
         },
       });
-      const result = await service.countLinesOfCode({
-        projectIds,
-        startDate,
-        endDate,
-      });
-
-      expect(buildAggregateMock).toBeCalledWith({
-        where: {
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-          linesOfCode: {
-            not: null,
-          },
-          resource: {
-            project: {
-              id: {
-                in: projectIds,
-              },
-            },
-          },
-        },
-        _sum: {
-          linesOfCode: true,
-        },
-      });
-
-      expect(result).toBeDefined();
-    });
-
-    it("should count the lines of code added/updated for all projects", async () => {
-      const startDate = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() - 14
-      );
-      const endDate = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate()
-      );
       buildAggregateMock.mockResolvedValueOnce({
         _sum: {
-          linesOfCode: 10,
+          linesOfCodeDeleted: 4,
         },
       });
       const result = await service.countLinesOfCode({
@@ -118,14 +76,14 @@ describe("UsageInsightsService", () => {
         endDate,
       });
 
-      expect(buildAggregateMock).toBeCalledWith({
+      expect(buildAggregateMock).toHaveBeenNthCalledWith(1, {
         where: {
+          linesOfCodeAdded: {
+            not: null,
+          },
           createdAt: {
             gte: startDate,
             lte: endDate,
-          },
-          linesOfCode: {
-            not: null,
           },
           resource: {
             project: {
@@ -136,11 +94,33 @@ describe("UsageInsightsService", () => {
           },
         },
         _sum: {
-          linesOfCode: true,
+          linesOfCodeAdded: true,
         },
       });
 
-      expect(result).toBeDefined();
+      expect(buildAggregateMock).toHaveBeenNthCalledWith(2, {
+        where: {
+          linesOfCodeDeleted: {
+            not: null,
+          },
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+          resource: {
+            project: {
+              id: {
+                in: projectIds,
+              },
+            },
+          },
+        },
+        _sum: {
+          linesOfCodeDeleted: true,
+        },
+      });
+
+      expect(result).toEqual(14);
     });
   });
 
