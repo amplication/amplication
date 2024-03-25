@@ -3085,7 +3085,11 @@ volumes:
   "server/nest-cli.json": "{
   "sourceRoot": "src",
   "compilerOptions": {
-    "assets": ["swagger"]
+    "assets": [
+      {
+        "include": "swagger/**/*"
+      }
+    ]
   }
 }
 ",
