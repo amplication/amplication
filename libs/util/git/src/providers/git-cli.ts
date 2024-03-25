@@ -256,7 +256,7 @@ export class GitCli {
     ).trim();
 
     const diffStat = (
-      await this.git.diff(["--shortstat", `${currentRef}..${prevRef}`])
+      await this.git.diff(["--shortstat", `${prevRef}..${currentRef}`])
     ).trim();
 
     this.logger.debug("get short stat", { currentRef, prevRef, diffStat });
