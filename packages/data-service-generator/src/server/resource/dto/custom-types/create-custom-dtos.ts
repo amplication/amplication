@@ -20,6 +20,7 @@ import { createApiPropertyDecorator } from "./create-api-property-decorator";
 import { createGraphQLFieldDecorator } from "./create-graphql-field-decorator";
 import { createPropTypeFromTypeDefList } from "./create-property-type";
 import { createTypeDecorator } from "./create-type-decorator";
+import { createEnumDTOModule } from "../create-enum-dto-module";
 
 import {
   StringLiteralEnumMember,
@@ -67,6 +68,7 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
                 dto.dtoType === EnumModuleDtoType.CustomEnum
                   ? createEnumDTO(dto)
                   : createDto(dto),
+              type: dto.dtoType,
             };
           }) || []
       );
@@ -78,6 +80,9 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
   const allDtoNameToPath = { ...dtoNameToPath, ...customDtoNameToPath };
 
   const dtoModules = dtos?.map((dto) => {
+    if (dto.type === EnumModuleDtoType.CustomEnum) {
+      return createEnumDTOModule(dto.dto, allDtoNameToPath, dto.path, false);
+    }
     return createDTOModule(dto.dto, allDtoNameToPath, dto.path, false);
   });
 
