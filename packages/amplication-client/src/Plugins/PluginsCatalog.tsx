@@ -15,6 +15,9 @@ import { CREATE_DEFAULT_ENTITIES } from "../Workspaces/queries/entitiesQueries";
 import usePlugins, { Plugin, PluginVersion } from "./hooks/usePlugins";
 import PluginInstallConfirmationDialog from "./PluginInstallConfirmationDialog";
 import PluginsCatalogItem from "./PluginsCatalogItem";
+import { useTracking } from "../util/analytics";
+import { UPDATE_SERVICE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
+import useSettingsHook from "../Resource/useSettingsHook";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -52,6 +55,14 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
     useState<models.PluginInstallation>(null);
 
   const { resourceSettings } = useResource(resource);
+
+  const { trackEvent } = useTracking();
+  const [updateResourceSettings] = useMutation<TData>(UPDATE_SERVICE_SETTINGS);
+  const { handleSubmit } = useSettingsHook({
+    trackEvent,
+    resourceId: resource,
+    updateResourceSettings,
+  });
 
   const { data: entities, refetch } = useQuery<TData>(GET_ENTITIES, {
     variables: {
@@ -127,6 +138,12 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
           },
         },
       }).catch(console.error);
+
+      if (pluginId === "auth-basic") {
+        const data = { ...resourceSettings.serviceSettings };
+        data.authProvider = models.EnumAuthProviderType.Http;
+        handleSubmit(data);
+      }
     },
     [
       createPluginInstallation,
@@ -142,9 +159,15 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
     setConfirmInstall(false);
   }, [setConfirmInstall]);
 
+  const installedPlugins = useMemo(() => {
+    if (!pluginInstallations) return {};
+
+    return keyBy(pluginInstallations, (plugin) => plugin && plugin.pluginId);
+  }, [pluginInstallations]);
+
   const onEnableStateChange = useCallback(
     (pluginInstallation: models.PluginInstallation) => {
-      const { enabled, version, settings, configurations, id } =
+      const { pluginId, enabled, version, settings, configurations, id } =
         pluginInstallation;
 
       const requireAuthenticationEntity = configurations
@@ -157,6 +180,14 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
 
         setConfirmInstall(true);
         return;
+      }
+
+      if (pluginId === "auth-basic") {
+        const data = { ...resourceSettings.serviceSettings };
+        data.authProvider = enabled
+          ? models.EnumAuthProviderType.Jwt
+          : models.EnumAuthProviderType.Http;
+        handleSubmit(data);
       }
 
       updatePluginInstallation({
@@ -173,14 +204,8 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
         },
       }).catch(console.error);
     },
-    [updatePluginInstallation, userEntity]
+    [updatePluginInstallation, userEntity, installedPlugins]
   );
-
-  const installedPlugins = useMemo(() => {
-    if (!pluginInstallations) return {};
-
-    return keyBy(pluginInstallations, (plugin) => plugin && plugin.pluginId);
-  }, [pluginInstallations]);
 
   const errorMessage = formatError(createError) || formatError(updateError);
 
