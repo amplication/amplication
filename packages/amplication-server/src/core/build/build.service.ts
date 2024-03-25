@@ -500,7 +500,8 @@ export class BuildService {
     await this.prisma.build.update({
       where: { id: buildId },
       data: {
-        linesOfCode: diffStat.insertions + diffStat.deletions,
+        linesOfCodeAdded: diffStat.insertions,
+        linesOfCodeDeleted: diffStat.deletions,
         filesChanged: diffStat.filesChanged,
       },
     });
