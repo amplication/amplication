@@ -1,5 +1,6 @@
 import {
   EnumModuleDtoPropertyType,
+  EnumModuleDtoType,
   PropertyTypeDef,
 } from "@amplication/code-gen-types";
 import { builders } from "ast-types";
@@ -67,7 +68,7 @@ export function createPropTypeFromTypeDef(
     }
     baseType = builders.tsTypeReference(builders.identifier(typeDef.dto.name));
 
-    if (typeDef.dto.dtoType === "CustomEnum") {
+    if (typeDef.dto.dtoType === EnumModuleDtoType.CustomEnum) {
       const members = typeDef.dto.members.map(
         (member) =>
           builders.tsEnumMember(
