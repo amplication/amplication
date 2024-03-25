@@ -477,8 +477,10 @@ export class BuildService {
 
   formatDiffStat(diffStat: string): DiffStatObject {
     const diffStatRegex =
-      /(\d+) files? changed, (\d+) insertions?\(\+\), (\d+) deletions?\(-\)/;
-    const match = diffStat.match(diffStatRegex);
+      /(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\))?/;
+    const match = diffStat?.match(diffStatRegex);
+    this.logger.debug("Diff stat", { diffStat });
+
     if (!match) {
       return {
         filesChanged: 0,
@@ -486,11 +488,15 @@ export class BuildService {
         deletions: 0,
       };
     }
-    return {
-      filesChanged: parseInt(match[1]),
-      insertions: parseInt(match[2]),
-      deletions: parseInt(match[3]),
+    this.logger.debug("Diff stat match", match);
+    const [, filesChanged, insertions, deletions] = match;
+    const diffStatObj = {
+      filesChanged: parseInt(filesChanged, 10),
+      insertions: parseInt(insertions || "0", 10),
+      deletions: parseInt(deletions || "0", 10),
     };
+    this.logger.debug("Diff stat object", diffStatObj);
+    return diffStatObj;
   }
 
   async updateBuildLOC(
