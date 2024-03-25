@@ -280,6 +280,9 @@ export class GitClientService {
       baseBranch,
     });
 
+    // creates temp branch for passed branch Name
+    let tempBranchName = await this.createTempBranchFor(branchName, gitCli);
+
     // calculate diff on everything *already existing* on the amplication branch since last amplication build
     const preCommitDiff = await this.calculateDiffAndResetBranch({
       branchName,
@@ -300,11 +303,16 @@ export class GitClientService {
 
     // On top of the previous amplication build, apply the patch for the already existing changes that have been in this branch
     if (preCommitDiff.diff) {
+      const userCommitMessages = await this.getUserCommits(
+        tempBranchName,
+        gitCli
+      );
       await this.applyPostCommit(
         preCommitDiff.diff,
         owner,
         repositoryName,
-        gitCli
+        gitCli,
+        userCommitMessages
       );
     }
     // on top of the already existing changes, apply the diff between the previous amplication build and the new one
@@ -353,7 +361,13 @@ export class GitClientService {
     return pullRequest?.url ?? "";
   }
 
-  private async applyPostCommit(diff, owner, repositoryName, gitCli) {
+  private async applyPostCommit(
+    diff,
+    owner,
+    repositoryName,
+    gitCli,
+    commitMessage?: string
+  ) {
     if (diff) {
       const diffFolder = normalize(
         join(
@@ -368,8 +382,54 @@ export class GitClientService {
         diffFolder,
         diff,
         gitCli,
+        commitMessage,
       });
     }
+  }
+
+  private async getUserCommits(
+    tempBranchName: string,
+    gitCli: GitCli
+  ): Promise<string> {
+    let prevBuildHash = "";
+    const gitLogs = await this.gitLog(gitCli, 1, tempBranchName);
+    if (gitLogs.total > 0 && gitLogs.latest) {
+      prevBuildHash = gitLogs.latest.hash;
+    }
+
+    if (prevBuildHash == "") {
+      return "";
+    }
+
+    const MAX_USER_COMMIT = 10;
+    const conflictMessage = "Amplication merge conflicts auto-resolution";
+
+    const userCommits = await gitCli.logBranch(tempBranchName, MAX_USER_COMMIT);
+
+    let userCommitMessages: string[] = [];
+    for (let userCommit of userCommits.all) {
+      if (
+        userCommit.hash == prevBuildHash ||
+        userCommitMessages.length >= MAX_USER_COMMIT
+      ) {
+        break;
+      }
+
+      if (userCommit.message.startsWith(conflictMessage)) {
+        let commitMessagesInConflict = userCommit.message
+          .replace(conflictMessage, "")
+          .split("*")
+          .map((s) => s.trim())
+          .filter((s) => !!s);
+        let diff = MAX_USER_COMMIT - userCommitMessages.length;
+        userCommitMessages.push(...commitMessagesInConflict.slice(0, diff));
+        continue;
+      }
+
+      userCommitMessages.push(userCommit.message);
+    }
+
+    return " \n * " + userCommitMessages.join(" \n * ");
   }
 
   /**
@@ -377,7 +437,11 @@ export class GitClientService {
    * @param gitCli Git client
    * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
    */
-  private async gitLog(gitCli: GitCli, maxCount = -1): Promise<LogResult> {
+  private async gitLog(
+    gitCli: GitCli,
+    maxCount = -1,
+    branchName?: string
+  ): Promise<LogResult> {
     const amplicationBot = await this.provider.getAmplicationBotIdentity();
 
     const authors: string[] = [];
@@ -387,7 +451,15 @@ export class GitClientService {
     authors.push(gitCli.gitAuthorUser);
     authors.push(gitCli.gitOldAuthorUser);
 
-    return gitCli.log(authors, maxCount);
+    return gitCli.log(authors, maxCount, branchName);
+  }
+
+  async createTempBranchFor(branchName, gitCli) {
+    let tempBranchName = `temp-${branchName}`;
+    await gitCli.checkout(branchName);
+    await gitCli.createBranch(tempBranchName);
+
+    return tempBranchName;
   }
 
   /**
@@ -421,7 +493,7 @@ export class GitClientService {
         return { diff: null };
       }
 
-      // Reset the branch to the latest commit of the user / bot
+      // Reset the branch to the latest commit of the bot
       this.logger.debug("preCommit - resetting branch ", { branchName, hash });
       await gitCli.reset([hash]);
       await gitCli.push(["--force"]);
@@ -444,6 +516,7 @@ export class GitClientService {
     diff,
     diffFolder,
     gitCli,
+    commitMessage,
   }: PostCommitProcessArgs) {
     await mkdir(diffFolder, { recursive: true });
     const diffPatchRelativePath = join(diffFolder, "diff.patch");
@@ -455,7 +528,8 @@ export class GitClientService {
     this.logger.debug("Applying diff patch", { diffPatchAbsolutePath });
     await gitCli.applyPatch(
       [diffPatchAbsolutePath],
-      ["--3way", "--whitespace=nowarn"]
+      ["--3way", "--whitespace=nowarn"],
+      commitMessage
     );
     this.logger.debug("Deleting diff patch", { diffPatchAbsolutePath });
     await rm(diffPatchAbsolutePath);

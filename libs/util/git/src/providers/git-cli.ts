@@ -43,14 +43,19 @@ export class GitCli {
     return this.git.add(files ?? ["."]);
   }
 
-  async applyPatch(patches: string[], options?: string[]) {
+  async applyPatch(
+    patches: string[],
+    options?: string[],
+    commitMessage?: string
+  ) {
     options = options ?? ["--index", "--3way", "--whitespace=nowarn"];
+    commitMessage = commitMessage ?? "";
 
     this.logger.debug(`Applying patches`, { patches, options });
     await this.git.applyPatch(patches, options);
     this.logger.debug(`Committing Amplication merge conflicts auto-resolution`);
     await this.git.commit(
-      "Amplication merge conflicts auto-resolution",
+      "Amplication merge conflicts auto-resolution" + commitMessage,
       undefined,
       {
         "--author": this.gitConflictsResolverAuthor,
@@ -58,6 +63,10 @@ export class GitCli {
     );
     this.logger.debug(`Pushing Amplication merge conflicts auto-resolution`);
     await this.push();
+  }
+
+  async createBranch(branchName: string): Promise<void> {
+    await this.git.branch([branchName, "-f"]);
   }
 
   /**
@@ -220,7 +229,11 @@ export class GitCli {
    * @param author Author of commits returned by the log
    * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
    */
-  async log(authors: string[], maxCount?: number): Promise<LogResult> {
+  async log(
+    authors: string[],
+    maxCount?: number,
+    branchName?: string
+  ): Promise<LogResult> {
     const author = authors.join("|");
     const authorEscaped = author
       .replaceAll("[", "\\[")
@@ -229,16 +242,26 @@ export class GitCli {
 
     const authorsRegex = `^(${authorEscaped})$`;
 
-    maxCount = maxCount ?? -1;
-    return this.git.log([
+    const logOptions = [
       "--perl-regexp",
       `--author=${authorsRegex}`,
       `--max-count=${maxCount}`,
-    ]);
+    ];
+    if (!!branchName) {
+      logOptions.unshift(branchName);
+    }
+
+    maxCount = maxCount ?? -1;
+    return this.git.log(logOptions);
   }
 
   async push(options?: string[]) {
     return this.git.push(options);
+  }
+
+  async logBranch(branchName: string, maxCount?: number): Promise<LogResult> {
+    maxCount = maxCount ?? -1;
+    return this.git.log([branchName, `--max-count=${maxCount}`]);
   }
 
   async reset(options: string[], mode: ResetMode = ResetMode.HARD) {
