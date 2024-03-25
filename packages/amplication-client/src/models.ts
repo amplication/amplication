@@ -234,7 +234,8 @@ export type Build = {
   createdBy?: Maybe<User>;
   filesChanged?: Maybe<Scalars['Float']['output']>;
   id: Scalars['String']['output'];
-  linesOfCode?: Maybe<Scalars['Float']['output']>;
+  linesOfCodeAdded?: Maybe<Scalars['Float']['output']>;
+  linesOfCodeDeleted?: Maybe<Scalars['Float']['output']>;
   message?: Maybe<Scalars['String']['output']>;
   resource?: Maybe<Resource>;
   resourceId: Scalars['String']['output'];
