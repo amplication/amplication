@@ -40,7 +40,6 @@ export const InfoButton = ({
   const { trackEvent } = useTracking();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const handleInfoButtonClicked = useCallback(() => {
-    console.log("Info button clicked");
     setIsOpen(true);
   }, []);
 

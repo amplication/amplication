@@ -100,9 +100,7 @@ function transformInsightsToDataset(
 
     for (const metric of results) {
       const monthIndex = (metric.timeGroup - currentMonth - 1 + 12) % 12;
-      if (monthIndex >= 0 && monthIndex < 12) {
-        dataset[monthIndex][category] += metric.count;
-      }
+      dataset[monthIndex][category] += metric.count;
     }
   }
 
