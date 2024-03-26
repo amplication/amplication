@@ -14,7 +14,7 @@ export class SERVICE_BASE {
   async FIND_MANY_ENTITY_FUNCTION<T extends Prisma.FIND_MANY_ARGS>(
     args: Prisma.SelectSubset<T, Prisma.FIND_MANY_ARGS>
   ): Promise<PRISMA_ENTITY[]> {
-    return this.prisma.DELEGATE.findMany(args);
+    return this.prisma.DELEGATE.findMany<Prisma.FIND_MANY_ARGS>(args);
   }
   async FIND_ONE_ENTITY_FUNCTION<T extends Prisma.FIND_ONE_ARGS>(
     args: Prisma.SelectSubset<T, Prisma.FIND_ONE_ARGS>

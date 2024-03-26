@@ -5745,7 +5745,7 @@ export class CustomerServiceBase {
   async customers<T extends Prisma.CustomerFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
   ): Promise<PrismaCustomer[]> {
-    return this.prisma.customer.findMany(args);
+    return this.prisma.customer.findMany<Prisma.CustomerFindManyArgs>(args);
   }
   async customer<T extends Prisma.CustomerFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindUniqueArgs>
@@ -6796,7 +6796,7 @@ export class EmptyServiceBase {
   async empties<T extends Prisma.EmptyFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
   ): Promise<PrismaEmpty[]> {
-    return this.prisma.empty.findMany(args);
+    return this.prisma.empty.findMany<Prisma.EmptyFindManyArgs>(args);
   }
   async empty<T extends Prisma.EmptyFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindUniqueArgs>
@@ -8533,7 +8533,7 @@ export class OrderServiceBase {
   async orders<T extends Prisma.OrderFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
   ): Promise<PrismaOrder[]> {
-    return this.prisma.order.findMany(args);
+    return this.prisma.order.findMany<Prisma.OrderFindManyArgs>(args);
   }
   async order<T extends Prisma.OrderFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindUniqueArgs>
@@ -10297,7 +10297,9 @@ export class OrganizationServiceBase {
   async organizations<T extends Prisma.OrganizationFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
   ): Promise<PrismaOrganization[]> {
-    return this.prisma.organization.findMany(args);
+    return this.prisma.organization.findMany<Prisma.OrganizationFindManyArgs>(
+      args
+    );
   }
   async organization<T extends Prisma.OrganizationFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindUniqueArgs>
@@ -11788,7 +11790,7 @@ export class ProfileServiceBase {
   async profiles<T extends Prisma.ProfileFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
   ): Promise<PrismaProfile[]> {
-    return this.prisma.profile.findMany(args);
+    return this.prisma.profile.findMany<Prisma.ProfileFindManyArgs>(args);
   }
   async profile<T extends Prisma.ProfileFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindUniqueArgs>
@@ -14591,7 +14593,7 @@ export class UserServiceBase {
   async users<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
   ): Promise<PrismaUser[]> {
-    return this.prisma.user.findMany(args);
+    return this.prisma.user.findMany<Prisma.UserFindManyArgs>(args);
   }
   async user<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
