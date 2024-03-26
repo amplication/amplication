@@ -14,7 +14,7 @@ import {
 import { BarChart } from "@mui/x-charts/BarChart";
 import React, { useCallback, useEffect } from "react";
 import "./UsageInsights.scss";
-import { UsageInsightsDataBox } from "./UsageInsightsDataBox";
+import { EnumValueFormat, UsageInsightsDataBox } from "./UsageInsightsDataBox";
 import { useUsageInsights } from "./hooks/useUsageInsights";
 import { EnumTimeGroup } from "../models";
 import { USAGE_INSIGHTS_DATA_BOX_DATA } from "./UsageInsightsDataBoxData";
@@ -193,10 +193,12 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
               <UsageInsightsDataBox
                 value={evaluationInsights.loc}
                 rawData={USAGE_INSIGHTS_DATA_BOX_DATA[0]}
+                valueFormat={EnumValueFormat.Number}
               />
 
               <UsageInsightsDataBox
                 value={evaluationInsights.timeSaved}
+                valueFormat={EnumValueFormat.Number}
                 rawData={USAGE_INSIGHTS_DATA_BOX_DATA[1]}
               />
             </>
@@ -222,12 +224,14 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
           <FlexItem gap={EnumGapSize.Large}>
             <UsageInsightsDataBox
               value={evaluationInsights.costSaved}
+              valueFormat={EnumValueFormat.Currency}
               rawData={USAGE_INSIGHTS_DATA_BOX_DATA[2]}
             />
 
             <UsageInsightsDataBox
               value={evaluationInsights.codeQuality}
               rawData={USAGE_INSIGHTS_DATA_BOX_DATA[3]}
+              valueFormat={EnumValueFormat.Number}
             />
           </FlexItem>
         </>

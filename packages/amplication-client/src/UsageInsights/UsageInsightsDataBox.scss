@@ -6,6 +6,7 @@ $max-width: 400px;
   width: 100%;
   flex: 1;
   margin-bottom: 0;
+  border: 1px solid var(--gray-70);
 
   &__content {
     height: 100%;

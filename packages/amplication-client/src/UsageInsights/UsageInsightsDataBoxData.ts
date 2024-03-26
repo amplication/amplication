@@ -11,7 +11,7 @@ export const USAGE_INSIGHTS_DATA_BOX_DATA: UsageInsightsDataBoxProps[] = [
   },
   {
     icon: "clock",
-    color: EnumTextColor.ThemeBlue,
+    color: EnumTextColor.Secondary,
     label: "Time saved",
     units: "hours",
     info: `Wondering about the time saved by Amplication generated code for your Node.js backend? 
@@ -33,7 +33,7 @@ export const USAGE_INSIGHTS_DATA_BOX_DATA: UsageInsightsDataBoxProps[] = [
   },
   {
     icon: "check",
-    color: EnumTextColor.ThemePink,
+    color: EnumTextColor.ThemeOrange,
     label: "Code quality - bugs prevented",
     info: `Wondering about the calculation for bugs prevented in your Node.js backend code? 
     We've estimated it to be around 14 bugs per 1,000 lines of code (LOC), based on research data, such as 
