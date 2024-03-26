@@ -49,7 +49,7 @@ export const useUsageInsights = ({
   ] = useLazyQuery<TUsageInsightsData>(GET_USAGE_INSIGHTS, {
     variables: { startDate, endDate, projectIds, timeGroup },
     onCompleted: (data) => {
-      const dataset = transformInsightsToDataset(data);
+      const dataset = transformInsightsToDataset(data, startDate, endDate);
       setUsageInsightsDataset(dataset);
     },
   });
@@ -80,18 +80,11 @@ export const useUsageInsights = ({
 };
 
 function transformInsightsToDataset(
-  insights: TUsageInsightsData
+  insights: TUsageInsightsData,
+  startDate: Date,
+  endDate: Date
 ): DatasetEntry[] {
-  const currentMonth = new Date().getMonth() + 1;
-  const months = createMonthArray();
-
-  const dataset: DatasetEntry[] = months.map((month) => ({
-    builds: 0,
-    entities: 0,
-    plugins: 0,
-    moduleActions: 0,
-    month,
-  }));
+  const monthYearObj = getMonthYearObject(startDate, endDate);
 
   for (const [category, { results }] of Object.entries(
     insights.getUsageInsights
@@ -99,29 +92,66 @@ function transformInsightsToDataset(
     if (category === "__typename") continue; // apollo adds __typename to the results so we need to skip it
 
     for (const metric of results) {
-      const monthIndex = (metric.timeGroup - currentMonth - 1 + 12) % 12;
-      if (monthIndex >= 0 && monthIndex < 12) {
-        dataset[monthIndex][category] += metric.count;
-      }
+      const key = convertMonthAndYearToKey(metric.timeGroup, metric.year);
+      monthYearObj[key][category] += metric.count;
     }
   }
+
+  const dataset = Object.values(monthYearObj)
+    .sort((a, b) => {
+      const [aYear, aMonth] = a.month.split(".");
+      const [bYear, bMonth] = b.month.split(".");
+      return (
+        parseInt(aYear) - parseInt(bYear) || parseInt(aMonth) - parseInt(bMonth)
+      );
+    })
+    .map((entry) => {
+      return {
+        ...entry,
+        month: convertKeyToDateString(entry.month),
+      };
+    });
 
   return dataset;
 }
 
-function createMonthArray() {
-  const months = new Array(12).fill(null).map((_, i) => {
-    const date = new Date(0, i, 1);
-    return date.toLocaleString("default", { month: "short" });
-  });
+function convertKeyToDateString(key: string) {
+  const [year, month] = key.split(".");
+  const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+  return date.toLocaleString("default", { month: "short", year: "numeric" });
+}
 
-  const currentMonthIndex = new Date().getMonth();
-  const orderedMonths = [];
+function convertMonthAndYearToKey(month: number, year: number) {
+  return `${year}.${month}`;
+}
 
-  for (let i = months.length - 1; i >= 0; i--) {
-    const index = (currentMonthIndex - i + 12) % 12;
-    orderedMonths.push(months[index]);
+function getMonthYearObject(
+  startDate: Date,
+  endDate: Date
+): Record<string, DatasetEntry> {
+  const monthYearArray: string[] = [];
+  const currentDate = new Date(startDate.getTime());
+
+  while (currentDate <= endDate) {
+    const monthYear = convertMonthAndYearToKey(
+      currentDate.getMonth() + 1,
+      currentDate.getFullYear()
+    );
+
+    monthYearArray.push(monthYear);
+    currentDate.setMonth(currentDate.getMonth() + 1);
   }
 
-  return orderedMonths;
+  return monthYearArray && monthYearArray.length
+    ? monthYearArray.reduce((acc, key) => {
+        acc[key] = {
+          builds: 0,
+          entities: 0,
+          plugins: 0,
+          moduleActions: 0,
+          month: key,
+        };
+        return acc;
+      }, {} as Record<string, DatasetEntry>)
+    : {};
 }
