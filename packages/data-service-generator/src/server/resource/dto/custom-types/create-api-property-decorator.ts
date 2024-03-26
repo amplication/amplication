@@ -59,11 +59,11 @@ function getTypeDefApiPropertyType(
   typeDef: PropertyTypeDef
 ): [namedTypes.Identifier, boolean, boolean] {
   if (typeDef.isArray) {
-    const [itemType] = getTypeDefApiPropertyType({
+    const [itemType, , isEnum] = getTypeDefApiPropertyType({
       ...typeDef,
       isArray: false,
     });
-    return [itemType, true, false];
+    return [itemType, true, isEnum];
   }
 
   if (typeDef.type === EnumModuleDtoPropertyType.Boolean) {
