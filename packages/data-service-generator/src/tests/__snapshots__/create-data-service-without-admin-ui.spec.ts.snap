@@ -2647,9 +2647,7 @@ import {
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.CustomerCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.CustomerCountArgs, "select">): Promise<number> {
     return this.prisma.customer.count(args);
   }
 
@@ -3700,9 +3698,7 @@ import { Prisma, Empty as PrismaEmpty } from "@prisma/client";
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.EmptyCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.EmptyCountArgs, "select">): Promise<number> {
     return this.prisma.empty.count(args);
   }
 
@@ -5303,9 +5299,7 @@ import {
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.OrderCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.OrderCountArgs, "select">): Promise<number> {
     return this.prisma.order.count(args);
   }
 
@@ -7067,8 +7061,8 @@ import {
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.OrganizationCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationCountArgs>
+  async count(
+    args: Omit<Prisma.OrganizationCountArgs, "select">
   ): Promise<number> {
     return this.prisma.organization.count(args);
   }
@@ -8560,9 +8554,7 @@ import {
 export class ProfileServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.ProfileCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.ProfileCountArgs, "select">): Promise<number> {
     return this.prisma.profile.count(args);
   }
 
@@ -11365,9 +11357,7 @@ import { PromoteUserInput } from "./PromoteUserInput";
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.UserCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.UserCountArgs, "select">): Promise<number> {
     return this.prisma.user.count(args);
   }
 
