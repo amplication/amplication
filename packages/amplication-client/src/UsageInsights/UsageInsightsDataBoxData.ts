@@ -7,7 +7,7 @@ export const USAGE_INSIGHTS_DATA_BOX_DATA: UsageInsightsDataBoxProps[] = [
     color: EnumTextColor.ThemeTurquoise,
     label: "Lines of code",
     info: "Total Lines of Code (LOC) generated or updated.",
-    endnotes: "Data collection started on March 26, 2024",
+    endnotes: "Data collection started on March 27, 2024",
   },
   {
     icon: "clock",
@@ -19,7 +19,7 @@ export const USAGE_INSIGHTS_DATA_BOX_DATA: UsageInsightsDataBoxProps[] = [
     we estimate that a developer creates around 1667 lines of code per month. This breaks down to 
     approximately 10.41 lines of code per developer hour.
     Have a different perspective? {{contactUsLink}} and let's chat about it!`,
-    endnotes: "Data collection started on March 26, 2024",
+    endnotes: "Data collection started on March 27, 2024",
   },
   {
     icon: "dollar-sign",
@@ -29,7 +29,7 @@ export const USAGE_INSIGHTS_DATA_BOX_DATA: UsageInsightsDataBoxProps[] = [
     We've calculated it to be around $12K, factoring in complexity, sensitivity, developer expenses,
     and potential bug resolution expenses. 
     Have a different perspective? {{contactUsLink}} and let's chat about it!`,
-    endnotes: "Data collection started on March 26, 2024",
+    endnotes: "Data collection started on March 27, 2024",
   },
   {
     icon: "check",
@@ -39,6 +39,6 @@ export const USAGE_INSIGHTS_DATA_BOX_DATA: UsageInsightsDataBoxProps[] = [
     We've estimated it to be around 14 bugs per 1,000 lines of code (LOC), based on research data, such as 
     findings from Carnegie Mellon University.
     Have a different perspective? {{contactUsLink}} and let's chat about it!`,
-    endnotes: "Data collection started on March 26, 2024",
+    endnotes: "Data collection started on March 27, 2024",
   },
 ];
