@@ -14,7 +14,7 @@ import {
 import { BarChart } from "@mui/x-charts/BarChart";
 import React, { useCallback, useEffect } from "react";
 import "./UsageInsights.scss";
-import { UsageInsightsDataBox } from "./UsageInsightsDataBox";
+import { EnumValueFormat, UsageInsightsDataBox } from "./UsageInsightsDataBox";
 import { useUsageInsights } from "./hooks/useUsageInsights";
 import { EnumTimeGroup } from "../models";
 import { USAGE_INSIGHTS_DATA_BOX_DATA } from "./UsageInsightsDataBoxData";
@@ -131,11 +131,11 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
         itemsAlign={EnumItemsAlign.Stretch}
         gap={EnumGapSize.Large}
       >
-        {usageInsightsDataset && (
-          <Panel
-            className={`${CLASS_NAME}__chart`}
-            panelStyle={EnumPanelStyle.Bold}
-          >
+        <Panel
+          className={`${CLASS_NAME}__chart`}
+          panelStyle={EnumPanelStyle.Bold}
+        >
+          {usageInsightsDataset && (
             <BarChart
               height={300}
               dataset={usageInsightsDataset}
@@ -180,10 +180,11 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
                 },
               ]}
             />
-          </Panel>
-        )}
+          )}
+        </Panel>
 
-        {evaluationInsights && evaluationInsights.loc !== 0 && (
+        {(evaluationInsightsLoading ||
+          (evaluationInsights && evaluationInsights.loc !== 0)) && (
           <FlexItem
             direction={EnumFlexDirection.Column}
             className={`${CLASS_NAME}__chart-side`}
@@ -191,21 +192,23 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
           >
             <>
               <UsageInsightsDataBox
-                value={evaluationInsights.loc}
+                value={evaluationInsights?.loc}
                 rawData={USAGE_INSIGHTS_DATA_BOX_DATA[0]}
+                valueFormat={EnumValueFormat.Number}
+                loading={evaluationInsightsLoading}
               />
 
               <UsageInsightsDataBox
-                value={evaluationInsights.timeSaved}
+                value={evaluationInsights?.timeSaved}
+                valueFormat={EnumValueFormat.Number}
                 rawData={USAGE_INSIGHTS_DATA_BOX_DATA[1]}
+                loading={evaluationInsightsLoading}
               />
             </>
           </FlexItem>
         )}
       </FlexItem>
 
-      {evaluationInsightsLoading ||
-        (!evaluationInsights && <div>Loading...</div>)}
       <FlexItem margin={EnumFlexItemMargin.Both}>
         <Text textStyle={EnumTextStyle.H4}>Efficiency Metrics</Text>
       </FlexItem>
@@ -217,17 +220,22 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
           </Text>
         </FlexItem>
       )}
-      {evaluationInsights && evaluationInsights.loc !== 0 && (
+      {(evaluationInsightsLoading ||
+        (evaluationInsights && evaluationInsights.loc !== 0)) && (
         <>
           <FlexItem gap={EnumGapSize.Large}>
             <UsageInsightsDataBox
-              value={evaluationInsights.costSaved}
+              loading={evaluationInsightsLoading}
+              value={evaluationInsights?.costSaved}
+              valueFormat={EnumValueFormat.Currency}
               rawData={USAGE_INSIGHTS_DATA_BOX_DATA[2]}
             />
 
             <UsageInsightsDataBox
-              value={evaluationInsights.codeQuality}
+              loading={evaluationInsightsLoading}
+              value={evaluationInsights?.codeQuality}
               rawData={USAGE_INSIGHTS_DATA_BOX_DATA[3]}
+              valueFormat={EnumValueFormat.Number}
             />
           </FlexItem>
         </>

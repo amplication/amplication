@@ -95,8 +95,8 @@ export const InfoButton = ({
         buttonStyle={EnumButtonStyle.Text}
         onClick={handleInfoButtonClicked}
       >
-        <CircleBadge size={"small"} themeColor={EnumTextColor.Black20}>
-          <Icon icon={icon} size="small" color={EnumTextColor.White} />
+        <CircleBadge size={"xxsmall"} themeColor={EnumTextColor.ThemeBlue}>
+          <Icon icon={icon} size="xsmall" color={EnumTextColor.White} />
         </CircleBadge>
       </Button>
       <Dialog isOpen={isOpen} onDismiss={toggleIsOpen} title={title}>
