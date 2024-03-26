@@ -7,16 +7,14 @@ declare const UPDATE_ARGS_MAPPING: Prisma.UPDATE_ARGS;
 export class SERVICE_BASE {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.COUNT_ARGS>(
-    args: Prisma.SelectSubset<T, Prisma.COUNT_ARGS>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.COUNT_ARGS, "select">): Promise<number> {
     return this.prisma.DELEGATE.count(args);
   }
 
   async FIND_MANY_ENTITY_FUNCTION<T extends Prisma.FIND_MANY_ARGS>(
     args: Prisma.SelectSubset<T, Prisma.FIND_MANY_ARGS>
   ): Promise<PRISMA_ENTITY[]> {
-    return this.prisma.DELEGATE.findMany(args);
+    return this.prisma.DELEGATE.findMany<Prisma.FIND_MANY_ARGS>(args);
   }
   async FIND_ONE_ENTITY_FUNCTION<T extends Prisma.FIND_ONE_ARGS>(
     args: Prisma.SelectSubset<T, Prisma.FIND_ONE_ARGS>

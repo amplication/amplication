@@ -60,7 +60,10 @@ export class Build {
   codeGeneratorVersion?: string;
 
   @Field(() => Number, { nullable: true })
-  linesOfCode?: number;
+  linesOfCodeAdded?: number;
+
+  @Field(() => Number, { nullable: true })
+  linesOfCodeDeleted?: number;
 
   @Field(() => Number, { nullable: true })
   filesChanged?: number;
