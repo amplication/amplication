@@ -165,7 +165,8 @@ export function createProperty(
 ): namedTypes.ClassProperty {
   const { appInfo } = DsgContext.getInstance;
 
-  const isEnum = property.propertyTypes[0].dto?.dtoType === "CustomEnum";
+  const isEnum =
+    property.propertyTypes[0].dto?.dtoType === EnumModuleDtoType.CustomEnum;
 
   const type = createPropTypeFromTypeDefList(property.propertyTypes);
   const tsTypeAnnotationNode = builders.tsTypeAnnotation(type);
