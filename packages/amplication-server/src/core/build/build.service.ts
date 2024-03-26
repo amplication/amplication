@@ -478,8 +478,10 @@ export class BuildService {
   formatDiffStat(diffStat: string): DiffStatObject {
     this.logger.debug("diffStat", { diffStat });
     const diffStatRegex =
-      /(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, )?(\d+) deletions?\(-\)/;
-    const match = diffStat.match(diffStatRegex);
+      /(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\))?/;
+    const match = diffStat?.match(diffStatRegex);
+    this.logger.debug("Diff stat", { diffStat });
+
     if (!match) {
       return {
         filesChanged: 0,
@@ -487,11 +489,15 @@ export class BuildService {
         deletions: 0,
       };
     }
-    return {
-      filesChanged: parseInt(match[1]),
-      insertions: parseInt(match[2]),
-      deletions: parseInt(match[3]),
+    this.logger.debug("Diff stat match", match);
+    const [, filesChanged, insertions, deletions] = match;
+    const diffStatObj = {
+      filesChanged: parseInt(filesChanged, 10),
+      insertions: parseInt(insertions || "0", 10),
+      deletions: parseInt(deletions || "0", 10),
     };
+    this.logger.debug("Diff stat object", diffStatObj);
+    return diffStatObj;
   }
 
   async updateBuildLOC(
@@ -501,7 +507,8 @@ export class BuildService {
     await this.prisma.build.update({
       where: { id: buildId },
       data: {
-        linesOfCode: diffStat.insertions + diffStat.deletions,
+        linesOfCodeAdded: diffStat.insertions,
+        linesOfCodeDeleted: diffStat.deletions,
         filesChanged: diffStat.filesChanged,
       },
     });

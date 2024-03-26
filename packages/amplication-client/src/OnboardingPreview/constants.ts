@@ -243,7 +243,7 @@ export const PAGES_DATA: Pages = {
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}provisioning-terraform-aws-core.png`,
-        title: "AWS ECS + RDS (Tarraform)",
+        title: "AWS ECS + RDS (Terraform)",
         plugins: [
           { pluginId: "provisioning-terraform-aws-core" },
           { pluginId: "provisioning-terraform-aws-database-rds" },
@@ -253,7 +253,7 @@ export const PAGES_DATA: Pages = {
       },
       {
         icon: `${PLUGIN_LOGO_BASE_URL}provisioning-terraform-gcp-core.png`,
-        title: "GCP xxx (Tarraform)",
+        title: "GCP (Terraform)",
         plugins: [
           { pluginId: "provisioning-terraform-gcp-core" },
           { pluginId: "provisioning-terraform-gcp-database-csql" },
