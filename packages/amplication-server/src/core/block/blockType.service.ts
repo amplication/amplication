@@ -11,7 +11,7 @@ import {
 import { UserEntity } from "../../decorators/user.decorator";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 import { JsonFilter } from "../../dto/JsonFilter";
-import { validateEntitlement } from "./block.util";
+import { validateEntitlementForBlockType } from "./block.util";
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
@@ -49,7 +49,7 @@ export abstract class BlockTypeService<
     forceEntitlementValidation = false
   ): Promise<T> {
     if (forceEntitlementValidation)
-      await validateEntitlement(this.blockType, user.workspace.id);
+      await validateEntitlementForBlockType(this.blockType, user.workspace.id);
     return this.blockService.create<T>(
       {
         ...args,
@@ -69,7 +69,7 @@ export abstract class BlockTypeService<
     forceEntitlementValidation = false
   ): Promise<T> {
     if (forceEntitlementValidation)
-      await validateEntitlement(this.blockType, user.workspace.id);
+      await validateEntitlementForBlockType(this.blockType, user.workspace.id);
     return this.blockService.update<T>(
       {
         ...args,
@@ -87,7 +87,7 @@ export abstract class BlockTypeService<
     forceEntitlementValidation = false
   ): Promise<T> {
     if (forceEntitlementValidation)
-      await validateEntitlement(this.blockType, user.workspace.id);
+      await validateEntitlementForBlockType(this.blockType, user.workspace.id);
     return await this.blockService.delete(
       args,
       user,

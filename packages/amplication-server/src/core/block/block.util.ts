@@ -43,7 +43,7 @@ export const mergeAllSettings = (
   };
 };
 
-export async function validateEntitlement(
+export async function validateEntitlementForBlockType(
   blockType: EnumBlockType,
   workspaceId: string
 ): Promise<void> {
