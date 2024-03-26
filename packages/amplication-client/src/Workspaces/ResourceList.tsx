@@ -7,6 +7,7 @@ import {
   EnumGapSize,
   EnumItemsAlign,
   EnumPanelStyle,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
@@ -36,6 +37,7 @@ import {
   EnumButtonLocation,
 } from "../Resource/break-the-monolith/BtmButton";
 import { UsageInsights } from "../UsageInsights/UsageInsights";
+import "./ResourceList.scss";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
@@ -157,7 +159,11 @@ function ResourceList() {
         itemsAlign={EnumItemsAlign.Stretch}
       >
         <UsageInsights projectIds={[currentProject?.id]} />
-        <div>
+        <Panel
+          panelStyle={EnumPanelStyle.Bordered}
+          className={`${CLASS_NAME}__resources`}
+          themeColor={EnumTextColor.ThemeBlue}
+        >
           <FlexItem margin={EnumFlexItemMargin.Bottom}>
             <Text textStyle={EnumTextStyle.Tag}>
               {resources.length}{" "}
@@ -183,7 +189,7 @@ function ResourceList() {
                 ))}
             </List>
           )}
-        </div>
+        </Panel>
       </FlexItem>
 
       <Snackbar
