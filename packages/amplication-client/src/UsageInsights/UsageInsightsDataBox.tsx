@@ -10,6 +10,7 @@ import {
   FlexItem,
   Icon,
   Panel,
+  SkeletonWrapper,
   Text,
 } from "@amplication/ui/design-system";
 import React from "react";
@@ -41,6 +42,7 @@ type Props = {
   value: string | number;
   rawData: UsageInsightsDataBoxProps;
   valueFormat?: EnumValueFormat;
+  loading: boolean;
 };
 
 const formatValue = (value: string | number, format: EnumValueFormat) => {
@@ -62,6 +64,7 @@ export const UsageInsightsDataBox: React.FC<Props> = ({
   rawData,
   value,
   valueFormat,
+  loading,
 }) => {
   const { icon, color, label, info, units, endnotes } = rawData;
   const { currentWorkspace } = useAppContext();
@@ -103,13 +106,21 @@ export const UsageInsightsDataBox: React.FC<Props> = ({
             {label}
           </Text>
         </FlexItem>
+
         <FlexItem
           direction={EnumFlexDirection.Column}
           itemsAlign={EnumItemsAlign.Center}
           contentAlign={EnumContentAlign.Center}
           margin={EnumFlexItemMargin.Top}
         >
-          <Text textStyle={EnumTextStyle.H1}>{formattedValue}</Text>
+          <SkeletonWrapper
+            showSkeleton={loading}
+            className={`${CLASS_NAME}__skeleton`}
+          >
+            <Text textStyle={EnumTextStyle.H1}>
+              {(!loading && formattedValue) || "."}
+            </Text>
+          </SkeletonWrapper>
           {units && (
             <Text
               textStyle={EnumTextStyle.H4}
