@@ -94,6 +94,7 @@ async function createServerInternal(
   const appModuleInputModules = new ModuleMap(context.logger);
   await appModuleInputModules.mergeMany([
     resourcesModules,
+    customModulesModules,
     staticModules,
     secretsManagerModule,
   ]);
