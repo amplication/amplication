@@ -129,13 +129,15 @@ const ModuleDto = ({ match }: Props) => {
           direction={EnumFlexDirection.Row}
           alignSelf={EnumContentAlign.Start}
         >
-          <Toggle
-            name={"enabled"}
-            onValueChange={onEnableChanged}
-            checked={data?.moduleDto?.enabled}
-          ></Toggle>
           {data?.moduleDto && isCustomDto && (
-            <DeleteModuleDto moduleDto={data?.moduleDto} />
+            <>
+              <Toggle
+                name={"enabled"}
+                onValueChange={onEnableChanged}
+                checked={data?.moduleDto?.enabled}
+              ></Toggle>
+              <DeleteModuleDto moduleDto={data?.moduleDto} />
+            </>
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
