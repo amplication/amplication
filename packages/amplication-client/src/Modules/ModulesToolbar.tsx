@@ -10,9 +10,10 @@ import {
 import { EnumFlexDirection } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import React, { useCallback } from "react";
 import NewModuleAction from "../ModuleActions/NewModuleAction";
-import NewModuleDtoButton from "../ModuleDto/NewModuleDtoButton";
+import NewModuleDtoSelectButton from "../ModuleDto/NewModuleDtoSelectButton";
 import "./ModulesToolbar.scss";
 import { useModulesContext } from "./modulesContext";
+import NewModuleDtoButton from "../ModuleDto/NewModuleDtoButton";
 
 type Props = {
   resourceId: string;
@@ -50,7 +51,10 @@ const ModulesToolbar: React.FC<Props> = ({ moduleId, resourceId }) => {
       >
         <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
           <>
-            <NewModuleDtoButton resourceId={resourceId} moduleId={moduleId} />
+            <NewModuleDtoSelectButton
+              resourceId={resourceId}
+              moduleId={moduleId}
+            />
             <NewModuleAction
               resourceId={resourceId}
               moduleId={moduleId}

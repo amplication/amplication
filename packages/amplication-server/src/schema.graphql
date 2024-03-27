@@ -1150,6 +1150,8 @@ input ModuleActionWhereInput {
   description: StringFilter
   displayName: StringFilter
   id: StringFilter
+  includeCustomActions: Boolean
+  includeDefaultActions: Boolean
   parentBlock: WhereUniqueInput
   resource: ResourceWhereInput
   updatedAt: DateTimeFilter
@@ -1254,6 +1256,8 @@ input ModuleDtoWhereInput {
   description: StringFilter
   displayName: StringFilter
   id: StringFilter
+  includeCustomDtos: Boolean
+  includeDefaultDtos: Boolean
   parentBlock: WhereUniqueInput
   resource: ResourceWhereInput
   updatedAt: DateTimeFilter

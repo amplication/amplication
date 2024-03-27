@@ -27,6 +27,7 @@ import * as models from "../models";
 import { EnumSubscriptionPlan } from "../models";
 import { GET_WORKSPACE_MEMBERS, TData as MemberListData } from "./MemberList";
 import WorkspaceSelector, { getWorkspaceColor } from "./WorkspaceSelector";
+import { UsageInsights } from "../UsageInsights/UsageInsights";
 
 const CLASS_NAME = "workspace-overview";
 const PAGE_TITLE = "Workspace Overview";
@@ -42,6 +43,10 @@ const SUBSCRIPTION_TO_CHIP_STYLE: {
 
 export const WorkspaceOverview = () => {
   const { currentWorkspace, projectsList } = useContext(AppContext);
+  const projectIds = useMemo(
+    () => projectsList.map((project) => project.id),
+    [projectsList]
+  );
 
   const { data: membersData } = useQuery<MemberListData>(GET_WORKSPACE_MEMBERS);
 
@@ -109,7 +114,17 @@ export const WorkspaceOverview = () => {
           </FlexItem.FlexEnd>
         </FlexItem>
       </Panel>
-      <ProjectList projects={projectsList} workspaceId={currentWorkspace.id} />
+      <FlexItem
+        direction={EnumFlexDirection.Row}
+        itemsAlign={EnumItemsAlign.Stretch}
+      >
+        <UsageInsights projectIds={projectIds} />
+
+        <ProjectList
+          projects={projectsList}
+          workspaceId={currentWorkspace.id}
+        />
+      </FlexItem>
     </PageContent>
   );
 };

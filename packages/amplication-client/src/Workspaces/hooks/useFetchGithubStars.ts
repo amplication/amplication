@@ -14,10 +14,14 @@ const useFetchGithubStars = () => {
 
   useEffect(() => {
     async function fetchGithubStars() {
-      const response = await fetch(AMP_GITHUB_API_URL);
-      const data = await response.json();
-      const num = formatNumWithSuffix(data.stargazers_count);
-      setStars(num);
+      try {
+        const response = await fetch(AMP_GITHUB_API_URL);
+        const data = await response.json();
+        const num = formatNumWithSuffix(data.stargazers_count);
+        setStars(num);
+      } catch (error) {
+        setStars(12000);
+      }
     }
 
     fetchGithubStars();

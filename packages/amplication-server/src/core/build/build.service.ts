@@ -476,6 +476,7 @@ export class BuildService {
   }
 
   formatDiffStat(diffStat: string): DiffStatObject {
+    this.logger.debug("diffStat", { diffStat });
     const diffStatRegex =
       /(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\))?/;
     const match = diffStat?.match(diffStatRegex);

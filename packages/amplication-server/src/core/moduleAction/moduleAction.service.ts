@@ -54,6 +54,42 @@ export class ModuleActionService extends BlockTypeService<
     );
   }
 
+  async findMany(args: FindManyModuleActionArgs): Promise<ModuleAction[]> {
+    const { includeCustomActions, includeDefaultActions, ...rest } =
+      args.where || {};
+
+    const prismaArgs = {
+      ...args,
+      where: {
+        ...rest,
+      },
+    };
+
+    //when undefined the default value is true
+    const includeCustomActionsBoolean = includeCustomActions !== false;
+    const includeDefaultActionsBoolean = includeDefaultActions !== false;
+
+    if (includeCustomActionsBoolean && includeDefaultActionsBoolean) {
+      return super.findMany(prismaArgs);
+    } else if (includeCustomActionsBoolean) {
+      return super.findManyBySettings(prismaArgs, [
+        {
+          path: ["actionType"],
+          equals: EnumModuleActionType.Custom,
+        },
+      ]);
+    } else if (includeDefaultActionsBoolean) {
+      return super.findManyBySettings(prismaArgs, [
+        {
+          path: ["actionType"],
+          not: EnumModuleActionType.Custom,
+        },
+      ]);
+    } else {
+      return [];
+    }
+  }
+
   validateModuleActionName(moduleActionName: string): void {
     const regex = /^[a-zA-Z0-9._-]{1,249}$/;
     if (!regex.test(moduleActionName)) {
