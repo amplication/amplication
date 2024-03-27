@@ -1,8 +1,6 @@
 import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
-// @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
-// @ts-ignore
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 
 declare interface CREATE_INPUT {}
@@ -85,7 +83,6 @@ export class RESOLVER_BASE {
 
   @graphql.Mutation(() => ENTITY)
   async CREATE_MUTATION(@graphql.Args() args: CREATE_ARGS): Promise<ENTITY> {
-    // @ts-ignore
     return await this.service.CREATE_FUNCTION({
       ...args,
       data: CREATE_DATA_MAPPING,
@@ -97,7 +94,6 @@ export class RESOLVER_BASE {
     @graphql.Args() args: UPDATE_ARGS
   ): Promise<ENTITY | null> {
     try {
-      // @ts-ignore
       return await this.service.UPDATE_FUNCTION({
         ...args,
         data: UPDATE_DATA_MAPPING,
@@ -117,7 +113,6 @@ export class RESOLVER_BASE {
     @graphql.Args() args: DELETE_ARGS
   ): Promise<ENTITY | null> {
     try {
-      // @ts-ignore
       return await this.service.DELETE_FUNCTION(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {

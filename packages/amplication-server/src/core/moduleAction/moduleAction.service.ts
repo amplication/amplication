@@ -18,6 +18,12 @@ import { EnumModuleActionType } from "./dto/EnumModuleActionType";
 import { FindManyModuleActionArgs } from "./dto/FindManyModuleActionArgs";
 import { ModuleAction } from "./dto/ModuleAction";
 import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
+import { kebabCase } from "lodash";
+import { EnumModuleDtoPropertyType } from "../moduleDto/dto/propertyTypes/EnumModuleDtoPropertyType";
+import { EnumModuleActionGqlOperation } from "./dto/EnumModuleActionGqlOperation";
+import { EnumModuleActionRestVerb } from "./dto/EnumModuleActionRestVerb";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
@@ -29,11 +35,19 @@ export class ModuleActionService extends BlockTypeService<
 > {
   blockType = EnumBlockType.ModuleAction;
 
+  customActionsEnabled: boolean;
+
   constructor(
     protected readonly blockService: BlockService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private configService: ConfigService
   ) {
     super(blockService);
+
+    this.customActionsEnabled = Boolean(
+      this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===
+        "true"
+    );
   }
 
   validateModuleActionName(moduleActionName: string): void {
@@ -49,13 +63,30 @@ export class ModuleActionService extends BlockTypeService<
   ): Promise<ModuleAction> {
     this.validateModuleActionName(args.data.name);
 
+    if (!this.customActionsEnabled) {
+      return null;
+    }
+
     return super.create(
       {
         ...args,
         data: {
           ...args.data,
+          actionType: EnumModuleActionType.Custom,
           enabled: true,
-          type: EnumModuleActionType.Custom,
+          gqlOperation: EnumModuleActionGqlOperation.Query,
+          restVerb: EnumModuleActionRestVerb.Get,
+          path: `/:id/${kebabCase(args.data.name)}`,
+          outputType: {
+            type: EnumModuleDtoPropertyType.Dto,
+            dtoId: "",
+            isArray: false,
+          },
+          inputType: {
+            type: EnumModuleDtoPropertyType.Dto,
+            dtoId: "",
+            isArray: false,
+          },
         },
       },
       user
@@ -80,7 +111,10 @@ export class ModuleActionService extends BlockTypeService<
     }
 
     if (existingAction.actionType !== EnumModuleActionType.Custom) {
-      if (existingAction.name !== args.data.name) {
+      if (
+        existingAction.name !== args.data.name &&
+        args.data.name !== undefined
+      ) {
         throw new AmplicationError(
           "Cannot update the name of a default Action for entity."
         );
@@ -182,6 +216,8 @@ export class ModuleActionService extends BlockTypeService<
                 gqlOperation: defaultActions[action.actionType].gqlOperation,
                 restVerb: defaultActions[action.actionType].restVerb,
                 path: defaultActions[action.actionType].path,
+                inputType: defaultActions[action.actionType].inputType,
+                outputType: defaultActions[action.actionType].outputType,
               },
             },
             user
@@ -255,23 +291,49 @@ export class ModuleActionService extends BlockTypeService<
       }
     );
 
-    return await Promise.all(
-      existingDefaultActions.map((action) => {
+    const defaultActionKeysSet = new Set(Object.keys(defaultActions));
+    const existingDefaultActionKeysSet = new Set(
+      existingDefaultActions.map((action) => action.actionType) as string[]
+    );
+
+    const actionsToDelete: EnumModuleActionType[] = [];
+    const actionsToCreate: EnumModuleActionType[] = [];
+    const actionsToUpdate: EnumModuleActionType[] = [];
+
+    // Iterate through once and categorize actions
+    for (const action of defaultActionKeysSet) {
+      if (!existingDefaultActionKeysSet.has(action)) {
+        actionsToCreate.push(action as EnumModuleActionType);
+      } else {
+        actionsToUpdate.push(action as EnumModuleActionType);
+      }
+    }
+
+    for (const action of existingDefaultActionKeysSet) {
+      if (!defaultActionKeysSet.has(action)) {
+        actionsToDelete.push(action as EnumModuleActionType);
+      }
+    }
+
+    const created = Promise.all(
+      actionsToCreate.map((action) => {
         return (
-          defaultActions[action.actionType] &&
-          super.update(
+          defaultActions[action] &&
+          super.create(
             {
-              where: {
-                id: action.id,
-              },
               data: {
-                name: defaultActions[action.actionType].name,
-                displayName: defaultActions[action.actionType].displayName,
-                description: defaultActions[action.actionType].description,
-                enabled: action.enabled,
-                gqlOperation: defaultActions[action.actionType].gqlOperation,
-                restVerb: defaultActions[action.actionType].restVerb,
-                path: defaultActions[action.actionType].path,
+                fieldPermanentId: field.permanentId,
+                ...defaultActions[action],
+                parentBlock: {
+                  connect: {
+                    id: moduleId,
+                  },
+                },
+                resource: {
+                  connect: {
+                    id: entity.resourceId,
+                  },
+                },
               },
             },
             user
@@ -279,6 +341,56 @@ export class ModuleActionService extends BlockTypeService<
         );
       })
     );
+
+    const deleted = Promise.all(
+      actionsToDelete.map((actionType) => {
+        const actionToDelete = existingDefaultActions.find(
+          (existing) => existing.actionType === actionType
+        );
+
+        return super.delete(
+          {
+            where: {
+              id: actionToDelete.id,
+            },
+          },
+          user,
+          true
+        );
+      })
+    );
+
+    const updated = Promise.all(
+      actionsToUpdate.map((action) => {
+        const actionToUpdate = existingDefaultActions.find(
+          (existing) => existing.actionType === action
+        );
+
+        return super.update(
+          {
+            where: {
+              id: actionToUpdate.id,
+            },
+            data: {
+              name: defaultActions[action].name,
+              displayName: defaultActions[action].displayName,
+              description: defaultActions[action].description,
+              enabled: actionToUpdate.enabled,
+              gqlOperation: defaultActions[action].gqlOperation,
+              restVerb: defaultActions[action].restVerb,
+              path: defaultActions[action].path,
+              inputType: defaultActions[action].inputType,
+              outputType: defaultActions[action].outputType,
+            },
+          },
+          user
+        );
+      })
+    );
+
+    await Promise.all([created, deleted, updated]);
+
+    return [...(await created), ...(await updated)];
   }
 
   async deleteDefaultActionsForRelationField(

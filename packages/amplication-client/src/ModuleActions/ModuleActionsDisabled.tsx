@@ -8,16 +8,23 @@ import {
   Icon,
   Text,
 } from "@amplication/ui/design-system";
-import React from "react";
+import React, { useContext } from "react";
 import { IconType } from "../Components/FeatureIndicatorContainer";
+import { AppContext } from "../context/appContext";
+import { useQuery } from "@apollo/client";
+import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
 
 type Props = {
-  icon: IconType;
-  handleSearchChange: (value: string) => void;
   className: string;
 };
 
-export const ModuleActionsDisabled: React.FC<Props> = ({ icon, className }) => {
+export const ModuleActionsDisabled: React.FC<Props> = ({ className }) => {
+  const { currentWorkspace } = useContext(AppContext);
+
+  const { data } = useQuery(GET_CONTACT_US_LINK, {
+    variables: { id: currentWorkspace.id },
+  });
+
   return (
     <FlexItem
       direction={EnumFlexDirection.Column}
@@ -28,7 +35,11 @@ export const ModuleActionsDisabled: React.FC<Props> = ({ icon, className }) => {
         <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.Black}>
           Premium feature
         </Text>
-        <Icon icon={icon} size={"xsmall"} color={EnumTextColor.Black} />
+        <Icon
+          icon={IconType.Diamond}
+          size={"xsmall"}
+          color={EnumTextColor.Black}
+        />
       </div>
       <Text
         textStyle={EnumTextStyle.H2}
@@ -48,13 +59,15 @@ export const ModuleActionsDisabled: React.FC<Props> = ({ icon, className }) => {
         textColor={EnumTextColor.Black20}
       >
         and customization as a unified source of truth.{" "}
-        <a
-          className={`${className}__addon-section__contact-us`}
-          href={"https://meetings-eu1.hubspot.com/liza-dymava/cta-link"}
-          target="blank"
-        >
-          <Text>{"Contact us"}</Text>{" "}
-        </a>
+        {data && (
+          <a
+            className={`${className}__addon-section__contact-us`}
+            href={data.contactUsLink}
+            target="blank"
+          >
+            <Text>{"Contact us"}</Text>{" "}
+          </a>
+        )}
         for more information
       </Text>
     </FlexItem>

@@ -35,6 +35,9 @@ export const SYSTEM_DATA_TYPES: Set<models.EnumDataType> = new Set([
   models.EnumDataType.Id,
 ]);
 
+export const AUTHENTICATION_ENTITY_DATA_TYPES: Set<models.EnumDataType> =
+  new Set([models.EnumDataType.Username, models.EnumDataType.Password]);
+
 export const DATA_TYPE_TO_LABEL_AND_ICON: {
   [key in models.EnumDataType]: {
     label: string;

@@ -43,7 +43,7 @@ env:
   BRANCH: ${{ inputs.branch }}
 
 jobs:
-  package:
+  package-container:
     if: ${{ inputs.affected-package-container != '[]' && inputs.affected-package-container != ''}}
     name: Package
     runs-on: ubuntu-20.04
@@ -52,12 +52,12 @@ jobs:
       matrix:
         project: ${{ fromJson(inputs.affected-package-container) }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -65,7 +65,7 @@ jobs:
 
       - name: Cache global node modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -77,7 +77,7 @@ jobs:
         run: npm ci
 
       - name: Configure AWS Credentials (operations account)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
@@ -131,7 +131,7 @@ jobs:
 
   deploy-container:
     name: Deployment container
-    needs: [package, configure]
+    needs: [package-container, configure]
     if: ${{ inputs.affected-deploy-container != '[]' && inputs.affected-deploy-container != ''}}
     strategy:
       matrix:
@@ -147,7 +147,7 @@ jobs:
 
   deploy-static:
     name: Deployment static
-    needs: [package, configure]
+    needs: [configure]
     if: ${{ inputs.affected-deploy-static != '[]' && inputs.affected-deploy-static != ''}}
     strategy:
       matrix:

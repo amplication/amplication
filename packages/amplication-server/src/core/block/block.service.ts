@@ -4,7 +4,7 @@ import {
   ConflictException,
 } from "@nestjs/common";
 import type { JsonObject } from "type-fest";
-import { pick, head, last, mergeWith, isArray } from "lodash";
+import { pick, head, last } from "lodash";
 import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion,
@@ -42,6 +42,7 @@ import {
 } from "../resource/dto";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 import { JsonFilter } from "../../dto/JsonFilter";
+import { mergeAllSettings } from "./block.util";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
@@ -87,6 +88,7 @@ export class BlockService {
     [EnumBlockType.PluginOrder]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.Module]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ModuleAction]: new Set([EnumBlockType.Module]),
+    [EnumBlockType.ModuleDto]: new Set([EnumBlockType.Module]),
   };
 
   private async resolveParentBlock(
@@ -468,7 +470,8 @@ export class BlockService {
    * */
   async update<T extends IBlock>(
     args: UpdateBlockArgs,
-    user: User
+    user: User,
+    keysToNotMerge?: string[]
   ): Promise<T> {
     const { displayName, description, ...settings } = args.data;
 
@@ -483,11 +486,10 @@ export class BlockService {
     });
 
     // merge the existing settings with the new settings. use deep merge but do not merge arrays
-    const allSettings = mergeWith(
-      {},
+    const allSettings = mergeAllSettings(
       existingVersion.settings,
       settings,
-      (oldValue, newValue) => (isArray(newValue) ? newValue : undefined)
+      keysToNotMerge || []
     );
 
     return await this.useLocking(args.where.id, user, async () => {

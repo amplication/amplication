@@ -18,17 +18,19 @@ datasource db {
 }
 
 model Account {
-  id            String   @id @default(cuid())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  email         String   @unique(map: "Account.email_unique")
-  firstName     String
-  lastName      String
-  password      String
-  currentUserId String?  @unique(map: "Account.currentUserId_unique")
-  githubId      String?
-  currentUser   User?    @relation(fields: [currentUserId], references: [id])
-  users         User[]   @relation("AccountOnUser")
+  id                  String             @id @default(cuid())
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  email               String             @unique(map: "Account.email_unique")
+  firstName           String
+  lastName            String
+  password            String
+  currentUserId       String?            @unique(map: "Account.currentUserId_unique")
+  githubId            String?
+  currentUser         User?              @relation(fields: [currentUserId], references: [id])
+  users               User[]             @relation("AccountOnUser")
+  previewAccountEmail String?
+  previewAccountType  PreviewAccountType @default(None)
 }
 
 model Workspace {
@@ -36,6 +38,7 @@ model Workspace {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   name             String            @unique(map: "Workspace.name_unique")
+  allowLLMFeatures Boolean           @default(true)
   users            User[]
   invitations      Invitation[]
   subscriptions    Subscription[]
@@ -502,6 +505,7 @@ enum EnumBlockType {
   PluginOrder
   Module
   ModuleAction
+  ModuleDto
 }
 
 enum ActionStepStatus {
@@ -560,6 +564,7 @@ enum EnumSubscriptionPlan {
   Free
   Pro
   Enterprise
+  PreviewBreakTheMonolith
 }
 
 enum EnumSubscriptionStatus {
@@ -601,10 +606,18 @@ enum EnumGitOrganizationType {
 
 enum EnumUserActionType {
   DBSchemaImport
+  GptConversation
+  ProjectRedesign
 }
 
 enum CodeGeneratorVersionStrategy {
   LatestMajor
   LatestMinor
   Specific
+}
+
+enum PreviewAccountType {
+  None
+  BreakingTheMonolith
+  PreviewOnboarding
 }

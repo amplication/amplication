@@ -1,6 +1,6 @@
 {
   "name": "data-service-generator",
-  "version": "3.0.1",
+  "version": "3.1.2",
   "scripts": {
     "dsg:package:container": "./scripts/package-container.sh"
   },
@@ -8,8 +8,8 @@
     "@amplication/code-gen-types": "2.0.21",
     "@amplication/code-gen-utils": "0.0.7",
     "@apollo/client": "^3.7.1",
-    "@babel/parser": "7.23.0",
-    "@babel/types": "7.23.0",
+    "@babel/parser": "7.23.6",
+    "@babel/types": "7.23.6",
     "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.3.12",
@@ -17,10 +17,10 @@
     "@nestjs/serve-static": "^3.0.1",
     "@nestjs/swagger": "^6.2.1",
     "@nestjs/testing": "^9.4.0",
-    "@prisma/client": "^4.16.2",
+    "@prisma/client": "^5.10.2",
     "@testing-library/jest-dom": "5.17.0",
     "ast-types": "^0.14.2",
-    "axios": "^0.27.2",
+    "axios": "^0.28.0",
     "base-64": "^1.0.0",
     "camel-case": "4.1.2",
     "class-transformer": "^0.5.1",

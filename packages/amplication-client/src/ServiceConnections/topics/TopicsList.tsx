@@ -9,7 +9,7 @@ import {
   MessagePattern,
   Topic,
 } from "../../models";
-import { topicsOfBroker } from "./queries/topicsQueries";
+import { GET_TOPICS_OF_BROKER } from "./queries/topicsQueries";
 import ServiceTopicPanel from "./ServiceTopicPanel";
 import { useTracking } from "../../util/analytics";
 import "./TopicsList.scss";
@@ -21,7 +21,7 @@ type Props = {
   messagePatterns: MessagePattern[];
 };
 type TData = {
-  Topics: Topic[];
+  topics: Topic[];
 };
 type messagePatternDictionary = {
   [topicId: string]: EnumMessagePatternConnectionOptions;
@@ -32,7 +32,7 @@ export default function TopicsList({
   messagePatterns,
 }: Props) {
   const { trackEvent } = useTracking();
-  const { data } = useQuery<TData>(topicsOfBroker, {
+  const { data } = useQuery<TData>(GET_TOPICS_OF_BROKER, {
     fetchPolicy: "no-cache",
     variables: { messageBrokerId },
     skip: !messageBrokerId,
@@ -60,13 +60,13 @@ export default function TopicsList({
   }
 
   return data ? (
-    data.Topics.length ? (
+    data.topics.length ? (
       <FieldArray
         validateOnChange
         name="patterns"
         render={({ replace }) => (
           <div className="topics-list">
-            {data.Topics.map((topic, i) => (
+            {data.topics.map((topic, i) => (
               <ServiceTopicPanel
                 enabled={enabled}
                 key={i}

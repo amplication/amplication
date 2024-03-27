@@ -1,6 +1,7 @@
 import {
   CircularProgress,
   EnumFlexItemMargin,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   List,
@@ -26,9 +27,10 @@ const DATE_CREATED_FIELD = "createdAt";
 
 type Props = {
   entityId: string;
+  entityName: string;
 };
 
-const EntityFieldList = React.memo(({ entityId }: Props) => {
+const EntityFieldList = React.memo(({ entityId, entityName }: Props) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
 
@@ -79,6 +81,7 @@ const EntityFieldList = React.memo(({ entityId }: Props) => {
 
   return (
     <>
+      <Text textColor={EnumTextColor.Primary}>{`${entityName} entity`}</Text>
       <TabContentTitle title="Entity Fields" subTitle="" />
       <SearchField
         label="search"

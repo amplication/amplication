@@ -105,14 +105,18 @@ export function getImportableNames() {
 
 export function createDTOModule(
   dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
-  dtoNameToPath: Record<string, string>
+  dtoNameToPath: Record<string, string>,
+  dtoPath: string = undefined,
+  shouldAddAutoGenerationComment = true
 ): Module {
   try {
-    const file = createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath);
-    addAutoGenerationComment(file);
+    const path = dtoPath || dtoNameToPath[dto.id.name];
+
+    const file = createDTOFile(dto, path, dtoNameToPath);
+    shouldAddAutoGenerationComment && addAutoGenerationComment(file);
     return {
       code: print(file).code,
-      path: dtoNameToPath[dto.id.name],
+      path: path,
     };
   } catch (error) {
     logger.info(error);

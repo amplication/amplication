@@ -10,6 +10,7 @@
         "{projectRoot}/package.json",
         "{projectRoot}/package-lock.json"
       ],
+      "cache": false,
       "outputs": ["{projectRoot}/node_modules"],
       "options": {
         "commands": ["npm ci"],

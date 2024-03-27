@@ -20,7 +20,7 @@ const useTopic = (topicId: string) => {
         const deletedTopicId = data.deleteTopic.id;
         cache.modify({
           fields: {
-            Topics(existingTopicRefs, { readField }) {
+            topics(existingTopicRefs, { readField }) {
               return existingTopicRefs.filter(
                 (topicRef: Reference) =>
                   deletedTopicId !== readField("id", topicRef)

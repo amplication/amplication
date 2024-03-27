@@ -8,44 +8,14 @@
     }
   }
 
-  &--horizontal {
-    .amp-form__content {
-      width: var(--form-horizontal-width);
+  .text-input,
+  .select-field {
+    min-width: var(--form-field-long);
+  }
 
-      @media only screen and (max-width: $breakpoint-desktop) {
-        width: auto;
-        .input-label {
-          flex-direction: column;
-        }
-      }
-
-      .input-label-value {
-        @include labelHorizontal;
-      }
-
-      .input-label {
-        display: flex !important;
-        justify-content: space-between;
-
-        .input-label-value {
-          width: var(--form-horizontal-label-width);
-        }
-
-        & > :last-child {
-          flex: 1;
-        }
-      }
-
-      .toggle-field--with-label {
-        label {
-          flex-direction: row;
-
-          .input-label-value {
-            width: var(--form-horizontal-label-width);
-            margin-left: 0;
-          }
-        }
-      }
+  .text-input {
+    &--textarea {
+      width: 100%;
     }
   }
 }

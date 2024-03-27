@@ -8,7 +8,6 @@ import {
   VerticalNavigationItem,
 } from "@amplication/ui/design-system";
 import React, { useContext, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
@@ -45,9 +44,7 @@ export const ModuleActionLinkList = React.memo(
           },
         },
       });
-    }, [moduleId, findModuleActions]);
-
-    const history = useHistory();
+    }, [moduleId, findModuleActions, resourceId]);
 
     const errorMessage = formatError(errorLoading);
 
@@ -57,10 +54,10 @@ export const ModuleActionLinkList = React.memo(
           <CircularProgress />
         ) : (
           <VerticalNavigation>
-            {data?.ModuleActions.map((action) => (
+            {data?.moduleActions.map((action) => (
               <VerticalNavigationItem
                 key={action.id}
-                icon="git_commit"
+                icon="api"
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/actions/${action.id}`}
               >
                 <FlexItem

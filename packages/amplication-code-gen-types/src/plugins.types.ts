@@ -3,6 +3,8 @@ import { BuildLogger } from "./build-logger";
 import {
   clientDirectories,
   DTOs,
+  EntityActionsMap,
+  ModuleActionsAndDtosMap,
   ModuleMap,
   serverDirectories,
 } from "./code-gen-types";
@@ -59,6 +61,8 @@ export interface DsgContext extends DSGResourceData {
   userNameFieldName: string;
   userPasswordFieldName: string;
   userRolesFieldName: string;
+  entityActionsMap: EntityActionsMap;
+  moduleActionsAndDtoMap: ModuleActionsAndDtosMap;
 }
 
 export type PluginWrapper = (args: EventParams, func: () => void) => any;

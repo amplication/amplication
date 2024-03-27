@@ -4,8 +4,8 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { EnumResourceType, PrismaService } from "../../prisma";
 import { BillingService } from "../billing/billing.service";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { Project, Resource, Workspace } from "../../models";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_PROJECT_ID_1 = "exampleProjectId_1";
@@ -100,12 +100,7 @@ describe("SubscriptionService", () => {
           })),
         },
         { provide: BillingService, useValue: billingServiceMock },
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            track: jest.fn(),
-          })),
-        },
+        MockedSegmentAnalyticsProvider(),
       ],
     }).compile();
 

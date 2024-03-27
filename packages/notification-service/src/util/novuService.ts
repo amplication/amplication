@@ -78,9 +78,10 @@ export class NovuService {
     subscriberId: string;
     eventName: string;
     payload?: { [key: string]: any };
+    overrides?: { [key: string]: any };
   }) {
     try {
-      const { subscriberId, eventName, payload } = obj;
+      const { subscriberId, eventName, payload, overrides } = obj;
       if (!subscriberId)
         throw Error("subscriberId is missing in triggerNotification !");
 
@@ -94,6 +95,7 @@ export class NovuService {
             subscriberId,
           },
           payload: payload,
+          overrides: overrides,
         }
       );
 
