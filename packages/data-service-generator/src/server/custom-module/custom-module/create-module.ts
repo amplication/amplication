@@ -24,9 +24,9 @@ const moduleTemplatePath = require.resolve("./module.template.ts");
 
 export async function createCustomModule(
   customModuleName: string,
-  entityServiceModule: string,
-  entityControllerModule: string | undefined,
-  entityResolverModule: string | undefined
+  customModuleServiceModule: string,
+  customModuleControllerModule: string | undefined,
+  customModuleResolverModule: string | undefined
 ): Promise<ModuleMap> {
   const moduleTemplate = await readFile(moduleTemplatePath);
   const controllerId = createControllerId(customModuleName);
@@ -48,9 +48,9 @@ export async function createCustomModule(
   await moduleMap.merge(
     await createModule({
       customModuleName,
-      entityServiceModule,
-      entityControllerModule,
-      entityResolverModule,
+      customModuleServiceModule,
+      customModuleControllerModule,
+      customModuleResolverModule,
       controllerId,
       serviceId,
       resolverId,
@@ -74,9 +74,9 @@ export async function createCustomModule(
 
 async function createModule({
   customModuleName,
-  entityServiceModule,
-  entityControllerModule,
-  entityResolverModule,
+  customModuleServiceModule,
+  customModuleControllerModule,
+  customModuleResolverModule,
   controllerId,
   serviceId,
   resolverId,
@@ -92,30 +92,30 @@ async function createModule({
 
   const serviceImport = importNames(
     [serviceId],
-    relativeImportPath(modulePath, entityServiceModule)
+    relativeImportPath(modulePath, customModuleServiceModule)
   );
 
-  const controllerImport = entityControllerModule
+  const controllerImport = customModuleControllerModule
     ? importNames(
         [controllerId],
-        relativeImportPath(modulePath, entityControllerModule)
+        relativeImportPath(modulePath, customModuleControllerModule)
       )
     : undefined;
 
   // if we are not generating the controller, remove the controller property
-  if (!entityControllerModule) {
+  if (!customModuleControllerModule) {
     removeIdentifierFromModuleDecorator(template, controllerId);
   }
 
-  const resolverImport = entityResolverModule
+  const resolverImport = customModuleResolverModule
     ? importNames(
         [resolverId],
-        relativeImportPath(modulePath, entityResolverModule)
+        relativeImportPath(modulePath, customModuleResolverModule)
       )
     : undefined;
 
   //if we are not generating the resolver, remove it from the providers list
-  if (!entityResolverModule) {
+  if (!customModuleResolverModule) {
     removeIdentifierFromModuleDecorator(template, resolverId);
   }
 
@@ -140,6 +140,6 @@ async function createModule({
   return moduleMap;
 }
 
-function createModuleId(entityType: string): namedTypes.Identifier {
-  return builders.identifier(`${entityType}Module`);
+function createModuleId(customModuleName: string): namedTypes.Identifier {
+  return builders.identifier(`${customModuleName}Module`);
 }

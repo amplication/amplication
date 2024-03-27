@@ -275,9 +275,9 @@ export interface CreateEntityModuleParams extends EventParams {
 
 export interface CreateCustomModuleModuleParams extends EventParams {
   customModuleName: string;
-  entityServiceModule: string;
-  entityControllerModule: string | undefined;
-  entityResolverModule: string | undefined;
+  customModuleServiceModule: string;
+  customModuleControllerModule: string | undefined;
+  customModuleResolverModule: string | undefined;
   controllerId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
   resolverId: namedTypes.Identifier;
