@@ -68,6 +68,8 @@ export type BlockPendingChange = {
   resource: Resource;
 };
 
+export type SettingsFilterOperator = "AND" | "OR";
+
 @Injectable()
 export class BlockService {
   constructor(
@@ -329,8 +331,21 @@ export class BlockService {
   async findManyByBlockTypeAndSettings<T extends IBlock>(
     args: FindManyBlockTypeArgs,
     blockType: EnumBlockType,
-    settingsFilter?: JsonFilter
+    settingsFilter?: JsonFilter | JsonFilter[],
+    settingsFilterOperator?: SettingsFilterOperator
   ): Promise<T[]> {
+    const filter = {
+      [settingsFilterOperator || "OR"]: Array.isArray(settingsFilter)
+        ? settingsFilter.map((filter) => ({
+            settings: filter,
+          }))
+        : [
+            {
+              settings: settingsFilter,
+            },
+          ],
+    };
+
     const blocks = this.prisma.block.findMany({
       ...args,
       where: {
@@ -340,7 +355,7 @@ export class BlockService {
         versions: {
           some: {
             versionNumber: CURRENT_VERSION_NUMBER,
-            settings: settingsFilter,
+            ...filter,
           },
         },
       },

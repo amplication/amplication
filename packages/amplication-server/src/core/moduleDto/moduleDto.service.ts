@@ -75,6 +75,53 @@ export class ModuleDtoService extends BlockTypeService<
     return super.findMany(args);
   }
 
+  async findMany(args: FindManyModuleDtoArgs): Promise<ModuleDto[]> {
+    const { includeCustomDtos, includeDefaultDtos, ...rest } = args.where || {};
+
+    const prismaArgs = {
+      ...args,
+      where: {
+        ...rest,
+      },
+    };
+
+    //when undefined the default value is true
+    const includeCustomDtosBoolean = includeCustomDtos !== false;
+    const includeDefaultDtosBoolean = includeDefaultDtos !== false;
+
+    if (includeCustomDtosBoolean && includeDefaultDtosBoolean) {
+      return super.findMany(prismaArgs);
+    } else if (includeCustomDtosBoolean) {
+      return super.findManyBySettings(prismaArgs, [
+        {
+          path: ["dtoType"],
+          equals: EnumModuleDtoType.Custom,
+        },
+        {
+          path: ["dtoType"],
+          equals: EnumModuleDtoType.CustomEnum,
+        },
+      ]);
+    } else if (includeDefaultDtosBoolean) {
+      return super.findManyBySettings(
+        prismaArgs,
+        [
+          {
+            path: ["dtoType"],
+            not: EnumModuleDtoType.Custom,
+          },
+          {
+            path: ["dtoType"],
+            not: EnumModuleDtoType.CustomEnum,
+          },
+        ],
+        "AND"
+      );
+    } else {
+      return [];
+    }
+  }
+
   validateModuleDtoName(moduleDtoName: string): void {
     const regex = /^[a-zA-Z0-9._-]{1,249}$/;
     if (!regex.test(moduleDtoName)) {

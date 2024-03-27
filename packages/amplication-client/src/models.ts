@@ -1179,6 +1179,8 @@ export type ModuleActionWhereInput = {
   description?: InputMaybe<StringFilter>;
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
+  includeCustomActions?: InputMaybe<Scalars['Boolean']['input']>;
+  includeDefaultActions?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
   resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -1283,6 +1285,8 @@ export type ModuleDtoWhereInput = {
   description?: InputMaybe<StringFilter>;
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
+  includeCustomDtos?: InputMaybe<Scalars['Boolean']['input']>;
+  includeDefaultDtos?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
   resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
