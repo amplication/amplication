@@ -9,9 +9,7 @@ import {
 } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import {
-  Entity,
   Module,
-  EnumEntityAction,
   ModuleMap,
   CreateCustomModuleControllerParams,
 } from "@amplication/code-gen-types";
@@ -30,13 +28,6 @@ import { createControllerCustomActionMethods } from "../../resource/controller/c
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports";
 import { relativeImportPath } from "../../../utils/module";
 import { getImportableDTOs } from "../../resource/dto/create-dto-module";
-
-export type MethodsIdsActionEntityTriplet = {
-  methodId: namedTypes.Identifier;
-  action: EnumEntityAction;
-  entity: Entity;
-};
-export const DATA_ID = builders.identifier("data");
 
 const controllerTemplatePath = require.resolve("./controller.template.ts");
 
@@ -62,7 +53,6 @@ export async function createCustomModuleControllerModules(
     RESOURCE: builders.stringLiteral(resource),
     CONTROLLER: controllerId,
     SERVICE: serviceId,
-    ENTITY_NAME: builders.stringLiteral(customModuleName),
     SWAGGER_API_AUTH_FUNCTION: getSwaggerAuthDecorationIdForClass(authProvider),
   };
 
@@ -149,6 +139,8 @@ async function createControllerModule({
   return moduleMap;
 }
 
-export function createControllerId(entityType: string): namedTypes.Identifier {
-  return builders.identifier(`${entityType}Controller`);
+export function createControllerId(
+  customModuleName: string
+): namedTypes.Identifier {
+  return builders.identifier(`${customModuleName}Controller`);
 }
