@@ -15,9 +15,22 @@ $modal-width: 400px;
     }
   }
 
+  &__go-to {
+    margin-bottom: var(--default-spacing);
+  }
+
   &__header {
     padding: var(--default-spacing);
     background: var(--gray-full);
+
+    .amp-button {
+      color: var(--gray-20);
+      font-size: var(--subtle-font-size);
+
+      &:hover {
+        color: var(--gray-base);
+      }
+    }
   }
 
   &__sub_header {
