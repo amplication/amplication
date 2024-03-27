@@ -248,4 +248,19 @@ export class GitCli {
   async resetState() {
     await this.git.reset(ResetMode.HARD).clean(CleanOptions.FORCE);
   }
+
+  async getShortStat(): Promise<string> {
+    const currentRef = (await this.git.raw(["rev-parse", "HEAD"])).trim();
+    const prevRef = (
+      await this.git.raw(["rev-parse", `${currentRef}^`])
+    ).trim();
+
+    const diffStat = (
+      await this.git.diff(["--shortstat", `${prevRef}..${currentRef}`])
+    ).trim();
+
+    this.logger.debug("get short stat", { currentRef, prevRef, diffStat });
+
+    return diffStat;
+  }
 }
