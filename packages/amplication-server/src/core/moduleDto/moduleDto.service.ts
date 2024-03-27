@@ -30,6 +30,8 @@ import { CreateModuleDtoEnumMemberArgs } from "./dto/CreateModuleDtoEnumMemberAr
 import { ModuleDtoEnumMember } from "./dto/ModuleDtoEnumMember";
 import { UpdateModuleDtoEnumMemberArgs } from "./dto/UpdateModuleDtoEnumMemberArgs";
 import { DeleteModuleDtoEnumMemberArgs } from "./dto/DeleteModuleDtoEnumMemberArgs";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingService } from "../billing/billing.service";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -56,10 +58,12 @@ export class ModuleDtoService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
+    protected readonly billingService: BillingService,
+    protected readonly logger: AmplicationLogger,
     private readonly prisma: PrismaService,
     private configService: ConfigService
   ) {
-    super(blockService);
+    super(blockService, billingService, logger);
 
     this.customActionsEnabled = Boolean(
       this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===

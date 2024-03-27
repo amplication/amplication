@@ -24,6 +24,8 @@ import { EnumModuleActionGqlOperation } from "./dto/EnumModuleActionGqlOperation
 import { EnumModuleActionRestVerb } from "./dto/EnumModuleActionRestVerb";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { BillingService } from "../billing/billing.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
@@ -39,10 +41,12 @@ export class ModuleActionService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
+    protected readonly billingService: BillingService,
+    protected readonly logger: AmplicationLogger,
     private readonly prisma: PrismaService,
     private configService: ConfigService
   ) {
-    super(blockService);
+    super(blockService, billingService, logger);
 
     this.customActionsEnabled = Boolean(
       this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===

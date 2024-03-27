@@ -27,6 +27,7 @@ import { createMainFile } from "./create-main/create-main-file";
 import { connectMicroservices } from "./connect-microservices/connect-microservices";
 import { createSecretsManager } from "./secrets-manager/create-secrets-manager";
 import { createCustomDtos } from "./resource/dto/custom-types/create-custom-dtos";
+import { createCustomModulesModules } from "./custom-module/create-custom-module";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -68,6 +69,9 @@ async function createServerInternal(
     dtoNameToPath
   );
 
+  await context.logger.info("Creating custom modules...");
+  const customModulesModules = await createCustomModulesModules(dtoNameToPath);
+
   await context.logger.info("Creating auth module...");
   const authModules = await createAuthModules();
 
@@ -90,6 +94,7 @@ async function createServerInternal(
   const appModuleInputModules = new ModuleMap(context.logger);
   await appModuleInputModules.mergeMany([
     resourcesModules,
+    customModulesModules,
     staticModules,
     secretsManagerModule,
   ]);
@@ -143,6 +148,7 @@ async function createServerInternal(
     gitIgnore,
     packageJsonModule,
     resourcesModules,
+    customModulesModules,
     dtoModules,
     swagger,
     appModule,

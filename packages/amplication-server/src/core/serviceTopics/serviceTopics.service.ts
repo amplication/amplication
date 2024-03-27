@@ -16,6 +16,7 @@ import {
   MessagePatternCreateInput,
 } from "@amplication/code-gen-types/models";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingService } from "../billing/billing.service";
 
 @Injectable()
 export class ServiceTopicsService extends BlockTypeService<
@@ -31,9 +32,10 @@ export class ServiceTopicsService extends BlockTypeService<
     @Inject(forwardRef(() => ResourceService))
     private resourceService: ResourceService,
     protected readonly blockService: BlockService,
-    @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
+    protected readonly billingService: BillingService,
+    @Inject(AmplicationLogger) protected readonly logger: AmplicationLogger
   ) {
-    super(blockService);
+    super(blockService, billingService, logger);
   }
 
   //check if the connected message broker is a resource of type "MessageBroker" in the current project

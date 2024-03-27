@@ -17,6 +17,12 @@ export {
   EnumModuleActionRestInputSource,
 } from "./models";
 
+export enum EnumModuleDtoDecoratorType {
+  ObjectType = "ObjectType",
+  InputType = "InputType",
+  ArgsType = "ArgsType",
+}
+
 export type ServiceSettings = Omit<
   BlockOmittedFields<models.ServiceSettings>,
   "id"
@@ -329,6 +335,7 @@ export type ModuleDto = Omit<
   description: string;
   dtoType: keyof typeof models.EnumModuleDtoType;
   properties?: ModuleDtoProperty[];
+  decorators?: EnumModuleDtoDecoratorType[];
 };
 
 export type ModuleActionDefaultTypesNestedOnly = Extract<
