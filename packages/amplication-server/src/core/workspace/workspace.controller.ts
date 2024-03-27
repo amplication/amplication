@@ -3,7 +3,10 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { WorkspaceService } from "./workspace.service";
 import { ApiTags } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
-import { CreateWorkspacesResourcesDefaultCustomActionsMigrationInput } from "./dto/CreateWorkspacesResourcesDefaultCustomActionsMigrationInput";
+import {
+  CreateWorkspacesResourcesDefaultCustomActionsMigrationInput,
+  CreateWorkspacesResourcesDefaultCustomDtosMigrationInput,
+} from "./dto/CreateWorkspacesResourcesDefaultCustomActionsMigrationInput";
 
 @ApiTags("workspace")
 @Controller("migrate-custom-actions")
@@ -56,6 +59,26 @@ export class WorkspaceController {
       return;
     }
     return this.workspaceService.dataMigrateWorkspacesResourcesCustomActionsFix(
+      quantity
+    );
+  }
+
+  @Post(`createWorkspacesResourcesDefaultCustomDtosMigration/:token`)
+  async createWorkspacesResourcesDefaultCustomDtosMigration(
+    @Param("token") token: string,
+    @Body()
+    data: CreateWorkspacesResourcesDefaultCustomDtosMigrationInput
+  ): Promise<boolean> {
+    this.logger.info("createWorkspacesResourcesDefaultCustomDtosMigration....");
+    const { quantity } = data;
+
+    if (
+      this.configService.get<string>("CUSTOM_DTO_MIGRATION_TOKEN") !== token
+    ) {
+      this.logger.error("InvalidToken, process aborted");
+      return;
+    }
+    return this.workspaceService.dataMigrateWorkspacesResourcesCustomDtos(
       quantity
     );
   }
