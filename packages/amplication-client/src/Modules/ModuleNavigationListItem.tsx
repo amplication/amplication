@@ -5,17 +5,20 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { ModuleDtoLinkList } from "../ModuleDto/ModuleDtoLinkList";
 import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
+import { ModulesFilter } from "./ModuleNavigationList";
 
 type Props = {
   module: models.Module;
   onDelete?: () => void;
   onError: (error: Error) => void;
+  filters: ModulesFilter;
 };
 
 export const ModuleNavigationListItem = ({
   module,
   onDelete,
   onError,
+  filters,
 }: Props) => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
@@ -29,34 +32,39 @@ export const ModuleNavigationListItem = ({
           expandable
           childItems={
             <>
-              <VerticalNavigationItem
-                expandable
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/actions`}
-                icon="api"
-                childItems={
-                  <ModuleActionLinkList
-                    resourceId={currentResource?.id}
-                    moduleId={module.id}
-                  />
-                }
-              >
-                Actions
-              </VerticalNavigationItem>
-              {REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED === "true" && (
+              {filters.showActions && (
                 <VerticalNavigationItem
                   expandable
-                  to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/dtos`}
-                  icon="zap"
+                  to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/actions`}
+                  icon="api"
                   childItems={
-                    <ModuleDtoLinkList
+                    <ModuleActionLinkList
                       resourceId={currentResource?.id}
                       moduleId={module.id}
+                      filters={filters}
                     />
                   }
                 >
-                  DTOs
+                  Actions
                 </VerticalNavigationItem>
               )}
+              {REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED === "true" &&
+                filters.showDTOs && (
+                  <VerticalNavigationItem
+                    expandable
+                    to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/dtos`}
+                    icon="zap"
+                    childItems={
+                      <ModuleDtoLinkList
+                        resourceId={currentResource?.id}
+                        moduleId={module.id}
+                        filters={filters}
+                      />
+                    }
+                  >
+                    DTOs
+                  </VerticalNavigationItem>
+                )}
             </>
           }
         >

@@ -232,7 +232,10 @@ export type Build = {
   commitId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   createdBy?: Maybe<User>;
+  filesChanged?: Maybe<Scalars['Float']['output']>;
   id: Scalars['String']['output'];
+  linesOfCodeAdded?: Maybe<Scalars['Float']['output']>;
+  linesOfCodeDeleted?: Maybe<Scalars['Float']['output']>;
   message?: Maybe<Scalars['String']['output']>;
   resource?: Maybe<Resource>;
   resourceId: Scalars['String']['output'];
@@ -903,6 +906,13 @@ export enum EnumSubscriptionStatus {
   Trailing = 'Trailing'
 }
 
+export enum EnumTimeGroup {
+  Day = 'Day',
+  Month = 'Month',
+  Week = 'Week',
+  Year = 'Year'
+}
+
 export enum EnumUserActionStatus {
   Completed = 'Completed',
   Failed = 'Failed',
@@ -930,6 +940,13 @@ export type Environment = {
   resource: Resource;
   resourceId: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type EvaluationInsights = {
+  codeQuality: Scalars['Int']['output'];
+  costSaved: Scalars['Int']['output'];
+  loc: Scalars['Int']['output'];
+  timeSaved: Scalars['Int']['output'];
 };
 
 export type GitGetInstallationUrlInput = {
@@ -1063,6 +1080,13 @@ export type MessagePatternCreateInput = {
   type: EnumMessagePatternConnectionOptions;
 };
 
+export type Metrics = {
+  count: Scalars['Int']['output'];
+  month: Scalars['Int']['output'];
+  timeGroup: Scalars['Int']['output'];
+  year: Scalars['Int']['output'];
+};
+
 export type Module = IBlock & {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -1155,6 +1179,8 @@ export type ModuleActionWhereInput = {
   description?: InputMaybe<StringFilter>;
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
+  includeCustomActions?: InputMaybe<Scalars['Boolean']['input']>;
+  includeDefaultActions?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
   resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -1259,6 +1285,8 @@ export type ModuleDtoWhereInput = {
   description?: InputMaybe<StringFilter>;
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
+  includeCustomDtos?: InputMaybe<Scalars['Boolean']['input']>;
+  includeDefaultDtos?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
   resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -2125,6 +2153,8 @@ export type Query = {
   entity?: Maybe<Entity>;
   /** Get the changes to apply to the model in order to break a resource into microservices */
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
+  getEvaluationInsights: EvaluationInsights;
+  getUsageInsights: UsageInsightsResult;
   gitGroups: PaginatedGitGroup;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
@@ -2234,6 +2264,22 @@ export type QueryEntityArgs = {
 
 export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
   userActionId: Scalars['String']['input'];
+};
+
+
+export type QueryGetEvaluationInsightsArgs = {
+  endDate: Scalars['DateTime']['input'];
+  projectIds: Array<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  timeGroup?: InputMaybe<EnumTimeGroup>;
+};
+
+
+export type QueryGetUsageInsightsArgs = {
+  endDate: Scalars['DateTime']['input'];
+  projectIds: Array<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  timeGroup?: InputMaybe<EnumTimeGroup>;
 };
 
 
@@ -2833,6 +2879,17 @@ export type TopicWhereInput = {
 export type UpdateAccountInput = {
   firstName?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UsageInsights = {
+  results: Array<Metrics>;
+};
+
+export type UsageInsightsResult = {
+  builds: UsageInsights;
+  entities: UsageInsights;
+  moduleActions: UsageInsights;
+  plugins: UsageInsights;
 };
 
 export type User = {

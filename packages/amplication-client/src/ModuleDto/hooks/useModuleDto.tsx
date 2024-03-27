@@ -52,11 +52,21 @@ type TUpdatePropertyData = {
 };
 
 const useModuleDto = () => {
-  const { addBlock, addEntity, currentResource } = useContext(AppContext);
+  const {
+    addBlock,
+    addEntity,
+    currentResource,
+    currentWorkspace,
+    currentProject,
+  } = useContext(AppContext);
 
   const [availableDtosDictionary, setAvailableDtosDictionary] = useState<
     Record<string, models.ModuleDto>
   >({});
+
+  const getModuleDtoUrl = (dto: models.ModuleDto) => {
+    return `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${dto.parentBlockId}/dtos/${dto.id}`;
+  };
 
   const [
     deleteModuleDto,
@@ -310,6 +320,7 @@ const useModuleDto = () => {
     createModuleDtoEnumData,
     createModuleDtoEnumError,
     createModuleDtoEnumLoading,
+    getModuleDtoUrl,
   };
 };
 

@@ -16,6 +16,8 @@ import { ModuleUpdateInput } from "./dto/ModuleUpdateInput";
 import { UpdateModuleArgs } from "./dto/UpdateModuleArgs";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { BillingService } from "../billing/billing.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
 
@@ -33,11 +35,13 @@ export class ModuleService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
+    protected readonly billingService: BillingService,
+    protected readonly logger: AmplicationLogger,
     private readonly moduleActionService: ModuleActionService,
     private readonly moduleDtoService: ModuleDtoService,
     private configService: ConfigService
   ) {
-    super(blockService);
+    super(blockService, billingService, logger);
 
     this.customActionsEnabled = Boolean(
       this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===

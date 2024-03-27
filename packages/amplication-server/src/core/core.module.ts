@@ -28,10 +28,12 @@ import { ModuleActionModule } from "./moduleAction/moduleAction.module";
 import { ModuleDtoModule } from "./moduleDto/moduleDto.module";
 import { AdministratorModule } from "./administrator/administrator.module";
 import { GptModule } from "./gpt/gpt.module";
+import { UsageInsightsModule } from "./UsageInsights/usageInsights.module";
 
 @Module({
   imports: [
     AdministratorModule,
+    UsageInsightsModule,
     AccountModule,
     WorkspaceModule,
     ResourceModule,
@@ -64,6 +66,7 @@ import { GptModule } from "./gpt/gpt.module";
   ],
   exports: [
     AccountModule,
+    UsageInsightsModule,
     WorkspaceModule,
     ResourceModule,
     UserModule,

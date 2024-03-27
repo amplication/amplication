@@ -20,6 +20,9 @@ import { kebabCase } from "lodash";
 import { EnumModuleDtoPropertyType } from "../moduleDto/dto/propertyTypes/EnumModuleDtoPropertyType";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { BillingService } from "../billing/billing.service";
+import { billingServiceGetBooleanEntitlementMock } from "../block/blockType.service.spec";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
@@ -198,6 +201,20 @@ describe("ModuleActionService", () => {
             update: blockServiceUpdateMock,
             findManyByBlockTypeAndSettings:
               blockServiceFindManyByBlockTypeAndSettingsMock,
+          })),
+        },
+        {
+          provide: BillingService,
+          useClass: jest.fn(() => ({
+            getBooleanEntitlement: billingServiceGetBooleanEntitlementMock,
+          })),
+        },
+        {
+          provide: AmplicationLogger,
+          useClass: jest.fn(() => ({
+            error: jest.fn(() => {
+              return null;
+            }),
           })),
         },
         {

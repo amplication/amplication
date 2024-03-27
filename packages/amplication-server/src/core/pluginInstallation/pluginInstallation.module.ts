@@ -6,6 +6,7 @@ import { BlockModule } from "../block/block.module";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { ResourceModule } from "../resource/resource.module";
 import { UserModule } from "../user/user.module";
+import { BillingService } from "../billing/billing.service";
 @Module({
   imports: [
     UserModule,
@@ -16,6 +17,7 @@ import { UserModule } from "../user/user.module";
   providers: [
     PluginInstallationService,
     PluginOrderService,
+    BillingService,
     PluginInstallationResolver,
   ],
   exports: [

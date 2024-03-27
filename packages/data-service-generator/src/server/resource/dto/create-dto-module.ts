@@ -162,8 +162,11 @@ export function getImportableDTOs(
 
 export function createDTOModulePath(
   entityDirectory: string,
-  dtoName: string
+  dtoName: string,
+  isCustomDto = false
 ): string {
   const { serverDirectories } = DsgContext.getInstance;
-  return `${serverDirectories.srcDirectory}/${entityDirectory}/base/${dtoName}.ts`;
+  let basePath = "base/";
+  if (isCustomDto) basePath = "";
+  return `${serverDirectories.srcDirectory}/${entityDirectory}/${basePath}${dtoName}.ts`;
 }

@@ -30,6 +30,8 @@ import { CreateModuleDtoEnumMemberArgs } from "./dto/CreateModuleDtoEnumMemberAr
 import { ModuleDtoEnumMember } from "./dto/ModuleDtoEnumMember";
 import { UpdateModuleDtoEnumMemberArgs } from "./dto/UpdateModuleDtoEnumMemberArgs";
 import { DeleteModuleDtoEnumMemberArgs } from "./dto/DeleteModuleDtoEnumMemberArgs";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingService } from "../billing/billing.service";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -56,10 +58,12 @@ export class ModuleDtoService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
+    protected readonly billingService: BillingService,
+    protected readonly logger: AmplicationLogger,
     private readonly prisma: PrismaService,
     private configService: ConfigService
   ) {
-    super(blockService);
+    super(blockService, billingService, logger);
 
     this.customActionsEnabled = Boolean(
       this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===
@@ -73,6 +77,53 @@ export class ModuleDtoService extends BlockTypeService<
     //todo: extend query to return shared dtos from other resources in the project
 
     return super.findMany(args);
+  }
+
+  async findMany(args: FindManyModuleDtoArgs): Promise<ModuleDto[]> {
+    const { includeCustomDtos, includeDefaultDtos, ...rest } = args.where || {};
+
+    const prismaArgs = {
+      ...args,
+      where: {
+        ...rest,
+      },
+    };
+
+    //when undefined the default value is true
+    const includeCustomDtosBoolean = includeCustomDtos !== false;
+    const includeDefaultDtosBoolean = includeDefaultDtos !== false;
+
+    if (includeCustomDtosBoolean && includeDefaultDtosBoolean) {
+      return super.findMany(prismaArgs);
+    } else if (includeCustomDtosBoolean) {
+      return super.findManyBySettings(prismaArgs, [
+        {
+          path: ["dtoType"],
+          equals: EnumModuleDtoType.Custom,
+        },
+        {
+          path: ["dtoType"],
+          equals: EnumModuleDtoType.CustomEnum,
+        },
+      ]);
+    } else if (includeDefaultDtosBoolean) {
+      return super.findManyBySettings(
+        prismaArgs,
+        [
+          {
+            path: ["dtoType"],
+            not: EnumModuleDtoType.Custom,
+          },
+          {
+            path: ["dtoType"],
+            not: EnumModuleDtoType.CustomEnum,
+          },
+        ],
+        "AND"
+      );
+    } else {
+      return [];
+    }
   }
 
   validateModuleDtoName(moduleDtoName: string): void {

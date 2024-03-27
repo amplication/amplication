@@ -86,7 +86,7 @@ const NewModuleChild = <T,>({
           <Formik
             initialValues={initialValueWithModuleId}
             validate={(values) => validate(values, validationSchema)}
-            onSubmit={handleSubmit}
+            onSubmit={() => {}}
           >
             {(formik) => {
               const handlers = {
@@ -112,6 +112,9 @@ const NewModuleChild = <T,>({
                   />
                   <Button
                     type="submit"
+                    onClick={() => {
+                      handleSubmit(formik.values);
+                    }}
                     buttonStyle={EnumButtonStyle.Primary}
                     disabled={!formik.isValid || loading}
                   >
