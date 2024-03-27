@@ -107,11 +107,12 @@ export function createDTOModule(
   dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
   dtoNameToPath: Record<string, string>,
   dtoPath: string = undefined,
-  shouldAddAutoGenerationComment = true
+  shouldAddAutoGenerationComment = true,
+  moduleDtoId?: string
 ): Module {
   try {
-    const path = dtoPath || dtoNameToPath[dto.id.name];
-
+    const dtoNameToPathIndex = moduleDtoId || dto.id.name;
+    const path = dtoPath || dtoNameToPath[dtoNameToPathIndex];
     const file = createDTOFile(dto, path, dtoNameToPath);
     shouldAddAutoGenerationComment && addAutoGenerationComment(file);
     return {
