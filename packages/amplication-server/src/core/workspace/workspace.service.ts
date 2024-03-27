@@ -1307,7 +1307,7 @@ export class WorkspaceService {
         }
       } catch (error) {
         this.logger.error(
-          `Failed to run createResourceCustomActions, error: ${error} resource: ${resource.id}`
+          `Failed to run createResourceCustomDtos, error: ${error} resource: ${resource.id}`
         );
 
         return hasChanges;
