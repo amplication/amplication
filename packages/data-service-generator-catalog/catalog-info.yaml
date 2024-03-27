@@ -1,0 +1,274 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: data-service-generator-catalog
+  namespace: default # From plugin configuration
+  description: The service example protected by SAML authentication
+  annotations:
+    github.com/project-slug: overbit/amplication # From git provider connected
+  tags:
+    - nodejs
+  links:
+    # - url: https://data-service-generator-catalog-admin.amplication.com
+    #   title: Admin Dashboard
+    #   icon: dashboard
+    #   type: admin-dashboard
+    - url: https://data-service-generator-catalog.amplication.com
+      title: Service
+      type: api
+
+spec:
+  type: service
+  lifecycle: production
+  owner: amplication-team # From plugin configuration
+  system: default # From plugin configuration. The system that the component belongs to, e.g. artist-engagement-portal
+  # dependsOn:
+  # - resource:default/artists-db # From plugin configuration
+  providesApis:
+    - data-service-generator-catalog-rest
+    - data-service-generator-catalog-graphql
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: -service-generator-catalog-graphql
+spec:
+  type: openapi
+  lifecycle: production
+  owner: amplication-team # From plugin configuration
+  system: default # From plugin configuration. The system that the component belongs to, e.g. artist-engagement-portal
+  definition:
+    $text: https://data-service-generator-catalog.amplication.com/api-json
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: -service-generator-catalog-graphql
+spec:
+  type: graphql
+  lifecycle: production
+  owner: amplication-team # From plugin configuration
+  system: default # From plugin configuration. The system that the component belongs to, e.g. artist-engagement-portal
+  definition: |
+    # ------------------------------------------------------
+    # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+    # ------------------------------------------------------
+
+    input BooleanFilter {
+      equals: Boolean
+      not: Boolean
+    }
+
+    input BooleanNullableFilter {
+      equals: Boolean
+      not: Boolean
+    }
+
+    enum CodeGeneratorVersionStrategy {
+      LatestMajor
+      LatestMinor
+      Specific
+    }
+
+    input Credentials {
+      password: String!
+      username: String!
+    }
+
+    """
+    A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+    """
+    scalar DateTime
+
+    input DateTimeNullableFilter {
+      equals: DateTime
+      gt: DateTime
+      gte: DateTime
+      in: [DateTime!]
+      lt: DateTime
+      lte: DateTime
+      not: DateTime
+      notIn: [DateTime!]
+    }
+
+    input GetCodeGeneratorVersionInput {
+      codeGeneratorStrategy: CodeGeneratorVersionStrategy!
+      codeGeneratorVersion: String
+    }
+
+    """
+    The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+    """
+    scalar JSON
+
+    type MetaQueryPayload {
+      count: Float!
+    }
+
+    type Mutation {
+      createUser(data: UserCreateInput!): User!
+      createVersion(data: VersionCreateInput!): Version!
+      deleteUser(where: UserWhereUniqueInput!): User!
+      deleteVersion(where: VersionWhereUniqueInput!): Version!
+      login(credentials: Credentials!): UserInfo!
+      sync: Boolean!
+      updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User!
+      updateVersion(data: VersionUpdateInput!, where: VersionWhereUniqueInput!): Version!
+    }
+
+    type Query {
+      _usersMeta(where: UserWhereInput): MetaQueryPayload!
+      _versionsMeta(where: VersionWhereInput): MetaQueryPayload!
+      getCodeGeneratorVersion(GetCodeGeneratorVersionInput: GetCodeGeneratorVersionInput!): Version!
+      user(where: UserWhereUniqueInput!): User
+      userInfo: UserInfo!
+      users(orderBy: [UserOrderByInput!], skip: Float, take: Float, where: UserWhereInput): [User!]!
+      version(where: VersionWhereUniqueInput!): Version
+      versions(orderBy: [VersionOrderByInput!], skip: Float, take: Float, where: VersionWhereInput): [Version!]!
+    }
+
+    enum QueryMode {
+      Default
+      Insensitive
+    }
+
+    enum SortOrder {
+      Asc
+      Desc
+    }
+
+    input StringFilter {
+      contains: String
+      endsWith: String
+      equals: String
+      gt: String
+      gte: String
+      in: [String!]
+      lt: String
+      lte: String
+      mode: QueryMode
+      not: String
+      notIn: [String!]
+      startsWith: String
+    }
+
+    input StringNullableFilter {
+      contains: String
+      endsWith: String
+      equals: String
+      gt: String
+      gte: String
+      in: [String!]
+      lt: String
+      lte: String
+      mode: QueryMode
+      not: String
+      notIn: [String!]
+      startsWith: String
+    }
+
+    type User {
+      createdAt: DateTime!
+      firstName: String
+      id: String!
+      lastName: String
+      roles: JSON!
+      updatedAt: DateTime!
+      username: String!
+    }
+
+    input UserCreateInput {
+      firstName: String
+      lastName: String
+      password: String!
+      roles: JSON!
+      username: String!
+    }
+
+    type UserInfo {
+      accessToken: String
+      id: String!
+      roles: [String!]!
+      username: String!
+    }
+
+    input UserOrderByInput {
+      createdAt: SortOrder
+      firstName: SortOrder
+      id: SortOrder
+      lastName: SortOrder
+      password: SortOrder
+      roles: SortOrder
+      updatedAt: SortOrder
+      username: SortOrder
+    }
+
+    input UserUpdateInput {
+      firstName: String
+      lastName: String
+      password: String
+      roles: JSON
+      username: String
+    }
+
+    input UserWhereInput {
+      firstName: StringNullableFilter
+      id: StringFilter
+      lastName: StringNullableFilter
+      username: StringFilter
+    }
+
+    input UserWhereUniqueInput {
+      id: String!
+    }
+
+    type Version {
+      changelog: String
+      createdAt: DateTime!
+      deletedAt: DateTime
+      id: String!
+      isActive: Boolean!
+      isDeprecated: Boolean
+      name: String
+      updatedAt: DateTime!
+    }
+
+    input VersionCreateInput {
+      changelog: String
+      deletedAt: DateTime
+      isActive: Boolean!
+      isDeprecated: Boolean
+      name: String
+    }
+
+    input VersionOrderByInput {
+      changelog: SortOrder
+      createdAt: SortOrder
+      deletedAt: SortOrder
+      id: SortOrder
+      isActive: SortOrder
+      isDeprecated: SortOrder
+      name: SortOrder
+      updatedAt: SortOrder
+    }
+
+    input VersionUpdateInput {
+      changelog: String
+      deletedAt: DateTime
+      isActive: Boolean
+      isDeprecated: Boolean
+      name: String
+    }
+
+    input VersionWhereInput {
+      changelog: StringNullableFilter
+      deletedAt: DateTimeNullableFilter
+      id: StringFilter
+      isActive: BooleanFilter
+      isDeprecated: BooleanNullableFilter
+      name: StringNullableFilter
+    }
+
+    input VersionWhereUniqueInput {
+      id: String!
+    }
