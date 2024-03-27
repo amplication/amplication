@@ -31,7 +31,7 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: -service-generator-catalog-graphql
+  name: data-service-generator-catalog-rest
 spec:
   type: openapi
   lifecycle: production
@@ -43,7 +43,7 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: -service-generator-catalog-graphql
+  name: data-service-generator-catalog-graphql
 spec:
   type: graphql
   lifecycle: production
