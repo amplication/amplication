@@ -20,7 +20,7 @@ export async function createCustomModulesModules(
     (module) => module.entityId === undefined
   );
 
-  const customModules = new ModuleMap(DsgContext.getInstance.logger);
+  const customModules = new ModuleMap(context.logger);
   for await (const customModule of customModuleContainers) {
     await customModules.merge(
       await createCustomModuleModules(customModule, dtoNameToPath)
