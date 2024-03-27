@@ -23,14 +23,14 @@ export async function createCustomModulesModules(
   const customModules = new ModuleMap(context.logger);
   for await (const customModule of customModuleContainers) {
     await customModules.merge(
-      await createCustomModuleModules(customModule, dtoNameToPath)
+      await createSingleCustomModuleModules(customModule, dtoNameToPath)
     );
   }
 
   return customModules;
 }
 
-async function createCustomModuleModules(
+async function createSingleCustomModuleModules(
   customModule: ModuleContainer,
   dtoNameToPath: Record<string, string>
 ): Promise<ModuleMap> {
