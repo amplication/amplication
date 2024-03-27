@@ -10,6 +10,8 @@ import { DeleteTopicArgs } from "./dto/DeleteTopicArgs";
 import { FindManyTopicArgs } from "./dto/FindManyTopicArgs";
 import { Topic } from "./dto/Topic";
 import { UpdateTopicArgs } from "./dto/UpdateTopicArgs";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingService } from "../billing/billing.service";
 
 const DEFAULT_TOPIC_NAME = "topic.sample.v1";
 const DEFAULT_TOPIC_DISPLAY_NAME = "Topic Sample 1";
@@ -28,9 +30,11 @@ export class TopicService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
+    protected readonly billingService: BillingService,
+    protected readonly logger: AmplicationLogger,
     protected readonly serviceTopicsService: ServiceTopicsService
   ) {
-    super(blockService);
+    super(blockService, billingService, logger);
   }
 
   async create(
