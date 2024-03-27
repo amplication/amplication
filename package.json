@@ -67,7 +67,7 @@
     "@octokit/oauth-authorization-url": "^5.0.0",
     "@octokit/openapi-types": "^19.0.0",
     "@octokit/rest": "^19.0.5",
-    "@octokit/webhooks": "^10.6.2",
+    "@octokit/webhooks": "^10.9.2",
     "@octokit/webhooks-types": "^6.9.0",
     "@opentelemetry/id-generator-aws-xray": "^1.2.1",
     "@primer/react": "^35.14.1",
