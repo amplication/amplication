@@ -67,6 +67,7 @@ export const ModuleActionLinkList = React.memo(
                 <FlexItem
                   itemsAlign={EnumItemsAlign.Center}
                   end={<EnabledIndicator enabled={action.enabled} />}
+                  singeChildWithEllipsis
                 >
                   {action.displayName}
                 </FlexItem>

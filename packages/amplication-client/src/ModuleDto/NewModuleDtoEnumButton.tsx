@@ -4,7 +4,7 @@ import { EnumButtonStyle } from "../Components/Button";
 import { useModulesContext } from "../Modules/modulesContext";
 import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 import * as models from "../models";
-import NewModuleDto from "./NewModuleDto";
+import NewModuleDtoEnum from "./NewModuleDtoEnum";
 
 type Props = {
   resourceId: string;
@@ -14,7 +14,7 @@ type Props = {
   navigateToDtoOnCreate?: boolean;
 };
 
-const NewModuleDtoButton = ({
+const NewModuleDtoEnumButton = ({
   resourceId,
   moduleId,
   onDtoCreated,
@@ -45,7 +45,7 @@ const NewModuleDtoButton = ({
   return (
     <div>
       {newDtoOpen && (
-        <NewModuleDto
+        <NewModuleDtoEnum
           resourceId={resourceId}
           moduleId={moduleId}
           onDismiss={onNewDtoDismiss}
@@ -61,11 +61,11 @@ const NewModuleDtoButton = ({
           disabled={!customActionsLicenseEnabled}
           icon="zap"
         >
-          Add DTO
+          Add Enum
         </Button>
       )}
     </div>
   );
 };
 
-export default NewModuleDtoButton;
+export default NewModuleDtoEnumButton;

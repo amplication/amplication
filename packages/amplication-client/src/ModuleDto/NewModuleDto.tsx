@@ -14,6 +14,7 @@ type Props = {
   onDtoCreated?: (moduleAction: models.ModuleDto) => void;
   buttonStyle?: EnumButtonStyle;
   onDismiss?: () => void;
+  navigateToDtoOnCreate?: boolean;
 };
 
 const FORM_SCHEMA = {
@@ -38,6 +39,7 @@ const NewModuleDto = ({
   onDtoCreated,
   buttonStyle = EnumButtonStyle.Primary,
   onDismiss,
+  navigateToDtoOnCreate = true,
 }: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
@@ -71,9 +73,11 @@ const NewModuleDto = ({
             if (onDtoCreated && result && result.data) {
               onDtoCreated(result.data.createModuleDto);
             }
-            history.push(
-              `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos/${result.data.createModuleDto.id}`
-            );
+            if (navigateToDtoOnCreate) {
+              history.push(
+                `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos/${result.data.createModuleDto.id}`
+              );
+            }
           }
         });
     },

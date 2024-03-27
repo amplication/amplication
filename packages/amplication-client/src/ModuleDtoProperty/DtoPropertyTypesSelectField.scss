@@ -1,15 +1,57 @@
 @import "../style/index.scss";
 
+$modal-width: 400px;
+
 .dto-property-types-select-field {
-  .toggle-field {
-    margin-bottom: 0;
+  &__modal-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: $modal-width;
+
+    .SelectMenu-icon {
+      margin-right: 0 !important;
+      margin-left: var(--default-spacing);
+    }
   }
 
-  .amp-name-field,
-  .select-field,
-  .text-input {
-    flex: 1;
+  &__go-to {
+    margin-bottom: var(--default-spacing);
+  }
 
-    max-width: var(--form-field-long);
+  &__header {
+    padding: var(--default-spacing);
+    background: var(--gray-full);
+
+    .amp-button {
+      color: var(--gray-20);
+      font-size: var(--subtle-font-size);
+
+      &:hover {
+        color: var(--gray-base);
+      }
+    }
+  }
+
+  &__sub_header {
+    padding: var(--default-spacing);
+    background-color: var(--gray-90);
+  }
+
+  &__container {
+    border-top: 1px solid var(--border-color);
+    flex: 1;
+    overflow: auto;
+  }
+  &__group {
+    background-color: var(--gray-90);
+    margin-left: var(--default-spacing);
+  }
+  &__group-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--default-spacing);
+    padding: var(--icon-spacing);
   }
 }
