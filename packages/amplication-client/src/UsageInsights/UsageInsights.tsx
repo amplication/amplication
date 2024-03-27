@@ -156,7 +156,7 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
               series={[
                 {
                   dataKey: "entities",
-                  label: "Entities changed",
+                  label: "Entity Changes",
                   valueFormatter,
                   color: chartColors[0],
                 },
@@ -168,13 +168,13 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
                 },
                 {
                   dataKey: "plugins",
-                  label: "Plugins",
+                  label: "Plugin Updates",
                   valueFormatter,
                   color: chartColors[2],
                 },
                 {
                   dataKey: "moduleActions",
-                  label: "APIs changed",
+                  label: "API Changes",
                   valueFormatter,
                   color: chartColors[3],
                 },

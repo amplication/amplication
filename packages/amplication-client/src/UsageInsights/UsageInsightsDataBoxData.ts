@@ -36,8 +36,7 @@ export const USAGE_INSIGHTS_DATA_BOX_DATA: UsageInsightsDataBoxProps[] = [
     color: EnumTextColor.ThemeOrange,
     label: "Code quality - bugs prevented",
     info: `Wondering about the calculation for bugs prevented in your Node.js backend code? 
-    We've estimated it to be around 14 bugs per 1,000 lines of code (LOC), based on research data, such as 
-    findings from Carnegie Mellon University.
+    We've estimated it to be around 14 bugs per 1,000 lines of code (LOC), based on research data, such as findings from Carnegie Mellon University.
     Have a different perspective? {{contactUsLink}} and let's chat about it!`,
     endnotes: "Data collection started on March 27, 2024",
   },
