@@ -84,7 +84,9 @@ const ModuleDto = ({ match }: Props) => {
             id: moduleDtoId,
           },
           data: {
-            ...data,
+            displayName: data.displayName,
+            enabled: data.enabled,
+            name: data.name,
           },
         },
       }).catch(console.error);
