@@ -32,6 +32,7 @@ import { UpdateModuleDtoEnumMemberArgs } from "./dto/UpdateModuleDtoEnumMemberAr
 import { DeleteModuleDtoEnumMemberArgs } from "./dto/DeleteModuleDtoEnumMemberArgs";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
+import { QueryMode } from "../../enums/QueryMode";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -126,10 +127,31 @@ export class ModuleDtoService extends BlockTypeService<
     }
   }
 
-  validateModuleDtoName(moduleDtoName: string): void {
+  async validateModuleDtoName(
+    moduleDtoName: string,
+    resourceId?: string
+  ): Promise<void> {
     const regex = /^[a-zA-Z0-9._-]{1,249}$/;
     if (!regex.test(moduleDtoName)) {
       throw new AmplicationError("Invalid moduleDto name");
+    }
+
+    if (!resourceId) return;
+
+    const duplicateDtoName = await super.findMany({
+      where: {
+        displayName: {
+          equals: moduleDtoName,
+          mode: QueryMode.Insensitive,
+        },
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+
+    if (duplicateDtoName.length > 0) {
+      throw new AmplicationError("Invalid moduleDto name, name already exist");
     }
   }
 
@@ -138,7 +160,26 @@ export class ModuleDtoService extends BlockTypeService<
       return null;
     }
 
-    this.validateModuleDtoName(args.data.name);
+    await this.validateModuleDtoName(
+      args.data.name,
+      args.data.resource.connect.id
+    );
+
+    const duplicateDtoName = await super.findMany({
+      where: {
+        displayName: {
+          equals: args.data.name,
+          mode: QueryMode.Insensitive,
+        },
+        resource: {
+          id: args.data.resource.connect.id,
+        },
+      },
+    });
+
+    if (duplicateDtoName.length > 0) {
+      throw new AmplicationError("Invalid moduleDto name, name already exist");
+    }
 
     return super.create(
       {
@@ -156,7 +197,7 @@ export class ModuleDtoService extends BlockTypeService<
 
   async update(args: UpdateModuleDtoArgs, user: User): Promise<ModuleDto> {
     //todo: validate that only the enabled field can be updated for default actions
-    this.validateModuleDtoName(args.data.name);
+    await this.validateModuleDtoName(args.data.name);
 
     const existingDto = await super.findOne({
       where: { id: args.where.id },
@@ -784,7 +825,10 @@ export class ModuleDtoService extends BlockTypeService<
       return null;
     }
 
-    this.validateModuleDtoName(args.data.name);
+    await this.validateModuleDtoName(
+      args.data.name,
+      args.data.resource.connect.id
+    );
 
     return super.create(
       {
