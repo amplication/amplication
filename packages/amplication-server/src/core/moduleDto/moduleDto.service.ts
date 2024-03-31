@@ -129,7 +129,8 @@ export class ModuleDtoService extends BlockTypeService<
 
   async validateModuleDtoName(
     moduleDtoName: string,
-    resourceId?: string
+    resourceId?: string,
+    blockId?: string
   ): Promise<void> {
     const regex = /^[a-zA-Z0-9._-]{1,249}$/;
     if (!regex.test(moduleDtoName)) {
@@ -138,17 +139,36 @@ export class ModuleDtoService extends BlockTypeService<
 
     if (!resourceId) return;
 
-    const duplicateDtoName = await super.findMany({
-      where: {
-        displayName: {
-          equals: moduleDtoName,
-          mode: QueryMode.Insensitive,
+    let duplicateDtoName: ModuleDto[] = [];
+
+    if (!blockId) {
+      duplicateDtoName = await super.findMany({
+        where: {
+          displayName: {
+            equals: moduleDtoName,
+            mode: QueryMode.Insensitive,
+          },
+          resource: {
+            id: resourceId,
+          },
         },
-        resource: {
-          id: resourceId,
+      });
+    } else {
+      duplicateDtoName = await super.findMany({
+        where: {
+          id: {
+            not: blockId,
+          },
+          displayName: {
+            equals: moduleDtoName,
+            mode: QueryMode.Insensitive,
+          },
+          resource: {
+            id: resourceId,
+          },
         },
-      },
-    });
+      });
+    }
 
     if (duplicateDtoName.length > 0) {
       throw new AmplicationError("Invalid DTO name, name already exists");
@@ -190,7 +210,11 @@ export class ModuleDtoService extends BlockTypeService<
       throw new AmplicationError(`Module DTO not found, ID: ${args.where.id}`);
     }
 
-    await this.validateModuleDtoName(args.data.name, existingDto.resourceId);
+    await this.validateModuleDtoName(
+      args.data.name,
+      existingDto.resourceId,
+      existingDto.id
+    );
 
     if (existingDto.dtoType !== EnumModuleDtoType.Custom) {
       if (existingDto.name !== args.data.name) {
