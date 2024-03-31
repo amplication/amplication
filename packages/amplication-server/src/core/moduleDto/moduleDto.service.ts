@@ -151,7 +151,7 @@ export class ModuleDtoService extends BlockTypeService<
     });
 
     if (duplicateDtoName.length > 0) {
-      throw new AmplicationError("Invalid moduleDto name, name already exist");
+      throw new AmplicationError("Invalid DTO name, name already exists");
     }
   }
 
