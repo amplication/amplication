@@ -165,22 +165,6 @@ export class ModuleDtoService extends BlockTypeService<
       args.data.resource.connect.id
     );
 
-    const duplicateDtoName = await super.findMany({
-      where: {
-        displayName: {
-          equals: args.data.name,
-          mode: QueryMode.Insensitive,
-        },
-        resource: {
-          id: args.data.resource.connect.id,
-        },
-      },
-    });
-
-    if (duplicateDtoName.length > 0) {
-      throw new AmplicationError("Invalid moduleDto name, name already exist");
-    }
-
     return super.create(
       {
         ...args,
