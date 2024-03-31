@@ -181,7 +181,6 @@ export class ModuleDtoService extends BlockTypeService<
 
   async update(args: UpdateModuleDtoArgs, user: User): Promise<ModuleDto> {
     //todo: validate that only the enabled field can be updated for default actions
-    await this.validateModuleDtoName(args.data.name);
 
     const existingDto = await super.findOne({
       where: { id: args.where.id },
@@ -190,6 +189,8 @@ export class ModuleDtoService extends BlockTypeService<
     if (!existingDto) {
       throw new AmplicationError(`Module DTO not found, ID: ${args.where.id}`);
     }
+
+    await this.validateModuleDtoName(args.data.name, existingDto.resourceId);
 
     if (existingDto.dtoType !== EnumModuleDtoType.Custom) {
       if (existingDto.name !== args.data.name) {
