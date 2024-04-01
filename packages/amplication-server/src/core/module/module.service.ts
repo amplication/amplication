@@ -123,6 +123,16 @@ export class ModuleService extends BlockTypeService<
         "Cannot delete the default module for entity. To delete it, you must delete the entity"
       );
     }
+
+    await this.validateDtoReferencesBeforeDeleteModule(
+      module.id,
+      module.resourceId
+    );
+    await this.validateActionsDtosReferencesBeforeDeleteModule(
+      module.id,
+      module.resourceId
+    );
+
     return super.delete(args, user, true, true);
   }
 
@@ -228,10 +238,15 @@ export class ModuleService extends BlockTypeService<
       entityId
     );
 
-    await this.validateDtoReferencesBeforeDeleteModule(moduleId, resourceId);
+    await this.validateDtoReferencesBeforeDeleteModule(
+      moduleId,
+      resourceId,
+      true
+    );
     await this.validateActionsDtosReferencesBeforeDeleteModule(
       moduleId,
-      resourceId
+      resourceId,
+      true
     );
 
     return super.delete({ where: { id: moduleId } }, user, true); //delete the module and all its children (actions/type...)
@@ -239,8 +254,10 @@ export class ModuleService extends BlockTypeService<
 
   private async validateDtoReferencesBeforeDeleteModule(
     moduleId: string,
-    resourceId: string
+    resourceId: string,
+    isEntity = false
   ) {
+    const deletedType = isEntity ? "entity" : "module";
     const allResourceModuleDtos = await this.moduleDtoService.findMany({
       where: {
         resource: {
@@ -269,7 +286,7 @@ export class ModuleService extends BlockTypeService<
             );
             if (currentDto)
               throw new AmplicationError(
-                `Cannot delete entity because DTO: ${currentDto.name} is in use in DTO: ${moduleDto.name}.`,
+                `Cannot delete ${deletedType} because DTO: ${currentDto.name} is in use in DTO: ${moduleDto.name}.`,
                 { cause: "dtoInUse" }
               );
           });
@@ -280,8 +297,11 @@ export class ModuleService extends BlockTypeService<
 
   private async validateActionsDtosReferencesBeforeDeleteModule(
     moduleId: string,
-    resourceId: string
+    resourceId: string,
+    isEntity = false
   ) {
+    const deletedType = isEntity ? "entity" : "module";
+
     const moduleModuleDtos = await this.moduleDtoService.findMany({
       where: {
         parentBlock: {
@@ -317,7 +337,7 @@ export class ModuleService extends BlockTypeService<
         );
         if (currentDtoInput) {
           throw new AmplicationError(
-            `Cannot delete entity because DTO: ${currentDtoInput.name} is in use in Action: ${moduleAction.name}.`,
+            `Cannot delete ${deletedType} because DTO: ${currentDtoInput.name} is in use in Action: ${moduleAction.name}.`,
             { cause: "ActionDtoInUse" }
           );
         }
@@ -331,7 +351,7 @@ export class ModuleService extends BlockTypeService<
         );
         if (currentDtoOutput) {
           throw new AmplicationError(
-            `Cannot delete entity because DTO: ${currentDtoOutput.name} is in use in Action: ${moduleAction.name}.`,
+            `Cannot delete ${deletedType} because DTO: ${currentDtoOutput.name} is in use in Action: ${moduleAction.name}.`,
             { cause: "ActionDtoInUse" }
           );
         }
