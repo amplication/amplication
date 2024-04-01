@@ -902,7 +902,8 @@ export class WorkspaceService {
             await this.projectService.commit(
               {
                 data: {
-                  message: "this is automatic commit for update custom actions",
+                  message:
+                    "this is automatic commit to update custom actions and create default DTOs",
                   project: {
                     connect: {
                       id: project.id,
