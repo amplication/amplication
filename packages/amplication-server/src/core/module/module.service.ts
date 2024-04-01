@@ -18,6 +18,11 @@ import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
 import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import {
+  EnumModuleActionType,
+  EnumModuleDtoPropertyType,
+  EnumModuleDtoType,
+} from "@amplication/code-gen-types";
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
 
@@ -118,6 +123,16 @@ export class ModuleService extends BlockTypeService<
         "Cannot delete the default module for entity. To delete it, you must delete the entity"
       );
     }
+
+    await this.validateDtoReferencesBeforeDeleteModule(
+      module.id,
+      module.resourceId
+    );
+    await this.validateActionsDtosReferencesBeforeDeleteModule(
+      module.id,
+      module.resourceId
+    );
+
     return super.delete(args, user, true, true);
   }
 
@@ -223,6 +238,124 @@ export class ModuleService extends BlockTypeService<
       entityId
     );
 
+    await this.validateDtoReferencesBeforeDeleteModule(
+      moduleId,
+      resourceId,
+      true
+    );
+    await this.validateActionsDtosReferencesBeforeDeleteModule(
+      moduleId,
+      resourceId,
+      true
+    );
+
     return super.delete({ where: { id: moduleId } }, user, true); //delete the module and all its children (actions/type...)
+  }
+
+  private async validateDtoReferencesBeforeDeleteModule(
+    moduleId: string,
+    resourceId: string,
+    isEntity = false
+  ) {
+    const deletedType = isEntity ? "entity" : "module";
+    const allResourceModuleDtos = await this.moduleDtoService.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+
+    const moduleModuleDtos = allResourceModuleDtos.filter(
+      (moduleDto) => moduleDto.parentBlockId === moduleId
+    );
+
+    const allOtherResourceCustomModuleDtos = allResourceModuleDtos.filter(
+      (moduleDto) =>
+        moduleDto.parentBlockId !== moduleId &&
+        (moduleDto.dtoType === EnumModuleDtoType.Custom ||
+          moduleDto.dtoType === EnumModuleDtoType.CustomEnum)
+    );
+
+    allOtherResourceCustomModuleDtos.forEach((moduleDto) => {
+      moduleDto.properties.forEach((prop) => {
+        if (prop) {
+          prop.propertyTypes.forEach((propType) => {
+            const currentDto = moduleModuleDtos.find(
+              (x) => x.id === propType.dtoId
+            );
+            if (currentDto)
+              throw new AmplicationError(
+                `Cannot delete ${deletedType} because DTO: ${currentDto.name} is in use in DTO: ${moduleDto.name}.`,
+                { cause: "dtoInUse" }
+              );
+          });
+        }
+      });
+    });
+  }
+
+  private async validateActionsDtosReferencesBeforeDeleteModule(
+    moduleId: string,
+    resourceId: string,
+    isEntity = false
+  ) {
+    const deletedType = isEntity ? "entity" : "module";
+
+    const moduleModuleDtos = await this.moduleDtoService.findMany({
+      where: {
+        parentBlock: {
+          id: moduleId,
+        },
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+
+    const allResourceModuleActions = await this.moduleActionService.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+
+    const allOtherResourceCustomModuleActions = allResourceModuleActions.filter(
+      (moduleAction) =>
+        moduleAction.parentBlockId !== moduleId &&
+        moduleAction.actionType === EnumModuleActionType.Custom
+    );
+
+    allOtherResourceCustomModuleActions.forEach((moduleAction) => {
+      if (
+        moduleAction.inputType.type === EnumModuleDtoPropertyType.Dto ||
+        moduleAction.inputType.type === EnumModuleDtoPropertyType.Enum
+      ) {
+        const currentDtoInput = moduleModuleDtos.find(
+          (moduleDto) => moduleDto.id === moduleAction.inputType.dtoId
+        );
+        if (currentDtoInput) {
+          throw new AmplicationError(
+            `Cannot delete ${deletedType} because DTO: ${currentDtoInput.name} is in use in Action: ${moduleAction.name}.`,
+            { cause: "ActionDtoInUse" }
+          );
+        }
+      }
+      if (
+        moduleAction.outputType.type === EnumModuleDtoPropertyType.Dto ||
+        moduleAction.outputType.type === EnumModuleDtoPropertyType.Enum
+      ) {
+        const currentDtoOutput = moduleModuleDtos.find(
+          (moduleDto) => moduleDto.id === moduleAction.outputType.dtoId
+        );
+        if (currentDtoOutput) {
+          throw new AmplicationError(
+            `Cannot delete ${deletedType} because DTO: ${currentDtoOutput.name} is in use in Action: ${moduleAction.name}.`,
+            { cause: "ActionDtoInUse" }
+          );
+        }
+      }
+    });
   }
 }
