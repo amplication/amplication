@@ -321,6 +321,11 @@ export class ModuleService extends BlockTypeService<
             { cause: "ActionDtoInUse" }
           );
         }
+      }
+      if (
+        moduleAction.outputType.type === EnumModuleDtoPropertyType.Dto ||
+        moduleAction.outputType.type === EnumModuleDtoPropertyType.Enum
+      ) {
         const currentDtoOutput = moduleModuleDtos.find(
           (moduleDto) => moduleDto.id === moduleAction.outputType.dtoId
         );
