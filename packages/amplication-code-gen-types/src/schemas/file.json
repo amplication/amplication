@@ -1,0 +1,33 @@
+{
+  "$id": "https://amplication.com/schema/entityfield/properties/file.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "file",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "maxFileSize": {
+      "type": "number",
+      "minimum": 0
+    },
+    "allowedMimeTypes": {
+      "type": "array",
+      "additionalItems": true,
+      "minItems": 0,
+      "items": {
+        "$comment": "String that the MIME type of the file must contain or a option from the enum",
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "enum": ["image/", "audio/", "video/", "application/", "document/"]
+          }
+        ]
+      }
+    },
+    "provider": {
+      "enum": ["local"],
+      "type": "string"
+    }
+  }
+}

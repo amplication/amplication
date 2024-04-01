@@ -724,6 +724,7 @@ export enum EnumDataType {
   DateTime = 'DateTime',
   DecimalNumber = 'DecimalNumber',
   Email = 'Email',
+  File = 'File',
   GeographicLocation = 'GeographicLocation',
   Id = 'Id',
   Json = 'Json',

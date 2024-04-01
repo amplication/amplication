@@ -13,7 +13,7 @@ import OptionSet from "../Entity/OptionSet";
 import { JSONSchema7 } from "json-schema";
 import RelationFkHolderField from "./RelationFkHolderField";
 import * as models from "../models";
-import { useMemo } from "react";
+import { useCallback } from "react";
 import { ENTITY_FIELD_ENUM_MAPPER } from "./constants";
 
 type Props = {
@@ -36,26 +36,33 @@ export const SchemaField = ({
   const fieldName = `properties.${propertyName}`;
   const label = propertySchema.title || capitalCase(propertyName);
 
-  const enumOptions = useMemo((): OptionItem[] | null => {
-    if (propertySchema.enum) {
-      return (propertySchema.enum as string[]).map((item) => {
-        const labelByItem: { label: string; value: string } =
-          ENTITY_FIELD_ENUM_MAPPER[fieldDataType][propertyName].find(
-            (option) => option.value === item
-          );
+  const enumOptions = useCallback(
+    function (enumOptions: string[]): OptionItem[] | null {
+      if (enumOptions) {
+        return enumOptions.map((item) => {
+          const labelByItem: { label: string; value: string } =
+            ENTITY_FIELD_ENUM_MAPPER[fieldDataType][propertyName].find(
+              (option) => option.value === item
+            );
 
-        return {
-          value: item,
-          label: labelByItem.label || item,
-        };
-      });
-    } else return null;
-  }, [fieldDataType, propertyName, propertySchema]);
+          return {
+            value: item,
+            label: labelByItem.label || item,
+          };
+        });
+      } else return null;
+    },
+    [fieldDataType, propertyName]
+  );
 
   if (propertySchema.enum) {
     if (propertySchema.enum.every((item) => typeof item === "string")) {
       return (
-        <SelectField label={label} name={fieldName} options={enumOptions} />
+        <SelectField
+          label={label}
+          name={fieldName}
+          options={enumOptions(propertySchema.enum as string[])}
+        />
       );
     } else {
       throw new Error(
@@ -80,9 +87,42 @@ export const SchemaField = ({
         throw new Error("Array schema must define items");
       }
 
+      if ((propertySchema.items as JSONSchema7).anyOf) {
+        return (
+          <SelectField
+            label={label}
+            name={fieldName}
+            options={enumOptions(
+              (
+                (propertySchema.items as JSONSchema7).anyOf?.find(
+                  (item) => (item as JSONSchema7).enum
+                ) as JSONSchema7
+              ).enum as string[]
+            )}
+            isMulti
+            isClearable
+            isCreatable
+          />
+        );
+      }
+
       switch ((propertySchema.items as JSONSchema7).type) {
         case "object": {
           return <OptionSet label={label} name={fieldName} />;
+        }
+        case "string": {
+          return (
+            <SelectField
+              label={label}
+              name={fieldName}
+              options={enumOptions(
+                (propertySchema.items as JSONSchema7).enum as string[]
+              )}
+              isMulti
+              isClearable
+              isCreatable
+            />
+          );
         }
         default: {
           throw new Error(

@@ -26,6 +26,7 @@ export type Values = {
   permanentId?: string | null;
   // eslint-disable-next-line @typescript-eslint/ban-types
   properties: {
+    allowedMimeTypes?: string;
     relatedEntityId?: string;
     allowMultipleSelection?: string;
   };
@@ -101,11 +102,17 @@ const EntityFieldForm = ({
         const propertiesError = validate<{
           relatedEntityId?: string;
           allowMultipleSelection?: string;
+          allowedMimeTypes?: string;
         }>(values.properties, schema);
 
         // Ignore related field ID error
         if ("relatedFieldId" in propertiesError) {
           delete propertiesError.relatedFieldId;
+        }
+
+        // Ignore allowedMimeTypes error
+        if ("allowedMimeTypes" in propertiesError) {
+          delete propertiesError.allowedMimeTypes;
         }
 
         if (!isEmpty(propertiesError)) {
