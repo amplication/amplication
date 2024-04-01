@@ -73,7 +73,7 @@ export class WorkspaceController {
     const { quantity } = data;
 
     if (
-      this.configService.get<string>("CUSTOM_DTO_MIGRATION_TOKEN") !== token
+      this.configService.get<string>("CUSTOM_ACTION_MIGRATION_TOKEN") !== token
     ) {
       this.logger.error("InvalidToken, process aborted");
       return;
