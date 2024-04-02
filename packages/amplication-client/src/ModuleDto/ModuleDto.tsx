@@ -84,7 +84,9 @@ const ModuleDto = ({ match }: Props) => {
             id: moduleDtoId,
           },
           data: {
-            ...data,
+            displayName: data.displayName,
+            enabled: data.enabled,
+            name: data.name,
           },
         },
       }).catch(console.error);
@@ -129,13 +131,15 @@ const ModuleDto = ({ match }: Props) => {
           direction={EnumFlexDirection.Row}
           alignSelf={EnumContentAlign.Start}
         >
-          <Toggle
-            name={"enabled"}
-            onValueChange={onEnableChanged}
-            checked={data?.moduleDto?.enabled}
-          ></Toggle>
           {data?.moduleDto && isCustomDto && (
-            <DeleteModuleDto moduleDto={data?.moduleDto} />
+            <>
+              <Toggle
+                name={"enabled"}
+                onValueChange={onEnableChanged}
+                checked={data?.moduleDto?.enabled}
+              ></Toggle>
+              <DeleteModuleDto moduleDto={data?.moduleDto} />
+            </>
           )}
         </FlexItem.FlexEnd>
       </FlexItem>

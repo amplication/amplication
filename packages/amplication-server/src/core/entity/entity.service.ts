@@ -835,14 +835,6 @@ export class EntityService {
         );
       }
 
-      for (const relatedEntityField of relatedEntityFields) {
-        await this.deleteField(
-          { where: { id: relatedEntityField.id } },
-          user,
-          fieldStrategy
-        );
-      }
-
       try {
         await this.moduleService.deleteDefaultModuleForEntity(
           entity.resourceId,
@@ -850,11 +842,25 @@ export class EntityService {
           user
         );
       } catch (error) {
+        const amplicationError = error as AmplicationError;
+        if (
+          amplicationError.cause === "dtoInUse" ||
+          amplicationError.cause === "ActionDtoInUse"
+        )
+          throw new AmplicationError(error);
         //continue to delete the entity even if the deletion of the default module failed.
         //This is done in order to allow the user to workaround issues in any case when a default module is missing
         this.logger.error(
           "Continue with EntityDelete even though the default entity could not be deleted or was not found ",
           error
+        );
+      }
+
+      for (const relatedEntityField of relatedEntityFields) {
+        await this.deleteField(
+          { where: { id: relatedEntityField.id } },
+          user,
+          fieldStrategy
         );
       }
 

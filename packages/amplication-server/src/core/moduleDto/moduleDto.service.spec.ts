@@ -154,6 +154,10 @@ const blockServiceFindOneMock = jest.fn(() => {
   return EXAMPLE_DTO;
 });
 
+const blockServiceFindManyMock = jest.fn(() => {
+  return [];
+});
+
 const blockServiceDeleteMock = jest.fn(() => {
   return EXAMPLE_DTO;
 });
@@ -210,6 +214,7 @@ describe("ModuleDtoService", () => {
             create: blockServiceCreateMock,
             delete: blockServiceDeleteMock,
             update: blockServiceUpdateMock,
+            findManyByBlockType: blockServiceFindManyMock,
             findManyByBlockTypeAndSettings:
               blockServiceFindManyByBlockTypeAndSettingsMock,
           })),
