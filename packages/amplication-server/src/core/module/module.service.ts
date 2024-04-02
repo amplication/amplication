@@ -18,6 +18,8 @@ import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
 import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
 import {
   EnumModuleActionType,
   EnumModuleDtoPropertyType,
@@ -43,6 +45,7 @@ export class ModuleService extends BlockTypeService<
     protected readonly blockService: BlockService,
     protected readonly billingService: BillingService,
     protected readonly logger: AmplicationLogger,
+    protected readonly analytics: SegmentAnalyticsService,
     private readonly moduleActionService: ModuleActionService,
     private readonly moduleDtoService: ModuleDtoService,
     private configService: ConfigService
@@ -62,9 +65,34 @@ export class ModuleService extends BlockTypeService<
     }
   }
 
+  async findMany(args: FindManyModuleArgs, user?: User): Promise<Module[]> {
+    const prismaArgs = {
+      ...args,
+      where: {
+        ...args.where,
+      },
+    };
+
+    if (user) {
+      const subscription = await this.billingService.getSubscription(
+        user.workspace?.id
+      );
+
+      await this.analytics.trackWithContext({
+        properties: {
+          planType: subscription.subscriptionPlan,
+        },
+        event: EnumEventType.SearchAPIs,
+      });
+    }
+
+    return super.findMany(prismaArgs);
+  }
+
   async create(
     args: CreateModuleArgs,
     user: User,
+    trackEvent = true,
     forceEntitlementValidation = true
   ): Promise<Module> {
     if (!args.data.entityId && !this.customActionsEnabled) {
@@ -78,6 +106,20 @@ export class ModuleService extends BlockTypeService<
     }
 
     this.validateModuleName(args.data.name);
+
+    if (trackEvent) {
+      const subscription = await this.billingService.getSubscription(
+        user.workspace?.id
+      );
+
+      await this.analytics.trackWithContext({
+        properties: {
+          name: args.data.name,
+          planType: subscription.subscriptionPlan,
+        },
+        event: EnumEventType.CreateModule,
+      });
+    }
 
     return super.create(
       {
@@ -116,6 +158,20 @@ export class ModuleService extends BlockTypeService<
     }
 
     this.validateModuleName(args.data.name);
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: args.data.name,
+        planType: subscription.subscriptionPlan,
+        operation: "rename",
+      },
+      event: EnumEventType.InteractModule,
+    });
+
     return super.update(
       {
         ...args,
@@ -144,7 +200,6 @@ export class ModuleService extends BlockTypeService<
         "Cannot delete the default module for entity. To delete it, you must delete the entity"
       );
     }
-
     await this.validateDtoReferencesBeforeDeleteModule(
       module.id,
       module.resourceId
@@ -153,6 +208,19 @@ export class ModuleService extends BlockTypeService<
       module.id,
       module.resourceId
     );
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: module.name,
+        planType: subscription.subscriptionPlan,
+        operation: "delete",
+      },
+      event: EnumEventType.InteractModule,
+    });
 
     return super.delete(args, user, true, true);
   }

@@ -12,6 +12,7 @@ import { UserEntity } from "../../decorators/user.decorator";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 import { JsonFilter } from "../../dto/JsonFilter";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
@@ -31,7 +32,7 @@ export abstract class BlockTypeService<
     return this.blockService.findOne<T>(args);
   }
 
-  async findMany(args: FindManyArgs): Promise<T[]> {
+  async findMany(args: FindManyArgs, user?: User): Promise<T[]> {
     return this.blockService.findManyByBlockType(args, this.blockType);
   }
 

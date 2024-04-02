@@ -27,6 +27,8 @@ import { Env } from "../../env";
 import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { validateCustomActionsEntitlement } from "../block/block.util";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
@@ -44,6 +46,7 @@ export class ModuleActionService extends BlockTypeService<
     protected readonly blockService: BlockService,
     protected readonly billingService: BillingService,
     protected readonly logger: AmplicationLogger,
+    protected readonly analytics: SegmentAnalyticsService,
     private readonly prisma: PrismaService,
     private configService: ConfigService
   ) {
@@ -55,7 +58,10 @@ export class ModuleActionService extends BlockTypeService<
     );
   }
 
-  async findMany(args: FindManyModuleActionArgs): Promise<ModuleAction[]> {
+  async findMany(
+    args: FindManyModuleActionArgs,
+    user?: User
+  ): Promise<ModuleAction[]> {
     const { includeCustomActions, includeDefaultActions, ...rest } =
       args.where || {};
 
@@ -69,6 +75,19 @@ export class ModuleActionService extends BlockTypeService<
     //when undefined the default value is true
     const includeCustomActionsBoolean = includeCustomActions !== false;
     const includeDefaultActionsBoolean = includeDefaultActions !== false;
+
+    if (user) {
+      const subscription = await this.billingService.getSubscription(
+        user.workspace?.id
+      );
+
+      await this.analytics.trackWithContext({
+        properties: {
+          planType: subscription.subscriptionPlan,
+        },
+        event: EnumEventType.SearchAPIs,
+      });
+    }
 
     if (includeCustomActionsBoolean && includeDefaultActionsBoolean) {
       return super.findMany(prismaArgs);
@@ -112,6 +131,18 @@ export class ModuleActionService extends BlockTypeService<
     if (!this.customActionsEnabled) {
       return null;
     }
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        actionParameters: args.data,
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.CreateUserAction,
+    });
 
     return super.create(
       {
@@ -172,6 +203,22 @@ export class ModuleActionService extends BlockTypeService<
       }
     }
 
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        actionParameters: args.data,
+        operation: "edit",
+        planType: subscription.subscriptionPlan,
+      },
+      event:
+        existingAction.actionType === EnumModuleActionType.Custom
+          ? EnumEventType.InteractUserAction
+          : EnumEventType.InteractAmplicationAction,
+    });
+
     return super.update(args, user);
   }
 
@@ -190,6 +237,19 @@ export class ModuleActionService extends BlockTypeService<
         "Cannot delete a default Action for entity. To delete it, you must delete the entity"
       );
     }
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: moduleAction.name,
+        operation: "delete",
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.InteractUserAction,
+    });
     return super.delete(args, user);
   }
 
