@@ -169,7 +169,6 @@ npm run serve:plugins
 > **Note**
 > In order to run the Amplication client properly, both the client and server need to be started by the `npm run serve:[application]` command, as well as an additional component for development on a specific component.
 
-
 The development environment should now be set up. Additional information on the different application components can be found under packages/`[application]`/README.md file. Happy hacking! 👾
 </details>
 
