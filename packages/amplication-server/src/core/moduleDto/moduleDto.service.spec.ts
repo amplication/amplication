@@ -20,6 +20,8 @@ import { DeleteModuleDtoArgs } from "./dto/DeleteModuleDtoArgs";
 import { BillingService } from "../billing/billing.service";
 import { billingServiceGetBooleanEntitlementMock } from "../block/blockType.service.spec";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { subscriptionServiceFindOneMock } from "../module/module.service.spec";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
@@ -216,6 +218,15 @@ describe("ModuleDtoService", () => {
           provide: BillingService,
           useClass: jest.fn(() => ({
             getBooleanEntitlement: billingServiceGetBooleanEntitlementMock,
+            getSubscription: subscriptionServiceFindOneMock,
+          })),
+        },
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            trackWithContext: jest.fn(() => {
+              return null;
+            }),
           })),
         },
         {

@@ -18,6 +18,8 @@ import { Env } from "../../env";
 import { BillingService } from "../billing/billing.service";
 import { billingServiceGetBooleanEntitlementMock } from "../block/blockType.service.spec";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { Subscription } from "../subscription/dto/Subscription";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
@@ -25,6 +27,15 @@ const EXAMPLE_FIRST_NAME = "exampleFirstName";
 const EXAMPLE_LAST_NAME = "exampleLastName";
 const EXAMPLE_PASSWORD = "examplePassword";
 const EXAMPLE_USER_ID = "exampleUserId";
+
+export const EXAMPLE_SUBSCRIPTION: Subscription = {
+  id: "exampleSubscriptionId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  workspaceId: "exampleWorkspaceId",
+  subscriptionPlan: "Free",
+  status: "Active",
+};
 
 const EXAMPLE_ACCOUNT: Account = {
   id: EXAMPLE_ACCOUNT_ID,
@@ -69,6 +80,9 @@ const EXAMPLE_MODULE: Module = {
   versionNumber: 0,
 };
 
+export const subscriptionServiceFindOneMock = jest.fn(() => {
+  return EXAMPLE_SUBSCRIPTION;
+});
 const blockServiceFindOneMock = jest.fn(() => {
   return EXAMPLE_MODULE;
 });
@@ -132,6 +146,15 @@ describe("ModuleService", () => {
           provide: BillingService,
           useClass: jest.fn(() => ({
             getBooleanEntitlement: billingServiceGetBooleanEntitlementMock,
+            getSubscription: subscriptionServiceFindOneMock,
+          })),
+        },
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            trackWithContext: jest.fn(() => {
+              return null;
+            }),
           })),
         },
         {
