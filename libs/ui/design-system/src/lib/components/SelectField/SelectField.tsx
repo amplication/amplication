@@ -9,7 +9,6 @@ import Select, {
   MultiValue,
   SingleValue,
 } from "react-select";
-import Creatable from "react-select/creatable";
 import { OptionItem } from "../types";
 import { LABEL_CLASS, LABEL_VALUE_CLASS } from "../constants";
 import { Props as InputToolTipProps } from "../InputTooltip/InputTooltip";
@@ -23,7 +22,6 @@ export type Props = {
   options: OptionItem[];
   isMulti?: boolean;
   isClearable?: boolean;
-  isCreatable?: boolean;
   disabled?: boolean;
   inputToolTip?: InputToolTipProps | undefined;
 };
@@ -34,7 +32,6 @@ export const SelectField = ({
   options,
   isMulti,
   isClearable,
-  isCreatable,
   disabled,
   inputToolTip,
 }: Props) => {
@@ -58,21 +55,10 @@ export const SelectField = ({
   const value = useMemo(() => {
     const values = field.value || [];
 
-    if (isCreatable && isMulti && Array.isArray(values)) {
-      const currOptions = options.filter((option) =>
-        values.includes(option.value)
-      );
-      const newOptions = values
-        .filter((value) => !options.find((option) => option.value === value))
-        .map((value) => ({ value, label: value }));
-
-      return [...currOptions, ...newOptions];
-    }
-
     return isMulti
       ? options.filter((option) => values.includes(option.value))
       : options.find((option) => option.value === values);
-  }, [field, isMulti, options, isCreatable]);
+  }, [field, isMulti, options]);
 
   const groupedOptions = useMemo(() => {
     if (!options || options.length === 0) {
@@ -107,37 +93,18 @@ export const SelectField = ({
     >
       <label className={LABEL_CLASS}>
         <Label text={label} inputToolTip={inputToolTip} />
-        {isCreatable ? (
-          <Creatable
-            components={
-              options?.length
-                ? { Option: CustomOption }
-                : { DropdownIndicator: null }
-            }
-            className="select-field__container"
-            classNamePrefix="select-field"
-            {...field}
-            isMulti={isMulti}
-            isClearable={isClearable}
-            value={value}
-            onChange={handleChange}
-            options={groupedOptions}
-            isDisabled={disabled}
-          />
-        ) : (
-          <Select
-            components={{ Option: CustomOption }}
-            className="select-field__container"
-            classNamePrefix="select-field"
-            {...field}
-            isMulti={isMulti}
-            isClearable={isClearable}
-            value={value}
-            onChange={handleChange}
-            options={groupedOptions}
-            isDisabled={disabled}
-          />
-        )}
+        <Select
+          components={{ Option: CustomOption }}
+          className="select-field__container"
+          classNamePrefix="select-field"
+          {...field}
+          isMulti={isMulti}
+          isClearable={isClearable}
+          value={value}
+          onChange={handleChange}
+          options={groupedOptions}
+          isDisabled={disabled}
+        />
       </label>
       <ErrorMessage name={name} component="div" className="text-input__error" />
     </div>

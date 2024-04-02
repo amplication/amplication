@@ -22,7 +22,6 @@
   .select-field__control {
     @include textField;
     padding: 0;
-    height: auto;
 
     &--is-focused,
     &:hover {
