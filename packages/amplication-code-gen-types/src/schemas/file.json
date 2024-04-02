@@ -14,15 +14,8 @@
       "additionalItems": true,
       "minItems": 0,
       "items": {
-        "$comment": "String that the MIME type of the file must contain or a option from the enum",
-        "anyOf": [
-          {
-            "type": "string"
-          },
-          {
-            "enum": ["image/", "audio/", "video/", "application/", "document/"]
-          }
-        ]
+        "$comment": "String that the MIME type of the file may contain",
+        "type": "string"
       }
     },
     "provider": {
