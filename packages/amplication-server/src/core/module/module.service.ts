@@ -240,6 +240,7 @@ export class ModuleService extends BlockTypeService<
         },
       },
       user,
+      false,
       false
     );
 
