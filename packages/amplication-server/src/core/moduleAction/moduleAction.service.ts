@@ -123,7 +123,8 @@ export class ModuleActionService extends BlockTypeService<
   ): Promise<ModuleAction> {
     await validateCustomActionsEntitlement(
       user.workspace?.id,
-      this.billingService
+      this.billingService,
+      this.logger
     );
 
     this.validateModuleActionName(args.data.name);
@@ -176,7 +177,8 @@ export class ModuleActionService extends BlockTypeService<
   ): Promise<ModuleAction> {
     await validateCustomActionsEntitlement(
       user.workspace?.id,
-      this.billingService
+      this.billingService,
+      this.logger
     );
 
     //todo: validate that only the enabled field can be updated for default actions
@@ -228,7 +230,8 @@ export class ModuleActionService extends BlockTypeService<
   ): Promise<ModuleAction> {
     await validateCustomActionsEntitlement(
       user.workspace?.id,
-      this.billingService
+      this.billingService,
+      this.logger
     );
     const moduleAction = await super.findOne(args);
 

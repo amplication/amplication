@@ -201,7 +201,8 @@ export class ModuleDtoService extends BlockTypeService<
     }
     await validateCustomActionsEntitlement(
       user.workspace?.id,
-      this.billingService
+      this.billingService,
+      this.logger
     );
 
     await this.validateModuleDtoName(
@@ -239,7 +240,8 @@ export class ModuleDtoService extends BlockTypeService<
     //todo: validate that only the enabled field can be updated for default actions
     await validateCustomActionsEntitlement(
       user.workspace?.id,
-      this.billingService
+      this.billingService,
+      this.logger
     );
 
     const existingDto = await super.findOne({
@@ -286,7 +288,8 @@ export class ModuleDtoService extends BlockTypeService<
   ): Promise<ModuleDto> {
     await validateCustomActionsEntitlement(
       user.workspace?.id,
-      this.billingService
+      this.billingService,
+      this.logger
     );
 
     const moduleDto = await super.findOne(args);
