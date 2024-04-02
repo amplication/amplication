@@ -63,14 +63,13 @@ export class PluginInstallationService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    protected readonly billingService: BillingService,
     protected readonly logger: AmplicationLogger,
     @Inject(forwardRef(() => ResourceService))
     protected readonly resourceService: ResourceService,
     protected readonly pluginOrderService: PluginOrderService,
     private readonly analytics: SegmentAnalyticsService
   ) {
-    super(blockService, billingService, logger);
+    super(blockService, logger);
   }
 
   async create(

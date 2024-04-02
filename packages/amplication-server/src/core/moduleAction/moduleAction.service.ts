@@ -26,6 +26,7 @@ import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
 import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { validateCustomActionsEntitlement } from "../block/block.util";
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
@@ -46,7 +47,7 @@ export class ModuleActionService extends BlockTypeService<
     private readonly prisma: PrismaService,
     private configService: ConfigService
   ) {
-    super(blockService, billingService, logger);
+    super(blockService, logger);
 
     this.customActionsEnabled = Boolean(
       this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===
@@ -101,6 +102,11 @@ export class ModuleActionService extends BlockTypeService<
     args: CreateModuleActionArgs,
     user: User
   ): Promise<ModuleAction> {
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService
+    );
+
     this.validateModuleActionName(args.data.name);
 
     if (!this.customActionsEnabled) {
@@ -137,6 +143,11 @@ export class ModuleActionService extends BlockTypeService<
     args: UpdateModuleActionArgs,
     user: User
   ): Promise<ModuleAction> {
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService
+    );
+
     //todo: validate that only the enabled field can be updated for default actions
     this.validateModuleActionName(args.data.name);
 
@@ -168,6 +179,10 @@ export class ModuleActionService extends BlockTypeService<
     args: DeleteModuleActionArgs,
     @UserEntity() user: User
   ): Promise<ModuleAction> {
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService
+    );
     const moduleAction = await super.findOne(args);
 
     if (moduleAction?.actionType !== EnumModuleActionType.Custom) {

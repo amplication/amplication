@@ -30,11 +30,10 @@ export class TopicService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    protected readonly billingService: BillingService,
     protected readonly logger: AmplicationLogger,
     protected readonly serviceTopicsService: ServiceTopicsService
   ) {
-    super(blockService, billingService, logger);
+    super(blockService, logger);
   }
 
   async create(

@@ -11,8 +11,6 @@ import {
 import { UserEntity } from "../../decorators/user.decorator";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 import { JsonFilter } from "../../dto/JsonFilter";
-import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 @Injectable()
 export abstract class BlockTypeService<
@@ -26,7 +24,6 @@ export abstract class BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    protected readonly billingService: BillingService,
     protected readonly logger: AmplicationLogger
   ) {}
 
@@ -51,16 +48,7 @@ export abstract class BlockTypeService<
     );
   }
 
-  async create(
-    args: CreateArgs,
-    @UserEntity() user: User,
-    forceEntitlementValidation = false
-  ): Promise<T> {
-    if (forceEntitlementValidation)
-      await this.validateEntitlementForBlockType(
-        this.blockType,
-        user.workspace.id
-      );
+  async create(args: CreateArgs, @UserEntity() user: User): Promise<T> {
     return this.blockService.create<T>(
       {
         ...args,
@@ -76,14 +64,8 @@ export abstract class BlockTypeService<
   async update(
     args: UpdateArgs,
     @UserEntity() user: User,
-    keysToNotMerge?: string[],
-    forceEntitlementValidation = false
+    keysToNotMerge?: string[]
   ): Promise<T> {
-    if (forceEntitlementValidation)
-      await this.validateEntitlementForBlockType(
-        this.blockType,
-        user.workspace.id
-      );
     return this.blockService.update<T>(
       {
         ...args,
@@ -97,49 +79,13 @@ export abstract class BlockTypeService<
     args: DeleteArgs,
     @UserEntity() user: User,
     deleteChildBlocks = false,
-    deleteChildBlocksRecursive = true,
-    forceEntitlementValidation = false
+    deleteChildBlocksRecursive = true
   ): Promise<T> {
-    if (forceEntitlementValidation)
-      await this.validateEntitlementForBlockType(
-        this.blockType,
-        user.workspace.id
-      );
     return await this.blockService.delete(
       args,
       user,
       deleteChildBlocks,
       deleteChildBlocksRecursive
     );
-  }
-
-  async validateCustomActionsEntitlement(workspaceId: string): Promise<void> {
-    try {
-      const customActionEntitlement =
-        await this.billingService.getBooleanEntitlement(
-          workspaceId,
-          BillingFeature.CustomActions
-        );
-
-      if (!customActionEntitlement.hasAccess) {
-        throw new Error("User has no access to custom actions features");
-      }
-    } catch (error) {
-      this.logger.error(error.message, error);
-    }
-  }
-
-  async validateEntitlementForBlockType(
-    blockType: EnumBlockType,
-    workspaceId: string
-  ): Promise<void> {
-    switch (blockType) {
-      case EnumBlockType.Module ||
-        EnumBlockType.ModuleAction ||
-        EnumBlockType.ModuleDto:
-        return await this.validateCustomActionsEntitlement(workspaceId);
-      default:
-        return;
-    }
   }
 }

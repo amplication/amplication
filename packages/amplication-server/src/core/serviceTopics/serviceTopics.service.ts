@@ -32,10 +32,9 @@ export class ServiceTopicsService extends BlockTypeService<
     @Inject(forwardRef(() => ResourceService))
     private resourceService: ResourceService,
     protected readonly blockService: BlockService,
-    protected readonly billingService: BillingService,
     @Inject(AmplicationLogger) protected readonly logger: AmplicationLogger
   ) {
-    super(blockService, billingService, logger);
+    super(blockService, logger);
   }
 
   //check if the connected message broker is a resource of type "MessageBroker" in the current project

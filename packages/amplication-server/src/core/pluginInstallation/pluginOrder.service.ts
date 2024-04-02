@@ -23,10 +23,9 @@ export class PluginOrderService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    protected readonly billingService: BillingService,
     protected readonly logger: AmplicationLogger
   ) {
-    super(blockService, billingService, logger);
+    super(blockService, logger);
   }
 
   async findByResourceId(args: FindOneArgs): Promise<PluginOrder | null> {
