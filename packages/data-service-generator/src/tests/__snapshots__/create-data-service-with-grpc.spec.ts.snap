@@ -12961,7 +12961,7 @@ class PromoteUserArgs {
 export { PromoteUserArgs as PromoteUserArgs };",
   "server/src/user/PromoteUserInput.ts": "import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { InputJsonValue } from "../../types";
+import { InputJsonValue } from "../types";
 
 class PromoteUserInput {
     @ApiProperty({
