@@ -182,19 +182,5 @@ export const ENTITY_FIELD_ENUM_MAPPER: {
   [models.EnumDataType.Username]: {},
   [models.EnumDataType.Password]: {},
   [models.EnumDataType.Roles]: {},
-  // todo: add allowed mime types from enum in prototype
-  [models.EnumDataType.File]: {
-    allowedMimeTypes: [
-      { label: "Image", value: "image/" },
-      { label: "Audio", value: "audio/" },
-      { label: "Video", value: "video/" },
-      { label: "Document", value: "document/" },
-      { label: "Application", value: "application/" },
-    ],
-    provider: [
-      { label: "Local", value: "local" },
-      { label: "AWS S3", value: "s3" },
-      { label: "Google Cloud Storage", value: "gcp" },
-    ],
-  },
+  [models.EnumDataType.File]: {},
 };

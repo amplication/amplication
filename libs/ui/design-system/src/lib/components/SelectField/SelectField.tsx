@@ -109,7 +109,11 @@ export const SelectField = ({
         <Label text={label} inputToolTip={inputToolTip} />
         {isCreatable ? (
           <Creatable
-            components={{ Option: CustomOption }}
+            components={
+              options?.length
+                ? { Option: CustomOption }
+                : { DropdownIndicator: null }
+            }
             className="select-field__container"
             classNamePrefix="select-field"
             {...field}

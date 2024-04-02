@@ -18,9 +18,9 @@
         "type": "string"
       }
     },
-    "provider": {
-      "enum": ["local"],
-      "type": "string"
+    "containerPath": {
+      "type": "string",
+      "default": "/"
     }
   }
 }
