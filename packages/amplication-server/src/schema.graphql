@@ -688,7 +688,6 @@ enum EnumDataType {
   DateTime
   DecimalNumber
   Email
-  File
   GeographicLocation
   Id
   Json

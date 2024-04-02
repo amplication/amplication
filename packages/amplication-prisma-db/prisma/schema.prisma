@@ -497,7 +497,6 @@ enum EnumDataType {
   Username
   Password
   Json
-  File
 }
 
 enum EnumBlockType {
