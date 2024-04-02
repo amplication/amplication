@@ -32,6 +32,8 @@ import { UpdateModuleDtoEnumMemberArgs } from "./dto/UpdateModuleDtoEnumMemberAr
 import { DeleteModuleDtoEnumMemberArgs } from "./dto/DeleteModuleDtoEnumMemberArgs";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -60,6 +62,7 @@ export class ModuleDtoService extends BlockTypeService<
     protected readonly blockService: BlockService,
     protected readonly billingService: BillingService,
     protected readonly logger: AmplicationLogger,
+    protected readonly analytics: SegmentAnalyticsService,
     private readonly prisma: PrismaService,
     private configService: ConfigService
   ) {
@@ -79,7 +82,10 @@ export class ModuleDtoService extends BlockTypeService<
     return super.findMany(args);
   }
 
-  async findMany(args: FindManyModuleDtoArgs): Promise<ModuleDto[]> {
+  async findMany(
+    args: FindManyModuleDtoArgs,
+    user?: User
+  ): Promise<ModuleDto[]> {
     const { includeCustomDtos, includeDefaultDtos, ...rest } = args.where || {};
 
     const prismaArgs = {
@@ -92,6 +98,19 @@ export class ModuleDtoService extends BlockTypeService<
     //when undefined the default value is true
     const includeCustomDtosBoolean = includeCustomDtos !== false;
     const includeDefaultDtosBoolean = includeDefaultDtos !== false;
+
+    if (user) {
+      const subscription = await this.billingService.getSubscription(
+        user.workspace?.id
+      );
+
+      await this.analytics.trackWithContext({
+        properties: {
+          planType: subscription.subscriptionPlan,
+        },
+        event: EnumEventType.SearchAPIs,
+      });
+    }
 
     if (includeCustomDtosBoolean && includeDefaultDtosBoolean) {
       return super.findMany(prismaArgs);
@@ -140,6 +159,18 @@ export class ModuleDtoService extends BlockTypeService<
 
     this.validateModuleDtoName(args.data.name);
 
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: args.data.name,
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.CreateUserDTO,
+    });
+
     return super.create(
       {
         ...args,
@@ -174,6 +205,19 @@ export class ModuleDtoService extends BlockTypeService<
 
     args.data.displayName = args.data.name;
 
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        dtoParameters: args.data,
+        operation: "edit",
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.InteractUserDTO,
+    });
+
     return super.update(args, user);
   }
 
@@ -188,6 +232,18 @@ export class ModuleDtoService extends BlockTypeService<
         "Cannot delete a default DTO. To delete it, you must delete the entity"
       );
     }
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: moduleDto.name,
+        operation: "delete",
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.InteractUserDTO,
+    });
 
     return super.delete(args, user);
   }

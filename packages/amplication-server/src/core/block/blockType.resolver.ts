@@ -79,9 +79,10 @@ export function BlockTypeResolver<
       "where.resource.id"
     )
     async findMany(
-      @Args({ type: () => findManyArgsRef }) args: FindManyArgs
+      @Args({ type: () => findManyArgsRef }) args: FindManyArgs,
+      @UserEntity() user: User
     ): Promise<T[]> {
-      return this.service.findMany(args);
+      return this.service.findMany(args, user);
     }
 
     @Mutation(() => classRef, {
