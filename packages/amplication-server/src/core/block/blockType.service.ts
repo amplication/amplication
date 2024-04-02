@@ -14,6 +14,7 @@ import { JsonFilter } from "../../dto/JsonFilter";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
@@ -34,7 +35,7 @@ export abstract class BlockTypeService<
     return this.blockService.findOne<T>(args);
   }
 
-  async findMany(args: FindManyArgs): Promise<T[]> {
+  async findMany(args: FindManyArgs, user?: User): Promise<T[]> {
     return this.blockService.findManyByBlockType(args, this.blockType);
   }
 
@@ -61,6 +62,7 @@ export abstract class BlockTypeService<
         this.blockType,
         user.workspace.id
       );
+
     return this.blockService.create<T>(
       {
         ...args,
@@ -84,6 +86,7 @@ export abstract class BlockTypeService<
         this.blockType,
         user.workspace.id
       );
+
     return this.blockService.update<T>(
       {
         ...args,
@@ -105,6 +108,7 @@ export abstract class BlockTypeService<
         this.blockType,
         user.workspace.id
       );
+
     return await this.blockService.delete(
       args,
       user,

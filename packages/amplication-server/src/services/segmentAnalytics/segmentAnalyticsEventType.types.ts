@@ -19,6 +19,14 @@ export enum EnumEventType {
   PluginUpdate = "updatePlugin",
   DemoRepoCreate = "CreateDemoRepo",
   InvitationAcceptance = "invitationAcceptance",
+  CreateModule = "CreateModule",
+  InteractModule = "InteractModule",
+  CreateUserAction = "CreateUserAction",
+  InteractUserAction = "InteractUserAction",
+  InteractAmplicationAction = "InteractAmplicationAction",
+  CreateUserDTO = "CreateUserDTO",
+  InteractUserDTO = "InteractUserDTO",
+  SearchAPIs = "SearchAPIs",
 
   //Import Prisma Schema
   ImportPrismaSchemaStart = "importPrismaSchemaStart",

@@ -32,6 +32,9 @@ import { UpdateModuleDtoEnumMemberArgs } from "./dto/UpdateModuleDtoEnumMemberAr
 import { DeleteModuleDtoEnumMemberArgs } from "./dto/DeleteModuleDtoEnumMemberArgs";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
+import { QueryMode } from "../../enums/QueryMode";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -60,6 +63,7 @@ export class ModuleDtoService extends BlockTypeService<
     protected readonly blockService: BlockService,
     protected readonly billingService: BillingService,
     protected readonly logger: AmplicationLogger,
+    protected readonly analytics: SegmentAnalyticsService,
     private readonly prisma: PrismaService,
     private configService: ConfigService
   ) {
@@ -79,7 +83,10 @@ export class ModuleDtoService extends BlockTypeService<
     return super.findMany(args);
   }
 
-  async findMany(args: FindManyModuleDtoArgs): Promise<ModuleDto[]> {
+  async findMany(
+    args: FindManyModuleDtoArgs,
+    user?: User
+  ): Promise<ModuleDto[]> {
     const { includeCustomDtos, includeDefaultDtos, ...rest } = args.where || {};
 
     const prismaArgs = {
@@ -92,6 +99,19 @@ export class ModuleDtoService extends BlockTypeService<
     //when undefined the default value is true
     const includeCustomDtosBoolean = includeCustomDtos !== false;
     const includeDefaultDtosBoolean = includeDefaultDtos !== false;
+
+    if (user) {
+      const subscription = await this.billingService.getSubscription(
+        user.workspace?.id
+      );
+
+      await this.analytics.trackWithContext({
+        properties: {
+          planType: subscription.subscriptionPlan,
+        },
+        event: EnumEventType.SearchAPIs,
+      });
+    }
 
     if (includeCustomDtosBoolean && includeDefaultDtosBoolean) {
       return super.findMany(prismaArgs);
@@ -126,10 +146,51 @@ export class ModuleDtoService extends BlockTypeService<
     }
   }
 
-  validateModuleDtoName(moduleDtoName: string): void {
+  async validateModuleDtoName(
+    moduleDtoName: string,
+    resourceId?: string,
+    blockId?: string
+  ): Promise<void> {
     const regex = /^[a-zA-Z0-9._-]{1,249}$/;
     if (!regex.test(moduleDtoName)) {
       throw new AmplicationError("Invalid moduleDto name");
+    }
+
+    if (!resourceId) return;
+
+    let duplicateDtoName: ModuleDto[] = [];
+
+    if (!blockId) {
+      duplicateDtoName = await super.findMany({
+        where: {
+          displayName: {
+            equals: moduleDtoName,
+            mode: QueryMode.Insensitive,
+          },
+          resource: {
+            id: resourceId,
+          },
+        },
+      });
+    } else {
+      duplicateDtoName = await super.findMany({
+        where: {
+          id: {
+            not: blockId,
+          },
+          displayName: {
+            equals: moduleDtoName,
+            mode: QueryMode.Insensitive,
+          },
+          resource: {
+            id: resourceId,
+          },
+        },
+      });
+    }
+
+    if (duplicateDtoName.length > 0) {
+      throw new AmplicationError("Invalid DTO name, name already exists");
     }
   }
 
@@ -138,7 +199,22 @@ export class ModuleDtoService extends BlockTypeService<
       return null;
     }
 
-    this.validateModuleDtoName(args.data.name);
+    await this.validateModuleDtoName(
+      args.data.name,
+      args.data.resource.connect.id
+    );
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: args.data.name,
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.CreateUserDTO,
+    });
 
     return super.create(
       {
@@ -156,7 +232,6 @@ export class ModuleDtoService extends BlockTypeService<
 
   async update(args: UpdateModuleDtoArgs, user: User): Promise<ModuleDto> {
     //todo: validate that only the enabled field can be updated for default actions
-    this.validateModuleDtoName(args.data.name);
 
     const existingDto = await super.findOne({
       where: { id: args.where.id },
@@ -166,6 +241,12 @@ export class ModuleDtoService extends BlockTypeService<
       throw new AmplicationError(`Module DTO not found, ID: ${args.where.id}`);
     }
 
+    await this.validateModuleDtoName(
+      args.data.name,
+      existingDto.resourceId,
+      existingDto.id
+    );
+
     if (existingDto.dtoType !== EnumModuleDtoType.Custom) {
       if (existingDto.name !== args.data.name) {
         throw new AmplicationError("Cannot update the name of a default DTO");
@@ -173,6 +254,19 @@ export class ModuleDtoService extends BlockTypeService<
     }
 
     args.data.displayName = args.data.name;
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        dtoParameters: args.data,
+        operation: "edit",
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.InteractUserDTO,
+    });
 
     return super.update(args, user);
   }
@@ -188,6 +282,18 @@ export class ModuleDtoService extends BlockTypeService<
         "Cannot delete a default DTO. To delete it, you must delete the entity"
       );
     }
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: moduleDto.name,
+        operation: "delete",
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.InteractUserDTO,
+    });
 
     return super.delete(args, user);
   }
@@ -784,7 +890,10 @@ export class ModuleDtoService extends BlockTypeService<
       return null;
     }
 
-    this.validateModuleDtoName(args.data.name);
+    await this.validateModuleDtoName(
+      args.data.name,
+      args.data.resource.connect.id
+    );
 
     return super.create(
       {
