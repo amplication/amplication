@@ -8,7 +8,6 @@ import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 import { FindManyPluginOrderArgs } from "./dto/FindManyPluginOrderArgs";
 import { PluginOrder } from "./dto/PluginOrder";
 import { UpdatePluginOrderArgs } from "./dto/UpdatePluginOrderArgs";
-import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
@@ -23,10 +22,9 @@ export class PluginOrderService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    protected readonly billingService: BillingService,
     protected readonly logger: AmplicationLogger
   ) {
-    super(blockService, billingService, logger);
+    super(blockService, logger);
   }
 
   async findByResourceId(args: FindOneArgs): Promise<PluginOrder | null> {

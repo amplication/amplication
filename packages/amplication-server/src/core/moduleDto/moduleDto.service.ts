@@ -35,6 +35,7 @@ import { BillingService } from "../billing/billing.service";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
 import { QueryMode } from "../../enums/QueryMode";
+import { validateCustomActionsEntitlement } from "../block/block.util";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -67,7 +68,7 @@ export class ModuleDtoService extends BlockTypeService<
     private readonly prisma: PrismaService,
     private configService: ConfigService
   ) {
-    super(blockService, billingService, logger);
+    super(blockService, logger);
 
     this.customActionsEnabled = Boolean(
       this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===
@@ -198,6 +199,10 @@ export class ModuleDtoService extends BlockTypeService<
     if (!this.customActionsEnabled) {
       return null;
     }
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService
+    );
 
     await this.validateModuleDtoName(
       args.data.name,
@@ -232,6 +237,10 @@ export class ModuleDtoService extends BlockTypeService<
 
   async update(args: UpdateModuleDtoArgs, user: User): Promise<ModuleDto> {
     //todo: validate that only the enabled field can be updated for default actions
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService
+    );
 
     const existingDto = await super.findOne({
       where: { id: args.where.id },
@@ -275,6 +284,11 @@ export class ModuleDtoService extends BlockTypeService<
     args: DeleteModuleDtoArgs,
     @UserEntity() user: User
   ): Promise<ModuleDto> {
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService
+    );
+
     const moduleDto = await super.findOne(args);
 
     if (moduleDto?.dtoType !== EnumModuleDtoType.Custom) {

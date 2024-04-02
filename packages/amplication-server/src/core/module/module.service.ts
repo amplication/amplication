@@ -25,6 +25,7 @@ import {
   EnumModuleDtoPropertyType,
   EnumModuleDtoType,
 } from "@amplication/code-gen-types";
+import { validateCustomActionsEntitlement } from "../block/block.util";
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
 
@@ -49,7 +50,7 @@ export class ModuleService extends BlockTypeService<
     private readonly moduleDtoService: ModuleDtoService,
     private configService: ConfigService
   ) {
-    super(blockService, billingService, logger);
+    super(blockService, logger);
 
     this.customActionsEnabled = Boolean(
       this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===
@@ -91,10 +92,17 @@ export class ModuleService extends BlockTypeService<
   async create(
     args: CreateModuleArgs,
     user: User,
-    trackEvent = true
+    trackEvent = true,
+    forceEntitlementValidation = true
   ): Promise<Module> {
     if (!args.data.entityId && !this.customActionsEnabled) {
       return null;
+    }
+    if (forceEntitlementValidation) {
+      await validateCustomActionsEntitlement(
+        user.workspace?.id,
+        this.billingService
+      );
     }
 
     this.validateModuleName(args.data.name);
@@ -127,6 +135,11 @@ export class ModuleService extends BlockTypeService<
   }
 
   async update(args: UpdateModuleArgs, user: User): Promise<Module> {
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService
+    );
+
     const existingModule = await super.findOne({
       where: {
         id: args.where.id,
@@ -175,6 +188,11 @@ export class ModuleService extends BlockTypeService<
     args: DeleteModuleArgs,
     @UserEntity() user: User
   ): Promise<Module> {
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService
+    );
+
     const module = await super.findOne(args);
 
     if (module?.entityId) {
@@ -204,7 +222,7 @@ export class ModuleService extends BlockTypeService<
       event: EnumEventType.InteractModule,
     });
 
-    return super.delete(args, user, true, true, true);
+    return super.delete(args, user, true, true);
   }
 
   async createDefaultModuleForEntity(
@@ -222,6 +240,7 @@ export class ModuleService extends BlockTypeService<
         },
       },
       user,
+      false,
       false
     );
 

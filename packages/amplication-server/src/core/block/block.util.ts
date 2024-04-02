@@ -1,4 +1,6 @@
+import { BillingFeature } from "@amplication/util-billing-types";
 import { JsonValue } from "type-fest";
+import { BillingService } from "../billing/billing.service";
 
 const getType = (obj) =>
   Object.prototype.toString.call(obj).slice(8, -1).toLowerCase();
@@ -40,3 +42,21 @@ export const mergeAllSettings = (
     ...mergedObj,
   };
 };
+
+export async function validateCustomActionsEntitlement(
+  workspaceId: string,
+  billingService: BillingService
+): Promise<void> {
+  try {
+    const customActionEntitlement = await billingService.getBooleanEntitlement(
+      workspaceId,
+      BillingFeature.CustomActions
+    );
+
+    if (!customActionEntitlement.hasAccess) {
+      throw new Error("User has no access to custom actions features");
+    }
+  } catch (error) {
+    this.logger.error(error.message, error);
+  }
+}
