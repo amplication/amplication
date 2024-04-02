@@ -258,6 +258,25 @@ export const createPrismaSchemaFieldsHandlers: {
       field.customAttributes
     ),
   ],
+  [EnumDataType.File]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.Json,
+      false,
+      field.required,
+      field.unique,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
+    ),
+  ],
   [EnumDataType.Lookup]: (
     field: EntityField,
     entity: Entity,
