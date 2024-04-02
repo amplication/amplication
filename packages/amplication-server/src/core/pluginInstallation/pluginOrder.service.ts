@@ -8,7 +8,6 @@ import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 import { FindManyPluginOrderArgs } from "./dto/FindManyPluginOrderArgs";
 import { PluginOrder } from "./dto/PluginOrder";
 import { UpdatePluginOrderArgs } from "./dto/UpdatePluginOrderArgs";
-import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()

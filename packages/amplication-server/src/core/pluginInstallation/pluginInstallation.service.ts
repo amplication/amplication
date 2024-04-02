@@ -15,7 +15,6 @@ import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ResourceService } from "../resource/resource.service";
-import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const reOrderPlugins = (

@@ -16,7 +16,6 @@ import {
   MessagePatternCreateInput,
 } from "@amplication/code-gen-types/models";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { BillingService } from "../billing/billing.service";
 
 @Injectable()
 export class ServiceTopicsService extends BlockTypeService<
