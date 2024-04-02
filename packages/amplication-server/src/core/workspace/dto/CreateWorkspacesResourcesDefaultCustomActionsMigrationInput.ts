@@ -4,3 +4,8 @@ export class CreateWorkspacesResourcesDefaultCustomActionsMigrationInput {
   @ApiProperty()
   quantity!: number;
 }
+
+export class CreateWorkspacesResourcesDefaultCustomDtosMigrationInput {
+  @ApiProperty()
+  quantity!: number;
+}

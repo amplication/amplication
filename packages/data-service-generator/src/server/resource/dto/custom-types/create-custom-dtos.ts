@@ -83,7 +83,7 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
     if (dto.type === EnumModuleDtoType.CustomEnum) {
       return createEnumDTOModule(dto.dto, allDtoNameToPath, dto.path, false);
     }
-    return createDTOModule(dto.dto, allDtoNameToPath, dto.path, false);
+    return createDTOModule(dto.dto, allDtoNameToPath, dto.path, false, true);
   });
 
   dtoModules.forEach((module) => moduleMap.set(module));

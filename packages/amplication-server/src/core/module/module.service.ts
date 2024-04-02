@@ -18,6 +18,14 @@ import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
 import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
+import {
+  EnumModuleActionType,
+  EnumModuleDtoPropertyType,
+  EnumModuleDtoType,
+} from "@amplication/code-gen-types";
+import { validateCustomActionsEntitlement } from "../block/block.util";
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
 
@@ -37,11 +45,12 @@ export class ModuleService extends BlockTypeService<
     protected readonly blockService: BlockService,
     protected readonly billingService: BillingService,
     protected readonly logger: AmplicationLogger,
+    protected readonly analytics: SegmentAnalyticsService,
     private readonly moduleActionService: ModuleActionService,
     private readonly moduleDtoService: ModuleDtoService,
     private configService: ConfigService
   ) {
-    super(blockService, billingService, logger);
+    super(blockService, logger);
 
     this.customActionsEnabled = Boolean(
       this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===
@@ -56,12 +65,62 @@ export class ModuleService extends BlockTypeService<
     }
   }
 
-  async create(args: CreateModuleArgs, user: User): Promise<Module> {
+  async findMany(args: FindManyModuleArgs, user?: User): Promise<Module[]> {
+    const prismaArgs = {
+      ...args,
+      where: {
+        ...args.where,
+      },
+    };
+
+    if (user) {
+      const subscription = await this.billingService.getSubscription(
+        user.workspace?.id
+      );
+
+      await this.analytics.trackWithContext({
+        properties: {
+          planType: subscription.subscriptionPlan,
+        },
+        event: EnumEventType.SearchAPIs,
+      });
+    }
+
+    return super.findMany(prismaArgs);
+  }
+
+  async create(
+    args: CreateModuleArgs,
+    user: User,
+    trackEvent = true,
+    forceEntitlementValidation = true
+  ): Promise<Module> {
     if (!args.data.entityId && !this.customActionsEnabled) {
       return null;
     }
+    if (forceEntitlementValidation) {
+      await validateCustomActionsEntitlement(
+        user.workspace?.id,
+        this.billingService,
+        this.logger
+      );
+    }
 
     this.validateModuleName(args.data.name);
+
+    if (trackEvent) {
+      const subscription = await this.billingService.getSubscription(
+        user.workspace?.id
+      );
+
+      await this.analytics.trackWithContext({
+        properties: {
+          name: args.data.name,
+          planType: subscription.subscriptionPlan,
+        },
+        event: EnumEventType.CreateModule,
+      });
+    }
 
     return super.create(
       {
@@ -77,6 +136,12 @@ export class ModuleService extends BlockTypeService<
   }
 
   async update(args: UpdateModuleArgs, user: User): Promise<Module> {
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService,
+      this.logger
+    );
+
     const existingModule = await super.findOne({
       where: {
         id: args.where.id,
@@ -95,6 +160,20 @@ export class ModuleService extends BlockTypeService<
     }
 
     this.validateModuleName(args.data.name);
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: args.data.name,
+        planType: subscription.subscriptionPlan,
+        operation: "rename",
+      },
+      event: EnumEventType.InteractModule,
+    });
+
     return super.update(
       {
         ...args,
@@ -111,6 +190,12 @@ export class ModuleService extends BlockTypeService<
     args: DeleteModuleArgs,
     @UserEntity() user: User
   ): Promise<Module> {
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService,
+      this.logger
+    );
+
     const module = await super.findOne(args);
 
     if (module?.entityId) {
@@ -118,6 +203,28 @@ export class ModuleService extends BlockTypeService<
         "Cannot delete the default module for entity. To delete it, you must delete the entity"
       );
     }
+    await this.validateDtoReferencesBeforeDeleteModule(
+      module.id,
+      module.resourceId
+    );
+    await this.validateActionsDtosReferencesBeforeDeleteModule(
+      module.id,
+      module.resourceId
+    );
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: module.name,
+        planType: subscription.subscriptionPlan,
+        operation: "delete",
+      },
+      event: EnumEventType.InteractModule,
+    });
+
     return super.delete(args, user, true, true);
   }
 
@@ -135,7 +242,9 @@ export class ModuleService extends BlockTypeService<
           entityId: entity.id,
         },
       },
-      user
+      user,
+      false,
+      false
     );
 
     await this.moduleActionService.createDefaultActionsForEntityModule(
@@ -223,6 +332,124 @@ export class ModuleService extends BlockTypeService<
       entityId
     );
 
+    await this.validateDtoReferencesBeforeDeleteModule(
+      moduleId,
+      resourceId,
+      true
+    );
+    await this.validateActionsDtosReferencesBeforeDeleteModule(
+      moduleId,
+      resourceId,
+      true
+    );
+
     return super.delete({ where: { id: moduleId } }, user, true); //delete the module and all its children (actions/type...)
+  }
+
+  private async validateDtoReferencesBeforeDeleteModule(
+    moduleId: string,
+    resourceId: string,
+    isEntity = false
+  ) {
+    const deletedType = isEntity ? "entity" : "module";
+    const allResourceModuleDtos = await this.moduleDtoService.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+
+    const moduleModuleDtos = allResourceModuleDtos.filter(
+      (moduleDto) => moduleDto.parentBlockId === moduleId
+    );
+
+    const allOtherResourceCustomModuleDtos = allResourceModuleDtos.filter(
+      (moduleDto) =>
+        moduleDto.parentBlockId !== moduleId &&
+        (moduleDto.dtoType === EnumModuleDtoType.Custom ||
+          moduleDto.dtoType === EnumModuleDtoType.CustomEnum)
+    );
+
+    allOtherResourceCustomModuleDtos.forEach((moduleDto) => {
+      moduleDto.properties.forEach((prop) => {
+        if (prop) {
+          prop.propertyTypes.forEach((propType) => {
+            const currentDto = moduleModuleDtos.find(
+              (x) => x.id === propType.dtoId
+            );
+            if (currentDto)
+              throw new AmplicationError(
+                `Cannot delete ${deletedType} because DTO: ${currentDto.name} is in use in DTO: ${moduleDto.name}.`,
+                { cause: "dtoInUse" }
+              );
+          });
+        }
+      });
+    });
+  }
+
+  private async validateActionsDtosReferencesBeforeDeleteModule(
+    moduleId: string,
+    resourceId: string,
+    isEntity = false
+  ) {
+    const deletedType = isEntity ? "entity" : "module";
+
+    const moduleModuleDtos = await this.moduleDtoService.findMany({
+      where: {
+        parentBlock: {
+          id: moduleId,
+        },
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+
+    const allResourceModuleActions = await this.moduleActionService.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+
+    const allOtherResourceCustomModuleActions = allResourceModuleActions.filter(
+      (moduleAction) =>
+        moduleAction.parentBlockId !== moduleId &&
+        moduleAction.actionType === EnumModuleActionType.Custom
+    );
+
+    allOtherResourceCustomModuleActions.forEach((moduleAction) => {
+      if (
+        moduleAction.inputType.type === EnumModuleDtoPropertyType.Dto ||
+        moduleAction.inputType.type === EnumModuleDtoPropertyType.Enum
+      ) {
+        const currentDtoInput = moduleModuleDtos.find(
+          (moduleDto) => moduleDto.id === moduleAction.inputType.dtoId
+        );
+        if (currentDtoInput) {
+          throw new AmplicationError(
+            `Cannot delete ${deletedType} because DTO: ${currentDtoInput.name} is in use in Action: ${moduleAction.name}.`,
+            { cause: "ActionDtoInUse" }
+          );
+        }
+      }
+      if (
+        moduleAction.outputType.type === EnumModuleDtoPropertyType.Dto ||
+        moduleAction.outputType.type === EnumModuleDtoPropertyType.Enum
+      ) {
+        const currentDtoOutput = moduleModuleDtos.find(
+          (moduleDto) => moduleDto.id === moduleAction.outputType.dtoId
+        );
+        if (currentDtoOutput) {
+          throw new AmplicationError(
+            `Cannot delete ${deletedType} because DTO: ${currentDtoOutput.name} is in use in Action: ${moduleAction.name}.`,
+            { cause: "ActionDtoInUse" }
+          );
+        }
+      }
+    });
   }
 }

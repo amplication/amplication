@@ -79,9 +79,10 @@ export function BlockTypeResolver<
       "where.resource.id"
     )
     async findMany(
-      @Args({ type: () => findManyArgsRef }) args: FindManyArgs
+      @Args({ type: () => findManyArgsRef }) args: FindManyArgs,
+      @UserEntity() user: User
     ): Promise<T[]> {
-      return this.service.findMany(args);
+      return this.service.findMany(args, user);
     }
 
     @Mutation(() => classRef, {
@@ -96,7 +97,7 @@ export function BlockTypeResolver<
       @Args({ type: () => createArgsRef }) args: CreateArgs,
       @UserEntity() user: User
     ): Promise<T> {
-      return this.service.create(args, user, true);
+      return this.service.create(args, user);
     }
 
     @Mutation(() => classRef, {
@@ -108,7 +109,7 @@ export function BlockTypeResolver<
       @Args({ type: () => updateArgsRef }) args: UpdateArgs,
       @UserEntity() user: User
     ): Promise<T> {
-      return this.service.update(args, user, [], true);
+      return this.service.update(args, user, []);
     }
 
     @ResolveField(() => User, { nullable: true })
