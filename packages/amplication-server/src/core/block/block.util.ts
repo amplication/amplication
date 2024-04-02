@@ -57,6 +57,7 @@ export async function validateCustomActionsEntitlement(
     );
   } catch (error) {
     logger.error(error.message, error);
+    return;
   }
 
   if (!customActionEntitlement.hasAccess) {
