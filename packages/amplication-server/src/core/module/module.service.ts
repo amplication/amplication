@@ -101,7 +101,8 @@ export class ModuleService extends BlockTypeService<
     if (forceEntitlementValidation) {
       await validateCustomActionsEntitlement(
         user.workspace?.id,
-        this.billingService
+        this.billingService,
+        this.logger
       );
     }
 
@@ -137,7 +138,8 @@ export class ModuleService extends BlockTypeService<
   async update(args: UpdateModuleArgs, user: User): Promise<Module> {
     await validateCustomActionsEntitlement(
       user.workspace?.id,
-      this.billingService
+      this.billingService,
+      this.logger
     );
 
     const existingModule = await super.findOne({
@@ -190,7 +192,8 @@ export class ModuleService extends BlockTypeService<
   ): Promise<Module> {
     await validateCustomActionsEntitlement(
       user.workspace?.id,
-      this.billingService
+      this.billingService,
+      this.logger
     );
 
     const module = await super.findOne(args);
