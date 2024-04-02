@@ -14,6 +14,8 @@ import {
 } from "./dtos/UsageInsights.object";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 
+const LOC_INFRASTRUCTURE_DISCOUNT_RATIO = 5;
+
 @Injectable()
 export class UsageInsightsService {
   constructor(
@@ -221,13 +223,13 @@ export class UsageInsightsService {
   private async evaluateTimeSaved(linesOfCode: number) {
     const divisor = 10.41;
     const timeSaved = linesOfCode / divisor;
-    return Math.round(timeSaved);
+    return Math.round(timeSaved / LOC_INFRASTRUCTURE_DISCOUNT_RATIO);
   }
 
   private async evaluateCostSaved(linesOfCode: number) {
     const multiplier = 12;
     const coastSaved = multiplier * linesOfCode;
-    return Math.round(coastSaved);
+    return Math.round(coastSaved / LOC_INFRASTRUCTURE_DISCOUNT_RATIO);
   }
 
   private async evaluateCodeQuality(linesOfCode: number) {
@@ -235,7 +237,7 @@ export class UsageInsightsService {
     const divisor = 1000;
     const bugsPrevented = (multiplier * linesOfCode) / divisor;
 
-    return Math.round(bugsPrevented);
+    return Math.round(bugsPrevented / LOC_INFRASTRUCTURE_DISCOUNT_RATIO);
   }
 
   private parseQueryRaw(results: QueryRawResult[]) {
