@@ -5,7 +5,6 @@ import { BlockModule } from "../block/block.module";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { ResourceModule } from "../resource/resource.module";
 import { UserModule } from "../user/user.module";
-import { BillingService } from "../billing/billing.service";
 
 @Module({
   imports: [
@@ -14,7 +13,7 @@ import { BillingService } from "../billing/billing.service";
     PermissionsModule,
     forwardRef(() => ResourceModule),
   ],
-  providers: [ServiceTopicsService, BillingService, ServiceTopicsResolver],
+  providers: [ServiceTopicsService, ServiceTopicsResolver],
   exports: [ServiceTopicsService, ServiceTopicsResolver],
 })
 export class ServiceTopicsModule {}

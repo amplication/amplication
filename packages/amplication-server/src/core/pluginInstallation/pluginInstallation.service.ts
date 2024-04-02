@@ -15,7 +15,6 @@ import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ResourceService } from "../resource/resource.service";
-import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const reOrderPlugins = (
@@ -63,14 +62,13 @@ export class PluginInstallationService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    protected readonly billingService: BillingService,
     protected readonly logger: AmplicationLogger,
     @Inject(forwardRef(() => ResourceService))
     protected readonly resourceService: ResourceService,
     protected readonly pluginOrderService: PluginOrderService,
     private readonly analytics: SegmentAnalyticsService
   ) {
-    super(blockService, billingService, logger);
+    super(blockService, logger);
   }
 
   async create(
