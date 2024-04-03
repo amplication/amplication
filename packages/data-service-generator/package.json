@@ -1,6 +1,6 @@
 {
   "name": "data-service-generator",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "scripts": {
     "dsg:package:container": "./scripts/package-container.sh"
   },
