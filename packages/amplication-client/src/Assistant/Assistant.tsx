@@ -55,7 +55,11 @@ const Assistant = () => {
       </div>
       <div className={`${CLASS_NAME}__messages`}>
         {messages.map((message) => (
-          <AssistantMessage key={message.id} message={message} />
+          <AssistantMessage
+            key={message.id}
+            message={message}
+            onOptionClick={sendMessage}
+          />
         ))}
         {loading && (
           <div className={`${CLASS_NAME}__message`}>

@@ -77,6 +77,15 @@
     background-color: var(--gray-90);
     border-radius: var(--default-border-radius);
     padding: var(--default-spacing);
+
+    &__options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--default-spacing);
+      align-items: flex-start;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
   }
 
   &__message-role {
