@@ -26,6 +26,7 @@ import RedeemCoupon from "../User/RedeemCoupon";
 import PendingChanges from "../VersionControl/PendingChanges";
 import LastCommit from "../VersionControl/LastCommit";
 import { EnumSubscriptionStatus } from "../models";
+import Assistant from "../Assistant/Assistant";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -234,6 +235,7 @@ const WorkspaceLayout: React.FC<Props> = ({
                   </div>
                 ) : null}
               </div>
+              <Assistant />
 
               <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
               <HubSpotChatComponent
