@@ -82,6 +82,20 @@ export type ApiTokenCreateInput = {
   name: Scalars['String']['input'];
 };
 
+export type AssistantMessage = {
+  createdAt: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  role: EnumAssistantMessageRole;
+  text: Scalars['String']['output'];
+};
+
+export type AssistantThread = {
+  createdAt: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  messages?: Maybe<Array<AssistantMessage>>;
+  updatedAt: Scalars['String']['output'];
+};
+
 export type Auth = {
   /** JWT Bearer token */
   token: Scalars['String']['output'];
@@ -684,6 +698,11 @@ export enum EnumActionStepStatus {
   Running = 'Running',
   Success = 'Success',
   Waiting = 'Waiting'
+}
+
+export enum EnumAssistantMessageRole {
+  Assistant = 'Assistant',
+  User = 'User'
 }
 
 export enum EnumAuthProviderType {
@@ -1382,6 +1401,7 @@ export type Mutation = {
   redesignProject: UserAction;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
+  sendAssistantMessage: AssistantThread;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
   signup: Auth;
@@ -1737,6 +1757,11 @@ export type MutationResendInvitationArgs = {
 
 export type MutationRevokeInvitationArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type MutationSendAssistantMessageArgs = {
+  data: SendAssistantMessageInput;
 };
 
 
@@ -2662,6 +2687,11 @@ export enum Role {
   ProjectAdmin = 'ProjectAdmin',
   User = 'User'
 }
+
+export type SendAssistantMessageInput = {
+  message: Scalars['String']['input'];
+  threadId?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type ServerSettings = {
   generateGraphQL: Scalars['Boolean']['output'];

@@ -64,6 +64,20 @@ input ApiTokenCreateInput {
   name: String!
 }
 
+type AssistantMessage {
+  createdAt: String!
+  id: String!
+  role: EnumAssistantMessageRole!
+  text: String!
+}
+
+type AssistantThread {
+  createdAt: String!
+  id: String!
+  messages: [AssistantMessage!]
+  updatedAt: String!
+}
+
 type Auth {
   """JWT Bearer token"""
   token: String!
@@ -648,6 +662,11 @@ enum EnumActionStepStatus {
   Running
   Success
   Waiting
+}
+
+enum EnumAssistantMessageRole {
+  Assistant
+  User
 }
 
 enum EnumAuthProviderType {
@@ -1356,6 +1375,7 @@ type Mutation {
   redesignProject(data: RedesignProjectInput!): UserAction!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
+  sendAssistantMessage(data: SendAssistantMessageInput!): AssistantThread!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   signup(data: SignupInput!): Auth!
@@ -1870,6 +1890,11 @@ enum Role {
   OrganizationAdmin
   ProjectAdmin
   User
+}
+
+input SendAssistantMessageInput {
+  message: String!
+  threadId: String
 }
 
 type ServerSettings {

@@ -29,6 +29,7 @@ import { ModuleDtoModule } from "./moduleDto/moduleDto.module";
 import { AdministratorModule } from "./administrator/administrator.module";
 import { GptModule } from "./gpt/gpt.module";
 import { UsageInsightsModule } from "./UsageInsights/usageInsights.module";
+import { AssistantModule } from "./assistant/assistant.module";
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { UsageInsightsModule } from "./UsageInsights/usageInsights.module";
     ModuleActionModule,
     ModuleDtoModule,
     GptModule,
+    AssistantModule,
   ],
   exports: [
     AccountModule,
@@ -93,6 +95,7 @@ import { UsageInsightsModule } from "./UsageInsights/usageInsights.module";
     ModuleActionModule,
     ModuleDtoModule,
     GptModule,
+    AssistantModule,
   ],
 })
 export class CoreModule {}
