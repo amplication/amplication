@@ -56,7 +56,7 @@ const useAssistant = () => {
       {
         text: message,
         role: models.EnumAssistantMessageRole.User,
-        id: "none",
+        id: Date.now().toString(),
         createdAt: "",
       },
     ]);
