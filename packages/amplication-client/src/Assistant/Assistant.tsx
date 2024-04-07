@@ -45,14 +45,6 @@ const Assistant = () => {
 
   return (
     <div className={classNames(CLASS_NAME, { [`${CLASS_NAME}--open`]: open })}>
-      <div
-        className={`${CLASS_NAME}__toggle`}
-        onClick={() => {
-          setOpen(!open);
-        }}
-      >
-        {open ? "Close" : "Open"} Assistant
-      </div>
       <div className={`${CLASS_NAME}__messages`}>
         {messages.map((message) => (
           <AssistantMessage
@@ -79,12 +71,14 @@ const Assistant = () => {
               <Form>
                 <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
                 <TextField
+                  textarea
                   name="message"
                   label="How can I help you?"
                   disabled={loading}
                   autoFocus
                   autoComplete="off"
                   hideLabel
+                  rows={2}
                 />
                 <Button
                   type="submit"

@@ -215,8 +215,8 @@ export class AssistantService {
     createEntity: async (
       args: { name: string; serviceId: string },
       context: AssistantContext
-    ): Promise<Entity> => {
-      return this.entityService.createOneEntity(
+    ): Promise<any> => {
+      const entity = await this.entityService.createOneEntity(
         {
           data: {
             displayName: args.name,
@@ -231,6 +231,10 @@ export class AssistantService {
         },
         context.user
       );
+      return {
+        link: `https://app.amplication.com/entities/${entity.id}`,
+        result: entity,
+      };
     },
     getProjectServices: async (
       args: { projectId: string },

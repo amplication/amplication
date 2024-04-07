@@ -216,33 +216,37 @@ const WorkspaceLayout: React.FC<Props> = ({
           customerId={currentWorkspace.id}
         >
           <Track>
-            <div className={moduleClass}>
-              <WorkspaceHeader />
-              <CompleteInvitation />
-              <RedeemCoupon />
+            <div className={`${moduleClass}__assistant__wrapper`}>
+              <div className={`${moduleClass}__assistant`}>
+                <Assistant />
+              </div>
+              <div className={moduleClass}>
+                <WorkspaceHeader />
+                <CompleteInvitation />
+                <RedeemCoupon />
 
-              <div className={`${moduleClass}__page_content`}>
-                <div className={`${moduleClass}__main_content`}>
-                  {innerRoutes}
+                <div className={`${moduleClass}__page_content`}>
+                  <div className={`${moduleClass}__main_content`}>
+                    {innerRoutes}
+                  </div>
+
+                  {currentProject ? (
+                    <div className={`${moduleClass}__changes_menu`}>
+                      <PendingChanges projectId={currentProject.id} />
+                      {commitUtils.lastCommit && (
+                        <LastCommit lastCommit={commitUtils.lastCommit} />
+                      )}
+                    </div>
+                  ) : null}
                 </div>
 
-                {currentProject ? (
-                  <div className={`${moduleClass}__changes_menu`}>
-                    <PendingChanges projectId={currentProject.id} />
-                    {commitUtils.lastCommit && (
-                      <LastCommit lastCommit={commitUtils.lastCommit} />
-                    )}
-                  </div>
-                ) : null}
+                <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
+                <HubSpotChatComponent
+                  setChatStatus={setChatStatus}
+                  chatStatus={chatStatus}
+                />
+                <ScreenResolutionMessage />
               </div>
-              <Assistant />
-
-              <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
-              <HubSpotChatComponent
-                setChatStatus={setChatStatus}
-                chatStatus={chatStatus}
-              />
-              <ScreenResolutionMessage />
             </div>
           </Track>
         </StiggProvider>

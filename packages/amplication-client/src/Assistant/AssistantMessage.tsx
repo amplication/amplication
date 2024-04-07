@@ -28,7 +28,7 @@ const AssistantMessage = ({ message, onOptionClick }: Props) => {
         ) : (
           <>
             <Icon icon="ai" color={EnumTextColor.ThemeTurquoise} size="large" />
-            Assistant
+            Jovu
           </>
         )}
       </div>

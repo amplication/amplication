@@ -1,30 +1,17 @@
 @import "../style/index.scss";
 
 .assistant {
-  position: absolute;
-  left: 0;
-  top: 0;
   height: 100vh;
   box-sizing: border-box;
-  width: 50vw;
+  width: 100%;
   padding: var(--default-spacing);
-  background-color: var(--surface);
+  background: var(--theme-gradient);
   box-shadow: var(--default-box-shadow);
   z-index: 1000;
   display: flex;
   flex-direction: column;
   gap: var(--default-spacing);
   overflow: hidden;
-  border-right: 1px solid var(--border-color);
-  transition: transform 0.3s;
-  transform: translateX(-95%);
-  &.assistant--open {
-    transform: translateX(0);
-  }
-
-  &__toggle {
-    background-color: var(--primary);
-  }
 
   &__messages {
     flex: 1;
@@ -38,11 +25,11 @@
 
   &__chat_input {
     display: flex;
-    gap: var(--default-spacing);
+    gap: var(--default-spacing-small);
     align-items: center;
-    background-color: var(--gray-80);
+    background-color: var(--gray-full);
     border-radius: var(--default-border-radius);
-    padding: var(--default-spacing);
+    padding: var(--icon-spacing) var(--default-spacing);
 
     form {
       width: 100%;
@@ -58,10 +45,11 @@
           margin: 0;
         }
 
-        input {
+        textarea {
           max-width: none;
           background: transparent;
           border: none;
+          height: 48px;
 
           &:focus,
           &:active,
@@ -75,9 +63,10 @@
   }
 
   &__message {
-    background-color: var(--gray-90);
+    background-color: var(--gray-base);
     border-radius: var(--default-border-radius);
     padding: var(--default-spacing);
+    color: var(--gray-full);
 
     &__options {
       display: flex;
@@ -86,6 +75,14 @@
       align-items: flex-start;
       justify-content: flex-start;
       flex-wrap: wrap;
+
+      > .amp-button.amp-button--gradient-outline {
+        max-width: 100%;
+        text-align: left;
+        white-space: normal;
+        height: auto;
+        color: var(--gray-80);
+      }
     }
   }
 
@@ -96,6 +93,6 @@
     align-items: center;
     justify-content: flex-start;
     font-weight: semi-bold;
-    color: var(--gray-10);
+    color: var(--gray-80);
   }
 }
