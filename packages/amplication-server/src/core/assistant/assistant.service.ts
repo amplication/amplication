@@ -241,22 +241,34 @@ export class AssistantService {
       args: { projectId: string },
       context: AssistantContext
     ) => {
-      return this.resourceService.resources({
+      const resources = await this.resourceService.resources({
         where: {
           project: { id: args.projectId },
           resourceType: { equals: EnumResourceType.Service },
         },
       });
+      return resources.map((resource) => ({
+        id: resource.id,
+        name: resource.name,
+        description: resource.description,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${resource.id}`,
+      }));
     },
     getServiceEntities: async (
       args: { serviceId: string },
       context: AssistantContext
     ) => {
-      return this.entityService.entities({
+      const entities = await this.entityService.entities({
         where: {
           resource: { id: args.serviceId },
         },
       });
+      return entities.map((entity) => ({
+        id: entity.id,
+        name: entity.displayName,
+        description: entity.description,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/entities/${entity.id}`,
+      }));
     },
   };
 }
