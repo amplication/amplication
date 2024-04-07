@@ -21,6 +21,19 @@ enum EnumAssistantFunctions {
   GetServiceEntities = "getServiceEntities",
 }
 
+const INSTRUCTIONS = `You are an assistant for users in Amplication.
+The user is currently logged in and using Amplication.
+The user will be able to ask you questions about the Amplication and the code generated using Amplication.
+All questions and answers should be in the context of Amplication or the generated code. 
+The user will not be able to upload files.
+
+Your goal is to help the user build production-ready backend services easily and according to industry standards. 
+It is essential to tell the user about their ownership and control over the generated code while keeping the ability to get more code changes and updates from Amplication,
+and that they should connect to a git repository to get the code and customize it.
+
+You can also help the user with the creation of settings and configuration in Amplication, including:
+Services, message brokers, entities, entity fields, roles, actions, DTOs, and more.`;
+
 @Injectable()
 export class AssistantService {
   private assistantId: string;
@@ -64,13 +77,13 @@ export class AssistantService {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       assistant_id: this.assistantId,
       //do not expose the entire context as it may include sensitive information
-      instructions:
+      instructions: `${INSTRUCTIONS} +
         "the following context is available: " +
-        JSON.stringify({
+        ${JSON.stringify({
           workspaceId: context.workspaceId,
           projectId: context.projectId,
           serviceId: context.resourceId, //@TODO: check type? //we use service id implicitly to help the assistant differentiate between different resources
-        }),
+        })}`,
     });
 
     return this.handleRunStatus(run, threadId, context);
