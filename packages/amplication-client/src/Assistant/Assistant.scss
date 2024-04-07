@@ -132,6 +132,11 @@ $assistant-handle-top: 150px;
     padding: var(--default-spacing);
     color: var(--gray-full);
 
+    a {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
     &__options {
       display: flex;
       flex-direction: column;

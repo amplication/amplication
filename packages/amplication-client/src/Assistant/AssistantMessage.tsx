@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import UserBadge from "../Components/UserBadge";
 import * as models from "../models";
 import { AssistantMessageWithOptions } from "./hooks/useAssistant";
+import { Link } from "react-router-dom";
 
 const CLASS_NAME = "assistant";
 
@@ -32,7 +33,22 @@ const AssistantMessage = ({ message, onOptionClick }: Props) => {
           </>
         )}
       </div>
-      <ReactMarkdown>{message.text}</ReactMarkdown>
+      <ReactMarkdown
+        components={{
+          a: (props) => {
+            const url = new URL(props.href);
+            return url.host === window.location.host ? (
+              <Link to={`${url.pathname}${url.search}${url.hash}`}>
+                {props.children}
+              </Link>
+            ) : (
+              <a href={props.href}>{props.children}</a> // All other links
+            );
+          },
+        }}
+      >
+        {message.text}
+      </ReactMarkdown>
       <div className={`${CLASS_NAME}__message__options`}>
         {message.options?.map((option) => (
           <Button
