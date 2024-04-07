@@ -1,9 +1,15 @@
 @import "../style/index.scss";
 
+$wide-assistant-width: 550px;
+$assistant-width: 350px;
+$assistant-handle-width: 24px;
+$assistant-handle-top: 150px;
+
 .assistant {
   height: 100vh;
   box-sizing: border-box;
-  width: 100%;
+  width: $assistant-width;
+  box-sizing: border-box;
   padding: var(--default-spacing);
   background: var(--theme-gradient);
   box-shadow: var(--default-box-shadow);
@@ -12,6 +18,64 @@
   flex-direction: column;
   gap: var(--default-spacing);
   overflow: hidden;
+  transition: width 0.15s;
+  &--wide {
+    width: $wide-assistant-width;
+  }
+
+  &--close {
+    width: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  &__handle {
+    position: absolute;
+    top: $assistant-handle-top;
+    z-index: 9999;
+    left: 0;
+    width: $assistant-handle-width;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: var(--gray-full);
+    font-size: var(--icon-font-size);
+    background: var(--theme-gradient);
+    border-radius: 0 var(--default-border-radius) var(--default-border-radius) 0;
+
+    padding: var(--default-spacing);
+
+    .assistant__title {
+      transform: rotate(-90deg);
+      margin-top: var(--default-spacing);
+      margin-bottom: var(--default-spacing);
+    }
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--icon-spacing);
+
+    .amp-button {
+      color: var(--gray-full);
+
+      &:focus,
+      &:active,
+      &:hover {
+        color: var(--gray-base);
+      }
+    }
+  }
+
+  &__title {
+    flex: 1;
+  }
 
   &__messages {
     flex: 1;

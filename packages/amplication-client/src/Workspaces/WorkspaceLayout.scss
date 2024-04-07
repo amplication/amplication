@@ -25,15 +25,11 @@
     display: flex;
   }
   &__assistant {
-    --changes-menu-width: 400px;
-    width: var(--changes-menu-width);
-    min-width: var(--changes-menu-width);
     background: var(--menu-background-color);
     border-right: $border-dark;
     display: flex;
     flex-direction: column;
     background-color: var(--gray-full);
-    transition: width 0.3s;
   }
 
   &__changes_menu {
