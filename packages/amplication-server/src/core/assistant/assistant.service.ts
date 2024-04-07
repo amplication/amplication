@@ -38,7 +38,7 @@ Services, message brokers, entities, entity fields, roles, actions, DTOs, and mo
 export class AssistantService {
   private assistantId: string;
   private openai: OpenAI;
-
+  private clientHost: string;
   constructor(
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
@@ -53,7 +53,8 @@ export class AssistantService {
       apiKey: configService.get<string>(Env.CHAT_OPENAI_KEY),
     });
 
-    this.assistantId = configService.get<string>(Env.CHAT_ASSISTANT_ID);
+    (this.clientHost = configService.get<string>(Env.CLIENT_HOST)),
+      (this.assistantId = configService.get<string>(Env.CHAT_ASSISTANT_ID));
   }
 
   async processMessage(
@@ -232,7 +233,7 @@ export class AssistantService {
         context.user
       );
       return {
-        link: `https://app.amplication.com/entities/${entity.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/entities/${entity.id}`,
         result: entity,
       };
     },
