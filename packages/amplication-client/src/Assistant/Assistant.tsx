@@ -63,7 +63,7 @@ const Assistant = () => {
         ))}
         {loading && (
           <div className={`${CLASS_NAME}__message`}>
-            <ReactMarkdown className="amp-text--tag">Thinking...</ReactMarkdown>
+            <ReactMarkdown>Thinking...</ReactMarkdown>
           </div>
         )}
         {error && <div className={`${CLASS_NAME}__error`}>{error.message}</div>}

@@ -17,7 +17,7 @@
   overflow: hidden;
   border-right: 1px solid var(--border-color);
   transition: transform 0.3s;
-  transform: translateX(-90%);
+  transform: translateX(-95%);
   &.assistant--open {
     transform: translateX(0);
   }
@@ -33,6 +33,7 @@
     gap: var(--default-spacing);
     overflow-y: auto;
     padding: var(--default-spacing);
+    font-size: var(--tag-font-size);
   }
 
   &__chat_input {

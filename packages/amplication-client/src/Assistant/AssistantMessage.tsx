@@ -1,7 +1,8 @@
 import {
   Button,
   EnumButtonStyle,
-  UserAvatar,
+  EnumTextColor,
+  Icon,
 } from "@amplication/ui/design-system";
 import ReactMarkdown from "react-markdown";
 import UserBadge from "../Components/UserBadge";
@@ -20,13 +21,18 @@ const AssistantMessage = ({ message, onOptionClick }: Props) => {
     <div key={message.id} className={`${CLASS_NAME}__message`}>
       <div className={`${CLASS_NAME}__message-role`}>
         {message.role === models.EnumAssistantMessageRole.User ? (
-          <UserBadge />
+          <>
+            {" "}
+            <UserBadge /> You
+          </>
         ) : (
-          <UserAvatar firstName={"A"} lastName={"P"} />
+          <>
+            <Icon icon="ai" color={EnumTextColor.ThemeTurquoise} size="large" />
+            Assistant
+          </>
         )}
-        You
       </div>
-      <ReactMarkdown className="amp-text--tag">{message.text}</ReactMarkdown>
+      <ReactMarkdown>{message.text}</ReactMarkdown>
       <div className={`${CLASS_NAME}__message__options`}>
         {message.options?.map((option) => (
           <Button
