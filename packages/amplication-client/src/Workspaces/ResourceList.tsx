@@ -155,10 +155,10 @@ function ResourceList() {
       </Panel>
 
       <FlexItem
-        direction={EnumFlexDirection.Row}
+        className={`${CLASS_NAME}__content`}
+        direction={EnumFlexDirection.Column}
         itemsAlign={EnumItemsAlign.Stretch}
       >
-        <UsageInsights projectIds={[currentProject?.id]} />
         <Panel
           panelStyle={EnumPanelStyle.Bordered}
           className={`${CLASS_NAME}__resources`}
@@ -190,6 +190,7 @@ function ResourceList() {
             </List>
           )}
         </Panel>
+        <UsageInsights projectIds={[currentProject?.id]} />
       </FlexItem>
 
       <Snackbar

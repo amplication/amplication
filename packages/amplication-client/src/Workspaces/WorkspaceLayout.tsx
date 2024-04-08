@@ -27,6 +27,7 @@ import PendingChanges from "../VersionControl/PendingChanges";
 import LastCommit from "../VersionControl/LastCommit";
 import { EnumSubscriptionStatus } from "../models";
 import Assistant from "../Assistant/Assistant";
+import ResponsiveContainer from "../Components/ResponsiveContainer";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -226,9 +227,11 @@ const WorkspaceLayout: React.FC<Props> = ({
                 <RedeemCoupon />
 
                 <div className={`${moduleClass}__page_content`}>
-                  <div className={`${moduleClass}__main_content`}>
+                  <ResponsiveContainer
+                    className={`${moduleClass}__main_content`}
+                  >
                     {innerRoutes}
-                  </div>
+                  </ResponsiveContainer>
 
                   {currentProject ? (
                     <div className={`${moduleClass}__changes_menu`}>
