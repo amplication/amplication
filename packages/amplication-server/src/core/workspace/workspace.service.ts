@@ -761,6 +761,66 @@ export class WorkspaceService {
     return true;
   }
 
+  async dataMigrateWorkspaceResourcesCustomDtos(
+    workspaceId: string
+  ): Promise<boolean> {
+    const currentWorkspace = await this.prisma.workspace.findFirst({
+      where: {
+        id: workspaceId,
+        projects: {
+          some: {
+            deletedAt: null,
+            resources: {
+              some: {
+                deletedAt: null,
+                archived: { not: true },
+                resourceType: EnumResourceType.Service,
+                blocks: { none: { blockType: EnumBlockType.ModuleDto } },
+                entities: { some: { deletedAt: null } },
+              },
+            },
+          },
+        },
+      },
+      include: {
+        users: {
+          orderBy: {
+            lastActive: Prisma.SortOrder.asc,
+          },
+        },
+        projects: {
+          where: {
+            deletedAt: null,
+          },
+          include: {
+            resources: {
+              include: {
+                entities: {
+                  where: {
+                    deletedAt: null,
+                  },
+                },
+              },
+              where: {
+                resourceType: EnumResourceType.Service,
+                deletedAt: null,
+                archived: { not: true },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!currentWorkspace) return;
+
+    await this.migrateWorkspacesDefaultDtos([currentWorkspace]);
+
+    await this.prisma.$disconnect();
+
+    return true;
+  }
+
   async dataMigrateWorkspacesResourcesCustomActionsFix(
     quantity: number
   ): Promise<boolean> {
