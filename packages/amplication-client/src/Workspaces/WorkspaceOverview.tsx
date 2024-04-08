@@ -28,6 +28,7 @@ import { EnumSubscriptionPlan } from "../models";
 import { GET_WORKSPACE_MEMBERS, TData as MemberListData } from "./MemberList";
 import WorkspaceSelector, { getWorkspaceColor } from "./WorkspaceSelector";
 import { UsageInsights } from "../UsageInsights/UsageInsights";
+import "./WorkspaceOverview.scss";
 
 const CLASS_NAME = "workspace-overview";
 const PAGE_TITLE = "Workspace Overview";
@@ -115,15 +116,15 @@ export const WorkspaceOverview = () => {
         </FlexItem>
       </Panel>
       <FlexItem
-        direction={EnumFlexDirection.Row}
+        className={`${CLASS_NAME}__content`}
+        direction={EnumFlexDirection.Column}
         itemsAlign={EnumItemsAlign.Stretch}
       >
-        <UsageInsights projectIds={projectIds} />
-
         <ProjectList
           projects={projectsList}
           workspaceId={currentWorkspace.id}
         />
+        <UsageInsights projectIds={projectIds} />
       </FlexItem>
     </PageContent>
   );
