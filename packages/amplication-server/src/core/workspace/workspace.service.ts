@@ -1142,20 +1142,9 @@ export class WorkspaceService {
       const entityModuleId =
         await this.moduleService.getDefaultModuleIdForEntity(resourceId, id);
 
-      const entityModule = await this.moduleService.findOne({
-        where: {
-          id: entityModuleId,
-        },
-      });
-
-      if (!entityModule) {
-        this.logger.warn(`entity module not found for entity: ${entity.name}`);
-        return;
-      }
-
       await this.moduleDtoService.createDefaultDtosForEntityModule(
         entity,
-        entityModule,
+        entityModuleId,
         user
       );
 
@@ -1186,7 +1175,7 @@ export class WorkspaceService {
             entity,
             field,
             relatedEntity,
-            entityModule.id,
+            entityModuleId,
             user
           );
         } catch (error) {

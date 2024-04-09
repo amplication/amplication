@@ -501,7 +501,7 @@ describe("ModuleDtoService", () => {
     expect(
       await service.createDefaultDtosForEntityModule(
         EXAMPLE_ENTITY,
-        EXAMPLE_MODULE,
+        EXAMPLE_MODULE.id,
         EXAMPLE_USER
       )
     ).toEqual([
@@ -1207,7 +1207,7 @@ describe("ModuleDtoService", () => {
     expect(
       await service.createDefaultDtosForEntityModule(
         EXAMPLE_ENTITY,
-        EXAMPLE_MODULE,
+        EXAMPLE_MODULE.id,
         EXAMPLE_USER
       )
     ).toEqual([]);

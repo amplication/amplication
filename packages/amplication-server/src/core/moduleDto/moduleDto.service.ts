@@ -317,7 +317,7 @@ export class ModuleDtoService extends BlockTypeService<
 
   async createDefaultDtosForEntityModule(
     entity: Entity,
-    module: Module,
+    moduleId: Module["id"],
     user: User
   ): Promise<ModuleDto[]> {
     if (!this.customActionsEnabled) {
@@ -341,7 +341,7 @@ export class ModuleDtoService extends BlockTypeService<
                 properties: [], //default DTOs do not have properties
                 parentBlock: {
                   connect: {
-                    id: module.id,
+                    id: moduleId,
                   },
                 },
                 resource: {
@@ -418,7 +418,7 @@ export class ModuleDtoService extends BlockTypeService<
     entity: Entity,
     relatedField: EntityField,
     relatedEntity: Entity,
-    moduleId: string,
+    moduleId: ModuleDto["id"],
     user: User
   ): Promise<ModuleDto[]> {
     if (!this.customActionsEnabled) {
