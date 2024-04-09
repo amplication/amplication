@@ -327,17 +327,31 @@ export class ModuleDtoService extends BlockTypeService<
     const defaultDtos = await getDefaultDtosForEntity(
       entity as unknown as CodeGenTypes.Entity
     );
-    return await Promise.all(
-      Object.keys(defaultDtos).map((dto) => {
-        const dtoData = defaultDtos[dto];
+    const existingModuleDtosForEntity = await this.findMany({
+      where: {
+        parentBlock: {
+          id: moduleId,
+        },
+      },
+    });
 
+    const existingModuleDtosForEntityMap = existingModuleDtosForEntity.reduce(
+      (map, dto) => {
+        map[dto.dtoType] = dto;
+        return map;
+      },
+      {} as Record<string, ModuleDto>
+    );
+
+    const promisesResults = await Promise.allSettled(
+      Object.entries(defaultDtos).map(async ([dtoType, dtoData]) => {
         return (
-          defaultDtos[dto] &&
+          existingModuleDtosForEntityMap[dtoType] ??
           super.create(
             {
               data: {
                 ...dtoData,
-                displayName: defaultDtos[dto].name,
+                displayName: dtoData.name,
                 properties: [], //default DTOs do not have properties
                 parentBlock: {
                   connect: {
@@ -357,6 +371,16 @@ export class ModuleDtoService extends BlockTypeService<
         );
       })
     );
+
+    return promisesResults.map((result) => {
+      if (result.status === "rejected") {
+        const error = result.reason as Error;
+        this.logger.error(error.message, error, ModuleDtoService.name);
+        return null;
+      }
+
+      return result.value;
+    });
   }
 
   //call this function when the entity names changes, and we need to update the default dtos
