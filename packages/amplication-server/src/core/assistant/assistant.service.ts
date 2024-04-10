@@ -14,12 +14,14 @@ import { camelCase } from "camel-case";
 import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { ModuleService } from "../module/module.service";
+import { ProjectService } from "../project/project.service";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
   GetProjectServices = "getProjectServices",
   GetServiceEntities = "getServiceEntities",
   CreateService = "createService",
+  CreateProject = "createProject",
 }
 
 @Injectable()
@@ -33,6 +35,7 @@ export class AssistantService {
     private readonly entityService: EntityService,
     private readonly resourceService: ResourceService,
     private readonly moduleService: ModuleService,
+    private readonly projectService: ProjectService,
 
     configService: ConfigService
   ) {
@@ -316,6 +319,32 @@ export class AssistantService {
           id: resource.id,
           name: resource.name,
           description: resource.description,
+        },
+      };
+    },
+    createProject: async (
+      args: { projectName: string },
+      context: AssistantContext
+    ) => {
+      const project = await this.projectService.createProject(
+        {
+          data: {
+            name: args.projectName,
+            workspace: {
+              connect: {
+                id: context.workspaceId,
+              },
+            },
+          },
+        },
+        context.user.id
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${project.id}`,
+        connectToGitLink: `${this.clientHost}/${context.workspaceId}/${project.id}/git-sync`,
+        result: {
+          id: project.id,
+          name: project.name,
         },
       };
     },
