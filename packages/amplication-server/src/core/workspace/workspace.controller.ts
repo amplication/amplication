@@ -70,7 +70,7 @@ export class WorkspaceController {
     data: CreateWorkspacesResourcesDefaultCustomDtosMigrationInput
   ): Promise<boolean> {
     this.logger.info("createWorkspacesResourcesDefaultCustomDtosMigration....");
-    const { quantity } = data;
+    const { quantity, page } = data;
 
     if (
       this.configService.get<string>("CUSTOM_ACTION_MIGRATION_TOKEN") !== token
@@ -79,7 +79,8 @@ export class WorkspaceController {
       return;
     }
     return this.workspaceService.dataMigrateWorkspacesResourcesCustomDtos(
-      quantity
+      quantity,
+      page
     );
   }
 }

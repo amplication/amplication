@@ -501,7 +501,7 @@ describe("ModuleDtoService", () => {
     expect(
       await service.createDefaultDtosForEntityModule(
         EXAMPLE_ENTITY,
-        EXAMPLE_MODULE,
+        EXAMPLE_MODULE.id,
         EXAMPLE_USER
       )
     ).toEqual([
@@ -717,6 +717,231 @@ describe("ModuleDtoService", () => {
     expect(blockServiceCreateMock).toBeCalledTimes(13);
   });
 
+  it("should create default dtos for entity only if not already created", async () => {
+    const mockServiceFindMany = jest.spyOn(service, "findMany");
+
+    const expectedExistingModuleDto: ModuleDto = {
+      dtoType: EnumModuleDtoType.Entity,
+      blockType: "ModuleDto",
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+      description: "the Example entity model",
+      displayName: "ExampleEntity",
+      enabled: true,
+      id: "exampleDtoId",
+      inputParameters: null,
+      name: "ExampleEntity",
+      outputParameters: null,
+      parentBlock: null,
+      versionNumber: 0,
+      properties: [],
+    };
+    mockServiceFindMany.mockResolvedValue([expectedExistingModuleDto]);
+
+    expect(
+      await service.createDefaultDtosForEntityModule(
+        EXAMPLE_ENTITY,
+        EXAMPLE_MODULE.id,
+        EXAMPLE_USER
+      )
+    ).toEqual([
+      {
+        dtoType: EnumModuleDtoType.CountArgs,
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        description: "Input type for Example entity count",
+        displayName: "ExampleEntityCountArgs",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "ExampleEntityCountArgs",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        versionNumber: 0,
+      },
+      {
+        dtoType: EnumModuleDtoType.CreateArgs,
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        description: "Args type for Example entity creation",
+        displayName: "CreateExampleEntityArgs",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "CreateExampleEntityArgs",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        versionNumber: 0,
+      },
+      {
+        dtoType: EnumModuleDtoType.CreateInput,
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        description: "Input type for Example entity creation",
+        displayName: "ExampleEntityCreateInput",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "ExampleEntityCreateInput",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        versionNumber: 0,
+      },
+      {
+        dtoType: EnumModuleDtoType.DeleteArgs,
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        description: "Args type for Example entity deletion",
+        displayName: "DeleteExampleEntityArgs",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "DeleteExampleEntityArgs",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        versionNumber: 0,
+      },
+      {
+        dtoType: EnumModuleDtoType.FindManyArgs,
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        description: "Args type for Example entity search",
+        displayName: "ExampleEntityFindManyArgs",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "ExampleEntityFindManyArgs",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        versionNumber: 0,
+      },
+      {
+        dtoType: EnumModuleDtoType.FindOneArgs,
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        description: "Args type for Example entity retrieval",
+        displayName: "ExampleEntityFindUniqueArgs",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "ExampleEntityFindUniqueArgs",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        versionNumber: 0,
+      },
+      {
+        dtoType: EnumModuleDtoType.ListRelationFilter,
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        description: "Input type for Example entity relation filter",
+        displayName: "ExampleEntityListRelationFilter",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "ExampleEntityListRelationFilter",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        versionNumber: 0,
+      },
+      {
+        dtoType: EnumModuleDtoType.OrderByInput,
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        description: "Input type for Example entity sorting",
+        displayName: "ExampleEntityOrderByInput",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "ExampleEntityOrderByInput",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        versionNumber: 0,
+      },
+      {
+        dtoType: EnumModuleDtoType.UpdateArgs,
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        description: "Args type for Example entity update",
+        displayName: "UpdateExampleEntityArgs",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "UpdateExampleEntityArgs",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        versionNumber: 0,
+      },
+      {
+        dtoType: EnumModuleDtoType.UpdateInput,
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        description: "Input type for Example entity update",
+        displayName: "ExampleEntityUpdateInput",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "ExampleEntityUpdateInput",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        versionNumber: 0,
+      },
+      {
+        dtoType: EnumModuleDtoType.WhereInput,
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        description: "Input type for Example entity search",
+        displayName: "ExampleEntityWhereInput",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "ExampleEntityWhereInput",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        versionNumber: 0,
+      },
+      {
+        dtoType: EnumModuleDtoType.WhereUniqueInput,
+        blockType: "ModuleDto",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        description: "Input type for Example entity retrieval",
+        displayName: "ExampleEntityWhereUniqueInput",
+        enabled: true,
+        id: "exampleDtoId",
+        inputParameters: null,
+        name: "ExampleEntityWhereUniqueInput",
+        outputParameters: null,
+        parentBlock: null,
+        properties: [],
+        versionNumber: 0,
+      },
+    ]);
+    expect(mockServiceFindMany).toBeCalledTimes(1);
+    expect(blockServiceCreateMock).toBeCalledTimes(12);
+  });
+
   it("should update default dtos for entity", async () => {
     await service.updateDefaultDtosForEntityModule(
       EXAMPLE_ENTITY,
@@ -835,7 +1060,7 @@ describe("ModuleDtoService", () => {
         EXAMPLE_MODULE.id,
         EXAMPLE_USER
       )
-    ).toEqual(null);
+    ).toEqual([]);
   });
 
   it("should not update default dtos for relation field when it is not one-to-many ", async () => {
@@ -1207,7 +1432,7 @@ describe("ModuleDtoService", () => {
     expect(
       await service.createDefaultDtosForEntityModule(
         EXAMPLE_ENTITY,
-        EXAMPLE_MODULE,
+        EXAMPLE_MODULE.id,
         EXAMPLE_USER
       )
     ).toEqual([]);
