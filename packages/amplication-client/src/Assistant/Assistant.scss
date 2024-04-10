@@ -5,14 +5,32 @@ $assistant-width: 350px;
 $assistant-handle-width: 24px;
 $assistant-handle-top: 150px;
 
+#root {
+  // --assistant-background: var(--theme-gradient);
+  // --assistant-message-background: var(--gray-base);
+  // --assistant-message-color: var(--gray-full);
+  // --assistant-title-color: var(--gray-base);
+  // --assistant-role-color: var(--gray-80);
+  // --assistant-handle-background: var(--theme-gradient);
+
+  --assistant-background: var(--surface);
+  --assistant-message-background: var(--gray-full);
+  --assistant-message-color: var(--gray-base);
+  --assistant-title-color: var(--gray-base);
+  --assistant-role-color: var(--gray-base);
+  --assistant-handle-background: var(--theme-gradient);
+
+  --assistant-box-shadow: 5px 0px 5px rgba(56, 28, 138, 0.06);
+}
+
 .assistant {
   height: 100vh;
   box-sizing: border-box;
   width: $assistant-width;
   box-sizing: border-box;
   padding: var(--default-spacing);
-  background: var(--theme-gradient);
-  box-shadow: var(--default-box-shadow);
+  background: var(--assistant-background);
+  box-shadow: var(--assistant-box-shadow);
   z-index: 1000;
   display: flex;
   flex-direction: column;
@@ -43,7 +61,7 @@ $assistant-handle-top: 150px;
     cursor: pointer;
     color: var(--gray-full);
     font-size: var(--icon-font-size);
-    background: var(--theme-gradient);
+    background: var(--assistant-handle-background);
     border-radius: 0 var(--default-border-radius) var(--default-border-radius) 0;
 
     padding: var(--default-spacing);
@@ -61,6 +79,10 @@ $assistant-handle-top: 150px;
     justify-content: space-between;
     align-items: center;
     gap: var(--icon-spacing);
+    background: var(--assistant-handle-background);
+    margin: calc(var(--default-spacing) * -1);
+    margin-bottom: 0;
+    padding: var(--default-spacing-small);
 
     .amp-button {
       color: var(--gray-full);
@@ -75,6 +97,7 @@ $assistant-handle-top: 150px;
 
   &__title {
     flex: 1;
+    color: var(--assistant-title-color);
   }
 
   &__messages {
@@ -127,10 +150,17 @@ $assistant-handle-top: 150px;
   }
 
   &__message {
-    background-color: var(--gray-base);
+    background-color: var(--assistant-message-background);
     border-radius: var(--default-border-radius);
     padding: var(--default-spacing);
-    color: var(--gray-full);
+    color: var(--assistant-message-color);
+    position: relative;
+
+    pre {
+      overflow: auto;
+      background: var(--gray-90);
+      padding: var(--default-spacing);
+    }
 
     a {
       color: var(--primary);
@@ -150,7 +180,7 @@ $assistant-handle-top: 150px;
         text-align: left;
         white-space: normal;
         height: auto;
-        color: var(--gray-80);
+        color: var(--assistant-message-color);
       }
     }
   }
@@ -162,6 +192,6 @@ $assistant-handle-top: 150px;
     align-items: center;
     justify-content: flex-start;
     font-weight: semi-bold;
-    color: var(--gray-80);
+    color: var(--assistant-role-color);
   }
 }
