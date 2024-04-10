@@ -522,6 +522,54 @@ export class ResourceService {
     }
   }
 
+  async createServiceWithDefaultSettings(
+    serviceName: string,
+    serviceDescription: string,
+    projectId: string,
+    adminUIPath: string,
+    serverPath: string,
+    user: User
+  ): Promise<Resource> {
+    const args: CreateOneResourceArgs = {
+      data: {
+        name: serviceName,
+        description: serviceDescription,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        resourceType: EnumResourceType.Service,
+        serviceSettings: {
+          adminUISettings: {
+            adminUIPath: adminUIPath,
+            generateAdminUI: true,
+          },
+          serverSettings: {
+            serverPath: serverPath,
+            generateGraphQL: true,
+            generateRestApi: true,
+            generateServer: true,
+          },
+          authProvider: EnumAuthProviderType.Jwt, //@todo: remove this property
+        },
+
+        gitRepository: {
+          isOverrideGitRepository: false,
+          name: "",
+          resourceId: "",
+          gitOrganizationId: "",
+        },
+      },
+    };
+
+    const resource = await this.createService(args, user);
+
+    await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
+
+    return resource;
+  }
+
   async redesignProject(
     args: RedesignProjectArgs,
     user: User

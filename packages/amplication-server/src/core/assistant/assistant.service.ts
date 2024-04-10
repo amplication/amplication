@@ -13,12 +13,12 @@ import { plural } from "pluralize";
 import { camelCase } from "camel-case";
 import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { Entity } from "../../models";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
   GetProjectServices = "getProjectServices",
   GetServiceEntities = "getServiceEntities",
+  CreateService = "createService",
 }
 
 const INSTRUCTIONS = `You are an assistant for users in Amplication.
@@ -217,11 +217,15 @@ export class AssistantService {
       args: { name: string; serviceId: string },
       context: AssistantContext
     ): Promise<any> => {
+      let pluralDisplayName = plural(args.name);
+      if (pluralDisplayName === args.name) {
+        pluralDisplayName = `${args.name}Items`;
+      }
       const entity = await this.entityService.createOneEntity(
         {
           data: {
             displayName: args.name,
-            pluralDisplayName: plural(args.name),
+            pluralDisplayName: pluralDisplayName,
             name: camelCase(args.name),
             resource: {
               connect: {
@@ -269,6 +273,34 @@ export class AssistantService {
         description: entity.description,
         link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/entities/${entity.id}`,
       }));
+    },
+    createService: async (
+      args: {
+        serviceName: string;
+        serviceDescription: string;
+        projectId: string;
+        adminUIPath: string;
+        serverPath: string;
+      },
+      context: AssistantContext
+    ) => {
+      const resource =
+        await this.resourceService.createServiceWithDefaultSettings(
+          args.serviceName,
+          args.serviceDescription,
+          args.projectId,
+          args.adminUIPath,
+          args.serverPath,
+          context.user
+        );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${args.projectId}/${resource.id}`,
+        result: {
+          id: resource.id,
+          name: resource.name,
+          description: resource.description,
+        },
+      };
     },
   };
 }
