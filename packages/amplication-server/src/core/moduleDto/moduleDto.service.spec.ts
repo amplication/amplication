@@ -745,7 +745,6 @@ describe("ModuleDtoService", () => {
         EXAMPLE_USER
       )
     ).toEqual([
-      expectedExistingModuleDto,
       {
         dtoType: EnumModuleDtoType.CountArgs,
         blockType: "ModuleDto",
@@ -1061,7 +1060,7 @@ describe("ModuleDtoService", () => {
         EXAMPLE_MODULE.id,
         EXAMPLE_USER
       )
-    ).toEqual(null);
+    ).toEqual([]);
   });
 
   it("should not update default dtos for relation field when it is not one-to-many ", async () => {

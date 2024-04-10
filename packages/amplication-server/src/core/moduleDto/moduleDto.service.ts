@@ -345,42 +345,42 @@ export class ModuleDtoService extends BlockTypeService<
 
     const promisesResults = await Promise.allSettled(
       Object.entries(defaultDtos).map(async ([dtoType, dtoData]) => {
-        return (
-          existingModuleDtosForEntityMap[dtoType] ??
-          super.create(
-            {
-              data: {
-                ...dtoData,
-                displayName: dtoData.name,
-                properties: [], //default DTOs do not have properties
-                parentBlock: {
-                  connect: {
-                    id: moduleId,
+        return existingModuleDtosForEntityMap[dtoType]
+          ? null
+          : super.create(
+              {
+                data: {
+                  ...dtoData,
+                  displayName: dtoData.name,
+                  properties: [], //default DTOs do not have properties
+                  parentBlock: {
+                    connect: {
+                      id: moduleId,
+                    },
                   },
-                },
-                resource: {
-                  connect: {
-                    id: entity.resourceId,
+                  resource: {
+                    connect: {
+                      id: entity.resourceId,
+                    },
                   },
                 },
               },
-            },
-            user
-            //@todo: create properties
-          )
-        );
+              user
+              //@todo: create properties
+            );
       })
     );
 
-    return promisesResults.map((result) => {
+    return promisesResults.reduce((acc, result) => {
+      // if the promise was rejected or the moduleDto Block was already created, we return the accumulator
       if (result.status === "rejected") {
         const error = result.reason as Error;
         this.logger.error(error.message, error, ModuleDtoService.name);
-        return null;
+        return acc;
       }
 
-      return result.value;
-    });
+      return result.value ? [...acc, result.value] : acc;
+    }, [] as ModuleDto[]);
   }
 
   //call this function when the entity names changes, and we need to update the default dtos
@@ -455,7 +455,7 @@ export class ModuleDtoService extends BlockTypeService<
 
     //We only need to create default DTOs for many-to-one relations
     if (!properties.allowMultipleSelection) {
-      return null;
+      return [];
     }
 
     //Check if a default dto already exists for this relation
@@ -473,42 +473,57 @@ export class ModuleDtoService extends BlockTypeService<
       }
     );
 
-    if (existingDefaultDto.length > 0) {
-      return existingDefaultDto;
-    }
-
     const defaultDtos = await getDefaultDtosForRelatedEntity(
       entity as unknown as CodeGenTypes.Entity,
       relatedEntity as unknown as CodeGenTypes.Entity
     );
-    return await Promise.all(
-      Object.keys(defaultDtos).map((dto) => {
-        return (
-          defaultDtos[dto] &&
-          super.create(
-            {
-              data: {
-                ...defaultDtos[dto],
-                displayName: defaultDtos[dto].name,
-                relatedEntityId: relatedEntity.id,
-                properties: [], //default DTOs do not have properties
-                parentBlock: {
-                  connect: {
-                    id: moduleId,
+
+    const existingModuleDtosForRelationMap = existingDefaultDto.reduce(
+      (map, dto) => {
+        map[dto.dtoType] = dto;
+        return map;
+      },
+      {} as Record<string, ModuleDto>
+    );
+
+    const promisesResults = await Promise.allSettled(
+      Object.entries(defaultDtos).map(([dtoType, dtoData]) => {
+        return existingModuleDtosForRelationMap[dtoType]
+          ? null
+          : super.create(
+              {
+                data: {
+                  ...dtoData,
+                  displayName: dtoData.name,
+                  relatedEntityId: relatedEntity.id,
+                  properties: [], //default DTOs do not have properties
+                  parentBlock: {
+                    connect: {
+                      id: moduleId,
+                    },
                   },
-                },
-                resource: {
-                  connect: {
-                    id: entity.resourceId,
+                  resource: {
+                    connect: {
+                      id: entity.resourceId,
+                    },
                   },
                 },
               },
-            },
-            user
-          )
-        );
+              user
+            );
       })
     );
+
+    return promisesResults.reduce((acc, result) => {
+      // if the promise was rejected or the moduleDto Block was already created, we return the accumulator
+      if (result.status === "rejected") {
+        const error = result.reason as Error;
+        this.logger.error(error.message, error, ModuleDtoService.name);
+        return acc;
+      }
+
+      return result.value ? [...acc, result.value] : acc;
+    }, [] as ModuleDto[]);
   }
 
   async updateDefaultDtosForRelatedEntity(
