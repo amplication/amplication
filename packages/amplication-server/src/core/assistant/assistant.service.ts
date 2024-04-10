@@ -13,6 +13,7 @@ import { plural } from "pluralize";
 import { camelCase } from "camel-case";
 import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { ModuleService } from "../module/module.service";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -20,19 +21,6 @@ enum EnumAssistantFunctions {
   GetServiceEntities = "getServiceEntities",
   CreateService = "createService",
 }
-
-const INSTRUCTIONS = `You are an assistant for users in Amplication.
-The user is currently logged in and using Amplication.
-The user will be able to ask you questions about the Amplication and the code generated using Amplication.
-All questions and answers should be in the context of Amplication or the generated code. 
-The user will not be able to upload files.
-
-Your goal is to help the user build production-ready backend services easily and according to industry standards. 
-It is essential to tell the user about their ownership and control over the generated code while keeping the ability to get more code changes and updates from Amplication,
-and that they should connect to a git repository to get the code and customize it.
-
-You can also help the user with the creation of settings and configuration in Amplication, including:
-Services, message brokers, entities, entity fields, roles, actions, DTOs, and more.`;
 
 @Injectable()
 export class AssistantService {
@@ -44,6 +32,7 @@ export class AssistantService {
     private readonly logger: AmplicationLogger,
     private readonly entityService: EntityService,
     private readonly resourceService: ResourceService,
+    private readonly moduleService: ModuleService,
 
     configService: ConfigService
   ) {
@@ -78,8 +67,8 @@ export class AssistantService {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       assistant_id: this.assistantId,
       //do not expose the entire context as it may include sensitive information
-      instructions: `${INSTRUCTIONS} +
-        "the following context is available: " +
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      additional_instructions: `The following context is available: 
         ${JSON.stringify({
           workspaceId: context.workspaceId,
           projectId: context.projectId,
@@ -214,7 +203,7 @@ export class AssistantService {
     ) => any;
   } = {
     createEntity: async (
-      args: { name: string; serviceId: string },
+      args: { name: string; serviceId: string; fields: string[] },
       context: AssistantContext
     ): Promise<any> => {
       let pluralDisplayName = plural(args.name);
@@ -236,8 +225,36 @@ export class AssistantService {
         },
         context.user
       );
+
+      if (args.fields && args.fields.length > 0) {
+        await Promise.all(
+          args.fields.map(async (field) => {
+            await this.entityService.createFieldByDisplayName(
+              {
+                data: {
+                  displayName: field,
+                  entity: {
+                    connect: {
+                      id: entity.id,
+                    },
+                  },
+                },
+              },
+              context.user
+            );
+          })
+        );
+      }
+
+      const defaultModuleId =
+        await this.moduleService.getDefaultModuleIdForEntity(
+          args.serviceId,
+          entity.id
+        );
+
       return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/entities/${entity.id}`,
+        entityLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities/${entity.id}`,
+        apisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${defaultModuleId}`,
         result: entity,
       };
     },
@@ -277,7 +294,7 @@ export class AssistantService {
     createService: async (
       args: {
         serviceName: string;
-        serviceDescription: string;
+        serviceDescription?: string;
         projectId: string;
         adminUIPath: string;
         serverPath: string;
@@ -287,7 +304,7 @@ export class AssistantService {
       const resource =
         await this.resourceService.createServiceWithDefaultSettings(
           args.serviceName,
-          args.serviceDescription,
+          args.serviceDescription || "",
           args.projectId,
           args.adminUIPath,
           args.serverPath,

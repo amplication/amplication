@@ -533,7 +533,7 @@ export class ResourceService {
     const args: CreateOneResourceArgs = {
       data: {
         name: serviceName,
-        description: serviceDescription,
+        description: serviceDescription || "",
         project: {
           connect: {
             id: projectId,
