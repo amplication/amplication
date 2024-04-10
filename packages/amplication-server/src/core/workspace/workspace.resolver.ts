@@ -93,9 +93,11 @@ export class WorkspaceResolver {
       currentUser
     );
 
-    await this.workspaceService.dataMigrateWorkspaceResourcesCustomDtos(
-      currentUser.workspace?.id
-    );
+    currentUser.workspace &&
+      (await this.workspaceService.dataMigrateWorkspaceResourcesCustomDtos(
+        currentUser.workspace.id,
+        currentUser
+      ));
 
     return { ...currentUser.workspace, externalId };
   }

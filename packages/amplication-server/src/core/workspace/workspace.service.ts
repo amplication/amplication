@@ -57,7 +57,7 @@ import { ResourceService } from "../resource/resource.service";
 import { generateRandomString } from "../auth/auth-utils";
 import { AuthUser, CreatePreviewServiceSettingsArgs } from "../auth/types";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
-import { types } from "@amplication/code-gen-types";
+import { ModuleDto, types } from "@amplication/code-gen-types";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -762,7 +762,8 @@ export class WorkspaceService {
   }
 
   async dataMigrateWorkspaceResourcesCustomDtos(
-    workspaceId: string
+    workspaceId: string,
+    currentUser: User
   ): Promise<boolean> {
     const currentWorkspace = await this.prisma.workspace.findFirst({
       where: {
@@ -775,7 +776,6 @@ export class WorkspaceService {
                 deletedAt: null,
                 archived: { not: true },
                 resourceType: EnumResourceType.Service,
-                blocks: { none: { blockType: EnumBlockType.ModuleDto } },
                 entities: { some: { deletedAt: null } },
               },
             },
@@ -814,7 +814,7 @@ export class WorkspaceService {
 
     if (!currentWorkspace) return;
 
-    await this.migrateWorkspacesDefaultDtos([currentWorkspace]);
+    await this.migrateWorkspacesDefaultDtos([currentWorkspace], currentUser);
 
     await this.prisma.$disconnect();
 
@@ -944,9 +944,9 @@ export class WorkspaceService {
     await Promise.all(promises);
   }
 
-  async migrateWorkspacesDefaultDtos(workspaces: Workspace[]) {
+  async migrateWorkspacesDefaultDtos(workspaces: Workspace[], user?: User) {
     const promises = workspaces.map(async (workspace) => {
-      const workspaceUser = workspace.users[0];
+      const workspaceUser = user || workspace.users[0];
 
       for (const project of workspace.projects) {
         const resources = project.resources;
@@ -1213,11 +1213,12 @@ export class WorkspaceService {
         return;
       }
 
-      await this.moduleDtoService.createDefaultDtosForEntityModule(
-        entity,
-        entityModule,
-        user
-      );
+      const newModuleDtos =
+        await this.moduleDtoService.createDefaultDtosForEntityModule(
+          entity,
+          entityModule,
+          user
+        );
 
       const fields = (await this.prisma.entityField.findMany({
         where: {
@@ -1233,6 +1234,8 @@ export class WorkspaceService {
         (e) => e.dataType === EnumDataType.Lookup
       );
 
+      let newRelatedModuleDtos: ModuleDto[];
+
       for (const field of relationFields) {
         const properties = field.properties as unknown as types.Lookup;
         const relatedEntity = await this.prisma.entity.findUnique({
@@ -1242,18 +1245,20 @@ export class WorkspaceService {
         });
 
         try {
-          await this.moduleDtoService.createDefaultDtosForRelatedEntity(
-            entity,
-            field,
-            relatedEntity,
-            entityModule.id,
-            user
-          );
+          newRelatedModuleDtos =
+            await this.moduleDtoService.createDefaultDtosForRelatedEntity(
+              entity,
+              field,
+              relatedEntity,
+              entityModule.id,
+              user
+            );
         } catch (error) {
           this.logger.error(`${error.message} entityId: ${entity.id}`);
           return;
         }
       }
+      if (!newModuleDtos && !newRelatedModuleDtos) return false;
       return true;
     } catch (error) {
       this.logger.error(error);
@@ -1354,17 +1359,14 @@ export class WorkspaceService {
     let hasChanges = false;
     const promises = resources.map(async (resource) => {
       try {
-        const resourceModuleDto = await this.prisma.block.findFirst({
-          where: {
-            blockType: EnumBlockType.ModuleDto,
-            resourceId: resource.id,
-          },
-        });
-        if (resourceModuleDto) return hasChanges;
-        hasChanges = true;
-
         for (const entity of resource.entities) {
-          await this.createEntityCustomDtos(entity, user);
+          const currentChanges = await this.createEntityCustomDtos(
+            entity,
+            user
+          );
+          if (!hasChanges && currentChanges) {
+            hasChanges = currentChanges;
+          }
         }
       } catch (error) {
         this.logger.error(
