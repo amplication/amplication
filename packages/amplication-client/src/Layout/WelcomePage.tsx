@@ -122,7 +122,7 @@ function WelcomePage({
             textAlign={EnumTextAlign.Center}
             underline
           >
-            <a href="https://amplication.com/privacy" target="privacy">
+            <a href="https://amplication.com/privacy-policy" target="privacy">
               privacy policy
             </a>
           </Text>

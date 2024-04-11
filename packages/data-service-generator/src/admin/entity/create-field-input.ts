@@ -91,6 +91,7 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.UpdatedAt]: (field) =>
     jsxElement`<DateTimeInput label="${field.displayName}" source="${field.name}" disabled />`,
   [EnumDataType.Json]: null,
+  [EnumDataType.File]: null,
   [EnumDataType.Roles]: (field) =>
     jsxElement`<SelectArrayInput
       source="${field.name}"

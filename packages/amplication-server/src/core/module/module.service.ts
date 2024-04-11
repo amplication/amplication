@@ -255,7 +255,7 @@ export class ModuleService extends BlockTypeService<
 
     await this.moduleDtoService.createDefaultDtosForEntityModule(
       entity,
-      module,
+      module.id,
       user
     );
 
