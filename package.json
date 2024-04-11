@@ -72,6 +72,7 @@
     "@opentelemetry/id-generator-aws-xray": "^1.2.1",
     "@primer/react": "^35.14.1",
     "@prisma/client": "^5.10.2",
+    "@react-hook/resize-observer": "^1.2.6",
     "@segment/analytics-node": "^2.0.0",
     "@sendgrid/mail": "^7.7.0",
     "@stigg/node-server-sdk": "v2.49.0",
