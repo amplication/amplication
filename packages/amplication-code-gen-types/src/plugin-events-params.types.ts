@@ -253,6 +253,11 @@ export interface CreateServerAppModuleParams extends EventParams {
   templateMapping: { [key: string]: any };
 }
 
+export interface CreateMainFileParams extends EventParams {
+  template: namedTypes.File;
+  bigIntTemplate: namedTypes.File;
+}
+
 export interface CreateConnectMicroservicesParams extends EventParams {
   template: namedTypes.File;
 }

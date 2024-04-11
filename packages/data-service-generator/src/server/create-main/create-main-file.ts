@@ -1,30 +1,42 @@
 import path from "path";
-import { promises as fs } from "fs";
-import { Module, ModuleMap } from "@amplication/code-gen-types";
+import {
+  CreateMainFileParams,
+  EventNames,
+  Module,
+  ModuleMap,
+} from "@amplication/code-gen-types";
 import { MAIN_TS_FILE_NAME, MAIN_TS_WITH_BIGINT_FILE_NAME } from "../constants";
 import DsgContext from "../../dsg-context";
-import { formatCode } from "@amplication/code-gen-utils";
+import { formatCode, print, readFile } from "@amplication/code-gen-utils";
+import pluginWrapper from "../../plugin-wrapper";
 
-export async function createMainFile() {
-  const { logger, serverDirectories, hasBigIntFields } = DsgContext.getInstance;
-  const moduleMap = new ModuleMap(logger);
-
-  await logger.info("Creating main.ts file...");
-
+export async function createMainFile(): Promise<ModuleMap> {
   const mainFilePath = path.resolve(__dirname, MAIN_TS_FILE_NAME);
   const mainWithBigintFilePath = path.resolve(
     __dirname,
     MAIN_TS_WITH_BIGINT_FILE_NAME
   );
-  const mainFileContent = await fs.readFile(mainFilePath, "utf-8");
-  const mainWithBigintFileContent = await fs.readFile(
-    mainWithBigintFilePath,
-    "utf-8"
-  );
+  const template = await readFile(mainFilePath);
+  const bigIntTemplate = await readFile(mainWithBigintFilePath);
+
+  return pluginWrapper(createMainFileInternal, EventNames.CreateMainFile, {
+    template,
+    bigIntTemplate,
+  });
+}
+
+export async function createMainFileInternal({
+  template,
+  bigIntTemplate,
+}: CreateMainFileParams): Promise<ModuleMap> {
+  const { logger, serverDirectories, hasBigIntFields } = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(logger);
+
+  await logger.info("Creating main.ts file...");
 
   const mainModule: Module = {
     path: path.join(serverDirectories.srcDirectory, MAIN_TS_FILE_NAME),
-    code: mainFileContent,
+    code: print(template).code,
   };
 
   const mainWithBigintModule: Module = {
@@ -32,7 +44,7 @@ export async function createMainFile() {
       serverDirectories.srcDirectory,
       MAIN_TS_WITH_BIGINT_FILE_NAME.replace(".with-bigint", "")
     ),
-    code: mainWithBigintFileContent,
+    code: print(bigIntTemplate).code,
   };
 
   if (hasBigIntFields) {
