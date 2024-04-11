@@ -702,20 +702,27 @@ export class WorkspaceService {
     quantity: number,
     page?: number
   ): Promise<boolean> {
+    this.logger.info(`Migrating started`, {
+      context: WorkspaceService.name,
+      method: this.dataMigrateWorkspacesResourcesCustomDtos.name,
+    });
+
     let currentPage = page || 1;
 
     let hasMore = true;
+    const processedWorkspaces: string[] = [];
 
     do {
       // get latest active users by chunks of quantity
       const latestActive = await this.prisma.user.findMany({
-        skip: (currentPage - 1) * quantity,
+        skip: page ? (currentPage - 1) * quantity : 0,
         take: quantity,
         orderBy: {
           lastActive: "desc",
         },
         where: {
           workspace: {
+            id: { notIn: processedWorkspaces },
             projects: {
               some: {
                 deletedAt: null,
@@ -730,6 +737,7 @@ export class WorkspaceService {
               },
             },
           },
+          lastActive: { not: null },
         },
         include: {
           workspace: {
@@ -773,11 +781,13 @@ export class WorkspaceService {
       });
 
       const workspaces = latestActive.map((user) => user.workspace);
+      processedWorkspaces.push(...workspaces.map((workspace) => workspace.id));
 
       this.logger.info(
         `Migrating workspaces... currentPage: ${currentPage}, quantity: ${quantity}`,
         {
           context: WorkspaceService.name,
+          method: this.dataMigrateWorkspacesResourcesCustomDtos.name,
           workspacesId: workspaces.map((workspace) => workspace.id),
         }
       );
@@ -794,6 +804,42 @@ export class WorkspaceService {
     } while (hasMore);
 
     await this.prisma.$disconnect();
+
+    const relevantWorkspaces = await this.prisma.workspace.findMany({
+      where: {
+        users: {
+          some: {
+            lastActive: { not: null },
+          },
+        },
+        projects: {
+          some: {
+            deletedAt: null,
+            resources: {
+              some: {
+                deletedAt: null,
+                archived: { not: true },
+                resourceType: EnumResourceType.Service,
+                entities: { some: { deletedAt: null } },
+              },
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    this.logger.info(
+      `Migrating completed. Workspaces processed: ${processedWorkspaces.length} out of ${relevantWorkspaces.length}`,
+      {
+        context: WorkspaceService.name,
+        method: this.dataMigrateWorkspacesResourcesCustomDtos.name,
+        workspacesProcessed: processedWorkspaces,
+        relevantWorkspaces: relevantWorkspaces.map((workspace) => workspace.id),
+      }
+    );
 
     return true;
   }
