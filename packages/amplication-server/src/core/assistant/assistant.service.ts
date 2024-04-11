@@ -24,6 +24,19 @@ enum EnumAssistantFunctions {
   CreateProject = "createProject",
 }
 
+type MessageLoggerContext = {
+  messageContext: {
+    workspaceId: string;
+    projectId: string;
+    serviceId: string;
+  };
+  threadId: string;
+  userId: string;
+  role: string;
+  functionName?: string;
+  params?: string;
+};
+
 @Injectable()
 export class AssistantService {
   private assistantId: string;
@@ -49,6 +62,15 @@ export class AssistantService {
       (this.assistantId = configService.get<string>(Env.CHAT_ASSISTANT_ID));
   }
 
+  //do not expose the entire context as it may include sensitive information
+  getShortMessageContext(context: AssistantContext) {
+    return {
+      workspaceId: context.workspaceId,
+      projectId: context.projectId,
+      serviceId: context.resourceId, //@TODO: check type? //we use service id implicitly to help the assistant differentiate between different resources
+    };
+  }
+
   async processMessage(
     messageText: string,
     threadId: string,
@@ -61,6 +83,16 @@ export class AssistantService {
       threadId = thread.id;
     }
 
+    const shortContext = this.getShortMessageContext(context);
+    const loggerContext: MessageLoggerContext = {
+      messageContext: shortContext,
+      threadId,
+      userId: context.user.id,
+      role: "user",
+    };
+
+    this.logger.info(`Chat: ${messageText}`, loggerContext);
+
     await openai.beta.threads.messages.create(threadId, {
       role: "user",
       content: messageText,
@@ -69,23 +101,19 @@ export class AssistantService {
     const run = await openai.beta.threads.runs.createAndPoll(threadId, {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       assistant_id: this.assistantId,
-      //do not expose the entire context as it may include sensitive information
       // eslint-disable-next-line @typescript-eslint/naming-convention
       additional_instructions: `The following context is available: 
-        ${JSON.stringify({
-          workspaceId: context.workspaceId,
-          projectId: context.projectId,
-          serviceId: context.resourceId, //@TODO: check type? //we use service id implicitly to help the assistant differentiate between different resources
-        })}`,
+        ${JSON.stringify(shortContext)}`,
     });
 
-    return this.handleRunStatus(run, threadId, context);
+    return this.handleRunStatus(run, threadId, context, loggerContext);
   }
 
   async handleRunStatus(
     run: Run,
     threadId: string,
-    context: AssistantContext
+    context: AssistantContext,
+    loggerContext: MessageLoggerContext
   ): Promise<AssistantThread> {
     const openai = this.openai;
 
@@ -102,13 +130,18 @@ export class AssistantService {
       });
       for (const message of messages.data.reverse()) {
         const textContentBlock = message.content[0] as TextContentBlock;
+        const messageText = textContentBlock.text.value;
+        loggerContext.role = message.role;
+
+        this.logger.info(`Chat: ${messageText}`, loggerContext);
+
         assistantThread.messages.push({
           id: message.id,
           role:
             message.role === "user"
               ? EnumAssistantMessageRole.User
               : EnumAssistantMessageRole.Assistant,
-          text: textContentBlock.text.value,
+          text: messageText,
           createdAt: new Date(message.created_at),
         });
       }
@@ -123,7 +156,13 @@ export class AssistantService {
           const functionName = action.function.name;
           const params = action.function.arguments;
 
-          return this.executeFunction(action.id, functionName, params, context);
+          return this.executeFunction(
+            action.id,
+            functionName,
+            params,
+            context,
+            loggerContext
+          );
         })
       );
 
@@ -140,13 +179,17 @@ export class AssistantService {
         }
       );
 
-      return this.handleRunStatus(innerRun, threadId, context);
+      return this.handleRunStatus(innerRun, threadId, context, loggerContext);
     } else {
       //@todo: handle other statuses
-      this.logger.error(`Run status: ${run.status}. Error: ${run.last_error}`);
+      this.logger.error(
+        `Chat: Run status: ${run.status}. Error: ${run.last_error}`,
+        null,
+        loggerContext
+      );
 
       assistantThread.messages.push({
-        id: "none",
+        id: Date.now().toString(), //use timestamp as id to be unique at the client
         role: EnumAssistantMessageRole.Assistant,
         text: run.last_error.message || "Sorry, I'm having trouble right now.",
         createdAt: new Date(),
@@ -159,16 +202,16 @@ export class AssistantService {
     callId: string,
     functionName: string,
     params: string,
-    context: AssistantContext
+    context: AssistantContext,
+    loggerContext: MessageLoggerContext
   ): Promise<{
     callId: string;
     results: string;
   }> {
-    this.logger.debug(
-      `Executing function: ${functionName} with params: ${JSON.stringify(
-        params
-      )} and context: ${JSON.stringify(context)}`
-    );
+    loggerContext.functionName = functionName;
+    loggerContext.params = params;
+
+    this.logger.info(`Chat: Executing function.`, loggerContext);
 
     const args = JSON.parse(params);
 
@@ -184,14 +227,22 @@ export class AssistantService {
           ),
         };
       } catch (error) {
-        this.logger.error(`Error executing function: ${functionName}`);
+        this.logger.error(
+          `Chat: Error executing function: ${error.message}`,
+          error,
+          loggerContext
+        );
         return {
           callId,
           results: JSON.stringify(error.message),
         };
       }
     } else {
-      this.logger.error(`Function not found: ${functionName}`);
+      this.logger.error(
+        `Chat: Function not found: ${functionName}`,
+        null,
+        loggerContext
+      );
       return {
         callId,
         results: "Function not found",
