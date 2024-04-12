@@ -15,6 +15,8 @@ import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { ModuleService } from "../module/module.service";
 import { ProjectService } from "../project/project.service";
+import { EnumPendingChangeOriginType } from "../resource/dto";
+import { Block } from "../../models";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -22,6 +24,8 @@ enum EnumAssistantFunctions {
   GetServiceEntities = "getServiceEntities",
   CreateService = "createService",
   CreateProject = "createProject",
+  CommitProjectPendingChanges = "commitProjectPendingChanges",
+  GetProjectPendingChanges = "getProjectPendingChanges",
 }
 
 type MessageLoggerContext = {
@@ -398,6 +402,60 @@ export class AssistantService {
           name: project.name,
         },
       };
+    },
+    commitProjectPendingChanges: async (
+      args: { projectId: string; commitMessage: string },
+      context: AssistantContext
+    ) => {
+      const commit = await this.projectService.commit(
+        {
+          data: {
+            message: args.commitMessage,
+            project: {
+              connect: {
+                id: args.projectId,
+              },
+            },
+            user: {
+              connect: {
+                id: context.user.id,
+              },
+            },
+          },
+        },
+        context.user
+      );
+
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${args.projectId}/commits/${commit.id}`,
+        result: commit,
+      };
+    },
+    getProjectPendingChanges: async (
+      args: { projectId: string },
+      context: AssistantContext
+    ) => {
+      const changes = await this.projectService.getPendingChanges(
+        {
+          where: {
+            project: { id: args.projectId },
+          },
+        },
+        context.user
+      );
+
+      return changes.map((change) => ({
+        id: change.originId,
+        action: change.action,
+        originType: change.originType,
+        versionNumber: change.versionNumber,
+        change: change.origin,
+        description: change.origin.description,
+        type:
+          change.originType === EnumPendingChangeOriginType.Block
+            ? (change.origin as Block).blockType
+            : "Entity",
+      }));
     },
   };
 }
