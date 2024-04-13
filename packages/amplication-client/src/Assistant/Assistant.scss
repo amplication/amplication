@@ -156,6 +156,11 @@ $assistant-handle-top: 150px;
     color: var(--assistant-message-color);
     position: relative;
 
+    &__content {
+      overflow: auto;
+      @include scrollbars(5px, var(--gray-30), transparent);
+    }
+
     pre {
       overflow: auto;
       background: var(--gray-90);

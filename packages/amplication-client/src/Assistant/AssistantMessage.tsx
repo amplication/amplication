@@ -33,22 +33,24 @@ const AssistantMessage = ({ message, onOptionClick }: Props) => {
           </>
         )}
       </div>
-      <ReactMarkdown
-        components={{
-          a: (props) => {
-            const url = new URL(props.href);
-            return url.host === window.location.host ? (
-              <Link to={`${url.pathname}${url.search}${url.hash}`}>
-                {props.children}
-              </Link>
-            ) : (
-              <a href={props.href}>{props.children}</a> // All other links
-            );
-          },
-        }}
-      >
-        {message.text}
-      </ReactMarkdown>
+      <div className={`${CLASS_NAME}__message__content`}>
+        <ReactMarkdown
+          components={{
+            a: (props) => {
+              const url = new URL(props.href);
+              return url.host === window.location.host ? (
+                <Link to={`${url.pathname}${url.search}${url.hash}`}>
+                  {props.children}
+                </Link>
+              ) : (
+                <a href={props.href}>{props.children}</a> // All other links
+              );
+            },
+          }}
+        >
+          {message.text}
+        </ReactMarkdown>
+      </div>
       <div className={`${CLASS_NAME}__message__options`}>
         {message.options?.map((option) => (
           <Button
