@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
@@ -56,12 +56,24 @@ const Assistant = () => {
   const [open, setOpen] = useState(true);
   const [widthState, setWidthState] = useState(WIDTH_STATE_DEFAULT);
 
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const {
     sendMessage,
     messages,
     sendMessageError: error,
     sendMessageLoading: loading,
+    streamError,
   } = useAssistant();
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSubmit = useCallback(
     (data: SendMessageType, { setErrors, resetForm }) => {
@@ -130,13 +142,13 @@ const Assistant = () => {
               onOptionClick={sendMessage}
             />
           ))}
-          {loading && (
-            <div className={`${CLASS_NAME}__message`}>
-              <ReactMarkdown>Thinking...</ReactMarkdown>
-            </div>
-          )}
+
+          <div ref={messagesEndRef} />
           {error && (
             <div className={`${CLASS_NAME}__error`}>{error.message}</div>
+          )}
+          {streamError && (
+            <div className={`${CLASS_NAME}__error`}>{streamError.message}</div>
           )}
         </div>
 

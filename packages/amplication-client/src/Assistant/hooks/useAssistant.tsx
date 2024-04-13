@@ -1,11 +1,18 @@
-import { useMutation } from "@apollo/client";
+import { useMutation, useSubscription } from "@apollo/client";
 import * as models from "../../models";
-import { SEND_ASSISTANT_MESSAGE } from "../queries/assistantQueries";
+import {
+  ASSISTANT_MESSAGE_UPDATED,
+  SEND_ASSISTANT_MESSAGE,
+} from "../queries/assistantQueries";
 import { useState } from "react";
 import { useAppContext } from "../../context/appContext";
 
 type TAssistantThreadData = {
-  sendAssistantMessage: models.AssistantThread;
+  sendAssistantMessageWithStream: models.AssistantThread;
+};
+
+type TAssistantMessageUpdatedData = {
+  assistantMessageUpdated: models.AssistantMessageDelta;
 };
 
 export type AssistantMessageWithOptions = models.AssistantMessage & {
@@ -45,13 +52,35 @@ const useAssistant = () => {
     { error: sendMessageError, loading: sendMessageLoading },
   ] = useMutation<TAssistantThreadData>(SEND_ASSISTANT_MESSAGE, {
     onCompleted: (data) => {
-      setThreadId(data.sendAssistantMessage.id);
-      setMessages([...messages, ...data.sendAssistantMessage.messages]);
+      setThreadId(data.sendAssistantMessageWithStream.id);
+      setMessages([
+        ...messages,
+        ...data.sendAssistantMessageWithStream.messages,
+      ]);
       //@todo: update client side data smartly based on the actions on the server
       addBlock("blockid");
       commitUtils.refetchCommitsData(true);
     },
   });
+
+  const { error: streamError } = useSubscription<TAssistantMessageUpdatedData>(
+    ASSISTANT_MESSAGE_UPDATED,
+    {
+      variables: {
+        threadId,
+      },
+      skip: !threadId,
+      onData: (data) => {
+        const message = data.data.data.assistantMessageUpdated;
+
+        setMessages((messages) => {
+          const lastMessage = messages[messages.length - 1];
+          lastMessage.text = message.snapshot;
+          return [...messages];
+        });
+      },
+    }
+  );
 
   const sendMessage = (message: string) => {
     setMessages([
@@ -60,6 +89,12 @@ const useAssistant = () => {
         text: message,
         role: models.EnumAssistantMessageRole.User,
         id: Date.now().toString(),
+        createdAt: "",
+      },
+      {
+        text: "Thinking...",
+        role: models.EnumAssistantMessageRole.Assistant,
+        id: Date.now().toString() + "_",
         createdAt: "",
       },
     ]);
@@ -85,6 +120,7 @@ const useAssistant = () => {
     messages,
     sendMessageError,
     sendMessageLoading,
+    streamError,
   };
 };
 
