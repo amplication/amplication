@@ -64,11 +64,23 @@ input ApiTokenCreateInput {
   name: String!
 }
 
+input AssistantContext {
+  projectId: String
+  resourceId: String
+}
+
 type AssistantMessage {
   createdAt: String!
   id: String!
   role: EnumAssistantMessageRole!
   text: String!
+}
+
+type AssistantMessageDelta {
+  id: String!
+  snapshot: String!
+  text: String!
+  threadId: String!
 }
 
 type AssistantThread {
@@ -1375,7 +1387,8 @@ type Mutation {
   redesignProject(data: RedesignProjectInput!): UserAction!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
-  sendAssistantMessage(data: SendAssistantMessageInput!): AssistantThread!
+  sendAssistantMessage(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
+  sendAssistantMessageWithStream(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   signup(data: SignupInput!): Auth!
@@ -2040,18 +2053,7 @@ input StringFilter {
 }
 
 type Subscription {
-  cancelUrl: String
-  cancellationEffectiveDate: DateTime
-  createdAt: DateTime!
-  id: String!
-  nextBillDate: DateTime
-  price: Float
-  status: EnumSubscriptionStatus!
-  subscriptionPlan: EnumSubscriptionPlan!
-  updateUrl: String
-  updatedAt: DateTime!
-  workspace: Workspace
-  workspaceId: String!
+  assistantMessageUpdated(threadId: String!): AssistantMessageDelta!
 }
 
 type Topic implements IBlock {
@@ -2186,7 +2188,7 @@ type Workspace {
   id: String!
   name: String!
   projects: [Project!]!
-  subscription: Subscription
+  subscription: WorkspaceSubscription
   updatedAt: DateTime!
   users: [User!]!
 }
@@ -2201,6 +2203,21 @@ type WorkspaceMember {
 }
 
 union WorkspaceMemberType = Invitation | User
+
+type WorkspaceSubscription {
+  cancelUrl: String
+  cancellationEffectiveDate: DateTime
+  createdAt: DateTime!
+  id: String!
+  nextBillDate: DateTime
+  price: Float
+  status: EnumSubscriptionStatus!
+  subscriptionPlan: EnumSubscriptionPlan!
+  updateUrl: String
+  updatedAt: DateTime!
+  workspace: Workspace
+  workspaceId: String!
+}
 
 input WorkspaceUpdateInput {
   allowLLMFeatures: Boolean

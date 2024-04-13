@@ -2,7 +2,7 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import { Workspace } from "../../../models/Workspace";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from ".";
 
-@ObjectType({
+@ObjectType("WorkspaceSubscription", {
   isAbstract: true,
 })
 export class Subscription {

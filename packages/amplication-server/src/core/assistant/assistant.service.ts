@@ -17,6 +17,9 @@ import { ModuleService } from "../module/module.service";
 import { ProjectService } from "../project/project.service";
 import { EnumPendingChangeOriginType } from "../resource/dto";
 import { Block } from "../../models";
+import { AssistantStream } from "openai/lib/AssistantStream";
+import { PubSub } from "graphql-subscriptions"; //@todo: replace with kafka pubsub
+import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -27,6 +30,8 @@ enum EnumAssistantFunctions {
   CommitProjectPendingChanges = "commitProjectPendingChanges",
   GetProjectPendingChanges = "getProjectPendingChanges",
 }
+
+const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
 type MessageLoggerContext = {
   messageContext: {
@@ -46,6 +51,8 @@ export class AssistantService {
   private assistantId: string;
   private openai: OpenAI;
   private clientHost: string;
+  private pubSub = new PubSub();
+
   constructor(
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
@@ -66,6 +73,27 @@ export class AssistantService {
       (this.assistantId = configService.get<string>(Env.CHAT_ASSISTANT_ID));
   }
 
+  subscribeToAssistantMessageUpdated() {
+    return this.pubSub.asyncIterator(MESSAGE_UPDATED_EVENT);
+  }
+
+  onMessageUpdated = async (
+    threadId: string,
+    messageId: string,
+    textDelta: string,
+    snapshot: string
+  ) => {
+    const message: AssistantMessageDelta = {
+      id: messageId,
+      threadId,
+      text: textDelta,
+      snapshot: snapshot,
+    };
+    await this.pubSub.publish(MESSAGE_UPDATED_EVENT, {
+      assistantMessageUpdated: message,
+    });
+  };
+
   //do not expose the entire context as it may include sensitive information
   getShortMessageContext(context: AssistantContext) {
     return {
@@ -80,6 +108,152 @@ export class AssistantService {
     threadId: string,
     context: AssistantContext
   ): Promise<AssistantThread> {
+    const openai = this.openai;
+
+    const preparedThread = await this.prepareThread(
+      messageText,
+      threadId,
+      context
+    );
+
+    const run = await openai.beta.threads.runs.createAndPoll(
+      preparedThread.threadId,
+      {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        assistant_id: this.assistantId,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        additional_instructions: `The following context is available: 
+        ${JSON.stringify(preparedThread.shortContext)}`,
+      }
+    );
+
+    return this.handleRunStatus(
+      run,
+      preparedThread.threadId,
+      context,
+      preparedThread.loggerContext
+    );
+  }
+
+  async processMessageWithStream(
+    messageText: string,
+    threadId: string,
+    context: AssistantContext
+  ): Promise<AssistantThread> {
+    const openai = this.openai;
+
+    const preparedThread = await this.prepareThread(
+      messageText,
+      threadId,
+      context
+    );
+
+    const runStream = openai.beta.threads.runs.stream(preparedThread.threadId, {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      assistant_id: this.assistantId,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      additional_instructions: `The following context is available: 
+        ${JSON.stringify(preparedThread.shortContext)}`,
+    });
+
+    await this.handleRunStream(
+      runStream,
+      preparedThread.threadId,
+      context,
+      preparedThread.loggerContext
+    );
+
+    return {
+      id: preparedThread.threadId,
+      messages: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  }
+
+  async handleRunStream(
+    stream: AssistantStream,
+    threadId: string,
+    context: AssistantContext,
+    loggerContext: MessageLoggerContext
+  ) {
+    const openai = this.openai;
+
+    stream
+      .on("error", (error) => {
+        this.logger.error(
+          `Chat: Stream error: ${error.message}. Error: ${JSON.stringify(
+            error
+          )}`,
+          null,
+          loggerContext
+        );
+      })
+      .on("event", async (event) => {
+        if (event.event === "thread.run.requires_action") {
+          const requiredActions =
+            event.data.required_action.submit_tool_outputs.tool_calls;
+
+          const functionCalls = await Promise.all(
+            requiredActions.map((action) => {
+              const functionName = action.function.name;
+              const params = action.function.arguments;
+
+              return this.executeFunction(
+                action.id,
+                functionName,
+                params,
+                context,
+                loggerContext
+              );
+            })
+          );
+
+          const submitToolStream =
+            openai.beta.threads.runs.submitToolOutputsStream(
+              threadId,
+              event.data.id,
+              {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                tool_outputs: functionCalls.map((call) => ({
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  tool_call_id: call.callId,
+                  output: call.results,
+                })),
+              }
+            );
+
+          await this.handleRunStream(
+            submitToolStream,
+            threadId,
+            context,
+            loggerContext
+          );
+        }
+      })
+      .on("textCreated", async (text) => {
+        await this.onMessageUpdated(threadId, "", text.value, text.value);
+      })
+      .on("textDelta", async (textDelta, snapshot) => {
+        await this.onMessageUpdated(
+          threadId,
+          "",
+          textDelta.value,
+          snapshot.value
+        );
+      })
+      .on("textDone", async (text) => {
+        await this.onMessageUpdated(threadId, "", text.value, text.value);
+        loggerContext.role = "assistant";
+        this.logger.info(`Chat: ${text.value}`, loggerContext);
+      });
+  }
+
+  async prepareThread(
+    messageText: string,
+    threadId: string,
+    context: AssistantContext
+  ) {
     const openai = this.openai;
 
     if (!threadId) {
@@ -102,15 +276,11 @@ export class AssistantService {
       content: messageText,
     });
 
-    const run = await openai.beta.threads.runs.createAndPoll(threadId, {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      assistant_id: this.assistantId,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      additional_instructions: `The following context is available: 
-        ${JSON.stringify(shortContext)}`,
-    });
-
-    return this.handleRunStatus(run, threadId, context, loggerContext);
+    return {
+      threadId,
+      shortContext,
+      loggerContext,
+    };
   }
 
   async handleRunStatus(

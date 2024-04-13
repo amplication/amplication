@@ -85,10 +85,21 @@ export type ApiTokenCreateInput = {
   name: Scalars['String']['input'];
 };
 
+export type AssistantContext = {
+  projectId?: InputMaybe<Scalars['String']['input']>;
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type AssistantMessage = {
   createdAt: Scalars['String']['output'];
   id: Scalars['String']['output'];
   role: EnumAssistantMessageRole;
+  text: Scalars['String']['output'];
+};
+
+export type AssistantMessageDelta = {
+  id: Scalars['String']['output'];
+  snapshot: Scalars['String']['output'];
   text: Scalars['String']['output'];
 };
 
@@ -1405,6 +1416,7 @@ export type Mutation = {
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   sendAssistantMessage: AssistantThread;
+  sendAssistantMessageWithStream: AssistantThread;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
   signup: Auth;
@@ -1764,6 +1776,13 @@ export type MutationRevokeInvitationArgs = {
 
 
 export type MutationSendAssistantMessageArgs = {
+  context: AssistantContext;
+  data: SendAssistantMessageInput;
+};
+
+
+export type MutationSendAssistantMessageWithStreamArgs = {
+  context: AssistantContext;
   data: SendAssistantMessageInput;
 };
 
@@ -2839,18 +2858,7 @@ export type StringFilter = {
 };
 
 export type Subscription = {
-  cancelUrl?: Maybe<Scalars['String']['output']>;
-  cancellationEffectiveDate?: Maybe<Scalars['DateTime']['output']>;
-  createdAt: Scalars['DateTime']['output'];
-  id: Scalars['String']['output'];
-  nextBillDate?: Maybe<Scalars['DateTime']['output']>;
-  price?: Maybe<Scalars['Float']['output']>;
-  status: EnumSubscriptionStatus;
-  subscriptionPlan: EnumSubscriptionPlan;
-  updateUrl?: Maybe<Scalars['String']['output']>;
-  updatedAt: Scalars['DateTime']['output'];
-  workspace?: Maybe<Workspace>;
-  workspaceId: Scalars['String']['output'];
+  assistantMessageUpdated: AssistantMessageDelta;
 };
 
 export type Topic = IBlock & {
@@ -2982,7 +2990,7 @@ export type Workspace = {
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   projects: Array<Project>;
-  subscription?: Maybe<Subscription>;
+  subscription?: Maybe<WorkspaceSubscription>;
   updatedAt: Scalars['DateTime']['output'];
   users: Array<User>;
 };
@@ -2997,6 +3005,21 @@ export type WorkspaceMember = {
 };
 
 export type WorkspaceMemberType = Invitation | User;
+
+export type WorkspaceSubscription = {
+  cancelUrl?: Maybe<Scalars['String']['output']>;
+  cancellationEffectiveDate?: Maybe<Scalars['DateTime']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  nextBillDate?: Maybe<Scalars['DateTime']['output']>;
+  price?: Maybe<Scalars['Float']['output']>;
+  status: EnumSubscriptionStatus;
+  subscriptionPlan: EnumSubscriptionPlan;
+  updateUrl?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  workspace?: Maybe<Workspace>;
+  workspaceId: Scalars['String']['output'];
+};
 
 export type WorkspaceUpdateInput = {
   allowLLMFeatures?: InputMaybe<Scalars['Boolean']['input']>;
