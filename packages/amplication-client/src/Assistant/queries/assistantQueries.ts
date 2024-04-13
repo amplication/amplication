@@ -1,11 +1,11 @@
 import { gql } from "@apollo/client";
 
 export const SEND_ASSISTANT_MESSAGE = gql`
-  mutation sendAssistantMessage(
+  mutation sendAssistantMessageWithStream(
     $data: SendAssistantMessageInput!
     $context: AssistantContext!
   ) {
-    sendAssistantMessage(data: $data, context: $context) {
+    sendAssistantMessageWithStream(data: $data, context: $context) {
       id
       messages {
         id
@@ -13,6 +13,17 @@ export const SEND_ASSISTANT_MESSAGE = gql`
         text
         createdAt
       }
+    }
+  }
+`;
+
+export const ASSISTANT_MESSAGE_UPDATED = gql`
+  subscription AssistantMessageUpdated($threadId: String!) {
+    assistantMessageUpdated(threadId: $threadId) {
+      id
+      threadId
+      snapshot
+      text
     }
   }
 `;
