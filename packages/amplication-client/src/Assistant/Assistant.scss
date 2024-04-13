@@ -157,8 +157,7 @@ $assistant-handle-top: 150px;
     position: relative;
 
     &__content {
-      overflow: auto;
-      @include scrollbars(5px, var(--gray-30), transparent);
+      overflow-wrap: break-word;
     }
 
     pre {
