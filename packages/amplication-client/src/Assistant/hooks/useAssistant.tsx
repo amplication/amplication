@@ -32,7 +32,8 @@ const INITIAL_MESSAGE: AssistantMessageWithOptions = {
 };
 
 const useAssistant = () => {
-  const { currentProject, currentResource, addBlock } = useAppContext();
+  const { currentProject, currentResource, addBlock, commitUtils } =
+    useAppContext();
 
   const [messages, setMessages] = useState<AssistantMessageWithOptions[]>([
     INITIAL_MESSAGE,
@@ -46,7 +47,9 @@ const useAssistant = () => {
     onCompleted: (data) => {
       setThreadId(data.sendAssistantMessage.id);
       setMessages([...messages, ...data.sendAssistantMessage.messages]);
+      //@todo: update client side data smartly based on the actions on the server
       addBlock("blockid");
+      commitUtils.refetchCommitsData(true);
     },
   });
 
