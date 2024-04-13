@@ -4,7 +4,6 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { GraphQLModule } from "@nestjs/graphql";
 import { MorganModule } from "nest-morgan";
-import { Request } from "express";
 import { CoreModule } from "./core/core.module";
 import { InjectContextInterceptor } from "./interceptors/inject-context.interceptor";
 import { SegmentAnalyticsModule } from "./services/segmentAnalytics/segmentAnalytics.module";
