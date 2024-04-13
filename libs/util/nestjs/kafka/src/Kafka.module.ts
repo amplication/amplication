@@ -9,6 +9,7 @@ import {
   KAFKA_CLIENT,
 } from "./createNestjsKafkaConfig";
 import { KafkaProducerService } from "./producer";
+import { KafkaPubSubService } from "./kafka.pubsub.service";
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { KafkaProducerService } from "./producer";
       useClass: KafkaMessageJsonSerializer,
     },
     KafkaProducerService,
+    KafkaPubSubService,
   ],
-  exports: [KAFKA_SERIALIZER, KafkaProducerService],
+  exports: [KAFKA_SERIALIZER, KafkaProducerService, KafkaPubSubService],
 })
 export class KafkaModule {}

@@ -8,6 +8,7 @@ import { SendAssistantMessageArgs } from "./dto/SendAssistantMessageArgs";
 import { UserEntity } from "../../decorators/user.decorator";
 import { User } from "../../models";
 import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
+import { KafkaMessage } from "kafkajs";
 
 @Resolver(() => AssistantThread)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -16,8 +17,15 @@ export class AssistantResolver {
   constructor(private readonly service: AssistantService) {}
 
   @Subscription(() => AssistantMessageDelta, {
-    filter: (payload, variables) => {
-      return payload.assistantMessageUpdated.threadId === variables.threadId;
+    resolve: (payload) => {
+      return JSON.parse(payload.value.toString());
+    },
+    filter: (payload: KafkaMessage, variables) => {
+      const parsedPayload = JSON.parse(payload.value.toString());
+
+      return (
+        (parsedPayload as AssistantMessageDelta).threadId === variables.threadId
+      );
     },
   })
   async assistantMessageUpdated(

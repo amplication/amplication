@@ -18,8 +18,8 @@ import { ProjectService } from "../project/project.service";
 import { EnumPendingChangeOriginType } from "../resource/dto";
 import { Block } from "../../models";
 import { AssistantStream } from "openai/lib/AssistantStream";
-import { PubSub } from "graphql-subscriptions"; //@todo: replace with kafka pubsub
 import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
+import { KafkaPubSubService } from "@amplication/util/nestjs/kafka";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -51,7 +51,6 @@ export class AssistantService {
   private assistantId: string;
   private openai: OpenAI;
   private clientHost: string;
-  private pubSub = new PubSub();
 
   constructor(
     @Inject(AmplicationLogger)
@@ -60,6 +59,7 @@ export class AssistantService {
     private readonly resourceService: ResourceService,
     private readonly moduleService: ModuleService,
     private readonly projectService: ProjectService,
+    private readonly kafkaPubSubService: KafkaPubSubService,
 
     configService: ConfigService
   ) {
@@ -74,7 +74,9 @@ export class AssistantService {
   }
 
   subscribeToAssistantMessageUpdated() {
-    return this.pubSub.asyncIterator(MESSAGE_UPDATED_EVENT);
+    return this.kafkaPubSubService
+      .getPubSub()
+      .asyncIterator(MESSAGE_UPDATED_EVENT);
   }
 
   onMessageUpdated = async (
@@ -84,14 +86,14 @@ export class AssistantService {
     snapshot: string
   ) => {
     const message: AssistantMessageDelta = {
-      id: messageId,
+      id: "messageId",
       threadId,
       text: textDelta,
       snapshot: snapshot,
     };
-    await this.pubSub.publish(MESSAGE_UPDATED_EVENT, {
-      assistantMessageUpdated: message,
-    });
+    await this.kafkaPubSubService
+      .getPubSub()
+      .publish(MESSAGE_UPDATED_EVENT, JSON.stringify(message));
   };
 
   //do not expose the entire context as it may include sensitive information
