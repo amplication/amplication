@@ -255,7 +255,6 @@ export interface CreateServerAppModuleParams extends EventParams {
 
 export interface CreateMainFileParams extends EventParams {
   template: namedTypes.File;
-  bigIntTemplate: namedTypes.File;
 }
 
 export interface CreateConnectMicroservicesParams extends EventParams {

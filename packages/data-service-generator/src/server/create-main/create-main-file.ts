@@ -7,30 +7,53 @@ import {
 } from "@amplication/code-gen-types";
 import { MAIN_TS_FILE_NAME, MAIN_TS_WITH_BIGINT_FILE_NAME } from "../constants";
 import DsgContext from "../../dsg-context";
-import { formatCode, print, readFile } from "@amplication/code-gen-utils";
+import {
+  formatCode,
+  parse,
+  print,
+  readFile,
+} from "@amplication/code-gen-utils";
 import pluginWrapper from "../../plugin-wrapper";
+import fs from "fs";
+import { namedTypes } from "ast-types";
 
 export async function createMainFile(): Promise<ModuleMap> {
   const mainFilePath = path.resolve(__dirname, MAIN_TS_FILE_NAME);
-  const mainWithBigintFilePath = path.resolve(
-    __dirname,
-    MAIN_TS_WITH_BIGINT_FILE_NAME
-  );
   const template = await readFile(mainFilePath);
-  const bigIntTemplate = await readFile(mainWithBigintFilePath);
 
   return pluginWrapper(createMainFileInternal, EventNames.CreateMainFile, {
     template,
-    bigIntTemplate,
   });
 }
 
 export async function createMainFileInternal({
   template,
-  bigIntTemplate,
 }: CreateMainFileParams): Promise<ModuleMap> {
   const { logger, serverDirectories, hasBigIntFields } = DsgContext.getInstance;
   const moduleMap = new ModuleMap(logger);
+
+  if (hasBigIntFields) {
+    const bigIntMainFilePath = path.resolve(
+      __dirname,
+      MAIN_TS_WITH_BIGINT_FILE_NAME
+    );
+
+    const bigIntMainFileExpression = parse(
+      fs.readFileSync(bigIntMainFilePath, "utf-8")
+    );
+
+    const mainFunction = template.program.body.find(
+      (node) => node.type === "FunctionDeclaration" && node.id.name == "main"
+    ) as namedTypes.FunctionDeclaration;
+
+    const [nestFactoryCreateCallExpression, ...rest] = mainFunction.body.body;
+
+    mainFunction.body.body = [
+      nestFactoryCreateCallExpression,
+      bigIntMainFileExpression.program.body[0],
+      ...rest,
+    ];
+  }
 
   await logger.info("Creating main.ts file...");
 
@@ -39,19 +62,7 @@ export async function createMainFileInternal({
     code: print(template).code,
   };
 
-  const mainWithBigintModule: Module = {
-    path: path.join(
-      serverDirectories.srcDirectory,
-      MAIN_TS_WITH_BIGINT_FILE_NAME.replace(".with-bigint", "")
-    ),
-    code: print(bigIntTemplate).code,
-  };
-
-  if (hasBigIntFields) {
-    await moduleMap.set(mainWithBigintModule);
-  } else {
-    await moduleMap.set(mainModule);
-  }
+  await moduleMap.set(mainModule);
 
   await logger.info("Formatting main.ts file...");
   await moduleMap.replaceModulesPath((path) => path.replace(".template", ""));
