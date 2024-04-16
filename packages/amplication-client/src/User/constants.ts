@@ -10,7 +10,7 @@ export const DEFAULT_PAGE_SOURCE = "default";
 export const SIGN_IN_PAGE_CONTENT: PageContentOptions = {
   [DEFAULT_PAGE_SOURCE]: {
     name: "Amplication",
-    title: "Instantly generate quality Node.js services",
+    title: "Instantly generate quality backend services",
     subTitle: "Just code what matters.",
     logo: amplicationLogo,
     message: "",

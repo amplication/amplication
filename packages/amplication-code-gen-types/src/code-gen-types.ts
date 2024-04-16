@@ -376,7 +376,7 @@ type defaultDtoNestedTypes = Extract<
 >;
 
 export type entityDefaultDtos = {
-  [key in defaultDtoTypes]: ModuleDto | undefined;
+  [key in defaultDtoTypes]: ModuleDto;
 };
 
 export type entityDefaultNestedDtos = {

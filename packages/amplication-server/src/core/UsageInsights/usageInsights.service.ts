@@ -23,6 +23,14 @@ export class UsageInsightsService {
     private readonly prisma: PrismaService
   ) {}
 
+  private projectIdsFilter = (projectIds: string[]) => {
+    let filter = Prisma.empty;
+    if (projectIds.length > 0) {
+      filter = Prisma.sql`AND r."projectId" IN (${Prisma.join(projectIds)})`;
+    }
+    return filter;
+  };
+
   async countLinesOfCode({
     projectIds,
     startDate,
@@ -91,7 +99,7 @@ export class UsageInsightsService {
     JOIN "Resource" r ON b."resourceId" = r."id"
     WHERE b."createdAt" >= ${startDate}
     AND b."createdAt" <= ${endDate}
-    AND r."projectId" IN (${Prisma.join(projectIds)})
+    ${this.projectIdsFilter(projectIds)}
     GROUP BY year, month, time_group
     ORDER BY year, month, time_group;
   `;
@@ -112,8 +120,8 @@ export class UsageInsightsService {
     FROM "EntityVersion" ev
     JOIN "Entity" e ON ev."entityId" = e."id"
     JOIN "Resource" r ON e."resourceId" = r."id"
-    WHERE r."projectId" IN (${Prisma.join(projectIds)})
-    AND ev."updatedAt" >= ${startDate} AND ev."updatedAt" <= ${endDate}
+    WHERE ev."updatedAt" >= ${startDate} AND ev."updatedAt" <= ${endDate}
+    ${this.projectIdsFilter(projectIds)}
     GROUP BY year, month, time_group
     ORDER BY year, month, time_group;
   `;
@@ -131,7 +139,8 @@ export class UsageInsightsService {
     timeGroup,
   }: BlockChangesArgs): Promise<UsageInsights> {
     let results: QueryRawResult[];
-    // Prisma query row doesn't work as expected with enums, so we use switch case instead of one query with ${blokType}
+
+    // Prisma query raw doesn't work as expected with enums, so we use switch case instead of one query with ${blockType}
     switch (blockType) {
       case EnumBlockType.ModuleAction:
         results = await this.prisma.$queryRaw`
@@ -140,7 +149,7 @@ export class UsageInsightsService {
           JOIN "Block" b ON bv."blockId" = b."id"
           JOIN "Resource" r ON b."resourceId" = r."id"
           WHERE b."blockType" = 'ModuleAction'
-          AND r."projectId" IN (${Prisma.join(projectIds)})
+          ${this.projectIdsFilter(projectIds)}
           AND bv."updatedAt" >= ${startDate} AND bv."updatedAt" <= ${endDate}
           GROUP BY year, month, time_group
           ORDER BY year, month, time_group;
@@ -153,7 +162,7 @@ export class UsageInsightsService {
           JOIN "Block" b ON bv."blockId" = b."id"
           JOIN "Resource" r ON b."resourceId" = r."id"
           WHERE b."blockType" = 'PluginInstallation'
-          AND r."projectId" IN (${Prisma.join(projectIds)})
+          ${this.projectIdsFilter(projectIds)}
           AND bv."updatedAt" >= ${startDate} AND bv."updatedAt" <= ${endDate}
           GROUP BY year, month, time_group
           ORDER BY year, month, time_group;
