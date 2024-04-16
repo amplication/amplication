@@ -1,4 +1,11 @@
-import { Body, Controller, Inject, Param, Post } from "@nestjs/common";
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Inject,
+  Param,
+  Post,
+} from "@nestjs/common";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { WorkspaceService } from "./workspace.service";
 import { ApiTags } from "@nestjs/swagger";
@@ -68,18 +75,26 @@ export class WorkspaceController {
     @Param("token") token: string,
     @Body()
     data: CreateWorkspacesResourcesDefaultCustomDtosMigrationInput
-  ): Promise<boolean> {
+  ): Promise<string> {
     this.logger.info("createWorkspacesResourcesDefaultCustomDtosMigration....");
-    const { quantity } = data;
+    const { quantity, page } = data;
 
     if (
       this.configService.get<string>("CUSTOM_ACTION_MIGRATION_TOKEN") !== token
     ) {
       this.logger.error("InvalidToken, process aborted");
-      return;
+      throw new BadRequestException("InvalidToken, process aborted");
     }
-    return this.workspaceService.dataMigrateWorkspacesResourcesCustomDtos(
-      quantity
-    );
+
+    this.workspaceService
+      .dataMigrateWorkspacesResourcesCustomDtos(quantity, page)
+      .catch((error) => {
+        this.logger.error(
+          "Error in createWorkspacesResourcesDefaultCustomDtosMigration",
+          error
+        );
+      });
+
+    return "Check logs for more information";
   }
 }
