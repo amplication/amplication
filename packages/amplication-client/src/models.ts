@@ -101,6 +101,7 @@ export type AssistantMessageDelta = {
   id: Scalars['String']['output'];
   snapshot: Scalars['String']['output'];
   text: Scalars['String']['output'];
+  threadId: Scalars['String']['output'];
 };
 
 export type AssistantThread = {
@@ -2859,6 +2860,11 @@ export type StringFilter = {
 
 export type Subscription = {
   assistantMessageUpdated: AssistantMessageDelta;
+};
+
+
+export type SubscriptionAssistantMessageUpdatedArgs = {
+  threadId: Scalars['String']['input'];
 };
 
 export type Topic = IBlock & {
