@@ -127,11 +127,11 @@ const NewModule = ({ resourceId, onModuleCreated }: Props) => {
                   <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
                   <TextField
                     name="displayName"
-                    label="New  Name"
+                    label="New Module Name"
                     disabled={loading}
                     autoFocus
                     hideLabel
-                    placeholder="Type New  Name"
+                    placeholder="Type New Module Name"
                     autoComplete="off"
                   />
                   <Button
