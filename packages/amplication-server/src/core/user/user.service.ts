@@ -18,6 +18,7 @@ import { Env } from "../../env";
 import { PreviewUserService } from "../auth/previewUser.service";
 import { AuthUser } from "../auth/types";
 import { EnumPreviewAccountType } from "@amplication/code-gen-types/models";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 @Injectable()
 export class UserService {
@@ -237,6 +238,15 @@ export class UserService {
               where: {
                 deletedAt: null,
               },
+              include: {
+                resources: {
+                  where: {
+                    deletedAt: null,
+                    archived: { not: true },
+                    resourceType: EnumResourceType.Service,
+                  },
+                },
+              },
             },
           },
         },
@@ -245,8 +255,10 @@ export class UserService {
 
     for (const user of users) {
       const firstProject = user.workspace?.projects?.at(0);
+      const firstService = firstProject?.resources?.at(0);
       this.logger.info(
-        `Queuing feature notification ${notificationTemplateIdentifier} to user ${user.id} (account: ${user.account?.id}, workspace: ${user.workspace?.id}, firstProject: ${firstProject?.id})`
+        `Queuing feature notification ${notificationTemplateIdentifier} to user ${user.id} (account: ${user.account?.id}, 
+          workspace: ${user.workspace?.id}, firstProject: ${firstProject?.id}), firstService: ${firstService?.id}`
       );
 
       this.kafkaProducerService
@@ -260,6 +272,7 @@ export class UserService {
             envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
             workspaceId: user.workspace?.id,
             projectId: firstProject?.id,
+            serviceId: firstService?.id,
           },
         })
         .catch((error) =>
