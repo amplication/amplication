@@ -50,8 +50,7 @@ type MessageLoggerContext = {
 @Injectable()
 export class AssistantService {
   private assistantId: string;
-  private assistantFeatureEnabled: string;
-  FEATURE_AI_ASSISTANT_ENABLED;
+  private assistantFeatureEnabled: boolean;
   private openai: OpenAI;
   private clientHost: string;
   private pubSub = new PubSub();
@@ -73,10 +72,11 @@ export class AssistantService {
     });
 
     (this.clientHost = configService.get<string>(Env.CLIENT_HOST)),
-      (this.assistantId = configService.get<string>(Env.CHAT_ASSISTANT_ID)),
-      (this.assistantFeatureEnabled = configService.get<string>(
-        Env.FEATURE_AI_ASSISTANT_ENABLED
-      ));
+      (this.assistantId = configService.get<string>(Env.CHAT_ASSISTANT_ID));
+
+    this.assistantFeatureEnabled = Boolean(
+      configService.get<string>(Env.FEATURE_AI_ASSISTANT_ENABLED) === "true"
+    );
   }
 
   subscribeToAssistantMessageUpdated() {
