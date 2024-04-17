@@ -11,11 +11,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
-import { useTracking } from "../util/analytics";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./Assistant.scss";
 import useAssistant from "./hooks/useAssistant";
-import ReactMarkdown from "react-markdown";
 import AssistantMessage from "./AssistantMessage";
 import classNames from "classnames";
 type SendMessageType = models.SendAssistantMessageInput;
@@ -51,8 +49,6 @@ const WIDTH_STATE_SETTINGS: Record<
 };
 
 const Assistant = () => {
-  const { trackEvent } = useTracking();
-
   const [open, setOpen] = useState(true);
   const [widthState, setWidthState] = useState(WIDTH_STATE_DEFAULT);
 
