@@ -20,6 +20,7 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import useModule from "./hooks/useModule";
 import { useModulesContext } from "./modulesContext";
 import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
+import "./NewModule.scss";
 
 type Props = {
   resourceId: string;
@@ -45,6 +46,8 @@ const INITIAL_VALUES: Partial<models.Module> = {
 const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
+
+const CLASS_NAME = "new-module";
 
 const NewModule = ({ resourceId, onModuleCreated }: Props) => {
   const history = useHistory();
@@ -101,47 +104,48 @@ const NewModule = ({ resourceId, onModuleCreated }: Props) => {
       <Dialog
         isOpen={dialogOpen}
         onDismiss={handleDialogStateChange}
-        title="New "
+        title="New Module"
       >
-        <SvgThemeImage image={EnumImages.Entities} />
-        <Text textAlign={EnumTextAlign.Center}>
-          Give your new a descriptive name. <br />
-          For example: Get Customer, Find Orders, Create Ticket...
-        </Text>
-
-        <Formik
-          initialValues={INITIAL_VALUES}
-          validate={(values) => validate(values, FORM_SCHEMA)}
-          onSubmit={handleSubmit}
-          validateOnMount
-        >
-          {(formik) => {
-            const handlers = {
-              SUBMIT: formik.submitForm,
-            };
-            return (
-              <Form>
-                <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-                <TextField
-                  name="displayName"
-                  label="New  Name"
-                  disabled={loading}
-                  autoFocus
-                  hideLabel
-                  placeholder="Type New  Name"
-                  autoComplete="off"
-                />
-                <Button
-                  type="submit"
-                  buttonStyle={EnumButtonStyle.Primary}
-                  disabled={!formik.isValid || loading}
-                >
-                  Create Module
-                </Button>
-              </Form>
-            );
-          }}
-        </Formik>
+        <div className={`${CLASS_NAME}__module-dialog`}>
+          <SvgThemeImage image={EnumImages.Entities} />
+          <Text textAlign={EnumTextAlign.Center}>
+            Give your new Module a descriptive name. <br /> For example:
+            Customer, Order
+          </Text>
+          <Formik
+            initialValues={INITIAL_VALUES}
+            validate={(values) => validate(values, FORM_SCHEMA)}
+            onSubmit={handleSubmit}
+            validateOnMount
+          >
+            {(formik) => {
+              const handlers = {
+                SUBMIT: formik.submitForm,
+              };
+              return (
+                <Form>
+                  <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+                  <TextField
+                    name="displayName"
+                    label="New  Name"
+                    disabled={loading}
+                    autoFocus
+                    hideLabel
+                    placeholder="Type New  Name"
+                    autoComplete="off"
+                  />
+                  <Button
+                    type="submit"
+                    buttonStyle={EnumButtonStyle.Primary}
+                    disabled={!formik.isValid || loading}
+                  >
+                    Create Module
+                  </Button>
+                </Form>
+              );
+            }}
+          </Formik>
+        </div>
       </Dialog>
       {REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED === "true" && (
         <Button
