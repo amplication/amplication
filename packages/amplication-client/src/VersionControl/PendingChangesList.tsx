@@ -27,7 +27,7 @@ const PendingChangesList = () => {
             <span>{resourceGroup.resource.name}</span>
           </div>
           {resourceGroup.changes.map((typeGroup) => (
-            <PendingChangesListGroup group={typeGroup} />
+            <PendingChangesListGroup key={typeGroup.type} group={typeGroup} />
           ))}
         </div>
       ))}

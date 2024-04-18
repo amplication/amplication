@@ -817,11 +817,7 @@ export class BlockService {
     const changedBlocks = await this.prisma.block.findMany({
       where: {
         lockedByUserId: userId,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        OR: [
-          { blockType: EnumBlockType.Module },
-          { blockType: EnumBlockType.ModuleAction },
-        ],
+        blockType: { equals: EnumBlockType.ModuleDto },
         resource: {
           deletedAt: null,
           project: {

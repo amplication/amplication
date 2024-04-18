@@ -6,7 +6,10 @@ import { match } from "react-router-dom";
 import { useTracking } from "react-tracking";
 import useAuthenticated from "../authentication/use-authenticated";
 import { AppContextProvider } from "../context/appContext";
-import { REACT_APP_BILLING_API_KEY } from "../env";
+import {
+  REACT_APP_BILLING_API_KEY,
+  REACT_APP_FEATURE_AI_ASSISTANT_ENABLED,
+} from "../env";
 import { HubSpotChatComponent } from "../hubSpotChat";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import { AppRouteProps } from "../routes/routesUtil";
@@ -26,6 +29,7 @@ import RedeemCoupon from "../User/RedeemCoupon";
 import PendingChanges from "../VersionControl/PendingChanges";
 import LastCommit from "../VersionControl/LastCommit";
 import { EnumSubscriptionStatus } from "../models";
+import Assistant from "../Assistant/Assistant";
 import ResponsiveContainer from "../Components/ResponsiveContainer";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
@@ -216,32 +220,41 @@ const WorkspaceLayout: React.FC<Props> = ({
           customerId={currentWorkspace.id}
         >
           <Track>
-            <div className={moduleClass}>
-              <WorkspaceHeader />
-              <CompleteInvitation />
-              <RedeemCoupon />
+            <div className={`${moduleClass}__assistant__wrapper`}>
+              {REACT_APP_FEATURE_AI_ASSISTANT_ENABLED === "true" && (
+                <div className={`${moduleClass}__assistant`}>
+                  <Assistant />
+                </div>
+              )}
+              <div className={moduleClass}>
+                <WorkspaceHeader />
+                <CompleteInvitation />
+                <RedeemCoupon />
 
-              <div className={`${moduleClass}__page_content`}>
-                <ResponsiveContainer className={`${moduleClass}__main_content`}>
-                  {innerRoutes}
-                </ResponsiveContainer>
+                <div className={`${moduleClass}__page_content`}>
+                  <ResponsiveContainer
+                    className={`${moduleClass}__main_content`}
+                  >
+                    {innerRoutes}
+                  </ResponsiveContainer>
 
-                {currentProject ? (
-                  <div className={`${moduleClass}__changes_menu`}>
-                    <PendingChanges projectId={currentProject.id} />
-                    {commitUtils.lastCommit && (
-                      <LastCommit lastCommit={commitUtils.lastCommit} />
-                    )}
-                  </div>
-                ) : null}
+                  {currentProject ? (
+                    <div className={`${moduleClass}__changes_menu`}>
+                      <PendingChanges projectId={currentProject.id} />
+                      {commitUtils.lastCommit && (
+                        <LastCommit lastCommit={commitUtils.lastCommit} />
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+
+                <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
+                <HubSpotChatComponent
+                  setChatStatus={setChatStatus}
+                  chatStatus={chatStatus}
+                />
+                <ScreenResolutionMessage />
               </div>
-
-              <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
-              <HubSpotChatComponent
-                setChatStatus={setChatStatus}
-                chatStatus={chatStatus}
-              />
-              <ScreenResolutionMessage />
             </div>
           </Track>
         </StiggProvider>
