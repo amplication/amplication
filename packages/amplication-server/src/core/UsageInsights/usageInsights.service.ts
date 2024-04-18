@@ -191,13 +191,6 @@ export class UsageInsightsService {
       blockType: EnumBlockType.PluginInstallation,
     });
 
-    this.logger.debug("Usage insights result", {
-      builds,
-      entities,
-      moduleActions,
-      plugins,
-    });
-
     return {
       builds,
       entities,
@@ -213,13 +206,6 @@ export class UsageInsightsService {
     const timeSaved = await this.evaluateTimeSaved(loc);
     const costSaved = await this.evaluateCostSaved(loc);
     const codeQuality = await this.evaluateCodeQuality(loc);
-
-    this.logger.debug("Evaluation insights result", {
-      loc,
-      timeSaved,
-      costSaved,
-      codeQuality,
-    });
 
     return {
       loc,
