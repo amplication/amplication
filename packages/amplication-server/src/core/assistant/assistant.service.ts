@@ -20,6 +20,7 @@ import { Block } from "../../models";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import { PubSub } from "graphql-subscriptions"; //@todo: replace with kafka pubsub
 import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
+import { AmplicationError } from "../../errors/AmplicationError";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -49,6 +50,7 @@ type MessageLoggerContext = {
 @Injectable()
 export class AssistantService {
   private assistantId: string;
+  private assistantFeatureEnabled: boolean;
   private openai: OpenAI;
   private clientHost: string;
   private pubSub = new PubSub();
@@ -71,9 +73,15 @@ export class AssistantService {
 
     (this.clientHost = configService.get<string>(Env.CLIENT_HOST)),
       (this.assistantId = configService.get<string>(Env.CHAT_ASSISTANT_ID));
+
+    this.assistantFeatureEnabled = Boolean(
+      configService.get<string>(Env.FEATURE_AI_ASSISTANT_ENABLED) === "true"
+    );
   }
 
   subscribeToAssistantMessageUpdated() {
+    if (!this.assistantFeatureEnabled)
+      throw new AmplicationError("The assistant AI feature is disabled");
     return this.pubSub.asyncIterator(MESSAGE_UPDATED_EVENT);
   }
 
@@ -140,6 +148,9 @@ export class AssistantService {
     threadId: string,
     context: AssistantContext
   ): Promise<AssistantThread> {
+    if (!this.assistantFeatureEnabled)
+      throw new AmplicationError("The assistant AI feature is disabled");
+
     const openai = this.openai;
 
     const preparedThread = await this.prepareThread(
