@@ -1,8 +1,6 @@
 import { Module, OnApplicationShutdown } from "@nestjs/common";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { GraphQLModule } from "@nestjs/graphql";
 import { MorganModule } from "nest-morgan";
 import { CoreModule } from "./core/core.module";
 import { InjectContextInterceptor } from "./interceptors/inject-context.interceptor";
@@ -11,13 +9,13 @@ import { SegmentAnalyticsOptionsService } from "./services/segmentAnalytics/segm
 import { SendGridModule } from "@ntegral/nestjs-sendgrid";
 import { SendgridConfigService } from "./services/sendgridConfig.service";
 import { HealthModule } from "./core/health/health.module";
-import { join } from "path";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { SERVICE_NAME } from "./constants";
 import { Logger } from "@amplication/util/logging";
 import { TracingModule } from "@amplication/util/nestjs/tracing";
 import { AnalyticsSessionIdInterceptor } from "./interceptors/analytics-session-id.interceptor";
 import { RequestContextModule } from "nestjs-request-context";
+import { GraphQLModule } from "./graphql/graphql.module";
 
 @Module({
   imports: [
@@ -30,39 +28,7 @@ import { RequestContextModule } from "nestjs-request-context";
       inject: [ConfigService],
       useClass: SendgridConfigService,
     }),
-    GraphQLModule.forRootAsync<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      useFactory: async (configService: ConfigService) => {
-        return {
-          autoSchemaFile:
-            configService.get("GRAPHQL_SCHEMA_DEST") ||
-            join(process.cwd(), "src", "schema.graphql"),
-          sortSchema: true,
-          debug: configService.get("GRAPHQL_DEBUG") === "1",
-          playground: configService.get("PLAYGROUND_ENABLE") === "1",
-          introspection: configService.get("PLAYGROUND_ENABLE") === "1",
-          context: (context) => {
-            if (context?.extra?.request) {
-              return {
-                req: {
-                  ...context?.extra?.request,
-                  headers: {
-                    ...context?.extra?.request?.headers,
-                    ...context?.connectionParams,
-                  },
-                },
-              };
-            }
-            return { req: context?.req };
-          },
-          subscriptions: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            "graphql-ws": true,
-          },
-        };
-      },
-      inject: [ConfigService],
-    }),
+    GraphQLModule,
     AmplicationLoggerModule.forRoot({
       component: SERVICE_NAME,
     }),

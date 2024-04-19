@@ -6,7 +6,7 @@ import { EntityModule } from "../entity/entity.module";
 import { ResourceModule } from "../resource/resource.module";
 import { ModuleModule } from "../module/module.module";
 import { ProjectModule } from "../project/project.module";
-import { KafkaModule } from "@amplication/util/nestjs/kafka";
+import { GraphQLModule } from "../../graphql/graphql.module";
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { KafkaModule } from "@amplication/util/nestjs/kafka";
     ResourceModule,
     ModuleModule,
     ProjectModule,
-    KafkaModule,
+    GraphQLModule,
   ],
   providers: [AssistantService, AssistantResolver],
   exports: [AssistantService, AssistantResolver],

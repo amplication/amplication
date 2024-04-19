@@ -19,8 +19,8 @@ import { EnumPendingChangeOriginType } from "../resource/dto";
 import { Block } from "../../models";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
-import { KafkaPubSubService } from "@amplication/util/nestjs/kafka";
 import { AmplicationError } from "../../errors/AmplicationError";
+import { GraphqlSubscriptionPubSubKafkaService } from "../../graphql/graphqlSubscriptionPubSubKafka.service";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -61,7 +61,7 @@ export class AssistantService {
     private readonly resourceService: ResourceService,
     private readonly moduleService: ModuleService,
     private readonly projectService: ProjectService,
-    private readonly kafkaPubSubService: KafkaPubSubService,
+    private readonly graphqlSubscriptionKafkaService: GraphqlSubscriptionPubSubKafkaService,
 
     configService: ConfigService
   ) {
@@ -82,7 +82,7 @@ export class AssistantService {
   subscribeToAssistantMessageUpdated() {
     if (!this.assistantFeatureEnabled)
       throw new AmplicationError("The assistant AI feature is disabled");
-    return this.kafkaPubSubService
+    return this.graphqlSubscriptionKafkaService
       .getPubSub()
       .asyncIterator(MESSAGE_UPDATED_EVENT);
   }
@@ -99,7 +99,7 @@ export class AssistantService {
       text: textDelta,
       snapshot: snapshot,
     };
-    await this.kafkaPubSubService
+    await this.graphqlSubscriptionKafkaService
       .getPubSub()
       .publish(MESSAGE_UPDATED_EVENT, JSON.stringify(message));
   };
