@@ -21,7 +21,7 @@ export const featureAnnouncement = async (
       eventName: notificationTemplateIdentifier,
       payload: {
         payload: {
-          ...restParams, //envBaseUrl, workspaceId, projectId
+          ...restParams, //envBaseUrl, workspaceId, projectId, serviceId
         },
       },
     });
