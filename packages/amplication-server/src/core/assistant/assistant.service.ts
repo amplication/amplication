@@ -20,7 +20,7 @@ import { Block } from "../../models";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
 import { AmplicationError } from "../../errors/AmplicationError";
-import { GraphqlSubscriptionPubSubKafkaService } from "../../graphql/graphqlSubscriptionPubSubKafka.service";
+import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",

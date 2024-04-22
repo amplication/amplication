@@ -6,7 +6,7 @@ import { EntityModule } from "../entity/entity.module";
 import { ResourceModule } from "../resource/resource.module";
 import { ModuleModule } from "../module/module.module";
 import { ProjectModule } from "../project/project.module";
-import { GraphQLModule } from "../../graphql/graphql.module";
+import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 
 @Module({
   imports: [
@@ -15,9 +15,12 @@ import { GraphQLModule } from "../../graphql/graphql.module";
     ResourceModule,
     ModuleModule,
     ProjectModule,
-    GraphQLModule,
   ],
-  providers: [AssistantService, AssistantResolver],
+  providers: [
+    AssistantService,
+    AssistantResolver,
+    GraphqlSubscriptionPubSubKafkaService,
+  ],
   exports: [AssistantService, AssistantResolver],
 })
 export class AssistantModule {}
