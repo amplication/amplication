@@ -7,8 +7,5 @@
     "types": ["node"]
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-  "include": [
-    "**/*.ts",
-    "../../../../packages/amplication-server/src/graphql/graphqlSubscriptionKafka.service.ts"
-  ]
+  "include": ["**/*.ts"]
 }
