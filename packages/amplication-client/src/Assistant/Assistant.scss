@@ -4,6 +4,7 @@ $wide-assistant-width: 550px;
 $assistant-width: 350px;
 $assistant-handle-width: 24px;
 $assistant-handle-top: 150px;
+$assistant-handle-margin: 40px;
 
 #root {
   // --assistant-background: var(--theme-gradient);
@@ -67,9 +68,10 @@ $assistant-handle-top: 150px;
     padding: var(--default-spacing);
 
     .assistant__title {
+      white-space: nowrap;
       transform: rotate(-90deg);
-      margin-top: var(--default-spacing);
-      margin-bottom: var(--default-spacing);
+      margin-top: $assistant-handle-margin;
+      margin-bottom: $assistant-handle-margin;
     }
   }
 
@@ -125,7 +127,7 @@ $assistant-handle-top: 150px;
       gap: var(--default-spacing);
       align-items: center;
 
-      .text-input {
+      .assistant__text-wrapper {
         flex: 1;
 
         label {

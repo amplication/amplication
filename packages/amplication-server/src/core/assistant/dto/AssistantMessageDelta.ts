@@ -23,4 +23,9 @@ export class AssistantMessageDelta {
     nullable: false,
   })
   snapshot: string;
+
+  @Field(() => Boolean, {
+    nullable: false,
+  })
+  completed: boolean;
 }

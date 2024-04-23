@@ -29,6 +29,7 @@ enum EnumAssistantFunctions {
   CreateProject = "createProject",
   CommitProjectPendingChanges = "commitProjectPendingChanges",
   GetProjectPendingChanges = "getProjectPendingChanges",
+  GetPluginList = "getPluginList",
 }
 
 const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
@@ -60,6 +61,7 @@ export class AssistantService {
     private readonly moduleService: ModuleService,
     private readonly projectService: ProjectService,
     private readonly kafkaPubSubService: KafkaPubSubService,
+    private readonly pluginInstallationService: PluginInstallationService,
 
     configService: ConfigService
   ) {
@@ -83,13 +85,16 @@ export class AssistantService {
     threadId: string,
     messageId: string,
     textDelta: string,
-    snapshot: string
+    snapshot: string,
+    completed: boolean
   ) => {
+    this.logger.info("Chat: Message updated");
     const message: AssistantMessageDelta = {
       id: "messageId",
       threadId,
       text: textDelta,
       snapshot: snapshot,
+      completed,
     };
     await this.kafkaPubSubService
       .getPubSub()
@@ -234,18 +239,25 @@ export class AssistantService {
         }
       })
       .on("textCreated", async (text) => {
-        await this.onMessageUpdated(threadId, "", text.value, text.value);
+        await this.onMessageUpdated(
+          threadId,
+          "",
+          text.value,
+          text.value,
+          false
+        );
       })
       .on("textDelta", async (textDelta, snapshot) => {
         await this.onMessageUpdated(
           threadId,
           "",
           textDelta.value,
-          snapshot.value
+          snapshot.value,
+          false
         );
       })
       .on("textDone", async (text) => {
-        await this.onMessageUpdated(threadId, "", text.value, text.value);
+        await this.onMessageUpdated(threadId, "", text.value, text.value, true);
         loggerContext.role = "assistant";
         this.logger.info(`Chat: ${text.value}`, loggerContext);
       });
