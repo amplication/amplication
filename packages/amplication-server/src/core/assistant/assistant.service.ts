@@ -30,7 +30,6 @@ enum EnumAssistantFunctions {
   CreateProject = "createProject",
   CommitProjectPendingChanges = "commitProjectPendingChanges",
   GetProjectPendingChanges = "getProjectPendingChanges",
-  GetPluginList = "getPluginList",
 }
 
 const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
