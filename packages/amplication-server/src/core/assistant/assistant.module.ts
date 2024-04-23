@@ -6,8 +6,7 @@ import { EntityModule } from "../entity/entity.module";
 import { ResourceModule } from "../resource/resource.module";
 import { ModuleModule } from "../module/module.module";
 import { ProjectModule } from "../project/project.module";
-import { KafkaModule } from "@amplication/util/nestjs/kafka";
-import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
+import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 
 @Module({
   imports: [
@@ -16,10 +15,12 @@ import { PluginInstallationModule } from "../pluginInstallation/pluginInstallati
     ResourceModule,
     ModuleModule,
     ProjectModule,
-    KafkaModule,
-    PluginInstallationModule,
   ],
-  providers: [AssistantService, AssistantResolver],
+  providers: [
+    AssistantService,
+    AssistantResolver,
+    GraphqlSubscriptionPubSubKafkaService,
+  ],
   exports: [AssistantService, AssistantResolver],
 })
 export class AssistantModule {}

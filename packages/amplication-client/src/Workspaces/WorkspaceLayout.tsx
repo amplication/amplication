@@ -6,7 +6,10 @@ import { match } from "react-router-dom";
 import { useTracking } from "react-tracking";
 import useAuthenticated from "../authentication/use-authenticated";
 import { AppContextProvider } from "../context/appContext";
-import { REACT_APP_BILLING_API_KEY } from "../env";
+import {
+  REACT_APP_BILLING_API_KEY,
+  REACT_APP_FEATURE_AI_ASSISTANT_ENABLED,
+} from "../env";
 import { HubSpotChatComponent } from "../hubSpotChat";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import { AppRouteProps } from "../routes/routesUtil";
@@ -218,9 +221,11 @@ const WorkspaceLayout: React.FC<Props> = ({
         >
           <Track>
             <div className={`${moduleClass}__assistant__wrapper`}>
-              <div className={`${moduleClass}__assistant`}>
-                <Assistant />
-              </div>
+              {REACT_APP_FEATURE_AI_ASSISTANT_ENABLED === "true" && (
+                <div className={`${moduleClass}__assistant`}>
+                  <Assistant />
+                </div>
+              )}
               <div className={moduleClass}>
                 <WorkspaceHeader />
                 <CompleteInvitation />

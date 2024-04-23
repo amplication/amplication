@@ -11,7 +11,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { HotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
-import { useTracking } from "../util/analytics";
 import "./Assistant.scss";
 import useAssistant from "./hooks/useAssistant";
 import AssistantMessage from "./AssistantMessage";
@@ -49,8 +48,6 @@ const WIDTH_STATE_SETTINGS: Record<
 };
 
 const Assistant = () => {
-  const { trackEvent } = useTracking();
-
   const [open, setOpen] = useState(true);
   const [widthState, setWidthState] = useState(WIDTH_STATE_DEFAULT);
 
