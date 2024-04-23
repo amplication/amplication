@@ -121,6 +121,15 @@ export class AssistantService {
     threadId: string,
     context: AssistantContext
   ): Promise<AssistantThread> {
+    if (!this.assistantFeatureEnabled)
+      throw new AmplicationError("The assistant AI feature is disabled");
+
+    if (context.user.workspace.allowLLMFeatures === false) {
+      throw new AmplicationError(
+        "AI-powered features are disabled for this workspace"
+      );
+    }
+
     const openai = this.openai;
 
     const preparedThread = await this.prepareThread(
@@ -155,6 +164,12 @@ export class AssistantService {
   ): Promise<AssistantThread> {
     if (!this.assistantFeatureEnabled)
       throw new AmplicationError("The assistant AI feature is disabled");
+
+    if (context.user.workspace.allowLLMFeatures === false) {
+      throw new AmplicationError(
+        "AI-powered features are disabled for this workspace"
+      );
+    }
 
     const openai = this.openai;
 
