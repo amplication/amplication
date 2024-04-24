@@ -8,14 +8,15 @@ import {
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { GlobalHotKeys } from "react-hotkeys";
+import { HotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
-import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./Assistant.scss";
 import useAssistant from "./hooks/useAssistant";
 import AssistantMessage from "./AssistantMessage";
 import classNames from "classnames";
+import { useAppContext } from "../context/appContext";
+import { Link } from "react-router-dom";
 type SendMessageType = models.SendAssistantMessageInput;
 
 const INITIAL_VALUES: SendMessageType = {
@@ -26,7 +27,7 @@ const DIRECTION = "sw";
 const CLASS_NAME = "assistant";
 
 const keyMap = {
-  SUBMIT: CROSS_OS_CTRL_ENTER,
+  SUBMIT: "enter",
 };
 
 const WIDTH_STATE_DEFAULT = "default";
@@ -49,6 +50,8 @@ const WIDTH_STATE_SETTINGS: Record<
 };
 
 const Assistant = () => {
+  const { currentWorkspace } = useAppContext();
+
   const [open, setOpen] = useState(true);
   const [widthState, setWidthState] = useState(WIDTH_STATE_DEFAULT);
 
@@ -63,7 +66,7 @@ const Assistant = () => {
     sendMessage,
     messages,
     sendMessageError: error,
-    sendMessageLoading: loading,
+    processingMessage: loading,
     streamError,
   } = useAssistant();
 
@@ -85,7 +88,7 @@ const Assistant = () => {
         <div className={`${CLASS_NAME}__handle`} onClick={() => setOpen(true)}>
           <Icon icon="ai" color={EnumTextColor.White} size="large" />
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
-            Jovu
+            Jovu (Beta)
           </Text>
         </div>
       )}
@@ -99,7 +102,7 @@ const Assistant = () => {
         <div className={`${CLASS_NAME}__header`}>
           <Icon icon="ai" color={EnumTextColor.White} size="large" />
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
-            Jovu
+            Jovu (Beta)
           </Text>
           <Tooltip
             aria-label={WIDTH_STATE_SETTINGS[widthState].tooltip}
@@ -130,55 +133,79 @@ const Assistant = () => {
           </Tooltip>
         </div>
 
-        <div className={`${CLASS_NAME}__messages`}>
-          {messages.map((message) => (
-            <AssistantMessage
-              key={message.id}
-              message={message}
-              onOptionClick={sendMessage}
-            />
-          ))}
+        {currentWorkspace?.allowLLMFeatures ? (
+          <>
+            <div className={`${CLASS_NAME}__messages`}>
+              {messages.map((message) => (
+                <AssistantMessage
+                  key={message.id}
+                  message={message}
+                  onOptionClick={sendMessage}
+                />
+              ))}
 
-          <div ref={messagesEndRef} />
-          {error && (
-            <div className={`${CLASS_NAME}__error`}>{error.message}</div>
-          )}
-          {streamError && (
-            <div className={`${CLASS_NAME}__error`}>{streamError.message}</div>
-          )}
-        </div>
+              <div ref={messagesEndRef} />
+              {error && (
+                <div className={`${CLASS_NAME}__error`}>{error.message}</div>
+              )}
+              {streamError && (
+                <div className={`${CLASS_NAME}__error`}>
+                  {streamError.message}
+                </div>
+              )}
+            </div>
 
-        <div className={`${CLASS_NAME}__chat_input`}>
-          <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-            {(formik) => {
-              const handlers = {
-                SUBMIT: formik.submitForm,
-              };
-              return (
-                <Form>
-                  <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-                  <TextField
-                    textarea
-                    name="message"
-                    label="How can I help you?"
-                    disabled={loading}
-                    autoFocus
-                    autoComplete="off"
-                    hideLabel
-                    rows={2}
-                  />
-                  <Button
-                    type="submit"
-                    buttonStyle={EnumButtonStyle.Primary}
-                    disabled={loading}
-                  >
-                    Send
-                  </Button>
-                </Form>
-              );
-            }}
-          </Formik>
-        </div>
+            <div className={`${CLASS_NAME}__chat_input`}>
+              <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+                {(formik) => {
+                  const handlers = {
+                    SUBMIT: formik.submitForm,
+                  };
+                  return (
+                    <Form>
+                      <HotKeys
+                        keyMap={keyMap}
+                        handlers={handlers}
+                        className={`${CLASS_NAME}__text-wrapper`}
+                      >
+                        <TextField
+                          textarea
+                          name="message"
+                          label="How can I help you?"
+                          disabled={loading}
+                          autoFocus
+                          autoComplete="off"
+                          hideLabel
+                          rows={2}
+                        />
+                      </HotKeys>
+                      <Button
+                        type="submit"
+                        buttonStyle={EnumButtonStyle.Primary}
+                        disabled={loading}
+                      >
+                        Send
+                      </Button>
+                    </Form>
+                  );
+                }}
+              </Formik>
+            </div>
+          </>
+        ) : (
+          <div className={`${CLASS_NAME}__messages`}>
+            <div className={`${CLASS_NAME}__error`}>
+              This feature is disabled for this workspace. To enable AI-powered
+              features,{" "}
+              <Link
+                to={`/${currentWorkspace?.id}/settings`}
+                className={`${CLASS_NAME}__settings-link`}
+              >
+                go to workspace settings.
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

@@ -24,6 +24,7 @@ export const ASSISTANT_MESSAGE_UPDATED = gql`
       threadId
       snapshot
       text
+      completed
     }
   }
 `;

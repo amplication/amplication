@@ -18,9 +18,9 @@ import { ProjectService } from "../project/project.service";
 import { EnumPendingChangeOriginType } from "../resource/dto";
 import { Block } from "../../models";
 import { AssistantStream } from "openai/lib/AssistantStream";
-import { PubSub } from "graphql-subscriptions"; //@todo: replace with kafka pubsub
 import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
 import { AmplicationError } from "../../errors/AmplicationError";
+import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -53,7 +53,6 @@ export class AssistantService {
   private assistantFeatureEnabled: boolean;
   private openai: OpenAI;
   private clientHost: string;
-  private pubSub = new PubSub();
 
   constructor(
     @Inject(AmplicationLogger)
@@ -62,6 +61,7 @@ export class AssistantService {
     private readonly resourceService: ResourceService,
     private readonly moduleService: ModuleService,
     private readonly projectService: ProjectService,
+    private readonly graphqlSubscriptionKafkaService: GraphqlSubscriptionPubSubKafkaService,
 
     configService: ConfigService
   ) {
@@ -82,24 +82,29 @@ export class AssistantService {
   subscribeToAssistantMessageUpdated() {
     if (!this.assistantFeatureEnabled)
       throw new AmplicationError("The assistant AI feature is disabled");
-    return this.pubSub.asyncIterator(MESSAGE_UPDATED_EVENT);
+    return this.graphqlSubscriptionKafkaService
+      .getPubSub()
+      .asyncIterator(MESSAGE_UPDATED_EVENT);
   }
 
   onMessageUpdated = async (
     threadId: string,
     messageId: string,
     textDelta: string,
-    snapshot: string
+    snapshot: string,
+    completed: boolean
   ) => {
+    this.logger.info("Chat: Message updated");
     const message: AssistantMessageDelta = {
-      id: messageId,
+      id: "messageId",
       threadId,
       text: textDelta,
       snapshot: snapshot,
+      completed,
     };
-    await this.pubSub.publish(MESSAGE_UPDATED_EVENT, {
-      assistantMessageUpdated: message,
-    });
+    await this.graphqlSubscriptionKafkaService
+      .getPubSub()
+      .publish(MESSAGE_UPDATED_EVENT, JSON.stringify(message));
   };
 
   //do not expose the entire context as it may include sensitive information
@@ -116,6 +121,15 @@ export class AssistantService {
     threadId: string,
     context: AssistantContext
   ): Promise<AssistantThread> {
+    if (!this.assistantFeatureEnabled)
+      throw new AmplicationError("The assistant AI feature is disabled");
+
+    if (context.user.workspace.allowLLMFeatures === false) {
+      throw new AmplicationError(
+        "AI-powered features are disabled for this workspace"
+      );
+    }
+
     const openai = this.openai;
 
     const preparedThread = await this.prepareThread(
@@ -150,6 +164,12 @@ export class AssistantService {
   ): Promise<AssistantThread> {
     if (!this.assistantFeatureEnabled)
       throw new AmplicationError("The assistant AI feature is disabled");
+
+    if (context.user.workspace.allowLLMFeatures === false) {
+      throw new AmplicationError(
+        "AI-powered features are disabled for this workspace"
+      );
+    }
 
     const openai = this.openai;
 
@@ -243,18 +263,25 @@ export class AssistantService {
         }
       })
       .on("textCreated", async (text) => {
-        await this.onMessageUpdated(threadId, "", text.value, text.value);
+        await this.onMessageUpdated(
+          threadId,
+          "",
+          text.value,
+          text.value,
+          false
+        );
       })
       .on("textDelta", async (textDelta, snapshot) => {
         await this.onMessageUpdated(
           threadId,
           "",
           textDelta.value,
-          snapshot.value
+          snapshot.value,
+          false
         );
       })
       .on("textDone", async (text) => {
-        await this.onMessageUpdated(threadId, "", text.value, text.value);
+        await this.onMessageUpdated(threadId, "", text.value, text.value, true);
         loggerContext.role = "assistant";
         this.logger.info(`Chat: ${text.value}`, loggerContext);
       });
