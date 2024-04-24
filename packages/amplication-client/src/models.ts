@@ -98,6 +98,7 @@ export type AssistantMessage = {
 };
 
 export type AssistantMessageDelta = {
+  completed: Scalars['Boolean']['output'];
   id: Scalars['String']['output'];
   snapshot: Scalars['String']['output'];
   text: Scalars['String']['output'];

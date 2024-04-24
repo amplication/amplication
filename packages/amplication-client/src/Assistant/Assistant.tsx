@@ -8,10 +8,9 @@ import {
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { GlobalHotKeys } from "react-hotkeys";
+import { HotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
-import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./Assistant.scss";
 import useAssistant from "./hooks/useAssistant";
 import AssistantMessage from "./AssistantMessage";
@@ -26,7 +25,7 @@ const DIRECTION = "sw";
 const CLASS_NAME = "assistant";
 
 const keyMap = {
-  SUBMIT: CROSS_OS_CTRL_ENTER,
+  SUBMIT: "enter",
 };
 
 const WIDTH_STATE_DEFAULT = "default";
@@ -63,7 +62,7 @@ const Assistant = () => {
     sendMessage,
     messages,
     sendMessageError: error,
-    sendMessageLoading: loading,
+    processingMessage: loading,
     streamError,
   } = useAssistant();
 
@@ -85,7 +84,7 @@ const Assistant = () => {
         <div className={`${CLASS_NAME}__handle`} onClick={() => setOpen(true)}>
           <Icon icon="ai" color={EnumTextColor.White} size="large" />
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
-            Jovu
+            Jovu (Beta)
           </Text>
         </div>
       )}
@@ -99,7 +98,7 @@ const Assistant = () => {
         <div className={`${CLASS_NAME}__header`}>
           <Icon icon="ai" color={EnumTextColor.White} size="large" />
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
-            Jovu
+            Jovu (Beta)
           </Text>
           <Tooltip
             aria-label={WIDTH_STATE_SETTINGS[widthState].tooltip}
@@ -156,17 +155,22 @@ const Assistant = () => {
               };
               return (
                 <Form>
-                  <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-                  <TextField
-                    textarea
-                    name="message"
-                    label="How can I help you?"
-                    disabled={loading}
-                    autoFocus
-                    autoComplete="off"
-                    hideLabel
-                    rows={2}
-                  />
+                  <HotKeys
+                    keyMap={keyMap}
+                    handlers={handlers}
+                    className={`${CLASS_NAME}__text-wrapper`}
+                  >
+                    <TextField
+                      textarea
+                      name="message"
+                      label="How can I help you?"
+                      disabled={loading}
+                      autoFocus
+                      autoComplete="off"
+                      hideLabel
+                      rows={2}
+                    />
+                  </HotKeys>
                   <Button
                     type="submit"
                     buttonStyle={EnumButtonStyle.Primary}
