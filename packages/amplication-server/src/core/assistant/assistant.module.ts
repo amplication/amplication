@@ -8,6 +8,7 @@ import { ModuleModule } from "../module/module.module";
 import { ProjectModule } from "../project/project.module";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 import { PluginCatalogModule } from "../pluginCatalog/pluginCatalog.module";
+import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PluginCatalogModule } from "../pluginCatalog/pluginCatalog.module";
     ModuleModule,
     ProjectModule,
     PluginCatalogModule,
+    PluginInstallationModule,
   ],
   providers: [
     AssistantService,

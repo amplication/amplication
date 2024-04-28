@@ -15,9 +15,11 @@ export class PluginCatalogService {
     });
   }
 
-  async getPlugin(pluginId: string): Promise<PluginCatalogItem> {
+  async getPluginWithLatestVersion(
+    pluginId: string
+  ): Promise<PluginCatalogItem> {
     const query = gql`
-      query GetPlugins($where: PluginWhereInput) {
+      query GetPlugin($where: PluginWhereInput) {
         plugins(where: $where) {
           pluginId
           name
@@ -50,13 +52,23 @@ export class PluginCatalogService {
         query,
         variables: {
           where: {
+            categories: {}, //this is required to workaround an issue in the API
             pluginId: {
               equals: pluginId,
             },
           },
         },
       });
-      return data.plugins && data.plugins.length ? data.plugins[0] : undefined;
+      const plugin =
+        data.plugins && data.plugins.length ? data.plugins[0] : undefined;
+      if (plugin) {
+        const versions = plugin.versions.filter((version) => version.isLatest);
+        return {
+          ...plugin,
+          versions,
+        };
+      }
+      return undefined;
     } catch (error) {
       throw new Error(`Failed to fetch plugin with ID ${pluginId}: ${error}`);
     }

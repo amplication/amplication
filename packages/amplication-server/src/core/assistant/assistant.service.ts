@@ -23,6 +23,7 @@ import { AmplicationError } from "../../errors/AmplicationError";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
 import { omit } from "lodash";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -33,9 +34,12 @@ enum EnumAssistantFunctions {
   CommitProjectPendingChanges = "commitProjectPendingChanges",
   GetProjectPendingChanges = "getProjectPendingChanges",
   GetPlugins = "getPlugins",
+  InstallPlugin = "installPlugin",
 }
 
 const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
+
+export const PLUGIN_LATEST_VERSION_TAG = "latest";
 
 type MessageLoggerContext = {
   messageContext: {
@@ -66,6 +70,7 @@ export class AssistantService {
     private readonly projectService: ProjectService,
     private readonly graphqlSubscriptionKafkaService: GraphqlSubscriptionPubSubKafkaService,
     private readonly pluginCatalogService: PluginCatalogService,
+    private readonly pluginInstallationService: PluginInstallationService,
 
     configService: ConfigService
   ) {
@@ -98,7 +103,7 @@ export class AssistantService {
     snapshot: string,
     completed: boolean
   ) => {
-    this.logger.debug("Chat: Message updated");
+    //this.logger.debug("Chat: Message updated");
     const message: AssistantMessageDelta = {
       id: "messageId",
       threadId,
@@ -679,6 +684,39 @@ export class AssistantService {
         context
       );
       return plugins;
+    },
+    installPlugin: async (
+      args: { pluginId: string; serviceId: string },
+      context: AssistantContext
+    ) => {
+      const plugin = await this.pluginCatalogService.getPluginWithLatestVersion(
+        args.pluginId
+      );
+      const pluginVersion = plugin.versions[0];
+
+      const { version, settings, configurations } = pluginVersion;
+
+      const installation = await this.pluginInstallationService.create(
+        {
+          data: {
+            displayName: plugin.name,
+            pluginId: args.pluginId,
+            enabled: true,
+            npm: plugin.npm,
+            version: version,
+            settings: settings,
+            configurations: configurations,
+            resource: { connect: { id: args.serviceId } },
+          },
+        },
+        context.user
+      );
+      return {
+        result: installation,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/installed/${installation.id}`,
+        pluginsCatalogLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/plugins/catalog`,
+        allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/plugins/installed`,
+      };
     },
   };
 }

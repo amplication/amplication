@@ -1,8 +1,10 @@
+import { JsonValue } from "type-fest";
+
 export class PluginCatalogItemVersion {
   version: string;
   isLatest: boolean;
-  settings: Record<string, unknown>;
-  configurations: string;
+  settings: JsonValue;
+  configurations: JsonValue;
   id: string;
   pluginId: string;
 }
