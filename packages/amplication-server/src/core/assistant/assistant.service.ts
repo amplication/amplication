@@ -10,7 +10,6 @@ import { Run } from "openai/resources/beta/threads/runs/runs";
 import { AssistantContext } from "./dto/AssistantContext";
 import { EntityService } from "../entity/entity.service";
 import { plural } from "pluralize";
-import { camelCase } from "camel-case";
 import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { ModuleService } from "../module/module.service";
@@ -24,6 +23,10 @@ import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubS
 import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
 import { omit } from "lodash";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
+import { pascalCase } from "pascal-case";
+//import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -35,6 +38,13 @@ enum EnumAssistantFunctions {
   GetProjectPendingChanges = "getProjectPendingChanges",
   GetPlugins = "getPlugins",
   InstallPlugins = "installPlugins",
+  GetServiceModules = "getServiceModules",
+  CreateModule = "createModule",
+  GetModuleDtosAndEnums = "getModuleDtosAndEnums",
+  //CreateModuleDto = "createModuleDto",
+  // CreateModuleEnum = "createModuleEnum",
+  // GetModuleActions = "getModuleActions",
+  // CreateModuleAction = "createModuleAction",
 }
 
 const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
@@ -71,7 +81,8 @@ export class AssistantService {
     private readonly graphqlSubscriptionKafkaService: GraphqlSubscriptionPubSubKafkaService,
     private readonly pluginCatalogService: PluginCatalogService,
     private readonly pluginInstallationService: PluginInstallationService,
-
+    private readonly moduleActionService: ModuleActionService,
+    private readonly moduleDtoService: ModuleDtoService,
     configService: ConfigService
   ) {
     this.logger.info("starting assistant service");
@@ -490,7 +501,7 @@ export class AssistantService {
           data: {
             displayName: args.name,
             pluralDisplayName: pluralDisplayName,
-            name: camelCase(args.name),
+            name: pascalCase(args.name),
             resource: {
               connect: {
                 id: args.serviceId,
@@ -727,5 +738,111 @@ export class AssistantService {
         allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/plugins/installed`,
       };
     },
+    getServiceModules: async (
+      args: { serviceId: string },
+      context: AssistantContext
+    ) => {
+      const modules = await this.moduleService.findMany({
+        where: {
+          resource: { id: args.serviceId },
+        },
+      });
+      return modules.map((module) => ({
+        id: module.id,
+        name: module.displayName,
+        description: module.description,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${module.id}`,
+      }));
+    },
+    createModule: async (
+      args: {
+        moduleName: string;
+        moduleDescription: string;
+        serviceId: string;
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.moduleName);
+
+      const module = await this.moduleService.create(
+        {
+          data: {
+            name: name,
+            displayName: args.moduleName,
+            description: args.moduleDescription,
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${module.id}`,
+        result: module,
+      };
+    },
+    getModuleDtosAndEnums: async (
+      args: { moduleId: string; serviceId: string },
+      context: AssistantContext
+    ) => {
+      const dtos = await this.moduleDtoService.findMany({
+        where: {
+          parentBlock: { id: args.moduleId },
+          resource: { id: args.serviceId },
+          includeCustomDtos: true,
+          includeDefaultDtos: true,
+        },
+      });
+      return dtos.map((dto) => ({
+        id: dto.id,
+        name: dto.name,
+        description: dto.description,
+        dtoType: dto.dtoType,
+        properties: dto.properties,
+        members: dto.members,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+      }));
+    },
+    // createModuleDto: async (
+    //   args: {
+    //     moduleId: string;
+    //     serviceId: string;
+    //     dtoName: string;
+    //     dtoDescription: string;
+    //     properties: ModuleDtoPropertyUpdateInput[];
+    //   },
+    //   context: AssistantContext
+    // ) => {
+    //   const name = pascalCase(args.dtoName);
+
+    //   const dto = await this.moduleDtoService.create(
+    //     {
+    //       properties: args.properties,
+    //       data: {
+    //         name: name,
+    //         displayName: args.dtoName,
+    //         description: args.dtoDescription,
+    //         parentBlock: {
+    //           connect: {
+    //             id: args.moduleId,
+    //           },
+    //         },
+    //         resource: {
+    //           connect: {
+    //             id: args.serviceId,
+    //           },
+    //         },
+    //       },
+    //     },
+    //     context.user
+    //   );
+    //   return {
+    //     link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+    //     result: dto,
+    //   };
+    // },
   };
 }
