@@ -21,6 +21,8 @@ import { AssistantStream } from "openai/lib/AssistantStream";
 import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
+import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
+import { omit } from "lodash";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -30,6 +32,7 @@ enum EnumAssistantFunctions {
   CreateProject = "createProject",
   CommitProjectPendingChanges = "commitProjectPendingChanges",
   GetProjectPendingChanges = "getProjectPendingChanges",
+  GetPlugins = "getPlugins",
 }
 
 const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
@@ -62,6 +65,7 @@ export class AssistantService {
     private readonly moduleService: ModuleService,
     private readonly projectService: ProjectService,
     private readonly graphqlSubscriptionKafkaService: GraphqlSubscriptionPubSubKafkaService,
+    private readonly pluginCatalogService: PluginCatalogService,
 
     configService: ConfigService
   ) {
@@ -94,7 +98,7 @@ export class AssistantService {
     snapshot: string,
     completed: boolean
   ) => {
-    this.logger.info("Chat: Message updated");
+    this.logger.debug("Chat: Message updated");
     const message: AssistantMessageDelta = {
       id: "messageId",
       threadId,
@@ -664,6 +668,17 @@ export class AssistantService {
             ? (change.origin as Block).blockType
             : "Entity",
       }));
+    },
+    getPlugins: async (args: undefined, context: AssistantContext) => {
+      const plugins = (await this.pluginCatalogService.getPlugins()).map(
+        (plugin) => omit(plugin, ["__typename"])
+      );
+      this.logger.debug(
+        `Chat: Plugins: ${JSON.stringify(plugins)}`,
+        null,
+        context
+      );
+      return plugins;
     },
   };
 }
