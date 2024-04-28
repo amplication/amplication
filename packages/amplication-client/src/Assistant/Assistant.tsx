@@ -17,6 +17,7 @@ import AssistantMessage from "./AssistantMessage";
 import classNames from "classnames";
 import { useAppContext } from "../context/appContext";
 import { Link } from "react-router-dom";
+import jovu from "../assets/jovu.svg";
 type SendMessageType = models.SendAssistantMessageInput;
 
 const INITIAL_VALUES: SendMessageType = {
@@ -100,7 +101,13 @@ const Assistant = () => {
         )}
       >
         <div className={`${CLASS_NAME}__header`}>
-          <Icon icon="ai" color={EnumTextColor.White} size="large" />
+          <img
+            src={jovu}
+            alt="jovu"
+            width={30}
+            height={30}
+            style={{ background: "white", borderRadius: "50%" }}
+          />
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
             Jovu (Beta)
           </Text>

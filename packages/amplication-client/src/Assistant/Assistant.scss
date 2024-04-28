@@ -5,6 +5,7 @@ $assistant-width: 350px;
 $assistant-handle-width: 24px;
 $assistant-handle-top: 150px;
 $assistant-handle-margin: 40px;
+$avatar-size: 30px;
 
 #root {
   // --assistant-background: var(--theme-gradient);
@@ -199,5 +200,11 @@ $assistant-handle-margin: 40px;
     justify-content: flex-start;
     font-weight: semi-bold;
     color: var(--assistant-role-color);
+
+    .user-avatar__initials {
+      width: $avatar-size;
+      height: $avatar-size;
+      font-size: var(--h3-font-size);
+    }
   }
 }
