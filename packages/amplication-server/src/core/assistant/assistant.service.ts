@@ -34,7 +34,7 @@ enum EnumAssistantFunctions {
   CommitProjectPendingChanges = "commitProjectPendingChanges",
   GetProjectPendingChanges = "getProjectPendingChanges",
   GetPlugins = "getPlugins",
-  InstallPlugin = "installPlugin",
+  InstallPlugins = "installPlugins",
 }
 
 const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
@@ -685,35 +685,44 @@ export class AssistantService {
       );
       return plugins;
     },
-    installPlugin: async (
-      args: { pluginId: string; serviceId: string },
+    installPlugins: async (
+      args: { pluginIds: string[]; serviceId: string },
       context: AssistantContext
     ) => {
-      const plugin = await this.pluginCatalogService.getPluginWithLatestVersion(
-        args.pluginId
-      );
-      const pluginVersion = plugin.versions[0];
+      //iterate over the pluginIds and install each plugin synchronously
+      //to support synchronous installation of multiple plugins we need first to fix the plugins order code in the pluginInstallation Service
+      const installations = [];
+      for (const pluginId of args.pluginIds) {
+        const plugin =
+          await this.pluginCatalogService.getPluginWithLatestVersion(pluginId);
+        const pluginVersion = plugin.versions[0];
 
-      const { version, settings, configurations } = pluginVersion;
+        const { version, settings, configurations } = pluginVersion;
 
-      const installation = await this.pluginInstallationService.create(
-        {
-          data: {
-            displayName: plugin.name,
-            pluginId: args.pluginId,
-            enabled: true,
-            npm: plugin.npm,
-            version: version,
-            settings: settings,
-            configurations: configurations,
-            resource: { connect: { id: args.serviceId } },
+        const installation = await this.pluginInstallationService.create(
+          {
+            data: {
+              displayName: plugin.name,
+              pluginId: pluginId,
+              enabled: true,
+              npm: plugin.npm,
+              version: version,
+              settings: settings,
+              configurations: configurations,
+              resource: { connect: { id: args.serviceId } },
+            },
           },
-        },
-        context.user
-      );
+          context.user
+        );
+
+        installations.push({
+          result: installation,
+          link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/installed/${installation.id}`,
+        });
+      }
+
       return {
-        result: installation,
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/installed/${installation.id}`,
+        installations,
         pluginsCatalogLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/plugins/catalog`,
         allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/plugins/installed`,
       };
