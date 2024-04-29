@@ -28,6 +28,10 @@ import { pascalCase } from "pascal-case";
 import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
 import { ModuleDtoEnumMember } from "../moduleDto/dto/ModuleDtoEnumMember";
 import { EnumModuleDtoType } from "@amplication/code-gen-types";
+import { EnumModuleActionGqlOperation } from "../moduleAction/dto/EnumModuleActionGqlOperation";
+import { EnumModuleActionRestVerb } from "../moduleAction/dto/EnumModuleActionRestVerb";
+import { PropertyTypeDef } from "../moduleDto/dto/propertyTypes/PropertyTypeDef";
+import { EnumModuleActionRestInputSource } from "../moduleAction/dto/EnumModuleActionRestInputSource";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -45,7 +49,7 @@ enum EnumAssistantFunctions {
   CreateModuleDto = "createModuleDto",
   CreateModuleEnum = "createModuleEnum",
   GetModuleActions = "getModuleActions",
-  // CreateModuleAction = "createModuleAction",
+  CreateModuleAction = "createModuleAction",
 }
 
 const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
@@ -901,6 +905,68 @@ export class AssistantService {
         outputType: action.outputType,
         link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
       }));
+    },
+    createModuleAction: async (
+      args: {
+        moduleId: string;
+        serviceId: string;
+        actionName: string;
+        actionDescription: string;
+        gqlOperation: EnumModuleActionGqlOperation;
+        restVerb: EnumModuleActionRestVerb;
+        path: string;
+        inputType: PropertyTypeDef;
+        outputType: PropertyTypeDef;
+        restInputSource?: EnumModuleActionRestInputSource;
+        restInputParamsPropertyName: string;
+        restInputBodyPropertyName: string;
+        restInputQueryPropertyName: string;
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.actionName);
+      const action = await this.moduleActionService.create(
+        {
+          data: {
+            displayName: args.actionName,
+            name: name,
+            parentBlock: {
+              connect: {
+                id: args.moduleId,
+              },
+            },
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+
+      const updatedAction = await this.moduleActionService.update(
+        {
+          data: {
+            displayName: args.actionName,
+            name: name,
+            description: args.actionDescription,
+            gqlOperation: args.gqlOperation,
+            restVerb: args.restVerb,
+            path: args.path,
+            inputType: args.inputType,
+            outputType: args.outputType,
+          },
+          where: {
+            id: action.id,
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/actions/${action.id}`,
+        result: updatedAction,
+      };
     },
   };
 }
