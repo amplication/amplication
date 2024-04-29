@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client/core";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
 import { PluginCatalogItem } from "./dto/PluginCatalogItem";
@@ -11,7 +11,9 @@ export class PluginCatalogService {
   constructor(configService: ConfigService) {
     this.client = new ApolloClient({
       uri: configService.get<string>(Env.PLUGIN_API_URL),
-      cache: new InMemoryCache(),
+      cache: new InMemoryCache({
+        addTypename: false,
+      }),
     });
   }
 
@@ -68,7 +70,7 @@ export class PluginCatalogService {
           versions,
         };
       }
-      return undefined;
+      throw new Error(`Failed to fetch plugin with ID ${pluginId}`);
     } catch (error) {
       throw new Error(`Failed to fetch plugin with ID ${pluginId}: ${error}`);
     }

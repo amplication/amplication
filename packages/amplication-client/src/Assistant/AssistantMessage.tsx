@@ -1,14 +1,9 @@
-import {
-  Button,
-  EnumButtonStyle,
-  EnumTextColor,
-  Icon,
-} from "@amplication/ui/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import ReactMarkdown from "react-markdown";
+import { Link } from "react-router-dom";
 import UserBadge from "../Components/UserBadge";
 import * as models from "../models";
 import { AssistantMessageWithOptions } from "./hooks/useAssistant";
-import { Link } from "react-router-dom";
 
 import jovu from "../assets/jovu.svg";
 
@@ -37,7 +32,6 @@ const AssistantMessage = ({ message, onOptionClick }: Props) => {
               height={30}
               style={{ background: "white", borderRadius: "50%" }}
             />
-            {/* <Icon icon="ai" color={EnumTextColor.ThemeTurquoise} size="large" /> */}
             Jovu
           </>
         )}
