@@ -26,6 +26,7 @@ import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { pascalCase } from "pascal-case";
 import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
+import { ModuleDtoEnumMember } from "../moduleDto/dto/ModuleDtoEnumMember";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -41,7 +42,7 @@ enum EnumAssistantFunctions {
   CreateModule = "createModule",
   GetModuleDtosAndEnums = "getModuleDtosAndEnums",
   CreateModuleDto = "createModuleDto",
-  // CreateModuleEnum = "createModuleEnum",
+  CreateModuleEnum = "createModuleEnum",
   // GetModuleActions = "getModuleActions",
   // CreateModuleAction = "createModuleAction",
 }
@@ -815,6 +816,44 @@ export class AssistantService {
             name: name,
             displayName: args.dtoName,
             description: args.dtoDescription,
+            parentBlock: {
+              connect: {
+                id: args.moduleId,
+              },
+            },
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        result: dto,
+      };
+    },
+    createModuleEnum: async (
+      args: {
+        moduleId: string;
+        serviceId: string;
+        enumName: string;
+        enumDescription: string;
+        members: ModuleDtoEnumMember[];
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.enumName);
+
+      const dto = await this.moduleDtoService.createEnum(
+        {
+          members: args.members,
+          data: {
+            name: name,
+            displayName: args.enumName,
+            description: args.enumDescription,
             parentBlock: {
               connect: {
                 id: args.moduleId,
