@@ -114,7 +114,6 @@ export class AssistantService {
     snapshot: string,
     completed: boolean
   ) => {
-    //this.logger.debug("Chat: Message updated");
     const message: AssistantMessageDelta = {
       id: "messageId",
       threadId,
@@ -686,15 +685,7 @@ export class AssistantService {
       }));
     },
     getPlugins: async (args: undefined, context: AssistantContext) => {
-      const plugins = (await this.pluginCatalogService.getPlugins()).map(
-        (plugin) => omit(plugin, ["__typename"])
-      );
-      this.logger.debug(
-        `Chat: Plugins: ${JSON.stringify(plugins)}`,
-        null,
-        context
-      );
-      return plugins;
+      return this.pluginCatalogService.getPlugins();
     },
     installPlugins: async (
       args: { pluginIds: string[]; serviceId: string },
