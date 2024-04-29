@@ -27,6 +27,7 @@ import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { pascalCase } from "pascal-case";
 import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
 import { ModuleDtoEnumMember } from "../moduleDto/dto/ModuleDtoEnumMember";
+import { EnumModuleDtoType } from "@amplication/code-gen-types";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -43,7 +44,7 @@ enum EnumAssistantFunctions {
   GetModuleDtosAndEnums = "getModuleDtosAndEnums",
   CreateModuleDto = "createModuleDto",
   CreateModuleEnum = "createModuleEnum",
-  // GetModuleActions = "getModuleActions",
+  GetModuleActions = "getModuleActions",
   // CreateModuleAction = "createModuleAction",
 }
 
@@ -792,8 +793,14 @@ export class AssistantService {
         name: dto.name,
         description: dto.description,
         dtoType: dto.dtoType,
-        properties: dto.properties,
-        members: dto.members,
+        properties:
+          dto.dtoType === EnumModuleDtoType.Custom
+            ? dto.properties
+            : "The properties for this DTO will be generated automatically on runtime based on the entity fields and relations.",
+        members:
+          dto.dtoType === EnumModuleDtoType.CustomEnum
+            ? dto.members
+            : "The members for this Enum will be generated automatically on runtime based on the entity field settings.",
         link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
       }));
     },
@@ -872,6 +879,28 @@ export class AssistantService {
         link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
         result: dto,
       };
+    },
+    getModuleActions: async (
+      args: { moduleId: string; serviceId: string },
+      context: AssistantContext
+    ) => {
+      const actions = await this.moduleActionService.findMany({
+        where: {
+          parentBlock: { id: args.moduleId },
+          resource: { id: args.serviceId },
+        },
+      });
+      return actions.map((action) => ({
+        id: action.id,
+        name: action.displayName,
+        description: action.description,
+        gqlOperation: action.gqlOperation,
+        restVerb: action.restVerb,
+        path: action.path,
+        inputType: action.inputType,
+        outputType: action.outputType,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
+      }));
     },
   };
 }
