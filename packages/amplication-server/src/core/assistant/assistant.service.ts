@@ -22,7 +22,6 @@ import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
-import { omit } from "lodash";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 
 enum EnumAssistantFunctions {
@@ -714,8 +713,8 @@ export class AssistantService {
 
       return {
         installations,
-        pluginsCatalogLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/plugins/catalog`,
-        allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/plugins/installed`,
+        pluginsCatalogLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/catalog`,
+        allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/installed`,
       };
     },
   };
