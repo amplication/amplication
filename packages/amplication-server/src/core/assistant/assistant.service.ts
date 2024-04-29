@@ -26,7 +26,7 @@ import { PluginInstallationService } from "../pluginInstallation/pluginInstallat
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { pascalCase } from "pascal-case";
-//import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
+import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -41,7 +41,7 @@ enum EnumAssistantFunctions {
   GetServiceModules = "getServiceModules",
   CreateModule = "createModule",
   GetModuleDtosAndEnums = "getModuleDtosAndEnums",
-  //CreateModuleDto = "createModuleDto",
+  CreateModuleDto = "createModuleDto",
   // CreateModuleEnum = "createModuleEnum",
   // GetModuleActions = "getModuleActions",
   // CreateModuleAction = "createModuleAction",
@@ -806,43 +806,43 @@ export class AssistantService {
         link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
       }));
     },
-    // createModuleDto: async (
-    //   args: {
-    //     moduleId: string;
-    //     serviceId: string;
-    //     dtoName: string;
-    //     dtoDescription: string;
-    //     properties: ModuleDtoPropertyUpdateInput[];
-    //   },
-    //   context: AssistantContext
-    // ) => {
-    //   const name = pascalCase(args.dtoName);
+    createModuleDto: async (
+      args: {
+        moduleId: string;
+        serviceId: string;
+        dtoName: string;
+        dtoDescription: string;
+        properties: ModuleDtoPropertyUpdateInput[];
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.dtoName);
 
-    //   const dto = await this.moduleDtoService.create(
-    //     {
-    //       properties: args.properties,
-    //       data: {
-    //         name: name,
-    //         displayName: args.dtoName,
-    //         description: args.dtoDescription,
-    //         parentBlock: {
-    //           connect: {
-    //             id: args.moduleId,
-    //           },
-    //         },
-    //         resource: {
-    //           connect: {
-    //             id: args.serviceId,
-    //           },
-    //         },
-    //       },
-    //     },
-    //     context.user
-    //   );
-    //   return {
-    //     link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
-    //     result: dto,
-    //   };
-    // },
+      const dto = await this.moduleDtoService.create(
+        {
+          properties: args.properties,
+          data: {
+            name: name,
+            displayName: args.dtoName,
+            description: args.dtoDescription,
+            parentBlock: {
+              connect: {
+                id: args.moduleId,
+              },
+            },
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        result: dto,
+      };
+    },
   };
 }

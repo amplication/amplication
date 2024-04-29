@@ -36,6 +36,7 @@ import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segment
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
 import { QueryMode } from "../../enums/QueryMode";
 import { validateCustomActionsEntitlement } from "../block/block.util";
+import { JsonArray } from "type-fest";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -227,7 +228,7 @@ export class ModuleDtoService extends BlockTypeService<
         ...args,
         data: {
           ...args.data,
-          properties: [],
+          properties: (args.properties as unknown as JsonArray) ?? [],
           enabled: true,
           dtoType: EnumModuleDtoType.Custom,
         },
