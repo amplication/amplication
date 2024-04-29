@@ -223,12 +223,28 @@ export class ModuleDtoService extends BlockTypeService<
       event: EnumEventType.CreateUserDTO,
     });
 
+    //make sure the properties are initialized correctly
+    const properties: ModuleDtoProperty[] = (
+      args.properties as unknown as JsonArray
+    )?.map((property) => {
+      return {
+        ...DEFAULT_DTO_PROPERTY,
+        ...property,
+        propertyTypes: property.propertyTypes.map((propertyType) => {
+          return {
+            ...DEFAULT_DTO_PROPERTY.propertyTypes[0],
+            ...propertyType,
+          };
+        }),
+      };
+    });
+
     return super.create(
       {
         ...args,
         data: {
           ...args.data,
-          properties: (args.properties as unknown as JsonArray) ?? [],
+          properties: (properties as unknown as JsonArray) ?? [],
           enabled: true,
           dtoType: EnumModuleDtoType.Custom,
         },
