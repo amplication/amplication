@@ -48,7 +48,7 @@ export function VerticalNavigationItem({
     if (match) {
       setExpanded(true);
     }
-  }, []);
+  }, [match?.path]);
 
   return (
     <>
