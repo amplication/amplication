@@ -21,7 +21,6 @@ import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
-import { omit } from "lodash";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
@@ -114,7 +113,6 @@ export class AssistantService {
     snapshot: string,
     completed: boolean
   ) => {
-    //this.logger.debug("Chat: Message updated");
     const message: AssistantMessageDelta = {
       id: "messageId",
       threadId,
@@ -686,15 +684,7 @@ export class AssistantService {
       }));
     },
     getPlugins: async (args: undefined, context: AssistantContext) => {
-      const plugins = (await this.pluginCatalogService.getPlugins()).map(
-        (plugin) => omit(plugin, ["__typename"])
-      );
-      this.logger.debug(
-        `Chat: Plugins: ${JSON.stringify(plugins)}`,
-        null,
-        context
-      );
-      return plugins;
+      return this.pluginCatalogService.getPlugins();
     },
     installPlugins: async (
       args: { pluginIds: string[]; serviceId: string },
@@ -734,8 +724,8 @@ export class AssistantService {
 
       return {
         installations,
-        pluginsCatalogLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/plugins/catalog`,
-        allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/plugins/installed`,
+        pluginsCatalogLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/catalog`,
+        allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/installed`,
       };
     },
     getServiceModules: async (
