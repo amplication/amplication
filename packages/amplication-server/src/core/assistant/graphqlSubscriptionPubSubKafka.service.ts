@@ -16,7 +16,7 @@ export class GraphqlSubscriptionPubSubKafkaService implements OnModuleInit {
     this.pubsub = await KafkaPubSub.create({
       kafka,
       topic: KAFKA_TOPICS.SHARED_GRAPHQL_SUBSCRIPTION_PUBSUB_TOPIC,
-      groupIdPrefix: config.consumer.groupId + "-graphql-subscrition",
+      groupIdPrefix: config.consumer.groupId + "-gql-subscription",
     });
   }
 
