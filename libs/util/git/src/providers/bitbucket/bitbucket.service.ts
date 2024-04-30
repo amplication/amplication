@@ -23,9 +23,9 @@ import {
   GetBranchArgs,
   PullRequest,
   PaginatedGitGroup,
-  BitBucketConfiguration,
   Bot,
   OAuthProviderOrganizationProperties,
+  OAuthConfiguration,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
@@ -60,7 +60,7 @@ export class BitBucketService implements GitProvider {
 
   constructor(
     providerOrganizationProperties: OAuthProviderOrganizationProperties,
-    providerConfiguration: BitBucketConfiguration,
+    providerConfiguration: OAuthConfiguration,
     logger: ILogger
   ) {
     this.logger = logger.child({
