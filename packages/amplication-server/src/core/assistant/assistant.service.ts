@@ -32,6 +32,9 @@ import { EnumModuleActionGqlOperation } from "../moduleAction/dto/EnumModuleActi
 import { EnumModuleActionRestVerb } from "../moduleAction/dto/EnumModuleActionRestVerb";
 import { PropertyTypeDef } from "../moduleDto/dto/propertyTypes/PropertyTypeDef";
 import { EnumModuleActionRestInputSource } from "../moduleAction/dto/EnumModuleActionRestInputSource";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -88,6 +91,8 @@ export class AssistantService {
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly moduleActionService: ModuleActionService,
     private readonly moduleDtoService: ModuleDtoService,
+    private readonly billingService: BillingService,
+
     configService: ConfigService
   ) {
     this.logger.info("starting assistant service");
@@ -140,11 +145,7 @@ export class AssistantService {
     };
   }
 
-  async processMessage(
-    messageText: string,
-    threadId: string,
-    context: AssistantContext
-  ): Promise<AssistantThread> {
+  async validateAndReportUsage(context: AssistantContext) {
     if (!this.assistantFeatureEnabled)
       throw new AmplicationError("The assistant AI feature is disabled");
 
@@ -153,6 +154,33 @@ export class AssistantService {
         "AI-powered features are disabled for this workspace"
       );
     }
+
+    if (this.billingService.isBillingEnabled) {
+      const usage = await this.billingService.getMeteredEntitlement(
+        context.user.workspace.id,
+        BillingFeature.JovuRequests
+      );
+
+      if (usage && !usage?.hasAccess) {
+        throw new BillingLimitationError(
+          "This workspace has exceeded the number of allowed requests. Please upgrade your plan to continue using this feature.",
+          BillingFeature.JovuRequests
+        );
+      }
+
+      await this.billingService.reportUsage(
+        context.user.workspace.id,
+        BillingFeature.JovuRequests
+      );
+    }
+  }
+
+  async processMessage(
+    messageText: string,
+    threadId: string,
+    context: AssistantContext
+  ): Promise<AssistantThread> {
+    await this.validateAndReportUsage(context);
 
     const openai = this.openai;
 
@@ -186,14 +214,7 @@ export class AssistantService {
     threadId: string,
     context: AssistantContext
   ): Promise<AssistantThread> {
-    if (!this.assistantFeatureEnabled)
-      throw new AmplicationError("The assistant AI feature is disabled");
-
-    if (context.user.workspace.allowLLMFeatures === false) {
-      throw new AmplicationError(
-        "AI-powered features are disabled for this workspace"
-      );
-    }
+    await this.validateAndReportUsage(context);
 
     const openai = this.openai;
 
