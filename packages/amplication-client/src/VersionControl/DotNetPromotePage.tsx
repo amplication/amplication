@@ -5,6 +5,7 @@ import {
   EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
+  EnumTextStyle,
   FlexItem,
   Icon,
   Modal,
@@ -37,29 +38,27 @@ const DotNetPromotePage = () => {
           Close
         </Button>
 
-        <FlexItem
-          direction={EnumFlexDirection.Column}
-          gap={EnumGapSize.Small}
-          margin={EnumFlexItemMargin.Top}
-          itemsAlign={EnumItemsAlign.Center}
-        >
-          <Text>
-            Amplication now supports .NET projects, offering lightning-fast code
-            generation for your backend needs.{" "}
-          </Text>
-          <Text>
-            Trusted by thousands of Node.js developers, our platform ensures
-            speed, reliability, and scalability.
-          </Text>
-          <Text>
-            Whether it's for personal projects, startups, or enterprises, we've
-            got you covered!
-          </Text>
-          <Text>
-            Could you please let us know your preferred usage scenario?
-          </Text>
-          <DotNetPromoteOptions />
-        </FlexItem>
+        <div className={`${CLASS_NAME}__content`}>
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            gap={EnumGapSize.Small}
+            margin={EnumFlexItemMargin.Top}
+            itemsAlign={EnumItemsAlign.Center}
+          >
+            <Text textStyle={EnumTextStyle.H1}>Amplication .Net</Text>
+            <Text textStyle={EnumTextStyle.H3}>
+              Amplication now supports .NET projects, offering lightning-fast
+              code generation for your backend needs. Trusted by thousands of
+              Node.js developers, our platform ensures speed, reliability, and
+              scalability. Whether it's for personal projects, startups, or
+              enterprises, we've got you covered!
+            </Text>
+            <Text>
+              Could you please let us know your preferred usage scenario?
+            </Text>
+            <DotNetPromoteOptions />
+          </FlexItem>
+        </div>
       </div>
     </Modal>
   );

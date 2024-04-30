@@ -1,14 +1,29 @@
 import { useQuery } from "@apollo/client";
-import { DotNetPromoteOption } from "./DotNetPromoteOption";
 import "./DotNetPromoteOptions.scss";
 import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
 import { useAppContext } from "../context/appContext";
-import { EnumTextColor, Text } from "@amplication/ui/design-system";
+import {
+  Button,
+  EnumFlexItemMargin,
+  EnumGapSize,
+  EnumTextColor,
+  FlexItem,
+  JumboButton,
+  Text,
+} from "@amplication/ui/design-system";
+import { useCallback, useState } from "react";
 
 const CLASS_NAME = "dotnet-promote-options";
 
 export const DotNetPromoteOptions = () => {
   const { currentWorkspace } = useAppContext();
+  const [businessType, setBusinessType] = useState<
+    "personal" | "startup" | "enterprise" | "none"
+  >("none");
+
+  const handleBusinessTypeChange = useCallback((type) => {
+    setBusinessType(type);
+  }, []);
 
   const { data } = useQuery(GET_CONTACT_US_LINK, {
     variables: { id: currentWorkspace?.id },
@@ -37,30 +52,48 @@ export const DotNetPromoteOptions = () => {
   };
   return (
     <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__list`}>
-        <DotNetPromoteOption
-          option="Personal Use"
-          type="personal"
-          answer={
-            <div>
-              We're currently hard at work on a free version tailored for
-              personal projects, slated for release very soon.
-              <br />
-              Stay tuned for updates, and thank you for your patience!
-            </div>
-          }
-        />
-        <DotNetPromoteOption
-          option="startup"
-          type="Startup"
-          answer={startupOrEnterpriseInfo()}
-        />
-        <DotNetPromoteOption
-          type="enterprise"
-          option="Enterprise"
-          answer={startupOrEnterpriseInfo()}
-        />
-      </div>
+      {businessType === "none" ? (
+        <FlexItem gap={EnumGapSize.Large} margin={EnumFlexItemMargin.Bottom}>
+          <JumboButton
+            text="Personal"
+            icon="pending_changes"
+            onClick={() => {
+              handleBusinessTypeChange("personal");
+            }}
+            circleColor={EnumTextColor.ThemeTurquoise}
+          ></JumboButton>
+
+          <JumboButton
+            text="Startup"
+            icon="pending_changes"
+            onClick={() => {
+              handleBusinessTypeChange("startup");
+            }}
+            circleColor={EnumTextColor.ThemeTurquoise}
+          ></JumboButton>
+          <JumboButton
+            text="Enterprise"
+            icon="pending_changes"
+            onClick={() => {
+              handleBusinessTypeChange("enterprise");
+            }}
+            circleColor={EnumTextColor.ThemeTurquoise}
+          ></JumboButton>
+        </FlexItem>
+      ) : businessType === "personal" ? (
+        <div>
+          We're currently hard at work on a free version tailored for personal
+          projects, slated for release very soon.
+          <br />
+          Stay tuned for updates, and thank you for your patience!
+        </div>
+      ) : businessType === "startup" ? (
+        startupOrEnterpriseInfo()
+      ) : (
+        startupOrEnterpriseInfo()
+      )}
+
+      <Button onClick={() => handleBusinessTypeChange("none")}>Back</Button>
     </div>
   );
 };

@@ -3,6 +3,7 @@
 $margin-top: 24px;
 $top: 10px;
 $gap: 4px;
+$options-max-width: 800px;
 
 .dotnet-promote-page {
   margin-top: $margin-top;
@@ -12,5 +13,10 @@ $gap: 4px;
     top: $top;
     right: 0;
     gap: $gap;
+  }
+
+  &__content {
+    max-width: $options-max-width;
+    margin: auto;
   }
 }
