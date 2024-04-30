@@ -7,3 +7,4 @@ export * from "./plugin-events-params.types";
 export * from "./plugin-events.types";
 export * from "./dsg-resource-data";
 export * from "./build-logger";
+export * from "./files";
