@@ -1,3 +1,6 @@
+import { useAppContext } from "../context/appContext";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import "./DotNetPromoteOptions.scss";
 import {
   Button,
@@ -17,13 +20,18 @@ import {
 
 type Props = {
   contactLink: string;
+  type: string;
 };
 
 const CLASS_NAME = "dotnet-promote-options";
 
 export const DotNetPromoteStartupOrEnterpriseIOption = ({
   contactLink,
+  type,
 }: Props) => {
+  const { currentWorkspace } = useAppContext();
+  const { trackEvent } = useTracking();
+
   return (
     <FlexItem
       direction={EnumFlexDirection.Column}
@@ -48,6 +56,13 @@ export const DotNetPromoteStartupOrEnterpriseIOption = ({
         <Button
           buttonStyle={EnumButtonStyle.Primary}
           className={`${CLASS_NAME}__demo`}
+          onClick={() => {
+            trackEvent({
+              eventName: AnalyticsEventNames.BookDotNetDemo,
+              workspaceId: currentWorkspace?.id,
+              type: type,
+            });
+          }}
         >
           <Icon icon="calendar" size="small" />
           {"Schedule a demo"}

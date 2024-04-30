@@ -169,4 +169,5 @@ export enum AnalyticsEventNames {
 
   ChangedToDotNet = "ChangedToDotNet",
   ChoseDotNetUsage = "ChoseDotNetUsage",
+  BookDotNetDemo = "BookDotNetDemo",
 }

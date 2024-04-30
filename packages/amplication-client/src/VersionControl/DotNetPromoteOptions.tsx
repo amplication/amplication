@@ -15,6 +15,9 @@ import {
 import { useCallback, useState } from "react";
 import "./DotNetPromoteOptions.scss";
 import { DotNetPromoteStartupOrEnterpriseIOption } from "./DotNetPromoteStartupOrEnterpriseIOption";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useAppContext } from "../context/appContext";
+import { useTracking } from "../util/analytics";
 
 const CLASS_NAME = "dotnet-promote-options";
 const contactStartupLink =
@@ -23,13 +26,24 @@ const contactEnterpriseLink =
   "https://meetings-eu1.hubspot.com/muly/dotnet-demo-with-vp-engineering";
 
 export const DotNetPromoteOptions = () => {
+  const { currentWorkspace } = useAppContext();
+  const { trackEvent } = useTracking();
+
   const [businessType, setBusinessType] = useState<
     "personal" | "startup" | "enterprise" | "none"
   >("none");
 
-  const handleBusinessTypeChange = useCallback((type) => {
-    setBusinessType(type);
-  }, []);
+  const handleBusinessTypeChange = useCallback(
+    (type) => {
+      setBusinessType(type);
+      trackEvent({
+        eventName: AnalyticsEventNames.ChoseDotNetUsage,
+        workspaceId: currentWorkspace?.id,
+        type: type,
+      });
+    },
+    [currentWorkspace?.id, trackEvent]
+  );
 
   return (
     <div className={CLASS_NAME}>
@@ -124,6 +138,7 @@ export const DotNetPromoteOptions = () => {
                   Amplication .NET for Startup
                 </Text>
                 <DotNetPromoteStartupOrEnterpriseIOption
+                  type={businessType}
                   contactLink={contactStartupLink}
                 />
               </>
@@ -137,6 +152,7 @@ export const DotNetPromoteOptions = () => {
                   Amplication .NET for Enterprise
                 </Text>
                 <DotNetPromoteStartupOrEnterpriseIOption
+                  type={businessType}
                   contactLink={contactEnterpriseLink}
                 />
               </>
