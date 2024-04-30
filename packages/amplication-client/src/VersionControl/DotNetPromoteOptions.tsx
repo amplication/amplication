@@ -1,10 +1,4 @@
-import { useQuery } from "@apollo/client";
-import "./DotNetPromoteOptions.scss";
-import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
-import { useAppContext } from "../context/appContext";
 import {
-  Button,
-  EnumButtonStyle,
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumGapSize,
@@ -14,17 +8,21 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
-  Icon,
   JumboButton,
   Panel,
   Text,
 } from "@amplication/ui/design-system";
 import { useCallback, useState } from "react";
+import "./DotNetPromoteOptions.scss";
+import { DotNetPromoteStartupOrEnterpriseIOption } from "./DotNetPromoteStartupOrEnterpriseIOption";
 
 const CLASS_NAME = "dotnet-promote-options";
+const contactStartupLink =
+  "https://meetings-eu1.hubspot.com/muly/dotnet-overview-with-vp-engineering";
+const contactEnterpriseLink =
+  "https://meetings-eu1.hubspot.com/muly/dotnet-demo-with-vp-engineering";
 
 export const DotNetPromoteOptions = () => {
-  const { currentWorkspace } = useAppContext();
   const [businessType, setBusinessType] = useState<
     "personal" | "startup" | "enterprise" | "none"
   >("none");
@@ -33,52 +31,6 @@ export const DotNetPromoteOptions = () => {
     setBusinessType(type);
   }, []);
 
-  const { data } = useQuery(GET_CONTACT_US_LINK, {
-    variables: { id: currentWorkspace?.id },
-  });
-
-  const startupOrEnterpriseInfo = () => {
-    return (
-      <FlexItem
-        direction={EnumFlexDirection.Column}
-        itemsAlign={EnumItemsAlign.Center}
-        gap={EnumGapSize.Large}
-      >
-        <Text textStyle={EnumTextStyle.Normal} textAlign={EnumTextAlign.Center}>
-          To explore our new product capabilities, including lightning-fast
-          backend code generation, and gain early access, please schedule a demo
-          with us.
-        </Text>
-        <Text
-          textStyle={EnumTextStyle.Normal}
-          textColor={EnumTextColor.White}
-          textAlign={EnumTextAlign.Center}
-        >
-          We look forward to showcasing how Amplication can accelerate your
-          startup's development journey
-        </Text>
-
-        <a href={data.contactUsLink} target="blank">
-          <Button
-            buttonStyle={EnumButtonStyle.Primary}
-            className={`${CLASS_NAME}__demo`}
-          >
-            <Icon icon="calendar" size="small" />
-            {"Schedule a demo"}
-          </Button>
-        </a>
-        <Panel panelStyle={EnumPanelStyle.Bordered}>
-          <Text
-            textStyle={EnumTextStyle.Description}
-            textColor={EnumTextColor.ThemeOrange}
-          >
-            Unfortunately, we encounter limited demo slots due to high demand.
-            Apologies for any inconvenience.
-          </Text>
-        </Panel>
-      </FlexItem>
-    );
-  };
   return (
     <div className={CLASS_NAME}>
       {businessType === "none" ? (
@@ -154,7 +106,7 @@ export const DotNetPromoteOptions = () => {
                     community.
                   </p>
                   <p>
-                    <a href={data.contactUsLink} target="blank">
+                    <a href={"https://amplication.com/discord"} target="blank">
                       <Text textColor={EnumTextColor.ThemeTurquoise}>
                         https://amplication.com/discord
                       </Text>
@@ -171,7 +123,9 @@ export const DotNetPromoteOptions = () => {
                 >
                   Amplication .NET for Startup
                 </Text>
-                {startupOrEnterpriseInfo()}
+                <DotNetPromoteStartupOrEnterpriseIOption
+                  contactLink={contactStartupLink}
+                />
               </>
             ) : (
               <>
@@ -182,7 +136,9 @@ export const DotNetPromoteOptions = () => {
                 >
                   Amplication .NET for Enterprise
                 </Text>
-                {startupOrEnterpriseInfo()}
+                <DotNetPromoteStartupOrEnterpriseIOption
+                  contactLink={contactEnterpriseLink}
+                />
               </>
             )}
           </Panel>
