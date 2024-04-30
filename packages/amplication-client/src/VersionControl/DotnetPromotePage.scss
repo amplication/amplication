@@ -1,0 +1,16 @@
+@import "../style/index.scss";
+
+$margin-top: 24px;
+$top: 10px;
+$gap: 4px;
+
+.dotnet-promote-page {
+  margin-top: $margin-top;
+  &__close {
+    color: var(--gray-20) !important;
+    position: absolute;
+    top: $top;
+    right: 0;
+    gap: $gap;
+  }
+}
