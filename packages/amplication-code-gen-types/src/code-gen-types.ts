@@ -131,6 +131,12 @@ export type Entity = Omit<
   pluralName: string;
 };
 
+/**
+ * File is a representation of a file
+ * @deprecated Use IFile instead
+ * @see IFile
+ * @see FileMap
+ */
 export type Module = {
   path: string;
   code: string;
@@ -138,6 +144,8 @@ export type Module = {
 
 /**
  * ModuleMap is a map of module paths to modules
+ * @deprecated Use FileMap instead
+ * @see FileMap
  */
 export class ModuleMap {
   private map: Record<string, Module> = {};
