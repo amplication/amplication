@@ -19,4 +19,13 @@ $options-max-width: 800px;
     max-width: $options-max-width;
     margin: auto;
   }
+
+  &__title {
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--default-spacing);
+  }
+
+  &__sub-title {
+    margin-bottom: var(--double-spacing);
+  }
 }

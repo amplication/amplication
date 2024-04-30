@@ -5,6 +5,8 @@ import {
   EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
+  EnumTextAlign,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Icon,
@@ -16,6 +18,7 @@ import { DotNetPromoteOptions } from "./DotNetPromoteOptions";
 import { useHistory } from "react-router-dom";
 import { useAppContext } from "../context/appContext";
 import { useCallback } from "react";
+import dotnetLogo from "../assets/images/dotnet-logo.svg";
 
 const CLASS_NAME = "dotnet-promote-page";
 
@@ -45,17 +48,25 @@ const DotNetPromotePage = () => {
             margin={EnumFlexItemMargin.Top}
             itemsAlign={EnumItemsAlign.Center}
           >
-            <Text textStyle={EnumTextStyle.H1}>Amplication .Net</Text>
-            <Text textStyle={EnumTextStyle.H3}>
-              Amplication now supports .NET projects, offering lightning-fast
-              code generation for your backend needs. Trusted by thousands of
-              Node.js developers, our platform ensures speed, reliability, and
-              scalability. Whether it's for personal projects, startups, or
-              enterprises, we've got you covered!
+            <img src={dotnetLogo} alt=".NET" width={150} />
+
+            <Text
+              textStyle={EnumTextStyle.Normal}
+              textColor={EnumTextColor.Black20}
+              textAlign={EnumTextAlign.Center}
+              className={`${CLASS_NAME}__sub-title`}
+            >
+              <p>
+                Amplication now supports .NET projects, offering lightning-fast
+                code generation for your backend needs.
+              </p>
+              <p>
+                Trusted by thousands of Node.js developers, our platform ensures
+                speed, reliability, and scalability. Whether it's for personal
+                projects, startups, or enterprises, we've got you covered!
+              </p>
             </Text>
-            <Text>
-              Could you please let us know your preferred usage scenario?
-            </Text>
+
             <DotNetPromoteOptions />
           </FlexItem>
         </div>
