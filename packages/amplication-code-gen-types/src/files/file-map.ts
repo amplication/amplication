@@ -12,7 +12,7 @@ import { IFileMap } from "./file-map.types";
 export class FileMap<T> implements IFileMap<T> {
   private map: Map<string, IFile<T>> = new Map();
 
-  constructor(private readonly logger: BuildLogger) {}
+  constructor(protected readonly logger: BuildLogger) {}
 
   /**
    * Merge another map into this map
