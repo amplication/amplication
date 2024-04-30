@@ -89,6 +89,9 @@ const HELP_MENU_LIST: HelpMenuItem[] = [
   },
 ];
 
+const talkToUsLink =
+  "https://meetings-eu1.hubspot.com/paz-yanover/product-overview-vp-product";
+
 const WorkspaceHeader: React.FC = () => {
   const { currentWorkspace, currentProject, openHubSpotChat } =
     useContext(AppContext);
@@ -150,15 +153,15 @@ const WorkspaceHeader: React.FC = () => {
   );
 
   const handleUpgradeClick = useCallback(() => {
-    history.push(`/${currentWorkspace.id}/purchase`, {
-      from: { pathname: window.location.pathname },
-    });
+    // history.push(`/${currentWorkspace.id}/purchase`, {
+    //   from: { pathname: window.location.pathname },
+    // });
     trackEvent({
       eventName: AnalyticsEventNames.UpgradeClick,
       eventOriginLocation: "workspace-header",
       workspace: currentWorkspace.id,
     });
-  }, [currentWorkspace, window.location.pathname]);
+  }, [currentWorkspace.id, trackEvent]);
 
   const handleContactUsClick = useCallback(() => {
     window.open(data?.contactUsLink, "_blank");
@@ -259,26 +262,40 @@ const WorkspaceHeader: React.FC = () => {
           <div className={`${CLASS_NAME}__links`}>
             {upgradeButtonData.isCompleted &&
               upgradeButtonData.showUpgradeTrialButton && (
-                <ButtonProgress
-                  className={`${CLASS_NAME}__upgrade__btn`}
-                  onClick={handleUpgradeClick}
-                  progress={upgradeButtonData.trialLeftProgress}
-                  leftValue={daysLeftText}
-                  yellowColorThreshold={50}
-                  redColorThreshold={0}
+                <a
+                  href={talkToUsLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${CLASS_NAME}__version`}
                 >
-                  Upgrade
-                </ButtonProgress>
+                  <ButtonProgress
+                    className={`${CLASS_NAME}__upgrade__btn`}
+                    onClick={handleUpgradeClick}
+                    progress={upgradeButtonData.trialLeftProgress}
+                    leftValue={daysLeftText}
+                    yellowColorThreshold={50}
+                    redColorThreshold={0}
+                  >
+                    Talk to us
+                  </ButtonProgress>
+                </a>
               )}
             {upgradeButtonData.isCompleted &&
               upgradeButtonData.showUpgradeDefaultButton && (
-                <Button
-                  className={`${CLASS_NAME}__upgrade__btn`}
-                  buttonStyle={EnumButtonStyle.Outline}
-                  onClick={handleUpgradeClick}
+                <a
+                  href={talkToUsLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${CLASS_NAME}__version`}
                 >
-                  Upgrade
-                </Button>
+                  <Button
+                    className={`${CLASS_NAME}__upgrade__btn`}
+                    buttonStyle={EnumButtonStyle.Outline}
+                    onClick={handleUpgradeClick}
+                  >
+                    Talk to us
+                  </Button>
+                </a>
               )}
             {upgradeButtonData.isCompleted &&
               upgradeButtonData.isPreviewPlan &&
