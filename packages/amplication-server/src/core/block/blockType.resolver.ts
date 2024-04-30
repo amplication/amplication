@@ -79,9 +79,10 @@ export function BlockTypeResolver<
       "where.resource.id"
     )
     async findMany(
-      @Args({ type: () => findManyArgsRef }) args: FindManyArgs
+      @Args({ type: () => findManyArgsRef }) args: FindManyArgs,
+      @UserEntity() user: User
     ): Promise<T[]> {
-      return this.service.findMany(args);
+      return this.service.findMany(args, user);
     }
 
     @Mutation(() => classRef, {
@@ -108,7 +109,7 @@ export function BlockTypeResolver<
       @Args({ type: () => updateArgsRef }) args: UpdateArgs,
       @UserEntity() user: User
     ): Promise<T> {
-      return this.service.update(args, user);
+      return this.service.update(args, user, []);
     }
 
     @ResolveField(() => User, { nullable: true })
@@ -133,7 +134,7 @@ export function BlockTypeResolver<
       @Args({ type: () => deleteArgsRef }) args: DeleteArgs,
       @UserEntity() user: User
     ): Promise<T> {
-      return this.service.delete(args, user);
+      return this.service.delete(args, user, true);
     }
   }
   return BaseResolverHost;

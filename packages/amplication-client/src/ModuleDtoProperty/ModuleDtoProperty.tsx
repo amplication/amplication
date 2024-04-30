@@ -30,7 +30,7 @@ const ModuleDtoProperty = ({
   onPropertyChanged,
 }: Props) => {
   const { addEntity } = useContext(AppContext);
-  const [editMode, setEditMode] = useState<boolean>(false);
+  const [editMode, setEditMode] = useState<boolean>(true);
   const [originalName, setOriginalName] = useState<string>(
     moduleDtoProperty.name
   );

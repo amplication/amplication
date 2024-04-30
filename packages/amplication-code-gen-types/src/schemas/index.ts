@@ -15,4 +15,5 @@ export { default as geographicLocation } from "./geographicLocation.json";
 export { default as password } from "./password.json";
 export { default as username } from "./username.json";
 export { default as roles } from "./roles.json";
+export { default as file } from "./file.json";
 export { default as json } from "./json.json";

@@ -20,7 +20,6 @@ import {
   WorkspaceMember,
 } from "./dto";
 import { Invitation } from "./dto/Invitation";
-
 import cuid from "cuid";
 import { addDays } from "date-fns";
 import { isEmpty } from "lodash";
@@ -57,6 +56,10 @@ import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { ResourceService } from "../resource/resource.service";
 import { generateRandomString } from "../auth/auth-utils";
 import { AuthUser, CreatePreviewServiceSettingsArgs } from "../auth/types";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
+import { types } from "@amplication/code-gen-types";
+import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForEntityNotFoundError";
+import { ModuleDto } from "../moduleDto/dto/ModuleDto";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -81,6 +84,7 @@ export class WorkspaceService {
     private readonly billingService: BillingService,
     private analytics: SegmentAnalyticsService,
     private readonly moduleService: ModuleService,
+    private readonly moduleDtoService: ModuleDtoService,
     private readonly moduleActionService: ModuleActionService,
     private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
@@ -694,6 +698,152 @@ export class WorkspaceService {
     return true;
   }
 
+  async dataMigrateWorkspacesResourcesCustomDtos(
+    quantity: number,
+    page?: number
+  ): Promise<boolean> {
+    this.logger.info(`Migrating started`, {
+      context: WorkspaceService.name,
+      method: this.dataMigrateWorkspacesResourcesCustomDtos.name,
+    });
+
+    let currentPage = page || 1;
+
+    let hasMore = true;
+    const processedWorkspaces: string[] = [];
+
+    do {
+      // get latest active users by chunks of quantity
+      const latestActive = await this.prisma.user.findMany({
+        skip: page ? (currentPage - 1) * quantity : 0,
+        take: quantity,
+        orderBy: {
+          lastActive: "desc",
+        },
+        where: {
+          workspace: {
+            id: { notIn: processedWorkspaces },
+            projects: {
+              some: {
+                deletedAt: null,
+                resources: {
+                  some: {
+                    deletedAt: null,
+                    archived: { not: true },
+                    resourceType: EnumResourceType.Service,
+                    entities: { some: { deletedAt: null } },
+                  },
+                },
+              },
+            },
+          },
+          lastActive: { not: null },
+        },
+        include: {
+          workspace: {
+            include: {
+              projects: {
+                where: {
+                  deletedAt: null,
+                },
+                include: {
+                  resources: {
+                    include: {
+                      blocks: {
+                        where: {
+                          blockType: EnumBlockType.ModuleDto,
+                        },
+                      },
+                      entities: {
+                        where: {
+                          deletedAt: null,
+                        },
+                      },
+                    },
+                    where: {
+                      resourceType: EnumResourceType.Service,
+                      deletedAt: null,
+                      archived: { not: true },
+                    },
+                  },
+                },
+              },
+              users: {
+                orderBy: {
+                  lastActive: Prisma.SortOrder.desc,
+                },
+                take: 1,
+              },
+            },
+          },
+        },
+        distinct: ["workspaceId"],
+      });
+
+      const workspaces = latestActive.map((user) => user.workspace);
+      processedWorkspaces.push(...workspaces.map((workspace) => workspace.id));
+
+      this.logger.info(
+        `Migrating workspaces... currentPage: ${currentPage}, quantity: ${quantity}`,
+        {
+          context: WorkspaceService.name,
+          method: this.dataMigrateWorkspacesResourcesCustomDtos.name,
+          workspacesId: workspaces.map((workspace) => workspace.id),
+        }
+      );
+
+      hasMore = page === undefined && workspaces.length > 0;
+
+      await Promise.all(
+        workspaces.map(async (workspace) => {
+          await this.migrateWorkspacesDefaultDtos(workspace);
+        })
+      );
+
+      currentPage++;
+    } while (hasMore);
+
+    await this.prisma.$disconnect();
+
+    const relevantWorkspaces = await this.prisma.workspace.findMany({
+      where: {
+        users: {
+          some: {
+            lastActive: { not: null },
+          },
+        },
+        projects: {
+          some: {
+            deletedAt: null,
+            resources: {
+              some: {
+                deletedAt: null,
+                archived: { not: true },
+                resourceType: EnumResourceType.Service,
+                entities: { some: { deletedAt: null } },
+              },
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    this.logger.info(
+      `Migrating completed. Workspaces processed: ${processedWorkspaces.length} out of ${relevantWorkspaces.length}`,
+      {
+        context: WorkspaceService.name,
+        method: this.dataMigrateWorkspacesResourcesCustomDtos.name,
+        workspacesProcessed: processedWorkspaces,
+        relevantWorkspaces: relevantWorkspaces.map((workspace) => workspace.id),
+      }
+    );
+
+    return true;
+  }
+
   async dataMigrateWorkspacesResourcesCustomActionsFix(
     quantity: number
   ): Promise<boolean> {
@@ -713,12 +863,17 @@ export class WorkspaceService {
             },
           },
         },
+        users: {
+          some: {
+            lastActive: { not: null },
+          },
+        },
       },
       take: quantity,
       include: {
         users: {
           orderBy: {
-            lastActive: Prisma.SortOrder.asc,
+            lastActive: Prisma.SortOrder.desc,
           },
         },
         projects: {
@@ -815,6 +970,55 @@ export class WorkspaceService {
       );
     });
     await Promise.all(promises);
+  }
+
+  async migrateWorkspacesDefaultDtos(workspace: Workspace, user?: User) {
+    const workspaceUser = user ?? workspace.users[0];
+
+    for (const project of workspace.projects) {
+      const resources = project.resources;
+      let hasChanges = false;
+
+      hasChanges = await this.createResourceCustomDtos(
+        resources,
+        workspaceUser
+      );
+
+      if (hasChanges) {
+        try {
+          await this.projectService.commit(
+            {
+              data: {
+                message:
+                  "this is automatic commit to update custom actions and create default DTOs",
+                project: {
+                  connect: {
+                    id: project.id,
+                  },
+                },
+                user: {
+                  connect: {
+                    id: workspaceUser.id,
+                  },
+                },
+              },
+            },
+            workspaceUser,
+            true // skip build
+          );
+        } catch (error) {
+          this.logger.error(
+            `Failed to run commit action, error: ${error} projectId: ${project.id}`
+          );
+        }
+      }
+    }
+    const date = new Date();
+    this.logger.info(
+      `workspace create default dto's process complete, workspaceId: ${
+        workspace.id
+      }, time: ${date.toUTCString()}`
+    );
   }
 
   async migrateWorkspace(workspace: Workspace, currentUser: User) {
@@ -1014,6 +1218,78 @@ export class WorkspaceService {
     }
   }
 
+  private async createEntityCustomDtos(
+    entity: Entity,
+    user: User
+  ): Promise<boolean> {
+    try {
+      if (entity.name.trim() === "" || entity.name.trim() === null)
+        return false;
+
+      const { resourceId, id } = entity;
+
+      const entityModuleId =
+        await this.moduleService.getDefaultModuleIdForEntity(resourceId, id);
+
+      const newModuleDtos =
+        await this.moduleDtoService.createDefaultDtosForEntityModule(
+          entity,
+          entityModuleId,
+          user
+        );
+
+      const relationFields = await this.prisma.entityField.findMany({
+        where: {
+          entityVersion: {
+            entityId: entity.id,
+            versionNumber: 0,
+            deleted: null,
+          },
+          dataType: { equals: EnumDataType.Lookup },
+        },
+      });
+
+      const newRelatedModuleDtos: ModuleDto[] = [];
+
+      for (const field of relationFields) {
+        const properties = field.properties as unknown as types.Lookup;
+        const relatedEntity = await this.prisma.entity.findUnique({
+          where: {
+            id: properties.relatedEntityId,
+          },
+        });
+
+        try {
+          newRelatedModuleDtos.push(
+            ...(await this.moduleDtoService.createDefaultDtosForRelatedEntity(
+              entity,
+              field,
+              relatedEntity,
+              entityModuleId,
+              user
+            ))
+          );
+        } catch (error) {
+          this.logger.error(`${error.message} entityId: ${entity.id}`);
+          return false;
+        }
+      }
+      if (newModuleDtos.length > 0 || newRelatedModuleDtos.length > 0) {
+        return true;
+      }
+    } catch (error) {
+      if (error instanceof DefaultModuleForEntityNotFoundError) {
+        this.logger.warn(error.message);
+        return false;
+      }
+
+      this.logger.error(error);
+      return false;
+    }
+
+    return false;
+  }
+
   async createEntityCustomActionsFix(
     entity: Entity,
     resourceId: string,
@@ -1097,6 +1373,32 @@ export class WorkspaceService {
       }
     });
     await Promise.allSettled(promises);
+    return hasChanges;
+  }
+
+  private async createResourceCustomDtos(
+    resources: Resource[],
+    user: User
+  ): Promise<boolean> {
+    let hasChanges = false;
+    const promises = resources.map(async (resource) => {
+      for (const entity of resource.entities) {
+        const currentChanges = await this.createEntityCustomDtos(entity, user);
+        if (!hasChanges && currentChanges) {
+          hasChanges = currentChanges;
+        }
+      }
+    });
+
+    const settledPromises = await Promise.allSettled(promises);
+    settledPromises.forEach((promise) => {
+      if (promise.status === "rejected") {
+        this.logger.error(
+          "Failed to run createResourceCustomDtos",
+          promise.reason
+        );
+      }
+    });
     return hasChanges;
   }
 

@@ -402,6 +402,9 @@ model Build {
   blockVersions            BlockVersion[]
   entityVersions           EntityVersion[]
   codeGeneratorVersion     String?
+  linesOfCodeAdded         Int?            @map("linesOfCode")
+  linesOfCodeDeleted       Int?
+  filesChanged             Int?
 
   @@unique([resourceId, version], map: "Build.resourceId_version_unique")
 }
@@ -494,6 +497,7 @@ enum EnumDataType {
   Username
   Password
   Json
+  File
 }
 
 enum EnumBlockType {
