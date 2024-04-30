@@ -1,6 +1,12 @@
 import {
+  EnumContentAlign,
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumItemsAlign,
+  EnumTextAlign,
   EnumTextColor,
   EnumTextStyle,
+  FlexItem,
   Icon,
   Text,
   TextField,
@@ -18,6 +24,8 @@ import classNames from "classnames";
 import { useAppContext } from "../context/appContext";
 import { Link } from "react-router-dom";
 import jovu from "../assets/jovu.svg";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useStiggContext } from "@stigg/react-sdk";
 type SendMessageType = models.SendAssistantMessageInput;
 
 const INITIAL_VALUES: SendMessageType = {
@@ -53,6 +61,12 @@ const WIDTH_STATE_SETTINGS: Record<
 const Assistant = () => {
   const { currentWorkspace } = useAppContext();
 
+  const { stigg } = useStiggContext();
+
+  const { hasAccess } = stigg.getMeteredEntitlement({
+    featureId: BillingFeature.JovuRequests,
+  });
+
   const [open, setOpen] = useState(true);
   const [widthState, setWidthState] = useState(WIDTH_STATE_DEFAULT);
 
@@ -66,7 +80,6 @@ const Assistant = () => {
   const {
     sendMessage,
     messages,
-    sendMessageError: error,
     processingMessage: loading,
     streamError,
   } = useAssistant();
@@ -140,7 +153,40 @@ const Assistant = () => {
           </Tooltip>
         </div>
 
-        {currentWorkspace?.allowLLMFeatures ? (
+        {!hasAccess ? (
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            itemsAlign={EnumItemsAlign.Center}
+            contentAlign={EnumContentAlign.Center}
+            gap={EnumGapSize.Large}
+            className={`${CLASS_NAME}__limit`}
+          >
+            <img
+              src={jovu}
+              alt="jovu"
+              width={50}
+              height={50}
+              style={{ background: "white", borderRadius: "50%" }}
+            />
+            <Text textStyle={EnumTextStyle.H3} textAlign={EnumTextAlign.Center}>
+              You have reached the daily limit of Jovu requests for your plan.
+            </Text>
+            <Text
+              textStyle={EnumTextStyle.Tag}
+              textAlign={EnumTextAlign.Center}
+            >
+              Upgrade your plan to continue using Jovu or come back tomorrow.
+            </Text>
+            <Link to={`/${currentWorkspace?.id}/purchase`}>
+              <Text
+                textColor={EnumTextColor.ThemeTurquoise}
+                textStyle={EnumTextStyle.Tag}
+              >
+                Upgrade Now
+              </Text>
+            </Link>
+          </FlexItem>
+        ) : currentWorkspace?.allowLLMFeatures ? (
           <>
             <div className={`${CLASS_NAME}__messages`}>
               {messages.map((message) => (
@@ -152,9 +198,6 @@ const Assistant = () => {
               ))}
 
               <div ref={messagesEndRef} />
-              {error && (
-                <div className={`${CLASS_NAME}__error`}>{error.message}</div>
-              )}
               {streamError && (
                 <div className={`${CLASS_NAME}__error`}>
                   {streamError.message}
