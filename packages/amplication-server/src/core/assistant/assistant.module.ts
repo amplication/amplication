@@ -11,6 +11,7 @@ import { PluginCatalogModule } from "../pluginCatalog/pluginCatalog.module";
 import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
 import { ModuleActionModule } from "../moduleAction/moduleAction.module";
 import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
+import { BillingModule } from "../billing/billing.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
     PluginInstallationModule,
     ModuleActionModule,
     ModuleDtoModule,
+    BillingModule,
   ],
   providers: [
     AssistantService,

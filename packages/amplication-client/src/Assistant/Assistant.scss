@@ -76,6 +76,12 @@ $avatar-size: 30px;
     }
   }
 
+  &__limit {
+    padding: var(--default-spacing);
+    flex: 1;
+    text-align: center;
+  }
+
   &__header {
     display: flex;
     flex-direction: row;

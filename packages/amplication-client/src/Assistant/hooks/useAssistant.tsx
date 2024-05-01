@@ -50,18 +50,18 @@ const useAssistant = () => {
 
   const [threadId, setThreadId] = useState<string | null>(null);
 
-  const [
-    sendAssistantMessage,
-    { error: sendMessageError, loading: sendMessageLoading },
-  ] = useMutation<TAssistantThreadData>(SEND_ASSISTANT_MESSAGE, {
-    onCompleted: (data) => {
-      setThreadId(data.sendAssistantMessageWithStream.id);
-      setMessages([
-        ...messages,
-        ...data.sendAssistantMessageWithStream.messages,
-      ]);
-    },
-  });
+  const [sendAssistantMessage] = useMutation<TAssistantThreadData>(
+    SEND_ASSISTANT_MESSAGE,
+    {
+      onCompleted: (data) => {
+        setThreadId(data.sendAssistantMessageWithStream.id);
+        setMessages([
+          ...messages,
+          ...data.sendAssistantMessageWithStream.messages,
+        ]);
+      },
+    }
+  );
 
   const { error: streamError } = useSubscription<TAssistantMessageUpdatedData>(
     ASSISTANT_MESSAGE_UPDATED,
@@ -125,15 +125,29 @@ const useAssistant = () => {
         },
       },
     }).catch((error) => {
-      console.error(error);
+      setMessages([
+        ...messages,
+        {
+          text: "I'm sorry, I had a problem processing your request.",
+          role: models.EnumAssistantMessageRole.Assistant,
+          id: Date.now().toString() + "_",
+          createdAt: "",
+        },
+        {
+          text: error.message,
+          role: models.EnumAssistantMessageRole.Assistant,
+          id: Date.now().toString() + "_",
+          createdAt: "",
+        },
+      ]);
+
+      setProcessingMessage(false);
     });
   };
 
   return {
     sendMessage,
     messages,
-    sendMessageError,
-    sendMessageLoading,
     streamError,
     processingMessage,
   };
