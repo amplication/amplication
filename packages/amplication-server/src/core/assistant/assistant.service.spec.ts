@@ -17,6 +17,7 @@ import { Env } from "../../env";
 import { billingServiceMock } from "../billing/billing.service.mock";
 import { AssistantContext } from "./dto/AssistantContext";
 import { AmplicationError } from "../../errors/AmplicationError";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 const EXAMPLE_CHAT_OPENAI_KEY = "EXAMPLE_CHAT_OPENAI_KEY";
 
@@ -111,7 +112,6 @@ describe("AssistantService", () => {
           provide: PluginInstallationService,
           useValue: {},
         },
-
         MockedAmplicationLoggerProvider,
       ],
     }).compile();
@@ -123,7 +123,6 @@ describe("AssistantService", () => {
     expect(service).toBeDefined();
   });
 
-  // Test to validate the error handling when AI features are disabled for a workspace
   it("should throw an AmplicationError if AI-powered features are disabled for the workspace", async () => {
     const context = {
       ...EXAMPLE_ASSISTANT_CONTEXT,
@@ -143,7 +142,6 @@ describe("AssistantService", () => {
     );
   });
 
-  // Test to ensure that the onMessageUpdated method correctly publishes messages
   it("should publish a message when onMessageUpdated is called", async () => {
     const threadId = "testThread123";
     const messageId = "message123";
@@ -168,6 +166,19 @@ describe("AssistantService", () => {
         snapshot,
         completed,
       })
+    );
+  });
+
+  it("should check billing feature and report usage when AI features are enabled and billing is active", async () => {
+    await service.validateAndReportUsage(EXAMPLE_ASSISTANT_CONTEXT);
+
+    expect(billingServiceMock.getMeteredEntitlement).toHaveBeenCalledWith(
+      EXAMPLE_ASSISTANT_CONTEXT.user.workspace.id,
+      BillingFeature.JovuRequests
+    );
+    expect(billingServiceMock.reportUsage).toHaveBeenCalledWith(
+      EXAMPLE_ASSISTANT_CONTEXT.user.workspace.id,
+      BillingFeature.JovuRequests
     );
   });
 });
