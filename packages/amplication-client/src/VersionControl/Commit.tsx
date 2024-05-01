@@ -2,6 +2,7 @@ import {
   EnumTextColor,
   JumboButton,
   LimitationDialog,
+  MultiStateToggle,
   Snackbar,
   TextField,
 } from "@amplication/ui/design-system";
@@ -25,6 +26,17 @@ import {
   LicenseIndicatorContainer,
   LicensedResourceType,
 } from "../Components/LicenseIndicatorContainer";
+
+const OPTIONS = [
+  {
+    label: ".NET",
+    value: "dotnet",
+  },
+  {
+    label: "Node.js",
+    value: "node",
+  },
+];
 
 type TCommit = {
   message: string;
@@ -161,6 +173,21 @@ const Commit = ({
     [setCommitRunning, commit, projectId]
   );
 
+  const handleOnSelectLanguageChange = useCallback(
+    (selectedValue: string) => {
+      if (selectedValue === "dotnet") {
+        trackEvent({
+          eventName: AnalyticsEventNames.ChangedToDotNet,
+          workspaceId: currentWorkspace.id,
+        });
+        history.push(
+          `/${currentWorkspace?.id}/${currentProject?.id}/dotnet-promote`
+        );
+      }
+    },
+    [currentProject?.id, currentWorkspace.id, history, trackEvent]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <Formik
@@ -194,6 +221,13 @@ const Commit = ({
                   autoComplete="off"
                 />
               )}
+              <MultiStateToggle
+                label=""
+                name="action_"
+                options={OPTIONS}
+                onChange={handleOnSelectLanguageChange}
+                selectedValue={"node"}
+              />
               <LicenseIndicatorContainer
                 featureId={BillingFeature.BlockBuild}
                 licensedResourceType={LicensedResourceType.Project}
