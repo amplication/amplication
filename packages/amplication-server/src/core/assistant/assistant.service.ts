@@ -26,6 +26,12 @@ import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { pascalCase } from "pascal-case";
 import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
+import { ModuleDtoEnumMember } from "../moduleDto/dto/ModuleDtoEnumMember";
+import { EnumModuleDtoType } from "@amplication/code-gen-types";
+import { EnumModuleActionGqlOperation } from "../moduleAction/dto/EnumModuleActionGqlOperation";
+import { EnumModuleActionRestVerb } from "../moduleAction/dto/EnumModuleActionRestVerb";
+import { PropertyTypeDef } from "../moduleDto/dto/propertyTypes/PropertyTypeDef";
+import { EnumModuleActionRestInputSource } from "../moduleAction/dto/EnumModuleActionRestInputSource";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -41,9 +47,9 @@ enum EnumAssistantFunctions {
   CreateModule = "createModule",
   GetModuleDtosAndEnums = "getModuleDtosAndEnums",
   CreateModuleDto = "createModuleDto",
-  // CreateModuleEnum = "createModuleEnum",
-  // GetModuleActions = "getModuleActions",
-  // CreateModuleAction = "createModuleAction",
+  CreateModuleEnum = "createModuleEnum",
+  GetModuleActions = "getModuleActions",
+  CreateModuleAction = "createModuleAction",
 }
 
 const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
@@ -791,8 +797,14 @@ export class AssistantService {
         name: dto.name,
         description: dto.description,
         dtoType: dto.dtoType,
-        properties: dto.properties,
-        members: dto.members,
+        properties:
+          dto.dtoType === EnumModuleDtoType.Custom
+            ? dto.properties
+            : "The properties for this DTO will be generated automatically on runtime based on the entity fields and relations.",
+        members:
+          dto.dtoType === EnumModuleDtoType.CustomEnum
+            ? dto.members
+            : "The members for this Enum will be generated automatically on runtime based on the entity field settings.",
         link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
       }));
     },
@@ -832,6 +844,128 @@ export class AssistantService {
       return {
         link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
         result: dto,
+      };
+    },
+    createModuleEnum: async (
+      args: {
+        moduleId: string;
+        serviceId: string;
+        enumName: string;
+        enumDescription: string;
+        members: ModuleDtoEnumMember[];
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.enumName);
+
+      const dto = await this.moduleDtoService.createEnum(
+        {
+          members: args.members,
+          data: {
+            name: name,
+            displayName: args.enumName,
+            description: args.enumDescription,
+            parentBlock: {
+              connect: {
+                id: args.moduleId,
+              },
+            },
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        result: dto,
+      };
+    },
+    getModuleActions: async (
+      args: { moduleId: string; serviceId: string },
+      context: AssistantContext
+    ) => {
+      const actions = await this.moduleActionService.findMany({
+        where: {
+          parentBlock: { id: args.moduleId },
+          resource: { id: args.serviceId },
+        },
+      });
+      return actions.map((action) => ({
+        id: action.id,
+        name: action.displayName,
+        description: action.description,
+        gqlOperation: action.gqlOperation,
+        restVerb: action.restVerb,
+        path: action.path,
+        inputType: action.inputType,
+        outputType: action.outputType,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
+      }));
+    },
+    createModuleAction: async (
+      args: {
+        moduleId: string;
+        serviceId: string;
+        actionName: string;
+        actionDescription: string;
+        gqlOperation: EnumModuleActionGqlOperation;
+        restVerb: EnumModuleActionRestVerb;
+        path: string;
+        inputType: PropertyTypeDef;
+        outputType: PropertyTypeDef;
+        restInputSource?: EnumModuleActionRestInputSource;
+        restInputParamsPropertyName: string;
+        restInputBodyPropertyName: string;
+        restInputQueryPropertyName: string;
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.actionName);
+      const action = await this.moduleActionService.create(
+        {
+          data: {
+            displayName: args.actionName,
+            name: name,
+            parentBlock: {
+              connect: {
+                id: args.moduleId,
+              },
+            },
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+
+      const updatedAction = await this.moduleActionService.update(
+        {
+          data: {
+            displayName: args.actionName,
+            name: name,
+            description: args.actionDescription,
+            gqlOperation: args.gqlOperation,
+            restVerb: args.restVerb,
+            path: args.path,
+            inputType: args.inputType,
+            outputType: args.outputType,
+          },
+          where: {
+            id: action.id,
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/actions/${action.id}`,
+        result: updatedAction,
       };
     },
   };
