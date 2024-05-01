@@ -17,6 +17,4 @@ export interface IFileMap<T extends any | string | Buffer> {
   removeMany(paths: string[]): void;
 
   replaceFilesCode(fn: (path: string, code: T) => T): Promise<void>;
-
-  writeAll(): Promise<void>;
 }

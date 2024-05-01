@@ -116,6 +116,4 @@ export class FileMap<T> implements IFileMap<T> {
   getAll(): IterableIterator<IFile<T>> {
     return this.map.values();
   }
-
-  writeAll(): Promise<void> {}
 }
