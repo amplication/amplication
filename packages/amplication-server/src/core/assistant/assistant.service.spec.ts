@@ -1,7 +1,12 @@
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
-import { AssistantService, MESSAGE_UPDATED_EVENT } from "./assistant.service";
+import {
+  AssistantService,
+  EnumAssistantFunctions,
+  MESSAGE_UPDATED_EVENT,
+  MessageLoggerContext,
+} from "./assistant.service";
 import { BillingService } from "../billing/billing.service";
 
 import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
@@ -18,24 +23,43 @@ import { billingServiceMock } from "../billing/billing.service.mock";
 import { AssistantContext } from "./dto/AssistantContext";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { Entity } from "../../models";
+import { id } from "date-fns/locale";
 
 const EXAMPLE_CHAT_OPENAI_KEY = "EXAMPLE_CHAT_OPENAI_KEY";
+const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
+const EXAMPLE_PROJECT_ID = "EXAMPLE_PROJECT_ID";
+const EXAMPLE_RESOURCE_ID = "EXAMPLE_RESOURCE_ID";
+const EXAMPLE_THREAD_ID = "EXAMPLE_THREAD_ID";
+const EXAMPLE_USER_ID = "EXAMPLE_USER_ID";
+
+const EXAMPLE_ENTITY: Entity = {
+  id: "exampleEntityId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  resourceId: "exampleResourceId",
+  name: "exampleName",
+  displayName: "exampleDisplayName",
+  pluralDisplayName: "examplePluralDisplayName",
+  customAttributes: "exampleCustomAttributes",
+  lockedByUserId: EXAMPLE_USER_ID,
+};
 
 const EXAMPLE_ASSISTANT_CONTEXT: AssistantContext = {
   user: {
     workspace: {
       allowLLMFeatures: true,
-      id: "EXAMPLE_WORKSPACE_ID",
+      id: EXAMPLE_WORKSPACE_ID,
       createdAt: new Date(),
       updatedAt: new Date(),
       name: "",
     },
-    id: "",
+    id: EXAMPLE_USER_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
     isOwner: true,
   },
-  workspaceId: "EXAMPLE_WORKSPACE_ID",
+  workspaceId: EXAMPLE_WORKSPACE_ID,
 };
 
 const pubSubPublishMock = jest.fn();
@@ -46,6 +70,38 @@ const mockGraphqlSubscriptionKafkaService = {
     asyncIterator: jest.fn(),
   })),
 };
+
+const createOneEntityMock = jest.fn(() => EXAMPLE_ENTITY);
+const createFieldByDisplayNameMock = jest.fn();
+const createProjectMock = jest.fn();
+const createServiceWithDefaultSettingsMock = jest.fn();
+const createModuleMock = jest.fn();
+const installPluginMock = jest.fn(() => ({ id: "examplePluginId" }));
+const getPluginWithLatestVersionMock = jest.fn(() => ({
+  id: "examplePluginId",
+  pluginId: "examplePluginId",
+  name: "exampleName",
+  description: "exampleDescription",
+  repo: "exampleRepo",
+  npm: "exampleNpm",
+  icon: "exampleIcon",
+  github: "exampleGithub",
+  website: "exampleWebsite",
+  categories: ["exampleCategory1", "exampleCategory2"],
+  type: "exampleType",
+  taggedVersions: {},
+  versions: [
+    {
+      id: "exampleVersionId",
+      pluginId: "examplePluginId",
+      deprecated: false,
+      isLatest: true,
+      version: "exampleVersion",
+      settings: {},
+      configurations: {},
+    },
+  ],
+}));
 
 describe("AssistantService", () => {
   let service: AssistantService;
@@ -78,23 +134,35 @@ describe("AssistantService", () => {
         },
         {
           provide: EntityService,
-          useValue: {},
+          useValue: {
+            createOneEntity: createOneEntityMock,
+            createFieldByDisplayName: createFieldByDisplayNameMock,
+          },
         },
         {
           provide: ResourceService,
-          useValue: {},
+          useValue: {
+            createServiceWithDefaultSettings:
+              createServiceWithDefaultSettingsMock,
+          },
         },
         {
           provide: ModuleService,
-          useValue: {},
+          useValue: {
+            create: createModuleMock,
+          },
         },
         {
           provide: ProjectService,
-          useValue: {},
+          useValue: {
+            createProject: createProjectMock,
+          },
         },
         {
           provide: PluginCatalogService,
-          useValue: {},
+          useValue: {
+            getPluginWithLatestVersion: getPluginWithLatestVersionMock,
+          },
         },
         {
           provide: ModuleActionService,
@@ -110,7 +178,9 @@ describe("AssistantService", () => {
         },
         {
           provide: PluginInstallationService,
-          useValue: {},
+          useValue: {
+            create: installPluginMock,
+          },
         },
         MockedAmplicationLoggerProvider,
       ],
@@ -181,4 +251,107 @@ describe("AssistantService", () => {
       BillingFeature.JovuRequests
     );
   });
+
+  it.each([
+    [
+      EnumAssistantFunctions.CreateEntity,
+      {
+        name: "value1",
+        serviceId: "value2",
+        fields: ["value3", "value4"],
+      },
+      [
+        {
+          mock: createOneEntityMock,
+          times: 1,
+        },
+        {
+          mock: createFieldByDisplayNameMock,
+          times: 2,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.CreateProject,
+      { projectName: "New Project" },
+      [
+        {
+          mock: createProjectMock,
+          times: 1,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.CreateService,
+      {
+        serviceName: "New Service",
+        projectId: "proj123",
+        adminUIPath: "/admin-ui",
+        serverPath: "/server",
+      },
+      [
+        {
+          mock: createServiceWithDefaultSettingsMock,
+          times: 1,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.CreateModule,
+      {
+        moduleName: "New Module",
+        moduleDescription: "Module Description",
+        serviceId: "service123",
+      },
+      [
+        {
+          mock: createModuleMock,
+          times: 1,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.InstallPlugins,
+      {
+        pluginIds: ["plugin1", "plugin2"],
+        serviceId: "service123",
+      },
+      [
+        {
+          mock: getPluginWithLatestVersionMock,
+          times: 2,
+        },
+        {
+          mock: installPluginMock,
+          times: 2,
+        },
+      ],
+    ],
+  ])(
+    "should execute function %s correctly",
+    async (functionName, params, mocks) => {
+      const loggerContext: MessageLoggerContext = {
+        messageContext: {
+          workspaceId: EXAMPLE_WORKSPACE_ID,
+          projectId: EXAMPLE_PROJECT_ID,
+          serviceId: EXAMPLE_RESOURCE_ID,
+        },
+        threadId: EXAMPLE_THREAD_ID,
+        userId: EXAMPLE_USER_ID,
+        role: "user",
+      };
+
+      await service.executeFunction(
+        "callId",
+        functionName,
+        JSON.stringify(params),
+        EXAMPLE_ASSISTANT_CONTEXT,
+        loggerContext
+      );
+
+      mocks.forEach((mock) => {
+        expect(mock.mock).toHaveBeenCalledTimes(mock.times);
+      });
+    }
+  );
 });

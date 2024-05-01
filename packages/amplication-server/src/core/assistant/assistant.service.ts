@@ -33,7 +33,7 @@ import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
 import { AssistantThread } from "./dto/AssistantThread";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 
-enum EnumAssistantFunctions {
+export enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
   GetProjectServices = "getProjectServices",
   GetServiceEntities = "getServiceEntities",
@@ -56,7 +56,7 @@ export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
 export const PLUGIN_LATEST_VERSION_TAG = "latest";
 
-type MessageLoggerContext = {
+export type MessageLoggerContext = {
   messageContext: {
     workspaceId: string;
     projectId: string;
