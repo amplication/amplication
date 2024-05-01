@@ -10,7 +10,6 @@ import { Run } from "openai/resources/beta/threads/runs/runs";
 import { AssistantContext } from "./dto/AssistantContext";
 import { EntityService } from "../entity/entity.service";
 import { plural } from "pluralize";
-import { camelCase } from "camel-case";
 import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { ModuleService } from "../module/module.service";
@@ -23,6 +22,16 @@ import { AmplicationError } from "../../errors/AmplicationError";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
+import { pascalCase } from "pascal-case";
+import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
+import { ModuleDtoEnumMember } from "../moduleDto/dto/ModuleDtoEnumMember";
+import { EnumModuleDtoType } from "@amplication/code-gen-types";
+import { EnumModuleActionGqlOperation } from "../moduleAction/dto/EnumModuleActionGqlOperation";
+import { EnumModuleActionRestVerb } from "../moduleAction/dto/EnumModuleActionRestVerb";
+import { PropertyTypeDef } from "../moduleDto/dto/propertyTypes/PropertyTypeDef";
+import { EnumModuleActionRestInputSource } from "../moduleAction/dto/EnumModuleActionRestInputSource";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -34,6 +43,13 @@ enum EnumAssistantFunctions {
   GetProjectPendingChanges = "getProjectPendingChanges",
   GetPlugins = "getPlugins",
   InstallPlugins = "installPlugins",
+  GetServiceModules = "getServiceModules",
+  CreateModule = "createModule",
+  GetModuleDtosAndEnums = "getModuleDtosAndEnums",
+  CreateModuleDto = "createModuleDto",
+  CreateModuleEnum = "createModuleEnum",
+  GetModuleActions = "getModuleActions",
+  CreateModuleAction = "createModuleAction",
 }
 
 const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
@@ -70,7 +86,8 @@ export class AssistantService {
     private readonly graphqlSubscriptionKafkaService: GraphqlSubscriptionPubSubKafkaService,
     private readonly pluginCatalogService: PluginCatalogService,
     private readonly pluginInstallationService: PluginInstallationService,
-
+    private readonly moduleActionService: ModuleActionService,
+    private readonly moduleDtoService: ModuleDtoService,
     configService: ConfigService
   ) {
     this.logger.info("starting assistant service");
@@ -488,7 +505,7 @@ export class AssistantService {
           data: {
             displayName: args.name,
             pluralDisplayName: pluralDisplayName,
-            name: camelCase(args.name),
+            name: pascalCase(args.name),
             resource: {
               connect: {
                 id: args.serviceId,
@@ -715,6 +732,240 @@ export class AssistantService {
         installations,
         pluginsCatalogLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/catalog`,
         allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/installed`,
+      };
+    },
+    getServiceModules: async (
+      args: { serviceId: string },
+      context: AssistantContext
+    ) => {
+      const modules = await this.moduleService.findMany({
+        where: {
+          resource: { id: args.serviceId },
+        },
+      });
+      return modules.map((module) => ({
+        id: module.id,
+        name: module.displayName,
+        description: module.description,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${module.id}`,
+      }));
+    },
+    createModule: async (
+      args: {
+        moduleName: string;
+        moduleDescription: string;
+        serviceId: string;
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.moduleName);
+
+      const module = await this.moduleService.create(
+        {
+          data: {
+            name: name,
+            displayName: args.moduleName,
+            description: args.moduleDescription,
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${module.id}`,
+        result: module,
+      };
+    },
+    getModuleDtosAndEnums: async (
+      args: { moduleId: string; serviceId: string },
+      context: AssistantContext
+    ) => {
+      const dtos = await this.moduleDtoService.findMany({
+        where: {
+          parentBlock: { id: args.moduleId },
+          resource: { id: args.serviceId },
+          includeCustomDtos: true,
+          includeDefaultDtos: true,
+        },
+      });
+      return dtos.map((dto) => ({
+        id: dto.id,
+        name: dto.name,
+        description: dto.description,
+        dtoType: dto.dtoType,
+        properties:
+          dto.dtoType === EnumModuleDtoType.Custom
+            ? dto.properties
+            : "The properties for this DTO will be generated automatically on runtime based on the entity fields and relations.",
+        members:
+          dto.dtoType === EnumModuleDtoType.CustomEnum
+            ? dto.members
+            : "The members for this Enum will be generated automatically on runtime based on the entity field settings.",
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+      }));
+    },
+    createModuleDto: async (
+      args: {
+        moduleId: string;
+        serviceId: string;
+        dtoName: string;
+        dtoDescription: string;
+        properties: ModuleDtoPropertyUpdateInput[];
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.dtoName);
+
+      const dto = await this.moduleDtoService.create(
+        {
+          properties: args.properties,
+          data: {
+            name: name,
+            displayName: args.dtoName,
+            description: args.dtoDescription,
+            parentBlock: {
+              connect: {
+                id: args.moduleId,
+              },
+            },
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        result: dto,
+      };
+    },
+    createModuleEnum: async (
+      args: {
+        moduleId: string;
+        serviceId: string;
+        enumName: string;
+        enumDescription: string;
+        members: ModuleDtoEnumMember[];
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.enumName);
+
+      const dto = await this.moduleDtoService.createEnum(
+        {
+          members: args.members,
+          data: {
+            name: name,
+            displayName: args.enumName,
+            description: args.enumDescription,
+            parentBlock: {
+              connect: {
+                id: args.moduleId,
+              },
+            },
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        result: dto,
+      };
+    },
+    getModuleActions: async (
+      args: { moduleId: string; serviceId: string },
+      context: AssistantContext
+    ) => {
+      const actions = await this.moduleActionService.findMany({
+        where: {
+          parentBlock: { id: args.moduleId },
+          resource: { id: args.serviceId },
+        },
+      });
+      return actions.map((action) => ({
+        id: action.id,
+        name: action.displayName,
+        description: action.description,
+        gqlOperation: action.gqlOperation,
+        restVerb: action.restVerb,
+        path: action.path,
+        inputType: action.inputType,
+        outputType: action.outputType,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
+      }));
+    },
+    createModuleAction: async (
+      args: {
+        moduleId: string;
+        serviceId: string;
+        actionName: string;
+        actionDescription: string;
+        gqlOperation: EnumModuleActionGqlOperation;
+        restVerb: EnumModuleActionRestVerb;
+        path: string;
+        inputType: PropertyTypeDef;
+        outputType: PropertyTypeDef;
+        restInputSource?: EnumModuleActionRestInputSource;
+        restInputParamsPropertyName: string;
+        restInputBodyPropertyName: string;
+        restInputQueryPropertyName: string;
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.actionName);
+      const action = await this.moduleActionService.create(
+        {
+          data: {
+            displayName: args.actionName,
+            name: name,
+            parentBlock: {
+              connect: {
+                id: args.moduleId,
+              },
+            },
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+
+      const updatedAction = await this.moduleActionService.update(
+        {
+          data: {
+            displayName: args.actionName,
+            name: name,
+            description: args.actionDescription,
+            gqlOperation: args.gqlOperation,
+            restVerb: args.restVerb,
+            path: args.path,
+            inputType: args.inputType,
+            outputType: args.outputType,
+          },
+          where: {
+            id: action.id,
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/actions/${action.id}`,
+        result: updatedAction,
       };
     },
   };

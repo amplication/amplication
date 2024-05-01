@@ -9,6 +9,8 @@ import { ProjectModule } from "../project/project.module";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 import { PluginCatalogModule } from "../pluginCatalog/pluginCatalog.module";
 import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
+import { ModuleActionModule } from "../moduleAction/moduleAction.module";
+import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { PluginInstallationModule } from "../pluginInstallation/pluginInstallati
     ProjectModule,
     PluginCatalogModule,
     PluginInstallationModule,
+    ModuleActionModule,
+    ModuleDtoModule,
   ],
   providers: [
     AssistantService,

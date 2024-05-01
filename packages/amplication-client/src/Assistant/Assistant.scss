@@ -110,6 +110,7 @@ $avatar-size: 30px;
     gap: var(--default-spacing);
     overflow-y: auto;
     padding: var(--default-spacing);
+    padding-left: 0;
     font-size: var(--tag-font-size);
   }
 
