@@ -26,6 +26,8 @@ import { Link } from "react-router-dom";
 import jovu from "../assets/jovu.svg";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { useStiggContext } from "@stigg/react-sdk";
+import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
+import { useQuery } from "@apollo/client";
 type SendMessageType = models.SendAssistantMessageInput;
 
 const INITIAL_VALUES: SendMessageType = {
@@ -65,6 +67,10 @@ const Assistant = () => {
 
   const { hasAccess } = stigg.getMeteredEntitlement({
     featureId: BillingFeature.JovuRequests,
+  });
+
+  const { data } = useQuery(GET_CONTACT_US_LINK, {
+    variables: { id: currentWorkspace.id },
   });
 
   const [open, setOpen] = useState(true);
@@ -175,16 +181,27 @@ const Assistant = () => {
               textStyle={EnumTextStyle.Tag}
               textAlign={EnumTextAlign.Center}
             >
-              Upgrade your plan to continue using Jovu or come back tomorrow.
+              Talk with us to upgrade and discover additional hidden
+              functionalities.
             </Text>
-            <Link to={`/${currentWorkspace?.id}/purchase`}>
-              <Text
-                textColor={EnumTextColor.ThemeTurquoise}
-                textStyle={EnumTextStyle.Tag}
+            <Text
+              textColor={EnumTextColor.White}
+              textStyle={EnumTextStyle.Tag}
+              textAlign={EnumTextAlign.Center}
+            >
+              <a
+                className={`${CLASS_NAME}__addon-section__contact-us`}
+                href={data?.contactUsLink}
+                target="blank"
               >
-                Upgrade Now
-              </Text>
-            </Link>
+                <Text
+                  textColor={EnumTextColor.ThemeTurquoise}
+                  textStyle={EnumTextStyle.Tag}
+                >
+                  Talk with us
+                </Text>
+              </a>
+            </Text>
           </FlexItem>
         ) : currentWorkspace?.allowLLMFeatures ? (
           <>
