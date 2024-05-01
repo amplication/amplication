@@ -1,40 +1,37 @@
+import { EnumModuleDtoType } from "@amplication/code-gen-types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import OpenAI from "openai";
-import { Env } from "../../env";
-import { AssistantThread } from "./dto/AssistantThread";
-import { TextContentBlock } from "openai/resources/beta/threads/messages/messages";
-import { EnumAssistantMessageRole } from "./dto/EnumAssistantMessageRole";
-import { Run } from "openai/resources/beta/threads/runs/runs";
-import { AssistantContext } from "./dto/AssistantContext";
-import { EntityService } from "../entity/entity.service";
-import { plural } from "pluralize";
-import { ResourceService } from "../resource/resource.service";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { ModuleService } from "../module/module.service";
-import { ProjectService } from "../project/project.service";
-import { EnumPendingChangeOriginType } from "../resource/dto";
-import { Block } from "../../models";
 import { AssistantStream } from "openai/lib/AssistantStream";
-import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
+import { pascalCase } from "pascal-case";
+import { plural } from "pluralize";
+import { Env } from "../../env";
 import { AmplicationError } from "../../errors/AmplicationError";
-import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { Block } from "../../models";
+import { BillingService } from "../billing/billing.service";
+import { EntityService } from "../entity/entity.service";
+import { ModuleService } from "../module/module.service";
+import { EnumModuleActionGqlOperation } from "../moduleAction/dto/EnumModuleActionGqlOperation";
+import { EnumModuleActionRestInputSource } from "../moduleAction/dto/EnumModuleActionRestInputSource";
+import { EnumModuleActionRestVerb } from "../moduleAction/dto/EnumModuleActionRestVerb";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleDtoEnumMember } from "../moduleDto/dto/ModuleDtoEnumMember";
+import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
+import { PropertyTypeDef } from "../moduleDto/dto/propertyTypes/PropertyTypeDef";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import { ModuleActionService } from "../moduleAction/moduleAction.service";
-import { ModuleDtoService } from "../moduleDto/moduleDto.service";
-import { pascalCase } from "pascal-case";
-import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
-import { ModuleDtoEnumMember } from "../moduleDto/dto/ModuleDtoEnumMember";
-import { EnumModuleDtoType } from "@amplication/code-gen-types";
-import { EnumModuleActionGqlOperation } from "../moduleAction/dto/EnumModuleActionGqlOperation";
-import { EnumModuleActionRestVerb } from "../moduleAction/dto/EnumModuleActionRestVerb";
-import { PropertyTypeDef } from "../moduleDto/dto/propertyTypes/PropertyTypeDef";
-import { EnumModuleActionRestInputSource } from "../moduleAction/dto/EnumModuleActionRestInputSource";
-import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { ProjectService } from "../project/project.service";
+import { EnumPendingChangeOriginType } from "../resource/dto";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { ResourceService } from "../resource/resource.service";
+import { AssistantContext } from "./dto/AssistantContext";
+import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
+import { AssistantThread } from "./dto/AssistantThread";
+import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 
 enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
@@ -55,7 +52,7 @@ enum EnumAssistantFunctions {
   CreateModuleAction = "createModuleAction",
 }
 
-const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
+export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
 export const PLUGIN_LATEST_VERSION_TAG = "latest";
 
@@ -173,40 +170,6 @@ export class AssistantService {
         BillingFeature.JovuRequests
       );
     }
-  }
-
-  async processMessage(
-    messageText: string,
-    threadId: string,
-    context: AssistantContext
-  ): Promise<AssistantThread> {
-    await this.validateAndReportUsage(context);
-
-    const openai = this.openai;
-
-    const preparedThread = await this.prepareThread(
-      messageText,
-      threadId,
-      context
-    );
-
-    const run = await openai.beta.threads.runs.createAndPoll(
-      preparedThread.threadId,
-      {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        assistant_id: this.assistantId,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        additional_instructions: `The following context is available: 
-        ${JSON.stringify(preparedThread.shortContext)}`,
-      }
-    );
-
-    return this.handleRunStatus(
-      run,
-      preparedThread.threadId,
-      context,
-      preparedThread.loggerContext
-    );
   }
 
   async processMessageWithStream(
@@ -364,95 +327,6 @@ export class AssistantService {
       shortContext,
       loggerContext,
     };
-  }
-
-  async handleRunStatus(
-    run: Run,
-    threadId: string,
-    context: AssistantContext,
-    loggerContext: MessageLoggerContext
-  ): Promise<AssistantThread> {
-    const openai = this.openai;
-
-    const assistantThread = new AssistantThread();
-    assistantThread.id = threadId;
-    assistantThread.messages = [];
-
-    this.logger.debug(`Run status: ${run.status}`);
-
-    if (run.status === "completed") {
-      const messages = await openai.beta.threads.messages.list(threadId, {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        run_id: run.id,
-      });
-      for (const message of messages.data.reverse()) {
-        const textContentBlock = message.content[0] as TextContentBlock;
-        const messageText = textContentBlock.text.value;
-        loggerContext.role = message.role;
-
-        this.logger.info(`Chat: ${messageText}`, loggerContext);
-
-        assistantThread.messages.push({
-          id: message.id,
-          role:
-            message.role === "user"
-              ? EnumAssistantMessageRole.User
-              : EnumAssistantMessageRole.Assistant,
-          text: messageText,
-          createdAt: new Date(message.created_at),
-        });
-      }
-
-      return assistantThread;
-    } else if (run.status === "requires_action") {
-      const requiredActions =
-        run.required_action.submit_tool_outputs.tool_calls;
-
-      const functionCalls = await Promise.all(
-        requiredActions.map((action) => {
-          const functionName = action.function.name;
-          const params = action.function.arguments;
-
-          return this.executeFunction(
-            action.id,
-            functionName,
-            params,
-            context,
-            loggerContext
-          );
-        })
-      );
-
-      const innerRun = await openai.beta.threads.runs.submitToolOutputsAndPoll(
-        threadId,
-        run.id,
-        {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          tool_outputs: functionCalls.map((call) => ({
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            tool_call_id: call.callId,
-            output: call.results,
-          })),
-        }
-      );
-
-      return this.handleRunStatus(innerRun, threadId, context, loggerContext);
-    } else {
-      //@todo: handle other statuses
-      this.logger.error(
-        `Chat: Run status: ${run.status}. Error: ${run.last_error}`,
-        null,
-        loggerContext
-      );
-
-      assistantThread.messages.push({
-        id: Date.now().toString(), //use timestamp as id to be unique at the client
-        role: EnumAssistantMessageRole.Assistant,
-        text: run.last_error.message || "Sorry, I'm having trouble right now.",
-        createdAt: new Date(),
-      });
-      return assistantThread;
-    }
   }
 
   async executeFunction(
