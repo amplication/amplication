@@ -5,7 +5,7 @@ export interface IFileMap<T extends any | string | Buffer> {
 
   mergeMany(maps: IFileMap<T>[]): Promise<void>;
 
-  set(file: IFile<T>);
+  set(file: IFile<T>): void;
 
   get(path: string): IFile<T> | null;
 

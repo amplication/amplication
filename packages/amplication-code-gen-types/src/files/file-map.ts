@@ -57,8 +57,8 @@ export class FileMap<T> implements IFileMap<T> {
   /**
    * @returns A file for the given path, or undefined if no file exists for the path
    */
-  get(path: string) {
-    return this.map.get(path);
+  get(path: string): IFile<T> | null {
+    return this.map.get(path) ?? null;
   }
 
   /**

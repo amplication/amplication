@@ -146,7 +146,7 @@ export type Module = IFile<string>;
  * @see FileMap
  */
 export class ModuleMap extends FileMap<string> {
-  constructor(readonly logger: BuildLogger) {
+  constructor(logger: BuildLogger) {
     super(logger);
   }
 
