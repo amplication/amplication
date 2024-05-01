@@ -150,9 +150,6 @@ const WorkspaceHeader: React.FC = () => {
   );
 
   const handleUpgradeClick = useCallback(() => {
-    // history.push(`/${currentWorkspace.id}/purchase`, {
-    //   from: { pathname: window.location.pathname },
-    // });
     trackEvent({
       eventName: AnalyticsEventNames.UpgradeClick,
       eventOriginLocation: "workspace-header",

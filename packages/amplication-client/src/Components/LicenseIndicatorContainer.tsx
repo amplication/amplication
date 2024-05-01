@@ -117,7 +117,7 @@ export const LicenseIndicatorContainer: FC<Props> = ({
       return false; // don't show the upgrade link when the plan is preview
     }
 
-    return true; // in case of null, it falls back to the default link text
+    return true;
   }, [subscriptionPlan]);
 
   const renderProps = {
