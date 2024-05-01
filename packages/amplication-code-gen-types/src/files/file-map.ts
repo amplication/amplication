@@ -105,7 +105,7 @@ export class FileMap<T> implements IFileMap<T> {
    */
   async replaceFilesCode(fn: (path: string, code: T) => T): Promise<void> {
     for await (const file of this.getAll()) {
-      file.content = fn(file.path, file.content);
+      file.code = fn(file.path, file.code);
       this.map.set(file.path, file);
     }
   }
