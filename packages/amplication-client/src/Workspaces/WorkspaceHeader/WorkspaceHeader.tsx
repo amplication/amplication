@@ -2,15 +2,12 @@ import {
   Breadcrumbs,
   ButtonProgress,
   Dialog,
-  EnumTextColor,
-  EnumTextStyle,
   Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
   Tooltip,
-  Text,
 } from "@amplication/ui/design-system";
 import { useApolloClient, useQuery } from "@apollo/client";
 import {
@@ -303,8 +300,8 @@ const WorkspaceHeader: React.FC = () => {
                 <>
                   <FeatureIndicator
                     featureName={BillingFeature.CodeGenerationBuilds}
-                    text="Generate production-ready code for this architecture with just a few simple clicks"
-                    linkText=""
+                    textStart="Generate production-ready code for this architecture with just a few simple clicks"
+                    showTooltipLink={false}
                     element={<CompletePreviewSignupButton />}
                   />
                   <Button
