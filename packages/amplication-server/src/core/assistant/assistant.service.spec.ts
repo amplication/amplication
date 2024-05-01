@@ -24,7 +24,6 @@ import { AssistantContext } from "./dto/AssistantContext";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { Entity } from "../../models";
-import { id } from "date-fns/locale";
 
 const EXAMPLE_CHAT_OPENAI_KEY = "EXAMPLE_CHAT_OPENAI_KEY";
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
@@ -71,13 +70,15 @@ const mockGraphqlSubscriptionKafkaService = {
   })),
 };
 
-const createOneEntityMock = jest.fn(() => EXAMPLE_ENTITY);
-const createFieldByDisplayNameMock = jest.fn();
-const createProjectMock = jest.fn();
-const createServiceWithDefaultSettingsMock = jest.fn();
-const createModuleMock = jest.fn();
-const installPluginMock = jest.fn(() => ({ id: "examplePluginId" }));
-const getPluginWithLatestVersionMock = jest.fn(() => ({
+const entityServiceCreateOneEntityMock = jest.fn(() => EXAMPLE_ENTITY);
+const entityServiceCreateFieldByDisplayNameMock = jest.fn();
+const projectServiceCreateProjectMock = jest.fn();
+const resourceServiceCreateServiceWithDefaultSettingsMock = jest.fn();
+const moduleServiceCreateMock = jest.fn();
+const pluginInstallationServiceCreateMock = jest.fn(() => ({
+  id: "examplePluginId",
+}));
+const pluginCatalogServiceGetPluginWithLatestVersionMock = jest.fn(() => ({
   id: "examplePluginId",
   pluginId: "examplePluginId",
   name: "exampleName",
@@ -103,6 +104,18 @@ const getPluginWithLatestVersionMock = jest.fn(() => ({
   ],
 }));
 
+const resourceServiceResourcesMock = jest.fn();
+const moduleServiceFindManyMock = jest.fn();
+const moduleDtoServiceCreateMock = jest.fn();
+const moduleDtoServiceCreateEnumMock = jest.fn();
+const moduleDtoServiceFindManyMock = jest.fn();
+
+const moduleActionServiceCreateMock = jest.fn();
+const projectServiceCommitMock = jest.fn();
+const projectServiceGetPendingChangesMock = jest.fn();
+const pluginCatalogServiceGetPluginsMock = jest.fn();
+const moduleActionServiceFindManyMock = jest.fn();
+const entityServiceEntitiesMock = jest.fn();
 describe("AssistantService", () => {
   let service: AssistantService;
 
@@ -135,42 +148,56 @@ describe("AssistantService", () => {
         {
           provide: EntityService,
           useValue: {
-            createOneEntity: createOneEntityMock,
-            createFieldByDisplayName: createFieldByDisplayNameMock,
+            createOneEntity: entityServiceCreateOneEntityMock,
+            createFieldByDisplayName: entityServiceCreateFieldByDisplayNameMock,
+            entities: entityServiceEntitiesMock,
           },
         },
         {
           provide: ResourceService,
           useValue: {
+            resources: resourceServiceResourcesMock,
             createServiceWithDefaultSettings:
-              createServiceWithDefaultSettingsMock,
+              resourceServiceCreateServiceWithDefaultSettingsMock,
           },
         },
         {
           provide: ModuleService,
           useValue: {
-            create: createModuleMock,
+            create: moduleServiceCreateMock,
+            findMany: moduleServiceFindManyMock,
           },
         },
         {
           provide: ProjectService,
           useValue: {
-            createProject: createProjectMock,
+            createProject: projectServiceCreateProjectMock,
+            commit: projectServiceCommitMock,
+            getPendingChanges: projectServiceGetPendingChangesMock,
           },
         },
         {
           provide: PluginCatalogService,
           useValue: {
-            getPluginWithLatestVersion: getPluginWithLatestVersionMock,
+            getPluginWithLatestVersion:
+              pluginCatalogServiceGetPluginWithLatestVersionMock,
+            getPlugins: pluginCatalogServiceGetPluginsMock,
           },
         },
         {
           provide: ModuleActionService,
-          useValue: {},
+          useValue: {
+            create: moduleActionServiceCreateMock,
+            findMany: moduleActionServiceFindManyMock,
+          },
         },
         {
           provide: ModuleDtoService,
-          useValue: {},
+          useValue: {
+            create: moduleDtoServiceCreateMock,
+            createEnum: moduleDtoServiceCreateEnumMock,
+            findMany: moduleDtoServiceFindManyMock,
+          },
         },
         {
           provide: GraphqlSubscriptionPubSubKafkaService,
@@ -179,7 +206,7 @@ describe("AssistantService", () => {
         {
           provide: PluginInstallationService,
           useValue: {
-            create: installPluginMock,
+            create: pluginInstallationServiceCreateMock,
           },
         },
         MockedAmplicationLoggerProvider,
@@ -252,7 +279,13 @@ describe("AssistantService", () => {
     );
   });
 
-  it.each([
+  const cases: Array<
+    [
+      EnumAssistantFunctions,
+      { [key: string]: any },
+      Array<{ mock: jest.Mock; times: number }>
+    ]
+  > = [
     [
       EnumAssistantFunctions.CreateEntity,
       {
@@ -262,11 +295,11 @@ describe("AssistantService", () => {
       },
       [
         {
-          mock: createOneEntityMock,
+          mock: entityServiceCreateOneEntityMock,
           times: 1,
         },
         {
-          mock: createFieldByDisplayNameMock,
+          mock: entityServiceCreateFieldByDisplayNameMock,
           times: 2,
         },
       ],
@@ -276,7 +309,7 @@ describe("AssistantService", () => {
       { projectName: "New Project" },
       [
         {
-          mock: createProjectMock,
+          mock: projectServiceCreateProjectMock,
           times: 1,
         },
       ],
@@ -291,7 +324,7 @@ describe("AssistantService", () => {
       },
       [
         {
-          mock: createServiceWithDefaultSettingsMock,
+          mock: resourceServiceCreateServiceWithDefaultSettingsMock,
           times: 1,
         },
       ],
@@ -305,7 +338,7 @@ describe("AssistantService", () => {
       },
       [
         {
-          mock: createModuleMock,
+          mock: moduleServiceCreateMock,
           times: 1,
         },
       ],
@@ -318,16 +351,147 @@ describe("AssistantService", () => {
       },
       [
         {
-          mock: getPluginWithLatestVersionMock,
+          mock: pluginCatalogServiceGetPluginWithLatestVersionMock,
           times: 2,
         },
         {
-          mock: installPluginMock,
+          mock: pluginInstallationServiceCreateMock,
           times: 2,
         },
       ],
     ],
-  ])(
+    [
+      EnumAssistantFunctions.GetProjectServices,
+      { projectId: "proj123" },
+      [
+        {
+          mock: resourceServiceResourcesMock,
+          times: 1,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.GetServiceEntities,
+      { serviceId: "service123" },
+      [
+        {
+          mock: entityServiceEntitiesMock,
+          times: 1,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.CommitProjectPendingChanges,
+      { projectId: "proj123", commitMessage: "Initial commit" },
+      [
+        {
+          mock: projectServiceCommitMock,
+          times: 1,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.GetProjectPendingChanges,
+      { projectId: "proj123" },
+      [
+        {
+          mock: projectServiceGetPendingChangesMock,
+          times: 1,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.GetPlugins,
+      {},
+      [
+        {
+          mock: pluginCatalogServiceGetPluginsMock,
+          times: 1,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.GetServiceModules,
+      { serviceId: "service123" },
+      [
+        {
+          mock: moduleServiceFindManyMock,
+          times: 1,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.CreateModuleDto,
+      {
+        moduleId: "module123",
+        serviceId: "service123",
+        dtoName: "NewDTO",
+        dtoDescription: "DTO Description",
+        properties: [],
+      },
+      [
+        {
+          mock: moduleDtoServiceCreateMock,
+          times: 1,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.CreateModuleEnum,
+      {
+        moduleId: "module123",
+        serviceId: "service123",
+        enumName: "NewEnum",
+        enumDescription: "Enum Description",
+        members: [],
+      },
+      [
+        {
+          mock: moduleDtoServiceCreateEnumMock,
+          times: 1,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.GetModuleActions,
+      {
+        moduleId: "module123",
+        serviceId: "service123",
+      },
+      [
+        {
+          mock: moduleActionServiceFindManyMock,
+          times: 1,
+        },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.CreateModuleAction,
+      {
+        moduleId: "module123",
+        serviceId: "service123",
+        actionName: "NewAction",
+        actionDescription: "Action Description",
+        gqlOperation: "QUERY",
+        restVerb: "GET",
+        path: "/new-action",
+        inputType: {},
+        outputType: {},
+        restInputSource: "BODY",
+        restInputParamsPropertyName: "params",
+        restInputBodyPropertyName: "body",
+        restInputQueryPropertyName: "query",
+      },
+      [
+        {
+          mock: moduleActionServiceCreateMock,
+          times: 1,
+        },
+      ],
+    ],
+  ];
+
+  it.each(cases)(
     "should execute function %s correctly",
     async (functionName, params, mocks) => {
       const loggerContext: MessageLoggerContext = {
