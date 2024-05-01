@@ -527,10 +527,17 @@ export class BuildService {
         "Sync Completed Successfully"
       );
 
-      await this.updateBuildLOC(
-        response.buildId,
-        this.formatDiffStat(response.diffStat)
+      const changes = await this.commitService.getChangesByResource(
+        build.commitId,
+        build.resourceId
       );
+
+      if (changes.length > 0) {
+        await this.updateBuildLOC(
+          response.buildId,
+          this.formatDiffStat(response.diffStat)
+        );
+      }
 
       await this.actionService.logInfo(step, response.url, {
         githubUrl: response.url,

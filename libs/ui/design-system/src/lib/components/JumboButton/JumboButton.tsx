@@ -15,6 +15,7 @@ export type Props = {
   icon: string;
   text: string;
   circleColor?: EnumTextColor;
+  iconColor?: EnumTextColor;
   to?: string;
   onClick?: () => void;
   className?: string;
@@ -26,6 +27,8 @@ export const JumboButton = ({
   text,
   icon,
   circleColor = EnumTextColor.ThemeTurquoise,
+  iconColor = EnumTextColor.Black,
+
   to,
   onClick,
 }: Props) => {
@@ -51,7 +54,7 @@ export const JumboButton = ({
       onClick={handleClick}
     >
       <CircleBadge color={bgColorVar} size="medium">
-        <Icon icon={icon} size="small" color={circleColor} />
+        <Icon icon={icon} size="small" color={iconColor} />
       </CircleBadge>
       <Text textStyle={EnumTextStyle.H3} textAlign={EnumTextAlign.Center}>
         {text}
