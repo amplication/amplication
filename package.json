@@ -327,7 +327,7 @@
     "tsconfig-paths": "^4.1.2",
     "typescript": "5.1.6",
     "url-loader": "^4.1.1",
-    "vite": "~4.3.9",
+    "vite": "~4.5.3",
     "webpack": "5.88.2",
     "webpack-merge": "^5.8.0",
     "winston-transport": "^4.5.0",
