@@ -44,7 +44,7 @@ import {
   EnumAuthProviderType,
   EnumBlockType,
   EnumDataType,
-} from "@amplication/code-gen-types/models";
+} from "@amplication/code-gen-types";
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";

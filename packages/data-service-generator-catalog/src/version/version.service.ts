@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { VersionServiceBase } from "./base/version.service.base";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import { Version } from "./base/Version";
 import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
 import { ConfigService } from "@nestjs/config";

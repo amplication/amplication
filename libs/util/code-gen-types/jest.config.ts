@@ -1,7 +1,7 @@
 /* eslint-disable */
 export default {
   displayName: "amplication-code-gen-types",
-  preset: "../../jest.preset.js",
+  preset: "../../../jest.preset.js",
   globals: {},
   testEnvironment: "node",
   transform: {
@@ -13,7 +13,7 @@ export default {
     ],
   },
   moduleFileExtensions: ["ts", "js", "html"],
-  coverageDirectory: "../../coverage/packages/amplication-code-gen-types",
+  coverageDirectory: "../../../coverage/libs/util/code-gen-types",
   coverageThreshold: {
     global: {
       branches: 92,
