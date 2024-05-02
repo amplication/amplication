@@ -75,7 +75,7 @@ describe("ModuleMap", () => {
   test("get should return undefined if no module exists for the path", async () => {
     const result = moduleMap.get("nonexistent");
 
-    expect(result).toBeUndefined();
+    expect(result).toBeNull();
   });
 
   test("replace should replace a module in the map", () => {

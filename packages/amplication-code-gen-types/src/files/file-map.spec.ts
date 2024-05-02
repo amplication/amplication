@@ -75,10 +75,10 @@ describe("FileMap", () => {
     expect(result).toBe(file);
   });
 
-  test("get should return undefined if no file exists for the path", async () => {
+  test("get should return null if no file exists for the path", async () => {
     const result = fileMap.get("nonexistent");
 
-    expect(result).toBeUndefined();
+    expect(result).toBeNull();
   });
 
   test("replace should replace a file in the map", () => {
@@ -88,7 +88,7 @@ describe("FileMap", () => {
 
     fileMap.replace(oldFile, newFile);
 
-    expect(fileMap.get("path1")).toBeUndefined();
+    expect(fileMap.get("path1")).toBeNull();
     expect(fileMap.get("path2")).toBe(newFile);
   });
 
@@ -128,7 +128,7 @@ describe("FileMap", () => {
 
     fileMap.removeMany(["path1"]);
 
-    expect(fileMap.get("path1")).toBeUndefined();
+    expect(fileMap.get("path1")).toBeNull();
   });
 
   test("files should return an array of files", () => {
