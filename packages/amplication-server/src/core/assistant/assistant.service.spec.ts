@@ -119,9 +119,11 @@ const entityServiceEntitiesMock = jest.fn();
 describe("AssistantService", () => {
   let service: AssistantService;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks();
+  });
 
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       providers: [
