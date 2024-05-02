@@ -112,12 +112,12 @@ export const LicenseIndicatorContainer: FC<Props> = ({
     blockedTooltipText,
   ]);
 
-  const linkText = useMemo(() => {
+  const showTooltipLink = useMemo(() => {
     if (isPreviewPlan(subscriptionPlan)) {
-      return ""; // don't show the upgrade link when the plan is preview
+      return false; // don't show the upgrade link when the plan is preview
     }
 
-    return undefined; // in case of null, it falls back to the default link text
+    return true;
   }, [subscriptionPlan]);
 
   const renderProps = {
@@ -132,8 +132,8 @@ export const LicenseIndicatorContainer: FC<Props> = ({
         <FeatureIndicator
           featureName={featureId}
           icon={IconType.Lock}
-          text={tooltipText}
-          linkText={linkText}
+          textStart={tooltipText}
+          showTooltipLink={showTooltipLink}
           element={
             featureIndicatorPlacement === FeatureIndicatorPlacement.Outside ? (
               <div

@@ -71,8 +71,7 @@ export default function GitProviderConnection({
             <FeatureIndicator
               featureName={featureName}
               comingSoon={true}
-              text={`for ${providerDisplayName} integration`}
-              linkText="Contact us"
+              textStart={`for ${providerDisplayName} integration`}
               icon={IconType.Lock}
             />
             <Button
