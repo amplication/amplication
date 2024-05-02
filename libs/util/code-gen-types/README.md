@@ -1,6 +1,6 @@
 # amplication-code-gen-types
 
-This library supplies all the contracts for Amplication Code Generation. 
+This library supplies all the contracts for Amplication Code Generation.
 The purpose is to make the contracts available for inclusion in plugins.
 
 ## Running unit tests

@@ -2,8 +2,9 @@ import {
   EnumActionStepStatus,
   RedesignProjectMovedEntity,
   RedesignProjectNewService,
-} from "@amplication/code-gen-types/models";
-import { Lookup } from "@amplication/code-gen-types/types";
+  types,
+} from "@amplication/code-gen-types";
+
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -854,10 +855,12 @@ export class ResourceService {
             };
 
             if (field.dataType === EnumDataType.Lookup) {
-              const relatedEntityId = (field.properties as unknown as Lookup)
-                .relatedEntityId;
+              const relatedEntityId = (
+                field.properties as unknown as types.Lookup
+              ).relatedEntityId;
 
-              const fieldProperties = field.properties as unknown as Lookup;
+              const fieldProperties =
+                field.properties as unknown as types.Lookup;
 
               //If the related entity is moved to the SAME RESOURCE - we should keep the relation
               if (
@@ -884,15 +887,15 @@ export class ResourceService {
                 createFieldInput.relatedFieldDisplayName =
                   relatedField.displayName;
                 createFieldInput.relatedFieldAllowMultipleSelection = (
-                  relatedField.properties as unknown as Lookup
+                  relatedField.properties as unknown as types.Lookup
                 ).allowMultipleSelection;
 
                 (
-                  createFieldInput.properties as unknown as Lookup
+                  createFieldInput.properties as unknown as types.Lookup
                 ).relatedFieldId = undefined; //clear the related field id, because it will be set later
 
                 (
-                  createFieldInput.properties as unknown as Lookup
+                  createFieldInput.properties as unknown as types.Lookup
                 ).relatedEntityId = sourceEntityIdToNewEntityMap.get(
                   fieldProperties.relatedEntityId
                 ).id; //the new entity Id of the related entity

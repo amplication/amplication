@@ -17,7 +17,7 @@ import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
 import { PreviewUserService } from "../auth/previewUser.service";
 import { AuthUser } from "../auth/types";
-import { EnumPreviewAccountType } from "@amplication/code-gen-types/models";
+import { EnumPreviewAccountType } from "@amplication/code-gen-types";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 @Injectable()
