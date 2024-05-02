@@ -28,13 +28,14 @@ export const ModuleDtoListItem = ({ module, moduleDto }: Props) => {
     <ListItem
       to={dtoUrl}
       showDefaultActionIcon={false}
-      direction={EnumFlexDirection.Row}
-      itemsAlign={EnumItemsAlign.Center}
+      direction={EnumFlexDirection.Column}
+      itemsAlign={EnumItemsAlign.Start}
       gap={EnumGapSize.Default}
     >
       <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
         {moduleDto.name}
       </Text>
+      <Text textStyle={EnumTextStyle.Description}>{moduleDto.description}</Text>
     </ListItem>
   );
 };
