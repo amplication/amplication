@@ -5,6 +5,7 @@ import {
   SimpleForm,
   EditProps,
   TextInput,
+  BooleanInput,
   ReferenceArrayInput,
   SelectArrayInput,
 } from "react-admin";
@@ -16,6 +17,7 @@ export const GeneratorEdit = (props: EditProps): React.ReactElement => {
     <Edit {...props}>
       <SimpleForm>
         <TextInput label="FullName" source="fullName" />
+        <BooleanInput label="IsActive" source="isActive" />
         <TextInput label="Name" source="name" />
         <ReferenceArrayInput
           source="version"

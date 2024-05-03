@@ -2,6 +2,7 @@ import { VersionUpdateManyWithoutGeneratorsInput } from "./VersionUpdateManyWith
 
 export type GeneratorUpdateInput = {
   fullName?: string | null;
+  isActive?: boolean | null;
   name?: string | null;
   version?: VersionUpdateManyWithoutGeneratorsInput;
 };

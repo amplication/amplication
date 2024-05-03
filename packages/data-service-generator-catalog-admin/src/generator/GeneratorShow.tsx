@@ -6,10 +6,10 @@ import {
   ShowProps,
   DateField,
   TextField,
+  BooleanField,
   ReferenceManyField,
   Datagrid,
   ReferenceField,
-  BooleanField,
 } from "react-admin";
 
 import { GENERATOR_TITLE_FIELD } from "./GeneratorTitle";
@@ -21,6 +21,7 @@ export const GeneratorShow = (props: ShowProps): React.ReactElement => {
         <DateField source="createdAt" label="Created At" />
         <TextField label="FullName" source="fullName" />
         <TextField label="ID" source="id" />
+        <BooleanField label="IsActive" source="isActive" />
         <TextField label="Name" source="name" />
         <DateField source="updatedAt" label="Updated At" />
         <ReferenceManyField

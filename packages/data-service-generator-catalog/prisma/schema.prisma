@@ -35,6 +35,7 @@ model Generator {
   createdAt DateTime  @default(now())
   fullName  String?   @unique
   id        String    @id @default(cuid())
+  isActive  Boolean?  @default(false)
   name      String?   @unique
   updatedAt DateTime  @updatedAt
   version   Version[]
