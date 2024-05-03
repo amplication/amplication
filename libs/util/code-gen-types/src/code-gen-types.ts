@@ -37,6 +37,7 @@ export type AppInfo = {
   url: string;
   settings: ServiceSettings;
   codeGeneratorVersionOptions: models.CodeGeneratorVersionOptionsInput;
+  codeGeneratorName?: string;
 };
 
 export type Role = Omit<
