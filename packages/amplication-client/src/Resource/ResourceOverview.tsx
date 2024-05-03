@@ -1,4 +1,4 @@
-import { EnumResourceType } from "@amplication/code-gen-types/models";
+import { EnumResourceType } from "@amplication/code-gen-types";
 import {
   CircleBadge,
   EnumButtonStyle,

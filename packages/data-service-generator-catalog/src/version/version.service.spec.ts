@@ -1,6 +1,6 @@
 import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import { VersionService } from "./version.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { AwsEcrService } from "../aws/aws-ecr.service";

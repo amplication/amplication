@@ -1,28 +1,39 @@
+import { EnumModuleDtoType } from "@amplication/code-gen-types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import OpenAI from "openai";
-import { Env } from "../../env";
-import { AssistantThread } from "./dto/AssistantThread";
-import { TextContentBlock } from "openai/resources/beta/threads/messages/messages";
-import { EnumAssistantMessageRole } from "./dto/EnumAssistantMessageRole";
-import { Run } from "openai/resources/beta/threads/runs/runs";
-import { AssistantContext } from "./dto/AssistantContext";
-import { EntityService } from "../entity/entity.service";
+import { AssistantStream } from "openai/lib/AssistantStream";
+import { pascalCase } from "pascal-case";
 import { plural } from "pluralize";
-import { camelCase } from "camel-case";
-import { ResourceService } from "../resource/resource.service";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { Env } from "../../env";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { Block } from "../../models";
+import { BillingService } from "../billing/billing.service";
+import { EntityService } from "../entity/entity.service";
 import { ModuleService } from "../module/module.service";
+import { EnumModuleActionGqlOperation } from "../moduleAction/dto/EnumModuleActionGqlOperation";
+import { EnumModuleActionRestInputSource } from "../moduleAction/dto/EnumModuleActionRestInputSource";
+import { EnumModuleActionRestVerb } from "../moduleAction/dto/EnumModuleActionRestVerb";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleDtoEnumMember } from "../moduleDto/dto/ModuleDtoEnumMember";
+import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
+import { PropertyTypeDef } from "../moduleDto/dto/propertyTypes/PropertyTypeDef";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
+import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { ProjectService } from "../project/project.service";
 import { EnumPendingChangeOriginType } from "../resource/dto";
-import { Block } from "../../models";
-import { AssistantStream } from "openai/lib/AssistantStream";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { ResourceService } from "../resource/resource.service";
+import { AssistantContext } from "./dto/AssistantContext";
 import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
-import { AmplicationError } from "../../errors/AmplicationError";
+import { AssistantThread } from "./dto/AssistantThread";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 
-enum EnumAssistantFunctions {
+export enum EnumAssistantFunctions {
   CreateEntity = "createEntity",
   GetProjectServices = "getProjectServices",
   GetServiceEntities = "getServiceEntities",
@@ -30,11 +41,22 @@ enum EnumAssistantFunctions {
   CreateProject = "createProject",
   CommitProjectPendingChanges = "commitProjectPendingChanges",
   GetProjectPendingChanges = "getProjectPendingChanges",
+  GetPlugins = "getPlugins",
+  InstallPlugins = "installPlugins",
+  GetServiceModules = "getServiceModules",
+  CreateModule = "createModule",
+  GetModuleDtosAndEnums = "getModuleDtosAndEnums",
+  CreateModuleDto = "createModuleDto",
+  CreateModuleEnum = "createModuleEnum",
+  GetModuleActions = "getModuleActions",
+  CreateModuleAction = "createModuleAction",
 }
 
-const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
+export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
-type MessageLoggerContext = {
+export const PLUGIN_LATEST_VERSION_TAG = "latest";
+
+export type MessageLoggerContext = {
   messageContext: {
     workspaceId: string;
     projectId: string;
@@ -62,6 +84,11 @@ export class AssistantService {
     private readonly moduleService: ModuleService,
     private readonly projectService: ProjectService,
     private readonly graphqlSubscriptionKafkaService: GraphqlSubscriptionPubSubKafkaService,
+    private readonly pluginCatalogService: PluginCatalogService,
+    private readonly pluginInstallationService: PluginInstallationService,
+    private readonly moduleActionService: ModuleActionService,
+    private readonly moduleDtoService: ModuleDtoService,
+    private readonly billingService: BillingService,
 
     configService: ConfigService
   ) {
@@ -94,7 +121,6 @@ export class AssistantService {
     snapshot: string,
     completed: boolean
   ) => {
-    this.logger.info("Chat: Message updated");
     const message: AssistantMessageDelta = {
       id: "messageId",
       threadId,
@@ -116,11 +142,7 @@ export class AssistantService {
     };
   }
 
-  async processMessage(
-    messageText: string,
-    threadId: string,
-    context: AssistantContext
-  ): Promise<AssistantThread> {
+  async validateAndReportUsage(context: AssistantContext) {
     if (!this.assistantFeatureEnabled)
       throw new AmplicationError("The assistant AI feature is disabled");
 
@@ -130,31 +152,24 @@ export class AssistantService {
       );
     }
 
-    const openai = this.openai;
+    if (this.billingService.isBillingEnabled) {
+      const usage = await this.billingService.getMeteredEntitlement(
+        context.user.workspace.id,
+        BillingFeature.JovuRequests
+      );
 
-    const preparedThread = await this.prepareThread(
-      messageText,
-      threadId,
-      context
-    );
-
-    const run = await openai.beta.threads.runs.createAndPoll(
-      preparedThread.threadId,
-      {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        assistant_id: this.assistantId,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        additional_instructions: `The following context is available: 
-        ${JSON.stringify(preparedThread.shortContext)}`,
+      if (usage && !usage?.hasAccess) {
+        throw new BillingLimitationError(
+          "This workspace has exceeded the number of allowed requests. Please upgrade your plan to continue using this feature.",
+          BillingFeature.JovuRequests
+        );
       }
-    );
 
-    return this.handleRunStatus(
-      run,
-      preparedThread.threadId,
-      context,
-      preparedThread.loggerContext
-    );
+      await this.billingService.reportUsage(
+        context.user.workspace.id,
+        BillingFeature.JovuRequests
+      );
+    }
   }
 
   async processMessageWithStream(
@@ -162,14 +177,7 @@ export class AssistantService {
     threadId: string,
     context: AssistantContext
   ): Promise<AssistantThread> {
-    if (!this.assistantFeatureEnabled)
-      throw new AmplicationError("The assistant AI feature is disabled");
-
-    if (context.user.workspace.allowLLMFeatures === false) {
-      throw new AmplicationError(
-        "AI-powered features are disabled for this workspace"
-      );
-    }
+    await this.validateAndReportUsage(context);
 
     const openai = this.openai;
 
@@ -321,95 +329,6 @@ export class AssistantService {
     };
   }
 
-  async handleRunStatus(
-    run: Run,
-    threadId: string,
-    context: AssistantContext,
-    loggerContext: MessageLoggerContext
-  ): Promise<AssistantThread> {
-    const openai = this.openai;
-
-    const assistantThread = new AssistantThread();
-    assistantThread.id = threadId;
-    assistantThread.messages = [];
-
-    this.logger.debug(`Run status: ${run.status}`);
-
-    if (run.status === "completed") {
-      const messages = await openai.beta.threads.messages.list(threadId, {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        run_id: run.id,
-      });
-      for (const message of messages.data.reverse()) {
-        const textContentBlock = message.content[0] as TextContentBlock;
-        const messageText = textContentBlock.text.value;
-        loggerContext.role = message.role;
-
-        this.logger.info(`Chat: ${messageText}`, loggerContext);
-
-        assistantThread.messages.push({
-          id: message.id,
-          role:
-            message.role === "user"
-              ? EnumAssistantMessageRole.User
-              : EnumAssistantMessageRole.Assistant,
-          text: messageText,
-          createdAt: new Date(message.created_at),
-        });
-      }
-
-      return assistantThread;
-    } else if (run.status === "requires_action") {
-      const requiredActions =
-        run.required_action.submit_tool_outputs.tool_calls;
-
-      const functionCalls = await Promise.all(
-        requiredActions.map((action) => {
-          const functionName = action.function.name;
-          const params = action.function.arguments;
-
-          return this.executeFunction(
-            action.id,
-            functionName,
-            params,
-            context,
-            loggerContext
-          );
-        })
-      );
-
-      const innerRun = await openai.beta.threads.runs.submitToolOutputsAndPoll(
-        threadId,
-        run.id,
-        {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          tool_outputs: functionCalls.map((call) => ({
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            tool_call_id: call.callId,
-            output: call.results,
-          })),
-        }
-      );
-
-      return this.handleRunStatus(innerRun, threadId, context, loggerContext);
-    } else {
-      //@todo: handle other statuses
-      this.logger.error(
-        `Chat: Run status: ${run.status}. Error: ${run.last_error}`,
-        null,
-        loggerContext
-      );
-
-      assistantThread.messages.push({
-        id: Date.now().toString(), //use timestamp as id to be unique at the client
-        role: EnumAssistantMessageRole.Assistant,
-        text: run.last_error.message || "Sorry, I'm having trouble right now.",
-        createdAt: new Date(),
-      });
-      return assistantThread;
-    }
-  }
-
   async executeFunction(
     callId: string,
     functionName: string,
@@ -481,7 +400,7 @@ export class AssistantService {
           data: {
             displayName: args.name,
             pluralDisplayName: pluralDisplayName,
-            name: camelCase(args.name),
+            name: pascalCase(args.name),
             resource: {
               connect: {
                 id: args.serviceId,
@@ -664,6 +583,285 @@ export class AssistantService {
             ? (change.origin as Block).blockType
             : "Entity",
       }));
+    },
+    getPlugins: async (args: undefined, context: AssistantContext) => {
+      return this.pluginCatalogService.getPlugins();
+    },
+    installPlugins: async (
+      args: { pluginIds: string[]; serviceId: string },
+      context: AssistantContext
+    ) => {
+      //iterate over the pluginIds and install each plugin synchronously
+      //to support synchronous installation of multiple plugins we need first to fix the plugins order code in the pluginInstallation Service
+      const installations = [];
+      for (const pluginId of args.pluginIds) {
+        const plugin =
+          await this.pluginCatalogService.getPluginWithLatestVersion(pluginId);
+        const pluginVersion = plugin.versions[0];
+
+        const { version, settings, configurations } = pluginVersion;
+
+        const installation = await this.pluginInstallationService.create(
+          {
+            data: {
+              displayName: plugin.name,
+              pluginId: pluginId,
+              enabled: true,
+              npm: plugin.npm,
+              version: version,
+              settings: settings,
+              configurations: configurations,
+              resource: { connect: { id: args.serviceId } },
+            },
+          },
+          context.user
+        );
+
+        installations.push({
+          result: installation,
+          link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/installed/${installation.id}`,
+        });
+      }
+
+      return {
+        installations,
+        pluginsCatalogLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/catalog`,
+        allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/installed`,
+      };
+    },
+    getServiceModules: async (
+      args: { serviceId: string },
+      context: AssistantContext
+    ) => {
+      const modules = await this.moduleService.findMany({
+        where: {
+          resource: { id: args.serviceId },
+        },
+      });
+      return modules.map((module) => ({
+        id: module.id,
+        name: module.displayName,
+        description: module.description,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${module.id}`,
+      }));
+    },
+    createModule: async (
+      args: {
+        moduleName: string;
+        moduleDescription: string;
+        serviceId: string;
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.moduleName);
+
+      const module = await this.moduleService.create(
+        {
+          data: {
+            name: name,
+            displayName: args.moduleName,
+            description: args.moduleDescription,
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${module.id}`,
+        result: module,
+      };
+    },
+    getModuleDtosAndEnums: async (
+      args: { moduleId: string; serviceId: string },
+      context: AssistantContext
+    ) => {
+      const dtos = await this.moduleDtoService.findMany({
+        where: {
+          parentBlock: { id: args.moduleId },
+          resource: { id: args.serviceId },
+          includeCustomDtos: true,
+          includeDefaultDtos: true,
+        },
+      });
+      return dtos.map((dto) => ({
+        id: dto.id,
+        name: dto.name,
+        description: dto.description,
+        dtoType: dto.dtoType,
+        properties:
+          dto.dtoType === EnumModuleDtoType.Custom
+            ? dto.properties
+            : "The properties for this DTO will be generated automatically on runtime based on the entity fields and relations.",
+        members:
+          dto.dtoType === EnumModuleDtoType.CustomEnum
+            ? dto.members
+            : "The members for this Enum will be generated automatically on runtime based on the entity field settings.",
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+      }));
+    },
+    createModuleDto: async (
+      args: {
+        moduleId: string;
+        serviceId: string;
+        dtoName: string;
+        dtoDescription: string;
+        properties: ModuleDtoPropertyUpdateInput[];
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.dtoName);
+
+      const dto = await this.moduleDtoService.create(
+        {
+          properties: args.properties,
+          data: {
+            name: name,
+            displayName: args.dtoName,
+            description: args.dtoDescription,
+            parentBlock: {
+              connect: {
+                id: args.moduleId,
+              },
+            },
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        result: dto,
+      };
+    },
+    createModuleEnum: async (
+      args: {
+        moduleId: string;
+        serviceId: string;
+        enumName: string;
+        enumDescription: string;
+        members: ModuleDtoEnumMember[];
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.enumName);
+
+      const dto = await this.moduleDtoService.createEnum(
+        {
+          members: args.members,
+          data: {
+            name: name,
+            displayName: args.enumName,
+            description: args.enumDescription,
+            parentBlock: {
+              connect: {
+                id: args.moduleId,
+              },
+            },
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        result: dto,
+      };
+    },
+    getModuleActions: async (
+      args: { moduleId: string; serviceId: string },
+      context: AssistantContext
+    ) => {
+      const actions = await this.moduleActionService.findMany({
+        where: {
+          parentBlock: { id: args.moduleId },
+          resource: { id: args.serviceId },
+        },
+      });
+      return actions.map((action) => ({
+        id: action.id,
+        name: action.displayName,
+        description: action.description,
+        gqlOperation: action.gqlOperation,
+        restVerb: action.restVerb,
+        path: action.path,
+        inputType: action.inputType,
+        outputType: action.outputType,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
+      }));
+    },
+    createModuleAction: async (
+      args: {
+        moduleId: string;
+        serviceId: string;
+        actionName: string;
+        actionDescription: string;
+        gqlOperation: EnumModuleActionGqlOperation;
+        restVerb: EnumModuleActionRestVerb;
+        path: string;
+        inputType: PropertyTypeDef;
+        outputType: PropertyTypeDef;
+        restInputSource?: EnumModuleActionRestInputSource;
+        restInputParamsPropertyName: string;
+        restInputBodyPropertyName: string;
+        restInputQueryPropertyName: string;
+      },
+      context: AssistantContext
+    ) => {
+      const name = pascalCase(args.actionName);
+      const action = await this.moduleActionService.create(
+        {
+          data: {
+            displayName: args.actionName,
+            name: name,
+            parentBlock: {
+              connect: {
+                id: args.moduleId,
+              },
+            },
+            resource: {
+              connect: {
+                id: args.serviceId,
+              },
+            },
+          },
+        },
+        context.user
+      );
+
+      const updatedAction = await this.moduleActionService.update(
+        {
+          data: {
+            displayName: args.actionName,
+            name: name,
+            description: args.actionDescription,
+            gqlOperation: args.gqlOperation,
+            restVerb: args.restVerb,
+            path: args.path,
+            inputType: args.inputType,
+            outputType: args.outputType,
+          },
+          where: {
+            id: action.id,
+          },
+        },
+        context.user
+      );
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/actions/${action.id}`,
+        result: updatedAction,
+      };
     },
   };
 }

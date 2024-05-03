@@ -7,6 +7,11 @@ import { ResourceModule } from "../resource/resource.module";
 import { ModuleModule } from "../module/module.module";
 import { ProjectModule } from "../project/project.module";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
+import { PluginCatalogModule } from "../pluginCatalog/pluginCatalog.module";
+import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
+import { ModuleActionModule } from "../moduleAction/moduleAction.module";
+import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
+import { BillingModule } from "../billing/billing.module";
 
 @Module({
   imports: [
@@ -15,6 +20,11 @@ import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubS
     ResourceModule,
     ModuleModule,
     ProjectModule,
+    PluginCatalogModule,
+    PluginInstallationModule,
+    ModuleActionModule,
+    ModuleDtoModule,
+    BillingModule,
   ],
   providers: [
     AssistantService,

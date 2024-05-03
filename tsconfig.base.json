@@ -16,12 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@amplication/code-gen-types": [
-        "packages/amplication-code-gen-types/src/index.ts"
-      ],
-      "@amplication/code-gen-types/*": [
-        "packages/amplication-code-gen-types/src/*"
-      ],
+      "@amplication/code-gen-types": ["libs/util/code-gen-types/src/index.ts"],
       "@amplication/code-gen-utils": ["libs/util/code-gen-utils/src/index.ts"],
       "@amplication/dsg-utils": ["libs/util/dsg-utils/src/index.ts"],
       "@amplication/graphql-error-codes": [

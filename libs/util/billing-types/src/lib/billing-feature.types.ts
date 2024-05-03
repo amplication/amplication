@@ -14,6 +14,7 @@ export enum BillingFeature {
   GitLab = "feature-gitlab",
   IgnoreValidationCodeGeneration = "feature-ignore-validation-code-generation",
   ImportDBSchema = "feature-import-db-schema",
+  JovuRequests = "feature-jovu-requests",
   Notification = "feature-notifications",
   Projects = "feature-projects",
   RedesignArchitecture = "feature-redesign-architecture",

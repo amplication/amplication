@@ -1,4 +1,9 @@
-import { EnumGapSize, FlexItem } from "@amplication/ui/design-system";
+import {
+  EnumGapSize,
+  EnumTextColor,
+  FlexItem,
+  Text,
+} from "@amplication/ui/design-system";
 import useModuleDto from "../ModuleDto/hooks/useModuleDto";
 import * as models from "../models";
 import "./ModuleDtoPropertyPreview.scss";
@@ -18,19 +23,23 @@ const ModuleDtoPropertyPreview = ({ dtoProperty }: Props) => {
   return (
     <FlexItem className={CLASS_NAME} gap={EnumGapSize.Small}>
       {dtoProperty.name}
-      {dtoProperty.isOptional ? "?" : ""}:{" "}
-      {isUnion && dtoProperty.isArray ? "(" : ""}
-      {dtoProperty.propertyTypes.map((type, index) => (
-        <div key={index}>
-          {type.type === models.EnumModuleDtoPropertyType.Dto
-            ? availableDtosDictionary[type.dtoId]?.name || UNAVAILABLE_DTO
-            : type.type}
-          {type.isArray ? "[]" : ""}
-          {isUnion && index < dtoProperty.propertyTypes.length - 1 ? " | " : ""}
-        </div>
-      ))}
-      {isUnion && dtoProperty.isArray ? ")" : ""}
-      {dtoProperty.isArray ? "[]" : ""}
+      <Text textColor={EnumTextColor.Black20}>
+        {dtoProperty.isOptional ? "?" : ""}:{" "}
+        {isUnion && dtoProperty.isArray ? "(" : ""}
+        {dtoProperty.propertyTypes.map((type, index) => (
+          <span key={index}>
+            {type.type === models.EnumModuleDtoPropertyType.Dto
+              ? availableDtosDictionary[type.dtoId]?.name || UNAVAILABLE_DTO
+              : type.type}
+            {type.isArray ? "[]" : ""}
+            {isUnion && index < dtoProperty.propertyTypes.length - 1
+              ? " | "
+              : ""}
+          </span>
+        ))}
+        {isUnion && dtoProperty.isArray ? ")" : ""}
+        {dtoProperty.isArray ? "[]" : ""}
+      </Text>
     </FlexItem>
   );
 };

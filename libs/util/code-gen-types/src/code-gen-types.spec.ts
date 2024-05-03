@@ -58,7 +58,7 @@ describe("ModuleMap", () => {
     await moduleMap.set(newModule);
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "Module path already exists. Overwriting..."
+      "File path already exists. Overwriting..."
     );
     expect(moduleMap.get("path")).toBe(newModule);
   });
@@ -72,10 +72,10 @@ describe("ModuleMap", () => {
     expect(result).toBe(module);
   });
 
-  test("get should return undefined if no module exists for the path", async () => {
+  test("get should return null if no module exists for the path", async () => {
     const result = moduleMap.get("nonexistent");
 
-    expect(result).toBeUndefined();
+    expect(result).toBeNull();
   });
 
   test("replace should replace a module in the map", () => {
@@ -85,7 +85,7 @@ describe("ModuleMap", () => {
 
     moduleMap.replace(oldModule, newModule);
 
-    expect(moduleMap.get("path1")).toBeUndefined();
+    expect(moduleMap.get("path1")).toBeNull();
     expect(moduleMap.get("path2")).toBe(newModule);
   });
 
@@ -125,7 +125,7 @@ describe("ModuleMap", () => {
 
     moduleMap.removeMany(["path1"]);
 
-    expect(moduleMap.get("path1")).toBeUndefined();
+    expect(moduleMap.get("path1")).toBeNull();
   });
 
   test("modules should return an array of modules", () => {

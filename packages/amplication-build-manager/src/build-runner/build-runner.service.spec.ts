@@ -19,7 +19,7 @@ import {
   CodeGenerationSuccess,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import axios from "axios";
 
 const spyOnMkdir = jest.spyOn(promises, "mkdir");

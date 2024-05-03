@@ -19,7 +19,7 @@ import {
   EnumResourceType,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
-} from "@amplication/code-gen-types/models";
+} from "@amplication/code-gen-types";
 import { PendingChange } from "../resource/dto/PendingChange";
 import { ResourceService } from "../resource/resource.service";
 import { BuildService } from "../build/build.service";
