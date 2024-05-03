@@ -93,6 +93,11 @@ export class Resource {
   })
   codeGeneratorStrategy?: keyof typeof CodeGeneratorVersionStrategy;
 
+  @Field(() => String, {
+    nullable: true,
+  })
+  codeGeneratorTechnology?: string;
+
   @Field(() => Boolean, { nullable: false, defaultValue: true })
   licensed: boolean;
 

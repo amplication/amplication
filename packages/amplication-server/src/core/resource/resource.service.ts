@@ -74,6 +74,7 @@ import {
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
 import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
+import { UpdateCodeGeneratorTechnologyArgs } from "./dto/UpdateCodeGeneratorTechnologyArgs";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -362,6 +363,46 @@ export class ResourceService {
           args.data.codeGeneratorVersionOptions.codeGeneratorVersion,
         codeGeneratorStrategy:
           args.data.codeGeneratorVersionOptions.codeGeneratorStrategy,
+      },
+    });
+  }
+
+  async updateCodeGeneratorTechnology(
+    args: UpdateCodeGeneratorTechnologyArgs,
+    user: User
+  ): Promise<Resource | null> {
+    const resource = await this.resource({
+      where: {
+        id: args.where.id,
+      },
+    });
+
+    if (isEmpty(resource)) {
+      throw new Error(INVALID_RESOURCE_ID);
+    }
+
+    const codeGeneratorUpdate = await this.billingService.getBooleanEntitlement(
+      user.workspace.id,
+      BillingFeature.CodeGeneratorTechnology
+    );
+
+    if (codeGeneratorUpdate && !codeGeneratorUpdate.hasAccess)
+      throw new AmplicationError(
+        "Feature Unavailable. Please upgrade your plan to access this feature."
+      );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        resourceId: resource.id,
+        projectId: resource.projectId,
+      },
+      event: EnumEventType.CodeGeneratorNameUpdate,
+    });
+
+    return this.prisma.resource.update({
+      where: args.where,
+      data: {
+        codeGeneratorName: args.codeGeneratorName,
       },
     });
   }
