@@ -93,7 +93,6 @@ const useAssistant = () => {
             case models.EnumAssistantFunctions.CreateEntity:
               updateCache("resources");
               addBlock("blockid");
-
               break;
             case models.EnumAssistantFunctions.CreateService:
               updateCache("resources");
@@ -104,6 +103,8 @@ const useAssistant = () => {
               break;
             case models.EnumAssistantFunctions.CommitProjectPendingChanges:
               commitUtils.refetchCommitsData(true);
+              addBlock("blockid");
+
               break;
             case models.EnumAssistantFunctions.CreateModule:
               addBlock("blockid");
@@ -119,6 +120,10 @@ const useAssistant = () => {
               updateCache("pluginInstallations");
               updateCache("pluginOrder");
 
+              break;
+            case models.EnumAssistantFunctions.CreateModuleAction:
+              addBlock("blockid");
+              updateCache("moduleActions");
               break;
             default:
               break;
