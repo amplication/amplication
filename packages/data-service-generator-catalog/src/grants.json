@@ -50,12 +50,6 @@
   {
     "role": "user",
     "resource": "Generator",
-    "action": "read:own",
-    "attributes": "*"
-  },
-  {
-    "role": "user",
-    "resource": "Generator",
     "action": "create:any",
     "attributes": "*"
   },
@@ -69,12 +63,6 @@
     "role": "user",
     "resource": "Generator",
     "action": "delete:any",
-    "attributes": "*"
-  },
-  {
-    "role": "user",
-    "resource": "Generator",
-    "action": "read:any",
     "attributes": "*"
   }
 ]
