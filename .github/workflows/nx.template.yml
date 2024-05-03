@@ -1,0 +1,101 @@
+name: _Reusable Nx template
+
+on:
+  workflow_call:
+    inputs:
+      nx-head:
+        type: string
+        description: Commit SHA, branch or tag name used by Nx in the affected jobs as head.
+        required: true
+      nx-base:
+        type: string
+        description: Commit SHA, branch or tag name used by Nx in the affected jobs as base.
+        required: true
+        default: next
+      nx-skip-cache:
+        type: boolean
+        description: Rerun the tasks even when the results are available in the cache.
+        default: false
+      nx-force-all:
+        type: boolean
+        description: Forces Nx to consider all projects (apps and libs) as affected.
+        default: false
+    outputs:
+      affected-apps:
+        description: Nx applications affected by the changes
+        value: ${{ jobs.nx.outputs.affected-apps }}
+      affected-lib:
+        description: Nx libraries affected by the changes
+        value: ${{ jobs.nx.outputs.affected-lib }}
+      affected-e2e:
+        description: Nx e2e projects affected by the changes
+        value: ${{ jobs.nx.outputs.affected-e2e }}
+      affected-package-container:
+        description: Nx projects configured with package:container affected by the changes
+        value: ${{ jobs.nx.outputs.affected-package-container }}
+      affected-deploy-static:
+        description: Nx projects configured with deploy:static affected by the changes
+        value: ${{ jobs.nx.outputs.affected-deploy-static }}
+      affected-deploy-container:
+        description: Nx projects configured with deploy:container affected by the changes
+        value: ${{ jobs.nx.outputs.affected-deploy-container }}
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_BRANCH: ${{ github.event.workflow_run.head_branch }}
+  BRANCH: ${{ github.event.workflow_run.head_branch }}
+  NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
+  NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache || false }}
+
+jobs:
+  nx:
+    name: Nx Affected
+    runs-on: ubuntu-20.04
+    outputs:
+      affected-apps: ${{ steps.configure-nx.outputs.affected-apps }}
+      affected-lib: ${{ steps.configure-nx.outputs.affected-lib }}
+      affected-e2e: ${{ steps.configure-nx.outputs.affected-e2e }}
+      affected-package-container: ${{ steps.configure-nx.outputs.affected-package-container }}
+      affected-deploy-static: ${{ steps.configure-nx.outputs.affected-deploy-static }}
+      affected-deploy-container: ${{ steps.configure-nx.outputs.affected-deploy-container }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.nx-head }}
+          filter: blob:none
+
+      - uses: nrwl/nx-set-shas@v4
+        if: inputs.nx-force-all == false
+        with:
+          main-branch-name: ${{ inputs.nx-base }}
+
+      - name: Setup Bun Runtime
+        if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+        uses: oven-sh/setup-bun@v1.1.1
+        with:
+          bun-version: 1.0.15
+
+      - name: Cache
+        id: cache
+        uses: actions/cache@v4
+        env:
+          cache-name: cache
+        with:
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          path: |
+            ~/.bun/install/cache
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Evaluate affected projects
+        id: configure-nx
+        run: |
+          echo affected-apps=$(bunx nx print-affected --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-lib=$(bunx nx print-affected --type=lib $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-e2e=$(bunx nx print-affected --target=e2e $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-package-container=$(bunx nx print-affected --target=package:container --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-deploy-static=$(bunx nx print-affected --target=deploy:static --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-deploy-container=$(bunx nx print-affected --target=deploy:container --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT | grep affected

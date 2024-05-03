@@ -1,0 +1,46 @@
+@import "../../style/index.scss";
+
+$item-size: 25px;
+
+.model-group-list {
+  &__filter {
+    display: flex;
+    padding: var(--default-spacing-small);
+    flex-direction: column;
+    align-items: center;
+    border-radius: var(--default-border-radius);
+    border: $border-dark;
+    background: var(--gray-full);
+    box-sizing: border-box;
+  }
+
+  &__serviceBox {
+    border-radius: var(--default-border-radius);
+    border: 1px solid var(--gray-50);
+    width: $item-size;
+    height: $item-size;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin-top: var(--default-spacing-small);
+
+    .amp-tooltip {
+      line-height: 1;
+    }
+
+    i {
+      margin: 0;
+    }
+
+    &--hidden {
+      i {
+        color: var(--gray-50);
+      }
+    }
+
+    &:last-child {
+      margin-bottom: var(--default-spacing-small);
+    }
+  }
+}

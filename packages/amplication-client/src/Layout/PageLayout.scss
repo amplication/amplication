@@ -1,0 +1,21 @@
+@import "../style/index.scss";
+
+$tabs-width: 300px;
+
+.amp-page-layout {
+  display: flex;
+  flex: 1;
+  background: var(--page-content-background);
+  box-sizing: border-box;
+  flex-direction: column;
+
+  &__header {
+    border-bottom: $border-dark;
+  }
+
+  &__body {
+    display: flex;
+    flex: 1;
+    overflow: hidden; //the scroll is handled on PageContent
+  }
+}
