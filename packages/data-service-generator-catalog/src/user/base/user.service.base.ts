@@ -10,7 +10,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, User } from "../../../prisma/generated-prisma-client";
+import {
+  Prisma,
+  User as PrismaUser,
+} from "../../../prisma/generated-prisma-client";
 import { PasswordService } from "../../auth/password.service";
 import { transformStringFieldUpdateInput } from "../../prisma.util";
 
