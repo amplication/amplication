@@ -17,7 +17,6 @@ import * as nestAccessControl from "nest-access-control";
 import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { Public } from "../../decorators/public.decorator";
 import { Generator } from "./Generator";
 import { GeneratorFindManyArgs } from "./GeneratorFindManyArgs";
@@ -33,26 +32,16 @@ export class GeneratorResolverBase {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => [Generator])
-  @nestAccessControl.UseRoles({
-    resource: "Generator",
-    action: "read",
-    possession: "any",
-  })
   async generators(
     @graphql.Args() args: GeneratorFindManyArgs
   ): Promise<Generator[]> {
     return this.service.generators(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => Generator, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: "Generator",
-    action: "read",
-    possession: "own",
-  })
   async generator(
     @graphql.Args() args: GeneratorFindUniqueArgs
   ): Promise<Generator | null> {

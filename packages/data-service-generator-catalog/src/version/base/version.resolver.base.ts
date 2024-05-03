@@ -19,7 +19,6 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { Public } from "../../decorators/public.decorator";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { Version } from "./Version";
 import { VersionCountArgs } from "./VersionCountArgs";
 import { VersionFindManyArgs } from "./VersionFindManyArgs";
@@ -146,15 +145,10 @@ export class VersionResolverBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.ResolveField(() => Generator, {
     nullable: true,
     name: "generator",
-  })
-  @nestAccessControl.UseRoles({
-    resource: "Generator",
-    action: "read",
-    possession: "any",
   })
   async getGenerator(
     @graphql.Parent() parent: Version
