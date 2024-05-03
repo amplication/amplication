@@ -37,6 +37,17 @@ class PluginCreateInput {
   @Field(() => String, {
     nullable: true,
   })
+  codeGeneratorName?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
   description?: string | null;
 
   @ApiProperty({

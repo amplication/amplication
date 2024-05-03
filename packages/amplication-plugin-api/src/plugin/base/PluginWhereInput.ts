@@ -40,6 +40,17 @@ class PluginWhereInput {
   @Field(() => StringNullableFilter, {
     nullable: true,
   })
+  codeGeneratorName?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
   description?: StringNullableFilter;
 
   @ApiProperty({
