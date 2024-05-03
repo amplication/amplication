@@ -14,7 +14,7 @@ import {
   CodeGenerationSuccess,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
-import { EnumJobStatus } from "../types";
+import { CodeGenerationRequest, EnumJobStatus } from "../types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 
@@ -40,6 +40,7 @@ export class BuildRunnerService {
     dsgResourceData: DSGResourceData
   ) {
     let codeGeneratorVersion: string;
+    const codeGeneratorName = dsgResourceData.resourceInfo.codeGeneratorName;
     try {
       codeGeneratorVersion =
         await this.codeGeneratorService.getCodeGeneratorVersion({
@@ -55,6 +56,10 @@ export class BuildRunnerService {
         codeGeneratorVersion,
       });
 
+      this.logger.debug("Code Generator Technology: ", {
+        codeGeneratorName,
+      });
+
       const jobs = await this.buildJobsHandlerService.splitBuildsIntoJobs(
         dsgResourceData,
         buildId,
@@ -62,7 +67,13 @@ export class BuildRunnerService {
       );
       for (const [jobBuildId, data] of jobs) {
         this.logger.debug("Running job for...", { jobBuildId });
-        await this.runJob(resourceId, jobBuildId, data, codeGeneratorVersion);
+        await this.runJob(
+          resourceId,
+          jobBuildId,
+          data,
+          codeGeneratorVersion,
+          codeGeneratorName
+        );
       }
     } catch (error) {
       this.logger.error(error.message, error);
@@ -82,16 +93,20 @@ export class BuildRunnerService {
     resourceId: string,
     jobBuildId: string,
     data: DSGResourceData,
-    codeGeneratorVersion: string
+    codeGeneratorVersion: string,
+    codeGeneratorName: string
   ) {
     await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
+    const containerImageName =
+      this.mapCodeGeneratorNameToImageName(codeGeneratorName);
 
     const url = this.configService.get(Env.DSG_RUNNER_URL);
     try {
-      const postBody = {
+      const postBody: CodeGenerationRequest = {
         resourceId,
         buildId: jobBuildId,
-        codeGeneratorVersion,
+        codeGeneratorVersion, // image tag. Nullable. If not provided, the default image tag for each environment will be used
+        codeGeneratorName: containerImageName, // image (and container) name. Nullable. If not provided, the default image name will be used (generator-nodejs-nest)
       };
       this.logger.debug("Calling argo event with post payload: ", { postBody });
       await axios.post(url, postBody);
@@ -287,5 +302,25 @@ export class BuildRunnerService {
       this.logger.error(error.message, error);
       throw error;
     }
+  }
+
+  /**
+   * Gets the code generator name as a string and returns the image name to be used in the runner
+   * @param codeGeneratorName (string) the code generator name - language/technology
+   */
+  private mapCodeGeneratorNameToImageName(codeGeneratorName: string): string {
+    // at this point it's an hardcoded map, but it should come from the dsg catalog service
+    const codeGeneratorImageMap = new Map<string, string>([
+      ["NodeJS", "generator-nodejs-nest"],
+      ["DotNET", "generator-dotnet-webapi"],
+    ]);
+
+    const containerImageName = codeGeneratorImageMap.get(codeGeneratorName);
+
+    if (!containerImageName) {
+      return "generator-nodejs-nest";
+    }
+
+    return containerImageName;
   }
 }
