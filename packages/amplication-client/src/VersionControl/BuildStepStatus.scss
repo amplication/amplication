@@ -1,0 +1,26 @@
+@import "../style/index.scss";
+$step-status-width: 25px;
+
+.build-step-status {
+  width: $step-status-width;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &--success {
+    i {
+      color: var(--theme-green) !important;
+    }
+  }
+
+  &--failed {
+    i {
+      color: var(--theme-red) !important;
+    }
+  }
+  &--waiting {
+    i {
+      color: var(--gray-60) !important;
+    }
+  }
+}

@@ -1,0 +1,37 @@
+@import "../style/index.scss";
+
+$feature-tag-padding: 2px 12px;
+$addon-margin-bottom: 44px;
+$addon-feature-tag-border-radius: 32px;
+$addon-feature-tag-gap: 4px;
+$addon-title-line-height: 36px;
+
+.module-dtos {
+  &__search-field {
+    display: flex;
+    margin-bottom: var(--double-spacing);
+  }
+
+  &__feature-tag {
+    display: flex;
+    align-items: center;
+    gap: $addon-feature-tag-gap;
+    padding: $feature-tag-padding;
+    border-radius: $addon-feature-tag-border-radius;
+    background-color: var(--theme-turquoise);
+  }
+
+  &__addon-section {
+    margin-bottom: $addon-margin-bottom;
+
+    &__contact-us {
+      & span {
+        color: var(--theme-turquoise);
+      }
+    }
+
+    &__title {
+      line-height: $addon-title-line-height;
+    }
+  }
+}

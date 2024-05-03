@@ -13,6 +13,10 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 
 import { ACLModule } from "./auth/acl.module";
 import { AuthModule } from "./auth/auth.module";
+import { join } from "path";
+import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
+import { SERVICE_NAME } from "./constants";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
 
 @Module({
   controllers: [],
@@ -35,15 +39,24 @@ import { AuthModule } from "./auth/auth.module";
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
         return {
-          autoSchemaFile: "schema.graphql",
+          autoSchemaFile:
+            configService.get("GRAPHQL_SCHEMA_DEST") ||
+            join(process.cwd(), "src", "schema.graphql"),
           sortSchema: true,
-          playground,
-          introspection: playground || introspection,
+          debug: configService.get("GRAPHQL_DEBUG") === "1",
+          playground: configService.get("PLAYGROUND_ENABLE") === "1",
+          introspection: configService.get("PLAYGROUND_ENABLE") === "1",
+          context: ({ req }: { req: Request }) => ({
+            req,
+          }),
         };
       },
       inject: [ConfigService],
-      imports: [ConfigModule],
     }),
+    AmplicationLoggerModule.forRoot({
+      component: SERVICE_NAME,
+    }),
+    TracingModule.forRoot(),
   ],
   providers: [],
 })

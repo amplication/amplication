@@ -1,0 +1,14 @@
+@use "sass:math";
+@import "../../style/index.scss";
+
+$min-size: 300px;
+
+.create-apply-changes-loader {
+  padding: var(--double-spacing);
+  margin: auto;
+
+  &__animation {
+    width: $min-size;
+    margin: auto;
+  }
+}

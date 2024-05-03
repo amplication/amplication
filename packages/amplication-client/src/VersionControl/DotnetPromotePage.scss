@@ -1,0 +1,31 @@
+@import "../style/index.scss";
+
+$margin-top: 24px;
+$top: 10px;
+$gap: 4px;
+$options-max-width: 800px;
+
+.dotnet-promote-page {
+  margin-top: $margin-top;
+  &__close {
+    color: var(--gray-20) !important;
+    position: absolute;
+    top: $top;
+    right: 0;
+    gap: $gap;
+  }
+
+  &__content {
+    max-width: $options-max-width;
+    margin: auto;
+  }
+
+  &__title {
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--default-spacing);
+  }
+
+  &__sub-title {
+    margin-bottom: var(--double-spacing);
+  }
+}

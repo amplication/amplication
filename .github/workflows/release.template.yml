@@ -1,0 +1,163 @@
+name: _Reusable Release template
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        type: string
+        description: Name of the git branch
+        required: true
+      affected-apps:
+        type: string
+        description: Nx applications affected by the changes
+        required: true
+      affected-lib:
+        type: string
+        description: Nx libraries affected by the changes
+        required: true
+      affected-package-container:
+        type: string
+        description: Nx projects configured with package:container affected by the changes
+        required: true
+      affected-deploy-static:
+        type: string
+        description: Nx projects configured with deploy:static affected by the changes
+        required: true
+      affected-deploy-container:
+        type: string
+        description: Nx projects configured with deploy affected by the changes
+        required: true
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN:
+        required: true
+      ECR_AWS_ACCESS_KEY_ID:
+        required: true
+      ECR_AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  BRANCH: ${{ inputs.branch }}
+
+jobs:
+  package-container:
+    if: ${{ inputs.affected-package-container != '[]' && inputs.affected-package-container != ''}}
+    name: Package
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(inputs.affected-package-container) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
+      - name: Cache global node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+
+      - name: Configure AWS Credentials (operations account)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR (operations account)
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: "true"
+          registries: "439403303254"
+
+      # https://github.com/docker/metadata-action
+      - name: Docker Metadata
+        uses: docker/metadata-action@v4
+        id: meta
+        with:
+          images: "439403303254.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
+          tags: |
+            type=sha,prefix=sha-
+            type=ref,event=pr,prefix=pr-
+            type=ref,event=tag,prefix=tag-
+            type=raw,value=${{ github.run_id }},prefix=gh-
+            type=raw,value=${{ env.BRANCH }}
+            type=raw,value=latest,enable=${{ env.BRANCH == 'master' }}
+
+      # https://www.npmjs.com/package/@nx-tools/nx-docker
+      - name: Dockerize
+        run: npx nx package:container ${{ matrix.project }} --prod
+        env:
+          INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+          INPUT_PUSH: true
+          # env variables substituted in the project.json docker target build-args
+          GIT_REF_NAME: ${{ github.ref_name }}
+          GIT_SHA: ${{ github.sha }}
+
+  configure:
+    name: Configure deployment target environment
+    runs-on: ubuntu-20.04
+    outputs:
+      environment: ${{ steps.environment-identifier.outputs.environment }}
+    steps:
+      - id: environment-identifier
+        run: |
+          if [[ "${{ env.BRANCH }}" == "next" ]];
+          then
+            echo environment="sandbox" >> $GITHUB_OUTPUT
+          elif [[ "${{ env.BRANCH }}" == "master" ]];
+          then
+            echo environment="staging" >> $GITHUB_OUTPUT
+          fi;
+
+  deploy-container:
+    name: Deployment container
+    needs: [package-container, configure]
+    if: ${{ inputs.affected-deploy-container != '[]' && inputs.affected-deploy-container != ''}}
+    strategy:
+      matrix:
+        project: ${{ fromJson(inputs.affected-deploy-container) }}
+    uses: ./.github/workflows/deployment.container.template.yml
+    with:
+      environment-name: ${{ needs.configure.outputs.environment }}
+      project-name: ${{ matrix.project }}
+      deploy-type: "container"
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  deploy-static:
+    name: Deployment static
+    needs: [configure]
+    if: ${{ inputs.affected-deploy-static != '[]' && inputs.affected-deploy-static != ''}}
+    strategy:
+      matrix:
+        project: ${{ fromJson(inputs.affected-deploy-static) }}
+    uses: ./.github/workflows/deployment.static.template.yml
+    with:
+      environment-name: ${{ needs.configure.outputs.environment }}
+      project-name: ${{ matrix.project }}
+      deploy-type: "static"
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
