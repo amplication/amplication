@@ -1402,6 +1402,7 @@ type Mutation {
   """
   triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
+  updateCodeGeneratorTechnology(codeGeneratorName: String!, where: WhereUniqueInput!): Resource
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   updateEntityField(data: EntityFieldUpdateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
@@ -1770,6 +1771,7 @@ type RemoteGitRepository {
 type Resource {
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
   codeGeneratorStrategy: CodeGeneratorVersionStrategy
+  codeGeneratorTechnology: String
   codeGeneratorVersion: String
   createdAt: DateTime!
   description: String!

@@ -1428,6 +1428,7 @@ export type Mutation = {
   /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
   triggerBreakServiceIntoMicroservices?: Maybe<UserAction>;
   updateAccount: Account;
+  updateCodeGeneratorTechnology?: Maybe<Resource>;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
   updateEntityField: EntityField;
@@ -1827,6 +1828,12 @@ export type MutationTriggerBreakServiceIntoMicroservicesArgs = {
 
 export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
+};
+
+
+export type MutationUpdateCodeGeneratorTechnologyArgs = {
+  codeGeneratorName: Scalars['String']['input'];
+  where: WhereUniqueInput;
 };
 
 
@@ -2560,6 +2567,7 @@ export type RemoteGitRepository = {
 export type Resource = {
   builds: Array<Build>;
   codeGeneratorStrategy?: Maybe<CodeGeneratorVersionStrategy>;
+  codeGeneratorTechnology?: Maybe<Scalars['String']['output']>;
   codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
