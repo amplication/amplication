@@ -9,7 +9,7 @@ generator client {
 
 model Plugin {
   categories        Json?    @default("[]")
-  codeGeneratorName String?
+  codeGeneratorName String   @default("data-service-generator")
   createdAt         DateTime @default(now())
   description       String?
   downloads         Int?

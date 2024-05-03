@@ -14,9 +14,9 @@ import { ApiProperty } from "@nestjs/swagger";
 import { JsonFilter } from "../../util/JsonFilter";
 import { Type } from "class-transformer";
 import { IsOptional } from "class-validator";
+import { StringFilter } from "../../util/StringFilter";
 import { StringNullableFilter } from "../../util/StringNullableFilter";
 import { IntNullableFilter } from "../../util/IntNullableFilter";
-import { StringFilter } from "../../util/StringFilter";
 
 @InputType()
 class PluginWhereInput {
@@ -33,14 +33,14 @@ class PluginWhereInput {
 
   @ApiProperty({
     required: false,
-    type: StringNullableFilter,
+    type: StringFilter,
   })
-  @Type(() => StringNullableFilter)
+  @Type(() => StringFilter)
   @IsOptional()
-  @Field(() => StringNullableFilter, {
+  @Field(() => StringFilter, {
     nullable: true,
   })
-  codeGeneratorName?: StringNullableFilter;
+  codeGeneratorName?: StringFilter;
 
   @ApiProperty({
     required: false,

@@ -29,15 +29,12 @@ class PluginCreateInput {
   categories?: InputJsonValue;
 
   @ApiProperty({
-    required: false,
+    required: true,
     type: String,
   })
   @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  codeGeneratorName?: string | null;
+  @Field(() => String)
+  codeGeneratorName!: string;
 
   @ApiProperty({
     required: false,

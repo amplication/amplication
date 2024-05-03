@@ -37,7 +37,7 @@ class PluginUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
-  codeGeneratorName?: string | null;
+  codeGeneratorName?: string;
 
   @ApiProperty({
     required: false,
