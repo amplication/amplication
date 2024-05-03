@@ -49,11 +49,26 @@ export class VersionControllerBase {
     @common.Body() data: VersionCreateInput
   ): Promise<Version> {
     return await this.service.createVersion({
-      data: data,
+      data: {
+        ...data,
+
+        generator: data.generator
+          ? {
+              connect: data.generator,
+            }
+          : undefined,
+      },
       select: {
         changelog: true,
         createdAt: true,
         deletedAt: true,
+
+        generator: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
         isActive: true,
         isDeprecated: true,
@@ -78,6 +93,13 @@ export class VersionControllerBase {
         changelog: true,
         createdAt: true,
         deletedAt: true,
+
+        generator: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
         isActive: true,
         isDeprecated: true,
@@ -103,6 +125,13 @@ export class VersionControllerBase {
         changelog: true,
         createdAt: true,
         deletedAt: true,
+
+        generator: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
         isActive: true,
         isDeprecated: true,
@@ -137,11 +166,26 @@ export class VersionControllerBase {
     try {
       return await this.service.updateVersion({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          generator: data.generator
+            ? {
+                connect: data.generator,
+              }
+            : undefined,
+        },
         select: {
           changelog: true,
           createdAt: true,
           deletedAt: true,
+
+          generator: {
+            select: {
+              id: true,
+            },
+          },
+
           id: true,
           isActive: true,
           isDeprecated: true,
@@ -180,6 +224,13 @@ export class VersionControllerBase {
           changelog: true,
           createdAt: true,
           deletedAt: true,
+
+          generator: {
+            select: {
+              id: true,
+            },
+          },
+
           id: true,
           isActive: true,
           isDeprecated: true,

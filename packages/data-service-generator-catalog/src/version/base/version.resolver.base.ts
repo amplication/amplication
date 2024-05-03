@@ -19,6 +19,7 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { Public } from "../../decorators/public.decorator";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { Version } from "./Version";
 import { VersionCountArgs } from "./VersionCountArgs";
 import { VersionFindManyArgs } from "./VersionFindManyArgs";
@@ -26,6 +27,7 @@ import { VersionFindUniqueArgs } from "./VersionFindUniqueArgs";
 import { CreateVersionArgs } from "./CreateVersionArgs";
 import { UpdateVersionArgs } from "./UpdateVersionArgs";
 import { DeleteVersionArgs } from "./DeleteVersionArgs";
+import { Generator } from "../../generator/base/Generator";
 import { VersionService } from "../version.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Version)
@@ -78,7 +80,15 @@ export class VersionResolverBase {
   ): Promise<Version> {
     return await this.service.createVersion({
       ...args,
-      data: args.data,
+      data: {
+        ...args.data,
+
+        generator: args.data.generator
+          ? {
+              connect: args.data.generator,
+            }
+          : undefined,
+      },
     });
   }
 
@@ -95,7 +105,15 @@ export class VersionResolverBase {
     try {
       return await this.service.updateVersion({
         ...args,
-        data: args.data,
+        data: {
+          ...args.data,
+
+          generator: args.data.generator
+            ? {
+                connect: args.data.generator,
+              }
+            : undefined,
+        },
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -126,5 +144,26 @@ export class VersionResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => Generator, {
+    nullable: true,
+    name: "generator",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Generator",
+    action: "read",
+    possession: "any",
+  })
+  async getGenerator(
+    @graphql.Parent() parent: Version
+  ): Promise<Generator | null> {
+    const result = await this.service.getGenerator(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

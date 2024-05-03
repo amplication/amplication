@@ -10,40 +10,50 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Version } from "@prisma/client";
+import {
+  Prisma,
+  Version as PrismaVersion,
+  Generator as PrismaGenerator,
+} from "@prisma/client";
 
 export class VersionServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.VersionCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.VersionCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.VersionCountArgs, "select">): Promise<number> {
     return this.prisma.version.count(args);
   }
 
   async versions<T extends Prisma.VersionFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.VersionFindManyArgs>
-  ): Promise<Version[]> {
-    return this.prisma.version.findMany(args);
+  ): Promise<PrismaVersion[]> {
+    return this.prisma.version.findMany<Prisma.VersionFindManyArgs>(args);
   }
   async version<T extends Prisma.VersionFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.VersionFindUniqueArgs>
-  ): Promise<Version | null> {
+  ): Promise<PrismaVersion | null> {
     return this.prisma.version.findUnique(args);
   }
   async createVersion<T extends Prisma.VersionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.VersionCreateArgs>
-  ): Promise<Version> {
+  ): Promise<PrismaVersion> {
     return this.prisma.version.create<T>(args);
   }
   async updateVersion<T extends Prisma.VersionUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.VersionUpdateArgs>
-  ): Promise<Version> {
+  ): Promise<PrismaVersion> {
     return this.prisma.version.update<T>(args);
   }
   async deleteVersion<T extends Prisma.VersionDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.VersionDeleteArgs>
-  ): Promise<Version> {
+  ): Promise<PrismaVersion> {
     return this.prisma.version.delete(args);
+  }
+
+  async getGenerator(parentId: string): Promise<PrismaGenerator | null> {
+    return this.prisma.version
+      .findUnique({
+        where: { id: parentId },
+      })
+      .generator();
   }
 }

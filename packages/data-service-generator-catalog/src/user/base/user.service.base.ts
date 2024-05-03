@@ -10,7 +10,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, User } from "@prisma/client";
+import { Prisma, User as PrismaUser } from "@prisma/client";
 import { PasswordService } from "../../auth/password.service";
 import { transformStringFieldUpdateInput } from "../../prisma.util";
 
@@ -20,25 +20,23 @@ export class UserServiceBase {
     protected readonly passwordService: PasswordService
   ) {}
 
-  async count<T extends Prisma.UserCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.UserCountArgs, "select">): Promise<number> {
     return this.prisma.user.count(args);
   }
 
   async users<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
-  ): Promise<User[]> {
-    return this.prisma.user.findMany(args);
+  ): Promise<PrismaUser[]> {
+    return this.prisma.user.findMany<Prisma.UserFindManyArgs>(args);
   }
   async user<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
-  ): Promise<User | null> {
+  ): Promise<PrismaUser | null> {
     return this.prisma.user.findUnique(args);
   }
   async createUser<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
-  ): Promise<User> {
+  ): Promise<PrismaUser> {
     return this.prisma.user.create<T>({
       ...args,
 
@@ -50,7 +48,7 @@ export class UserServiceBase {
   }
   async updateUser<T extends Prisma.UserUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
-  ): Promise<User> {
+  ): Promise<PrismaUser> {
     return this.prisma.user.update<T>({
       ...args,
 
@@ -68,7 +66,7 @@ export class UserServiceBase {
   }
   async deleteUser<T extends Prisma.UserDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
-  ): Promise<User> {
+  ): Promise<PrismaUser> {
     return this.prisma.user.delete(args);
   }
 }

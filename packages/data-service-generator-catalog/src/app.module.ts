@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { UserModule } from "./user/user.module";
 import { VersionModule } from "./version/version.module";
+import { GeneratorModule } from "./generator/generator.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
@@ -20,6 +21,7 @@ import { AuthModule } from "./auth/auth.module";
     AuthModule,
     UserModule,
     VersionModule,
+    GeneratorModule,
     HealthModule,
     PrismaModule,
     SecretsManagerModule,

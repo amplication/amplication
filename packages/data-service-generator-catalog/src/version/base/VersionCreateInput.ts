@@ -11,8 +11,15 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional, IsDate, IsBoolean } from "class-validator";
+import {
+  IsString,
+  IsOptional,
+  IsDate,
+  ValidateNested,
+  IsBoolean,
+} from "class-validator";
 import { Type } from "class-transformer";
+import { GeneratorWhereUniqueInput } from "../../generator/base/GeneratorWhereUniqueInput";
 
 @InputType()
 class VersionCreateInput {
@@ -37,6 +44,18 @@ class VersionCreateInput {
     nullable: true,
   })
   deletedAt?: Date | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => GeneratorWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => GeneratorWhereUniqueInput)
+  @IsOptional()
+  @Field(() => GeneratorWhereUniqueInput, {
+    nullable: true,
+  })
+  generator?: GeneratorWhereUniqueInput | null;
 
   @ApiProperty({
     required: true,
