@@ -110,7 +110,7 @@ export class VersionService extends VersionServiceBase {
     }
 
     if (codeGeneratorStrategy === CodeGeneratorVersionStrategy.Specific) {
-      const foundVersion = await this.findOne({
+      const foundVersion = await this.version({
         where: {
           id: codeGeneratorVersion,
         },
@@ -157,7 +157,7 @@ export class VersionService extends VersionServiceBase {
     if (this.includeDevVersion) {
       result.push(this.devVersion);
     }
-    result.push(...(await super.findMany(args)));
+    result.push(...(await super.versions(args)));
     return result;
   }
 
