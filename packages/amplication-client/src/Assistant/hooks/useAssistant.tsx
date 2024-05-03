@@ -1,10 +1,10 @@
-import { useMutation, useSubscription } from "@apollo/client";
+import { useMutation, useSubscription, useApolloClient } from "@apollo/client";
 import * as models from "../../models";
 import {
   ASSISTANT_MESSAGE_UPDATED,
   SEND_ASSISTANT_MESSAGE,
 } from "../queries/assistantQueries";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useAppContext } from "../../context/appContext";
 
 type TAssistantThreadData = {
@@ -43,6 +43,19 @@ const useAssistant = () => {
   const { currentProject, currentResource, addBlock, commitUtils } =
     useAppContext();
 
+  const apolloClient = useApolloClient();
+
+  const updateCache = useCallback(
+    (fieldName: string) => {
+      apolloClient.refetchQueries({
+        updateCache(cache) {
+          cache.evict({ fieldName });
+        },
+      });
+    },
+    [apolloClient]
+  );
+
   const [messages, setMessages] = useState<AssistantMessageWithOptions[]>([
     INITIAL_MESSAGE,
   ]);
@@ -73,11 +86,48 @@ const useAssistant = () => {
       skip: !threadId,
       onData: (data) => {
         const message = data.data.data.assistantMessageUpdated;
+        const functionExecuted = message.functionExecuted;
+
+        if (functionExecuted) {
+          switch (functionExecuted) {
+            case models.EnumAssistantFunctions.CreateEntity:
+              updateCache("resources");
+              addBlock("blockid");
+
+              break;
+            case models.EnumAssistantFunctions.CreateService:
+              updateCache("resources");
+              addBlock("blockid");
+              break;
+            case models.EnumAssistantFunctions.CreateProject:
+              updateCache("projects");
+              break;
+            case models.EnumAssistantFunctions.CommitProjectPendingChanges:
+              commitUtils.refetchCommitsData(true);
+              break;
+            case models.EnumAssistantFunctions.CreateModule:
+              addBlock("blockid");
+              updateCache("modules");
+
+              break;
+            case models.EnumAssistantFunctions.CreateModuleDto:
+            case models.EnumAssistantFunctions.CreateModuleEnum:
+              addBlock("blockid");
+              updateCache("moduleDtos");
+              break;
+            case models.EnumAssistantFunctions.InstallPlugins:
+              updateCache("pluginInstallations");
+              updateCache("pluginOrder");
+
+              break;
+            default:
+              break;
+          }
+          return;
+        }
+
         if (message.completed) {
           setProcessingMessage(false);
-          //@todo: update client side data smartly based on the actions on the server
-          addBlock("blockid");
-          commitUtils.refetchCommitsData(true);
         }
 
         setMessages((messages) => {
