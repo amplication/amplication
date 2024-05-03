@@ -742,7 +742,7 @@ export class AssistantService {
         context.user
       );
       return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/dtos/${dto.id}`,
         result: dto,
       };
     },
@@ -780,7 +780,7 @@ export class AssistantService {
         context.user
       );
       return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/dtos/${dto.id}`,
         result: dto,
       };
     },
@@ -864,7 +864,7 @@ export class AssistantService {
         context.user
       );
       return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/actions/${action.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
         result: updatedAction,
       };
     },
