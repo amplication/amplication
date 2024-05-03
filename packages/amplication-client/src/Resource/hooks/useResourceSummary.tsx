@@ -92,7 +92,7 @@ export const useResourceSummary = (currentResource: models.Resource) => {
     });
 
     const installedCategories = pluginInstallations.reduce((acc, plugin) => {
-      const categories = plugin.categories || [];
+      const categories = plugin?.categories || [];
       categories.forEach((category) => {
         if (!category) return;
         const categoryObj =
