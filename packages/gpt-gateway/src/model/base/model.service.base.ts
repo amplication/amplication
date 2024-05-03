@@ -10,52 +10,49 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-
 import {
   Prisma,
-  Model, // @ts-ignore
-  Template,
+  Model as PrismaModel,
+  Template as PrismaTemplate,
 } from "@prisma/client";
 
 export class ModelServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.ModelCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ModelCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.ModelCountArgs, "select">): Promise<number> {
     return this.prisma.model.count(args);
   }
 
   async models<T extends Prisma.ModelFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelFindManyArgs>
-  ): Promise<Model[]> {
-    return this.prisma.model.findMany(args);
+  ): Promise<PrismaModel[]> {
+    return this.prisma.model.findMany<Prisma.ModelFindManyArgs>(args);
   }
   async model<T extends Prisma.ModelFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelFindUniqueArgs>
-  ): Promise<Model | null> {
+  ): Promise<PrismaModel | null> {
     return this.prisma.model.findUnique(args);
   }
   async createModel<T extends Prisma.ModelCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelCreateArgs>
-  ): Promise<Model> {
+  ): Promise<PrismaModel> {
     return this.prisma.model.create<T>(args);
   }
   async updateModel<T extends Prisma.ModelUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelUpdateArgs>
-  ): Promise<Model> {
+  ): Promise<PrismaModel> {
     return this.prisma.model.update<T>(args);
   }
   async deleteModel<T extends Prisma.ModelDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelDeleteArgs>
-  ): Promise<Model> {
+  ): Promise<PrismaModel> {
     return this.prisma.model.delete(args);
   }
 
   async findTemplates(
     parentId: string,
     args: Prisma.TemplateFindManyArgs
-  ): Promise<Template[]> {
+  ): Promise<PrismaTemplate[]> {
     return this.prisma.model
       .findUniqueOrThrow({
         where: { id: parentId },

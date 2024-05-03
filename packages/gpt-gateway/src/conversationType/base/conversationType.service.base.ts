@@ -13,46 +13,48 @@ import { PrismaService } from "../../prisma/prisma.service";
 
 import {
   Prisma,
-  ConversationType, // @ts-ignore
-  Template,
+  ConversationType as PrismaConversationType,
+  Template as PrismaTemplate,
 } from "@prisma/client";
 
 export class ConversationTypeServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.ConversationTypeCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ConversationTypeCountArgs>
+  async count(
+    args: Omit<Prisma.ConversationTypeCountArgs, "select">
   ): Promise<number> {
     return this.prisma.conversationType.count(args);
   }
 
   async conversationTypes<T extends Prisma.ConversationTypeFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeFindManyArgs>
-  ): Promise<ConversationType[]> {
-    return this.prisma.conversationType.findMany(args);
+  ): Promise<PrismaConversationType[]> {
+    return this.prisma.conversationType.findMany<Prisma.ConversationTypeFindManyArgs>(
+      args
+    );
   }
   async conversationType<T extends Prisma.ConversationTypeFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeFindUniqueArgs>
-  ): Promise<ConversationType | null> {
+  ): Promise<PrismaConversationType | null> {
     return this.prisma.conversationType.findUnique(args);
   }
   async createConversationType<T extends Prisma.ConversationTypeCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeCreateArgs>
-  ): Promise<ConversationType> {
+  ): Promise<PrismaConversationType> {
     return this.prisma.conversationType.create<T>(args);
   }
   async updateConversationType<T extends Prisma.ConversationTypeUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeUpdateArgs>
-  ): Promise<ConversationType> {
+  ): Promise<PrismaConversationType> {
     return this.prisma.conversationType.update<T>(args);
   }
   async deleteConversationType<T extends Prisma.ConversationTypeDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.ConversationTypeDeleteArgs>
-  ): Promise<ConversationType> {
+  ): Promise<PrismaConversationType> {
     return this.prisma.conversationType.delete(args);
   }
 
-  async getTemplate(parentId: string): Promise<Template | null> {
+  async getTemplate(parentId: string): Promise<PrismaTemplate | null> {
     return this.prisma.conversationType
       .findUnique({
         where: { id: parentId },

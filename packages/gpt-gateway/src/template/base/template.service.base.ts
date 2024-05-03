@@ -13,51 +13,49 @@ import { PrismaService } from "../../prisma/prisma.service";
 
 import {
   Prisma,
-  Template, // @ts-ignore
-  Message, // @ts-ignore
-  ConversationType, // @ts-ignore
-  Model,
+  Template as PrismaTemplate,
+  Message as PrismaMessage,
+  ConversationType as PrismaConversationType,
+  Model as PrismaModel,
 } from "@prisma/client";
 
 export class TemplateServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.TemplateCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.TemplateCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.TemplateCountArgs, "select">): Promise<number> {
     return this.prisma.template.count(args);
   }
 
   async templates<T extends Prisma.TemplateFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.TemplateFindManyArgs>
-  ): Promise<Template[]> {
-    return this.prisma.template.findMany(args);
+  ): Promise<PrismaTemplate[]> {
+    return this.prisma.template.findMany<Prisma.TemplateFindManyArgs>(args);
   }
   async template<T extends Prisma.TemplateFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.TemplateFindUniqueArgs>
-  ): Promise<Template | null> {
+  ): Promise<PrismaTemplate | null> {
     return this.prisma.template.findUnique(args);
   }
   async createTemplate<T extends Prisma.TemplateCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.TemplateCreateArgs>
-  ): Promise<Template> {
+  ): Promise<PrismaTemplate> {
     return this.prisma.template.create<T>(args);
   }
   async updateTemplate<T extends Prisma.TemplateUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.TemplateUpdateArgs>
-  ): Promise<Template> {
+  ): Promise<PrismaTemplate> {
     return this.prisma.template.update<T>(args);
   }
   async deleteTemplate<T extends Prisma.TemplateDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.TemplateDeleteArgs>
-  ): Promise<Template> {
+  ): Promise<PrismaTemplate> {
     return this.prisma.template.delete(args);
   }
 
   async findMessages(
     parentId: string,
     args: Prisma.MessageFindManyArgs
-  ): Promise<Message[]> {
+  ): Promise<PrismaMessage[]> {
     return this.prisma.template
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -68,7 +66,7 @@ export class TemplateServiceBase {
   async findMessageTypes(
     parentId: string,
     args: Prisma.ConversationTypeFindManyArgs
-  ): Promise<ConversationType[]> {
+  ): Promise<PrismaConversationType[]> {
     return this.prisma.template
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -76,7 +74,7 @@ export class TemplateServiceBase {
       .messageTypes(args);
   }
 
-  async getModel(parentId: string): Promise<Model | null> {
+  async getModel(parentId: string): Promise<PrismaModel | null> {
     return this.prisma.template
       .findUnique({
         where: { id: parentId },
