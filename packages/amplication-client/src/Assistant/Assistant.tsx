@@ -23,11 +23,12 @@ import AssistantMessage from "./AssistantMessage";
 import classNames from "classnames";
 import { useAppContext } from "../context/appContext";
 import { Link } from "react-router-dom";
-import jovu from "../assets/jovu.svg";
+import jovu from "../assets/jovu-logo.svg";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { useStiggContext } from "@stigg/react-sdk";
 import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
 import { useQuery } from "@apollo/client";
+import JovuLogo from "./JovuLogo";
 type SendMessageType = models.SendAssistantMessageInput;
 
 const INITIAL_VALUES: SendMessageType = {
@@ -167,13 +168,7 @@ const Assistant = () => {
             gap={EnumGapSize.Large}
             className={`${CLASS_NAME}__limit`}
           >
-            <img
-              src={jovu}
-              alt="jovu"
-              width={50}
-              height={50}
-              style={{ background: "white", borderRadius: "50%" }}
-            />
+            <JovuLogo />
             <Text textStyle={EnumTextStyle.H3} textAlign={EnumTextAlign.Center}>
               You have reached the daily limit of Jovu requests for your plan.
             </Text>

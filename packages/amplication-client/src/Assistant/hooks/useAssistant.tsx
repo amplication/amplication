@@ -17,6 +17,7 @@ type TAssistantMessageUpdatedData = {
 
 export type AssistantMessageWithOptions = models.AssistantMessage & {
   options?: string[];
+  loading?: boolean;
 };
 
 const INITIAL_MESSAGE: AssistantMessageWithOptions = {
@@ -82,6 +83,7 @@ const useAssistant = () => {
         setMessages((messages) => {
           const lastMessage = messages[messages.length - 1];
           lastMessage.text = message.snapshot;
+          lastMessage.loading = false; // remove loading indicator when first message is received
           return [...messages];
         });
       },
@@ -108,6 +110,7 @@ const useAssistant = () => {
         role: models.EnumAssistantMessageRole.Assistant,
         id: Date.now().toString() + "_",
         createdAt: "",
+        loading: true,
       },
     ]);
 
@@ -125,6 +128,9 @@ const useAssistant = () => {
         },
       },
     }).catch((error) => {
+      const lastMessage = messages[messages.length - 1];
+
+      lastMessage.loading = false;
       setMessages([
         ...messages,
         {
