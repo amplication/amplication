@@ -18,10 +18,12 @@ import { CodeGenerationRequest, EnumJobStatus } from "../types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 
+const OLD_DSG_IMAGE_NAME = "data-service-generator";
+
 @Traceable()
 @Injectable()
 export class BuildRunnerService {
-  private readonly minDsgVersionToSplitBuild: string;
+  private readonly minDsgVersionForMultiImages: string;
   constructor(
     private readonly configService: ConfigService<Env, true>,
     private readonly producerService: KafkaProducerService,
@@ -29,8 +31,8 @@ export class BuildRunnerService {
     private readonly buildJobsHandlerService: BuildJobsHandlerService,
     private readonly logger: AmplicationLogger
   ) {
-    this.minDsgVersionToSplitBuild = this.configService.getOrThrow(
-      Env.FEATURE_SPLIT_JOBS_MIN_DSG_VERSION
+    this.minDsgVersionForMultiImages = this.configService.getOrThrow(
+      Env.FEATURE_MULTI_DSG_IMAGES
     );
   }
 
@@ -52,11 +54,8 @@ export class BuildRunnerService {
               .codeGeneratorStrategy,
         });
 
-      this.logger.debug("Code Generator Version Calculated as: ", {
+      this.logger.debug("Code Generator settings: ", {
         codeGeneratorVersion,
-      });
-
-      this.logger.debug("Code Generator Technology: ", {
         codeGeneratorName,
       });
 
@@ -97,8 +96,11 @@ export class BuildRunnerService {
     codeGeneratorName: string
   ) {
     await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
-    const containerImageName =
-      this.mapCodeGeneratorNameToImageName(codeGeneratorName);
+
+    const containerImageName = await this.codeGeneratorNameToContainerImageName(
+      codeGeneratorVersion,
+      codeGeneratorName
+    );
 
     const url = this.configService.get(Env.DSG_RUNNER_URL);
     try {
@@ -305,22 +307,37 @@ export class BuildRunnerService {
   }
 
   /**
-   * Gets the code generator name as a string and returns the image name to be used in the runner
-   * @param codeGeneratorName (string) the code generator name - language/technology
+   *
+   * @param codeGeneratorVersion (string) the requested code generator version
+   * @param codeGeneratorName (string) the requested code generator name (from the DSG catalog).
+   * If didn't provided, the old image name will be used
+   * If the requested version is lower than the min version for multi images, the old image name will be used for backward compatibility
+   * @returns (string) the container image name
    */
-  private mapCodeGeneratorNameToImageName(codeGeneratorName: string): string {
-    // at this point it's an hardcoded map, but it should come from the dsg catalog service
-    const codeGeneratorImageMap = new Map<string, string>([
-      ["NodeJS", "generator-nodejs-nest"],
-      ["DotNET", "generator-dotnet-webapi"],
-    ]);
+  private async codeGeneratorNameToContainerImageName(
+    codeGeneratorVersion: string,
+    codeGeneratorName: string
+  ): Promise<string> {
+    const canUseMultiImages =
+      this.codeGeneratorService.compareVersions(
+        codeGeneratorVersion,
+        this.minDsgVersionForMultiImages
+      ) >= 0;
 
-    const containerImageName = codeGeneratorImageMap.get(codeGeneratorName);
+    if (!canUseMultiImages || !codeGeneratorName) {
+      this.logger.debug("Using default image name", {
+        name: OLD_DSG_IMAGE_NAME,
+        codeGeneratorVersion,
+      });
 
-    if (!containerImageName) {
-      return "generator-nodejs-nest";
+      return OLD_DSG_IMAGE_NAME;
     }
 
-    return containerImageName;
+    this.logger.debug("Using image name from the DSG catalog", {
+      name: codeGeneratorName,
+      codeGeneratorVersion,
+    });
+
+    return this.codeGeneratorService.getCodeGenerators(codeGeneratorName);
   }
 }
