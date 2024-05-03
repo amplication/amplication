@@ -1,4 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
+import { EnumAssistantFunctions } from "./EnumAssistantFunctions";
 
 @ObjectType({
   isAbstract: true,
@@ -28,4 +29,9 @@ export class AssistantMessageDelta {
     nullable: false,
   })
   completed: boolean;
+
+  @Field(() => EnumAssistantFunctions, {
+    nullable: true,
+  })
+  functionExecuted?: EnumAssistantFunctions;
 }
