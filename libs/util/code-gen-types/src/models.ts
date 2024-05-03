@@ -1270,6 +1270,11 @@ export type ModuleDtoEnumMemberCreateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type ModuleDtoEnumMemberInput = {
+  name: Scalars['String']['input'];
+  value: Scalars['String']['input'];
+};
+
 export type ModuleDtoEnumMemberUpdateInput = {
   name: Scalars['String']['input'];
   value: Scalars['String']['input'];
@@ -1294,6 +1299,13 @@ export type ModuleDtoProperty = {
 export type ModuleDtoPropertyCreateInput = {
   moduleDto: WhereParentIdInput;
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ModuleDtoPropertyInput = {
+  isArray: Scalars['Boolean']['input'];
+  isOptional: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  propertyTypes: Array<PropertyTypeDefInput>;
 };
 
 export type ModuleDtoPropertyUpdateInput = {
@@ -1414,7 +1426,6 @@ export type Mutation = {
   redesignProject: UserAction;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
-  sendAssistantMessage: AssistantThread;
   sendAssistantMessageWithStream: AssistantThread;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
@@ -1425,6 +1436,7 @@ export type Mutation = {
   /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
   triggerBreakServiceIntoMicroservices?: Maybe<UserAction>;
   updateAccount: Account;
+  updateCodeGeneratorTechnology?: Maybe<Resource>;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
   updateEntityField: EntityField;
@@ -1550,11 +1562,15 @@ export type MutationCreateModuleActionArgs = {
 
 export type MutationCreateModuleDtoArgs = {
   data: ModuleDtoCreateInput;
+  members?: InputMaybe<Array<ModuleDtoEnumMemberInput>>;
+  properties?: InputMaybe<Array<ModuleDtoPropertyInput>>;
 };
 
 
 export type MutationCreateModuleDtoEnumArgs = {
   data: ModuleDtoCreateInput;
+  members?: InputMaybe<Array<ModuleDtoEnumMemberInput>>;
+  properties?: InputMaybe<Array<ModuleDtoPropertyInput>>;
 };
 
 
@@ -1774,12 +1790,6 @@ export type MutationRevokeInvitationArgs = {
 };
 
 
-export type MutationSendAssistantMessageArgs = {
-  context: AssistantContext;
-  data: SendAssistantMessageInput;
-};
-
-
 export type MutationSendAssistantMessageWithStreamArgs = {
   context: AssistantContext;
   data: SendAssistantMessageInput;
@@ -1824,6 +1834,12 @@ export type MutationTriggerBreakServiceIntoMicroservicesArgs = {
 
 export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
+};
+
+
+export type MutationUpdateCodeGeneratorTechnologyArgs = {
+  codeGeneratorName: Scalars['String']['input'];
+  where: WhereUniqueInput;
 };
 
 
@@ -2557,6 +2573,7 @@ export type RemoteGitRepository = {
 export type Resource = {
   builds: Array<Build>;
   codeGeneratorStrategy?: Maybe<CodeGeneratorVersionStrategy>;
+  codeGeneratorTechnology?: Maybe<Scalars['String']['output']>;
   codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];

@@ -1244,6 +1244,11 @@ input ModuleDtoEnumMemberCreateInput {
   name: String
 }
 
+input ModuleDtoEnumMemberInput {
+  name: String!
+  value: String!
+}
+
 input ModuleDtoEnumMemberUpdateInput {
   name: String!
   value: String!
@@ -1268,6 +1273,13 @@ type ModuleDtoProperty {
 input ModuleDtoPropertyCreateInput {
   moduleDto: WhereParentIdInput!
   name: String
+}
+
+input ModuleDtoPropertyInput {
+  isArray: Boolean!
+  isOptional: Boolean!
+  name: String!
+  propertyTypes: [PropertyTypeDefInput!]!
 }
 
 input ModuleDtoPropertyUpdateInput {
@@ -1343,8 +1355,8 @@ type Mutation {
   createMessageBroker(data: ResourceCreateInput!): Resource!
   createModule(data: ModuleCreateInput!): Module!
   createModuleAction(data: ModuleActionCreateInput!): ModuleAction!
-  createModuleDto(data: ModuleDtoCreateInput!): ModuleDto!
-  createModuleDtoEnum(data: ModuleDtoCreateInput!): ModuleDto!
+  createModuleDto(data: ModuleDtoCreateInput!, members: [ModuleDtoEnumMemberInput!], properties: [ModuleDtoPropertyInput!]): ModuleDto!
+  createModuleDtoEnum(data: ModuleDtoCreateInput!, members: [ModuleDtoEnumMemberInput!], properties: [ModuleDtoPropertyInput!]): ModuleDto!
   createModuleDtoEnumMember(data: ModuleDtoEnumMemberCreateInput!): ModuleDtoEnumMember!
   createModuleDtoProperty(data: ModuleDtoPropertyCreateInput!): ModuleDtoProperty!
   createOneEntity(data: EntityCreateInput!): Entity!
@@ -1388,7 +1400,6 @@ type Mutation {
   redesignProject(data: RedesignProjectInput!): UserAction!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
-  sendAssistantMessage(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
   sendAssistantMessageWithStream(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
