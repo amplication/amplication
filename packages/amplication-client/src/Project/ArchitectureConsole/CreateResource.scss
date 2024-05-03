@@ -1,0 +1,13 @@
+@import "../../style/index.scss";
+
+$image-height: 130px;
+
+.create-resource {
+  @include modalForm;
+  align-items: baseline;
+
+  &__dialog_btn {
+    display: flex;
+    gap: var(--large-spacing);
+  }
+}

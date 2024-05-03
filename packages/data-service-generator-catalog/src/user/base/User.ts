@@ -15,7 +15,7 @@ import { IsDate, IsString, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
 import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
-import { JsonValue } from "type-fest";
+import type { JsonValue } from "type-fest";
 
 @ObjectType()
 class User {

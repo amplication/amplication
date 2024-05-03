@@ -1,0 +1,66 @@
+@import "../../style/index.scss";
+
+.plan-upgrade-confirmation {
+  width: 600px !important;
+  padding-top: 40px;
+  padding-bottom: 32px;
+
+  .amp-dialog__header {
+    align-items: flex-end;
+    margin: 0;
+
+    .amp-button {
+      margin: 0;
+      width: auto;
+    }
+  }
+
+  .amp-dialog__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    &__header {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    &__animation {
+      height: 200px;
+      width: 200px;
+
+      img {
+        width: 100%;
+      }
+    }
+
+    &__description_purchase {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: var(--default-spacing);
+    }
+
+    &__description_details {
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    &__keep_building {
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+  }
+
+  &__upgrade_button {
+    margin: 32px 0 0 !important;
+    width: auto !important;
+  }
+}

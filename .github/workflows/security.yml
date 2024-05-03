@@ -1,0 +1,30 @@
+name: Security
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - next
+    paths-ignore:
+      - "**/*.md"
+      - ".all-contributorsrc"
+
+jobs:
+  file-system-scan:
+    name: Vulnerability scanning - File system
+    uses: ./.github/workflows/security.template.yml
+    with:
+      scan-type: "fs"
+      format: "sarif"
+      exit-code: 0
+      publish: true
+
+  config-scan:
+    name: Vulnerability scanning - Config
+    uses: ./.github/workflows/security.template.yml
+    with:
+      scan-type: "config"
+      format: "sarif"
+      exit-code: 0
+      publish: true
