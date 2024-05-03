@@ -96,7 +96,7 @@ export class Resource {
   @Field(() => String, {
     nullable: true,
   })
-  codeGeneratorTechnology?: string;
+  codeGeneratorName?: string;
 
   @Field(() => Boolean, { nullable: false, defaultValue: true })
   licensed: boolean;
