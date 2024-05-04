@@ -29,6 +29,7 @@
     "loglevel",
     "microservices",
     "nestjs",
+    "novu",
     "nrwl",
     "oclif",
     "Octokit",
