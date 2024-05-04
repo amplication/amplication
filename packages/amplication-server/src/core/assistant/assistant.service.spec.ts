@@ -24,6 +24,7 @@ import { AssistantContext } from "./dto/AssistantContext";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { Entity } from "../../models";
+import { EnumDataType } from "@amplication/code-gen-types";
 
 const EXAMPLE_CHAT_OPENAI_KEY = "EXAMPLE_CHAT_OPENAI_KEY";
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
@@ -116,6 +117,7 @@ const projectServiceGetPendingChangesMock = jest.fn();
 const pluginCatalogServiceGetPluginsMock = jest.fn();
 const moduleActionServiceFindManyMock = jest.fn();
 const entityServiceEntitiesMock = jest.fn();
+const entityServiceEntityMock = jest.fn(() => EXAMPLE_ENTITY);
 describe("AssistantService", () => {
   let service: AssistantService;
 
@@ -153,6 +155,7 @@ describe("AssistantService", () => {
             createOneEntity: entityServiceCreateOneEntityMock,
             createFieldByDisplayName: entityServiceCreateFieldByDisplayNameMock,
             entities: entityServiceEntitiesMock,
+            entity: entityServiceEntityMock,
           },
         },
         {
@@ -289,17 +292,34 @@ describe("AssistantService", () => {
     ]
   > = [
     [
-      EnumAssistantFunctions.CreateEntity,
+      EnumAssistantFunctions.CreateEntities,
       {
-        name: "value1",
+        names: ["entity 1", "entity 2"],
         serviceId: "value2",
-        fields: ["value3", "value4"],
       },
       [
         {
           mock: entityServiceCreateOneEntityMock,
-          times: 1,
+          times: 2,
         },
+      ],
+    ],
+    [
+      EnumAssistantFunctions.CreateEntityFields,
+      {
+        fields: [
+          {
+            name: "field1",
+            type: EnumDataType.SingleLineText,
+          },
+          {
+            name: "field2",
+            type: EnumDataType.WholeNumber,
+          },
+        ],
+        entityId: "value2",
+      },
+      [
         {
           mock: entityServiceCreateFieldByDisplayNameMock,
           times: 2,
