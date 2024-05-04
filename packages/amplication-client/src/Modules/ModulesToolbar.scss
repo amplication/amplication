@@ -2,4 +2,52 @@
 
 .modules-toolbar {
   margin-top: calc(var(--default-spacing) * -1);
+  overflow: hidden;
+
+  .search-field {
+    max-width: 100px;
+  }
+
+  .beta-feature-tag__tag {
+    max-width: 80px;
+    text-wrap: nowrap;
+    .amp-text {
+      max-width: 50px;
+      overflow: hidden;
+    }
+  }
+}
+
+.workspaces-layout__main_content--lg {
+  .modules-toolbar {
+    .search-field {
+      max-width: 150px;
+    }
+  }
+
+  .beta-feature-tag__tag {
+    max-width: 120px;
+    text-wrap: nowrap;
+    .amp-text {
+      max-width: 90px;
+      overflow: hidden;
+    }
+  }
+}
+
+.workspaces-layout__main_content--xl {
+  .modules-toolbar {
+    .search-field {
+      max-width: none;
+    }
+  }
+
+  .beta-feature-tag__tag {
+    max-width: 150px;
+    text-wrap: nowrap;
+    .amp-text {
+      max-width: 120px;
+      overflow: hidden;
+    }
+  }
 }
