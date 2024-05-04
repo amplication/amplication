@@ -1,4 +1,9 @@
-import { useMutation, useSubscription, useApolloClient } from "@apollo/client";
+import {
+  useMutation,
+  useSubscription,
+  useApolloClient,
+  DocumentNode,
+} from "@apollo/client";
 import * as models from "../../models";
 import {
   ASSISTANT_MESSAGE_UPDATED,
@@ -6,6 +11,7 @@ import {
 } from "../queries/assistantQueries";
 import { useCallback, useState } from "react";
 import { useAppContext } from "../../context/appContext";
+import { GET_ENTITIES } from "../../Entity/EntityERD/EntitiesERD";
 
 type TAssistantThreadData = {
   sendAssistantMessageWithStream: models.AssistantThread;
@@ -39,9 +45,86 @@ const INITIAL_MESSAGE: AssistantMessageWithOptions = {
   ],
 };
 
+const FUNCTIONS_CACHE_MAP: {
+  [key in models.EnumAssistantFunctions]: {
+    refreshPendingChanges: boolean;
+    cacheKey: string;
+    queries?: DocumentNode[];
+  };
+} = {
+  [models.EnumAssistantFunctions.CreateEntities]: {
+    refreshPendingChanges: true,
+    cacheKey: "resources",
+  },
+  [models.EnumAssistantFunctions.CreateService]: {
+    refreshPendingChanges: true,
+    cacheKey: "resources",
+  },
+  [models.EnumAssistantFunctions.CreateProject]: {
+    refreshPendingChanges: false,
+    cacheKey: "projects",
+  },
+  [models.EnumAssistantFunctions.CommitProjectPendingChanges]: {
+    refreshPendingChanges: true,
+    cacheKey: "commits",
+  },
+  [models.EnumAssistantFunctions.CreateModule]: {
+    refreshPendingChanges: true,
+    cacheKey: "modules",
+  },
+  [models.EnumAssistantFunctions.CreateModuleDto]: {
+    refreshPendingChanges: true,
+    cacheKey: "moduleDtos",
+  },
+  [models.EnumAssistantFunctions.CreateModuleEnum]: {
+    refreshPendingChanges: true,
+    cacheKey: "moduleEnums",
+  },
+  [models.EnumAssistantFunctions.InstallPlugins]: {
+    refreshPendingChanges: true,
+    cacheKey: "pluginInstallations",
+  },
+  [models.EnumAssistantFunctions.CreateModuleAction]: {
+    refreshPendingChanges: true,
+    cacheKey: "moduleActions",
+  },
+  [models.EnumAssistantFunctions.CreateEntityFields]: {
+    refreshPendingChanges: true,
+    cacheKey: "fields",
+    queries: [GET_ENTITIES],
+  },
+  [models.EnumAssistantFunctions.GetModuleActions]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetModuleDtosAndEnums]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetPlugins]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetProjectPendingChanges]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetProjectServices]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetServiceEntities]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetServiceModules]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+};
+
 const useAssistant = () => {
-  const { currentProject, currentResource, addBlock, commitUtils } =
-    useAppContext();
+  const { currentProject, currentResource, addBlock } = useAppContext();
 
   const apolloClient = useApolloClient();
 
@@ -89,45 +172,21 @@ const useAssistant = () => {
         const functionExecuted = message.functionExecuted;
 
         if (functionExecuted) {
-          switch (functionExecuted) {
-            case models.EnumAssistantFunctions.CreateEntity:
-              updateCache("resources");
-              addBlock("blockid");
-              break;
-            case models.EnumAssistantFunctions.CreateService:
-              updateCache("resources");
-              addBlock("blockid");
-              break;
-            case models.EnumAssistantFunctions.CreateProject:
-              updateCache("projects");
-              break;
-            case models.EnumAssistantFunctions.CommitProjectPendingChanges:
-              commitUtils.refetchCommitsData(true);
-              addBlock("blockid");
-
-              break;
-            case models.EnumAssistantFunctions.CreateModule:
-              addBlock("blockid");
-              updateCache("modules");
-
-              break;
-            case models.EnumAssistantFunctions.CreateModuleDto:
-            case models.EnumAssistantFunctions.CreateModuleEnum:
-              addBlock("blockid");
-              updateCache("moduleDtos");
-              break;
-            case models.EnumAssistantFunctions.InstallPlugins:
-              updateCache("pluginInstallations");
-              updateCache("pluginOrder");
-
-              break;
-            case models.EnumAssistantFunctions.CreateModuleAction:
-              addBlock("blockid");
-              updateCache("moduleActions");
-              break;
-            default:
-              break;
+          const cacheKey = FUNCTIONS_CACHE_MAP[functionExecuted].cacheKey;
+          if (cacheKey) {
+            updateCache(cacheKey);
           }
+          if (FUNCTIONS_CACHE_MAP[functionExecuted].refreshPendingChanges) {
+            addBlock("blockId");
+          }
+
+          const queries = FUNCTIONS_CACHE_MAP[functionExecuted].queries;
+          if (queries) {
+            apolloClient.refetchQueries({
+              include: queries,
+            });
+          }
+
           return;
         }
 
