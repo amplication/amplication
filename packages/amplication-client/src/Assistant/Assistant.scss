@@ -202,7 +202,7 @@ $avatar-size: 30px;
   &__message-role {
     display: flex;
     flex-direction: row;
-    gap: var(--icon-spacing);
+    gap: var(--default-spacing);
     align-items: center;
     justify-content: flex-start;
     font-weight: semi-bold;
@@ -211,7 +211,7 @@ $avatar-size: 30px;
     .user-avatar__initials {
       width: $avatar-size;
       height: $avatar-size;
-      font-size: var(--h3-font-size);
+      font-size: var(--h4-font-size);
     }
   }
 }
