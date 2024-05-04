@@ -3,10 +3,10 @@ import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import {
   AssistantService,
-  EnumAssistantFunctions,
   MESSAGE_UPDATED_EVENT,
   MessageLoggerContext,
 } from "./assistant.service";
+import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
 import { BillingService } from "../billing/billing.service";
 
 import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
