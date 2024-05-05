@@ -18,6 +18,10 @@ import { ResourceService } from "../resource/resource.service";
 import { AssistantFunctionsService } from "./assistantFunctions.service";
 import { AssistantContext } from "./dto/AssistantContext";
 import { EnumDataType } from "../../enums/EnumDataType";
+import { PermissionsService } from "../permissions/permissions.service";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { Module } from "../module/dto/Module";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 
 const EXAMPLE_CHAT_OPENAI_KEY = "EXAMPLE_CHAT_OPENAI_KEY";
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
@@ -55,6 +59,38 @@ const EXAMPLE_ASSISTANT_CONTEXT: AssistantContext = {
   workspaceId: EXAMPLE_WORKSPACE_ID,
 };
 
+const EXAMPLE_MODULE_NAME = "exampleModule";
+const EXAMPLE_MODULE_DESCRIPTION = "Example Module Description";
+const EXAMPLE_MODULE_ID = "exampleModuleId";
+
+const EXAMPLE_MODULE: Module = {
+  id: EXAMPLE_MODULE_ID,
+  name: EXAMPLE_MODULE_NAME,
+  displayName: EXAMPLE_MODULE_NAME,
+  description: EXAMPLE_MODULE_DESCRIPTION,
+  enabled: true,
+  createdAt: expect.any(Date),
+  updatedAt: expect.any(Date),
+  parentBlock: null,
+  blockType: EnumBlockType.Module,
+  inputParameters: null,
+  outputParameters: null,
+  versionNumber: 0,
+};
+
+const EXAMPLE_CALL_ID = "callId";
+
+const EXAMPLE_LOGGER_CONTEXT: MessageLoggerContext = {
+  messageContext: {
+    workspaceId: EXAMPLE_WORKSPACE_ID,
+    projectId: EXAMPLE_PROJECT_ID,
+    serviceId: EXAMPLE_RESOURCE_ID,
+  },
+  threadId: EXAMPLE_THREAD_ID,
+  userId: EXAMPLE_USER_ID,
+  role: "user",
+};
+
 const entityServiceCreateOneEntityMock = jest.fn(() => EXAMPLE_ENTITY);
 const entityServiceCreateFieldByDisplayNameMock = jest.fn();
 const projectServiceCreateProjectMock = jest.fn();
@@ -90,7 +126,9 @@ const pluginCatalogServiceGetPluginWithLatestVersionMock = jest.fn(() => ({
 }));
 
 const resourceServiceResourcesMock = jest.fn();
-const moduleServiceFindManyMock = jest.fn();
+const moduleServiceFindManyMock = jest.fn(() => {
+  return [EXAMPLE_MODULE];
+});
 const moduleDtoServiceCreateMock = jest.fn();
 const moduleDtoServiceCreateEnumMock = jest.fn();
 const moduleDtoServiceFindManyMock = jest.fn();
@@ -102,6 +140,12 @@ const pluginCatalogServiceGetPluginsMock = jest.fn();
 const moduleActionServiceFindManyMock = jest.fn();
 const entityServiceEntitiesMock = jest.fn();
 const entityServiceEntityMock = jest.fn(() => EXAMPLE_ENTITY);
+const moduleServiceGetDefaultModuleIdForEntityMock = jest.fn(
+  () => EXAMPLE_MODULE_ID
+);
+
+const permissionsServiceValidateAccessMock = jest.fn(() => true);
+
 describe("AssistantFunctionsService", () => {
   let service: AssistantFunctionsService;
 
@@ -152,6 +196,8 @@ describe("AssistantFunctionsService", () => {
           useValue: {
             create: moduleServiceCreateMock,
             findMany: moduleServiceFindManyMock,
+            getDefaultModuleIdForEntity:
+              moduleServiceGetDefaultModuleIdForEntityMock,
           },
         },
         {
@@ -189,6 +235,12 @@ describe("AssistantFunctionsService", () => {
           provide: PluginInstallationService,
           useValue: {
             create: pluginInstallationServiceCreateMock,
+          },
+        },
+        {
+          provide: PermissionsService,
+          useValue: {
+            validateAccess: permissionsServiceValidateAccessMock,
           },
         },
         MockedAmplicationLoggerProvider,
@@ -434,23 +486,12 @@ describe("AssistantFunctionsService", () => {
   it.each(cases)(
     "should execute function %s correctly",
     async (functionName, params, mocks) => {
-      const loggerContext: MessageLoggerContext = {
-        messageContext: {
-          workspaceId: EXAMPLE_WORKSPACE_ID,
-          projectId: EXAMPLE_PROJECT_ID,
-          serviceId: EXAMPLE_RESOURCE_ID,
-        },
-        threadId: EXAMPLE_THREAD_ID,
-        userId: EXAMPLE_USER_ID,
-        role: "user",
-      };
-
       await service.executeFunction(
-        "callId",
+        EXAMPLE_CALL_ID,
         functionName,
         JSON.stringify(params),
         EXAMPLE_ASSISTANT_CONTEXT,
-        loggerContext
+        EXAMPLE_LOGGER_CONTEXT
       );
 
       mocks.forEach((mock) => {
@@ -458,4 +499,56 @@ describe("AssistantFunctionsService", () => {
       });
     }
   );
+
+  it("should validate permissions before executing a function", async () => {
+    const EXAMPLE_SERVICE_ID = "exampleServiceId";
+
+    const functionName = EnumAssistantFunctions.CreateEntities;
+    const params = {
+      names: ["entity 1", "entity 2"],
+      serviceId: EXAMPLE_SERVICE_ID,
+    };
+
+    await service.executeFunction(
+      EXAMPLE_CALL_ID,
+      functionName,
+      JSON.stringify(params),
+      EXAMPLE_ASSISTANT_CONTEXT,
+      EXAMPLE_LOGGER_CONTEXT
+    );
+
+    expect(permissionsServiceValidateAccessMock).toHaveBeenCalledTimes(1);
+    expect(permissionsServiceValidateAccessMock).toHaveBeenCalledWith(
+      EXAMPLE_ASSISTANT_CONTEXT.user,
+      AuthorizableOriginParameter.ResourceId,
+      EXAMPLE_SERVICE_ID
+    );
+  });
+
+  it("should not execute the function without the needed permissions", async () => {
+    const EXAMPLE_SERVICE_ID = "exampleServiceId";
+
+    const functionName = EnumAssistantFunctions.CreateEntities;
+    const params = {
+      names: ["entity 1", "entity 2"],
+      serviceId: EXAMPLE_SERVICE_ID,
+    };
+
+    permissionsServiceValidateAccessMock.mockReturnValueOnce(false);
+
+    const results = await service.executeFunction(
+      EXAMPLE_CALL_ID,
+      functionName,
+      JSON.stringify(params),
+      EXAMPLE_ASSISTANT_CONTEXT,
+      EXAMPLE_LOGGER_CONTEXT
+    );
+
+    expect(permissionsServiceValidateAccessMock).toHaveBeenCalledTimes(1);
+
+    expect(results).toEqual({
+      callId: EXAMPLE_CALL_ID,
+      results: "User does not have access to this resource",
+    });
+  });
 });
