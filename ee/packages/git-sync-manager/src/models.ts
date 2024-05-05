@@ -716,7 +716,8 @@ export enum EnumActionStepStatus {
 
 export enum EnumAssistantFunctions {
   CommitProjectPendingChanges = 'CommitProjectPendingChanges',
-  CreateEntity = 'CreateEntity',
+  CreateEntities = 'CreateEntities',
+  CreateEntityFields = 'CreateEntityFields',
   CreateModule = 'CreateModule',
   CreateModuleAction = 'CreateModuleAction',
   CreateModuleDto = 'CreateModuleDto',

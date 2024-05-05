@@ -2336,6 +2336,9 @@ export class EntityService {
             },
           };
         }
+      } else {
+        // If the related entity is not found, create a single line text field
+        dataType = EnumDataType.SingleLineText;
       }
     }
 

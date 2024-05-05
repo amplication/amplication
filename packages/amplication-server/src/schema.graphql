@@ -680,7 +680,8 @@ enum EnumActionStepStatus {
 
 enum EnumAssistantFunctions {
   CommitProjectPendingChanges
-  CreateEntity
+  CreateEntities
+  CreateEntityFields
   CreateModule
   CreateModuleAction
   CreateModuleDto

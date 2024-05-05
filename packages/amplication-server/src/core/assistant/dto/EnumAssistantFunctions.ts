@@ -1,7 +1,8 @@
 import { registerEnumType } from "@nestjs/graphql";
 
 export enum EnumAssistantFunctions {
-  CreateEntity = "createEntity",
+  CreateEntities = "createEntities",
+  CreateEntityFields = "createEntityFields",
   GetProjectServices = "getProjectServices",
   GetServiceEntities = "getServiceEntities",
   CreateService = "createService",

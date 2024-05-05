@@ -33,10 +33,15 @@ import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
 import { AssistantThread } from "./dto/AssistantThread";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { cloneDeep } from "lodash";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
 export const PLUGIN_LATEST_VERSION_TAG = "latest";
+
+const STREAM_ERROR_MESSAGE =
+  "It looks like we're experiencing a high demand right now, which might be affecting our connection to the AI model. Please give it a little time and try again later. We appreciate your patience and understanding as we work to resolve this. Thank you! 🙏";
 
 export type MessageLoggerContext = {
   messageContext: {
@@ -215,13 +220,21 @@ export class AssistantService {
     const openai = this.openai;
 
     stream
-      .on("error", (error) => {
+      .on("error", async (error) => {
         this.logger.error(
           `Chat: Stream error: ${error.message}. Error: ${JSON.stringify(
             error
           )}`,
           null,
           loggerContext
+        );
+
+        await this.onMessageUpdated(
+          threadId,
+          "",
+          "",
+          STREAM_ERROR_MESSAGE,
+          true
         );
       })
       .on("event", async (event) => {
@@ -239,7 +252,7 @@ export class AssistantService {
                 functionName,
                 params,
                 context,
-                loggerContext
+                cloneDeep(loggerContext)
               );
             })
           );
@@ -347,6 +360,7 @@ export class AssistantService {
         const result = await this.assistantFunctions[functionName].apply(null, [
           args,
           context,
+          loggerContext,
         ]);
 
         await this.onMessageUpdated(
@@ -389,63 +403,104 @@ export class AssistantService {
   private assistantFunctions: {
     [key in EnumAssistantFunctions]: (
       args: any,
-      context: AssistantContext
+      context: AssistantContext,
+      loggerContext?: MessageLoggerContext
     ) => any;
   } = {
-    createEntity: async (
-      args: { name: string; serviceId: string; fields: string[] },
-      context: AssistantContext
+    createEntities: async (
+      args: {
+        names: string[];
+        serviceId: string;
+      },
+      context: AssistantContext,
+      loggerContext: MessageLoggerContext
     ): Promise<any> => {
-      let pluralDisplayName = plural(args.name);
-      if (pluralDisplayName === args.name) {
-        pluralDisplayName = `${args.name}Items`;
-      }
-      const entity = await this.entityService.createOneEntity(
-        {
-          data: {
-            displayName: args.name,
-            pluralDisplayName: pluralDisplayName,
-            name: pascalCase(args.name),
-            resource: {
-              connect: {
-                id: args.serviceId,
+      const results = await Promise.all(
+        args.names.map(async (entityName) => {
+          let pluralDisplayName = plural(entityName);
+          if (pluralDisplayName === entityName) {
+            pluralDisplayName = `${entityName}Items`;
+          }
+          const entity = await this.entityService.createOneEntity(
+            {
+              data: {
+                displayName: entityName,
+                pluralDisplayName: pluralDisplayName,
+                name: pascalCase(entityName),
+                resource: {
+                  connect: {
+                    id: args.serviceId,
+                  },
+                },
               },
             },
-          },
-        },
-        context.user
+            context.user
+          );
+
+          const defaultModuleId =
+            await this.moduleService.getDefaultModuleIdForEntity(
+              args.serviceId,
+              entity.id
+            );
+
+          return {
+            entityLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities/${entity.id}`,
+            apisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${defaultModuleId}`,
+            result: entity,
+          };
+        })
       );
 
-      if (args.fields && args.fields.length > 0) {
-        await Promise.all(
-          args.fields.map(async (field) => {
-            await this.entityService.createFieldByDisplayName(
+      return {
+        allEntitiesLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities/`,
+        allApisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/`,
+        result: results,
+      };
+    },
+    createEntityFields: async (
+      args: {
+        entityId: string;
+        fields: { name: string; type: EnumDataType }[];
+      },
+      context: AssistantContext,
+      loggerContext: MessageLoggerContext
+    ): Promise<any> => {
+      const entity = await this.entityService.entity({
+        where: {
+          id: args.entityId,
+        },
+      });
+
+      const newFields = await Promise.all(
+        args.fields?.map(async (field) => {
+          try {
+            return this.entityService.createFieldByDisplayName(
               {
                 data: {
-                  displayName: field,
+                  displayName: field.name,
+                  dataType: field.type,
                   entity: {
                     connect: {
-                      id: entity.id,
+                      id: args.entityId,
                     },
                   },
                 },
               },
               context.user
             );
-          })
-        );
-      }
-
-      const defaultModuleId =
-        await this.moduleService.getDefaultModuleIdForEntity(
-          args.serviceId,
-          entity.id
-        );
+          } catch (error) {
+            this.logger.error(
+              `Chat: Error creating field ${field.name} for entity ${entity.name}`,
+              error,
+              loggerContext
+            );
+          }
+        })
+      );
 
       return {
-        entityLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities/${entity.id}`,
-        apisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${defaultModuleId}`,
-        result: entity,
+        entityLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${entity.resourceId}/entities/${entity.id}`,
+        result: newFields,
       };
     },
     getProjectServices: async (
