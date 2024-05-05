@@ -39,9 +39,9 @@ const INITIAL_MESSAGE: AssistantMessageWithOptions = {
   createdAt: "",
   options: [
     "Does Amplication auto-generate APIs?",
-    "How can I create a new entity in my Amplication service?",
-    "I want to add Kafka to my services. Can I do it with Amplication?",
     "I want to create a new project with a couple of services. Can you help me?",
+    "Can you recommend the plugins I should install for my Service for an event-driven architecture?",
+    "What are the benefits that Amplication can provide to my backend services?",
   ],
 };
 
