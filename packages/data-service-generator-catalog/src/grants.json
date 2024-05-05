@@ -46,5 +46,23 @@
     "resource": "Version",
     "action": "delete:any",
     "attributes": "*"
+  },
+  {
+    "role": "user",
+    "resource": "Generator",
+    "action": "create:any",
+    "attributes": "*"
+  },
+  {
+    "role": "user",
+    "resource": "Generator",
+    "action": "update:any",
+    "attributes": "*"
+  },
+  {
+    "role": "user",
+    "resource": "Generator",
+    "action": "delete:any",
+    "attributes": "*"
   }
 ]
