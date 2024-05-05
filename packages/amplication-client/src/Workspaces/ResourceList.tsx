@@ -160,7 +160,7 @@ function ResourceList() {
         itemsAlign={EnumItemsAlign.Stretch}
       >
         <Panel
-          panelStyle={EnumPanelStyle.Bordered}
+          panelStyle={EnumPanelStyle.Bold}
           className={`${CLASS_NAME}__resources`}
           themeColor={EnumTextColor.ThemeBlue}
         >
