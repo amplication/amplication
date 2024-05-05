@@ -93,6 +93,7 @@ body {
   background-size: contain;
 }
 
+.swagger-ui .topbar-wrapper svg,
 .swagger-ui .topbar-wrapper img {
   display: none;
 }
