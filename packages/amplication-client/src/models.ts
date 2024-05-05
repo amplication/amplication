@@ -99,6 +99,7 @@ export type AssistantMessage = {
 
 export type AssistantMessageDelta = {
   completed: Scalars['Boolean']['output'];
+  functionExecuted?: Maybe<EnumAssistantFunctions>;
   id: Scalars['String']['output'];
   snapshot: Scalars['String']['output'];
   text: Scalars['String']['output'];
@@ -716,6 +717,25 @@ export enum EnumActionStepStatus {
   Waiting = 'Waiting'
 }
 
+export enum EnumAssistantFunctions {
+  CommitProjectPendingChanges = 'CommitProjectPendingChanges',
+  CreateEntity = 'CreateEntity',
+  CreateModule = 'CreateModule',
+  CreateModuleAction = 'CreateModuleAction',
+  CreateModuleDto = 'CreateModuleDto',
+  CreateModuleEnum = 'CreateModuleEnum',
+  CreateProject = 'CreateProject',
+  CreateService = 'CreateService',
+  GetModuleActions = 'GetModuleActions',
+  GetModuleDtosAndEnums = 'GetModuleDtosAndEnums',
+  GetPlugins = 'GetPlugins',
+  GetProjectPendingChanges = 'GetProjectPendingChanges',
+  GetProjectServices = 'GetProjectServices',
+  GetServiceEntities = 'GetServiceEntities',
+  GetServiceModules = 'GetServiceModules',
+  InstallPlugins = 'InstallPlugins'
+}
+
 export enum EnumAssistantMessageRole {
   Assistant = 'Assistant',
   User = 'User'
@@ -1273,6 +1293,11 @@ export type ModuleDtoEnumMemberCreateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type ModuleDtoEnumMemberInput = {
+  name: Scalars['String']['input'];
+  value: Scalars['String']['input'];
+};
+
 export type ModuleDtoEnumMemberUpdateInput = {
   name: Scalars['String']['input'];
   value: Scalars['String']['input'];
@@ -1297,6 +1322,13 @@ export type ModuleDtoProperty = {
 export type ModuleDtoPropertyCreateInput = {
   moduleDto: WhereParentIdInput;
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ModuleDtoPropertyInput = {
+  isArray: Scalars['Boolean']['input'];
+  isOptional: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  propertyTypes: Array<PropertyTypeDefInput>;
 };
 
 export type ModuleDtoPropertyUpdateInput = {
@@ -1417,7 +1449,6 @@ export type Mutation = {
   redesignProject: UserAction;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
-  sendAssistantMessage: AssistantThread;
   sendAssistantMessageWithStream: AssistantThread;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
@@ -1553,11 +1584,15 @@ export type MutationCreateModuleActionArgs = {
 
 export type MutationCreateModuleDtoArgs = {
   data: ModuleDtoCreateInput;
+  members?: InputMaybe<Array<ModuleDtoEnumMemberInput>>;
+  properties?: InputMaybe<Array<ModuleDtoPropertyInput>>;
 };
 
 
 export type MutationCreateModuleDtoEnumArgs = {
   data: ModuleDtoCreateInput;
+  members?: InputMaybe<Array<ModuleDtoEnumMemberInput>>;
+  properties?: InputMaybe<Array<ModuleDtoPropertyInput>>;
 };
 
 
@@ -1774,12 +1809,6 @@ export type MutationResendInvitationArgs = {
 
 export type MutationRevokeInvitationArgs = {
   where: WhereUniqueInput;
-};
-
-
-export type MutationSendAssistantMessageArgs = {
-  context: AssistantContext;
-  data: SendAssistantMessageInput;
 };
 
 

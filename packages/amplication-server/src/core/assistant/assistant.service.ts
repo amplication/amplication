@@ -32,25 +32,7 @@ import { AssistantContext } from "./dto/AssistantContext";
 import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
 import { AssistantThread } from "./dto/AssistantThread";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
-
-export enum EnumAssistantFunctions {
-  CreateEntity = "createEntity",
-  GetProjectServices = "getProjectServices",
-  GetServiceEntities = "getServiceEntities",
-  CreateService = "createService",
-  CreateProject = "createProject",
-  CommitProjectPendingChanges = "commitProjectPendingChanges",
-  GetProjectPendingChanges = "getProjectPendingChanges",
-  GetPlugins = "getPlugins",
-  InstallPlugins = "installPlugins",
-  GetServiceModules = "getServiceModules",
-  CreateModule = "createModule",
-  GetModuleDtosAndEnums = "getModuleDtosAndEnums",
-  CreateModuleDto = "createModuleDto",
-  CreateModuleEnum = "createModuleEnum",
-  GetModuleActions = "getModuleActions",
-  CreateModuleAction = "createModuleAction",
-}
+import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
@@ -119,14 +101,28 @@ export class AssistantService {
     messageId: string,
     textDelta: string,
     snapshot: string,
-    completed: boolean
+    completed: boolean,
+    functionName?: string
   ) => {
+    let functionExecuted: EnumAssistantFunctions | undefined;
+
+    if (functionName) {
+      //get the enum value based on the function name and the enum value
+      functionExecuted =
+        EnumAssistantFunctions[
+          Object.keys(EnumAssistantFunctions).find(
+            (key) => EnumAssistantFunctions[key] === functionName
+          )
+        ];
+    }
+
     const message: AssistantMessageDelta = {
       id: "messageId",
       threadId,
       text: textDelta,
       snapshot: snapshot,
       completed,
+      functionExecuted: functionExecuted,
     };
     await this.graphqlSubscriptionKafkaService
       .getPubSub()
@@ -348,14 +344,23 @@ export class AssistantService {
 
     if (this.assistantFunctions[functionName] !== undefined) {
       try {
+        const result = await this.assistantFunctions[functionName].apply(null, [
+          args,
+          context,
+        ]);
+
+        await this.onMessageUpdated(
+          loggerContext.threadId,
+          callId,
+          "",
+          "",
+          false,
+          functionName
+        );
+
         return {
           callId,
-          results: JSON.stringify(
-            await this.assistantFunctions[functionName].apply(null, [
-              args,
-              context,
-            ])
-          ),
+          results: JSON.stringify(result),
         };
       } catch (error) {
         this.logger.error(
@@ -737,7 +742,7 @@ export class AssistantService {
         context.user
       );
       return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/dtos/${dto.id}`,
         result: dto,
       };
     },
@@ -775,7 +780,7 @@ export class AssistantService {
         context.user
       );
       return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/dtos/${dto.id}`,
         result: dto,
       };
     },
@@ -859,7 +864,7 @@ export class AssistantService {
         context.user
       );
       return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/modules/${args.moduleId}/actions/${action.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
         result: updatedAction,
       };
     },
