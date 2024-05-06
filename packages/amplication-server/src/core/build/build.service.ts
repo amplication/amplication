@@ -985,6 +985,7 @@ export class BuildService {
             // resource.codeGeneratorStrategy is the value and not the key, but as the key is the same as the value we can use it
             CodeGeneratorVersionStrategy[resource.codeGeneratorStrategy],
         },
+        codeGeneratorName: resource.codeGeneratorName,
       },
       otherResources,
     };

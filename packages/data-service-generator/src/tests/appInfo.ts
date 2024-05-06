@@ -36,4 +36,5 @@ export const appInfo: AppInfo = {
     codeGeneratorVersion: null,
     codeGeneratorStrategy: CodeGeneratorVersionStrategy.LatestMajor,
   },
+  codeGeneratorName: "",
 };

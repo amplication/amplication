@@ -304,16 +304,18 @@ describe("BuildRunnerService", () => {
       expect(spyOnAxiosPost).toHaveBeenNthCalledWith(1, "http://runner.url/", {
         resourceId: resourceId,
         buildId: `${buildId}-${EnumDomainName.Server}`,
+        codeGeneratorName: "data-service-generator",
         codeGeneratorVersion: expectedCodeGeneratorVersion,
       });
       expect(spyOnAxiosPost).toHaveBeenNthCalledWith(2, "http://runner.url/", {
         resourceId: resourceId,
         buildId: `${buildId}-${EnumDomainName.AdminUI}`,
+        codeGeneratorName: "data-service-generator",
         codeGeneratorVersion: expectedCodeGeneratorVersion,
       });
     });
 
-    it("On code generation request, it should split the build into jobs, save the DSG resource data and send it to the runner", async () => {
+    it("On code generation request, it should split the build into jobs, save the DSG resource data and send it to the runner with the default dsg-image-name", async () => {
       // Arrange
       const resourceId = "resourceId";
       const buildId = "buildId";
@@ -401,11 +403,13 @@ describe("BuildRunnerService", () => {
       expect(spyOnAxiosPost).toHaveBeenNthCalledWith(1, "http://runner.url/", {
         resourceId: resourceId,
         buildId: `${buildId}-${EnumDomainName.Server}`,
+        codeGeneratorName: "data-service-generator",
         codeGeneratorVersion: expectedCodeGeneratorVersion,
       });
       expect(spyOnAxiosPost).toHaveBeenNthCalledWith(2, "http://runner.url/", {
         resourceId: resourceId,
         buildId: `${buildId}-${EnumDomainName.AdminUI}`,
+        codeGeneratorName: "data-service-generator",
         codeGeneratorVersion: expectedCodeGeneratorVersion,
       });
     });
