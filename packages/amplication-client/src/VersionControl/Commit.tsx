@@ -222,6 +222,7 @@ const Commit = ({
                 />
               )}
               <MultiStateToggle
+                className={`${CLASS_NAME}__technology-toggle`}
                 label=""
                 name="action_"
                 options={OPTIONS}

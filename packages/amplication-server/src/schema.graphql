@@ -78,6 +78,7 @@ type AssistantMessage {
 
 type AssistantMessageDelta {
   completed: Boolean!
+  functionExecuted: EnumAssistantFunctions
   id: String!
   snapshot: String!
   text: String!
@@ -675,6 +676,26 @@ enum EnumActionStepStatus {
   Running
   Success
   Waiting
+}
+
+enum EnumAssistantFunctions {
+  CommitProjectPendingChanges
+  CreateEntities
+  CreateEntityFields
+  CreateModule
+  CreateModuleAction
+  CreateModuleDto
+  CreateModuleEnum
+  CreateProject
+  CreateService
+  GetModuleActions
+  GetModuleDtosAndEnums
+  GetPlugins
+  GetProjectPendingChanges
+  GetProjectServices
+  GetServiceEntities
+  GetServiceModules
+  InstallPlugins
 }
 
 enum EnumAssistantMessageRole {

@@ -9,44 +9,34 @@ import {
   FlexItem,
   Icon,
   Text,
-  TextField,
   Tooltip,
 } from "@amplication/ui/design-system";
-import { Form, Formik } from "formik";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { HotKeys } from "react-hotkeys";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import * as models from "../models";
-import "./Assistant.scss";
-import useAssistant from "./hooks/useAssistant";
-import AssistantMessage from "./AssistantMessage";
-import classNames from "classnames";
-import { useAppContext } from "../context/appContext";
-import { Link } from "react-router-dom";
-import jovu from "../assets/jovu.svg";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { useStiggContext } from "@stigg/react-sdk";
-import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
 import { useQuery } from "@apollo/client";
-type SendMessageType = models.SendAssistantMessageInput;
+import { useStiggContext } from "@stigg/react-sdk";
+import classNames from "classnames";
+import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import { Button, EnumButtonStyle } from "../Components/Button";
+import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
+import jovu from "../assets/jovu-logo.svg";
+import { useAppContext } from "../context/appContext";
+import "./Assistant.scss";
+import AssistantChatInput from "./AssistantChatInput";
+import AssistantMessage from "./AssistantMessage";
+import JovuLogo from "./JovuLogo";
+import { useAssistantContext } from "./context/AssistantContext";
 
-const INITIAL_VALUES: SendMessageType = {
-  message: "",
-};
 const DIRECTION = "sw";
 
-const CLASS_NAME = "assistant";
-
-const keyMap = {
-  SUBMIT: "enter",
-};
+export const CLASS_NAME = "assistant";
 
 const WIDTH_STATE_DEFAULT = "default";
 const WIDTH_STATE_WIDE = "wide";
 
 const WIDTH_STATE_SETTINGS: Record<
   string,
-  { icon: string; tooltip: string; nextState: string }
+  { icon: string; tooltip: string; nextState: "default" | "wide" }
 > = {
   [WIDTH_STATE_DEFAULT]: {
     icon: "chevrons_right",
@@ -63,6 +53,17 @@ const WIDTH_STATE_SETTINGS: Record<
 const Assistant = () => {
   const { currentWorkspace } = useAppContext();
 
+  const {
+    open,
+    setOpen,
+    widthState,
+    setWidthState,
+    sendMessage,
+    messages,
+    processingMessage: loading,
+    streamError,
+  } = useAssistantContext();
+
   const { stigg } = useStiggContext();
 
   const { hasAccess } = stigg.getMeteredEntitlement({
@@ -73,9 +74,6 @@ const Assistant = () => {
     variables: { id: currentWorkspace.id },
   });
 
-  const [open, setOpen] = useState(true);
-  const [widthState, setWidthState] = useState(WIDTH_STATE_DEFAULT);
-
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -83,24 +81,9 @@ const Assistant = () => {
     }
   };
 
-  const {
-    sendMessage,
-    messages,
-    processingMessage: loading,
-    streamError,
-  } = useAssistant();
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  const handleSubmit = useCallback(
-    (data: SendMessageType, { setErrors, resetForm }) => {
-      sendMessage(data.message);
-      resetForm({ values: INITIAL_VALUES });
-    },
-    [sendMessage]
-  );
 
   return (
     <>
@@ -167,13 +150,7 @@ const Assistant = () => {
             gap={EnumGapSize.Large}
             className={`${CLASS_NAME}__limit`}
           >
-            <img
-              src={jovu}
-              alt="jovu"
-              width={50}
-              height={50}
-              style={{ background: "white", borderRadius: "50%" }}
-            />
+            <JovuLogo />
             <Text textStyle={EnumTextStyle.H3} textAlign={EnumTextAlign.Center}>
               You have reached the daily limit of Jovu requests for your plan.
             </Text>
@@ -222,42 +199,7 @@ const Assistant = () => {
               )}
             </div>
 
-            <div className={`${CLASS_NAME}__chat_input`}>
-              <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-                {(formik) => {
-                  const handlers = {
-                    SUBMIT: formik.submitForm,
-                  };
-                  return (
-                    <Form>
-                      <HotKeys
-                        keyMap={keyMap}
-                        handlers={handlers}
-                        className={`${CLASS_NAME}__text-wrapper`}
-                      >
-                        <TextField
-                          textarea
-                          name="message"
-                          label="How can I help you?"
-                          disabled={loading}
-                          autoFocus
-                          autoComplete="off"
-                          hideLabel
-                          rows={2}
-                        />
-                      </HotKeys>
-                      <Button
-                        type="submit"
-                        buttonStyle={EnumButtonStyle.Primary}
-                        disabled={loading}
-                      >
-                        Send
-                      </Button>
-                    </Form>
-                  );
-                }}
-              </Formik>
-            </div>
+            <AssistantChatInput disabled={loading} sendMessage={sendMessage} />
           </>
         ) : (
           <div className={`${CLASS_NAME}__messages`}>

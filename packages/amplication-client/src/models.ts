@@ -99,6 +99,7 @@ export type AssistantMessage = {
 
 export type AssistantMessageDelta = {
   completed: Scalars['Boolean']['output'];
+  functionExecuted?: Maybe<EnumAssistantFunctions>;
   id: Scalars['String']['output'];
   snapshot: Scalars['String']['output'];
   text: Scalars['String']['output'];
@@ -714,6 +715,26 @@ export enum EnumActionStepStatus {
   Running = 'Running',
   Success = 'Success',
   Waiting = 'Waiting'
+}
+
+export enum EnumAssistantFunctions {
+  CommitProjectPendingChanges = 'CommitProjectPendingChanges',
+  CreateEntities = 'CreateEntities',
+  CreateEntityFields = 'CreateEntityFields',
+  CreateModule = 'CreateModule',
+  CreateModuleAction = 'CreateModuleAction',
+  CreateModuleDto = 'CreateModuleDto',
+  CreateModuleEnum = 'CreateModuleEnum',
+  CreateProject = 'CreateProject',
+  CreateService = 'CreateService',
+  GetModuleActions = 'GetModuleActions',
+  GetModuleDtosAndEnums = 'GetModuleDtosAndEnums',
+  GetPlugins = 'GetPlugins',
+  GetProjectPendingChanges = 'GetProjectPendingChanges',
+  GetProjectServices = 'GetProjectServices',
+  GetServiceEntities = 'GetServiceEntities',
+  GetServiceModules = 'GetServiceModules',
+  InstallPlugins = 'InstallPlugins'
 }
 
 export enum EnumAssistantMessageRole {

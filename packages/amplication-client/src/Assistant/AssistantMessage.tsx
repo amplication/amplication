@@ -5,7 +5,7 @@ import UserBadge from "../Components/UserBadge";
 import * as models from "../models";
 import { AssistantMessageWithOptions } from "./hooks/useAssistant";
 
-import jovu from "../assets/jovu.svg";
+import JovuLogo from "./JovuLogo";
 
 const CLASS_NAME = "assistant";
 
@@ -25,13 +25,7 @@ const AssistantMessage = ({ message, onOptionClick }: Props) => {
           </>
         ) : (
           <>
-            <img
-              src={jovu}
-              alt="jovu"
-              width={30}
-              height={30}
-              style={{ background: "white", borderRadius: "50%" }}
-            />
+            <JovuLogo loading={message.loading} />
             Jovu
           </>
         )}
