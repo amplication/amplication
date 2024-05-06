@@ -2,7 +2,7 @@ import { ArgsType, Field } from "@nestjs/graphql";
 import { WhereUniqueInput } from "../../../dto";
 
 @ArgsType()
-export class UpdateCodeGeneratorTechnologyArgs {
+export class UpdateCodeGeneratorNameArgs {
   @Field(() => String, {
     nullable: false,
   })

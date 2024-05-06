@@ -75,7 +75,7 @@ import {
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
 import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
-import { UpdateCodeGeneratorTechnologyArgs } from "./dto/UpdateCodeGeneratorTechnologyArgs";
+import { UpdateCodeGeneratorNameArgs } from "./dto/UpdateCodeGeneratorNameArgs";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -369,7 +369,7 @@ export class ResourceService {
   }
 
   async updateCodeGeneratorName(
-    args: UpdateCodeGeneratorTechnologyArgs,
+    args: UpdateCodeGeneratorNameArgs,
     user: User
   ): Promise<Resource | null> {
     const resource = await this.resource({
