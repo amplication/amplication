@@ -95,7 +95,7 @@ const ResourceOverview = () => {
           <BtmButton
             openInFullScreen
             location={EnumButtonLocation.Resource}
-            ButtonStyle={EnumButtonStyle.GradientFull}
+            ButtonStyle={EnumButtonStyle.GradientOutline}
           />
           {currentResource?.resourceType === EnumResourceType.Service && (
             <AddResourceFunctionalityButton

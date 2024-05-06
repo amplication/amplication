@@ -15,7 +15,7 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { useQuery } from "@apollo/client";
 import { useStiggContext } from "@stigg/react-sdk";
 import classNames from "classnames";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
@@ -25,7 +25,7 @@ import "./Assistant.scss";
 import AssistantChatInput from "./AssistantChatInput";
 import AssistantMessage from "./AssistantMessage";
 import JovuLogo from "./JovuLogo";
-import useAssistant from "./hooks/useAssistant";
+import { useAssistantContext } from "./context/AssistantContext";
 
 const DIRECTION = "sw";
 
@@ -36,7 +36,7 @@ const WIDTH_STATE_WIDE = "wide";
 
 const WIDTH_STATE_SETTINGS: Record<
   string,
-  { icon: string; tooltip: string; nextState: string }
+  { icon: string; tooltip: string; nextState: "default" | "wide" }
 > = {
   [WIDTH_STATE_DEFAULT]: {
     icon: "chevrons_right",
@@ -53,6 +53,17 @@ const WIDTH_STATE_SETTINGS: Record<
 const Assistant = () => {
   const { currentWorkspace } = useAppContext();
 
+  const {
+    open,
+    setOpen,
+    widthState,
+    setWidthState,
+    sendMessage,
+    messages,
+    processingMessage: loading,
+    streamError,
+  } = useAssistantContext();
+
   const { stigg } = useStiggContext();
 
   const { hasAccess } = stigg.getMeteredEntitlement({
@@ -63,22 +74,12 @@ const Assistant = () => {
     variables: { id: currentWorkspace.id },
   });
 
-  const [open, setOpen] = useState(true);
-  const [widthState, setWidthState] = useState(WIDTH_STATE_DEFAULT);
-
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
-
-  const {
-    sendMessage,
-    messages,
-    processingMessage: loading,
-    streamError,
-  } = useAssistant();
 
   useEffect(() => {
     scrollToBottom();
