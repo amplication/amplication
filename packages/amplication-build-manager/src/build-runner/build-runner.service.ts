@@ -23,18 +23,13 @@ const OLD_DSG_IMAGE_NAME = "data-service-generator";
 @Traceable()
 @Injectable()
 export class BuildRunnerService {
-  private readonly minDsgVersionForMultiImages: string;
   constructor(
     private readonly configService: ConfigService<Env, true>,
     private readonly producerService: KafkaProducerService,
     private readonly codeGeneratorService: CodeGeneratorService,
     private readonly buildJobsHandlerService: BuildJobsHandlerService,
     private readonly logger: AmplicationLogger
-  ) {
-    this.minDsgVersionForMultiImages = this.configService.getOrThrow(
-      Env.FEATURE_MULTI_DSG_IMAGES
-    );
-  }
+  ) {}
 
   async runBuild(
     resourceId: string,
@@ -311,20 +306,13 @@ export class BuildRunnerService {
    * @param codeGeneratorVersion (string) the requested code generator version
    * @param codeGeneratorName (string) the requested code generator name (from the DSG catalog).
    * If didn't provided, the old image name will be used
-   * If the requested version is lower than the min version for multi images, the old image name will be used for backward compatibility
    * @returns (string) the container image name
    */
   private async codeGeneratorNameToContainerImageName(
     codeGeneratorVersion: string,
     codeGeneratorName: string
   ): Promise<string> {
-    const canUseMultiImages =
-      this.codeGeneratorService.compareVersions(
-        codeGeneratorVersion,
-        this.minDsgVersionForMultiImages
-      ) >= 0;
-
-    if (!canUseMultiImages || !codeGeneratorName) {
+    if (!codeGeneratorName) {
       this.logger.debug("Using default image name", {
         name: OLD_DSG_IMAGE_NAME,
         codeGeneratorVersion,
