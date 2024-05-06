@@ -368,7 +368,7 @@ export class ResourceService {
     });
   }
 
-  async updateCodeGeneratorTechnology(
+  async updateCodeGeneratorName(
     args: UpdateCodeGeneratorTechnologyArgs,
     user: User
   ): Promise<Resource | null> {
@@ -384,7 +384,7 @@ export class ResourceService {
 
     const codeGeneratorUpdate = await this.billingService.getBooleanEntitlement(
       user.workspace.id,
-      BillingFeature.CodeGeneratorTechnology
+      BillingFeature.CodeGeneratorName
     );
 
     if (codeGeneratorUpdate && !codeGeneratorUpdate.hasAccess)

@@ -187,11 +187,11 @@ export class ResourceResolver {
     nullable: true,
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
-  async updateCodeGeneratorTechnology(
+  async updateCodeGeneratorName(
     @Args() args: UpdateCodeGeneratorTechnologyArgs,
     @UserEntity() user: User
   ): Promise<Resource | null> {
-    return this.resourceService.updateCodeGeneratorTechnology(args, user);
+    return this.resourceService.updateCodeGeneratorName(args, user);
   }
 
   @ResolveField(() => GitRepository, { nullable: true })
