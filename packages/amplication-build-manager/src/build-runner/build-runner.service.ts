@@ -103,7 +103,7 @@ export class BuildRunnerService {
         resourceId,
         buildId: jobBuildId,
         codeGeneratorVersion, // image tag. Nullable. If not provided, the default image tag for each environment will be used
-        codeGeneratorName: containerImageName, // image (and container) name. Nullable. If not provided, the default image name will be used (generator-nodejs-nest)
+        codeGeneratorName: containerImageName, // image (and container) name. Nullable. If not provided, the default image name will be used (data-service-generator)
       };
       this.logger.debug("Calling argo event with post payload: ", { postBody });
       await axios.post(url, postBody);
