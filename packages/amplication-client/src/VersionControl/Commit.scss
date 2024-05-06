@@ -1,11 +1,23 @@
 @import "../style/index.scss";
 
+$padding-top-toggle: 16px;
+
 .commit {
   padding-top: 0;
 
   .amp-button {
     margin: var(--large-spacing) 0;
     width: 100%;
+  }
+
+  .multi-state-toggle {
+    margin-bottom: 0px;
+    padding-top: $padding-top-toggle;
+
+    .multi-state-toggle__states__state--selected {
+      background-color: var(--color-positive);
+      border-color: var(--color-positive);
+    }
   }
 
   .text-input {

@@ -86,6 +86,7 @@ export enum EventNames {
   CreateAdminUI = "CreateAdminUI",
   CreateServer = "CreateServer",
   CreateServerAppModule = "CreateServerAppModule",
+  CreateMainFile = "CreateMainFile",
   CreateServerDotEnv = "CreateServerDotEnv",
   CreateServerGitIgnore = "CreateServerGitIgnore",
   CreateAdminGitIgnore = "CreateAdminGitIgnore",

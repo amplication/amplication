@@ -1,13 +1,13 @@
 import { EnumTextColor, Icon } from "@amplication/ui/design-system";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import { styled } from "@mui/material/styles";
-import { useCallback, useContext, useMemo } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useCallback, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { useTracking } from "react-tracking";
-import { AppContext } from "../context/appContext";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import "./FeatureIndicator.scss";
 import { IconType } from "./FeatureIndicatorContainer";
+import useAbTesting from "../VersionControl/hooks/useABTesting";
 
 const WarningTooltip = styled(
   ({ className, placement, ...props }: TooltipProps) => (
@@ -32,9 +32,10 @@ const WarningTooltip = styled(
 
 const CLASS_NAME = "amp-feature-indicator";
 
-export const tooltipDefaultTextUpgrade = "Upgrade";
-
-export const tooltipDefaultText = `Explore this feature, included in your 7-day Enterprise trial. ${tooltipDefaultTextUpgrade} for continued access.`;
+export const defaultTextStart =
+  "Explore this feature, included in your 7-day Enterprise trial.";
+export const defaultTextEnd =
+  "today to ensure continued access and discover additional hidden functionalities!";
 
 type Props = {
   featureName: string;
@@ -43,8 +44,9 @@ type Props = {
   comingSoon?: boolean;
   placement?: TooltipProps["placement"];
   tooltipIcon?: string;
-  text?: string;
-  linkText?: string;
+  textStart?: string;
+  textEnd?: string;
+  showTooltipLink?: boolean;
 };
 
 export const FeatureIndicator = ({
@@ -54,55 +56,53 @@ export const FeatureIndicator = ({
   comingSoon = false,
   tooltipIcon,
   placement = "top-start",
-  text = tooltipDefaultText,
-  linkText = tooltipDefaultTextUpgrade,
+  textStart,
+  textEnd,
+  showTooltipLink = true,
 }: Props) => {
-  const history = useHistory();
+  const { upgradeCtaVariationData } = useAbTesting();
   const { trackEvent } = useTracking();
-  const { currentWorkspace } = useContext(AppContext);
 
   const handleViewPlansClick = useCallback(() => {
-    history.push(`/${currentWorkspace.id}/purchase`, {
-      from: { pathname: window.location.pathname },
-    });
     trackEvent({
       eventName: AnalyticsEventNames.UpgradeClick,
       eventOriginLocation: FeatureIndicator.name,
       billingFeature: featureName,
+      linkType: upgradeCtaVariationData?.linkMessage,
     });
-  }, [currentWorkspace, window.location.pathname]);
-
-  const renderEnterpriseTrialTooltipText = useMemo(() => {
-    const textArray = text.split(tooltipDefaultTextUpgrade);
-    return (
-      <>
-        {textArray[0]}
-        <Link
-          onClick={handleViewPlansClick}
-          style={{ color: "#53dbee" }}
-          to={{}}
-        >
-          {tooltipDefaultTextUpgrade}
-        </Link>
-        {textArray[1]}
-      </>
-    );
-  }, [text, tooltipDefaultTextUpgrade, handleViewPlansClick]);
+  }, [featureName, trackEvent, upgradeCtaVariationData]);
 
   const renderTooltipTextWithUpgradeLink = useMemo(() => {
+    const currentStartText = textStart ?? defaultTextStart;
+    const currentEndText = textEnd ?? defaultTextEnd;
     return (
       <>
-        <span>{text}</span>{" "}
-        <Link
-          onClick={handleViewPlansClick}
-          style={{ color: "#53dbee" }}
-          to={{}}
-        >
-          {linkText}
-        </Link>
+        <span>{currentStartText}</span>
+        {showTooltipLink && (
+          <>
+            <br />
+            <a
+              href={upgradeCtaVariationData?.url}
+              target="_blank"
+              rel="noreferrer"
+              onClick={handleViewPlansClick}
+              style={{ color: "#53dbee" }}
+            >
+              {upgradeCtaVariationData?.linkMessage}{" "}
+            </a>
+            <span>{currentEndText}</span>
+          </>
+        )}
       </>
     );
-  }, [text, linkText, handleViewPlansClick]);
+  }, [
+    textStart,
+    showTooltipLink,
+    upgradeCtaVariationData?.url,
+    upgradeCtaVariationData?.linkMessage,
+    handleViewPlansClick,
+    textEnd,
+  ]);
 
   return (
     <WarningTooltip
@@ -112,9 +112,7 @@ export const FeatureIndicator = ({
           {tooltipIcon && <Icon icon={tooltipIcon} />}
           {!comingSoon ? (
             <div className={`${CLASS_NAME}__tooltip__window__info`}>
-              {icon === IconType.Diamond
-                ? renderEnterpriseTrialTooltipText
-                : renderTooltipTextWithUpgradeLink}
+              {renderTooltipTextWithUpgradeLink}
             </div>
           ) : (
             <div className={`${CLASS_NAME}__tooltip__window__info`}>
@@ -123,9 +121,9 @@ export const FeatureIndicator = ({
                 style={{ color: "#53dbee" }}
                 to={{}}
               >
-                {linkText}{" "}
+                {upgradeCtaVariationData?.linkMessage}{" "}
               </Link>
-              <span>{text}</span>
+              <span>{textStart}</span>
             </div>
           )}
         </div>

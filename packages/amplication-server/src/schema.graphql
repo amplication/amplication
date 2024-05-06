@@ -64,6 +64,33 @@ input ApiTokenCreateInput {
   name: String!
 }
 
+input AssistantContext {
+  projectId: String
+  resourceId: String
+}
+
+type AssistantMessage {
+  createdAt: String!
+  id: String!
+  role: EnumAssistantMessageRole!
+  text: String!
+}
+
+type AssistantMessageDelta {
+  completed: Boolean!
+  id: String!
+  snapshot: String!
+  text: String!
+  threadId: String!
+}
+
+type AssistantThread {
+  createdAt: String!
+  id: String!
+  messages: [AssistantMessage!]
+  updatedAt: String!
+}
+
 type Auth {
   """JWT Bearer token"""
   token: String!
@@ -648,6 +675,11 @@ enum EnumActionStepStatus {
   Running
   Success
   Waiting
+}
+
+enum EnumAssistantMessageRole {
+  Assistant
+  User
 }
 
 enum EnumAuthProviderType {
@@ -1356,6 +1388,8 @@ type Mutation {
   redesignProject(data: RedesignProjectInput!): UserAction!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
+  sendAssistantMessage(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
+  sendAssistantMessageWithStream(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   signup(data: SignupInput!): Auth!
@@ -1872,6 +1906,11 @@ enum Role {
   User
 }
 
+input SendAssistantMessageInput {
+  message: String!
+  threadId: String
+}
+
 type ServerSettings {
   generateGraphQL: Boolean!
   generateRestApi: Boolean!
@@ -2015,18 +2054,7 @@ input StringFilter {
 }
 
 type Subscription {
-  cancelUrl: String
-  cancellationEffectiveDate: DateTime
-  createdAt: DateTime!
-  id: String!
-  nextBillDate: DateTime
-  price: Float
-  status: EnumSubscriptionStatus!
-  subscriptionPlan: EnumSubscriptionPlan!
-  updateUrl: String
-  updatedAt: DateTime!
-  workspace: Workspace
-  workspaceId: String!
+  assistantMessageUpdated(threadId: String!): AssistantMessageDelta!
 }
 
 type Topic implements IBlock {
@@ -2161,7 +2189,7 @@ type Workspace {
   id: String!
   name: String!
   projects: [Project!]!
-  subscription: Subscription
+  subscription: WorkspaceSubscription
   updatedAt: DateTime!
   users: [User!]!
 }
@@ -2176,6 +2204,21 @@ type WorkspaceMember {
 }
 
 union WorkspaceMemberType = Invitation | User
+
+type WorkspaceSubscription {
+  cancelUrl: String
+  cancellationEffectiveDate: DateTime
+  createdAt: DateTime!
+  id: String!
+  nextBillDate: DateTime
+  price: Float
+  status: EnumSubscriptionStatus!
+  subscriptionPlan: EnumSubscriptionPlan!
+  updateUrl: String
+  updatedAt: DateTime!
+  workspace: Workspace
+  workspaceId: String!
+}
 
 input WorkspaceUpdateInput {
   allowLLMFeatures: Boolean

@@ -43,4 +43,6 @@ export enum KAFKA_TOPICS {
   /// ai
   AI_CONVERSATION_START_TOPIC = "ai.internal.conversation.start.1",
   AI_CONVERSATION_COMPLETED_TOPIC = "ai.internal.conversation.completed.1",
+
+  SHARED_GRAPHQL_SUBSCRIPTION_PUBSUB_TOPIC = "shared.internal.graphql-subscrition-pubsub.1",
 }

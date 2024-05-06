@@ -407,6 +407,7 @@ const ModalContent = ({
                 <SelectMenuItem
                   closeAfterSelectionChange
                   key={option.value}
+                  itemData={option.value}
                   onSelectionChange={onPrimitiveSelected}
                   selected={option.value === meta.value?.type}
                 >

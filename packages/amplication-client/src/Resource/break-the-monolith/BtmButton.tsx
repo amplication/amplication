@@ -31,10 +31,11 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { useStiggContext } from "@stigg/react-sdk";
 import {
   FeatureIndicator,
-  tooltipDefaultText,
-  tooltipDefaultTextUpgrade,
+  defaultTextEnd,
+  defaultTextStart,
 } from "../../Components/FeatureIndicator";
 import { getCookie, setCookie } from "../../util/cookie";
+import useAbTesting from "../../VersionControl/hooks/useABTesting";
 
 export enum EnumButtonLocation {
   Project = "Project",
@@ -80,6 +81,8 @@ export const BtmButton: React.FC<Props> = ({
   } = useAppContext();
   const { trackEvent } = useTracking();
   const { stigg } = useStiggContext();
+  const { upgradeCtaVariationData } = useAbTesting();
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(
     null
@@ -89,10 +92,10 @@ export const BtmButton: React.FC<Props> = ({
   );
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const [tooltipText, setTooltipText] = useState<string>(tooltipDefaultText);
-  const [upgradeTooltipText, setUpgradeTooltipText] = useState<string>(
-    tooltipDefaultTextUpgrade
-  );
+  const [tooltipTextStart, setTooltipTextStart] = useState<string>("");
+  const [tooltipTextEnd, setTooltipTextEnd] = useState<string>("");
+
+  const [showTooltipLink, setShowTooltipLink] = useState<boolean>(true);
 
   const hasRedesignArchitectureFeature = stigg.getBooleanEntitlement({
     featureId: BillingFeature.RedesignArchitecture,
@@ -106,20 +109,21 @@ export const BtmButton: React.FC<Props> = ({
       subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
       subscriptionStatus === EnumSubscriptionStatus.Trailing
     ) {
-      setTooltipText(tooltipDefaultText);
-      setUpgradeTooltipText(tooltipDefaultTextUpgrade);
+      setTooltipTextStart(defaultTextStart);
+      setTooltipTextEnd(defaultTextEnd);
+      setShowTooltipLink(true);
     }
 
     if (!hasRedesignArchitectureFeature) {
-      setTooltipText(NO_ACCESS_TEXT);
-      setUpgradeTooltipText(tooltipDefaultTextUpgrade);
+      setTooltipTextStart(NO_ACCESS_TEXT);
+      setShowTooltipLink(true);
     }
 
     if (hasRedesignArchitectureFeature && !allowLLMFeature) {
-      setTooltipText(
+      setTooltipTextStart(
         "This feature is turned off because it relies on LLMs, and your workspace settings forbid their use."
       );
-      setUpgradeTooltipText("");
+      setShowTooltipLink(false);
     }
 
     if (
@@ -128,14 +132,16 @@ export const BtmButton: React.FC<Props> = ({
         subscriptionStatus !== EnumSubscriptionStatus.Trailing) ||
         isPreviewPlan)
     ) {
-      setTooltipText(FULL_ACCESS_TEXT);
-      setUpgradeTooltipText("");
+      setTooltipTextStart(FULL_ACCESS_TEXT);
+      setShowTooltipLink(false);
     }
   }, [
+    allowLLMFeature,
     hasRedesignArchitectureFeature,
     isPreviewPlan,
     subscriptionPlan,
     subscriptionStatus,
+    upgradeCtaVariationData?.linkMessage,
   ]);
 
   const toggleIsOpen = useCallback(() => {
@@ -204,8 +210,9 @@ export const BtmButton: React.FC<Props> = ({
       {currentResource || selectedEditableResource ? (
         <FeatureIndicator
           featureName={BillingFeature.RedesignArchitecture}
-          text={tooltipText}
-          linkText={upgradeTooltipText}
+          textStart={tooltipTextStart}
+          textEnd={tooltipTextEnd}
+          showTooltipLink={showTooltipLink}
           element={
             <Button
               iconPosition={EnumIconPosition.Left}
@@ -221,8 +228,9 @@ export const BtmButton: React.FC<Props> = ({
       ) : (
         <FeatureIndicator
           featureName={BillingFeature.RedesignArchitecture}
-          text={tooltipText}
-          linkText={upgradeTooltipText}
+          textStart={tooltipTextStart}
+          textEnd={tooltipTextEnd}
+          showTooltipLink={showTooltipLink}
           element={
             <SelectMenu
               title={buttonText}

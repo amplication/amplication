@@ -152,7 +152,9 @@ const useProjectSelector = (
       (projectDB: models.Project) => projectDB.id === project
     );
 
-    if (!selectedProject) projectRedirect(projectsList[0].id);
+    //reload projects list if project not found, but do not redirect to avoid infinite loop
+    //this may be needed if the project was created on the server side and is not known to the client yet
+    if (!selectedProject) refetch();
 
     setCurrentProject(selectedProject);
 

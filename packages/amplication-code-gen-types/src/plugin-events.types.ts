@@ -41,6 +41,7 @@ import {
   CreateEntityGrpcControllerParams,
   CreateEntityGrpcControllerBaseParams,
   CreateServerSecretsManagerParams,
+  CreateMainFileParams,
 } from "./plugin-events-params.types";
 import { EventNames, PluginEventType } from "./plugins.types";
 
@@ -71,6 +72,7 @@ export type Events = {
   [EventNames.CreateServerPackageJson]?: PluginEventType<CreateServerPackageJsonParams>;
   [EventNames.CreateAdminUIPackageJson]?: PluginEventType<CreateAdminUIPackageJsonParams>;
   [EventNames.CreateServerAppModule]?: PluginEventType<CreateServerAppModuleParams>;
+  [EventNames.CreateMainFile]?: PluginEventType<CreateMainFileParams>;
   [EventNames.CreateAdminAppModule]?: PluginEventType<CreateAdminAppModuleParams>;
   [EventNames.CreateConnectMicroservices]?: PluginEventType<CreateConnectMicroservicesParams>;
   [EventNames.CreateEntityModule]?: PluginEventType<CreateEntityModuleParams>;

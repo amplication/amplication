@@ -264,6 +264,12 @@ const useResources = (
       (resource: models.Resource) => resource.id === urlResource
     );
 
+    if (!resource) {
+      //reload resources but do not redirect to prevent an infinite loop
+      //this may be needed if the resource was created on the server side and is not known to the client yet
+      reloadResources();
+    }
+
     setCurrentResource(resource);
     setGitRepositoryFullName(
       createGitRepositoryFullName(
