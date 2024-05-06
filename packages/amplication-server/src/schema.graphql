@@ -1434,7 +1434,7 @@ type Mutation {
   """
   triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
-  updateCodeGeneratorTechnology(codeGeneratorName: String!, where: WhereUniqueInput!): Resource
+  updateCodeGeneratorName(codeGeneratorName: String!, where: WhereUniqueInput!): Resource
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   updateEntityField(data: EntityFieldUpdateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
