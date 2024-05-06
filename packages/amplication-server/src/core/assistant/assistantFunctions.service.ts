@@ -26,10 +26,89 @@ import { ResourceService } from "../resource/resource.service";
 import { AssistantContext } from "./dto/AssistantContext";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
 import { MessageLoggerContext } from "./assistant.service";
+import { PermissionsService } from "../permissions/permissions.service";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { get } from "lodash";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
 export const PLUGIN_LATEST_VERSION_TAG = "latest";
+
+const FUNCTION_PERMISSIONS: {
+  [key in EnumAssistantFunctions]: {
+    paramType: AuthorizableOriginParameter;
+    paramPath: string;
+  };
+} = {
+  createEntities: {
+    paramType: AuthorizableOriginParameter.ResourceId,
+    paramPath: "serviceId",
+  },
+  createEntityFields: {
+    paramType: AuthorizableOriginParameter.EntityId,
+    paramPath: "entityId",
+  },
+  getProjectServices: {
+    paramType: AuthorizableOriginParameter.ProjectId,
+    paramPath: "projectId",
+  },
+  getServiceEntities: {
+    paramType: AuthorizableOriginParameter.ResourceId,
+    paramPath: "serviceId",
+  },
+  createService: {
+    paramType: AuthorizableOriginParameter.ProjectId,
+    paramPath: "projectId",
+  },
+  createProject: {
+    paramType: AuthorizableOriginParameter.WorkspaceId,
+    paramPath: "context.workspaceId",
+  },
+  commitProjectPendingChanges: {
+    paramType: AuthorizableOriginParameter.ProjectId,
+    paramPath: "projectId",
+  },
+  getProjectPendingChanges: {
+    paramType: AuthorizableOriginParameter.ProjectId,
+    paramPath: "projectId",
+  },
+  getPlugins: {
+    paramType: AuthorizableOriginParameter.WorkspaceId,
+    paramPath: "context.workspaceId",
+  },
+  installPlugins: {
+    paramType: AuthorizableOriginParameter.ResourceId,
+    paramPath: "serviceId",
+  },
+  getServiceModules: {
+    paramType: AuthorizableOriginParameter.ResourceId,
+    paramPath: "serviceId",
+  },
+  createModule: {
+    paramType: AuthorizableOriginParameter.ResourceId,
+    paramPath: "serviceId",
+  },
+  getModuleDtosAndEnums: {
+    paramType: AuthorizableOriginParameter.ResourceId,
+    paramPath: "serviceId",
+  },
+  createModuleDto: {
+    paramType: AuthorizableOriginParameter.ResourceId,
+    paramPath: "serviceId",
+  },
+  createModuleEnum: {
+    paramType: AuthorizableOriginParameter.ResourceId,
+    paramPath: "serviceId",
+  },
+  getModuleActions: {
+    paramType: AuthorizableOriginParameter.ResourceId,
+    paramPath: "serviceId",
+  },
+  createModuleAction: {
+    paramType: AuthorizableOriginParameter.ResourceId,
+    paramPath: "serviceId",
+  },
+};
 
 @Injectable()
 export class AssistantFunctionsService {
@@ -46,6 +125,7 @@ export class AssistantFunctionsService {
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly moduleActionService: ModuleActionService,
     private readonly moduleDtoService: ModuleDtoService,
+    private readonly permissionsService: PermissionsService,
 
     configService: ConfigService
   ) {
@@ -72,6 +152,24 @@ export class AssistantFunctionsService {
     const args = JSON.parse(params);
 
     if (this.assistantFunctions[functionName] !== undefined) {
+      const hasAccess = await this.validatePermissions(
+        functionName as EnumAssistantFunctions,
+        context,
+        args
+      );
+
+      if (!hasAccess) {
+        this.logger.error(
+          `Chat: User does not have access to resource: ${functionName}`,
+          null,
+          loggerContext
+        );
+        return {
+          callId,
+          results: "User does not have access to this resource",
+        };
+      }
+
       try {
         const result = await this.assistantFunctions[functionName].apply(null, [
           args,
@@ -105,6 +203,38 @@ export class AssistantFunctionsService {
         results: "Function not found",
       };
     }
+  }
+
+  async validatePermissions(
+    functionName: EnumAssistantFunctions,
+    context: AssistantContext,
+    args: any
+  ): Promise<boolean> {
+    const permissions = FUNCTION_PERMISSIONS[functionName];
+    if (!permissions) {
+      return false;
+    }
+
+    if (
+      permissions.paramType === AuthorizableOriginParameter.WorkspaceId &&
+      permissions.paramPath === "context.workspaceId"
+    ) {
+      return true;
+    }
+
+    const parameterValue = get(args, permissions.paramPath);
+
+    if (!parameterValue) {
+      return false;
+    }
+
+    const hasAccess = await this.permissionsService.validateAccess(
+      context.user,
+      permissions.paramType,
+      parameterValue
+    );
+
+    return hasAccess;
   }
 
   private assistantFunctions: {
@@ -482,6 +612,17 @@ export class AssistantFunctionsService {
     ) => {
       const name = pascalCase(args.dtoName);
 
+      const module = await this.moduleService.findMany({
+        where: {
+          id: { equals: args.moduleId },
+          resource: { id: args.serviceId },
+        },
+      });
+
+      if (!module || module.length === 0) {
+        throw new Error("Module not found");
+      }
+
       const dto = await this.moduleDtoService.create(
         {
           properties: args.properties,
@@ -519,6 +660,17 @@ export class AssistantFunctionsService {
       context: AssistantContext
     ) => {
       const name = pascalCase(args.enumName);
+
+      const module = await this.moduleService.findMany({
+        where: {
+          id: { equals: args.moduleId },
+          resource: { id: args.serviceId },
+        },
+      });
+
+      if (!module || module.length === 0) {
+        throw new Error("Module not found");
+      }
 
       const dto = await this.moduleDtoService.createEnum(
         {
@@ -587,6 +739,18 @@ export class AssistantFunctionsService {
       context: AssistantContext
     ) => {
       const name = pascalCase(args.actionName);
+
+      const module = await this.moduleService.findMany({
+        where: {
+          id: { equals: args.moduleId },
+          resource: { id: args.serviceId },
+        },
+      });
+
+      if (!module || module.length === 0) {
+        throw new Error("Module not found");
+      }
+
       const action = await this.moduleActionService.create(
         {
           data: {
