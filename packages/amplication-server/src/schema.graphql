@@ -1781,8 +1781,8 @@ type RemoteGitRepository {
 
 type Resource {
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
+  codeGeneratorName: String
   codeGeneratorStrategy: CodeGeneratorVersionStrategy
-  codeGeneratorTechnology: String
   codeGeneratorVersion: String
   createdAt: DateTime!
   description: String!
