@@ -3,12 +3,19 @@ import Docker from "dockerode";
 import { CodeGenerationRequest } from "./types";
 
 function generateCode(req: Request, res: Response) {
-  const { resourceId, buildId } = req.body as CodeGenerationRequest;
+  const { resourceId, buildId, codeGeneratorName } =
+    req.body as CodeGenerationRequest;
 
   console.log("generateCode", req.body);
 
-  const imageName = "amplication/data-service-generator";
-  const containerName = `dsg-controller-${buildId}`;
+  const defaultCodeGeneratorName = "data-service-generator";
+
+  const imageName = codeGeneratorName
+    ? `amplication/${codeGeneratorName}`
+    : "amplication/data-service-generator";
+  const containerName = `${
+    codeGeneratorName ?? defaultCodeGeneratorName
+  }-${buildId}`;
 
   const {
     DSG_JOBS_BASE_FOLDER: dsgJogsBaseFolder,

@@ -4,4 +4,16 @@
   .toggle-field {
     margin: 0;
   }
+
+  .search-field {
+    max-width: 120px;
+  }
+}
+
+.workspaces-layout__main_content--xl {
+  .entity-list {
+    .search-field {
+      max-width: none;
+    }
+  }
 }

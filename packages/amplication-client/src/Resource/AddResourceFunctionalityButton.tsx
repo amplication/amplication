@@ -53,6 +53,7 @@ const AddResourceFunctionalityButton = ({ availableCategories }: Props) => {
         <SelectMenuList>
           {categories.map((category) => (
             <Link
+              key={category.name}
               onClick={() => {
                 handleClick(category);
               }}

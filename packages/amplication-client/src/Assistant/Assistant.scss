@@ -7,6 +7,9 @@ $assistant-handle-top: 150px;
 $assistant-handle-margin: 40px;
 $avatar-size: 30px;
 
+$input-line-height: 18px;
+$input-max-height: 100px;
+
 #root {
   // --assistant-background: var(--theme-gradient);
   // --assistant-message-background: var(--gray-base);
@@ -126,16 +129,16 @@ $avatar-size: 30px;
     align-items: center;
     background-color: var(--gray-full);
     border-radius: var(--default-border-radius);
-    padding: var(--icon-spacing) var(--default-spacing);
+    padding: var(--default-spacing) var(--icon-spacing);
 
     form {
       width: 100%;
       display: flex;
       flex-direction: row;
       gap: var(--default-spacing);
-      align-items: center;
+      align-items: flex-end;
 
-      .assistant__text-wrapper {
+      .text-input {
         flex: 1;
 
         label {
@@ -143,10 +146,16 @@ $avatar-size: 30px;
         }
 
         textarea {
+          --input-line-height: #{$input-line-height};
+          --input-lines: 1;
           max-width: none;
           background: transparent;
           border: none;
-          height: 48px;
+          height: calc(
+            (var(--input-lines) * var(--input-line-height)) +
+              var(--default-spacing)
+          );
+          max-height: $input-max-height;
 
           &:focus,
           &:active,
@@ -156,6 +165,10 @@ $avatar-size: 30px;
           }
         }
       }
+    }
+
+    .amp-button {
+      height: calc((1 * var(--input-line-height)) + var(--default-spacing));
     }
   }
 
@@ -202,7 +215,7 @@ $avatar-size: 30px;
   &__message-role {
     display: flex;
     flex-direction: row;
-    gap: var(--icon-spacing);
+    gap: var(--default-spacing);
     align-items: center;
     justify-content: flex-start;
     font-weight: semi-bold;
@@ -211,7 +224,7 @@ $avatar-size: 30px;
     .user-avatar__initials {
       width: $avatar-size;
       height: $avatar-size;
-      font-size: var(--h3-font-size);
+      font-size: var(--h4-font-size);
     }
   }
 }
