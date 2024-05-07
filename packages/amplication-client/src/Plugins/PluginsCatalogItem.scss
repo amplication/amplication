@@ -1,0 +1,50 @@
+@import "../style/index.scss";
+
+$order-badge-size: 14px;
+$install-width: 86px;
+$button-padding: 5px 12px;
+
+.plugins-catalog-item {
+  &__install {
+    padding: $button-padding;
+    min-width: $install-width;
+  }
+
+  &__order {
+    @include flexVerticalCenter;
+    margin-left: var(--large-spacing);
+
+    span {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--gray-90);
+      padding: var(--icon-spacing);
+      border-radius: var(--default-border-radius);
+      width: $order-badge-size;
+      height: $order-badge-size;
+    }
+  }
+  .toggle-field {
+    margin-bottom: 0px;
+  }
+
+  &__category {
+    display: flex;
+    flex-direction: row;
+  }
+  &__category_chip {
+    border-radius: 24px !important;
+    padding: 3px 0px !important;
+    background-color: var(--gray-60) !important;
+    height: auto !important;
+    margin-right: 4px !important;
+    cursor: pointer;
+    & span {
+      font-family: Poppins, sans-serif;
+      font-size: 10px;
+      color: var(--gray-base);
+      font-weight: 400;
+    }
+  }
+}

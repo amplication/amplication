@@ -1,0 +1,65 @@
+@import "../style/index.scss";
+
+.workspace-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px var(--large-spacing);
+  background: var(--gray-full);
+  height: var(--footer-height);
+  min-height: var(--footer-height);
+  border-top: $border-dark;
+
+  &__skeleton {
+    display: flex;
+    align-items: center;
+  }
+
+  &__vertical_border {
+    width: 1px;
+    height: var(--large-spacing);
+    background: var(--gray-30);
+    border: none;
+    margin: 0 var(--default-spacing-small);
+  }
+
+  &__right,
+  &__left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &__git-connection {
+    color: var(--gray-20);
+    display: flex;
+    align-items: center;
+  }
+
+  &__git-disconnected {
+    display: flex;
+    align-items: center;
+    color: var(--theme-light-red);
+  }
+
+  &__connect-to-git {
+    color: var(--theme-light-red);
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__git-link {
+    @include regular-12;
+    margin-left: var(--default-spacing-small);
+    color: var(--gray-base);
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__git-icon {
+    margin-right: var(--default-spacing-small);
+  }
+}

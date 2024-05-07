@@ -1,0 +1,89 @@
+.amp-button-progress {
+  transition-property: border-color, background-color, color;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+
+  &.amp-button-progress--left {
+    background-color: transparent;
+    border-radius: var(--default-button-radius) 0 0 var(--default-button-radius);
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: var(--gray-base);
+      cursor: pointer;
+    }
+
+    &.amp-button-progress--primary {
+      &--left {
+        &:hover,
+        &:active,
+        &:focus,
+        &:not(:hover, :active, :focus) {
+          color: var(--gray-base);
+          border-color: var(--theme-turquoise);
+        }
+      }
+    }
+    &.amp-button-progress--warning {
+      &--left {
+        &:hover,
+        &:active,
+        &:focus,
+        &:not(:hover, :active, :focus) {
+          color: var(--gray-base);
+          border-color: var(--theme-orange);
+        }
+      }
+    }
+    &.amp-button-progress--danger {
+      &--left {
+        &:hover,
+        &:active,
+        &:focus,
+        &:not(:hover, :active, :focus) {
+          color: var(--gray-base);
+          border-color: var(--theme-red);
+        }
+      }
+    }
+  }
+
+  &.amp-button-progress--right {
+    color: var(--gray-full);
+    background-color: transparent;
+    border-radius: 0 var(--default-button-radius) var(--default-button-radius) 0;
+
+    &.amp-button-progress--primary--right {
+      border-color: var(--theme-turquoise);
+      background-color: var(--theme-turquoise);
+    }
+    &.amp-button-progress--warning--right {
+      border-color: var(--theme-orange);
+      background-color: var(--theme-orange);
+    }
+    &.amp-button-progress--danger--right {
+      border-color: var(--theme-red);
+      background-color: var(--theme-red);
+    }
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: var(--gray-base);
+      cursor: pointer;
+    }
+  }
+
+  .amp-button-progress-pie {
+    &--primary {
+      color: var(--theme-turquoise);
+    }
+    &--warning {
+      color: var(--theme-orange);
+    }
+    &--danger {
+      color: var(--theme-red);
+    }
+  }
+}

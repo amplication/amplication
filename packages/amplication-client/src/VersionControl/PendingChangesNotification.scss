@@ -1,0 +1,6 @@
+@import "../style/index.scss";
+
+.pending-changes-notification {
+  margin-top: var(--large-spacing);
+  box-shadow: 0px 28px 30px -19px rgba(9, 11, 20, 0.5);
+}

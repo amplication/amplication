@@ -1,0 +1,66 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "command": "npx nx run amplication-server:serve",
+      "problemMatcher": [],
+      "label": "Serve amplication-server"
+    },
+    {
+      "type": "shell",
+      "command": "npx nx run amplication-client:serve",
+      "problemMatcher": [],
+      "label": "Serve amplication-client"
+    },
+    {
+      "type": "shell",
+      "command": "npx nx run amplication-build-manager:serve",
+      "problemMatcher": [],
+      "label": "Serve amplication-build-manager"
+    },
+    {
+      "type": "shell",
+      "command": "npx nx run git-sync-manager:serve",
+      "problemMatcher": [],
+      "label": "Serve git-sync-manager"
+    },
+    {
+      "type": "shell",
+      "command": "npx nx run data-service-generator-catalog:serve",
+      "problemMatcher": [],
+      "label": "Serve data-service-generator-catalog"
+    },
+    {
+      "type": "shell",
+      "command": "npx nx run local-data-service-generator-controller:serve",
+      "problemMatcher": [],
+      "label": "Serve local-data-service-generator-controller"
+    },
+
+    {
+      "type": "npm",
+      "script": "docker:dev",
+      "path": "",
+      "problemMatcher": [],
+      "label": "Start docker:dev"
+    },
+    {
+      "label": "Start all services",
+      "dependsOn": [
+        "Serve amplication-server",
+        "Serve amplication-client",
+        "Serve amplication-build-manager",
+        "Serve git-sync-manager",
+        "Serve data-service-generator-catalog",
+        "Serve local-data-service-generator-controller"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Start all services with docker:dev",
+      "dependsOn": ["Start docker:dev", "Start all services"],
+      "problemMatcher": []
+    }
+  ]
+}

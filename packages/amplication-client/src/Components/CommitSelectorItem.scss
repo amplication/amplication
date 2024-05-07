@@ -1,0 +1,17 @@
+@import "../style/index.scss";
+$selector-title-max-width: 180px;
+
+.commit-selector-item {
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+  &__title {
+    @include regular-12;
+    margin: 0 var(--user-badge-spacing);
+    max-width: $selector-title-max-width;
+    white-space: nowrap;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
