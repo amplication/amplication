@@ -43,14 +43,25 @@ export const DotNetPromoteStartupOrEnterpriseIOption = ({
         backend code generation, and gain early access, please schedule a demo
         with us.
       </Text>
-      <Text
-        textStyle={EnumTextStyle.Normal}
-        textColor={EnumTextColor.White}
-        textAlign={EnumTextAlign.Center}
-      >
-        We look forward to showcasing how Amplication can accelerate your
-        startup's development journey
-      </Text>
+      {type === "startup" ? (
+        <Text
+          textStyle={EnumTextStyle.Normal}
+          textColor={EnumTextColor.White}
+          textAlign={EnumTextAlign.Center}
+        >
+          We look forward to showcasing how Amplication can accelerate your
+          startup's development journey
+        </Text>
+      ) : (
+        <Text
+          textStyle={EnumTextStyle.Normal}
+          textColor={EnumTextColor.White}
+          textAlign={EnumTextAlign.Center}
+        >
+          We look forward to showcasing how Amplication can accelerate your
+          enterprise's development journey
+        </Text>
+      )}
 
       <a href={contactLink} target="blank">
         <Button
