@@ -29,8 +29,10 @@ model Version {
   id           String     @id @default(cuid())
   isActive     Boolean
   isDeprecated Boolean?
-  name         String     @unique
+  name         String
   updatedAt    DateTime   @updatedAt
+
+  @@unique([name, generatorId])
 }
 
 model Generator {
