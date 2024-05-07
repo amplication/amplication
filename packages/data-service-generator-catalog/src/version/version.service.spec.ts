@@ -9,6 +9,7 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 
 describe("VersionService", () => {
   let service: VersionService;
+  const mockGeneratorFindMany = jest.fn();
   const mockVersionFindUnique = jest.fn();
   const mockVersionFindMany = jest.fn();
   const mockVersionCreateMany = jest.fn();
@@ -38,6 +39,9 @@ describe("VersionService", () => {
         {
           provide: PrismaService,
           useValue: {
+            generator: {
+              findMany: mockGeneratorFindMany,
+            },
             version: {
               findMany: mockVersionFindMany,
               findUnique: mockVersionFindUnique,
@@ -299,9 +303,15 @@ describe("VersionService", () => {
         },
       ]);
       mockVersionFindMany.mockResolvedValue([]);
+      mockGeneratorFindMany.mockResolvedValueOnce([
+        {
+          fullName: "data-service-generator",
+        },
+      ]);
 
       await service.syncVersions();
 
+      expect(mockGeneratorFindMany).toBeCalledTimes(1);
       expect(mockVersionFindMany).toBeCalledTimes(1);
       expect(mockVersionFindMany).toBeCalledWith({});
       expect(mockVersionCreateMany).toBeCalledTimes(1);

@@ -165,55 +165,74 @@ export class VersionService extends VersionServiceBase {
     this.logger.info("Syncing versions");
 
     try {
-      const tags = await this.awsEcrService.getTags();
-      const versions = tags.map((tag) => ({
-        id: tag.imageTags[0],
-        name: tag.imageTags[0],
-        isActive: false,
-        createdAt: tag.imagePushedAt,
-        updatedAt: new Date(),
-        changelog: "",
-        deletedAt: null,
-        isDeprecated: false,
-      }));
+      const generators = await this.prisma.generator.findMany({
+        where: {
+          isActive: true,
+        },
+        select: {
+          id: true,
+          fullName: true,
+        },
+      });
 
-      const storedVersions = await this.findMany({});
+      const newVersions = [];
 
-      const newVersions = versions.filter(
-        (version) =>
-          !storedVersions.some(
-            (storedVersion) => storedVersion.name === version.name
+      for (const generator of generators) {
+        const tags = await this.awsEcrService.getTags(generator.fullName);
+        const versions = tags.map((tag) => ({
+          name: tag.imageTags[0],
+          isActive: false,
+          createdAt: tag.imagePushedAt,
+          updatedAt: new Date(),
+          changelog: "",
+          deletedAt: null,
+          isDeprecated: false,
+        }));
+
+        const storedVersions = await this.findMany({});
+
+        newVersions.push(
+          ...versions.filter(
+            (version) =>
+              !storedVersions.some(
+                (storedVersion) => storedVersion.name === version.name
+              )
           )
-      );
+        );
+
+        const deletedVersions = storedVersions.filter(
+          (storedVersion) =>
+            !versions.some((version) => version.name === storedVersion.name)
+        );
+        if (deletedVersions.length > 0) {
+          await this.prisma.version.updateMany({
+            data: {
+              deletedAt: new Date(),
+              isActive: false,
+              isDeprecated: true,
+            },
+            where: {
+              AND: {
+                name: {
+                  in: deletedVersions.map((version) => version.id),
+                },
+                generatorId: generator.id,
+              },
+            },
+          });
+        }
+      }
 
       await this.prisma.version.createMany({
         data: newVersions,
       });
-
-      const deletedVersions = storedVersions.filter(
-        (storedVersion) =>
-          !versions.some((version) => version.name === storedVersion.name)
-      );
-      if (deletedVersions.length > 0) {
-        await this.prisma.version.updateMany({
-          data: {
-            deletedAt: new Date(),
-            isActive: false,
-            isDeprecated: true,
-          },
-          where: {
-            id: {
-              in: deletedVersions.map((version) => version.id),
-            },
-          },
-        });
-      }
-      this.logger.info("Synced versions successfully");
     } catch (error) {
       this.logger.error("Failed to sync versions", error, {
         stack: error.stack,
       });
       throw error;
     }
+
+    this.logger.info("Synced versions successfully");
   }
 }
