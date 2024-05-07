@@ -5,7 +5,10 @@ import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import { Version } from "./base/Version";
 import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
 import { ConfigService } from "@nestjs/config";
-import { Prisma } from "../../prisma/generated-prisma-client";
+import {
+  Prisma,
+  Version as PrismaVersion,
+} from "../../prisma/generated-prisma-client";
 import { AwsEcrService } from "../aws/aws-ecr.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
@@ -179,7 +182,7 @@ export class VersionService extends VersionServiceBase {
 
       for (const generator of generators) {
         const tags = await this.awsEcrService.getTags(generator.fullName);
-        const versions = tags.map((tag) => ({
+        const versions: Omit<PrismaVersion, "id">[] = tags.map((tag) => ({
           name: tag.imageTags[0],
           isActive: false,
           createdAt: tag.imagePushedAt,
@@ -187,6 +190,7 @@ export class VersionService extends VersionServiceBase {
           changelog: "",
           deletedAt: null,
           isDeprecated: false,
+          generatorId: generator.id,
         }));
 
         const storedVersions = await this.findMany({});

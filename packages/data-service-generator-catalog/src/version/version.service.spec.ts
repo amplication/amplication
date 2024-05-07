@@ -305,6 +305,7 @@ describe("VersionService", () => {
       mockVersionFindMany.mockResolvedValue([]);
       mockGeneratorFindMany.mockResolvedValueOnce([
         {
+          id: "generator-id",
           fullName: "data-service-generator",
         },
       ]);
@@ -318,8 +319,8 @@ describe("VersionService", () => {
       expect(mockVersionCreateMany).toBeCalledWith({
         data: [
           {
-            id: "v1.0.0",
             name: "v1.0.0",
+            generatorId: "generator-id",
             isActive: false,
             createdAt: pushedDate,
             updatedAt: expect.anything(),
@@ -328,8 +329,8 @@ describe("VersionService", () => {
             isDeprecated: false,
           },
           {
-            id: "v1.0.1",
             name: "v1.0.1",
+            generatorId: "generator-id",
             isActive: false,
             createdAt: pushedDate,
             updatedAt: expect.anything(),
@@ -338,14 +339,13 @@ describe("VersionService", () => {
             isDeprecated: false,
           },
           {
-            id: "v2.0.0",
             name: "v2.0.0",
+            generatorId: "generator-id",
             isActive: false,
             createdAt: pushedDate,
             updatedAt: expect.anything(),
             changelog: "",
             deletedAt: null,
-
             isDeprecated: false,
           },
         ],
