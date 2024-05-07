@@ -235,7 +235,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                       eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
                     }}
                   >
-                    Upload Prisma Schema
+                    Upload Schema
                   </Button>
                 </FeatureIndicatorContainer>
               </Link>

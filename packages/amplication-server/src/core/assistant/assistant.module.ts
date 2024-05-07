@@ -12,6 +12,7 @@ import { PluginInstallationModule } from "../pluginInstallation/pluginInstallati
 import { ModuleActionModule } from "../moduleAction/moduleAction.module";
 import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
 import { BillingModule } from "../billing/billing.module";
+import { AssistantFunctionsService } from "./assistantFunctions.service";
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { BillingModule } from "../billing/billing.module";
   ],
   providers: [
     AssistantService,
+    AssistantFunctionsService,
     AssistantResolver,
     GraphqlSubscriptionPubSubKafkaService,
   ],

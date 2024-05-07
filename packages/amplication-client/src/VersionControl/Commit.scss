@@ -26,12 +26,18 @@ $padding-top-toggle: 16px;
     }
 
     textarea {
-      height: var(--textarea-height);
+      height: var(--textarea-height-small);
       background-color: var(--gray-80);
 
       @media only screen and (max-width: $breakpoint-desktop) {
         height: var(--textare-height-small);
       }
+    }
+  }
+
+  &__technology-toggle {
+    label {
+      margin-bottom: 0;
     }
   }
 }

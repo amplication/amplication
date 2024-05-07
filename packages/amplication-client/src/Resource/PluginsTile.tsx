@@ -259,6 +259,7 @@ function PluginLogos({ installedPlugins }: pluginLogosProps) {
           direction={TOOLTIP_DIRECTION}
           aria-label={plugin.displayName}
           noDelay
+          key={plugin.id}
         >
           <PluginLogo plugin={pluginCatalog[plugin.pluginId]} />
         </Tooltip>

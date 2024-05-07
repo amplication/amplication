@@ -76,7 +76,7 @@ export const UsageInsightsDataBox: React.FC<Props> = ({
   const formattedValue = valueFormat ? formatValue(value, valueFormat) : value;
 
   return (
-    <Panel panelStyle={EnumPanelStyle.Bold} className={`${CLASS_NAME}`}>
+    <Panel panelStyle={EnumPanelStyle.Surface} className={`${CLASS_NAME}`}>
       <FlexItem
         direction={EnumFlexDirection.Column}
         itemsAlign={EnumItemsAlign.Start}
