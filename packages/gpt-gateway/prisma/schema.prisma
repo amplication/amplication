@@ -1,0 +1,67 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "./generated-prisma-client"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+}
+
+model User {
+  createdAt DateTime @default(now())
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+model Model {
+  createdAt DateTime   @default(now())
+  id        String     @id @default(cuid())
+  name      String     @unique
+  templates Template[]
+  updatedAt DateTime   @updatedAt
+}
+
+model ConversationType {
+  createdAt  DateTime  @default(now())
+  id         String    @id @default(cuid())
+  key        String    @unique
+  template   Template? @relation(fields: [templateId], references: [id])
+  templateId String?
+  updatedAt  DateTime  @updatedAt
+}
+
+model Template {
+  createdAt    DateTime           @default(now())
+  id           String             @id @default(cuid())
+  messages     Message[]
+  messageTypes ConversationType[]
+  model        Model              @relation(fields: [modelId], references: [id])
+  modelId      String
+  name         String             @unique
+  params       String?
+  updatedAt    DateTime           @updatedAt
+}
+
+model Message {
+  content    String
+  createdAt  DateTime        @default(now())
+  id         String          @id @default(cuid())
+  position   Int?
+  role       EnumMessageRole
+  template   Template?       @relation(fields: [templateId], references: [id])
+  templateId String?
+  updatedAt  DateTime        @updatedAt
+}
+
+enum EnumMessageRole {
+  User
+  System
+  Assistant
+}

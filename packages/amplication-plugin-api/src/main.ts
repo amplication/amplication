@@ -1,22 +1,29 @@
+import { SERVICE_NAME } from "./constants";
+import { Tracing } from "@amplication/util/nestjs/tracing";
+Tracing.init({
+  serviceName: SERVICE_NAME,
+});
 import { ValidationPipe } from "@nestjs/common";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 import { HttpExceptionFilter } from "./filters/HttpExceptions.filter";
-// @ts-ignore
-// eslint-disable-next-line
 import { AppModule } from "./app.module";
+import { connectMicroservices } from "./connectMicroservices";
 import {
   swaggerPath,
   swaggerDocumentOptions,
   swaggerSetupOptions,
-  // @ts-ignore
-  // eslint-disable-next-line
 } from "./swagger";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3005 } = process.env;
 
 async function main() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+    bufferLogs: true,
+  });
+  app.useLogger(app.get(AmplicationLogger));
 
   app.setGlobalPrefix("api");
   app.useGlobalPipes(
@@ -39,6 +46,9 @@ async function main() {
       }
     });
   });
+
+  await connectMicroservices(app);
+  await app.startAllMicroservices();
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 

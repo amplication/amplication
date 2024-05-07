@@ -1,0 +1,76 @@
+{
+  "name": "amplication-build-manager",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-build-manager/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/amplication-build-manager/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/packages/amplication-build-manager"
+      ],
+      "options": {
+        "jestConfig": "packages/amplication-build-manager/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/amplication-build-manager",
+        "main": "packages/amplication-build-manager/src/main.ts",
+        "tsConfig": "packages/amplication-build-manager/tsconfig.app.json",
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "amplication-build-manager:build",
+        "inspect": true,
+        "port": 7010,
+        "watch": true
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "amplication-build-manager:build:production"
+        }
+      }
+    },
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/build-manager:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
+      }
+    },
+    "deploy:container": {
+      "executor": "nx:run-commands"
+    }
+  },
+  "tags": []
+}

@@ -1,24 +1,23 @@
 {
+  "extends": "../../tsconfig.base.json",
+  "files": [],
+  "include": [],
   "compilerOptions": {
-    "baseUrl": "./",
-    "module": "commonjs",
-    "declaration": false,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "target": "es2017",
-    "lib": ["ES2020"],
-    "sourceMap": true,
-    "outDir": "./dist",
-    "incremental": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true,
+    "baseUrl": "./",
     "paths": {
-      "@app/custom-validators": ["src/validators"]
+      "@app/custom-validators": ["src/validators"],
+      "@amplication/util/nestjs/logging": [
+        "../../libs/util/nestjs/logging/src/index.ts"
+      ],
+      "@amplication/util/nestjs/tracing": [
+        "../../libs/util/nestjs/tracing/src/index.ts"
+      ],
+      "@amplication/util/logging": ["../../libs/util/logging/src/index.ts"]
     }
   },
-  "include": ["src"]
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.spec.json" }
+  ]
 }

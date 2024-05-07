@@ -1,0 +1,17 @@
+@import "../../style/index.scss";
+
+$chip-height: 16px;
+$padding: 6px;
+
+.amp-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: $chip-height;
+  padding: 0 $padding;
+  border-radius: $chip-height / 2;
+  font-size: 8px;
+  font-weight: 400;
+  color: var(--gray-base);
+  background-color: var(--theme-blue);
+}
