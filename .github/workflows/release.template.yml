@@ -101,7 +101,7 @@ jobs:
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
             type=raw,value=${{ env.BRANCH }}
-            type=raw,value=latest,enable=${{ env.BRANCH == 'master' }}
+            type=raw,value=latest,enable=${{ env.BRANCH == github.event.repository.default_branch }}
 
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       - name: Dockerize
@@ -124,7 +124,7 @@ jobs:
           if [[ "${{ env.BRANCH }}" == "next" ]];
           then
             echo environment="sandbox" >> $GITHUB_OUTPUT
-          elif [[ "${{ env.BRANCH }}" == "master" ]];
+          elif [[ "${{ env.BRANCH }}" == github.event.repository.default_branch ]];
           then
             echo environment="staging" >> $GITHUB_OUTPUT
           fi;
