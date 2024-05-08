@@ -27,7 +27,10 @@ const CreateServiceWelcome: React.FC<WizardStepProps> = ({
             🎉
           </span>
         </h1>
-        <h3>Let's create together your first service</h3>
+        <h3>
+          Let's create your first service and take advantage of our 7-day free
+          trial!
+        </h3>
       </div>
       <div className={`${className}__start_btn`}>
         <Button onClick={handleStart}>Let's start</Button>
