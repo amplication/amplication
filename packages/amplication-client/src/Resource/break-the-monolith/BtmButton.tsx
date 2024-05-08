@@ -33,6 +33,7 @@ import {
   FeatureIndicator,
   defaultTextEnd,
   defaultTextStart,
+  disabledDefaultTextEnd,
 } from "../../Components/FeatureIndicator";
 import { getCookie, setCookie } from "../../util/cookie";
 import useAbTesting from "../../VersionControl/hooks/useABTesting";
@@ -116,6 +117,7 @@ export const BtmButton: React.FC<Props> = ({
 
     if (!hasRedesignArchitectureFeature) {
       setTooltipTextStart(NO_ACCESS_TEXT);
+      setTooltipTextEnd(disabledDefaultTextEnd);
       setShowTooltipLink(true);
     }
 
