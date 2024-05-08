@@ -48,8 +48,8 @@ export const DotNetPromoteStartupOrEnterpriseIOption = ({
         textColor={EnumTextColor.White}
         textAlign={EnumTextAlign.Center}
       >
-        We look forward to showcasing how Amplication can accelerate your
-        startup's development journey
+        We look forward to showcasing how Amplication can accelerate your {type}
+        's development journey
       </Text>
 
       <a href={contactLink} target="blank">
