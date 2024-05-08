@@ -136,9 +136,6 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   }, [disabled, subscriptionPlan, status, limitationText, fullEnterpriseText]);
 
   const textEnd = useMemo(() => {
-    if (disabled) {
-      return "";
-    }
     if (
       subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
       status !== EnumSubscriptionStatus.Trailing
@@ -147,7 +144,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
 
     return defaultTextEnd;
-  }, [disabled, subscriptionPlan, status]);
+  }, [subscriptionPlan, status]);
 
   const showTooltipLink = useMemo(() => {
     if (
