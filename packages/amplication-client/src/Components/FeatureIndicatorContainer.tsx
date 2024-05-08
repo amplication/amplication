@@ -16,6 +16,7 @@ import {
   FeatureIndicator,
   defaultTextEnd,
   defaultTextStart,
+  disabledDefaultTextEnd,
 } from "./FeatureIndicator";
 import "./FeatureIndicatorContainer.scss";
 import { omit } from "lodash";
@@ -136,6 +137,9 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   }, [disabled, subscriptionPlan, status, limitationText, fullEnterpriseText]);
 
   const textEnd = useMemo(() => {
+    if (disabled) {
+      return disabledDefaultTextEnd;
+    }
     if (
       subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
       status !== EnumSubscriptionStatus.Trailing
@@ -144,7 +148,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
 
     return defaultTextEnd;
-  }, [subscriptionPlan, status]);
+  }, [disabled, subscriptionPlan, status]);
 
   const showTooltipLink = useMemo(() => {
     if (
