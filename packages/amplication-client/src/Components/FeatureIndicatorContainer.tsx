@@ -16,6 +16,7 @@ import {
   FeatureIndicator,
   defaultTextEnd,
   defaultTextStart,
+  disabledDefaultTextEnd,
 } from "./FeatureIndicator";
 import "./FeatureIndicatorContainer.scss";
 import { omit } from "lodash";
@@ -137,7 +138,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
 
   const textEnd = useMemo(() => {
     if (disabled) {
-      return "";
+      return disabledDefaultTextEnd;
     }
     if (
       subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
