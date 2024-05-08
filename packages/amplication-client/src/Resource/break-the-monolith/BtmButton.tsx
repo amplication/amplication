@@ -93,7 +93,7 @@ export const BtmButton: React.FC<Props> = ({
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const [tooltipTextStart, setTooltipTextStart] = useState<string>("");
-  const [tooltipTextEnd, setTooltipTextEnd] = useState<string>(defaultTextEnd);
+  const [tooltipTextEnd, setTooltipTextEnd] = useState<string>("");
 
   const [showTooltipLink, setShowTooltipLink] = useState<boolean>(true);
 
