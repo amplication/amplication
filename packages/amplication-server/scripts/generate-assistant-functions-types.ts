@@ -15,6 +15,7 @@ const TYPES_DIRECTORY = path.join(SCHEMAS_DIRECTORY, "types");
 
 if (require.main === module) {
   generateTypes().catch((error) => {
+    // eslint-disable-next-line no-console
     console.error(error);
     process.exit(1);
   });
@@ -39,6 +40,7 @@ async function generateTypes() {
     .join("\n");
   const indexPath = path.join(TYPES_DIRECTORY, "index.ts");
   await fs.promises.writeFile(indexPath, code);
+  // eslint-disable-next-line no-console
   console.info(
     `Successfully written to ${path.relative(process.cwd(), TYPES_DIRECTORY)}`
   );
