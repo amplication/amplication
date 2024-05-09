@@ -36,6 +36,7 @@
       },
       "inputType": {
         "type": "object",
+        "required": ["type", "isArray"],
         "properties": {
           "type": {
             "type": "string",
@@ -62,6 +63,7 @@
       },
       "outputType": {
         "type": "object",
+        "required": ["type", "isArray"],
         "properties": {
           "type": {
             "type": "string",
