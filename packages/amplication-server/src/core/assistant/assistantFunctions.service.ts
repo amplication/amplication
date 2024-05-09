@@ -13,8 +13,6 @@ import { EnumModuleActionGqlOperation } from "../moduleAction/dto/EnumModuleActi
 import { EnumModuleActionRestInputSource } from "../moduleAction/dto/EnumModuleActionRestInputSource";
 import { EnumModuleActionRestVerb } from "../moduleAction/dto/EnumModuleActionRestVerb";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
-import { ModuleDtoEnumMember } from "../moduleDto/dto/ModuleDtoEnumMember";
-import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
 import { PropertyTypeDef } from "../moduleDto/dto/propertyTypes/PropertyTypeDef";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
@@ -29,6 +27,10 @@ import { MessageLoggerContext } from "./assistant.service";
 import { PermissionsService } from "../permissions/permissions.service";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { get } from "lodash";
+import { JsonSchemaValidationService } from "../../services/jsonSchemaValidation.service";
+
+import * as functionArgsSchemas from "./functions/";
+import * as functionsArgsTypes from "./functions/types";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
@@ -126,6 +128,7 @@ export class AssistantFunctionsService {
     private readonly moduleActionService: ModuleActionService,
     private readonly moduleDtoService: ModuleDtoService,
     private readonly permissionsService: PermissionsService,
+    private readonly jsonSchemaValidationService: JsonSchemaValidationService,
 
     configService: ConfigService
   ) {
@@ -167,6 +170,23 @@ export class AssistantFunctionsService {
         return {
           callId,
           results: "User does not have access to this resource",
+        };
+      }
+
+      try {
+        await this.validateFunctionArgs(
+          functionName as EnumAssistantFunctions,
+          args
+        );
+      } catch (error) {
+        this.logger.error(
+          `Chat: Error validating function arguments: ${error.message}`,
+          error,
+          loggerContext
+        );
+        return {
+          callId,
+          results: error.message,
         };
       }
 
@@ -235,6 +255,24 @@ export class AssistantFunctionsService {
     );
 
     return hasAccess;
+  }
+
+  async validateFunctionArgs(
+    functionName: EnumAssistantFunctions,
+    args: any
+  ): Promise<undefined> {
+    const schema = functionArgsSchemas[functionName]?.parameters;
+
+    if (!schema) {
+      throw new Error(`Function schema not found for ${functionName}`);
+    }
+
+    const schemaValidation =
+      await this.jsonSchemaValidationService.validateSchema(schema, args);
+
+    if (!schemaValidation.isValid) {
+      throw new Error(`Invalid arguments: ${schemaValidation.errorText}`);
+    }
   }
 
   private assistantFunctions: {
@@ -601,13 +639,7 @@ export class AssistantFunctionsService {
       }));
     },
     createModuleDto: async (
-      args: {
-        moduleId: string;
-        serviceId: string;
-        dtoName: string;
-        dtoDescription: string;
-        properties: ModuleDtoPropertyUpdateInput[];
-      },
+      args: functionsArgsTypes.CreateModuleDto,
       context: AssistantContext
     ) => {
       const name = pascalCase(args.dtoName);
@@ -650,13 +682,7 @@ export class AssistantFunctionsService {
       };
     },
     createModuleEnum: async (
-      args: {
-        moduleId: string;
-        serviceId: string;
-        enumName: string;
-        enumDescription: string;
-        members: ModuleDtoEnumMember[];
-      },
+      args: functionsArgsTypes.CreateModuleEnum,
       context: AssistantContext
     ) => {
       const name = pascalCase(args.enumName);
