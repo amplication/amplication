@@ -296,33 +296,47 @@ export class AssistantFunctionsService {
           if (pluralDisplayName === entityName) {
             pluralDisplayName = `${entityName}Items`;
           }
-          const entity = await this.entityService.createOneEntity(
-            {
-              data: {
-                displayName: entityName,
-                pluralDisplayName: pluralDisplayName,
-                name: pascalCase(entityName),
-                resource: {
-                  connect: {
-                    id: args.serviceId,
+          try {
+            const entity = await this.entityService.createOneEntity(
+              {
+                data: {
+                  displayName: entityName,
+                  pluralDisplayName: pluralDisplayName,
+                  name: pascalCase(entityName),
+                  resource: {
+                    connect: {
+                      id: args.serviceId,
+                    },
                   },
                 },
               },
-            },
-            context.user
-          );
-
-          const defaultModuleId =
-            await this.moduleService.getDefaultModuleIdForEntity(
-              args.serviceId,
-              entity.id
+              context.user
             );
 
-          return {
-            entityLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities/${entity.id}`,
-            apisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${defaultModuleId}`,
-            result: entity,
-          };
+            const defaultModuleId =
+              await this.moduleService.getDefaultModuleIdForEntity(
+                args.serviceId,
+                entity.id
+              );
+
+            return {
+              entityLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities/${entity.id}`,
+              apisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${defaultModuleId}`,
+              result: entity,
+            };
+          } catch (error) {
+            this.logger.error(
+              `Chat: Error creating entity ${entityName}`,
+              error,
+              loggerContext
+            );
+            return {
+              entityLink: null,
+              apisLink: null,
+              result: null,
+              error: error.message,
+            };
+          }
         })
       );
 
