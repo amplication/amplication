@@ -40,6 +40,6 @@
         }
       }
     },
-    "required": ["name", "entityId", "fields"]
+    "required": ["entityId", "fields"]
   }
 }
