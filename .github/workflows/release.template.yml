@@ -3,6 +3,11 @@ name: _Reusable Release template
 on:
   workflow_call:
     inputs:
+      default-branch:
+        type: string
+        description: Default branch of the repository. i.e github.event.repository.default_branch
+        required: true
+        default: main
       branch:
         type: string
         description: Name of the git branch
@@ -107,7 +112,7 @@ jobs:
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
             type=raw,value=${{ env.BRANCH }}
-            type=raw,value=latest,enable=${{ env.BRANCH == github.event.repository.default_branch }}
+            type=raw,value=latest,enable=${{ env.BRANCH == inputs.default-branch }}
             type=raw,value=next,enable=${{ env.ENABLE_CUSTOM_TAGS }}
             type=raw,value=master,enable=${{ env.ENABLE_CUSTOM_TAGS }}
 
@@ -132,7 +137,7 @@ jobs:
           if [[ "${{ env.BRANCH }}" == "next" ]];
           then
             echo environment="sandbox" >> $GITHUB_OUTPUT
-          elif [[ "${{ env.BRANCH }}" == github.event.repository.default_branch ]];
+          elif [[ "${{ env.BRANCH }}" == ${{ inputs.default-branch }} ]];
           then
             echo environment="staging" >> $GITHUB_OUTPUT
           fi;
