@@ -44,7 +44,7 @@ const AssistantChatInput = ({ disabled, sendMessage }: Props) => {
 
   const formRef = useRef(null);
 
-  const ref = useHotkeys<HTMLInputElement>(
+  const ref = useHotkeys<HTMLFormElement>(
     KEY_MAP,
     (event, handler) => {
       if (handler.keys.includes("enter") && handler.shift) {
@@ -67,7 +67,7 @@ const AssistantChatInput = ({ disabled, sendMessage }: Props) => {
         onSubmit={handleSubmit}
         innerRef={formRef}
       >
-        <Form>
+        <Form ref={ref}>
           <TextField
             textarea
             name="message"
@@ -76,7 +76,6 @@ const AssistantChatInput = ({ disabled, sendMessage }: Props) => {
             autoComplete="off"
             hideLabel
             rows={2}
-            ref={ref}
             style={{
               "--input-lines": rowCount, //set the css variable to the theme color to be used from the css file
             }}

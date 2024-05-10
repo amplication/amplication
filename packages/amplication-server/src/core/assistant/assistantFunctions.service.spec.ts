@@ -551,4 +551,63 @@ describe("AssistantFunctionsService", () => {
       results: "User does not have access to this resource",
     });
   });
+
+  it("should return error for one entity, while creating others successfully ", async () => {
+    const EXAMPLE_SERVICE_ID = "exampleServiceId";
+
+    const functionName = EnumAssistantFunctions.CreateEntities;
+    const reservedEntityName = "function";
+    const params = {
+      names: ["entity 1", reservedEntityName, "entity 3"],
+      serviceId: EXAMPLE_SERVICE_ID,
+    };
+
+    const entityResults = {
+      ...EXAMPLE_ENTITY,
+      updatedAt: expect.any(String),
+      createdAt: expect.any(String),
+    };
+
+    const errorMessage = `The name '${reservedEntityName}' is reserved`;
+
+    entityServiceCreateOneEntityMock.mockImplementationOnce(() => {
+      return EXAMPLE_ENTITY;
+    });
+    entityServiceCreateOneEntityMock.mockImplementationOnce(() => {
+      throw new Error(errorMessage);
+    });
+    entityServiceCreateOneEntityMock.mockImplementationOnce(() => {
+      return EXAMPLE_ENTITY;
+    });
+
+    const functionResults = await service.executeFunction(
+      EXAMPLE_CALL_ID,
+      functionName,
+      JSON.stringify(params),
+      EXAMPLE_ASSISTANT_CONTEXT,
+      EXAMPLE_LOGGER_CONTEXT
+    );
+
+    expect(entityServiceCreateOneEntityMock).toHaveBeenCalledTimes(3);
+
+    const executionResults = JSON.parse(functionResults.results);
+
+    expect(executionResults).toEqual(
+      expect.objectContaining({
+        allEntitiesLink: expect.any(String),
+        allApisLink: expect.any(String),
+        result: [
+          expect.objectContaining({
+            result: expect.objectContaining(entityResults),
+          }),
+          expect.objectContaining({
+            error: errorMessage,
+          }),
+          expect.objectContaining({
+            result: expect.objectContaining(entityResults),
+          }),
+        ],
+      })
+    );
+  });
 });

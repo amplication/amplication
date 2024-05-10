@@ -92,6 +92,7 @@ import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { pascalCase } from "pascal-case";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { EnumRelatedFieldStrategy } from "./dto/EnumRelatedFieldStrategy";
+import pluralize from "pluralize";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -2268,10 +2269,15 @@ export class EntityService {
   async createFieldCreateInputByDisplayName(
     args: CreateOneEntityFieldByDisplayNameArgs,
     entity: Entity
-  ): Promise<{ name: string; dataType: EnumDataType; properties: JsonObject }> {
-    const { displayName } = args.data;
-    const lowerCaseName = displayName.toLowerCase();
-    const name = camelCase(displayName);
+  ): Promise<{
+    name: string;
+    displayName: string;
+    dataType: EnumDataType;
+    properties: JsonObject;
+  }> {
+    let { displayName } = args.data;
+    let lowerCaseName = displayName.toLowerCase();
+    let name = camelCase(displayName);
 
     let dataType: EnumDataType | null = null;
 
@@ -2299,12 +2305,34 @@ export class EntityService {
       dataType = EnumDataType.WholeNumber;
     }
 
+    let relatedEntity: Entity | null = null;
+
     if (dataType === EnumDataType.Lookup || dataType === null) {
       // Find an entity with the field's display name
-      const relatedEntity = await this.findEntityByNames(
-        name,
-        entity.resourceId
-      );
+      relatedEntity = await this.findEntityByNames(name, entity.resourceId);
+
+      // If the entity is not found, try to find it by removing the ID suffix
+      if (!relatedEntity && lowerCaseName.endsWith("id")) {
+        const relatedEntityName = lowerCaseName.substring(
+          0,
+          lowerCaseName.length - 2
+        );
+
+        relatedEntity = await this.findEntityByNames(
+          relatedEntityName,
+          entity.resourceId
+        );
+        if (relatedEntity) {
+          this.logger.warn(
+            `Entity not found by display name "${displayName}", but found without the ID suffix`
+          );
+
+          name = name.substring(0, name.length - 2);
+          lowerCaseName = lowerCaseName.substring(0, lowerCaseName.length - 2);
+          displayName = displayName.substring(0, displayName.length - 2);
+        }
+      }
+
       // If found attempt to create a lookup field
       if (relatedEntity) {
         // The created field would be multiple selection if its name is equal to
@@ -2329,6 +2357,7 @@ export class EntityService {
         ) {
           return {
             name,
+            displayName,
             dataType: EnumDataType.Lookup,
             properties: {
               relatedEntityId: relatedEntity.id,
@@ -2344,6 +2373,7 @@ export class EntityService {
 
     return {
       name,
+      displayName,
       dataType: dataType || EnumDataType.SingleLineText,
       properties:
         DATA_TYPE_TO_DEFAULT_PROPERTIES[
@@ -3154,25 +3184,46 @@ export function createEntityNamesWhereInput(
   name: string,
   resourceId: string
 ): Prisma.EntityWhereInput {
+  const singularDisplayName = pluralize.singular(name);
+  const pluralDisplayName = pluralize.plural(name);
+
   return {
     resourceId: resourceId,
     // eslint-disable-next-line @typescript-eslint/naming-convention
     OR: [
       {
         displayName: {
-          equals: name,
+          equals: singularDisplayName,
           mode: Prisma.QueryMode.insensitive,
         },
       },
       {
         pluralDisplayName: {
-          equals: name,
+          equals: singularDisplayName,
           mode: Prisma.QueryMode.insensitive,
         },
       },
       {
         name: {
-          equals: name,
+          equals: singularDisplayName,
+          mode: Prisma.QueryMode.insensitive,
+        },
+      },
+      {
+        displayName: {
+          equals: pluralDisplayName,
+          mode: Prisma.QueryMode.insensitive,
+        },
+      },
+      {
+        pluralDisplayName: {
+          equals: pluralDisplayName,
+          mode: Prisma.QueryMode.insensitive,
+        },
+      },
+      {
+        name: {
+          equals: pluralDisplayName,
           mode: Prisma.QueryMode.insensitive,
         },
       },
