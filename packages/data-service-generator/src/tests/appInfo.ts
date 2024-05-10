@@ -1,6 +1,6 @@
 import { AppInfo } from "@amplication/code-gen-types";
 import { EnumAuthProviderType } from "../models";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 
 export const MODULE_EXTENSIONS_TO_SNAPSHOT = [
   ".ts",
@@ -36,4 +36,5 @@ export const appInfo: AppInfo = {
     codeGeneratorVersion: null,
     codeGeneratorStrategy: CodeGeneratorVersionStrategy.LatestMajor,
   },
+  codeGeneratorName: "",
 };

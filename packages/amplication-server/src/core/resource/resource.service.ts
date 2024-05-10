@@ -2,8 +2,9 @@ import {
   EnumActionStepStatus,
   RedesignProjectMovedEntity,
   RedesignProjectNewService,
-} from "@amplication/code-gen-types/models";
-import { Lookup } from "@amplication/code-gen-types/types";
+  types,
+} from "@amplication/code-gen-types";
+
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -74,6 +75,7 @@ import {
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
 import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
+import { UpdateCodeGeneratorNameArgs } from "./dto/UpdateCodeGeneratorNameArgs";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -362,6 +364,46 @@ export class ResourceService {
           args.data.codeGeneratorVersionOptions.codeGeneratorVersion,
         codeGeneratorStrategy:
           args.data.codeGeneratorVersionOptions.codeGeneratorStrategy,
+      },
+    });
+  }
+
+  async updateCodeGeneratorName(
+    args: UpdateCodeGeneratorNameArgs,
+    user: User
+  ): Promise<Resource | null> {
+    const resource = await this.resource({
+      where: {
+        id: args.where.id,
+      },
+    });
+
+    if (isEmpty(resource)) {
+      throw new Error(INVALID_RESOURCE_ID);
+    }
+
+    const codeGeneratorUpdate = await this.billingService.getBooleanEntitlement(
+      user.workspace.id,
+      BillingFeature.CodeGeneratorName
+    );
+
+    if (codeGeneratorUpdate && !codeGeneratorUpdate.hasAccess)
+      throw new AmplicationError(
+        "Feature Unavailable. Please upgrade your plan to access this feature."
+      );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        resourceId: resource.id,
+        projectId: resource.projectId,
+      },
+      event: EnumEventType.CodeGeneratorNameUpdate,
+    });
+
+    return this.prisma.resource.update({
+      where: args.where,
+      data: {
+        codeGeneratorName: args.codeGeneratorName,
       },
     });
   }
@@ -854,10 +896,12 @@ export class ResourceService {
             };
 
             if (field.dataType === EnumDataType.Lookup) {
-              const relatedEntityId = (field.properties as unknown as Lookup)
-                .relatedEntityId;
+              const relatedEntityId = (
+                field.properties as unknown as types.Lookup
+              ).relatedEntityId;
 
-              const fieldProperties = field.properties as unknown as Lookup;
+              const fieldProperties =
+                field.properties as unknown as types.Lookup;
 
               //If the related entity is moved to the SAME RESOURCE - we should keep the relation
               if (
@@ -884,15 +928,15 @@ export class ResourceService {
                 createFieldInput.relatedFieldDisplayName =
                   relatedField.displayName;
                 createFieldInput.relatedFieldAllowMultipleSelection = (
-                  relatedField.properties as unknown as Lookup
+                  relatedField.properties as unknown as types.Lookup
                 ).allowMultipleSelection;
 
                 (
-                  createFieldInput.properties as unknown as Lookup
+                  createFieldInput.properties as unknown as types.Lookup
                 ).relatedFieldId = undefined; //clear the related field id, because it will be set later
 
                 (
-                  createFieldInput.properties as unknown as Lookup
+                  createFieldInput.properties as unknown as types.Lookup
                 ).relatedEntityId = sourceEntityIdToNewEntityMap.get(
                   fieldProperties.relatedEntityId
                 ).id; //the new entity Id of the related entity

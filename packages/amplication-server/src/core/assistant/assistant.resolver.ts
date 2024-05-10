@@ -50,18 +50,18 @@ export class AssistantResolver {
     );
   }
 
-  @Mutation(() => AssistantThread)
-  async sendAssistantMessage(
-    @UserEntity() user: User,
-    @Args() args: SendAssistantMessageArgs
-  ): Promise<AssistantThread> {
-    args.context.user = user;
-    args.context.workspaceId = user.workspace.id;
+  // @Mutation(() => AssistantThread)
+  // async sendAssistantMessage(
+  //   @UserEntity() user: User,
+  //   @Args() args: SendAssistantMessageArgs
+  // ): Promise<AssistantThread> {
+  //   args.context.user = user;
+  //   args.context.workspaceId = user.workspace.id;
 
-    return this.service.processMessage(
-      args.data.message,
-      args.data.threadId,
-      args.context
-    );
-  }
+  //   return this.service.processMessage(
+  //     args.data.message,
+  //     args.data.threadId,
+  //     args.context
+  //   );
+  // }
 }

@@ -10,7 +10,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
+import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import * as nestAccessControl from "nest-access-control";
@@ -19,13 +19,14 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { Public } from "../../decorators/public.decorator";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { CreateVersionArgs } from "./CreateVersionArgs";
-import { UpdateVersionArgs } from "./UpdateVersionArgs";
-import { DeleteVersionArgs } from "./DeleteVersionArgs";
+import { Version } from "./Version";
 import { VersionCountArgs } from "./VersionCountArgs";
 import { VersionFindManyArgs } from "./VersionFindManyArgs";
 import { VersionFindUniqueArgs } from "./VersionFindUniqueArgs";
-import { Version } from "./Version";
+import { CreateVersionArgs } from "./CreateVersionArgs";
+import { UpdateVersionArgs } from "./UpdateVersionArgs";
+import { DeleteVersionArgs } from "./DeleteVersionArgs";
+import { Generator } from "../../generator/base/Generator";
 import { VersionService } from "../version.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Version)
@@ -51,7 +52,7 @@ export class VersionResolverBase {
   async versions(
     @graphql.Args() args: VersionFindManyArgs
   ): Promise<Version[]> {
-    return this.service.findMany(args);
+    return this.service.versions(args);
   }
 
   @Public()
@@ -59,7 +60,7 @@ export class VersionResolverBase {
   async version(
     @graphql.Args() args: VersionFindUniqueArgs
   ): Promise<Version | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.version(args);
     if (result === null) {
       return null;
     }
@@ -76,9 +77,17 @@ export class VersionResolverBase {
   async createVersion(
     @graphql.Args() args: CreateVersionArgs
   ): Promise<Version> {
-    return await this.service.create({
+    return await this.service.createVersion({
       ...args,
-      data: args.data,
+      data: {
+        ...args.data,
+
+        generator: args.data.generator
+          ? {
+              connect: args.data.generator,
+            }
+          : undefined,
+      },
     });
   }
 
@@ -93,13 +102,21 @@ export class VersionResolverBase {
     @graphql.Args() args: UpdateVersionArgs
   ): Promise<Version | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateVersion({
         ...args,
-        data: args.data,
+        data: {
+          ...args.data,
+
+          generator: args.data.generator
+            ? {
+                connect: args.data.generator,
+              }
+            : undefined,
+        },
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -117,14 +134,30 @@ export class VersionResolverBase {
     @graphql.Args() args: DeleteVersionArgs
   ): Promise<Version | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteVersion(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
       throw error;
     }
+  }
+
+  @Public()
+  @graphql.ResolveField(() => Generator, {
+    nullable: true,
+    name: "generator",
+  })
+  async getGenerator(
+    @graphql.Parent() parent: Version
+  ): Promise<Generator | null> {
+    const result = await this.service.getGenerator(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

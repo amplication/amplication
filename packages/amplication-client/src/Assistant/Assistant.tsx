@@ -1,41 +1,42 @@
 import {
+  EnumContentAlign,
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumItemsAlign,
+  EnumTextAlign,
   EnumTextColor,
   EnumTextStyle,
+  FlexItem,
   Icon,
   Text,
-  TextField,
   Tooltip,
 } from "@amplication/ui/design-system";
-import { Form, Formik } from "formik";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { HotKeys } from "react-hotkeys";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import * as models from "../models";
-import "./Assistant.scss";
-import useAssistant from "./hooks/useAssistant";
-import AssistantMessage from "./AssistantMessage";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useQuery } from "@apollo/client";
+import { useStiggContext } from "@stigg/react-sdk";
 import classNames from "classnames";
-import { useAppContext } from "../context/appContext";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-type SendMessageType = models.SendAssistantMessageInput;
+import { Button, EnumButtonStyle } from "../Components/Button";
+import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
+import jovu from "../assets/jovu-logo.svg";
+import { useAppContext } from "../context/appContext";
+import "./Assistant.scss";
+import AssistantChatInput from "./AssistantChatInput";
+import AssistantMessage from "./AssistantMessage";
+import JovuLogo from "./JovuLogo";
+import { useAssistantContext } from "./context/AssistantContext";
 
-const INITIAL_VALUES: SendMessageType = {
-  message: "",
-};
 const DIRECTION = "sw";
 
-const CLASS_NAME = "assistant";
-
-const keyMap = {
-  SUBMIT: "enter",
-};
+export const CLASS_NAME = "assistant";
 
 const WIDTH_STATE_DEFAULT = "default";
 const WIDTH_STATE_WIDE = "wide";
 
 const WIDTH_STATE_SETTINGS: Record<
   string,
-  { icon: string; tooltip: string; nextState: string }
+  { icon: string; tooltip: string; nextState: "default" | "wide" }
 > = {
   [WIDTH_STATE_DEFAULT]: {
     icon: "chevrons_right",
@@ -52,8 +53,26 @@ const WIDTH_STATE_SETTINGS: Record<
 const Assistant = () => {
   const { currentWorkspace } = useAppContext();
 
-  const [open, setOpen] = useState(true);
-  const [widthState, setWidthState] = useState(WIDTH_STATE_DEFAULT);
+  const {
+    open,
+    setOpen,
+    widthState,
+    setWidthState,
+    sendMessage,
+    messages,
+    processingMessage: loading,
+    streamError,
+  } = useAssistantContext();
+
+  const { stigg } = useStiggContext();
+
+  const { hasAccess } = stigg.getMeteredEntitlement({
+    featureId: BillingFeature.JovuRequests,
+  });
+
+  const { data } = useQuery(GET_CONTACT_US_LINK, {
+    variables: { id: currentWorkspace.id },
+  });
 
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const scrollToBottom = () => {
@@ -62,25 +81,9 @@ const Assistant = () => {
     }
   };
 
-  const {
-    sendMessage,
-    messages,
-    sendMessageError: error,
-    processingMessage: loading,
-    streamError,
-  } = useAssistant();
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  const handleSubmit = useCallback(
-    (data: SendMessageType, { setErrors, resetForm }) => {
-      sendMessage(data.message);
-      resetForm({ values: INITIAL_VALUES });
-    },
-    [sendMessage]
-  );
 
   return (
     <>
@@ -100,7 +103,13 @@ const Assistant = () => {
         )}
       >
         <div className={`${CLASS_NAME}__header`}>
-          <Icon icon="ai" color={EnumTextColor.White} size="large" />
+          <img
+            src={jovu}
+            alt="jovu"
+            width={30}
+            height={30}
+            style={{ background: "white", borderRadius: "50%" }}
+          />
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
             Jovu (Beta)
           </Text>
@@ -133,7 +142,45 @@ const Assistant = () => {
           </Tooltip>
         </div>
 
-        {currentWorkspace?.allowLLMFeatures ? (
+        {!hasAccess ? (
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            itemsAlign={EnumItemsAlign.Center}
+            contentAlign={EnumContentAlign.Center}
+            gap={EnumGapSize.Large}
+            className={`${CLASS_NAME}__limit`}
+          >
+            <JovuLogo />
+            <Text textStyle={EnumTextStyle.H3} textAlign={EnumTextAlign.Center}>
+              You have reached the daily limit of Jovu requests for your plan.
+            </Text>
+            <Text
+              textStyle={EnumTextStyle.Tag}
+              textAlign={EnumTextAlign.Center}
+            >
+              Talk with us to upgrade and discover additional hidden
+              functionalities.
+            </Text>
+            <Text
+              textColor={EnumTextColor.White}
+              textStyle={EnumTextStyle.Tag}
+              textAlign={EnumTextAlign.Center}
+            >
+              <a
+                className={`${CLASS_NAME}__addon-section__contact-us`}
+                href={data?.contactUsLink}
+                target="blank"
+              >
+                <Text
+                  textColor={EnumTextColor.ThemeTurquoise}
+                  textStyle={EnumTextStyle.Tag}
+                >
+                  Talk with us
+                </Text>
+              </a>
+            </Text>
+          </FlexItem>
+        ) : currentWorkspace?.allowLLMFeatures ? (
           <>
             <div className={`${CLASS_NAME}__messages`}>
               {messages.map((message) => (
@@ -145,9 +192,6 @@ const Assistant = () => {
               ))}
 
               <div ref={messagesEndRef} />
-              {error && (
-                <div className={`${CLASS_NAME}__error`}>{error.message}</div>
-              )}
               {streamError && (
                 <div className={`${CLASS_NAME}__error`}>
                   {streamError.message}
@@ -155,42 +199,7 @@ const Assistant = () => {
               )}
             </div>
 
-            <div className={`${CLASS_NAME}__chat_input`}>
-              <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-                {(formik) => {
-                  const handlers = {
-                    SUBMIT: formik.submitForm,
-                  };
-                  return (
-                    <Form>
-                      <HotKeys
-                        keyMap={keyMap}
-                        handlers={handlers}
-                        className={`${CLASS_NAME}__text-wrapper`}
-                      >
-                        <TextField
-                          textarea
-                          name="message"
-                          label="How can I help you?"
-                          disabled={loading}
-                          autoFocus
-                          autoComplete="off"
-                          hideLabel
-                          rows={2}
-                        />
-                      </HotKeys>
-                      <Button
-                        type="submit"
-                        buttonStyle={EnumButtonStyle.Primary}
-                        disabled={loading}
-                      >
-                        Send
-                      </Button>
-                    </Form>
-                  );
-                }}
-              </Formik>
-            </div>
+            <AssistantChatInput disabled={loading} sendMessage={sendMessage} />
           </>
         ) : (
           <div className={`${CLASS_NAME}__messages`}>

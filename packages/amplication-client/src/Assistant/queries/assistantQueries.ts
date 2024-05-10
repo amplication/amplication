@@ -25,6 +25,7 @@ export const ASSISTANT_MESSAGE_UPDATED = gql`
       snapshot
       text
       completed
+      functionExecuted
     }
   }
 `;

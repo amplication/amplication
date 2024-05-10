@@ -68,7 +68,7 @@ const NewModuleChild = <T,>({
   }, [findModulesData]);
 
   const initialValueWithModuleId = useMemo(() => {
-    const firstModule = findModulesData?.modules[0].id;
+    const firstModule = findModulesData?.modules[0]?.id;
 
     return {
       ...initialValues,

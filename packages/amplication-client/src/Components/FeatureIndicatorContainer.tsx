@@ -16,6 +16,7 @@ import {
   FeatureIndicator,
   defaultTextEnd,
   defaultTextStart,
+  disabledDefaultTextEnd,
 } from "./FeatureIndicator";
 import "./FeatureIndicatorContainer.scss";
 import { omit } from "lodash";
@@ -127,45 +128,39 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
     if (
       subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
-      subscription.status !== EnumSubscriptionStatus.Trailing
+      status !== EnumSubscriptionStatus.Trailing
     ) {
       return fullEnterpriseText;
     }
 
     return defaultTextStart;
-  }, [
-    disabled,
-    subscriptionPlan,
-    subscription.status,
-    limitationText,
-    fullEnterpriseText,
-  ]);
+  }, [disabled, subscriptionPlan, status, limitationText, fullEnterpriseText]);
 
   const textEnd = useMemo(() => {
     if (disabled) {
-      return "";
+      return disabledDefaultTextEnd;
     }
     if (
       subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
-      subscription.status !== EnumSubscriptionStatus.Trailing
+      status !== EnumSubscriptionStatus.Trailing
     ) {
       return "";
     }
 
     return defaultTextEnd;
-  }, [disabled, subscriptionPlan, subscription.status]);
+  }, [disabled, subscriptionPlan, status]);
 
   const showTooltipLink = useMemo(() => {
     if (
       isPreviewPlan(subscriptionPlan) ||
       (subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
-        subscription.status !== EnumSubscriptionStatus.Trailing)
+        status !== EnumSubscriptionStatus.Trailing)
     ) {
       return false; // don't show the upgrade link when the plan is preview
     }
 
     return true; // in case of null, it falls back to the default link text
-  }, [subscriptionPlan, subscription]);
+  }, [subscriptionPlan, status]);
 
   useEffect(() => {
     if (!subscriptionPlan || !status || !featureId) {

@@ -1,4 +1,4 @@
-import { EnumGitProvider } from "@amplication/code-gen-types/models";
+import { EnumGitProvider } from "@amplication/code-gen-types";
 import {
   Button,
   EnumButtonStyle,

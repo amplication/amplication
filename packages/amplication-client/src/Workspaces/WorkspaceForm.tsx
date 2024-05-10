@@ -129,14 +129,16 @@ function WorkspaceForm() {
                         gap={EnumGapSize.Small}
                       >
                         <div>
-                          Turn on this option to enable advanced features using
-                          artificial intelligence. These include personalized
+                          Manage Amplication AI-powered features and
+                          enable/disable advanced features using artificial
+                          intelligence. These include personalized
                           recommendations, and automation of tasks.
                         </div>
                         <div>
                           Note: This may involve processing your data with AI
-                          technologies. When disabled, we will never share your
-                          data with any AI or large language model services.
+                          technologies while keeping your data secure. When
+                          disabled, we will never share your data with any AI or
+                          large language model services.
                         </div>
                       </FlexItem>
                     </Text>

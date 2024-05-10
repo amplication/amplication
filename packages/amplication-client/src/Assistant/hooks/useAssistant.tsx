@@ -1,11 +1,17 @@
-import { useMutation, useSubscription } from "@apollo/client";
+import {
+  useMutation,
+  useSubscription,
+  useApolloClient,
+  DocumentNode,
+} from "@apollo/client";
 import * as models from "../../models";
 import {
   ASSISTANT_MESSAGE_UPDATED,
   SEND_ASSISTANT_MESSAGE,
 } from "../queries/assistantQueries";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useAppContext } from "../../context/appContext";
+import { GET_ENTITIES } from "../../Entity/EntityERD/EntitiesERD";
 
 type TAssistantThreadData = {
   sendAssistantMessageWithStream: models.AssistantThread;
@@ -17,6 +23,7 @@ type TAssistantMessageUpdatedData = {
 
 export type AssistantMessageWithOptions = models.AssistantMessage & {
   options?: string[];
+  loading?: boolean;
 };
 
 const INITIAL_MESSAGE: AssistantMessageWithOptions = {
@@ -32,15 +39,105 @@ const INITIAL_MESSAGE: AssistantMessageWithOptions = {
   createdAt: "",
   options: [
     "Does Amplication auto-generate APIs?",
-    "How can I create a new entity in my Amplication service?",
-    "I want to add Kafka to my services. Can I do it with Amplication?",
     "I want to create a new project with a couple of services. Can you help me?",
+    "Can you recommend the plugins I should install for my Service for an event-driven architecture?",
+    "What are the benefits that Amplication can provide to my backend services?",
   ],
 };
 
+const FUNCTIONS_CACHE_MAP: {
+  [key in models.EnumAssistantFunctions]: {
+    refreshPendingChanges: boolean;
+    cacheKey: string;
+    queries?: DocumentNode[];
+  };
+} = {
+  [models.EnumAssistantFunctions.CreateEntities]: {
+    refreshPendingChanges: true,
+    cacheKey: "resources",
+  },
+  [models.EnumAssistantFunctions.CreateService]: {
+    refreshPendingChanges: true,
+    cacheKey: "resources",
+  },
+  [models.EnumAssistantFunctions.CreateProject]: {
+    refreshPendingChanges: false,
+    cacheKey: "projects",
+  },
+  [models.EnumAssistantFunctions.CommitProjectPendingChanges]: {
+    refreshPendingChanges: true,
+    cacheKey: "commits",
+  },
+  [models.EnumAssistantFunctions.CreateModule]: {
+    refreshPendingChanges: true,
+    cacheKey: "modules",
+  },
+  [models.EnumAssistantFunctions.CreateModuleDto]: {
+    refreshPendingChanges: true,
+    cacheKey: "moduleDtos",
+  },
+  [models.EnumAssistantFunctions.CreateModuleEnum]: {
+    refreshPendingChanges: true,
+    cacheKey: "moduleEnums",
+  },
+  [models.EnumAssistantFunctions.InstallPlugins]: {
+    refreshPendingChanges: true,
+    cacheKey: "pluginInstallations",
+  },
+  [models.EnumAssistantFunctions.CreateModuleAction]: {
+    refreshPendingChanges: true,
+    cacheKey: "moduleActions",
+  },
+  [models.EnumAssistantFunctions.CreateEntityFields]: {
+    refreshPendingChanges: true,
+    cacheKey: "fields",
+    queries: [GET_ENTITIES],
+  },
+  [models.EnumAssistantFunctions.GetModuleActions]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetModuleDtosAndEnums]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetPlugins]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetProjectPendingChanges]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetProjectServices]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetServiceEntities]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetServiceModules]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+};
+
 const useAssistant = () => {
-  const { currentProject, currentResource, addBlock, commitUtils } =
-    useAppContext();
+  const { currentProject, currentResource, addBlock } = useAppContext();
+
+  const apolloClient = useApolloClient();
+
+  const updateCache = useCallback(
+    (fieldName: string) => {
+      apolloClient.refetchQueries({
+        updateCache(cache) {
+          cache.evict({ fieldName });
+        },
+      });
+    },
+    [apolloClient]
+  );
 
   const [messages, setMessages] = useState<AssistantMessageWithOptions[]>([
     INITIAL_MESSAGE,
@@ -50,18 +147,18 @@ const useAssistant = () => {
 
   const [threadId, setThreadId] = useState<string | null>(null);
 
-  const [
-    sendAssistantMessage,
-    { error: sendMessageError, loading: sendMessageLoading },
-  ] = useMutation<TAssistantThreadData>(SEND_ASSISTANT_MESSAGE, {
-    onCompleted: (data) => {
-      setThreadId(data.sendAssistantMessageWithStream.id);
-      setMessages([
-        ...messages,
-        ...data.sendAssistantMessageWithStream.messages,
-      ]);
-    },
-  });
+  const [sendAssistantMessage] = useMutation<TAssistantThreadData>(
+    SEND_ASSISTANT_MESSAGE,
+    {
+      onCompleted: (data) => {
+        setThreadId(data.sendAssistantMessageWithStream.id);
+        setMessages([
+          ...messages,
+          ...data.sendAssistantMessageWithStream.messages,
+        ]);
+      },
+    }
+  );
 
   const { error: streamError } = useSubscription<TAssistantMessageUpdatedData>(
     ASSISTANT_MESSAGE_UPDATED,
@@ -72,16 +169,35 @@ const useAssistant = () => {
       skip: !threadId,
       onData: (data) => {
         const message = data.data.data.assistantMessageUpdated;
+        const functionExecuted = message.functionExecuted;
+
+        if (functionExecuted) {
+          const cacheKey = FUNCTIONS_CACHE_MAP[functionExecuted].cacheKey;
+          if (cacheKey) {
+            updateCache(cacheKey);
+          }
+          if (FUNCTIONS_CACHE_MAP[functionExecuted].refreshPendingChanges) {
+            addBlock("blockId");
+          }
+
+          const queries = FUNCTIONS_CACHE_MAP[functionExecuted].queries;
+          if (queries) {
+            apolloClient.refetchQueries({
+              include: queries,
+            });
+          }
+
+          return;
+        }
+
         if (message.completed) {
           setProcessingMessage(false);
-          //@todo: update client side data smartly based on the actions on the server
-          addBlock("blockid");
-          commitUtils.refetchCommitsData(true);
         }
 
         setMessages((messages) => {
           const lastMessage = messages[messages.length - 1];
           lastMessage.text = message.snapshot;
+          lastMessage.loading = false; // remove loading indicator when first message is received
           return [...messages];
         });
       },
@@ -108,6 +224,7 @@ const useAssistant = () => {
         role: models.EnumAssistantMessageRole.Assistant,
         id: Date.now().toString() + "_",
         createdAt: "",
+        loading: true,
       },
     ]);
 
@@ -125,15 +242,32 @@ const useAssistant = () => {
         },
       },
     }).catch((error) => {
-      console.error(error);
+      const lastMessage = messages[messages.length - 1];
+
+      lastMessage.loading = false;
+      setMessages([
+        ...messages,
+        {
+          text: "I'm sorry, I had a problem processing your request.",
+          role: models.EnumAssistantMessageRole.Assistant,
+          id: Date.now().toString() + "_",
+          createdAt: "",
+        },
+        {
+          text: error.message,
+          role: models.EnumAssistantMessageRole.Assistant,
+          id: Date.now().toString() + "_",
+          createdAt: "",
+        },
+      ]);
+
+      setProcessingMessage(false);
     });
   };
 
   return {
     sendMessage,
     messages,
-    sendMessageError,
-    sendMessageLoading,
     streamError,
     processingMessage,
   };

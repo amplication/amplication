@@ -1,14 +1,11 @@
-import {
-  Button,
-  EnumButtonStyle,
-  EnumTextColor,
-  Icon,
-} from "@amplication/ui/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import ReactMarkdown from "react-markdown";
+import { Link } from "react-router-dom";
 import UserBadge from "../Components/UserBadge";
 import * as models from "../models";
 import { AssistantMessageWithOptions } from "./hooks/useAssistant";
-import { Link } from "react-router-dom";
+
+import JovuLogo from "./JovuLogo";
 
 const CLASS_NAME = "assistant";
 
@@ -28,7 +25,7 @@ const AssistantMessage = ({ message, onOptionClick }: Props) => {
           </>
         ) : (
           <>
-            <Icon icon="ai" color={EnumTextColor.ThemeTurquoise} size="large" />
+            <JovuLogo loading={message.loading} />
             Jovu
           </>
         )}
@@ -43,7 +40,9 @@ const AssistantMessage = ({ message, onOptionClick }: Props) => {
                   {props.children}
                 </Link>
               ) : (
-                <a href={props.href}>{props.children}</a> // All other links
+                <a href={props.href} target="_blank" rel="noreferrer">
+                  {props.children}
+                </a> // All other links
               );
             },
           }}
