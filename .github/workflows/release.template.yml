@@ -137,7 +137,7 @@ jobs:
           if [[ "${{ env.BRANCH }}" == "next" ]];
           then
             echo environment="sandbox" >> $GITHUB_OUTPUT
-          elif [[ "${{ env.BRANCH }}" == inputs.default-branch ]];
+          elif [[ "${{ env.BRANCH }}" == ${{ inputs.default-branch }} ]];
           then
             echo environment="staging" >> $GITHUB_OUTPUT
           fi;
