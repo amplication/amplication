@@ -78,6 +78,7 @@ const EXAMPLE_MODULE: Module = {
   inputParameters: null,
   outputParameters: null,
   versionNumber: 0,
+  resourceId: EXAMPLE_RESOURCE_ID,
 };
 
 export const subscriptionServiceFindOneMock = jest.fn(() => {
@@ -107,6 +108,7 @@ const blockServiceCreateMock = jest.fn((args: CreateModuleArgs): Module => {
     description: data.description,
     inputParameters: null,
     outputParameters: null,
+    resourceId: EXAMPLE_RESOURCE_ID,
   };
 });
 
@@ -393,6 +395,33 @@ describe("ModuleService", () => {
     await expect(service.create(args, EXAMPLE_USER)).rejects.toThrow(
       new AmplicationError(
         `Module with name ${args.data.name} already exists in resource ${args.data.resource.connect.id}`
+      )
+    );
+  });
+
+  it("should throw an error when updating a module with a name that is already used", async () => {
+    blockServiceFindManyByBlockTypeMock.mockReturnValue([
+      {
+        ...EXAMPLE_MODULE,
+        id: "anotherModuleId",
+        name: EXAMPLE_MODULE_NAME,
+      },
+    ]);
+
+    const args: UpdateModuleArgs = {
+      where: {
+        id: EXAMPLE_MODULE_ID,
+      },
+      data: {
+        displayName: EXAMPLE_MODULE_DISPLAY_NAME,
+        name: EXAMPLE_MODULE_NAME,
+        enabled: true,
+      },
+    };
+
+    await expect(service.update(args, EXAMPLE_USER)).rejects.toThrow(
+      new AmplicationError(
+        `Module with name ${args.data.name} already exists in resource ${EXAMPLE_RESOURCE_ID}`
       )
     );
   });

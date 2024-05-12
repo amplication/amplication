@@ -185,6 +185,20 @@ export class ModuleService extends BlockTypeService<
 
     this.validateModuleName(args.data.name);
 
+    const otherModule = await this.findModuleByName(
+      args.data.name,
+      existingModule.resourceId
+    );
+
+    if (
+      otherModule.length > 0 &&
+      otherModule.filter((module) => module.id !== args.where.id).length > 0
+    ) {
+      throw new AmplicationError(
+        `Module with name ${args.data.name} already exists in resource ${existingModule.resourceId}`
+      );
+    }
+
     const subscription = await this.billingService.getSubscription(
       user.workspace?.id
     );
