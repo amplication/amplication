@@ -15,6 +15,7 @@ import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
 import { AssistantThread } from "./dto/AssistantThread";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
+import { EnumAssistantMessageType } from "./dto/EnumAssistantMessageType";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
@@ -22,6 +23,16 @@ export const PLUGIN_LATEST_VERSION_TAG = "latest";
 
 const STREAM_ERROR_MESSAGE =
   "It looks like we're experiencing a high demand right now, which might be affecting our connection to the AI model. Please give it a little time and try again later. We appreciate your patience and understanding as we work to resolve this. Thank you! 🙏";
+
+const ASSISTANT_INSTRUCTIONS: { [key in EnumAssistantMessageType]: string } = {
+  [EnumAssistantMessageType.Default]: ``,
+  [EnumAssistantMessageType.Onboarding]: `
+  The user is creating a new service and you need to generate everything needed for the service, including entities, fields, relations, apis, and install plugins. 
+  You can suggest names and different configuration as needed. 
+  After you create entities, also create fields and relations for all entities. Aim to create as many fields and relations as needed. 
+  Install any plugins that are needed for the service.
+  Your reply should start with "Welcome to Amplication!" and include a brief introduction to the service and the entities you created.`,
+};
 
 export type MessageLoggerContext = {
   messageContext: {
@@ -149,7 +160,8 @@ export class AssistantService {
   async processMessageWithStream(
     messageText: string,
     threadId: string,
-    context: AssistantContext
+    context: AssistantContext,
+    messageType?: EnumAssistantMessageType
   ): Promise<AssistantThread> {
     await this.validateAndReportUsage(context);
 
@@ -165,7 +177,10 @@ export class AssistantService {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       assistant_id: this.assistantId,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      additional_instructions: `The following context is available: 
+      additional_instructions: `${
+        messageType && ASSISTANT_INSTRUCTIONS[messageType]
+      }. 
+      The following context is available: 
         ${JSON.stringify(preparedThread.shortContext)}`,
     });
 
