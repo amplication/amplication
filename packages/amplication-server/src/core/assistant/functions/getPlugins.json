@@ -1,0 +1,9 @@
+{
+  "name": "getPlugins",
+  "description": "Get a list of all available plugins in Amplication, such as Kafka, auth providers, architecture, databases and more",
+  "parameters": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  }
+}
