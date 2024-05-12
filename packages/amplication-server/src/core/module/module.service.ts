@@ -89,6 +89,19 @@ export class ModuleService extends BlockTypeService<
     return super.findMany(prismaArgs);
   }
 
+  async findModuleByName(name: string, resourceId: string): Promise<Module[]> {
+    const modules = await this.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+    const lowerName = name.toLowerCase();
+
+    return modules.filter((module) => module.name.toLowerCase() === lowerName);
+  }
+
   async create(
     args: CreateModuleArgs,
     user: User,
@@ -107,6 +120,17 @@ export class ModuleService extends BlockTypeService<
     }
 
     this.validateModuleName(args.data.name);
+
+    const otherModule = await this.findModuleByName(
+      args.data.name,
+      args.data.resource.connect.id
+    );
+
+    if (otherModule.length > 0) {
+      throw new AmplicationError(
+        `Module with name ${args.data.name} already exists in resource ${args.data.resource.connect.id}`
+      );
+    }
 
     if (trackEvent) {
       const subscription = await this.billingService.getSubscription(
