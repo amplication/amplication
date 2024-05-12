@@ -20,10 +20,10 @@ import { useAssistantContext } from "./context/AssistantContext";
 const CLASS_NAME = "onboarding-with-jovu";
 
 const STARTERS = [
-  "Create an event-driven architecture with Kafka. Include two services, one with GraphQL API and Postgres, writing to Kafka, and another reading from Kafka and writing to MongoBD",
-  "Build a CRM system for a real estate agency. This CRM needs to manage properties, clients, appointments, and agent assignments",
-  "Create a service for a twitter clone, based on PostgreSQL with REST and GraphQL APIs",
-  "Create an Identity service to manage users and roles for my organization with...",
+  "Create a blog application that utilizes event-driven architecture. Include two services, one with GraphQL API and Postgres, writing to Kafka, and another reading from Kafka and writing to MongoBD.",
+  "Build a CRM system for a real estate agency. This CRM needs to manage properties, clients, appointments, and agent assignments.",
+  "Create a service for a twitter clone, based on PostgreSQL with REST and GraphQL APIs. Generate the production-ready code also for all the required APIs.",
+  "Add a service of product reviews to my e-commerce system. The service should have a Redis cache layer, and authentication method so users can edit their reviews only.",
 ];
 
 const OnboardingWithJovu: React.FC = () => {
