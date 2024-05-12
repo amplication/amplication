@@ -31,6 +31,8 @@ const ASSISTANT_INSTRUCTIONS: { [key in EnumAssistantMessageType]: string } = {
   You can suggest names and different configuration as needed. 
   After you create entities, also create fields and relations for all entities. Aim to create as many fields and relations as needed. 
   Install any plugins that are needed for the service.
+  Do not ask the user to commit changes before the onboarding is complete.
+  The user is already connected to a demo git repo. After the creation is completed, suggest the user to connect to their own git repo.
   Your reply should start with "Welcome to Amplication!" and include a brief introduction to the service and the entities you created.`,
 };
 
