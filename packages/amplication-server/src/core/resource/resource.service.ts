@@ -15,7 +15,7 @@ import {
   forwardRef,
 } from "@nestjs/common";
 import cuid from "cuid";
-import { isEmpty } from "lodash";
+import { isEmpty, kebabCase } from "lodash";
 import { pascalCase } from "pascal-case";
 import pluralize from "pluralize";
 import { JsonObject, JsonValue } from "type-fest";
@@ -568,10 +568,14 @@ export class ResourceService {
     serviceName: string,
     serviceDescription: string,
     projectId: string,
-    adminUIPath: string,
-    serverPath: string,
-    user: User
+    user: User,
+    installDefaultDbPlugin = true
   ): Promise<Resource> {
+    const pathBase = `apps/${kebabCase(serviceName)}`;
+
+    const adminUIPath = `${pathBase}-admin`;
+    const serverPath = `${pathBase}-server`;
+
     const args: CreateOneResourceArgs = {
       data: {
         name: serviceName,
@@ -602,7 +606,9 @@ export class ResourceService {
 
     const resource = await this.createService(args, user);
 
-    await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
+    if (installDefaultDbPlugin) {
+      await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
+    }
 
     return resource;
   }

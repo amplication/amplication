@@ -270,6 +270,51 @@ export class AssistantFunctionsService {
     }
   }
 
+  async installMultiplePlugins(
+    pluginIds: string[],
+    serviceId: string,
+    context: AssistantContext
+  ): Promise<any> {
+    //iterate over the pluginIds and install each plugin synchronously
+    //to support synchronous installation of multiple plugins we need first to fix the plugins order code in the pluginInstallation Service
+    const installations = [];
+    for (const pluginId of pluginIds) {
+      const plugin = await this.pluginCatalogService.getPluginWithLatestVersion(
+        pluginId
+      );
+      const pluginVersion = plugin.versions[0];
+
+      const { version, settings, configurations } = pluginVersion;
+
+      const installation = await this.pluginInstallationService.create(
+        {
+          data: {
+            displayName: plugin.name,
+            pluginId: pluginId,
+            enabled: true,
+            npm: plugin.npm,
+            version: version,
+            settings: settings,
+            configurations: configurations,
+            resource: { connect: { id: serviceId } },
+          },
+        },
+        context.user
+      );
+
+      installations.push({
+        result: installation,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${serviceId}/plugins/installed/${installation.id}`,
+      });
+    }
+
+    return {
+      installations,
+      pluginsCatalogLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${serviceId}/plugins/catalog`,
+      allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${serviceId}/plugins/installed`,
+    };
+  }
+
   private assistantFunctions: {
     [key in EnumAssistantFunctions]: (
       args: any,
@@ -418,15 +463,29 @@ export class AssistantFunctionsService {
       args: functionsArgsTypes.CreateService,
       context: AssistantContext
     ) => {
+      const needDefaultDbPlugin = !(
+        args.pluginIds &&
+        args.pluginIds.find((pluginId) => pluginId.startsWith("db-"))
+      );
+
       const resource =
         await this.resourceService.createServiceWithDefaultSettings(
           args.serviceName,
           args.serviceDescription || "",
           args.projectId,
-          args.adminUIPath,
-          args.serverPath,
-          context.user
+          context.user,
+          needDefaultDbPlugin
         );
+
+      let pluginsResults = null;
+      if (args.pluginIds && args.pluginIds.length > 0) {
+        pluginsResults = await this.installMultiplePlugins(
+          args.pluginIds,
+          resource.id,
+          context
+        );
+      }
+
       return {
         link: `${this.clientHost}/${context.workspaceId}/${args.projectId}/${resource.id}`,
         result: {
@@ -434,6 +493,7 @@ export class AssistantFunctionsService {
           name: resource.name,
           description: resource.description,
         },
+        pluginsResults,
       };
     },
     createProject: async (
@@ -526,43 +586,11 @@ export class AssistantFunctionsService {
       args: functionsArgsTypes.InstallPlugins,
       context: AssistantContext
     ) => {
-      //iterate over the pluginIds and install each plugin synchronously
-      //to support synchronous installation of multiple plugins we need first to fix the plugins order code in the pluginInstallation Service
-      const installations = [];
-      for (const pluginId of args.pluginIds) {
-        const plugin =
-          await this.pluginCatalogService.getPluginWithLatestVersion(pluginId);
-        const pluginVersion = plugin.versions[0];
-
-        const { version, settings, configurations } = pluginVersion;
-
-        const installation = await this.pluginInstallationService.create(
-          {
-            data: {
-              displayName: plugin.name,
-              pluginId: pluginId,
-              enabled: true,
-              npm: plugin.npm,
-              version: version,
-              settings: settings,
-              configurations: configurations,
-              resource: { connect: { id: args.serviceId } },
-            },
-          },
-          context.user
-        );
-
-        installations.push({
-          result: installation,
-          link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/installed/${installation.id}`,
-        });
-      }
-
-      return {
-        installations,
-        pluginsCatalogLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/catalog`,
-        allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/plugins/installed`,
-      };
+      return this.installMultiplePlugins(
+        args.pluginIds,
+        args.serviceId,
+        context
+      );
     },
     getServiceModules: async (
       args: functionsArgsTypes.GetServiceModules,
