@@ -53,9 +53,7 @@ async function generateTypeFile(filePath: string, name: string) {
 
   //generate the typescript code for the parameters property
 
-  const code = await compile(content.parameters, name.replace(".json", ""), {
-    additionalProperties: false,
-  });
+  const code = await compile(content.parameters, name.replace(".json", ""), {});
   const tsPath = path.join(TYPES_DIRECTORY, name.replace(".json", ".ts"));
   await fs.promises.writeFile(tsPath, code);
 }
