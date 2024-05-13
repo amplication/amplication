@@ -1,6 +1,6 @@
 {
   "name": "createService",
-  "description": "Create a service in a project. When using this function, it is best to also create a few default entities and fields unless specifically requested not to do so",
+  "description": "Create a service in a project, with a list of plugins to install on the service. After using this function, it is best to also create a few default entities and fields unless specifically requested not to do so",
   "parameters": {
     "type": "object",
     "properties": {
@@ -14,17 +14,16 @@
       },
       "projectId": {
         "type": "string",
-        "description": "the ID of the service in which to create the project"
+        "description": "the ID of the project in which to create the service"
       },
-      "adminUIPath": {
-        "type": "string",
-        "description": "the path in the repo where to save the generated files of the admin UI. e.g. 'apps/my-admin'"
-      },
-      "serverPath": {
-        "type": "string",
-        "description": "the path in the repo where to save the generated files of the server. e.g. 'apps/my-server'"
+      "pluginIds": {
+        "type": "array",
+        "description": "a list of IDs of the plugins to install.",
+        "items": {
+          "type": "string"
+        }
       }
     },
-    "required": ["serviceName", "projectId", "adminUIPath", "serverPath"]
+    "required": ["serviceName", "projectId"]
   }
 }

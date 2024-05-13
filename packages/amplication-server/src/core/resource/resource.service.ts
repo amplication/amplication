@@ -15,7 +15,7 @@ import {
   forwardRef,
 } from "@nestjs/common";
 import cuid from "cuid";
-import { isEmpty } from "lodash";
+import { isEmpty, kebabCase } from "lodash";
 import { pascalCase } from "pascal-case";
 import pluralize from "pluralize";
 import { JsonObject, JsonValue } from "type-fest";
@@ -568,10 +568,13 @@ export class ResourceService {
     serviceName: string,
     serviceDescription: string,
     projectId: string,
-    adminUIPath: string,
-    serverPath: string,
     user: User
   ): Promise<Resource> {
+    const pathBase = `apps/${kebabCase(serviceName)}`;
+
+    const adminUIPath = `${pathBase}-admin`;
+    const serverPath = `${pathBase}-server`;
+
     const args: CreateOneResourceArgs = {
       data: {
         name: serviceName,

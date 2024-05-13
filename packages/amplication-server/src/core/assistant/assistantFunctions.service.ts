@@ -423,8 +423,6 @@ export class AssistantFunctionsService {
           args.serviceName,
           args.serviceDescription || "",
           args.projectId,
-          args.adminUIPath,
-          args.serverPath,
           context.user
         );
       return {

@@ -15,15 +15,11 @@ export interface CreateService {
    */
   serviceDescription?: string;
   /**
-   * the ID of the service in which to create the project
+   * the ID of the project in which to create the service
    */
   projectId: string;
   /**
-   * the path in the repo where to save the generated files of the admin UI. e.g. 'apps/my-admin'
+   * a list of IDs of the plugins to install.
    */
-  adminUIPath: string;
-  /**
-   * the path in the repo where to save the generated files of the server. e.g. 'apps/my-server'
-   */
-  serverPath: string;
+  pluginIds?: string[];
 }
