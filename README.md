@@ -42,7 +42,7 @@
 
 ## Introduction
 
-`Amplication` is a robust, open-source development platform designed to revolutionize the creation of scalable and secure .NET and Node.js applications. We eliminate repetitive coding tasks and deliver production-ready infrastructure code, meticulously tailored to your specifications and adhering to industry best practices.
+`Amplication` is a robust, open-source development platform designed to revolutionize the creation of scalable and secure .NET and Node.js applications. Amplication is the only AI platform turning ideas into production-ready code in a few mninutes. We automate your backend applications development, ensuring consistency, predictability, and adherence to the highest standards with code that’s built to scale
 
 Our user-friendly interface fosters seamless integration of APIs, data models, databases, authentication, and authorization. Built on a flexible, plugin-based architecture, Amplication allows effortless customization of the code and offers a diverse range of integrations.
 
