@@ -596,12 +596,7 @@ export class ResourceService {
           authProvider: EnumAuthProviderType.Jwt, //@todo: remove this property
         },
 
-        gitRepository: {
-          isOverrideGitRepository: false,
-          name: "",
-          resourceId: "",
-          gitOrganizationId: "",
-        },
+        gitRepository: null,
       },
     };
 

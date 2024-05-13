@@ -1,0 +1,21 @@
+{
+  "name": "installPlugins",
+  "description": "Installs plugins on a service.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "pluginIds": {
+        "type": "array",
+        "description": "a list of IDs of the plugins to install.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "serviceId": {
+        "type": "string",
+        "description": "the ID of the service in which the plugin is installed. If there are multiple services available in the context, show the user a list of services to choose from. If there is no service available, do not use projectId instead"
+      }
+    },
+    "required": ["pluginIds", "serviceId"]
+  }
+}

@@ -105,6 +105,7 @@ jobs:
     uses: ./.github/workflows/release.template.yml
     if: ${{ github.ref_name == 'master' || github.ref_name == 'next' }}
     with:
+      default-branch: ${{ github.event.repository.default_branch }}
       branch: ${{ github.ref_name }}
       affected-apps: ${{ needs.nx.outputs.affected-apps }}
       affected-lib: ${{ needs.nx.outputs.affected-lib }}

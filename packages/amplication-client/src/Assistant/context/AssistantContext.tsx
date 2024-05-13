@@ -3,13 +3,17 @@ import useAssistant, {
   AssistantMessageWithOptions,
 } from "../hooks/useAssistant";
 import { ApolloError } from "@apollo/client";
-
+import * as Models from "../../models";
 export interface AssistantContextInterface {
   open: boolean;
   setOpen: (open: boolean) => void;
   widthState: string;
   setWidthState: (widthState: "default" | "wide") => void;
-  sendMessage: (message: string) => void;
+  sendMessage: (
+    message: string,
+    messageType?: Models.EnumAssistantMessageType
+  ) => void;
+  sendOnboardingMessage: (message: string) => void;
   messages: AssistantMessageWithOptions[];
   streamError: ApolloError;
   processingMessage: boolean;
@@ -21,6 +25,7 @@ const initialContext: AssistantContextInterface = {
   widthState: "default",
   setWidthState: () => {},
   sendMessage: () => {},
+  sendOnboardingMessage: () => {},
   messages: [],
   streamError: null,
   processingMessage: false,
@@ -35,8 +40,13 @@ export const AssistantContextProvider: React.FC<{
   const [open, setOpen] = useState<boolean>(false);
   const [widthState, setWidthState] = useState<string>("default");
 
-  const { sendMessage, messages, streamError, processingMessage } =
-    useAssistant();
+  const {
+    sendMessage,
+    sendOnboardingMessage,
+    messages,
+    streamError,
+    processingMessage,
+  } = useAssistant();
 
   const contextValue = {
     open,
@@ -44,6 +54,7 @@ export const AssistantContextProvider: React.FC<{
     widthState,
     setWidthState,
     sendMessage,
+    sendOnboardingMessage,
     messages,
     streamError,
     processingMessage,

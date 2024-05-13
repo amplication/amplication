@@ -16,6 +16,7 @@ import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ResourceService } from "../resource/resource.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { AmplicationError } from "../../errors/AmplicationError";
 
 const reOrderPlugins = (
   argsData: PluginOrderItem,
@@ -71,6 +72,25 @@ export class PluginInstallationService extends BlockTypeService<
     super(blockService, logger);
   }
 
+  async findPluginInstallationByPluginId(
+    pluginId: string,
+    resourceId: string
+  ): Promise<PluginInstallation[]> {
+    return this.findManyBySettings(
+      {
+        where: {
+          resource: {
+            id: resourceId,
+          },
+        },
+      },
+      {
+        path: ["pluginId"],
+        equals: pluginId,
+      }
+    );
+  }
+
   async create(
     args: CreatePluginInstallationArgs,
     user: User
@@ -81,6 +101,17 @@ export class PluginInstallationService extends BlockTypeService<
       resource.connect.id,
       configurations
     );
+
+    const existingPlugin = await this.findPluginInstallationByPluginId(
+      args.data.pluginId,
+      resource.connect.id
+    );
+
+    if (existingPlugin.length > 0) {
+      throw new AmplicationError(
+        `The Plugin ${args.data.pluginId} already installed in resource ${resource.connect.id}`
+      );
+    }
 
     const newPlugin = await super.create(args, user);
     await this.setOrder(

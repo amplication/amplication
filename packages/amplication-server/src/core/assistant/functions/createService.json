@@ -1,0 +1,30 @@
+{
+  "name": "createService",
+  "description": "Create a service in a project. When using this function, it is best to also create a few default entities and fields unless specifically requested not to do so",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "serviceName": {
+        "type": "string",
+        "description": "the name of the service"
+      },
+      "serviceDescription": {
+        "type": "string",
+        "description": "the description of the service"
+      },
+      "projectId": {
+        "type": "string",
+        "description": "the ID of the service in which to create the project"
+      },
+      "adminUIPath": {
+        "type": "string",
+        "description": "the path in the repo where to save the generated files of the admin UI. e.g. 'apps/my-admin'"
+      },
+      "serverPath": {
+        "type": "string",
+        "description": "the path in the repo where to save the generated files of the server. e.g. 'apps/my-server'"
+      }
+    },
+    "required": ["serviceName", "projectId", "adminUIPath", "serverPath"]
+  }
+}
