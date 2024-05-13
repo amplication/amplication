@@ -68,11 +68,11 @@ Experience the fastest way to develop .NET and Node.js applications with Amplica
 </p> 
     
 <p align="center">
-    <img width="49%" src="https://github.com/amplication/amplication/assets/73097785/a51e166b-07ec-4c80-99ed-8792a81c4064.png" alt="own-your-code"/>
+    <img width="49%" src="https://github.com/amplication/amplication/assets/149934977/4daf03a4-0866-49c9-8dd6-a340f3465c73" alt="own-your-code"/>
 &nbsp;
     <img width="49%" src="https://github.com/amplication/amplication/assets/73097785/1cca9721-b8d6-425b-a1a9-d10d3cdcc9b8.png" alt="customize-code"/>
 </p>
-    
+
 </details>
 
 ## Usage 
