@@ -7,7 +7,7 @@ import {
   NpmTags,
   PluginData,
   PluginList,
-  PluginYml,
+  PluginCatalogEntryYml,
 } from "./plugin.types";
 import { AMPLICATION_GITHUB_URL, emptyPlugin } from "./plugin.constants";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -106,7 +106,7 @@ export class GitPluginService {
 
         const pluginConfig = await response.text();
 
-        const fileYml: PluginYml = yaml.load(pluginConfig) as PluginYml;
+        const fileYml = yaml.load(pluginConfig) as PluginCatalogEntryYml;
 
         const pluginId = pluginList[index]["name"].replace(".yml", "");
 
@@ -115,7 +115,7 @@ export class GitPluginService {
         ++index;
 
         yield {
-          plugin: {
+          pluginCatalogEntry: {
             ...fileYml,
             pluginId,
           },
@@ -150,23 +150,24 @@ export class GitPluginService {
       const pluginsArr: Plugin[] = [];
 
       for await (const pluginConfig of this.getPluginConfig(pluginCatalog)) {
-        if (!(pluginConfig as PluginData).plugin.pluginId) continue;
+        if (!(pluginConfig as PluginData).pluginCatalogEntry.pluginId) continue;
 
-        const { npm, plugin, downloads } = pluginConfig;
+        const { npm, pluginCatalogEntry, downloads } = pluginConfig;
         pluginsArr.push({
-          id: "",
+          id: undefined,
           createdAt: npm.time ? new Date(npm.time.created) : new Date(),
-          description: plugin.description,
-          github: plugin.github,
-          icon: plugin.icon,
-          name: plugin.name,
-          npm: plugin.npm,
-          pluginId: plugin.pluginId,
+          description: pluginCatalogEntry.description,
+          github: pluginCatalogEntry.github,
+          icon: pluginCatalogEntry.icon,
+          name: pluginCatalogEntry.name,
+          npm: pluginCatalogEntry.npm,
+          pluginId: pluginCatalogEntry.pluginId,
           taggedVersions: npm["dist-tags"],
-          website: plugin.website,
+          website: pluginCatalogEntry.website,
           updatedAt: npm.time ? new Date(npm.time.modified) : new Date(),
           downloads: downloads,
-          categories: plugin.categories,
+          categories: pluginCatalogEntry.categories,
+          codeGeneratorName: pluginCatalogEntry.generator,
         });
       }
 

@@ -19,21 +19,6 @@ interface PluginsDataObj {
   };
 }
 
-const setPluginData = (plugin) => ({
-  description: plugin.description,
-  github: plugin.github,
-  icon: plugin.icon,
-  name: plugin.name,
-  npm: plugin.npm,
-  website: plugin.website,
-  taggedVersions: plugin.taggedVersions,
-  pluginId: plugin.pluginId,
-  createdAt: plugin.createdAt,
-  updatedAt: plugin.updatedAt,
-  categories: plugin.categories,
-  downloads: plugin.downloads,
-});
-
 @Injectable()
 export class PluginService extends PluginServiceBase {
   constructor(
@@ -58,16 +43,15 @@ export class PluginService extends PluginServiceBase {
         throw pluginsList;
       }
 
-      const pluginsAndCategories = pluginsList.reduce(
-        (pluginsDataObj: PluginsDataObj, plugin: PluginCreateInput) => {
-          const pluginData = setPluginData(plugin);
+      const pluginsAndCategories: PluginsDataObj = pluginsList.reduce(
+        (pluginsDataObj: PluginsDataObj, plugin: Plugin) => {
+          pluginsDataObj.pluginsData.push(plugin);
 
-          pluginsDataObj.pluginsData.push(pluginData);
           const pluginUpdate = this.prisma.plugin.update({
             where: {
               pluginId: plugin.pluginId,
             },
-            data: pluginData,
+            data: plugin,
           });
           pluginsDataObj.pluginUpdate.push(pluginUpdate);
 

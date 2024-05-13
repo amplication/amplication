@@ -9,6 +9,7 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 
 describe("VersionService", () => {
   let service: VersionService;
+  const mockGeneratorFindMany = jest.fn();
   const mockVersionFindUnique = jest.fn();
   const mockVersionFindMany = jest.fn();
   const mockVersionCreateMany = jest.fn();
@@ -38,6 +39,9 @@ describe("VersionService", () => {
         {
           provide: PrismaService,
           useValue: {
+            generator: {
+              findMany: mockGeneratorFindMany,
+            },
             version: {
               findMany: mockVersionFindMany,
               findUnique: mockVersionFindUnique,
@@ -299,17 +303,24 @@ describe("VersionService", () => {
         },
       ]);
       mockVersionFindMany.mockResolvedValue([]);
+      mockGeneratorFindMany.mockResolvedValueOnce([
+        {
+          id: "generator-id",
+          fullName: "data-service-generator",
+        },
+      ]);
 
       await service.syncVersions();
 
+      expect(mockGeneratorFindMany).toBeCalledTimes(1);
       expect(mockVersionFindMany).toBeCalledTimes(1);
       expect(mockVersionFindMany).toBeCalledWith({});
       expect(mockVersionCreateMany).toBeCalledTimes(1);
       expect(mockVersionCreateMany).toBeCalledWith({
         data: [
           {
-            id: "v1.0.0",
             name: "v1.0.0",
+            generatorId: "generator-id",
             isActive: false,
             createdAt: pushedDate,
             updatedAt: expect.anything(),
@@ -318,8 +329,8 @@ describe("VersionService", () => {
             isDeprecated: false,
           },
           {
-            id: "v1.0.1",
             name: "v1.0.1",
+            generatorId: "generator-id",
             isActive: false,
             createdAt: pushedDate,
             updatedAt: expect.anything(),
@@ -328,14 +339,13 @@ describe("VersionService", () => {
             isDeprecated: false,
           },
           {
-            id: "v2.0.0",
             name: "v2.0.0",
+            generatorId: "generator-id",
             isActive: false,
             createdAt: pushedDate,
             updatedAt: expect.anything(),
             changelog: "",
             deletedAt: null,
-
             isDeprecated: false,
           },
         ],

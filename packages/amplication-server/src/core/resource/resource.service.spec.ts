@@ -482,6 +482,7 @@ const entityServiceBulkCreateFields = jest.fn();
 
 const mockedUpdateServiceLicensed = jest.fn();
 
+const pluginInstallationServiceCreateMock = jest.fn();
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
 const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
@@ -525,7 +526,7 @@ describe("ResourceService", () => {
           provide: PluginInstallationService,
           useValue: { get: () => "" },
           useClass: jest.fn(() => ({
-            create: jest.fn(),
+            create: pluginInstallationServiceCreateMock,
           })),
         },
         MockedSegmentAnalyticsProvider(),
@@ -1133,5 +1134,31 @@ describe("ResourceService", () => {
         new Error(INVALID_RESOURCE_ID)
       );
     });
+  });
+
+  it("should create a service with default settings and install the default DB plugin", async () => {
+    await service.createServiceWithDefaultSettings(
+      EXAMPLE_RESOURCE_NAME,
+      EXAMPLE_RESOURCE_DESCRIPTION,
+      EXAMPLE_PROJECT_ID,
+      EXAMPLE_USER,
+      true
+    );
+
+    expect(prismaResourceCreateMock).toBeCalledTimes(1);
+    expect(pluginInstallationServiceCreateMock).toBeCalledTimes(1);
+  });
+
+  it("should create a service with default settings without installing the default DB plugin", async () => {
+    await service.createServiceWithDefaultSettings(
+      EXAMPLE_RESOURCE_NAME,
+      EXAMPLE_RESOURCE_DESCRIPTION,
+      EXAMPLE_PROJECT_ID,
+      EXAMPLE_USER,
+      false
+    );
+
+    expect(prismaResourceCreateMock).toBeCalledTimes(1);
+    expect(pluginInstallationServiceCreateMock).toBeCalledTimes(0);
   });
 });
