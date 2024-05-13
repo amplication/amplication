@@ -204,7 +204,14 @@ const useAssistant = () => {
     }
   );
 
-  const sendMessage = (message: string) => {
+  const sendOnboardingMessage = (message: string) => {
+    sendMessage(message, models.EnumAssistantMessageType.Onboarding);
+  };
+
+  const sendMessage = (
+    message: string,
+    messageType: models.EnumAssistantMessageType
+  ) => {
     const messageList = messages;
 
     if (messageList.length === 1) {
@@ -235,6 +242,7 @@ const useAssistant = () => {
         data: {
           message,
           threadId,
+          messageType,
         },
         context: {
           projectId: currentProject?.id,
@@ -267,6 +275,7 @@ const useAssistant = () => {
 
   return {
     sendMessage,
+    sendOnboardingMessage,
     messages,
     streamError,
     processingMessage,

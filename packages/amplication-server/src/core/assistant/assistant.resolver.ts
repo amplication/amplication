@@ -46,22 +46,8 @@ export class AssistantResolver {
     return this.service.processMessageWithStream(
       args.data.message,
       args.data.threadId,
-      args.context
+      args.context,
+      args.data.messageType
     );
   }
-
-  // @Mutation(() => AssistantThread)
-  // async sendAssistantMessage(
-  //   @UserEntity() user: User,
-  //   @Args() args: SendAssistantMessageArgs
-  // ): Promise<AssistantThread> {
-  //   args.context.user = user;
-  //   args.context.workspaceId = user.workspace.id;
-
-  //   return this.service.processMessage(
-  //     args.data.message,
-  //     args.data.threadId,
-  //     args.context
-  //   );
-  // }
 }
