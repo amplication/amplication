@@ -8,3 +8,6 @@ export * from "./plugin-events.types";
 export * from "./dsg-resource-data";
 export * from "./build-logger";
 export * from "./files";
+export * as dotnetTypes from "./dotnet-plugins.types";
+export * as dotnetPluginEventsParams from "./dotnet-plugin-events-params.types";
+export * as dotnetPluginEventsTypes from "./dotnet-plugin-events.types";
