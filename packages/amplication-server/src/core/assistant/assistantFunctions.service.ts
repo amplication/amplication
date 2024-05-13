@@ -2,33 +2,30 @@ import { EnumModuleDtoType } from "@amplication/code-gen-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { get } from "lodash";
 import { pascalCase } from "pascal-case";
 import { plural } from "pluralize";
-import { EnumDataType } from "../../enums/EnumDataType";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { Env } from "../../env";
 import { Block } from "../../models";
+import { JsonSchemaValidationService } from "../../services/jsonSchemaValidation.service";
 import { EntityService } from "../entity/entity.service";
 import { ModuleService } from "../module/module.service";
-import { EnumModuleActionGqlOperation } from "../moduleAction/dto/EnumModuleActionGqlOperation";
-import { EnumModuleActionRestInputSource } from "../moduleAction/dto/EnumModuleActionRestInputSource";
-import { EnumModuleActionRestVerb } from "../moduleAction/dto/EnumModuleActionRestVerb";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
-import { ModuleDtoEnumMember } from "../moduleDto/dto/ModuleDtoEnumMember";
-import { ModuleDtoPropertyUpdateInput } from "../moduleDto/dto/ModuleDtoPropertyUpdateInput";
-import { PropertyTypeDef } from "../moduleDto/dto/propertyTypes/PropertyTypeDef";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
+import { PermissionsService } from "../permissions/permissions.service";
 import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { ProjectService } from "../project/project.service";
 import { EnumPendingChangeOriginType } from "../resource/dto";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { ResourceService } from "../resource/resource.service";
+import { MessageLoggerContext } from "./assistant.service";
 import { AssistantContext } from "./dto/AssistantContext";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
-import { MessageLoggerContext } from "./assistant.service";
-import { PermissionsService } from "../permissions/permissions.service";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
-import { get } from "lodash";
+
+import * as functionArgsSchemas from "./functions/";
+import * as functionsArgsTypes from "./functions/types";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
@@ -126,6 +123,7 @@ export class AssistantFunctionsService {
     private readonly moduleActionService: ModuleActionService,
     private readonly moduleDtoService: ModuleDtoService,
     private readonly permissionsService: PermissionsService,
+    private readonly jsonSchemaValidationService: JsonSchemaValidationService,
 
     configService: ConfigService
   ) {
@@ -167,6 +165,23 @@ export class AssistantFunctionsService {
         return {
           callId,
           results: "User does not have access to this resource",
+        };
+      }
+
+      try {
+        await this.validateFunctionArgs(
+          functionName as EnumAssistantFunctions,
+          args
+        );
+      } catch (error) {
+        this.logger.error(
+          `Chat: Error validating function arguments: ${error.message}`,
+          error,
+          loggerContext
+        );
+        return {
+          callId,
+          results: error.message,
         };
       }
 
@@ -237,6 +252,24 @@ export class AssistantFunctionsService {
     return hasAccess;
   }
 
+  async validateFunctionArgs(
+    functionName: EnumAssistantFunctions,
+    args: any
+  ): Promise<undefined> {
+    const schema = functionArgsSchemas[functionName]?.parameters;
+
+    if (!schema) {
+      throw new Error(`Function schema not found for ${functionName}`);
+    }
+
+    const schemaValidation =
+      await this.jsonSchemaValidationService.validateSchema(schema, args);
+
+    if (!schemaValidation.isValid) {
+      throw new Error(`Invalid arguments: ${schemaValidation.errorText}`);
+    }
+  }
+
   private assistantFunctions: {
     [key in EnumAssistantFunctions]: (
       args: any,
@@ -245,10 +278,7 @@ export class AssistantFunctionsService {
     ) => any;
   } = {
     createEntities: async (
-      args: {
-        names: string[];
-        serviceId: string;
-      },
+      args: functionsArgsTypes.CreateEntities,
       context: AssistantContext,
       loggerContext: MessageLoggerContext
     ): Promise<any> => {
@@ -309,10 +339,7 @@ export class AssistantFunctionsService {
       };
     },
     createEntityFields: async (
-      args: {
-        entityId: string;
-        fields: { name: string; type: EnumDataType }[];
-      },
+      args: functionsArgsTypes.CreateEntityFields,
       context: AssistantContext,
       loggerContext: MessageLoggerContext
     ): Promise<any> => {
@@ -355,7 +382,7 @@ export class AssistantFunctionsService {
       };
     },
     getProjectServices: async (
-      args: { projectId: string },
+      args: functionsArgsTypes.GetProjectServices,
       context: AssistantContext
     ) => {
       const resources = await this.resourceService.resources({
@@ -372,7 +399,7 @@ export class AssistantFunctionsService {
       }));
     },
     getServiceEntities: async (
-      args: { serviceId: string },
+      args: functionsArgsTypes.GetServiceEntities,
       context: AssistantContext
     ) => {
       const entities = await this.entityService.entities({
@@ -388,13 +415,7 @@ export class AssistantFunctionsService {
       }));
     },
     createService: async (
-      args: {
-        serviceName: string;
-        serviceDescription?: string;
-        projectId: string;
-        adminUIPath: string;
-        serverPath: string;
-      },
+      args: functionsArgsTypes.CreateService,
       context: AssistantContext
     ) => {
       const resource =
@@ -416,7 +437,7 @@ export class AssistantFunctionsService {
       };
     },
     createProject: async (
-      args: { projectName: string },
+      args: functionsArgsTypes.CreateProject,
       context: AssistantContext
     ) => {
       const project = await this.projectService.createProject(
@@ -442,7 +463,7 @@ export class AssistantFunctionsService {
       };
     },
     commitProjectPendingChanges: async (
-      args: { projectId: string; commitMessage: string },
+      args: functionsArgsTypes.CommitProjectPendingChanges,
       context: AssistantContext
     ) => {
       const commit = await this.projectService.commit(
@@ -470,7 +491,7 @@ export class AssistantFunctionsService {
       };
     },
     getProjectPendingChanges: async (
-      args: { projectId: string },
+      args: functionsArgsTypes.GetProjectPendingChanges,
       context: AssistantContext
     ) => {
       const changes = await this.projectService.getPendingChanges(
@@ -495,11 +516,14 @@ export class AssistantFunctionsService {
             : "Entity",
       }));
     },
-    getPlugins: async (args: undefined, context: AssistantContext) => {
+    getPlugins: async (
+      args: functionsArgsTypes.GetPlugins,
+      context: AssistantContext
+    ) => {
       return this.pluginCatalogService.getPlugins();
     },
     installPlugins: async (
-      args: { pluginIds: string[]; serviceId: string },
+      args: functionsArgsTypes.InstallPlugins,
       context: AssistantContext
     ) => {
       //iterate over the pluginIds and install each plugin synchronously
@@ -541,7 +565,7 @@ export class AssistantFunctionsService {
       };
     },
     getServiceModules: async (
-      args: { serviceId: string },
+      args: functionsArgsTypes.GetServiceModules,
       context: AssistantContext
     ) => {
       const modules = await this.moduleService.findMany({
@@ -557,11 +581,7 @@ export class AssistantFunctionsService {
       }));
     },
     createModule: async (
-      args: {
-        moduleName: string;
-        moduleDescription: string;
-        serviceId: string;
-      },
+      args: functionsArgsTypes.CreateModule,
       context: AssistantContext
     ) => {
       const name = pascalCase(args.moduleName);
@@ -587,7 +607,7 @@ export class AssistantFunctionsService {
       };
     },
     getModuleDtosAndEnums: async (
-      args: { moduleId: string; serviceId: string },
+      args: functionsArgsTypes.GetModuleDtosAndEnums,
       context: AssistantContext
     ) => {
       const dtos = await this.moduleDtoService.findMany({
@@ -615,13 +635,7 @@ export class AssistantFunctionsService {
       }));
     },
     createModuleDto: async (
-      args: {
-        moduleId: string;
-        serviceId: string;
-        dtoName: string;
-        dtoDescription: string;
-        properties: ModuleDtoPropertyUpdateInput[];
-      },
+      args: functionsArgsTypes.CreateModuleDto,
       context: AssistantContext
     ) => {
       const name = pascalCase(args.dtoName);
@@ -664,13 +678,7 @@ export class AssistantFunctionsService {
       };
     },
     createModuleEnum: async (
-      args: {
-        moduleId: string;
-        serviceId: string;
-        enumName: string;
-        enumDescription: string;
-        members: ModuleDtoEnumMember[];
-      },
+      args: functionsArgsTypes.CreateModuleEnum,
       context: AssistantContext
     ) => {
       const name = pascalCase(args.enumName);
@@ -713,7 +721,7 @@ export class AssistantFunctionsService {
       };
     },
     getModuleActions: async (
-      args: { moduleId: string; serviceId: string },
+      args: functionsArgsTypes.GetModuleActions,
       context: AssistantContext
     ) => {
       const actions = await this.moduleActionService.findMany({
@@ -735,21 +743,7 @@ export class AssistantFunctionsService {
       }));
     },
     createModuleAction: async (
-      args: {
-        moduleId: string;
-        serviceId: string;
-        actionName: string;
-        actionDescription: string;
-        gqlOperation: EnumModuleActionGqlOperation;
-        restVerb: EnumModuleActionRestVerb;
-        path: string;
-        inputType: PropertyTypeDef;
-        outputType: PropertyTypeDef;
-        restInputSource?: EnumModuleActionRestInputSource;
-        restInputParamsPropertyName: string;
-        restInputBodyPropertyName: string;
-        restInputQueryPropertyName: string;
-      },
+      args: functionsArgsTypes.CreateModuleAction,
       context: AssistantContext
     ) => {
       const name = pascalCase(args.actionName);
