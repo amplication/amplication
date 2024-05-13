@@ -568,7 +568,8 @@ export class ResourceService {
     serviceName: string,
     serviceDescription: string,
     projectId: string,
-    user: User
+    user: User,
+    installDefaultDbPlugin = true
   ): Promise<Resource> {
     const pathBase = `apps/${kebabCase(serviceName)}`;
 
@@ -610,7 +611,9 @@ export class ResourceService {
 
     const resource = await this.createService(args, user);
 
-    await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
+    if (installDefaultDbPlugin) {
+      await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
+    }
 
     return resource;
   }
