@@ -166,4 +166,11 @@ export enum AnalyticsEventNames {
 
   // break the monolith preview user
   PreviewUser_GenerateCode = "PreviewUser_GenerateCode",
+
+  ChangedToDotNet = "ChangedToDotNet",
+  ChoseDotNetUsage = "ChoseDotNetUsage",
+  BookDotNetDemo = "BookDotNetDemo",
+
+  AskJovuClick = "AskJovuClick",
+  CreateWithJovuClick = "CreateWithJovuClick",
 }

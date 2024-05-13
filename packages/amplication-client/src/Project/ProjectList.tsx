@@ -24,7 +24,7 @@ type Props = {
 export const ProjectList = ({ projects, workspaceId }: Props) => {
   return (
     <Panel
-      panelStyle={EnumPanelStyle.Bordered}
+      panelStyle={EnumPanelStyle.Bold}
       className={CLASS_NAME}
       themeColor={EnumTextColor.ThemeBlue}
     >

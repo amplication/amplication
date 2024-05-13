@@ -87,7 +87,6 @@ const NewModuleAction = ({
     [
       createModuleAction,
       resourceId,
-      moduleId,
       onActionCreated,
       history,
       currentWorkspace?.id,

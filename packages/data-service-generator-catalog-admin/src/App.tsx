@@ -13,6 +13,10 @@ import { VersionList } from "./version/VersionList";
 import { VersionCreate } from "./version/VersionCreate";
 import { VersionEdit } from "./version/VersionEdit";
 import { VersionShow } from "./version/VersionShow";
+import { GeneratorList } from "./generator/GeneratorList";
+import { GeneratorCreate } from "./generator/GeneratorCreate";
+import { GeneratorEdit } from "./generator/GeneratorEdit";
+import { GeneratorShow } from "./generator/GeneratorShow";
 import { jwtAuthProvider } from "./auth-provider/ra-auth-jwt";
 
 const App = (): React.ReactElement => {
@@ -52,6 +56,13 @@ const App = (): React.ReactElement => {
           edit={VersionEdit}
           create={VersionCreate}
           show={VersionShow}
+        />
+        <Resource
+          name="Generator"
+          list={GeneratorList}
+          edit={GeneratorEdit}
+          create={GeneratorCreate}
+          show={GeneratorShow}
         />
       </Admin>
     </div>

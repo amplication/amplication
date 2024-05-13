@@ -18,7 +18,7 @@ import { GitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 import "./RepositoryActions.scss";
 import WizardGithubSyncDetails from "./WizardGithubSyncDetails";
-import { EnumGitProvider } from "@amplication/code-gen-types/models";
+import { EnumGitProvider } from "@amplication/code-gen-types";
 type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;

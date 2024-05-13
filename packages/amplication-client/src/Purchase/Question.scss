@@ -3,6 +3,9 @@
 .question {
   border: 1px solid var(--gray-70);
   border-radius: 8px;
+  background-color: var(--surface);
+  margin-bottom: var(--default-spacing);
+  padding: var(--default-spacing);
 
   &__header {
     display: flex;
@@ -28,5 +31,6 @@
   &__answer {
     white-space: pre-line;
     padding: var(--default-spacing) var(--large-spacing);
+    color: var(--gray-base);
   }
 }

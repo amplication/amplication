@@ -1,17 +1,14 @@
 import {
   Breadcrumbs,
-  ButtonProgress,
   Dialog,
-  EnumTextColor,
-  EnumTextStyle,
   Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
   Tooltip,
-  Text,
 } from "@amplication/ui/design-system";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { useApolloClient, useQuery } from "@apollo/client";
 import {
   ButtonTypeEnum,
@@ -21,20 +18,15 @@ import {
   PopoverNotificationCenter,
 } from "@novu/notification-center";
 import { useStiggContext } from "@stigg/react-sdk";
-import React, {
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import CommandPalette from "../../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../../Components/Button";
 import UserBadge from "../../Components/UserBadge";
 import BreadcrumbsContext from "../../Layout/BreadcrumbsContext";
 import ProfileForm from "../../Profile/ProfileForm";
+import NoNotifications from "../../assets/images/no-notification.svg";
 import { unsetToken } from "../../authentication/authentication";
 import { AppContext } from "../../context/appContext";
 import {
@@ -48,16 +40,13 @@ import {
   AMPLICATION_DOC_URL,
 } from "../../util/constants";
 import { version } from "../../util/version";
-import WorkspaceBanner from "./WorkspaceBanner";
-import styles from "./notificationStyle";
-import NoNotifications from "../../assets/images/no-notification.svg";
-import "./WorkspaceHeader.scss";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
-import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
-import { FeatureIndicator } from "../../Components/FeatureIndicator";
-import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
 import useFetchGithubStars from "../hooks/useFetchGithubStars";
+import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
+import UpgradeCtaButton from "./UpgradeCtaButton";
+import WorkspaceBanner from "./WorkspaceBanner";
+import "./WorkspaceHeader.scss";
+import styles from "./notificationStyle";
+import AskJovuButton from "../../Assistant/AskJovuButton";
 
 const CLASS_NAME = "workspace-header";
 const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
@@ -90,26 +79,16 @@ const HELP_MENU_LIST: HelpMenuItem[] = [
 ];
 
 const WorkspaceHeader: React.FC = () => {
-  const { currentWorkspace, currentProject, openHubSpotChat } =
-    useContext(AppContext);
-  const upgradeButtonData = useUpgradeButtonData(currentWorkspace);
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const { data } = useQuery(GET_CONTACT_US_LINK, {
     variables: { id: currentWorkspace.id },
   });
 
   const apolloClient = useApolloClient();
-  const history = useHistory();
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
-  const novuBellRef = useRef(null);
   const stars = useFetchGithubStars();
-
-  const daysLeftText = useMemo(() => {
-    return `${upgradeButtonData.trialDaysLeft} day${
-      upgradeButtonData.trialDaysLeft !== 1 ? "s" : ""
-    } left for the free trial`;
-  }, [upgradeButtonData.trialDaysLeft]);
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
@@ -121,26 +100,26 @@ const WorkspaceHeader: React.FC = () => {
   const [showProfileFormDialog, setShowProfileFormDialog] =
     useState<boolean>(false);
 
-  const [showCompleteSignupDialog, setShowCompleteSignupDialog] =
-    useState<boolean>(false);
-
   const handleSignOut = useCallback(() => {
     unsetToken();
     apolloClient.clearStore();
 
     window.location.replace(REACT_APP_AUTH_LOGOUT_URI);
-  }, [history, apolloClient]);
+  }, [apolloClient]);
 
-  const onNotificationClick = useCallback((message: IMessage) => {
-    trackEvent({
-      eventName: AnalyticsEventNames.ClickNotificationMessage,
-      messageType: message.templateIdentifier,
-    });
+  const onNotificationClick = useCallback(
+    (message: IMessage) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.ClickNotificationMessage,
+        messageType: message.templateIdentifier,
+      });
 
-    if (message?.cta?.data?.url) {
-      // window.location.href = message.cta.data.url;
-    }
-  }, []);
+      if (message?.cta?.data?.url) {
+        // window.location.href = message.cta.data.url;
+      }
+    },
+    [trackEvent]
+  );
 
   const onBuildNotificationClick = useCallback(
     (templateIdentifier: string, type: ButtonTypeEnum, message: IMessage) => {
@@ -149,17 +128,6 @@ const WorkspaceHeader: React.FC = () => {
     []
   );
 
-  const handleUpgradeClick = useCallback(() => {
-    history.push(`/${currentWorkspace.id}/purchase`, {
-      from: { pathname: window.location.pathname },
-    });
-    trackEvent({
-      eventName: AnalyticsEventNames.UpgradeClick,
-      eventOriginLocation: "workspace-header",
-      workspace: currentWorkspace.id,
-    });
-  }, [currentWorkspace, window.location.pathname]);
-
   const handleContactUsClick = useCallback(() => {
     window.open(data?.contactUsLink, "_blank");
     trackEvent({
@@ -167,7 +135,7 @@ const WorkspaceHeader: React.FC = () => {
       action: "Contact Us",
       eventOriginLocation: "workspace-header-help-menu",
     });
-  }, [openHubSpotChat]);
+  }, [data?.contactUsLink, trackEvent]);
 
   const handleItemDataClicked = useCallback(
     (itemData: ItemDataCommand) => {
@@ -182,10 +150,6 @@ const WorkspaceHeader: React.FC = () => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
 
-  const handleShowCompleteSignupDialog = useCallback(() => {
-    setShowCompleteSignupDialog(!showCompleteSignupDialog);
-  }, [showCompleteSignupDialog]);
-
   const handleBellClick = useCallback(() => {
     if (!novuCenterState) {
       trackEvent({
@@ -193,7 +157,7 @@ const WorkspaceHeader: React.FC = () => {
       });
     }
     setNovuCenterState(!novuCenterState);
-  }, [novuBellRef, novuCenterState]);
+  }, [novuCenterState, trackEvent]);
 
   const Footer = () => <div></div>;
 
@@ -257,48 +221,8 @@ const WorkspaceHeader: React.FC = () => {
         <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>
           <div className={`${CLASS_NAME}__links`}>
-            {upgradeButtonData.isCompleted &&
-              upgradeButtonData.showUpgradeTrialButton && (
-                <ButtonProgress
-                  className={`${CLASS_NAME}__upgrade__btn`}
-                  onClick={handleUpgradeClick}
-                  progress={upgradeButtonData.trialLeftProgress}
-                  leftValue={daysLeftText}
-                  yellowColorThreshold={50}
-                  redColorThreshold={0}
-                >
-                  Upgrade
-                </ButtonProgress>
-              )}
-            {upgradeButtonData.isCompleted &&
-              upgradeButtonData.showUpgradeDefaultButton && (
-                <Button
-                  className={`${CLASS_NAME}__upgrade__btn`}
-                  buttonStyle={EnumButtonStyle.Outline}
-                  onClick={handleUpgradeClick}
-                >
-                  Upgrade
-                </Button>
-              )}
-            {upgradeButtonData.isCompleted &&
-              upgradeButtonData.isPreviewPlan &&
-              !upgradeButtonData.showUpgradeDefaultButton && (
-                <>
-                  <FeatureIndicator
-                    featureName={BillingFeature.CodeGenerationBuilds}
-                    text="Generate production-ready code for this architecture with just a few simple clicks"
-                    linkText=""
-                    element={<CompletePreviewSignupButton />}
-                  />
-                  <Button
-                    className={`${CLASS_NAME}__upgrade__btn`}
-                    buttonStyle={EnumButtonStyle.Outline}
-                    onClick={handleContactUsClick}
-                  >
-                    Contact us
-                  </Button>
-                </>
-              )}
+            <AskJovuButton />
+            <UpgradeCtaButton />
           </div>
           <hr className={`${CLASS_NAME}__vertical_border`} />
 

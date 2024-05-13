@@ -14,7 +14,7 @@ import { DeleteServiceTopicsArgs } from "./dto/DeleteServiceTopicsArgs";
 import {
   EnumMessagePatternConnectionOptions,
   MessagePatternCreateInput,
-} from "@amplication/code-gen-types/models";
+} from "@amplication/code-gen-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()

@@ -1,4 +1,4 @@
-import { EnumResourceType } from "@amplication/code-gen-types/models";
+import { EnumResourceType } from "@amplication/code-gen-types";
 import {
   CircleBadge,
   EnumButtonStyle,
@@ -95,7 +95,7 @@ const ResourceOverview = () => {
           <BtmButton
             openInFullScreen
             location={EnumButtonLocation.Resource}
-            ButtonStyle={EnumButtonStyle.GradientFull}
+            ButtonStyle={EnumButtonStyle.GradientOutline}
           />
           {currentResource?.resourceType === EnumResourceType.Service && (
             <AddResourceFunctionalityButton

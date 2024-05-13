@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { VersionServiceBase } from "./base/version.service.base";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import { Version } from "./base/Version";
 import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
 import { ConfigService } from "@nestjs/config";
@@ -110,7 +110,7 @@ export class VersionService extends VersionServiceBase {
     }
 
     if (codeGeneratorStrategy === CodeGeneratorVersionStrategy.Specific) {
-      const foundVersion = await this.findOne({
+      const foundVersion = await this.version({
         where: {
           id: codeGeneratorVersion,
         },
@@ -157,7 +157,7 @@ export class VersionService extends VersionServiceBase {
     if (this.includeDevVersion) {
       result.push(this.devVersion);
     }
-    result.push(...(await super.findMany(args)));
+    result.push(...(await super.versions(args)));
     return result;
   }
 

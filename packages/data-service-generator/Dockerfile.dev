@@ -14,7 +14,7 @@ RUN npm i --omit-dev
 # Copy unpublished amplication libraries
 COPY ./dist/libs/util/logging node_modules/@amplication/util/logging
 COPY ./dist/libs/util/dsg-utils node_modules/@amplication/dsg-utils
-COPY ./dist/packages/amplication-code-gen-types node_modules/@amplication/code-gen-types
+COPY ./dist/libs/util/code-gen-types node_modules/@amplication/code-gen-types
 
 ENV GIT_REF_NAME=${GIT_REF_NAME}
 ENV GIT_SHA=${GIT_SHA}

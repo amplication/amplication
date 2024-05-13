@@ -17,6 +17,7 @@ import classNames from "classnames";
 import relationEdge from "./edges/relationEdge";
 import { entitiesToNodesAndEdges } from "./helpers";
 import RelationMarkets from "./edges/relationMarkets";
+import { useEffect } from "react";
 
 export const CLASS_NAME = "entities-erd";
 type TData = {
@@ -37,20 +38,26 @@ export default function EntitiesERD({ resourceId }: { resourceId: string }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const { loading, error } = useQuery<TData>(GET_ENTITIES, {
+  const { loading, error, data } = useQuery<TData>(GET_ENTITIES, {
     variables: {
       id: resourceId,
       orderBy: {
         [DATE_CREATED_FIELD]: models.SortOrder.Asc,
       },
     },
-    async onCompleted(data) {
-      const { nodes, edges } = await entitiesToNodesAndEdges(data.entities);
-      setNodes(nodes);
-      setEdges(edges);
-    },
     fetchPolicy: "no-cache",
   });
+
+  useEffect(() => {
+    async function updateNodes() {
+      if (!loading && !error) {
+        const { nodes, edges } = await entitiesToNodesAndEdges(data.entities);
+        setNodes(nodes);
+        setEdges(edges);
+      }
+    }
+    updateNodes();
+  }, [data, loading, error, setNodes, setEdges]);
 
   const errorMessage = error && formatError(error);
 

@@ -527,10 +527,17 @@ export class BuildService {
         "Sync Completed Successfully"
       );
 
-      await this.updateBuildLOC(
-        response.buildId,
-        this.formatDiffStat(response.diffStat)
+      const changes = await this.commitService.getChangesByResource(
+        build.commitId,
+        build.resourceId
       );
+
+      if (changes.length > 0) {
+        await this.updateBuildLOC(
+          response.buildId,
+          this.formatDiffStat(response.diffStat)
+        );
+      }
 
       await this.actionService.logInfo(step, response.url, {
         githubUrl: response.url,
@@ -978,6 +985,7 @@ export class BuildService {
             // resource.codeGeneratorStrategy is the value and not the key, but as the key is the same as the value we can use it
             CodeGeneratorVersionStrategy[resource.codeGeneratorStrategy],
         },
+        codeGeneratorName: resource.codeGeneratorName,
       },
       otherResources,
     };

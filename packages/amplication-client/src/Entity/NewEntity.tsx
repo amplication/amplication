@@ -6,6 +6,7 @@ import {
   Text,
   TextField,
   EnumTextAlign,
+  EnumFlexDirection,
 } from "@amplication/ui/design-system";
 import { Reference, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
@@ -32,6 +33,7 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewEntity.scss";
 import { USER_ENTITY } from "./constants";
 import useModule from "../Modules/hooks/useModule";
+import CreateWithJovuButton from "../Assistant/CreateWithJovuButton";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "resource">;
 
@@ -295,13 +297,24 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
                 placeholder="Type New Entity Name"
                 autoComplete="off"
               />
-              <Button
-                type="submit"
-                buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loading}
+              <FlexItem
+                direction={EnumFlexDirection.Row}
+                margin={EnumFlexItemMargin.Top}
               >
-                Create Entity
-              </Button>
+                <Button
+                  type="submit"
+                  buttonStyle={EnumButtonStyle.Primary}
+                  disabled={!formik.isValid || loading}
+                >
+                  Create Entity
+                </Button>
+                <CreateWithJovuButton
+                  message={`Create a new entity ${formik.values.displayName}. Include common fields, and relations to other entities when needed.`}
+                  onClick={handleDismissConfirmationInstall}
+                  disabled={!formik.isValid || loading}
+                  eventOriginLocation="New Entity Dialog"
+                />
+              </FlexItem>
             </Form>
           );
         }}

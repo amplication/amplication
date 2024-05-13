@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CodeGenerationRequest } from "@amplication/schema-registry";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
 import { BuildRunnerController } from "./build-runner.controller";

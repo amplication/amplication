@@ -39,4 +39,9 @@ export class Env {
 
   static readonly FEATURE_CUSTOM_ACTIONS_ENABLED =
     "FEATURE_CUSTOM_ACTIONS_ENABLED";
+
+  static readonly CHAT_OPENAI_KEY = "CHAT_OPENAI_KEY";
+  static readonly CHAT_ASSISTANT_ID = "CHAT_ASSISTANT_ID";
+  static readonly FEATURE_AI_ASSISTANT_ENABLED = "FEATURE_AI_ASSISTANT_ENABLED";
+  static readonly PLUGIN_API_URL = "PLUGIN_API_URL";
 }

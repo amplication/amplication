@@ -36,6 +36,7 @@ import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segment
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
 import { QueryMode } from "../../enums/QueryMode";
 import { validateCustomActionsEntitlement } from "../block/block.util";
+import { JsonArray } from "type-fest";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -222,12 +223,28 @@ export class ModuleDtoService extends BlockTypeService<
       event: EnumEventType.CreateUserDTO,
     });
 
+    //make sure the properties are initialized correctly
+    const properties: ModuleDtoProperty[] = (
+      args.properties as unknown as JsonArray
+    )?.map((property) => {
+      return {
+        ...DEFAULT_DTO_PROPERTY,
+        ...property,
+        propertyTypes: property.propertyTypes.map((propertyType) => {
+          return {
+            ...DEFAULT_DTO_PROPERTY.propertyTypes[0],
+            ...propertyType,
+          };
+        }),
+      };
+    });
+
     return super.create(
       {
         ...args,
         data: {
           ...args.data,
-          properties: [],
+          properties: (properties as unknown as JsonArray) ?? [],
           enabled: true,
           dtoType: EnumModuleDtoType.Custom,
         },
@@ -945,18 +962,35 @@ export class ModuleDtoService extends BlockTypeService<
     if (!this.customActionsEnabled) {
       return null;
     }
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService,
+      this.logger
+    );
 
     await this.validateModuleDtoName(
       args.data.name,
       args.data.resource.connect.id
     );
 
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: args.data.name,
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.CreateUserDTO,
+    });
+
     return super.create(
       {
         ...args,
         data: {
           ...args.data,
-          properties: [],
+          members: (args.members as unknown as JsonArray) ?? [],
           enabled: true,
           dtoType: EnumModuleDtoType.CustomEnum,
         },

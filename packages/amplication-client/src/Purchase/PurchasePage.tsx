@@ -195,7 +195,7 @@ const PurchasePage = (props) => {
               upgrade: provisionSubscriptionLoading
                 ? "...Loading"
                 : "Upgrade now",
-              custom: "Contact us",
+              custom: "Talk with an Expert",
             },
             price: {
               free: {
@@ -232,7 +232,9 @@ const PurchasePage = (props) => {
             Contact Us
           </Button>
         </div>
-        <FAQ />
+        <div className={`${CLASS_NAME}__faq`}>
+          <FAQ />
+        </div>
         <div className={`${CLASS_NAME}__footer`}>
           <div className={`${CLASS_NAME}__footer__copyright`}>
             ©2022 amplication

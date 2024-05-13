@@ -44,6 +44,10 @@
     resize: none;
   }
 
+  textarea.text-input__textarea--small {
+    height: var(--textarea-height-small);
+  }
+
   &--has-error {
     input,
     textarea {
