@@ -603,7 +603,7 @@ describe("AssistantFunctionsService", () => {
 
     expect(executionResults).toEqual(
       expect.objectContaining({
-        allEntitiesLink: expect.any(String),
+        allEntitiesErdViewLink: expect.any(String),
         allApisLink: expect.any(String),
         result: [
           expect.objectContaining({

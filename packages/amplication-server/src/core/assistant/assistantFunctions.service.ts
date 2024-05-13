@@ -333,7 +333,7 @@ export class AssistantFunctionsService {
       );
 
       return {
-        allEntitiesLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities/`,
+        allEntitiesErdViewLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities?view=erd`,
         allApisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/`,
         result: results,
       };
