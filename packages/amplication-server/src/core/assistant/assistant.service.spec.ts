@@ -134,7 +134,7 @@ describe("AssistantService", () => {
     expect(pubSubPublishMock).toHaveBeenCalledWith(
       MESSAGE_UPDATED_EVENT,
       JSON.stringify({
-        id: "messageId",
+        id: messageId,
         threadId,
         text: textDelta,
         snapshot,
