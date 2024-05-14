@@ -73,19 +73,6 @@ export class ModuleService extends BlockTypeService<
       },
     };
 
-    // if (user) {
-    //   const subscription = await this.billingService.getSubscription(
-    //     user.workspace?.id
-    //   );
-
-    //   await this.analytics.trackWithContext({
-    //     properties: {
-    //       planType: subscription.subscriptionPlan,
-    //     },
-    //     event: EnumEventType.SearchAPIs,
-    //   });
-    // }
-
     return super.findMany(prismaArgs);
   }
 
