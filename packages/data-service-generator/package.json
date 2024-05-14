@@ -1,6 +1,6 @@
 {
   "name": "generator-nodejs-nest",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "scripts": {
     "dsg:package:container": "./scripts/package-container.sh"
   },
