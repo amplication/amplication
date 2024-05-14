@@ -1,0 +1,48 @@
+{
+  "name": "code-gen-types",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/util/code-gen-types/src",
+  "projectType": "library",
+  "targets": {
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/types"],
+      "options": {
+        "command": "ts-node -P tsconfig.lib.json ./scripts/generate-types",
+        "cwd": "libs/util/code-gen-types"
+      }
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": ["prebuild"],
+      "options": {
+        "outputPath": "dist/libs/util/code-gen-types",
+        "tsConfig": "libs/util/code-gen-types/tsconfig.lib.json",
+        "packageJson": "libs/util/code-gen-types/package.json",
+        "main": "libs/util/code-gen-types/src/index.ts",
+        "assets": ["libs/util/code-gen-types/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/util/code-gen-types/**/*.{ts,tsx,js,jsx}",
+          "libs/util/code-gen-types/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/util/code-gen-types"],
+      "dependsOn": ["prebuild"],
+      "options": {
+        "jestConfig": "libs/util/code-gen-types/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

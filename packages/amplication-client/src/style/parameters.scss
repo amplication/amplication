@@ -1,0 +1,23 @@
+//  Use this file for Sass parameters.
+//  CSS variable should be added to css-variables.css
+$border-primary: 1px solid var(--primary);
+$border-white-transparent: 1px solid rgba(255, 255, 255, 0.2);
+
+$border-dark: 1px solid var(--border-color);
+
+$default-scroll-width: 8px;
+
+$breakpoint-phone: 576px;
+$breakpoint-tablet: 768px;
+$breakpoint-desktop: 992px;
+$breakpoint-large-desktop: 1200px;
+$breakpoint-xl-desktop: 1920px;
+
+$page-content-max-width: 1600px;
+$page-content-min-width: 900px;
+
+$detect-screen-resolution-z-index: 10000;
+$command-palette-z-index: 9995;
+$side-bar-z-index: 9990;
+$app-control-toolbar-z-index: 9985;
+$app-home-info-z-index: 5;
