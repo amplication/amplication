@@ -1,5 +1,5 @@
 # multi-stage: base (build)
-FROM node:18.13.0-slim AS base
+FROM node:18.13.0 AS base
 
 # instantiate environment variable
 ARG REACT_APP_SERVER_URL=http://localhost:3000
@@ -14,6 +14,7 @@ WORKDIR /app
 # and the package-lock.json are copied over
 COPY package*.json ./
 
+RUN apt update && apt install -y python
 # installs packages and their dependencies
 RUN npm install
 
@@ -21,8 +22,8 @@ RUN npm install
 COPY . .
 
 # create the bundle of the application
-RUN npm run build
-
+RUN npx nx build data-service-generator-catalog-admin
+ 
 # multi-stage: production (runtime)
 FROM nginx:1.22-alpine AS production
 

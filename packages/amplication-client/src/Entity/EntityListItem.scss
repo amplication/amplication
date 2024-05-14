@@ -1,0 +1,11 @@
+@import "../style/index.scss";
+
+.entity-list-item {
+  &__alert-bold {
+    @include bold;
+  }
+  &__alert-bold-notice {
+    @include bold;
+    color: var(--theme-orange);
+  }
+}

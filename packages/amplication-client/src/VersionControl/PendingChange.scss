@@ -1,0 +1,76 @@
+@import "../style/index.scss";
+
+$before-spacing-left: -16px;
+$before-spacing: -16px;
+$indicator-width: 19px;
+
+.pending-change {
+  margin-left: 0;
+  margin-right: var(--default-spacing-small);
+  margin-bottom: var(--default-spacing);
+  position: relative;
+  @include flexFullRow;
+  align-items: flex-start;
+  white-space: nowrap;
+
+  &__guide {
+    position: relative;
+    width: 0px;
+    height: 100;
+    display: inline-block;
+    margin-left: var(--double-spacing);
+    &:before {
+      content: "";
+      position: absolute;
+      display: block;
+      left: $before-spacing-left;
+      border-right: 1px solid var(--gray-70);
+      top: $before-spacing;
+      bottom: $before-spacing;
+    }
+  }
+
+  &:last-child {
+    margin-bottom: var(--large-spacing);
+  }
+
+  .pending-change-content {
+    &__link {
+      width: calc(100% - $indicator-width);
+    }
+    &__name {
+      width: calc(100% - $indicator-width);
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    &__indicator-wrapper {
+      min-width: $indicator-width;
+      max-width: $indicator-width;
+    }
+    &__indicator {
+      &--Update {
+        color: var(--theme-blue);
+      }
+
+      &--Delete {
+        color: var(--theme-red);
+      }
+      &--Create {
+        color: var(--theme-green);
+      }
+    }
+  }
+
+  &__version {
+    font-weight: 500;
+  }
+  &__tooltip_deleted:after {
+    background-color: var(--gray-70);
+    color: var(--gray-base);
+  }
+  &__deleted {
+    color: var(--gray-20);
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,14 @@
+@import "../../style/index.scss";
+
+.flex-default-story {
+  .amp-flex-item {
+    > * {
+      background: var(--gray-50);
+
+      color: var(--gray90);
+      text-shadow: 1px 1px 1px var(--gray-full);
+      padding: 10px;
+      font-size: 15px;
+    }
+  }
+}

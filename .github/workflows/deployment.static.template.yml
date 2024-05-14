@@ -1,0 +1,79 @@
+name: _Reusable Deployment Static template
+
+on:
+  workflow_call:
+    inputs:
+      environment-name:
+        type: string
+        description: Environment to deploy to.
+        required: true
+      project-name:
+        type: string
+        description: Project (amplication application component) to deploy.
+        required: true
+      deploy-type:
+        type: string
+        description: Deployment type, valid options are 'container' or 'static'.
+        required: true
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+
+jobs:
+  deployment-static:
+    name: Deployment static
+    if: ${{ inputs.deploy-type == 'static' }}
+    environment:
+      name: ${{ inputs.environment-name }}
+      url: ${{ vars.AMPLICATION_URL }}
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
+      - name: Cache global node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Deploy to S3 bucket
+        run: |
+          project=${{ inputs.project-name }}
+          prefix="amplication-"
+          project=${project#$prefix}
+
+          if [[ "$project" == "client" ]];
+          then
+            if [[ "${{ inputs.environment-name }}" == "production" ]];
+            then
+              npx nx deploy:static --configuration="${{ inputs.environment-name }}" --bucket-name="app.amplication.com" --distribution-id="${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}"
+            else
+              npx nx deploy:static --configuration="${{ inputs.environment-name }}" --bucket-name="app.amplication-${{ inputs.environment-name }}.com" --distribution-id="${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}"
+            fi;  
+          fi;

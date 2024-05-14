@@ -19,6 +19,8 @@ export class JsonFilter {
   })
   equals?: InputJsonValue;
 
+  path?: string[];
+
   @ApiProperty({
     required: false,
     type: GraphQLJSONObject,

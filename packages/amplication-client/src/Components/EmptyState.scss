@@ -1,0 +1,21 @@
+@import "../style/index.scss";
+
+$svg-img-width: 200px;
+$svg-img-height: 200px;
+
+.empty-state {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  p {
+    @include regular-12;
+    color: var(--gray-60);
+  }
+  .svg-theme-image {
+    width: $svg-img-width;
+    height: $svg-img-height;
+  }
+}
