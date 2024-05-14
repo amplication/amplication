@@ -3,6 +3,7 @@ import * as path from "path";
 import fg from "fast-glob";
 import { compile } from "json-schema-to-typescript";
 import normalize from "normalize-path";
+import { format } from "prettier";
 
 const SRC_DIRECTORY = path.join(__dirname, "..", "src");
 const SCHEMAS_DIRECTORY = path.join(
@@ -38,8 +39,12 @@ async function generateTypes() {
   const code = schemaFiles
     .map(({ name }) => `export * from "./${name.replace(".json", ".types")}";`)
     .join("\n");
+
   const indexPath = path.join(TYPES_DIRECTORY, "index.ts");
-  await fs.promises.writeFile(indexPath, code);
+  await fs.promises.writeFile(
+    indexPath,
+    format(code, { parser: "typescript" })
+  );
   // eslint-disable-next-line no-console
   console.info(
     `Successfully written to ${path.relative(process.cwd(), TYPES_DIRECTORY)}`
@@ -57,5 +62,5 @@ async function generateTypeFile(filePath: string, name: string) {
     additionalProperties: false,
   });
   const tsPath = path.join(TYPES_DIRECTORY, name.replace(".json", ".types.ts"));
-  await fs.promises.writeFile(tsPath, code);
+  await fs.promises.writeFile(tsPath, format(code, { parser: "typescript" }));
 }
