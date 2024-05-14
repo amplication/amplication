@@ -1,0 +1,13 @@
+@import "../../style/index.scss";
+
+$max-width: 700px;
+
+.entities-import {
+  &__link-docs {
+    @include body2;
+    a {
+      color: var(--theme-turquoise);
+    }
+    align-self: center;
+  }
+}

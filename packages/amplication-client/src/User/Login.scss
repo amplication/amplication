@@ -1,0 +1,70 @@
+@import "../style/index.scss";
+
+$title-padding-bottom: 24px;
+$policy-margin-top: 64px;
+$message-margin-bottom: 24px;
+
+.login-page {
+  &__title {
+    font-size: 24px;
+    font-weight: 600;
+  }
+  &__sso-link {
+    margin-bottom: 0;
+  }
+
+  &__signup {
+    @include body2;
+    color: var(--gray-20);
+
+    a {
+      color: var(--theme-turquoise);
+    }
+  }
+
+  &__login {
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 50px;
+
+    & a {
+      margin-left: 10px;
+      font-size: 13px;
+    }
+  }
+
+  &__message {
+    @include body1;
+    white-space: normal;
+    color: var(--gray-base);
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: var(--default-spacing);
+    margin-bottom: $message-margin-bottom;
+  }
+
+  &.amp-button--primary[disabled] {
+    background-color: #2c3249;
+  }
+
+  &.amp-button {
+    margin-top: 0px;
+    border-radius: 4px;
+  }
+
+  &__title {
+    @include pageTitle;
+    display: inline-block;
+  }
+
+  &__policy {
+    margin-bottom: 0;
+    @include body2;
+    color: var(--gray-20);
+
+    a {
+      color: var(--gray-20);
+      text-decoration: underline;
+    }
+  }
+}

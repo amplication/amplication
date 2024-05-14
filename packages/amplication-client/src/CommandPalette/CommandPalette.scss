@@ -1,0 +1,121 @@
+@import "../style/index.scss";
+$command-palette-width: 675px;
+$icon-font-size-medium: 24px;
+$item-height: 48px;
+$overflow-scrollbar-width: 4px;
+
+.command-palette {
+  &__overlay {
+    z-index: $command-palette-z-index;
+  }
+  &__modal {
+    width: $command-palette-width;
+    position: absolute;
+    top: var(--default-spacing);
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    border: 0px none;
+    overflow: hidden;
+    border-radius: 0;
+    outline: none;
+    margin-right: -50%;
+    transform: translate(-50%, 0px);
+    box-shadow: 0px 4px 10px 0px rgba(42, 33, 70, 0.12),
+      0px 0px 24px 0px rgba(12, 7, 77, 0.18);
+    border-radius: var(--default-border-radius);
+  }
+
+  &__overlay {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: transparent;
+  }
+
+  &__container {
+    font-size: var(--normal-font-size);
+  }
+
+  &__input {
+    @include textField;
+
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border: $border-dark;
+    border-bottom: none;
+    height: $item-height;
+    padding: var(--default-spacing) var(--large-spacing);
+    &:active,
+    &:hover,
+    &:focus {
+      @include textField--active;
+      border: $border-dark;
+      border-bottom: none;
+    }
+  }
+
+  &__suggestions-container {
+    --open {
+      overflow: hidden;
+      max-height: 500px;
+    }
+  }
+
+  &__suggestions-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0;
+    margin-top: 0;
+    border: $border-dark;
+    background-color: var(--gray-full);
+  }
+
+  &__suggestion {
+    color: var(--gray-30);
+    border-top: $border-dark;
+    height: $item-height;
+    box-sizing: border-box;
+    cursor: pointer;
+    padding: var(--default-spacing) var(--large-spacing);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    > div {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+
+      i {
+        font-size: $icon-font-size-medium;
+        margin-right: var(--default-spacing);
+      }
+    }
+    .circle-badge {
+      margin-right: var(--default-spacing);
+    }
+
+    &:first-child {
+      border-top: none;
+    }
+    b {
+      color: var(--primary);
+      @include bold;
+    }
+    &--highlighted {
+      background-color: var(--gray-80);
+    }
+  }
+  &__resource-name {
+    @include semiBold;
+    color: var(--gray-20);
+    margin-right: var(--default-spacing);
+  }
+}
+
+::-webkit-scrollbar {
+  width: $overflow-scrollbar-width !important;
+}

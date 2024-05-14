@@ -1,0 +1,31 @@
+@import "../../style/index.scss";
+
+.workspace-banner {
+  &__banner {
+    text-align: center;
+    background-color: var(--gray-full);
+    padding: 6px 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    &__cta {
+      .amp-icon {
+        font-size: 12px;
+      }
+      i {
+        margin-right: 5px;
+      }
+      color: var(--static-white);
+      font-weight: 400;
+      font-size: var(--normal-font-size);
+    }
+    &__close {
+      position: absolute;
+      right: 6px;
+      top: 7px;
+      cursor: pointer;
+    }
+  }
+}

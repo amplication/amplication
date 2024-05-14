@@ -1,0 +1,22 @@
+{
+  "name": "createModule",
+  "description": "creates a new module in a service. ",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "moduleName": {
+        "type": "string",
+        "description": "the name of the module. for example: System, Customer, Order, Util."
+      },
+      "moduleDescription": {
+        "type": "string",
+        "description": "the description of the module."
+      },
+      "serviceId": {
+        "type": "string",
+        "description": "the ID of the service in which the module is created. If there are multiple services available in the context, show the user a list of services to choose from. If there is no service available, do not use projectId instead"
+      }
+    },
+    "required": ["moduleName", "serviceId", "moduleDescription"]
+  }
+}

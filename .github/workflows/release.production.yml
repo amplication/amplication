@@ -1,0 +1,170 @@
+name: Release apps to production
+run-name: Release Version ${{ github.event.inputs.version }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
+        description: Version used to update apps version.ts and create a new release. i.e. v1.0.0, v1.1.2, v2.0.1
+      draft-release:
+        type: boolean
+        description: Create a draft release instead of a published release.
+        required: false
+        default: true
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  ECHO_RED: '\033[0;31m'
+  ECHO_YELLOW: '\033[0;33m'
+  ECHO_GREEN: '\033[0;32m'
+
+jobs:
+  check-version:
+    name: Check version syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check version is SemVer
+        run: |
+          if ! [[ "${{ github.event.inputs.version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version '${{ github.event.inputs.version }}'."
+            echo "Version must be a valid semver version. i.e. v1.0.0, v1.1.2, v2.0.1"
+            echo "See https://semver.org/ for more details."
+            exit 1
+          fi
+        shell: bash
+
+  generate-release:
+    name: Create a release for amplication platform
+    runs-on: ubuntu-latest
+    needs: check-version
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PRODUCTION_PAT }}
+
+      - name: Check version is unique
+        id: validate-version-unique
+        run: |
+          if git tag --list | grep -q "^${{ github.event.inputs.version }}"; then
+            echo "Version '${{ github.event.inputs.version }}' already exists."
+            echo "Please use a different version."
+            exit 1
+          fi
+        shell: bash
+
+      - name: Create new tag and determine previous tag
+        run: |
+          git tag ${{ github.event.inputs.version }}> /dev/null
+
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -v ^dsg/ | grep -A 1 ^${{ github.event.inputs.version }} | tail -n 1)
+          echo "🏷️ PREVIOUS_TAG=$PREVIOUS_TAG (used to detect the affected projects)"
+          echo "previous-tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+
+          git tag -d ${{ github.event.inputs.version }}> /dev/null
+        id: check-tag
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
+      - name: Cache global node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+
+      - name: Check release is needed
+        run: |
+          export NX_BASE="${{ steps.check-tag.outputs.previous-tag }}"
+          AFFECTED_APPS=$(npx nx show projects --affected --json --type=app | jq -c .)
+          AFFECTED_DEPLOYABLE_CONTAINER_APPS=$(npx nx show projects --affected --json --with-target deploy:container --type=app | jq -c .)
+          AFFECTED_DEPLOYABLE_STATIC_APPS=$(npx nx show projects --affected --json --with-target deploy:static --type=app | jq -c .)
+
+          if [[ $AFFECTED_DEPLOYABLE_CONTAINER_APPS == "[]" ]] && [[ $AFFECTED_DEPLOYABLE_STATIC_APPS == "[]" ]]; then
+            echo -e "$ECHO_YELLOW affected-apps: $AFFECTED_APPS"
+            echo -e "$ECHO_YELLOW affected-deploy-container: $AFFECTED_DEPLOYABLE_CONTAINER_APPS"
+            echo -e "$ECHO_YELLOW affected-deploy-static: $AFFECTED_DEPLOYABLE_STATIC_APPS"
+
+            if [[ $AFFECTED_APPS == *"data-service-generator"* ]]; then
+              echo -e "$ECHO_RED 🚨 Only data-service-generator is affected by this release 🚨"
+              echo -e "$ECHO_YELLOW Use the \033[1;33mRelease DSG Hotfix workflow${ECHO_YELLOW} instead"
+              exit 1
+            fi
+
+            echo -e "$ECHO_RED 🚨 No apps affected by this release 🚨"
+            echo -e "$ECHO_RED  Are you sure you want to release?"
+            exit 1
+          fi
+
+      - name: Update apps version.ts
+        id: update-version-ts
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          APP_VERSION=${VERSION:1}
+          npx nx run-many --target=update-version --args="--version=$APP_VERSION"
+
+      # Commit all changed files back to the repository
+      - name: Commit changes
+        id: commit-changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore: update apps version.ts"
+          branch: ${{ github.event.repository.default_branch }}
+          commit_user_name: amplication-engineering
+          commit_user_email: engineering@amplication.com
+          commit_author: amplication-engineering <engineering@amplication.com> # defaults to author of the commit that triggered the run
+
+      - name: "Build amplication Changelog"
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          fromTag: "${{ steps.check-tag.outputs.previous-tag }}"
+          toTag: ${{ steps.commit-changes.outputs.commit_hash }}
+          configurationJson: |
+            {
+              "template": "#{{CHANGELOG}}\n\n**Full Changelog**: [#{{FROM_TAG}}...${{ github.event.inputs.version }}](https://github.com/amplication/amplication/compare/#{{FROM_TAG}}...${{ github.event.inputs.version }})",
+              "pr_template": "- #{{TITLE}} by @#{{AUTHOR}} in [##{{NUMBER}}](#{{URL}})",
+              "empty_template": "",
+              "ignore_labels": [
+                "ignore-from-release-notes"
+              ],
+              "categories": [
+                {
+                  "title": "## What's Changed?",
+                  "exhaustive_rules": "true",
+                  "rules": [
+                    {
+                      "pattern": "(app|lib):(?!data-service-generator|local-data-service-generator-controller)",
+                      "on_property": "labels",
+                      "flags": "gu"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release amplication
+        id: release
+        if: ${{ steps.changelog.outputs.changelog != '' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.event.inputs.version }}
+          tag_name: ${{ github.event.inputs.version }}
+          draft: ${{ github.event.inputs.draft-release }}
+          body: ${{ steps.changelog.outputs.changelog }}

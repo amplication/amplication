@@ -47,6 +47,17 @@ class PluginUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
+  codeGeneratorName?: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
   description?: string | null;
 
   @ApiProperty({
