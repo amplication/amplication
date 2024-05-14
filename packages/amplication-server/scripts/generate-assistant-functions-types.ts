@@ -36,7 +36,7 @@ async function generateTypes() {
     )
   );
   const code = schemaFiles
-    .map(({ name }) => `export * from "./${name.replace(".json", "")}"`)
+    .map(({ name }) => `export * from "./${name.replace(".json", ".types")}";`)
     .join("\n");
   const indexPath = path.join(TYPES_DIRECTORY, "index.ts");
   await fs.promises.writeFile(indexPath, code);
@@ -56,6 +56,6 @@ async function generateTypeFile(filePath: string, name: string) {
   const code = await compile(content.parameters, name.replace(".json", ""), {
     additionalProperties: false,
   });
-  const tsPath = path.join(TYPES_DIRECTORY, name.replace(".json", ".ts"));
+  const tsPath = path.join(TYPES_DIRECTORY, name.replace(".json", ".types.ts"));
   await fs.promises.writeFile(tsPath, code);
 }
