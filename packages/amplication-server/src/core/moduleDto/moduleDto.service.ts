@@ -38,7 +38,6 @@ import { QueryMode } from "../../enums/QueryMode";
 import { validateCustomActionsEntitlement } from "../block/block.util";
 import { JsonArray } from "type-fest";
 import { PropertyTypeDef } from "./dto/propertyTypes/PropertyTypeDef";
-import { validate } from "json-schema";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,

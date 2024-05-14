@@ -30,7 +30,6 @@ import { validateCustomActionsEntitlement } from "../block/block.util";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
-import { PropertyTypeDef } from "../moduleDto/dto/propertyTypes/PropertyTypeDef";
 
 const UNSUPPORTED_TYPES = [
   EnumModuleDtoPropertyType.Null,
