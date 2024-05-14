@@ -11,7 +11,7 @@ generator client {
 
 model Plugin {
   categories         Json?    @default("[]")
-  codeGeneratorNames Json     @default("[data-service-generator]")
+  codeGeneratorNames Json?    @default("[\"data-service-generator\"]")
   createdAt          DateTime @default(now())
   description        String?
   downloads          Int?

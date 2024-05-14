@@ -30,7 +30,7 @@ export interface PluginCatalogEntryYml {
   categories: string;
   resourceTypes: string;
   pluginId?: string;
-  generator: string;
+  generator: string[];
 }
 
 export interface PluginList {
