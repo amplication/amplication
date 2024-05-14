@@ -89,6 +89,7 @@ describe("VersionService", () => {
       mockVersionFindMany.mockResolvedValue([{ name: expected }]);
 
       const result = await service.getCodeGeneratorVersion({
+        codeGeneratorFullName: "data-service-generator",
         codeGeneratorVersion: selectedVersion,
         codeGeneratorStrategy,
       });
@@ -137,6 +138,7 @@ describe("VersionService", () => {
       service = module.get<VersionService>(VersionService);
 
       const result = await service.getCodeGeneratorVersion({
+        codeGeneratorFullName: "data-service-generator",
         codeGeneratorVersion: devVersion,
         codeGeneratorStrategy,
       });
