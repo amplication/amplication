@@ -9,11 +9,19 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
+import { InputType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString } from "class-validator";
 
-@Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
-})
-export class PluginModuleBase {}
+@InputType()
+class CategoryWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+}
+
+export { CategoryWhereUniqueInput as CategoryWhereUniqueInput };

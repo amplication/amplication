@@ -13,21 +13,20 @@ import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { Public } from "../../decorators/public.decorator";
-import { CreatePluginArgs } from "./CreatePluginArgs";
-import { UpdatePluginArgs } from "./UpdatePluginArgs";
-import { DeletePluginArgs } from "./DeletePluginArgs";
-import { PluginCountArgs } from "./PluginCountArgs";
-import { PluginFindManyArgs } from "./PluginFindManyArgs";
-import { PluginFindUniqueArgs } from "./PluginFindUniqueArgs";
-import { Plugin } from "./Plugin";
-import { PluginService } from "../plugin.service";
-@graphql.Resolver(() => Plugin)
-export class PluginResolverBase {
-  constructor(protected readonly service: PluginService) {}
+import { CreateCategoryArgs } from "./CreateCategoryArgs";
+import { UpdateCategoryArgs } from "./UpdateCategoryArgs";
+import { DeleteCategoryArgs } from "./DeleteCategoryArgs";
+import { CategoryCountArgs } from "./CategoryCountArgs";
+import { CategoryFindManyArgs } from "./CategoryFindManyArgs";
+import { CategoryFindUniqueArgs } from "./CategoryFindUniqueArgs";
+import { Category } from "./Category";
+import { CategoryService } from "../category.service";
+@graphql.Resolver(() => Category)
+export class CategoryResolverBase {
+  constructor(protected readonly service: CategoryService) {}
 
-  async _pluginsMeta(
-    @graphql.Args() args: PluginCountArgs
+  async _categoriesMeta(
+    @graphql.Args() args: CategoryCountArgs
   ): Promise<MetaQueryPayload> {
     const result = await this.service.count(args);
     return {
@@ -35,17 +34,17 @@ export class PluginResolverBase {
     };
   }
 
-  @Public()
-  @graphql.Query(() => [Plugin])
-  async plugins(@graphql.Args() args: PluginFindManyArgs): Promise<Plugin[]> {
+  @graphql.Query(() => [Category])
+  async categories(
+    @graphql.Args() args: CategoryFindManyArgs
+  ): Promise<Category[]> {
     return this.service.findMany(args);
   }
 
-  @Public()
-  @graphql.Query(() => Plugin, { nullable: true })
-  async plugin(
-    @graphql.Args() args: PluginFindUniqueArgs
-  ): Promise<Plugin | null> {
+  @graphql.Query(() => Category, { nullable: true })
+  async category(
+    @graphql.Args() args: CategoryFindUniqueArgs
+  ): Promise<Category | null> {
     const result = await this.service.findOne(args);
     if (result === null) {
       return null;
@@ -53,18 +52,20 @@ export class PluginResolverBase {
     return result;
   }
 
-  @graphql.Mutation(() => Plugin)
-  async createPlugin(@graphql.Args() args: CreatePluginArgs): Promise<Plugin> {
+  @graphql.Mutation(() => Category)
+  async createCategory(
+    @graphql.Args() args: CreateCategoryArgs
+  ): Promise<Category> {
     return await this.service.create({
       ...args,
       data: args.data,
     });
   }
 
-  @graphql.Mutation(() => Plugin)
-  async updatePlugin(
-    @graphql.Args() args: UpdatePluginArgs
-  ): Promise<Plugin | null> {
+  @graphql.Mutation(() => Category)
+  async updateCategory(
+    @graphql.Args() args: UpdateCategoryArgs
+  ): Promise<Category | null> {
     try {
       return await this.service.update({
         ...args,
@@ -80,10 +81,10 @@ export class PluginResolverBase {
     }
   }
 
-  @graphql.Mutation(() => Plugin)
-  async deletePlugin(
-    @graphql.Args() args: DeletePluginArgs
-  ): Promise<Plugin | null> {
+  @graphql.Mutation(() => Category)
+  async deleteCategory(
+    @graphql.Args() args: DeleteCategoryArgs
+  ): Promise<Category | null> {
     try {
       return await this.service.delete(args);
     } catch (error) {

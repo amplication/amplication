@@ -16,4 +16,4 @@ import { MorganModule } from "nest-morgan";
   imports: [MorganModule],
   exports: [MorganModule],
 })
-export class PluginModuleBase {}
+export class CategoryModuleBase {}
