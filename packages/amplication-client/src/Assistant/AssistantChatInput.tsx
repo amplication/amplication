@@ -26,9 +26,10 @@ const KEY_MAP = [
 type Props = {
   disabled: boolean;
   sendMessage: (message: string) => void;
+  placeholder?: string;
 };
 
-const AssistantChatInput = ({ disabled, sendMessage }: Props) => {
+const AssistantChatInput = ({ disabled, sendMessage, placeholder }: Props) => {
   const [rowCount, setRowCount] = useState(1);
 
   const handleSubmit = useCallback(
@@ -69,6 +70,7 @@ const AssistantChatInput = ({ disabled, sendMessage }: Props) => {
       >
         <Form ref={ref}>
           <TextField
+            placeholder={placeholder}
             textarea
             name="message"
             label="How can I help you?"
