@@ -1,5 +1,5 @@
 {
-  "name": "data-service-generator",
+  "name": "generator-nodejs-nest",
   "version": "4.1.0",
   "scripts": {
     "dsg:package:container": "./scripts/package-container.sh"
