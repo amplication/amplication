@@ -20,6 +20,14 @@ class GetCodeGeneratorVersionInput {
   })
   @Field(() => CodeGeneratorVersionStrategy, { nullable: false })
   codeGeneratorStrategy!: CodeGeneratorVersionStrategy;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  codeGeneratorFullName!: string;
 }
 
 registerEnumType(CodeGeneratorVersionStrategy, {

@@ -67,6 +67,7 @@ describe("CodeGeneratorService", () => {
       });
 
       const result = await service.getCodeGeneratorVersion({
+        codeGeneratorFullName: "data-service-generator",
         codeGeneratorVersion: selectedVersion,
         codeGeneratorStrategy,
       });

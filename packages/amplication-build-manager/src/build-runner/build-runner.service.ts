@@ -37,10 +37,15 @@ export class BuildRunnerService {
     dsgResourceData: DSGResourceData
   ) {
     let codeGeneratorVersion: string;
-    const codeGeneratorName = dsgResourceData.resourceInfo.codeGeneratorName;
+    const codeGeneratorFullName =
+      await this.codeGeneratorNameToContainerImageName(
+        codeGeneratorVersion,
+        dsgResourceData.resourceInfo.codeGeneratorName
+      );
     try {
       codeGeneratorVersion =
         await this.codeGeneratorService.getCodeGeneratorVersion({
+          codeGeneratorFullName,
           codeGeneratorVersion:
             dsgResourceData.resourceInfo.codeGeneratorVersionOptions
               .codeGeneratorVersion,
@@ -51,7 +56,8 @@ export class BuildRunnerService {
 
       this.logger.debug("Code Generator settings: ", {
         codeGeneratorVersion,
-        codeGeneratorName,
+        codeGeneratorName: dsgResourceData.resourceInfo.codeGeneratorName,
+        codeGeneratorFullName,
       });
 
       const jobs = await this.buildJobsHandlerService.splitBuildsIntoJobs(
@@ -66,7 +72,7 @@ export class BuildRunnerService {
           jobBuildId,
           data,
           codeGeneratorVersion,
-          codeGeneratorName
+          codeGeneratorFullName
         );
       }
     } catch (error) {
@@ -88,14 +94,9 @@ export class BuildRunnerService {
     jobBuildId: string,
     data: DSGResourceData,
     codeGeneratorVersion: string,
-    codeGeneratorName: string
+    codeGeneratorFullName: string
   ) {
     await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
-
-    const containerImageName = await this.codeGeneratorNameToContainerImageName(
-      codeGeneratorVersion,
-      codeGeneratorName
-    );
 
     const url = this.configService.get(Env.DSG_RUNNER_URL);
     try {
@@ -103,7 +104,7 @@ export class BuildRunnerService {
         resourceId,
         buildId: jobBuildId,
         codeGeneratorVersion, // image tag. Nullable. If not provided, the default image tag for each environment will be used
-        codeGeneratorName: containerImageName, // image (and container) name. Nullable. If not provided, the default image name will be used (data-service-generator)
+        codeGeneratorName: codeGeneratorFullName, // image (and container) name. Nullable. If not provided, the default image name will be used (data-service-generator)
       };
       this.logger.debug("Calling argo event with post payload: ", { postBody });
       await axios.post(url, postBody);
