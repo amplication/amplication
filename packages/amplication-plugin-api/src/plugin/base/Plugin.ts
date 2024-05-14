@@ -9,7 +9,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { ObjectType, Field, Int } from "@nestjs/graphql";
+import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsJSONValue } from "@app/custom-validators";
 import { IsOptional, IsString, IsDate, IsInt } from "class-validator";
@@ -20,12 +20,21 @@ import { Type } from "class-transformer";
 @ObjectType()
 class Plugin {
   @ApiProperty({
-    required: true,
-    type: String,
+    required: false,
   })
-  @IsString()
-  @Field(() => String)
-  codeGeneratorName!: string;
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  categories!: JsonValue;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  codeGeneratorNames!: JsonValue;
 
   @ApiProperty({
     required: true,
@@ -45,6 +54,17 @@ class Plugin {
     nullable: true,
   })
   description!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  downloads!: number | null;
 
   @ApiProperty({
     required: false,
@@ -137,22 +157,6 @@ class Plugin {
     nullable: true,
   })
   website!: string | null;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsInt()
-  @Field(() => Int, {
-    nullable: true,
-  })
-  downloads!: number | null;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsJSONValue()
-  @Field(() => GraphQLJSON)
-  categories!: JsonValue;
 }
 
 export { Plugin as Plugin };

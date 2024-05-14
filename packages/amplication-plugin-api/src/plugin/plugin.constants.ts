@@ -20,7 +20,7 @@ export const emptyPlugin: PluginData = {
     categories: "[]",
     resourceTypes: "",
     pluginId: "",
-    generator: "",
+    generator: [""],
   },
   npm: {
     "dist-tags": {},
