@@ -156,12 +156,12 @@ export class ModuleActionService extends BlockTypeService<
           restVerb: EnumModuleActionRestVerb.Get,
           path: `/:id/${kebabCase(args.data.name)}`,
           outputType: {
-            type: EnumModuleDtoPropertyType.Dto,
+            type: EnumModuleDtoPropertyType.String,
             dtoId: "",
             isArray: false,
           },
           inputType: {
-            type: EnumModuleDtoPropertyType.Dto,
+            type: EnumModuleDtoPropertyType.String,
             dtoId: "",
             isArray: false,
           },
