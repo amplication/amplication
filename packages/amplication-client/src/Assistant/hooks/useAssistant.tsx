@@ -192,6 +192,12 @@ const useAssistant = () => {
           return;
         }
 
+        if (message.completed) {
+          //completed is send when thread run is completed or on error
+          setProcessingMessage(false);
+          if (message.snapshot === "") return; //do not continue to process empty messages
+        }
+
         //use the state setter to ensure the message is updated in order
         setMessages((currentMessages) => {
           const lastMessage = currentMessages[currentMessages.length - 1];

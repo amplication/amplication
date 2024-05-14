@@ -20,6 +20,7 @@ import { EnumAssistantMessageType } from "./dto/EnumAssistantMessageType";
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
 export const PLUGIN_LATEST_VERSION_TAG = "latest";
+const THREAD_RUN_COMPLETED = "thread.run.completed";
 
 const STREAM_ERROR_MESSAGE =
   "It looks like we're experiencing a high demand right now, which might be affecting our connection to the AI model. Please give it a little time and try again later. We appreciate your patience and understanding as we work to resolve this. Thank you! 🙏";
@@ -32,8 +33,7 @@ const ASSISTANT_INSTRUCTIONS: { [key in EnumAssistantMessageType]: string } = {
   After you create entities, also create fields and relations for all entities. Aim to create as many fields and relations as needed. 
   Install any plugins that are needed for the service.
   Do not ask the user to commit changes before the onboarding is complete.
-  The user is already connected to a demo git repo. After the creation is completed, suggest the user to connect to their own git repo.
-  Your reply should start with "Welcome to Amplication!" and include a brief introduction to the service and the entities you created.`,
+  The user is already connected to a demo git repo. After the creation is completed, suggest the user to connect to their own git repo.`,
 };
 
 export type MessageLoggerContext = {
@@ -232,6 +232,15 @@ export class AssistantService {
         );
       })
       .on("event", async (event) => {
+        if (event.event === "thread.run.completed") {
+          await this.onMessageUpdated(
+            threadId,
+            THREAD_RUN_COMPLETED,
+            "",
+            "",
+            true
+          );
+        }
         if (event.event === "thread.run.requires_action") {
           const requiredActions =
             event.data.required_action.submit_tool_outputs.tool_calls;
@@ -309,7 +318,7 @@ export class AssistantService {
           messageId,
           text.value,
           text.value,
-          true
+          false
         );
         loggerContext.role = "assistant";
         this.logger.info(`Chat: ${text.value}`, loggerContext);
