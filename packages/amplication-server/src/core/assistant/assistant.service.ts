@@ -108,7 +108,7 @@ export class AssistantService {
     }
 
     const message: AssistantMessageDelta = {
-      id: "messageId",
+      id: messageId,
       threadId,
       text: textDelta,
       snapshot: snapshot,
@@ -208,8 +208,12 @@ export class AssistantService {
     loggerContext: MessageLoggerContext
   ) {
     const openai = this.openai;
+    let messageId: string | null = null; // Variable to store the message ID
 
     stream
+      .on("messageCreated", async (message) => {
+        messageId = message.id;
+      })
       .on("error", async (error) => {
         this.logger.error(
           `Chat: Stream error: ${error.message}. Error: ${JSON.stringify(
@@ -284,7 +288,7 @@ export class AssistantService {
       .on("textCreated", async (text) => {
         await this.onMessageUpdated(
           threadId,
-          "",
+          messageId,
           text.value,
           text.value,
           false
@@ -293,14 +297,20 @@ export class AssistantService {
       .on("textDelta", async (textDelta, snapshot) => {
         await this.onMessageUpdated(
           threadId,
-          "",
+          messageId,
           textDelta.value,
           snapshot.value,
           false
         );
       })
       .on("textDone", async (text) => {
-        await this.onMessageUpdated(threadId, "", text.value, text.value, true);
+        await this.onMessageUpdated(
+          threadId,
+          messageId,
+          text.value,
+          text.value,
+          true
+        );
         loggerContext.role = "assistant";
         this.logger.info(`Chat: ${text.value}`, loggerContext);
       });

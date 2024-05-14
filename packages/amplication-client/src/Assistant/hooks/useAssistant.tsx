@@ -26,6 +26,8 @@ export type AssistantMessageWithOptions = models.AssistantMessage & {
   loading?: boolean;
 };
 
+const TEMP_MESSAGE_PREFIX = "temp_";
+
 const INITIAL_MESSAGE: AssistantMessageWithOptions = {
   text: `**Welcome! my name is Jovu.** 
 
@@ -190,15 +192,31 @@ const useAssistant = () => {
           return;
         }
 
-        if (message.completed) {
-          setProcessingMessage(false);
-        }
+        //use the state setter to ensure the message is updated in order
+        setMessages((currentMessages) => {
+          const lastMessage = currentMessages[currentMessages.length - 1];
 
-        setMessages((messages) => {
-          const lastMessage = messages[messages.length - 1];
-          lastMessage.text = message.snapshot;
-          lastMessage.loading = false; // remove loading indicator when first message is received
-          return [...messages];
+          if (lastMessage.id.startsWith(TEMP_MESSAGE_PREFIX)) {
+            currentMessages.pop();
+          }
+
+          setProcessingMessage(!message.completed);
+
+          if (lastMessage.id === message.id) {
+            lastMessage.text = message.snapshot;
+            lastMessage.loading = false;
+            return [...currentMessages];
+          } else {
+            const newMessage = {
+              text: message.snapshot,
+              role: models.EnumAssistantMessageRole.Assistant,
+              id: message.id,
+              createdAt: "",
+              loading: false,
+            };
+
+            return [...currentMessages, newMessage];
+          }
         });
       },
     }
@@ -229,7 +247,7 @@ const useAssistant = () => {
       {
         text: "Thinking...",
         role: models.EnumAssistantMessageRole.Assistant,
-        id: Date.now().toString() + "_",
+        id: TEMP_MESSAGE_PREFIX + Date.now().toString() + "_",
         createdAt: "",
         loading: true,
       },
