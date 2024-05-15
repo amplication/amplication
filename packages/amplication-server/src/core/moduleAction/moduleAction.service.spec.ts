@@ -25,6 +25,7 @@ import { billingServiceGetBooleanEntitlementMock } from "../block/blockType.serv
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { subscriptionServiceFindOneMock } from "../module/module.service.spec";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
@@ -78,12 +79,12 @@ const EXAMPLE_ACTION: ModuleAction = {
   outputParameters: null,
   versionNumber: 0,
   outputType: {
-    type: EnumModuleDtoPropertyType.Dto,
+    type: EnumModuleDtoPropertyType.String,
     dtoId: "",
     isArray: false,
   },
   inputType: {
-    type: EnumModuleDtoPropertyType.Dto,
+    type: EnumModuleDtoPropertyType.String,
     dtoId: "",
     isArray: false,
   },
@@ -221,6 +222,14 @@ describe("ModuleActionService", () => {
           })),
         },
         {
+          provide: ModuleDtoService,
+          useClass: jest.fn(() => ({
+            validateTypes: jest.fn(() => {
+              return null;
+            }),
+          })),
+        },
+        {
           provide: AmplicationLogger,
           useClass: jest.fn(() => ({
             error: jest.fn(() => {
@@ -287,12 +296,12 @@ describe("ModuleActionService", () => {
           restVerb: EnumModuleActionRestVerb.Get,
           path: `/:id/${kebabCase(args.data.name)}`,
           outputType: {
-            type: EnumModuleDtoPropertyType.Dto,
+            type: EnumModuleDtoPropertyType.String,
             dtoId: "",
             isArray: false,
           },
           inputType: {
-            type: EnumModuleDtoPropertyType.Dto,
+            type: EnumModuleDtoPropertyType.String,
             dtoId: "",
             isArray: false,
           },

@@ -29,6 +29,13 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { validateCustomActionsEntitlement } from "../block/block.util";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
+
+const UNSUPPORTED_TYPES = [
+  EnumModuleDtoPropertyType.Null,
+  EnumModuleDtoPropertyType.Undefined,
+  EnumModuleDtoPropertyType.Json,
+];
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
@@ -48,7 +55,8 @@ export class ModuleActionService extends BlockTypeService<
     protected readonly logger: AmplicationLogger,
     protected readonly analytics: SegmentAnalyticsService,
     private readonly prisma: PrismaService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private readonly moduleDtoService: ModuleDtoService
   ) {
     super(blockService, logger);
 
@@ -156,12 +164,12 @@ export class ModuleActionService extends BlockTypeService<
           restVerb: EnumModuleActionRestVerb.Get,
           path: `/:id/${kebabCase(args.data.name)}`,
           outputType: {
-            type: EnumModuleDtoPropertyType.Dto,
+            type: EnumModuleDtoPropertyType.String,
             dtoId: "",
             isArray: false,
           },
           inputType: {
-            type: EnumModuleDtoPropertyType.Dto,
+            type: EnumModuleDtoPropertyType.String,
             dtoId: "",
             isArray: false,
           },
@@ -204,6 +212,12 @@ export class ModuleActionService extends BlockTypeService<
         );
       }
     }
+
+    await this.moduleDtoService.validateTypes(
+      existingAction.resourceId,
+      [args.data.inputType, args.data.outputType],
+      UNSUPPORTED_TYPES
+    );
 
     const subscription = await this.billingService.getSubscription(
       user.workspace?.id
