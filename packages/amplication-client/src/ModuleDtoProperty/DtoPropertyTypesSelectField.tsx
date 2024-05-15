@@ -72,9 +72,12 @@ export const typeMapping: {
 export const TYPE_OPTIONS = Object.values(EnumModuleDtoPropertyType)
   .filter(
     (value) =>
-      ![EnumModuleDtoPropertyType.Dto, EnumModuleDtoPropertyType.Enum].includes(
-        value
-      )
+      ![
+        EnumModuleDtoPropertyType.Dto,
+        EnumModuleDtoPropertyType.Enum,
+        EnumModuleDtoPropertyType.Undefined,
+        EnumModuleDtoPropertyType.Null,
+      ].includes(value)
   )
   .map((value) => ({
     label: typeMapping[value].label,
