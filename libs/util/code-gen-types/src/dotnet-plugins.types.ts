@@ -127,6 +127,7 @@ export enum DotnetEventNames {
    * Event that will allow plugins to add secrets references to the SecretsKeyNames enum
    */
   CreateServerSecretsManager = "CreateServerSecretsManager",
+  CreateEntityInterface = "CreateEntityInterface",
 }
 
 export interface AmplicationPlugin {

@@ -1,11 +1,11 @@
 import {
-  CreateAdminGitIgnoreParams,
   CreateDTOsParams,
   CreateEntityControllerBaseParams,
   CreateEntityControllerParams,
   CreateEntityControllerToManyRelationMethodsParams,
   CreateEntityGrpcControllerBaseParams,
   CreateEntityGrpcControllerParams,
+  CreateEntityInterfaceParams,
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
   CreateMainFileParams,
@@ -17,7 +17,6 @@ import {
   CreateSeedParams,
   CreateServerAuthParams,
   CreateServerDockerComposeDBParams,
-  CreateServerDockerComposeDevParams,
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
   CreateServerGitIgnoreParams,
@@ -27,7 +26,7 @@ import {
   LoadStaticFilesParams,
 } from "./dotnet-plugin-events-params.types";
 import { DotnetEventNames, PluginEventType } from "./dotnet-plugins.types";
-import { Class, CodeBlock } from "@amplication/csharp-ast";
+import { CodeBlock, Interface } from "@amplication/csharp-ast";
 
 export type DotnetEvents = {
   [DotnetEventNames.CreateServerAuth]?: PluginEventType<CreateServerAuthParams>;
@@ -37,17 +36,24 @@ export type DotnetEvents = {
     CodeBlock
   >;
 
-  [DotnetEventNames.CreateServerGitIgnore]?: PluginEventType<CreateServerGitIgnoreParams>;
-  [DotnetEventNames.CreateAdminGitIgnore]?: PluginEventType<CreateAdminGitIgnoreParams>;
+  [DotnetEventNames.CreateServerGitIgnore]?: PluginEventType<
+    CreateServerGitIgnoreParams,
+    CodeBlock
+  >;
   [DotnetEventNames.CreateEntityService]?: PluginEventType<CreateEntityServiceParams>;
   [DotnetEventNames.CreateEntityServiceBase]?: PluginEventType<CreateEntityServiceBaseParams>;
   [DotnetEventNames.CreateEntityController]?: PluginEventType<CreateEntityControllerParams>;
   [DotnetEventNames.CreateEntityControllerBase]?: PluginEventType<CreateEntityControllerBaseParams>;
   [DotnetEventNames.CreateEntityGrpcController]?: PluginEventType<CreateEntityGrpcControllerParams>;
   [DotnetEventNames.CreateEntityGrpcControllerBase]?: PluginEventType<CreateEntityGrpcControllerBaseParams>;
-  [DotnetEventNames.CreateServerDockerCompose]?: PluginEventType<CreateServerDockerComposeParams>;
-  [DotnetEventNames.CreateServerDockerComposeDB]?: PluginEventType<CreateServerDockerComposeDBParams>;
-  [DotnetEventNames.CreateServerDockerComposeDev]?: PluginEventType<CreateServerDockerComposeDevParams>;
+  [DotnetEventNames.CreateServerDockerCompose]?: PluginEventType<
+    CreateServerDockerComposeParams,
+    CodeBlock
+  >;
+  [DotnetEventNames.CreateServerDockerComposeDB]?: PluginEventType<
+    CreateServerDockerComposeDBParams,
+    CodeBlock
+  >;
   [DotnetEventNames.CreateMessageBroker]?: PluginEventType<CreateMessageBrokerParams>;
   [DotnetEventNames.CreateMessageBrokerTopicsEnum]?: PluginEventType<CreateMessageBrokerTopicsEnumParams>;
   [DotnetEventNames.CreateMessageBrokerClientOptionsFactory]?: PluginEventType<CreateMessageBrokerClientOptionsFactoryParams>;
@@ -60,4 +66,8 @@ export type DotnetEvents = {
   [DotnetEventNames.CreateDTOs]?: PluginEventType<CreateDTOsParams>;
   [DotnetEventNames.LoadStaticFiles]?: PluginEventType<LoadStaticFilesParams>;
   [DotnetEventNames.CreateServerSecretsManager]?: PluginEventType<CreateServerSecretsManagerParams>;
+  [DotnetEventNames.CreateEntityInterface]?: PluginEventType<
+    CreateEntityInterfaceParams,
+    Interface
+  >;
 };
