@@ -9,7 +9,7 @@ import {
 } from "./code-gen-types";
 import { DSGResourceData } from "./dsg-resource-data";
 import { FileMap } from "./files";
-import { AstNode } from "@amplication/csharp-ast";
+import { AstNode, Class } from "@amplication/csharp-ast";
 import { DotnetEvents } from "./dotnet-plugin-events.types";
 
 export interface EventParams {}
@@ -19,15 +19,18 @@ export type PluginBeforeEvent<T extends EventParams> = (
   eventParams: T
 ) => Promisable<T>;
 
-export type PluginAfterEvent<T extends EventParams> = (
+export type PluginAfterEvent<T extends EventParams, F extends AstNode> = (
   dsgContext: DsgContext,
   eventParams: T,
-  files: FileMap<AstNode>
-) => Promisable<FileMap<AstNode>>;
+  files: FileMap<F>
+) => Promisable<FileMap<F>>;
 
-export interface PluginEventType<T extends EventParams> {
+export interface PluginEventType<
+  T extends EventParams,
+  F extends AstNode = Class
+> {
   before?: PluginBeforeEvent<T>;
-  after?: PluginAfterEvent<T>;
+  after?: PluginAfterEvent<T, F>;
 }
 
 export interface PrintResultType {
@@ -74,7 +77,7 @@ export type PluginWrapper = (args: EventParams, func: () => void) => any;
 export type PluginMap = {
   [K in DotnetEventNames]?: {
     before?: PluginBeforeEvent<EventParams>[];
-    after?: PluginAfterEvent<EventParams>[];
+    after?: PluginAfterEvent<EventParams, AstNode>[];
   };
 };
 

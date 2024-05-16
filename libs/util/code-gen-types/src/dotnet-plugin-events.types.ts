@@ -27,11 +27,16 @@ import {
   LoadStaticFilesParams,
 } from "./dotnet-plugin-events-params.types";
 import { DotnetEventNames, PluginEventType } from "./dotnet-plugins.types";
+import { Class, CodeBlock } from "@amplication/csharp-ast";
 
 export type DotnetEvents = {
   [DotnetEventNames.CreateServerAuth]?: PluginEventType<CreateServerAuthParams>;
   [DotnetEventNames.CreateServer]?: PluginEventType<CreateServerParams>;
-  [DotnetEventNames.CreateServerDotEnv]?: PluginEventType<CreateServerDotEnvParams>;
+  [DotnetEventNames.CreateServerDotEnv]?: PluginEventType<
+    CreateServerDotEnvParams,
+    CodeBlock
+  >;
+
   [DotnetEventNames.CreateServerGitIgnore]?: PluginEventType<CreateServerGitIgnoreParams>;
   [DotnetEventNames.CreateAdminGitIgnore]?: PluginEventType<CreateAdminGitIgnoreParams>;
   [DotnetEventNames.CreateEntityService]?: PluginEventType<CreateEntityServiceParams>;
