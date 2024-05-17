@@ -100,7 +100,7 @@ export interface CreateServerDockerComposeParams extends EventParams {
   outputFileName: string;
 }
 
-export interface CreateServerDockerComposeDBParams extends EventParams {
+export interface CreateServerDockerComposeDevParams extends EventParams {
   fileContent: string;
   updateProperties: { [key: string]: any }[];
   outputFileName: string;

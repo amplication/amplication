@@ -17,7 +17,7 @@ import {
   CreateSeedParams,
   CreateServerAuthParams,
   CreateServerCsprojParams,
-  CreateServerDockerComposeDBParams,
+  CreateServerDockerComposeDevParams,
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
   CreateServerGitIgnoreParams,
@@ -52,8 +52,8 @@ export type DotnetEvents = {
     CreateServerDockerComposeParams,
     CodeBlock
   >;
-  [DotnetEventNames.CreateServerDockerComposeDB]?: PluginEventType<
-    CreateServerDockerComposeDBParams,
+  [DotnetEventNames.CreateServerDockerComposeDev]?: PluginEventType<
+    CreateServerDockerComposeDevParams,
     CodeBlock
   >;
   [DotnetEventNames.CreateMessageBroker]?: PluginEventType<CreateMessageBrokerParams>;
