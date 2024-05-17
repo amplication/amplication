@@ -19,9 +19,9 @@ In order to publish to npm `@amplication/code-gen-types` run the following:
 # From the monorepo root folder
 npm i
 
-npx nx build amplication-code-gen-types
+npx nx build code-gen-types
 
-cd ./dist/packages/amplication-code-gen-types
+cd ./dist/libs/util/code-gen-types
 
 npm publish --access public ....
 ```
