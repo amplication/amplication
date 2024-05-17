@@ -107,8 +107,12 @@ export interface CreateServerDockerComposeDBParams extends EventParams {
 }
 
 export interface CreateServerCsprojParams extends EventParams {
-  updateProperties: { [key: string]: any }[];
-  outputFileName: string;
+  packageReferences: {
+    include: string;
+    version: string;
+    includeAssets?: string;
+    privateAssets?: string;
+  }[];
 }
 
 export interface CreateMessageBrokerParams extends EventParams {}
