@@ -111,7 +111,6 @@ export interface CreateServerCsprojParams extends EventParams {
   }[];
 }
 export interface CreateServerAppsettingsParams extends EventParams {
-  fileContent: string;
   updateProperties: { [key: string]: any };
 }
 
