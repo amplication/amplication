@@ -15,6 +15,7 @@ import {
   CreateMessageBrokerServiceParams,
   CreateMessageBrokerTopicsEnumParams,
   CreateSeedParams,
+  CreateServerAppsettingsParams,
   CreateServerAuthParams,
   CreateServerCsprojParams,
   CreateServerDockerComposeDevParams,
@@ -42,6 +43,7 @@ export type DotnetEvents = {
     CodeBlock
   >;
   [DotnetEventNames.CreateServerCsproj]?: PluginEventType<CreateServerCsprojParams>;
+  [DotnetEventNames.CreateServerAppsettings]?: PluginEventType<CreateServerAppsettingsParams>;
   [DotnetEventNames.CreateEntityService]?: PluginEventType<CreateEntityServiceParams>;
   [DotnetEventNames.CreateEntityServiceBase]?: PluginEventType<CreateEntityServiceBaseParams>;
   [DotnetEventNames.CreateEntityController]?: PluginEventType<CreateEntityControllerParams>;

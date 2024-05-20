@@ -108,6 +108,7 @@ export enum DotnetEventNames {
   CreateServerDockerComposeDev = "CreateServerDockerComposeDev",
   CreatePrismaSchema = "CreatePrismaSchema",
   CreateServerCsproj = "CreateServerCsproj",
+  CreateServerAppsettings = "CreateServerAppsettings",
   CreateAdminUIPackageJson = "CreateAdminUIPackageJson",
   CreateEntityModule = "CreateEntityModule",
   CreateEntityModuleBase = "CreateEntityModuleBase",

@@ -114,6 +114,10 @@ export interface CreateServerCsprojParams extends EventParams {
     privateAssets?: string;
   }[];
 }
+export interface CreateServerAppsettingsParams extends EventParams {
+  fileContent: string;
+  updateProperties: { [key: string]: any }[];
+}
 
 export interface CreateMessageBrokerParams extends EventParams {}
 
