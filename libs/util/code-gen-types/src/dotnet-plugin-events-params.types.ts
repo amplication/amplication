@@ -86,10 +86,6 @@ export type VariableDictionary = {
   [variable: string]: string;
 }[];
 
-export interface CreateServerDotEnvParams extends EventParams {
-  envVariables: VariableDictionary;
-}
-
 export interface CreateServerGitIgnoreParams extends EventParams {
   gitignorePaths: string[];
 }

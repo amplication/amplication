@@ -93,7 +93,6 @@ export enum DotnetEventNames {
   CreateServer = "CreateServer",
   CreateServerAppModule = "CreateServerAppModule",
   CreateMainFile = "CreateMainFile",
-  CreateServerDotEnv = "CreateServerDotEnv",
   CreateServerGitIgnore = "CreateServerGitIgnore",
   CreateAdminGitIgnore = "CreateAdminGitIgnore",
   CreateMessageBroker = "CreateMessageBroker",
