@@ -37,6 +37,7 @@ import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsE
 import { QueryMode } from "../../enums/QueryMode";
 import { validateCustomActionsEntitlement } from "../block/block.util";
 import { JsonArray } from "type-fest";
+import { PropertyTypeDef } from "./dto/propertyTypes/PropertyTypeDef";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -48,6 +49,11 @@ const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
     },
   ],
 };
+
+const UNSUPPORTED_TYPES = [
+  EnumModuleDtoPropertyType.Null,
+  EnumModuleDtoPropertyType.Undefined,
+];
 
 @Injectable()
 export class ModuleDtoService extends BlockTypeService<
@@ -744,6 +750,12 @@ export class ModuleDtoService extends BlockTypeService<
       }
     }
 
+    await this.validateTypes(
+      dto.resourceId,
+      args.data.propertyTypes,
+      UNSUPPORTED_TYPES
+    );
+
     const existingProperty = dto.properties[existingPropertyIndex];
 
     const newProperty = {
@@ -1160,5 +1172,53 @@ export class ModuleDtoService extends BlockTypeService<
     );
 
     return deleted;
+  }
+
+  async validateTypes(
+    resourceId: string,
+    types: PropertyTypeDef[],
+    unsupportedTypes?: EnumModuleDtoPropertyType[]
+  ): Promise<void> {
+    for (const type of types) {
+      if (!type) {
+        throw new AmplicationError("Type is required");
+      }
+
+      if (!type.type) {
+        throw new AmplicationError("Type is required");
+      }
+
+      if (unsupportedTypes?.includes(type.type as EnumModuleDtoPropertyType)) {
+        throw new AmplicationError(
+          `The type ${type.type} is not supported yet`
+        );
+      }
+
+      if (
+        type.type === EnumModuleDtoPropertyType.Dto ||
+        type.type === EnumModuleDtoPropertyType.Enum
+      ) {
+        if (!type.dtoId) {
+          throw new AmplicationError(
+            `dtoId is required when type is ${type.type}`
+          );
+        }
+
+        const existingDto = await this.availableDtosForResource({
+          where: {
+            resource: {
+              id: resourceId,
+            },
+            id: {
+              equals: type.dtoId,
+            },
+          },
+        });
+
+        if (!existingDto || existingDto.length === 0) {
+          throw new AmplicationError(`Dto with id ${type.dtoId} not found`);
+        }
+      }
+    }
   }
 }

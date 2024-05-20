@@ -73,20 +73,20 @@ export class ModuleService extends BlockTypeService<
       },
     };
 
-    if (user) {
-      const subscription = await this.billingService.getSubscription(
-        user.workspace?.id
-      );
-
-      await this.analytics.trackWithContext({
-        properties: {
-          planType: subscription.subscriptionPlan,
-        },
-        event: EnumEventType.SearchAPIs,
-      });
-    }
-
     return super.findMany(prismaArgs);
+  }
+
+  async findModuleByName(name: string, resourceId: string): Promise<Module[]> {
+    const modules = await this.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+    const lowerName = name.toLowerCase();
+
+    return modules.filter((module) => module.name.toLowerCase() === lowerName);
   }
 
   async create(
@@ -107,6 +107,17 @@ export class ModuleService extends BlockTypeService<
     }
 
     this.validateModuleName(args.data.name);
+
+    const otherModule = await this.findModuleByName(
+      args.data.name,
+      args.data.resource.connect.id
+    );
+
+    if (otherModule.length > 0) {
+      throw new AmplicationError(
+        `Module with name ${args.data.name} already exists in resource ${args.data.resource.connect.id}`
+      );
+    }
 
     if (trackEvent) {
       const subscription = await this.billingService.getSubscription(
@@ -160,6 +171,20 @@ export class ModuleService extends BlockTypeService<
     }
 
     this.validateModuleName(args.data.name);
+
+    const otherModule = await this.findModuleByName(
+      args.data.name,
+      existingModule.resourceId
+    );
+
+    if (
+      otherModule.length > 0 &&
+      otherModule.filter((module) => module.id !== args.where.id).length > 0
+    ) {
+      throw new AmplicationError(
+        `Module with name ${args.data.name} already exists in resource ${existingModule.resourceId}`
+      );
+    }
 
     const subscription = await this.billingService.getSubscription(
       user.workspace?.id

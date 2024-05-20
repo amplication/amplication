@@ -22,6 +22,7 @@ import { PermissionsService } from "../permissions/permissions.service";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { Module } from "../module/dto/Module";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { JsonSchemaValidationModule } from "../../services/jsonSchemaValidation.module";
 
 const EXAMPLE_CHAT_OPENAI_KEY = "EXAMPLE_CHAT_OPENAI_KEY";
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
@@ -129,7 +130,9 @@ const resourceServiceResourcesMock = jest.fn();
 const moduleServiceFindManyMock = jest.fn(() => {
   return [EXAMPLE_MODULE];
 });
-const moduleDtoServiceCreateMock = jest.fn();
+const moduleDtoServiceCreateMock = jest.fn(() => {
+  return { id: "exampleModuleDtoId" };
+});
 const moduleDtoServiceCreateEnumMock = jest.fn();
 const moduleDtoServiceFindManyMock = jest.fn();
 
@@ -155,7 +158,7 @@ describe("AssistantFunctionsService", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [],
+      imports: [JsonSchemaValidationModule],
       providers: [
         AssistantFunctionsService,
 
@@ -464,12 +467,18 @@ describe("AssistantFunctionsService", () => {
         serviceId: "service123",
         actionName: "NewAction",
         actionDescription: "Action Description",
-        gqlOperation: "QUERY",
-        restVerb: "GET",
+        gqlOperation: "Query",
+        restVerb: "Get",
         path: "/new-action",
-        inputType: {},
-        outputType: {},
-        restInputSource: "BODY",
+        inputType: {
+          type: "String",
+          isArray: false,
+        },
+        outputType: {
+          type: "String",
+          isArray: false,
+        },
+        restInputSource: "Body",
         restInputParamsPropertyName: "params",
         restInputBodyPropertyName: "body",
         restInputQueryPropertyName: "query",
@@ -549,6 +558,103 @@ describe("AssistantFunctionsService", () => {
     expect(results).toEqual({
       callId: EXAMPLE_CALL_ID,
       results: "User does not have access to this resource",
+    });
+  });
+
+  it("should return error for one entity, while creating others successfully ", async () => {
+    const EXAMPLE_SERVICE_ID = "exampleServiceId";
+
+    const functionName = EnumAssistantFunctions.CreateEntities;
+    const reservedEntityName = "function";
+    const params = {
+      names: ["entity 1", reservedEntityName, "entity 3"],
+      serviceId: EXAMPLE_SERVICE_ID,
+    };
+
+    const entityResults = {
+      ...EXAMPLE_ENTITY,
+      updatedAt: expect.any(String),
+      createdAt: expect.any(String),
+    };
+
+    const errorMessage = `The name '${reservedEntityName}' is reserved`;
+
+    entityServiceCreateOneEntityMock.mockImplementationOnce(() => {
+      return EXAMPLE_ENTITY;
+    });
+    entityServiceCreateOneEntityMock.mockImplementationOnce(() => {
+      throw new Error(errorMessage);
+    });
+    entityServiceCreateOneEntityMock.mockImplementationOnce(() => {
+      return EXAMPLE_ENTITY;
+    });
+
+    const functionResults = await service.executeFunction(
+      EXAMPLE_CALL_ID,
+      functionName,
+      JSON.stringify(params),
+      EXAMPLE_ASSISTANT_CONTEXT,
+      EXAMPLE_LOGGER_CONTEXT
+    );
+
+    expect(entityServiceCreateOneEntityMock).toHaveBeenCalledTimes(3);
+
+    const executionResults = JSON.parse(functionResults.results);
+
+    expect(executionResults).toEqual(
+      expect.objectContaining({
+        allEntitiesErdViewLink: expect.any(String),
+        allApisLink: expect.any(String),
+        result: [
+          expect.objectContaining({
+            result: expect.objectContaining(entityResults),
+          }),
+          expect.objectContaining({
+            error: errorMessage,
+          }),
+          expect.objectContaining({
+            result: expect.objectContaining(entityResults),
+          }),
+        ],
+      })
+    );
+  });
+
+  it("should return an error if module DTO types are invalid", async () => {
+    const EXAMPLE_SERVICE_ID = "exampleServiceId";
+
+    const functionName = EnumAssistantFunctions.CreateModuleDto;
+
+    const params = {
+      moduleId: EXAMPLE_MODULE_ID,
+      serviceId: EXAMPLE_SERVICE_ID,
+      dtoName: "NewDTO",
+      dtoDescription: "DTO Description",
+      properties: [
+        {
+          name: "property1",
+          propertyTypes: [
+            {
+              type: "InvalidType", //this is an invalid type
+            },
+          ],
+          isOptional: false,
+          isArray: false,
+        },
+      ],
+    };
+
+    const results = await service.executeFunction(
+      EXAMPLE_CALL_ID,
+      functionName,
+      JSON.stringify(params),
+      EXAMPLE_ASSISTANT_CONTEXT,
+      EXAMPLE_LOGGER_CONTEXT
+    );
+
+    expect(results).toEqual({
+      callId: EXAMPLE_CALL_ID,
+      results: expect.stringContaining("Invalid arguments:"),
     });
   });
 });

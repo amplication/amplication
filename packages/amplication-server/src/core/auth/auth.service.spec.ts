@@ -374,20 +374,25 @@ describe("AuthService", () => {
     expect(hashPasswordMock).toHaveBeenCalledTimes(1);
     expect(hashPasswordMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.password);
     expect(createWorkspaceMock).toHaveBeenCalledTimes(1);
-    expect(createWorkspaceMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.id, {
-      data: {
-        name: EXAMPLE_WORKSPACE.name,
-      },
-      include: {
-        users: {
-          include: {
-            account: true,
-            userRoles: true,
-            workspace: true,
+    expect(createWorkspaceMock).toHaveBeenCalledWith(
+      EXAMPLE_ACCOUNT.id,
+      {
+        data: {
+          name: EXAMPLE_WORKSPACE.name,
+        },
+        include: {
+          users: {
+            include: {
+              account: true,
+              userRoles: true,
+              workspace: true,
+            },
           },
         },
       },
-    });
+      undefined,
+      true
+    );
     expect(signMock).toHaveBeenCalledTimes(1);
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,

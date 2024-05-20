@@ -15,13 +15,26 @@ import { AssistantMessageDelta } from "./dto/AssistantMessageDelta";
 import { AssistantThread } from "./dto/AssistantThread";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
+import { EnumAssistantMessageType } from "./dto/EnumAssistantMessageType";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
 export const PLUGIN_LATEST_VERSION_TAG = "latest";
+const THREAD_RUN_COMPLETED = "thread.run.completed";
 
 const STREAM_ERROR_MESSAGE =
   "It looks like we're experiencing a high demand right now, which might be affecting our connection to the AI model. Please give it a little time and try again later. We appreciate your patience and understanding as we work to resolve this. Thank you! 🙏";
+
+const ASSISTANT_INSTRUCTIONS: { [key in EnumAssistantMessageType]: string } = {
+  [EnumAssistantMessageType.Default]: ``,
+  [EnumAssistantMessageType.Onboarding]: `
+  The user is creating a new service and you need to generate everything needed for the service, including entities, fields, relations, apis, and install plugins. 
+  You can suggest names and different configuration as needed. 
+  After you create entities, also create fields and relations for all entities. Aim to create as many fields and relations as needed. 
+  Install any plugins that are needed for the service.
+  Do not ask the user to commit changes before the onboarding is complete.
+  The user is already connected to a demo git repo. After the creation is completed, suggest the user to connect to their own git repo.`,
+};
 
 export type MessageLoggerContext = {
   messageContext: {
@@ -95,7 +108,7 @@ export class AssistantService {
     }
 
     const message: AssistantMessageDelta = {
-      id: "messageId",
+      id: messageId,
       threadId,
       text: textDelta,
       snapshot: snapshot,
@@ -149,7 +162,8 @@ export class AssistantService {
   async processMessageWithStream(
     messageText: string,
     threadId: string,
-    context: AssistantContext
+    context: AssistantContext,
+    messageType?: EnumAssistantMessageType
   ): Promise<AssistantThread> {
     await this.validateAndReportUsage(context);
 
@@ -165,7 +179,10 @@ export class AssistantService {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       assistant_id: this.assistantId,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      additional_instructions: `The following context is available: 
+      additional_instructions: `${
+        messageType && ASSISTANT_INSTRUCTIONS[messageType]
+      }. 
+      The following context is available: 
         ${JSON.stringify(preparedThread.shortContext)}`,
     });
 
@@ -191,8 +208,12 @@ export class AssistantService {
     loggerContext: MessageLoggerContext
   ) {
     const openai = this.openai;
+    let messageId: string | null = null; // Variable to store the message ID
 
     stream
+      .on("messageCreated", async (message) => {
+        messageId = message.id;
+      })
       .on("error", async (error) => {
         this.logger.error(
           `Chat: Stream error: ${error.message}. Error: ${JSON.stringify(
@@ -211,6 +232,15 @@ export class AssistantService {
         );
       })
       .on("event", async (event) => {
+        if (event.event === "thread.run.completed") {
+          await this.onMessageUpdated(
+            threadId,
+            THREAD_RUN_COMPLETED,
+            "",
+            "",
+            true
+          );
+        }
         if (event.event === "thread.run.requires_action") {
           const requiredActions =
             event.data.required_action.submit_tool_outputs.tool_calls;
@@ -267,7 +297,7 @@ export class AssistantService {
       .on("textCreated", async (text) => {
         await this.onMessageUpdated(
           threadId,
-          "",
+          messageId,
           text.value,
           text.value,
           false
@@ -276,14 +306,20 @@ export class AssistantService {
       .on("textDelta", async (textDelta, snapshot) => {
         await this.onMessageUpdated(
           threadId,
-          "",
+          messageId,
           textDelta.value,
           snapshot.value,
           false
         );
       })
       .on("textDone", async (text) => {
-        await this.onMessageUpdated(threadId, "", text.value, text.value, true);
+        await this.onMessageUpdated(
+          threadId,
+          messageId,
+          text.value,
+          text.value,
+          false
+        );
         loggerContext.role = "assistant";
         this.logger.info(`Chat: ${text.value}`, loggerContext);
       });

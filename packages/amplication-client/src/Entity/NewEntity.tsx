@@ -298,8 +298,8 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
                 autoComplete="off"
               />
               <FlexItem
-                direction={EnumFlexDirection.Row}
-                margin={EnumFlexItemMargin.Top}
+                direction={EnumFlexDirection.Column}
+                margin={EnumFlexItemMargin.None}
               >
                 <Button
                   type="submit"
@@ -309,8 +309,8 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
                   Create Entity
                 </Button>
                 <CreateWithJovuButton
-                  message={`Create a new entity ${formik.values.displayName}. Include common fields, and relations to other entities when needed.`}
-                  onClick={handleDismissConfirmationInstall}
+                  message={`Create a new entity ${formik.values.displayName}. Create common fields that should be part of this data model, and create relations to other entities when needed.`}
+                  onCreateWithJovuClicked={onSuccess}
                   disabled={!formik.isValid || loading}
                   eventOriginLocation="New Entity Dialog"
                 />

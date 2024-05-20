@@ -37,6 +37,9 @@ export const defaultTextStart =
 export const defaultTextEnd =
   "today to ensure continued access and discover additional hidden functionalities!";
 
+export const disabledDefaultTextEnd =
+  "today to access it and discover additional hidden functionalities";
+
 type Props = {
   featureName: string;
   icon?: IconType;
@@ -73,8 +76,8 @@ export const FeatureIndicator = ({
   }, [featureName, trackEvent, upgradeCtaVariationData]);
 
   const renderTooltipTextWithUpgradeLink = useMemo(() => {
-    const currentStartText = textStart ?? defaultTextStart;
-    const currentEndText = textEnd ?? defaultTextEnd;
+    const currentStartText = textStart ? textStart : defaultTextStart;
+    const currentEndText = textEnd ? textEnd : defaultTextEnd;
     return (
       <>
         <span>{currentStartText}</span>
