@@ -1,0 +1,22 @@
+{
+  "name": "createEntities",
+  "description": "creates new entities in a service. ",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "names": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "description": "the name of the entity."
+        },
+        "description": "a list of name of the entities to create."
+      },
+      "serviceId": {
+        "type": "string",
+        "description": "the ID of the service in which the entity is created. If there are multiple services available in the context, show the user a list of services to choose from. If there is no service available, do not use projectId instead"
+      }
+    },
+    "required": ["names", "serviceId"]
+  }
+}

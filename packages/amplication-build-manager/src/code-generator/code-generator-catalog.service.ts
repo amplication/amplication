@@ -34,9 +34,11 @@ export class CodeGeneratorService {
   }
 
   async getCodeGeneratorVersion({
+    codeGeneratorFullName,
     codeGeneratorVersion,
     codeGeneratorStrategy,
   }: {
+    codeGeneratorFullName: string;
     codeGeneratorVersion?: string;
     codeGeneratorStrategy?: CodeGeneratorVersionStrategy;
   }): Promise<string | undefined> {
@@ -47,6 +49,7 @@ export class CodeGeneratorService {
       const response = await axios.post(
         `${catalogServiceUrl}api/versions/code-generator-version`,
         {
+          codeGeneratorFullName,
           codeGeneratorVersion,
           codeGeneratorStrategy,
         }

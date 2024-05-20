@@ -95,6 +95,7 @@ const CodeGeneratorVersion = () => {
       },
       variables: {
         getCodeGeneratorVersionInput: {
+          codeGeneratorFullName: "data-service-generator",
           codeGeneratorStrategy: currentResource?.codeGeneratorStrategy,
           codeGeneratorVersion: currentResource?.codeGeneratorVersion,
         },

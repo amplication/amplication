@@ -1,0 +1,14 @@
+{
+  "name": "getProjectServices",
+  "description": "get a list of services in a project",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "projectId": {
+        "type": "string",
+        "description": "The ID of the project"
+      }
+    },
+    "required": ["projectId"]
+  }
+}

@@ -40,7 +40,9 @@ const AssistantMessage = ({ message, onOptionClick }: Props) => {
                   {props.children}
                 </Link>
               ) : (
-                <a href={props.href}>{props.children}</a> // All other links
+                <a href={props.href} target="_blank" rel="noreferrer">
+                  {props.children}
+                </a> // All other links
               );
             },
           }}

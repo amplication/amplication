@@ -1440,6 +1440,7 @@ describe("EntityService", () => {
       )
     ).toEqual({
       dataType: EnumDataType.DateTime,
+      displayName: EXAMPLE_DATE_DISPLAY_NAME,
       name: camelCase(EXAMPLE_DATE_DISPLAY_NAME),
       properties: {
         timeZone: "localTime",
@@ -1463,6 +1464,7 @@ describe("EntityService", () => {
     ).toEqual({
       dataType: EnumDataType.MultiLineText,
       name: camelCase(EXAMPLE_DESCRIPTION_DISPLAY_NAME),
+      displayName: EXAMPLE_DESCRIPTION_DISPLAY_NAME,
       properties: {
         maxLength: 1000,
       },
@@ -1483,6 +1485,7 @@ describe("EntityService", () => {
     ).toEqual({
       dataType: EnumDataType.Email,
       name: camelCase(EXAMPLE_EMAIL_DISPLAY_NAME),
+      displayName: EXAMPLE_EMAIL_DISPLAY_NAME,
       properties: {},
     });
   });
@@ -1501,6 +1504,7 @@ describe("EntityService", () => {
     ).toEqual({
       dataType: EnumDataType.OptionSet,
       name: camelCase(EXAMPLE_STATUS_DISPLAY_NAME),
+      displayName: EXAMPLE_STATUS_DISPLAY_NAME,
       properties: { options: [{ label: "Option 1", value: "Option1" }] },
     });
   });
@@ -1519,6 +1523,7 @@ describe("EntityService", () => {
     ).toEqual({
       dataType: EnumDataType.Boolean,
       name: camelCase(EXAMPLE_BOOLEAN_DISPLAY_NAME),
+      displayName: EXAMPLE_BOOLEAN_DISPLAY_NAME,
       properties: {},
     });
   });
@@ -1545,6 +1550,7 @@ describe("EntityService", () => {
         allowMultipleSelection: false,
       },
       name: camelCase(relatedEntity.displayName),
+      displayName: relatedEntity.displayName,
     });
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFindManyMock).toBeCalledWith({
@@ -1587,6 +1593,7 @@ describe("EntityService", () => {
         allowMultipleSelection: true,
       },
       name: camelCase(query),
+      displayName: query,
     });
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);

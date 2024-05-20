@@ -42,6 +42,28 @@ const mockGraphqlSubscriptionKafkaService = {
   })),
 };
 
+const openAiCreateThreadMock = jest.fn(() => {
+  return {
+    id: "testThread123",
+  };
+});
+const openAiCreateMessageMock = jest.fn(() => {
+  return {
+    id: "message123",
+  };
+});
+
+const openAiMock = jest.fn(() => ({
+  beta: {
+    threads: {
+      create: openAiCreateThreadMock,
+      messages: {
+        create: openAiCreateMessageMock,
+      },
+    },
+  },
+}));
+
 describe("AssistantService", () => {
   let service: AssistantService;
 
@@ -134,7 +156,7 @@ describe("AssistantService", () => {
     expect(pubSubPublishMock).toHaveBeenCalledWith(
       MESSAGE_UPDATED_EVENT,
       JSON.stringify({
-        id: "messageId",
+        id: messageId,
         threadId,
         text: textDelta,
         snapshot,
@@ -154,5 +176,35 @@ describe("AssistantService", () => {
       EXAMPLE_ASSISTANT_CONTEXT.user.workspace.id,
       BillingFeature.JovuRequests
     );
+  });
+
+  it("should prepare Thread with existing thread ID", async () => {
+    Object.defineProperty(service, "openai", {
+      get: openAiMock,
+    });
+
+    const thread = await service.prepareThread(
+      "exampleMessage",
+      "exampleThreadId",
+      EXAMPLE_ASSISTANT_CONTEXT
+    );
+    expect(thread).toBeDefined();
+    expect(openAiCreateThreadMock).toHaveBeenCalledTimes(0);
+    expect(openAiCreateMessageMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("should create and prepare a new thread", async () => {
+    Object.defineProperty(service, "openai", {
+      get: openAiMock,
+    });
+
+    const thread = await service.prepareThread(
+      "exampleMessage",
+      null,
+      EXAMPLE_ASSISTANT_CONTEXT
+    );
+    expect(thread).toBeDefined();
+    expect(openAiCreateThreadMock).toHaveBeenCalledTimes(1);
+    expect(openAiCreateMessageMock).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,5 +1,6 @@
 import { DSGResourceData, ModuleMap } from "@amplication/code-gen-types";
 import normalize from "normalize-path";
+import { name as generatorName } from "../package.json";
 import { createAdminModules } from "./admin/create-admin";
 import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
@@ -16,6 +17,16 @@ export async function createDataService(
   internalLogger: ILogger,
   pluginInstallationPath?: string
 ): Promise<ModuleMap> {
+  const context = DsgContext.getInstance;
+
+  const { GIT_REF_NAME: gitRefName, GIT_SHA: gitSha } = process.env;
+  await context.logger.info(
+    `Running DSG ${generatorName} version: ${gitRefName} <${gitSha?.substring(
+      0,
+      7
+    )}>`
+  );
+
   dSGResourceData.pluginInstallations = prepareDefaultPlugins(
     dSGResourceData.pluginInstallations
   );
@@ -26,7 +37,6 @@ export async function createDataService(
     internalLogger
   );
 
-  const context = DsgContext.getInstance;
   try {
     if (dSGResourceData.resourceType === EnumResourceType.MessageBroker) {
       internalLogger.info("No code to generate for a message broker");
@@ -38,11 +48,6 @@ export async function createDataService(
       dSGResourceData,
       internalLogger,
       pluginInstallationPath
-    );
-
-    const { GIT_REF_NAME: gitRefName, GIT_SHA: gitSha } = process.env;
-    await context.logger.info(
-      `Running DSG version: ${gitRefName} <${gitSha?.substring(0, 6)}>`
     );
 
     await context.logger.info("Creating application...", {
