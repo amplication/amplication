@@ -189,7 +189,8 @@ export class WorkspaceService {
   async createWorkspace(
     accountId: string,
     args: Prisma.WorkspaceCreateArgs,
-    currentWorkspaceId?: string
+    currentWorkspaceId?: string,
+    connectToDemoRepo?: boolean
   ): Promise<Workspace> {
     if (await this.shouldBlockWorkspaceCreation(currentWorkspaceId)) {
       const message = "Your current plan does not allow creating workspaces";
@@ -226,7 +227,7 @@ export class WorkspaceService {
     await this.billingService.provisionCustomer(workspace.id);
 
     const [user] = workspace.users;
-    await this.projectService.createProject(
+    const newProject = await this.projectService.createProject(
       {
         data: {
           name: "Sample Project",
@@ -235,6 +236,10 @@ export class WorkspaceService {
       },
       user.id
     );
+
+    if (connectToDemoRepo) {
+      await this.projectService.createDemoRepo(newProject.id);
+    }
 
     await this.billingService.reportUsage(
       workspace.id,

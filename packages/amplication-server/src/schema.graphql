@@ -703,6 +703,11 @@ enum EnumAssistantMessageRole {
   User
 }
 
+enum EnumAssistantMessageType {
+  Default
+  Onboarding
+}
+
 enum EnumAuthProviderType {
   Auth0
   Http
@@ -1942,6 +1947,7 @@ enum Role {
 
 input SendAssistantMessageInput {
   message: String!
+  messageType: EnumAssistantMessageType
   threadId: String
 }
 

@@ -18,22 +18,6 @@ type Props = {
   buttonStyle?: EnumButtonStyle;
 };
 
-const FORM_SCHEMA = {
-  required: ["displayName"],
-  properties: {
-    displayName: {
-      type: "string",
-      minLength: 2,
-    },
-  },
-};
-
-const INITIAL_VALUES: Partial<models.ModuleAction> = {
-  name: "",
-  displayName: "",
-  description: "",
-};
-
 const NewModuleAction = ({
   resourceId,
   moduleId,
@@ -99,11 +83,9 @@ const NewModuleAction = ({
   return (
     <div>
       {dialogOpen && (
-        <NewModuleChild<models.ModuleAction>
+        <NewModuleChild
           resourceId={resourceId}
           moduleId={moduleId}
-          validationSchema={FORM_SCHEMA}
-          initialValues={INITIAL_VALUES}
           loading={loading}
           errorMessage={errorMessage}
           typeName={"Action"}

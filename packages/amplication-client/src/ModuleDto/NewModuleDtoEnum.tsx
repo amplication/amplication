@@ -17,22 +17,6 @@ type Props = {
   navigateToDtoOnCreate?: boolean;
 };
 
-const FORM_SCHEMA = {
-  required: ["displayName"],
-  properties: {
-    displayName: {
-      type: "string",
-      minLength: 2,
-    },
-  },
-};
-
-const INITIAL_VALUES: Partial<models.ModuleDto> = {
-  name: "",
-  displayName: "",
-  description: "",
-};
-
 const NewModuleDtoEnum = ({
   resourceId,
   moduleId,
@@ -87,6 +71,7 @@ const NewModuleDtoEnum = ({
       history,
       currentWorkspace?.id,
       currentProject?.id,
+      navigateToDtoOnCreate,
     ]
   );
 
@@ -94,11 +79,9 @@ const NewModuleDtoEnum = ({
 
   return (
     <div>
-      <NewModuleChild<models.ModuleDto>
+      <NewModuleChild
         resourceId={resourceId}
         moduleId={moduleId}
-        validationSchema={FORM_SCHEMA}
-        initialValues={INITIAL_VALUES}
         loading={loading}
         errorMessage={errorMessage}
         typeName={"Enum"}

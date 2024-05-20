@@ -532,12 +532,17 @@ export class AuthService {
     name: string,
     account: Account
   ): Promise<Workspace & { users: AuthUser[] }> {
-    const workspace = await this.workspaceService.createWorkspace(account.id, {
-      data: {
-        name,
+    const workspace = await this.workspaceService.createWorkspace(
+      account.id,
+      {
+        data: {
+          name,
+        },
+        include: WORKSPACE_INCLUDE,
       },
-      include: WORKSPACE_INCLUDE,
-    });
+      undefined,
+      true
+    );
 
     return workspace as unknown as Workspace & { users: AuthUser[] };
   }

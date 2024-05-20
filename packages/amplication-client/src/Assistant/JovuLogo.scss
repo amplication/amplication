@@ -3,6 +3,7 @@
 $logo-size-small: 30px;
 $logo-size-medium: 40px;
 $logo-size-large: 50px;
+$logo-size-extra-large: 100px;
 $loader-padding: 4px;
 $animation-duration: 3s;
 
@@ -21,6 +22,11 @@ $animation-duration: 3s;
   &--large {
     width: $logo-size-large;
     height: $logo-size-large;
+  }
+
+  &--extra-large {
+    width: $logo-size-extra-large;
+    height: $logo-size-extra-large;
   }
 
   &__logo-wrapper {

@@ -739,6 +739,11 @@ export enum EnumAssistantMessageRole {
   User = 'User'
 }
 
+export enum EnumAssistantMessageType {
+  Default = 'Default',
+  Onboarding = 'Onboarding'
+}
+
 export enum EnumAuthProviderType {
   Auth0 = 'Auth0',
   Http = 'Http',
@@ -2749,6 +2754,7 @@ export enum Role {
 
 export type SendAssistantMessageInput = {
   message: Scalars['String']['input'];
+  messageType?: InputMaybe<EnumAssistantMessageType>;
   threadId?: InputMaybe<Scalars['String']['input']>;
 };
 

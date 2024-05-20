@@ -17,22 +17,6 @@ type Props = {
   navigateToDtoOnCreate?: boolean;
 };
 
-const FORM_SCHEMA = {
-  required: ["displayName"],
-  properties: {
-    displayName: {
-      type: "string",
-      minLength: 2,
-    },
-  },
-};
-
-const INITIAL_VALUES: Partial<models.ModuleDto> = {
-  name: "",
-  displayName: "",
-  description: "",
-};
-
 const NewModuleDto = ({
   resourceId,
   moduleId,
@@ -88,17 +72,16 @@ const NewModuleDto = ({
       history,
       currentWorkspace?.id,
       currentProject?.id,
+      navigateToDtoOnCreate,
     ]
   );
 
   const errorMessage = formatError(error);
 
   return (
-    <NewModuleChild<models.ModuleDto>
+    <NewModuleChild
       resourceId={resourceId}
       moduleId={moduleId}
-      validationSchema={FORM_SCHEMA}
-      initialValues={INITIAL_VALUES}
       loading={loading}
       errorMessage={errorMessage}
       typeName={"DTO"}

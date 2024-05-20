@@ -36,6 +36,7 @@ export class BuildJobsHandlerService {
     codeGeneratorVersion: string
   ): Promise<ResourceTuple[]> {
     const shouldSplitBuild =
+      codeGeneratorVersion !== "latest-local" &&
       this.codeGeneratorService.compareVersions(
         codeGeneratorVersion,
         this.minDsgVersionToSplitBuild

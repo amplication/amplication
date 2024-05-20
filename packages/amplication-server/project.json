@@ -44,6 +44,14 @@
         "cwd": "packages/amplication-server"
       }
     },
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/core/assistant/functions/types"],
+      "options": {
+        "command": "ts-node ./scripts/generate-assistant-functions-types",
+        "cwd": "packages/amplication-server"
+      }
+    },
     "build": {
       "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],

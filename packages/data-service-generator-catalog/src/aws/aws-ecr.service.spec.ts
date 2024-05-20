@@ -2,11 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AwsEcrService } from "./aws-ecr.service";
 
 import { mockClient } from "aws-sdk-client-mock";
-import {
-  ECRClient,
-  DescribeImagesCommand,
-  ImageDetail,
-} from "@aws-sdk/client-ecr";
+import { ECRClient, DescribeImagesCommand } from "@aws-sdk/client-ecr";
 
 describe("AwsEcrService", () => {
   let service: AwsEcrService;
