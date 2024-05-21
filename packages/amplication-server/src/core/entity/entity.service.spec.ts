@@ -1329,6 +1329,33 @@ describe("EntityService", () => {
       },
     });
   });
+
+  it("should create entity field with a reserved name", async () => {
+    expect(
+      await service.createField(
+        {
+          data: {
+            ...EXAMPLE_ENTITY_FIELD_DATA,
+            name: RESERVED_NAME,
+            entity: { connect: { id: EXAMPLE_ENTITY_ID } },
+          },
+        },
+        EXAMPLE_USER
+      )
+    ).toEqual(EXAMPLE_ENTITY_FIELD);
+    expect(prismaEntityFieldCreateMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldCreateMock).toBeCalledWith({
+      data: {
+        ...EXAMPLE_ENTITY_FIELD_DATA,
+        name: `${RESERVED_NAME}Field`,
+        permanentId: expect.any(String),
+      },
+      include: {
+        entityVersion: true,
+      },
+    });
+  });
+
   it("should fail to create entity field with bad name", async () => {
     await expect(
       service.createField(
@@ -1697,7 +1724,7 @@ describe("EntityService", () => {
     expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(false);
     expect(areDifferentMock).not.toBeCalled();
   });
-  it("should fail to create one entity with a reserved name", async () => {
+  it("should create one entity with a reserved name", async () => {
     const createArgs = {
       args: {
         data: {
@@ -1719,8 +1746,56 @@ describe("EntityService", () => {
       };
     });
 
+    const fixedName = `${RESERVED_NAME}Model`;
+
+    const newEntityArgs = {
+      data: {
+        ...createArgs.args.data,
+        name: fixedName,
+        lockedAt: expect.any(Date),
+        lockedByUser: {
+          connect: {
+            id: createArgs.user.id,
+          },
+        },
+        versions: {
+          create: {
+            commit: undefined,
+            versionNumber: CURRENT_VERSION_NUMBER,
+            name: fixedName,
+            displayName: createArgs.args.data.displayName,
+            pluralDisplayName: createArgs.args.data.pluralDisplayName,
+            customAttributes: createArgs.args.data.customAttributes,
+            description: createArgs.args.data.description,
+            permissions: {
+              create: DEFAULT_PERMISSIONS,
+            },
+          },
+        },
+      },
+    };
+
+    await service.createOneEntity(createArgs.args, createArgs.user);
+
+    expect(prismaEntityCreateMock).toBeCalledWith(newEntityArgs);
+  });
+  it("should fail to update one entity with a reserved name", async () => {
+    const updateArgs = {
+      args: {
+        where: { id: EXAMPLE_ENTITY_ID },
+        data: {
+          name: RESERVED_NAME,
+          displayName: EXAMPLE_ENTITY.displayName,
+          pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
+          description: EXAMPLE_ENTITY.description,
+        },
+      },
+      user: EXAMPLE_USER,
+    };
+
     await expect(
-      service.createOneEntity(createArgs.args, createArgs.user)
+      service.updateOneEntity(updateArgs.args, updateArgs.user)
     ).rejects.toThrow(new ReservedNameError(RESERVED_NAME));
   });
   it("should send unreserved name to a function that checks if its a reserved name", async () => {
