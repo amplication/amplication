@@ -15,11 +15,11 @@ import {
   CreateMessageBrokerServiceParams,
   CreateMessageBrokerTopicsEnumParams,
   CreateSeedParams,
+  CreateServerAppsettingsParams,
   CreateServerAuthParams,
   CreateServerCsprojParams,
   CreateServerDockerComposeDevParams,
   CreateServerDockerComposeParams,
-  CreateServerDotEnvParams,
   CreateServerGitIgnoreParams,
   CreateServerParams,
   CreateServerSecretsManagerParams,
@@ -32,16 +32,18 @@ import { CodeBlock, Interface } from "@amplication/csharp-ast";
 export type DotnetEvents = {
   [DotnetEventNames.CreateServerAuth]?: PluginEventType<CreateServerAuthParams>;
   [DotnetEventNames.CreateServer]?: PluginEventType<CreateServerParams>;
-  [DotnetEventNames.CreateServerDotEnv]?: PluginEventType<
-    CreateServerDotEnvParams,
-    CodeBlock
-  >;
-
   [DotnetEventNames.CreateServerGitIgnore]?: PluginEventType<
     CreateServerGitIgnoreParams,
     CodeBlock
   >;
-  [DotnetEventNames.CreateServerCsproj]?: PluginEventType<CreateServerCsprojParams>;
+  [DotnetEventNames.CreateServerCsproj]?: PluginEventType<
+    CreateServerCsprojParams,
+    CodeBlock
+  >;
+  [DotnetEventNames.CreateServerAppsettings]?: PluginEventType<
+    CreateServerAppsettingsParams,
+    CodeBlock
+  >;
   [DotnetEventNames.CreateEntityService]?: PluginEventType<CreateEntityServiceParams>;
   [DotnetEventNames.CreateEntityServiceBase]?: PluginEventType<CreateEntityServiceBaseParams>;
   [DotnetEventNames.CreateEntityController]?: PluginEventType<CreateEntityControllerParams>;
