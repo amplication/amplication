@@ -505,6 +505,7 @@ export class PrismaSchemaParserService {
           mapper.fieldNames = {
             ...mapper.fieldNames,
             [originalModelName]: {
+              ...(mapper.fieldNames[originalModelName] ?? {}),
               [field.name]: {
                 originalName: field.name,
                 newName: newFieldName,
@@ -689,9 +690,6 @@ export class PrismaSchemaParserService {
 
     models.forEach((model: Model) => {
       builder.model(model.name).then<Model>((modelItem) => {
-        const modelFields = modelItem.properties.filter(
-          (prop) => prop.type === FIELD_TYPE_NAME
-        ) as Field[];
         const modelAttributes = modelItem.properties.filter(
           (prop) =>
             prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
@@ -766,15 +764,14 @@ export class PrismaSchemaParserService {
                     attrArgArr[index] = newIdFieldName;
                   }
 
-                  modelFields.forEach((field) => {
-                    // check that we are at the right field
-                    if (formatFieldName(field.name) === formatFieldName(arg)) {
-                      // if the field was formatted, we format the arg, otherwise we leave it as it is
-                      if (field.name !== arg) {
-                        attrArgArr[index] = field.name;
-                      }
-                    }
-                  });
+                  // check if a field (regular, not id) name was changed and if so, change the arg to the new field name
+                  const newFieldName = mapper.fieldNames[originalModelName]
+                    ? mapper.fieldNames[originalModelName][arg]?.newName
+                    : undefined;
+
+                  if (newFieldName && newFieldName === formatFieldName(arg)) {
+                    attrArgArr[index] = newFieldName;
+                  }
                 }
               }
             }
