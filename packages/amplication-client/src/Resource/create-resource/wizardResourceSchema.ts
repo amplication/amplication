@@ -1,3 +1,4 @@
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { sampleServiceResourceWithEntities } from "../constants";
 import { EnumTemplateType } from "./wizard-pages/interfaces";
 
@@ -173,13 +174,13 @@ export const templateMapping: { [key: string]: TemplateSettings } = {
   [EnumTemplateType.empty]: {
     type: EnumTemplateType.empty,
     description: "",
-    eventName: "createResourceFromScratch",
+    eventName: AnalyticsEventNames.ResourceFromScratchCreate,
     entities: [],
   },
   [EnumTemplateType.orderManagement]: {
     type: EnumTemplateType.orderManagement,
     description: "Sample service for e-commerce",
-    eventName: "createResourceFromSample",
+    eventName: AnalyticsEventNames.ResourceFromSampleCreate,
     entities: sampleServiceResourceWithEntities,
   },
 };
