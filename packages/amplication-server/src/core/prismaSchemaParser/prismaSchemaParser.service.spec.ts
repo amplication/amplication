@@ -2107,9 +2107,9 @@ describe("prismaSchemaParser", () => {
           }
           
           model Doctor {
-            id          String     @id @default(cuid())
-            first_name   String    
-            license_id     Int
+            id            String     @id @default(cuid())
+            first_name    String    
+            license_id    Int
           
             @@index([first_name, license_id], map: "doctor_first_name_license_id_unique")
           }`;
@@ -2144,6 +2144,92 @@ describe("prismaSchemaParser", () => {
                     idType: "CUID",
                   },
                   customAttributes: "",
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "firstName",
+                  displayName: "First Name",
+                  dataType: EnumDataType.SingleLineText,
+                  required: true,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    maxLength: 256,
+                  },
+                  customAttributes: '@map("first_name")',
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "licenseId",
+                  displayName: "License Id",
+                  dataType: EnumDataType.WholeNumber,
+                  required: true,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    databaseFieldType: "INT",
+                    maximumValue: 99999999999,
+                    minimumValue: 0,
+                  },
+                  customAttributes: '@map("license_id")',
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
+
+        it("should use the right id field name on the @@index model attribute", async () => {
+          // arrange
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Doctor {
+            doctor_id       String     @id @default(cuid())
+            first_name      String    
+            license_id      Int
+          
+            @@index([doctor_id, license_id], map: "doctor_id_license_id_unique")
+          }`;
+          const existingEntities: ExistingEntitySelect[] = [];
+          // act
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+          // assert
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Doctor",
+              displayName: "Doctor",
+              pluralDisplayName: "Doctors",
+              description: "",
+              customAttributes:
+                '@@index([id, licenseId], map: "doctor_id_license_id_unique")',
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "ID",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: true,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: `@map("doctor_id")`,
                 },
                 {
                   permanentId: expect.any(String),

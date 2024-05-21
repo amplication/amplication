@@ -65,6 +65,7 @@
     "util": "0.12.5",
     "validator": "13.11.0",
     "winston": "3.8.2",
-    "yaml": "2.2.2"
+    "yaml": "2.2.2",
+    "@amplication/csharp-ast": "^0.0.1"
   }
 }
