@@ -154,6 +154,11 @@ export interface CreateServerSecretsManagerParams extends EventParams {
    */
   secretsNameKey: SecretsNameKey[];
 }
+export interface CreateEntityExtensionsParams extends EventParams {
+  entity: Entity;
+  resourceName: string;
+  apisDir: string;
+}
 
 export interface SecretsNameKey {
   name: string;
