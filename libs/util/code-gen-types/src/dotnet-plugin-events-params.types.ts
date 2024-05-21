@@ -86,10 +86,6 @@ export type VariableDictionary = {
   [variable: string]: string;
 }[];
 
-export interface CreateServerDotEnvParams extends EventParams {
-  envVariables: VariableDictionary;
-}
-
 export interface CreateServerGitIgnoreParams extends EventParams {
   gitignorePaths: string[];
 }
@@ -113,6 +109,9 @@ export interface CreateServerCsprojParams extends EventParams {
     includeAssets?: string;
     privateAssets?: string;
   }[];
+}
+export interface CreateServerAppsettingsParams extends EventParams {
+  updateProperties: { [key: string]: any };
 }
 
 export interface CreateMessageBrokerParams extends EventParams {}
