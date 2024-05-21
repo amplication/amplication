@@ -9,12 +9,12 @@ import {
   CreateEntityInterfaceParams,
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
-  CreateMainFileParams,
   CreateMessageBrokerClientOptionsFactoryParams,
   CreateMessageBrokerParams,
   CreateMessageBrokerServiceBaseParams,
   CreateMessageBrokerServiceParams,
   CreateMessageBrokerTopicsEnumParams,
+  CreateProgramFileParams,
   CreateSeedParams,
   CreateServerAppsettingsParams,
   CreateServerAuthParams,
@@ -64,7 +64,10 @@ export type DotnetEvents = {
   [DotnetEventNames.CreateMessageBrokerClientOptionsFactory]?: PluginEventType<CreateMessageBrokerClientOptionsFactoryParams>;
   [DotnetEventNames.CreateMessageBrokerService]?: PluginEventType<CreateMessageBrokerServiceParams>;
   [DotnetEventNames.CreateMessageBrokerServiceBase]?: PluginEventType<CreateMessageBrokerServiceBaseParams>;
-  [DotnetEventNames.CreateMainFile]?: PluginEventType<CreateMainFileParams>;
+  [DotnetEventNames.CreateProgramFile]?: PluginEventType<
+    CreateProgramFileParams,
+    CodeBlock
+  >;
   [DotnetEventNames.CreateSwagger]?: PluginEventType<CreateSwaggerParams>;
   [DotnetEventNames.CreateSeed]?: PluginEventType<CreateSeedParams>;
   [DotnetEventNames.CreateEntityControllerToManyRelationMethods]?: PluginEventType<CreateEntityControllerToManyRelationMethodsParams>;

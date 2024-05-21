@@ -124,7 +124,7 @@ export interface CreateMessageBrokerClientOptionsFactoryParams
 export interface CreateMessageBrokerServiceParams extends EventParams {}
 export interface CreateMessageBrokerServiceBaseParams extends EventParams {}
 
-export interface CreateMainFileParams extends EventParams {}
+export interface CreateProgramFileParams extends EventParams {}
 
 export interface CreateSwaggerParams extends EventParams {
   fileDir: string;
