@@ -3,6 +3,7 @@ import {
   CreateEntityControllerBaseParams,
   CreateEntityControllerParams,
   CreateEntityControllerToManyRelationMethodsParams,
+  CreateEntityExtensionsParams,
   CreateEntityGrpcControllerBaseParams,
   CreateEntityGrpcControllerParams,
   CreateEntityInterfaceParams,
@@ -74,4 +75,5 @@ export type DotnetEvents = {
     CreateEntityInterfaceParams,
     Interface
   >;
+  [DotnetEventNames.CreateEntityExtensions]?: PluginEventType<CreateEntityExtensionsParams>;
 };
