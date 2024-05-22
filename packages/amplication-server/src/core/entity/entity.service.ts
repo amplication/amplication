@@ -299,7 +299,7 @@ export class EntityService {
       enforceValidation &&
       isReservedName(args.data?.name?.toLowerCase().trim())
     ) {
-      throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
+      args.data.name = `${args.data?.name}Model`;
     }
 
     const newEntity = await this.prisma.entity.create({
@@ -2511,7 +2511,7 @@ export class EntityService {
       enforceValidation &&
       isReservedName(args.data?.name?.toLowerCase().trim())
     ) {
-      throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
+      args.data.name = `${args.data?.name}Field`;
     }
 
     // Omit entity from received data
