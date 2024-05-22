@@ -12,7 +12,6 @@ export interface CreateEntityServiceBaseParams extends EventParams {
   entity: Entity;
   resourceName: string;
   apisDir: string;
-  moduleContainers: ModuleContainer[];
   moduleActions: ModuleAction[];
   entities: Entity[];
 }
@@ -53,8 +52,8 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   entity: Entity;
   resourceName: string;
   apisDir: string;
-  moduleContainers: ModuleContainer[];
-  entityActions: entityActions;
+  moduleActions: ModuleAction[];
+  entities: Entity[];
 }
 
 export interface CreateEntityGrpcControllerParams extends EventParams {
