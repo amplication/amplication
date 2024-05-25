@@ -1,0 +1,18 @@
+@import "../../style/index.scss";
+
+$height: 160px;
+$width: 300px;
+
+.amp-jumbo-button {
+  align-items: center;
+  border: 1px solid var(--gray-70);
+  border-radius: var(--default-border-radius);
+  display: flex;
+  flex-direction: column;
+  gap: var(--default-spacing);
+  height: $height;
+  width: $width;
+  justify-content: center;
+  padding: var(--double-spacing);
+  box-sizing: border-box;
+}

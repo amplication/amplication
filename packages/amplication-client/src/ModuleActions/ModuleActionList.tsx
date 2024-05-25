@@ -5,48 +5,49 @@ import {
   EnumListStyle,
   EnumTextColor,
   EnumTextStyle,
+  EnumTextWeight,
+  EnumToggleStyle,
   FlexItem,
   List,
+  ListItem,
   Text,
   Toggle,
 } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect, useState } from "react";
 import useModule from "../Modules/hooks/useModule";
 import * as models from "../models";
-import { formatError } from "../util/error";
 import { ModuleActionListItem } from "./ModuleActionListItem";
 import useModuleAction from "./hooks/useModuleAction";
-import "./ToggleModule.scss";
 
 const DATE_CREATED_FIELD = "createdAt";
 
 type Props = {
-  moduleId: string;
-  resourceId: string;
+  module: models.Module;
   displayMode: EnumApiOperationTagStyle;
   searchPhrase: string;
+  disabled?: boolean;
 };
 const ModuleActionList = React.memo(
-  ({ moduleId, resourceId, displayMode, searchPhrase }: Props) => {
-    const [error, setError] = useState<Error>();
-
+  ({ module, displayMode, searchPhrase, disabled }: Props) => {
     const {
       findModuleActions,
       findModuleActionsData: data,
-      findModuleActionsError: errorLoading,
       findModuleActionsLoading: loading,
     } = useModuleAction();
 
-    const { getModuleData: moduleData, updateModule } = useModule(moduleId);
+    const moduleId = module.id;
+    const resourceId = module.resourceId;
+
+    const { updateModule } = useModule(moduleId);
 
     const [enabledActions, setEnabledActions] = useState<boolean>(
-      moduleData?.Module?.enabled || null
+      module?.enabled || null
     );
 
     useEffect(() => {
-      if (!moduleData) return;
-      setEnabledActions(moduleData.Module.enabled);
-    }, [moduleData, moduleData?.Module?.enabled]);
+      if (!module) return;
+      setEnabledActions(module.enabled);
+    }, [module]);
 
     const onEnableChanged = useCallback(
       (value: boolean) => {
@@ -56,15 +57,12 @@ const ModuleActionList = React.memo(
               id: moduleId,
             },
             data: {
-              description: moduleData.Module.description,
-              displayName: moduleData.Module.description,
-              name: moduleData.Module.name,
               enabled: value,
             },
           },
         }).catch(console.error);
       },
-      [moduleId, moduleData, updateModule]
+      [moduleId, updateModule]
     );
 
     useEffect(() => {
@@ -86,51 +84,55 @@ const ModuleActionList = React.memo(
           },
         },
       });
-    }, [moduleId, searchPhrase, findModuleActions]);
-
-    const errorMessage =
-      formatError(errorLoading) || (error && formatError(error));
+    }, [moduleId, searchPhrase, findModuleActions, resourceId]);
 
     return (
       <>
-        {loading && <CircularProgress centerToParent />}
         <List
-          listStyle={EnumListStyle.Dark}
-          collapsible
+          listStyle={EnumListStyle.Default}
           headerContent={
             <FlexItem
               itemsAlign={EnumItemsAlign.Center}
               start={
-                <div className="module-toggle-field">
-                  <Toggle
-                    name={"enabled"}
-                    onValueChange={onEnableChanged}
-                    checked={enabledActions}
-                  ></Toggle>
-                </div>
+                <Toggle
+                  toggleStyle={EnumToggleStyle.Green}
+                  name={"enabled"}
+                  onValueChange={onEnableChanged}
+                  checked={enabledActions}
+                  disabled={disabled}
+                ></Toggle>
               }
             >
               <Text
                 textStyle={EnumTextStyle.Normal}
                 textColor={EnumTextColor.White}
               >
-                {moduleData?.Module.name}
-              </Text>
-              <Text textStyle={EnumTextStyle.Description}>
-                {moduleData?.Module.description}
+                All actions in module {module.name}
               </Text>
             </FlexItem>
           }
         >
-          {data?.ModuleActions?.map((action) => (
-            <ModuleActionListItem
-              key={action.id}
-              module={moduleData?.Module}
-              moduleAction={action}
-              tagStyle={displayMode}
-              disabled={!enabledActions}
-            />
-          ))}
+          {data?.moduleActions?.length ? (
+            data?.moduleActions?.map((action) => (
+              <ModuleActionListItem
+                key={action.id}
+                module={module}
+                moduleAction={action}
+                tagStyle={displayMode}
+                disabled={disabled || !enabledActions}
+              />
+            ))
+          ) : (
+            <ListItem>
+              {loading ? (
+                <CircularProgress centerToParent />
+              ) : (
+                <Text textStyle={EnumTextStyle.Description}>
+                  No actions found
+                </Text>
+              )}
+            </ListItem>
+          )}
         </List>
       </>
     );

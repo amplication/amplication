@@ -62,12 +62,6 @@
           "vendorChunk": true
         },
         "sandbox": {
-          "fileReplacements": [
-            {
-              "replace": "packages/amplication-client/src/environments/environment.ts",
-              "with": "packages/amplication-client/src/environments/environment.sandbox.ts"
-            }
-          ],
           "optimization": true,
           "outputHashing": "all",
           "sourceMap": false,
@@ -76,12 +70,6 @@
           "vendorChunk": true
         },
         "staging": {
-          "fileReplacements": [
-            {
-              "replace": "packages/amplication-client/src/environments/environment.ts",
-              "with": "packages/amplication-client/src/environments/environment.staging.ts"
-            }
-          ],
           "optimization": true,
           "outputHashing": "all",
           "sourceMap": false,
@@ -90,12 +78,6 @@
           "vendorChunk": true
         },
         "production": {
-          "fileReplacements": [
-            {
-              "replace": "packages/amplication-client/src/environments/environment.ts",
-              "with": "packages/amplication-client/src/environments/environment.production.ts"
-            }
-          ],
           "optimization": true,
           "outputHashing": "all",
           "sourceMap": false,
@@ -119,6 +101,9 @@
         "development": {
           "buildTarget": "amplication-client:build:development"
         },
+        "sandbox": {
+          "buildTarget": "amplication-client:build:sandbox"
+        },
         "production": {
           "buildTarget": "amplication-client:build:production",
           "hmr": false
@@ -138,19 +123,6 @@
       "options": {
         "jestConfig": "packages/amplication-client/jest.config.ts",
         "passWithNoTests": true
-      }
-    },
-    "package:container": {
-      "executor": "@nx-tools/nx-container:build",
-      "options": {
-        "push": false,
-        "tags": ["amplication/client:latest"],
-        "build-args": []
-      },
-      "configurations": {
-        "production": {
-          "build-args": []
-        }
       }
     },
     "deploy:static": {

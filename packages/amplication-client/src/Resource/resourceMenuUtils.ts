@@ -1,5 +1,5 @@
+import { BillingFeature } from "@amplication/util-billing-types";
 import { EnumResourceType } from "../models";
-import { BillingFeature } from "../util/BillingFeature";
 
 export type MenuItemLinks =
   | "entities"
@@ -83,9 +83,9 @@ export const linksMap: {
     to: "/pending-changes",
   },
   modules: {
-    title: "Modules",
+    title: "APIs",
     icon: "box",
-    to: "/modules/all",
+    to: "/modules",
     license: BillingFeature.CustomActions,
   },
 };

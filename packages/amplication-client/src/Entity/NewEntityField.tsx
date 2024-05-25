@@ -8,6 +8,10 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import "./NewEntityField.scss";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 
 type Props = {
   entity: models.Entity;
@@ -118,14 +122,18 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
               hideLabel
               className={`${CLASS_NAME}__add-field__text`}
             />
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              icon="plus"
-              className={classNames(`${CLASS_NAME}__add-field__button`, {
-                [`${CLASS_NAME}__add-field__button--show`]:
-                  formik.values.displayName.length > 0,
-              })}
-            />
+            <LicenseIndicatorContainer
+              licensedResourceType={LicensedResourceType.Service}
+            >
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                icon="plus"
+                className={classNames(`${CLASS_NAME}__add-field__button`, {
+                  [`${CLASS_NAME}__add-field__button--show`]:
+                    formik.values.displayName.length > 0,
+                })}
+              />
+            </LicenseIndicatorContainer>
           </Form>
         )}
       </Formik>

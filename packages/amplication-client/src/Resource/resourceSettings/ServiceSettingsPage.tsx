@@ -1,9 +1,8 @@
 import React, { useContext, useEffect } from "react";
 import { AppContext } from "../../context/appContext";
 import InnerTabLink from "../../Layout/InnerTabLink";
-import { BillingFeature } from "../../util/BillingFeature";
-import { useStiggContext } from "@stigg/react-sdk";
 import { useHistory } from "react-router-dom";
+import { EnumResourceType } from "../../models";
 
 const CLASS_NAME = "service-settings";
 
@@ -11,11 +10,6 @@ const CLASS_NAME = "service-settings";
 const ServiceSettingsPage: React.FC<{}> = () => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
-
-  const { stigg } = useStiggContext();
-  const showCodeGeneratorVersion = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.ShowCodeGeneratorVersion,
-  }).hasAccess;
 
   const history = useHistory();
   const location = history.location;
@@ -39,31 +33,33 @@ const ServiceSettingsPage: React.FC<{}> = () => {
       >
         General
       </InnerTabLink>
-      <InnerTabLink
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/generationSettings`}
-        icon="api"
-      >
-        APIs & Admin UI
-      </InnerTabLink>
-      <InnerTabLink
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/directories`}
-        icon="folder"
-      >
-        Base Directories
-      </InnerTabLink>
-      <InnerTabLink
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/authentication`}
-        icon="unlock"
-      >
-        Authentication Entity
-      </InnerTabLink>
-      {showCodeGeneratorVersion && (
-        <InnerTabLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/code-generator-version`}
-          icon="code"
-        >
-          Code Generator Version
-        </InnerTabLink>
+      {currentResource.resourceType != EnumResourceType.MessageBroker && (
+        <>
+          <InnerTabLink
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/generationSettings`}
+            icon="api"
+          >
+            APIs & Admin UI
+          </InnerTabLink>
+          <InnerTabLink
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/directories`}
+            icon="folder"
+          >
+            Base Directories
+          </InnerTabLink>
+          <InnerTabLink
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/authentication`}
+            icon="unlock"
+          >
+            Authentication Entity
+          </InnerTabLink>
+          <InnerTabLink
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/code-generator-version`}
+            icon="code"
+          >
+            Code Generator Version
+          </InnerTabLink>
+        </>
       )}
     </div>
   );

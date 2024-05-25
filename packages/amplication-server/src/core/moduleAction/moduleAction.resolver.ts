@@ -15,7 +15,7 @@ import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 @UseGuards(GqlAuthGuard)
 export class ModuleActionResolver extends BlockTypeResolver(
   ModuleAction,
-  "ModuleActions",
+  "moduleActions",
   FindManyModuleActionArgs,
   "createModuleAction",
   CreateModuleActionArgs,

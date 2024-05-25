@@ -6,6 +6,9 @@ import { PermissionsModule } from "../permissions/permissions.module";
 import { PrismaModule } from "../../prisma";
 import { UserModule } from "../user/user.module";
 import { ModuleActionModule } from "../moduleAction/moduleAction.module";
+import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
+import { BillingService } from "../billing/billing.service";
+import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
 @Module({
   imports: [
     UserModule,
@@ -13,8 +16,10 @@ import { ModuleActionModule } from "../moduleAction/moduleAction.module";
     PermissionsModule,
     PrismaModule,
     ModuleActionModule,
+    ModuleDtoModule,
+    SegmentAnalyticsModule,
   ],
-  providers: [ModuleService, ModuleResolver],
+  providers: [ModuleService, BillingService, ModuleResolver],
   exports: [ModuleService, ModuleResolver],
 })
 export class ModuleModule {}

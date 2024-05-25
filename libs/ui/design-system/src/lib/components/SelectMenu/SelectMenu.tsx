@@ -1,35 +1,41 @@
-import React, { useCallback, useContext } from "react";
+import React, { ReactNode, useCallback, useContext } from "react";
 
-import { SelectMenu as PrimerSelectMenu } from "@primer/react/deprecated";
 import type {
-  SelectMenuProps,
-  SelectMenuModalProps as PrimerSelectMenuModalProps,
   SelectMenuItemProps as PrimerSelectMenuItemProps,
   SelectMenuListProps as PrimerSelectMenuListProps,
+  SelectMenuModalProps as PrimerSelectMenuModalProps,
+  SelectMenuProps,
 } from "@primer/react/deprecated";
+import { SelectMenu as PrimerSelectMenu } from "@primer/react/deprecated";
 
 import classNames from "classnames";
 import SearchField, {
   Props as SearchFieldProps,
 } from "../SearchField/SearchField";
 
-import { Button, EnumButtonStyle } from "../Button/Button";
+import { Button, EnumButtonStyle, EnumIconPosition } from "../Button/Button";
 
 import "./SelectMenu.scss";
+import { Label } from "../Label/Label";
 
 export interface Props extends Omit<SelectMenuProps, "title"> {
   buttonStyle?: EnumButtonStyle;
+  buttonIconPosition?: EnumIconPosition;
   disabled?: boolean;
   title: string | React.ReactNode;
   icon?: string;
   openIcon?: string;
   buttonClassName?: string;
   selectRef?: React.Ref<HTMLDetailsElement> | undefined;
+  hideSelectedItemsIndication?: boolean;
+  buttonAsTextBox?: boolean;
+  buttonAsTextBoxLabel?: string;
 }
 
 const SelectButton: React.FC<Props> = ({
   disabled,
   buttonStyle,
+  buttonIconPosition = EnumIconPosition.Right,
   title,
   icon,
   openIcon,
@@ -42,11 +48,32 @@ const SelectButton: React.FC<Props> = ({
       {...(disabled ? { disabled } : { as: "summary" })}
       className={className}
       buttonStyle={buttonStyle}
+      iconPosition={buttonIconPosition}
       icon={openIcon ? ((menuContext as any).open ? openIcon : icon) : icon}
       iconSize={"xsmall"}
     >
       {title}
     </Button>
+  );
+};
+
+type SelectTextboxProps = {
+  title: string | React.ReactNode;
+  buttonClassName?: string;
+  label?: string;
+};
+
+const SelectTextbox: React.FC<SelectTextboxProps> = ({
+  title,
+  buttonClassName,
+  label,
+}) => {
+  const className = `select-menu__summary text-input  ${buttonClassName}`;
+  return (
+    <summary className={className}>
+      <Label className="select-menu__textbox-label" text={label || ""} />
+      <span className="select-menu__textbox">{title}</span>
+    </summary>
   );
 };
 
@@ -60,6 +87,10 @@ export const SelectMenu = ({
   icon,
   openIcon,
   selectRef,
+  hideSelectedItemsIndication = false,
+  buttonIconPosition = EnumIconPosition.Right,
+  buttonAsTextBox = false,
+  buttonAsTextBoxLabel,
   ...rest
 }: Props) => {
   if (disabled) {
@@ -67,6 +98,7 @@ export const SelectMenu = ({
       <div className={classNames("select-menu", className)}>
         <SelectButton
           disabled={disabled}
+          buttonIconPosition={buttonIconPosition}
           buttonStyle={buttonStyle}
           buttonClassName={buttonClassName}
           icon={icon}
@@ -78,34 +110,65 @@ export const SelectMenu = ({
   } else
     return (
       <PrimerSelectMenu
-        className={classNames("select-menu", className)}
+        className={classNames("select-menu", className, {
+          "select-menu--hide-selected-item-indication":
+            hideSelectedItemsIndication,
+        })}
         {...(selectRef ? { ref: selectRef } : {})}
         {...rest}
       >
-        <SelectButton
-          disabled={disabled}
-          buttonStyle={buttonStyle}
-          buttonClassName={buttonClassName}
-          icon={icon}
-          openIcon={openIcon}
-          title={title}
-        />
-        {children}
+        {buttonAsTextBox ? (
+          <SelectTextbox
+            buttonClassName={buttonClassName}
+            title={title}
+            label={buttonAsTextBoxLabel}
+          />
+        ) : (
+          <SelectButton
+            disabled={disabled}
+            buttonStyle={buttonStyle}
+            buttonIconPosition={buttonIconPosition}
+            buttonClassName={buttonClassName}
+            icon={icon}
+            openIcon={openIcon}
+            title={title}
+          />
+        )}
+
+        <SelectMenuChildren>{children}</SelectMenuChildren>
       </PrimerSelectMenu>
     );
 };
 
-export type SelectMenuModalProps = PrimerSelectMenuModalProps;
+type SelectMenuChildrenProps = {
+  children: React.ReactNode;
+};
 
-export const SelectMenuModal: React.FC<SelectMenuModalProps> = (props) => {
+export const SelectMenuChildren = ({ children }: SelectMenuChildrenProps) => {
+  const menuContext = useContext(PrimerSelectMenu.MenuContext);
+  const isOpen = menuContext.open;
+
+  return <>{isOpen && children}</>;
+};
+
+export type SelectMenuModalProps = PrimerSelectMenuModalProps & {
+  withCaret?: boolean;
+};
+
+export const SelectMenuModal: React.FC<SelectMenuModalProps> = ({
+  withCaret = false,
+  ...rest
+}: SelectMenuModalProps) => {
   return (
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     <PrimerSelectMenu.Modal
-      className={classNames("select-menu__modal", props.className)}
-      {...props}
+      className={classNames("select-menu__modal", rest.className, {
+        "select-menu__modal--with-caret": withCaret,
+      })}
+      {...rest}
     >
-      {props.children}
+      {rest.children}
     </PrimerSelectMenu.Modal>
   );
 };

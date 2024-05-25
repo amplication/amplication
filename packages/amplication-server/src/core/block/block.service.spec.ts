@@ -28,6 +28,7 @@ const EXAMPLE_RESOURCE: Resource = {
   name: "Example Resource",
   description: "Example Resource Description",
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const EXAMPLE_USER: User = {
@@ -39,6 +40,7 @@ const EXAMPLE_USER: User = {
     createdAt: new Date(),
     updatedAt: new Date(),
     name: "example_workspace_name",
+    allowLLMFeatures: true,
   },
   isOwner: true,
 };

@@ -2,7 +2,7 @@ import {
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
   EnumResourceType,
-} from "@amplication/code-gen-types/models";
+} from "@amplication/code-gen-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   ApolloDriver,
@@ -101,6 +101,7 @@ const EXAMPLE_RESOURCE: Resource = {
   builds: [EXAMPLE_BUILD],
   environments: [EXAMPLE_ENVIRONMENT],
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const EXAMPLE_PENDING_CHANGE: PendingChange = {
@@ -164,6 +165,7 @@ const PENDING_CHANGE_QUERY = gql`
         name
         description
         gitRepositoryOverride
+        licensed
         entities {
           id
           createdAt
@@ -279,6 +281,7 @@ describe("ProjectResolver", () => {
     expect(commitMock).toBeCalledWith(
       {
         data: {
+          bypassLimitations: false,
           message: EXAMPLE_MESSAGE,
           project: { connect: { id: EXAMPLE_PROJECT_ID } },
         },

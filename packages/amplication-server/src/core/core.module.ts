@@ -21,13 +21,20 @@ import { HealthModule } from "./health/health.module";
 import { PluginInstallationModule } from "./pluginInstallation/pluginInstallation.module";
 import { TopicModule } from "./topic/topic.module";
 import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
-import { UserActionModule } from "./userAction/userActionModule";
+import { UserActionModule } from "./userAction/userAction.module";
 import { DBSchemaImportModule } from "./dbSchemaImport/dbSchemaImport.module";
 import { ModuleModule } from "./module/module.module";
 import { ModuleActionModule } from "./moduleAction/moduleAction.module";
+import { ModuleDtoModule } from "./moduleDto/moduleDto.module";
+import { AdministratorModule } from "./administrator/administrator.module";
+import { GptModule } from "./gpt/gpt.module";
+import { UsageInsightsModule } from "./UsageInsights/usageInsights.module";
+import { AssistantModule } from "./assistant/assistant.module";
 
 @Module({
   imports: [
+    AdministratorModule,
+    UsageInsightsModule,
     AccountModule,
     WorkspaceModule,
     ResourceModule,
@@ -55,9 +62,13 @@ import { ModuleActionModule } from "./moduleAction/moduleAction.module";
     DBSchemaImportModule,
     ModuleModule,
     ModuleActionModule,
+    ModuleDtoModule,
+    GptModule,
+    AssistantModule,
   ],
   exports: [
     AccountModule,
+    UsageInsightsModule,
     WorkspaceModule,
     ResourceModule,
     UserModule,
@@ -82,6 +93,9 @@ import { ModuleActionModule } from "./moduleAction/moduleAction.module";
     DBSchemaImportModule,
     ModuleModule,
     ModuleActionModule,
+    ModuleDtoModule,
+    GptModule,
+    AssistantModule,
   ],
 })
 export class CoreModule {}

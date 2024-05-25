@@ -61,6 +61,19 @@ export const Routes: RouteDef[] = [
             exactPath: false,
             tabRoutes: [
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/architecture",
+                Component: lazy(
+                  () =>
+                    import("../Project/ArchitectureConsole/ArchitectureConsole")
+                ),
+                moduleName: "ProjectArchitecture",
+                displayName: "Architecture",
+                moduleClass: "",
+                routeTrackType: "",
+                exactPath: false,
+                isAnalytics: true,
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/git-sync",
                 Component: lazy(
                   () => import("../Resource/git/SyncWithGithubPage")
@@ -166,13 +179,22 @@ export const Routes: RouteDef[] = [
                 isAnalytics: true,
               },
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/dotnet-promote",
+                Component: lazy(
+                  () => import("../VersionControl/DotNetPromotePage")
+                ),
+                moduleName: "DotnetPromote",
+                moduleClass: "",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/welcome",
                 Component: lazy(
-                  () =>
-                    import("../Resource/create-resource/CreateServiceWizard")
+                  () => import("../Assistant/OnboardingWithJovuPage")
                 ),
-                moduleName: "CreateServiceWizard",
-                moduleClass: "create-service-wizard",
+                moduleName: "OnboardingWithJovuPage",
                 routeTrackType: "",
                 exactPath: true,
                 isAnalytics: true,
@@ -200,6 +222,17 @@ export const Routes: RouteDef[] = [
                 ),
                 moduleName: "CreateMessageBroker",
                 moduleClass: "create-message-broker",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/complete-preview-signup",
+                Component: lazy(
+                  () => import("../User/CompletePreviewSignupPage")
+                ),
+                moduleName: "CompletePreviewSignupPage",
+                moduleClass: "complete-preview-signup-page",
                 routeTrackType: "",
                 exactPath: true,
                 isAnalytics: true,
@@ -287,5 +320,36 @@ export const Routes: RouteDef[] = [
     routeTrackType: "signup",
     exactPath: true,
     isAnalytics: true,
+  },
+  {
+    path: "/signup/preview-account",
+    Component: lazy(() => import("../User/SignupPreviewAccount")),
+    moduleName: "SignupPreviewAccount",
+    moduleClass: "signupPreviewAccount-page",
+    routeTrackType: "signupPreviewAccount",
+    exactPath: true,
+    isAnalytics: true,
+  },
+  {
+    path: "/select-preview-env",
+    Component: lazy(
+      () => import("../Resource/break-the-monolith/SelectPreviewEnvPage")
+    ),
+    moduleName: "SelectPreviewEnvPage",
+    moduleClass: "select-preview-env-page",
+    routeTrackType: "",
+    exactPath: true,
+    isAnalytics: true,
+    permission: true,
+  },
+  {
+    path: "/onboarding-preview",
+    Component: lazy(() => import("../OnboardingPreview/OnboardingPreviewPage")),
+    moduleName: "OnboardingPreview",
+    moduleClass: "onboarding-preview",
+    routeTrackType: "",
+    exactPath: true,
+    isAnalytics: true,
+    permission: true,
   },
 ];

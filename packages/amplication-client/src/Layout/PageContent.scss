@@ -103,4 +103,8 @@ $tabs-width: 300px;
     min-height: calc(100% - (var(--double-spacing) * 2));
     height: 1px; //this is needed to allow the main content to grow
   }
+
+  &__spacer {
+    padding: var(--default-spacing);
+  }
 }

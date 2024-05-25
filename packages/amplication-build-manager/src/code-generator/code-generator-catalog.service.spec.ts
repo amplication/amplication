@@ -3,7 +3,8 @@ import { CodeGeneratorService } from "./code-generator-catalog.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Env } from "../env";
 import axios from "axios";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
+import { Generator } from "./generator.interface";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -66,11 +67,41 @@ describe("CodeGeneratorService", () => {
       });
 
       const result = await service.getCodeGeneratorVersion({
+        codeGeneratorFullName: "data-service-generator",
         codeGeneratorVersion: selectedVersion,
         codeGeneratorStrategy,
       });
 
       expect(result).toEqual(expected);
+    }
+  );
+
+  it.each([
+    ["data-service-generator", "NodeJS"],
+    ["generator-dotnet-webapi", "DotNET"],
+  ])(
+    `should return the full name %s when %s is selected`,
+    async (expectedFullName: string, codeGeneratorName: string) => {
+      const mockGenerators: Generator[] = [
+        {
+          fullName: "generator-dotnet-webapi",
+          isActive: true,
+          name: "DotNET",
+          version: [],
+        },
+        {
+          fullName: "data-service-generator",
+          isActive: true,
+          name: "NodeJS",
+          version: [],
+        },
+      ];
+
+      mockedAxios.get.mockResolvedValue({ data: mockGenerators });
+
+      const result = await service.getCodeGenerators(codeGeneratorName);
+
+      expect(result).toEqual(expectedFullName);
     }
   );
 

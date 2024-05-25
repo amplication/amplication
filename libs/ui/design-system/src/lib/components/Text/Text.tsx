@@ -16,6 +16,7 @@ export enum EnumTextStyle {
 
 export enum EnumTextColor {
   Black20 = "gray-20",
+  Black = "gray-full",
   White = "gray-base",
   ThemeTurquoise = "theme-turquoise",
   ThemeBlue = "theme-blue",
@@ -23,6 +24,8 @@ export enum EnumTextColor {
   ThemeRed = "theme-red",
   ThemeOrange = "theme-orange",
   Primary = "primary",
+  ThemePink = "theme-pink",
+  Secondary = "secondary",
 }
 
 export enum EnumTextAlign {

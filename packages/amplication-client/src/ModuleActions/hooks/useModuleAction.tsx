@@ -1,6 +1,5 @@
 import { Reference, useLazyQuery, useMutation } from "@apollo/client";
 import { useContext } from "react";
-import { useHistory } from "react-router-dom";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import {
@@ -16,11 +15,11 @@ type TDeleteData = {
 };
 
 type TFindData = {
-  ModuleActions: models.ModuleAction[];
+  moduleActions: models.ModuleAction[];
 };
 
 type TGetData = {
-  ModuleAction: models.ModuleAction;
+  moduleAction: models.ModuleAction;
 };
 
 type TCreateData = {
@@ -32,15 +31,7 @@ type TUpdateData = {
 };
 
 const useModuleAction = () => {
-  const {
-    addBlock,
-    addEntity,
-    currentWorkspace,
-    currentProject,
-    currentResource,
-  } = useContext(AppContext);
-
-  const history = useHistory();
+  const { addBlock, addEntity } = useContext(AppContext);
 
   const [
     deleteModuleAction,
@@ -51,7 +42,7 @@ const useModuleAction = () => {
       const deletedModuleActionId = data.deleteModuleAction.id;
       cache.modify({
         fields: {
-          ModuleActions(existingModuleActionRefs, { readField }) {
+          moduleActions(existingModuleActionRefs, { readField }) {
             return existingModuleActionRefs.filter(
               (moduleRef: Reference) =>
                 deletedModuleActionId !== readField("id", moduleRef)
@@ -64,22 +55,6 @@ const useModuleAction = () => {
       addBlock(data.deleteModuleAction.id);
     },
   });
-
-  const deleteCurrentModuleAction = (data: models.ModuleAction) => {
-    deleteModuleAction({
-      variables: {
-        where: {
-          id: data.id,
-        },
-      },
-    })
-      .then((result) => {
-        history.push(
-          `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/all`
-        );
-      })
-      .catch(console.error);
-  };
 
   const [
     createModuleAction,
@@ -96,7 +71,7 @@ const useModuleAction = () => {
 
       cache.modify({
         fields: {
-          ModuleActions(existingModuleActionRefs = [], { readField }) {
+          moduleActions(existingModuleActionRefs = [], { readField }) {
             const newModuleActionRef = cache.writeFragment({
               data: newModuleAction,
               fragment: MODULE_ACTION_FIELDS_FRAGMENT,
@@ -149,7 +124,6 @@ const useModuleAction = () => {
 
   return {
     deleteModuleAction,
-    deleteCurrentModuleAction,
     deleteModuleActionError,
     deleteModuleActionLoading,
     createModuleAction,

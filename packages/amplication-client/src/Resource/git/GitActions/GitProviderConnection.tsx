@@ -5,8 +5,15 @@ import { EnumGitProvider } from "../../../models";
 import classNames from "classnames";
 import "./GitProviderConnection.scss";
 
-import { LockedFeatureIndicator } from "../../../Components/LockedFeatureIndicator";
+import { FeatureIndicator } from "../../../Components/FeatureIndicator";
 import { PROVIDERS_DISPLAY_NAME } from "../../constants";
+import { BillingFeature } from "@amplication/util-billing-types";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+  FeatureIndicatorPlacement,
+  IconType,
+} from "../../../Components/FeatureIndicatorContainer";
 
 type Props = {
   onSyncNewGitOrganizationClick: (data: any) => any;
@@ -14,6 +21,7 @@ type Props = {
   disabled?: boolean;
   comingSoon?: boolean;
   featureName?: string;
+  billingFeature?: BillingFeature;
 };
 
 const CLASS_NAME = "git-provider-connection";
@@ -24,6 +32,7 @@ export default function GitProviderConnection({
   disabled,
   comingSoon,
   featureName,
+  billingFeature,
 }: Props) {
   const handleClick = useCallback(() => {
     onSyncNewGitOrganizationClick(provider);
@@ -41,18 +50,39 @@ export default function GitProviderConnection({
       />
       <div className={`${CLASS_NAME}__name`}>{providerDisplayName}</div>
       <div className={`${CLASS_NAME}__controls`}>
-        {disabled && <LockedFeatureIndicator featureName={featureName} />}
         {!comingSoon ? (
-          <Button
-            className={`${CLASS_NAME}__connect`}
-            buttonStyle={EnumButtonStyle.Primary}
-            onClick={handleClick}
-            disabled={disabled}
+          <FeatureIndicatorContainer
+            featureId={billingFeature}
+            entitlementType={EntitlementType.Boolean}
+            reversePosition={true}
+            featureIndicatorPlacement={FeatureIndicatorPlacement.Outside}
+            limitationText="Available in Enterprise plans only. "
           >
-            Connect
-          </Button>
+            <Button
+              className={`${CLASS_NAME}__connect`}
+              buttonStyle={EnumButtonStyle.Primary}
+              onClick={handleClick}
+            >
+              Connect
+            </Button>
+          </FeatureIndicatorContainer>
         ) : (
-          <div className={`${CLASS_NAME}__coming_soon`}>Coming soon</div>
+          <div className={`${CLASS_NAME}__coming_soon`}>
+            <FeatureIndicator
+              featureName={featureName}
+              comingSoon={true}
+              textStart={`for ${providerDisplayName} integration`}
+              icon={IconType.Lock}
+            />
+            <Button
+              className={`${CLASS_NAME}__connect`}
+              buttonStyle={EnumButtonStyle.Primary}
+              onClick={handleClick}
+              disabled={true}
+            >
+              Connect
+            </Button>
+          </div>
         )}
       </div>
     </div>

@@ -13,7 +13,7 @@ import {
   createEntityTitleComponentsModules,
 } from "./entity/create-entity-components-modules";
 import { createPublicFiles } from "./public-files/create-public-files";
-import { createDTONameToPath } from "./create-dto-name-to-path";
+import { createAdminDTONameToPath } from "./create-dto-name-to-path";
 import { createEntityToDirectory } from "./create-entity-to-directory";
 import { createEnumRolesModule } from "./create-enum-roles";
 import { createRolesModule } from "./create-roles-module";
@@ -39,10 +39,10 @@ export function createAdminModules(): Promise<ModuleMap> {
 
 async function createAdminModulesInternal(): Promise<ModuleMap> {
   const context = DsgContext.getInstance;
-  const { entities, roles, clientDirectories } = context;
+  const { entities, roles, clientDirectories, logger } = context;
 
-  await context.logger.info("Creating admin...");
-  await context.logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
+  await logger.info("Creating admin...");
+  await logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
 
   await context.logger.info("Copying static modules...");
   const staticModules = await readStaticModules(
@@ -73,7 +73,7 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
   await context.logger.info("Creating public files...");
   const publicFilesModules = await createPublicFiles();
   await context.logger.info("Creating Admin UI DTOs...");
-  const dtoNameToPath = createDTONameToPath(context.DTOs);
+  const dtoNameToPath = createAdminDTONameToPath(context.DTOs);
   const dtoModuleMap = await createDTOModules(context.DTOs, dtoNameToPath);
   const enumRolesModule = createEnumRolesModule(roles);
   const rolesModule = createRolesModule(roles, clientDirectories.srcDirectory);

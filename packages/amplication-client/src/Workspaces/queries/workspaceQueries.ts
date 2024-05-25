@@ -5,6 +5,7 @@ export const GET_CURRENT_WORKSPACE = gql`
     currentWorkspace {
       id
       name
+      allowLLMFeatures
       externalId
       subscription {
         id
@@ -61,6 +62,7 @@ export const GET_WORKSPACES = gql`
       subscription {
         id
         subscriptionPlan
+        status
       }
     }
   }

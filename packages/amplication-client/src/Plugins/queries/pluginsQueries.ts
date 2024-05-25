@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_PLUGIN_INSTALLATIONS = gql`
-  query PluginInstallations($resourceId: String!) {
-    PluginInstallations(
+  query pluginInstallations($resourceId: String!) {
+    pluginInstallations(
       where: { resource: { id: $resourceId } }
       orderBy: { createdAt: Asc }
     ) {
@@ -18,8 +18,8 @@ export const GET_PLUGIN_INSTALLATIONS = gql`
 `;
 
 export const GET_PLUGIN_INSTALLATION = gql`
-  query PluginInstallation($pluginId: String!) {
-    PluginInstallation(where: { id: $pluginId }) {
+  query pluginInstallation($pluginId: String!) {
+    pluginInstallation(where: { id: $pluginId }) {
       id
       displayName
       pluginId
@@ -98,6 +98,7 @@ export const GET_PLUGIN_VERSIONS_CATALOG = gql`
       npm
       github
       website
+      categories
       versions(where: $where, orderBy: { createdAt: Desc }) {
         id
         pluginId

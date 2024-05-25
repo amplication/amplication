@@ -30,4 +30,12 @@ export class CommitService {
 
     return [...changedBlocks, ...changedEntities];
   }
+
+  async getChangesByResource(
+    commitId: string,
+    resourceId: string
+  ): Promise<PendingChange[]> {
+    const changes = await this.getChanges(commitId);
+    return changes.filter((change) => change.resource.id === resourceId);
+  }
 }

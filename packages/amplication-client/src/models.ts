@@ -31,6 +31,8 @@ export type Account = {
   id: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
   password: Scalars['String']['output'];
+  previewAccountEmail?: Maybe<Scalars['String']['output']>;
+  previewAccountType: EnumPreviewAccountType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -83,9 +85,44 @@ export type ApiTokenCreateInput = {
   name: Scalars['String']['input'];
 };
 
+export type AssistantContext = {
+  projectId?: InputMaybe<Scalars['String']['input']>;
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AssistantMessage = {
+  createdAt: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  role: EnumAssistantMessageRole;
+  text: Scalars['String']['output'];
+};
+
+export type AssistantMessageDelta = {
+  completed: Scalars['Boolean']['output'];
+  functionExecuted?: Maybe<EnumAssistantFunctions>;
+  id: Scalars['String']['output'];
+  snapshot: Scalars['String']['output'];
+  text: Scalars['String']['output'];
+  threadId: Scalars['String']['output'];
+};
+
+export type AssistantThread = {
+  createdAt: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  messages?: Maybe<Array<AssistantMessage>>;
+  updatedAt: Scalars['String']['output'];
+};
+
 export type Auth = {
   /** JWT Bearer token */
   token: Scalars['String']['output'];
+};
+
+export type AuthPreviewAccount = {
+  projectId: Scalars['String']['output'];
+  resourceId?: Maybe<Scalars['String']['output']>;
+  token: Scalars['String']['output'];
+  workspaceId: Scalars['String']['output'];
 };
 
 export type AuthorizeResourceWithGitResult = {
@@ -190,6 +227,30 @@ export type BooleanFilter = {
   not?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type BreakServiceToMicroservicesData = {
+  microservices: Array<BreakServiceToMicroservicesItem>;
+};
+
+export type BreakServiceToMicroservicesItem = {
+  functionality: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  tables: Array<BreakServiceToMicroservicesItemEntities>;
+};
+
+export type BreakServiceToMicroservicesItemEntities = {
+  name: Scalars['String']['output'];
+  originalEntityId: Scalars['String']['output'];
+};
+
+export type BreakServiceToMicroservicesResult = {
+  /** Prompt result with some data structure manipulation */
+  data?: Maybe<BreakServiceToMicroservicesData>;
+  /** The original resource ID */
+  originalResourceId: Scalars['String']['output'];
+  /** The status of the user action */
+  status: EnumUserActionStatus;
+};
+
 export type Build = {
   action?: Maybe<Action>;
   actionId: Scalars['String']['output'];
@@ -199,7 +260,10 @@ export type Build = {
   commitId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   createdBy?: Maybe<User>;
+  filesChanged?: Maybe<Scalars['Float']['output']>;
   id: Scalars['String']['output'];
+  linesOfCodeAdded?: Maybe<Scalars['Float']['output']>;
+  linesOfCodeDeleted?: Maybe<Scalars['Float']['output']>;
   message?: Maybe<Scalars['String']['output']>;
   resource?: Maybe<Resource>;
   resourceId: Scalars['String']['output'];
@@ -272,6 +336,8 @@ export type CommitBuildsArgs = {
 };
 
 export type CommitCreateInput = {
+  /** It will bypass the limitations of the plan (if any). It will only work for limitation that support commit bypass. */
+  bypassLimitations?: InputMaybe<Scalars['Boolean']['input']>;
   message: Scalars['String']['input'];
   project: WhereParentIdInput;
 };
@@ -291,7 +357,7 @@ export type CommitWhereInput = {
 };
 
 export type CommitWhereUniqueInput = {
-  id?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
 };
 
 export type CompleteInvitationInput = {
@@ -313,6 +379,11 @@ export type Coupon = {
   durationMonths: Scalars['Int']['output'];
   id: Scalars['String']['output'];
   subscriptionPlan: EnumSubscriptionPlan;
+};
+
+export type CreateEntitiesFromPredefinedSchemaInput = {
+  resource: WhereParentIdInput;
+  schemaName: EnumSchemaNames;
 };
 
 export type CreateGitRepositoryBaseInput = {
@@ -646,6 +717,36 @@ export enum EnumActionStepStatus {
   Waiting = 'Waiting'
 }
 
+export enum EnumAssistantFunctions {
+  CommitProjectPendingChanges = 'CommitProjectPendingChanges',
+  CreateEntities = 'CreateEntities',
+  CreateEntityFields = 'CreateEntityFields',
+  CreateModule = 'CreateModule',
+  CreateModuleAction = 'CreateModuleAction',
+  CreateModuleDto = 'CreateModuleDto',
+  CreateModuleEnum = 'CreateModuleEnum',
+  CreateProject = 'CreateProject',
+  CreateService = 'CreateService',
+  GetModuleActions = 'GetModuleActions',
+  GetModuleDtosAndEnums = 'GetModuleDtosAndEnums',
+  GetPlugins = 'GetPlugins',
+  GetProjectPendingChanges = 'GetProjectPendingChanges',
+  GetProjectServices = 'GetProjectServices',
+  GetServiceEntities = 'GetServiceEntities',
+  GetServiceModules = 'GetServiceModules',
+  InstallPlugins = 'InstallPlugins'
+}
+
+export enum EnumAssistantMessageRole {
+  Assistant = 'Assistant',
+  User = 'User'
+}
+
+export enum EnumAssistantMessageType {
+  Default = 'Default',
+  Onboarding = 'Onboarding'
+}
+
 export enum EnumAuthProviderType {
   Auth0 = 'Auth0',
   Http = 'Http',
@@ -655,6 +756,7 @@ export enum EnumAuthProviderType {
 export enum EnumBlockType {
   Module = 'Module',
   ModuleAction = 'ModuleAction',
+  ModuleDto = 'ModuleDto',
   PluginInstallation = 'PluginInstallation',
   PluginOrder = 'PluginOrder',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
@@ -683,6 +785,7 @@ export enum EnumDataType {
   DateTime = 'DateTime',
   DecimalNumber = 'DecimalNumber',
   Email = 'Email',
+  File = 'File',
   GeographicLocation = 'GeographicLocation',
   Id = 'Id',
   Json = 'Json',
@@ -743,6 +846,13 @@ export enum EnumModuleActionGqlOperation {
   Query = 'Query'
 }
 
+export enum EnumModuleActionRestInputSource {
+  Body = 'Body',
+  Params = 'Params',
+  Query = 'Query',
+  Split = 'Split'
+}
+
 export enum EnumModuleActionRestVerb {
   Delete = 'Delete',
   Get = 'Get',
@@ -769,6 +879,40 @@ export enum EnumModuleActionType {
   Update = 'Update'
 }
 
+export enum EnumModuleDtoPropertyType {
+  Boolean = 'Boolean',
+  DateTime = 'DateTime',
+  Dto = 'Dto',
+  Enum = 'Enum',
+  Float = 'Float',
+  Integer = 'Integer',
+  Json = 'Json',
+  Null = 'Null',
+  String = 'String',
+  Undefined = 'Undefined'
+}
+
+export enum EnumModuleDtoType {
+  CountArgs = 'CountArgs',
+  CreateArgs = 'CreateArgs',
+  CreateInput = 'CreateInput',
+  CreateNestedManyInput = 'CreateNestedManyInput',
+  Custom = 'Custom',
+  CustomEnum = 'CustomEnum',
+  DeleteArgs = 'DeleteArgs',
+  Entity = 'Entity',
+  Enum = 'Enum',
+  FindManyArgs = 'FindManyArgs',
+  FindOneArgs = 'FindOneArgs',
+  ListRelationFilter = 'ListRelationFilter',
+  OrderByInput = 'OrderByInput',
+  UpdateArgs = 'UpdateArgs',
+  UpdateInput = 'UpdateInput',
+  UpdateNestedManyInput = 'UpdateNestedManyInput',
+  WhereInput = 'WhereInput',
+  WhereUniqueInput = 'WhereUniqueInput'
+}
+
 export enum EnumPendingChangeAction {
   Create = 'Create',
   Delete = 'Delete',
@@ -778,6 +922,12 @@ export enum EnumPendingChangeAction {
 export enum EnumPendingChangeOriginType {
   Block = 'Block',
   Entity = 'Entity'
+}
+
+export enum EnumPreviewAccountType {
+  BreakingTheMonolith = 'BreakingTheMonolith',
+  None = 'None',
+  PreviewOnboarding = 'PreviewOnboarding'
 }
 
 export enum EnumResourceType {
@@ -793,9 +943,17 @@ export type EnumResourceTypeFilter = {
   notIn?: InputMaybe<Array<EnumResourceType>>;
 };
 
+export enum EnumSchemaNames {
+  Abby = 'Abby',
+  CalDotCom = 'CalDotCom',
+  Formbricks = 'Formbricks',
+  Papermark = 'Papermark'
+}
+
 export enum EnumSubscriptionPlan {
   Enterprise = 'Enterprise',
   Free = 'Free',
+  PreviewBreakTheMonolith = 'PreviewBreakTheMonolith',
   Pro = 'Pro'
 }
 
@@ -807,6 +965,13 @@ export enum EnumSubscriptionStatus {
   Trailing = 'Trailing'
 }
 
+export enum EnumTimeGroup {
+  Day = 'Day',
+  Month = 'Month',
+  Week = 'Week',
+  Year = 'Year'
+}
+
 export enum EnumUserActionStatus {
   Completed = 'Completed',
   Failed = 'Failed',
@@ -815,7 +980,9 @@ export enum EnumUserActionStatus {
 }
 
 export enum EnumUserActionType {
-  DbSchemaImport = 'DBSchemaImport'
+  DbSchemaImport = 'DBSchemaImport',
+  GptConversation = 'GptConversation',
+  ProjectRedesign = 'ProjectRedesign'
 }
 
 export enum EnumWorkspaceMemberType {
@@ -832,6 +999,13 @@ export type Environment = {
   resource: Resource;
   resourceId: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type EvaluationInsights = {
+  codeQuality: Scalars['Int']['output'];
+  costSaved: Scalars['Int']['output'];
+  loc: Scalars['Int']['output'];
+  timeSaved: Scalars['Int']['output'];
 };
 
 export type GitGetInstallationUrlInput = {
@@ -965,6 +1139,13 @@ export type MessagePatternCreateInput = {
   type: EnumMessagePatternConnectionOptions;
 };
 
+export type Metrics = {
+  count: Scalars['Int']['output'];
+  month: Scalars['Int']['output'];
+  timeGroup: Scalars['Int']['output'];
+  year: Scalars['Int']['output'];
+};
+
 export type Module = IBlock & {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -997,15 +1178,21 @@ export type ModuleAction = IBlock & {
   gqlOperation: EnumModuleActionGqlOperation;
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
+  inputType?: Maybe<PropertyTypeDef>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
   lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
+  outputType?: Maybe<PropertyTypeDef>;
   parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['String']['output']>;
   path?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
+  restInputBodyPropertyName?: Maybe<Scalars['String']['output']>;
+  restInputParamsPropertyName?: Maybe<Scalars['String']['output']>;
+  restInputQueryPropertyName?: Maybe<Scalars['String']['output']>;
+  restInputSource?: Maybe<EnumModuleActionRestInputSource>;
   restVerb: EnumModuleActionRestVerb;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
@@ -1014,14 +1201,11 @@ export type ModuleAction = IBlock & {
 export type ModuleActionCreateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName: Scalars['String']['input'];
-  gqlOperation: EnumModuleActionGqlOperation;
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   name?: InputMaybe<Scalars['String']['input']>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  path?: InputMaybe<Scalars['String']['input']>;
   resource: WhereParentIdInput;
-  restVerb: EnumModuleActionRestVerb;
 };
 
 export type ModuleActionOrderByInput = {
@@ -1036,11 +1220,17 @@ export type ModuleActionOrderByInput = {
 export type ModuleActionUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
-  enabled: Scalars['Boolean']['input'];
-  gqlOperation: EnumModuleActionGqlOperation;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  gqlOperation?: InputMaybe<EnumModuleActionGqlOperation>;
+  inputType?: InputMaybe<PropertyTypeDefInput>;
   name?: InputMaybe<Scalars['String']['input']>;
+  outputType?: InputMaybe<PropertyTypeDefInput>;
   path?: InputMaybe<Scalars['String']['input']>;
-  restVerb: EnumModuleActionRestVerb;
+  restInputBodyPropertyName?: InputMaybe<Scalars['String']['input']>;
+  restInputParamsPropertyName?: InputMaybe<Scalars['String']['input']>;
+  restInputQueryPropertyName?: InputMaybe<Scalars['String']['input']>;
+  restInputSource?: InputMaybe<EnumModuleActionRestInputSource>;
+  restVerb?: InputMaybe<EnumModuleActionRestVerb>;
 };
 
 export type ModuleActionWhereInput = {
@@ -1048,6 +1238,8 @@ export type ModuleActionWhereInput = {
   description?: InputMaybe<StringFilter>;
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
+  includeCustomActions?: InputMaybe<Scalars['Boolean']['input']>;
+  includeDefaultActions?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
   resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -1061,6 +1253,114 @@ export type ModuleCreateInput = {
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
   resource: WhereParentIdInput;
+};
+
+export type ModuleDto = IBlock & {
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
+  dtoType: EnumModuleDtoType;
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']['output']>;
+  lockedByUser?: Maybe<User>;
+  lockedByUserId?: Maybe<Scalars['String']['output']>;
+  members?: Maybe<Array<ModuleDtoEnumMember>>;
+  name: Scalars['String']['output'];
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
+  properties?: Maybe<Array<ModuleDtoProperty>>;
+  relatedEntityId?: Maybe<Scalars['String']['output']>;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  versionNumber: Scalars['Float']['output'];
+};
+
+export type ModuleDtoCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName: Scalars['String']['input'];
+  inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  parentBlock?: InputMaybe<WhereParentIdInput>;
+  resource: WhereParentIdInput;
+};
+
+export type ModuleDtoEnumMember = {
+  name: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
+
+export type ModuleDtoEnumMemberCreateInput = {
+  moduleDto: WhereParentIdInput;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ModuleDtoEnumMemberInput = {
+  name: Scalars['String']['input'];
+  value: Scalars['String']['input'];
+};
+
+export type ModuleDtoEnumMemberUpdateInput = {
+  name: Scalars['String']['input'];
+  value: Scalars['String']['input'];
+};
+
+export type ModuleDtoOrderByInput = {
+  blockType?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
+  displayName?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type ModuleDtoProperty = {
+  isArray: Scalars['Boolean']['output'];
+  isOptional: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  propertyTypes: Array<PropertyTypeDef>;
+};
+
+export type ModuleDtoPropertyCreateInput = {
+  moduleDto: WhereParentIdInput;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ModuleDtoPropertyInput = {
+  isArray: Scalars['Boolean']['input'];
+  isOptional: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  propertyTypes: Array<PropertyTypeDefInput>;
+};
+
+export type ModuleDtoPropertyUpdateInput = {
+  isArray: Scalars['Boolean']['input'];
+  isOptional: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  propertyTypes: Array<PropertyTypeDefInput>;
+};
+
+export type ModuleDtoUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  enabled: Scalars['Boolean']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ModuleDtoWhereInput = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  displayName?: InputMaybe<StringFilter>;
+  id?: InputMaybe<StringFilter>;
+  includeCustomDtos?: InputMaybe<Scalars['Boolean']['input']>;
+  includeDefaultDtos?: InputMaybe<Scalars['Boolean']['input']>;
+  parentBlock?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type ModuleOrderByInput = {
@@ -1091,22 +1391,29 @@ export type ModuleWhereInput = {
 
 export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
+  bulkUpdateWorkspaceProjectsAndResourcesLicensed: Scalars['Boolean']['output'];
   changePassword: Account;
   commit?: Maybe<Commit>;
   completeGitOAuth2Flow: GitOrganization;
   completeInvitation: Auth;
+  completeSignupWithBusinessEmail: Scalars['String']['output'];
   connectGitRepository: Resource;
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
+  createEntitiesFromPredefinedSchema: UserAction;
   createEntitiesFromPrismaSchema: UserAction;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createMessageBroker: Resource;
   createModule: Module;
   createModuleAction: ModuleAction;
+  createModuleDto: ModuleDto;
+  createModuleDtoEnum: ModuleDto;
+  createModuleDtoEnumMember: ModuleDtoEnumMember;
+  createModuleDtoProperty: ModuleDtoProperty;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
@@ -1126,6 +1433,9 @@ export type Mutation = {
   deleteGitRepository: Resource;
   deleteModule: Module;
   deleteModuleAction: ModuleAction;
+  deleteModuleDto: ModuleDto;
+  deleteModuleDtoEnumMember: ModuleDtoEnumMember;
+  deleteModuleDtoProperty: ModuleDtoProperty;
   deletePluginInstallation: PluginInstallation;
   deleteProject?: Maybe<Project>;
   deleteResource?: Maybe<Resource>;
@@ -1142,12 +1452,20 @@ export type Mutation = {
   login: Auth;
   provisionSubscription?: Maybe<ProvisionSubscriptionResult>;
   redeemCoupon: Coupon;
+  redesignProject: UserAction;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
+  sendAssistantMessageWithStream: AssistantThread;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
   signup: Auth;
+  signupPreviewAccount: AuthPreviewAccount;
+  signupWithBusinessEmail: Scalars['Boolean']['output'];
+  startRedesign?: Maybe<Resource>;
+  /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
+  triggerBreakServiceIntoMicroservices?: Maybe<UserAction>;
   updateAccount: Account;
+  updateCodeGeneratorName?: Maybe<Resource>;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
   updateEntityField: EntityField;
@@ -1157,6 +1475,9 @@ export type Mutation = {
   updateGitRepository: GitRepository;
   updateModule: Module;
   updateModuleAction: ModuleAction;
+  updateModuleDto: ModuleDto;
+  updateModuleDtoEnumMember: ModuleDtoEnumMember;
+  updateModuleDtoProperty: ModuleDtoProperty;
   updatePluginInstallation: PluginInstallation;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
@@ -1171,6 +1492,11 @@ export type Mutation = {
 
 export type MutationAddEntityPermissionFieldArgs = {
   data: EntityAddPermissionFieldInput;
+};
+
+
+export type MutationBulkUpdateWorkspaceProjectsAndResourcesLicensedArgs = {
+  useUserLastActive?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -1224,6 +1550,11 @@ export type MutationCreateDefaultEntitiesArgs = {
 };
 
 
+export type MutationCreateEntitiesFromPredefinedSchemaArgs = {
+  data: CreateEntitiesFromPredefinedSchemaInput;
+};
+
+
 export type MutationCreateEntitiesFromPrismaSchemaArgs = {
   data: DbSchemaImportCreateInput;
   file: Scalars['Upload']['input'];
@@ -1255,6 +1586,30 @@ export type MutationCreateModuleArgs = {
 
 export type MutationCreateModuleActionArgs = {
   data: ModuleActionCreateInput;
+};
+
+
+export type MutationCreateModuleDtoArgs = {
+  data: ModuleDtoCreateInput;
+  members?: InputMaybe<Array<ModuleDtoEnumMemberInput>>;
+  properties?: InputMaybe<Array<ModuleDtoPropertyInput>>;
+};
+
+
+export type MutationCreateModuleDtoEnumArgs = {
+  data: ModuleDtoCreateInput;
+  members?: InputMaybe<Array<ModuleDtoEnumMemberInput>>;
+  properties?: InputMaybe<Array<ModuleDtoPropertyInput>>;
+};
+
+
+export type MutationCreateModuleDtoEnumMemberArgs = {
+  data: ModuleDtoEnumMemberCreateInput;
+};
+
+
+export type MutationCreateModuleDtoPropertyArgs = {
+  data: ModuleDtoPropertyCreateInput;
 };
 
 
@@ -1354,6 +1709,21 @@ export type MutationDeleteModuleActionArgs = {
 };
 
 
+export type MutationDeleteModuleDtoArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteModuleDtoEnumMemberArgs = {
+  where: WhereEnumMemberUniqueInput;
+};
+
+
+export type MutationDeleteModuleDtoPropertyArgs = {
+  where: WherePropertyUniqueInput;
+};
+
+
 export type MutationDeletePluginInstallationArgs = {
   where: WhereUniqueInput;
 };
@@ -1434,6 +1804,11 @@ export type MutationRedeemCouponArgs = {
 };
 
 
+export type MutationRedesignProjectArgs = {
+  data: RedesignProjectInput;
+};
+
+
 export type MutationResendInvitationArgs = {
   where: WhereUniqueInput;
 };
@@ -1441,6 +1816,12 @@ export type MutationResendInvitationArgs = {
 
 export type MutationRevokeInvitationArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type MutationSendAssistantMessageWithStreamArgs = {
+  context: AssistantContext;
+  data: SendAssistantMessageInput;
 };
 
 
@@ -1460,8 +1841,34 @@ export type MutationSignupArgs = {
 };
 
 
+export type MutationSignupPreviewAccountArgs = {
+  data: SignupPreviewAccountInput;
+};
+
+
+export type MutationSignupWithBusinessEmailArgs = {
+  data: SignupWithBusinessEmailInput;
+};
+
+
+export type MutationStartRedesignArgs = {
+  data: WhereUniqueInput;
+};
+
+
+export type MutationTriggerBreakServiceIntoMicroservicesArgs = {
+  resourceId: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
+};
+
+
+export type MutationUpdateCodeGeneratorNameArgs = {
+  codeGeneratorName: Scalars['String']['input'];
+  where: WhereUniqueInput;
 };
 
 
@@ -1517,6 +1924,24 @@ export type MutationUpdateModuleArgs = {
 export type MutationUpdateModuleActionArgs = {
   data: ModuleActionUpdateInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateModuleDtoArgs = {
+  data: ModuleDtoUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateModuleDtoEnumMemberArgs = {
+  data: ModuleDtoEnumMemberUpdateInput;
+  where: WhereEnumMemberUniqueInput;
+};
+
+
+export type MutationUpdateModuleDtoPropertyArgs = {
+  data: ModuleDtoPropertyUpdateInput;
+  where: WherePropertyUniqueInput;
 };
 
 
@@ -1712,6 +2137,7 @@ export type Project = {
   demoRepoName?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
+  licensed: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   resources?: Maybe<Array<Resource>>;
   updatedAt: Scalars['DateTime']['output'];
@@ -1774,6 +2200,18 @@ export type PropertySelectorInput = {
   propertyName: Scalars['String']['input'];
 };
 
+export type PropertyTypeDef = {
+  dtoId?: Maybe<Scalars['String']['output']>;
+  isArray: Scalars['Boolean']['output'];
+  type: EnumModuleDtoPropertyType;
+};
+
+export type PropertyTypeDefInput = {
+  dtoId?: InputMaybe<Scalars['String']['input']>;
+  isArray: Scalars['Boolean']['input'];
+  type: EnumModuleDtoPropertyType;
+};
+
 export type ProvisionSubscriptionInput = {
   billingPeriod: Scalars['String']['input'];
   cancelUrl?: InputMaybe<Scalars['String']['input']>;
@@ -1789,18 +2227,9 @@ export type ProvisionSubscriptionResult = {
 };
 
 export type Query = {
-  Module?: Maybe<Module>;
-  ModuleAction?: Maybe<ModuleAction>;
-  ModuleActions: Array<ModuleAction>;
-  Modules: Array<Module>;
-  PluginInstallation?: Maybe<PluginInstallation>;
-  PluginInstallations: Array<PluginInstallation>;
-  ServiceTopics?: Maybe<ServiceTopics>;
-  ServiceTopicsList: Array<ServiceTopics>;
-  Topic?: Maybe<Topic>;
-  Topics: Array<Topic>;
   account: Account;
   action: Action;
+  availableDtosForResource: Array<ModuleDto>;
   block: Block;
   blocks: Array<Block>;
   build: Build;
@@ -1811,12 +2240,24 @@ export type Query = {
   currentWorkspace?: Maybe<Workspace>;
   entities: Array<Entity>;
   entity?: Maybe<Entity>;
+  /** Get the changes to apply to the model in order to break a resource into microservices */
+  finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
+  getEvaluationInsights: EvaluationInsights;
+  getUsageInsights: UsageInsightsResult;
   gitGroups: PaginatedGitGroup;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
   me: User;
   messageBrokerConnectedServices: Array<Resource>;
+  module?: Maybe<Module>;
+  moduleAction?: Maybe<ModuleAction>;
+  moduleActions: Array<ModuleAction>;
+  moduleDto?: Maybe<ModuleDto>;
+  moduleDtos: Array<ModuleDto>;
+  modules: Array<Module>;
   pendingChanges: Array<PendingChange>;
+  pluginInstallation?: Maybe<PluginInstallation>;
+  pluginInstallations: Array<PluginInstallation>;
   pluginOrder: PluginOrder;
   project?: Maybe<Project>;
   projectConfigurationSettings: ProjectConfigurationSettings;
@@ -1827,6 +2268,10 @@ export type Query = {
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
+  serviceTopics?: Maybe<ServiceTopics>;
+  serviceTopicsList: Array<ServiceTopics>;
+  topic?: Maybe<Topic>;
+  topics: Array<Topic>;
   userAction: UserAction;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
@@ -1835,73 +2280,16 @@ export type Query = {
 };
 
 
-export type QueryModuleArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryModuleActionArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryModuleActionsArgs = {
-  orderBy?: InputMaybe<ModuleActionOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ModuleActionWhereInput>;
-};
-
-
-export type QueryModulesArgs = {
-  orderBy?: InputMaybe<ModuleOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ModuleWhereInput>;
-};
-
-
-export type QueryPluginInstallationArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryPluginInstallationsArgs = {
-  orderBy?: InputMaybe<PluginInstallationOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<PluginInstallationWhereInput>;
-};
-
-
-export type QueryServiceTopicsArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryServiceTopicsListArgs = {
-  orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ServiceTopicsWhereInput>;
-};
-
-
-export type QueryTopicArgs = {
-  where: WhereUniqueInput;
-};
-
-
-export type QueryTopicsArgs = {
-  orderBy?: InputMaybe<TopicOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<TopicWhereInput>;
-};
-
-
 export type QueryActionArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type QueryAvailableDtosForResourceArgs = {
+  orderBy?: InputMaybe<ModuleDtoOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleDtoWhereInput>;
 };
 
 
@@ -1963,6 +2351,27 @@ export type QueryEntityArgs = {
 };
 
 
+export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
+  userActionId: Scalars['String']['input'];
+};
+
+
+export type QueryGetEvaluationInsightsArgs = {
+  endDate: Scalars['DateTime']['input'];
+  projectIds: Array<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  timeGroup?: InputMaybe<EnumTimeGroup>;
+};
+
+
+export type QueryGetUsageInsightsArgs = {
+  endDate: Scalars['DateTime']['input'];
+  projectIds: Array<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  timeGroup?: InputMaybe<EnumTimeGroup>;
+};
+
+
 export type QueryGitGroupsArgs = {
   where: GitGroupInput;
 };
@@ -1985,8 +2394,60 @@ export type QueryMessageBrokerConnectedServicesArgs = {
 };
 
 
+export type QueryModuleArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModuleActionArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModuleActionsArgs = {
+  orderBy?: InputMaybe<ModuleActionOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleActionWhereInput>;
+};
+
+
+export type QueryModuleDtoArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModuleDtosArgs = {
+  orderBy?: InputMaybe<ModuleDtoOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleDtoWhereInput>;
+};
+
+
+export type QueryModulesArgs = {
+  orderBy?: InputMaybe<ModuleOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleWhereInput>;
+};
+
+
 export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
+};
+
+
+export type QueryPluginInstallationArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryPluginInstallationsArgs = {
+  orderBy?: InputMaybe<PluginInstallationOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PluginInstallationWhereInput>;
 };
 
 
@@ -2050,6 +2511,32 @@ export type QueryServiceSettingsArgs = {
 };
 
 
+export type QueryServiceTopicsArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryServiceTopicsListArgs = {
+  orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ServiceTopicsWhereInput>;
+};
+
+
+export type QueryTopicArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryTopicsArgs = {
+  orderBy?: InputMaybe<TopicOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TopicWhereInput>;
+};
+
+
 export type QueryUserActionArgs = {
   where: WhereUniqueInput;
 };
@@ -2066,6 +2553,24 @@ export enum QueryMode {
 
 export type RedeemCouponInput = {
   code: Scalars['String']['input'];
+};
+
+export type RedesignProjectInput = {
+  movedEntities: Array<RedesignProjectMovedEntity>;
+  newServices: Array<RedesignProjectNewService>;
+  projectId: Scalars['String']['input'];
+};
+
+export type RedesignProjectMovedEntity = {
+  entityId: Scalars['String']['input'];
+  originalResourceId: Scalars['String']['input'];
+  targetResourceId: Scalars['String']['input'];
+};
+
+export type RedesignProjectNewService = {
+  description: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type RemoteGitRepos = {
@@ -2096,6 +2601,7 @@ export type RemoteGitRepository = {
 
 export type Resource = {
   builds: Array<Build>;
+  codeGeneratorName?: Maybe<Scalars['String']['output']>;
   codeGeneratorStrategy?: Maybe<CodeGeneratorVersionStrategy>;
   codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
@@ -2108,6 +2614,7 @@ export type Resource = {
   githubLastMessage?: Maybe<Scalars['String']['output']>;
   githubLastSync?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['String']['output'];
+  licensed: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;
@@ -2248,6 +2755,12 @@ export enum Role {
   User = 'User'
 }
 
+export type SendAssistantMessageInput = {
+  message: Scalars['String']['input'];
+  messageType?: InputMaybe<EnumAssistantMessageType>;
+  threadId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type ServerSettings = {
   generateGraphQL: Scalars['Boolean']['output'];
   generateRestApi: Scalars['Boolean']['output'];
@@ -2361,6 +2874,15 @@ export type SignupInput = {
   workspaceName: Scalars['String']['input'];
 };
 
+export type SignupPreviewAccountInput = {
+  previewAccountEmail: Scalars['String']['input'];
+  previewAccountType: EnumPreviewAccountType;
+};
+
+export type SignupWithBusinessEmailInput = {
+  email: Scalars['String']['input'];
+};
+
 export enum SortOrder {
   Asc = 'Asc',
   Desc = 'Desc'
@@ -2382,18 +2904,12 @@ export type StringFilter = {
 };
 
 export type Subscription = {
-  cancelUrl?: Maybe<Scalars['String']['output']>;
-  cancellationEffectiveDate?: Maybe<Scalars['DateTime']['output']>;
-  createdAt: Scalars['DateTime']['output'];
-  id: Scalars['String']['output'];
-  nextBillDate?: Maybe<Scalars['DateTime']['output']>;
-  price?: Maybe<Scalars['Float']['output']>;
-  status: EnumSubscriptionStatus;
-  subscriptionPlan: EnumSubscriptionPlan;
-  updateUrl?: Maybe<Scalars['String']['output']>;
-  updatedAt: Scalars['DateTime']['output'];
-  workspace?: Maybe<Workspace>;
-  workspaceId: Scalars['String']['output'];
+  assistantMessageUpdated: AssistantMessageDelta;
+};
+
+
+export type SubscriptionAssistantMessageUpdatedArgs = {
+  threadId: Scalars['String']['input'];
 };
 
 export type Topic = IBlock & {
@@ -2455,6 +2971,17 @@ export type UpdateAccountInput = {
   lastName?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UsageInsights = {
+  results: Array<Metrics>;
+};
+
+export type UsageInsightsResult = {
+  builds: UsageInsights;
+  entities: UsageInsights;
+  moduleActions: UsageInsights;
+  plugins: UsageInsights;
+};
+
 export type User = {
   account?: Maybe<Account>;
   createdAt: Scalars['DateTime']['output'];
@@ -2488,8 +3015,18 @@ export type UserRole = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type WhereEnumMemberUniqueInput = {
+  enumMemberName: Scalars['String']['input'];
+  moduleDto: WhereUniqueInput;
+};
+
 export type WhereParentIdInput = {
   connect: WhereUniqueInput;
+};
+
+export type WherePropertyUniqueInput = {
+  moduleDto: WhereUniqueInput;
+  propertyName: Scalars['String']['input'];
 };
 
 export type WhereUniqueInput = {
@@ -2497,13 +3034,14 @@ export type WhereUniqueInput = {
 };
 
 export type Workspace = {
+  allowLLMFeatures: Scalars['Boolean']['output'];
   createdAt: Scalars['DateTime']['output'];
   externalId?: Maybe<Scalars['String']['output']>;
   gitOrganizations?: Maybe<Array<GitOrganization>>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   projects: Array<Project>;
-  subscription?: Maybe<Subscription>;
+  subscription?: Maybe<WorkspaceSubscription>;
   updatedAt: Scalars['DateTime']['output'];
   users: Array<User>;
 };
@@ -2519,7 +3057,23 @@ export type WorkspaceMember = {
 
 export type WorkspaceMemberType = Invitation | User;
 
+export type WorkspaceSubscription = {
+  cancelUrl?: Maybe<Scalars['String']['output']>;
+  cancellationEffectiveDate?: Maybe<Scalars['DateTime']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  nextBillDate?: Maybe<Scalars['DateTime']['output']>;
+  price?: Maybe<Scalars['Float']['output']>;
+  status: EnumSubscriptionStatus;
+  subscriptionPlan: EnumSubscriptionPlan;
+  updateUrl?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  workspace?: Maybe<Workspace>;
+  workspaceId: Scalars['String']['output'];
+};
+
 export type WorkspaceUpdateInput = {
+  allowLLMFeatures?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 

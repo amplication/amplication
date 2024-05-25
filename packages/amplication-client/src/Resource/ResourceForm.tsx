@@ -19,8 +19,10 @@ import {
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
 import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
-import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
-import { GET_RESOURCE } from "./ResourceHome";
+import {
+  GET_RESOURCE,
+  UPDATE_RESOURCE,
+} from "../Workspaces/queries/resourcesQueries";
 
 type Props = {
   resourceId: string;
@@ -30,7 +32,7 @@ type TData = {
   updateResource: models.Resource;
 };
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["name"],
@@ -45,7 +47,7 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      name: AT_LEAST_TWO_CHARARCTERS,
+      name: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };

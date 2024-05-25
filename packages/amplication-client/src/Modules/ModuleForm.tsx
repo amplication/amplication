@@ -1,9 +1,8 @@
 import React, { useMemo } from "react";
 import { Formik } from "formik";
-import { Form } from "../Components/Form";
 import { omit } from "lodash";
 import * as models from "../models";
-import { TextField } from "@amplication/ui/design-system";
+import { TextField, Form } from "@amplication/ui/design-system";
 import { validate } from "../util/formikValidateJsonSchema";
 
 import FormikAutoSave from "../util/formikAutoSave";
@@ -65,6 +64,7 @@ const ModuleForm = ({ onSubmit, defaultValues, disabled }: Props) => {
           name="description"
           label="Description"
           textarea
+          textareaSize="small"
           rows={3}
           disabled={disabled}
         />

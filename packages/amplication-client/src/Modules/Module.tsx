@@ -47,18 +47,20 @@ const Module = () => {
 
     setResetPendingChangesIndicator(false);
     refetch();
-  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator]);
+  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator, refetch]);
 
   const handleSubmit = useCallback(
     (data) => {
+      const { name, description } = data;
       updateModule({
         variables: {
           where: {
             id: moduleId,
           },
           data: {
-            ...data,
-            displayName: data.name,
+            name,
+            displayName: name,
+            description,
           },
         },
       }).catch(console.error);
@@ -77,33 +79,33 @@ const Module = () => {
   }, [history, currentWorkspace?.id, currentProject?.id, currentResource?.id]);
 
   const isEntityModule =
-    data?.Module && !isEmpty(data.Module.entityId) ? true : false;
+    data?.module && !isEmpty(data.module.entityId) ? true : false;
 
   return (
     <>
       <FlexItem>
         <TabContentTitle
-          title={data?.Module?.displayName}
-          subTitle={data?.Module?.description}
+          title={data?.module?.displayName}
+          subTitle={data?.module?.description}
         />
         <FlexItem.FlexEnd>
-          {data?.Module && !isEntityModule && (
-            <DeleteModule module={data?.Module} onDelete={handleDeleteModule} />
+          {data?.module && !isEntityModule && (
+            <DeleteModule module={data?.module} onDelete={handleDeleteModule} />
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
-      {data?.Module && isEntityModule && (
+      {data?.module && isEntityModule && (
         <FlexItem margin={EnumFlexItemMargin.Bottom}>
           <Text textStyle={EnumTextStyle.Description}>
             This modules was created automatically with the{" "}
             <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/${data?.Module.entityId}`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/${data?.module.entityId}`}
             >
               <Text
                 textStyle={EnumTextStyle.Description}
                 textColor={EnumTextColor.White}
               >
-                {data.Module.name} entity
+                {data.module.name} entity
               </Text>
             </Link>
           </Text>
@@ -114,7 +116,7 @@ const Module = () => {
         <ModuleForm
           disabled={isEntityModule}
           onSubmit={handleSubmit}
-          defaultValues={data?.Module}
+          defaultValues={data?.module}
         />
       )}
       <Snackbar open={hasError} message={errorMessage} />

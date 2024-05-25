@@ -1,10 +1,9 @@
 export const PRISMA_QUERY_INTERPRETATION_ERROR = "P2016";
 export const PRISMA_RECORD_NOT_FOUND = "RecordNotFound";
 
-export function isRecordNotFoundError(
-  error: Error & { code?: string }
-): boolean {
+export function isRecordNotFoundError(error: any): boolean {
   return (
+    error instanceof Error &&
     "code" in error &&
     error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
     error.message.includes(PRISMA_RECORD_NOT_FOUND)

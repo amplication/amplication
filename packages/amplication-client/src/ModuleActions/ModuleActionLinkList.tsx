@@ -8,21 +8,22 @@ import {
   VerticalNavigationItem,
 } from "@amplication/ui/design-system";
 import React, { useContext, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import useModuleAction from "./hooks/useModuleAction";
+import { ModulesFilter } from "../Modules/ModuleNavigationList";
 
 const DATE_CREATED_FIELD = "createdAt";
 
 type Props = {
   moduleId: string;
   resourceId: string;
+  filters: ModulesFilter;
 };
 
 export const ModuleActionLinkList = React.memo(
-  ({ moduleId, resourceId }: Props) => {
+  ({ moduleId, resourceId, filters }: Props) => {
     const { currentWorkspace, currentProject } = useContext(AppContext);
 
     const {
@@ -39,15 +40,15 @@ export const ModuleActionLinkList = React.memo(
             parentBlock: { id: moduleId },
             resource: { id: resourceId },
             displayName: undefined,
+            includeDefaultActions: filters.showDefaultObjects,
+            includeCustomActions: filters.showCustomObjects,
           },
           orderBy: {
             [DATE_CREATED_FIELD]: models.SortOrder.Asc,
           },
         },
       });
-    }, [moduleId, findModuleActions]);
-
-    const history = useHistory();
+    }, [moduleId, findModuleActions, resourceId, filters]);
 
     const errorMessage = formatError(errorLoading);
 
@@ -57,15 +58,16 @@ export const ModuleActionLinkList = React.memo(
           <CircularProgress />
         ) : (
           <VerticalNavigation>
-            {data?.ModuleActions.map((action) => (
+            {data?.moduleActions.map((action) => (
               <VerticalNavigationItem
                 key={action.id}
-                icon="git_commit"
+                icon="api"
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/actions/${action.id}`}
               >
                 <FlexItem
                   itemsAlign={EnumItemsAlign.Center}
                   end={<EnabledIndicator enabled={action.enabled} />}
+                  singeChildWithEllipsis
                 >
                   {action.displayName}
                 </FlexItem>

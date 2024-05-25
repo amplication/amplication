@@ -10,6 +10,7 @@ export const MODULE_FIELDS_FRAGMENT = gql`
     entityId
     lockedByUserId
     lockedAt
+    resourceId
     lockedByUser {
       account {
         firstName
@@ -29,8 +30,8 @@ export const DELETE_MODULE = gql`
 
 export const GET_MODULE = gql`
   ${MODULE_FIELDS_FRAGMENT}
-  query Module($moduleId: String!) {
-    Module(where: { id: $moduleId }) {
+  query module($moduleId: String!) {
+    module(where: { id: $moduleId }) {
       ...ModuleFields
     }
   }
@@ -56,8 +57,8 @@ export const CREATE_MODULE = gql`
 
 export const FIND_MODULES = gql`
   ${MODULE_FIELDS_FRAGMENT}
-  query Modules($where: ModuleWhereInput, $orderBy: ModuleOrderByInput) {
-    Modules(where: $where, orderBy: $orderBy) {
+  query modules($where: ModuleWhereInput, $orderBy: ModuleOrderByInput) {
+    modules(where: $where, orderBy: $orderBy) {
       ...ModuleFields
     }
   }
