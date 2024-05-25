@@ -319,12 +319,13 @@ export function findRemoteRelatedModelAndField(
     // in cases where the relation is self relation
     remoteField = remoteModelFields.find((fieldOnRelatedModel: Field) => {
       return (
-        field.name !== fieldOnRelatedModel.name &&
         fieldOnRelatedModel.attributes?.find(
           (attr) =>
             attr.name === RELATION_ATTRIBUTE_NAME &&
             findRelationAttributeName(attr) === relationAttributeName
-        )
+        ) &&
+        (field.name !== fieldOnRelatedModel.name ||
+          model.name !== remoteModel.name)
       );
     });
   } else {

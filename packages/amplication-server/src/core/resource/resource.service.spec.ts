@@ -57,7 +57,6 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
 import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
@@ -67,6 +66,7 @@ import { SubscriptionService } from "../subscription/subscription.service";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { ActionService } from "../action/action.service";
 import { UserActionService } from "../userAction/userAction.service";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -220,6 +220,7 @@ const EXAMPLE_USER: User = {
     createdAt: new Date(),
     updatedAt: new Date(),
     name: "example_workspace_name",
+    allowLLMFeatures: true,
   },
   account: EXAMPLE_ACCOUNT,
   isOwner: true,
@@ -478,10 +479,10 @@ const entityServiceCreateDefaultEntitiesMock = jest.fn();
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
 const entityServiceBulkCreateFields = jest.fn();
-const analyticServiceTrack = jest.fn();
 
 const mockedUpdateServiceLicensed = jest.fn();
 
+const pluginInstallationServiceCreateMock = jest.fn();
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
 const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
@@ -525,15 +526,10 @@ describe("ResourceService", () => {
           provide: PluginInstallationService,
           useValue: { get: () => "" },
           useClass: jest.fn(() => ({
-            create: jest.fn(),
+            create: pluginInstallationServiceCreateMock,
           })),
         },
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            track: analyticServiceTrack,
-          })),
-        },
+        MockedSegmentAnalyticsProvider(),
         {
           provide: SubscriptionService,
           useClass: jest.fn(() => ({
@@ -1138,5 +1134,31 @@ describe("ResourceService", () => {
         new Error(INVALID_RESOURCE_ID)
       );
     });
+  });
+
+  it("should create a service with default settings and install the default DB plugin", async () => {
+    await service.createServiceWithDefaultSettings(
+      EXAMPLE_RESOURCE_NAME,
+      EXAMPLE_RESOURCE_DESCRIPTION,
+      EXAMPLE_PROJECT_ID,
+      EXAMPLE_USER,
+      true
+    );
+
+    expect(prismaResourceCreateMock).toBeCalledTimes(1);
+    expect(pluginInstallationServiceCreateMock).toBeCalledTimes(1);
+  });
+
+  it("should create a service with default settings without installing the default DB plugin", async () => {
+    await service.createServiceWithDefaultSettings(
+      EXAMPLE_RESOURCE_NAME,
+      EXAMPLE_RESOURCE_DESCRIPTION,
+      EXAMPLE_PROJECT_ID,
+      EXAMPLE_USER,
+      false
+    );
+
+    expect(prismaResourceCreateMock).toBeCalledTimes(1);
+    expect(pluginInstallationServiceCreateMock).toBeCalledTimes(0);
   });
 });

@@ -4,6 +4,8 @@ import {
   DescribeImagesCommand,
   DescribeImagesCommandInput,
   ImageDetail,
+  DescribeRepositoriesCommand,
+  Repository,
 } from "@aws-sdk/client-ecr";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
 
@@ -19,9 +21,12 @@ export class AwsEcrService {
     });
   }
 
-  async getTags(nextToken?: string): Promise<ImageDetail[]> {
+  async getTags(
+    name = "data-service-generator",
+    nextToken?: string
+  ): Promise<ImageDetail[]> {
     const input = <DescribeImagesCommandInput>{
-      repositoryName: "data-service-generator",
+      repositoryName: name,
       filter: {
         tagStatus: "TAGGED",
       },
@@ -44,9 +49,35 @@ export class AwsEcrService {
         })) || [];
 
     if (response.nextToken) {
-      images.push(...(await this.getTags(response.nextToken)));
+      images.push(...(await this.getTags(name, response.nextToken)));
     }
 
     return images;
+  }
+
+  async getGeneratorImages(nextToken?: string): Promise<string[]> {
+    const command = new DescribeRepositoriesCommand({
+      repositoryNames: [],
+      maxResults: 100,
+      nextToken,
+    });
+    const response = await this.client.send(command);
+
+    const repositories: Repository[] =
+      response.repositories?.filter((repository) =>
+        repository.repositoryName.startsWith("generator-")
+      ) || [];
+
+    const repositoriesNames = repositories.map(
+      (repository) => repository.repositoryName
+    );
+
+    if (response.nextToken) {
+      repositoriesNames.push(
+        ...(await this.getGeneratorImages(response.nextToken))
+      );
+    }
+
+    return repositoriesNames;
   }
 }

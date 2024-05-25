@@ -3089,7 +3089,11 @@ volumes:
   "server/nest-cli.json": "{
   "sourceRoot": "src",
   "compilerOptions": {
-    "assets": ["swagger"]
+    "assets": [
+      {
+        "include": "swagger/**/*"
+      }
+    ]
   }
 }
 ",
@@ -3141,7 +3145,7 @@ volumes:
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.1",
     "reflect-metadata": "0.1.13",
-    "ts-node": "10.9.1",
+    "ts-node": "10.9.2",
     "type-fest": "2.19.0",
     "validator": "13.11.0"
   },
@@ -3161,7 +3165,7 @@ volumes:
     "prisma": "^5.4.2",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.3"
   },
   "jest": {
     "preset": "ts-jest",
@@ -3528,8 +3532,7 @@ export function getInvalidAttributes(
 }
 ",
   "server/src/auth/acl.module.ts": "import { AccessControlModule, RolesBuilder } from "nest-access-control";
-// @ts-ignore
-// eslint-disable-next-line import/no-unresolved
+
 import grants from "../grants.json";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -3870,8 +3873,6 @@ export class GqlACGuard<User extends any = any> extends ACGuard<User> {
   "server/src/auth/gqlDefaultAuth.guard.ts": "import { ExecutionContext } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import type { Request } from "express";
-// @ts-ignore
-// eslint-disable-next-line
 import { DefaultAuthGuard } from "./defaultAuth.guard";
 
 export class GqlDefaultAuthGuard extends DefaultAuthGuard {
@@ -4117,10 +4118,8 @@ export function parseSalt(value: string | undefined): Salt {
   return rounds;
 }
 ",
-  "server/src/auth/token.service.ts": "//@ts-ignore
-import { ITokenService } from "./ITokenService";
-// eslint-disable-next-line import/no-unresolved
-//@ts-ignore
+  "server/src/auth/token.service.ts": "import { ITokenService } from "./ITokenService";
+
 import { TokenServiceBase } from "./base/token.service.base";
 
 export class TokenService extends TokenServiceBase implements ITokenService {}
@@ -6543,47 +6542,51 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Customer, Order, Organization } from "@prisma/client";
+
+import {
+  Prisma,
+  Customer as PrismaCustomer,
+  Order as PrismaOrder,
+  Organization as PrismaOrganization,
+} from "@prisma/client";
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.CustomerCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.CustomerCountArgs, "select">): Promise<number> {
     return this.prisma.customer.count(args);
   }
 
   async customers<T extends Prisma.CustomerFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
-  ): Promise<Customer[]> {
-    return this.prisma.customer.findMany(args);
+  ): Promise<PrismaCustomer[]> {
+    return this.prisma.customer.findMany<Prisma.CustomerFindManyArgs>(args);
   }
   async customer<T extends Prisma.CustomerFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindUniqueArgs>
-  ): Promise<Customer | null> {
+  ): Promise<PrismaCustomer | null> {
     return this.prisma.customer.findUnique(args);
   }
   async createCustomer<T extends Prisma.CustomerCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>
-  ): Promise<Customer> {
+  ): Promise<PrismaCustomer> {
     return this.prisma.customer.create<T>(args);
   }
   async updateCustomer<T extends Prisma.CustomerUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerUpdateArgs>
-  ): Promise<Customer> {
+  ): Promise<PrismaCustomer> {
     return this.prisma.customer.update<T>(args);
   }
   async deleteCustomer<T extends Prisma.CustomerDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerDeleteArgs>
-  ): Promise<Customer> {
+  ): Promise<PrismaCustomer> {
     return this.prisma.customer.delete(args);
   }
 
   async findOrders(
-    parentId: number,
+    parentId: bigint,
     args: Prisma.OrderFindManyArgs
-  ): Promise<Order[]> {
+  ): Promise<PrismaOrder[]> {
     return this.prisma.customer
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -6591,7 +6594,7 @@ export class CustomerServiceBase {
       .orders(args);
   }
 
-  async getOrganization(parentId: number): Promise<Organization | null> {
+  async getOrganization(parentId: bigint): Promise<PrismaOrganization | null> {
     return this.prisma.customer
       .findUnique({
         where: { id: parentId },
@@ -6599,7 +6602,9 @@ export class CustomerServiceBase {
       .organization();
   }
 
-  async getVipOrganization(parentId: number): Promise<Organization | null> {
+  async getVipOrganization(
+    parentId: bigint
+  ): Promise<PrismaOrganization | null> {
     return this.prisma.customer
       .findUnique({
         where: { id: parentId },
@@ -7694,40 +7699,38 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Empty } from "@prisma/client";
+import { Prisma, Empty as PrismaEmpty } from "@prisma/client";
 
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.EmptyCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.EmptyCountArgs, "select">): Promise<number> {
     return this.prisma.empty.count(args);
   }
 
   async empties<T extends Prisma.EmptyFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
-  ): Promise<Empty[]> {
-    return this.prisma.empty.findMany(args);
+  ): Promise<PrismaEmpty[]> {
+    return this.prisma.empty.findMany<Prisma.EmptyFindManyArgs>(args);
   }
   async empty<T extends Prisma.EmptyFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindUniqueArgs>
-  ): Promise<Empty | null> {
+  ): Promise<PrismaEmpty | null> {
     return this.prisma.empty.findUnique(args);
   }
   async createEmpty<T extends Prisma.EmptyCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyCreateArgs>
-  ): Promise<Empty> {
+  ): Promise<PrismaEmpty> {
     return this.prisma.empty.create<T>(args);
   }
   async updateEmpty<T extends Prisma.EmptyUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyUpdateArgs>
-  ): Promise<Empty> {
+  ): Promise<PrismaEmpty> {
     return this.prisma.empty.update<T>(args);
   }
   async deleteEmpty<T extends Prisma.EmptyDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyDeleteArgs>
-  ): Promise<Empty> {
+  ): Promise<PrismaEmpty> {
     return this.prisma.empty.delete(args);
   }
 }
@@ -8540,6 +8543,13 @@ const { PORT = 3000 } = process.env;
 async function main() {
   const app = await NestFactory.create(AppModule, { cors: true });
 
+  // This fix is based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  BigInt.prototype.toJSON = function () {
+    return this.toString();
+  };
+
   app.setGlobalPrefix("api");
   app.useGlobalPipes(
     new ValidationPipe({
@@ -8547,12 +8557,6 @@ async function main() {
       forbidUnknownValues: false,
     })
   );
-
-  //This fix is based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  BigInt.prototype.toJSON = function () {
-    return this.toString();
-  };
 
   const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
 
@@ -9896,44 +9900,46 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Order, Customer } from "@prisma/client";
+import {
+  Prisma,
+  Order as PrismaOrder,
+  Customer as PrismaCustomer,
+} from "@prisma/client";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.OrderCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.OrderCountArgs, "select">): Promise<number> {
     return this.prisma.order.count(args);
   }
 
   async orders<T extends Prisma.OrderFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
-  ): Promise<Order[]> {
-    return this.prisma.order.findMany(args);
+  ): Promise<PrismaOrder[]> {
+    return this.prisma.order.findMany<Prisma.OrderFindManyArgs>(args);
   }
   async order<T extends Prisma.OrderFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindUniqueArgs>
-  ): Promise<Order | null> {
+  ): Promise<PrismaOrder | null> {
     return this.prisma.order.findUnique(args);
   }
   async createOrder<T extends Prisma.OrderCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderCreateArgs>
-  ): Promise<Order> {
+  ): Promise<PrismaOrder> {
     return this.prisma.order.create<T>(args);
   }
   async updateOrder<T extends Prisma.OrderUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderUpdateArgs>
-  ): Promise<Order> {
+  ): Promise<PrismaOrder> {
     return this.prisma.order.update<T>(args);
   }
   async deleteOrder<T extends Prisma.OrderDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderDeleteArgs>
-  ): Promise<Order> {
+  ): Promise<PrismaOrder> {
     return this.prisma.order.delete(args);
   }
 
-  async getCustomer(parentId: string): Promise<Customer | null> {
+  async getCustomer(parentId: string): Promise<PrismaCustomer | null> {
     return this.prisma.order
       .findUnique({
         where: { id: parentId },
@@ -11848,47 +11854,55 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Organization, User, Customer } from "@prisma/client";
+
+import {
+  Prisma,
+  Organization as PrismaOrganization,
+  User as PrismaUser,
+  Customer as PrismaCustomer,
+} from "@prisma/client";
 
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.OrganizationCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationCountArgs>
+  async count(
+    args: Omit<Prisma.OrganizationCountArgs, "select">
   ): Promise<number> {
     return this.prisma.organization.count(args);
   }
 
   async organizations<T extends Prisma.OrganizationFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
-  ): Promise<Organization[]> {
-    return this.prisma.organization.findMany(args);
+  ): Promise<PrismaOrganization[]> {
+    return this.prisma.organization.findMany<Prisma.OrganizationFindManyArgs>(
+      args
+    );
   }
   async organization<T extends Prisma.OrganizationFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindUniqueArgs>
-  ): Promise<Organization | null> {
+  ): Promise<PrismaOrganization | null> {
     return this.prisma.organization.findUnique(args);
   }
   async createOrganization<T extends Prisma.OrganizationCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationCreateArgs>
-  ): Promise<Organization> {
+  ): Promise<PrismaOrganization> {
     return this.prisma.organization.create<T>(args);
   }
   async updateOrganization<T extends Prisma.OrganizationUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationUpdateArgs>
-  ): Promise<Organization> {
+  ): Promise<PrismaOrganization> {
     return this.prisma.organization.update<T>(args);
   }
   async deleteOrganization<T extends Prisma.OrganizationDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationDeleteArgs>
-  ): Promise<Organization> {
+  ): Promise<PrismaOrganization> {
     return this.prisma.organization.delete(args);
   }
 
   async findUsers(
     parentId: string,
     args: Prisma.UserFindManyArgs
-  ): Promise<User[]> {
+  ): Promise<PrismaUser[]> {
     return this.prisma.organization
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -11899,7 +11913,7 @@ export class OrganizationServiceBase {
   async findCustomers(
     parentId: string,
     args: Prisma.CustomerFindManyArgs
-  ): Promise<Customer[]> {
+  ): Promise<PrismaCustomer[]> {
     return this.prisma.organization
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -11910,7 +11924,7 @@ export class OrganizationServiceBase {
   async findVipCustomers(
     parentId: string,
     args: Prisma.CustomerFindManyArgs
-  ): Promise<Customer[]> {
+  ): Promise<PrismaCustomer[]> {
     return this.prisma.organization
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -13456,44 +13470,46 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Profile, User } from "@prisma/client";
+import {
+  Prisma,
+  Profile as PrismaProfile,
+  User as PrismaUser,
+} from "@prisma/client";
 
 export class ProfileServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.ProfileCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.ProfileCountArgs, "select">): Promise<number> {
     return this.prisma.profile.count(args);
   }
 
   async profiles<T extends Prisma.ProfileFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
-  ): Promise<Profile[]> {
-    return this.prisma.profile.findMany(args);
+  ): Promise<PrismaProfile[]> {
+    return this.prisma.profile.findMany<Prisma.ProfileFindManyArgs>(args);
   }
   async profile<T extends Prisma.ProfileFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindUniqueArgs>
-  ): Promise<Profile | null> {
+  ): Promise<PrismaProfile | null> {
     return this.prisma.profile.findUnique(args);
   }
   async createProfile<T extends Prisma.ProfileCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileCreateArgs>
-  ): Promise<Profile> {
+  ): Promise<PrismaProfile> {
     return this.prisma.profile.create<T>(args);
   }
   async updateProfile<T extends Prisma.ProfileUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileUpdateArgs>
-  ): Promise<Profile> {
+  ): Promise<PrismaProfile> {
     return this.prisma.profile.update<T>(args);
   }
   async deleteProfile<T extends Prisma.ProfileDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileDeleteArgs>
-  ): Promise<Profile> {
+  ): Promise<PrismaProfile> {
     return this.prisma.profile.delete(args);
   }
 
-  async getUser(parentId: number): Promise<User | null> {
+  async getUser(parentId: number): Promise<PrismaUser | null> {
     return this.prisma.profile
       .findUnique({
         where: { id: parentId },
@@ -13849,6 +13865,117 @@ describe("Testing the HealthServiceBase", () => {
 
 export type InputJsonValue = Omit<JsonValue, "null">;
 ",
+  "server/src/user/PromoteUserArgs.ts": "import { ArgsType, Field } from "@nestjs/graphql";
+import { PromoteUserInput } from "./PromoteUserInput";
+import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { UserWhereUniqueInput } from "./base/UserWhereUniqueInput";
+
+@ArgsType()
+class PromoteUserArgs {
+    @Field(() => PromoteUserInput, {
+        nullable: true
+    })
+    @ApiProperty({
+        required: false,
+        type: () => PromoteUserInput
+    })
+    @Type(() => PromoteUserInput)
+    data?: PromoteUserInput;
+
+    @Field(() => UserWhereUniqueInput)
+    @ApiProperty({
+        required: true,
+        type: () => UserWhereUniqueInput
+    })
+    @Type(() => UserWhereUniqueInput)
+    where!: UserWhereUniqueInput;
+
+    @Field(() => UserWhereUniqueInput)
+    @ApiProperty({
+        required: true,
+        type: () => UserWhereUniqueInput
+    })
+    @Type(() => UserWhereUniqueInput)
+    query!: UserWhereUniqueInput;
+}
+
+export { PromoteUserArgs as PromoteUserArgs };",
+  "server/src/user/PromoteUserInput.ts": "import { ArgsType, InputType, ObjectType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../types";
+
+@ArgsType()
+@InputType("PromoteUserInputInput")
+@ObjectType("PromoteUserInputObject")
+class PromoteUserInput {
+    @Field(() => [String])
+    @ApiProperty({
+        required: true,
+        type: () => [String]
+    })
+    @Type(() => String)
+    userId!: string[];
+
+    @Field(() => Number)
+    @ApiProperty({
+        required: true,
+        type: () => Number
+    })
+    @Type(() => Number)
+    score!: number;
+
+    @Field(() => Boolean)
+    @ApiProperty({
+        required: true,
+        type: () => Boolean
+    })
+    @Type(() => Boolean)
+    isAdmin!: boolean;
+
+    @Field(() => Date)
+    @Type(() => Date)
+    lastLogin!: Date;
+
+    @Field(() => Number, {
+        nullable: true
+    })
+    @ApiProperty({
+        required: false,
+        type: () => Number
+    })
+    @Type(() => Number)
+    weightedScore?: number;
+
+    @Field(() => GraphQLJSON, {
+        nullable: true
+    })
+    extendedProfile?: InputJsonValue;
+
+    @Field(() => PromoteUserInput, {
+        nullable: true
+    })
+    @ApiProperty({
+        required: false,
+        type: () => PromoteUserInput
+    })
+    @Type(() => PromoteUserInput)
+    selfReference?: PromoteUserInput;
+
+    @Field(() => [PromoteUserInput], {
+        nullable: true
+    })
+    @ApiProperty({
+        required: false,
+        type: () => [PromoteUserInput]
+    })
+    @Type(() => PromoteUserInput)
+    selfReferenceArray?: PromoteUserInput[];
+}
+
+export { PromoteUserInput as PromoteUserInput };",
   "server/src/user/base/CreateUserArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -15464,7 +15591,7 @@ const service = {
   createUser() {
     return CREATE_RESULT;
   },
-  users: () => FIND_MANY_RESULT,
+
   user: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
@@ -15546,18 +15673,6 @@ describe("User", () => {
       });
   });
 
-  test("GET /users", async () => {
-    await request(app.getHttpServer())
-      .get("/users")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          birthDate: FIND_MANY_RESULT[0].birthDate.toISOString(),
-        },
-      ]);
-  });
-
   test("GET /users/:id non existing", async () => {
     await request(app.getHttpServer())
       .get(\`\${"/users"}/\${nonExistingId}\`)
@@ -15630,12 +15745,13 @@ import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateReq
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { UserCreateInput } from "./UserCreateInput";
 import { User } from "./User";
-import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateInput } from "./UserUpdateInput";
+import { UserFindManyArgs } from "./UserFindManyArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { OrganizationWhereUniqueInput } from "../../organization/base/OrganizationWhereUniqueInput";
+import { PromoteUserInput } from "../PromoteUserInput";
 
 @swagger.ApiBasicAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
@@ -15672,54 +15788,6 @@ export class UserControllerBase {
             }
           : undefined,
       },
-      select: {
-        id: true,
-        username: true,
-        roles: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        manager: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-        extendedProperties: true,
-
-        profile: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-  }
-
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.Get()
-  @swagger.ApiOkResponse({ type: [User] })
-  @ApiNestedQuery(UserFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: "User",
-    action: "read",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
-  async users(@common.Req() request: Request): Promise<User[]> {
-    const args = plainToClass(UserFindManyArgs, request.query);
-    return this.service.users({
-      ...args,
       select: {
         id: true,
         username: true,
@@ -15841,63 +15909,6 @@ export class UserControllerBase {
               }
             : undefined,
         },
-        select: {
-          id: true,
-          username: true,
-          roles: true,
-          name: true,
-          bio: true,
-          email: true,
-          age: true,
-          birthDate: true,
-          score: true,
-
-          manager: {
-            select: {
-              id: true,
-            },
-          },
-
-          interests: true,
-          priority: true,
-          isCurious: true,
-          location: true,
-          extendedProperties: true,
-
-          profile: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
-    } catch (error) {
-      if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
-          \`No resource was found for \${JSON.stringify(params)}\`
-        );
-      }
-      throw error;
-    }
-  }
-
-  @common.Delete("/:id")
-  @swagger.ApiOkResponse({ type: User })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "User",
-    action: "delete",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
-  async deleteUser(
-    @common.Param() params: UserWhereUniqueInput
-  ): Promise<User | null> {
-    try {
-      return await this.service.deleteUser({
-        where: params,
         select: {
           id: true,
           username: true,
@@ -16152,6 +16163,83 @@ export class UserControllerBase {
       select: { id: true },
     });
   }
+
+  @common.Post("/:id/promote")
+  @swagger.ApiOkResponse({
+    type: PromoteUserInput,
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
+  async promoteUser(
+    @common.Param()
+    params: UserWhereUniqueInput,
+    @common.Query()
+    query: UserWhereUniqueInput,
+    @common.Body()
+    body: PromoteUserInput
+  ): Promise<PromoteUserInput[]> {
+    const args = {
+      where: params,
+      query: query,
+      data: body,
+    };
+    return this.service.promoteUser(args);
+  }
+
+  @common.Patch("/:id/sendPasswordResetEmail")
+  @swagger.ApiOkResponse({
+    type: Boolean,
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
+  async sendPasswordResetEmail(
+    @common.Body()
+    body: PromoteUserInput
+  ): Promise<boolean> {
+    return this.service.sendPasswordResetEmail(body);
+  }
+
+  @common.Get("/:id/resendInviteEmail")
+  @swagger.ApiOkResponse({
+    type: PromoteUserInput,
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
+  async resendInviteEmail(
+    @common.Body()
+    body: PromoteUserInput
+  ): Promise<PromoteUserInput> {
+    return this.service.resendInviteEmail(body);
+  }
+
+  @common.Delete("/:id/softDeleteUser")
+  @swagger.ApiOkResponse({
+    type: PromoteUserInput,
+  })
+  @swagger.ApiNotFoundResponse({
+    type: errors.NotFoundException,
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
+  async softDeleteUser(
+    @common.Body()
+    body: PromoteUserInput
+  ): Promise<PromoteUserInput> {
+    return this.service.softDeleteUser(body);
+  }
 }
 ",
   "server/src/user/base/user.module.base.ts": "/*
@@ -16196,14 +16284,15 @@ import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterRespon
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { User } from "./User";
 import { UserCountArgs } from "./UserCountArgs";
-import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
 import { CreateUserArgs } from "./CreateUserArgs";
 import { UpdateUserArgs } from "./UpdateUserArgs";
-import { DeleteUserArgs } from "./DeleteUserArgs";
+import { UserFindManyArgs } from "./UserFindManyArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { Profile } from "../../profile/base/Profile";
+import { PromoteUserArgs } from "../PromoteUserArgs";
+import { PromoteUserInput } from "../PromoteUserInput";
 import { UserService } from "../user.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => User)
@@ -16226,17 +16315,6 @@ export class UserResolverBase {
     return {
       count: result,
     };
-  }
-
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.Query(() => [User])
-  @nestAccessControl.UseRoles({
-    resource: "User",
-    action: "read",
-    possession: "any",
-  })
-  async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
-    return this.service.users(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -16309,25 +16387,6 @@ export class UserResolverBase {
             : undefined,
         },
       });
-    } catch (error) {
-      if (isRecordNotFoundError(error)) {
-        throw new GraphQLError(
-          \`No resource was found for \${JSON.stringify(args.where)}\`
-        );
-      }
-      throw error;
-    }
-  }
-
-  @graphql.Mutation(() => User)
-  @nestAccessControl.UseRoles({
-    resource: "User",
-    action: "delete",
-    possession: "any",
-  })
-  async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
-    try {
-      return await this.service.deleteUser(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -16415,6 +16474,38 @@ export class UserResolverBase {
     }
     return result;
   }
+
+  @graphql.Mutation(() => [PromoteUserInput])
+  async promoteUser(
+    @graphql.Args()
+    args: PromoteUserArgs
+  ): Promise<PromoteUserInput[]> {
+    return this.service.promoteUser(args);
+  }
+
+  @graphql.Mutation(() => Boolean)
+  async sendPasswordResetEmail(
+    @graphql.Args()
+    args: PromoteUserInput
+  ): Promise<boolean> {
+    return this.service.sendPasswordResetEmail(args);
+  }
+
+  @graphql.Query(() => PromoteUserInput)
+  async resendInviteEmail(
+    @graphql.Args()
+    args: PromoteUserInput
+  ): Promise<PromoteUserInput> {
+    return this.service.resendInviteEmail(args);
+  }
+
+  @graphql.Mutation(() => PromoteUserInput)
+  async softDeleteUser(
+    @graphql.Args()
+    args: PromoteUserInput
+  ): Promise<PromoteUserInput> {
+    return this.service.softDeleteUser(args);
+  }
 }
 ",
   "server/src/user/base/user.service.base.ts": "/*
@@ -16429,9 +16520,18 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, User, Organization, Profile } from "@prisma/client";
+
+import {
+  Prisma,
+  User as PrismaUser,
+  Organization as PrismaOrganization,
+  Profile as PrismaProfile,
+} from "@prisma/client";
+
 import { PasswordService } from "../../auth/password.service";
 import { transformStringFieldUpdateInput } from "../../prisma.util";
+import { PromoteUserArgs } from "../PromoteUserArgs";
+import { PromoteUserInput } from "../PromoteUserInput";
 
 export class UserServiceBase {
   constructor(
@@ -16439,25 +16539,23 @@ export class UserServiceBase {
     protected readonly passwordService: PasswordService
   ) {}
 
-  async count<T extends Prisma.UserCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserCountArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.UserCountArgs, "select">): Promise<number> {
     return this.prisma.user.count(args);
   }
 
   async users<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
-  ): Promise<User[]> {
-    return this.prisma.user.findMany(args);
+  ): Promise<PrismaUser[]> {
+    return this.prisma.user.findMany<Prisma.UserFindManyArgs>(args);
   }
   async user<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
-  ): Promise<User | null> {
+  ): Promise<PrismaUser | null> {
     return this.prisma.user.findUnique(args);
   }
   async createUser<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
-  ): Promise<User> {
+  ): Promise<PrismaUser> {
     return this.prisma.user.create<T>({
       ...args,
 
@@ -16469,7 +16567,7 @@ export class UserServiceBase {
   }
   async updateUser<T extends Prisma.UserUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
-  ): Promise<User> {
+  ): Promise<PrismaUser> {
     return this.prisma.user.update<T>({
       ...args,
 
@@ -16487,14 +16585,14 @@ export class UserServiceBase {
   }
   async deleteUser<T extends Prisma.UserDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
-  ): Promise<User> {
+  ): Promise<PrismaUser> {
     return this.prisma.user.delete(args);
   }
 
   async findEmployees(
     parentId: string,
     args: Prisma.UserFindManyArgs
-  ): Promise<User[]> {
+  ): Promise<PrismaUser[]> {
     return this.prisma.user
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -16505,7 +16603,7 @@ export class UserServiceBase {
   async findOrganizations(
     parentId: string,
     args: Prisma.OrganizationFindManyArgs
-  ): Promise<Organization[]> {
+  ): Promise<PrismaOrganization[]> {
     return this.prisma.user
       .findUniqueOrThrow({
         where: { id: parentId },
@@ -16513,7 +16611,7 @@ export class UserServiceBase {
       .organizations(args);
   }
 
-  async getManager(parentId: string): Promise<User | null> {
+  async getManager(parentId: string): Promise<PrismaUser | null> {
     return this.prisma.user
       .findUnique({
         where: { id: parentId },
@@ -16521,12 +16619,24 @@ export class UserServiceBase {
       .manager();
   }
 
-  async getProfile(parentId: string): Promise<Profile | null> {
+  async getProfile(parentId: string): Promise<PrismaProfile | null> {
     return this.prisma.user
       .findUnique({
         where: { id: parentId },
       })
       .profile();
+  }
+  async promoteUser(args: PromoteUserArgs): Promise<PromoteUserInput[]> {
+    throw new Error("Not implemented");
+  }
+  async sendPasswordResetEmail(args: PromoteUserInput): Promise<boolean> {
+    throw new Error("Not implemented");
+  }
+  async resendInviteEmail(args: PromoteUserInput): Promise<PromoteUserInput> {
+    throw new Error("Not implemented");
+  }
+  async softDeleteUser(args: PromoteUserInput): Promise<PromoteUserInput> {
+    throw new Error("Not implemented");
   }
 }
 ",

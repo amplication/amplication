@@ -150,6 +150,16 @@ export const DEFAULT_ENTITIES: EntityData[] = [
         },
       },
       {
+        dataType: EnumDataType.Email,
+        name: "email",
+        displayName: "Email",
+        description: "An automatically created field of the email of the user",
+        unique: true,
+        required: false,
+        searchable: true,
+        properties: {},
+      },
+      {
         dataType: EnumDataType.Password,
         name: "password",
         displayName: "Password",
@@ -221,6 +231,7 @@ export const DATA_TYPE_TO_DEFAULT_PROPERTIES: {
   [EnumDataType.Username]: {},
   [EnumDataType.Password]: {},
   [EnumDataType.Roles]: {},
+  [EnumDataType.File]: {},
 };
 
 export const PRISMA_IMPORT_ACTION_LOG: Action = {

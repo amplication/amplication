@@ -120,6 +120,7 @@ const CommandPalette = ({ trigger }: Props) => {
   };
   const { data } = useQuery<TData>(SEARCH, {
     variables: { query, projectId: currentProject?.id },
+    skip: !currentProject,
   });
   const commands = useMemo(
     () =>

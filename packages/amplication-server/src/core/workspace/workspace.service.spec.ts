@@ -13,7 +13,6 @@ import { DeleteUserArgs } from "./dto";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { ProjectService } from "../project/project.service";
 import { BillingService } from "../billing/billing.service";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -23,6 +22,8 @@ import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
@@ -77,6 +78,7 @@ const EXAMPLE_WORKSPACE: Workspace = {
   updatedAt: new Date(),
   name: EXAMPLE_WORKSPACE_NAME,
   users: [EXAMPLE_USER],
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -171,6 +173,9 @@ Object.defineProperty(billingServiceMock, "isBillingEnabled", {
 const createPreviewServiceMock = jest.fn();
 const mockUpdateProjectLicensed = jest.fn();
 const mockUpdateServiceLicensed = jest.fn();
+
+const createDemoRepoMock = jest.fn();
+
 describe("WorkspaceService", () => {
   let service: WorkspaceService;
 
@@ -201,6 +206,13 @@ describe("WorkspaceService", () => {
         },
         {
           provide: ModuleService,
+          useClass: jest.fn(() => {
+            return {};
+          }),
+        },
+
+        {
+          provide: ModuleDtoService,
           useClass: jest.fn(() => {
             return {};
           }),
@@ -280,16 +292,10 @@ describe("WorkspaceService", () => {
           provide: ProjectService,
           useClass: jest.fn().mockImplementation(() => ({
             createProject: createProjectMock,
+            createDemoRepo: createDemoRepoMock,
           })),
         },
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            track: jest.fn(() => {
-              return;
-            }),
-          })),
-        },
+        MockedSegmentAnalyticsProvider(),
       ],
     }).compile();
 
@@ -382,6 +388,7 @@ describe("WorkspaceService", () => {
       );
       expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
       expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
+      expect(createDemoRepoMock).toBeCalledTimes(0);
     });
 
     it("should throw a billing limitation error if the block workspace creation entitlement is true", async () => {
@@ -408,6 +415,52 @@ describe("WorkspaceService", () => {
       );
 
       expect(prismaWorkspaceCreateMock).toBeCalledTimes(0);
+    });
+
+    it("should create a demo repo when creating a workspace ", async () => {
+      billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+        hasAccess: false,
+      } as unknown as BooleanEntitlement);
+
+      const args = {
+        accountId: EXAMPLE_ACCOUNT_ID,
+        args: {
+          data: {
+            name: EXAMPLE_WORKSPACE_NAME,
+          },
+        },
+      };
+      const prismaArgs = {
+        ...args.args,
+        data: {
+          ...args.args.data,
+          users: {
+            create: {
+              account: { connect: { id: args.accountId } },
+              userRoles: {
+                create: {
+                  role: Role.OrganizationAdmin,
+                },
+              },
+              isOwner: true,
+            },
+          },
+        },
+        include: {
+          users: true,
+        },
+      };
+      expect(
+        await service.createWorkspace(
+          args.accountId,
+          args.args,
+          undefined,
+          true
+        )
+      ).toEqual(EXAMPLE_WORKSPACE);
+      expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
+      expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
+      expect(createDemoRepoMock).toBeCalledTimes(1);
     });
   });
 

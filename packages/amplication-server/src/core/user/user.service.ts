@@ -3,11 +3,22 @@ import { ConflictException, Injectable } from "@nestjs/common";
 import { Account, User, UserRole } from "../../models";
 import { UserRoleArgs } from "./dto";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { KAFKA_TOPICS, UserAction } from "@amplication/schema-registry";
+import {
+  CreatePrProcessCompleted,
+  KAFKA_TOPICS,
+  UserAction,
+  UserFeatureAnnouncement,
+} from "@amplication/schema-registry";
 import { encryptString } from "../../util/encryptionUtil";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
+import { PreviewUserService } from "../auth/previewUser.service";
+import { AuthUser } from "../auth/types";
+import { EnumPreviewAccountType } from "@amplication/code-gen-types";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 @Injectable()
 export class UserService {
@@ -15,7 +26,9 @@ export class UserService {
     private readonly kafkaProducerService: KafkaProducerService,
     private readonly logger: AmplicationLogger,
     private readonly billingService: BillingService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+    private readonly previewUserService: PreviewUserService
   ) {}
 
   findUser(
@@ -39,6 +52,23 @@ export class UserService {
         deletedAt: null,
       },
     });
+  }
+
+  async getAuthUser(where: Prisma.UserWhereInput): Promise<AuthUser | null> {
+    const matchingUsers = await this.findUsers({
+      where,
+      include: {
+        account: true,
+        userRoles: true,
+        workspace: true,
+      },
+      take: 1,
+    });
+    if (matchingUsers.length === 0) {
+      return null;
+    }
+    const [user] = matchingUsers;
+    return user as AuthUser;
   }
 
   async assignRole(args: UserRoleArgs): Promise<User> {
@@ -187,5 +217,122 @@ export class UserService {
       );
 
     return externalId;
+  }
+
+  async notifyUserFeatureAnnouncement(
+    userActiveDaysBack: number,
+    notificationTemplateIdentifier: string
+  ): Promise<boolean> {
+    const date = new Date();
+    const users = await this.findUsers({
+      where: {
+        lastActive: {
+          gte: new Date(date.setDate(date.getDate() - userActiveDaysBack)),
+        },
+      },
+      include: {
+        account: true,
+        workspace: {
+          include: {
+            projects: {
+              where: {
+                deletedAt: null,
+              },
+              include: {
+                resources: {
+                  where: {
+                    deletedAt: null,
+                    archived: { not: true },
+                    resourceType: EnumResourceType.Service,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    for (const user of users) {
+      const firstProject = user.workspace?.projects?.at(0);
+      const firstService = firstProject?.resources?.at(0);
+      this.logger.info(
+        `Queuing feature notification ${notificationTemplateIdentifier} to user ${user.id} (account: ${user.account?.id}, 
+          workspace: ${user.workspace?.id}, firstProject: ${firstProject?.id}), firstService: ${firstService?.id}`
+      );
+
+      this.kafkaProducerService
+        .emitMessage(KAFKA_TOPICS.USER_ANNOUNCEMENT_TOPIC, <
+          UserFeatureAnnouncement.KafkaEvent
+        >{
+          key: {},
+          value: {
+            externalId: encryptString(user.id),
+            notificationTemplateIdentifier,
+            envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
+            workspaceId: user.workspace?.id,
+            projectId: firstProject?.id,
+            serviceId: firstService?.id,
+          },
+        })
+        .catch((error) =>
+          this.logger.error(
+            `Failed to send feature notification ${notificationTemplateIdentifier} to user ${user.id}`,
+            error
+          )
+        );
+    }
+
+    return true;
+  }
+
+  async handleUserPullRequestCompleted(
+    userId: string,
+    buildId: string,
+    pullRequestUrl: string
+  ): Promise<void> {
+    try {
+      const user = await this.getAuthUser({ id: userId });
+
+      //In case this is a preview onboarding, we'll complete the signup and send the password reset link
+      if (
+        user.account.previewAccountType ===
+        EnumPreviewAccountType.PreviewOnboarding
+      ) {
+        user.account.email =
+          user.account.previewAccountEmail ?? user.account.email;
+        const resetPasswordUrl =
+          await this.previewUserService.completeSignupPreviewAccount(
+            user,
+            false
+          );
+
+        await this.setNotificationRegistry(user);
+
+        //send the password reset link and pull request link to the user via novu
+        this.kafkaProducerService
+          .emitMessage(KAFKA_TOPICS.USER_PREVIEW_GENERATION_COMPLETED_TOPIC, <
+            CreatePrProcessCompleted.KafkaEvent
+          >{
+            key: {},
+            value: {
+              externalId: encryptString(userId),
+              resetPasswordUrl,
+              pullRequestUrl,
+            },
+          })
+          .catch((error) =>
+            this.logger.error(
+              `Failed to que CreatePrProcessCompleted for build ID ${buildId}`,
+              error
+            )
+          );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to handle pull request completed for user ${userId} and build ID ${buildId}`,
+        error
+      );
+    }
   }
 }

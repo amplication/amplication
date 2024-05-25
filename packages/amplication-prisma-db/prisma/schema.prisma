@@ -38,6 +38,7 @@ model Workspace {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   name             String            @unique(map: "Workspace.name_unique")
+  allowLLMFeatures Boolean           @default(true)
   users            User[]
   invitations      Invitation[]
   subscriptions    Subscription[]
@@ -167,6 +168,7 @@ model Resource {
   resourceType          EnumResourceType
   codeGeneratorVersion  String?
   codeGeneratorStrategy CodeGeneratorVersionStrategy @default(LatestMajor)
+  codeGeneratorName     String?
   licensed              Boolean                      @default(true)
 
   @@unique([projectId, name], map: "Resource.projectId_name_unique")
@@ -401,6 +403,9 @@ model Build {
   blockVersions            BlockVersion[]
   entityVersions           EntityVersion[]
   codeGeneratorVersion     String?
+  linesOfCodeAdded         Int?            @map("linesOfCode")
+  linesOfCodeDeleted       Int?
+  filesChanged             Int?
 
   @@unique([resourceId, version], map: "Build.resourceId_version_unique")
 }
@@ -493,6 +498,7 @@ enum EnumDataType {
   Username
   Password
   Json
+  File
 }
 
 enum EnumBlockType {
@@ -504,6 +510,7 @@ enum EnumBlockType {
   PluginOrder
   Module
   ModuleAction
+  ModuleDto
 }
 
 enum ActionStepStatus {
@@ -617,4 +624,5 @@ enum CodeGeneratorVersionStrategy {
 enum PreviewAccountType {
   None
   BreakingTheMonolith
+  PreviewOnboarding
 }

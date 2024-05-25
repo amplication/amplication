@@ -20,11 +20,7 @@ const BuildGitLink = ({
   return (
     buildGitUrl && (
       <a href={buildGitUrl} target={"git"}>
-        <Text
-          underline={true}
-          textStyle={EnumTextStyle.Tag}
-          textColor={textColor}
-        >
+        <Text textStyle={EnumTextStyle.Subtle} textColor={textColor}>
           {buildGitUrl}
         </Text>
       </a>

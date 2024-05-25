@@ -68,3 +68,5 @@ src/schema.graphql
 
 **/prisma/migrations/dev/
 .nx
+
+schema.graphql

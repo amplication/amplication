@@ -1,11 +1,13 @@
 import {
   CircleBadge,
   CircularProgress,
+  EnumButtonStyle,
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
   EnumPanelStyle,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
@@ -30,6 +32,12 @@ import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import ResourceListItem from "./ResourceListItem";
 import { useStiggContext } from "@stigg/react-sdk";
+import {
+  BtmButton,
+  EnumButtonLocation,
+} from "../Resource/break-the-monolith/BtmButton";
+import { UsageInsights } from "../UsageInsights/UsageInsights";
+import "./ResourceList.scss";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
@@ -109,7 +117,21 @@ function ResourceList() {
             onChange={handleSearchChange}
           />
         }
-        end={<CreateResourceButton resourcesLength={resources.length} />}
+        end={
+          <>
+            <FlexItem
+              itemsAlign={EnumItemsAlign.Center}
+              direction={EnumFlexDirection.Row}
+            >
+              <BtmButton
+                openInFullScreen={true}
+                location={EnumButtonLocation.Project}
+                ButtonStyle={EnumButtonStyle.GradientOutline}
+              />
+              <CreateResourceButton resourcesLength={resources.length} />
+            </FlexItem>
+          </>
+        }
       />
       <HorizontalRule doubleSpacing />
 
@@ -131,31 +153,45 @@ function ResourceList() {
           </FlexItem>
         </FlexItem>
       </Panel>
-      <FlexItem margin={EnumFlexItemMargin.Bottom}>
-        <Text textStyle={EnumTextStyle.Tag}>
-          {resources.length}{" "}
-          {pluralize(resources.length, "Resource", "Resources")}
-        </Text>
-      </FlexItem>
-      {loadingResources && <CircularProgress centerToParent />}
 
-      {isEmpty(resources) && !loadingResources ? (
-        <EmptyState
-          message="There are no resources to show"
-          image={EnumImages.AddResource}
-        />
-      ) : (
-        <List>
-          {!loadingResources &&
-            resources.map((resource) => (
-              <ResourceListItem
-                key={resource.id}
-                resource={resource}
-                onDelete={handleResourceDelete}
-              />
-            ))}
-        </List>
-      )}
+      <FlexItem
+        className={`${CLASS_NAME}__content`}
+        direction={EnumFlexDirection.Column}
+        itemsAlign={EnumItemsAlign.Stretch}
+      >
+        <Panel
+          panelStyle={EnumPanelStyle.Bold}
+          className={`${CLASS_NAME}__resources`}
+          themeColor={EnumTextColor.ThemeBlue}
+        >
+          <FlexItem margin={EnumFlexItemMargin.Bottom}>
+            <Text textStyle={EnumTextStyle.Tag}>
+              {resources.length}{" "}
+              {pluralize(resources.length, "Resource", "Resources")}
+            </Text>
+          </FlexItem>
+          {loadingResources && <CircularProgress centerToParent />}
+
+          {isEmpty(resources) && !loadingResources ? (
+            <EmptyState
+              message="There are no resources to show"
+              image={EnumImages.AddResource}
+            />
+          ) : (
+            <List>
+              {!loadingResources &&
+                resources.map((resource) => (
+                  <ResourceListItem
+                    key={resource.id}
+                    resource={resource}
+                    onDelete={handleResourceDelete}
+                  />
+                ))}
+            </List>
+          )}
+        </Panel>
+        <UsageInsights projectIds={[currentProject?.id]} />
+      </FlexItem>
 
       <Snackbar
         open={Boolean(error || errorResources)}

@@ -1,4 +1,7 @@
+import { BillingFeature } from "@amplication/util-billing-types";
 import { JsonValue } from "type-fest";
+import { BillingService } from "../billing/billing.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const getType = (obj) =>
   Object.prototype.toString.call(obj).slice(8, -1).toLowerCase();
@@ -40,3 +43,24 @@ export const mergeAllSettings = (
     ...mergedObj,
   };
 };
+
+export async function validateCustomActionsEntitlement(
+  workspaceId: string,
+  billingService: BillingService,
+  logger: AmplicationLogger
+): Promise<void> {
+  let customActionEntitlement;
+  try {
+    customActionEntitlement = await billingService.getBooleanEntitlement(
+      workspaceId,
+      BillingFeature.CustomActions
+    );
+  } catch (error) {
+    logger.error(error.message, error);
+    return;
+  }
+
+  if (!customActionEntitlement.hasAccess) {
+    throw new Error("User has no access to custom actions features");
+  }
+}

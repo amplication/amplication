@@ -1,11 +1,14 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { VersionServiceBase } from "./base/version.service.base";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import { Version } from "./base/Version";
 import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
 import { ConfigService } from "@nestjs/config";
-import { Prisma } from "../../prisma/generated-prisma-client";
+import {
+  Prisma,
+  Version as PrismaVersion,
+} from "../../prisma/generated-prisma-client";
 import { AwsEcrService } from "../aws/aws-ecr.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
@@ -90,10 +93,11 @@ export class VersionService extends VersionServiceBase {
     return latestMinorVersion;
   }
 
-  async getCodeGeneratorVersion(
-    args: GetCodeGeneratorVersionInput
-  ): Promise<Version | undefined> {
-    const { codeGeneratorVersion, codeGeneratorStrategy } = args;
+  async getCodeGeneratorVersion({
+    codeGeneratorFullName,
+    codeGeneratorVersion,
+    codeGeneratorStrategy,
+  }: GetCodeGeneratorVersionInput): Promise<Version | undefined> {
     if (
       (!codeGeneratorVersion &&
         (codeGeneratorStrategy === CodeGeneratorVersionStrategy.Specific ||
@@ -110,12 +114,19 @@ export class VersionService extends VersionServiceBase {
     }
 
     if (codeGeneratorStrategy === CodeGeneratorVersionStrategy.Specific) {
-      const foundVersion = await this.findOne({
+      const foundVersions = await this.findMany({
         where: {
-          id: codeGeneratorVersion,
+          name: codeGeneratorVersion,
+          generator: {
+            fullName: codeGeneratorFullName,
+          },
         },
       });
-      if (foundVersion?.name !== codeGeneratorVersion) {
+      const foundVersion = foundVersions.find(
+        (v) => v.name === codeGeneratorVersion
+      );
+
+      if (!foundVersion) {
         throw new BadRequestException(
           `Version ${codeGeneratorVersion} not found`
         );
@@ -127,6 +138,9 @@ export class VersionService extends VersionServiceBase {
       where: {
         isActive: true,
         deletedAt: null,
+        generator: {
+          fullName: codeGeneratorFullName,
+        },
       },
     });
 
@@ -157,7 +171,7 @@ export class VersionService extends VersionServiceBase {
     if (this.includeDevVersion) {
       result.push(this.devVersion);
     }
-    result.push(...(await super.findMany(args)));
+    result.push(...(await super.versions(args)));
     return result;
   }
 
@@ -165,55 +179,75 @@ export class VersionService extends VersionServiceBase {
     this.logger.info("Syncing versions");
 
     try {
-      const tags = await this.awsEcrService.getTags();
-      const versions = tags.map((tag) => ({
-        id: tag.imageTags[0],
-        name: tag.imageTags[0],
-        isActive: false,
-        createdAt: tag.imagePushedAt,
-        updatedAt: new Date(),
-        changelog: "",
-        deletedAt: null,
-        isDeprecated: false,
-      }));
+      const generators = await this.prisma.generator.findMany({
+        where: {
+          isActive: true,
+        },
+        select: {
+          id: true,
+          fullName: true,
+        },
+      });
 
-      const storedVersions = await this.findMany({});
+      const newVersions = [];
 
-      const newVersions = versions.filter(
-        (version) =>
-          !storedVersions.some(
-            (storedVersion) => storedVersion.name === version.name
+      for (const generator of generators) {
+        const tags = await this.awsEcrService.getTags(generator.fullName);
+        const versions: Omit<PrismaVersion, "id">[] = tags.map((tag) => ({
+          name: tag.imageTags[0],
+          isActive: false,
+          createdAt: tag.imagePushedAt,
+          updatedAt: new Date(),
+          changelog: "",
+          deletedAt: null,
+          isDeprecated: false,
+          generatorId: generator.id,
+        }));
+
+        const storedVersions = await this.findMany({});
+
+        newVersions.push(
+          ...versions.filter(
+            (version) =>
+              !storedVersions.some(
+                (storedVersion) => storedVersion.name === version.name
+              )
           )
-      );
+        );
+
+        const deletedVersions = storedVersions.filter(
+          (storedVersion) =>
+            !versions.some((version) => version.name === storedVersion.name)
+        );
+        if (deletedVersions.length > 0) {
+          await this.prisma.version.updateMany({
+            data: {
+              deletedAt: new Date(),
+              isActive: false,
+              isDeprecated: true,
+            },
+            where: {
+              AND: {
+                name: {
+                  in: deletedVersions.map((version) => version.id),
+                },
+                generatorId: generator.id,
+              },
+            },
+          });
+        }
+      }
 
       await this.prisma.version.createMany({
         data: newVersions,
       });
-
-      const deletedVersions = storedVersions.filter(
-        (storedVersion) =>
-          !versions.some((version) => version.name === storedVersion.name)
-      );
-      if (deletedVersions.length > 0) {
-        await this.prisma.version.updateMany({
-          data: {
-            deletedAt: new Date(),
-            isActive: false,
-            isDeprecated: true,
-          },
-          where: {
-            id: {
-              in: deletedVersions.map((version) => version.id),
-            },
-          },
-        });
-      }
-      this.logger.info("Synced versions successfully");
     } catch (error) {
       this.logger.error("Failed to sync versions", error, {
         stack: error.stack,
       });
       throw error;
     }
+
+    this.logger.info("Synced versions successfully");
   }
 }

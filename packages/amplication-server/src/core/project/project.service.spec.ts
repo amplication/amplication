@@ -1,7 +1,6 @@
 import { PrismaService } from "../../prisma/prisma.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ProjectService } from "./project.service";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import {
   Account,
   Block,
@@ -20,7 +19,7 @@ import {
   EnumResourceType,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
-} from "@amplication/code-gen-types/models";
+} from "@amplication/code-gen-types";
 import { PendingChange } from "../resource/dto/PendingChange";
 import { ResourceService } from "../resource/resource.service";
 import { BuildService } from "../build/build.service";
@@ -37,6 +36,7 @@ import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -209,6 +209,7 @@ const EXAMPLE_WORKSPACE: Workspace = {
   updatedAt: new Date(),
   name: EXAMPLE_NAME,
   projects: [EXAMPLE_PROJECT_2],
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -378,14 +379,7 @@ describe("ProjectService", () => {
             archiveProjectResources: jest.fn(() => Promise.resolve([])),
           })),
         },
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            track: jest.fn(() => {
-              return;
-            }),
-          })),
-        },
+        MockedSegmentAnalyticsProvider(),
         {
           provide: GitProviderService,
           useClass: jest.fn(() => ({})),

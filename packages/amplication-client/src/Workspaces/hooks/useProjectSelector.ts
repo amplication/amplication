@@ -105,7 +105,14 @@ const useProjectSelector = (
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("complete-signup=1");
+    const isFromPreviewPlan = location.search.includes("preview-user-login=1");
+
     const isSignupCookieExist = getCookie("signup");
+    const isFromPreviewPlanCookieExist = getCookie("isFromPreviewPlan");
+
+    !isFromPreviewPlanCookieExist &&
+      setCookie("isFromPreviewPlan", isFromPreviewPlan ? "1" : "0");
+
     !isSignupCookieExist && isFromSignup && setCookie("signup", "1");
     const isFromPurchase = localStorage.getItem(PURCHASE_URL);
 
@@ -145,7 +152,9 @@ const useProjectSelector = (
       (projectDB: models.Project) => projectDB.id === project
     );
 
-    if (!selectedProject) projectRedirect(projectsList[0].id);
+    //reload projects list if project not found, but do not redirect to avoid infinite loop
+    //this may be needed if the project was created on the server side and is not known to the client yet
+    if (!selectedProject) refetch();
 
     setCurrentProject(selectedProject);
 

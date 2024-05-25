@@ -2,6 +2,7 @@ import React from "react";
 import { Dialog, Props as DialogProps } from "../Dialog/Dialog";
 import { Button, EnumButtonStyle } from "../Button/Button";
 import "./ConfirmationDialog.scss";
+import classNames from "classnames";
 
 const CLASS_NAME = "confirmation-dialog";
 
@@ -13,10 +14,11 @@ export type Props = DialogProps & {
     icon?: string;
     disabled?: boolean;
   };
-  dismissButton: {
+  dismissButton?: {
     label?: string;
     icon?: string;
   };
+  btnClassName?: string;
   onConfirm: () => void;
   onDismiss: () => void;
 };
@@ -27,6 +29,7 @@ export const ConfirmationDialog = ({
   message,
   confirmButton,
   dismissButton,
+  btnClassName,
   onConfirm,
   onDismiss,
 }: Props) => {
@@ -40,15 +43,22 @@ export const ConfirmationDialog = ({
     >
       <div className={`${CLASS_NAME}__message`}>{message}</div>
       <hr className={`${CLASS_NAME}__separator`} />
-      <div className={`${CLASS_NAME}__buttons`}>
+      <div
+        className={classNames(
+          `${CLASS_NAME}__buttons`,
+          btnClassName && btnClassName
+        )}
+      >
         <div className="spacer" />
-        <Button
-          buttonStyle={EnumButtonStyle.Text}
-          icon={dismissButton.icon}
-          onClick={onDismiss}
-        >
-          {dismissButton.label}
-        </Button>
+        {dismissButton && (
+          <Button
+            buttonStyle={EnumButtonStyle.Text}
+            icon={dismissButton.icon}
+            onClick={onDismiss}
+          >
+            {dismissButton.label}
+          </Button>
+        )}
 
         <Button
           buttonStyle={EnumButtonStyle.Primary}

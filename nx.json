@@ -14,9 +14,7 @@
           "test:e2e",
           "e2e",
           "test:cov",
-          "build-storybook",
-          "graphql:schema:generate",
-          "graphql:models:generate"
+          "build-storybook"
         ],
         "accessToken": "ZjczM2RhYjEtYzdmOS00MDVhLThkYWEtMDU4MmJkMTQ1ZWZjfHJlYWQ="
       }

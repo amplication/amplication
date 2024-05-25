@@ -87,17 +87,17 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         disabled={false}
       />
       <GitProviderConnection
+        provider={EnumGitProvider.Bitbucket}
+        onSyncNewGitOrganizationClick={handleAddProvider}
+        billingFeature={BillingFeature.Bitbucket}
+        disabled={!showBitbucketConnect}
+      />
+      <GitProviderConnection
         provider={EnumGitProvider.GitLab}
         onSyncNewGitOrganizationClick={handleAddProvider}
         billingFeature={BillingFeature.GitLab}
         disabled={!showGitLab}
         comingSoon={true}
-      />
-      <GitProviderConnection
-        provider={EnumGitProvider.Bitbucket}
-        onSyncNewGitOrganizationClick={handleAddProvider}
-        billingFeature={BillingFeature.Bitbucket}
-        disabled={!showBitbucketConnect}
       />
       <GitProviderConnection
         provider={EnumGitProvider.AwsCodeCommit}

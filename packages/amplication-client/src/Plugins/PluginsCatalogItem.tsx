@@ -163,7 +163,10 @@ function PluginsCatalogItem({
             </Text>
           </a>
         </FlexItem.FlexStart>
-        <FlexItem.FlexEnd className={`${CLASS_NAME}__category`}>
+        <FlexItem.FlexEnd
+          className={`${CLASS_NAME}__category`}
+          direction={EnumFlexDirection.Row}
+        >
           {plugin &&
             plugin.categories.map((category: string) => (
               <Chip

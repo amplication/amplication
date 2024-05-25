@@ -45,6 +45,9 @@ export class BillingService {
         {
           addonId: BillingAddon.CustomActions,
         },
+        {
+          addonId: BillingAddon.BreakingTheMonolith,
+        },
       ],
     };
   }
@@ -216,9 +219,9 @@ export class BillingService {
     intentionType,
     cancelUrl,
     successUrl,
-    userId,
+    accountId,
   }: ProvisionSubscriptionInput & {
-    userId: string;
+    accountId: string;
   }): Promise<ProvisionSubscriptionResult> {
     const stiggClient = await this.getStiggClient();
     const stiggResponse = await stiggClient.provisionSubscription({
@@ -232,15 +235,10 @@ export class BillingService {
         successUrl: new URL(successUrl, this.clientHost).href,
       },
       metadata: {
-        userId: userId,
+        userId: accountId,
       },
     });
-    await this.analytics.track({
-      userId,
-      properties: {
-        workspaceId,
-        $groups: { groupWorkspace: workspaceId },
-      },
+    await this.analytics.trackWithContext({
       event:
         intentionType === "DOWNGRADE_PLAN"
           ? EnumEventType.WorkspacePlanDowngradeRequest
@@ -412,14 +410,11 @@ export class BillingService {
         }
       } catch (error) {
         if (error instanceof BillingLimitationError) {
-          await this.analytics.track({
-            userId: currentUser.account.id,
-            properties: {
-              workspaceId,
-              reason: error.message,
-              $groups: { groupWorkspace: workspaceId },
-            },
+          await this.analytics.trackWithContext({
             event: EnumEventType.SubscriptionLimitPassed,
+            properties: {
+              reason: error.message,
+            },
           });
         }
         throw error;
@@ -496,6 +491,8 @@ export class BillingService {
     switch (previewAccountType) {
       case EnumPreviewAccountType.BreakingTheMonolith:
         return BillingPlan.PreviewBreakTheMonolith;
+      case EnumPreviewAccountType.PreviewOnboarding:
+        return BillingPlan.Free;
       case EnumPreviewAccountType.None:
         throw new Error(`${previewAccountType} is not a preview account type`);
       default:

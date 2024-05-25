@@ -1,7 +1,6 @@
 import { TabItem, Tabs } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React, { useCallback } from "react";
-import { FeatureIndicator } from "../Components/FeatureIndicator";
 import "./PageLayout.scss";
 
 type Props = {

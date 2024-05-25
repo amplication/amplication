@@ -47,18 +47,20 @@ const Module = () => {
 
     setResetPendingChangesIndicator(false);
     refetch();
-  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator]);
+  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator, refetch]);
 
   const handleSubmit = useCallback(
     (data) => {
+      const { name, description } = data;
       updateModule({
         variables: {
           where: {
             id: moduleId,
           },
           data: {
-            ...data,
-            displayName: data.name,
+            name,
+            displayName: name,
+            description,
           },
         },
       }).catch(console.error);
