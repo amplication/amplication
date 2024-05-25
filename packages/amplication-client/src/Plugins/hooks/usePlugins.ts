@@ -22,7 +22,7 @@ import { LATEST_VERSION_TAG } from "../constant";
 export type PluginVersion = {
   version: string;
   isLatest: boolean;
-  settings: string;
+  settings: Record<string, unknown>;
   configurations: string;
   id: string;
   pluginId: string;
@@ -43,6 +43,10 @@ export type Plugin = {
   taggedVersions: { [tag: string]: string };
   versions: PluginVersion[];
 };
+
+export interface SortedPluginInstallation extends models.PluginInstallation {
+  categories?: string[];
+}
 
 export type OnPluginDropped = (
   dragItem: models.PluginInstallation,
@@ -170,7 +174,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
       (plugin) => {
         const categories = plugin.categories;
         categories.forEach((category) => {
-          if (!categoriesMap.hasOwnProperty(category))
+          if (!Object.prototype.hasOwnProperty.call(categoriesMap, category))
             categoriesMap[category] = 1;
 
           return;
@@ -235,7 +239,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     }
   }, [pluginOrderError]);
 
-  const sortedPluginInstallation = useMemo(() => {
+  const sortedPluginInstallation: SortedPluginInstallation[] = useMemo(() => {
     if (
       !pluginOrder ||
       !pluginInstallations ||

@@ -2,8 +2,9 @@ import {
   EnumActionStepStatus,
   RedesignProjectMovedEntity,
   RedesignProjectNewService,
-} from "@amplication/code-gen-types/models";
-import { Lookup } from "@amplication/code-gen-types/types";
+  types,
+} from "@amplication/code-gen-types";
+
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -14,7 +15,7 @@ import {
   forwardRef,
 } from "@nestjs/common";
 import cuid from "cuid";
-import { isEmpty } from "lodash";
+import { isEmpty, kebabCase } from "lodash";
 import { pascalCase } from "pascal-case";
 import pluralize from "pluralize";
 import { JsonObject, JsonValue } from "type-fest";
@@ -74,6 +75,7 @@ import {
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
 import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
+import { UpdateCodeGeneratorNameArgs } from "./dto/UpdateCodeGeneratorNameArgs";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -347,13 +349,10 @@ export class ResourceService {
         "Feature Unavailable. Please upgrade your plan to access this feature."
       );
 
-    await this.analytics.track({
-      userId: user.account.id,
+    await this.analytics.trackWithContext({
       properties: {
         resourceId: resource.id,
         projectId: resource.projectId,
-        workspaceId: user.workspace.id,
-        $groups: { groupWorkspace: user.workspace.id },
       },
       event: EnumEventType.CodeGeneratorVersionUpdate,
     });
@@ -365,6 +364,46 @@ export class ResourceService {
           args.data.codeGeneratorVersionOptions.codeGeneratorVersion,
         codeGeneratorStrategy:
           args.data.codeGeneratorVersionOptions.codeGeneratorStrategy,
+      },
+    });
+  }
+
+  async updateCodeGeneratorName(
+    args: UpdateCodeGeneratorNameArgs,
+    user: User
+  ): Promise<Resource | null> {
+    const resource = await this.resource({
+      where: {
+        id: args.where.id,
+      },
+    });
+
+    if (isEmpty(resource)) {
+      throw new Error(INVALID_RESOURCE_ID);
+    }
+
+    const codeGeneratorUpdate = await this.billingService.getBooleanEntitlement(
+      user.workspace.id,
+      BillingFeature.CodeGeneratorName
+    );
+
+    if (codeGeneratorUpdate && !codeGeneratorUpdate.hasAccess)
+      throw new AmplicationError(
+        "Feature Unavailable. Please upgrade your plan to access this feature."
+      );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        resourceId: resource.id,
+        projectId: resource.projectId,
+      },
+      event: EnumEventType.CodeGeneratorNameUpdate,
+    });
+
+    return this.prisma.resource.update({
+      where: args.where,
+      data: {
+        codeGeneratorName: args.codeGeneratorName,
       },
     });
   }
@@ -497,6 +536,18 @@ export class ResourceService {
     return resource;
   }
 
+  private createMovedEntitiesByResourceMapping(movedEntities): {
+    [resourceId: string]: RedesignProjectMovedEntity[];
+  } {
+    return movedEntities.reduce((entitiesByResource, entity) => {
+      if (!entitiesByResource[entity.targetResourceId]) {
+        entitiesByResource[entity.targetResourceId] = [];
+      }
+      entitiesByResource[entity.targetResourceId].push(entity);
+      return entitiesByResource;
+    }, {} as { [resourceId: string]: RedesignProjectMovedEntity[] });
+  }
+
   async installPlugins(
     resourceId: string,
     plugins: PluginInstallationCreateInput[],
@@ -511,6 +562,55 @@ export class ResourceService {
       isvValidEntityUser &&
         (await this.pluginInstallationService.create({ data: plugin }, user));
     }
+  }
+
+  async createServiceWithDefaultSettings(
+    serviceName: string,
+    serviceDescription: string,
+    projectId: string,
+    user: User,
+    installDefaultDbPlugin = true
+  ): Promise<Resource> {
+    const pathBase = `apps/${kebabCase(serviceName)}`;
+
+    const adminUIPath = `${pathBase}-admin`;
+    const serverPath = `${pathBase}-server`;
+
+    const args: CreateOneResourceArgs = {
+      data: {
+        name: serviceName,
+        description: serviceDescription || "",
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        resourceType: EnumResourceType.Service,
+        serviceSettings: {
+          adminUISettings: {
+            adminUIPath: adminUIPath,
+            generateAdminUI: true,
+          },
+          serverSettings: {
+            serverPath: serverPath,
+            generateGraphQL: true,
+            generateRestApi: true,
+            generateServer: true,
+          },
+          authProvider: EnumAuthProviderType.Jwt, //@todo: remove this property
+        },
+
+        gitRepository: null,
+      },
+    };
+
+    const resource = await this.createService(args, user);
+
+    if (installDefaultDbPlugin) {
+      await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
+    }
+
+    return resource;
   }
 
   async redesignProject(
@@ -531,16 +631,8 @@ export class ResourceService {
 
     //group moved entities by target resource
 
-    const movedEntitiesByResource = movedEntities.reduce(
-      (entitiesByResource, entity) => {
-        if (!entitiesByResource[entity.targetResourceId]) {
-          entitiesByResource[entity.targetResourceId] = [];
-        }
-        entitiesByResource[entity.targetResourceId].push(entity);
-        return entitiesByResource;
-      },
-      {} as { [resourceId: string]: RedesignProjectMovedEntity[] }
-    );
+    let movedEntitiesByResource =
+      this.createMovedEntitiesByResourceMapping(movedEntities);
 
     const resourceId =
       movedEntities[0]?.originalResourceId ?? firstResource?.id;
@@ -564,12 +656,10 @@ export class ResourceService {
       user.workspace?.id
     );
 
-    await this.analytics.track({
-      userId: user.id,
+    await this.analytics.trackWithContext({
       properties: {
-        workspaceId: user.workspace?.id,
         projectId,
-        resourceId: resourceId,
+        resourceId,
         plan: subscription.subscriptionPlan,
         movedEntities: movedEntities.length,
         newServices: newServices.length,
@@ -728,6 +818,10 @@ export class ResourceService {
         }
       }
 
+      // re-update movedEntitiesByResource after all new services were created, and the targetResourceId was updated to a real resourceId
+      movedEntitiesByResource =
+        this.createMovedEntitiesByResourceMapping(movedEntities);
+
       const sourceEntityIdToNewEntityMap = new Map<
         string,
         CreateBulkEntitiesInput
@@ -803,10 +897,12 @@ export class ResourceService {
             };
 
             if (field.dataType === EnumDataType.Lookup) {
-              const relatedEntityId = (field.properties as unknown as Lookup)
-                .relatedEntityId;
+              const relatedEntityId = (
+                field.properties as unknown as types.Lookup
+              ).relatedEntityId;
 
-              const fieldProperties = field.properties as unknown as Lookup;
+              const fieldProperties =
+                field.properties as unknown as types.Lookup;
 
               //If the related entity is moved to the SAME RESOURCE - we should keep the relation
               if (
@@ -833,15 +929,15 @@ export class ResourceService {
                 createFieldInput.relatedFieldDisplayName =
                   relatedField.displayName;
                 createFieldInput.relatedFieldAllowMultipleSelection = (
-                  relatedField.properties as unknown as Lookup
+                  relatedField.properties as unknown as types.Lookup
                 ).allowMultipleSelection;
 
                 (
-                  createFieldInput.properties as unknown as Lookup
+                  createFieldInput.properties as unknown as types.Lookup
                 ).relatedFieldId = undefined; //clear the related field id, because it will be set later
 
                 (
-                  createFieldInput.properties as unknown as Lookup
+                  createFieldInput.properties as unknown as types.Lookup
                 ).relatedEntityId = sourceEntityIdToNewEntityMap.get(
                   fieldProperties.relatedEntityId
                 ).id; //the new entity Id of the related entity
@@ -1115,24 +1211,18 @@ export class ResourceService {
       data.plugins?.plugins?.filter((plugin) => {
         return plugin.configurations["requireAuthenticationEntity"] === "true";
       }).length > 0;
-    const project = await this.projectService.findUnique({
-      where: { id: data.resource.project.connect.id },
-    });
+
+    const projectId = data.resource.project.connect.id;
 
     if (data.connectToDemoRepo) {
-      await this.projectService.createDemoRepo(
-        data.resource.project.connect.id
-      );
+      await this.projectService.createDemoRepo(projectId);
       //do not use any git data when using demo repo
       data.resource.gitRepository = undefined;
 
-      await this.analytics.track({
-        userId: user.account.id,
+      await this.analytics.trackWithContext({
         event: EnumEventType.DemoRepoCreate,
         properties: {
-          projectId: project.id,
-          workspaceId: project.workspaceId,
-          $groups: { groupWorkspace: project.workspaceId },
+          projectId,
         },
       });
     }
@@ -1278,8 +1368,7 @@ export class ResourceService {
       return acc + entity.fields.length;
     }, 0);
 
-    await this.analytics.track({
-      userId: user.account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.ServiceWizardServiceGenerated,
       properties: {
         category: "Service Wizard",
@@ -1294,12 +1383,10 @@ export class ResourceService {
         repoType: data.repoType,
         dbType: data.dbType,
         auth: data.authType,
-        projectId: project.id,
-        workspaceId: project.workspaceId,
+        projectId,
         totalEntities,
         totalFields,
         gitOrgType: gitOrganization?.type,
-        $groups: { groupWorkspace: project.workspaceId },
       },
     });
 

@@ -60,8 +60,9 @@ const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   })
 );
 
-export function getImportableNames() {
+export function getImportableNames(isCustomDto: boolean) {
   const { hasDecimalFields, hasBigIntFields } = DsgContext.getInstance;
+  const folderPrefix = isCustomDto ? "../" : "../../";
 
   const importableNames: Record<string, namedTypes.Identifier[]> = {
     [CLASS_VALIDATOR_MODULE]: [
@@ -87,15 +88,17 @@ export function getImportableNames() {
       FLOAT_ID,
     ],
     [SORT_ORDER_MODULE]: [SORT_ORDER_ID],
-    "../../types": [builders.identifier(INPUT_JSON_VALUE_KEY)],
     ...FILTERS_IMPORTABLE_NAMES,
   };
+  importableNames[`${folderPrefix}types`] = [
+    builders.identifier(INPUT_JSON_VALUE_KEY),
+  ];
 
   if (hasDecimalFields) {
     importableNames[DECIMAL_JS_MODULE] = [DECIMAL_VALUE_ID];
   }
   if (hasBigIntFields) {
-    importableNames["../../util/GraphQLBigInt"] = [
+    importableNames[`${folderPrefix}util/GraphQLBigInt`] = [
       builders.identifier(GRAPHQL_BIGINT_VALUE),
     ];
   }
@@ -105,14 +108,19 @@ export function getImportableNames() {
 
 export function createDTOModule(
   dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
-  dtoNameToPath: Record<string, string>
+  dtoNameToPath: Record<string, string>,
+  dtoPath: string = undefined,
+  shouldAddAutoGenerationComment = true,
+  isCustomDto = false
 ): Module {
   try {
-    const file = createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath);
-    addAutoGenerationComment(file);
+    const path = dtoPath || dtoNameToPath[dto.id.name];
+
+    const file = createDTOFile(dto, path, dtoNameToPath, isCustomDto);
+    shouldAddAutoGenerationComment && addAutoGenerationComment(file);
     return {
       code: print(file).code,
-      path: dtoNameToPath[dto.id.name],
+      path: path,
     };
   } catch (error) {
     logger.info(error);
@@ -123,7 +131,8 @@ export function createDTOModule(
 export function createDTOFile(
   dto: DeclarationKind,
   modulePath: string,
-  dtoNameToPath: Record<string, string>
+  dtoNameToPath: Record<string, string>,
+  isCustomDto = false
 ): namedTypes.File {
   const statements =
     namedTypes.ClassDeclaration.check(dto) &&
@@ -133,7 +142,7 @@ export function createDTOFile(
 
   const file = builders.file(builders.program(statements));
   const moduleToIds = {
-    ...getImportableNames(),
+    ...getImportableNames(isCustomDto),
     ...getImportableDTOs(modulePath, dtoNameToPath),
   };
   addImports(file, importContainedIdentifiers2(dto, moduleToIds));
@@ -158,8 +167,11 @@ export function getImportableDTOs(
 
 export function createDTOModulePath(
   entityDirectory: string,
-  dtoName: string
+  dtoName: string,
+  isCustomDto = false
 ): string {
   const { serverDirectories } = DsgContext.getInstance;
-  return `${serverDirectories.srcDirectory}/${entityDirectory}/base/${dtoName}.ts`;
+  let basePath = "base/";
+  if (isCustomDto) basePath = "";
+  return `${serverDirectories.srcDirectory}/${entityDirectory}/${basePath}${dtoName}.ts`;
 }

@@ -63,6 +63,7 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.GitLab]: "GitLab",
 };
 import { encryptString } from "../../util/encryptionUtil";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -184,6 +185,11 @@ export function createInitialStepData(
 
 const PREVIEW_PR_BODY = `Welcome to your first sync with Amplication's Preview Repo! 🚀 \n\nYou’ve taken the first step in supercharging your development. This Preview Repo is a sandbox for you to see what Amplication can do.\n\nRemember, by connecting to your own repository, you’ll have even more power - like customizing the code to fit your needs.\n\nNow, head back to Amplication, connect to your own repo and keep building! Define data entities, set up roles, and extend your service’s functionality with our versatile plugin system. The possibilities are endless.\n\n[link]\n\nThank you, and let's build something amazing together! 🚀\n\n`;
 
+type DiffStatObject = {
+  filesChanged: number;
+  insertions: number;
+  deletions: number;
+};
 @Injectable()
 export class BuildService {
   constructor(
@@ -202,6 +208,7 @@ export class BuildService {
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly moduleActionService: ModuleActionService,
+    private readonly moduleDtoService: ModuleDtoService,
     private readonly moduleService: ModuleService,
     private readonly billingService: BillingService,
     private readonly gitProviderService: GitProviderService,
@@ -234,7 +241,7 @@ export class BuildService {
     const version = commitId.slice(commitId.length - 8);
 
     const latestEntityVersions = await this.entityService.getLatestVersions({
-      where: { resource: { id: resourceId } },
+      where: { resourceId: resourceId },
     });
 
     const build = await this.prisma.build.create({
@@ -468,6 +475,45 @@ export class BuildService {
     });
   }
 
+  formatDiffStat(diffStat: string): DiffStatObject {
+    this.logger.debug("diffStat", { diffStat });
+    const diffStatRegex =
+      /(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\))?/;
+    const match = diffStat?.match(diffStatRegex);
+    this.logger.debug("Diff stat", { diffStat });
+
+    if (!match) {
+      return {
+        filesChanged: 0,
+        insertions: 0,
+        deletions: 0,
+      };
+    }
+    this.logger.debug("Diff stat match", match);
+    const [, filesChanged, insertions, deletions] = match;
+    const diffStatObj = {
+      filesChanged: parseInt(filesChanged, 10),
+      insertions: parseInt(insertions || "0", 10),
+      deletions: parseInt(deletions || "0", 10),
+    };
+    this.logger.debug("Diff stat object", diffStatObj);
+    return diffStatObj;
+  }
+
+  async updateBuildLOC(
+    buildId: string,
+    diffStat: DiffStatObject
+  ): Promise<void> {
+    await this.prisma.build.update({
+      where: { id: buildId },
+      data: {
+        linesOfCodeAdded: diffStat.insertions,
+        linesOfCodeDeleted: diffStat.deletions,
+        filesChanged: diffStat.filesChanged,
+      },
+    });
+  }
+
   public async onCreatePRSuccess(
     response: CreatePrSuccess.Value
   ): Promise<void> {
@@ -481,14 +527,34 @@ export class BuildService {
         "Sync Completed Successfully"
       );
 
+      const changes = await this.commitService.getChangesByResource(
+        build.commitId,
+        build.resourceId
+      );
+
+      if (changes.length > 0) {
+        await this.updateBuildLOC(
+          response.buildId,
+          this.formatDiffStat(response.diffStat)
+        );
+      }
+
       await this.actionService.logInfo(step, response.url, {
         githubUrl: response.url,
+        diffStat: this.formatDiffStat(response.diffStat),
       });
       await this.actionService.logInfo(
         step,
         PUSH_TO_GIT_STEP_FINISH_LOG(response.gitProvider)
       );
       await this.actionService.complete(step, EnumActionStepStatus.Success);
+
+      //In case this is a preview user - a success email will be sent after the first code generation
+      await this.userService.handleUserPullRequestCompleted(
+        build.userId,
+        build.id,
+        response.url
+      );
 
       const workspace = await this.resourceService.getResourceWorkspace(
         build.resourceId
@@ -543,16 +609,19 @@ export class BuildService {
     );
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
 
-    await this.analytics.track({
-      userId: build.createdBy.account.id,
-      properties: {
-        resourceId: build.resource.id,
-        projectId: build.resource.project.id,
+    await this.analytics.trackManual({
+      user: {
+        accountId: build.createdBy.account.id,
         workspaceId: build.resource.project.workspaceId,
-        message: response.errorMessage,
-        $groups: { groupWorkspace: build.resource.project.workspaceId },
       },
-      event: EnumEventType.GitSyncError,
+      data: {
+        properties: {
+          resourceId: build.resource.id,
+          projectId: build.resource.project.id,
+          message: response.errorMessage,
+        },
+        event: EnumEventType.GitSyncError,
+      },
     });
   }
 
@@ -570,21 +639,30 @@ export class BuildService {
         include: {
           createdBy: { include: { account: true } },
           resource: {
-            include: { project: true },
+            include: {
+              project: {
+                select: {
+                  id: true,
+                  workspaceId: true,
+                },
+              },
+            },
           },
         },
       });
-
-      await this.analytics.track({
-        userId: build.createdBy.account.id,
-        properties: {
-          resourceId: build.resource.id,
-          projectId: build.resource.project.id,
+      await this.analytics.trackManual({
+        user: {
+          accountId: build.createdBy.account.id,
           workspaceId: build.resource.project.workspaceId,
-          message: logEntry.message,
-          $groups: { groupWorkspace: build.resource.project.workspaceId },
         },
-        event: EnumEventType.CodeGenerationError,
+        data: {
+          properties: {
+            resourceId: build.resource.id,
+            projectId: build.resource.project.id,
+            message: logEntry.message,
+          },
+          event: EnumEventType.CodeGenerationError,
+        },
       });
     }
   }
@@ -845,6 +923,10 @@ export class BuildService {
       where: { resource: { id: resourceId } },
     });
 
+    const moduleDtos = await this.moduleDtoService.findMany({
+      where: { resource: { id: resourceId } },
+    });
+
     const modules = await this.moduleService.findMany({
       where: { resource: { id: resourceId } },
     });
@@ -881,6 +963,7 @@ export class BuildService {
       pluginInstallations: plugins,
       moduleContainers: modules,
       moduleActions: moduleActions,
+      moduleDtos: moduleDtos,
       resourceType: resource.resourceType,
       topics: await this.topicService.findMany({
         where: { resource: { id: resourceId } },
@@ -902,6 +985,7 @@ export class BuildService {
             // resource.codeGeneratorStrategy is the value and not the key, but as the key is the same as the value we can use it
             CodeGeneratorVersionStrategy[resource.codeGeneratorStrategy],
         },
+        codeGeneratorName: resource.codeGeneratorName,
       },
       otherResources,
     };

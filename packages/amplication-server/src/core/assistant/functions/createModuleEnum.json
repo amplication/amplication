@@ -1,0 +1,50 @@
+{
+  "name": "createModuleEnum",
+  "description": "creates a new Enum for a module in a service",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "moduleId": {
+        "type": "string",
+        "description": "the ID of the module in which the Enum is created. This is not the module name, but the ID of the module. and will be q unique identifier and not a word like 'customer'. e.g.: 'mod_1234'"
+      },
+      "serviceId": {
+        "type": "string",
+        "description": "the ID of the service in which the Enum is created. If there are multiple services available in the context, show the user a list of services to choose from. If there is no service available, do not use projectId instead"
+      },
+      "enumName": {
+        "type": "string",
+        "description": "the name of the enum. e.g.: 'EnumCustomerStatus'"
+      },
+      "enumDescription": {
+        "type": "string",
+        "description": "the description of the enum. e.g.: 'The status of a customer'"
+      },
+      "members": {
+        "type": "array",
+        "description": "a list of members of the Enum.",
+        "items": {
+          "type": "object",
+          "required": ["name", "value"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "the name of the enum member property. e.g.: 'InProgress'"
+            },
+            "value": {
+              "type": "string",
+              "description": "the value of the enum member property. e.g.: 'InProgress'"
+            }
+          }
+        }
+      }
+    },
+    "required": [
+      "moduleId",
+      "serviceId",
+      "enumName",
+      "enumDescription",
+      "members"
+    ]
+  }
+}

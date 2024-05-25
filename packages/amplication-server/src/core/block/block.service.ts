@@ -68,6 +68,8 @@ export type BlockPendingChange = {
   resource: Resource;
 };
 
+export type SettingsFilterOperator = "AND" | "OR";
+
 @Injectable()
 export class BlockService {
   constructor(
@@ -88,6 +90,7 @@ export class BlockService {
     [EnumBlockType.PluginOrder]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.Module]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ModuleAction]: new Set([EnumBlockType.Module]),
+    [EnumBlockType.ModuleDto]: new Set([EnumBlockType.Module]),
   };
 
   private async resolveParentBlock(
@@ -328,8 +331,21 @@ export class BlockService {
   async findManyByBlockTypeAndSettings<T extends IBlock>(
     args: FindManyBlockTypeArgs,
     blockType: EnumBlockType,
-    settingsFilter?: JsonFilter
+    settingsFilter?: JsonFilter | JsonFilter[],
+    settingsFilterOperator?: SettingsFilterOperator
   ): Promise<T[]> {
+    const filter = {
+      [settingsFilterOperator || "OR"]: Array.isArray(settingsFilter)
+        ? settingsFilter.map((filter) => ({
+            settings: filter,
+          }))
+        : [
+            {
+              settings: settingsFilter,
+            },
+          ],
+    };
+
     const blocks = this.prisma.block.findMany({
       ...args,
       where: {
@@ -339,7 +355,7 @@ export class BlockService {
         versions: {
           some: {
             versionNumber: CURRENT_VERSION_NUMBER,
-            settings: settingsFilter,
+            ...filter,
           },
         },
       },
@@ -801,11 +817,7 @@ export class BlockService {
     const changedBlocks = await this.prisma.block.findMany({
       where: {
         lockedByUserId: userId,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        OR: [
-          { blockType: EnumBlockType.Module },
-          { blockType: EnumBlockType.ModuleAction },
-        ],
+        blockType: { equals: EnumBlockType.ModuleDto },
         resource: {
           deletedAt: null,
           project: {

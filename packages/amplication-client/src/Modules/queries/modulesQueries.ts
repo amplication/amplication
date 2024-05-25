@@ -10,6 +10,7 @@ export const MODULE_FIELDS_FRAGMENT = gql`
     entityId
     lockedByUserId
     lockedAt
+    resourceId
     lockedByUser {
       account {
         firstName

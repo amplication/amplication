@@ -14,25 +14,22 @@ import {
   CodeGenerationSuccess,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
-import { EnumJobStatus } from "../types";
+import { CodeGenerationRequest, EnumJobStatus } from "../types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
+
+const OLD_DSG_IMAGE_NAME = "data-service-generator";
 
 @Traceable()
 @Injectable()
 export class BuildRunnerService {
-  private readonly minDsgVersionToSplitBuild: string;
   constructor(
     private readonly configService: ConfigService<Env, true>,
     private readonly producerService: KafkaProducerService,
     private readonly codeGeneratorService: CodeGeneratorService,
     private readonly buildJobsHandlerService: BuildJobsHandlerService,
     private readonly logger: AmplicationLogger
-  ) {
-    this.minDsgVersionToSplitBuild = this.configService.getOrThrow(
-      Env.FEATURE_SPLIT_JOBS_MIN_DSG_VERSION
-    );
-  }
+  ) {}
 
   async runBuild(
     resourceId: string,
@@ -40,9 +37,15 @@ export class BuildRunnerService {
     dsgResourceData: DSGResourceData
   ) {
     let codeGeneratorVersion: string;
+    const codeGeneratorFullName =
+      await this.codeGeneratorNameToContainerImageName(
+        codeGeneratorVersion,
+        dsgResourceData.resourceInfo.codeGeneratorName
+      );
     try {
       codeGeneratorVersion =
         await this.codeGeneratorService.getCodeGeneratorVersion({
+          codeGeneratorFullName,
           codeGeneratorVersion:
             dsgResourceData.resourceInfo.codeGeneratorVersionOptions
               .codeGeneratorVersion,
@@ -51,8 +54,10 @@ export class BuildRunnerService {
               .codeGeneratorStrategy,
         });
 
-      this.logger.debug("Code Generator Version Calculated as: ", {
+      this.logger.debug("Code Generator settings: ", {
         codeGeneratorVersion,
+        codeGeneratorName: dsgResourceData.resourceInfo.codeGeneratorName,
+        codeGeneratorFullName,
       });
 
       const jobs = await this.buildJobsHandlerService.splitBuildsIntoJobs(
@@ -62,7 +67,13 @@ export class BuildRunnerService {
       );
       for (const [jobBuildId, data] of jobs) {
         this.logger.debug("Running job for...", { jobBuildId });
-        await this.runJob(resourceId, jobBuildId, data, codeGeneratorVersion);
+        await this.runJob(
+          resourceId,
+          jobBuildId,
+          data,
+          codeGeneratorVersion,
+          codeGeneratorFullName
+        );
       }
     } catch (error) {
       this.logger.error(error.message, error);
@@ -82,16 +93,18 @@ export class BuildRunnerService {
     resourceId: string,
     jobBuildId: string,
     data: DSGResourceData,
-    codeGeneratorVersion: string
+    codeGeneratorVersion: string,
+    codeGeneratorFullName: string
   ) {
     await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
 
     const url = this.configService.get(Env.DSG_RUNNER_URL);
     try {
-      const postBody = {
+      const postBody: CodeGenerationRequest = {
         resourceId,
         buildId: jobBuildId,
-        codeGeneratorVersion,
+        codeGeneratorVersion, // image tag. Nullable. If not provided, the default image tag for each environment will be used
+        codeGeneratorName: codeGeneratorFullName, // image (and container) name. Nullable. If not provided, the default image name will be used (data-service-generator)
       };
       this.logger.debug("Calling argo event with post payload: ", { postBody });
       await axios.post(url, postBody);
@@ -287,5 +300,33 @@ export class BuildRunnerService {
       this.logger.error(error.message, error);
       throw error;
     }
+  }
+
+  /**
+   *
+   * @param codeGeneratorVersion (string) the requested code generator version
+   * @param codeGeneratorName (string) the requested code generator name (from the DSG catalog).
+   * If didn't provided, the old image name will be used
+   * @returns (string) the container image name
+   */
+  private async codeGeneratorNameToContainerImageName(
+    codeGeneratorVersion: string,
+    codeGeneratorName: string
+  ): Promise<string> {
+    if (!codeGeneratorName) {
+      this.logger.debug("Using default image name", {
+        name: OLD_DSG_IMAGE_NAME,
+        codeGeneratorVersion,
+      });
+
+      return OLD_DSG_IMAGE_NAME;
+    }
+
+    this.logger.debug("Using image name from the DSG catalog", {
+      name: codeGeneratorName,
+      codeGeneratorVersion,
+    });
+
+    return this.codeGeneratorService.getCodeGenerators(codeGeneratorName);
   }
 }

@@ -1,7 +1,31 @@
 @import "../style/index.scss";
 
 .entity-list {
-  .toggle-field {
-    margin: 0;
+  &__view-toggle {
+    .toggle-field {
+      border: $border-dark;
+      border-radius: 20px;
+      .MuiSwitch-root {
+        border-radius: 8px;
+        .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
+          background-color: var(--gray-full);
+        }
+        .MuiSwitch-switchBase:not(.Mui-checked) + .MuiSwitch-track {
+          background-color: var(--gray-full);
+        }
+      }
+    }
+  }
+
+  .search-field {
+    max-width: 120px;
+  }
+}
+
+.workspaces-layout__main_content--xl {
+  .entity-list {
+    .search-field {
+      max-width: none;
+    }
   }
 }

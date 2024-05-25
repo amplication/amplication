@@ -27,8 +27,10 @@ import {
   extractImportDeclarations,
   getClassDeclarationById,
   getMethods,
+  importContainedIdentifiers,
   importNames,
   interpolate,
+  removeClassMethodByName,
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,
@@ -38,7 +40,9 @@ import { relativeImportPath } from "../../../utils/module";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
 import { getEntityIdType } from "../../../utils/get-entity-id-type";
+import { createCustomActionMethods } from "./create-custom-action";
 import { logger as applicationLogger } from "../../../logging";
+import { getImportableDTOs } from "../dto/create-dto-module";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -53,7 +57,8 @@ export async function createServiceModules(
   entity: Entity,
   serviceId: namedTypes.Identifier,
   serviceBaseId: namedTypes.Identifier,
-  delegateId: namedTypes.Identifier
+  delegateId: namedTypes.Identifier,
+  dtoNameToPath: Record<string, string>
 ): Promise<ModuleMap> {
   const template = await readFile(serviceTemplatePath);
   const templateBase = await readFile(serviceBaseTemplatePath);
@@ -79,7 +84,8 @@ export async function createServiceModules(
       serviceBaseId,
       template,
       entityActions,
-    }),
+      dtoNameToPath,
+    } as CreateEntityServiceParams),
     await pluginWrapper(
       createServiceBaseModule,
       EventNames.CreateEntityServiceBase,
@@ -93,7 +99,8 @@ export async function createServiceModules(
         template: templateBase,
         moduleContainers,
         entityActions,
-      }
+        dtoNameToPath,
+      } as CreateEntityServiceBaseParams
     ),
   ]);
 
@@ -146,16 +153,13 @@ async function createServiceBaseModule({
   template,
   moduleContainers,
   entityActions,
+  dtoNameToPath,
 }: CreateEntityServiceBaseParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
 
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
 
   interpolate(template, templateMapping);
-
-  const moduleContainer = moduleContainers?.find(
-    (moduleContainer) => moduleContainer.entityId === entity.id
-  );
 
   const classDeclaration = getClassDeclarationById(template, serviceBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
@@ -204,7 +208,8 @@ async function createServiceBaseModule({
 
   classDeclaration.body.body.push(
     ...toManyRelations.flatMap((relation) => relation.methods),
-    ...toOneRelations.flatMap((relation) => relation.methods)
+    ...toOneRelations.flatMap((relation) => relation.methods),
+    ...(await createCustomActionMethods(entityActions.customActions))
   );
 
   toManyRelationFields.map((field) =>
@@ -213,14 +218,8 @@ async function createServiceBaseModule({
         const action: ModuleAction =
           entityActions.relatedFieldsDefaultActions[field.name][key];
 
-        if (
-          (moduleContainer && !moduleContainer?.enabled && action) ||
-          (action && !action.enabled)
-        ) {
-          applicationLogger.debug(
-            `Removing ${action.name} from ${entityName} - not implemented yet`
-          );
-          // removeClassMethodByName(classDeclaration, action.name);
+        if (action && !action.enabled) {
+          removeClassMethodByName(classDeclaration, action.name);
         }
       }
     )
@@ -232,14 +231,8 @@ async function createServiceBaseModule({
         const action: ModuleAction =
           entityActions.relatedFieldsDefaultActions[field.name][key];
 
-        if (
-          (moduleContainer && !moduleContainer?.enabled && action) ||
-          (action && !action.enabled)
-        ) {
-          applicationLogger.debug(
-            `Removing ${action.name} from ${entityName} - not implemented yet`
-          );
-          // removeClassMethodByName(classDeclaration, action.name);
+        if (action && !action.enabled) {
+          removeClassMethodByName(classDeclaration, action.name);
         }
       }
     )
@@ -247,10 +240,7 @@ async function createServiceBaseModule({
 
   Object.keys(entityActions.entityDefaultActions).forEach((key) => {
     const action: ModuleAction = entityActions.entityDefaultActions[key];
-    if (
-      (moduleContainer && !moduleContainer?.enabled && action) ||
-      (action && !action.enabled)
-    ) {
+    if (action && !action.enabled) {
       applicationLogger.debug(
         `Removing ${action.name} from ${entityName} - not implemented yet`
       );
@@ -272,6 +262,12 @@ async function createServiceBaseModule({
     template,
     toOneRelations.flatMap((relation) => relation.imports)
   );
+
+  const dtoImports = importContainedIdentifiers(
+    template,
+    getImportableDTOs(moduleBasePath, dtoNameToPath)
+  );
+  addImports(template, [...dtoImports]);
 
   addAutoGenerationComment(template);
 
@@ -334,6 +330,7 @@ async function createToOneRelationFile(
     DELEGATE: delegateId,
     PARENT_ID_TYPE: getParentIdType(entity.name),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
+    PRISMA_RELATED_ENTITY: builders.identifier(`Prisma${relatedEntity.name}`),
     PROPERTY: builders.identifier(field.name),
     FIND_ONE: createFieldFindOneFunctionId(field.name),
   });
@@ -356,6 +353,7 @@ async function createToManyRelationFile(
     DELEGATE: delegateId,
     PARENT_ID_TYPE: getParentIdType(entity.name),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
+    PRISMA_RELATED_ENTITY: builders.identifier(`Prisma${relatedEntity.name}`),
     PROPERTY: builders.identifier(field.name),
     FIND_MANY: createFieldFindManyFunctionId(field.name),
     ARGS: relatedEntityDTOs.findManyArgs.id,
@@ -371,7 +369,7 @@ function getParentIdType(entityName: string): namedTypes.Identifier {
     [key in types.Id["idType"]]: namedTypes.Identifier;
   } = {
     AUTO_INCREMENT: builders.identifier("number"),
-    AUTO_INCREMENT_BIG_INT: builders.identifier("number"),
+    AUTO_INCREMENT_BIG_INT: builders.identifier("bigint"),
     UUID: builders.identifier("string"),
     CUID: builders.identifier("string"),
   };
@@ -390,6 +388,7 @@ function createTemplateMapping(
     SERVICE: serviceId,
     SERVICE_BASE: serviceBaseId,
     ENTITY: builders.identifier(entityType),
+    PRISMA_ENTITY: builders.identifier(`Prisma${entityType}`),
     COUNT_ARGS: builders.identifier(`${entityType}CountArgs`),
     FIND_MANY_ARGS: builders.identifier(`${entityType}FindManyArgs`),
     FIND_ONE_ARGS: builders.identifier(`${entityType}FindUniqueArgs`),

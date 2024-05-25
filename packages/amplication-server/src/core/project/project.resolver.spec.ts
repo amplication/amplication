@@ -2,7 +2,7 @@ import {
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
   EnumResourceType,
-} from "@amplication/code-gen-types/models";
+} from "@amplication/code-gen-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   ApolloDriver,

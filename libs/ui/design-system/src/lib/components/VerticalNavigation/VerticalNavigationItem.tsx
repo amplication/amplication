@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useCallback, useEffect } from "react";
+import { NavLink, useRouteMatch } from "react-router-dom";
 import { Icon } from "../Icon/Icon";
 import classNames from "classnames";
 import { VerticalNavigation } from "./VerticalNavigation";
@@ -30,20 +30,32 @@ export function VerticalNavigationItem({
 }: Props) {
   const [expanded, setExpanded] = React.useState(false);
 
+  const match = useRouteMatch({
+    path: to,
+  });
+
   const handleExpand = useCallback(
     (e: any) => {
       e.preventDefault();
+      e.stopPropagation();
       setExpanded((expanded) => !expanded);
       onExpand && onExpand();
     },
     [onExpand, setExpanded]
   );
 
+  useEffect(() => {
+    if (match) {
+      setExpanded(true);
+    }
+  }, [match?.path]);
+
   return (
     <>
       <NavLink
         to={to}
         exact
+        onClick={() => setExpanded(true)}
         className={classNames(CLASS_NAME, className, {
           [`${CLASS_NAME}--expanded`]: expanded,
         })}

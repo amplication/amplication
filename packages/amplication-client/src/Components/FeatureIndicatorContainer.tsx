@@ -12,7 +12,12 @@ import { AppContext } from "../context/appContext";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
 import React from "react";
-import { FeatureIndicator, tooltipDefaultText } from "./FeatureIndicator";
+import {
+  FeatureIndicator,
+  defaultTextEnd,
+  defaultTextStart,
+  disabledDefaultTextEnd,
+} from "./FeatureIndicator";
 import "./FeatureIndicatorContainer.scss";
 import { omit } from "lodash";
 import { EnumTextColor, Icon } from "@amplication/ui/design-system";
@@ -39,7 +44,6 @@ export type Props = {
   entitlementType: EntitlementType;
   featureIndicatorPlacement?: FeatureIndicatorPlacement;
   icon?: IconType | null;
-  featureText?: string;
   fullEnterpriseText?: string;
   limitationText?: string;
   children?: React.ReactElement;
@@ -53,7 +57,6 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   entitlementType,
   featureIndicatorPlacement = FeatureIndicatorPlacement.Inside,
   children,
-  featureText = tooltipDefaultText,
   limitationText,
   fullEnterpriseText,
   render,
@@ -63,6 +66,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   const { stigg } = useStiggContext();
   const { currentWorkspace } = useContext(AppContext);
   const { subscription } = currentWorkspace;
+
   const subscriptionPlan = subscription?.subscriptionPlan;
   const status = subscription?.status;
 
@@ -89,12 +93,22 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
 
     if (entitlementType === EntitlementType.Boolean) {
+      if (isPreviewPlan(subscriptionPlan) && hasBooleanAccess) {
+        setDisabled(null);
+        setIcon(null);
+        return;
+      }
       setDisabled(!hasBooleanAccess);
     }
 
     if (entitlementType === EntitlementType.Metered) {
       const usageExceeded = usageLimit && currentUsage >= usageLimit;
       const isDisabled = usageExceeded ?? !hasMeteredAccess;
+      if (isPreviewPlan(subscriptionPlan) && !isDisabled) {
+        setDisabled(null);
+        setIcon(null);
+        return;
+      }
       setDisabled(isDisabled);
     }
   }, [
@@ -108,41 +122,53 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     entitlementType,
   ]);
 
-  const text = useMemo(() => {
+  const textStart = useMemo(() => {
     if (disabled) {
       return limitationText;
     }
     if (
-      subscription.subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
-      subscription.status !== EnumSubscriptionStatus.Trailing
+      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      status !== EnumSubscriptionStatus.Trailing
     ) {
       return fullEnterpriseText;
     }
 
-    return featureText;
-  }, [disabled, subscription, featureText, limitationText, fullEnterpriseText]);
+    return defaultTextStart;
+  }, [disabled, subscriptionPlan, status, limitationText, fullEnterpriseText]);
 
-  const linkText = useMemo(() => {
+  const textEnd = useMemo(() => {
+    if (disabled) {
+      return disabledDefaultTextEnd;
+    }
     if (
-      isPreviewPlan(subscriptionPlan) ||
-      (subscription.subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
-        subscription.status !== EnumSubscriptionStatus.Trailing)
+      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      status !== EnumSubscriptionStatus.Trailing
     ) {
-      return ""; // don't show the upgrade link when the plan is preview
+      return "";
     }
 
-    return undefined; // in case of null, it falls back to the default link text
-  }, [subscriptionPlan, subscription]);
+    return defaultTextEnd;
+  }, [disabled, subscriptionPlan, status]);
+
+  const showTooltipLink = useMemo(() => {
+    if (
+      isPreviewPlan(subscriptionPlan) ||
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+        status !== EnumSubscriptionStatus.Trailing)
+    ) {
+      return false; // don't show the upgrade link when the plan is preview
+    }
+
+    return true; // in case of null, it falls back to the default link text
+  }, [subscriptionPlan, status]);
 
   useEffect(() => {
     if (!subscriptionPlan || !status || !featureId) {
       setIcon(null);
       return;
     }
-    if (
-      (subscriptionPlan === EnumSubscriptionPlan.Free && disabled) ||
-      (isPreviewPlan(subscriptionPlan) && disabled)
-    ) {
+
+    if (disabled) {
       setIcon(IconType.Lock);
     }
 
@@ -168,8 +194,9 @@ export const FeatureIndicatorContainer: FC<Props> = ({
           featureName={featureId}
           element={render(renderProps)}
           icon={icon}
-          text={text}
-          linkText={linkText}
+          textStart={textStart}
+          textEnd={textEnd}
+          showTooltipLink={showTooltipLink}
         ></FeatureIndicator>
       )}
       {!render &&
@@ -178,8 +205,9 @@ export const FeatureIndicatorContainer: FC<Props> = ({
           <FeatureIndicator
             featureName={featureId}
             icon={icon}
-            text={text}
-            linkText={linkText}
+            textStart={textStart}
+            textEnd={textEnd}
+            showTooltipLink={showTooltipLink}
             element={
               featureIndicatorPlacement ===
               FeatureIndicatorPlacement.Outside ? (

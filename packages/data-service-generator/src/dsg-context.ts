@@ -4,6 +4,7 @@ import {
   clientDirectories,
   ContextUtil,
   serverDirectories,
+  ModuleActionsAndDtosMap,
 } from "@amplication/code-gen-types";
 import { EnumResourceType } from "./models";
 import { readPluginStaticModules } from "./utils/read-static-modules";
@@ -26,6 +27,7 @@ class DsgContext implements types.DsgContext {
   public DTOs: types.DTOs = {};
   public plugins: types.PluginMap = {};
   public entityActionsMap: types.EntityActionsMap = {};
+  public moduleActionsAndDtoMap: ModuleActionsAndDtosMap;
 
   public readonly logger: IBuildLogger;
   public utils: ContextUtil = {
@@ -72,6 +74,7 @@ class DsgContext implements types.DsgContext {
   public pluginInstallations: types.PluginInstallation[] = [];
   public moduleActions: types.ModuleAction[] = [];
   public moduleContainers: types.ModuleContainer[] = [];
+  public moduleDtos: types.ModuleDto[] = [];
 
   public otherResources?: types.DSGResourceData[] | undefined;
 }

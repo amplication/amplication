@@ -28,13 +28,12 @@ function BetaFeatureTag({ tagLabel }: Props) {
             gap={EnumGapSize.Small}
           >
             <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-              The Architecture tab's overview and redesign features are
-              currently in beta.
+              The APIs tab's features are currently in beta.
             </Text>
             <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-              For more details, check our "Break the Monolith"{" "}
+              For more details, check our "Custom Types & Actions"{" "}
               <a
-                href="https://docs.amplication.com/docs/break-the-monolith"
+                href="https://docs.amplication.com/docs//custom-types-and-actions"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -51,7 +50,7 @@ function BetaFeatureTag({ tagLabel }: Props) {
               If you encounter issues or have feedback, please join the
               discussion on{" "}
               <a
-                href="https://github.com/amplication/amplication/discussions/7869"
+                href="https://github.com/amplication/amplication/discussions/8269"
                 target="_blank"
                 rel="noreferrer"
               >

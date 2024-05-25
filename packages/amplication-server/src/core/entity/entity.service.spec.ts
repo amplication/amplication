@@ -31,16 +31,17 @@ import {
 import { DiffService } from "../../services/diff.service";
 import { isReservedName } from "./reservedNames";
 import { ReservedNameError } from "../resource/ReservedNameError";
-import { EnumResourceType } from "@amplication/code-gen-types/models";
+import { EnumResourceType } from "@amplication/code-gen-types";
 import { Build } from "../build/dto/Build";
 import { Environment } from "../environment/dto";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
 import { BillingService } from "../billing/billing.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
@@ -420,6 +421,19 @@ const prismaEntityPermissionFindManyMock = jest.fn(() => []);
 const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
 const prismaEntityPermissionFieldFindManyMock = jest.fn(() => null);
 const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
+const dtoServiceUpdateDefaultDtoForEnumFieldMock = jest.fn(() => {
+  return {};
+});
+const dtoServiceDeleteDefaultDtoForEnumFieldMock = jest.fn(() => {
+  return {};
+});
+
+const moduleServiceUpdateDefaultModuleForEntityMock = jest.fn(() => {
+  return {};
+});
+const moduleServiceCreateDefaultModuleForEntityMock = jest.fn(() => {
+  return {};
+});
 
 const areDifferentMock = jest.fn(() => true);
 
@@ -455,14 +469,7 @@ describe("EntityService", () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [JsonSchemaValidationModule, DiffModule],
       providers: [
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            track: jest.fn(() => {
-              return;
-            }),
-          })),
-        },
+        MockedSegmentAnalyticsProvider(),
         {
           provide: BillingService,
           useValue: billingServiceMock,
@@ -478,20 +485,19 @@ describe("EntityService", () => {
         {
           provide: ModuleService,
           useClass: jest.fn(() => ({
-            createDefaultModuleForEntity: jest.fn(() => {
-              return {};
-            }),
+            createDefaultModuleForEntity:
+              moduleServiceCreateDefaultModuleForEntityMock,
             deleteDefaultModuleForEntity: jest.fn(() => {
               return {};
             }),
-            updateDefaultModuleForEntity: jest.fn(() => {
-              return {};
-            }),
+            updateDefaultModuleForEntity:
+              moduleServiceUpdateDefaultModuleForEntityMock,
             getDefaultModuleIdForEntity: jest.fn(() => {
               return "exampleModuleId";
             }),
           })),
         },
+
         {
           provide: ModuleActionService,
           useClass: jest.fn(() => ({
@@ -501,6 +507,22 @@ describe("EntityService", () => {
             deleteDefaultActionsForRelationField: jest.fn(() => {
               return [];
             }),
+          })),
+        },
+        {
+          provide: ModuleDtoService,
+          useClass: jest.fn(() => ({
+            createDefaultDtosForRelatedEntity: jest.fn(() => {
+              return [];
+            }),
+            deleteDefaultDtosForRelatedEntity: jest.fn(() => {
+              return [];
+            }),
+            deleteDefaultDtoForEnumField:
+              dtoServiceDeleteDefaultDtoForEnumFieldMock,
+
+            updateDefaultDtoForEnumField:
+              dtoServiceUpdateDefaultDtoForEnumFieldMock,
           })),
         },
         {
@@ -665,6 +687,7 @@ describe("EntityService", () => {
     expect(prismaEntityCreateMock).toBeCalledTimes(1);
     expect(prismaEntityCreateMock).toBeCalledWith(newEntityArgs);
     expect(prismaEntityFieldCreateMock).toBeCalledTimes(3);
+    expect(moduleServiceCreateDefaultModuleForEntityMock).toBeCalledTimes(1);
   });
 
   describe("service license", () => {
@@ -1301,8 +1324,38 @@ describe("EntityService", () => {
         ...EXAMPLE_ENTITY_FIELD_DATA,
         permanentId: expect.any(String),
       },
+      include: {
+        entityVersion: true,
+      },
     });
   });
+
+  it("should create entity field with a reserved name", async () => {
+    expect(
+      await service.createField(
+        {
+          data: {
+            ...EXAMPLE_ENTITY_FIELD_DATA,
+            name: RESERVED_NAME,
+            entity: { connect: { id: EXAMPLE_ENTITY_ID } },
+          },
+        },
+        EXAMPLE_USER
+      )
+    ).toEqual(EXAMPLE_ENTITY_FIELD);
+    expect(prismaEntityFieldCreateMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldCreateMock).toBeCalledWith({
+      data: {
+        ...EXAMPLE_ENTITY_FIELD_DATA,
+        name: `${RESERVED_NAME}Field`,
+        permanentId: expect.any(String),
+      },
+      include: {
+        entityVersion: true,
+      },
+    });
+  });
+
   it("should fail to create entity field with bad name", async () => {
     await expect(
       service.createField(
@@ -1348,6 +1401,7 @@ describe("EntityService", () => {
     );
     expect(prismaEntityFieldUpdateMock).toBeCalledTimes(1);
     expect(prismaEntityFieldUpdateMock).toBeCalledWith(args);
+    expect(dtoServiceDeleteDefaultDtoForEnumFieldMock).toBeCalledTimes(0);
   });
 
   it('should throw a "Record not found" error', async () => {
@@ -1413,6 +1467,7 @@ describe("EntityService", () => {
       )
     ).toEqual({
       dataType: EnumDataType.DateTime,
+      displayName: EXAMPLE_DATE_DISPLAY_NAME,
       name: camelCase(EXAMPLE_DATE_DISPLAY_NAME),
       properties: {
         timeZone: "localTime",
@@ -1436,6 +1491,7 @@ describe("EntityService", () => {
     ).toEqual({
       dataType: EnumDataType.MultiLineText,
       name: camelCase(EXAMPLE_DESCRIPTION_DISPLAY_NAME),
+      displayName: EXAMPLE_DESCRIPTION_DISPLAY_NAME,
       properties: {
         maxLength: 1000,
       },
@@ -1456,6 +1512,7 @@ describe("EntityService", () => {
     ).toEqual({
       dataType: EnumDataType.Email,
       name: camelCase(EXAMPLE_EMAIL_DISPLAY_NAME),
+      displayName: EXAMPLE_EMAIL_DISPLAY_NAME,
       properties: {},
     });
   });
@@ -1474,6 +1531,7 @@ describe("EntityService", () => {
     ).toEqual({
       dataType: EnumDataType.OptionSet,
       name: camelCase(EXAMPLE_STATUS_DISPLAY_NAME),
+      displayName: EXAMPLE_STATUS_DISPLAY_NAME,
       properties: { options: [{ label: "Option 1", value: "Option1" }] },
     });
   });
@@ -1492,6 +1550,7 @@ describe("EntityService", () => {
     ).toEqual({
       dataType: EnumDataType.Boolean,
       name: camelCase(EXAMPLE_BOOLEAN_DISPLAY_NAME),
+      displayName: EXAMPLE_BOOLEAN_DISPLAY_NAME,
       properties: {},
     });
   });
@@ -1518,6 +1577,7 @@ describe("EntityService", () => {
         allowMultipleSelection: false,
       },
       name: camelCase(relatedEntity.displayName),
+      displayName: relatedEntity.displayName,
     });
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFindManyMock).toBeCalledWith({
@@ -1560,6 +1620,7 @@ describe("EntityService", () => {
         allowMultipleSelection: true,
       },
       name: camelCase(query),
+      displayName: query,
     });
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
@@ -1663,7 +1724,7 @@ describe("EntityService", () => {
     expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(false);
     expect(areDifferentMock).not.toBeCalled();
   });
-  it("should fail to create one entity with a reserved name", async () => {
+  it("should create one entity with a reserved name", async () => {
     const createArgs = {
       args: {
         data: {
@@ -1685,8 +1746,56 @@ describe("EntityService", () => {
       };
     });
 
+    const fixedName = `${RESERVED_NAME}Model`;
+
+    const newEntityArgs = {
+      data: {
+        ...createArgs.args.data,
+        name: fixedName,
+        lockedAt: expect.any(Date),
+        lockedByUser: {
+          connect: {
+            id: createArgs.user.id,
+          },
+        },
+        versions: {
+          create: {
+            commit: undefined,
+            versionNumber: CURRENT_VERSION_NUMBER,
+            name: fixedName,
+            displayName: createArgs.args.data.displayName,
+            pluralDisplayName: createArgs.args.data.pluralDisplayName,
+            customAttributes: createArgs.args.data.customAttributes,
+            description: createArgs.args.data.description,
+            permissions: {
+              create: DEFAULT_PERMISSIONS,
+            },
+          },
+        },
+      },
+    };
+
+    await service.createOneEntity(createArgs.args, createArgs.user);
+
+    expect(prismaEntityCreateMock).toBeCalledWith(newEntityArgs);
+  });
+  it("should fail to update one entity with a reserved name", async () => {
+    const updateArgs = {
+      args: {
+        where: { id: EXAMPLE_ENTITY_ID },
+        data: {
+          name: RESERVED_NAME,
+          displayName: EXAMPLE_ENTITY.displayName,
+          pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
+          description: EXAMPLE_ENTITY.description,
+        },
+      },
+      user: EXAMPLE_USER,
+    };
+
     await expect(
-      service.createOneEntity(createArgs.args, createArgs.user)
+      service.updateOneEntity(updateArgs.args, updateArgs.user)
     ).rejects.toThrow(new ReservedNameError(RESERVED_NAME));
   });
   it("should send unreserved name to a function that checks if its a reserved name", async () => {
@@ -1694,5 +1803,49 @@ describe("EntityService", () => {
   });
   it("should send a reserved name to a function that checks if its a reserved name", async () => {
     expect(isReservedName(RESERVED_NAME)).toBe(true);
+  });
+
+  it("should update default module and enum DTOs when updating entity name", async () => {
+    const updateArgs = {
+      args: {
+        where: { id: EXAMPLE_ENTITY_ID },
+        data: {
+          name: "changed name",
+          displayName: EXAMPLE_ENTITY.displayName,
+          pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
+          description: EXAMPLE_ENTITY.description,
+        },
+      },
+      user: EXAMPLE_USER,
+    };
+
+    expect(
+      await service.updateOneEntity(updateArgs.args, updateArgs.user)
+    ).toEqual(EXAMPLE_ENTITY);
+    expect(dtoServiceUpdateDefaultDtoForEnumFieldMock).toBeCalledTimes(1);
+    expect(moduleServiceUpdateDefaultModuleForEntityMock).toBeCalledTimes(1);
+  });
+
+  it("should delete Enum DTO when updating entity field type from OptionSet to other type", async () => {
+    prismaEntityFieldFindFirstMock.mockImplementationOnce(
+      (args: Prisma.EntityFieldFindUniqueArgs) => {
+        return {
+          ...EXAMPLE_ENTITY_FIELD,
+          dataType: EnumDataType.OptionSet,
+          entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION,
+        };
+      }
+    );
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id },
+      data: EXAMPLE_ENTITY_FIELD_DATA,
+    };
+    expect(await service.updateField(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_ENTITY_FIELD
+    );
+    expect(prismaEntityFieldUpdateMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldUpdateMock).toBeCalledWith(args);
+    expect(dtoServiceDeleteDefaultDtoForEnumFieldMock).toBeCalledTimes(1);
   });
 });

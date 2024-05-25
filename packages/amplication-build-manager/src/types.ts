@@ -12,3 +12,10 @@ export enum EnumJobStatus {
 export type JobBuildId<T extends BuildId> = `${T}-${EnumDomainName}` | T;
 export type BuildId = string;
 export type RedisValue = Record<JobBuildId<BuildId>, EnumJobStatus>;
+
+export type CodeGenerationRequest = {
+  resourceId: string;
+  buildId: string;
+  codeGeneratorVersion: string;
+  codeGeneratorName: string;
+};

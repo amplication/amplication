@@ -59,6 +59,7 @@ function PageContent({
                 />
               )}
               {children}
+              <div className={`${CLASS_NAME}__spacer`} />
             </div>
           </main>
         </div>

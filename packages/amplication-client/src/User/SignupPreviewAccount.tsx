@@ -1,8 +1,8 @@
 import { formatError } from "../util/error";
 import "./Signup.scss";
-import { CircularProgress } from "@mui/material";
 import useSignupPreviewAccount from "./hooks/useSignupPreviewAccount";
 import { EnumPreviewAccountType } from "../models";
+import { AnimationType, FullScreenLoader } from "@amplication/ui/design-system";
 
 const SignupPreviewAccount = () => {
   const queryString = window.location.search;
@@ -21,7 +21,7 @@ const SignupPreviewAccount = () => {
   return (
     <>
       {errorMessage && <p>{errorMessage}</p>}
-      {loading && <CircularProgress />}
+      {loading && <FullScreenLoader animationType={AnimationType.Full} />}
     </>
   );
 };
