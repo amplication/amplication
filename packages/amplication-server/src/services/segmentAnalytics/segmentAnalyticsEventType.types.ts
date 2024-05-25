@@ -27,7 +27,6 @@ export enum EnumEventType {
   InteractAmplicationAction = "InteractAmplicationAction",
   CreateUserDTO = "CreateUserDTO",
   InteractUserDTO = "InteractUserDTO",
-  SearchAPIs = "SearchAPIs",
   ServiceCreate = "createService",
   MessageBrokerCreate = "createMessageBroker",
 
