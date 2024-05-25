@@ -1,3 +1,4 @@
+import { CodeBlock } from "@amplication/csharp-ast";
 import {
   Entity,
   EntityLookupField,
@@ -11,7 +12,6 @@ export interface CreateEntityServiceBaseParams extends EventParams {
   entity: Entity;
   resourceName: string;
   apisDir: string;
-  moduleContainers: ModuleContainer[];
   moduleActions: ModuleAction[];
   entities: Entity[];
 }
@@ -52,8 +52,8 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   entity: Entity;
   resourceName: string;
   apisDir: string;
-  moduleContainers: ModuleContainer[];
-  entityActions: entityActions;
+  moduleActions: ModuleAction[];
+  entities: Entity[];
 }
 
 export interface CreateEntityGrpcControllerParams extends EventParams {
@@ -124,7 +124,22 @@ export interface CreateMessageBrokerClientOptionsFactoryParams
 export interface CreateMessageBrokerServiceParams extends EventParams {}
 export interface CreateMessageBrokerServiceBaseParams extends EventParams {}
 
-export interface CreateProgramFileParams extends EventParams {}
+export interface CreateProgramFileParams extends EventParams {
+  /**
+   * List of code blocks that will be added to the program file.
+   * The code blocks will be added to the `builder` object, before builder.Build() gets called.
+   * i.e. `builder.services.AddControllers();`
+   * @type {CodeBlock[]}
+   */
+  builderServicesBlocks: CodeBlock[];
+  /**
+   * List of code blocks that will be added to the program file.
+   * The code blocks will be added to the `app` object after builder.Build() gets called.
+   * i.e. `app.UseCors();`
+   * @type {CodeBlock[]}
+   */
+  appBlocks: CodeBlock[];
+}
 
 export interface CreateSwaggerParams extends EventParams {
   fileDir: string;
