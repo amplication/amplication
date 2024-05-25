@@ -74,6 +74,7 @@ export class BuildController {
         validationErrors: validationErrors.map((error) =>
           error.toString().replace(/\n/g, " ")
         ),
+        message,
       });
       return;
     }

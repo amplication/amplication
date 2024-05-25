@@ -93,10 +93,11 @@ export class VersionService extends VersionServiceBase {
     return latestMinorVersion;
   }
 
-  async getCodeGeneratorVersion(
-    args: GetCodeGeneratorVersionInput
-  ): Promise<Version | undefined> {
-    const { codeGeneratorVersion, codeGeneratorStrategy } = args;
+  async getCodeGeneratorVersion({
+    codeGeneratorFullName,
+    codeGeneratorVersion,
+    codeGeneratorStrategy,
+  }: GetCodeGeneratorVersionInput): Promise<Version | undefined> {
     if (
       (!codeGeneratorVersion &&
         (codeGeneratorStrategy === CodeGeneratorVersionStrategy.Specific ||
@@ -113,12 +114,19 @@ export class VersionService extends VersionServiceBase {
     }
 
     if (codeGeneratorStrategy === CodeGeneratorVersionStrategy.Specific) {
-      const foundVersion = await this.version({
+      const foundVersions = await this.findMany({
         where: {
-          id: codeGeneratorVersion,
+          name: codeGeneratorVersion,
+          generator: {
+            fullName: codeGeneratorFullName,
+          },
         },
       });
-      if (foundVersion?.name !== codeGeneratorVersion) {
+      const foundVersion = foundVersions.find(
+        (v) => v.name === codeGeneratorVersion
+      );
+
+      if (!foundVersion) {
         throw new BadRequestException(
           `Version ${codeGeneratorVersion} not found`
         );
@@ -130,6 +138,9 @@ export class VersionService extends VersionServiceBase {
       where: {
         isActive: true,
         deletedAt: null,
+        generator: {
+          fullName: codeGeneratorFullName,
+        },
       },
     });
 

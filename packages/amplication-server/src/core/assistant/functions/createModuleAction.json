@@ -46,8 +46,7 @@
               "Integer",
               "Float",
               "DateTime",
-              "Dto",
-              "Json"
+              "Dto"
             ],
             "description": "The type of the input. When the type is Dto, the dtoId property is required. You can use the function getModuleDtosAndEnums to get a list of available DTOs in the module or other modules."
           },
@@ -73,8 +72,7 @@
               "Integer",
               "Float",
               "DateTime",
-              "Dto",
-              "Json"
+              "Dto"
             ],
             "description": "The type of the input. When the type is Dto, the dtoId property is required. You can use the function getModuleDtosAndEnums to get a list of available DTOs in the module or other modules."
           },

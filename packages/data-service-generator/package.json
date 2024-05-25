@@ -1,6 +1,6 @@
 {
-  "name": "data-service-generator",
-  "version": "4.0.1",
+  "name": "generator-nodejs-nest",
+  "version": "4.1.1",
   "scripts": {
     "dsg:package:container": "./scripts/package-container.sh"
   },
@@ -65,6 +65,7 @@
     "util": "0.12.5",
     "validator": "13.11.0",
     "winston": "3.8.2",
-    "yaml": "2.2.2"
+    "yaml": "2.2.2",
+    "@amplication/csharp-ast": "^0.0.1"
   }
 }
