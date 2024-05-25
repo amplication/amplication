@@ -1236,16 +1236,9 @@ export class ResourceService {
     const projectId = data.resource.project.connect.id;
 
     if (data.connectToDemoRepo) {
-      await this.projectService.createDemoRepo(projectId);
+      await this.projectService.createDemoRepo(projectId, user);
       //do not use any git data when using demo repo
       data.resource.gitRepository = undefined;
-
-      await this.analytics.trackWithContext({
-        event: EnumEventType.DemoRepoCreate,
-        properties: {
-          projectId,
-        },
-      });
     }
 
     const resource = await this.createService(
