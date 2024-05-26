@@ -130,6 +130,14 @@ const DEFAULT_AUTH_PLUGINS: PluginInstallationCreateInput[] = [
   },
 ];
 
+const RESOURCE_TYPE_TO_EVENT_TYPE: {
+  [key in EnumResourceType]: EnumEventType;
+} = {
+  [EnumResourceType.Service]: EnumEventType.ServiceCreate,
+  [EnumResourceType.MessageBroker]: EnumEventType.MessageBrokerCreate,
+  [EnumResourceType.ProjectConfiguration]: EnumEventType.UnknownEvent,
+};
+
 @Injectable()
 export class ResourceService {
   constructor(
@@ -315,7 +323,7 @@ export class ResourceService {
       });
     }
 
-    return await this.prisma.resource.create({
+    const resource = await this.prisma.resource.create({
       data: {
         ...args.data,
         gitRepository: gitRepository,
@@ -323,6 +331,19 @@ export class ResourceService {
           gitRepositoryToCreate?.isOverrideGitRepository ?? false,
       },
     });
+
+    const eventName = RESOURCE_TYPE_TO_EVENT_TYPE[args.data.resourceType];
+
+    await this.analytics.trackWithContext({
+      properties: {
+        resourceId: resource.id,
+        projectId: args.data.project.connect.id,
+        name: args.data.name,
+      },
+      event: eventName,
+    });
+
+    return resource;
   }
 
   async updateCodeGeneratorVersion(
@@ -1215,16 +1236,9 @@ export class ResourceService {
     const projectId = data.resource.project.connect.id;
 
     if (data.connectToDemoRepo) {
-      await this.projectService.createDemoRepo(projectId);
+      await this.projectService.createDemoRepo(projectId, user);
       //do not use any git data when using demo repo
       data.resource.gitRepository = undefined;
-
-      await this.analytics.trackWithContext({
-        event: EnumEventType.DemoRepoCreate,
-        properties: {
-          projectId,
-        },
-      });
     }
 
     const resource = await this.createService(

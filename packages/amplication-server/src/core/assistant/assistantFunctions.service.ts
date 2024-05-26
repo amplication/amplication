@@ -409,7 +409,8 @@ export class AssistantFunctionsService {
                   },
                 },
               },
-              context.user
+              context.user,
+              true
             );
           } catch (error) {
             this.logger.error(
