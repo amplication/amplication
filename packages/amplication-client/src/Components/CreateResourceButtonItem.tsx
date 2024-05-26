@@ -1,6 +1,6 @@
 import { SelectMenuItem } from "@amplication/ui/design-system";
 import React, { useCallback, useContext } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -16,7 +16,6 @@ const CLASS_NAME = "create-resource-button-item";
 
 const CreateResourceButtonItem = ({ item }: props) => {
   const { trackEvent } = useTracking();
-  const history = useHistory();
 
   const { currentWorkspace, currentProject } = useContext(AppContext);
 
@@ -32,18 +31,8 @@ const CreateResourceButtonItem = ({ item }: props) => {
     });
   }, [trackEvent, item]);
 
-  const handleSelectItem = useCallback(() => {
-    history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/${item.route}`
-    );
-  }, [history, currentWorkspace, currentProject, item]);
-
   return (
-    <SelectMenuItem
-      closeAfterSelectionChange
-      onSelectionChange={handleSelectItem}
-      as="span"
-    >
+    <SelectMenuItem closeAfterSelectionChange as="span">
       <Link
         onClick={handleClick}
         to={`/${currentWorkspace?.id}/${currentProject?.id}/${item.route}`}
