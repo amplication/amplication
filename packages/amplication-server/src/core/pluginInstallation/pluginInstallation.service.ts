@@ -20,7 +20,7 @@ import { AmplicationError } from "../../errors/AmplicationError";
 import { JsonValue } from "type-fest";
 import { isEmpty } from "lodash";
 
-const REQUIRES_AUTHENTICATION_ENTITY = "requireAuthenticationEntity";
+export const REQUIRES_AUTHENTICATION_ENTITY = "requireAuthenticationEntity";
 
 const reOrderPlugins = (
   argsData: PluginOrderItem,
