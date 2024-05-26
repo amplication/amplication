@@ -477,8 +477,11 @@ export class ResourceService {
     });
 
     if (requireAuthenticationEntity) {
-      await this.entityService.createDefaultEntities(resource.id, user);
-      serviceSettings.authEntityName = USER_ENTITY_NAME;
+      const [userEntity] = await this.entityService.createDefaultUserEntity(
+        resource.id,
+        user
+      );
+      serviceSettings.authEntityName = userEntity.name;
     }
 
     await this.serviceSettingsService.createDefaultServiceSettings(
@@ -525,8 +528,11 @@ export class ResourceService {
     });
 
     if (requireAuthenticationEntity) {
-      await this.entityService.createDefaultEntities(resource.id, user);
-      serviceSettings.authEntityName = USER_ENTITY_NAME;
+      const [userEntity] = await this.entityService.createDefaultUserEntity(
+        resource.id,
+        user
+      );
+      serviceSettings.authEntityName = userEntity.name;
     }
 
     await this.serviceSettingsService.createDefaultServiceSettings(
@@ -576,12 +582,8 @@ export class ResourceService {
   ): Promise<void> {
     for (const plugin of plugins) {
       plugin.resource = { connect: { id: resourceId } };
-      const isvValidEntityUser = await this.userEntityValidation(
-        resourceId,
-        plugin.configurations
-      );
-      isvValidEntityUser &&
-        (await this.pluginInstallationService.create({ data: plugin }, user));
+
+      await this.pluginInstallationService.create({ data: plugin }, user);
     }
   }
 
@@ -1181,35 +1183,16 @@ export class ResourceService {
       }
     }
   }
-  async userEntityValidation(
-    resourceId: string,
-    configurations: JsonValue
-  ): Promise<boolean> {
-    try {
-      const resource = await this.prisma.resource.findUnique({
-        where: {
-          id: resourceId,
-        },
-        include: {
-          entities: true,
-        },
-      });
 
-      if (
-        !resource.entities?.find(
-          (entity) =>
-            entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
-        ) &&
-        configurations &&
-        configurations["requireAuthenticationEntity"] === "true"
-      ) {
-        throw new ConflictException("Plugin must have an User entity");
-      }
-      return true;
-    } catch (error) {
-      this.logger.error(error.message, error);
-      return false;
-    }
+  async getAuthEntityName(resourceId: string, user: User): Promise<string> {
+    const serviceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
+          where: { id: resourceId },
+        },
+        user
+      );
+    return serviceSettings.authEntityName;
   }
 
   /**

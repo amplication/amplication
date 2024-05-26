@@ -17,6 +17,10 @@ import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segment
 import { ResourceService } from "../resource/resource.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { AmplicationError } from "../../errors/AmplicationError";
+import { JsonValue } from "type-fest";
+import { isEmpty } from "lodash";
+
+const REQUIRES_AUTHENTICATION_ENTITY = "requireAuthenticationEntity";
 
 const reOrderPlugins = (
   argsData: PluginOrderItem,
@@ -91,15 +95,40 @@ export class PluginInstallationService extends BlockTypeService<
     );
   }
 
+  async validatePluginConfiguration(
+    resourceId: string,
+    configurations: JsonValue,
+    user: User
+  ): Promise<void> {
+    if (
+      !configurations ||
+      configurations[REQUIRES_AUTHENTICATION_ENTITY] !== "true"
+    ) {
+      return;
+    }
+
+    const authEntity = await this.resourceService.getAuthEntityName(
+      resourceId,
+      user
+    );
+    if (isEmpty(authEntity)) {
+      throw new AmplicationError(
+        "The plugin requires an authentication entity. Please select the authentication entity in the service settings."
+      );
+    }
+    return;
+  }
+
   async create(
     args: CreatePluginInstallationArgs,
     user: User
   ): Promise<PluginInstallation> {
     const { configurations, resource } = args.data;
 
-    await this.resourceService.userEntityValidation(
+    await this.validatePluginConfiguration(
       resource.connect.id,
-      configurations
+      configurations,
+      user
     );
 
     const existingPlugin = await this.findPluginInstallationByPluginId(

@@ -36,7 +36,7 @@ import {
   CURRENT_VERSION_NUMBER,
   INITIAL_ENTITY_FIELDS,
   USER_ENTITY_NAME,
-  DEFAULT_ENTITIES,
+  DEFAULT_USER_ENTITY,
   DEFAULT_PERMISSIONS,
   SYSTEM_DATA_TYPES,
   DATA_TYPE_TO_DEFAULT_PROPERTIES,
@@ -758,12 +758,12 @@ export class EntityService {
     return entities;
   }
 
-  async createDefaultEntities(
+  async createDefaultUserEntity(
     resourceId: string,
     user: User
   ): Promise<Entity[]> {
     return await Promise.all(
-      DEFAULT_ENTITIES.map(async (entity) => {
+      DEFAULT_USER_ENTITY.map(async (entity) => {
         const { fields, ...rest } = entity;
         const newEntity = await this.createOneEntity(
           {
