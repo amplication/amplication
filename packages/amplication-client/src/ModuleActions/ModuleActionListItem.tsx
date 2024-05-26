@@ -64,11 +64,6 @@ export const ModuleActionListItem = ({
           },
           data: {
             enabled: value,
-            gqlOperation: moduleAction.gqlOperation,
-            restVerb: moduleAction.restVerb,
-            name: moduleAction.name,
-            displayName: moduleAction.displayName,
-            description: moduleAction.description,
           },
         },
       }).catch(console.error);
