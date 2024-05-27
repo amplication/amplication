@@ -108,19 +108,6 @@ export class ModuleDtoService extends BlockTypeService<
     const includeCustomDtosBoolean = includeCustomDtos !== false;
     const includeDefaultDtosBoolean = includeDefaultDtos !== false;
 
-    if (user) {
-      const subscription = await this.billingService.getSubscription(
-        user.workspace?.id
-      );
-
-      await this.analytics.trackWithContext({
-        properties: {
-          planType: subscription.subscriptionPlan,
-        },
-        event: EnumEventType.SearchAPIs,
-      });
-    }
-
     if (includeCustomDtosBoolean && includeDefaultDtosBoolean) {
       return super.findMany(prismaArgs);
     } else if (includeCustomDtosBoolean) {

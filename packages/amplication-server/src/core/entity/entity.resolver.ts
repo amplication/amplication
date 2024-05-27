@@ -92,7 +92,7 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: CreateDefaultEntitiesArgs
   ): Promise<Entity[]> {
-    return await this.entityService.createDefaultEntities(
+    return await this.entityService.createDefaultUserEntity(
       args.data.resourceId,
       user
     );

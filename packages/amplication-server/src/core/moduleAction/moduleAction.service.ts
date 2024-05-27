@@ -84,19 +84,6 @@ export class ModuleActionService extends BlockTypeService<
     const includeCustomActionsBoolean = includeCustomActions !== false;
     const includeDefaultActionsBoolean = includeDefaultActions !== false;
 
-    if (user) {
-      const subscription = await this.billingService.getSubscription(
-        user.workspace?.id
-      );
-
-      await this.analytics.trackWithContext({
-        properties: {
-          planType: subscription.subscriptionPlan,
-        },
-        event: EnumEventType.SearchAPIs,
-      });
-    }
-
     if (includeCustomActionsBoolean && includeDefaultActionsBoolean) {
       return super.findMany(prismaArgs);
     } else if (includeCustomActionsBoolean) {

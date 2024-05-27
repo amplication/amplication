@@ -9,13 +9,16 @@ import {
   Panel,
   Text,
 } from "@amplication/ui/design-system";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppContext } from "../context/appContext";
 import AssistantChatInput from "./AssistantChatInput";
 import JovuLogo, { EnumLogoSize } from "./JovuLogo";
 import "./OnboardingWithJovu.scss";
 import { useAssistantContext } from "./context/AssistantContext";
+import { expireCookie } from "../util/cookie";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 const CLASS_NAME = "onboarding-with-jovu";
 
@@ -27,6 +30,8 @@ const STARTERS = [
 ];
 
 const OnboardingWithJovu: React.FC = () => {
+  const { trackEvent } = useTracking();
+
   const { setOpen, sendOnboardingMessage } = useAssistantContext();
   const { currentWorkspace, currentProject } = useAppContext();
 
@@ -35,7 +40,11 @@ const OnboardingWithJovu: React.FC = () => {
   const handleSubmit = useCallback(
     (message: string) => {
       sendOnboardingMessage(message);
+      expireCookie("signup");
       setOpen(true);
+      trackEvent({
+        eventName: AnalyticsEventNames.SendPromptOnboardingWithJovu,
+      });
       history.push(`/${currentWorkspace.id}/${currentProject.id}`);
     },
     [
@@ -44,8 +53,15 @@ const OnboardingWithJovu: React.FC = () => {
       history,
       sendOnboardingMessage,
       setOpen,
+      trackEvent,
     ]
   );
+
+  useEffect(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.ViewOnboardingWithJovu,
+    });
+  }, []);
 
   return (
     <div className={CLASS_NAME}>
