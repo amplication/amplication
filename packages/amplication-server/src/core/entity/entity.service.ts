@@ -836,6 +836,13 @@ export class EntityService {
         );
       }
 
+      for (const relatedEntityField of relatedEntityFields) {
+        await this.deleteField(
+          { where: { id: relatedEntityField.id } },
+          user,
+          fieldStrategy
+        );
+      }
       try {
         await this.moduleService.deleteDefaultModuleForEntity(
           entity.resourceId,
@@ -856,15 +863,6 @@ export class EntityService {
           error
         );
       }
-
-      for (const relatedEntityField of relatedEntityFields) {
-        await this.deleteField(
-          { where: { id: relatedEntityField.id } },
-          user,
-          fieldStrategy
-        );
-      }
-
       return this.prisma.entity.update({
         where: args.where,
         data: {
