@@ -473,9 +473,12 @@ const blockServiceReleaseLockMock = jest.fn(async () => EXAMPLE_BLOCK);
 
 const USER_ENTITY_MOCK = {
   id: "USER_ENTITY_MOCK_ID",
+  name: USER_ENTITY_NAME,
 };
 
-const entityServiceCreateDefaultEntitiesMock = jest.fn();
+const entityServiceCreateDefaultUserEntityMock = jest.fn(() => {
+  return [USER_ENTITY_MOCK];
+});
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
 const entityServiceBulkCreateFields = jest.fn();
@@ -590,7 +593,7 @@ describe("ResourceService", () => {
             createFieldByDisplayName: entityServiceCreateFieldByDisplayNameMock,
             createOneEntity: entityServiceCreateOneEntityMock,
             releaseLock: entityServiceReleaseLockMock,
-            createDefaultEntities: entityServiceCreateDefaultEntitiesMock,
+            createDefaultUserEntity: entityServiceCreateDefaultUserEntityMock,
             getChangedEntities: entityServiceGetChangedEntitiesMock,
             findFirst: entityServiceFindFirstMock,
             bulkCreateEntities: entityServiceBulkCreateEntities,
@@ -703,8 +706,8 @@ describe("ResourceService", () => {
       )
     ).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
-    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(1);
-    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledWith(
+    expect(entityServiceCreateDefaultUserEntityMock).toBeCalledTimes(1);
+    expect(entityServiceCreateDefaultUserEntityMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID,
       EXAMPLE_USER
     );
@@ -796,7 +799,7 @@ describe("ResourceService", () => {
       )
     );
     expect(prismaResourceCreateMock).toBeCalledTimes(0);
-    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(0);
+    expect(entityServiceCreateDefaultUserEntityMock).toBeCalledTimes(0);
   });
 
   it("should fail to create resource with entities with a reserved name", async () => {

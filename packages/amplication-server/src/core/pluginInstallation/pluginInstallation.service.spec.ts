@@ -13,7 +13,10 @@ import { ResourceService } from "../resource/resource.service";
 import { CreatePluginInstallationArgs } from "./dto/CreatePluginInstallationArgs";
 import { PluginInstallation } from "./dto/PluginInstallation";
 import { UpdatePluginInstallationArgs } from "./dto/UpdatePluginInstallationArgs";
-import { PluginInstallationService } from "./pluginInstallation.service";
+import {
+  PluginInstallationService,
+  REQUIRES_AUTHENTICATION_ENTITY,
+} from "./pluginInstallation.service";
 import { PluginOrderService } from "./pluginOrder.service";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
@@ -66,6 +69,8 @@ const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
   npm: "ExampleNpm",
   version: "1.0.0",
 };
+
+const resourceServiceGetAuthEntityNameMock = jest.fn(() => "User");
 
 const blockServiceFindOneMock = jest.fn(() => {
   return EXAMPLE_PLUGIN_INSTALLATION;
@@ -134,7 +139,7 @@ describe("PluginInstallationService", () => {
         {
           provide: ResourceService,
           useValue: {
-            userEntityValidation: jest.fn(),
+            getAuthEntityName: resourceServiceGetAuthEntityNameMock,
           },
         },
         {
@@ -271,5 +276,63 @@ describe("PluginInstallationService", () => {
     expect(blockServiceUpdateMock).toBeCalledWith(args, EXAMPLE_USER, [
       "settings",
     ]);
+  });
+
+  it("should install an auth plugin when auth entity is available", async () => {
+    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValueOnce([]);
+
+    const args: CreatePluginInstallationArgs = {
+      data: {
+        resource: {
+          connect: {
+            id: EXAMPLE_RESOURCE_ID,
+          },
+        },
+        description: EXAMPLE_PLUGIN_INSTALLATION_DESCRIPTION,
+        displayName: EXAMPLE_PLUGIN_INSTALLATION_DISPLAY_NAME,
+        pluginId: EXAMPLE_PLUGIN_ID,
+        npm: "ExampleNpm",
+        version: "1.0.0",
+        enabled: true,
+        configurations: {
+          [REQUIRES_AUTHENTICATION_ENTITY]: "true",
+        },
+      },
+    };
+    expect(await service.create(args, EXAMPLE_USER)).toEqual({
+      ...EXAMPLE_PLUGIN_INSTALLATION,
+      configurations: {
+        [REQUIRES_AUTHENTICATION_ENTITY]: "true",
+      },
+    });
+  });
+  it("should throw an error when installing a plugin and auth entity is missing", async () => {
+    resourceServiceGetAuthEntityNameMock.mockImplementationOnce(() => {
+      return null;
+    });
+
+    const args: CreatePluginInstallationArgs = {
+      data: {
+        resource: {
+          connect: {
+            id: EXAMPLE_RESOURCE_ID,
+          },
+        },
+        description: EXAMPLE_PLUGIN_INSTALLATION_DESCRIPTION,
+        displayName: EXAMPLE_PLUGIN_INSTALLATION_DISPLAY_NAME,
+        pluginId: EXAMPLE_PLUGIN_ID,
+        npm: "ExampleNpm",
+        version: "1.0.0",
+        enabled: true,
+        configurations: {
+          [REQUIRES_AUTHENTICATION_ENTITY]: "true",
+        },
+      },
+    };
+    await expect(service.create(args, EXAMPLE_USER)).rejects.toThrow(
+      new AmplicationError(
+        "The plugin requires an authentication entity. Please select the authentication entity in the service settings."
+      )
+    );
   });
 });
