@@ -1,14 +1,29 @@
 import {
-  clientDirectories,
   DSGResourceData,
   Entity,
+  EntityActionsMap,
   EntityField,
   EnumDataType,
+  EnumModuleActionType,
   LookupResolvedProperties,
+  ModuleAction,
+  ModuleActionsAndDtosMap,
+  ModuleActionsAndDtos,
+  ModuleContainer,
+  ModuleDto,
   PluginInstallation,
+  clientDirectories,
+  entityDefaultActions,
+  entityRelatedFieldDefaultActions,
   serverDirectories,
   types,
+  EnumModuleDtoPropertyType,
+  PropertyTypeDef,
 } from "@amplication/code-gen-types";
+import {
+  getDefaultActionsForEntity,
+  getDefaultActionsForRelationField,
+} from "@amplication/dsg-utils";
 import { ILogger } from "@amplication/util/logging";
 import { camelCase } from "camel-case";
 import { get, isEmpty, trim } from "lodash";
@@ -20,6 +35,7 @@ import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { resolveTopicNames } from "./utils/message-broker";
+import { EnumModuleDtoDecoratorType } from "@amplication/code-gen-types";
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
@@ -35,6 +51,9 @@ export async function prepareContext(
     roles,
     resourceInfo: appInfo,
     otherResources,
+    moduleActions,
+    moduleContainers,
+    moduleDtos,
   } = dSGResourceData;
 
   if (!entities || !roles || !appInfo) {
@@ -60,6 +79,21 @@ export async function prepareContext(
   context.serviceTopics = serviceTopicsWithName;
   context.otherResources = otherResources;
   context.pluginInstallations = resourcePlugins;
+  context.moduleContainers = moduleContainers;
+  context.moduleDtos = moduleDtos;
+
+  context.moduleActionsAndDtoMap = prepareModuleActionsAndDtos(
+    moduleContainers,
+    moduleActions,
+    moduleDtos,
+    context.appInfo.settings.serverSettings.generateGraphQL
+  );
+
+  context.entityActionsMap = prepareEntityActions(
+    entities,
+    moduleContainers,
+    moduleActions
+  );
   context.generateGrpc = shouldGenerateGrpc(context.pluginInstallations);
 
   context.hasDecimalFields = normalizedEntities.some((entity) => {
@@ -224,4 +258,290 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
       }),
     };
   });
+}
+
+function prepareEntityActions(
+  entities: Entity[],
+  moduleContainers: ModuleContainer[],
+  moduleActions: ModuleAction[]
+): EntityActionsMap {
+  return Object.fromEntries(
+    entities.map((entity) => {
+      const defaultActions = getDefaultActionsForEntity(entity);
+
+      const relationFields = entity.fields.filter((field) => {
+        return field.dataType === EnumDataType.Lookup;
+      });
+
+      const defaultRelatedActions = Object.fromEntries(
+        relationFields.map((relatedField) => {
+          return [
+            relatedField.name,
+            getDefaultActionsForRelationField(entity, relatedField),
+          ];
+        })
+      );
+
+      const moduleContainer = moduleContainers?.find(
+        (moduleContainer) => moduleContainer.entityId === entity.id
+      );
+
+      //return the defaultActions if the relevant module was not provided
+      if (moduleContainer === undefined) {
+        return [
+          entity.name,
+          {
+            entityDefaultActions: defaultActions,
+            relatedFieldsDefaultActions: defaultRelatedActions,
+            customActions: [],
+          },
+        ];
+      }
+
+      const moduleContainerId = moduleContainer.id;
+
+      const actionKeys = Object.keys(EnumModuleActionType) as Array<
+        keyof typeof EnumModuleActionType
+      >;
+
+      const currentEntityActions = moduleActions.filter(
+        (moduleAction) => moduleAction.parentBlockId === moduleContainerId
+      );
+
+      let entityCustomAction = currentEntityActions.filter(
+        (moduleAction) =>
+          moduleAction.actionType === EnumModuleActionType.Custom
+      );
+
+      //create 2 arrays for default and relations
+      let entityDefaultEntries = Object.fromEntries(
+        actionKeys.map((key) => {
+          if (key === EnumModuleActionType.Custom) {
+            return [];
+          }
+          const moduleAction = currentEntityActions.find(
+            (moduleAction) =>
+              moduleAction.actionType === key && !moduleAction.fieldPermanentId
+          );
+          //return the defaultAction if the relevant actions was not provided
+          return [key, moduleAction || defaultActions[key]];
+        })
+      ) as entityDefaultActions;
+
+      let relatedFieldsDefaultEntries = Object.fromEntries(
+        relationFields.map((relatedField) => {
+          const actions = actionKeys.map((key) => {
+            const moduleAction = currentEntityActions.find(
+              (moduleAction) =>
+                moduleAction.actionType === key &&
+                moduleAction.fieldPermanentId === relatedField.permanentId
+            );
+            //return the defaultAction if the relevant actions was not provided
+            return moduleAction || defaultRelatedActions[key];
+          });
+          return [relatedField.name, actions];
+        })
+      ) as Record<string, entityRelatedFieldDefaultActions>;
+
+      //disable all actions if the moduleContainer is disabled
+      if (!moduleContainer.enabled) {
+        entityDefaultEntries = Object.fromEntries(
+          Object.entries(entityDefaultEntries).map(([key, value]) => {
+            return [key, { ...value, enabled: false }];
+          })
+        ) as entityDefaultActions;
+
+        relatedFieldsDefaultEntries = Object.fromEntries(
+          Object.entries(relatedFieldsDefaultEntries).map(([key, value]) => {
+            return [
+              key,
+              Object.fromEntries(
+                Object.entries(value).map(([key, value]) => {
+                  return [key, { ...value, enabled: false }];
+                })
+              ),
+            ];
+          })
+        ) as Record<string, entityRelatedFieldDefaultActions>;
+
+        entityCustomAction = entityCustomAction.map((action) => {
+          return { ...action, enabled: false };
+        });
+      }
+
+      return [
+        entity.name,
+        {
+          entityDefaultActions: entityDefaultEntries,
+          relatedFieldsDefaultActions: relatedFieldsDefaultEntries,
+          customActions: entityCustomAction,
+        },
+      ];
+    })
+  );
+}
+
+function prepareModuleActionsAndDtos(
+  moduleContainers: ModuleContainer[],
+  moduleActions: ModuleAction[],
+  moduleDtos: ModuleDto[],
+  generateGraphQL: boolean
+): ModuleActionsAndDtosMap {
+  const dtosMap = Object.fromEntries(
+    moduleDtos.map((moduleDto) => {
+      return [moduleDto.id, moduleDto];
+    })
+  );
+
+  //resolve references from dto properties to dtos
+  moduleDtos.forEach((moduleDto) => {
+    const dtoProperties = moduleDto.properties;
+    if (dtoProperties) {
+      dtoProperties.forEach((property) => {
+        const propertyTypes = property.propertyTypes;
+        if (propertyTypes) {
+          propertyTypes.forEach((propertyType) => {
+            resolvePropTypeDtoFromDtoId(
+              propertyType,
+              dtosMap,
+              `dto property ${property.name} of moduleDto ${moduleDto.name}`
+            );
+          });
+        }
+      });
+    }
+  });
+
+  //resolve references from action input/output types to dtos
+  moduleActions.forEach((moduleAction) => {
+    if (!moduleAction.restInputSource) {
+      moduleAction.restInputSource = "Body"; //set the default as Body in case no value was provided
+    }
+
+    const actionInputType = moduleAction.inputType;
+    if (actionInputType) {
+      if (
+        resolvePropTypeDtoFromDtoId(
+          actionInputType,
+          dtosMap,
+          `action ${moduleAction.name} input type`
+        )
+      ) {
+        if (generateGraphQL) {
+          addDecoratorToDto(
+            actionInputType.dto,
+            EnumModuleDtoDecoratorType.ArgsType
+          );
+          setDtoNestedDecorator(
+            actionInputType.dto,
+            EnumModuleDtoDecoratorType.InputType,
+            dtosMap,
+            true // the top level DTO has ArgsType and doesn't also need InputType
+          );
+        }
+      }
+    }
+
+    const actionOutputType = moduleAction.outputType;
+    if (actionOutputType) {
+      if (
+        resolvePropTypeDtoFromDtoId(
+          actionOutputType,
+          dtosMap,
+          `action ${moduleAction.name} output type`
+        )
+      ) {
+        if (generateGraphQL) {
+          setDtoNestedDecorator(
+            actionOutputType.dto,
+            EnumModuleDtoDecoratorType.ObjectType,
+            dtosMap
+          );
+        }
+      }
+    }
+  });
+
+  return Object.fromEntries(
+    moduleContainers.map((moduleContainer) => {
+      const moduleContainerId = moduleContainer.id;
+
+      const currentModuleActions = moduleActions?.filter(
+        (moduleAction) => moduleAction.parentBlockId === moduleContainerId
+      );
+
+      const currentModuleDtos = moduleDtos?.filter(
+        (moduleDto) => moduleDto.parentBlockId === moduleContainerId
+      );
+
+      const moduleActionsAndDtos: ModuleActionsAndDtos = {
+        moduleContainer: moduleContainer,
+        actions: currentModuleActions,
+        dtos: currentModuleDtos,
+      };
+
+      return [moduleContainer.name, moduleActionsAndDtos];
+    })
+  );
+}
+
+function setDtoNestedDecorator(
+  dto: ModuleDto,
+  decorator: EnumModuleDtoDecoratorType,
+  dtosMap: { [k: string]: ModuleDto },
+  decorateOnlySubProperties = false
+) {
+  if (dto.decorators && dto.decorators.find((dec) => dec === decorator)) return;
+
+  if (!decorateOnlySubProperties) {
+    addDecoratorToDto(dto, decorator);
+  }
+
+  if (dto.properties) {
+    dto.properties.forEach((prop) => {
+      if (prop.propertyTypes) {
+        prop.propertyTypes.forEach((propType) => {
+          if (propType.type === EnumModuleDtoPropertyType.Dto) {
+            if (
+              resolvePropTypeDtoFromDtoId(
+                propType,
+                dtosMap,
+                `DTO ${dto.name} in property ${prop.name}`
+              )
+            ) {
+              setDtoNestedDecorator(propType.dto, decorator, dtosMap);
+            }
+          }
+        });
+      }
+    });
+  }
+}
+
+function addDecoratorToDto(
+  dto: ModuleDto,
+  decorator: EnumModuleDtoDecoratorType
+) {
+  if (!dto.decorators) dto.decorators = [];
+  dto.decorators.push(decorator);
+}
+
+function resolvePropTypeDtoFromDtoId(
+  propertyType: PropertyTypeDef,
+  dtosMap: { [k: string]: ModuleDto },
+  referencedIn: string
+): boolean {
+  const dtoId = propertyType.dtoId;
+  if (dtoId) {
+    const dto = dtosMap[dtoId];
+    if (dto) {
+      propertyType.dto = dto;
+      return true;
+    } else {
+      throw new Error(
+        `Could not find dto with the ID ${dtoId} referenced in ${referencedIn}`
+      );
+    }
+  }
+  return false;
 }

@@ -103,7 +103,7 @@ export class GitClientService {
 
   async createPullRequest(
     createPullRequestArgs: CreatePullRequestArgs
-  ): Promise<string> {
+  ): Promise<{ pullRequestUrl: string; diffStat: string }> {
     const {
       owner,
       repositoryName,
@@ -228,15 +228,18 @@ export class GitClientService {
             preparedFiles,
             baseBranch,
             repositoryGroupName,
+            pullRequestTitle,
           });
           break;
         default:
           throw new InvalidPullRequestMode();
       }
 
+      const diffStat = await gitCli.getShortStat();
+
       await gitCli.deleteRepositoryDir();
 
-      return pullRequestUrl;
+      return { pullRequestUrl, diffStat };
     } catch (error) {
       await gitCli.deleteRepositoryDir();
 
@@ -254,6 +257,7 @@ export class GitClientService {
     preparedFiles: UpdateFile[];
     baseBranch: string;
     repositoryGroupName?: string;
+    pullRequestTitle?: string;
   }): Promise<string> {
     const {
       gitCli,
@@ -265,6 +269,7 @@ export class GitClientService {
       preparedFiles,
       baseBranch,
       repositoryGroupName,
+      pullRequestTitle,
     } = options;
 
     await gitCli.clone();
@@ -328,14 +333,14 @@ export class GitClientService {
         owner,
         repositoryName,
         repositoryGroupName,
-        pullRequestTitle: accumulativePullRequestTitle,
+        pullRequestTitle: `${accumulativePullRequestTitle} ${pullRequestTitle}`,
         pullRequestBody: accumulativePullRequestBody,
         branchName,
         baseBranchName: baseBranch,
       });
     }
 
-    if (sha) {
+    if (sha && pullRequest) {
       await this.provider.createPullRequestComment({
         where: {
           issueNumber: pullRequest.number,
@@ -347,7 +352,7 @@ export class GitClientService {
       });
     }
 
-    return pullRequest.url;
+    return pullRequest?.url ?? "";
   }
 
   private async applyPostCommit(diff, owner, repositoryName, gitCli) {

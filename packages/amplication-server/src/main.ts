@@ -1,3 +1,9 @@
+import { SERVICE_NAME } from "./constants";
+import { Tracing } from "@amplication/util/nestjs/tracing";
+Tracing.init({
+  serviceName: SERVICE_NAME,
+});
+
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { graphqlUploadExpress } from "graphql-upload";
@@ -6,8 +12,13 @@ import { sendServerLoadEvent } from "./util/sendServerLoadEvent";
 import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
 import { MicroserviceOptions } from "@nestjs/microservices";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { SERVICE_NAME } from "./constants";
 import { Logger } from "@amplication/util/logging";
+import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
+import {
+  swaggerDocumentOptions,
+  swaggerPath,
+  swaggerSetupOptions,
+} from "./swagger";
 
 async function bootstrap() {
   /**
@@ -24,14 +35,29 @@ async function bootstrap() {
   ) {
     sendServerLoadEvent();
   }
-
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(AmplicationLogger));
 
   app.connectMicroservice<MicroserviceOptions>(createNestjsKafkaConfig());
   app.use(graphqlUploadExpress({ maxFileSize: 1000000, maxFiles: 10 }));
 
+  const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
+
+  /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
+  Object.values((document as OpenAPIObject).paths).forEach((path: any) => {
+    Object.values(path).forEach((method: any) => {
+      if (
+        Array.isArray(method.security) &&
+        method.security.includes("isPublic")
+      ) {
+        method.security = [];
+      }
+    });
+  });
+
   await app.startAllMicroservices();
+
+  SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
   if (process.env.ENABLE_SHUTDOWN_HOOKS) {
     // Remove listeners created by Prisma

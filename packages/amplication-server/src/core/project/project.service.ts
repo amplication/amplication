@@ -4,7 +4,7 @@ import { FindOneArgs } from "../../dto";
 import { Commit, Project, Resource, User } from "../../models";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { ResourceService, EntityService } from "../";
-import { BlockService } from "../block/block.service";
+import { BlockPendingChange, BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
 import {
   CreateCommitArgs,
@@ -19,15 +19,16 @@ import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
 import { BillingService } from "../billing/billing.service";
 import { FeatureUsageReport } from "./FeatureUsageReport";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { GitProviderService } from "../git/git.provider.service";
 
 export const INVALID_PROJECT_ID = "Invalid projectId";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import dockerNames from "docker-names";
+import { EntityPendingChange } from "../entity/entity.service";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { SubscriptionService } from "../subscription/subscription.service";
 
 @Injectable()
 export class ProjectService {
@@ -39,7 +40,8 @@ export class ProjectService {
     private readonly entityService: EntityService,
     private readonly billingService: BillingService,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly gitProviderService: GitProviderService
+    private readonly gitProviderService: GitProviderService,
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -64,6 +66,19 @@ export class ProjectService {
     args: ProjectCreateArgs,
     userId: string
   ): Promise<Project> {
+    if (this.billingService.isBillingEnabled) {
+      const projectEntitlement =
+        await this.billingService.getMeteredEntitlement(
+          args.data.workspace.connect.id,
+          BillingFeature.Projects
+        );
+
+      if (projectEntitlement && !projectEntitlement.hasAccess) {
+        const message = `Your workspace exceeds its project limitation.`;
+        throw new BillingLimitationError(message, BillingFeature.Projects);
+      }
+    }
+
     const project = await this.prisma.project.create({
       data: {
         ...args.data,
@@ -111,19 +126,24 @@ export class ProjectService {
       -archivedServiceCount
     );
 
-    await this.billingService.reportUsage(
-      project.workspaceId,
-      BillingFeature.Projects,
-      -1
-    );
-
-    return this.prisma.project.update({
+    const updatedProject = this.prisma.project.update({
       where: args.where,
       data: {
         name: prepareDeletedItemName(project.name, project.id),
         deletedAt: new Date(),
       },
     });
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.Projects,
+      -1
+    );
+
+    await this.subscriptionService.updateProjectLicensed(project.workspaceId);
+    await this.subscriptionService.updateServiceLicensed(project.workspaceId);
+
+    return updatedProject;
   }
 
   async updateProject(args: UpdateProjectArgs): Promise<Project> {
@@ -190,6 +210,11 @@ export class ProjectService {
       },
       include: {
         subscriptions: true,
+        users: {
+          where: {
+            deletedAt: null,
+          },
+        },
         projects: {
           include: {
             resources: {
@@ -232,15 +257,44 @@ export class ProjectService {
       services: workspaceServices.length,
       servicesAboveEntityPerServiceLimit:
         servicesAboveEntityPerServiceLimitCount,
+      teamMembers: workspace.users.length,
     };
+  }
+
+  private async shouldBlockBuild(userId: string): Promise<boolean> {
+    if (!this.billingService.isBillingEnabled) {
+      return false;
+    }
+
+    const workspace = await this.prisma.user
+      .findUnique({
+        where: {
+          id: userId,
+        },
+      })
+      .workspace();
+
+    const blockBuildEntitlement =
+      await this.billingService.getBooleanEntitlement(
+        workspace.id,
+        BillingFeature.BlockBuild
+      );
+
+    return blockBuildEntitlement.hasAccess;
   }
 
   async commit(
     args: CreateCommitArgs,
-    currentUser: User
+    currentUser: User,
+    skipBuild = false
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
+
+    if (await this.shouldBlockBuild(userId)) {
+      const message = "Your current plan does not allow code generation.";
+      throw new BillingLimitationError(message, BillingFeature.BlockBuild);
+    }
 
     const resources = await this.prisma.resource.findMany({
       where: {
@@ -261,7 +315,7 @@ export class ProjectService {
     const project = await this.findFirst({ where: { id: projectId } });
 
     //check if billing enabled first to skip calculation
-    if (this.billingService.isBillingEnabled) {
+    if (this.billingService.isBillingEnabled && !skipBuild) {
       const usageReport = await this.calculateMeteredUsage(project.workspaceId);
       await this.billingService.resetUsage(project.workspaceId, usageReport);
 
@@ -275,11 +329,20 @@ export class ProjectService {
         },
       });
 
+      const repositories =
+        await this.gitProviderService.getProjectsConnectedGitRepositories([
+          project.id,
+        ]);
+
       await this.billingService.validateSubscriptionPlanLimitationsForWorkspace(
-        project.workspaceId,
-        currentUser,
-        project.id,
-        projects
+        {
+          workspaceId: project.workspaceId,
+          currentUser,
+          currentProjectId: project.id,
+          projects: projects,
+          repositories,
+          bypassLimitations: args.data.bypassLimitations,
+        }
       );
     }
 
@@ -287,14 +350,38 @@ export class ProjectService {
       throw new Error(`Invalid userId or resourceId`);
     }
 
-    const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(projectId, userId),
-      this.blockService.getChangedBlocks(projectId, userId),
-    ]);
+    let changedEntities: EntityPendingChange[] = [];
+    let changedBlocks: BlockPendingChange[] = [];
+    if (skipBuild) {
+      changedBlocks =
+        await this.blockService.getChangedBlocksForCustomActionsMigration(
+          projectId,
+          userId
+        );
+    } else {
+      [changedEntities, changedBlocks] = await Promise.all([
+        this.entityService.getChangedEntities(projectId, userId),
+        this.blockService.getChangedBlocks(projectId, userId),
+      ]);
+    }
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
-    const commit = await this.prisma.commit.create(args);
+    const commit = await this.prisma.commit.create({
+      data: {
+        message: args.data.message,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
 
     await this.billingService.reportUsage(
       project.workspaceId,
@@ -356,41 +443,42 @@ export class ProjectService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    const promises = resources
-      .filter(
-        (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
-      )
-      .map((resource: Resource) => {
-        return this.buildService.create({
-          data: {
-            resource: {
-              connect: { id: resource.id },
-            },
-            commit: {
-              connect: {
-                id: commit.id,
+    if (!skipBuild) {
+      const promises = resources
+        .filter(
+          (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
+        )
+        .map((resource: Resource) => {
+          return this.buildService.create({
+            data: {
+              resource: {
+                connect: { id: resource.id },
               },
-            },
-            createdBy: {
-              connect: {
-                id: userId,
+              commit: {
+                connect: {
+                  id: commit.id,
+                },
               },
+              createdBy: {
+                connect: {
+                  id: userId,
+                },
+              },
+              message: args.data.message,
             },
-            message: args.data.message,
-          },
+          });
         });
+
+      await Promise.all(promises);
+    }
+    if (!skipBuild) {
+      await this.analytics.trackWithContext({
+        event: EnumEventType.CommitCreate,
+        properties: {
+          projectId,
+        },
       });
-
-    await Promise.all(promises);
-
-    await this.analytics.track({
-      userId: currentUser.account.id,
-      properties: {
-        workspaceId: project.workspaceId,
-        projectId: project.id,
-      },
-      event: EnumEventType.CommitCreate,
-    });
+    }
 
     return commit;
   }
@@ -459,7 +547,7 @@ export class ProjectService {
   /**
    * Creates a demo repository for a project
    */
-  async createDemoRepo(projectId: string) {
+  async createDemoRepo(projectId: string, user: User) {
     const project = await this.prisma.project.findUnique({
       where: {
         id: projectId,
@@ -492,6 +580,18 @@ export class ProjectService {
       data: {
         useDemoRepo: true,
         demoRepoName: demoRepoName,
+      },
+    });
+
+    await this.analytics.trackManual({
+      user: {
+        accountId: user.account?.id,
+      },
+      data: {
+        event: EnumEventType.DemoRepoCreate,
+        properties: {
+          projectId,
+        },
       },
     });
   }

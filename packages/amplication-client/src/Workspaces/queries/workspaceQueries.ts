@@ -5,6 +5,7 @@ export const GET_CURRENT_WORKSPACE = gql`
     currentWorkspace {
       id
       name
+      allowLLMFeatures
       externalId
       subscription {
         id
@@ -61,8 +62,15 @@ export const GET_WORKSPACES = gql`
       subscription {
         id
         subscriptionPlan
+        status
       }
     }
+  }
+`;
+
+export const GET_CONTACT_US_LINK = gql`
+  query GetContactUsLink($id: String!) {
+    contactUsLink(where: { id: $id })
   }
 `;
 

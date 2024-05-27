@@ -1,15 +1,16 @@
 import {
   CircleBadge,
   CircularProgress,
+  EnumButtonStyle,
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
   EnumPanelStyle,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
-  LimitationNotification,
   List,
   Panel,
   SearchField,
@@ -17,21 +18,26 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { Reference, gql, useMutation } from "@apollo/client";
-import { useStiggContext } from "@stigg/react-sdk";
 import { isEmpty } from "lodash";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 import PageContent from "../Layout/PageContent";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
-import { BillingFeature } from "../util/BillingFeature";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import ResourceListItem from "./ResourceListItem";
+import { useStiggContext } from "@stigg/react-sdk";
+import {
+  BtmButton,
+  EnumButtonLocation,
+} from "../Resource/break-the-monolith/BtmButton";
+import { UsageInsights } from "../UsageInsights/UsageInsights";
+import "./ResourceList.scss";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
@@ -42,7 +48,7 @@ const PAGE_TITLE = "Project Overview";
 
 function ResourceList() {
   const { trackEvent } = useTracking();
-
+  const { refreshData } = useStiggContext();
   const [error, setError] = useState<Error | null>(null);
 
   const {
@@ -52,18 +58,15 @@ function ResourceList() {
     loadingResources,
     errorResources,
     currentProject,
-    currentWorkspace,
   } = useContext(AppContext);
 
   const clearError = useCallback(() => {
     setError(null);
   }, [setError]);
 
-  const handleResourceClick = () => {
-    trackEvent({
-      eventName: AnalyticsEventNames.UpgradeOnResourceListClick,
-    });
-  };
+  useEffect(() => {
+    refreshData();
+  }, []);
 
   const [deleteResource] = useMutation<TDeleteResourceData>(DELETE_RESOURCE, {
     update(cache, { data }) {
@@ -80,6 +83,7 @@ function ResourceList() {
           },
         },
       });
+      refreshData();
     },
   });
 
@@ -100,11 +104,6 @@ function ResourceList() {
     [deleteResource, setError, trackEvent]
   );
 
-  const { stigg } = useStiggContext();
-  const hideNotifications = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.HideNotifications,
-  });
-
   const errorMessage =
     formatError(errorResources) || (error && formatError(error));
 
@@ -118,7 +117,21 @@ function ResourceList() {
             onChange={handleSearchChange}
           />
         }
-        end={<CreateResourceButton />}
+        end={
+          <>
+            <FlexItem
+              itemsAlign={EnumItemsAlign.Center}
+              direction={EnumFlexDirection.Row}
+            >
+              <BtmButton
+                openInFullScreen={true}
+                location={EnumButtonLocation.Project}
+                ButtonStyle={EnumButtonStyle.GradientOutline}
+              />
+              <CreateResourceButton resourcesLength={resources.length} />
+            </FlexItem>
+          </>
+        }
       />
       <HorizontalRule doubleSpacing />
 
@@ -140,39 +153,45 @@ function ResourceList() {
           </FlexItem>
         </FlexItem>
       </Panel>
-      <FlexItem margin={EnumFlexItemMargin.Bottom}>
-        <Text textStyle={EnumTextStyle.Tag}>
-          {resources.length}{" "}
-          {pluralize(resources.length, "Resource", "Resources")}
-        </Text>
+
+      <FlexItem
+        className={`${CLASS_NAME}__content`}
+        direction={EnumFlexDirection.Column}
+        itemsAlign={EnumItemsAlign.Stretch}
+      >
+        <Panel
+          panelStyle={EnumPanelStyle.Bold}
+          className={`${CLASS_NAME}__resources`}
+          themeColor={EnumTextColor.ThemeBlue}
+        >
+          <FlexItem margin={EnumFlexItemMargin.Bottom}>
+            <Text textStyle={EnumTextStyle.Tag}>
+              {resources.length}{" "}
+              {pluralize(resources.length, "Resource", "Resources")}
+            </Text>
+          </FlexItem>
+          {loadingResources && <CircularProgress centerToParent />}
+
+          {isEmpty(resources) && !loadingResources ? (
+            <EmptyState
+              message="There are no resources to show"
+              image={EnumImages.AddResource}
+            />
+          ) : (
+            <List>
+              {!loadingResources &&
+                resources.map((resource) => (
+                  <ResourceListItem
+                    key={resource.id}
+                    resource={resource}
+                    onDelete={handleResourceDelete}
+                  />
+                ))}
+            </List>
+          )}
+        </Panel>
+        <UsageInsights projectIds={[currentProject?.id]} />
       </FlexItem>
-      {loadingResources && <CircularProgress centerToParent />}
-
-      {!hideNotifications.hasAccess && (
-        <LimitationNotification
-          description="With the current plan, you can use up to 3 services."
-          link={`/${currentWorkspace?.id}/purchase`}
-          handleClick={handleResourceClick}
-        />
-      )}
-
-      {isEmpty(resources) && !loadingResources ? (
-        <EmptyState
-          message="There are no resources to show"
-          image={EnumImages.AddResource}
-        />
-      ) : (
-        <List>
-          {!loadingResources &&
-            resources.map((resource) => (
-              <ResourceListItem
-                key={resource.id}
-                resource={resource}
-                onDelete={handleResourceDelete}
-              />
-            ))}
-        </List>
-      )}
 
       <Snackbar
         open={Boolean(error || errorResources)}

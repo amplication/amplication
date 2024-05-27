@@ -6,17 +6,24 @@ import {
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
 import { EnumResourceType } from "../models";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import entities from "./entities";
-import roles from "./roles";
-import { join } from "path";
-import { AMPLICATION_MODULES } from "../generate-code";
+import { TEST_DATA } from "./test-data";
+import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { rm } from "fs/promises";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
+import { plugins } from "./mock-data-plugin-installations";
 
 jest.setTimeout(100000);
 
+const temporaryPluginInstallationPath =
+  getTemporaryPluginInstallationPath(__filename);
+
 describe("createDataService", () => {
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    await rm(temporaryPluginInstallationPath, {
+      recursive: true,
+      force: true,
+    });
   });
   describe("when kafka plugin is installed", () => {
     test("creates resource as expected", async () => {
@@ -41,11 +48,7 @@ describe("createDataService", () => {
         pluginInstallations: [],
       };
       const service: DSGResourceData = {
-        entities,
-        roles,
-        resourceInfo: appInfo,
-        buildId: "example_build_id",
-        resourceType: EnumResourceType.Service,
+        ...TEST_DATA,
         serviceTopics: [
           {
             enabled: true,
@@ -60,20 +63,12 @@ describe("createDataService", () => {
           },
         ],
         otherResources: [messageBroker],
-        pluginInstallations: [
-          {
-            id: "broker-kafka",
-            npm: "@amplication/plugin-broker-kafka",
-            enabled: true,
-            pluginId: "broker-kafka",
-            version: "latest",
-          },
-        ],
+        pluginInstallations: [plugins.kafka],
       };
       const modules = await createDataService(
         service,
         MockedLogger,
-        join(__dirname, "../../", AMPLICATION_MODULES)
+        temporaryPluginInstallationPath
       );
       const modulesToSnapshot = modules
         .modules()

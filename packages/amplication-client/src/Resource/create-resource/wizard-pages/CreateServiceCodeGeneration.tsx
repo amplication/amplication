@@ -15,7 +15,7 @@ import { useMutation } from "@apollo/client";
 import { COMMIT_CHANGES } from "../../../VersionControl/Commit";
 import { PUSH_TO_GIT_STEP_NAME } from "../../../VersionControl/BuildSteps";
 import { isEmpty } from "lodash";
-import { EnumGitProvider } from "@amplication/code-gen-types/models";
+import { EnumGitProvider } from "@amplication/code-gen-types";
 
 const className = "create-service-code-generation";
 
@@ -40,7 +40,8 @@ const CreateServiceCodeGeneration: React.FC<
   const { data } = useBuildWatchStatus(build);
 
   const history = useHistory();
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { currentWorkspace, currentProject, commitUtils } =
+    useContext(AppContext);
 
   const [buildCompleted, setBuildCompleted] = React.useState(false);
 
@@ -59,6 +60,7 @@ const CreateServiceCodeGeneration: React.FC<
       data?.build?.status === models.EnumBuildStatus.Completed
     ) {
       setBuildCompleted(true);
+      commitUtils.refetchLastCommit();
       trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CodeReady);
     }
   }, [data?.build?.status]);
@@ -120,7 +122,7 @@ const CreateServiceCodeGeneration: React.FC<
       ? EnumGitProvider.Github
       : resource?.gitRepository?.gitOrganization?.provider;
     const stepGithub = data.build.action.steps.find(
-      (step) => step.name === PUSH_TO_GIT_STEP_NAME(provider)
+      (step) => step.name === "PUSH_TO_GIT_PROVIDER"
     );
 
     const log = stepGithub?.logs?.find(

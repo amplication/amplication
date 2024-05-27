@@ -15,7 +15,7 @@ import * as PrismaSchemaDSLTypes from "prisma-schema-dsl-types";
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
 import { getEnumFields } from "../../utils/entity";
-import { createEnumName } from "./create-prisma-schema-fields";
+import { createEnumName } from "@amplication/dsg-utils";
 
 export async function createPrismaSchema(
   eventParams: CreatePrismaSchemaParams

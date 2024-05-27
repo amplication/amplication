@@ -12,11 +12,11 @@ import { PluginOrder } from "./dto/PluginOrder";
 import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
 import { PluginOrderItem } from "./dto/PluginOrderItem";
 import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ResourceService } from "../resource/resource.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { AmplicationError } from "../../errors/AmplicationError";
 
 const reOrderPlugins = (
   argsData: PluginOrderItem,
@@ -63,12 +63,32 @@ export class PluginInstallationService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
+    protected readonly logger: AmplicationLogger,
     @Inject(forwardRef(() => ResourceService))
     protected readonly resourceService: ResourceService,
     protected readonly pluginOrderService: PluginOrderService,
     private readonly analytics: SegmentAnalyticsService
   ) {
-    super(blockService);
+    super(blockService, logger);
+  }
+
+  async findPluginInstallationByPluginId(
+    pluginId: string,
+    resourceId: string
+  ): Promise<PluginInstallation[]> {
+    return this.findManyBySettings(
+      {
+        where: {
+          resource: {
+            id: resourceId,
+          },
+        },
+      },
+      {
+        path: ["pluginId"],
+        equals: pluginId,
+      }
+    );
   }
 
   async create(
@@ -81,6 +101,17 @@ export class PluginInstallationService extends BlockTypeService<
       resource.connect.id,
       configurations
     );
+
+    const existingPlugin = await this.findPluginInstallationByPluginId(
+      args.data.pluginId,
+      resource.connect.id
+    );
+
+    if (existingPlugin.length > 0) {
+      throw new AmplicationError(
+        `The Plugin ${args.data.pluginId} already installed in resource ${resource.connect.id}`
+      );
+    }
 
     const newPlugin = await super.create(args, user);
     await this.setOrder(
@@ -95,12 +126,12 @@ export class PluginInstallationService extends BlockTypeService<
       user
     );
 
-    await this.analytics.track({
-      userId: user.account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.PluginInstall,
       properties: {
         pluginId: newPlugin.pluginId,
         pluginType: "official",
+        resourceId: resource.connect.id,
       },
     });
 
@@ -120,10 +151,9 @@ export class PluginInstallationService extends BlockTypeService<
     args.data.pluginId = installation.pluginId;
     args.data.npm = installation.npm;
 
-    const updated = await super.update(args, user);
+    const updated = await super.update(args, user, ["settings"]);
 
-    await this.analytics.track({
-      userId: user.account.id,
+    await this.analytics.trackWithContext({
       event: EnumEventType.PluginUpdate,
       properties: {
         pluginId: updated.pluginId,

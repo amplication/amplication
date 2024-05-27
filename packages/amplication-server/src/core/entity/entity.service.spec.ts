@@ -31,14 +31,21 @@ import {
 import { DiffService } from "../../services/diff.service";
 import { isReservedName } from "./reservedNames";
 import { ReservedNameError } from "../resource/ReservedNameError";
-import { EnumResourceType } from "@amplication/code-gen-types/models";
+import { EnumResourceType } from "@amplication/code-gen-types";
 import { Build } from "../build/dto/Build";
 import { Environment } from "../environment/dto";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
 import { BillingService } from "../billing/billing.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ModuleService } from "../module/module.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { MeteredEntitlement } from "@stigg/node-server-sdk";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -154,6 +161,7 @@ const EXAMPLE_RESOURCE: Resource = {
   builds: [EXAMPLE_BUILD],
   environments: [EXAMPLE_ENVIRONMENT],
   gitRepositoryOverride: false,
+  licensed: true,
   project: {
     id: EXAMPLE_PROJECT_ID,
     workspaceId: "exampleWorkspaceId",
@@ -161,6 +169,7 @@ const EXAMPLE_RESOURCE: Resource = {
     createdAt: new Date(),
     updatedAt: new Date(),
     useDemoRepo: false,
+    licensed: true,
   },
 };
 
@@ -285,6 +294,8 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
+  previewAccountType: EnumPreviewAccountType.None,
+  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -306,6 +317,13 @@ const prismaResourceFindUniqueMock = jest.fn(() => {
 
 const prismaEntityFindFirstMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
+});
+
+const prismaEntityFindUniqueMock = jest.fn(() => {
+  return {
+    ...EXAMPLE_ENTITY,
+    resource: EXAMPLE_RESOURCE,
+  };
 });
 
 const prismaEntityFindManyMock = jest.fn(() => {
@@ -382,7 +400,7 @@ const prismaEntityFieldFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY_FIELD];
 });
 const prismaEntityFieldDeleteMock = jest.fn(() => {
-  return;
+  return Promise.resolve(EXAMPLE_ENTITY_FIELD);
 });
 
 const prismaEntityFieldFindFirstMock = jest.fn(
@@ -403,8 +421,42 @@ const prismaEntityPermissionFindManyMock = jest.fn(() => []);
 const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
 const prismaEntityPermissionFieldFindManyMock = jest.fn(() => null);
 const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
+const dtoServiceUpdateDefaultDtoForEnumFieldMock = jest.fn(() => {
+  return {};
+});
+const dtoServiceDeleteDefaultDtoForEnumFieldMock = jest.fn(() => {
+  return {};
+});
+
+const moduleServiceUpdateDefaultModuleForEntityMock = jest.fn(() => {
+  return {};
+});
+const moduleServiceCreateDefaultModuleForEntityMock = jest.fn(() => {
+  return {};
+});
 
 const areDifferentMock = jest.fn(() => true);
+
+/** methods mock */
+const billingServiceIsBillingEnabledMock = jest.fn();
+
+const billingServiceMock = {
+  getMeteredEntitlement: jest.fn(() => {
+    return {
+      usageLimit: undefined,
+    } as unknown as MeteredEntitlement;
+  }),
+  getNumericEntitlement: jest.fn(() => {
+    return {};
+  }),
+  reportUsage: jest.fn(() => {
+    return {};
+  }),
+};
+// This is important to mock the getter!!!
+Object.defineProperty(billingServiceMock, "isBillingEnabled", {
+  get: billingServiceIsBillingEnabledMock,
+});
 
 describe("EntityService", () => {
   let service: EntityService;
@@ -417,21 +469,10 @@ describe("EntityService", () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [JsonSchemaValidationModule, DiffModule],
       providers: [
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            track: jest.fn(() => {
-              return;
-            }),
-          })),
-        },
+        MockedSegmentAnalyticsProvider(),
         {
           provide: BillingService,
-          useClass: jest.fn(() => ({
-            getMeteredEntitlement: jest.fn(() => {
-              return {};
-            }),
-          })),
+          useValue: billingServiceMock,
         },
         {
           provide: ServiceSettingsService,
@@ -439,6 +480,49 @@ describe("EntityService", () => {
             getServiceSettingsValues: jest.fn(() => {
               return {};
             }),
+          })),
+        },
+        {
+          provide: ModuleService,
+          useClass: jest.fn(() => ({
+            createDefaultModuleForEntity:
+              moduleServiceCreateDefaultModuleForEntityMock,
+            deleteDefaultModuleForEntity: jest.fn(() => {
+              return {};
+            }),
+            updateDefaultModuleForEntity:
+              moduleServiceUpdateDefaultModuleForEntityMock,
+            getDefaultModuleIdForEntity: jest.fn(() => {
+              return "exampleModuleId";
+            }),
+          })),
+        },
+
+        {
+          provide: ModuleActionService,
+          useClass: jest.fn(() => ({
+            createDefaultActionsForRelationField: jest.fn(() => {
+              return [];
+            }),
+            deleteDefaultActionsForRelationField: jest.fn(() => {
+              return [];
+            }),
+          })),
+        },
+        {
+          provide: ModuleDtoService,
+          useClass: jest.fn(() => ({
+            createDefaultDtosForRelatedEntity: jest.fn(() => {
+              return [];
+            }),
+            deleteDefaultDtosForRelatedEntity: jest.fn(() => {
+              return [];
+            }),
+            deleteDefaultDtoForEnumField:
+              dtoServiceDeleteDefaultDtoForEnumFieldMock,
+
+            updateDefaultDtoForEnumField:
+              dtoServiceUpdateDefaultDtoForEnumFieldMock,
           })),
         },
         {
@@ -460,6 +544,7 @@ describe("EntityService", () => {
             },
             entity: {
               findFirst: prismaEntityFindFirstMock,
+              findUnique: prismaEntityFindUniqueMock,
               findMany: prismaEntityFindManyMock,
               create: prismaEntityCreateMock,
               delete: prismaEntityDeleteMock,
@@ -602,6 +687,103 @@ describe("EntityService", () => {
     expect(prismaEntityCreateMock).toBeCalledTimes(1);
     expect(prismaEntityCreateMock).toBeCalledWith(newEntityArgs);
     expect(prismaEntityFieldCreateMock).toBeCalledTimes(3);
+    expect(moduleServiceCreateDefaultModuleForEntityMock).toBeCalledTimes(1);
+  });
+
+  describe("service license", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    describe("when billing is not enabled", () => {
+      beforeEach(() => {
+        billingServiceIsBillingEnabledMock.mockReturnValue(false);
+      });
+
+      it("should not throw billing limitation error even when the project or the service is not licensed", async () => {
+        const resource = {
+          ...EXAMPLE_RESOURCE,
+          licensed: false,
+          project: { ...EXAMPLE_RESOURCE.project, licensed: false },
+        };
+        await expect(
+          service.checkServiceLicense(resource)
+        ).resolves.not.toThrow(BillingLimitationError);
+      });
+    });
+
+    describe("when billing is enabled", () => {
+      beforeEach(() => {
+        billingServiceIsBillingEnabledMock.mockReturnValue(true);
+      });
+
+      it("should not throw billing limitation error when the project and the service within the project is under license", async () => {
+        await expect(
+          service.checkServiceLicense(EXAMPLE_RESOURCE) // in the example resource the project and the service are licensed
+        ).resolves.not.toThrow(BillingLimitationError);
+      });
+
+      it("should throw billing limitation error when project license is false and the service license is true", async () => {
+        const resource = {
+          ...EXAMPLE_RESOURCE,
+          licensed: true,
+          project: { ...EXAMPLE_RESOURCE.project, licensed: false },
+        };
+        await expect(service.checkServiceLicense(resource)).rejects.toThrow(
+          new BillingLimitationError(
+            "Your workspace reached its service limitation.",
+            BillingFeature.Services
+          )
+        );
+      });
+
+      it("should throw billing limitation error when project license is true and the service license is false", async () => {
+        const resource = {
+          ...EXAMPLE_RESOURCE,
+          licensed: false,
+          project: { ...EXAMPLE_RESOURCE.project, licensed: true },
+        };
+        await expect(service.checkServiceLicense(resource)).rejects.toThrow(
+          new BillingLimitationError(
+            "Your workspace reached its service limitation.",
+            BillingFeature.Services
+          )
+        );
+      });
+    });
+  });
+
+  it("should not create an entity when the service in not under license", async () => {
+    const createArgs = {
+      args: {
+        data: {
+          name: EXAMPLE_ENTITY.name,
+          displayName: EXAMPLE_ENTITY.displayName,
+          description: EXAMPLE_ENTITY.description,
+          pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
+          resource: { connect: { id: EXAMPLE_ENTITY.resourceId } },
+        },
+      },
+      user: EXAMPLE_USER,
+    };
+
+    prismaResourceFindUniqueMock.mockImplementation(() => {
+      return {
+        ...EXAMPLE_RESOURCE,
+        licensed: false,
+      };
+    });
+
+    await expect(
+      service.createOneEntity(createArgs.args, createArgs.user)
+    ).rejects.toThrow(
+      new BillingLimitationError(
+        "Your workspace reached its service limitation.",
+        BillingFeature.Services
+      )
+    );
+    expect(prismaEntityCreateMock).toBeCalledTimes(0);
+    expect(prismaEntityFieldCreateMock).toBeCalledTimes(0);
   });
 
   it("should delete one entity", async () => {
@@ -1095,6 +1277,35 @@ describe("EntityService", () => {
     expect(service.updateLock).toBeCalled();
   });
 
+  it("should not create an entity field when the service in not under license", async () => {
+    prismaEntityFindUniqueMock.mockImplementationOnce(() => {
+      return {
+        ...EXAMPLE_ENTITY,
+        resource: {
+          ...EXAMPLE_RESOURCE,
+          licensed: false,
+        },
+      };
+    });
+
+    await expect(
+      service.createField(
+        {
+          data: {
+            ...EXAMPLE_ENTITY_FIELD_DATA,
+            entity: { connect: { id: EXAMPLE_ENTITY_ID } },
+          },
+        },
+        EXAMPLE_USER
+      )
+    ).rejects.toThrow(
+      new BillingLimitationError(
+        "Your workspace reached its service limitation.",
+        BillingFeature.Services
+      )
+    );
+  });
+
   it("should create entity field", async () => {
     expect(
       await service.createField(
@@ -1113,8 +1324,38 @@ describe("EntityService", () => {
         ...EXAMPLE_ENTITY_FIELD_DATA,
         permanentId: expect.any(String),
       },
+      include: {
+        entityVersion: true,
+      },
     });
   });
+
+  it("should create entity field with a reserved name", async () => {
+    expect(
+      await service.createField(
+        {
+          data: {
+            ...EXAMPLE_ENTITY_FIELD_DATA,
+            name: RESERVED_NAME,
+            entity: { connect: { id: EXAMPLE_ENTITY_ID } },
+          },
+        },
+        EXAMPLE_USER
+      )
+    ).toEqual(EXAMPLE_ENTITY_FIELD);
+    expect(prismaEntityFieldCreateMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldCreateMock).toBeCalledWith({
+      data: {
+        ...EXAMPLE_ENTITY_FIELD_DATA,
+        name: `${RESERVED_NAME}Field`,
+        permanentId: expect.any(String),
+      },
+      include: {
+        entityVersion: true,
+      },
+    });
+  });
+
   it("should fail to create entity field with bad name", async () => {
     await expect(
       service.createField(
@@ -1160,6 +1401,7 @@ describe("EntityService", () => {
     );
     expect(prismaEntityFieldUpdateMock).toBeCalledTimes(1);
     expect(prismaEntityFieldUpdateMock).toBeCalledWith(args);
+    expect(dtoServiceDeleteDefaultDtoForEnumFieldMock).toBeCalledTimes(0);
   });
 
   it('should throw a "Record not found" error', async () => {
@@ -1225,6 +1467,7 @@ describe("EntityService", () => {
       )
     ).toEqual({
       dataType: EnumDataType.DateTime,
+      displayName: EXAMPLE_DATE_DISPLAY_NAME,
       name: camelCase(EXAMPLE_DATE_DISPLAY_NAME),
       properties: {
         timeZone: "localTime",
@@ -1248,6 +1491,7 @@ describe("EntityService", () => {
     ).toEqual({
       dataType: EnumDataType.MultiLineText,
       name: camelCase(EXAMPLE_DESCRIPTION_DISPLAY_NAME),
+      displayName: EXAMPLE_DESCRIPTION_DISPLAY_NAME,
       properties: {
         maxLength: 1000,
       },
@@ -1268,6 +1512,7 @@ describe("EntityService", () => {
     ).toEqual({
       dataType: EnumDataType.Email,
       name: camelCase(EXAMPLE_EMAIL_DISPLAY_NAME),
+      displayName: EXAMPLE_EMAIL_DISPLAY_NAME,
       properties: {},
     });
   });
@@ -1286,6 +1531,7 @@ describe("EntityService", () => {
     ).toEqual({
       dataType: EnumDataType.OptionSet,
       name: camelCase(EXAMPLE_STATUS_DISPLAY_NAME),
+      displayName: EXAMPLE_STATUS_DISPLAY_NAME,
       properties: { options: [{ label: "Option 1", value: "Option1" }] },
     });
   });
@@ -1304,6 +1550,7 @@ describe("EntityService", () => {
     ).toEqual({
       dataType: EnumDataType.Boolean,
       name: camelCase(EXAMPLE_BOOLEAN_DISPLAY_NAME),
+      displayName: EXAMPLE_BOOLEAN_DISPLAY_NAME,
       properties: {},
     });
   });
@@ -1330,6 +1577,7 @@ describe("EntityService", () => {
         allowMultipleSelection: false,
       },
       name: camelCase(relatedEntity.displayName),
+      displayName: relatedEntity.displayName,
     });
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFindManyMock).toBeCalledWith({
@@ -1372,6 +1620,7 @@ describe("EntityService", () => {
         allowMultipleSelection: true,
       },
       name: camelCase(query),
+      displayName: query,
     });
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
@@ -1475,7 +1724,7 @@ describe("EntityService", () => {
     expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(false);
     expect(areDifferentMock).not.toBeCalled();
   });
-  it("should fail to create one entity with a reserved name", async () => {
+  it("should create one entity with a reserved name", async () => {
     const createArgs = {
       args: {
         data: {
@@ -1489,8 +1738,64 @@ describe("EntityService", () => {
       },
       user: EXAMPLE_USER,
     };
+
+    prismaResourceFindUniqueMock.mockImplementation(() => {
+      return {
+        ...EXAMPLE_RESOURCE,
+        licensed: true,
+      };
+    });
+
+    const fixedName = `${RESERVED_NAME}Model`;
+
+    const newEntityArgs = {
+      data: {
+        ...createArgs.args.data,
+        name: fixedName,
+        lockedAt: expect.any(Date),
+        lockedByUser: {
+          connect: {
+            id: createArgs.user.id,
+          },
+        },
+        versions: {
+          create: {
+            commit: undefined,
+            versionNumber: CURRENT_VERSION_NUMBER,
+            name: fixedName,
+            displayName: createArgs.args.data.displayName,
+            pluralDisplayName: createArgs.args.data.pluralDisplayName,
+            customAttributes: createArgs.args.data.customAttributes,
+            description: createArgs.args.data.description,
+            permissions: {
+              create: DEFAULT_PERMISSIONS,
+            },
+          },
+        },
+      },
+    };
+
+    await service.createOneEntity(createArgs.args, createArgs.user);
+
+    expect(prismaEntityCreateMock).toBeCalledWith(newEntityArgs);
+  });
+  it("should fail to update one entity with a reserved name", async () => {
+    const updateArgs = {
+      args: {
+        where: { id: EXAMPLE_ENTITY_ID },
+        data: {
+          name: RESERVED_NAME,
+          displayName: EXAMPLE_ENTITY.displayName,
+          pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
+          description: EXAMPLE_ENTITY.description,
+        },
+      },
+      user: EXAMPLE_USER,
+    };
+
     await expect(
-      service.createOneEntity(createArgs.args, createArgs.user)
+      service.updateOneEntity(updateArgs.args, updateArgs.user)
     ).rejects.toThrow(new ReservedNameError(RESERVED_NAME));
   });
   it("should send unreserved name to a function that checks if its a reserved name", async () => {
@@ -1498,5 +1803,49 @@ describe("EntityService", () => {
   });
   it("should send a reserved name to a function that checks if its a reserved name", async () => {
     expect(isReservedName(RESERVED_NAME)).toBe(true);
+  });
+
+  it("should update default module and enum DTOs when updating entity name", async () => {
+    const updateArgs = {
+      args: {
+        where: { id: EXAMPLE_ENTITY_ID },
+        data: {
+          name: "changed name",
+          displayName: EXAMPLE_ENTITY.displayName,
+          pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
+          description: EXAMPLE_ENTITY.description,
+        },
+      },
+      user: EXAMPLE_USER,
+    };
+
+    expect(
+      await service.updateOneEntity(updateArgs.args, updateArgs.user)
+    ).toEqual(EXAMPLE_ENTITY);
+    expect(dtoServiceUpdateDefaultDtoForEnumFieldMock).toBeCalledTimes(1);
+    expect(moduleServiceUpdateDefaultModuleForEntityMock).toBeCalledTimes(1);
+  });
+
+  it("should delete Enum DTO when updating entity field type from OptionSet to other type", async () => {
+    prismaEntityFieldFindFirstMock.mockImplementationOnce(
+      (args: Prisma.EntityFieldFindUniqueArgs) => {
+        return {
+          ...EXAMPLE_ENTITY_FIELD,
+          dataType: EnumDataType.OptionSet,
+          entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION,
+        };
+      }
+    );
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id },
+      data: EXAMPLE_ENTITY_FIELD_DATA,
+    };
+    expect(await service.updateField(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_ENTITY_FIELD
+    );
+    expect(prismaEntityFieldUpdateMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldUpdateMock).toBeCalledWith(args);
+    expect(dtoServiceDeleteDefaultDtoForEnumFieldMock).toBeCalledTimes(1);
   });
 });

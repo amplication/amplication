@@ -2,9 +2,10 @@ import buildGraphQLProvider from "ra-data-graphql-amplication";
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { CREDENTIALS_LOCAL_STORAGE_ITEM } from "../constants";
+import { REACT_APP_SERVER_URL } from "../env";
 
 const httpLink = createHttpLink({
-  uri: `${process.env.REACT_APP_SERVER_URL}/graphql`,
+  uri: `${REACT_APP_SERVER_URL}/graphql`,
 });
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

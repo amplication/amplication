@@ -1,5 +1,7 @@
 @import "../style/index.scss";
 
+$padding-top-toggle: 16px;
+
 .commit {
   padding-top: 0;
 
@@ -8,18 +10,34 @@
     width: 100%;
   }
 
+  .multi-state-toggle {
+    margin-bottom: 0px;
+    padding-top: $padding-top-toggle;
+
+    .multi-state-toggle__states__state--selected {
+      background-color: var(--color-positive);
+      border-color: var(--color-positive);
+    }
+  }
+
   .text-input {
     label {
       margin-bottom: 0;
     }
 
     textarea {
-      height: var(--textarea-height);
+      height: var(--textarea-height-small);
       background-color: var(--gray-80);
 
       @media only screen and (max-width: $breakpoint-desktop) {
         height: var(--textare-height-small);
       }
+    }
+  }
+
+  &__technology-toggle {
+    label {
+      margin-bottom: 0;
     }
   }
 }

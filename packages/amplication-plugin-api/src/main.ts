@@ -1,8 +1,14 @@
+import { SERVICE_NAME } from "./constants";
+import { Tracing } from "@amplication/util/nestjs/tracing";
+Tracing.init({
+  serviceName: SERVICE_NAME,
+});
 import { ValidationPipe } from "@nestjs/common";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 import { HttpExceptionFilter } from "./filters/HttpExceptions.filter";
 import { AppModule } from "./app.module";
+import { connectMicroservices } from "./connectMicroservices";
 import {
   swaggerPath,
   swaggerDocumentOptions,
@@ -40,6 +46,9 @@ async function main() {
       }
     });
   });
+
+  await connectMicroservices(app);
+  await app.startAllMicroservices();
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 

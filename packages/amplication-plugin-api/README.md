@@ -34,11 +34,16 @@ Executes tests.
 ```
 npx nx test amplication-plugin-api
 ```
+By default, your app comes with one user with the username "admin" and password "admin".
 
+## Step 2.2: Scripts - container based development
 ### `lint`
 
 Performs a linting check using ESLint.
 
+```shell
+# start the server component as a docker container
+$ npm run compose:up
 ```
 npx nx lint amplication-plugin-api
 ```
@@ -65,4 +70,5 @@ Runs a curl GraphQL request targeting the running `amplication-plugin-api` servi
 
 ```
 npx nx refresh:plugins amplication-plugin-api
+By default, your app comes with one user with the username "admin" and password "admin".
 ```

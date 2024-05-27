@@ -13,11 +13,10 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { MorganInterceptor } from "nest-morgan";
 import { Request, Response } from "express";
-import { AuthService, AuthUser } from "./auth.service";
+import { AuthService } from "./auth.service";
 import { GithubAuthExceptionFilter } from "../../filters/github-auth-exception.filter";
 import { GitHubAuthGuard } from "./github.guard";
-import { AuthProfile, GitHubRequest } from "./types";
-import { stringifyUrl } from "query-string";
+import { AuthProfile, AuthUser, GitHubRequest } from "./types";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { AuthExceptionFilter } from "../../filters/auth-exception.filter";
@@ -64,33 +63,35 @@ export class AuthController {
       `receive login callback from github account_id=${user.account.id}`
     );
 
-    const token = await this.authService.prepareToken(user);
-    const url = stringifyUrl({
-      url: this.clientHost,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      query: { "complete-signup": isNew ? "1" : "0" },
-    });
-    const clientDomain = new URL(url).hostname;
-
-    const cookieDomainParts = clientDomain.split(".");
-    const cookieDomain = cookieDomainParts
-      .slice(Math.max(cookieDomainParts.length - 2, 0))
-      .join(".");
-
-    response.cookie("AJWT", token, {
-      domain: cookieDomain,
-      secure: true,
-    });
-    response.redirect(301, url);
+    await this.authService.configureJtw(response, user, isNew);
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
   @Get(AUTH_LOGIN_PATH)
   async auth0Login(@Req() request: Request, @Res() response: Response) {
-    await response.oidc.login({
-      returnTo: AUTH_AFTER_CALLBACK_PATH,
-    });
-    return;
+    try {
+      const screenHint = request.query.work_email
+        ? {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            screen_hint: "signup",
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            login_hint: request.query.work_email as string,
+          }
+        : // eslint-disable-next-line @typescript-eslint/naming-convention
+          { screen_hint: "login-id" };
+      await response.oidc.login({
+        authorizationParams: {
+          ...screenHint,
+        },
+        returnTo: AUTH_AFTER_CALLBACK_PATH,
+      });
+      return;
+    } catch (error) {
+      this.logger.error(error.message, error);
+      return (
+        error.body.friendly_message || "Please enter a valid work email address"
+      );
+    }
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
@@ -137,50 +138,15 @@ export class AuthController {
   @UseInterceptors(MorganInterceptor("combined"))
   @UseFilters(AuthExceptionFilter)
   @Get(AUTH_AFTER_CALLBACK_PATH)
-  async authorisationCode(
+  async authorizationCode(
     @Req() request: GitHubRequest,
     @Res() response: Response
   ): Promise<void> {
     // Populate the request.oidc.user object
     requiresAuth();
 
-    let isNew: boolean;
     const profile = <AuthProfile>request.oidc.user;
 
-    let user = await this.authService.getAuthUser({
-      account: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        OR: [{ githubId: profile.sub }, { email: profile.email }],
-      },
-    });
-
-    if (!user) {
-      user = await this.authService.createUser(profile);
-      isNew = true;
-    }
-    if (!user.account.githubId || user.account.githubId !== profile.sub) {
-      user = await this.authService.updateUser(user, profile);
-      isNew = false;
-    }
-
-    // @todo update the token to include the auth0 expiry / issued at / etc
-    const token = await this.authService.prepareToken(user);
-    const url = stringifyUrl({
-      url: this.clientHost,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      query: { "complete-signup": isNew ? "1" : "0" },
-    });
-    const clientDomain = new URL(url).hostname;
-
-    const cookieDomainParts = clientDomain.split(".");
-    const cookieDomain = cookieDomainParts
-      .slice(Math.max(cookieDomainParts.length - 2, 0))
-      .join(".");
-
-    response.cookie("AJWT", token, {
-      domain: cookieDomain,
-      secure: true,
-    });
-    response.redirect(301, url);
+    await this.authService.loginOrSignUp(profile, response);
   }
 }

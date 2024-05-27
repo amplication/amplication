@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useRef, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { isEmpty } from "lodash";
@@ -57,7 +57,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
 
       cache.modify({
         fields: {
-          Topics(existingTopicRefs = [], { readField }) {
+          topics(existingTopicRefs = [], { readField }) {
             const newTopicRef = cache.writeFragment({
               data: newTopic,
               fragment: NEW_TOPIC_FRAGMENT,
@@ -108,11 +108,6 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
   );
 
   const errorMessage = formatError(error);
-  useEffect(() => {
-    if (!error) return;
-
-    trackEvent({ eventName: AnalyticsEventNames.TopicCreateFailed });
-  }, [error]);
 
   return (
     <div className={CLASS_NAME}>
@@ -141,6 +136,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
             <Button
               buttonStyle={EnumButtonStyle.Text}
               icon="plus"
+              disabled={loading}
               className={classNames(`${CLASS_NAME}__add-field__button`, {
                 [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
                   formik.values.displayName

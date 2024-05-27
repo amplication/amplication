@@ -10,6 +10,9 @@ export interface AppContextInterface {
   currentWorkspace: models.Workspace | undefined;
   handleSetCurrentWorkspace: (workspaceId: string) => void;
   createWorkspace: (data: CreateWorkspaceType) => void;
+  subscriptionPlan: models.EnumSubscriptionPlan;
+  subscriptionStatus: models.EnumSubscriptionStatus;
+  isPreviewPlan: boolean;
   createNewWorkspaceError: ApolloError | undefined;
   loadingCreateNewWorkspace: boolean;
   currentProject: models.Project | undefined;
@@ -26,6 +29,7 @@ export interface AppContextInterface {
   projectConfigurationResource: models.Resource | undefined;
   handleSearchChange: (searchResults: string) => void;
   loadingResources: boolean;
+  reloadResources: () => void;
   errorResources: Error | undefined;
   loadingCreateService: boolean;
   errorCreateService: Error | undefined;
@@ -63,6 +67,9 @@ export interface AppContextInterface {
 
 const initialContext: AppContextInterface = {
   currentWorkspace: undefined,
+  subscriptionPlan: models.EnumSubscriptionPlan.Free,
+  subscriptionStatus: models.EnumSubscriptionStatus.Active,
+  isPreviewPlan: false,
   handleSetCurrentWorkspace: () => {},
   createWorkspace: () => {},
   createNewWorkspaceError: undefined,
@@ -79,6 +86,7 @@ const initialContext: AppContextInterface = {
   handleSearchChange: () => {},
   loadingResources: true,
   errorResources: undefined,
+  reloadResources: () => {},
   loadingCreateService: true,
   errorCreateService: undefined,
   currentResource: undefined,

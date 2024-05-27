@@ -21,8 +21,8 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { ApolloServerBase } from "apollo-server-core";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { UserService } from "../user/user.service";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
@@ -47,6 +47,7 @@ const EXAMPLE_WORKSPACE: Workspace = {
   name: EXAMPLE_WORKSPACE_NAME,
   createdAt: timeNow,
   updatedAt: timeNow,
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_INVITATION: Invitation = {
@@ -64,6 +65,7 @@ const EXAMPLE_RESOURCE: Resource = {
   createdAt: timeNow,
   updatedAt: timeNow,
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -73,6 +75,7 @@ const EXAMPLE_PROJECT: Project = {
   updatedAt: timeNow,
   useDemoRepo: false,
   demoRepoName: null,
+  licensed: true,
 };
 
 const GET_WORKSPACE_QUERY = gql`
@@ -80,6 +83,7 @@ const GET_WORKSPACE_QUERY = gql`
     workspace(where: { id: $id }) {
       id
       name
+      allowLLMFeatures
       createdAt
       updatedAt
     }
@@ -96,6 +100,7 @@ const GET_PROJECT_QUERY = gql`
         updatedAt
         useDemoRepo
         demoRepoName
+        licensed
       }
     }
   }
@@ -106,6 +111,7 @@ const DELETE_WORKSPACE_MUTATION = gql`
     deleteWorkspace(where: { id: $id }) {
       id
       name
+      allowLLMFeatures
       createdAt
       updatedAt
     }
@@ -117,6 +123,7 @@ const UPDATE_WORKSPACE_MUTATION = gql`
     updateWorkspace(data: {}, where: { id: $id }) {
       id
       name
+      allowLLMFeatures
       createdAt
       updatedAt
     }
@@ -204,18 +211,17 @@ describe("WorkspaceResolver", () => {
             get: jest.fn(),
           })),
         },
-        {
-          provide: SegmentAnalyticsService,
-          useClass: jest.fn(() => ({
-            track: jest.fn(() => {
-              return;
-            }),
-          })),
-        },
+        MockedSegmentAnalyticsProvider(),
         {
           provide: UserService,
           useClass: jest.fn(() => ({
             setLastActivity: jest.fn(),
+          })),
+        },
+        {
+          provide: ConfigService,
+          useClass: jest.fn(() => ({
+            get: jest.fn(),
           })),
         },
       ],

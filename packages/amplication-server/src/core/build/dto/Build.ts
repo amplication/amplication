@@ -58,4 +58,13 @@ export class Build {
 
   @Field(() => String, { nullable: true })
   codeGeneratorVersion?: string;
+
+  @Field(() => Number, { nullable: true })
+  linesOfCodeAdded?: number;
+
+  @Field(() => Number, { nullable: true })
+  linesOfCodeDeleted?: number;
+
+  @Field(() => Number, { nullable: true })
+  filesChanged?: number;
 }

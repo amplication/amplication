@@ -1,16 +1,12 @@
-import { forwardRef, Module, Scope } from "@nestjs/common";
-import { APP_INTERCEPTOR } from "@nestjs/core";
-import { MorganInterceptor, MorganModule } from "nest-morgan";
-import { UserModule } from "./user/user.module";
+import { forwardRef, Module } from "@nestjs/common";
 import { PluginModule } from "./plugin/plugin.module";
 import { PluginVersionModule } from "./pluginVersion/pluginVersion.module";
-import { ACLModule } from "./auth/acl.module";
-import { AuthModule } from "./auth/auth.module";
+import { CategoryModule } from "./category/category.module";
 import { HealthModule } from "./health/health.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
-import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
@@ -21,14 +17,11 @@ import { SERVICE_NAME } from "./constants";
   controllers: [],
   imports: [
     PrismaModule,
-    UserModule,
     PluginModule,
     forwardRef(() => PluginVersionModule),
-    ACLModule,
-    AuthModule,
+    CategoryModule,
     HealthModule,
     SecretsManagerModule,
-    MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
@@ -36,9 +29,7 @@ import { SERVICE_NAME } from "./constants";
     AmplicationLoggerModule.forRoot({
       component: SERVICE_NAME,
     }),
-    TracingModule.forRoot({
-      serviceName: SERVICE_NAME,
-    }),
+    TracingModule.forRoot(),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       useFactory: (configService) => {
@@ -54,13 +45,6 @@ import { SERVICE_NAME } from "./constants";
       inject: [ConfigService],
       imports: [ConfigModule],
     }),
-  ],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      scope: Scope.REQUEST,
-      useClass: MorganInterceptor("combined"),
-    },
   ],
 })
 export class AppModule {}

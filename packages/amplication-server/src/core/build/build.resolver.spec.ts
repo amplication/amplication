@@ -18,7 +18,7 @@ import { Commit, Resource, User } from "../../models";
 import { Action } from "../action/dto";
 import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 import { CommitService } from "../commit/commit.service";
-import { EnumResourceType } from "@amplication/code-gen-types/models";
+import { EnumResourceType } from "@amplication/code-gen-types";
 import { ResourceService } from "../resource/resource.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ApolloServerBase } from "apollo-server-core";
@@ -69,6 +69,7 @@ const EXAMPLE_RESOURCE: Resource = {
   description: "exampleDescription",
   builds: [EXAMPLE_BUILD],
   gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const FIND_MANY_BUILDS_QUERY = gql`

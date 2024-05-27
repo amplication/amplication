@@ -1,4 +1,6 @@
 import { Paywall, BillingPeriod, Price } from "@stigg/react-sdk";
+import { BillingPlan } from "@amplication/util-billing-types";
+
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { useHistory } from "react-router-dom";
@@ -15,10 +17,11 @@ import { useCallback, useContext, useState } from "react";
 
 import { AppContext } from "../context/appContext";
 import { PromoBanner } from "./PromoBanner";
-import { ApolloError, useMutation } from "@apollo/client";
+import { ApolloError, useMutation, useQuery } from "@apollo/client";
 import { PROVISION_SUBSCRIPTION } from "../Workspaces/queries/workspaceQueries";
 import { PurchaseLoader } from "./PurchaseLoader";
 import { FAQ } from "./FAQ";
+import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
 
 export type DType = {
   provisionSubscription: models.ProvisionSubscriptionResult;
@@ -56,6 +59,10 @@ const CLASS_NAME = "purchase-page";
 const PurchasePage = (props) => {
   const { currentWorkspace, openHubSpotChat } = useContext(AppContext);
 
+  const { data } = useQuery(GET_CONTACT_US_LINK, {
+    variables: { id: currentWorkspace.id },
+  });
+
   const { trackEvent } = useTracking();
 
   const history = useHistory();
@@ -82,15 +89,13 @@ const PurchasePage = (props) => {
     });
 
   const handleContactUsClick = useCallback(() => {
-    // This query param is used to open HubSpot chat with the main flow
-    history.push("?contact-us=true");
-    openHubSpotChat();
+    window.open(data?.contactUsLink, "_blank");
     trackEvent({
       eventName: AnalyticsEventNames.ContactUsButtonClick,
-      Action: "Contact Us",
-      workspaceId: currentWorkspace.id,
+      action: "Contact Us",
+      eventOriginLocation: "pricing-page",
     });
-  }, [openHubSpotChat, currentWorkspace.id]);
+  }, [currentWorkspace.id, data?.contactUsLink]);
 
   const handleDowngradeClick = useCallback(() => {
     // This query param is used to open HubSpot chat with the downgrade flow
@@ -106,7 +111,7 @@ const PurchasePage = (props) => {
         variables: {
           data: {
             workspaceId: currentWorkspace.id,
-            planId: "plan-amplication-pro",
+            planId: BillingPlan.Pro,
             billingPeriod: selectedBillingPeriod,
             intentionType,
             successUrl: props.location.state?.from?.pathname,
@@ -136,14 +141,14 @@ const PurchasePage = (props) => {
         currency,
       });
       switch (plan.id) {
-        case "plan-amplication-enterprise":
+        case BillingPlan.Enterprise:
           handleContactUsClick();
           break;
-        case "plan-amplication-pro":
+        case BillingPlan.Pro:
           setLoading(true);
           await upgradeToPro(selectedBillingPeriod, intentionType);
           break;
-        case "plan-amplication-free":
+        case BillingPlan.Free:
           handleDowngradeClick();
           break;
       }
@@ -183,13 +188,14 @@ const PurchasePage = (props) => {
                 : `All core backend functionality:`;
             },
             planCTAButton: {
+              startTrial: () => "Contact us",
               startNew: provisionSubscriptionLoading
                 ? "...Loading"
                 : "Upgrade now",
               upgrade: provisionSubscriptionLoading
                 ? "...Loading"
                 : "Upgrade now",
-              custom: "Contact us",
+              custom: "Talk with an Expert",
             },
             price: {
               free: {
@@ -226,7 +232,9 @@ const PurchasePage = (props) => {
             Contact Us
           </Button>
         </div>
-        <FAQ />
+        <div className={`${CLASS_NAME}__faq`}>
+          <FAQ />
+        </div>
         <div className={`${CLASS_NAME}__footer`}>
           <div className={`${CLASS_NAME}__footer__copyright`}>
             ©2022 amplication

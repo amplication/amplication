@@ -22,11 +22,25 @@ model User {
 
 model Version {
   changelog    String?
-  createdAt    DateTime  @default(now())
+  createdAt    DateTime   @default(now())
   deletedAt    DateTime?
-  id           String    @id @default(cuid())
+  generator    Generator? @relation(fields: [generatorId], references: [id])
+  generatorId  String?
+  id           String     @id @default(cuid())
   isActive     Boolean
   isDeprecated Boolean?
-  name         String?
-  updatedAt    DateTime  @updatedAt
+  name         String
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([name, generatorId])
+}
+
+model Generator {
+  createdAt DateTime  @default(now())
+  fullName  String?   @unique
+  id        String    @id @default(cuid())
+  isActive  Boolean?  @default(false)
+  name      String?   @unique
+  updatedAt DateTime  @updatedAt
+  version   Version[]
 }

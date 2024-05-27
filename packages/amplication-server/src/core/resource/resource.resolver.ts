@@ -31,6 +31,9 @@ import {
   ResourceCreateWithEntitiesResult,
   UpdateCodeGeneratorVersionArgs,
 } from "./dto";
+import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
+import { UserAction } from "../userAction/dto";
+import { UpdateCodeGeneratorNameArgs } from "./dto/UpdateCodeGeneratorNameArgs";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -159,6 +162,16 @@ export class ResourceResolver {
     return this.resourceService.updateResource(args);
   }
 
+  @Mutation(() => UserAction, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "data.projectId")
+  async redesignProject(
+    @Args() args: RedesignProjectArgs,
+    @UserEntity() user: User
+  ): Promise<UserAction> {
+    return this.resourceService.redesignProject(args, user);
+  }
+
   @Mutation(() => Resource, {
     nullable: true,
   })
@@ -168,6 +181,17 @@ export class ResourceResolver {
     @UserEntity() user: User
   ): Promise<Resource | null> {
     return this.resourceService.updateCodeGeneratorVersion(args, user);
+  }
+
+  @Mutation(() => Resource, {
+    nullable: true,
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  async updateCodeGeneratorName(
+    @Args() args: UpdateCodeGeneratorNameArgs,
+    @UserEntity() user: User
+  ): Promise<Resource | null> {
+    return this.resourceService.updateCodeGeneratorName(args, user);
   }
 
   @ResolveField(() => GitRepository, { nullable: true })

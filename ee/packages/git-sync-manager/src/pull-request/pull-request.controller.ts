@@ -21,6 +21,8 @@ import {
   CreatePrSuccess,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
+import { LogLevel } from "@amplication/util/logging";
+import { NoChangesOnPullRequest } from "@amplication/util/git";
 
 @Controller()
 export class PullRequestController {
@@ -32,16 +34,19 @@ export class PullRequestController {
     private readonly logger: AmplicationLogger
   ) {}
 
-  private async logStartProcessing(buildId: string): Promise<void> {
-    const key = {
-      buildId: buildId,
-    };
+  private async log(
+    buildId: string,
+    level: LogLevel,
+    message: string
+  ): Promise<void> {
     await this.producerService.emitMessage(KAFKA_TOPICS.CREATE_PR_LOG_TOPIC, {
-      key,
+      key: {
+        buildId,
+      },
       value: {
-        buildId: buildId,
-        level: "info",
-        message: "Worker assigned. Starting pull request creation...",
+        buildId,
+        level,
+        message,
       },
     });
   }
@@ -67,7 +72,11 @@ export class PullRequestController {
       buildId: validArgs.newBuildId,
     });
 
-    await this.logStartProcessing(validArgs.newBuildId);
+    await this.log(
+      validArgs.newBuildId,
+      LogLevel.Info,
+      "Worker assigned. Starting pull request creation..."
+    );
     logger.info(`Got a new generate pull request item from queue.`, {
       topic,
       partition,
@@ -76,10 +85,11 @@ export class PullRequestController {
     });
 
     try {
-      const pullRequest = await KafkaPacemaker.wrapLongRunningMethod<string>(
-        context,
-        () => this.pullRequestService.createPullRequest(validArgs)
-      );
+      const { pullRequestUrl, diffStat } =
+        await KafkaPacemaker.wrapLongRunningMethod<{
+          pullRequestUrl: string;
+          diffStat: string;
+        }>(context, () => this.pullRequestService.createPullRequest(validArgs));
 
       logger.info(`Finish process, committing`, {
         topic,
@@ -93,7 +103,8 @@ export class PullRequestController {
           resourceRepositoryId: eventKey.resourceRepositoryId,
         },
         value: {
-          url: pullRequest,
+          url: pullRequestUrl,
+          diffStat,
           gitProvider: validArgs.gitProvider,
           buildId: validArgs.newBuildId,
         },
@@ -103,6 +114,26 @@ export class PullRequestController {
         successEvent
       );
     } catch (error) {
+      if (error instanceof NoChangesOnPullRequest) {
+        await this.log(
+          validArgs.newBuildId,
+          LogLevel.Warn,
+          "Hey there! Looks like your code hasn't changed since the last build. We skipped creating a new pull request to keep things tidy."
+        );
+        await this.producerService.emitMessage(
+          KAFKA_TOPICS.CREATE_PR_SUCCESS_TOPIC,
+          {
+            key: eventKey,
+            value: {
+              url: error.pullRequestUrl,
+              gitProvider: validArgs.gitProvider,
+              buildId: validArgs.newBuildId,
+            },
+          }
+        );
+        return;
+      }
+
       logger.error(error.message, error, {
         class: PullRequestController.name,
         offset,

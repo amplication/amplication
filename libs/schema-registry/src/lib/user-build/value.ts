@@ -20,6 +20,9 @@ export class Value {
   resourceId!: string;
 
   @IsString()
+  resourceName!: string;
+
+  @IsString()
   workspaceId!: string;
 
   @IsString()

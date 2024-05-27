@@ -1,8 +1,8 @@
 import { builders } from "ast-types";
 import { Entity } from "@amplication/code-gen-types";
-import { createCreateInput } from "../dto/create-create-input";
 import { EXAMPLE_ID_FIELD, EXAMPLE_LOOKUP_FIELD } from "../util/test-data";
 import { CONNECT_ID, createDataMapping } from "./create-data-mapping";
+import { createEntityInputFiles } from "../create-dtos";
 
 const DATA_ID = builders.identifier("data");
 
@@ -27,11 +27,13 @@ const EXAMPLE_ENTITY_WITH_LOOKUP_FIELD: Entity = {
 
 describe("createDataMapping", () => {
   test("does nothing if there are no object properties", () => {
-    const dto = createCreateInput(EXAMPLE_ENTITY);
+    const dto = createEntityInputFiles(EXAMPLE_ENTITY).createInput;
     expect(createDataMapping(EXAMPLE_ENTITY, dto, DATA_ID)).toBe(DATA_ID);
   });
   test("creates mapping of object properties", () => {
-    const dto = createCreateInput(EXAMPLE_ENTITY_WITH_LOOKUP_FIELD);
+    const dto = createEntityInputFiles(
+      EXAMPLE_ENTITY_WITH_LOOKUP_FIELD
+    ).createInput;
     const [property] = dto.body.body;
     expect(
       createDataMapping(EXAMPLE_ENTITY_WITH_LOOKUP_FIELD, dto, DATA_ID)

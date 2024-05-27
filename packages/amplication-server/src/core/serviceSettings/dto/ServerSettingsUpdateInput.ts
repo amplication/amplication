@@ -18,4 +18,7 @@ export class ServerSettingsUpdateInput {
     nullable: true,
   })
   serverPath?: string;
+
+  @Field(() => Boolean, { nullable: true, defaultValue: true })
+  generateServer?: boolean;
 }

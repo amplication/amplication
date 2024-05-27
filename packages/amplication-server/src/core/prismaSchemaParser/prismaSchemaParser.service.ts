@@ -110,8 +110,8 @@ export class PrismaSchemaParserService {
     this.prepareFieldNames,
     this.prepareFieldTypes,
     this.prepareModelIdAttribute,
-    this.prepareModelCompositeTypeAttributes,
     this.prepareIdField,
+    this.prepareModelCompositeTypeAttributes,
     this.prepareRelationReferenceFields,
   ];
 
@@ -505,6 +505,7 @@ export class PrismaSchemaParserService {
           mapper.fieldNames = {
             ...mapper.fieldNames,
             [originalModelName]: {
+              ...(mapper.fieldNames[originalModelName] ?? {}),
               [field.name]: {
                 originalName: field.name,
                 newName: newFieldName,
@@ -689,9 +690,6 @@ export class PrismaSchemaParserService {
 
     models.forEach((model: Model) => {
       builder.model(model.name).then<Model>((modelItem) => {
-        const modelFields = modelItem.properties.filter(
-          (prop) => prop.type === FIELD_TYPE_NAME
-        ) as Field[];
         const modelAttributes = modelItem.properties.filter(
           (prop) =>
             prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
@@ -728,15 +726,16 @@ export class PrismaSchemaParserService {
               const rangeIndexAttribute =
                 attribute.name === INDEX_ATTRIBUTE_NAME && functionArgs;
 
+              const originalModelName = findOriginalModelName(
+                mapper,
+                model.name
+              );
+
               if (rangeIndexAttribute) {
                 const rangeIndexArgArr = (
                   rangeIndexAttribute.value as RelationArray
                 ).args as unknown as Array<Func>;
 
-                const originalModelName = findOriginalModelName(
-                  mapper,
-                  model.name
-                );
                 for (const arg of rangeIndexArgArr) {
                   if (typeof arg.name === "string") {
                     const newFieldName =
@@ -755,15 +754,24 @@ export class PrismaSchemaParserService {
                 // avoid formatting an arg when the field in the model was not formatted, for example: the fk field of a relation
                 // or a field that represents an enum value
                 for (const [index, arg] of attrArgArr.entries()) {
-                  modelFields.forEach((field) => {
-                    // check that we are at the right field
-                    if (formatFieldName(field.name) === formatFieldName(arg)) {
-                      // if the field was formatted, we format the arg, otherwise we leave it as it is
-                      if (field.name !== arg) {
-                        attrArgArr[index] = field.name;
-                      }
-                    }
-                  });
+                  // in case of id field the manipulation is different, we don't change it from snake_case to camelCase, we actually rename the field name to id
+                  // therefore we need to check if the id field in the current model was changed, and if so, we need to change the arg to id
+                  const newIdFieldName = mapper.idFields[originalModelName]
+                    ? mapper.idFields[originalModelName][arg]?.newName
+                    : undefined;
+
+                  if (newIdFieldName && newIdFieldName === ID_FIELD_NAME) {
+                    attrArgArr[index] = newIdFieldName;
+                  }
+
+                  // check if a field (regular, not id) name was changed and if so, change the arg to the new field name
+                  const newFieldName = mapper.fieldNames[originalModelName]
+                    ? mapper.fieldNames[originalModelName][arg]?.newName
+                    : undefined;
+
+                  if (newFieldName && newFieldName === formatFieldName(arg)) {
+                    attrArgArr[index] = newFieldName;
+                  }
                 }
               }
             }

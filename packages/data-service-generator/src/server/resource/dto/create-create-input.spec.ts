@@ -5,9 +5,10 @@ import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
 } from "../util/test-data";
-import { createCreateInput, createCreateInputID } from "./create-create-input";
+import { createCreateInputID } from "./create-create-input";
 import { createInput } from "./create-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import { createEntityInputFiles } from "../create-dtos";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -24,7 +25,9 @@ const EXAMPLE_ENTITY: Entity = {
 
 describe("createCreateInput", () => {
   test("creates create input", () => {
-    expect(print(createCreateInput(EXAMPLE_ENTITY)).code).toEqual(
+    expect(
+      print(createEntityInputFiles(EXAMPLE_ENTITY).createInput).code
+    ).toEqual(
       print(
         createInput(
           createCreateInputID(EXAMPLE_ENTITY_NAME),

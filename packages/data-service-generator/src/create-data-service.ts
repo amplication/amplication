@@ -1,5 +1,6 @@
 import { DSGResourceData, ModuleMap } from "@amplication/code-gen-types";
 import normalize from "normalize-path";
+import { name as generatorName } from "../package.json";
 import { createAdminModules } from "./admin/create-admin";
 import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
@@ -8,22 +9,34 @@ import { createServer } from "./server/create-server";
 import { ILogger } from "@amplication/util/logging";
 import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
 import { dynamicPackagesInstallations } from "./dynamic-package-installation";
+import { logger } from "./logging";
+import { createDTOs } from "./server/resource/create-dtos";
 
 export async function createDataService(
   dSGResourceData: DSGResourceData,
   internalLogger: ILogger,
   pluginInstallationPath?: string
 ): Promise<ModuleMap> {
+  const context = DsgContext.getInstance;
+
+  const { GIT_REF_NAME: gitRefName, GIT_SHA: gitSha } = process.env;
+  await context.logger.info(
+    `Running DSG ${generatorName} version: ${gitRefName} <${gitSha?.substring(
+      0,
+      7
+    )}>`
+  );
+
   dSGResourceData.pluginInstallations = prepareDefaultPlugins(
     dSGResourceData.pluginInstallations
   );
 
   await dynamicPackagesInstallations(
     dSGResourceData.pluginInstallations,
+    pluginInstallationPath,
     internalLogger
   );
 
-  const context = DsgContext.getInstance;
   try {
     if (dSGResourceData.resourceType === EnumResourceType.MessageBroker) {
       internalLogger.info("No code to generate for a message broker");
@@ -37,30 +50,34 @@ export async function createDataService(
       pluginInstallationPath
     );
 
-    const { GIT_REF_NAME: gitRefName, GIT_SHA: gitSha } = process.env;
-    await context.logger.info(
-      `Running DSG version: ${gitRefName} <${gitSha?.substring(0, 6)}>`
-    );
-
     await context.logger.info("Creating application...", {
       resourceId: dSGResourceData.resourceInfo.id,
       buildId: dSGResourceData.buildId,
     });
 
-    const { appInfo } = context;
-    const { settings } = appInfo;
+    await context.logger.info("Creating DTOs...");
+    context.DTOs = await createDTOs(context.entities);
 
-    const serverModules = await createServer();
+    const {
+      appInfo: {
+        settings: {
+          serverSettings: { generateServer },
+          adminUISettings: { generateAdminUI },
+        },
+      },
+    } = context;
 
-    const { adminUISettings } = settings;
-    const { generateAdminUI } = adminUISettings;
+    const modules = new ModuleMap(context.logger);
 
-    const adminUIModules =
-      (generateAdminUI && (await createAdminModules())) ||
-      new ModuleMap(context.logger);
+    if (generateServer ?? true) {
+      logger.debug("Creating server...", { generateServer });
+      await modules.merge(await createServer());
+    }
 
-    const modules = serverModules;
-    await modules.merge(adminUIModules);
+    if (generateAdminUI) {
+      logger.debug("Creating admin...", { generateAdminUI });
+      await modules.merge(await createAdminModules());
+    }
 
     // This code normalizes the path of each module to always use Unix path separator.
     await context.logger.info(

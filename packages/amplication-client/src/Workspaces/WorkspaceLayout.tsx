@@ -6,7 +6,10 @@ import { match } from "react-router-dom";
 import { useTracking } from "react-tracking";
 import useAuthenticated from "../authentication/use-authenticated";
 import { AppContextProvider } from "../context/appContext";
-import { REACT_APP_BILLING_API_KEY } from "../env";
+import {
+  REACT_APP_BILLING_API_KEY,
+  REACT_APP_FEATURE_AI_ASSISTANT_ENABLED,
+} from "../env";
 import { HubSpotChatComponent } from "../hubSpotChat";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import { AppRouteProps } from "../routes/routesUtil";
@@ -25,6 +28,10 @@ import useCommits from "../VersionControl/hooks/useCommits";
 import RedeemCoupon from "../User/RedeemCoupon";
 import PendingChanges from "../VersionControl/PendingChanges";
 import LastCommit from "../VersionControl/LastCommit";
+import { EnumSubscriptionStatus } from "../models";
+import Assistant from "../Assistant/Assistant";
+import ResponsiveContainer from "../Components/ResponsiveContainer";
+import { AssistantContextProvider } from "../Assistant/context/AssistantContext";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -47,6 +54,9 @@ const WorkspaceLayout: React.FC<Props> = ({
   const authenticated = useAuthenticated();
   const {
     currentWorkspace,
+    subscriptionPlan,
+    subscriptionStatus,
+    isPreviewPlan,
     handleSetCurrentWorkspace,
     createWorkspace,
     createNewWorkspaceError,
@@ -85,6 +95,7 @@ const WorkspaceLayout: React.FC<Props> = ({
     handleSearchChange,
     loadingResources,
     errorResources,
+    reloadResources,
     currentResource,
     setResource,
     createService,
@@ -109,8 +120,18 @@ const WorkspaceLayout: React.FC<Props> = ({
 
   const { trackEvent, Track } = useTracking<{ [key: string]: any }>({
     workspaceId: currentWorkspace?.id,
+    subscriptionPlan: `${currentWorkspace?.subscription?.subscriptionPlan}${
+      currentWorkspace?.subscription?.status === EnumSubscriptionStatus.Trailing
+        ? "-trial"
+        : ""
+    }`,
     projectId: currentProject?.id,
     resourceId: currentResource?.id,
+    $groups: {
+      groupWorkspace: currentWorkspace?.id,
+      groupProject: currentProject?.id,
+      groupResource: currentResource?.id,
+    },
   });
 
   const openHubSpotChat = () => {
@@ -135,12 +156,15 @@ const WorkspaceLayout: React.FC<Props> = ({
         workspaceId: currentWorkspace.id,
       });
     }
-  }, [currentWorkspace]);
+  }, [currentWorkspace, trackEvent]);
 
   return currentWorkspace ? (
     <AppContextProvider
       newVal={{
         currentWorkspace,
+        subscriptionPlan,
+        subscriptionStatus,
+        isPreviewPlan,
         handleSetCurrentWorkspace,
         createWorkspace,
         currentProjectConfiguration,
@@ -155,6 +179,7 @@ const WorkspaceLayout: React.FC<Props> = ({
         projectConfigurationResource,
         handleSearchChange,
         loadingResources,
+        reloadResources,
         errorResources,
         loadingCreateService,
         errorCreateService,
@@ -188,44 +213,55 @@ const WorkspaceLayout: React.FC<Props> = ({
         errorUpdateCodeGeneratorVersion,
       }}
     >
-      {isMobileOnly ? (
-        <MobileMessage />
-      ) : (
-        <StiggProvider
-          apiKey={REACT_APP_BILLING_API_KEY}
-          customerId={currentWorkspace.id}
-        >
-          <Track>
-            <div className={moduleClass}>
-              <WorkspaceHeader />
-              <CompleteInvitation />
-              <RedeemCoupon />
-
-              <div className={`${moduleClass}__page_content`}>
-                <div className={`${moduleClass}__main_content`}>
-                  {innerRoutes}
-                </div>
-
-                {currentProject ? (
-                  <div className={`${moduleClass}__changes_menu`}>
-                    <PendingChanges projectId={currentProject.id} />
-                    {commitUtils.lastCommit && (
-                      <LastCommit lastCommit={commitUtils.lastCommit} />
-                    )}
+      <AssistantContextProvider>
+        {isMobileOnly ? (
+          <MobileMessage />
+        ) : (
+          <StiggProvider
+            apiKey={REACT_APP_BILLING_API_KEY}
+            customerId={currentWorkspace.id}
+          >
+            <Track>
+              <div className={`${moduleClass}__assistant__wrapper`}>
+                {REACT_APP_FEATURE_AI_ASSISTANT_ENABLED === "true" && (
+                  <div className={`${moduleClass}__assistant`}>
+                    <Assistant />
                   </div>
-                ) : null}
-              </div>
+                )}
+                <div className={moduleClass}>
+                  <WorkspaceHeader />
+                  <CompleteInvitation />
+                  <RedeemCoupon />
 
-              <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
-              <HubSpotChatComponent
-                setChatStatus={setChatStatus}
-                chatStatus={chatStatus}
-              />
-              <ScreenResolutionMessage />
-            </div>
-          </Track>
-        </StiggProvider>
-      )}
+                  <div className={`${moduleClass}__page_content`}>
+                    <ResponsiveContainer
+                      className={`${moduleClass}__main_content`}
+                    >
+                      {innerRoutes}
+                    </ResponsiveContainer>
+
+                    {currentProject ? (
+                      <div className={`${moduleClass}__changes_menu`}>
+                        <PendingChanges projectId={currentProject.id} />
+                        {commitUtils.lastCommit && (
+                          <LastCommit lastCommit={commitUtils.lastCommit} />
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
+                  <HubSpotChatComponent
+                    setChatStatus={setChatStatus}
+                    chatStatus={chatStatus}
+                  />
+                  <ScreenResolutionMessage />
+                </div>
+              </div>
+            </Track>
+          </StiggProvider>
+        )}
+      </AssistantContextProvider>
     </AppContextProvider>
   ) : (
     <CircularProgress centerToParent />

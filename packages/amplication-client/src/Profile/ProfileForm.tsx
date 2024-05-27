@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
-import { GET_USER } from "../Components/UserBadge";
+import { GET_USER, UPDATE_ACCOUNT } from "./accountQueries";
 import { Form, Formik } from "formik";
 import {
   validate,
@@ -20,7 +20,7 @@ type TData = {
   };
 };
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["firstName", "lastName"],
@@ -36,8 +36,8 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      firstName: AT_LEAST_TWO_CHARARCTERS,
-      lastName: AT_LEAST_TWO_CHARARCTERS,
+      firstName: AT_LEAST_TWO_CHARACTERS,
+      lastName: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };
@@ -119,12 +119,3 @@ const ProfileForm = () => {
 };
 
 export default ProfileForm;
-
-const UPDATE_ACCOUNT = gql`
-  mutation updateAccount($data: UpdateAccountInput!) {
-    updateAccount(data: $data) {
-      firstName
-      lastName
-    }
-  }
-`;

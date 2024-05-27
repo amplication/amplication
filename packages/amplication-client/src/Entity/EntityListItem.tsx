@@ -8,6 +8,7 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
+  Icon,
   ListItem,
   Text,
   UserAndTime,
@@ -25,6 +26,8 @@ import { useTracking } from "../util/analytics";
 import ConfirmationDialogFieldList from "./ConfirmationDialogFieldList";
 import "./EntityListItem.scss";
 import { USER_ENTITY } from "./constants";
+import useModule from "../Modules/hooks/useModule";
+import { DATE_CREATED_FIELD } from "../Modules/ModuleNavigationList";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -61,6 +64,7 @@ export const EntityListItem = ({
   const history = useHistory();
 
   const { resourceSettings } = useResource(resourceId);
+  const { findModuleRefetch } = useModule();
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -84,6 +88,17 @@ export const EntityListItem = ({
       },
       onCompleted: (data) => {
         addEntity(data.deleteEntity.id);
+
+        //refresh the modules list
+        findModuleRefetch({
+          where: {
+            resource: { id: resourceId },
+          },
+          orderBy: {
+            [DATE_CREATED_FIELD]: models.SortOrder.Asc,
+          },
+        });
+
         onDelete && onDelete();
       },
     }
@@ -186,7 +201,10 @@ export const EntityListItem = ({
                 title={entity.displayName}
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}`}
               >
-                <Text>{entity.displayName}</Text>
+                <FlexItem gap={EnumGapSize.Small}>
+                  <Icon icon="entity_outline" size="xsmall" />
+                  <Text>{entity.displayName}</Text>
+                </FlexItem>
               </Link>
               <Text textStyle={EnumTextStyle.Subtle}>{entity.description}</Text>
             </FlexItem>

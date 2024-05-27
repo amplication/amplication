@@ -106,7 +106,7 @@ const useResources = (
     data: resourcesData,
     loading: loadingResources,
     error: errorResources,
-    refetch,
+    refetch: reloadResources,
   } = useQuery<TGetResources>(GET_RESOURCES, {
     variables: {
       projectId: currentProject?.id,
@@ -199,7 +199,7 @@ const useResources = (
       addEntity(currentResourceId);
       setCurrentResource(result.data?.createServiceWithEntities.resource);
       expireCookie("signup");
-      refetch();
+      reloadResources();
     });
   };
 
@@ -219,7 +219,7 @@ const useResources = (
       result.data?.createMessageBroker.id &&
         addBlock(result.data.createMessageBroker.id);
       result.data?.createMessageBroker.id &&
-        refetch().then(() => {
+        reloadResources().then(() => {
           resourceRedirect(result.data?.createMessageBroker.id as string);
         });
     });
@@ -263,6 +263,12 @@ const useResources = (
     const resource = [...resources, projectConfigurationResource].find(
       (resource: models.Resource) => resource.id === urlResource
     );
+
+    if (!resource) {
+      //reload resources but do not redirect to prevent an infinite loop
+      //this may be needed if the resource was created on the server side and is not known to the client yet
+      reloadResources();
+    }
 
     setCurrentResource(resource);
     setGitRepositoryFullName(
@@ -328,6 +334,7 @@ const useResources = (
     handleSearchChange,
     loadingResources,
     errorResources,
+    reloadResources,
     currentResource,
     setResource,
     createService,

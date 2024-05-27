@@ -4,7 +4,9 @@ import { NovuService } from "./util/novuService";
 import { novuPackage } from "./util/novuPackage";
 import { subscribeUser } from "./notification-packages/subscribeUser";
 import { buildCompleted } from "./notification-packages/buildCompleted";
+import { featureAnnouncement } from "./notification-packages/featureAnnouncement";
 import { NotificationContext } from "./util/novuTypes";
+import { previewUserGenerationCompleted } from "./notification-packages/previewUserGenerationCompleted";
 
 type NotificationPackageFunc = (
   ctx: NotificationContext
@@ -26,6 +28,8 @@ export class AppService {
     return compose(
       subscribeUser,
       buildCompleted,
+      previewUserGenerationCompleted,
+      featureAnnouncement,
       novuPackage
     )({
       message,

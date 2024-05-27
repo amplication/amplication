@@ -12,6 +12,7 @@ export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
   hideLabel?: boolean;
   hasError?: boolean;
   textarea?: boolean;
+  textareaSize?: "small" | "large";
   labelType?: LabelTypes;
   inputToolTip?: InputToolTipProps | undefined;
 };
@@ -28,6 +29,7 @@ export function TextInput({
   textarea,
   labelType,
   inputToolTip,
+  textareaSize = "large",
   ...rest
 }: Props) {
   const key = rest.key || rest.autoFocus?.toString();
@@ -35,6 +37,7 @@ export function TextInput({
     <div
       className={classNames(`${CLASS_NAME}`, className, {
         [`${CLASS_NAME}--has-error`]: hasError,
+        [`${CLASS_NAME}--textarea`]: textarea,
       })}
     >
       <div className={`${CLASS_NAME}__inner-wrapper`}>
@@ -47,6 +50,7 @@ export function TextInput({
             <textarea
               {...rest}
               ref={inputRef as React.Ref<HTMLTextAreaElement>}
+              className={`${CLASS_NAME}__textarea--${textareaSize}`}
             />
           ) : (
             <input

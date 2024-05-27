@@ -13,7 +13,7 @@ const CUSTOMER_ORGANIZATION_FIELD_ID = "e4ea7c84-e998-482e-8bd2-34657a3ff23c";
 const CUSTOMER_VIP_ORGANIZATION_FIELD_ID =
   "3e64e7d1-b1d2-4c5a-a546-b4f493dc4f57";
 const ORGANIZATION_ID = "3426e3f7-c316-416e-b7a1-d2a1bce17a4";
-const USER_ID = "aed41776-99ca-4674-b26d-0458fd440875";
+export const USER_ENTITY_ID = "aed41776-99ca-4674-b26d-0458fd440875";
 const ORGANIZATION_USERS_FIELD_ID = "3c5f6e76-a124-4f9a-a944-c75f55495859";
 const ORGANIZATION_CUSTOMERS_FIELD_ID = "8d84e22b-ced7-46d7-8ffb-78b74477553a";
 const ORGANIZATION_VIP_CUSTOMERS_FIELD_ID =
@@ -29,7 +29,7 @@ const USER_PROFILE_FIELD_ID = "118e407b-30f7-48da-af9c-de1393548b4c";
 const PROFILE_USER_FIELD_ID = "42d31012-6164-472a-92d0-a8f5dc0486d4";
 
 const USER: Entity = {
-  id: USER_ID,
+  id: USER_ENTITY_ID,
   name: USER_ENTITY_NAME,
   displayName: "User",
   pluralDisplayName: "Users",
@@ -46,6 +46,36 @@ const USER: Entity = {
       properties: {
         idType: "CUID",
       },
+      required: true,
+      unique: false,
+      searchable: true,
+    },
+    {
+      id: "053e75d0-9f02-4182-8f61-46fbdbaa71bd",
+      permanentId: "053e75d0-9f02-4182-8f61-46fbdbaa71b1",
+      name: "username",
+      displayName: "Username",
+      dataType: EnumDataType.Username,
+      required: true,
+      unique: true,
+      searchable: true,
+    },
+    {
+      id: "053e75d0-9f02-4182-8f61-46fbdbaa71bd",
+      permanentId: "053e75d0-9f02-4182-8f61-46fbdbaa71b1",
+      name: "roles",
+      displayName: "Roles",
+      dataType: EnumDataType.Roles,
+      required: true,
+      unique: false,
+      searchable: true,
+    },
+    {
+      id: "053e75d0-9f02-4182-8f61-46fbdbaa71bd",
+      permanentId: "053e75d0-9f02-4182-8f61-46fbdbaa71b1",
+      name: "password",
+      displayName: "Password",
+      dataType: EnumDataType.Password,
       required: true,
       unique: false,
       searchable: true,
@@ -132,7 +162,7 @@ const USER: Entity = {
       searchable: true,
       dataType: EnumDataType.Lookup,
       properties: {
-        relatedEntityId: USER_ID,
+        relatedEntityId: USER_ENTITY_ID,
         relatedFieldId: USER_EMPLOYEES_FIELD_ID,
         allowMultipleSelection: false,
       },
@@ -147,7 +177,7 @@ const USER: Entity = {
       searchable: false,
       dataType: EnumDataType.Lookup,
       properties: {
-        relatedEntityId: USER_ID,
+        relatedEntityId: USER_ENTITY_ID,
         relatedFieldId: USER_MANAGER_FIELD_ID,
         allowMultipleSelection: true,
       },
@@ -364,7 +394,7 @@ const PROFILE: Entity = {
       displayName: "User",
       dataType: EnumDataType.Lookup,
       properties: {
-        relatedEntityId: USER_ID,
+        relatedEntityId: USER_ENTITY_ID,
         relatedFieldId: USER_PROFILE_FIELD_ID,
         allowMultipleSelection: false,
       },

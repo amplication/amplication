@@ -323,8 +323,8 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const createResourcePlugins = useCallback(
     (
-      databaseType: "postgres" | "mysql" | "mongo",
-      authType: string
+      databaseType: "postgres" | "mysql" | "mongo" | "sqlserver",
+      authType: "no" | "core"
     ): models.PluginInstallationsCreateInput => {
       const dbPlugin = pluginsVersionData?.plugins.find(
         (x) => x.pluginId === `db-${databaseType}`

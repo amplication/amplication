@@ -73,15 +73,20 @@ export class PullRequestService {
     repositoryGroupName,
     baseBranchName,
     isBranchPerResource,
-  }: CreatePrRequest.Value): Promise<string> {
+  }: CreatePrRequest.Value): Promise<{
+    pullRequestUrl: string;
+    diffStat: string;
+  }> {
     const logger = this.logger.child({ resourceId, buildId: newBuildId });
     const { body, title } = commit;
 
-    let head = null;
+    let head = null,
+      pullRequestTitle = null;
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
       if (isBranchPerResource) {
         head = `amplication-${resourceName}`;
+        pullRequestTitle = `for ${resourceName}`;
       } else {
         head = `amplication`;
       }
@@ -123,25 +128,26 @@ export class PullRequestService {
     );
     const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
 
-    const prUrl = await gitClientService.createPullRequest({
-      owner,
-      cloneDirPath,
-      repositoryName: repo,
-      repositoryGroupName,
-      branchName: head,
-      commitMessage: body,
-      pullRequestTitle: title,
-      pullRequestBody: body,
-      pullRequestMode,
-      gitResourceMeta,
-      files: PullRequestService.removeFirstSlashFromPath(changedFiles),
-      resourceId,
-      buildId: newBuildId,
-      baseBranchName,
-    });
+    const { pullRequestUrl, diffStat } =
+      await gitClientService.createPullRequest({
+        owner,
+        cloneDirPath,
+        repositoryName: repo,
+        repositoryGroupName,
+        branchName: head,
+        commitMessage: body,
+        pullRequestTitle: pullRequestTitle || title,
+        pullRequestBody: body,
+        pullRequestMode,
+        gitResourceMeta,
+        files: PullRequestService.removeFirstSlashFromPath(changedFiles),
+        resourceId,
+        buildId: newBuildId,
+        baseBranchName,
+      });
 
-    logger.info("Opened a new pull request", { prUrl });
-    return prUrl;
+    logger.info("Opened a new pull request", { pullRequestUrl, diffStat });
+    return { pullRequestUrl, diffStat };
   }
 
   private static removeFirstSlashFromPath(changedFiles: File[]): File[] {

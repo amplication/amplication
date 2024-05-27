@@ -1,12 +1,11 @@
-import entities from "./entities";
-import roles from "./roles";
 import { AppInfo } from "@amplication/code-gen-types";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import { EnumResourceType } from "../models";
-import { createDataService } from "../create-data-service";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
-import { join } from "path";
-import { AMPLICATION_MODULES } from "../generate-code";
+import { rm } from "fs/promises";
+import { createDataService } from "../create-data-service";
+import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
+import { plugins } from "./mock-data-plugin-installations";
+import { TEST_DATA } from "./test-data";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
@@ -22,34 +21,28 @@ const newAppInfo: AppInfo = {
 
 jest.setTimeout(100000);
 
+const temporaryPluginInstallationPath =
+  getTemporaryPluginInstallationPath(__filename);
+
 describe("createDataService", () => {
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    await rm(temporaryPluginInstallationPath, {
+      recursive: true,
+      force: true,
+    });
   });
+
   describe("when grpc is enabled", () => {
     test("creates app as expected", async () => {
       const modules = await createDataService(
         {
-          entities,
-          buildId: "example_build_id",
-          roles,
+          ...TEST_DATA,
           resourceInfo: newAppInfo,
-          resourceType: EnumResourceType.Service,
-          pluginInstallations: [
-            {
-              id: "transport-grpc",
-              npm: "@amplication/plugin-transport-grpc",
-              enabled: true,
-              version: "latest",
-              pluginId: "transport-grpc",
-              configurations: {
-                generateGRPC: "true",
-              },
-            },
-          ],
+          pluginInstallations: [plugins.grpc],
         },
         MockedLogger,
-        join(__dirname, "../../", AMPLICATION_MODULES)
+        temporaryPluginInstallationPath
       );
       const modulesToSnapshot = modules
         .modules()

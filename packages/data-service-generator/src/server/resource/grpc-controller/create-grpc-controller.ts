@@ -33,7 +33,6 @@ import {
   getMethods,
 } from "../../../utils/ast";
 import { isToManyRelationField } from "../../../utils/field";
-import { getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports";
@@ -42,6 +41,7 @@ import pluginWrapper from "../../../plugin-wrapper";
 import {
   createFieldFindManyFunctionId,
   createServiceId,
+  createUpdateFunctionId,
 } from "../service/create-service";
 import { setEndpointPermissions } from "../../../utils/set-endpoint-permission";
 import { createSelect } from "../controller/create-select";
@@ -64,10 +64,11 @@ export async function createGrpcControllerModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entity: Entity
+  entity: Entity,
+  dtoNameToPath: Record<string, string>
 ): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { appInfo, DTOs } = DsgContext.getInstance;
+  const { appInfo, DTOs, entityActionsMap } = DsgContext.getInstance;
   const { settings } = appInfo;
   const { authProvider } = settings;
   const entityDTOs = DTOs[entity.name];
@@ -75,15 +76,26 @@ export async function createGrpcControllerModules(
 
   const template = undefined;
   const templateBase = undefined;
+  const entityActions = entityActionsMap[entity.name];
 
   const controllerId = createGrpcControllerId(entityType);
   const controllerBaseId = createGrpcControllerBaseId(entityType);
   const serviceId = createServiceId(entityType);
-  const createEntityId = builders.identifier("create");
-  const findManyEntityId = builders.identifier("findMany");
-  const findOneEntityId = builders.identifier("findOne");
-  const updateEntityId = builders.identifier("update");
-  const deleteEntityId = builders.identifier("delete");
+  const createEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Create.name
+  );
+  const findManyEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Find.name
+  );
+  const findOneEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Read.name
+  );
+  const updateEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Update.name
+  );
+  const deleteEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Delete.name
+  );
 
   const templateMapping = {
     RESOURCE: builders.stringLiteral(resource),
@@ -113,6 +125,11 @@ export async function createGrpcControllerModules(
     FIND_ONE_ENTITY_FUNCTION: findOneEntityId,
     UPDATE_ENTITY_FUNCTION: updateEntityId,
     DELETE_ENTITY_FUNCTION: deleteEntityId,
+    CREATE_FUNCTION: createEntityId,
+    FIND_MANY_FUNCTION: findManyEntityId,
+    FIND_ONE_FUNCTION: findOneEntityId,
+    UPDATE_FUNCTION: updateEntityId,
+    DELETE_FUNCTION: deleteEntityId,
     /** @todo make dynamic */
     FINE_ONE_PATH: builders.stringLiteral("/:id"),
     UPDATE_PATH: builders.stringLiteral("/:id"),
@@ -132,7 +149,8 @@ export async function createGrpcControllerModules(
       templateMapping,
       controllerBaseId,
       serviceId,
-    }
+      dtoNameToPath,
+    } as CreateEntityGrpcControllerParams
   );
 
   const grpcControllerBaseModule = await pluginWrapper(
@@ -147,7 +165,8 @@ export async function createGrpcControllerModules(
       templateMapping,
       controllerBaseId,
       serviceId,
-    }
+      dtoNameToPath,
+    } as CreateEntityGrpcControllerBaseParams
   );
   if (!grpcControllerModule || !grpcControllerBaseModule) return moduleMap;
 
@@ -211,6 +230,7 @@ async function createGrpcControllerBaseModule({
   templateMapping,
   controllerBaseId,
   serviceId,
+  dtoNameToPath,
 }: CreateEntityGrpcControllerBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories, generateGrpc } = DsgContext.getInstance;
@@ -292,7 +312,6 @@ async function createGrpcControllerBaseModule({
 
   classDeclaration.body.body.push(...toManyRelationMethods);
 
-  const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     template,
     getImportableDTOs(moduleBasePath, dtoNameToPath)
@@ -355,6 +374,7 @@ async function createToManyRelationMethods(
     ENTITY_NAME: builders.stringLiteral(entityType),
     FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
     PROPERTY: builders.identifier(field.name),
+    UPDATE_FUNCTION: createUpdateFunctionId(entityType),
     FIND_MANY: builders.identifier(camelCase(`findMany ${field.name}`)),
     FIND_MANY_PATH: builders.stringLiteral(`/:id/${field.name}`),
     CONNECT: builders.identifier(camelCase(`connect ${field.name}`)),

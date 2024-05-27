@@ -1,8 +1,5 @@
 @import "../../style/index.scss";
 
-$expandable-bottom-max-height: 200px;
-$expandable-transition-duration: 0.1s;
-
 .amp-flex-item {
   display: flex;
   flex-direction: row;
@@ -30,13 +27,24 @@ $expandable-transition-duration: 0.1s;
     gap: var(--large-spacing);
   }
 
+  &--gap-xlarge {
+    gap: var(--double-spacing);
+  }
+
   &__start,
   &__end {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    min-width: 0;
+    min-width: fit-content;
+    gap: var(--default-spacing);
+  }
+
+  &__singe-child-with-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &--row {

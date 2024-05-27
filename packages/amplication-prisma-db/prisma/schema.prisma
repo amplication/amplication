@@ -18,17 +18,19 @@ datasource db {
 }
 
 model Account {
-  id            String   @id @default(cuid())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  email         String   @unique(map: "Account.email_unique")
-  firstName     String
-  lastName      String
-  password      String
-  currentUserId String?  @unique(map: "Account.currentUserId_unique")
-  githubId      String?
-  currentUser   User?    @relation(fields: [currentUserId], references: [id])
-  users         User[]   @relation("AccountOnUser")
+  id                  String             @id @default(cuid())
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  email               String             @unique(map: "Account.email_unique")
+  firstName           String
+  lastName            String
+  password            String
+  currentUserId       String?            @unique(map: "Account.currentUserId_unique")
+  githubId            String?
+  currentUser         User?              @relation(fields: [currentUserId], references: [id])
+  users               User[]             @relation("AccountOnUser")
+  previewAccountEmail String?
+  previewAccountType  PreviewAccountType @default(None)
 }
 
 model Workspace {
@@ -36,6 +38,7 @@ model Workspace {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   name             String            @unique(map: "Workspace.name_unique")
+  allowLLMFeatures Boolean           @default(true)
   users            User[]
   invitations      Invitation[]
   subscriptions    Subscription[]
@@ -55,6 +58,7 @@ model Project {
   commits      Commit[]
   useDemoRepo  Boolean    @default(false)
   demoRepoName String?
+  licensed     Boolean    @default(true)
 
   @@unique([workspaceId, name])
 }
@@ -164,6 +168,8 @@ model Resource {
   resourceType          EnumResourceType
   codeGeneratorVersion  String?
   codeGeneratorStrategy CodeGeneratorVersionStrategy @default(LatestMajor)
+  codeGeneratorName     String?
+  licensed              Boolean                      @default(true)
 
   @@unique([projectId, name], map: "Resource.projectId_name_unique")
 }
@@ -319,7 +325,7 @@ model Block {
   blocks         Block[]        @relation("BlockToBlock")
   versions       BlockVersion[]
 
-  @@unique([resourceId, displayName], map: "Block.resourceId_displayName_unique")
+  @@unique([resourceId, displayName, blockType, parentBlockId], map: "Block.resourceId_displayName_unique")
 }
 
 model BlockVersion {
@@ -397,6 +403,9 @@ model Build {
   blockVersions            BlockVersion[]
   entityVersions           EntityVersion[]
   codeGeneratorVersion     String?
+  linesOfCodeAdded         Int?            @map("linesOfCode")
+  linesOfCodeDeleted       Int?
+  filesChanged             Int?
 
   @@unique([resourceId, version], map: "Build.resourceId_version_unique")
 }
@@ -489,6 +498,7 @@ enum EnumDataType {
   Username
   Password
   Json
+  File
 }
 
 enum EnumBlockType {
@@ -498,6 +508,9 @@ enum EnumBlockType {
   ServiceTopics
   PluginInstallation
   PluginOrder
+  Module
+  ModuleAction
+  ModuleDto
 }
 
 enum ActionStepStatus {
@@ -556,6 +569,7 @@ enum EnumSubscriptionPlan {
   Free
   Pro
   Enterprise
+  PreviewBreakTheMonolith
 }
 
 enum EnumSubscriptionStatus {
@@ -587,6 +601,7 @@ enum EnumGitProvider {
   Github
   Bitbucket
   AwsCodeCommit
+  GitLab
 }
 
 enum EnumGitOrganizationType {
@@ -596,10 +611,18 @@ enum EnumGitOrganizationType {
 
 enum EnumUserActionType {
   DBSchemaImport
+  GptConversation
+  ProjectRedesign
 }
 
 enum CodeGeneratorVersionStrategy {
   LatestMajor
   LatestMinor
   Specific
+}
+
+enum PreviewAccountType {
+  None
+  BreakingTheMonolith
+  PreviewOnboarding
 }

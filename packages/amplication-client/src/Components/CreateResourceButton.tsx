@@ -8,6 +8,11 @@ import React from "react";
 import * as models from "../models";
 import "./CreateResourceButton.scss";
 import CreateResourceButtonItem from "./CreateResourceButtonItem";
+import { BillingFeature } from "@amplication/util-billing-types";
+import {
+  EntitlementType,
+  FeatureIndicatorContainer,
+} from "./FeatureIndicatorContainer";
 
 const CLASS_NAME = "create-resource-button";
 
@@ -33,18 +38,28 @@ const ITEMS: CreateResourceButtonItemType[] = [
   },
 ];
 
-const CreateResourceButton = () => {
+type Props = {
+  resourcesLength: number;
+};
+
+const CreateResourceButton: React.FC<Props> = ({ resourcesLength }) => {
   return (
     <div className={CLASS_NAME}>
-      <SelectMenu title="Add Resource" buttonStyle={EnumButtonStyle.Primary}>
-        <SelectMenuModal align="right">
-          <SelectMenuList>
-            {ITEMS.map((item, index) => (
-              <CreateResourceButtonItem item={item} key={index} />
-            ))}
-          </SelectMenuList>
-        </SelectMenuModal>
-      </SelectMenu>
+      <FeatureIndicatorContainer
+        featureId={BillingFeature.Services}
+        entitlementType={EntitlementType.Metered}
+        limitationText="The workspace reached your plan's resource limitation. "
+      >
+        <SelectMenu title="Add Resource" buttonStyle={EnumButtonStyle.Primary}>
+          <SelectMenuModal align="right" withCaret>
+            <SelectMenuList>
+              {ITEMS.map((item, index) => (
+                <CreateResourceButtonItem item={item} key={index} />
+              ))}
+            </SelectMenuList>
+          </SelectMenuModal>
+        </SelectMenu>
+      </FeatureIndicatorContainer>
     </div>
   );
 };

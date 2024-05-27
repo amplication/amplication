@@ -1,4 +1,9 @@
-import { QueryOptions, useMutation, useQuery } from "@apollo/client";
+import {
+  ApolloError,
+  QueryOptions,
+  useMutation,
+  useQuery,
+} from "@apollo/client";
 import {
   GET_PLUGIN_INSTALLATIONS,
   CREATE_PLUGIN_INSTALLATION,
@@ -17,7 +22,7 @@ import { LATEST_VERSION_TAG } from "../constant";
 export type PluginVersion = {
   version: string;
   isLatest: boolean;
-  settings: string;
+  settings: Record<string, unknown>;
   configurations: string;
   id: string;
   pluginId: string;
@@ -33,11 +38,15 @@ export type Plugin = {
   icon: string;
   github: string;
   website: string;
-  category: string;
+  categories: string[];
   type: string;
   taggedVersions: { [tag: string]: string };
   versions: PluginVersion[];
 };
+
+export interface SortedPluginInstallation extends models.PluginInstallation {
+  categories?: string[];
+}
 
 export type OnPluginDropped = (
   dragItem: models.PluginInstallation,
@@ -62,6 +71,10 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   const [pluginOrderObj, setPluginOrderObj] = useState<{
     [key: string]: number;
   }>();
+  const [pluginCategories, setPluginCategories] = useState<{
+    categories: string[];
+    pluginCategoriesMap: { [key: string]: string[] };
+  }>({ categories: [], pluginCategoriesMap: {} });
   const [pluginsVersion, setPluginsVersion] = useState<{
     [key: string]: Plugin;
   }>({});
@@ -97,7 +110,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     refetch: refetchPluginInstallations,
     error: errorPluginInstallations,
   } = useQuery<{
-    PluginInstallations: models.PluginInstallation[];
+    pluginInstallations: models.PluginInstallation[];
   }>(GET_PLUGIN_INSTALLATIONS, {
     variables: {
       resourceId: resourceId,
@@ -110,7 +123,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     loading: loadingPluginInstallation,
     error: errorPluginInstallation,
   } = useQuery<{
-    PluginInstallation: models.PluginInstallation;
+    pluginInstallation: models.PluginInstallation;
   }>(GET_PLUGIN_INSTALLATION, {
     variables: {
       pluginId: pluginInstallationId,
@@ -130,11 +143,43 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     skip: !resourceId,
   });
 
+  const [createPluginInstallation, { error: createError }] = useMutation<{
+    createPluginInstallation: models.PluginInstallation;
+  }>(CREATE_PLUGIN_INSTALLATION, {
+    onCompleted: (data) => {
+      addBlock(data.createPluginInstallation.id);
+    },
+    refetchQueries: [
+      {
+        query: GET_PLUGIN_INSTALLATIONS,
+        variables: {
+          resourceId: resourceId,
+        },
+      },
+      {
+        query: GET_PLUGIN_ORDER,
+        variables: {
+          resourceId: resourceId,
+        },
+      },
+    ],
+  });
+
   useEffect(() => {
     if (!pluginsVersionData || loadingPluginsVersionData) return;
 
+    const categoriesMap = {};
+    const pluginCategoriesHash = {};
     const pluginsWithLatestVersion = pluginsVersionData.plugins.map(
       (plugin) => {
+        const categories = plugin.categories;
+        categories.forEach((category) => {
+          if (!Object.prototype.hasOwnProperty.call(categoriesMap, category))
+            categoriesMap[category] = 1;
+
+          return;
+        });
+        pluginCategoriesHash[plugin.pluginId] = categories;
         const latestVersion = plugin.versions.find(
           (pluginVersion) => pluginVersion.isLatest
         );
@@ -153,6 +198,11 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
         } else return plugin;
       }
     );
+
+    setPluginCategories({
+      categories: Object.keys(categoriesMap),
+      pluginCategoriesMap: pluginCategoriesHash,
+    });
 
     const sortedPlugins = keyBy(
       pluginsWithLatestVersion,
@@ -189,18 +239,38 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     }
   }, [pluginOrderError]);
 
-  const sortedPluginInstallation = useMemo(() => {
-    if (!pluginOrder || !pluginInstallations) return undefined;
+  const sortedPluginInstallation: SortedPluginInstallation[] = useMemo(() => {
+    if (
+      !pluginOrder ||
+      !pluginInstallations ||
+      !pluginsVersionData ||
+      loadingPluginInstallations
+    )
+      return undefined;
 
     const pluginOrderArr = [...(pluginOrder?.pluginOrder.order ?? [])];
 
     return pluginOrderArr.map((plugin: models.PluginOrderItem) => {
-      return pluginInstallations?.PluginInstallations.find(
+      const installedPlugin: models.PluginInstallation & {
+        categories?: string[];
+      } = pluginInstallations?.pluginInstallations.find(
         (installationPlugin: models.PluginInstallation) =>
           installationPlugin.pluginId === plugin.pluginId
       );
+      if (!installedPlugin) return installedPlugin;
+
+      installedPlugin.categories =
+        pluginCategories.pluginCategoriesMap[installedPlugin.pluginId];
+
+      return installedPlugin;
     }) as unknown as models.PluginInstallation[];
-  }, [pluginInstallations, pluginOrder]);
+  }, [
+    loadingPluginInstallations,
+    pluginInstallations,
+    pluginOrder,
+    pluginsVersionData,
+    pluginCategories,
+  ]);
 
   const [updatePluginOrder, { error: UpdatePluginOrderError }] = useMutation<{
     setPluginOrder: models.PluginOrder;
@@ -252,28 +322,6 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     },
   });
 
-  const [createPluginInstallation, { error: createError }] = useMutation<{
-    createPluginInstallation: models.PluginInstallation;
-  }>(CREATE_PLUGIN_INSTALLATION, {
-    onCompleted: (data) => {
-      addBlock(data.createPluginInstallation.id);
-    },
-    refetchQueries: [
-      {
-        query: GET_PLUGIN_INSTALLATIONS,
-        variables: {
-          resourceId: resourceId,
-        },
-      },
-      {
-        query: GET_PLUGIN_ORDER,
-        variables: {
-          resourceId: resourceId,
-        },
-      },
-    ],
-  });
-
   const onPluginDropped = useCallback(
     (
       dragPlugin: models.PluginInstallation,
@@ -295,6 +343,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     updateError,
     createPluginInstallation,
     createError,
+    categories: pluginCategories.categories,
     pluginCatalog: pluginsVersion,
     onPluginDropped,
     pluginOrderObj,

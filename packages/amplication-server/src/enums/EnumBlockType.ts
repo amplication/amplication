@@ -7,6 +7,9 @@ export enum EnumBlockType {
   ServiceTopics = "ServiceTopics",
   PluginInstallation = "PluginInstallation",
   PluginOrder = "PluginOrder",
+  Module = "Module",
+  ModuleAction = "ModuleAction",
+  ModuleDto = "ModuleDto",
 }
 
 registerEnumType(EnumBlockType, { name: "EnumBlockType" });

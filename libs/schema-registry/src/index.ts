@@ -5,13 +5,16 @@ export * as CodeGenerationSuccess from "./lib/code-generation-success";
 export * as CreatePrFailure from "./lib/create-pr-failure";
 export * as CreatePrRequest from "./lib/create-pr-request";
 export * as CreatePrSuccess from "./lib/create-pr-success";
+export * as CreatePrProcessCompleted from "./lib/create-pr-process-completed";
 export * as CreatePrLog from "./lib/create-pr-log";
 export * as CanUserAccessBuild from "./lib/can-user-access-build";
 export * as DBSchemaImportRequest from "./lib/db-schema-import-request";
 export * as UserActionLog from "./lib/user-action-log";
 export * as UserAction from "./lib/user-action";
+export * as GptConversationStart from "./lib/gpt-conversion-start";
 export * as GptConversationComplete from "./lib/gpt-conversion-complete";
 export * as UserBuild from "./lib/user-build";
+export * as UserFeatureAnnouncement from "./lib/user-feature-announcement";
 
 export enum KAFKA_TOPICS {
   /// build-manager
@@ -31,6 +34,15 @@ export enum KAFKA_TOPICS {
   CHECK_USER_ACCESS_TOPIC = "authorization.internal.can-access-build.request.0",
   DB_SCHEMA_IMPORT_TOPIC = "user-action.internal.db-schema-import.request.1",
   USER_ACTION_LOG_TOPIC = "user-action.internal.action-log.1",
+  // notifications-related topics
   USER_ACTION_TOPIC = "user-action.internal.1",
   USER_BUILD_TOPIC = "user-build.internal.1",
+  USER_ANNOUNCEMENT_TOPIC = "user-announcement.internal.1",
+  USER_PREVIEW_GENERATION_COMPLETED_TOPIC = "user-preview-generation-completed.internal.1",
+
+  /// ai
+  AI_CONVERSATION_START_TOPIC = "ai.internal.conversation.start.1",
+  AI_CONVERSATION_COMPLETED_TOPIC = "ai.internal.conversation.completed.1",
+
+  SHARED_GRAPHQL_SUBSCRIPTION_PUBSUB_TOPIC = "shared.internal.graphql-subscrition-pubsub.1",
 }

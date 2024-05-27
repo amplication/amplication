@@ -6,6 +6,7 @@ import {
   Text,
   TextField,
   EnumTextAlign,
+  EnumFlexDirection,
 } from "@amplication/ui/design-system";
 import { Reference, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
@@ -31,6 +32,8 @@ import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewEntity.scss";
 import { USER_ENTITY } from "./constants";
+import useModule from "../Modules/hooks/useModule";
+import CreateWithJovuButton from "../Assistant/CreateWithJovuButton";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "resource">;
 
@@ -70,6 +73,7 @@ const FORM_SCHEMA = {
   },
 };
 const CLASS_NAME = "new-entity";
+const DATE_CREATED_FIELD = "createdAt";
 
 const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
@@ -81,13 +85,22 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
     useContext(AppContext);
 
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
+  const { findModuleRefetch } = useModule();
 
   const [createEntity, { error, data, loading }] = useMutation<DType>(
     CREATE_ENTITY,
     {
       onCompleted: (data) => {
         addEntity(data.createOneEntity.id);
-
+        //refresh the modules list
+        findModuleRefetch({
+          where: {
+            resource: { id: resourceId },
+          },
+          orderBy: {
+            [DATE_CREATED_FIELD]: models.SortOrder.Asc,
+          },
+        });
         onSuccess();
         history.push(`entities/${data.createOneEntity.id}`);
       },
@@ -284,13 +297,24 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
                 placeholder="Type New Entity Name"
                 autoComplete="off"
               />
-              <Button
-                type="submit"
-                buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loading}
+              <FlexItem
+                direction={EnumFlexDirection.Column}
+                margin={EnumFlexItemMargin.None}
               >
-                Create Entity
-              </Button>
+                <Button
+                  type="submit"
+                  buttonStyle={EnumButtonStyle.Primary}
+                  disabled={!formik.isValid || loading}
+                >
+                  Create Entity
+                </Button>
+                <CreateWithJovuButton
+                  message={`Create a new entity ${formik.values.displayName}. Create common fields that should be part of this data model, and create relations to other entities when needed.`}
+                  onCreateWithJovuClicked={onSuccess}
+                  disabled={!formik.isValid || loading}
+                  eventOriginLocation="New Entity Dialog"
+                />
+              </FlexItem>
             </Form>
           );
         }}
