@@ -96,12 +96,6 @@ export interface CreateServerDockerComposeParams extends EventParams {
   outputFileName: string;
 }
 
-export interface CreateServerDockerComposeDevParams extends EventParams {
-  fileContent: string;
-  updateProperties: { [key: string]: any }[];
-  outputFileName: string;
-}
-
 export interface CreateServerCsprojParams extends EventParams {
   packageReferences: {
     include: string;
