@@ -188,6 +188,7 @@ const useAssistant = () => {
             models.EnumAssistantFunctions.CommitProjectPendingChanges
           ) {
             commitUtils.refetchCommitsData(true);
+            commitUtils.refetchLastCommit();
           }
 
           const queries = FUNCTIONS_CACHE_MAP[functionExecuted].queries;

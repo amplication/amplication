@@ -1,10 +1,17 @@
 import { GET_COMMITS } from "./commitQueries";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Commit, PendingChange, SortOrder, Build } from "../../models";
+import {
+  Commit,
+  PendingChange,
+  SortOrder,
+  Build,
+  EnumBuildStatus,
+} from "../../models";
 import { ApolloError, useLazyQuery } from "@apollo/client";
 import { cloneDeep, groupBy } from "lodash";
 
 const MAX_ITEMS_PER_LOADING = 20;
+const POLL_INTERVAL = 3000;
 
 export type CommitChangesByResource = (commitId: string) => {
   resourceId: string;
@@ -60,6 +67,57 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     },
     [commits, lastCommit]
   );
+
+  const [
+    getLastCommit,
+    {
+      data: getLastCommitData,
+      startPolling: getLastCommitStartPolling,
+      stopPolling: getLastCommitStopPolling,
+    },
+  ] = useLazyQuery<{ commits: Commit[] }>(GET_COMMITS, {
+    variables: {
+      projectId: currentProjectId,
+      skip: 0,
+      take: 1,
+      orderBy: {
+        createdAt: SortOrder.Desc,
+      },
+    },
+  });
+
+  useEffect(() => {
+    let shouldPoll = false;
+
+    if (lastCommit && lastCommit.builds && lastCommit.builds.length > 0) {
+      const runningBuilds = lastCommit.builds.some(
+        (build) => build.status === EnumBuildStatus.Running
+      );
+      if (runningBuilds) {
+        shouldPoll = true;
+      }
+    }
+
+    if (shouldPoll) {
+      getLastCommitStartPolling(POLL_INTERVAL);
+    } else {
+      getLastCommitStopPolling();
+    }
+    getLastCommitData && setLastCommit(getLastCommitData.commits[0]);
+  }, [
+    getLastCommitData,
+    getLastCommitStopPolling,
+    getLastCommitStartPolling,
+    updateBuildStatus,
+    lastCommit,
+  ]);
+
+  //cleanup polling
+  useEffect(() => {
+    return () => {
+      getLastCommitStopPolling();
+    };
+  }, [getLastCommitStopPolling]);
 
   const [
     getInitialCommits,
