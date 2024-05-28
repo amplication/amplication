@@ -55,11 +55,14 @@ const EXAMPLE_USER: User = {
 };
 
 const EXAMPLE_ACTION_NAME = "createCustomer";
+const EXAMPLE_DEFAULT_ACTION_NAME = "defaultActionCreateCustomer";
 const EXAMPLE_INVALID_ACTION_NAME = "create Customer";
 const EXAMPLE_ACTION_DISPLAY_NAME = "Create Customer";
 const EXAMPLE_ACTION_DESCRIPTION = "Create One Customer";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_ACTION_ID = "exampleActionId";
+const EXAMPLE_DEFAULT_ACTION_ID = "exampleDefaultActionId";
+const EXAMPLE_DTO_ID = "exampleDtoId";
 
 const EXAMPLE_ACTION: ModuleAction = {
   id: EXAMPLE_ACTION_ID,
@@ -77,6 +80,36 @@ const EXAMPLE_ACTION: ModuleAction = {
   blockType: EnumBlockType.ModuleAction,
   inputParameters: null,
   outputParameters: null,
+  versionNumber: 0,
+  outputType: {
+    type: EnumModuleDtoPropertyType.String,
+    dtoId: "",
+    isArray: false,
+  },
+  inputType: {
+    type: EnumModuleDtoPropertyType.String,
+    dtoId: "",
+    isArray: false,
+  },
+};
+
+const EXAMPLE_DEFAULT_ACTION: ModuleAction = {
+  id: EXAMPLE_DEFAULT_ACTION_ID,
+  actionType: EnumModuleActionType.Create,
+  resourceId: EXAMPLE_RESOURCE_ID,
+  name: EXAMPLE_DEFAULT_ACTION_NAME,
+  displayName: EXAMPLE_ACTION_DISPLAY_NAME,
+  description: EXAMPLE_ACTION_DESCRIPTION,
+  enabled: false,
+  gqlOperation: EnumModuleActionGqlOperation.Query,
+  restVerb: EnumModuleActionRestVerb.Get,
+  path: `/:id/${kebabCase(EXAMPLE_ACTION_NAME)}`,
+  createdAt: expect.any(Date),
+  updatedAt: expect.any(Date),
+  parentBlock: null,
+  blockType: EnumBlockType.ModuleAction,
+  inputParameters: undefined,
+  outputParameters: undefined,
   versionNumber: 0,
   outputType: {
     type: EnumModuleDtoPropertyType.String,
@@ -139,8 +172,10 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   },
 };
 
-const blockServiceFindOneMock = jest.fn(() => {
-  return EXAMPLE_ACTION;
+const blockServiceFindOneMock = jest.fn((args: FindOneArgs): ModuleAction => {
+  if (args.where.id === EXAMPLE_ACTION_ID) {
+    return EXAMPLE_ACTION;
+  } else return EXAMPLE_DEFAULT_ACTION;
 });
 
 const blockServiceDeleteMock = jest.fn(() => {
@@ -173,9 +208,14 @@ const blockServiceCreateMock = jest.fn(
   }
 );
 
-const blockServiceUpdateMock = jest.fn(() => {
-  return EXAMPLE_ACTION;
-});
+const blockServiceUpdateMock = jest.fn(
+  (args: UpdateModuleActionArgs): ModuleAction => {
+    if (args.where.id === EXAMPLE_ACTION_ID) {
+      return EXAMPLE_ACTION;
+    }
+    return EXAMPLE_DEFAULT_ACTION;
+  }
+);
 
 const blockServiceFindManyByBlockTypeAndSettingsMock = jest.fn(() => {
   return [
@@ -355,6 +395,15 @@ describe("ModuleActionService", () => {
         gqlOperation: EnumModuleActionGqlOperation.Mutation,
         restVerb: EnumModuleActionRestVerb.Post,
         path: ``,
+        inputType: {
+          type: EnumModuleDtoPropertyType.Dto,
+          isArray: false,
+          dtoId: EXAMPLE_DTO_ID,
+        },
+        outputType: {
+          type: EnumModuleDtoPropertyType.Boolean,
+          isArray: false,
+        },
       },
     };
     expect(await service.update(args, EXAMPLE_USER)).toEqual(EXAMPLE_ACTION);
@@ -363,6 +412,60 @@ describe("ModuleActionService", () => {
       args,
       EXAMPLE_USER,
       undefined
+    );
+  });
+
+  it("should update one default action", async () => {
+    const args: UpdateModuleActionArgs = {
+      where: {
+        id: EXAMPLE_DEFAULT_ACTION_ID,
+      },
+      data: {
+        description: "",
+        displayName: EXAMPLE_ACTION_DISPLAY_NAME,
+        enabled: false,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        name: EXAMPLE_DEFAULT_ACTION_NAME,
+        restVerb: EnumModuleActionRestVerb.Post,
+      },
+    };
+
+    expect(await service.update(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_DEFAULT_ACTION
+    );
+    expect(blockServiceUpdateMock).toBeCalledTimes(1);
+
+    expect(blockServiceUpdateMock).toBeCalledWith(
+      args,
+      EXAMPLE_USER,
+      undefined
+    );
+  });
+
+  it("should throw an error when updating an input type of a default action", async () => {
+    const args: UpdateModuleActionArgs = {
+      where: {
+        id: EXAMPLE_DEFAULT_ACTION_ID,
+      },
+      data: {
+        description: "",
+        displayName: EXAMPLE_ACTION_DISPLAY_NAME,
+        enabled: false,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        name: EXAMPLE_DEFAULT_ACTION_NAME,
+        restVerb: EnumModuleActionRestVerb.Post,
+        inputType: {
+          type: EnumModuleDtoPropertyType.Dto,
+          isArray: false,
+          dtoId: EXAMPLE_DTO_ID,
+        },
+      },
+    };
+
+    await expect(service.update(args, EXAMPLE_USER)).rejects.toThrow(
+      new AmplicationError(
+        "Cannot update the input type of a default Action for entity."
+      )
     );
   });
 
