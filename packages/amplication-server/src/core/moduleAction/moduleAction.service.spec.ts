@@ -442,6 +442,33 @@ describe("ModuleActionService", () => {
     );
   });
 
+  it("should throw an error when updating an input type of a default action", async () => {
+    const args: UpdateModuleActionArgs = {
+      where: {
+        id: EXAMPLE_DEFAULT_ACTION_ID,
+      },
+      data: {
+        description: "",
+        displayName: EXAMPLE_ACTION_DISPLAY_NAME,
+        enabled: false,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        name: EXAMPLE_DEFAULT_ACTION_NAME,
+        restVerb: EnumModuleActionRestVerb.Post,
+        inputType: {
+          type: EnumModuleDtoPropertyType.Dto,
+          isArray: false,
+          dtoId: EXAMPLE_DTO_ID,
+        },
+      },
+    };
+
+    await expect(service.update(args, EXAMPLE_USER)).rejects.toThrow(
+      new AmplicationError(
+        "Cannot update the input type of a default Action for entity."
+      )
+    );
+  });
+
   it("should throw an error when updating an action with invalid name", async () => {
     const args: UpdateModuleActionArgs = {
       where: {
