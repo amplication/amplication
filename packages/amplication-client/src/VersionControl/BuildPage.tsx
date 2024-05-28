@@ -10,23 +10,22 @@ import {
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useContext, useMemo } from "react";
 import { Link, match, useLocation } from "react-router-dom";
+import { BackNavigation } from "../Components/BackNavigation";
 import { TruncatedId } from "../Components/TruncatedId";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
+import { resourceThemeMap } from "../Resource/constants";
+import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { truncateId } from "../util/truncatedId";
 import ActionLog from "./ActionLog";
-import "./BuildPage.scss";
-import { GET_COMMIT } from "./PendingChangesPage";
-import useBuildWatchStatus, { GET_BUILD } from "./useBuildWatchStatus";
-import { BackNavigation } from "../Components/BackNavigation";
-import { AppContext } from "../context/appContext";
-import { resourceThemeMap } from "../Resource/constants";
-import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import BuildGitLink from "./BuildGitLink";
+import "./BuildPage.scss";
+import useBuildWatchStatus, { GET_BUILD } from "./useBuildWatchStatus";
 
 export type LogData = {
   action: models.Action;
