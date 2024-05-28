@@ -126,7 +126,8 @@ const FUNCTIONS_CACHE_MAP: {
 };
 
 const useAssistant = () => {
-  const { currentProject, currentResource, addBlock } = useAppContext();
+  const { currentProject, currentResource, addBlock, commitUtils } =
+    useAppContext();
 
   const apolloClient = useApolloClient();
 
@@ -180,6 +181,13 @@ const useAssistant = () => {
           }
           if (FUNCTIONS_CACHE_MAP[functionExecuted].refreshPendingChanges) {
             addBlock("blockId");
+          }
+
+          if (
+            functionExecuted ===
+            models.EnumAssistantFunctions.CommitProjectPendingChanges
+          ) {
+            commitUtils.refetchCommitsData(true);
           }
 
           const queries = FUNCTIONS_CACHE_MAP[functionExecuted].queries;
