@@ -50,19 +50,12 @@ const BuildPage = ({ match, buildId }: Props) => {
 
   const location = useLocation();
 
-  // const [getCommit, { data: commitData }] = useLazyQuery<{
-  //   commit: models.Commit;
-  // }>(GET_COMMIT);
-
   const { data: buildData, error: errorLoading } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
     variables: {
       buildId: build,
     },
-    // onCompleted: (data) => {
-    //   getCommit({ variables: { commitId: data.build.commitId } });
-    // },
   });
 
   const { data: updatedBuild } = useBuildWatchStatus(buildData?.build);
