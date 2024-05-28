@@ -210,25 +210,13 @@ export class ModuleActionService extends BlockTypeService<
           "Cannot update the name of a default Action for entity."
         );
       }
-      if (
-        existingAction.inputType !== undefined &&
-        args.data.inputType &&
-        Object.keys(existingAction.inputType).length !==
-          Object.keys(args.data.inputType).length &&
-        args.data.inputType !== undefined
-      ) {
+      if (args.data.inputType !== undefined) {
         throw new AmplicationError(
           "Cannot update the input type of a default Action for entity."
         );
       }
 
-      if (
-        existingAction.outputType !== undefined &&
-        args.data.outputType &&
-        Object.keys(existingAction.outputType).length !==
-          Object.keys(args.data.outputType).length &&
-        args.data.outputType !== undefined
-      ) {
+      if (args.data.outputType !== undefined) {
         throw new AmplicationError(
           "Cannot update the output type of a default Action for entity."
         );
