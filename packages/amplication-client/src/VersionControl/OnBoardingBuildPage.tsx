@@ -1,5 +1,5 @@
 import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import { BackNavigation } from "../Components/BackNavigation";
@@ -12,7 +12,6 @@ import ActionLog from "./ActionLog";
 import "./BuildPage.scss";
 import BuildSteps from "./BuildSteps";
 import DataPanel, { TitleDataType } from "./DataPanel";
-import { GET_COMMIT } from "./PendingChangesPage";
 import { GET_BUILD } from "./useBuildWatchStatus";
 
 type LogData = {
@@ -34,18 +33,11 @@ const OnBoardingBuildPage = ({ match }: Props) => {
 
   const { currentProject, currentWorkspace } = useContext(AppContext);
 
-  const [getCommit, { data: commitData }] = useLazyQuery<{
-    commit: models.Commit;
-  }>(GET_COMMIT);
-
   const { data, error: errorLoading } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
     variables: {
       buildId: build,
-    },
-    onCompleted: (data) => {
-      getCommit({ variables: { commitId: data.build.commitId } });
     },
   });
 
@@ -74,16 +66,16 @@ const OnBoardingBuildPage = ({ match }: Props) => {
               to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${data.build.commitId}`}
               label="Back to Commits"
             />
-            {commitData && (
-              <DataPanel
-                id={data.build.id}
-                dataType={TitleDataType.BUILD}
-                createdAt={data.build.createdAt}
-                account={data.build.createdBy.account}
-                relatedDataName="Commit"
-                relatedDataId={commitData.commit.id}
-              />
-            )}
+
+            <DataPanel
+              id={data.build.id}
+              dataType={TitleDataType.BUILD}
+              createdAt={data.build.createdAt}
+              account={data.build.createdBy.account}
+              relatedDataName="Commit"
+              relatedDataId={data.build.commitId}
+            />
+
             <div className={`${CLASS_NAME}__build-details`}>
               <BuildSteps build={data.build} />
               <aside className="log-container">
