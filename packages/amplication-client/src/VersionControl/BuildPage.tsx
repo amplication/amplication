@@ -51,9 +51,9 @@ const BuildPage = ({ match, buildId }: Props) => {
 
   const location = useLocation();
 
-  const [getCommit, { data: commitData }] = useLazyQuery<{
-    commit: models.Commit;
-  }>(GET_COMMIT);
+  // const [getCommit, { data: commitData }] = useLazyQuery<{
+  //   commit: models.Commit;
+  // }>(GET_COMMIT);
 
   const { data: buildData, error: errorLoading } = useQuery<{
     build: models.Build;
@@ -61,9 +61,9 @@ const BuildPage = ({ match, buildId }: Props) => {
     variables: {
       buildId: build,
     },
-    onCompleted: (data) => {
-      getCommit({ variables: { commitId: data.build.commitId } });
-    },
+    // onCompleted: (data) => {
+    //   getCommit({ variables: { commitId: data.build.commitId } });
+    // },
   });
 
   const { data: updatedBuild } = useBuildWatchStatus(buildData?.build);
@@ -110,7 +110,7 @@ const BuildPage = ({ match, buildId }: Props) => {
           <CircularProgress centerToParent />
         ) : (
           <>
-            {commitData && (
+            {buildData && (
               <FlexItem
                 direction={EnumFlexDirection.Column}
                 className={`${CLASS_NAME}__header`}
@@ -121,7 +121,7 @@ const BuildPage = ({ match, buildId }: Props) => {
                     label={
                       <>
                         &nbsp;Return to Commit&nbsp;
-                        <TruncatedId id={commitData.commit.id} />
+                        <TruncatedId id={buildData.build.commitId} />
                       </>
                     }
                     iconSize="xsmall"
@@ -164,7 +164,7 @@ const BuildPage = ({ match, buildId }: Props) => {
                       <h3>
                         Commit&nbsp;
                         <span>
-                          <TruncatedId id={commitData.commit.id} />
+                          <TruncatedId id={buildData.build.commitId} />
                         </span>
                       </h3>
                     </>
