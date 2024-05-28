@@ -51,10 +51,14 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       }
 
       builds[buildIdx].status = build.status;
+      builds[buildIdx].action = build.action;
 
       setCommits(clonedCommits);
+      if (lastCommit.id === build.commitId) {
+        setLastCommit(commit);
+      }
     },
-    [commits, setCommits]
+    [commits, lastCommit]
   );
 
   const [
@@ -101,6 +105,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     setLastCommit(commitsData?.commits[0]);
   }, [commitsData?.commits, commits]);
 
+  //refetch next page of commits, or refetch from start
   const refetchCommitsData = useCallback(
     (refetchFromStart?: boolean) => {
       refetchCommits({
@@ -113,6 +118,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     [refetchCommits, setCommitsCount, commitsCount]
   );
 
+  //refetch from the server the most updated commit
   const refetchLastCommit = useCallback(() => {
     if (!currentProjectId) return;
 
@@ -122,7 +128,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     });
   }, [currentProjectId]);
 
-  // pagination refetch
+  // pagination refetch - we received an updated list from the server, and we need to append it to the current list
   useEffect(() => {
     if (!commitsData?.commits?.length || commitsCount === 1 || commitsLoading)
       return;
@@ -132,6 +138,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
 
   // last commit refetch
   useEffect(() => {
+    //check if the data from the server contains a single commit
     if (!commitsData?.commits?.length || commitsData?.commits?.length > 1)
       return;
 
