@@ -14,15 +14,13 @@ type Props = {
 
 export const ProjectListItem = ({ project, workspaceId }: Props) => {
   return (
-    <ListItem showDefaultActionIcon={true}>
-      <Link to={`/${workspaceId}/${project.id}`}>
-        <Text
-          textStyle={EnumTextStyle.Normal}
-          textWeight={EnumTextWeight.SemiBold}
-        >
-          {project.name}
-        </Text>
-      </Link>
+    <ListItem showDefaultActionIcon={true} to={`/${workspaceId}/${project.id}`}>
+      <Text
+        textStyle={EnumTextStyle.Normal}
+        textWeight={EnumTextWeight.SemiBold}
+      >
+        {project.name}
+      </Text>
 
       <Text textStyle={EnumTextStyle.Description}>{project.description}</Text>
     </ListItem>
