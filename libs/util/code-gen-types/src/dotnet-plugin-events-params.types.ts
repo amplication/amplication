@@ -104,6 +104,7 @@ export interface CreateServerDockerComposeParams extends EventParams {
 }
 
 export interface CreateServerCsprojParams extends EventParams {
+  propertyGroup: Record<string, string>;
   packageReferences: {
     include: string;
     version: string;
