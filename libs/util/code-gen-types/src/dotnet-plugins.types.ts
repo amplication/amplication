@@ -127,6 +127,7 @@ export enum DotnetEventNames {
   CreateServerSecretsManager = "CreateServerSecretsManager",
   CreateEntityInterface = "CreateEntityInterface",
   CreateEntityExtensions = "CreateEntityExtensions",
+  CreateEntityModel = "CreateEntityModel",
 }
 
 export interface AmplicationPlugin {

@@ -7,6 +7,7 @@ import {
   CreateEntityGrpcControllerBaseParams,
   CreateEntityGrpcControllerParams,
   CreateEntityInterfaceParams,
+  CreateEntityModelParams,
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
   CreateMessageBrokerClientOptionsFactoryParams,
@@ -74,4 +75,5 @@ export type DotnetEvents = {
     Interface
   >;
   [DotnetEventNames.CreateEntityExtensions]?: PluginEventType<CreateEntityExtensionsParams>;
+  [DotnetEventNames.CreateEntityModel]?: PluginEventType<CreateEntityModelParams>;
 };
