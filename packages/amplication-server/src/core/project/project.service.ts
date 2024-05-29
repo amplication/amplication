@@ -547,7 +547,7 @@ export class ProjectService {
   /**
    * Creates a demo repository for a project
    */
-  async createDemoRepo(projectId: string) {
+  async createDemoRepo(projectId: string, user: User) {
     const project = await this.prisma.project.findUnique({
       where: {
         id: projectId,
@@ -580,6 +580,18 @@ export class ProjectService {
       data: {
         useDemoRepo: true,
         demoRepoName: demoRepoName,
+      },
+    });
+
+    await this.analytics.trackManual({
+      user: {
+        accountId: user.account?.id,
+      },
+      data: {
+        event: EnumEventType.DemoRepoCreate,
+        properties: {
+          projectId,
+        },
       },
     });
   }

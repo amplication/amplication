@@ -100,7 +100,7 @@ type EntityData = Omit<
 
 export const DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH = 256;
 
-export const DEFAULT_ENTITIES: EntityData[] = [
+export const DEFAULT_USER_ENTITY: EntityData[] = [
   {
     name: USER_ENTITY_NAME,
     displayName: "User",
