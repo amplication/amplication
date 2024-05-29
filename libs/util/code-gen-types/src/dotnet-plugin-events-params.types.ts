@@ -56,6 +56,13 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   entities: Entity[];
 }
 
+export interface CreateEntityModelParams extends EventParams {
+  entity: Entity;
+  entities: Entity[];
+  resourceName: string;
+  apisDir: string;
+}
+
 export interface CreateEntityGrpcControllerParams extends EventParams {
   entity: Entity;
 }
