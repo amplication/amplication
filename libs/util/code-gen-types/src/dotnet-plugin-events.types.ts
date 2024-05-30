@@ -68,7 +68,10 @@ export type DotnetEvents = {
   [DotnetEventNames.CreateSeed]?: PluginEventType<CreateSeedParams>;
   [DotnetEventNames.CreateEntityControllerToManyRelationMethods]?: PluginEventType<CreateEntityControllerToManyRelationMethodsParams>;
   [DotnetEventNames.CreateDTOs]?: PluginEventType<CreateDTOsParams>;
-  [DotnetEventNames.LoadStaticFiles]?: PluginEventType<LoadStaticFilesParams>;
+  [DotnetEventNames.LoadStaticFiles]?: PluginEventType<
+    LoadStaticFilesParams,
+    CodeBlock
+  >;
   [DotnetEventNames.CreateServerSecretsManager]?: PluginEventType<CreateServerSecretsManagerParams>;
   [DotnetEventNames.CreateEntityInterface]?: PluginEventType<
     CreateEntityInterfaceParams,
