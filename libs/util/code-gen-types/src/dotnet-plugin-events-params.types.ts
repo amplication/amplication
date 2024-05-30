@@ -66,7 +66,7 @@ export interface CreateEntityModelParams extends EventParams {
 export interface createResourceDbContextFileParams extends EventParams {
   entities: Entity[];
   resourceName: string;
-  apisDir: string;
+  resourceDbContextPath: string;
 }
 
 export interface CreateEntityGrpcControllerParams extends EventParams {
