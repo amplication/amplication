@@ -21,6 +21,7 @@ import {
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 import { AppContext } from "../context/appContext";
+import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 
 type Props = {
   resource: models.Resource;
@@ -33,7 +34,8 @@ const DISMISS_BUTTON = { label: "Dismiss" };
 function ResourceListItem({ resource, onDelete }: Props) {
   const { currentWorkspace, currentProject, setResource } =
     useContext(AppContext);
-  const { id, name, description, gitRepository, resourceType } = resource;
+  const { id, name, description, gitRepository, resourceType, codeGenerator } =
+    resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
   const handleDelete = useCallback(
@@ -108,12 +110,20 @@ function ResourceListItem({ resource, onDelete }: Props) {
             direction={EnumFlexDirection.Column}
             gap={EnumGapSize.Small}
           >
-            <Text
-              textStyle={EnumTextStyle.Normal}
-              textWeight={EnumTextWeight.SemiBold}
+            <FlexItem
+              direction={EnumFlexDirection.Row}
+              gap={EnumGapSize.Small}
+              itemsAlign={EnumItemsAlign.Center}
             >
-              {name}
-            </Text>
+              <Text
+                textStyle={EnumTextStyle.Normal}
+                textWeight={EnumTextWeight.SemiBold}
+              >
+                {name}
+              </Text>
+              <CodeGeneratorImage codeGenerator={codeGenerator} />
+            </FlexItem>
+
             {description && (
               <Text textStyle={EnumTextStyle.Description}>{description}</Text>
             )}

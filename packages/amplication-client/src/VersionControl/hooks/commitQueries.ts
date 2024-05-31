@@ -35,6 +35,7 @@ export const COMMIT_FIELDS_FRAGMENT = gql`
         id
         name
         resourceType
+        codeGenerator
       }
     }
     builds {
@@ -45,6 +46,7 @@ export const COMMIT_FIELDS_FRAGMENT = gql`
         id
         name
         resourceType
+        codeGenerator
       }
       version
       message

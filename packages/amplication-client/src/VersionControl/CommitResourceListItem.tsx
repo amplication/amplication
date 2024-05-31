@@ -22,6 +22,7 @@ import { resourceThemeMap } from "../Resource/constants";
 import { TruncatedId } from "../Components/TruncatedId";
 import BuildGitLink from "./BuildGitLink";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
+import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 
 type Props = {
   build: Build;
@@ -64,6 +65,7 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
               />
             </FlexItem.FlexStart>
             <Text textStyle={EnumTextStyle.Normal}>{build.resource.name}</Text>
+            <CodeGeneratorImage codeGenerator={build.resource.codeGenerator} />
             <FlexItem.FlexEnd>
               <Icon
                 icon="chevron_right"

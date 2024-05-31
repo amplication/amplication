@@ -1,6 +1,6 @@
 import { FormikProps } from "formik";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
-import { EnumGitProvider } from "../../../models";
+import { EnumCodeGenerator, EnumGitProvider } from "../../../models";
 
 export interface ResourceSettings {
   serviceName: string;
@@ -19,6 +19,7 @@ export interface ResourceSettings {
   authType: "no" | "core";
   isGenerateCompleted: string;
   connectToDemoRepo: boolean;
+  codeGenerator: EnumCodeGenerator;
 }
 export interface NextPage {
   nextTitle: string;

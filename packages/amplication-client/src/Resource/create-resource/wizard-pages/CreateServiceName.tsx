@@ -1,7 +1,8 @@
-import { TextField } from "@amplication/ui/design-system";
+import { SelectField, TextField } from "@amplication/ui/design-system";
 import React, { useEffect } from "react";
 import { WizardStepProps } from "./interfaces";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+import useAvailableCodeGenerators from "../../../Workspaces/hooks/useCodeGeneratorFeature";
 
 const CreateServiceName: React.FC<WizardStepProps> = ({
   moduleClass,
@@ -10,6 +11,16 @@ const CreateServiceName: React.FC<WizardStepProps> = ({
   useEffect(() => {
     formik.validateForm();
   }, []);
+
+  const { availableCodeGenerators, defaultCodeGenerator } =
+    useAvailableCodeGenerators();
+
+  //Set the default value after it is loaded
+  useEffect(() => {
+    if (defaultCodeGenerator && !formik.values.codeGenerator) {
+      formik.setFieldValue("codeGenerator", defaultCodeGenerator);
+    }
+  }, [defaultCodeGenerator, formik]);
 
   return (
     <Layout.Split>
@@ -30,6 +41,13 @@ const CreateServiceName: React.FC<WizardStepProps> = ({
             label="Service name"
             placeholder="Order Service"
           />
+          {availableCodeGenerators.length > 1 && (
+            <SelectField
+              name="codeGenerator"
+              label="Code Generator Tech Stack"
+              options={availableCodeGenerators}
+            />
+          )}
         </Layout.ContentWrapper>
       </Layout.RightSide>
     </Layout.Split>

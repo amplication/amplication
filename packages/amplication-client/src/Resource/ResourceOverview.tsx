@@ -30,6 +30,7 @@ import { BtmButton, EnumButtonLocation } from "./break-the-monolith/BtmButton";
 import { resourceThemeMap } from "./constants";
 import AppGitStatusPanel from "./git/AppGitStatusPanel";
 import { useResourceSummary } from "./hooks/useResourceSummary";
+import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -110,14 +111,24 @@ const ResourceOverview = () => {
       <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem itemsAlign={EnumItemsAlign.Center}>
           <FlexItem.FlexStart direction={EnumFlexDirection.Column}>
-            <CircleBadge
-              size="large"
-              name={currentResource?.name || ""}
-              color={
-                resourceThemeMap[currentResource?.resourceType].color ||
-                "transparent"
-              }
-            />
+            <FlexItem
+              direction={EnumFlexDirection.Row}
+              gap={EnumGapSize.Small}
+              itemsAlign={EnumItemsAlign.Center}
+            >
+              <CircleBadge
+                size="large"
+                name={currentResource?.name || ""}
+                color={
+                  resourceThemeMap[currentResource?.resourceType].color ||
+                  "transparent"
+                }
+              />
+              <CodeGeneratorImage
+                codeGenerator={currentResource?.codeGenerator}
+                size="medium"
+              />
+            </FlexItem>
             <Text textStyle={EnumTextStyle.H3}>{currentResource?.name}</Text>
             <Text textStyle={EnumTextStyle.Description}>
               {currentResource?.description}
