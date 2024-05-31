@@ -134,9 +134,11 @@ const RESOURCE_TYPE_TO_EVENT_TYPE: {
   [EnumResourceType.ProjectConfiguration]: EnumEventType.UnknownEvent,
 };
 
+type CodeGeneratorName = "NodeJS" | "DotNET";
+
 const CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE: {
   [key in EnumCodeGenerator]: {
-    codeGeneratorName: string;
+    codeGeneratorName: CodeGeneratorName;
     license: BillingFeature;
   };
 } = {
@@ -145,6 +147,15 @@ const CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE: {
     license: BillingFeature.CodeGeneratorDotNet,
   },
   [EnumCodeGenerator.NodeJs]: { codeGeneratorName: null, license: null },
+};
+
+export const CODE_GENERATOR_NAME_TO_ENUM: {
+  [key in CodeGeneratorName]: EnumCodeGenerator;
+} = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  NodeJS: EnumCodeGenerator.NodeJs,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  DotNET: EnumCodeGenerator.DotNet,
 };
 
 @Injectable()

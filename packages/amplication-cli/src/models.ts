@@ -2596,7 +2596,7 @@ export type RemoteGitRepository = {
 
 export type Resource = {
   builds: Array<Build>;
-  codeGeneratorName?: Maybe<Scalars['String']['output']>;
+  codeGenerator?: Maybe<EnumCodeGenerator>;
   codeGeneratorStrategy?: Maybe<CodeGeneratorVersionStrategy>;
   codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];

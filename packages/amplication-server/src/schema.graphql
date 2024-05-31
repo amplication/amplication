@@ -1811,7 +1811,7 @@ type RemoteGitRepository {
 
 type Resource {
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
-  codeGeneratorName: String
+  codeGenerator: EnumCodeGenerator
   codeGeneratorStrategy: CodeGeneratorVersionStrategy
   codeGeneratorVersion: String
   createdAt: DateTime!

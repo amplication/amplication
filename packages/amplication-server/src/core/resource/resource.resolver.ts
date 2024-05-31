@@ -33,6 +33,8 @@ import {
 } from "./dto";
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { UserAction } from "../userAction/dto";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -192,5 +194,19 @@ export class ResourceResolver {
   @ResolveField(() => Project)
   async project(@Parent() resource: Resource): Promise<Project> {
     return this.resourceService.project(resource.id);
+  }
+
+  @ResolveField(() => EnumCodeGenerator, { nullable: true })
+  async codeGenerator(
+    @Parent() resource: Resource
+  ): Promise<EnumCodeGenerator> {
+    const codeGenerator =
+      CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName];
+
+    if (!codeGenerator) {
+      return EnumCodeGenerator.NodeJs;
+    }
+
+    return codeGenerator;
   }
 }
