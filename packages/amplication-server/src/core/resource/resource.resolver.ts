@@ -33,7 +33,6 @@ import {
 } from "./dto";
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { UserAction } from "../userAction/dto";
-import { UpdateCodeGeneratorNameArgs } from "./dto/UpdateCodeGeneratorNameArgs";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -181,17 +180,6 @@ export class ResourceResolver {
     @UserEntity() user: User
   ): Promise<Resource | null> {
     return this.resourceService.updateCodeGeneratorVersion(args, user);
-  }
-
-  @Mutation(() => Resource, {
-    nullable: true,
-  })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
-  async updateCodeGeneratorName(
-    @Args() args: UpdateCodeGeneratorNameArgs,
-    @UserEntity() user: User
-  ): Promise<Resource | null> {
-    return this.resourceService.updateCodeGeneratorName(args, user);
   }
 
   @ResolveField(() => GitRepository, { nullable: true })

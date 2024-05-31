@@ -779,6 +779,11 @@ export enum EnumBuildStatus {
   Running = 'Running'
 }
 
+export enum EnumCodeGenerator {
+  DotNet = 'DotNet',
+  NodeJs = 'NodeJs'
+}
+
 export enum EnumDataType {
   Boolean = 'Boolean',
   CreatedAt = 'CreatedAt',
@@ -1465,7 +1470,6 @@ export type Mutation = {
   /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
   triggerBreakServiceIntoMicroservices?: Maybe<UserAction>;
   updateAccount: Account;
-  updateCodeGeneratorName?: Maybe<Resource>;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
   updateEntityField: EntityField;
@@ -1863,12 +1867,6 @@ export type MutationTriggerBreakServiceIntoMicroservicesArgs = {
 
 export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
-};
-
-
-export type MutationUpdateCodeGeneratorNameArgs = {
-  codeGeneratorName: Scalars['String']['input'];
-  where: WhereUniqueInput;
 };
 
 
@@ -2639,6 +2637,7 @@ export type ResourceEntitiesArgs = {
 };
 
 export type ResourceCreateInput = {
+  codeGenerator: EnumCodeGenerator;
   description: Scalars['String']['input'];
   gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String']['input'];
