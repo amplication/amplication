@@ -453,9 +453,8 @@ export class ResourceService {
       if (entitlement && entitlement.hasAccess) {
         return EnumCodeGenerator.DotNet;
       }
-
-      return EnumCodeGenerator.NodeJs;
     }
+    return EnumCodeGenerator.NodeJs;
   }
 
   /**
