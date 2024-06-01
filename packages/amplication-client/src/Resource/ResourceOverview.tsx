@@ -124,10 +124,7 @@ const ResourceOverview = () => {
                   "transparent"
                 }
               />
-              <CodeGeneratorImage
-                codeGenerator={currentResource?.codeGenerator}
-                size="medium"
-              />
+              <CodeGeneratorImage resource={currentResource} size="medium" />
             </FlexItem>
             <Text textStyle={EnumTextStyle.H3}>{currentResource?.name}</Text>
             <Text textStyle={EnumTextStyle.Description}>

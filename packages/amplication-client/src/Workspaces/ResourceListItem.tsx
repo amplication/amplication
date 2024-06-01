@@ -121,7 +121,8 @@ function ResourceListItem({ resource, onDelete }: Props) {
               >
                 {name}
               </Text>
-              <CodeGeneratorImage codeGenerator={codeGenerator} />
+
+              <CodeGeneratorImage resource={resource} />
             </FlexItem>
 
             {description && (

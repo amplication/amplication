@@ -5,16 +5,27 @@ import * as models from "../models";
 import classNames from "classnames";
 
 export type Props = {
-  codeGenerator: models.EnumCodeGenerator;
+  resource: models.Resource;
   size?: "small" | "medium" | "large";
 };
 
 const CLASS_NAME = "code-generator-image";
 
-export const CodeGeneratorImage = ({
-  codeGenerator,
-  size = "small",
-}: Props) => {
+export const CodeGeneratorImage = ({ resource, size = "small" }: Props) => {
+  if (!resource) {
+    return null;
+  }
+
+  const { codeGenerator, resourceType } = resource;
+
+  if (!codeGenerator) {
+    return null;
+  }
+
+  if (resourceType !== models.EnumResourceType.Service) {
+    return null;
+  }
+
   return (
     <span className={classNames(CLASS_NAME, `${CLASS_NAME}--${size}`)}>
       <span

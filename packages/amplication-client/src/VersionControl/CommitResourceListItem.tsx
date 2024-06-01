@@ -65,7 +65,7 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
               />
             </FlexItem.FlexStart>
             <Text textStyle={EnumTextStyle.Normal}>{build.resource.name}</Text>
-            <CodeGeneratorImage codeGenerator={build.resource.codeGenerator} />
+            <CodeGeneratorImage resource={build.resource} />
             <FlexItem.FlexEnd>
               <Icon
                 icon="chevron_right"
