@@ -151,9 +151,9 @@ export const ResourceInitialValues = {
   isGenerateCompleted: null,
   structureType: "Mono",
   baseDir: "./apps",
-  databaseType: "postgres",
+  databaseType: "db-postgres",
   templateType: "empty",
-  authType: "core",
+  authType: "auth-jwt",
   gitProvider: null,
   connectToDemoRepo: false,
 };

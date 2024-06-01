@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
@@ -38,11 +38,27 @@ const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
     }
 
     if (formik.values.codeGenerator === EnumCodeGenerator.DotNet) {
-      return DOTNET_DB_PLUGINS.map((plugin) => pluginCatalog[plugin]);
+      return DOTNET_DB_PLUGINS.map((plugin) => pluginCatalog[plugin]).filter(
+        (plugin) => plugin
+      );
     } else {
-      return NODE_DB_PLUGINS.map((plugin) => pluginCatalog[plugin]);
+      return NODE_DB_PLUGINS.map((plugin) => pluginCatalog[plugin]).filter(
+        (plugin) => plugin
+      );
     }
   }, [formik, pluginCatalog]);
+
+  useEffect(() => {
+    if (
+      pluginList &&
+      pluginList.length > 0 &&
+      !pluginList.find(
+        (plugin) => plugin.pluginId === formik.values.databaseType
+      )
+    ) {
+      formik.setFieldValue("databaseType", pluginList[0].pluginId);
+    }
+  }, [formik, pluginList]);
 
   const handleDatabaseSelect = useCallback(
     (database: string) => {

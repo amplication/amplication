@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { PluginLogo } from "../../../Plugins/PluginLogo";
 import usePlugins from "../../../Plugins/hooks/usePlugins";
 import { EnumCodeGenerator } from "../../../models";
@@ -26,11 +26,27 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
     }
 
     if (formik.values.codeGenerator === EnumCodeGenerator.DotNet) {
-      return DOTNET_AUTH_PLUGINS.map((plugin) => pluginCatalog[plugin]);
+      return DOTNET_AUTH_PLUGINS.map((plugin) => pluginCatalog[plugin]).filter(
+        (plugin) => plugin
+      );
     } else {
-      return NODE_AUTH_PLUGINS.map((plugin) => pluginCatalog[plugin]);
+      return NODE_AUTH_PLUGINS.map((plugin) => pluginCatalog[plugin]).filter(
+        (plugin) => plugin
+      );
     }
   }, [formik, pluginCatalog]);
+
+  useEffect(() => {
+    if (
+      pluginList &&
+      pluginList.length > 0 &&
+      !pluginList.find(
+        (plugin) => plugin.pluginId === formik.values.databaseType
+      )
+    ) {
+      formik.setFieldValue("databaseType", pluginList[0].pluginId);
+    }
+  }, [formik, pluginList]);
 
   const handleAuthSelect = useCallback(
     (authType: string) => {
