@@ -34,8 +34,7 @@ const DISMISS_BUTTON = { label: "Dismiss" };
 function ResourceListItem({ resource, onDelete }: Props) {
   const { currentWorkspace, currentProject, setResource } =
     useContext(AppContext);
-  const { id, name, description, gitRepository, resourceType, codeGenerator } =
-    resource;
+  const { id, name, description, gitRepository, resourceType } = resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
   const handleDelete = useCallback(
