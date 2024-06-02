@@ -13,6 +13,14 @@ import { AMPLICATION_GITHUB_URL, emptyPlugin } from "./plugin.constants";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConfigService } from "@nestjs/config";
 import { NpmService } from "../npm/npm.service";
+import { isArray } from "lodash";
+
+const GENERATOR_PROPERTY_TO_GENERATOR_NAME = {
+  ["data-service-generator"]: "NodeJs",
+  ["generator-dotnet-webapi"]: "DotNet",
+  nodejs: "NodeJs",
+  dotnet: "DotNet",
+};
 
 @Injectable()
 export class GitPluginService {
@@ -127,6 +135,17 @@ export class GitPluginService {
       this.logger.error(error.message, error);
     }
   }
+
+  getGeneratorNameFromGeneratorProperty(generator: string[] | string): string {
+    const generatorProperty = isArray(generator) ? generator[0] : generator;
+    const translatedGeneratorName =
+      GENERATOR_PROPERTY_TO_GENERATOR_NAME[generatorProperty];
+    if (!translatedGeneratorName) {
+      return generatorProperty;
+    }
+    return translatedGeneratorName;
+  }
+
   /**
    * main function that fetch the catalog and trigger the generator in order to get each one of the plugins
    * @returns Plugin[]
@@ -167,7 +186,9 @@ export class GitPluginService {
           updatedAt: npm.time ? new Date(npm.time.modified) : new Date(),
           downloads: downloads,
           categories: pluginCatalogEntry.categories,
-          codeGeneratorNames: pluginCatalogEntry.generator,
+          codeGeneratorName: this.getGeneratorNameFromGeneratorProperty(
+            pluginCatalogEntry.generator
+          ),
         });
       }
 
