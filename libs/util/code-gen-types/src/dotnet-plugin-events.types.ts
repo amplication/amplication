@@ -27,6 +27,9 @@ import {
   CreateSwaggerParams,
   LoadStaticFilesParams,
   CreateResourceDbContextFileParams,
+  CreateSeedDevelopmentDataFileParams,
+  CreateControllerModuleFileParams,
+  CreateControllerBaseModuleFileParams,
 } from "./dotnet-plugin-events-params.types";
 import { DotnetEventNames, PluginEventType } from "./dotnet-plugins.types";
 import { CodeBlock, Interface } from "@amplication/csharp-ast";
@@ -81,4 +84,7 @@ export type DotnetEvents = {
   [DotnetEventNames.CreateEntityExtensions]?: PluginEventType<CreateEntityExtensionsParams>;
   [DotnetEventNames.CreateEntityModel]?: PluginEventType<CreateEntityModelParams>;
   [DotnetEventNames.CreateResourceDbContextFile]?: PluginEventType<CreateResourceDbContextFileParams>;
+  [DotnetEventNames.CreateSeedDevelopmentDataFile]?: PluginEventType<CreateSeedDevelopmentDataFileParams>;
+  [DotnetEventNames.CreateControllerModuleFile]?: PluginEventType<CreateControllerModuleFileParams>;
+  [DotnetEventNames.CreateControllerBaseModuleFile]?: PluginEventType<CreateControllerBaseModuleFileParams>;
 };
