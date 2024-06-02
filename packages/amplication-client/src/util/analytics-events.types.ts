@@ -50,16 +50,11 @@ export enum AnalyticsEventNames {
   ServiceSettingsUpdate = "updateServiceSettings",
 
   // resource
-  ResourceFromFileCreate = "createResourceFromFile",
   ResourceFromSampleCreate = "createResourceFromSample",
   ResourceFromScratchCreate = "createResourceFromScratch",
   ResourceInfoUpdate = "updateResourceInfo",
-  ResourceBuild = "buildResource",
   ResourceDelete = "deleteResource",
   ResourceCardClick = "resourceCardClick",
-  MessageBrokerCreate = "createResourceClick-MessageBroker",
-  ProjectConfigurationCreate = "createResourceClick-ProjectConfiguration",
-  ServiceCreate = "createResourceClick-Service",
 
   // entity
 
@@ -105,9 +100,12 @@ export enum AnalyticsEventNames {
   GithubOpenPullRequest = "openGithubPullRequest",
   GitHubRepositorySync = "selectGitRepository",
   GithubRepoSync = "selectGithubRepo",
-  CreateService = "CreateService",
-  CreateMessageBroker = "CreateMessageBroker",
-  CreateProjectConfiguration = "CreateProjectConfiguration",
+
+  //Create Resource Click
+  CreateService = "CreateResource_ServiceClick",
+  CreateMessageBroker = "CreateResource_MessageBrokerClick",
+  CreateProjectConfiguration = "CreateResource_ProjectConfigurationClick",
+
   StarUsBannerCTAClick = "StarUsBannerCTAClick",
   StarUsBannerClose = "StarUsBannerClose",
   MWC2024BannerCTAClick = "MWC2024BannerCTAClick",
@@ -173,4 +171,6 @@ export enum AnalyticsEventNames {
 
   AskJovuClick = "AskJovuClick",
   CreateWithJovuClick = "CreateWithJovuClick",
+  ViewOnboardingWithJovu = "ViewOnboardingWithJovu",
+  SendPromptOnboardingWithJovu = "SendPromptOnboardingWithJovu",
 }

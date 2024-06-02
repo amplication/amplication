@@ -1,7 +1,6 @@
 import {
   EnumContentAlign,
   EnumFlexDirection,
-  EnumFlexItemMargin,
   EnumTextStyle,
   FlexItem,
   Snackbar,
@@ -88,12 +87,14 @@ const ModuleAction = ({ match }: Props) => {
     [updateModuleAction, moduleActionId, addEntity]
   );
 
-  const onEnableChanged = useCallback(() => {
-    if (!data?.moduleAction) return;
-    handleSubmit({
-      enabled: !data.moduleAction.enabled,
-    });
-  }, [data?.moduleAction, handleSubmit]);
+  const onEnableChanged = useCallback(
+    (value: boolean) => {
+      handleSubmit({
+        enabled: value,
+      });
+    },
+    [handleSubmit]
+  );
 
   const hasError = Boolean(error) || Boolean(updateModuleActionError);
 
@@ -117,7 +118,9 @@ const ModuleAction = ({ match }: Props) => {
           <Toggle
             name={"enabled"}
             onValueChange={onEnableChanged}
-            checked={data?.moduleAction?.enabled}
+            checked={
+              data?.moduleAction?.enabled ? data?.moduleAction?.enabled : false
+            }
             disabled={!customActionsLicenseEnabled}
           ></Toggle>
           {data?.moduleAction && isCustomAction && (

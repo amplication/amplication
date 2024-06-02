@@ -1,10 +1,17 @@
 import { GET_COMMITS } from "./commitQueries";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Commit, PendingChange, SortOrder, Build } from "../../models";
+import {
+  Commit,
+  PendingChange,
+  SortOrder,
+  Build,
+  EnumBuildStatus,
+} from "../../models";
 import { ApolloError, useLazyQuery } from "@apollo/client";
 import { cloneDeep, groupBy } from "lodash";
 
 const MAX_ITEMS_PER_LOADING = 20;
+const POLL_INTERVAL = 3000;
 
 export type CommitChangesByResource = (commitId: string) => {
   resourceId: string;
@@ -51,11 +58,66 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       }
 
       builds[buildIdx].status = build.status;
+      builds[buildIdx].action = build.action;
 
       setCommits(clonedCommits);
+      if (lastCommit.id === build.commitId) {
+        setLastCommit(commit);
+      }
     },
-    [commits, setCommits]
+    [commits, lastCommit]
   );
+
+  const [
+    getLastCommit,
+    {
+      data: getLastCommitData,
+      startPolling: getLastCommitStartPolling,
+      stopPolling: getLastCommitStopPolling,
+    },
+  ] = useLazyQuery<{ commits: Commit[] }>(GET_COMMITS, {
+    variables: {
+      projectId: currentProjectId,
+      skip: 0,
+      take: 1,
+      orderBy: {
+        createdAt: SortOrder.Desc,
+      },
+    },
+  });
+
+  useEffect(() => {
+    let shouldPoll = false;
+
+    if (lastCommit && lastCommit.builds && lastCommit.builds.length > 0) {
+      const runningBuilds = lastCommit.builds.some(
+        (build) => build.status === EnumBuildStatus.Running
+      );
+      if (runningBuilds) {
+        shouldPoll = true;
+      }
+    }
+
+    if (shouldPoll) {
+      getLastCommitStartPolling(POLL_INTERVAL);
+    } else {
+      getLastCommitStopPolling();
+    }
+    getLastCommitData && setLastCommit(getLastCommitData.commits[0]);
+  }, [
+    getLastCommitData,
+    getLastCommitStopPolling,
+    getLastCommitStartPolling,
+    updateBuildStatus,
+    lastCommit,
+  ]);
+
+  //cleanup polling
+  useEffect(() => {
+    return () => {
+      getLastCommitStopPolling();
+    };
+  }, [getLastCommitStopPolling]);
 
   const [
     getInitialCommits,
@@ -101,6 +163,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     setLastCommit(commitsData?.commits[0]);
   }, [commitsData?.commits, commits]);
 
+  //refetch next page of commits, or refetch from start
   const refetchCommitsData = useCallback(
     (refetchFromStart?: boolean) => {
       refetchCommits({
@@ -113,6 +176,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     [refetchCommits, setCommitsCount, commitsCount]
   );
 
+  //refetch from the server the most updated commit
   const refetchLastCommit = useCallback(() => {
     if (!currentProjectId) return;
 
@@ -122,7 +186,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     });
   }, [currentProjectId]);
 
-  // pagination refetch
+  // pagination refetch - we received an updated list from the server, and we need to append it to the current list
   useEffect(() => {
     if (!commitsData?.commits?.length || commitsCount === 1 || commitsLoading)
       return;
@@ -132,6 +196,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
 
   // last commit refetch
   useEffect(() => {
+    //check if the data from the server contains a single commit
     if (!commitsData?.commits?.length || commitsData?.commits?.length > 1)
       return;
 

@@ -238,7 +238,7 @@ export class WorkspaceService {
     );
 
     if (connectToDemoRepo) {
-      await this.projectService.createDemoRepo(newProject.id);
+      await this.projectService.createDemoRepo(newProject.id, user);
     }
 
     await this.billingService.reportUsage(

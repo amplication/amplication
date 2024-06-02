@@ -8,17 +8,12 @@ import {
 import { KAFKA_TOPICS } from "@amplication/schema-registry";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  forwardRef,
-} from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import cuid from "cuid";
 import { isEmpty, kebabCase } from "lodash";
 import { pascalCase } from "pascal-case";
 import pluralize from "pluralize";
-import { JsonObject, JsonValue } from "type-fest";
+import { JsonObject } from "type-fest";
 import { FindOneArgs } from "../../dto";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
@@ -129,6 +124,14 @@ const DEFAULT_AUTH_PLUGINS: PluginInstallationCreateInput[] = [
     resource: undefined,
   },
 ];
+
+const RESOURCE_TYPE_TO_EVENT_TYPE: {
+  [key in EnumResourceType]: EnumEventType;
+} = {
+  [EnumResourceType.Service]: EnumEventType.ServiceCreate,
+  [EnumResourceType.MessageBroker]: EnumEventType.MessageBrokerCreate,
+  [EnumResourceType.ProjectConfiguration]: EnumEventType.UnknownEvent,
+};
 
 @Injectable()
 export class ResourceService {
@@ -315,7 +318,7 @@ export class ResourceService {
       });
     }
 
-    return await this.prisma.resource.create({
+    const resource = await this.prisma.resource.create({
       data: {
         ...args.data,
         gitRepository: gitRepository,
@@ -323,6 +326,19 @@ export class ResourceService {
           gitRepositoryToCreate?.isOverrideGitRepository ?? false,
       },
     });
+
+    const eventName = RESOURCE_TYPE_TO_EVENT_TYPE[args.data.resourceType];
+
+    await this.analytics.trackWithContext({
+      properties: {
+        resourceId: resource.id,
+        projectId: args.data.project.connect.id,
+        name: args.data.name,
+      },
+      event: eventName,
+    });
+
+    return resource;
   }
 
   async updateCodeGeneratorVersion(
@@ -456,8 +472,11 @@ export class ResourceService {
     });
 
     if (requireAuthenticationEntity) {
-      await this.entityService.createDefaultEntities(resource.id, user);
-      serviceSettings.authEntityName = USER_ENTITY_NAME;
+      const [userEntity] = await this.entityService.createDefaultUserEntity(
+        resource.id,
+        user
+      );
+      serviceSettings.authEntityName = userEntity.name;
     }
 
     await this.serviceSettingsService.createDefaultServiceSettings(
@@ -478,6 +497,60 @@ export class ResourceService {
     );
 
     return resource;
+  }
+
+  async createDefaultAuthEntity(
+    resourceId: string,
+    user: User
+  ): Promise<Entity> {
+    const serviceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
+          where: {
+            id: resourceId,
+          },
+        },
+        user
+      );
+
+    if (!isEmpty(serviceSettings.authEntityName)) {
+      throw new AmplicationError(
+        `Auth entity already exists for resource "${resourceId} `
+      );
+    }
+
+    const existingUserEntity = await this.entityService.entities({
+      where: {
+        resourceId: resourceId,
+        name: USER_ENTITY_NAME,
+      },
+    });
+
+    if (!isEmpty(existingUserEntity)) {
+      throw new AmplicationError(
+        `An entity with the default Auth entity name already exists for resource "${resourceId} `
+      );
+    }
+
+    const [userEntity] = await this.entityService.createDefaultUserEntity(
+      resourceId,
+      user
+    );
+
+    await this.serviceSettingsService.updateServiceSettings(
+      {
+        data: {
+          ...serviceSettings,
+          authEntityName: userEntity.displayName,
+        },
+        where: {
+          id: resourceId,
+        },
+      },
+      user
+    );
+
+    return userEntity;
   }
 
   async createPreviewService({
@@ -504,8 +577,11 @@ export class ResourceService {
     });
 
     if (requireAuthenticationEntity) {
-      await this.entityService.createDefaultEntities(resource.id, user);
-      serviceSettings.authEntityName = USER_ENTITY_NAME;
+      const [userEntity] = await this.entityService.createDefaultUserEntity(
+        resource.id,
+        user
+      );
+      serviceSettings.authEntityName = userEntity.name;
     }
 
     await this.serviceSettingsService.createDefaultServiceSettings(
@@ -555,12 +631,8 @@ export class ResourceService {
   ): Promise<void> {
     for (const plugin of plugins) {
       plugin.resource = { connect: { id: resourceId } };
-      const isvValidEntityUser = await this.userEntityValidation(
-        resourceId,
-        plugin.configurations
-      );
-      isvValidEntityUser &&
-        (await this.pluginInstallationService.create({ data: plugin }, user));
+
+      await this.pluginInstallationService.create({ data: plugin }, user);
     }
   }
 
@@ -1160,35 +1232,16 @@ export class ResourceService {
       }
     }
   }
-  async userEntityValidation(
-    resourceId: string,
-    configurations: JsonValue
-  ): Promise<boolean> {
-    try {
-      const resource = await this.prisma.resource.findUnique({
-        where: {
-          id: resourceId,
-        },
-        include: {
-          entities: true,
-        },
-      });
 
-      if (
-        !resource.entities?.find(
-          (entity) =>
-            entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
-        ) &&
-        configurations &&
-        configurations["requireAuthenticationEntity"] === "true"
-      ) {
-        throw new ConflictException("Plugin must have an User entity");
-      }
-      return true;
-    } catch (error) {
-      this.logger.error(error.message, error);
-      return false;
-    }
+  async getAuthEntityName(resourceId: string, user: User): Promise<string> {
+    const serviceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
+          where: { id: resourceId },
+        },
+        user
+      );
+    return serviceSettings.authEntityName;
   }
 
   /**
@@ -1215,16 +1268,9 @@ export class ResourceService {
     const projectId = data.resource.project.connect.id;
 
     if (data.connectToDemoRepo) {
-      await this.projectService.createDemoRepo(projectId);
+      await this.projectService.createDemoRepo(projectId, user);
       //do not use any git data when using demo repo
       data.resource.gitRepository = undefined;
-
-      await this.analytics.trackWithContext({
-        event: EnumEventType.DemoRepoCreate,
-        properties: {
-          projectId,
-        },
-      });
     }
 
     const resource = await this.createService(

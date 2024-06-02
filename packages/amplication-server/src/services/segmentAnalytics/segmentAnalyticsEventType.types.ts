@@ -1,4 +1,5 @@
 export enum EnumEventType {
+  UnknownEvent = "UNKNOWN_EVENT",
   Signup = "Signup",
   StartEmailSignup = "StartEmailSignup",
   CompleteEmailSignup = "CompleteEmailSignup",
@@ -26,7 +27,8 @@ export enum EnumEventType {
   InteractAmplicationAction = "InteractAmplicationAction",
   CreateUserDTO = "CreateUserDTO",
   InteractUserDTO = "InteractUserDTO",
-  SearchAPIs = "SearchAPIs",
+  ServiceCreate = "createService",
+  MessageBrokerCreate = "createMessageBroker",
 
   //Import Prisma Schema
   ImportPrismaSchemaStart = "importPrismaSchemaStart",

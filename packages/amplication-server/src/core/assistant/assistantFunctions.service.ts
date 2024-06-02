@@ -2,9 +2,9 @@ import { EnumModuleDtoType } from "@amplication/code-gen-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { get } from "lodash";
+import { get, isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
-import { plural } from "pluralize";
+import { plural, singular } from "pluralize";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { Env } from "../../env";
 import { Block } from "../../models";
@@ -15,7 +15,10 @@ import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { PermissionsService } from "../permissions/permissions.service";
 import { PluginCatalogService } from "../pluginCatalog/pluginCatalog.service";
-import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import {
+  PluginInstallationService,
+  REQUIRES_AUTHENTICATION_ENTITY,
+} from "../pluginInstallation/pluginInstallation.service";
 import { ProjectService } from "../project/project.service";
 import { EnumPendingChangeOriginType } from "../resource/dto";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
@@ -26,6 +29,7 @@ import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
 
 import * as functionArgsSchemas from "./functions/";
 import * as functionsArgsTypes from "./functions/types";
+import { USER_ENTITY_NAME } from "../entity/constants";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
@@ -278,6 +282,8 @@ export class AssistantFunctionsService {
     //iterate over the pluginIds and install each plugin synchronously
     //to support synchronous installation of multiple plugins we need first to fix the plugins order code in the pluginInstallation Service
     const installations = [];
+    let authEntityExist = false;
+
     for (const pluginId of pluginIds) {
       const plugin = await this.pluginCatalogService.getPluginWithLatestVersion(
         pluginId
@@ -285,6 +291,27 @@ export class AssistantFunctionsService {
       const pluginVersion = plugin.versions[0];
 
       const { version, settings, configurations } = pluginVersion;
+
+      if (
+        configurations &&
+        configurations[REQUIRES_AUTHENTICATION_ENTITY] === "true" &&
+        !authEntityExist
+      ) {
+        const authEntityName = await this.resourceService.getAuthEntityName(
+          serviceId,
+          context.user
+        );
+        if (!isEmpty(authEntityName)) {
+          authEntityExist = true;
+        } else {
+          //create auth entity
+          await this.resourceService.createDefaultAuthEntity(
+            serviceId,
+            context.user
+          );
+          authEntityExist = true;
+        }
+      }
 
       const installation = await this.pluginInstallationService.create(
         {
@@ -334,21 +361,44 @@ export class AssistantFunctionsService {
             pluralDisplayName = `${entityName}Items`;
           }
           try {
-            const entity = await this.entityService.createOneEntity(
-              {
-                data: {
-                  displayName: entityName,
-                  pluralDisplayName: pluralDisplayName,
-                  name: pascalCase(entityName),
-                  resource: {
-                    connect: {
-                      id: args.serviceId,
+            let entity;
+            if (
+              singular(entityName.toLowerCase()) ===
+              USER_ENTITY_NAME.toLowerCase()
+            ) {
+              try {
+                entity = await this.resourceService.createDefaultAuthEntity(
+                  args.serviceId,
+                  context.user
+                );
+              } catch (error) {
+                this.logger.warn(
+                  `Chat: Error creating default auth entity ${entityName}. Continue creating regular entity`,
+                  error,
+                  loggerContext
+                );
+              }
+            }
+
+            if (!entity) {
+              entity = await this.entityService.createOneEntity(
+                {
+                  data: {
+                    displayName: entityName,
+                    pluralDisplayName: pluralDisplayName,
+                    name: pascalCase(entityName),
+                    resource: {
+                      connect: {
+                        id: args.serviceId,
+                      },
                     },
                   },
                 },
-              },
-              context.user
-            );
+                context.user
+              );
+            }
+
+            const fields = await this.entityService.getFields(entity.id, {});
 
             const defaultModuleId =
               await this.moduleService.getDefaultModuleIdForEntity(
@@ -358,6 +408,11 @@ export class AssistantFunctionsService {
 
             return {
               entityLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities/${entity.id}`,
+              entityFields: fields.map((field) => ({
+                id: field.id,
+                name: field.name,
+                type: field.dataType,
+              })),
               apisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${defaultModuleId}`,
               result: entity,
             };
@@ -409,7 +464,8 @@ export class AssistantFunctionsService {
                   },
                 },
               },
-              context.user
+              context.user,
+              true
             );
           } catch (error) {
             this.logger.error(

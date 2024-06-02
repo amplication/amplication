@@ -38,14 +38,7 @@ export interface CreateModuleAction {
     /**
      * The type of the input. When the type is Dto, the dtoId property is required. You can use the function getModuleDtosAndEnums to get a list of available DTOs in the module or other modules.
      */
-    type:
-      | "String"
-      | "Boolean"
-      | "Integer"
-      | "Float"
-      | "DateTime"
-      | "Dto"
-      | "Json";
+    type: "String" | "Boolean" | "Integer" | "Float" | "DateTime" | "Dto";
     /**
      * whether the property is an array or not
      */
@@ -59,14 +52,7 @@ export interface CreateModuleAction {
     /**
      * The type of the input. When the type is Dto, the dtoId property is required. You can use the function getModuleDtosAndEnums to get a list of available DTOs in the module or other modules.
      */
-    type:
-      | "String"
-      | "Boolean"
-      | "Integer"
-      | "Float"
-      | "DateTime"
-      | "Dto"
-      | "Json";
+    type: "String" | "Boolean" | "Integer" | "Float" | "DateTime" | "Dto";
     /**
      * whether the property is an array or not
      */
