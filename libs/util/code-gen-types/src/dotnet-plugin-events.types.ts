@@ -26,7 +26,7 @@ import {
   CreateServerSecretsManagerParams,
   CreateSwaggerParams,
   LoadStaticFilesParams,
-  createResourceDbContextFileParams,
+  CreateResourceDbContextFileParams,
 } from "./dotnet-plugin-events-params.types";
 import { DotnetEventNames, PluginEventType } from "./dotnet-plugins.types";
 import { CodeBlock, Interface } from "@amplication/csharp-ast";
@@ -80,5 +80,5 @@ export type DotnetEvents = {
   >;
   [DotnetEventNames.CreateEntityExtensions]?: PluginEventType<CreateEntityExtensionsParams>;
   [DotnetEventNames.CreateEntityModel]?: PluginEventType<CreateEntityModelParams>;
-  [DotnetEventNames.createResourceDbContextFile]?: PluginEventType<createResourceDbContextFileParams>;
+  [DotnetEventNames.CreateResourceDbContextFile]?: PluginEventType<CreateResourceDbContextFileParams>;
 };

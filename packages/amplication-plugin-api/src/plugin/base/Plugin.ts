@@ -31,10 +31,11 @@ class Plugin {
 
   @ApiProperty({
     required: true,
+    type: String,
   })
-  @IsJSONValue()
-  @Field(() => GraphQLJSON)
-  codeGeneratorNames!: JsonValue;
+  @IsString()
+  @Field(() => String)
+  codeGeneratorName!: string;
 
   @ApiProperty({
     required: true,
