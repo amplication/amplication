@@ -44,7 +44,7 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
         (plugin) => plugin.pluginId === formik.values.databaseType
       )
     ) {
-      formik.setFieldValue("databaseType", pluginList[0].pluginId);
+      formik.setFieldValue("authType", pluginList[0].pluginId);
     }
   }, [formik, pluginList]);
 
