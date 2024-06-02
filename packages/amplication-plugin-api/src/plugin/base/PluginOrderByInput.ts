@@ -39,7 +39,7 @@ class PluginOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  codeGeneratorNames?: SortOrder;
+  codeGeneratorName?: SortOrder;
 
   @ApiProperty({
     required: false,
