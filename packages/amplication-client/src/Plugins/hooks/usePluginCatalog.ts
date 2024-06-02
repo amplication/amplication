@@ -51,6 +51,7 @@ const usePluginCatalog = (codeGenerator: models.EnumCodeGenerator) => {
       clientName: "pluginApiHttpLink",
     },
     variables: {
+      codeGeneratorName: codeGenerator,
       where: {
         deprecated: {
           equals: null,

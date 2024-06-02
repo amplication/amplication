@@ -57,7 +57,11 @@ const InstalledPluginSettings: React.FC<Props> = ({
     pluginCatalog,
     updatePluginInstallation,
     updateError,
-  } = usePlugins(currentResource.id, pluginInstallationId);
+  } = usePlugins(
+    currentResource.id,
+    pluginInstallationId,
+    currentResource?.codeGenerator
+  );
   const [selectedVersion, setSelectedVersion] = useState(
     pluginInstallation?.pluginInstallation.version
   );

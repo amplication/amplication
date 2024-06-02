@@ -53,7 +53,9 @@ export const useResourceSummary = (currentResource: models.Resource) => {
     roles: 0,
   });
   const { pluginInstallations, loadingPluginInstallation } = usePlugins(
-    currentResource.id
+    currentResource.id,
+    null,
+    currentResource.codeGenerator
   );
 
   const { data: categoriesData, loading: categoriesLoading } = useQuery<{

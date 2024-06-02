@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { keyBy } from "lodash";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { match } from "react-router-dom";
-import { AppContext } from "../context/appContext";
+import { AppContext, useAppContext } from "../context/appContext";
 import { USER_ENTITY } from "../Entity/constants";
 import { GET_ENTITIES } from "../Entity/EntityList";
 import { TEntities } from "../Entity/NewEntity";
@@ -61,6 +61,8 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
     },
   });
 
+  const { currentResource } = useAppContext();
+
   const {
     pluginInstallations,
     pluginCatalog,
@@ -69,7 +71,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
     updatePluginInstallation,
     updateError,
     // onPluginDropped,
-  } = usePlugins(resource);
+  } = usePlugins(resource, null, currentResource?.codeGenerator);
 
   const filteredCatalog = useMemo(() => {
     if (category === "undefined") return Object.values(pluginCatalog);

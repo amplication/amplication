@@ -35,9 +35,13 @@ const setPluginOrderMap = (pluginOrder: models.PluginOrderItem[]) => {
   );
 };
 
-const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
+const usePlugins = (
+  resourceId: string,
+  pluginInstallationId?: string,
+  codeGenerator?: models.EnumCodeGenerator
+) => {
   const { pluginCatalog, pluginCategories } = usePluginCatalog(
-    models.EnumCodeGenerator.NodeJs
+    codeGenerator || models.EnumCodeGenerator.NodeJs
   );
 
   const [pluginOrderObj, setPluginOrderObj] = useState<{
