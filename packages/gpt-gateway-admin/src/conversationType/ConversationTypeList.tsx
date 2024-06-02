@@ -15,7 +15,7 @@ export const ConversationTypeList = (props: ListProps): React.ReactElement => {
     <List
       {...props}
       bulkActionButtons={false}
-      title={"Conversation Types"}
+      title={"ConversationTypes"}
       perPage={50}
       pagination={<Pagination />}
     >
