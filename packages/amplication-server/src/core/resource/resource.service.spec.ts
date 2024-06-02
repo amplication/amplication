@@ -67,6 +67,7 @@ import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { ActionService } from "../action/action.service";
 import { UserActionService } from "../userAction/userAction.service";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -126,6 +127,7 @@ const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   project: { connect: { id: EXAMPLE_PROJECT_ID } },
   serviceSettings: EXAMPLE_SERVICE_SETTINGS,
   gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+  codeGenerator: EnumCodeGenerator.NodeJs,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -547,6 +549,9 @@ describe("ResourceService", () => {
             getNumericEntitlement: jest.fn(() => {
               return {};
             }),
+            getBooleanEntitlement: jest.fn(() => {
+              return {};
+            }),
             reportUsage: jest.fn(() => {
               return {};
             }),
@@ -686,6 +691,7 @@ describe("ResourceService", () => {
           color: DEFAULT_RESOURCE_COLORS.service,
           resourceType: EnumResourceType.Service,
           wizardType: "create resource",
+          codeGenerator: EnumCodeGenerator.NodeJs,
           project: {
             connect: {
               id: EXAMPLE_PROJECT_ID,
@@ -727,6 +733,7 @@ describe("ResourceService", () => {
             description: EXAMPLE_RESOURCE_DESCRIPTION,
             color: DEFAULT_RESOURCE_COLORS.service,
             resourceType: EnumResourceType.Service,
+            codeGenerator: EnumCodeGenerator.NodeJs,
             wizardType: "create resource",
             project: {
               connect: {
@@ -767,6 +774,7 @@ describe("ResourceService", () => {
           description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: DEFAULT_RESOURCE_COLORS.service,
           resourceType: EnumResourceType.Service,
+          codeGenerator: EnumCodeGenerator.NodeJs,
           wizardType: "create resource",
           project: {
             connect: {

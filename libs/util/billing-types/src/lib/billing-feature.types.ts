@@ -6,7 +6,7 @@ export enum BillingFeature {
   BranchPerResource = "feature-branch-per-resource",
   ChangeGitBaseBranch = "feature-change-git-base-branch",
   CodeGenerationBuilds = "feature-code-generation-builds",
-  CodeGeneratorName = "feature-code-generator-name",
+  CodeGeneratorDotNet = "feature-code-generator-dotnet",
   CodeGeneratorVersion = "feature-code-generator-version",
   CodePushToGit = "feature-code-push-to-git",
   CustomActions = "feature-custom-actions",
