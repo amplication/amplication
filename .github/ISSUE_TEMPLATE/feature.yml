@@ -1,0 +1,43 @@
+name: Feature Request
+description: Submit a proposal for a new feature
+labels: ["type: feature request"]
+body:
+  - type: markdown
+    attributes:
+      value: "
+        <img src='https://avatars.githubusercontent.com/u/65107786?s=200&v=4' align='left' width='80' height='80'>
+        Thank you for finding the time to propose a new feature!
+
+        We appreciate the community's efforts to improve Amplication.
+
+        Note, that after you create an issue, if you have a change ready to submit!
+
+        You can open [Pull Request](https://github.com/amplication/amplication/pulls) immediately after.
+        <br clear='left'/>"
+  - type: textarea
+    attributes:
+      label: Feature description
+      description: Describe your feature proposal
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Use case
+      description: Describe what you are trying to achive
+  - type: dropdown
+    attributes:
+      label: Are you willing to submit PR?
+      description: >
+        This is absolutely not required, but we are happy to guide you in the contribution process
+        especially if you already have a good understanding of how to implement the fix.
+        Amplication is a community-managed project and we love to bring new contributors in.
+        Find us in #support on [Discord](https://amplication.com/discord)!
+      multiple: true
+      options:
+        - "Yes I am willing to submit a PR!"
+  - type: markdown
+    attributes:
+      value: <br>
+  - type: markdown
+    attributes:
+      value: By submitting this issue I agree to follow this project`s [Code of Conduct](https://github.com/amplication/amplication/blob/master/CODE_OF_CONDUCT.md)

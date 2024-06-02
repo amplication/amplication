@@ -1,0 +1,48 @@
+@import "../style/index.scss";
+
+.amp-help-popover {
+  max-width: 500px;
+  margin: var(--default-spacing);
+
+  .amp-popover__inner-content {
+    @include body2;
+    background-color: var(--gray-full);
+    padding: var(--default-spacing);
+    color: var(--gray-base);
+  }
+  &__details {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    &__icon {
+      padding-right: var(--default-spacing);
+    }
+  }
+
+  &__dismiss {
+    margin-top: var(--default-spacing);
+    @include flexFullRowWithSpacing;
+    justify-content: flex-end;
+  }
+
+  .rmwc-tooltip-inner {
+    @include body2;
+    background-color: var(--gray-full);
+    padding: 0;
+  }
+
+  --mdc-theme-on-surface: var(--gray-full);
+
+  .amp-popover {
+    &__content {
+      color: var(--gray-base);
+      padding: var(--large-spacing);
+
+      a {
+        color: var(--gray-full);
+      }
+    }
+  }
+}

@@ -14,7 +14,7 @@ import {
   Prisma,
   Generator as PrismaGenerator,
   Version as PrismaVersion,
-} from "@prisma/client";
+} from "../../../prisma/generated-prisma-client";
 
 export class GeneratorServiceBase {
   constructor(protected readonly prisma: PrismaService) {}

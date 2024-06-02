@@ -1,0 +1,78 @@
+{
+  "name": "@amplication/cli",
+  "description": "Amplication CLI",
+  "version": "1.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amplication/amplication.git"
+  },
+  "homepage": "https://amplication.com",
+  "bin": {
+    "amp": "bin/run"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "jest": {
+    "preset": "ts-jest",
+    "testPathIgnorePatterns": [
+      "dist/"
+    ]
+  },
+  "keywords": [
+    "amplication",
+    "amplication cli",
+    "amp cli"
+  ],
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "amp",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "scripts": {
+    "build": "tsc",
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack-manual": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepare": "npm run build"
+  },
+  "types": "lib/index.d.ts",
+  "dependencies": {
+    "@apollo/client": "3.6.9",
+    "@oclif/command": "1.8.16",
+    "@oclif/config": "1.17.0",
+    "@oclif/plugin-help": "3.2.2",
+    "cli-ux": "5.5.1",
+    "cross-fetch": "3.1.5",
+    "graphql": "15.5.0",
+    "pascal-case": "3.1.2",
+    "pluralize": "8.0.0",
+    "tslib": "1.14.1",
+    "url-join": "4.0.1"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "1.26.10",
+    "@types/node": "10.17.60",
+    "@types/pluralize": "0.0.29",
+    "@types/url-join": "4.0.1",
+    "@typescript-eslint/eslint-plugin": "2.34.0",
+    "@typescript-eslint/parser": "2.34.0",
+    "eslint": "5.16.0",
+    "eslint-config-oclif": "3.1.0",
+    "eslint-config-oclif-typescript": "0.2.0",
+    "eslint-import-resolver-lerna": "2.0.0",
+    "eslint-plugin-import": "2.23.4",
+    "ts-node": "8.10.2",
+    "typescript": "3.9.10"
+  }
+}
