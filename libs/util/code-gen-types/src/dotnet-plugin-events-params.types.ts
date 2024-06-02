@@ -69,6 +69,11 @@ export interface CreateResourceDbContextFileParams extends EventParams {
   resourceDbContextPath: string;
 }
 
+export interface CreateSeedDevelopmentDataFileParams extends EventParams {
+  seedFilePath: string;
+  resourceName: string;
+}
+
 export interface CreateEntityGrpcControllerParams extends EventParams {
   entity: Entity;
 }
