@@ -19,7 +19,7 @@ import { REACT_APP_PLUGIN_VERSION_USE_LATEST } from "../env";
 import { PluginLogo } from "./PluginLogo";
 import "./PluginsCatalogItem.scss";
 import { LATEST_VERSION_TAG } from "./constant";
-import { Plugin, PluginVersion } from "./hooks/usePlugins";
+import { Plugin, PluginVersion } from "./hooks/usePluginCatalog";
 
 type Props = {
   plugin: Plugin;

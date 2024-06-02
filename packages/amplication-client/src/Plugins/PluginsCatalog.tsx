@@ -12,7 +12,9 @@ import useResource from "../Resource/hooks/useResource";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import { CREATE_DEFAULT_ENTITIES } from "../Workspaces/queries/entitiesQueries";
-import usePlugins, { Plugin, PluginVersion } from "./hooks/usePlugins";
+import usePlugins from "./hooks/usePlugins";
+import { Plugin, PluginVersion } from "./hooks/usePluginCatalog";
+
 import PluginInstallConfirmationDialog from "./PluginInstallConfirmationDialog";
 import PluginsCatalogItem from "./PluginsCatalogItem";
 
