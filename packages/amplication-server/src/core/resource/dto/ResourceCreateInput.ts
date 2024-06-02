@@ -3,6 +3,7 @@ import { Field, InputType } from "@nestjs/graphql";
 import { WhereParentIdInput } from "../../../dto";
 import { ServiceSettingsUpdateInput } from "../../serviceSettings/dto/ServiceSettingsUpdateInput";
 import { ConnectGitRepositoryInput } from "../../git/dto/inputs/ConnectGitRepositoryInput";
+import { EnumCodeGenerator } from "./EnumCodeGenerator";
 
 @InputType({
   isAbstract: true,
@@ -29,4 +30,9 @@ export class ResourceCreateInput {
 
   @Field(() => ConnectGitRepositoryInput, { nullable: true })
   gitRepository?: ConnectGitRepositoryInput;
+
+  @Field(() => EnumCodeGenerator, {
+    nullable: false,
+  })
+  codeGenerator!: keyof typeof EnumCodeGenerator;
 }

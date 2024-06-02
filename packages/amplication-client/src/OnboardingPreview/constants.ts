@@ -304,6 +304,7 @@ export const CREATE_SERVICE_DEFAULT_VALUES: models.ResourceCreateWithEntitiesInp
       description: "",
       resourceType: models.EnumResourceType.Service,
       project: { connect: { id: "" } },
+      codeGenerator: models.EnumCodeGenerator.NodeJs,
       serviceSettings: {
         adminUISettings: {
           generateAdminUI: false,

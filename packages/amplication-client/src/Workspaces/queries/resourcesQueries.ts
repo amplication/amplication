@@ -32,6 +32,7 @@ export const GET_RESOURCES = gql`
       gitRepositoryOverride
       codeGeneratorStrategy
       codeGeneratorVersion
+      codeGenerator
       licensed
       gitRepository {
         id
