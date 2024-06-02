@@ -60,6 +60,7 @@ import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { types } from "@amplication/code-gen-types";
 import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForEntityNotFoundError";
 import { ModuleDto } from "../moduleDto/dto/ModuleDto";
+import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -1541,6 +1542,7 @@ export class WorkspaceService {
             id: projectId,
           },
         },
+        codeGenerator: EnumCodeGenerator.NodeJs,
         serviceSettings: {
           authProvider: EnumAuthProviderType.Jwt,
           adminUISettings: {
