@@ -34,5 +34,5 @@ export class ResourceCreateInput {
   @Field(() => EnumCodeGenerator, {
     nullable: false,
   })
-  codeGenerator?: keyof typeof EnumCodeGenerator;
+  codeGenerator!: keyof typeof EnumCodeGenerator;
 }
