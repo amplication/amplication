@@ -740,6 +740,11 @@ enum EnumBuildStatus {
   Running
 }
 
+enum EnumCodeGenerator {
+  DotNet
+  NodeJs
+}
+
 enum EnumDataType {
   Boolean
   CreatedAt
@@ -1439,7 +1444,6 @@ type Mutation {
   """
   triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
-  updateCodeGeneratorName(codeGeneratorName: String!, where: WhereUniqueInput!): Resource
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   updateEntityField(data: EntityFieldUpdateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
@@ -1807,7 +1811,7 @@ type RemoteGitRepository {
 
 type Resource {
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
-  codeGeneratorName: String
+  codeGenerator: EnumCodeGenerator
   codeGeneratorStrategy: CodeGeneratorVersionStrategy
   codeGeneratorVersion: String
   createdAt: DateTime!
@@ -1829,6 +1833,7 @@ type Resource {
 }
 
 input ResourceCreateInput {
+  codeGenerator: EnumCodeGenerator!
   description: String!
   gitRepository: ConnectGitRepositoryInput
   name: String!

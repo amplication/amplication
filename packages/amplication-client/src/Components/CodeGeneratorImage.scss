@@ -1,0 +1,45 @@
+@import "../style/index.scss";
+
+$image-height-small: 15px;
+$image-height-medium: 20px;
+$image-height-large: 25px;
+$image-width: 100px;
+
+.code-generator-image {
+  margin-left: var(--default-spacing);
+  width: $image-width;
+  padding: 0;
+
+  &__icon {
+    width: $image-width;
+    background-color: var(--gray-20);
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    mask-position: left center;
+    width: 100%;
+    display: inline-block;
+  }
+
+  &--small,
+  &--small &__icon {
+    height: $image-height-small;
+  }
+
+  &--medium,
+  &--medium &__icon {
+    height: $image-height-medium;
+  }
+
+  &--large,
+  &--large &__icon {
+    height: $image-height-large;
+  }
+
+  &--dotnet {
+    mask-image: var(--image-dotnet);
+  }
+
+  &--nodejs {
+    mask-image: var(--image-nodejs);
+  }
+}

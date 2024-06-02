@@ -21,6 +21,7 @@ import {
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 import { AppContext } from "../context/appContext";
+import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 
 type Props = {
   resource: models.Resource;
@@ -108,12 +109,21 @@ function ResourceListItem({ resource, onDelete }: Props) {
             direction={EnumFlexDirection.Column}
             gap={EnumGapSize.Small}
           >
-            <Text
-              textStyle={EnumTextStyle.Normal}
-              textWeight={EnumTextWeight.SemiBold}
+            <FlexItem
+              direction={EnumFlexDirection.Row}
+              gap={EnumGapSize.Small}
+              itemsAlign={EnumItemsAlign.Center}
             >
-              {name}
-            </Text>
+              <Text
+                textStyle={EnumTextStyle.Normal}
+                textWeight={EnumTextWeight.SemiBold}
+              >
+                {name}
+              </Text>
+
+              <CodeGeneratorImage resource={resource} />
+            </FlexItem>
+
             {description && (
               <Text textStyle={EnumTextStyle.Description}>{description}</Text>
             )}

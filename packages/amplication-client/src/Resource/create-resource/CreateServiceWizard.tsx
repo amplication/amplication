@@ -414,6 +414,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         structureType,
         baseDir,
         connectToDemoRepo,
+        codeGenerator,
       } = values;
 
       const kebabCaseServiceName = kebabCase(serviceName);
@@ -454,7 +455,8 @@ const CreateServiceWizard: React.FC<Props> = ({
           structureType,
           databaseType,
           authType,
-          connectToDemoRepo
+          connectToDemoRepo,
+          codeGenerator
         );
         createStarterResource(resource, templateSettings.eventName);
       }

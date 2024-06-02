@@ -187,20 +187,22 @@ const useResources = (
     trackEvent({
       eventName: eventName,
     });
-    createServiceWithEntities({ variables: { data: data } }).then((result) => {
-      if (!result.data?.createServiceWithEntities.resource.id) return;
+    createServiceWithEntities({ variables: { data: data } })
+      .then((result) => {
+        if (!result.data?.createServiceWithEntities.resource.id) return;
 
-      setCreateServiceWithEntitiesResult(
-        result.data?.createServiceWithEntities
-      );
+        setCreateServiceWithEntitiesResult(
+          result.data?.createServiceWithEntities
+        );
 
-      const currentResourceId =
-        result.data?.createServiceWithEntities.resource.id;
-      addEntity(currentResourceId);
-      setCurrentResource(result.data?.createServiceWithEntities.resource);
-      expireCookie("signup");
-      reloadResources();
-    });
+        const currentResourceId =
+          result.data?.createServiceWithEntities.resource.id;
+        addEntity(currentResourceId);
+        setCurrentResource(result.data?.createServiceWithEntities.resource);
+        expireCookie("signup");
+        reloadResources();
+      })
+      .catch(console.error);
   };
 
   const [
