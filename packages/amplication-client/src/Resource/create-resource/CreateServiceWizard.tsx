@@ -172,6 +172,7 @@ const CreateServiceWizard: React.FC<Props> = ({
     loadingCreateService,
     setNewService,
     createServiceWithEntitiesResult: createResult,
+    currentResource,
   } = useContext(AppContext);
 
   const { trackEvent } = useTracking();
@@ -180,7 +181,11 @@ const CreateServiceWizard: React.FC<Props> = ({
     createResult?.build || null
   );
 
-  const { pluginCatalog } = usePlugins(null, null);
+  const { pluginCatalog } = usePlugins(
+    null,
+    null,
+    currentResource?.codeGenerator
+  );
 
   const isSignupUser = signupCookie === "1";
 

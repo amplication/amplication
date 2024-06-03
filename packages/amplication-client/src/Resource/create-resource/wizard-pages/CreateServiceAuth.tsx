@@ -6,6 +6,7 @@ import "../CreateServiceWizard.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
+import { useAppContext } from "../../../context/appContext";
 
 const NODE_AUTH_PLUGINS = ["auth-jwt", "auth-basic", "auth-keycloak"];
 const DOTNET_AUTH_PLUGINS = ["dotnet-auth-core-identity"];
@@ -18,7 +19,13 @@ const OVERRIDE_PLUGIN_DESCRIPTION = {
 };
 
 const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
-  const { pluginCatalog } = usePlugins(null, null);
+  const { currentResource } = useAppContext();
+
+  const { pluginCatalog } = usePlugins(
+    null,
+    null,
+    currentResource?.codeGenerator
+  );
 
   const pluginList = useMemo(() => {
     if (!pluginCatalog) {

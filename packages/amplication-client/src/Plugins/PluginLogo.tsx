@@ -1,6 +1,7 @@
 import { Icon } from "@amplication/ui/design-system";
 import React from "react";
-import { Plugin } from "./hooks/usePlugins";
+import { Plugin } from "./hooks/usePluginCatalog";
+
 import "./PluginLogo.scss";
 
 const PLUGIN_LOGO_BASE_URL =

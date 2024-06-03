@@ -5,7 +5,8 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
-import usePlugins, { Plugin } from "./hooks/usePlugins";
+import usePlugins from "./hooks/usePlugins";
+import { Plugin } from "./hooks/usePluginCatalog";
 import * as models from "../models";
 import PluginsCatalogItem from "./PluginsCatalogItem";
 import { EnumImages } from "../Components/SvgThemeImage";
@@ -17,7 +18,7 @@ import { GET_ENTITIES } from "../Entity/EntityList";
 import { USER_ENTITY } from "../Entity/constants";
 import { TEntities } from "../Entity/NewEntity";
 import { CREATE_DEFAULT_ENTITIES } from "../Workspaces/queries/entitiesQueries";
-import { AppContext } from "../context/appContext";
+import { AppContext, useAppContext } from "../context/appContext";
 import useResource from "../Resource/hooks/useResource";
 // import DragPluginsCatalogItem from "./DragPluginCatalogItem";
 
@@ -37,6 +38,8 @@ const SUB_TITLE = "Manage your installed plugins";
 const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
   const { resource } = match.params;
 
+  const { currentResource } = useAppContext();
+
   const {
     pluginInstallations,
     // loadingPluginInstallations: loading,
@@ -50,7 +53,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     updatePluginOrder,
     UpdatePluginOrderError,
     // onPluginDropped,
-  } = usePlugins(resource);
+  } = usePlugins(resource, null, currentResource?.codeGenerator);
 
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
   const [isCreatePluginInstallation, setIsCreatePluginInstallation] =

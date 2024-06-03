@@ -14,6 +14,7 @@ import usePlugins from "../../../Plugins/hooks/usePlugins";
 
 import { PluginLogo } from "../../../Plugins/PluginLogo";
 import { EnumCodeGenerator } from "../../../models";
+import { useAppContext } from "../../../context/appContext";
 
 const NODE_DB_PLUGINS = ["db-postgres", "db-mongo", "db-mysql", "db-mssql"];
 const DOTNET_DB_PLUGINS = ["dotnet-db-sqlserver", "dotnet-db-postgres"];
@@ -30,7 +31,12 @@ const OVERRIDE_PLUGIN_DESCRIPTION = {
 };
 
 const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
-  const { pluginCatalog } = usePlugins(null, null);
+  const { currentResource } = useAppContext();
+  const { pluginCatalog } = usePlugins(
+    null,
+    null,
+    currentResource?.codeGenerator
+  );
 
   const pluginList = useMemo(() => {
     if (!pluginCatalog) {
