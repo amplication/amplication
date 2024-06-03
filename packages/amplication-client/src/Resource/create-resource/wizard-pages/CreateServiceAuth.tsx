@@ -14,7 +14,7 @@ const OVERRIDE_PLUGIN_DESCRIPTION = {
   "auth-jwt": "Use JSON Web Token (JWT) authentication",
   "auth-basic": "Use basic (username-password) authentication",
   "auth-keycloak": "Use Keycloak authentication",
-  "dotnet-auth-core-identity": "Use JSON Web Token (JWT) authentication",
+  "dotnet-auth-core-identity": "Use ASP.NET Core Identity authentication",
 };
 
 const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
