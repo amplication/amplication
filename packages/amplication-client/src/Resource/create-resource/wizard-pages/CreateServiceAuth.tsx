@@ -9,13 +9,13 @@ import { WizardStepProps } from "./interfaces";
 import { useAppContext } from "../../../context/appContext";
 
 const NODE_AUTH_PLUGINS = ["auth-jwt", "auth-basic", "auth-keycloak"];
-const DOTNET_AUTH_PLUGINS = ["dotnet-auth-jwt"];
+const DOTNET_AUTH_PLUGINS = ["dotnet-auth-core-identity"];
 
 const OVERRIDE_PLUGIN_DESCRIPTION = {
   "auth-jwt": "Use JSON Web Token (JWT) authentication",
   "auth-basic": "Use basic (username-password) authentication",
   "auth-keycloak": "Use Keycloak authentication",
-  "dotnet-auth-jwt": "Use JSON Web Token (JWT) authentication",
+  "dotnet-auth-core-identity": "Use JSON Web Token (JWT) authentication",
 };
 
 const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
@@ -51,7 +51,7 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
         (plugin) => plugin.pluginId === formik.values.databaseType
       )
     ) {
-      formik.setFieldValue("databaseType", pluginList[0].pluginId);
+      formik.setFieldValue("authType", pluginList[0].pluginId);
     }
   }, [formik, pluginList]);
 

@@ -356,10 +356,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         const pluginIds: string[] = [databaseType];
         if (authType && authType !== "no") {
           pluginIds.push(authType);
-          if (codeGenerator === models.EnumCodeGenerator.DotNet) {
-            //todo:use actual plugin id
-            pluginIds.push("dotnet-auth-core");
-          } else {
+          if (codeGenerator === models.EnumCodeGenerator.NodeJs) {
             pluginIds.push("auth-core");
           }
         }
