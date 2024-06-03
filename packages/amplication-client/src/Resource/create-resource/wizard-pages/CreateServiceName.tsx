@@ -2,7 +2,7 @@ import { SelectField, TextField } from "@amplication/ui/design-system";
 import React, { useEffect } from "react";
 import { WizardStepProps } from "./interfaces";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
-import useAvailableCodeGenerators from "../../../Workspaces/hooks/useCodeGeneratorFeature";
+import useAvailableCodeGenerators from "../../../Workspaces/hooks/useAvailableCodeGenerators";
 
 const CreateServiceName: React.FC<WizardStepProps> = ({
   moduleClass,
