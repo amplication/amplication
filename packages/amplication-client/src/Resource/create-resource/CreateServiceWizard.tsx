@@ -138,12 +138,6 @@ const CREATE_SERVICE_STEPS: WizardStep[] = [
     stepName: "CreateServiceDatabase",
   },
   {
-    index: 6,
-    analyticsEventName:
-      AnalyticsEventNames.ViewServiceWizardStep_EntitiesSettings,
-    stepName: "CreateServiceTemplate",
-  },
-  {
     index: 7,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_AuthSettings,
     stepName: "CreateServiceAuth",
