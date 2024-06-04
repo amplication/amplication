@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import { PluginLogo } from "../../../Plugins/PluginLogo";
-import usePlugins from "../../../Plugins/hooks/usePlugins";
+import { Plugin } from "../../../Plugins/hooks/usePluginCatalog";
 import { EnumCodeGenerator } from "../../../models";
 import "../CreateServiceWizard.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
-import { useAppContext } from "../../../context/appContext";
 
 const NODE_AUTH_PLUGINS = ["auth-jwt", "auth-basic", "auth-keycloak"];
 const DOTNET_AUTH_PLUGINS = ["dotnet-auth-core-identity"];
@@ -18,15 +17,11 @@ const OVERRIDE_PLUGIN_DESCRIPTION = {
   "dotnet-auth-core-identity": "Use ASP.NET Core Identity authentication",
 };
 
-const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
-  const { currentResource } = useAppContext();
+type Props = WizardStepProps & {
+  pluginCatalog: { [key: string]: Plugin };
+};
 
-  const { pluginCatalog } = usePlugins(
-    null,
-    null,
-    currentResource?.codeGenerator
-  );
-
+const CreateServiceAuth: React.FC<Props> = ({ formik, pluginCatalog }) => {
   const pluginList = useMemo(() => {
     if (!pluginCatalog) {
       return [];
@@ -47,9 +42,8 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
     if (
       pluginList &&
       pluginList.length > 0 &&
-      !pluginList.find(
-        (plugin) => plugin.pluginId === formik.values.databaseType
-      )
+      formik.values.authType !== "no" &&
+      !pluginList.find((plugin) => plugin.pluginId === formik.values.authType)
     ) {
       formik.setFieldValue("authType", pluginList[0].pluginId);
     }

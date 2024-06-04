@@ -10,11 +10,10 @@ import {
   FlexItem,
   Text,
 } from "@amplication/ui/design-system";
-import usePlugins from "../../../Plugins/hooks/usePlugins";
+import { Plugin } from "../../../Plugins/hooks/usePluginCatalog";
 
 import { PluginLogo } from "../../../Plugins/PluginLogo";
 import { EnumCodeGenerator } from "../../../models";
-import { useAppContext } from "../../../context/appContext";
 
 const NODE_DB_PLUGINS = ["db-postgres", "db-mongo", "db-mysql", "db-mssql"];
 const DOTNET_DB_PLUGINS = ["dotnet-db-sqlserver", "dotnet-db-postgres"];
@@ -30,14 +29,11 @@ const OVERRIDE_PLUGIN_DESCRIPTION = {
   "dotnet-db-sqlserver": "Scalable NoSQL database for unstructured data",
 };
 
-const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
-  const { currentResource } = useAppContext();
-  const { pluginCatalog } = usePlugins(
-    null,
-    null,
-    currentResource?.codeGenerator
-  );
+type Props = WizardStepProps & {
+  pluginCatalog: { [key: string]: Plugin };
+};
 
+const CreateServiceDatabase: React.FC<Props> = ({ formik, pluginCatalog }) => {
   const pluginList = useMemo(() => {
     if (!pluginCatalog) {
       return [];

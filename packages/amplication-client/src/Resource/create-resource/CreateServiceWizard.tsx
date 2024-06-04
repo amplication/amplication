@@ -138,12 +138,6 @@ const CREATE_SERVICE_STEPS: WizardStep[] = [
     stepName: "CreateServiceDatabase",
   },
   {
-    index: 6,
-    analyticsEventName:
-      AnalyticsEventNames.ViewServiceWizardStep_EntitiesSettings,
-    stepName: "CreateServiceTemplate",
-  },
-  {
     index: 7,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_AuthSettings,
     stepName: "CreateServiceAuth",
@@ -172,7 +166,6 @@ const CreateServiceWizard: React.FC<Props> = ({
     loadingCreateService,
     setNewService,
     createServiceWithEntitiesResult: createResult,
-    currentResource,
   } = useContext(AppContext);
 
   const { trackEvent } = useTracking();
@@ -181,11 +174,10 @@ const CreateServiceWizard: React.FC<Props> = ({
     createResult?.build || null
   );
 
-  const { pluginCatalog } = usePlugins(
-    null,
-    null,
-    currentResource?.codeGenerator
-  );
+  const [currentCodeGenerator, setCurrentCodeGenerator] =
+    useState<models.EnumCodeGenerator>(models.EnumCodeGenerator.NodeJs);
+
+  const { pluginCatalog } = usePlugins(null, null, currentCodeGenerator);
 
   const isSignupUser = signupCookie === "1";
 
@@ -419,6 +411,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateServiceName
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          setCurrentCodeGenerator={setCurrentCodeGenerator}
         />
         <CreateGithubSync
           moduleClass={moduleClass}
@@ -440,6 +433,7 @@ const CreateServiceWizard: React.FC<Props> = ({
           // MsSqlPng={MsSqlPng}
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          pluginCatalog={pluginCatalog}
         />
         <CreateServiceTemplate
           moduleClass={moduleClass}
@@ -449,6 +443,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateServiceAuth
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          pluginCatalog={pluginCatalog}
         />
         <CreateServiceCodeGeneration
           moduleClass="create-service-code-generation"
