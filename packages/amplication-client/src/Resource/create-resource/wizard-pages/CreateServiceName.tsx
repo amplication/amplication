@@ -3,10 +3,16 @@ import React, { useEffect } from "react";
 import { WizardStepProps } from "./interfaces";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import useAvailableCodeGenerators from "../../../Workspaces/hooks/useAvailableCodeGenerators";
+import { EnumCodeGenerator } from "../../../models";
 
-const CreateServiceName: React.FC<WizardStepProps> = ({
+type Props = WizardStepProps & {
+  setCurrentCodeGenerator: (codeGenerator: EnumCodeGenerator) => void;
+};
+
+const CreateServiceName: React.FC<Props> = ({
   moduleClass,
   formik,
+  setCurrentCodeGenerator,
 }) => {
   useEffect(() => {
     formik.validateForm();
@@ -19,8 +25,12 @@ const CreateServiceName: React.FC<WizardStepProps> = ({
   useEffect(() => {
     if (defaultCodeGenerator && !formik.values.codeGenerator) {
       formik.setFieldValue("codeGenerator", defaultCodeGenerator);
+    } else {
+      if (formik.values.codeGenerator) {
+        setCurrentCodeGenerator(formik.values.codeGenerator);
+      }
     }
-  }, [defaultCodeGenerator, formik]);
+  }, [defaultCodeGenerator, formik, setCurrentCodeGenerator]);
 
   return (
     <Layout.Split>
