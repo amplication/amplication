@@ -1,15 +1,36 @@
-import { TextField } from "@amplication/ui/design-system";
+import { SelectField, TextField } from "@amplication/ui/design-system";
 import React, { useEffect } from "react";
 import { WizardStepProps } from "./interfaces";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+import useAvailableCodeGenerators from "../../../Workspaces/hooks/useAvailableCodeGenerators";
+import { EnumCodeGenerator } from "../../../models";
 
-const CreateServiceName: React.FC<WizardStepProps> = ({
+type Props = WizardStepProps & {
+  setCurrentCodeGenerator: (codeGenerator: EnumCodeGenerator) => void;
+};
+
+const CreateServiceName: React.FC<Props> = ({
   moduleClass,
   formik,
+  setCurrentCodeGenerator,
 }) => {
   useEffect(() => {
     formik.validateForm();
   }, []);
+
+  const { availableCodeGenerators, defaultCodeGenerator } =
+    useAvailableCodeGenerators();
+
+  //Set the default value after it is loaded
+  useEffect(() => {
+    if (defaultCodeGenerator && !formik.values.codeGenerator) {
+      formik.setFieldValue("codeGenerator", defaultCodeGenerator);
+    } else {
+      if (formik.values.codeGenerator) {
+        setCurrentCodeGenerator(formik.values.codeGenerator);
+      }
+    }
+  }, [defaultCodeGenerator, formik, setCurrentCodeGenerator]);
 
   return (
     <Layout.Split>
@@ -30,6 +51,13 @@ const CreateServiceName: React.FC<WizardStepProps> = ({
             label="Service name"
             placeholder="Order Service"
           />
+          {availableCodeGenerators.length > 1 && (
+            <SelectField
+              name="codeGenerator"
+              label="Code Generator Tech Stack"
+              options={availableCodeGenerators}
+            />
+          )}
         </Layout.ContentWrapper>
       </Layout.RightSide>
     </Layout.Split>

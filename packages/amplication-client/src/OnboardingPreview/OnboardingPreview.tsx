@@ -42,7 +42,11 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
   const [pagesData, setPagesData] = useState(PAGES_DATA);
   const [done, setDone] = useState(false);
 
-  const { pluginCatalog } = usePlugins(null, null);
+  const { pluginCatalog } = usePlugins(
+    null,
+    null,
+    models.EnumCodeGenerator.NodeJs
+  );
 
   const { createService, errorCreateService, loadingCreateService } =
     useOnboardingPreview();

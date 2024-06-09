@@ -24,7 +24,8 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
-import usePlugins, { PluginVersion } from "./hooks/usePlugins";
+import usePlugins from "./hooks/usePlugins";
+import { PluginVersion } from "./hooks/usePluginCatalog";
 import "./InstalledPluginSettings.scss";
 import { PluginLogo } from "./PluginLogo";
 
@@ -56,7 +57,11 @@ const InstalledPluginSettings: React.FC<Props> = ({
     pluginCatalog,
     updatePluginInstallation,
     updateError,
-  } = usePlugins(currentResource.id, pluginInstallationId);
+  } = usePlugins(
+    currentResource.id,
+    pluginInstallationId,
+    currentResource?.codeGenerator
+  );
   const [selectedVersion, setSelectedVersion] = useState(
     pluginInstallation?.pluginInstallation.version
   );

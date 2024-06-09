@@ -116,14 +116,15 @@ export function prepareServiceObject(
   repoType: string,
   dbType: string,
   auth: string,
-  connectToDemoRepo: boolean
-  // gitOrganizationName: string
+  connectToDemoRepo: boolean,
+  codeGenerator: models.EnumCodeGenerator = models.EnumCodeGenerator.NodeJs
 ): models.ResourceCreateWithEntitiesInput {
   return {
     resource: {
       name: serviceName,
       description: templateSettings.description,
       resourceType: models.EnumResourceType.Service,
+      codeGenerator: codeGenerator,
       project: {
         connect: {
           id: projectId,
@@ -161,6 +162,7 @@ export function prepareMessageBrokerObject(
     name: "My message broker",
     description: "",
     resourceType: models.EnumResourceType.MessageBroker,
+    codeGenerator: models.EnumCodeGenerator.NodeJs,
     project: {
       connect: {
         id: projectId,

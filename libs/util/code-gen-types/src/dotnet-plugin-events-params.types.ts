@@ -5,6 +5,7 @@ import {
   ModuleContainer,
   ModuleAction,
   entityActions,
+  ModuleActionsAndDtos,
 } from "./code-gen-types";
 import { EventParams } from "./plugins.types";
 
@@ -56,6 +57,36 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   entities: Entity[];
 }
 
+export interface CreateControllerModuleFileParams extends EventParams {
+  moduleActionsAndDtos: ModuleActionsAndDtos;
+  resourceName: string;
+  controllerModuleBasePath: string;
+}
+
+export interface CreateControllerBaseModuleFileParams extends EventParams {
+  moduleActionsAndDtos: ModuleActionsAndDtos;
+  resourceName: string;
+  controllerBaseModuleBasePath: string;
+}
+
+export interface CreateEntityModelParams extends EventParams {
+  entity: Entity;
+  entities: Entity[];
+  resourceName: string;
+  apisDir: string;
+}
+
+export interface CreateResourceDbContextFileParams extends EventParams {
+  entities: Entity[];
+  resourceName: string;
+  resourceDbContextPath: string;
+}
+
+export interface CreateSeedDevelopmentDataFileParams extends EventParams {
+  seedFilePath: string;
+  resourceName: string;
+}
+
 export interface CreateEntityGrpcControllerParams extends EventParams {
   entity: Entity;
 }
@@ -97,6 +128,7 @@ export interface CreateServerDockerComposeParams extends EventParams {
 }
 
 export interface CreateServerCsprojParams extends EventParams {
+  propertyGroup: Record<string, string>;
   packageReferences: {
     include: string;
     version: string;

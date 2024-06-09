@@ -127,6 +127,11 @@ export enum DotnetEventNames {
   CreateServerSecretsManager = "CreateServerSecretsManager",
   CreateEntityInterface = "CreateEntityInterface",
   CreateEntityExtensions = "CreateEntityExtensions",
+  CreateEntityModel = "CreateEntityModel",
+  CreateResourceDbContextFile = "CreateResourceDbContextFile",
+  CreateSeedDevelopmentDataFile = "CreateSeedDevelopmentDataFile",
+  CreateControllerModuleFile = "CreateControllerModuleFile",
+  CreateControllerBaseModuleFile = "CreateControllerBaseModuleFile",
 }
 
 export interface AmplicationPlugin {

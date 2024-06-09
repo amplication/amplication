@@ -70,7 +70,8 @@ import {
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
 import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
-import { UpdateCodeGeneratorNameArgs } from "./dto/UpdateCodeGeneratorNameArgs";
+
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -131,6 +132,30 @@ const RESOURCE_TYPE_TO_EVENT_TYPE: {
   [EnumResourceType.Service]: EnumEventType.ServiceCreate,
   [EnumResourceType.MessageBroker]: EnumEventType.MessageBrokerCreate,
   [EnumResourceType.ProjectConfiguration]: EnumEventType.UnknownEvent,
+};
+
+type CodeGeneratorName = "NodeJS" | "DotNET";
+
+const CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE: {
+  [key in EnumCodeGenerator]: {
+    codeGeneratorName: CodeGeneratorName;
+    license: BillingFeature;
+  };
+} = {
+  [EnumCodeGenerator.DotNet]: {
+    codeGeneratorName: "DotNET",
+    license: BillingFeature.CodeGeneratorDotNet,
+  },
+  [EnumCodeGenerator.NodeJs]: { codeGeneratorName: null, license: null },
+};
+
+export const CODE_GENERATOR_NAME_TO_ENUM: {
+  [key in CodeGeneratorName]: EnumCodeGenerator;
+} = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  NodeJS: EnumCodeGenerator.NodeJs,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  DotNET: EnumCodeGenerator.DotNet,
 };
 
 @Injectable()
@@ -318,9 +343,15 @@ export class ResourceService {
       });
     }
 
+    const { codeGenerator, ...rest } = args.data;
+
     const resource = await this.prisma.resource.create({
       data: {
-        ...args.data,
+        ...rest,
+        codeGeneratorName: await this.getAndValidateCodeGeneratorName(
+          codeGenerator,
+          user
+        ),
         gitRepository: gitRepository,
         gitRepositoryOverride:
           gitRepositoryToCreate?.isOverrideGitRepository ?? false,
@@ -384,44 +415,46 @@ export class ResourceService {
     });
   }
 
-  async updateCodeGeneratorName(
-    args: UpdateCodeGeneratorNameArgs,
+  async getAndValidateCodeGeneratorName(
+    codeGenerator: keyof typeof EnumCodeGenerator,
     user: User
-  ): Promise<Resource | null> {
-    const resource = await this.resource({
-      where: {
-        id: args.where.id,
-      },
-    });
+  ): Promise<string | null> {
+    const { codeGeneratorName, license } =
+      CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE[codeGenerator];
 
-    if (isEmpty(resource)) {
-      throw new Error(INVALID_RESOURCE_ID);
-    }
-
-    const codeGeneratorUpdate = await this.billingService.getBooleanEntitlement(
-      user.workspace.id,
-      BillingFeature.CodeGeneratorName
-    );
-
-    if (codeGeneratorUpdate && !codeGeneratorUpdate.hasAccess)
-      throw new AmplicationError(
-        "Feature Unavailable. Please upgrade your plan to access this feature."
+    if (license) {
+      const entitlement = await this.billingService.getBooleanEntitlement(
+        user.workspace.id,
+        license
       );
 
-    await this.analytics.trackWithContext({
-      properties: {
-        resourceId: resource.id,
-        projectId: resource.projectId,
-      },
-      event: EnumEventType.CodeGeneratorNameUpdate,
-    });
+      if (entitlement && !entitlement.hasAccess)
+        throw new AmplicationError(
+          `Feature Unavailable. Please upgrade your plan to use the code generator for ${codeGenerator}.`
+        );
+    }
 
-    return this.prisma.resource.update({
-      where: args.where,
-      data: {
-        codeGeneratorName: args.codeGeneratorName,
-      },
-    });
+    return codeGeneratorName;
+  }
+
+  //returns the default code generator name for the user
+  //if the user has access to the .NET code generator, it will return it
+  //otherwise, it will return the Node.js code generator
+  async getDefaultCodeGenerator(user: User): Promise<EnumCodeGenerator | null> {
+    const { license } =
+      CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE[EnumCodeGenerator.DotNet];
+
+    if (license) {
+      const entitlement = await this.billingService.getBooleanEntitlement(
+        user.workspace.id,
+        license
+      );
+
+      if (entitlement && entitlement.hasAccess) {
+        return EnumCodeGenerator.DotNet;
+      }
+    }
+    return EnumCodeGenerator.NodeJs;
   }
 
   /**
@@ -648,6 +681,8 @@ export class ResourceService {
     const adminUIPath = `${pathBase}-admin`;
     const serverPath = `${pathBase}-server`;
 
+    const codeGenerator = await this.getDefaultCodeGenerator(user);
+
     const args: CreateOneResourceArgs = {
       data: {
         name: serviceName,
@@ -657,6 +692,7 @@ export class ResourceService {
             id: projectId,
           },
         },
+        codeGenerator,
         resourceType: EnumResourceType.Service,
         serviceSettings: {
           adminUISettings: {
@@ -828,6 +864,8 @@ export class ResourceService {
             ? newService.name
             : `${serverPathWithoutLastFolder}${newService.name}`;
 
+        const codeGenerator = await this.getDefaultCodeGenerator(user);
+
         const args: CreateOneResourceArgs = {
           data: {
             name: newService.name,
@@ -837,6 +875,7 @@ export class ResourceService {
                 id: projectId,
               },
             },
+            codeGenerator,
             resourceType: EnumResourceType.Service,
             serviceSettings: {
               ...defaultServiceSettings,

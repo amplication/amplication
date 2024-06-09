@@ -1,6 +1,6 @@
 {
   "name": "@amplication/code-gen-types",
-  "version": "2.0.33-beta.12",
+  "version": "2.0.34",
   "description": "This library supplies all the contracts for Amplication Code Generation. The purpose is to make the contracts available for inclusion in plugins.",
   "main": "src/index.js",
   "author": {
@@ -13,7 +13,9 @@
     "json-schema": "^0.4.0",
     "prisma-schema-dsl-types": "^1.1.2",
     "tslib": "^2.6.2",
-    "type-fest": "^3.11.0",
-    "@amplication/csharp-ast": "^0.0.2"
+    "type-fest": "^3.11.0"
+  },
+  "peerDependencies": {
+    "@amplication/csharp-ast": "*"
   }
 }

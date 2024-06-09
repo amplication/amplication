@@ -102,7 +102,7 @@ const StructureType = {
 const DatabaseType = {
   properties: {
     databaseType: {
-      enum: ["postgres", "mongo", "mysql", "sqlserver"],
+      type: "string",
     },
   },
   required: ["databaseType"],
@@ -120,7 +120,7 @@ const TemplateType = {
 const Auth = {
   properties: {
     authType: {
-      enum: ["core", "no"],
+      type: "string",
     },
   },
   required: ["authType"],
@@ -151,9 +151,9 @@ export const ResourceInitialValues = {
   isGenerateCompleted: null,
   structureType: "Mono",
   baseDir: "./apps",
-  databaseType: "postgres",
+  databaseType: "db-postgres",
   templateType: "empty",
-  authType: "core",
+  authType: "auth-jwt",
   gitProvider: null,
   connectToDemoRepo: false,
 };

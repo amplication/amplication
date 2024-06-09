@@ -215,8 +215,6 @@ const useAssistant = () => {
             currentMessages.pop();
           }
 
-          setProcessingMessage(!message.completed);
-
           if (lastMessage.id === message.id) {
             lastMessage.text = message.snapshot;
             lastMessage.loading = false;

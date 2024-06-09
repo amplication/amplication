@@ -1,41 +1,38 @@
 import { Modal, Snackbar } from "@amplication/ui/design-system";
+import * as H from "history";
+import { kebabCase } from "lodash";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { match, useHistory } from "react-router-dom";
-import * as H from "history";
-import { formatError } from "../../util/error";
-import "./CreateServiceWizard.scss";
-import { AppRouteProps } from "../../routes/routesUtil";
+import usePlugins from "../../Plugins/hooks/usePlugins";
 import { AppContext } from "../../context/appContext";
+import { REACT_APP_PLUGIN_VERSION_USE_LATEST } from "../../env";
+import * as models from "../../models";
+import { AppRouteProps } from "../../routes/routesUtil";
+import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { expireCookie, getCookie } from "../../util/cookie";
+import { formatError } from "../../util/error";
+import { prepareServiceObject } from "../constants";
+import "./CreateServiceWizard.scss";
 import ServiceWizard, { WizardStep } from "./ServiceWizard";
-import CreateServiceWelcome from "./wizard-pages/CreateServiceWelcome";
-import CreateServiceName from "./wizard-pages/CreateServiceName";
-import CreateGithubSync from "./wizard-pages/CreateGithubSync";
 import CreateGenerationSettings from "./wizard-pages/CreateGenerationSettings";
-import CreateServiceRepository from "./wizard-pages/CreateServiceRepository";
-import CreateServiceDatabase from "./wizard-pages/CreateServiceDatabase";
+import CreateGithubSync from "./wizard-pages/CreateGithubSync";
 import CreateServiceAuth from "./wizard-pages/CreateServiceAuth";
+import CreateServiceCodeGeneration from "./wizard-pages/CreateServiceCodeGeneration";
+import CreateServiceDatabase from "./wizard-pages/CreateServiceDatabase";
+import CreateServiceName from "./wizard-pages/CreateServiceName";
+import { CreateServiceNextSteps } from "./wizard-pages/CreateServiceNextSteps";
+import CreateServiceRepository from "./wizard-pages/CreateServiceRepository";
+import CreateServiceTemplate from "./wizard-pages/CreateServiceTemplate";
+import CreateServiceWelcome from "./wizard-pages/CreateServiceWelcome";
+import { ResourceSettings } from "./wizard-pages/interfaces";
 import {
-  schemaArray,
   ResourceInitialValues,
   WizardProgressBarInterface,
-  wizardProgressBarSchema,
+  schemaArray,
   templateMapping,
+  wizardProgressBarSchema,
 } from "./wizardResourceSchema";
-import { ResourceSettings } from "./wizard-pages/interfaces";
-import CreateServiceCodeGeneration from "./wizard-pages/CreateServiceCodeGeneration";
-import { CreateServiceNextSteps } from "./wizard-pages/CreateServiceNextSteps";
-import { prepareServiceObject } from "../constants";
-import * as models from "../../models";
-import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import { useTracking } from "../../util/analytics";
-import { expireCookie, getCookie } from "../../util/cookie";
-import CreateServiceTemplate from "./wizard-pages/CreateServiceTemplate";
-import { kebabCase } from "lodash";
-import { Plugin } from "../../Plugins/hooks/usePlugins";
-import { useQuery } from "@apollo/client";
-import { GET_PLUGIN_VERSIONS_CATALOG } from "../../Plugins/queries/pluginsQueries";
-import ImgSvg from "./wizard-pages/ImgSvg";
-import { REACT_APP_PLUGIN_VERSION_USE_LATEST } from "../../env";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -141,12 +138,6 @@ const CREATE_SERVICE_STEPS: WizardStep[] = [
     stepName: "CreateServiceDatabase",
   },
   {
-    index: 6,
-    analyticsEventName:
-      AnalyticsEventNames.ViewServiceWizardStep_EntitiesSettings,
-    stepName: "CreateServiceTemplate",
-  },
-  {
     index: 7,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_AuthSettings,
     stepName: "CreateServiceAuth",
@@ -159,8 +150,6 @@ const CREATE_SERVICE_STEPS: WizardStep[] = [
   },
 ];
 
-export const PLUGIN_LOGO_BASE_URL =
-  "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 const CREATE_SERVICE_PATTERN = CREATE_SERVICE_STEPS.map((step) => step.index);
 
 const signupCookie = getCookie("signup");
@@ -185,76 +174,10 @@ const CreateServiceWizard: React.FC<Props> = ({
     createResult?.build || null
   );
 
-  const PostgresPng = ImgSvg({
-    image: `${PLUGIN_LOGO_BASE_URL}db-postgres.png`,
-    imgSize: "large",
-  });
-  const MongoPng = ImgSvg({
-    image: `${PLUGIN_LOGO_BASE_URL}db-mongo.png`,
-    imgSize: "large",
-  });
-  const MysqlPng = ImgSvg({
-    image: `${PLUGIN_LOGO_BASE_URL}db-mysql.png`,
-    imgSize: "large",
-  });
-  const MsSqlPng = ImgSvg({
-    image: `${PLUGIN_LOGO_BASE_URL}db-mssql.png`,
-    imgSize: "large",
-  });
+  const [currentCodeGenerator, setCurrentCodeGenerator] =
+    useState<models.EnumCodeGenerator>(models.EnumCodeGenerator.NodeJs);
 
-  const { data: pluginsVersionData } = useQuery<{
-    plugins: Plugin[];
-  }>(GET_PLUGIN_VERSIONS_CATALOG, {
-    context: {
-      clientName: "pluginApiHttpLink",
-    },
-    variables: {
-      where: {
-        deprecated: {
-          equals: null,
-        },
-      },
-    },
-  });
-
-  const authCorePlugin = pluginsVersionData?.plugins.find(
-    (x) => x.pluginId === "auth-core"
-  );
-
-  const authCoreVersion = pluginUseLatest
-    ? authCorePlugin?.versions.find((x) => x.isLatest)
-    : authCorePlugin?.versions[0];
-
-  const authJwtPlugin = pluginsVersionData?.plugins.find(
-    (x) => x.pluginId === "auth-jwt"
-  );
-
-  const authJwtVersion = pluginUseLatest
-    ? authJwtPlugin?.versions.find((x) => x.isLatest)
-    : authJwtPlugin?.versions[0];
-
-  const AUTH_PLUGINS = [
-    {
-      displayName: "Auth-core",
-      pluginId: "auth-core",
-      enabled: true,
-      npm: "@amplication/plugin-auth-core",
-      version: "latest",
-      resource: { connect: { id: "" } },
-      settings: authCoreVersion?.settings || JSON.parse("{}"),
-      configurations: authCoreVersion?.configurations || JSON.parse("{}"),
-    },
-    {
-      displayName: "Auth-jwt",
-      pluginId: "auth-jwt",
-      enabled: true,
-      npm: "@amplication/plugin-auth-jwt",
-      version: "latest",
-      resource: { connect: { id: "" } },
-      settings: authJwtVersion?.settings || JSON.parse("{}"),
-      configurations: authJwtVersion?.configurations || JSON.parse("{}"),
-    },
-  ];
+  const { pluginCatalog } = usePlugins(null, null, currentCodeGenerator);
 
   const isSignupUser = signupCookie === "1";
 
@@ -322,39 +245,33 @@ const CreateServiceWizard: React.FC<Props> = ({
   );
 
   const createResourcePlugins = useCallback(
-    (
-      databaseType: "postgres" | "mysql" | "mongo" | "sqlserver",
-      authType: "no" | "core"
-    ): models.PluginInstallationsCreateInput => {
-      const dbPlugin = pluginsVersionData?.plugins.find(
-        (x) => x.pluginId === `db-${databaseType}`
-      );
-
-      const dbLastVersion = pluginUseLatest
-        ? dbPlugin?.versions.find((x) => x.isLatest)
-        : dbPlugin?.versions[0];
-
-      const authCorePlugins = authType === "core" && AUTH_PLUGINS;
-
+    (pluginIds: string[]): models.PluginInstallationsCreateInput => {
       const data: models.PluginInstallationsCreateInput = {
-        plugins: [
-          {
-            displayName: databaseType,
-            pluginId: `db-${databaseType}`,
-            enabled: true,
-            npm: `@amplication/plugin-db-${databaseType}`,
-            version: "latest",
-            resource: { connect: { id: "" } },
-            settings: dbLastVersion?.settings || JSON.parse("{}"),
-            configurations: dbLastVersion?.configurations || JSON.parse("{}"),
-          },
-        ],
+        plugins: [],
       };
 
-      if (authCorePlugins) data.plugins.push(...authCorePlugins);
+      data.plugins = pluginIds.map((pluginId) => {
+        const plugin = pluginCatalog[pluginId];
+
+        const pluginVersion = pluginUseLatest
+          ? plugin?.versions.find((x) => x.isLatest)
+          : plugin?.versions[0];
+
+        return {
+          displayName: plugin.name,
+          pluginId: plugin.pluginId,
+          enabled: true,
+          npm: plugin.npm,
+          version: "latest",
+          resource: { connect: { id: "" } },
+          settings: pluginVersion?.settings || JSON.parse("{}"),
+          configurations: pluginVersion?.configurations || JSON.parse("{}"),
+        };
+      });
+
       return data;
     },
-    [pluginsVersionData]
+    [pluginCatalog]
   );
 
   const handleCloseWizard = useCallback(
@@ -414,6 +331,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         structureType,
         baseDir,
         connectToDemoRepo,
+        codeGenerator,
       } = values;
 
       const kebabCaseServiceName = kebabCase(serviceName);
@@ -427,7 +345,14 @@ const CreateServiceWizard: React.FC<Props> = ({
       const templateSettings = templateMapping[templateType];
 
       if (currentProject) {
-        const plugins = createResourcePlugins(databaseType, authType);
+        const pluginIds: string[] = [databaseType];
+        if (authType && authType !== "no") {
+          pluginIds.push(authType);
+          if (codeGenerator === models.EnumCodeGenerator.NodeJs) {
+            pluginIds.push("auth-core");
+          }
+        }
+        const plugins = createResourcePlugins(pluginIds);
         let currentGitRepository: models.ConnectGitRepositoryInput = null;
         if (gitRepositoryName) {
           currentGitRepository = {
@@ -454,13 +379,14 @@ const CreateServiceWizard: React.FC<Props> = ({
           structureType,
           databaseType,
           authType,
-          connectToDemoRepo
+          connectToDemoRepo,
+          codeGenerator
         );
         createStarterResource(resource, templateSettings.eventName);
       }
       expireCookie("signup");
     },
-    [pluginsVersionData]
+    [createResourcePlugins, createStarterResource, currentProject, defineUser]
   );
 
   return (
@@ -485,6 +411,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateServiceName
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          setCurrentCodeGenerator={setCurrentCodeGenerator}
         />
         <CreateGithubSync
           moduleClass={moduleClass}
@@ -500,12 +427,13 @@ const CreateServiceWizard: React.FC<Props> = ({
           trackWizardPageEvent={trackWizardPageEvent}
         />
         <CreateServiceDatabase
-          PostgresPng={PostgresPng}
-          MongoPng={MongoPng}
-          MysqlPng={MysqlPng}
-          MsSqlPng={MsSqlPng}
+          // PostgresPng={PostgresPng}
+          // MongoPng={MongoPng}
+          // MysqlPng={MysqlPng}
+          // MsSqlPng={MsSqlPng}
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          pluginCatalog={pluginCatalog}
         />
         <CreateServiceTemplate
           moduleClass={moduleClass}
@@ -515,6 +443,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateServiceAuth
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          pluginCatalog={pluginCatalog}
         />
         <CreateServiceCodeGeneration
           moduleClass="create-service-code-generation"
