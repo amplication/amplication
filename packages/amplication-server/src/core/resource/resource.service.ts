@@ -43,7 +43,6 @@ import {
   EntityService,
 } from "../entity/entity.service";
 import { EnvironmentService } from "../environment/environment.service";
-import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { ProjectService } from "../project/project.service";
@@ -797,13 +796,6 @@ export class ResourceService {
       );
 
       // 2. create new resources
-      const currentProjectConfiguration = await this.prisma.resource.findFirst({
-        where: {
-          projectId: projectId,
-          resourceType: EnumResourceType.ProjectConfiguration,
-        },
-      });
-
       const newResourcesMap = new Map<string, Resource>();
 
       for (const newService of newServices) {
