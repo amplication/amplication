@@ -5075,7 +5075,7 @@ export class CustomerServiceBase {
   ): Promise<PrismaCustomer | null> {
     return this.prisma.customer.findUnique(args);
   }
-  async createCustomer<T extends Prisma.CustomerCreateArgs>(
+  async createCustomer<T extends Omit<Prisma.CustomerCreateArgs, "select">>(
     args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>
   ): Promise<PrismaCustomer> {
     return this.prisma.customer.create<T>(args);
@@ -5790,7 +5790,7 @@ export class EmptyServiceBase {
   ): Promise<PrismaEmpty | null> {
     return this.prisma.empty.findUnique(args);
   }
-  async createEmpty<T extends Prisma.EmptyCreateArgs>(
+  async createEmpty<T extends Omit<Prisma.EmptyCreateArgs, "select">>(
     args: Prisma.SelectSubset<T, Prisma.EmptyCreateArgs>
   ): Promise<PrismaEmpty> {
     return this.prisma.empty.create<T>(args);
@@ -6992,7 +6992,7 @@ export class OrderServiceBase {
   ): Promise<PrismaOrder | null> {
     return this.prisma.order.findUnique(args);
   }
-  async createOrder<T extends Prisma.OrderCreateArgs>(
+  async createOrder<T extends Omit<Prisma.OrderCreateArgs, "select">>(
     args: Prisma.SelectSubset<T, Prisma.OrderCreateArgs>
   ): Promise<PrismaOrder> {
     return this.prisma.order.create<T>(args);
@@ -8113,7 +8113,9 @@ export class OrganizationServiceBase {
   ): Promise<PrismaOrganization | null> {
     return this.prisma.organization.findUnique(args);
   }
-  async createOrganization<T extends Prisma.OrganizationCreateArgs>(
+  async createOrganization<
+    T extends Omit<Prisma.OrganizationCreateArgs, "select">
+  >(
     args: Prisma.SelectSubset<T, Prisma.OrganizationCreateArgs>
   ): Promise<PrismaOrganization> {
     return this.prisma.organization.create<T>(args);
@@ -9185,7 +9187,7 @@ export class ProfileServiceBase {
   ): Promise<PrismaProfile | null> {
     return this.prisma.profile.findUnique(args);
   }
-  async createProfile<T extends Prisma.ProfileCreateArgs>(
+  async createProfile<T extends Omit<Prisma.ProfileCreateArgs, "select">>(
     args: Prisma.SelectSubset<T, Prisma.ProfileCreateArgs>
   ): Promise<PrismaProfile> {
     return this.prisma.profile.create<T>(args);
@@ -11286,7 +11288,7 @@ export class UserServiceBase {
   ): Promise<PrismaUser | null> {
     return this.prisma.user.findUnique(args);
   }
-  async createUser<T extends Prisma.UserCreateArgs>(
+  async createUser<T extends Omit<Prisma.UserCreateArgs, "select">>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
   ): Promise<PrismaUser> {
     return this.prisma.user.create<T>(args);
