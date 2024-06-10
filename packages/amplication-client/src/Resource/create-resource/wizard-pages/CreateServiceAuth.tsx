@@ -10,6 +10,9 @@ import { WizardStepProps } from "./interfaces";
 const NODE_AUTH_PLUGINS = ["auth-jwt", "auth-basic", "auth-keycloak"];
 const DOTNET_AUTH_PLUGINS = ["dotnet-auth-core-identity"];
 
+const OVERRIDE_PLUGIN_NAME = {
+  "dotnet-auth-core-identity": "ASP.NET Core Identity",
+};
 const OVERRIDE_PLUGIN_DESCRIPTION = {
   "auth-jwt": "Use JSON Web Token (JWT) authentication",
   "auth-basic": "Use basic (username-password) authentication",
@@ -77,7 +80,7 @@ const CreateServiceAuth: React.FC<Props> = ({ formik, pluginCatalog }) => {
               plugin && (
                 <LabelDescriptionSelector
                   name={plugin.pluginId}
-                  label={plugin.name}
+                  label={OVERRIDE_PLUGIN_NAME[plugin.pluginId] || plugin.name}
                   excludeImageWrapper
                   image={<PluginLogo plugin={plugin} />}
                   description={
