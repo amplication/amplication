@@ -570,6 +570,7 @@ enum EnumSubscriptionPlan {
   Pro
   Enterprise
   PreviewBreakTheMonolith
+  Essential
 }
 
 enum EnumSubscriptionStatus {

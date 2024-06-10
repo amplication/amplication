@@ -957,6 +957,7 @@ export enum EnumSchemaNames {
 
 export enum EnumSubscriptionPlan {
   Enterprise = 'Enterprise',
+  Essential = 'Essential',
   Free = 'Free',
   PreviewBreakTheMonolith = 'PreviewBreakTheMonolith',
   Pro = 'Pro'
