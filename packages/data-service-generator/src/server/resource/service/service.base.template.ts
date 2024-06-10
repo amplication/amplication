@@ -21,7 +21,7 @@ export class SERVICE_BASE {
   ): Promise<PRISMA_ENTITY | null> {
     return this.prisma.DELEGATE.findUnique(args);
   }
-  async CREATE_ENTITY_FUNCTION<T extends Prisma.CREATE_ARGS>(
+  async CREATE_ENTITY_FUNCTION<T extends Omit<Prisma.CREATE_ARGS, "select">>(
     args: Prisma.SelectSubset<T, Prisma.CREATE_ARGS>
   ): Promise<PRISMA_ENTITY> {
     return this.prisma.DELEGATE.create<T>(CREATE_ARGS_MAPPING);
