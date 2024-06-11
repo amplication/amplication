@@ -28,7 +28,11 @@ export const PluginTree = React.memo(
     const history = useHistory();
     const { currentWorkspace, currentProject, currentResource } =
       useContext(AppContext);
-    const { categories } = usePlugins(currentResource.id);
+    const { categories } = usePlugins(
+      currentResource.id,
+      null,
+      currentResource?.codeGenerator
+    );
 
     useLayoutEffect(() => {
       const urlArr = location.pathname.split("/");

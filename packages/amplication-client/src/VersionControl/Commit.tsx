@@ -26,6 +26,7 @@ import {
   LicenseIndicatorContainer,
   LicensedResourceType,
 } from "../Components/LicenseIndicatorContainer";
+import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
 
 const OPTIONS = [
   {
@@ -93,6 +94,8 @@ const Commit = ({
   const match = useRouteMatch<RouteMatchProps>();
   const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
   const formikRef = useRef(null);
+
+  const { dotNetGeneratorEnabled } = useAvailableCodeGenerators();
 
   const {
     setCommitRunning,
@@ -221,14 +224,16 @@ const Commit = ({
                   autoComplete="off"
                 />
               )}
-              <MultiStateToggle
-                className={`${CLASS_NAME}__technology-toggle`}
-                label=""
-                name="action_"
-                options={OPTIONS}
-                onChange={handleOnSelectLanguageChange}
-                selectedValue={"node"}
-              />
+              {!dotNetGeneratorEnabled && (
+                <MultiStateToggle
+                  className={`${CLASS_NAME}__technology-toggle`}
+                  label=""
+                  name="action_"
+                  options={OPTIONS}
+                  onChange={handleOnSelectLanguageChange}
+                  selectedValue={"node"}
+                />
+              )}
               <LicenseIndicatorContainer
                 featureId={BillingFeature.BlockBuild}
                 licensedResourceType={LicensedResourceType.Project}

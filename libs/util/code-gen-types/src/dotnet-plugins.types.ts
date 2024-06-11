@@ -104,7 +104,6 @@ export enum DotnetEventNames {
   CreateEntityService = "CreateEntityService",
   CreateEntityServiceBase = "CreateEntityServiceBase",
   CreateServerDockerCompose = "CreateServerDockerCompose",
-  CreateServerDockerComposeDev = "CreateServerDockerComposeDev",
   CreatePrismaSchema = "CreatePrismaSchema",
   CreateServerCsproj = "CreateServerCsproj",
   CreateServerAppsettings = "CreateServerAppsettings",
@@ -128,6 +127,11 @@ export enum DotnetEventNames {
   CreateServerSecretsManager = "CreateServerSecretsManager",
   CreateEntityInterface = "CreateEntityInterface",
   CreateEntityExtensions = "CreateEntityExtensions",
+  CreateEntityModel = "CreateEntityModel",
+  CreateResourceDbContextFile = "CreateResourceDbContextFile",
+  CreateSeedDevelopmentDataFile = "CreateSeedDevelopmentDataFile",
+  CreateControllerModuleFile = "CreateControllerModuleFile",
+  CreateControllerBaseModuleFile = "CreateControllerBaseModuleFile",
 }
 
 export interface AmplicationPlugin {

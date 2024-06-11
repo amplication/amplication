@@ -126,7 +126,8 @@ const FUNCTIONS_CACHE_MAP: {
 };
 
 const useAssistant = () => {
-  const { currentProject, currentResource, addBlock } = useAppContext();
+  const { currentProject, currentResource, addBlock, commitUtils } =
+    useAppContext();
 
   const apolloClient = useApolloClient();
 
@@ -182,6 +183,14 @@ const useAssistant = () => {
             addBlock("blockId");
           }
 
+          if (
+            functionExecuted ===
+            models.EnumAssistantFunctions.CommitProjectPendingChanges
+          ) {
+            commitUtils.refetchCommitsData(true);
+            commitUtils.refetchLastCommit();
+          }
+
           const queries = FUNCTIONS_CACHE_MAP[functionExecuted].queries;
           if (queries) {
             apolloClient.refetchQueries({
@@ -205,8 +214,6 @@ const useAssistant = () => {
           if (lastMessage.id.startsWith(TEMP_MESSAGE_PREFIX)) {
             currentMessages.pop();
           }
-
-          setProcessingMessage(!message.completed);
 
           if (lastMessage.id === message.id) {
             lastMessage.text = message.snapshot;

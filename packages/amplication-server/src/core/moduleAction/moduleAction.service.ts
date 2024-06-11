@@ -175,7 +175,6 @@ export class ModuleActionService extends BlockTypeService<
       this.billingService,
       this.logger
     );
-
     //todo: validate that only the enabled field can be updated for default actions
     this.validateModuleActionName(args.data.name);
 
@@ -198,13 +197,25 @@ export class ModuleActionService extends BlockTypeService<
           "Cannot update the name of a default Action for entity."
         );
       }
-    }
+      if (args.data.inputType !== undefined) {
+        throw new AmplicationError(
+          "Cannot update the input type of a default Action for entity."
+        );
+      }
 
-    await this.moduleDtoService.validateTypes(
-      existingAction.resourceId,
-      [args.data.inputType, args.data.outputType],
-      UNSUPPORTED_TYPES
-    );
+      if (args.data.outputType !== undefined) {
+        throw new AmplicationError(
+          "Cannot update the output type of a default Action for entity."
+        );
+      }
+    } else {
+      if (args.data.inputType && args.data.outputType)
+        await this.moduleDtoService.validateTypes(
+          existingAction.resourceId,
+          [args.data.inputType, args.data.outputType],
+          UNSUPPORTED_TYPES
+        );
+    }
 
     const subscription = await this.billingService.getSubscription(
       user.workspace?.id

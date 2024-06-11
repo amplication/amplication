@@ -10,23 +10,22 @@ import {
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useContext, useMemo } from "react";
 import { Link, match, useLocation } from "react-router-dom";
+import { BackNavigation } from "../Components/BackNavigation";
 import { TruncatedId } from "../Components/TruncatedId";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
+import { resourceThemeMap } from "../Resource/constants";
+import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { truncateId } from "../util/truncatedId";
 import ActionLog from "./ActionLog";
-import "./BuildPage.scss";
-import { GET_COMMIT } from "./PendingChangesPage";
-import useBuildWatchStatus, { GET_BUILD } from "./useBuildWatchStatus";
-import { BackNavigation } from "../Components/BackNavigation";
-import { AppContext } from "../context/appContext";
-import { resourceThemeMap } from "../Resource/constants";
-import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import BuildGitLink from "./BuildGitLink";
+import "./BuildPage.scss";
+import useBuildWatchStatus, { GET_BUILD } from "./useBuildWatchStatus";
 
 export type LogData = {
   action: models.Action;
@@ -51,18 +50,11 @@ const BuildPage = ({ match, buildId }: Props) => {
 
   const location = useLocation();
 
-  const [getCommit, { data: commitData }] = useLazyQuery<{
-    commit: models.Commit;
-  }>(GET_COMMIT);
-
   const { data: buildData, error: errorLoading } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
     variables: {
       buildId: build,
-    },
-    onCompleted: (data) => {
-      getCommit({ variables: { commitId: data.build.commitId } });
     },
   });
 
@@ -110,7 +102,7 @@ const BuildPage = ({ match, buildId }: Props) => {
           <CircularProgress centerToParent />
         ) : (
           <>
-            {commitData && (
+            {buildData && (
               <FlexItem
                 direction={EnumFlexDirection.Column}
                 className={`${CLASS_NAME}__header`}
@@ -121,7 +113,7 @@ const BuildPage = ({ match, buildId }: Props) => {
                     label={
                       <>
                         &nbsp;Return to Commit&nbsp;
-                        <TruncatedId id={commitData.commit.id} />
+                        <TruncatedId id={buildData.build.commitId} />
                       </>
                     }
                     iconSize="xsmall"
@@ -164,7 +156,7 @@ const BuildPage = ({ match, buildId }: Props) => {
                       <h3>
                         Commit&nbsp;
                         <span>
-                          <TruncatedId id={commitData.commit.id} />
+                          <TruncatedId id={buildData.build.commitId} />
                         </span>
                       </h3>
                     </>

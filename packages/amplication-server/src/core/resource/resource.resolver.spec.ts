@@ -25,6 +25,7 @@ import { UserService } from "../user/user.service";
 import { ResourceCreateInput } from "./dto";
 import { ResourceResolver } from "./resource.resolver";
 import { ResourceService } from "./resource.service";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -534,6 +535,7 @@ describe("ResourceResolver", () => {
       description: EXAMPLE_DESCRIPTION,
       resourceType: EnumResourceType.Service,
       project: { connect: { id: EXAMPLE_PROJECT_ID } },
+      codeGenerator: EnumCodeGenerator.NodeJs,
     };
     const res = await apolloClient.executeOperation({
       query: CREATE_SERVICE_MUTATION,

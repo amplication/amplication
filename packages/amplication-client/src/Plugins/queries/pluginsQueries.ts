@@ -87,8 +87,8 @@ export const UPDATE_PLUGIN_ORDER = gql`
 `;
 
 export const GET_PLUGIN_VERSIONS_CATALOG = gql`
-  query Plugins($where: PluginVersionWhereInput) {
-    plugins {
+  query Plugins($where: PluginVersionWhereInput, $codeGeneratorName: String!) {
+    plugins(where: { codeGeneratorName: { equals: $codeGeneratorName } }) {
       id
       pluginId
       name

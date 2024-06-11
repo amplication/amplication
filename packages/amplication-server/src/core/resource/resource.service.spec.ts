@@ -67,6 +67,7 @@ import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { ActionService } from "../action/action.service";
 import { UserActionService } from "../userAction/userAction.service";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -126,6 +127,7 @@ const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   project: { connect: { id: EXAMPLE_PROJECT_ID } },
   serviceSettings: EXAMPLE_SERVICE_SETTINGS,
   gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+  codeGenerator: EnumCodeGenerator.NodeJs,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -473,9 +475,12 @@ const blockServiceReleaseLockMock = jest.fn(async () => EXAMPLE_BLOCK);
 
 const USER_ENTITY_MOCK = {
   id: "USER_ENTITY_MOCK_ID",
+  name: USER_ENTITY_NAME,
 };
 
-const entityServiceCreateDefaultEntitiesMock = jest.fn();
+const entityServiceCreateDefaultUserEntityMock = jest.fn(() => {
+  return [USER_ENTITY_MOCK];
+});
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
 const entityServiceBulkCreateFields = jest.fn();
@@ -544,6 +549,9 @@ describe("ResourceService", () => {
             getNumericEntitlement: jest.fn(() => {
               return {};
             }),
+            getBooleanEntitlement: jest.fn(() => {
+              return {};
+            }),
             reportUsage: jest.fn(() => {
               return {};
             }),
@@ -590,7 +598,7 @@ describe("ResourceService", () => {
             createFieldByDisplayName: entityServiceCreateFieldByDisplayNameMock,
             createOneEntity: entityServiceCreateOneEntityMock,
             releaseLock: entityServiceReleaseLockMock,
-            createDefaultEntities: entityServiceCreateDefaultEntitiesMock,
+            createDefaultUserEntity: entityServiceCreateDefaultUserEntityMock,
             getChangedEntities: entityServiceGetChangedEntitiesMock,
             findFirst: entityServiceFindFirstMock,
             bulkCreateEntities: entityServiceBulkCreateEntities,
@@ -683,6 +691,7 @@ describe("ResourceService", () => {
           color: DEFAULT_RESOURCE_COLORS.service,
           resourceType: EnumResourceType.Service,
           wizardType: "create resource",
+          codeGenerator: EnumCodeGenerator.NodeJs,
           project: {
             connect: {
               id: EXAMPLE_PROJECT_ID,
@@ -698,13 +707,13 @@ describe("ResourceService", () => {
       await service.createService(
         createResourceArgs.args,
         createResourceArgs.user,
-        null,
+        false,
         true
       )
     ).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
-    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(1);
-    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledWith(
+    expect(entityServiceCreateDefaultUserEntityMock).toBeCalledTimes(1);
+    expect(entityServiceCreateDefaultUserEntityMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID,
       EXAMPLE_USER
     );
@@ -724,6 +733,7 @@ describe("ResourceService", () => {
             description: EXAMPLE_RESOURCE_DESCRIPTION,
             color: DEFAULT_RESOURCE_COLORS.service,
             resourceType: EnumResourceType.Service,
+            codeGenerator: EnumCodeGenerator.NodeJs,
             wizardType: "create resource",
             project: {
               connect: {
@@ -740,12 +750,12 @@ describe("ResourceService", () => {
       const nonDefaultPluginsToInstall = [];
       const requireAuthenticationEntity = true;
 
-      const result = await service.createPreviewService({
-        args: createResourceArgs.args,
+      const result = await service.createPreviewService(
+        createResourceArgs.args,
         user,
         nonDefaultPluginsToInstall,
-        requireAuthenticationEntity,
-      });
+        requireAuthenticationEntity
+      );
 
       expect(result).toEqual(EXAMPLE_RESOURCE);
       expect(prismaResourceCreateMock).toBeCalledTimes(1);
@@ -764,6 +774,7 @@ describe("ResourceService", () => {
           description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: DEFAULT_RESOURCE_COLORS.service,
           resourceType: EnumResourceType.Service,
+          codeGenerator: EnumCodeGenerator.NodeJs,
           wizardType: "create resource",
           project: {
             connect: {
@@ -796,7 +807,7 @@ describe("ResourceService", () => {
       )
     );
     expect(prismaResourceCreateMock).toBeCalledTimes(0);
-    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(0);
+    expect(entityServiceCreateDefaultUserEntityMock).toBeCalledTimes(0);
   });
 
   it("should fail to create resource with entities with a reserved name", async () => {

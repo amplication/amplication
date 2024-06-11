@@ -1,5 +1,3 @@
-import { useContext } from "react";
-import classNames from "classnames";
 import {
   Button,
   EnumButtonStyle,
@@ -7,19 +5,22 @@ import {
   EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Text,
 } from "@amplication/ui/design-system";
-import { ClickableId } from "../Components/ClickableId";
-import "./LastCommit.scss";
-import { AppContext } from "../context/appContext";
-import { Link } from "react-router-dom";
+import classNames from "classnames";
 import { formatDistanceToNow } from "date-fns";
-import { useCommitStatus } from "./hooks/useCommitStatus";
-import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useContext } from "react";
+import { Link } from "react-router-dom";
+import { ClickableId } from "../Components/ClickableId";
+import { AppContext } from "../context/appContext";
 import { Commit } from "../models";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
+import "./LastCommit.scss";
+import { useCommitStatus } from "./hooks/useCommitStatus";
 
 type Props = {
   lastCommit: Commit;
@@ -31,7 +32,7 @@ const LastCommit = ({ lastCommit }: Props) => {
   const { currentWorkspace, currentProject, commitRunning } =
     useContext(AppContext);
 
-  const { commitStatus } = useCommitStatus(lastCommit);
+  const { commitStatus, commitLastError } = useCommitStatus(lastCommit);
   if (!lastCommit) return null;
 
   const ClickableCommitId = (
@@ -59,7 +60,30 @@ const LastCommit = ({ lastCommit }: Props) => {
         >
           <Text textStyle={EnumTextStyle.H4}>Last Commit</Text>
         </FlexItem>
-
+        {commitLastError && (
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            margin={EnumFlexItemMargin.Top}
+          >
+            <Link
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${lastCommit.id}`}
+            >
+              <Text
+                textStyle={EnumTextStyle.Tag}
+                textColor={EnumTextColor.ThemeRed}
+              >
+                {commitLastError}
+              </Text>{" "}
+              <Text
+                textStyle={EnumTextStyle.Tag}
+                textColor={EnumTextColor.White}
+                underline
+              >
+                View details
+              </Text>
+            </Link>
+          </FlexItem>
+        )}
         <FlexItem
           direction={EnumFlexDirection.Column}
           margin={EnumFlexItemMargin.Both}

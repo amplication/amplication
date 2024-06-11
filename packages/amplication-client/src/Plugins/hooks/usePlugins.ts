@@ -1,48 +1,16 @@
-import {
-  ApolloError,
-  QueryOptions,
-  useMutation,
-  useQuery,
-} from "@apollo/client";
-import {
-  GET_PLUGIN_INSTALLATIONS,
-  CREATE_PLUGIN_INSTALLATION,
-  UPDATE_PLUGIN_INSTALLATION,
-  GET_PLUGIN_ORDER,
-  UPDATE_PLUGIN_ORDER,
-  GET_PLUGIN_INSTALLATION,
-  GET_PLUGIN_VERSIONS_CATALOG,
-} from "../queries/pluginsQueries";
-import * as models from "../../models";
-import { keyBy } from "lodash";
+import { QueryOptions, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../../context/appContext";
-import { LATEST_VERSION_TAG } from "../constant";
-
-export type PluginVersion = {
-  version: string;
-  isLatest: boolean;
-  settings: Record<string, unknown>;
-  configurations: string;
-  id: string;
-  pluginId: string;
-};
-
-export type Plugin = {
-  id: string;
-  pluginId: string;
-  name: string;
-  description: string;
-  repo: string;
-  npm: string;
-  icon: string;
-  github: string;
-  website: string;
-  categories: string[];
-  type: string;
-  taggedVersions: { [tag: string]: string };
-  versions: PluginVersion[];
-};
+import * as models from "../../models";
+import {
+  CREATE_PLUGIN_INSTALLATION,
+  GET_PLUGIN_INSTALLATION,
+  GET_PLUGIN_INSTALLATIONS,
+  GET_PLUGIN_ORDER,
+  UPDATE_PLUGIN_INSTALLATION,
+  UPDATE_PLUGIN_ORDER,
+} from "../queries/pluginsQueries";
+import usePluginCatalog from "./usePluginCatalog";
 
 export interface SortedPluginInstallation extends models.PluginInstallation {
   categories?: string[];
@@ -67,36 +35,19 @@ const setPluginOrderMap = (pluginOrder: models.PluginOrderItem[]) => {
   );
 };
 
-const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
+const usePlugins = (
+  resourceId: string,
+  pluginInstallationId?: string,
+  codeGenerator?: models.EnumCodeGenerator
+) => {
+  const { pluginCatalog, pluginCategories } = usePluginCatalog(
+    codeGenerator || models.EnumCodeGenerator.NodeJs
+  );
+
   const [pluginOrderObj, setPluginOrderObj] = useState<{
     [key: string]: number;
   }>();
-  const [pluginCategories, setPluginCategories] = useState<{
-    categories: string[];
-    pluginCategoriesMap: { [key: string]: string[] };
-  }>({ categories: [], pluginCategoriesMap: {} });
-  const [pluginsVersion, setPluginsVersion] = useState<{
-    [key: string]: Plugin;
-  }>({});
-  const {
-    data: pluginsVersionData,
-    loading: loadingPluginsVersionData,
-    error: errorPluginsVersionData,
-  } = useQuery<{
-    plugins: Plugin[];
-  }>(GET_PLUGIN_VERSIONS_CATALOG, {
-    skip: !pluginsVersion,
-    context: {
-      clientName: "pluginApiHttpLink",
-    },
-    variables: {
-      where: {
-        deprecated: {
-          equals: null,
-        },
-      },
-    },
-  });
+
   const {
     addBlock,
     pendingChanges,
@@ -166,59 +117,6 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   });
 
   useEffect(() => {
-    if (!pluginsVersionData || loadingPluginsVersionData) return;
-
-    const categoriesMap = {};
-    const pluginCategoriesHash = {};
-    const pluginsWithLatestVersion = pluginsVersionData.plugins.map(
-      (plugin) => {
-        const categories = plugin.categories;
-        categories.forEach((category) => {
-          if (!Object.prototype.hasOwnProperty.call(categoriesMap, category))
-            categoriesMap[category] = 1;
-
-          return;
-        });
-        pluginCategoriesHash[plugin.pluginId] = categories;
-        const latestVersion = plugin.versions.find(
-          (pluginVersion) => pluginVersion.isLatest
-        );
-        if (latestVersion) {
-          return {
-            ...plugin,
-            versions: [
-              {
-                ...latestVersion,
-                id: `${latestVersion.id}-${LATEST_VERSION_TAG}`,
-                version: LATEST_VERSION_TAG,
-              },
-              ...plugin.versions,
-            ],
-          };
-        } else return plugin;
-      }
-    );
-
-    setPluginCategories({
-      categories: Object.keys(categoriesMap),
-      pluginCategoriesMap: pluginCategoriesHash,
-    });
-
-    const sortedPlugins = keyBy(
-      pluginsWithLatestVersion,
-      (plugin) => plugin.pluginId
-    );
-
-    setPluginsVersion(sortedPlugins);
-  }, [pluginsVersionData, loadingPluginsVersionData]);
-
-  useEffect(() => {
-    if (!errorPluginsVersionData) return;
-
-    setPluginsVersion({});
-  }, [errorPluginsVersionData]);
-
-  useEffect(() => {
     if (!pluginOrder || loadingPluginOrder) return;
 
     const setPluginOrder = setPluginOrderMap(pluginOrder?.pluginOrder.order);
@@ -231,7 +129,13 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     setResetPendingChangesIndicator(false);
     refetchPluginInstallations();
     refetchPluginOrder();
-  }, [pendingChanges, resetPendingChangesIndicator]);
+  }, [
+    pendingChanges,
+    refetchPluginInstallations,
+    refetchPluginOrder,
+    resetPendingChangesIndicator,
+    setResetPendingChangesIndicator,
+  ]);
 
   useEffect(() => {
     if (pluginOrderError) {
@@ -243,7 +147,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     if (
       !pluginOrder ||
       !pluginInstallations ||
-      !pluginsVersionData ||
+      !pluginCatalog ||
       loadingPluginInstallations
     )
       return undefined;
@@ -265,11 +169,11 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
       return installedPlugin;
     }) as unknown as models.PluginInstallation[];
   }, [
-    loadingPluginInstallations,
-    pluginInstallations,
     pluginOrder,
-    pluginsVersionData,
-    pluginCategories,
+    pluginInstallations,
+    pluginCatalog,
+    loadingPluginInstallations,
+    pluginCategories?.pluginCategoriesMap,
   ]);
 
   const [updatePluginOrder, { error: UpdatePluginOrderError }] = useMutation<{
@@ -344,7 +248,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     createPluginInstallation,
     createError,
     categories: pluginCategories.categories,
-    pluginCatalog: pluginsVersion,
+    pluginCatalog,
     onPluginDropped,
     pluginOrderObj,
     updatePluginOrder,

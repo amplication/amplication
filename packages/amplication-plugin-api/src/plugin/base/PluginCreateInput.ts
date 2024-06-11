@@ -30,10 +30,11 @@ class PluginCreateInput {
 
   @ApiProperty({
     required: true,
+    type: String,
   })
-  @IsJSONValue()
-  @Field(() => GraphQLJSON)
-  codeGeneratorNames!: InputJsonValue;
+  @IsString()
+  @Field(() => String)
+  codeGeneratorName!: string;
 
   @ApiProperty({
     required: false,

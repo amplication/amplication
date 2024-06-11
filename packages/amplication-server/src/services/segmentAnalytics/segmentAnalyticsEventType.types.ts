@@ -39,7 +39,6 @@ export enum EnumEventType {
   CodeGenerationError = "codeGenerationError",
 
   CodeGeneratorVersionUpdate = "codeGeneratorVersionUpdate",
-  CodeGeneratorNameUpdate = "codeGeneratorNameUpdate",
 
   RedeemCoupon = "RedeemCoupon",
 

@@ -7,6 +7,7 @@ import {
   CreateEntityGrpcControllerBaseParams,
   CreateEntityGrpcControllerParams,
   CreateEntityInterfaceParams,
+  CreateEntityModelParams,
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
   CreateMessageBrokerClientOptionsFactoryParams,
@@ -19,13 +20,16 @@ import {
   CreateServerAppsettingsParams,
   CreateServerAuthParams,
   CreateServerCsprojParams,
-  CreateServerDockerComposeDevParams,
   CreateServerDockerComposeParams,
   CreateServerGitIgnoreParams,
   CreateServerParams,
   CreateServerSecretsManagerParams,
   CreateSwaggerParams,
   LoadStaticFilesParams,
+  CreateResourceDbContextFileParams,
+  CreateSeedDevelopmentDataFileParams,
+  CreateControllerModuleFileParams,
+  CreateControllerBaseModuleFileParams,
 } from "./dotnet-plugin-events-params.types";
 import { DotnetEventNames, PluginEventType } from "./dotnet-plugins.types";
 import { CodeBlock, Interface } from "@amplication/csharp-ast";
@@ -55,10 +59,6 @@ export type DotnetEvents = {
     CreateServerDockerComposeParams,
     CodeBlock
   >;
-  [DotnetEventNames.CreateServerDockerComposeDev]?: PluginEventType<
-    CreateServerDockerComposeDevParams,
-    CodeBlock
-  >;
   [DotnetEventNames.CreateMessageBroker]?: PluginEventType<CreateMessageBrokerParams>;
   [DotnetEventNames.CreateMessageBrokerTopicsEnum]?: PluginEventType<CreateMessageBrokerTopicsEnumParams>;
   [DotnetEventNames.CreateMessageBrokerClientOptionsFactory]?: PluginEventType<CreateMessageBrokerClientOptionsFactoryParams>;
@@ -72,11 +72,19 @@ export type DotnetEvents = {
   [DotnetEventNames.CreateSeed]?: PluginEventType<CreateSeedParams>;
   [DotnetEventNames.CreateEntityControllerToManyRelationMethods]?: PluginEventType<CreateEntityControllerToManyRelationMethodsParams>;
   [DotnetEventNames.CreateDTOs]?: PluginEventType<CreateDTOsParams>;
-  [DotnetEventNames.LoadStaticFiles]?: PluginEventType<LoadStaticFilesParams>;
+  [DotnetEventNames.LoadStaticFiles]?: PluginEventType<
+    LoadStaticFilesParams,
+    CodeBlock
+  >;
   [DotnetEventNames.CreateServerSecretsManager]?: PluginEventType<CreateServerSecretsManagerParams>;
   [DotnetEventNames.CreateEntityInterface]?: PluginEventType<
     CreateEntityInterfaceParams,
     Interface
   >;
   [DotnetEventNames.CreateEntityExtensions]?: PluginEventType<CreateEntityExtensionsParams>;
+  [DotnetEventNames.CreateEntityModel]?: PluginEventType<CreateEntityModelParams>;
+  [DotnetEventNames.CreateResourceDbContextFile]?: PluginEventType<CreateResourceDbContextFileParams>;
+  [DotnetEventNames.CreateSeedDevelopmentDataFile]?: PluginEventType<CreateSeedDevelopmentDataFileParams>;
+  [DotnetEventNames.CreateControllerModuleFile]?: PluginEventType<CreateControllerModuleFileParams>;
+  [DotnetEventNames.CreateControllerBaseModuleFile]?: PluginEventType<CreateControllerBaseModuleFileParams>;
 };
