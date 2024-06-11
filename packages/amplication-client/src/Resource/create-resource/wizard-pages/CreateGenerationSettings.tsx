@@ -19,7 +19,17 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
   trackWizardPageEvent,
 }) => {
   useEffect(() => {
-    if (!formik.values.generateGraphQL) {
+    if (
+      formik.values.codeGenerator !== "NestJS" &&
+      formik.values.generateGraphQL &&
+      formik.values.generateAdminUI
+    ) {
+      formik.setValues({
+        ...formik.values,
+        generateGraphQL: false,
+        generateAdminUI: false,
+      });
+    } else if (!formik.values.generateGraphQL) {
       formik.values.generateAdminUI &&
         formik.setValues({
           ...formik.values,
@@ -44,6 +54,7 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
           <ImageLabelToggle
             name="generateGraphQL"
             image={graphql}
+            disabled={formik.values.codeGenerator !== "NestJS"}
             label="GraphQL API"
             value={formik.values.generateGraphQL}
             onChange={formik.setFieldValue}
@@ -58,7 +69,10 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
           <ImageLabelToggle
             name="generateAdminUI"
             image={adminUI}
-            disabled={!formik.values.generateGraphQL}
+            disabled={
+              !formik.values.generateGraphQL &&
+              formik.values.codeGenerator !== "NestJS"
+            }
             label="Admin UI"
             value={formik.values.generateAdminUI}
             onChange={formik.setFieldValue}
