@@ -301,11 +301,9 @@ describe("Data Service Generator", () => {
             });
             expect(res.status === STATUS_CREATED);
             customer = await res.json();
-            const expectedCustomer = EXAMPLE_CUSTOMER;
-            delete expectedCustomer.organization;
-            expect(customer).toStrictEqual(
+            expect(customer).toEqual(
               expect.objectContaining({
-                ...expectedCustomer,
+                ...EXAMPLE_CUSTOMER,
                 id: expect.any(String),
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),

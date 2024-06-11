@@ -5125,6 +5125,34 @@ export class CustomerControllerBase {
             }
           : undefined,
       },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
   }
 
@@ -5631,28 +5659,28 @@ export class CustomerServiceBase {
     return this.prisma.customer.count(args);
   }
 
-  async customers<T extends Prisma.CustomerFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
+  async customers(
+    args: Prisma.CustomerFindManyArgs
   ): Promise<PrismaCustomer[]> {
-    return this.prisma.customer.findMany<Prisma.CustomerFindManyArgs>(args);
+    return this.prisma.customer.findMany(args);
   }
-  async customer<T extends Prisma.CustomerFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerFindUniqueArgs>
+  async customer(
+    args: Prisma.CustomerFindUniqueArgs
   ): Promise<PrismaCustomer | null> {
     return this.prisma.customer.findUnique(args);
   }
-  async createCustomer<T extends Omit<Prisma.CustomerCreateArgs, "select">>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>
+  async createCustomer(
+    args: Prisma.CustomerCreateArgs
   ): Promise<PrismaCustomer> {
-    return this.prisma.customer.create<T>(args);
+    return this.prisma.customer.create(args);
   }
-  async updateCustomer<T extends Prisma.CustomerUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerUpdateArgs>
+  async updateCustomer(
+    args: Prisma.CustomerUpdateArgs
   ): Promise<PrismaCustomer> {
-    return this.prisma.customer.update<T>(args);
+    return this.prisma.customer.update(args);
   }
-  async deleteCustomer<T extends Prisma.CustomerDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerDeleteArgs>
+  async deleteCustomer(
+    args: Prisma.CustomerDeleteArgs
   ): Promise<PrismaCustomer> {
     return this.prisma.customer.delete(args);
   }
@@ -6477,6 +6505,11 @@ export class EmptyControllerBase {
   async createEmpty(@common.Body() data: EmptyCreateInput): Promise<Empty> {
     return await this.service.createEmpty({
       data: data,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
   }
 
@@ -6677,29 +6710,19 @@ export class EmptyServiceBase {
     return this.prisma.empty.count(args);
   }
 
-  async empties<T extends Prisma.EmptyFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
-  ): Promise<PrismaEmpty[]> {
-    return this.prisma.empty.findMany<Prisma.EmptyFindManyArgs>(args);
+  async empties(args: Prisma.EmptyFindManyArgs): Promise<PrismaEmpty[]> {
+    return this.prisma.empty.findMany(args);
   }
-  async empty<T extends Prisma.EmptyFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyFindUniqueArgs>
-  ): Promise<PrismaEmpty | null> {
+  async empty(args: Prisma.EmptyFindUniqueArgs): Promise<PrismaEmpty | null> {
     return this.prisma.empty.findUnique(args);
   }
-  async createEmpty<T extends Omit<Prisma.EmptyCreateArgs, "select">>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyCreateArgs>
-  ): Promise<PrismaEmpty> {
-    return this.prisma.empty.create<T>(args);
+  async createEmpty(args: Prisma.EmptyCreateArgs): Promise<PrismaEmpty> {
+    return this.prisma.empty.create(args);
   }
-  async updateEmpty<T extends Prisma.EmptyUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyUpdateArgs>
-  ): Promise<PrismaEmpty> {
-    return this.prisma.empty.update<T>(args);
+  async updateEmpty(args: Prisma.EmptyUpdateArgs): Promise<PrismaEmpty> {
+    return this.prisma.empty.update(args);
   }
-  async deleteEmpty<T extends Prisma.EmptyDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyDeleteArgs>
-  ): Promise<PrismaEmpty> {
+  async deleteEmpty(args: Prisma.EmptyDeleteArgs): Promise<PrismaEmpty> {
     return this.prisma.empty.delete(args);
   }
 }
@@ -7953,6 +7976,20 @@ export class OrderControllerBase {
           connect: data.customer,
         },
       },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
     });
   }
 
@@ -8264,29 +8301,19 @@ export class OrderServiceBase {
     return this.prisma.order.count(args);
   }
 
-  async orders<T extends Prisma.OrderFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
-  ): Promise<PrismaOrder[]> {
-    return this.prisma.order.findMany<Prisma.OrderFindManyArgs>(args);
+  async orders(args: Prisma.OrderFindManyArgs): Promise<PrismaOrder[]> {
+    return this.prisma.order.findMany(args);
   }
-  async order<T extends Prisma.OrderFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderFindUniqueArgs>
-  ): Promise<PrismaOrder | null> {
+  async order(args: Prisma.OrderFindUniqueArgs): Promise<PrismaOrder | null> {
     return this.prisma.order.findUnique(args);
   }
-  async createOrder<T extends Omit<Prisma.OrderCreateArgs, "select">>(
-    args: Prisma.SelectSubset<T, Prisma.OrderCreateArgs>
-  ): Promise<PrismaOrder> {
-    return this.prisma.order.create<T>(args);
+  async createOrder(args: Prisma.OrderCreateArgs): Promise<PrismaOrder> {
+    return this.prisma.order.create(args);
   }
-  async updateOrder<T extends Prisma.OrderUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderUpdateArgs>
-  ): Promise<PrismaOrder> {
-    return this.prisma.order.update<T>(args);
+  async updateOrder(args: Prisma.OrderUpdateArgs): Promise<PrismaOrder> {
+    return this.prisma.order.update(args);
   }
-  async deleteOrder<T extends Prisma.OrderDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderDeleteArgs>
-  ): Promise<PrismaOrder> {
+  async deleteOrder(args: Prisma.OrderDeleteArgs): Promise<PrismaOrder> {
     return this.prisma.order.delete(args);
   }
 
@@ -9439,6 +9466,12 @@ export class OrganizationControllerBase {
   ): Promise<Organization> {
     return await this.service.createOrganization({
       data: data,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
     });
   }
 
@@ -10022,32 +10055,28 @@ export class OrganizationServiceBase {
     return this.prisma.organization.count(args);
   }
 
-  async organizations<T extends Prisma.OrganizationFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
+  async organizations(
+    args: Prisma.OrganizationFindManyArgs
   ): Promise<PrismaOrganization[]> {
-    return this.prisma.organization.findMany<Prisma.OrganizationFindManyArgs>(
-      args
-    );
+    return this.prisma.organization.findMany(args);
   }
-  async organization<T extends Prisma.OrganizationFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationFindUniqueArgs>
+  async organization(
+    args: Prisma.OrganizationFindUniqueArgs
   ): Promise<PrismaOrganization | null> {
     return this.prisma.organization.findUnique(args);
   }
-  async createOrganization<
-    T extends Omit<Prisma.OrganizationCreateArgs, "select">
-  >(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationCreateArgs>
+  async createOrganization(
+    args: Prisma.OrganizationCreateArgs
   ): Promise<PrismaOrganization> {
-    return this.prisma.organization.create<T>(args);
+    return this.prisma.organization.create(args);
   }
-  async updateOrganization<T extends Prisma.OrganizationUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationUpdateArgs>
+  async updateOrganization(
+    args: Prisma.OrganizationUpdateArgs
   ): Promise<PrismaOrganization> {
-    return this.prisma.organization.update<T>(args);
+    return this.prisma.organization.update(args);
   }
-  async deleteOrganization<T extends Prisma.OrganizationDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationDeleteArgs>
+  async deleteOrganization(
+    args: Prisma.OrganizationDeleteArgs
   ): Promise<PrismaOrganization> {
     return this.prisma.organization.delete(args);
   }
@@ -11192,6 +11221,20 @@ export class ProfileControllerBase {
             }
           : undefined,
       },
+      select: {
+        id: true,
+        createdIn: true,
+        createdAt: true,
+        updatedIn: true,
+        updatedAt: true,
+        email: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
   }
 
@@ -11503,29 +11546,21 @@ export class ProfileServiceBase {
     return this.prisma.profile.count(args);
   }
 
-  async profiles<T extends Prisma.ProfileFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
-  ): Promise<PrismaProfile[]> {
-    return this.prisma.profile.findMany<Prisma.ProfileFindManyArgs>(args);
+  async profiles(args: Prisma.ProfileFindManyArgs): Promise<PrismaProfile[]> {
+    return this.prisma.profile.findMany(args);
   }
-  async profile<T extends Prisma.ProfileFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileFindUniqueArgs>
+  async profile(
+    args: Prisma.ProfileFindUniqueArgs
   ): Promise<PrismaProfile | null> {
     return this.prisma.profile.findUnique(args);
   }
-  async createProfile<T extends Omit<Prisma.ProfileCreateArgs, "select">>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileCreateArgs>
-  ): Promise<PrismaProfile> {
-    return this.prisma.profile.create<T>(args);
+  async createProfile(args: Prisma.ProfileCreateArgs): Promise<PrismaProfile> {
+    return this.prisma.profile.create(args);
   }
-  async updateProfile<T extends Prisma.ProfileUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileUpdateArgs>
-  ): Promise<PrismaProfile> {
-    return this.prisma.profile.update<T>(args);
+  async updateProfile(args: Prisma.ProfileUpdateArgs): Promise<PrismaProfile> {
+    return this.prisma.profile.update(args);
   }
-  async deleteProfile<T extends Prisma.ProfileDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileDeleteArgs>
-  ): Promise<PrismaProfile> {
+  async deleteProfile(args: Prisma.ProfileDeleteArgs): Promise<PrismaProfile> {
     return this.prisma.profile.delete(args);
   }
 
@@ -13680,6 +13715,35 @@ export class UserControllerBase {
             }
           : undefined,
       },
+      select: {
+        id: true,
+        username: true,
+        roles: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+        extendedProperties: true,
+
+        profile: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
   }
 
@@ -14283,29 +14347,19 @@ export class UserServiceBase {
     return this.prisma.user.count(args);
   }
 
-  async users<T extends Prisma.UserFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
-  ): Promise<PrismaUser[]> {
-    return this.prisma.user.findMany<Prisma.UserFindManyArgs>(args);
+  async users(args: Prisma.UserFindManyArgs): Promise<PrismaUser[]> {
+    return this.prisma.user.findMany(args);
   }
-  async user<T extends Prisma.UserFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
-  ): Promise<PrismaUser | null> {
+  async user(args: Prisma.UserFindUniqueArgs): Promise<PrismaUser | null> {
     return this.prisma.user.findUnique(args);
   }
-  async createUser<T extends Omit<Prisma.UserCreateArgs, "select">>(
-    args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
-  ): Promise<PrismaUser> {
-    return this.prisma.user.create<T>(args);
+  async createUser(args: Prisma.UserCreateArgs): Promise<PrismaUser> {
+    return this.prisma.user.create(args);
   }
-  async updateUser<T extends Prisma.UserUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
-  ): Promise<PrismaUser> {
-    return this.prisma.user.update<T>(args);
+  async updateUser(args: Prisma.UserUpdateArgs): Promise<PrismaUser> {
+    return this.prisma.user.update(args);
   }
-  async deleteUser<T extends Prisma.UserDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
-  ): Promise<PrismaUser> {
+  async deleteUser(args: Prisma.UserDeleteArgs): Promise<PrismaUser> {
     return this.prisma.user.delete(args);
   }
 
