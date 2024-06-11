@@ -22,7 +22,10 @@ declare class ENTITY {}
 declare interface Select {}
 
 declare interface SERVICE {
-  CREATE_FUNCTION(args: { data: CREATE_INPUT }): Promise<ENTITY>;
+  CREATE_FUNCTION(args: {
+    data: CREATE_INPUT;
+    select: Select;
+  }): Promise<ENTITY>;
   FIND_MANY_FUNCTION(args: {
     where: WHERE_INPUT;
     select: Select;
@@ -42,6 +45,8 @@ declare interface SERVICE {
   }): Promise<ENTITY>;
 }
 
+declare const RESOURCE: string;
+declare const ENTITY_NAME: string;
 declare const CREATE_DATA_MAPPING: CREATE_INPUT;
 declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
 declare const SELECT: Select;
@@ -55,6 +60,7 @@ export class CONTROLLER_BASE {
   ): Promise<ENTITY> {
     return await this.service.CREATE_FUNCTION({
       data: CREATE_DATA_MAPPING,
+      select: SELECT,
     });
   }
 
