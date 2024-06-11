@@ -39,7 +39,7 @@ function GenerationSettingsForm({ match }: Props) {
       id: resourceId,
     },
   });
-  const { addBlock } = useContext(AppContext);
+  const { currentResource, addBlock } = useContext(AppContext);
   const { trackEvent } = useTracking();
 
   const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
@@ -86,6 +86,10 @@ function GenerationSettingsForm({ match }: Props) {
                   <ToggleField
                     name="serverSettings[generateGraphQL]"
                     label="GraphQL API"
+                    disabled={
+                      currentResource.codeGenerator !==
+                      models.EnumCodeGenerator.NodeJs
+                    }
                   />
                   <ToggleField
                     name="serverSettings[generateRestApi]"
@@ -93,7 +97,9 @@ function GenerationSettingsForm({ match }: Props) {
                   />
                   <ToggleField
                     disabled={
-                      !data?.serviceSettings.serverSettings.generateGraphQL
+                      !data?.serviceSettings.serverSettings.generateGraphQL ||
+                      currentResource.codeGenerator !==
+                        models.EnumCodeGenerator.NodeJs
                     }
                     name="adminUISettings[generateAdminUI]"
                     label="Admin UI"
