@@ -182,13 +182,10 @@ describe("BillingService", () => {
       expect.objectContaining({
         customerId: expectedWorkspaceId,
         subscriptionParams: {
-          planId: BillingPlan.Enterprise,
+          planId: BillingPlan.Essential,
           addons: [
             {
-              addonId: BillingAddon.CustomActions,
-            },
-            {
-              addonId: BillingAddon.BreakingTheMonolith,
+              addonId: BillingAddon.EssentialBreakingTheMonolith,
             },
           ],
         },
