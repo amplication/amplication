@@ -24,7 +24,6 @@ import { PurchaseLoader } from "./PurchaseLoader";
 import { FAQ } from "./FAQ";
 import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
 import { formatError } from "../util/error";
-import { set } from "lodash";
 
 export type DType = {
   provisionSubscription: models.ProvisionSubscriptionResult;
