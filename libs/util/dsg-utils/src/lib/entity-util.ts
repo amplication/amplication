@@ -42,7 +42,7 @@ export const getDefaultActionsForEntity = (
       enabled: true,
       gqlOperation: EnumModuleActionGqlOperation.Query,
       restVerb: EnumModuleActionRestVerb.Get,
-      path: `/:id/meta`,
+      path: `/meta`,
     },
     [EnumModuleActionType.Create]: {
       actionType: EnumModuleActionType.Create,
