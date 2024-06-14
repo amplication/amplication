@@ -10,6 +10,7 @@ import {
   FlexItem,
   Text,
 } from "@amplication/ui/design-system";
+import { EnumCodeGenerator } from "../../../models";
 import adminUI from "../../../assets/images/admin-ui.svg";
 import graphql from "../../../assets/images/graphql.svg";
 import swagger from "../../../assets/images/swagger.svg";
@@ -20,7 +21,7 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
 }) => {
   useEffect(() => {
     if (
-      formik.values.codeGenerator !== "NestJS" &&
+      formik.values.codeGenerator !== EnumCodeGenerator.NodeJs &&
       formik.values.generateGraphQL &&
       formik.values.generateAdminUI
     ) {
@@ -54,7 +55,7 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
           <ImageLabelToggle
             name="generateGraphQL"
             image={graphql}
-            disabled={formik.values.codeGenerator !== "NestJS"}
+            disabled={formik.values.codeGenerator !== EnumCodeGenerator.NodeJs}
             label="GraphQL API"
             value={formik.values.generateGraphQL}
             onChange={formik.setFieldValue}
@@ -70,8 +71,8 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
             name="generateAdminUI"
             image={adminUI}
             disabled={
-              !formik.values.generateGraphQL &&
-              formik.values.codeGenerator !== "NestJS"
+              !formik.values.generateGraphQL ||
+              formik.values.codeGenerator !== EnumCodeGenerator.NodeJs
             }
             label="Admin UI"
             value={formik.values.generateAdminUI}
