@@ -2642,7 +2642,6 @@ export class EntityService {
     relatedEntityId: string,
     relatedFieldId: string,
     user: User,
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     fkHolder?: string
   ): Promise<EntityField> {
     return await this.useLocking(entityId, user, async () => {
@@ -2666,7 +2665,6 @@ export class EntityService {
             allowMultipleSelection: relatedFieldAllowMultipleSelection,
             relatedEntityId,
             relatedFieldId,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             fkHolder,
           },
         },
