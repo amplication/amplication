@@ -23,6 +23,7 @@ export const getWorkspaceColor = (plan: EnumSubscriptionPlan) => {
   switch (plan) {
     case EnumSubscriptionPlan.Free:
       return FREE_WORKSPACE_COLOR;
+    case EnumSubscriptionPlan.Essential:
     case EnumSubscriptionPlan.Pro:
       return PRO_WORKSPACE_COLOR;
     case EnumSubscriptionPlan.Enterprise:

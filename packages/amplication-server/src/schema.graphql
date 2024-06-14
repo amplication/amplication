@@ -918,6 +918,7 @@ enum EnumSchemaNames {
 
 enum EnumSubscriptionPlan {
   Enterprise
+  Essential
   Free
   PreviewBreakTheMonolith
   Pro

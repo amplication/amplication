@@ -5,6 +5,7 @@ export enum EnumSubscriptionPlan {
   Pro = "Pro",
   Enterprise = "Enterprise",
   PreviewBreakTheMonolith = "PreviewBreakTheMonolith",
+  Essential = "Essential",
 }
 registerEnumType(EnumSubscriptionPlan, {
   name: "EnumSubscriptionPlan",
