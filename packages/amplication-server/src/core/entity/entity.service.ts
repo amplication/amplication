@@ -2586,12 +2586,6 @@ export class EntityService {
           // Cast the received properties to Lookup properties type
           const properties = args.data.properties as unknown as types.Lookup;
 
-          if (!properties.relatedFieldId) {
-            throw new Error(
-              `Could not find entity field with the ID ${properties.relatedFieldId} referenced in entity field ${args.data.name}`
-            );
-          }
-
           const relatedEntity = await this.entity({
             where: { id: properties.relatedEntityId },
           });
