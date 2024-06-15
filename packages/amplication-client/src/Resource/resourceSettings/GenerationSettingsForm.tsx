@@ -1,5 +1,6 @@
 import {
   EnumFlexDirection,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
@@ -57,6 +58,9 @@ function GenerationSettingsForm({ match }: Props) {
     resourceId,
   });
 
+  const isDotNet =
+    currentResource.codeGenerator === models.EnumCodeGenerator.DotNet;
+
   return (
     <div className={CLASS_NAME}>
       {data?.serviceSettings && (
@@ -79,27 +83,33 @@ function GenerationSettingsForm({ match }: Props) {
                   generate. Use the settings to include or exclude GraphQL API,
                   REST API, and Admin UI.
                 </Text>
-
+                {isDotNet && (
+                  <div>
+                    <Text
+                      textStyle={EnumTextStyle.Description}
+                      textColor={EnumTextColor.ThemeOrange}
+                    >
+                      GraphQL and Admin UI are currently not available with the
+                      .NET generator. These features will be available soon.
+                    </Text>
+                  </div>
+                )}
                 <HorizontalRule />
                 <FormikAutoSave debounceMS={200} />
                 <FlexItem direction={EnumFlexDirection.Column}>
-                  <ToggleField
-                    name="serverSettings[generateGraphQL]"
-                    label="GraphQL API"
-                    disabled={
-                      currentResource.codeGenerator !==
-                      models.EnumCodeGenerator.NodeJs
-                    }
-                  />
                   <ToggleField
                     name="serverSettings[generateRestApi]"
                     label="REST API & Swagger UI"
                   />
                   <ToggleField
+                    name="serverSettings[generateGraphQL]"
+                    label="GraphQL API"
+                    disabled={isDotNet}
+                  />
+                  <ToggleField
                     disabled={
                       !data?.serviceSettings.serverSettings.generateGraphQL ||
-                      currentResource.codeGenerator !==
-                        models.EnumCodeGenerator.NodeJs
+                      isDotNet
                     }
                     name="adminUISettings[generateAdminUI]"
                     label="Admin UI"

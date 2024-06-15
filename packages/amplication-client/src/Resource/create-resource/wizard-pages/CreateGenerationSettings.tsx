@@ -6,8 +6,11 @@ import { WizardStepProps } from "./interfaces";
 
 import {
   EnumFlexItemMargin,
+  EnumPanelStyle,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
+  Panel,
   Text,
 } from "@amplication/ui/design-system";
 import { EnumCodeGenerator } from "../../../models";
@@ -39,6 +42,8 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
     }
   }, [formik.values]);
 
+  const isDotNet = formik.values.codeGenerator === EnumCodeGenerator.DotNet;
+
   return (
     <Layout.Split>
       <Layout.LeftSide>
@@ -49,17 +54,20 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
             
           `}
         />
+        {isDotNet && (
+          <Panel panelStyle={EnumPanelStyle.Bordered}>
+            <Text
+              textStyle={EnumTextStyle.Normal}
+              textColor={EnumTextColor.ThemeOrange}
+            >
+              GraphQL and Admin UI are currently not available with the .NET
+              generator. These features will be available soon.
+            </Text>
+          </Panel>
+        )}
       </Layout.LeftSide>
       <Layout.RightSide>
         <Layout.SelectorWrapper>
-          <ImageLabelToggle
-            name="generateGraphQL"
-            image={graphql}
-            disabled={formik.values.codeGenerator !== EnumCodeGenerator.NodeJs}
-            label="GraphQL API"
-            value={formik.values.generateGraphQL}
-            onChange={formik.setFieldValue}
-          />
           <ImageLabelToggle
             name="generateRestApi"
             image={swagger}
@@ -68,12 +76,17 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
             onChange={formik.setFieldValue}
           />
           <ImageLabelToggle
+            name="generateGraphQL"
+            image={graphql}
+            disabled={isDotNet}
+            label="GraphQL API"
+            value={formik.values.generateGraphQL}
+            onChange={formik.setFieldValue}
+          />
+          <ImageLabelToggle
             name="generateAdminUI"
             image={adminUI}
-            disabled={
-              !formik.values.generateGraphQL ||
-              formik.values.codeGenerator !== EnumCodeGenerator.NodeJs
-            }
+            disabled={!formik.values.generateGraphQL || isDotNet}
             label="Admin UI"
             value={formik.values.generateAdminUI}
             onChange={formik.setFieldValue}
