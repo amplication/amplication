@@ -55,6 +55,9 @@ export class BillingService {
         {
           addonId: BillingAddon.EssentialBreakingTheMonolith,
         },
+        {
+          addonId: BillingAddon.EssentialTrialLimitToNodeJs,
+        },
       ],
     };
   }
