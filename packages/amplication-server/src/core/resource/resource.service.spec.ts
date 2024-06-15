@@ -707,7 +707,7 @@ describe("ResourceService", () => {
       await service.createService(
         createResourceArgs.args,
         createResourceArgs.user,
-        null,
+        false,
         true
       )
     ).toEqual(EXAMPLE_RESOURCE);
@@ -750,12 +750,12 @@ describe("ResourceService", () => {
       const nonDefaultPluginsToInstall = [];
       const requireAuthenticationEntity = true;
 
-      const result = await service.createPreviewService({
-        args: createResourceArgs.args,
+      const result = await service.createPreviewService(
+        createResourceArgs.args,
         user,
         nonDefaultPluginsToInstall,
-        requireAuthenticationEntity,
-      });
+        requireAuthenticationEntity
+      );
 
       expect(result).toEqual(EXAMPLE_RESOURCE);
       expect(prismaResourceCreateMock).toBeCalledTimes(1);

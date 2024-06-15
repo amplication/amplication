@@ -26,7 +26,6 @@ import { PluginsTile } from "./PluginsTile";
 import "./ResourceOverview.scss";
 import { ServicesTile } from "./ServicesTile";
 import { TopicsTile } from "./TopicsTile";
-import { BtmButton, EnumButtonLocation } from "./break-the-monolith/BtmButton";
 import { resourceThemeMap } from "./constants";
 import AppGitStatusPanel from "./git/AppGitStatusPanel";
 import { useResourceSummary } from "./hooks/useResourceSummary";
@@ -93,11 +92,6 @@ const ResourceOverview = () => {
     <PageContent pageTitle={PAGE_TITLE}>
       <FlexItem>
         <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
-          <BtmButton
-            openInFullScreen
-            location={EnumButtonLocation.Resource}
-            ButtonStyle={EnumButtonStyle.GradientOutline}
-          />
           {currentResource?.resourceType === EnumResourceType.Service && (
             <AddResourceFunctionalityButton
               availableCategories={availableCategories}

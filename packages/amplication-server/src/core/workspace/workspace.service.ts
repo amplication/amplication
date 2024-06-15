@@ -61,6 +61,7 @@ import { types } from "@amplication/code-gen-types";
 import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForEntityNotFoundError";
 import { ModuleDto } from "../moduleDto/dto/ModuleDto";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+import { CreateOneResourceArgs } from "../resource/dto";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -1512,12 +1513,12 @@ export class WorkspaceService {
       generateRestApi: true,
     });
 
-    const resource = await this.resourceService.createPreviewService({
-      args: previewServiceSettings,
+    const resource = await this.resourceService.createPreviewService(
+      previewServiceSettings,
       user,
-      nonDefaultPluginsToInstall: [],
-      requireAuthenticationEntity: false,
-    });
+      [],
+      false
+    );
 
     return resource;
   }
@@ -1531,7 +1532,7 @@ export class WorkspaceService {
     generateGraphQL,
     generateRestApi,
     projectId,
-  }: CreatePreviewServiceSettingsArgs) {
+  }: CreatePreviewServiceSettingsArgs): CreateOneResourceArgs {
     return {
       data: {
         name,
