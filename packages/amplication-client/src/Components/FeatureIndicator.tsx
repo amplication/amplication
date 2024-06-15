@@ -25,7 +25,7 @@ const WarningTooltip = styled(
     borderRadius: "4px",
     padding: "6px 8px",
     fontFamily: "unset",
-    fontSize: "10px",
+    fontSize: "12px",
     fontWeight: "unset",
   },
 }));

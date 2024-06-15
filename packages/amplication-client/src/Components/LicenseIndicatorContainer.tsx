@@ -10,10 +10,10 @@ import { IconType, isPreviewPlan } from "./FeatureIndicatorContainer";
 const CLASS_NAME = "license-indicator-container";
 const DEFAULT_BLOCKED_TOOLTIP_TEXT = "Your plan doesn't include this feature.";
 const SERVICE_LICENSE_TOOLTIP_TEXT =
-  "Your current plan permits only one active Service. ";
+  "You have reached the maximum number of services allowed. To continue using additional services, please upgrade your plan.";
 
 const PROJECT_LICENSE_TOOLTIP_TEXT =
-  "The workspace reached your plan's project limitation. ";
+  "You have reached the maximum number of projects allowed. To continue using additional projects, please upgrade your plan.";
 
 export enum LicensedResourceType {
   Workspace = "Workspace",
