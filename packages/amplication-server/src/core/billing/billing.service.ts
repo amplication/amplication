@@ -28,6 +28,16 @@ import { ValidateSubscriptionPlanLimitationsArgs } from "./billing.service.types
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
+const SUBSCRIPTION_PLAN_MAP: Record<BillingPlan, EnumSubscriptionPlan> = {
+  [BillingPlan.Enterprise]: EnumSubscriptionPlan.Enterprise,
+  [BillingPlan.Essential]: EnumSubscriptionPlan.Essential,
+  [BillingPlan.Free]: EnumSubscriptionPlan.Free,
+  [BillingPlan.PreviewBreakTheMonolith]:
+    EnumSubscriptionPlan.PreviewBreakTheMonolith,
+  [BillingPlan.Pro]: EnumSubscriptionPlan.Pro,
+  [BillingPlan.ProWithTrial]: EnumSubscriptionPlan.Pro,
+};
+
 @Injectable()
 export class BillingService {
   private readonly stiggClient: Stigg;
@@ -40,13 +50,10 @@ export class BillingService {
 
   private get defaultSubscriptionPlan() {
     return {
-      planId: BillingPlan.Enterprise,
+      planId: BillingPlan.Essential,
       addons: [
         {
-          addonId: BillingAddon.CustomActions,
-        },
-        {
-          addonId: BillingAddon.BreakingTheMonolith,
+          addonId: BillingAddon.EssentialBreakingTheMonolith,
         },
       ],
     };
@@ -229,6 +236,7 @@ export class BillingService {
       planId: planId,
       billingPeriod: billingPeriod,
       awaitPaymentConfirmation: true,
+      unitQuantity: planId === BillingPlan.Essential ? 1 : undefined,
       checkoutOptions: {
         allowPromoCodes: true,
         cancelUrl: new URL(cancelUrl, this.clientHost).href,
@@ -469,20 +477,11 @@ export class BillingService {
   }
 
   mapSubscriptionPlan(planId: BillingPlan): EnumSubscriptionPlan {
-    switch (planId) {
-      case BillingPlan.Free:
-        return EnumSubscriptionPlan.Free;
-      case BillingPlan.Pro:
-        return EnumSubscriptionPlan.Pro;
-      case BillingPlan.ProWithTrial:
-        return EnumSubscriptionPlan.Pro;
-      case BillingPlan.Enterprise:
-        return EnumSubscriptionPlan.Enterprise;
-      case BillingPlan.PreviewBreakTheMonolith:
-        return EnumSubscriptionPlan.PreviewBreakTheMonolith;
-      default:
-        throw new Error(`Unknown plan id: ${planId}`);
+    const mappedPlan = SUBSCRIPTION_PLAN_MAP[planId];
+    if (mappedPlan) {
+      return mappedPlan;
     }
+    throw new Error(`Unknown plan id: ${planId}`);
   }
 
   mapPreviewAccountTypeToSubscriptionPlan(
