@@ -1,5 +1,6 @@
 import {
   EnumFlexDirection,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
@@ -39,7 +40,7 @@ function GenerationSettingsForm({ match }: Props) {
       id: resourceId,
     },
   });
-  const { addBlock } = useContext(AppContext);
+  const { currentResource, addBlock } = useContext(AppContext);
   const { trackEvent } = useTracking();
 
   const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
@@ -56,6 +57,9 @@ function GenerationSettingsForm({ match }: Props) {
     updateResourceSettings,
     resourceId,
   });
+
+  const isDotNet =
+    currentResource.codeGenerator === models.EnumCodeGenerator.DotNet;
 
   return (
     <div className={CLASS_NAME}>
@@ -79,21 +83,33 @@ function GenerationSettingsForm({ match }: Props) {
                   generate. Use the settings to include or exclude GraphQL API,
                   REST API, and Admin UI.
                 </Text>
-
+                {isDotNet && (
+                  <div>
+                    <Text
+                      textStyle={EnumTextStyle.Description}
+                      textColor={EnumTextColor.ThemeOrange}
+                    >
+                      GraphQL and Admin UI are currently not available with the
+                      .NET generator. These features will be available soon.
+                    </Text>
+                  </div>
+                )}
                 <HorizontalRule />
                 <FormikAutoSave debounceMS={200} />
                 <FlexItem direction={EnumFlexDirection.Column}>
-                  <ToggleField
-                    name="serverSettings[generateGraphQL]"
-                    label="GraphQL API"
-                  />
                   <ToggleField
                     name="serverSettings[generateRestApi]"
                     label="REST API & Swagger UI"
                   />
                   <ToggleField
+                    name="serverSettings[generateGraphQL]"
+                    label="GraphQL API"
+                    disabled={isDotNet}
+                  />
+                  <ToggleField
                     disabled={
-                      !data?.serviceSettings.serverSettings.generateGraphQL
+                      !data?.serviceSettings.serverSettings.generateGraphQL ||
+                      isDotNet
                     }
                     name="adminUISettings[generateAdminUI]"
                     label="Admin UI"

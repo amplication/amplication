@@ -1,5 +1,6 @@
 import {
   CircleBadge,
+  EnumTextColor,
   EnumTextStyle,
   EnumTextWeight,
   Text,
@@ -29,8 +30,8 @@ export const ImageLabelToggle: React.FC<Props> = ({
   disabled,
 }) => {
   const handleClick = useCallback(() => {
-    onChange(name, !value);
-  }, [value, onChange]);
+    !disabled && onChange(name, !value);
+  }, [disabled, onChange, name, value]);
 
   return (
     <div
@@ -45,7 +46,11 @@ export const ImageLabelToggle: React.FC<Props> = ({
       >
         <img src={image} alt="" />
       </CircleBadge>
-      <Text textStyle={EnumTextStyle.Normal} textWeight={EnumTextWeight.Bold}>
+      <Text
+        textStyle={EnumTextStyle.Normal}
+        textWeight={EnumTextWeight.Bold}
+        textColor={disabled ? EnumTextColor.Black20 : EnumTextColor.White}
+      >
         {label}
       </Text>
 
