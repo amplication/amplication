@@ -14,9 +14,9 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import React from "react";
 import {
   FeatureIndicator,
-  defaultTextEnd,
-  defaultTextStart,
-  disabledDefaultTextEnd,
+  DEFAULT_TEXT_END,
+  DEFAULT_TEXT_START,
+  DISABLED_DEFAULT_TEXT_END,
 } from "./FeatureIndicator";
 import "./FeatureIndicatorContainer.scss";
 import { omit } from "lodash";
@@ -133,12 +133,12 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       return fullEnterpriseText;
     }
 
-    return defaultTextStart;
+    return DEFAULT_TEXT_START;
   }, [disabled, subscriptionPlan, status, limitationText, fullEnterpriseText]);
 
   const textEnd = useMemo(() => {
     if (disabled) {
-      return disabledDefaultTextEnd;
+      return DISABLED_DEFAULT_TEXT_END;
     }
     if (
       subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
@@ -147,7 +147,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       return "";
     }
 
-    return defaultTextEnd;
+    return DEFAULT_TEXT_END;
   }, [disabled, subscriptionPlan, status]);
 
   const showTooltipLink = useMemo(() => {

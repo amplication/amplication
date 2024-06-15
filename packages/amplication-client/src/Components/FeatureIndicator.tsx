@@ -32,12 +32,12 @@ const WarningTooltip = styled(
 
 const CLASS_NAME = "amp-feature-indicator";
 
-export const defaultTextStart =
+export const DEFAULT_TEXT_START =
   "Explore this feature, included in your 7-day Enterprise trial.";
-export const defaultTextEnd =
+export const DEFAULT_TEXT_END =
   "today to ensure continued access and discover additional hidden functionalities!";
 
-export const disabledDefaultTextEnd =
+export const DISABLED_DEFAULT_TEXT_END =
   "today to access it and discover additional hidden functionalities";
 
 type Props = {
@@ -76,8 +76,8 @@ export const FeatureIndicator = ({
   }, [featureName, trackEvent, upgradeCtaVariationData]);
 
   const renderTooltipTextWithUpgradeLink = useMemo(() => {
-    const currentStartText = textStart ? textStart : defaultTextStart;
-    const currentEndText = textEnd ? textEnd : defaultTextEnd;
+    const currentStartText = textStart ? textStart : DEFAULT_TEXT_START;
+    const currentEndText = textEnd ? textEnd : DEFAULT_TEXT_END;
     return (
       <>
         <span>{currentStartText}</span>
