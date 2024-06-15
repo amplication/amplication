@@ -292,11 +292,32 @@ export class AssistantFunctionsService {
     const installations = [];
     let authEntityExist = false;
 
+    const service = await this.resourceService.resource({
+      where: {
+        id: serviceId,
+      },
+    });
+
+    const codeGenerator =
+      CODE_GENERATOR_NAME_TO_ENUM[service.codeGeneratorName] ||
+      EnumCodeGenerator.NodeJs;
+
+    if (!service) {
+      throw new Error(`Service with id ${serviceId} not found`);
+    }
+
     for (const pluginId of pluginIds) {
       const plugin = await this.pluginCatalogService.getPluginWithLatestVersion(
         pluginId
       );
       const pluginVersion = plugin.versions[0];
+
+      if (plugin.codeGeneratorName !== codeGenerator) {
+        installations.push({
+          result: `Plugin not installed. Plugin code generator "${plugin.codeGeneratorName}" is not compatible with the service code generator ${codeGenerator}`,
+        });
+        continue;
+      }
 
       const { version, settings, configurations } = pluginVersion;
 

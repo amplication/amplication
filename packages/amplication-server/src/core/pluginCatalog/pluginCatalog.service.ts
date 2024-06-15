@@ -12,6 +12,7 @@ const GET_PLUGINS = gql`
       name
       icon
       description
+      codeGeneratorName
       npm
       github
       categories
@@ -43,6 +44,7 @@ export class PluginCatalogService {
           icon
           description
           taggedVersions
+          codeGeneratorName
           npm
           github
           categories
