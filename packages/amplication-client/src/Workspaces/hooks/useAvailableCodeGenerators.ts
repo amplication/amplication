@@ -21,13 +21,24 @@ const useAvailableCodeGenerators = () => {
     featureId: BillingFeature.CodeGeneratorDotNet,
   });
 
+  const NodeJsOnlyEntitlement = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.CodeGeneratorNodeJsOnly,
+  });
+
   const availableCodeGeneratorsReady = useMemo(() => {
-    return !dotNetGeneratorEntitlement.isFallback;
-  }, [dotNetGeneratorEntitlement]);
+    return (
+      !dotNetGeneratorEntitlement.isFallback &&
+      !NodeJsOnlyEntitlement.isFallback
+    );
+  }, [NodeJsOnlyEntitlement.isFallback, dotNetGeneratorEntitlement.isFallback]);
+
+  const nodeJsOnly = useMemo(() => {
+    return NodeJsOnlyEntitlement?.hasAccess ?? false;
+  }, [NodeJsOnlyEntitlement]);
 
   const dotNetGeneratorEnabled = useMemo(() => {
-    return dotNetGeneratorEntitlement?.hasAccess ?? false;
-  }, [dotNetGeneratorEntitlement]);
+    return !nodeJsOnly && (dotNetGeneratorEntitlement?.hasAccess ?? false);
+  }, [dotNetGeneratorEntitlement, nodeJsOnly]);
 
   const availableCodeGenerators = useMemo(() => {
     return CODE_GENERATORS.filter((generator) => {
