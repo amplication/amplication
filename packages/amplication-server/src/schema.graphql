@@ -693,6 +693,7 @@ enum EnumAssistantFunctions {
   GetPlugins
   GetProjectPendingChanges
   GetProjectServices
+  GetService
   GetServiceEntities
   GetServiceModules
   InstallPlugins

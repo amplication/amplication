@@ -123,6 +123,10 @@ const FUNCTIONS_CACHE_MAP: {
     refreshPendingChanges: false,
     cacheKey: "",
   },
+  [models.EnumAssistantFunctions.GetService]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
 };
 
 const useAssistant = () => {

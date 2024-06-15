@@ -3,6 +3,21 @@ import { ApolloClient, InMemoryCache, gql } from "@apollo/client/core";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
 import { PluginCatalogItem } from "./dto/PluginCatalogItem";
+import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+
+const GET_PLUGINS = gql`
+  query GetPlugins($codeGeneratorName: String!) {
+    plugins(where: { codeGeneratorName: { equals: $codeGeneratorName } }) {
+      pluginId
+      name
+      icon
+      description
+      npm
+      github
+      categories
+    }
+  }
+`;
 
 @Injectable()
 export class PluginCatalogService {
@@ -76,26 +91,17 @@ export class PluginCatalogService {
     }
   }
 
-  async getPlugins(): Promise<PluginCatalogItem[]> {
-    const query = gql`
-      query GetPlugins {
-        plugins {
-          pluginId
-          name
-          icon
-          description
-          npm
-          github
-          categories
-        }
-      }
-    `;
-
+  async getPlugins(
+    codeGeneratorName: keyof typeof EnumCodeGenerator
+  ): Promise<PluginCatalogItem[]> {
     try {
       const { data } = await this.client.query<{
         plugins: PluginCatalogItem[];
       }>({
-        query,
+        query: GET_PLUGINS,
+        variables: {
+          codeGeneratorName,
+        },
       });
       return data.plugins;
     } catch (error) {

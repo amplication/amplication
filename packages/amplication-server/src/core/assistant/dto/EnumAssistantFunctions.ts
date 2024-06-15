@@ -12,6 +12,7 @@ export enum EnumAssistantFunctions {
   GetPlugins = "getPlugins",
   InstallPlugins = "installPlugins",
   GetServiceModules = "getServiceModules",
+  GetService = "getService",
   CreateModule = "createModule",
   GetModuleDtosAndEnums = "getModuleDtosAndEnums",
   CreateModuleDto = "createModuleDto",
