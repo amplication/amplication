@@ -12,7 +12,6 @@ import {
   FeatureIndicatorContainer,
   FeatureIndicatorPlacement,
 } from "../../../Components/FeatureIndicatorContainer";
-import { EnumCtaType } from "../../../Components/FeatureIndicator";
 
 type Props = {
   onSyncNewGitOrganizationClick: (data: any) => any;
@@ -49,7 +48,6 @@ export default function GitProviderConnection({
           reversePosition={true}
           featureIndicatorPlacement={FeatureIndicatorPlacement.Outside}
           limitationText="Available in Enterprise plans only. "
-          ctaType={EnumCtaType.TalkToUs}
         >
           <Button
             className={`${CLASS_NAME}__connect`}

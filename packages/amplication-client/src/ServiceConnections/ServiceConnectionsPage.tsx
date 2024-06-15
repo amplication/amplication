@@ -85,23 +85,18 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
           message="There is no message broker to show."
           image={EnumImages.MessageBrokerEmptyState}
         >
-          <FeatureIndicatorContainer
-            featureId={BillingFeature.Services}
-            entitlementType={EntitlementType.Metered}
+          <Button
+            onClick={() =>
+              history.push(
+                `/${currentWorkspace?.id}/${currentProject?.id}/create-broker`
+              )
+            }
+            type="button"
+            buttonStyle={EnumButtonStyle.Outline}
+            iconSize="xsmall"
           >
-            <Button
-              onClick={() =>
-                history.push(
-                  `/${currentWorkspace?.id}/${currentProject?.id}/create-broker`
-                )
-              }
-              type="button"
-              buttonStyle={EnumButtonStyle.Outline}
-              iconSize="xsmall"
-            >
-              <span className={"add-broker__label"}>Add Message Broker</span>
-            </Button>
-          </FeatureIndicatorContainer>
+            <span className={"add-broker__label"}>Add Message Broker</span>
+          </Button>
         </EmptyState>
       )}
     </PageContent>

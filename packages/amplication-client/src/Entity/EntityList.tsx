@@ -27,7 +27,6 @@ import NewEntity from "./NewEntity";
 
 import { BillingFeature } from "@amplication/util-billing-types";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { EnumCtaType } from "../Components/FeatureIndicator";
 import {
   EntitlementType,
   FeatureIndicatorContainer,
@@ -218,7 +217,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 entitlementType={EntitlementType.Boolean}
                 limitationText="Available in Enterprise plans only. "
                 reversePosition={true}
-                ctaType={EnumCtaType.TalkToUs}
                 render={(props) => {
                   return (
                     <Link
