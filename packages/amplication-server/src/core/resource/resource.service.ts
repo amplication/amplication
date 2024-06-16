@@ -225,8 +225,12 @@ export class ResourceService {
           BillingFeature.Services
         );
 
-      if (serviceEntitlement && !serviceEntitlement.hasAccess) {
-        const message = `Your project exceeds its services limitation.`;
+      if (
+        serviceEntitlement &&
+        (!serviceEntitlement.hasAccess ||
+          serviceEntitlement.currentUsage >= serviceEntitlement.usageLimit)
+      ) {
+        const message = `You have reached the maximum number of services allowed. To continue using additional services, please upgrade your plan.`;
         throw new BillingLimitationError(message, BillingFeature.Services);
       }
     }
@@ -670,7 +674,8 @@ export class ResourceService {
     const adminUIPath = `${pathBase}-admin`;
     const serverPath = `${pathBase}-server`;
 
-    const defaultCodeGenerator = await this.getDefaultCodeGenerator(user);
+    const actualCodeGenerator =
+      codeGenerator || (await this.getDefaultCodeGenerator(user));
 
     const args: CreateOneResourceArgs = {
       data: {
@@ -681,16 +686,16 @@ export class ResourceService {
             id: projectId,
           },
         },
-        codeGenerator: codeGenerator || defaultCodeGenerator,
+        codeGenerator: actualCodeGenerator,
         resourceType: EnumResourceType.Service,
         serviceSettings: {
           adminUISettings: {
             adminUIPath: adminUIPath,
-            generateAdminUI: true,
+            generateAdminUI: actualCodeGenerator === EnumCodeGenerator.NodeJs,
           },
           serverSettings: {
             serverPath: serverPath,
-            generateGraphQL: true,
+            generateGraphQL: actualCodeGenerator === EnumCodeGenerator.NodeJs,
             generateRestApi: true,
             generateServer: true,
           },
