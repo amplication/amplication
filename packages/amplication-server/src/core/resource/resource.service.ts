@@ -670,7 +670,8 @@ export class ResourceService {
     const adminUIPath = `${pathBase}-admin`;
     const serverPath = `${pathBase}-server`;
 
-    const defaultCodeGenerator = await this.getDefaultCodeGenerator(user);
+    const actualCodeGenerator =
+      codeGenerator || (await this.getDefaultCodeGenerator(user));
 
     const args: CreateOneResourceArgs = {
       data: {
@@ -681,16 +682,16 @@ export class ResourceService {
             id: projectId,
           },
         },
-        codeGenerator: codeGenerator || defaultCodeGenerator,
+        codeGenerator: actualCodeGenerator,
         resourceType: EnumResourceType.Service,
         serviceSettings: {
           adminUISettings: {
             adminUIPath: adminUIPath,
-            generateAdminUI: true,
+            generateAdminUI: actualCodeGenerator === EnumCodeGenerator.NodeJs,
           },
           serverSettings: {
             serverPath: serverPath,
-            generateGraphQL: true,
+            generateGraphQL: actualCodeGenerator === EnumCodeGenerator.NodeJs,
             generateRestApi: true,
             generateServer: true,
           },
