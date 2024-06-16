@@ -97,7 +97,6 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         onSyncNewGitOrganizationClick={handleAddProvider}
         billingFeature={BillingFeature.GitLab}
         disabled={!showGitLab}
-        comingSoon={true}
       />
       <GitProviderConnection
         provider={EnumGitProvider.AwsCodeCommit}
@@ -106,7 +105,6 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         }}
         billingFeature={BillingFeature.AwsCodeCommit}
         disabled={true}
-        comingSoon={true}
       />
     </div>
   );

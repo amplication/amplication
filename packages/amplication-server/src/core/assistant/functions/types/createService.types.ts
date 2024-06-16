@@ -19,6 +19,10 @@ export interface CreateService {
    */
   projectId: string;
   /**
+   * Optional. The code generator to use for the service. Leave blank unless a specific code generator was asked by the user
+   */
+  codeGenerator?: "DotNet" | "NodeJs";
+  /**
    * a list of IDs of the plugins to install.
    */
   pluginIds?: string[];

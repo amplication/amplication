@@ -562,7 +562,8 @@ export class AssistantFunctionsService {
           args.serviceDescription || "",
           args.projectId,
           context.user,
-          needDefaultDbPlugin
+          needDefaultDbPlugin,
+          args.codeGenerator
         );
 
       let pluginsResults = null;

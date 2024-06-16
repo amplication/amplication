@@ -233,9 +233,8 @@ const Commit = ({
                 />
               )}
               <LicenseIndicatorContainer
-                featureId={BillingFeature.BlockBuild}
+                blockByFeatureId={BillingFeature.BlockBuild}
                 licensedResourceType={LicensedResourceType.Project}
-                licensedTooltipText="The workspace reached your plan's project limitation. "
               >
                 {commitBtnType === CommitBtnType.Button ? (
                   <Button
