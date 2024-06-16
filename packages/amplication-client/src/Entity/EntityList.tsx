@@ -20,21 +20,13 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Link, match, useLocation } from "react-router-dom";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import * as models from "../models";
-import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { EntityListItem } from "./EntityListItem";
 import NewEntity from "./NewEntity";
 
-import { Button, EnumButtonStyle } from "../Components/Button";
-import usePlugins from "../Plugins/hooks/usePlugins";
-import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
-import { AppContext } from "../context/appContext";
-import { AppRouteProps } from "../routes/routesUtil";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { pluralize } from "../util/pluralize";
-import EntitiesERD from "./EntityERD/EntitiesERD";
-import "./EntityList.scss";
+import { Button, EnumButtonStyle } from "../Components/Button";
 import {
   EntitlementType,
   FeatureIndicatorContainer,
@@ -43,13 +35,15 @@ import {
   LicenseIndicatorContainer,
   LicensedResourceType,
 } from "../Components/LicenseIndicatorContainer";
+import usePlugins from "../Plugins/hooks/usePlugins";
+import { AppContext } from "../context/appContext";
+import { AppRouteProps } from "../routes/routesUtil";
+import { pluralize } from "../util/pluralize";
+import EntitiesERD from "./EntityERD/EntitiesERD";
+import "./EntityList.scss";
 
 type TData = {
   entities: models.Entity[];
-};
-
-type GetWorkspaceResponse = {
-  currentWorkspace: models.Workspace;
 };
 
 type Props = AppRouteProps & {
@@ -73,7 +67,6 @@ function useUrlQuery() {
 
 const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource } = match.params;
-  const { trackEvent } = useTracking();
   const [error, setError] = useState<Error>();
   const pageTitle = "Entities";
   const [searchPhrase, setSearchPhrase] = useState<string>("");
@@ -150,17 +143,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
     };
   }, [refetch, stopPolling, startPolling]);
 
-  const handleEntityClick = () => {
-    trackEvent({
-      eventName: AnalyticsEventNames.UpgradeClick,
-      eventOriginLocation: "entity-list",
-    });
-  };
-
-  const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
-    GET_CURRENT_WORKSPACE
-  );
-
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
@@ -230,26 +212,31 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           </FlexItem>
           <FlexItem.FlexEnd>
             <FlexItem direction={EnumFlexDirection.Row}>
-              <Link
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
-              >
-                <FeatureIndicatorContainer
-                  featureId={BillingFeature.ImportDBSchema}
-                  entitlementType={EntitlementType.Boolean}
-                  limitationText="Available in Enterprise plans only. "
-                  reversePosition={true}
-                >
-                  <Button
-                    className={`${CLASS_NAME}__install`}
-                    buttonStyle={EnumButtonStyle.Outline}
-                    eventData={{
-                      eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                    }}
-                  >
-                    Upload Schema
-                  </Button>
-                </FeatureIndicatorContainer>
-              </Link>
+              <FeatureIndicatorContainer
+                featureId={BillingFeature.ImportDBSchema}
+                entitlementType={EntitlementType.Boolean}
+                limitationText="Available in Enterprise plans only. "
+                reversePosition={true}
+                render={(props) => {
+                  return (
+                    <Link
+                      to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
+                    >
+                      <Button
+                        disabled={props.disabled}
+                        className={`${CLASS_NAME}__install`}
+                        buttonStyle={EnumButtonStyle.Outline}
+                        eventData={{
+                          eventName:
+                            AnalyticsEventNames.ImportPrismaSchemaClick,
+                        }}
+                      >
+                        Upload Schema
+                      </Button>
+                    </Link>
+                  );
+                }}
+              ></FeatureIndicatorContainer>
               <LicenseIndicatorContainer
                 licensedResourceType={LicensedResourceType.Service}
               >

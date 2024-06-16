@@ -17,6 +17,7 @@ import {
   DEFAULT_TEXT_END,
   DEFAULT_TEXT_START,
   DISABLED_DEFAULT_TEXT_END,
+  EnumCtaType,
 } from "./FeatureIndicator";
 import "./FeatureIndicatorContainer.scss";
 import { omit } from "lodash";
@@ -50,6 +51,7 @@ export type Props = {
   render?: (props: { disabled: boolean; icon?: IconType }) => ReactElement;
   reversePosition?: boolean;
   showTooltip?: boolean;
+  ctaType?: EnumCtaType;
 };
 
 export const FeatureIndicatorContainer: FC<Props> = ({
@@ -62,6 +64,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   render,
   reversePosition,
   showTooltip = true,
+  ctaType = EnumCtaType.TalkToUs,
 }) => {
   const { stigg } = useStiggContext();
   const { currentWorkspace } = useContext(AppContext);
@@ -197,6 +200,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
           textStart={textStart}
           textEnd={textEnd}
           showTooltipLink={showTooltipLink}
+          ctaType={ctaType}
         ></FeatureIndicator>
       )}
       {!render &&
@@ -208,6 +212,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
             textStart={textStart}
             textEnd={textEnd}
             showTooltipLink={showTooltipLink}
+            ctaType={ctaType}
             element={
               featureIndicatorPlacement ===
               FeatureIndicatorPlacement.Outside ? (
