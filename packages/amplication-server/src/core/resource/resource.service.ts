@@ -640,14 +640,15 @@ export class ResourceService {
     serviceDescription: string,
     projectId: string,
     user: User,
-    installDefaultDbPlugin = true
+    installDefaultDbPlugin = true,
+    codeGenerator: keyof typeof EnumCodeGenerator | null = null
   ): Promise<Resource> {
     const pathBase = `apps/${kebabCase(serviceName)}`;
 
     const adminUIPath = `${pathBase}-admin`;
     const serverPath = `${pathBase}-server`;
 
-    const codeGenerator = await this.getDefaultCodeGenerator(user);
+    const defaultCodeGenerator = await this.getDefaultCodeGenerator(user);
 
     const args: CreateOneResourceArgs = {
       data: {
@@ -658,7 +659,7 @@ export class ResourceService {
             id: projectId,
           },
         },
-        codeGenerator,
+        codeGenerator: codeGenerator || defaultCodeGenerator,
         resourceType: EnumResourceType.Service,
         serviceSettings: {
           adminUISettings: {

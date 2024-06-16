@@ -732,6 +732,7 @@ export enum EnumAssistantFunctions {
   GetPlugins = 'GetPlugins',
   GetProjectPendingChanges = 'GetProjectPendingChanges',
   GetProjectServices = 'GetProjectServices',
+  GetService = 'GetService',
   GetServiceEntities = 'GetServiceEntities',
   GetServiceModules = 'GetServiceModules',
   InstallPlugins = 'InstallPlugins'

@@ -12,6 +12,7 @@ export * from "./getModuleDtosAndEnums.types";
 export * from "./getPlugins.types";
 export * from "./getProjectPendingChanges.types";
 export * from "./getProjectServices.types";
+export * from "./getService.types";
 export * from "./getServiceEntities.types";
 export * from "./getServiceModules.types";
 export * from "./installPlugins.types";
