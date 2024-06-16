@@ -7,7 +7,7 @@
 
 export interface GetPlugins {
   /**
-   * The type of code generator. This will impact the list of available plugins. The value of this property should be used per the code generator of the service
+   * The type of code generator of the service. When not available, fetch the service details to find the codeGenerator.
    */
   codeGenerator: "DotNet" | "NodeJs";
 }
