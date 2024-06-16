@@ -225,8 +225,12 @@ export class ResourceService {
           BillingFeature.Services
         );
 
-      if (serviceEntitlement && !serviceEntitlement.hasAccess) {
-        const message = `Your project exceeds its services limitation.`;
+      if (
+        serviceEntitlement &&
+        (!serviceEntitlement.hasAccess ||
+          serviceEntitlement.currentUsage >= serviceEntitlement.usageLimit)
+      ) {
+        const message = `You have reached the maximum number of services allowed. To continue using additional services, please upgrade your plan.`;
         throw new BillingLimitationError(message, BillingFeature.Services);
       }
     }
