@@ -64,7 +64,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   render,
   reversePosition,
   showTooltip = true,
-  ctaType = EnumCtaType.TalkToUs,
+  ctaType = EnumCtaType.Upgrade,
 }) => {
   const { stigg } = useStiggContext();
   const { currentWorkspace } = useContext(AppContext);
