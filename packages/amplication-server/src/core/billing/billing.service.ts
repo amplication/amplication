@@ -58,6 +58,9 @@ export class BillingService {
         {
           addonId: BillingAddon.EssentialTrialLimitToNodeJs,
         },
+        {
+          addonId: BillingAddon.EssentialTrialJovuRequests,
+        },
       ],
     };
   }
@@ -240,6 +243,10 @@ export class BillingService {
       billingPeriod: billingPeriod,
       awaitPaymentConfirmation: true,
       unitQuantity: planId === BillingPlan.Essential ? 1 : undefined,
+      addons:
+        planId === BillingPlan.Essential
+          ? this.defaultSubscriptionPlan.addons
+          : undefined,
       checkoutOptions: {
         allowPromoCodes: true,
         cancelUrl: new URL(cancelUrl, this.clientHost).href,
