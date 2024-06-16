@@ -418,7 +418,7 @@ describe("ProjectService", () => {
         service.createProject(args, EXAMPLE_USER_ID)
       ).rejects.toThrow(
         new BillingLimitationError(
-          "Your workspace exceeds its project limitation.",
+          "You have reached the maximum number of projects allowed. To continue using additional projects, please upgrade your plan.",
           BillingFeature.Projects
         )
       );
