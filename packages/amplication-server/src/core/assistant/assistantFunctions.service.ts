@@ -298,13 +298,13 @@ export class AssistantFunctionsService {
       },
     });
 
-    const codeGenerator =
-      CODE_GENERATOR_NAME_TO_ENUM[service.codeGeneratorName] ||
-      EnumCodeGenerator.NodeJs;
-
     if (!service) {
       throw new Error(`Service with id ${serviceId} not found`);
     }
+
+    const codeGenerator =
+      CODE_GENERATOR_NAME_TO_ENUM[service.codeGeneratorName] ||
+      EnumCodeGenerator.NodeJs;
 
     for (const pluginId of pluginIds) {
       const plugin = await this.pluginCatalogService.getPluginWithLatestVersion(
