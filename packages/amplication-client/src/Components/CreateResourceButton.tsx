@@ -48,7 +48,7 @@ const CreateResourceButton: React.FC<Props> = ({ resourcesLength }) => {
       <FeatureIndicatorContainer
         featureId={BillingFeature.Services}
         entitlementType={EntitlementType.Metered}
-        limitationText="The workspace reached your plan's resource limitation. "
+        limitationText="You have reached the maximum number of services allowed. "
       >
         <SelectMenu title="Add Resource" buttonStyle={EnumButtonStyle.Primary}>
           <SelectMenuModal align="right" withCaret>

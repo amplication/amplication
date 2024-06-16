@@ -7,7 +7,10 @@ import React, { useMemo } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import WorkspaceSelectorListItem from "./WorkspaceSelectorListItem";
-import { LicenseIndicatorContainer } from "../Components/LicenseIndicatorContainer";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 import { BillingFeature } from "@amplication/util-billing-types";
 
 type TData = {
@@ -65,7 +68,8 @@ function WorkspaceSelectorList({
 
           <div className={`${CLASS_NAME}__new`}>
             <LicenseIndicatorContainer
-              featureId={BillingFeature.BlockWorkspaceCreation}
+              licensedResourceType={LicensedResourceType.Workspace}
+              blockByFeatureId={BillingFeature.BlockWorkspaceCreation}
             >
               <Button
                 buttonStyle={EnumButtonStyle.Text}
