@@ -58,6 +58,9 @@ export class BillingService {
         {
           addonId: BillingAddon.EssentialTrialLimitToNodeJs,
         },
+        {
+          addonId: BillingAddon.EssentialTrialJovuRequests,
+        },
       ],
     };
   }

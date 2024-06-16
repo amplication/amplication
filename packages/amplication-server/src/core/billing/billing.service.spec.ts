@@ -190,6 +190,9 @@ describe("BillingService", () => {
             {
               addonId: BillingAddon.EssentialTrialLimitToNodeJs,
             },
+            {
+              addonId: BillingAddon.EssentialTrialJovuRequests,
+            },
           ],
         },
       })
