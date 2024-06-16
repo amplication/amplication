@@ -273,6 +273,13 @@ const WorkspaceHeader: React.FC = () => {
                       </div>
                     </SelectMenuItem>
                   ))}
+                  <SelectMenuItem closeAfterSelectionChange>
+                    <div className={`${CLASS_NAME}__help_popover__name`}>
+                      <Link to={`/${currentWorkspace?.id}/purchase`}>
+                        Pricing Plans
+                      </Link>
+                    </div>
+                  </SelectMenuItem>
                 </SelectMenuList>
               </SelectMenuModal>
             </SelectMenu>
