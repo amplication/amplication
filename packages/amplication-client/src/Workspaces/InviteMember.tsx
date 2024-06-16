@@ -18,7 +18,6 @@ import {
   EntitlementType,
   FeatureIndicatorContainer,
 } from "../Components/FeatureIndicatorContainer";
-import { EnumCtaType } from "../Components/FeatureIndicator";
 
 type Values = {
   email: string;
@@ -102,7 +101,6 @@ const InviteMember = () => {
                 featureId={BillingFeature.TeamMembers}
                 entitlementType={EntitlementType.Metered}
                 limitationText="The workspace reached your plan's team members limitation. "
-                ctaType={EnumCtaType.Upgrade}
               >
                 <Button buttonStyle={EnumButtonStyle.Primary} type="submit">
                   Invite

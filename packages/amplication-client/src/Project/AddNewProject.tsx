@@ -7,7 +7,6 @@ import {
   FeatureIndicatorContainer,
 } from "../Components/FeatureIndicatorContainer";
 import { Button } from "../Components/Button";
-import { EnumCtaType } from "../Components/FeatureIndicator";
 
 const CLASS_NAME = "add-new-project";
 
@@ -37,7 +36,6 @@ const AddNewProject = () => {
         featureId={BillingFeature.Projects}
         entitlementType={EntitlementType.Metered}
         limitationText="You have reached the maximum number of projects allowed. "
-        ctaType={EnumCtaType.Upgrade}
       >
         <Button
           onClick={handleNewProjectClick}
