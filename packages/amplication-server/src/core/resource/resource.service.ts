@@ -388,6 +388,19 @@ export class ResourceService {
     codeGenerator: keyof typeof EnumCodeGenerator,
     user: User
   ): Promise<string | null> {
+    const blockEntitlement = await this.billingService.getBooleanEntitlement(
+      user.workspace.id,
+      BillingFeature.CodeGeneratorNodeJsOnly
+    );
+
+    if (blockEntitlement && blockEntitlement.hasAccess) {
+      if (codeGenerator !== EnumCodeGenerator.NodeJs) {
+        throw new AmplicationError(
+          `Feature Unavailable. Please upgrade your plan to use the code generator for ${codeGenerator}.`
+        );
+      }
+    }
+
     const { codeGeneratorName, license } =
       CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE[codeGenerator];
 
@@ -410,6 +423,15 @@ export class ResourceService {
   //if the user has access to the .NET code generator, it will return it
   //otherwise, it will return the Node.js code generator
   async getDefaultCodeGenerator(user: User): Promise<EnumCodeGenerator | null> {
+    const blockEntitlement = await this.billingService.getBooleanEntitlement(
+      user.workspace.id,
+      BillingFeature.CodeGeneratorNodeJsOnly
+    );
+
+    if (blockEntitlement && blockEntitlement.hasAccess) {
+      return EnumCodeGenerator.NodeJs;
+    }
+
     const { license } =
       CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE[EnumCodeGenerator.DotNet];
 
