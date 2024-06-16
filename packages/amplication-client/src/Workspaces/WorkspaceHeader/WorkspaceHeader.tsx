@@ -20,7 +20,7 @@ import {
 import { useStiggContext } from "@stigg/react-sdk";
 import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import CommandPalette from "../../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../../Components/Button";
 import UserBadge from "../../Components/UserBadge";
@@ -89,6 +89,7 @@ const WorkspaceHeader: React.FC = () => {
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
   const stars = useFetchGithubStars();
+  const history = useHistory();
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
@@ -273,6 +274,16 @@ const WorkspaceHeader: React.FC = () => {
                       </div>
                     </SelectMenuItem>
                   ))}
+                  <SelectMenuItem
+                    closeAfterSelectionChange
+                    onSelectionChange={() => {
+                      history.push(`/${currentWorkspace?.id}/purchase`);
+                    }}
+                  >
+                    <div className={`${CLASS_NAME}__help_popover__name`}>
+                      Pricing Plans
+                    </div>
+                  </SelectMenuItem>
                 </SelectMenuList>
               </SelectMenuModal>
             </SelectMenu>

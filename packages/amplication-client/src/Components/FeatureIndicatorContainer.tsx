@@ -14,9 +14,10 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import React from "react";
 import {
   FeatureIndicator,
-  defaultTextEnd,
-  defaultTextStart,
-  disabledDefaultTextEnd,
+  DEFAULT_TEXT_END,
+  DEFAULT_TEXT_START,
+  DISABLED_DEFAULT_TEXT_END,
+  EnumCtaType,
 } from "./FeatureIndicator";
 import "./FeatureIndicatorContainer.scss";
 import { omit } from "lodash";
@@ -50,6 +51,7 @@ export type Props = {
   render?: (props: { disabled: boolean; icon?: IconType }) => ReactElement;
   reversePosition?: boolean;
   showTooltip?: boolean;
+  ctaType?: EnumCtaType;
 };
 
 export const FeatureIndicatorContainer: FC<Props> = ({
@@ -62,6 +64,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   render,
   reversePosition,
   showTooltip = true,
+  ctaType = EnumCtaType.Upgrade,
 }) => {
   const { stigg } = useStiggContext();
   const { currentWorkspace } = useContext(AppContext);
@@ -133,12 +136,12 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       return fullEnterpriseText;
     }
 
-    return defaultTextStart;
+    return DEFAULT_TEXT_START;
   }, [disabled, subscriptionPlan, status, limitationText, fullEnterpriseText]);
 
   const textEnd = useMemo(() => {
     if (disabled) {
-      return disabledDefaultTextEnd;
+      return DISABLED_DEFAULT_TEXT_END;
     }
     if (
       subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
@@ -147,7 +150,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       return "";
     }
 
-    return defaultTextEnd;
+    return DEFAULT_TEXT_END;
   }, [disabled, subscriptionPlan, status]);
 
   const showTooltipLink = useMemo(() => {
@@ -197,6 +200,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
           textStart={textStart}
           textEnd={textEnd}
           showTooltipLink={showTooltipLink}
+          ctaType={ctaType}
         ></FeatureIndicator>
       )}
       {!render &&
@@ -208,6 +212,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
             textStart={textStart}
             textEnd={textEnd}
             showTooltipLink={showTooltipLink}
+            ctaType={ctaType}
             element={
               featureIndicatorPlacement ===
               FeatureIndicatorPlacement.Outside ? (

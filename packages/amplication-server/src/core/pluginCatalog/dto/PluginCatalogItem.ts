@@ -12,6 +12,7 @@ export class PluginCatalogItem {
   website: string;
   categories: string[];
   type: string;
+  codeGeneratorName: string;
   taggedVersions: { [tag: string]: string };
   versions: PluginCatalogItemVersion[];
 }

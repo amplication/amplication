@@ -3,11 +3,14 @@ import {
   CircularProgress,
   EnumIconPosition,
 } from "@amplication/ui/design-system";
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import WorkspaceSelectorListItem from "./WorkspaceSelectorListItem";
-import { LicenseIndicatorContainer } from "../Components/LicenseIndicatorContainer";
+import {
+  LicenseIndicatorContainer,
+  LicensedResourceType,
+} from "../Components/LicenseIndicatorContainer";
 import { BillingFeature } from "@amplication/util-billing-types";
 
 type TData = {
@@ -29,13 +32,30 @@ function WorkspaceSelectorList({
 }: Props) {
   const { data, loading } = useQuery<TData>(GET_WORKSPACES);
 
+  //order workspaces by subscription plan
+  const orderedWorkspaces = useMemo(() => {
+    if (!data) {
+      return [];
+    }
+    return data.workspaces.sort((a, b) => {
+      if (
+        a.subscription?.subscriptionPlan === b.subscription?.subscriptionPlan
+      ) {
+        return a.name.localeCompare(b.name);
+      }
+      return a.subscription?.subscriptionPlan.localeCompare(
+        b.subscription?.subscriptionPlan
+      );
+    });
+  }, [data]);
+
   return (
     <div className={CLASS_NAME}>
       {loading ? (
         <CircularProgress centerToParent />
       ) : (
         <>
-          {data?.workspaces.map((workspace) => (
+          {orderedWorkspaces.map((workspace) => (
             <WorkspaceSelectorListItem
               onWorkspaceSelected={onWorkspaceSelected}
               workspace={workspace}
@@ -48,7 +68,8 @@ function WorkspaceSelectorList({
 
           <div className={`${CLASS_NAME}__new`}>
             <LicenseIndicatorContainer
-              featureId={BillingFeature.BlockWorkspaceCreation}
+              licensedResourceType={LicensedResourceType.Workspace}
+              blockByFeatureId={BillingFeature.BlockWorkspaceCreation}
             >
               <Button
                 buttonStyle={EnumButtonStyle.Text}

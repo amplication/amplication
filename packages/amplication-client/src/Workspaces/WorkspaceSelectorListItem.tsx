@@ -43,6 +43,10 @@ function WorkspaceSelectorListItem({
           {workspace.subscription?.subscriptionPlan ||
             models.EnumSubscriptionPlan.Free}{" "}
           Plan
+          {workspace.subscription?.status ===
+            models.EnumSubscriptionStatus.Trailing && (
+            <span className={`${CLASS_NAME}__trailing`}> - Trial</span>
+          )}
         </span>
       </div>
       {selected && (

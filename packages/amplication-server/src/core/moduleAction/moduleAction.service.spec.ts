@@ -538,7 +538,7 @@ describe("ModuleActionService", () => {
         name: "_exampleEntitiesMeta",
         outputParameters: null,
         parentBlock: null,
-        path: "/:id/meta",
+        path: "/meta",
         restVerb: "Get",
         versionNumber: 0,
       },

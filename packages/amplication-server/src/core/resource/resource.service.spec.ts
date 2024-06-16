@@ -707,7 +707,7 @@ describe("ResourceService", () => {
       await service.createService(
         createResourceArgs.args,
         createResourceArgs.user,
-        null,
+        false,
         true
       )
     ).toEqual(EXAMPLE_RESOURCE);
@@ -750,12 +750,12 @@ describe("ResourceService", () => {
       const nonDefaultPluginsToInstall = [];
       const requireAuthenticationEntity = true;
 
-      const result = await service.createPreviewService({
-        args: createResourceArgs.args,
+      const result = await service.createPreviewService(
+        createResourceArgs.args,
         user,
         nonDefaultPluginsToInstall,
-        requireAuthenticationEntity,
-      });
+        requireAuthenticationEntity
+      );
 
       expect(result).toEqual(EXAMPLE_RESOURCE);
       expect(prismaResourceCreateMock).toBeCalledTimes(1);
@@ -802,7 +802,7 @@ describe("ResourceService", () => {
       )
     ).rejects.toThrow(
       new BillingLimitationError(
-        "Your project exceeds its services limitation.",
+        "You have reached the maximum number of services allowed. To continue using additional services, please upgrade your plan.",
         BillingFeature.Services
       )
     );

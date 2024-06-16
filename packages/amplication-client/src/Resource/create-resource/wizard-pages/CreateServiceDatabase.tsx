@@ -18,6 +18,10 @@ import { EnumCodeGenerator } from "../../../models";
 const NODE_DB_PLUGINS = ["db-postgres", "db-mongo", "db-mysql", "db-mssql"];
 const DOTNET_DB_PLUGINS = ["dotnet-db-sqlserver", "dotnet-db-postgres"];
 
+const OVERRIDE_PLUGIN_NAME = {
+  "dotnet-db-postgres": "MS SQL Server DB",
+  "dotnet-db-sqlserver": "PostgreSQL DB",
+};
 const OVERRIDE_PLUGIN_DESCRIPTION = {
   "db-postgres":
     "Open-source object-relational database with a strong community",
@@ -26,7 +30,8 @@ const OVERRIDE_PLUGIN_DESCRIPTION = {
   "db-mssql": "High-performance, secure relational database by Microsoft",
   "dotnet-db-postgres":
     "Open-source object-relational database with a strong community",
-  "dotnet-db-sqlserver": "Scalable NoSQL database for unstructured data",
+  "dotnet-db-sqlserver":
+    "High-performance, secure relational database by Microsoft",
 };
 
 type Props = WizardStepProps & {
@@ -92,7 +97,7 @@ const CreateServiceDatabase: React.FC<Props> = ({ formik, pluginCatalog }) => {
               plugin && (
                 <LabelDescriptionSelector
                   name={plugin.pluginId}
-                  label={plugin.name}
+                  label={OVERRIDE_PLUGIN_NAME[plugin.pluginId] || plugin.name}
                   excludeImageWrapper
                   image={<PluginLogo plugin={plugin} />}
                   description={

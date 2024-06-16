@@ -22,7 +22,10 @@ import {
 import { ProjectService } from "../project/project.service";
 import { EnumPendingChangeOriginType } from "../resource/dto";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { ResourceService } from "../resource/resource.service";
+import {
+  CODE_GENERATOR_NAME_TO_ENUM,
+  ResourceService,
+} from "../resource/resource.service";
 import { MessageLoggerContext } from "./assistant.service";
 import { AssistantContext } from "./dto/AssistantContext";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
@@ -30,6 +33,7 @@ import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
 import * as functionArgsSchemas from "./functions/";
 import * as functionsArgsTypes from "./functions/types";
 import { USER_ENTITY_NAME } from "../entity/constants";
+import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
@@ -78,6 +82,10 @@ const FUNCTION_PERMISSIONS: {
     paramPath: "context.workspaceId",
   },
   installPlugins: {
+    paramType: AuthorizableOriginParameter.ResourceId,
+    paramPath: "serviceId",
+  },
+  getService: {
     paramType: AuthorizableOriginParameter.ResourceId,
     paramPath: "serviceId",
   },
@@ -284,11 +292,32 @@ export class AssistantFunctionsService {
     const installations = [];
     let authEntityExist = false;
 
+    const service = await this.resourceService.resource({
+      where: {
+        id: serviceId,
+      },
+    });
+
+    if (!service) {
+      throw new Error(`Service with id ${serviceId} not found`);
+    }
+
+    const codeGenerator =
+      CODE_GENERATOR_NAME_TO_ENUM[service.codeGeneratorName] ||
+      EnumCodeGenerator.NodeJs;
+
     for (const pluginId of pluginIds) {
       const plugin = await this.pluginCatalogService.getPluginWithLatestVersion(
         pluginId
       );
       const pluginVersion = plugin.versions[0];
+
+      if (plugin.codeGeneratorName !== codeGenerator) {
+        installations.push({
+          result: `Plugin not installed. Plugin code generator "${plugin.codeGeneratorName}" is not compatible with the service code generator ${codeGenerator}`,
+        });
+        continue;
+      }
 
       const { version, settings, configurations } = pluginVersion;
 
@@ -496,7 +525,10 @@ export class AssistantFunctionsService {
         id: resource.id,
         name: resource.name,
         description: resource.description,
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${resource.id}`,
+        codeGenerator:
+          CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
+          EnumCodeGenerator.NodeJs,
+        link: `${this.clientHost}/${context.workspaceId}/${args.projectId}/${resource.id}`,
       }));
     },
     getServiceEntities: async (
@@ -530,7 +562,8 @@ export class AssistantFunctionsService {
           args.serviceDescription || "",
           args.projectId,
           context.user,
-          needDefaultDbPlugin
+          needDefaultDbPlugin,
+          args.codeGenerator
         );
 
       let pluginsResults = null;
@@ -636,7 +669,7 @@ export class AssistantFunctionsService {
       args: functionsArgsTypes.GetPlugins,
       context: AssistantContext
     ) => {
-      return this.pluginCatalogService.getPlugins();
+      return this.pluginCatalogService.getPlugins(args.codeGenerator);
     },
     installPlugins: async (
       args: functionsArgsTypes.InstallPlugins,
@@ -647,6 +680,25 @@ export class AssistantFunctionsService {
         args.serviceId,
         context
       );
+    },
+    getService: async (
+      args: functionsArgsTypes.GetService,
+      context: AssistantContext
+    ) => {
+      const resource = await this.resourceService.resource({
+        where: {
+          id: args.serviceId,
+        },
+      });
+      return {
+        id: resource.id,
+        name: resource.name,
+        description: resource.description,
+        codeGenerator:
+          CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
+          EnumCodeGenerator.NodeJs,
+        link: `${this.clientHost}/${context.workspaceId}/${resource.projectId}/${resource.id}`,
+      };
     },
     getServiceModules: async (
       args: functionsArgsTypes.GetServiceModules,

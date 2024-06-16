@@ -15,3 +15,4 @@ export { default as getProjectServices } from "./getProjectServices.json";
 export { default as getServiceEntities } from "./getServiceEntities.json";
 export { default as getServiceModules } from "./getServiceModules.json";
 export { default as installPlugins } from "./installPlugins.json";
+export { default as getService } from "./getService.json";
