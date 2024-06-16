@@ -74,8 +74,9 @@ export class ProjectService {
         );
 
       if (
-        (projectEntitlement && !projectEntitlement.hasAccess) ||
-        projectEntitlement.usageLimit >= projectEntitlement.currentUsage
+        projectEntitlement &&
+        (!projectEntitlement.hasAccess ||
+          projectEntitlement.usageLimit >= projectEntitlement.currentUsage)
       ) {
         const message = `You have reached the maximum number of projects allowed. To continue using additional projects, please upgrade your plan.`;
         throw new BillingLimitationError(message, BillingFeature.Projects);
