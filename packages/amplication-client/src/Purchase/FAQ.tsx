@@ -89,24 +89,36 @@ export const FAQ = () => {
           }
         />
         <Question
-          question="Does Amplication support advanced security features like 2FA, audit logs, and SSO for organizational security concerns?"
+          question="What does the renewal process look like?"
           answer={
             <div>
-              Yes, Amplication&apos;s Enterprise plan is equipped with advanced
-              security features to meet the needs of your organization. This
-              includes support for Single Sign-On (SSO), audit logs, and
-              Two-Factor Authentication (2FA).
+              Paid subscriptions automatically renew for the same subscription
+              period unless you downgrade your plan before your renewal date.
             </div>
           }
         />
-
         <Question
-          question="We have multiple teams in the organization, can we use one account to manage separate teams?"
+          question="How do I cancel my subscription?"
           answer={
             <div>
-              Yes, the Enterprise plan lets you have unlimited projects,
-              services, and team members. You can manage all your teams from the
-              same organization in your preferred structure.
+              Very soon you will be able to manage your subscriptions in the
+              workspace settings. For now, you can reach out directly to us at{" "}
+              <MailTo
+                email="support@amplication.com"
+                subject="Cancel my subscription"
+                body="here"
+              />{" "}
+              and we will update your plan as requested.
+            </div>
+          }
+        />
+        <Question
+          question="What happens when I downgrade a subscription?"
+          answer={
+            <div>
+              You may downgrade your paid subscription any time before the
+              renewal date. The subscription will automatically downgrade at the
+              end of the billing cycle.
             </div>
           }
         />
@@ -120,12 +132,58 @@ export const FAQ = () => {
           }
         />
         <Question
+          question="What about VAT or other taxes?"
+          answer={
+            <div>
+              All prices exclude tax, because there are different taxes applied
+              in different areas. When paying by credit card, local taxes will
+              be added upon subscription, in accordance with the details you'll
+              provide.
+            </div>
+          }
+        />
+        <Question
+          question="What forms of payment do you accept?"
+          answer={
+            <div>
+              We accept payments via all major Credit Cards for all applicable
+              plans. For the enterprise edition, we also accept AWS billing and
+              wire transfers.
+            </div>
+          }
+        />
+        <Question
+          question="We have multiple teams in the organization, can we use one account to manage separate teams?"
+          answer={
+            <div>
+              Yes, the Enterprise plan lets you have unlimited projects,
+              services, and team members. You can manage all your teams from the
+              same organization in your preferred structure.
+            </div>
+          }
+        />
+        <Question
+          question="We are working with the enterprise edition of GitLab / BitBucket, will it work with Amplication?"
+          answer={
+            <div>
+              Amplication's compatibility with git providers varies based on the
+              plan:
+              <br />
+              <br />
+              <strong>Free & Essential Plans:</strong> Support GitHub.
+              <br />
+              <strong>Enterprise Plan:</strong> Supports also Bitbucket, AWS
+              CodeCommit, GitLab, Azure devOps and any other Git provider.
+              <br />
+            </div>
+          }
+        />
+        <Question
           question="We have our own best practices and standards - can we ask Amplication to generate the code in our own flavor?"
           answer={
             <div>
               Amplication offers a structured way to{" "}
               <a
-                className="text-secondary-purple"
                 target="_blank"
                 rel="noreferrer"
                 href="https://docs.amplication.com/custom-code/"
@@ -136,7 +194,6 @@ export const FAQ = () => {
               <br />
               We also provide various{" "}
               <a
-                className="text-secondary-purple"
                 target="_blank"
                 rel="noreferrer"
                 href="https://docs.amplication.com/getting-started/plugins/"
@@ -148,7 +205,6 @@ export const FAQ = () => {
               <br />
               Furthermore, you can create{" "}
               <a
-                className="text-secondary-purple"
                 target="_blank"
                 rel="noreferrer"
                 href="https://docs.amplication.com/enterprise-private-plugins/"
@@ -156,6 +212,103 @@ export const FAQ = () => {
                 private plugins
               </a>{" "}
               that are accessible only within your organization.
+            </div>
+          }
+        />
+
+        <Question
+          question="We have legacy systems, and would like to progress to modern architecture. Can you assist with it?"
+          answer={
+            <div>
+              Amplication can facilitate the modernization of your legacy
+              system. We offer a suite of tools and features designed to
+              streamline this process like{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://docs.amplication.com/how-to/import-prisma-schema/"
+              >
+                DB Schema Import
+              </a>
+              ,{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://docs.amplication.com/how-to/create-entity/"
+              >
+                Data Modeling
+              </a>
+              ,{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://docs.amplication.com/plugins-list/#apache-kafka"
+              >
+                Event Brokering
+              </a>
+              ,{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://docs.amplication.com/custom-code/"
+              >
+                Customizable Code Generation
+              </a>
+              ,{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://docs.amplication.com/break-the-monolith/"
+              >
+                Break The Monolith
+              </a>{" "}
+              and many more features.
+            </div>
+          }
+        />
+
+        <Question
+          question="Can you assist with deploying to various cloud providers like AWS?"
+          answer={
+            <div>
+              Yes, Amplication offers a wide range of relevant plugins and
+              comprehensive guides that enable deployment to services such as{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://docs.amplication.com/deploy/kubernetes/"
+              >
+                Kubernetes
+              </a>
+              ,{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://docs.amplication.com/deploy/docker-desktop/"
+              >
+                Docker Desktop
+              </a>
+              ,{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://docs.amplication.com/deploy/aws/ecs/"
+              >
+                AWS's ECS
+              </a>
+              , and more. Need to deploy to other cloud providers? You can
+              easily create a custom plugin for that.
+            </div>
+          }
+        />
+        <Question
+          question="I have an existing DB with a lot of data, entities, tables, and relationships. Can I use your backend development platform, while still keeping the data and the knowledge?"
+          answer={
+            <div>
+              Amplication's DB Schema Import feature provides a clear pathway
+              for integrating an existing database with the Amplication
+              platform. The import feature is available on Amplication's
+              Enterprise plan.
             </div>
           }
         />
@@ -169,13 +322,23 @@ export const FAQ = () => {
               the generated code, so your changes will not be overridden. For
               more details on how this works, please refer to our{" "}
               <a
-                className="text-secondary-purple"
                 target="_blank"
                 rel="noreferrer"
                 href="https://docs.amplication.com/smart-git-sync/"
               >
                 documentation.
               </a>
+            </div>
+          }
+        />
+        <Question
+          question="Does Amplication support advanced security features like 2FA, audit logs, and SSO for organizational security concerns?"
+          answer={
+            <div>
+              Yes, Amplication&apos;s Enterprise plan is equipped with advanced
+              security features to meet the needs of your organization. This
+              includes support for Single Sign-On (SSO), audit logs, and
+              Two-Factor Authentication (2FA).
             </div>
           }
         />
