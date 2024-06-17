@@ -538,6 +538,8 @@ class Customer {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(100)
   @IsOptional()
   @Field(() => Float, {
     nullable: true,
@@ -549,6 +551,8 @@ class Customer {
     type: Number,
   })
   @IsInt()
+  @Min(10)
+  @Max(9007199254740991)
   @IsOptional()
   @Field(() => GraphQLBigInt, {
     nullable: true,
@@ -571,6 +575,7 @@ class Customer {
     type: String,
   })
   @IsString()
+  @MaxLength(500)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -753,6 +758,8 @@ class CustomerCreateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(100)
   @IsOptional()
   @Field(() => Float, {
     nullable: true,
@@ -764,6 +771,8 @@ class CustomerCreateInput {
     type: Number,
   })
   @IsInt()
+  @Min(10)
+  @Max(9007199254740991)
   @IsOptional()
   @Field(() => GraphQLBigInt, {
     nullable: true,
@@ -786,6 +795,7 @@ class CustomerCreateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(500)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -1302,6 +1312,8 @@ class CustomerUpdateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(100)
   @IsOptional()
   @Field(() => Float, {
     nullable: true,
@@ -1313,6 +1325,8 @@ class CustomerUpdateInput {
     type: Number,
   })
   @IsInt()
+  @Min(10)
+  @Max(9007199254740991)
   @IsOptional()
   @Field(() => GraphQLBigInt, {
     nullable: true,
@@ -1335,6 +1349,7 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(500)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -9228,6 +9243,7 @@ class User {
     type: Number,
   })
   @IsInt()
+  @Max(120)
   @Field(() => Number)
   age!: number;
 
@@ -9244,6 +9260,8 @@ class User {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(999)
   @Field(() => Number)
   score!: number;
 
@@ -9452,6 +9470,7 @@ class UserCreateInput {
     type: Number,
   })
   @IsInt()
+  @Max(120)
   @Field(() => Number)
   age!: number;
 
@@ -9468,6 +9487,8 @@ class UserCreateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(999)
   @Field(() => Number)
   score!: number;
 
@@ -10066,6 +10087,7 @@ class UserUpdateInput {
     type: Number,
   })
   @IsInt()
+  @Max(120)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -10088,6 +10110,8 @@ class UserUpdateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(999)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
