@@ -1396,7 +1396,6 @@ export class ResourceService {
                   id: resource.projectId,
                 },
               },
-              resourceIds: [resource.id], // on the onboarding, we commit only the new resource
               user: {
                 connect: {
                   id: user.id,
