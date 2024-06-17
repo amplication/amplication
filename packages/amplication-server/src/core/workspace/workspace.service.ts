@@ -942,6 +942,7 @@ export class WorkspaceService {
         }
 
         if (hasChanges) {
+          const resourceIds = resources.map((resource) => resource.id);
           try {
             await this.projectService.commit(
               {
@@ -952,6 +953,7 @@ export class WorkspaceService {
                       id: project.id,
                     },
                   },
+                  resourceIds,
                   user: {
                     connect: {
                       id: workspaceUser.id,
@@ -992,6 +994,7 @@ export class WorkspaceService {
       );
 
       if (hasChanges) {
+        const resourceIds = resources.map((resource) => resource.id);
         try {
           await this.projectService.commit(
             {
@@ -1003,6 +1006,7 @@ export class WorkspaceService {
                     id: project.id,
                   },
                 },
+                resourceIds,
                 user: {
                   connect: {
                     id: workspaceUser.id,
@@ -1087,6 +1091,8 @@ export class WorkspaceService {
       );
 
       if (hasChanges) {
+        const resources = project.resources;
+        const resourceIds = resources.map((resource) => resource.id);
         try {
           await this.projectService.commit(
             {
@@ -1097,6 +1103,7 @@ export class WorkspaceService {
                     id: project.id,
                   },
                 },
+                resourceIds,
                 user: {
                   connect: {
                     id: currentUser.id,
