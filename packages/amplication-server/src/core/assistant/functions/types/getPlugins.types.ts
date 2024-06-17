@@ -5,9 +5,4 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface GetPlugins {
-  /**
-   * The type of code generator of the service. When not available, fetch the service details to find the codeGenerator.
-   */
-  codeGenerator: "DotNet" | "NodeJs";
-}
+export interface GetPlugins {}
