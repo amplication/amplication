@@ -338,8 +338,17 @@ export type CommitBuildsArgs = {
 export type CommitCreateInput = {
   /** It will bypass the limitations of the plan (if any). It will only work for limitation that support commit bypass. */
   bypassLimitations?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The strategy to use when committing the changes. If not provided, the default strategy will be used. */
+  commitStrategy?: InputMaybe<EnumCommitStrategy>;
   message: Scalars['String']['input'];
   project: WhereParentIdInput;
+  /**
+   * The resources to commit. By default, it contains all the project resources.
+   *       If the commit strategy is AllWithPendingChanges, the server will .
+   *       If the commit strategy is Specific, it will be an array with one element.
+   *       For on boarding only the newly created service will be committed.
+   */
+  resourceIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type CommitOrderByInput = {
@@ -783,6 +792,12 @@ export enum EnumBuildStatus {
 export enum EnumCodeGenerator {
   DotNet = 'DotNet',
   NodeJs = 'NodeJs'
+}
+
+export enum EnumCommitStrategy {
+  All = 'All',
+  AllWithPendingChanges = 'AllWithPendingChanges',
+  Specific = 'Specific'
 }
 
 export enum EnumDataType {
