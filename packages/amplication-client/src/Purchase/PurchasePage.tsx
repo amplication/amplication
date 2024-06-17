@@ -109,6 +109,9 @@ const PurchasePage = (props) => {
   const errorMessage =
     provisionSubscriptionError && formatError(provisionSubscriptionError);
 
+  const returnUrl =
+    props.location.state?.from?.pathname || `/${currentWorkspace?.id}`;
+
   const handleContactUsClick = useCallback(() => {
     window.open(data?.contactUsLink, "_blank");
     trackEvent({
@@ -135,8 +138,8 @@ const PurchasePage = (props) => {
             planId: BillingPlan.Essential,
             billingPeriod: selectedBillingPeriod,
             intentionType,
-            successUrl: props.location.state?.from?.pathname,
-            cancelUrl: props.location.state?.from?.pathname,
+            successUrl: returnUrl,
+            cancelUrl: returnUrl,
           },
         },
       });
