@@ -287,6 +287,41 @@ export class ProjectService {
     return blockBuildEntitlement.hasAccess;
   }
 
+  private async validateProjectLimitations(workspaceId, project: Project) {
+    const entitiesPerServiceEntitlement =
+      await this.billingService.getNumericEntitlement(
+        workspaceId,
+        BillingFeature.EntitiesPerService
+      );
+    const resourcesEntitiesCount = await this.prisma.entity.groupBy({
+      by: ["resourceId"],
+      where: {
+        resource: {
+          projectId: project.id,
+          deletedAt: null,
+        },
+        deletedAt: null,
+      },
+      _count: {
+        id: true,
+      },
+    });
+
+    const maxResourceEntitiesCount: number = resourcesEntitiesCount.reduce(
+      (max, current) => (current._count.id > max ? current._count.id : max),
+      0
+    );
+
+    if (
+      !entitiesPerServiceEntitlement.hasAccess ||
+      (!entitiesPerServiceEntitlement.isUnlimited &&
+        entitiesPerServiceEntitlement.value < maxResourceEntitiesCount)
+    ) {
+      const message = `Your workspace exceeds its resources entities limitation.`;
+      throw new BillingLimitationError(message, BillingFeature.Services);
+    }
+  }
+
   async commit(
     args: CreateCommitArgs,
     currentUser: User,
@@ -348,6 +383,8 @@ export class ProjectService {
           bypassLimitations: args.data.bypassLimitations,
         }
       );
+
+      await this.validateProjectLimitations(project.workspaceId, project);
     }
 
     if (isEmpty(resources)) {
