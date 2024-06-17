@@ -54,7 +54,15 @@ export const FAQ = () => {
                 applications into microservices. This plan is tailored for
                 scalability and integration with lifecycle management tools. For
                 a full breakdown of its capabilities and to get a personalized
-                quote, contact us directly.
+                quote,{" "}
+                <a
+                  target="_blank"
+                  rel="noreferrer"
+                  href="https://meetings-eu1.hubspot.com/paz-yanover/product-overview-vp-product"
+                >
+                  contact us
+                </a>{" "}
+                directly.
               </p>
             </div>
           }
@@ -67,7 +75,15 @@ export const FAQ = () => {
               Free plan is offered for <strong>FREE</strong>. The Essential plan
               is offered in a monthly or annual subscription, for a single or
               multiple projects. Enterprise plan pricing will be tailored to
-              your specific requirements. Contact us to get a quote.
+              your specific requirements.{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://meetings-eu1.hubspot.com/paz-yanover/product-overview-vp-product"
+              >
+                Contact us
+              </a>{" "}
+              to get a quote.
             </div>
           }
         />
@@ -215,7 +231,6 @@ export const FAQ = () => {
             </div>
           }
         />
-
         <Question
           question="We have legacy systems, and would like to progress to modern architecture. Can you assist with it?"
           answer={
@@ -266,7 +281,6 @@ export const FAQ = () => {
             </div>
           }
         />
-
         <Question
           question="Can you assist with deploying to various cloud providers like AWS?"
           answer={
@@ -297,7 +311,14 @@ export const FAQ = () => {
                 AWS's ECS
               </a>
               , and more. Need to deploy to other cloud providers? You can
-              easily create a custom plugin for that.
+              easily{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://docs.amplication.com/plugins/how-to-create-plugin/"
+              >
+                create a custom plugin for that.
+              </a>
             </div>
           }
         />
@@ -337,8 +358,15 @@ export const FAQ = () => {
             <div>
               Yes, Amplication&apos;s Enterprise plan is equipped with advanced
               security features to meet the needs of your organization. This
-              includes support for Single Sign-On (SSO), audit logs, and
-              Two-Factor Authentication (2FA).
+              includes support for{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://docs.amplication.com/enterprise-sso/"
+              >
+                Single Sign-On (SSO)
+              </a>
+              , audit logs, and Two-Factor Authentication (2FA).
             </div>
           }
         />
