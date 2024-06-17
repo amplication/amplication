@@ -615,12 +615,6 @@ export class AssistantFunctionsService {
       args: functionsArgsTypes.CommitProjectPendingChanges,
       context: AssistantContext
     ) => {
-      const resources = await this.resourceService.resources({
-        where: {
-          project: { id: args.projectId },
-        },
-      });
-      const resourceIds = resources.map((resource) => resource.id);
       const commit = await this.projectService.commit(
         {
           data: {
@@ -630,7 +624,6 @@ export class AssistantFunctionsService {
                 id: args.projectId,
               },
             },
-            resourceIds, // by default Jovu will commit all resources
             user: {
               connect: {
                 id: context.user.id,
