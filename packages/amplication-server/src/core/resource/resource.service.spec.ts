@@ -802,7 +802,7 @@ describe("ResourceService", () => {
       )
     ).rejects.toThrow(
       new BillingLimitationError(
-        "Your project exceeds its services limitation.",
+        "You have reached the maximum number of services allowed. To continue using additional services, please upgrade your plan.",
         BillingFeature.Services
       )
     );

@@ -693,6 +693,7 @@ enum EnumAssistantFunctions {
   GetPlugins
   GetProjectPendingChanges
   GetProjectServices
+  GetService
   GetServiceEntities
   GetServiceModules
   InstallPlugins
@@ -918,6 +919,7 @@ enum EnumSchemaNames {
 
 enum EnumSubscriptionPlan {
   Enterprise
+  Essential
   Free
   PreviewBreakTheMonolith
   Pro

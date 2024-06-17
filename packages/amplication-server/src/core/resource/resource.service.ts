@@ -225,8 +225,12 @@ export class ResourceService {
           BillingFeature.Services
         );
 
-      if (serviceEntitlement && !serviceEntitlement.hasAccess) {
-        const message = `Your project exceeds its services limitation.`;
+      if (
+        serviceEntitlement &&
+        (!serviceEntitlement.hasAccess ||
+          serviceEntitlement.currentUsage >= serviceEntitlement.usageLimit)
+      ) {
+        const message = `You have reached the maximum number of services allowed. To continue using additional services, please upgrade your plan.`;
         throw new BillingLimitationError(message, BillingFeature.Services);
       }
     }
@@ -388,6 +392,19 @@ export class ResourceService {
     codeGenerator: keyof typeof EnumCodeGenerator,
     user: User
   ): Promise<string | null> {
+    const blockEntitlement = await this.billingService.getBooleanEntitlement(
+      user.workspace.id,
+      BillingFeature.CodeGeneratorNodeJsOnly
+    );
+
+    if (blockEntitlement && blockEntitlement.hasAccess) {
+      if (codeGenerator !== EnumCodeGenerator.NodeJs) {
+        throw new AmplicationError(
+          `Feature Unavailable. Please upgrade your plan to use the code generator for ${codeGenerator}.`
+        );
+      }
+    }
+
     const { codeGeneratorName, license } =
       CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE[codeGenerator];
 
@@ -410,6 +427,15 @@ export class ResourceService {
   //if the user has access to the .NET code generator, it will return it
   //otherwise, it will return the Node.js code generator
   async getDefaultCodeGenerator(user: User): Promise<EnumCodeGenerator | null> {
+    const blockEntitlement = await this.billingService.getBooleanEntitlement(
+      user.workspace.id,
+      BillingFeature.CodeGeneratorNodeJsOnly
+    );
+
+    if (blockEntitlement && blockEntitlement.hasAccess) {
+      return EnumCodeGenerator.NodeJs;
+    }
+
     const { license } =
       CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE[EnumCodeGenerator.DotNet];
 
@@ -640,14 +666,16 @@ export class ResourceService {
     serviceDescription: string,
     projectId: string,
     user: User,
-    installDefaultDbPlugin = true
+    installDefaultDbPlugin = true,
+    codeGenerator: keyof typeof EnumCodeGenerator | null = null
   ): Promise<Resource> {
     const pathBase = `apps/${kebabCase(serviceName)}`;
 
     const adminUIPath = `${pathBase}-admin`;
     const serverPath = `${pathBase}-server`;
 
-    const codeGenerator = await this.getDefaultCodeGenerator(user);
+    const actualCodeGenerator =
+      codeGenerator || (await this.getDefaultCodeGenerator(user));
 
     const args: CreateOneResourceArgs = {
       data: {
@@ -658,16 +686,16 @@ export class ResourceService {
             id: projectId,
           },
         },
-        codeGenerator,
+        codeGenerator: actualCodeGenerator,
         resourceType: EnumResourceType.Service,
         serviceSettings: {
           adminUISettings: {
             adminUIPath: adminUIPath,
-            generateAdminUI: true,
+            generateAdminUI: actualCodeGenerator === EnumCodeGenerator.NodeJs,
           },
           serverSettings: {
             serverPath: serverPath,
-            generateGraphQL: true,
+            generateGraphQL: actualCodeGenerator === EnumCodeGenerator.NodeJs,
             generateRestApi: true,
             generateServer: true,
           },

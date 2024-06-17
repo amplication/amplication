@@ -158,7 +158,7 @@ const Assistant = () => {
               textStyle={EnumTextStyle.Tag}
               textAlign={EnumTextAlign.Center}
             >
-              Talk with us to upgrade and discover additional hidden
+              Upgrade now to keep using Jovu and unlock additional hidden
               functionalities.
             </Text>
             <Text
@@ -166,18 +166,17 @@ const Assistant = () => {
               textStyle={EnumTextStyle.Tag}
               textAlign={EnumTextAlign.Center}
             >
-              <a
+              <Link
+                to={`/${currentWorkspace?.id}/purchase`}
                 className={`${CLASS_NAME}__addon-section__contact-us`}
-                href={data?.contactUsLink}
-                target="blank"
               >
                 <Text
                   textColor={EnumTextColor.ThemeTurquoise}
                   textStyle={EnumTextStyle.Tag}
                 >
-                  Talk with us
+                  Upgrade Now
                 </Text>
-              </a>
+              </Link>
             </Text>
           </FlexItem>
         ) : currentWorkspace?.allowLLMFeatures ? (

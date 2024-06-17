@@ -179,17 +179,6 @@ export const Routes: RouteDef[] = [
                 isAnalytics: true,
               },
               {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/dotnet-promote",
-                Component: lazy(
-                  () => import("../VersionControl/DotNetPromotePage")
-                ),
-                moduleName: "DotnetPromote",
-                moduleClass: "",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/welcome",
                 Component: lazy(
                   () => import("../Assistant/OnboardingWithJovuPage")

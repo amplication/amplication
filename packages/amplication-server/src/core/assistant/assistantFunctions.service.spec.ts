@@ -6,7 +6,7 @@ import { MessageLoggerContext } from "./assistant.service";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
 
 import { Env } from "../../env";
-import { Entity } from "../../models";
+import { Entity, Resource } from "../../models";
 import { EntityService } from "../entity/entity.service";
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
@@ -28,6 +28,8 @@ import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParam
 import { JsonSchemaValidationModule } from "../../services/jsonSchemaValidation.module";
 import { USER_ENTITY_NAME } from "../entity/constants";
 import { AmplicationError } from "../../errors/AmplicationError";
+import { EnumResourceType } from "@amplication/code-gen-types";
+import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 
 const EXAMPLE_CHAT_OPENAI_KEY = "EXAMPLE_CHAT_OPENAI_KEY";
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
@@ -110,6 +112,7 @@ const EXAMPLE_PLUGIN = {
   categories: ["exampleCategory1", "exampleCategory2"],
   type: "exampleType",
   taggedVersions: {},
+  codeGeneratorName: EnumCodeGenerator.NodeJs,
   versions: [
     {
       id: "exampleVersionId",
@@ -121,6 +124,18 @@ const EXAMPLE_PLUGIN = {
       configurations: {},
     },
   ],
+};
+
+const EXAMPLE_RESOURCE: Resource = {
+  id: EXAMPLE_RESOURCE_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: "exampleName",
+  codeGeneratorName: "NodeJS",
+  description: "",
+  resourceType: EnumResourceType.Service,
+  gitRepositoryOverride: false,
+  licensed: true,
 };
 
 const entityServiceCreateOneEntityMock = jest.fn(() => EXAMPLE_ENTITY);
@@ -136,6 +151,9 @@ const pluginCatalogServiceGetPluginWithLatestVersionMock = jest.fn(
 );
 
 const resourceServiceResourcesMock = jest.fn();
+const resourceServiceResourceMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
+});
 const moduleServiceFindManyMock = jest.fn(() => {
   return [EXAMPLE_MODULE];
 });
@@ -204,6 +222,7 @@ describe("AssistantFunctionsService", () => {
         {
           provide: ResourceService,
           useValue: {
+            resource: resourceServiceResourceMock,
             resources: resourceServiceResourcesMock,
             createServiceWithDefaultSettings:
               resourceServiceCreateServiceWithDefaultSettingsMock,
@@ -414,7 +433,9 @@ describe("AssistantFunctionsService", () => {
     ],
     [
       EnumAssistantFunctions.GetPlugins,
-      {},
+      {
+        codeGenerator: EnumCodeGenerator.NodeJs,
+      },
       [
         {
           mock: pluginCatalogServiceGetPluginsMock,

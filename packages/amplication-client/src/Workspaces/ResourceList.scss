@@ -7,11 +7,3 @@ $resource-list-width: 400px;
     min-width: $resource-list-width;
   }
 }
-
-.workspaces-layout__main_content--xl {
-  .resource-list {
-    &__content {
-      flex-direction: row;
-    }
-  }
-}

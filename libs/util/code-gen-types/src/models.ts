@@ -729,6 +729,7 @@ export enum EnumAssistantFunctions {
   GetPlugins = 'GetPlugins',
   GetProjectPendingChanges = 'GetProjectPendingChanges',
   GetProjectServices = 'GetProjectServices',
+  GetService = 'GetService',
   GetServiceEntities = 'GetServiceEntities',
   GetServiceModules = 'GetServiceModules',
   InstallPlugins = 'InstallPlugins'
@@ -954,6 +955,7 @@ export enum EnumSchemaNames {
 
 export enum EnumSubscriptionPlan {
   Enterprise = 'Enterprise',
+  Essential = 'Essential',
   Free = 'Free',
   PreviewBreakTheMonolith = 'PreviewBreakTheMonolith',
   Pro = 'Pro'

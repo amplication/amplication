@@ -848,6 +848,14 @@ export class BuildService {
           const createPullRequestEvent: CreatePrRequest.KafkaEvent = {
             key: {
               resourceRepositoryId: kafkaEventKey,
+              /**
+                  If the branch is not per resource, we want to create a PR for the entire project
+                  so we set the resourceId to null to indicate avoid
+                  git force action issues due to creating PR for specific resources in parallel
+                  */
+              resourceId: createPullRequestMessage.isBranchPerResource
+                ? resource.id
+                : null,
             },
             value: createPullRequestMessage,
           };

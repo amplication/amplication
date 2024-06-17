@@ -31,9 +31,9 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { useStiggContext } from "@stigg/react-sdk";
 import {
   FeatureIndicator,
-  defaultTextEnd,
-  defaultTextStart,
-  disabledDefaultTextEnd,
+  DEFAULT_TEXT_END,
+  DEFAULT_TEXT_START,
+  DISABLED_DEFAULT_TEXT_END,
 } from "../../Components/FeatureIndicator";
 import { getCookie, setCookie } from "../../util/cookie";
 import useAbTesting from "../../VersionControl/hooks/useABTesting";
@@ -110,14 +110,14 @@ export const BtmButton: React.FC<Props> = ({
       subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
       subscriptionStatus === EnumSubscriptionStatus.Trailing
     ) {
-      setTooltipTextStart(defaultTextStart);
-      setTooltipTextEnd(defaultTextEnd);
+      setTooltipTextStart(DEFAULT_TEXT_START);
+      setTooltipTextEnd(DEFAULT_TEXT_END);
       setShowTooltipLink(true);
     }
 
     if (!hasRedesignArchitectureFeature) {
       setTooltipTextStart(NO_ACCESS_TEXT);
-      setTooltipTextEnd(disabledDefaultTextEnd);
+      setTooltipTextEnd(DISABLED_DEFAULT_TEXT_END);
       setShowTooltipLink(true);
     }
 
