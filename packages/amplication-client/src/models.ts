@@ -344,9 +344,8 @@ export type CommitCreateInput = {
   project: WhereParentIdInput;
   /**
    * The resources to commit. By default, it contains all the project resources.
-   *       If the commit strategy is AllWithPendingChanges, the server will .
+   *       If the commit strategy is AllWithPendingChanges, it will contain the resources with pending changes.
    *       If the commit strategy is Specific, it will be an array with one element.
-   *       For on boarding only the newly created service will be committed.
    */
   resourceIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
