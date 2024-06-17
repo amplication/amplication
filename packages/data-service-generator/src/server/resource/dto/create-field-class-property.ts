@@ -6,7 +6,7 @@ import {
   ScalarField,
   ScalarType,
 } from "prisma-schema-dsl-types";
-import { Entity, EntityField } from "@amplication/code-gen-types";
+import { Entity, EntityField, EnumDataType } from "@amplication/code-gen-types";
 import { classProperty, createGenericArray } from "../../../utils/ast";
 import {
   isEnumField,
@@ -156,6 +156,17 @@ export const PARSE_ID = builders.identifier("parse");
 export const IS_ARRAY_ID = builders.identifier("isArray");
 export const NULLABLE_ID = builders.identifier("nullable");
 
+function createMinMaxDecorator(
+  identifierName: string,
+  minValue: number
+): namedTypes.Decorator {
+  return builders.decorator(
+    builders.callExpression(builders.identifier(identifierName), [
+      builders.numericLiteral(minValue),
+    ])
+  );
+}
+
 /**
  *
  * create all the body of the classes of the dto like input, object, args, etc...
@@ -261,6 +272,37 @@ export function createFieldClassProperty(
   }
   if (prismaField.type === ScalarType.DateTime && !isQuery) {
     decorators.push(createTypeDecorator(DATE_ID));
+  }
+  if (
+    !isQuery &&
+    (field.dataType === EnumDataType.WholeNumber ||
+      field.dataType === EnumDataType.DecimalNumber)
+  ) {
+    const minValue = field.properties?.minimumValue;
+    const maxValue = field.properties?.maximumValue;
+
+    if (minValue) {
+      const minDecorator = createMinMaxDecorator("Min", minValue);
+      decorators.push(minDecorator);
+    }
+
+    if (maxValue) {
+      const maxDecorator = createMinMaxDecorator("Max", maxValue);
+      decorators.push(maxDecorator);
+    }
+  }
+  if (
+    !isQuery &&
+    (field.dataType === EnumDataType.SingleLineText ||
+      field.dataType === EnumDataType.MultiLineText)
+  ) {
+    const maxLengthValue = field.properties?.maxLength;
+    // min length is not exposed in the UI. We have a default value of 1 but we don't want to enforce it
+
+    if (maxLengthValue) {
+      const maxDecorator = createMinMaxDecorator("MaxLength", maxLengthValue);
+      decorators.push(maxDecorator);
+    }
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field, entity));
