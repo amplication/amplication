@@ -35,9 +35,8 @@ export class CommitCreateInput {
   @Field(() => [String], {
     nullable: true,
     description: `The resources to commit. By default, it contains all the project resources. 
-      If the commit strategy is AllWithPendingChanges, the server will . 
-      If the commit strategy is Specific, it will be an array with one element. 
-      For on boarding only the newly created service will be committed.`,
+      If the commit strategy is AllWithPendingChanges, it will contain the resources with pending changes. 
+      If the commit strategy is Specific, it will be an array with one element. `,
   })
   resourceIds?: string[];
 
