@@ -334,6 +334,10 @@ const prismaEntityCreateMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
 
+const prismaEntityCountMock = jest.fn(() => {
+  return 0;
+});
+
 const prismaEntityDeleteMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
@@ -547,6 +551,7 @@ describe("EntityService", () => {
               findUnique: prismaEntityFindUniqueMock,
               findMany: prismaEntityFindManyMock,
               create: prismaEntityCreateMock,
+              count: prismaEntityCountMock,
               delete: prismaEntityDeleteMock,
               update: prismaEntityUpdateMock,
             },
