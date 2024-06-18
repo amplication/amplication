@@ -31,6 +31,7 @@ import { OpenIDConnectAuthMiddleware } from "./oidc.middleware";
 import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
 import { IdpModule } from "../idp/idp.module";
 import { PreviewUserService } from "./previewUser.service";
+import { AwsMarketplaceService } from "./aws-marketplace/aws-marketplace.service";
 
 @Module({
   imports: [
@@ -79,6 +80,7 @@ import { PreviewUserService } from "./previewUser.service";
     GitHubStrategyConfigService,
     OpenIDConnectAuthMiddleware,
     SegmentAnalyticsModule,
+    AwsMarketplaceService,
   ],
   controllers: [AuthController],
   exports: [GqlAuthGuard, AuthResolver, PreviewUserService],

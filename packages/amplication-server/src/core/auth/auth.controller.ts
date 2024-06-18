@@ -21,6 +21,8 @@ import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { AuthExceptionFilter } from "../../filters/auth-exception.filter";
 import { requiresAuth } from "express-openid-connect";
+import { AwsMarketplaceService } from "./aws-marketplace/aws-marketplace.service";
+import { AWS_MARKETPLACE_INTEGRATION_CALLBACK_PATH } from "./aws-marketplace/constant";
 export const AUTH_LOGIN_PATH = "/auth/login";
 export const AUTH_LOGOUT_PATH = "/auth/logout";
 export const AUTH_CALLBACK_PATH = "/auth/callback";
@@ -35,7 +37,8 @@ export class AuthController {
     private readonly authService: AuthService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly awsMarketplaceService: AwsMarketplaceService
   ) {
     this.clientHost = configService.get(Env.CLIENT_HOST);
     this.host = `${configService.get(Env.HOST)}`;
@@ -148,5 +151,30 @@ export class AuthController {
     const profile = <AuthProfile>request.oidc.user;
 
     await this.authService.loginOrSignUp(profile, response);
+  }
+
+  @UseInterceptors(MorganInterceptor("combined"))
+  @Post("/auth/marketplace")
+  async awsMarketplace(@Req() request: Request, @Res() response: Response) {
+    const resBody =
+      await this.awsMarketplaceService.handleAwsMarketplaceRequest(
+        request,
+        response
+      );
+    response.send(resBody);
+  }
+
+  @UseInterceptors(MorganInterceptor("combined"))
+  @Post(AWS_MARKETPLACE_INTEGRATION_CALLBACK_PATH)
+  async awsMarketplaceCallback(
+    @Req() request: Request,
+    @Res() response: Response
+  ) {
+    const res =
+      await this.awsMarketplaceService.handleAwsMarketplaceRegistration(
+        request,
+        response
+      );
+    response.send(res);
   }
 }
