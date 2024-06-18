@@ -6,11 +6,13 @@ import {
   ScalarField,
   ScalarType,
 } from "prisma-schema-dsl-types";
-import { Entity, EntityField, EnumDataType } from "@amplication/code-gen-types";
+import { Entity, EntityField } from "@amplication/code-gen-types";
 import { classProperty, createGenericArray } from "../../../utils/ast";
 import {
   isEnumField,
+  isNumericField,
   isOneToOneRelationField,
+  isTextField,
   isToManyRelationField,
 } from "../../../utils/field";
 import { createPrismaFields } from "../../prisma/create-prisma-schema-fields";
@@ -25,6 +27,9 @@ import {
   IS_NUMBER_ID,
   IS_OPTIONAL_ID,
   IS_STRING_ID,
+  MAX_ID,
+  MAX_LENGTH_ID,
+  MIN_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
 import {
@@ -157,13 +162,11 @@ export const IS_ARRAY_ID = builders.identifier("isArray");
 export const NULLABLE_ID = builders.identifier("nullable");
 
 function createMinMaxDecorator(
-  identifierName: string,
-  minValue: number
+  identifierName: namedTypes.Identifier,
+  value: number
 ): namedTypes.Decorator {
   return builders.decorator(
-    builders.callExpression(builders.identifier(identifierName), [
-      builders.numericLiteral(minValue),
-    ])
+    builders.callExpression(identifierName, [builders.numericLiteral(value)])
   );
 }
 
@@ -273,34 +276,26 @@ export function createFieldClassProperty(
   if (prismaField.type === ScalarType.DateTime && !isQuery) {
     decorators.push(createTypeDecorator(DATE_ID));
   }
-  if (
-    !isQuery &&
-    (field.dataType === EnumDataType.WholeNumber ||
-      field.dataType === EnumDataType.DecimalNumber)
-  ) {
+  if (!isQuery && isNumericField(field)) {
     const minValue = field.properties?.minimumValue;
     const maxValue = field.properties?.maximumValue;
 
     if (minValue) {
-      const minDecorator = createMinMaxDecorator("Min", minValue);
+      const minDecorator = createMinMaxDecorator(MIN_ID, minValue);
       decorators.push(minDecorator);
     }
 
     if (maxValue) {
-      const maxDecorator = createMinMaxDecorator("Max", maxValue);
+      const maxDecorator = createMinMaxDecorator(MAX_ID, maxValue);
       decorators.push(maxDecorator);
     }
   }
-  if (
-    !isQuery &&
-    (field.dataType === EnumDataType.SingleLineText ||
-      field.dataType === EnumDataType.MultiLineText)
-  ) {
+  if (!isQuery && isTextField(field)) {
     const maxLengthValue = field.properties?.maxLength;
     // min length is not exposed in the UI. We have a default value of 1 but we don't want to enforce it
 
     if (maxLengthValue) {
-      const maxDecorator = createMinMaxDecorator("MaxLength", maxLengthValue);
+      const maxDecorator = createMinMaxDecorator(MAX_LENGTH_ID, maxLengthValue);
       decorators.push(maxDecorator);
     }
   }
