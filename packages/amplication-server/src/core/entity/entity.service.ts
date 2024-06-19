@@ -272,6 +272,39 @@ export class EntityService {
     }
   }
 
+  private async checkServiceEntityLicense(resource: Resource) {
+    if (!this.billingService.isBillingEnabled) {
+      return;
+    }
+    await this.checkServiceLicense(resource);
+
+    const serviceEntityEntitlementPromise =
+      this.billingService.getNumericEntitlement(
+        resource.project.workspaceId,
+        BillingFeature.EntitiesPerService
+      );
+
+    const resourceEntitiesCount = this.prisma.entity.count({
+      where: {
+        resourceId: resource.id,
+        deletedAt: null,
+      },
+    });
+
+    const serviceEntityEntitlement = await serviceEntityEntitlementPromise;
+    if (
+      !serviceEntityEntitlement.hasAccess ||
+      (!serviceEntityEntitlement.isUnlimited &&
+        serviceEntityEntitlement.value <= (await resourceEntitiesCount))
+    ) {
+      const message = "Your service reached its number of entities limitation.";
+      throw new BillingLimitationError(
+        message,
+        BillingFeature.EntitiesPerService
+      );
+    }
+  }
+
   async createOneEntity(
     args: CreateOneEntityArgs,
     user: User,
@@ -285,7 +318,7 @@ export class EntityService {
       include: { project: true },
     });
 
-    await this.checkServiceLicense(resource);
+    await this.checkServiceEntityLicense(resource);
 
     if (
       args.data?.name?.toLowerCase().trim() ===
