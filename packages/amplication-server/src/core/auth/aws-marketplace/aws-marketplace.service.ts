@@ -4,6 +4,11 @@ import {
   ResolveCustomerCommand,
   ResolveCustomerResult,
 } from "@aws-sdk/client-marketplace-metering";
+import {
+  MarketplaceEntitlementServiceClient,
+  GetEntitlementsCommand,
+  Entitlement,
+} from "@aws-sdk/client-marketplace-entitlement-service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Request, Response } from "express";
 import { Env } from "../../../env";
@@ -19,6 +24,7 @@ import { AuthService } from "../auth.service";
 @Injectable()
 export class AwsMarketplaceService {
   private awsMeteringClient: MarketplaceMeteringClient;
+  private awsEntitlementsClient: MarketplaceEntitlementServiceClient;
   private host: string;
 
   private cookieName = "mpid";
@@ -43,6 +49,9 @@ export class AwsMarketplaceService {
     };
 
     this.awsMeteringClient = new MarketplaceMeteringClient(config);
+    this.awsEntitlementsClient = new MarketplaceEntitlementServiceClient(
+      config
+    );
 
     this.host = configService.get(Env.HOST);
   }
@@ -56,7 +65,6 @@ export class AwsMarketplaceService {
     });
 
     try {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       const result = await this.awsMeteringClient.send(command);
 
       this.logger.debug(`Resolve aws marketplace customer response`, {
@@ -67,6 +75,42 @@ export class AwsMarketplaceService {
       this.logger.error(`Failed to resolve aws marketplace customer`, error, {
         token,
       });
+      throw error;
+    }
+  }
+
+  public async validateEntitlements(
+    productCode: string,
+    customerIdentifier: string
+  ): Promise<Entitlement> {
+    const command = new GetEntitlementsCommand({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      ProductCode: productCode,
+    });
+
+    try {
+      const result = await this.awsEntitlementsClient.send(command);
+
+      this.logger.debug(`Validate aws marketplace customer entitlements`, {
+        ...result,
+      });
+      const { Entitlements: entitlements } = result;
+
+      if (!entitlements || entitlements.length === 0) {
+        throw new Error("No entitlements found");
+      }
+
+      return entitlements.find(
+        (x) => x.CustomerIdentifier === customerIdentifier
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to retrieve aws marketplace customer entitlements`,
+        error,
+        {
+          productCode,
+        }
+      );
       throw error;
     }
   }
@@ -134,18 +178,25 @@ export class AwsMarketplaceService {
         return `Failed to register. Please contact Amplication support and quote: ${customer.CustomerIdentifier} ${customer.ProductCode}`;
       }
 
+      const entitlement = await this.validateEntitlements(
+        customer.ProductCode,
+        customer.CustomerIdentifier
+      );
+
       await this.prismaService.awsMarketplaceIntegration.upsert({
         create: {
           email: contactEmail,
           awsAccountId: customer.CustomerAWSAccountId,
           customerIdentifier: customer.CustomerIdentifier,
           productCode: customer.ProductCode,
+          dimension: entitlement.Dimension,
         },
         update: {
           email: contactEmail,
           awsAccountId: customer.CustomerAWSAccountId,
           customerIdentifier: customer.CustomerIdentifier,
           productCode: customer.ProductCode,
+          dimension: entitlement.Dimension,
         },
         where: {
           customerIdentifier: customer.CustomerIdentifier,
