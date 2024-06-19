@@ -11,15 +11,15 @@ import {
 } from "@aws-sdk/client-marketplace-entitlement-service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Request, Response } from "express";
-import { Env } from "../../../env";
-import { PrismaService } from "../../../prisma";
 import { ConfigService } from "@nestjs/config";
 import { stringifyUrl } from "query-string";
 import { URL } from "url";
 import { registrationHtmlBody } from "./registration-page";
 import { AWS_MARKETPLACE_INTEGRATION_CALLBACK_PATH } from "./constant";
 import * as cookie from "cookie";
-import { AuthService } from "../auth.service";
+import { Env } from "../../env";
+import { PrismaService } from "../../prisma";
+import { AuthService } from "../auth/auth.service";
 
 @Injectable()
 export class AwsMarketplaceService {
