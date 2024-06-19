@@ -572,9 +572,10 @@ model AwsMarketplaceIntegration {
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
   email              String     @unique
-  productCode        String
   customerIdentifier String     @unique
   awsAccountId       String
+  productCode        String
+  dimension          String
   accountId          String?    @unique
   account            Account?   @relation(fields: [accountId], references: [id], onDelete: Cascade)
   workspaceId        String?
