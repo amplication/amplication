@@ -2,13 +2,21 @@ import { Icon, TreeItem } from "@amplication/ui/design-system";
 import React, { useCallback, useMemo } from "react";
 import { NodeTypeEnum } from "./NodeTypeEnum";
 import { FileMeta } from "./CodeViewExplorer";
+import { CircularProgress } from "@mui/material";
 
 export type FileExplorerNodeProps = {
   file: FileMeta;
   onSelect: (data: FileMeta) => void;
+  currentFolder: string;
+  isLoading: boolean;
 };
 
-export const FileExplorerNode = ({ file, onSelect }: FileExplorerNodeProps) => {
+export const FileExplorerNode = ({
+  file,
+  onSelect,
+  currentFolder,
+  isLoading,
+}: FileExplorerNodeProps) => {
   const handleNodeClick = useCallback(
     (id: string, file: FileMeta) => {
       file && onSelect(file);
@@ -24,12 +32,16 @@ export const FileExplorerNode = ({ file, onSelect }: FileExplorerNodeProps) => {
   const farIcon = useMemo(() => {
     if (file.type !== NodeTypeEnum.Folder) return null;
 
-    return file.expanded ? (
-      <Icon icon="chevron_down" />
-    ) : (
-      <Icon icon="chevron_right" />
+    return (
+      <div className={`folder-icon ${isLoading ? CircularProgress : ""}`}>
+        {file.expanded ? (
+          <Icon icon="chevron_down" />
+        ) : (
+          <Icon icon="chevron_right" />
+        )}
+      </div>
     );
-  }, [file.expanded, file.type]);
+  }, [isLoading, file.expanded, file.type]);
 
   return (
     <TreeItem
@@ -42,7 +54,13 @@ export const FileExplorerNode = ({ file, onSelect }: FileExplorerNodeProps) => {
     >
       {file.children?.map((child) => {
         return (
-          <FileExplorerNode file={child} key={child.path} onSelect={onSelect} />
+          <FileExplorerNode
+            file={child}
+            key={child.path}
+            onSelect={onSelect}
+            currentFolder={currentFolder}
+            isLoading={isLoading}
+          />
         );
       })}
     </TreeItem>
