@@ -29,6 +29,8 @@ import dockerNames from "docker-names";
 import { EntityPendingChange } from "../entity/entity.service";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { SubscriptionService } from "../subscription/subscription.service";
+import { EnumCommitStrategy } from "../resource/dto/EnumCommitStrategy";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class ProjectService {
@@ -41,7 +43,8 @@ export class ProjectService {
     private readonly billingService: BillingService,
     private readonly analytics: SegmentAnalyticsService,
     private readonly gitProviderService: GitProviderService,
-    private readonly subscriptionService: SubscriptionService
+    private readonly subscriptionService: SubscriptionService,
+    private readonly logger: AmplicationLogger
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -484,12 +487,40 @@ export class ProjectService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
+    let resourcesToBuild: Resource[] = resources;
+    if (args.data.commitStrategy === EnumCommitStrategy.AllWithPendingChanges) {
+      resourcesToBuild = resources.filter((resource) => {
+        return (
+          changedEntities.some(
+            (change) => change.resource.id === resource.id
+          ) ||
+          changedBlocks.some((change) => change.resource.id === resource.id)
+        );
+      });
+    }
+
+    if (args.data.commitStrategy === EnumCommitStrategy.Specific) {
+      if (!args.data.resourceIds || args.data.resourceIds.length === 0) {
+        throw new Error(
+          "resourceIds are required for specific commit strategy"
+        );
+      }
+      resourcesToBuild = resources.filter((resource) => {
+        return args.data.resourceIds.includes(resource.id);
+      });
+    }
+
     if (!skipBuild) {
-      const promises = resources
+      const promises = resourcesToBuild
         .filter(
           (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
         )
         .map((resource: Resource) => {
+          this.logger.debug("Creating build for resource", {
+            resourceId: resource.id,
+            commitStrategy: args.data.commitStrategy,
+            commitId: commit.id,
+          });
           return this.buildService.create({
             data: {
               resource: {
@@ -511,8 +542,7 @@ export class ProjectService {
         });
 
       await Promise.all(promises);
-    }
-    if (!skipBuild) {
+
       await this.analytics.trackWithContext({
         event: EnumEventType.CommitCreate,
         properties: {
