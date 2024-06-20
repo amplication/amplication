@@ -4,7 +4,6 @@ import { ConfigService } from "@nestjs/config";
 import Stigg, {
   BillingPeriod,
   BooleanEntitlement,
-  CreateSubscriptionParams,
   MeteredEntitlement,
   NumericEntitlement,
   ReportUsageAck,
