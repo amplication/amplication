@@ -35,17 +35,17 @@ model Account {
 }
 
 model Workspace {
-  id                        String                      @id(map: "Organization_pkey") @default(cuid())
-  createdAt                 DateTime                    @default(now())
-  updatedAt                 DateTime                    @updatedAt
-  name                      String                      @unique(map: "Workspace.name_unique")
-  allowLLMFeatures          Boolean                     @default(true)
+  id                        String                     @id(map: "Organization_pkey") @default(cuid())
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+  name                      String                     @unique(map: "Workspace.name_unique")
+  allowLLMFeatures          Boolean                    @default(true)
   users                     User[]
   invitations               Invitation[]
   subscriptions             Subscription[]
   gitOrganizations          GitOrganization[]
   projects                  Project[]
-  AwsMarketplaceIntegration AwsMarketplaceIntegration[]
+  AwsMarketplaceIntegration AwsMarketplaceIntegration?
 }
 
 model Project {
@@ -572,14 +572,16 @@ model AwsMarketplaceIntegration {
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
   email              String     @unique
-  customerIdentifier String     @unique
+  customerIdentifier String
   awsAccountId       String
   productCode        String
   dimension          String
   accountId          String?    @unique
   account            Account?   @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  workspaceId        String?
-  workspace          Workspace? @relation(fields: [workspaceId], references: [id])
+  workspaceId        String?    @unique
+  workspace          Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([customerIdentifier, productCode], map: "AwsMarketplaceIntegration.customerIdentifier_productCode_unique")
 }
 
 enum EnumSubscriptionPlan {

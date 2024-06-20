@@ -199,7 +199,11 @@ export class AwsMarketplaceService {
           dimension: entitlement.Dimension,
         },
         where: {
-          customerIdentifier: customer.CustomerIdentifier,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          customerIdentifier_productCode: {
+            customerIdentifier: customer.CustomerIdentifier,
+            productCode: customer.ProductCode,
+          },
         },
       });
 
