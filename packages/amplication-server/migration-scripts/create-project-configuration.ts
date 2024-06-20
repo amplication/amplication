@@ -3,8 +3,6 @@ import { PrismaClient, EnumResourceType, EnumBlockType } from "../src/prisma";
 import { DEFAULT_RESOURCE_COLORS } from "../src/core/resource/constants";
 
 const DEFAULT_PROJECT_CONFIGURATION_NAME = "Project Configuration";
-const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
-  "This resource is used to store project configuration.";
 
 const DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME =
   "Project Configuration Settings";
@@ -68,7 +66,7 @@ async function main() {
                 create: {
                   color: DEFAULT_RESOURCE_COLORS.projectConfiguration,
                   resourceType: EnumResourceType.ProjectConfiguration,
-                  description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
+                  description: "", // mandatory field
                   name: DEFAULT_PROJECT_CONFIGURATION_NAME,
                   project: { connect: { id: project.id } },
                 },
