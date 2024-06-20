@@ -84,9 +84,6 @@ export const INVALID_RESOURCE_ID = "Invalid resourceId";
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
   "The resource of type `ProjectConfiguration` cannot be deleted";
 
-const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
-  "This resource is used to store project configuration.";
-
 const SERVICE_LIMITATION_ERROR =
   "Can not create new services, The workspace reached your plan's resource limitation";
 
@@ -191,7 +188,7 @@ export class ResourceService {
     const newProjectConfiguration = await this.prisma.resource.create({
       data: {
         resourceType: EnumResourceType.ProjectConfiguration,
-        description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
+        description: "", // mandatory field
         name: projectName,
         project: { connect: { id: projectId } },
       },
