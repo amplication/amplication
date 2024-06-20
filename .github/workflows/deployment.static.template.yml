@@ -22,6 +22,9 @@ on:
         required: true
       AWS_SECRET_ACCESS_KEY:
         required: true
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
 
 jobs:
   deployment-static:
