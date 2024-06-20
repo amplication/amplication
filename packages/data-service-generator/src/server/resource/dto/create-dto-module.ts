@@ -21,6 +21,9 @@ import {
   IS_JSON_VALUE_ID,
   VALIDATE_NESTED_ID,
   CLASS_VALIDATOR_CUSTOM_VALIDATORS_MODULE,
+  MIN_ID,
+  MAX_ID,
+  MAX_LENGTH_ID,
 } from "./class-validator.util";
 import {
   CLASS_TRANSFORMER_MODULE,
@@ -73,6 +76,9 @@ export function getImportableNames(isCustomDto: boolean) {
       IS_STRING_ID,
       IS_OPTIONAL_ID,
       IS_ENUM_ID,
+      MIN_ID,
+      MAX_ID,
+      MAX_LENGTH_ID,
       VALIDATE_NESTED_ID,
     ],
     [CLASS_VALIDATOR_CUSTOM_VALIDATORS_MODULE]: [IS_JSON_VALUE_ID],

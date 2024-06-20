@@ -3430,6 +3430,9 @@ import {
   IsOptional,
   IsBoolean,
   IsNumber,
+  Min,
+  Max,
+  MaxLength,
   IsEnum,
   ValidateNested,
 } from "class-validator";
@@ -3525,6 +3528,8 @@ class Customer {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(100)
   @IsOptional()
   @Field(() => Float, {
     nullable: true,
@@ -3536,6 +3541,8 @@ class Customer {
     type: Number,
   })
   @IsInt()
+  @Min(10)
+  @Max(9007199254740991)
   @IsOptional()
   @Field(() => GraphQLBigInt, {
     nullable: true,
@@ -3558,6 +3565,7 @@ class Customer {
     type: String,
   })
   @IsString()
+  @MaxLength(500)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -3668,7 +3676,10 @@ import {
   IsBoolean,
   IsDate,
   IsNumber,
+  Min,
+  Max,
   IsInt,
+  MaxLength,
   IsEnum,
   ValidateNested,
 } from "class-validator";
@@ -3740,6 +3751,8 @@ class CustomerCreateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(100)
   @IsOptional()
   @Field(() => Float, {
     nullable: true,
@@ -3751,6 +3764,8 @@ class CustomerCreateInput {
     type: Number,
   })
   @IsInt()
+  @Min(10)
+  @Max(9007199254740991)
   @IsOptional()
   @Field(() => GraphQLBigInt, {
     nullable: true,
@@ -3773,6 +3788,7 @@ class CustomerCreateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(500)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -4214,7 +4230,10 @@ import {
   IsBoolean,
   IsDate,
   IsNumber,
+  Min,
+  Max,
   IsInt,
+  MaxLength,
   IsEnum,
   ValidateNested,
 } from "class-validator";
@@ -4289,6 +4308,8 @@ class CustomerUpdateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(100)
   @IsOptional()
   @Field(() => Float, {
     nullable: true,
@@ -4300,6 +4321,8 @@ class CustomerUpdateInput {
     type: Number,
   })
   @IsInt()
+  @Min(10)
+  @Max(9007199254740991)
   @IsOptional()
   @Field(() => GraphQLBigInt, {
     nullable: true,
@@ -4322,6 +4345,7 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(500)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -11403,8 +11427,10 @@ import { ApiProperty } from "@nestjs/swagger";
 import {
   IsString,
   IsInt,
+  Max,
   IsDate,
   IsNumber,
+  Min,
   ValidateNested,
   IsOptional,
   IsEnum,
@@ -11474,6 +11500,7 @@ class User {
     type: Number,
   })
   @IsInt()
+  @Max(120)
   @Field(() => Number)
   age!: number;
 
@@ -11490,6 +11517,8 @@ class User {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(999)
   @Field(() => Number)
   score!: number;
 
@@ -11625,8 +11654,10 @@ import { ApiProperty } from "@nestjs/swagger";
 import {
   IsString,
   IsInt,
+  Max,
   IsDate,
   IsNumber,
+  Min,
   ValidateNested,
   IsOptional,
   IsEnum,
@@ -11698,6 +11729,7 @@ class UserCreateInput {
     type: Number,
   })
   @IsInt()
+  @Max(120)
   @Field(() => Number)
   age!: number;
 
@@ -11714,6 +11746,8 @@ class UserCreateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(999)
   @Field(() => Number)
   score!: number;
 
@@ -12222,8 +12256,10 @@ import {
   IsString,
   IsOptional,
   IsInt,
+  Max,
   IsDate,
   IsNumber,
+  Min,
   ValidateNested,
   IsEnum,
   IsBoolean,
@@ -12312,6 +12348,7 @@ class UserUpdateInput {
     type: Number,
   })
   @IsInt()
+  @Max(120)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -12334,6 +12371,8 @@ class UserUpdateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(999)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
