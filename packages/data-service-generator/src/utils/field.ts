@@ -16,6 +16,16 @@ export const ENUM_DATA_TYPES: Set<EnumDataType> = new Set([
   EnumDataType.OptionSet,
 ]);
 
+export const NUMERIC_DATA_TYPES: Set<EnumDataType> = new Set([
+  EnumDataType.WholeNumber,
+  EnumDataType.DecimalNumber,
+]);
+
+export const TEXT_DATA_TYPES: Set<EnumDataType> = new Set([
+  EnumDataType.SingleLineText,
+  EnumDataType.MultiLineText,
+]);
+
 export function isEditableField(field: EntityField): boolean {
   const editableFieldType = !UNEDITABLE_FIELD_TYPES.has(field.dataType);
   return editableFieldType;
@@ -40,6 +50,14 @@ export function isScalarListField(field: EntityField): boolean {
 
 export function isEnumField(field: EntityField): boolean {
   return ENUM_DATA_TYPES.has(field.dataType);
+}
+
+export function isNumericField(field: EntityField): boolean {
+  return NUMERIC_DATA_TYPES.has(field.dataType);
+}
+
+export function isTextField(field: EntityField): boolean {
+  return TEXT_DATA_TYPES.has(field.dataType);
 }
 
 export function isRelationField(
