@@ -1,10 +1,10 @@
-import { EnumModuleDtoType } from "@amplication/code-gen-types";
+import { EnumDataType, EnumModuleDtoType } from "@amplication/code-gen-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { get, isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
-import { plural, singular } from "pluralize";
+import { isPlural, plural, singular } from "pluralize";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { Env } from "../../env";
 import { Block } from "../../models";
@@ -29,7 +29,6 @@ import {
 import { MessageLoggerContext } from "./assistant.service";
 import { AssistantContext } from "./dto/AssistantContext";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
-
 import * as functionArgsSchemas from "./functions/";
 import * as functionsArgsTypes from "./functions/types";
 import { USER_ENTITY_NAME } from "../entity/constants";
@@ -480,6 +479,14 @@ export class AssistantFunctionsService {
 
       const newFields = await Promise.all(
         args.fields?.map(async (field) => {
+          //Jovu currently supports only one-many relations.
+          //@todo: This validation should be changed after adding support for one-one/ many-many relations.
+          if (field.type === EnumDataType.Lookup && isPlural(field.name)) {
+            return {
+              error: `a lookup field [${field.name}] that is the many side of the relation can not be created because it is already created on the one side of the relation`,
+            };
+          }
+
           try {
             return this.entityService.createFieldByDisplayName(
               {

@@ -81,7 +81,7 @@ import { PreviewUserService } from "./previewUser.service";
     SegmentAnalyticsModule,
   ],
   controllers: [AuthController],
-  exports: [GqlAuthGuard, AuthResolver, PreviewUserService],
+  exports: [GqlAuthGuard, AuthResolver, PreviewUserService, AuthService],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

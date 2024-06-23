@@ -30,6 +30,7 @@ import { AdministratorModule } from "./administrator/administrator.module";
 import { GptModule } from "./gpt/gpt.module";
 import { UsageInsightsModule } from "./UsageInsights/usageInsights.module";
 import { AssistantModule } from "./assistant/assistant.module";
+import { AwsMarketplaceModule } from "./aws-marketplace/aws-marketplace.module";
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { AssistantModule } from "./assistant/assistant.module";
     ModuleDtoModule,
     GptModule,
     AssistantModule,
+    AwsMarketplaceModule,
   ],
   exports: [
     AccountModule,
