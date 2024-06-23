@@ -25,7 +25,7 @@ jobs:
 
       - name: copy json source files to target repository
         run: |
-          cp -r amplication/packages/amplication-server/src/core/assistant/functions/*.json openai-assistant-configuration/src/assets/functions/
+          cp amplication/packages/amplication-server/src/core/assistant/functions/*.json openai-assistant-configuration/src/assets/functions/
 
       - name: configure git
         run: |
