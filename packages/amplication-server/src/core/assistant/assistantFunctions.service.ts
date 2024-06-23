@@ -480,11 +480,10 @@ export class AssistantFunctionsService {
       const newFields = await Promise.all(
         args.fields?.map(async (field) => {
           //Jovu currently supports only one-many relations.
-          // This validation should be changed after adding support for one-one/ many-many relations.
+          //@todo: This validation should be changed after adding support for one-one/ many-many relations.
           if (field.type === EnumDataType.Lookup && isPlural(field.name)) {
             return {
-              error:
-                "a lookup field that is the many side of the relation can not be created because it is already created on the one side of the relation",
+              error: `a lookup field [${field.name}] that is the many side of the relation can not be created because it is already created on the one side of the relation`,
             };
           }
 
