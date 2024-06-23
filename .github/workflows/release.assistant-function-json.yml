@@ -19,9 +19,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: amplication/openai-assistant-configuration
-          path: amplication
+          path: openai-assistant-configuration
           ref: next
-          token: ${{ secrets.RELEASE_PAT }}
+          token: ${{ secrets.RELEASE_FUNCTIONS_PAT }}
 
       - name: copy json source files to target repository
         run: |
@@ -47,7 +47,7 @@ jobs:
       - name: create pull request
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.RELEASE_PAT }}
+          token: ${{ secrets.RELEASE_FUNCTIONS_PAT }}
           commit-message: "feat(openai-assistant): updated json source files"
           path: openai-assistant-configuration
           branch: function-json-files-update
