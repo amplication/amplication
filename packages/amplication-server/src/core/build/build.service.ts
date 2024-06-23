@@ -145,12 +145,13 @@ export const ACTION_LOG_LEVEL: {
   debug: EnumActionLogLevel.Debug,
 };
 
-const INITIAL_ONBOARDING_COMMIT_MESSAGE_BODY = `Congratulations on your first commit with Amplication! 
-We encourage you to continue exploring the many ways Amplication can supercharge your development. 
- 
-If you find Amplication useful, please show your support and give our GitHub repo a star ⭐️   
-This simple action helps our open-source project grow and reach more developers like you. 
-Thank you and happy coding!`;
+const FIRST_COMMIT_MESSAGE_BODY = `Congratulations on your first commit!
+
+We encourage you to continue exploring how Amplication can enhance your development process, including easy management of entities, API generation, and the simplification of backend services management through extensive plugin system.
+
+Remember, [Amplication](https://amplication.com/) is the fastest way in the world to build production-ready backend services : ) 
+
+Happy coding!`;
 
 export function createInitialStepData(
   version: string,
@@ -774,11 +775,11 @@ export class BuildService {
       const url = `${clientHost}/${project.workspaceId}/${project.id}/${resource.id}/builds/${build.id}`;
       const buildLinkHTML = `[${url}](${url})`;
 
-      const commitMessage = oldBuild
+      const commitMessage = oldBuild?.id
         ? commit.message && `Commit message: ${commit.message}.`
-        : INITIAL_ONBOARDING_COMMIT_MESSAGE_BODY;
+        : FIRST_COMMIT_MESSAGE_BODY; // this message will be shown only on the first commit to the repository
 
-      const commitBody = `Amplication build # ${build.id}\n${commitMessage}\nBuild URL: ${buildLinkHTML}`;
+      const commitBody = `Amplication build # ${build.id}\n\n${commitMessage}\n\nBuild URL: ${buildLinkHTML}`;
 
       const canUseCustomBaseBranch =
         await this.billingService.getBooleanEntitlement(

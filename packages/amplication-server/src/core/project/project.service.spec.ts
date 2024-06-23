@@ -37,6 +37,7 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -384,6 +385,7 @@ describe("ProjectService", () => {
           provide: GitProviderService,
           useClass: jest.fn(() => ({})),
         },
+        MockedAmplicationLoggerProvider,
       ],
     }).compile();
 

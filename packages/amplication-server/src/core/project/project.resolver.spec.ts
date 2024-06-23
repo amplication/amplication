@@ -24,6 +24,7 @@ import { PendingChange } from "../resource/dto/PendingChange";
 import { ResourceService } from "../resource/resource.service";
 import { ProjectResolver } from "./project.resolver";
 import { ProjectService } from "./project.service";
+import { EnumCommitStrategy } from "../resource/dto/EnumCommitStrategy";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -282,6 +283,7 @@ describe("ProjectResolver", () => {
       {
         data: {
           bypassLimitations: false,
+          commitStrategy: EnumCommitStrategy.All,
           message: EXAMPLE_MESSAGE,
           project: { connect: { id: EXAMPLE_PROJECT_ID } },
         },
