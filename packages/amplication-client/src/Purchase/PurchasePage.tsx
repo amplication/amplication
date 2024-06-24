@@ -212,7 +212,7 @@ const PurchasePage = (props) => {
                 : `All core backend functionality:`;
             },
             planCTAButton: {
-              startTrial: () => "Contact us",
+              startTrial: () => "Upgrade now", //essential for existing users starts without a trial
               startNew: provisionSubscriptionLoading
                 ? "...Loading"
                 : "Upgrade now",
