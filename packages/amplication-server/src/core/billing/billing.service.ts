@@ -243,6 +243,7 @@ export class BillingService {
       billingPeriod: billingPeriod,
       awaitPaymentConfirmation: true,
       unitQuantity: planId === BillingPlan.Essential ? 1 : undefined,
+      skipTrial: true,
       checkoutOptions: {
         allowPromoCodes: true,
         cancelUrl: new URL(cancelUrl, this.clientHost).href,

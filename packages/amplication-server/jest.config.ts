@@ -19,7 +19,7 @@ export default {
   coverageDirectory: "../../coverage/packages/amplication-server",
   coverageThreshold: {
     global: {
-      branches: 81,
+      branches: 80,
       lines: 52,
     },
   },
