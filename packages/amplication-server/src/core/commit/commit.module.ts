@@ -14,7 +14,7 @@ import { CommitService } from "./commit.service";
     UserModule,
     PermissionsModule,
     forwardRef(() => BuildModule),
-    EntityModule,
+    forwardRef(() => EntityModule),
     BlockModule,
   ],
   providers: [CommitService, CommitResolver],

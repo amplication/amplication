@@ -4,7 +4,7 @@ import {
   getDefaultDtosForEnumField,
   getDefaultDtosForRelatedEntity,
 } from "@amplication/dsg-utils";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { AmplicationError } from "../../errors/AmplicationError";
@@ -38,6 +38,11 @@ import { QueryMode } from "../../enums/QueryMode";
 import { validateCustomActionsEntitlement } from "../block/block.util";
 import { JsonArray } from "type-fest";
 import { PropertyTypeDef } from "./dto/propertyTypes/PropertyTypeDef";
+import {
+  CODE_GENERATOR_NAME_TO_ENUM,
+  ResourceService,
+} from "../resource/resource.service";
+import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -53,6 +58,18 @@ const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
 const UNSUPPORTED_TYPES = [
   EnumModuleDtoPropertyType.Null,
   EnumModuleDtoPropertyType.Undefined,
+];
+
+const NEST_ONLY_DTO_TYPES = [
+  EnumModuleDtoType.OrderByInput,
+  EnumModuleDtoType.ListRelationFilter,
+  EnumModuleDtoType.CreateNestedManyInput,
+  EnumModuleDtoType.UpdateNestedManyInput,
+  EnumModuleDtoType.DeleteArgs,
+  EnumModuleDtoType.CountArgs,
+  EnumModuleDtoType.FindOneArgs,
+  EnumModuleDtoType.CreateArgs,
+  EnumModuleDtoType.UpdateArgs,
 ];
 
 @Injectable()
@@ -73,6 +90,8 @@ export class ModuleDtoService extends BlockTypeService<
     protected readonly logger: AmplicationLogger,
     protected readonly analytics: SegmentAnalyticsService,
     private readonly prisma: PrismaService,
+    @Inject(forwardRef(() => ResourceService))
+    private readonly resourceService: ResourceService,
     private configService: ConfigService
   ) {
     super(blockService, logger);
@@ -88,13 +107,14 @@ export class ModuleDtoService extends BlockTypeService<
   ): Promise<ModuleDto[]> {
     //todo: extend query to return shared dtos from other resources in the project
 
-    return super.findMany(args);
+    return this.findMany(args);
   }
 
   async findMany(
     args: FindManyModuleDtoArgs,
     user?: User
   ): Promise<ModuleDto[]> {
+    let allDTOs = [];
     const { includeCustomDtos, includeDefaultDtos, ...rest } = args.where || {};
 
     const prismaArgs = {
@@ -109,9 +129,9 @@ export class ModuleDtoService extends BlockTypeService<
     const includeDefaultDtosBoolean = includeDefaultDtos !== false;
 
     if (includeCustomDtosBoolean && includeDefaultDtosBoolean) {
-      return super.findMany(prismaArgs);
+      allDTOs = await super.findMany(prismaArgs);
     } else if (includeCustomDtosBoolean) {
-      return super.findManyBySettings(prismaArgs, [
+      allDTOs = await super.findManyBySettings(prismaArgs, [
         {
           path: ["dtoType"],
           equals: EnumModuleDtoType.Custom,
@@ -122,7 +142,7 @@ export class ModuleDtoService extends BlockTypeService<
         },
       ]);
     } else if (includeDefaultDtosBoolean) {
-      return super.findManyBySettings(
+      allDTOs = await super.findManyBySettings(
         prismaArgs,
         [
           {
@@ -137,8 +157,34 @@ export class ModuleDtoService extends BlockTypeService<
         "AND"
       );
     } else {
-      return [];
+      allDTOs = [];
     }
+
+    const resourceId = args.where.resource?.id;
+    return this.filterDtosByGeneratorName(resourceId, allDTOs);
+  }
+
+  async filterDtosByGeneratorName(
+    resourceId: string,
+    allDTOs: ModuleDto[]
+  ): Promise<ModuleDto[]> {
+    const resource = await this.resourceService.findOne({
+      where: { id: resourceId },
+    });
+
+    if (
+      !resource ||
+      (resource &&
+        CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] !==
+          EnumCodeGenerator.DotNet)
+    )
+      return allDTOs;
+
+    return allDTOs.filter((dto) => {
+      return (
+        NEST_ONLY_DTO_TYPES.find((type) => type === dto.dtoType) === undefined
+      );
+    });
   }
 
   async validateModuleDtoName(
