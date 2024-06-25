@@ -6,6 +6,11 @@ import { PrismaService } from "../../prisma";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { EnumEventType } from "./segmentAnalytics.types";
 import { RequestContext } from "nestjs-request-context";
+import { BillingService } from "../../core/billing/billing.service";
+import {
+  billingServiceMock,
+  subscriptionPlanMock,
+} from "../../core/billing/billing.service.mock";
 
 jest.mock("@segment/analytics-node");
 
@@ -32,6 +37,10 @@ describe("SegmentAnalyticsService", () => {
             segmentWriteKey: "segmentWriteKey",
           },
         },
+        {
+          provide: BillingService,
+          useValue: billingServiceMock,
+        },
       ],
     }).compile();
 
@@ -42,7 +51,7 @@ describe("SegmentAnalyticsService", () => {
     jest.clearAllMocks();
   });
 
-  it("should indentify with account data and anonymous id if present", async () => {
+  it("should identify with account data and anonymous id if present", async () => {
     jest.spyOn(RequestContext, "currentContext", "get").mockReturnValue({
       req: {
         analyticsSessionId: "123",
@@ -95,6 +104,7 @@ describe("SegmentAnalyticsService", () => {
         properties: {
           workspaceId: "workspaceId",
           entityName: "entityName",
+          planType: subscriptionPlanMock,
           $groups: {
             groupWorkspace: "workspaceId",
           },
@@ -149,6 +159,7 @@ describe("SegmentAnalyticsService", () => {
             workspaceId: "workspaceId",
             resourceId,
             projectId,
+            planType: subscriptionPlanMock,
             $groups: {
               groupWorkspace: "workspaceId",
             },
@@ -182,6 +193,7 @@ describe("SegmentAnalyticsService", () => {
             workspaceId: "workspaceId",
             resourceId,
             projectId,
+            planType: subscriptionPlanMock,
             $groups: {
               groupWorkspace: "workspaceId",
             },
