@@ -22,6 +22,7 @@ import { billingServiceGetBooleanEntitlementMock } from "../block/blockType.serv
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { subscriptionServiceFindOneMock } from "../module/module.service.spec";
+import { ResourceService } from "../resource/resource.service";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
@@ -262,6 +263,14 @@ describe("ModuleDtoService", () => {
               }
             },
           },
+        },
+        {
+          provide: ResourceService,
+          useClass: jest.fn(() => ({
+            findOne: jest.fn(() => {
+              return { codeGeneratorName: "NodeJS" };
+            }),
+          })),
         },
         ModuleDtoService,
       ],
