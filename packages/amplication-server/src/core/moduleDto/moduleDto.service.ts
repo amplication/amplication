@@ -350,7 +350,10 @@ export class ModuleDtoService extends BlockTypeService<
 
     const moduleDto = await super.findOne(args);
 
-    if (moduleDto?.dtoType !== EnumModuleDtoType.Custom) {
+    if (
+      moduleDto?.dtoType !== EnumModuleDtoType.Custom &&
+      moduleDto?.dtoType !== EnumModuleDtoType.CustomEnum
+    ) {
       throw new AmplicationError(
         "Cannot delete a default DTO. To delete it, you must delete the entity"
       );
