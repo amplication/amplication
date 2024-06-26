@@ -12,13 +12,11 @@ import {
   Tooltip,
 } from "@amplication/ui/design-system";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { useQuery } from "@apollo/client";
 import { useStiggContext } from "@stigg/react-sdk";
 import classNames from "classnames";
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
 import jovu from "../assets/jovu-logo.svg";
 import { useAppContext } from "../context/appContext";
 import "./Assistant.scss";
@@ -68,10 +66,6 @@ const Assistant = () => {
 
   const { hasAccess } = stigg.getMeteredEntitlement({
     featureId: BillingFeature.JovuRequests,
-  });
-
-  const { data } = useQuery(GET_CONTACT_US_LINK, {
-    variables: { id: currentWorkspace.id },
   });
 
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
