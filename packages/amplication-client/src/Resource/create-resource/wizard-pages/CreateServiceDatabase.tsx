@@ -19,8 +19,8 @@ const NODE_DB_PLUGINS = ["db-postgres", "db-mongo", "db-mysql", "db-mssql"];
 const DOTNET_DB_PLUGINS = ["dotnet-db-sqlserver", "dotnet-db-postgres"];
 
 const OVERRIDE_PLUGIN_NAME = {
-  "dotnet-db-postgres": "MS SQL Server DB",
-  "dotnet-db-sqlserver": "PostgreSQL DB",
+  "dotnet-db-postgres": "PostgreSQL DB",
+  "dotnet-db-sqlserver": "MS SQL Server DB",
 };
 const OVERRIDE_PLUGIN_DESCRIPTION = {
   "db-postgres":
