@@ -188,7 +188,7 @@ const Commit = ({
         );
       }
     },
-    [currentProject?.id, currentWorkspace.id, history, trackEvent]
+    [currentProject?.id, currentWorkspace?.id, history, trackEvent]
   );
 
   return (
