@@ -28,6 +28,7 @@ const STREAM_ERROR_MESSAGE =
 const ASSISTANT_INSTRUCTIONS: { [key in EnumAssistantMessageType]: string } = {
   [EnumAssistantMessageType.Default]: ``,
   [EnumAssistantMessageType.Onboarding]: `
+  Use the current project, do not create a new project.
   The user is creating a new service and you need to generate everything needed for the service, including entities, fields, relations, apis, and install plugins. 
   You can suggest names and different configuration as needed. 
   After you create entities, also create fields and relations for all entities. Aim to create as many fields and relations as needed. 
