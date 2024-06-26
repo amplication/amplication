@@ -250,17 +250,22 @@ export class GitCli {
   }
 
   async getShortStat(): Promise<string> {
-    const currentRef = (await this.git.raw(["rev-parse", "HEAD"])).trim();
-    const prevRef = (
-      await this.git.raw(["rev-parse", `${currentRef}^`])
-    ).trim();
+    try {
+      const currentRef = (await this.git.raw(["rev-parse", "HEAD"])).trim();
+      const prevRef = (
+        await this.git.raw(["rev-parse", `${currentRef}^`])
+      ).trim();
 
-    const diffStat = (
-      await this.git.diff(["--shortstat", `${prevRef}..${currentRef}`])
-    ).trim();
+      const diffStat = (
+        await this.git.diff(["--shortstat", `${prevRef}..${currentRef}`])
+      ).trim();
 
-    this.logger.debug("get short stat", { currentRef, prevRef, diffStat });
+      this.logger.debug("get short stat", { currentRef, prevRef, diffStat });
 
-    return diffStat;
+      return diffStat;
+    } catch (error) {
+      this.logger.warn("Failed to git diff get short stat", error);
+      return "0 file changed, 0 insertions(+), 0 deletions(-)";
+    }
   }
 }
