@@ -20,6 +20,7 @@ import { useContactUs } from "../Workspaces/hooks/useContactUs";
 import dotnetLogo from "../assets/images/dotnet-logo.svg";
 import { useAppContext } from "../context/appContext";
 import "./DotnetPromotePage.scss";
+import { EnumSubscriptionStatus } from "../models";
 
 const CLASS_NAME = "dotnet-promote-page";
 
@@ -61,8 +62,18 @@ const DotNetPromotePage = () => {
                 textAlign={EnumTextAlign.Center}
                 className={`${CLASS_NAME}__sub-title`}
               >
-                The trial plan does not include the option to generate code in
-                .NET. However, you have a few alternatives:
+                {currentWorkspace?.subscription?.status ===
+                EnumSubscriptionStatus.Trailing ? (
+                  <>
+                    The trial plan does not include the option to generate code
+                    in .NET. However, you have a few alternatives:
+                  </>
+                ) : (
+                  <>
+                    Your plan does not include the option to generate code in
+                    .NET. However, you have a few alternatives:
+                  </>
+                )}
               </Text>
 
               <List
@@ -137,8 +148,12 @@ const DotNetPromotePage = () => {
                   />
                   <Text textStyle={EnumTextStyle.Tag}>
                     Continue working and generate code in Node.js to explore and
-                    understand Amplication's capabilities during the trial
-                    period.
+                    understand Amplication's capabilities
+                    {currentWorkspace?.subscription?.status ===
+                    EnumSubscriptionStatus.Trailing
+                      ? " during the trial period"
+                      : ""}
+                    .
                   </Text>
                 </ListItem>
               </List>
