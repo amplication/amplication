@@ -183,10 +183,12 @@ const Commit = ({
           eventName: AnalyticsEventNames.ChangedToDotNet,
           workspaceId: currentWorkspace.id,
         });
-        history.push(`/${currentWorkspace?.id}/purchase`);
+        history.push(
+          `/${currentWorkspace?.id}/${currentProject?.id}/dotnet-upgrade`
+        );
       }
     },
-    [currentWorkspace?.id, history, trackEvent]
+    [currentProject?.id, currentWorkspace.id, history, trackEvent]
   );
 
   return (
