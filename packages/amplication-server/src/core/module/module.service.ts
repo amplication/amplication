@@ -397,14 +397,13 @@ export class ModuleService extends BlockTypeService<
     const allOtherResourceCustomModuleDtos = allResourceModuleDtos.filter(
       (moduleDto) =>
         moduleDto.parentBlockId !== moduleId &&
-        (moduleDto.dtoType === EnumModuleDtoType.Custom ||
-          moduleDto.dtoType === EnumModuleDtoType.CustomEnum)
+        moduleDto.dtoType === EnumModuleDtoType.Custom
     );
 
     allOtherResourceCustomModuleDtos.forEach((moduleDto) => {
-      moduleDto.properties.forEach((prop) => {
+      moduleDto.properties?.forEach((prop) => {
         if (prop) {
-          prop.propertyTypes.forEach((propType) => {
+          prop.propertyTypes?.forEach((propType) => {
             const currentDto = moduleModuleDtos.find(
               (x) => x.id === propType.dtoId
             );

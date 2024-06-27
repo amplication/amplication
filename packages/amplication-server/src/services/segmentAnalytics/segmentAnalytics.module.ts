@@ -1,10 +1,17 @@
-import { Module, Global, DynamicModule, Provider } from "@nestjs/common";
+import {
+  Module,
+  Global,
+  DynamicModule,
+  Provider,
+  forwardRef,
+} from "@nestjs/common";
 import { SegmentAnalyticsService } from "./segmentAnalytics.service";
 import {
   SegmentAnalyticsAsyncOptions,
   SegmentAnalyticsOptionsFactory,
 } from "./segmentAnalytics.interfaces";
 import { PrismaModule } from "../../prisma";
+import { BillingModule } from "../../core/billing/billing.module";
 
 @Global()
 @Module({
@@ -21,7 +28,7 @@ export class SegmentAnalyticsModule {
   ): DynamicModule {
     return {
       module: SegmentAnalyticsModule,
-      imports: [],
+      imports: [forwardRef(() => BillingModule)],
       providers: [
         SegmentAnalyticsService,
         ...this.createConnectProviders(options),

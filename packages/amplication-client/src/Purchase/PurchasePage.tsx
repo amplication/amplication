@@ -1,11 +1,6 @@
-import { Paywall, BillingPeriod, Price } from "@stigg/react-sdk";
 import { BillingPlan } from "@amplication/util-billing-types";
+import { BillingPeriod, Paywall, Price } from "@stigg/react-sdk";
 
-import { useTracking } from "../util/analytics";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { useHistory } from "react-router-dom";
-import { Helmet } from "react-helmet";
-import * as models from "../models";
 import {
   Button,
   EnumButtonStyle,
@@ -13,17 +8,22 @@ import {
   Modal,
   Snackbar,
 } from "@amplication/ui/design-system";
-import "./PurchasePage.scss";
 import { useCallback, useContext, useState } from "react";
+import { Helmet } from "react-helmet";
+import { useHistory } from "react-router-dom";
+import * as models from "../models";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import "./PurchasePage.scss";
 
-import { AppContext } from "../context/appContext";
-import { PromoBanner } from "./PromoBanner";
-import { ApolloError, useMutation, useQuery } from "@apollo/client";
+import { ApolloError, useMutation } from "@apollo/client";
+import { useContactUs } from "../Workspaces/hooks/useContactUs";
 import { PROVISION_SUBSCRIPTION } from "../Workspaces/queries/workspaceQueries";
-import { PurchaseLoader } from "./PurchaseLoader";
-import { FAQ } from "./FAQ";
-import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
+import { AppContext } from "../context/appContext";
 import { formatError } from "../util/error";
+import { FAQ } from "./FAQ";
+import { PromoBanner } from "./PromoBanner";
+import { PurchaseLoader } from "./PurchaseLoader";
 
 export type DType = {
   provisionSubscription: models.ProvisionSubscriptionResult;
@@ -63,8 +63,9 @@ const PurchasePage = (props) => {
   const [provisionErrorMessage, setProvisionErrorMessage] = useState<
     string | null
   >(null);
-  const { data } = useQuery(GET_CONTACT_US_LINK, {
-    variables: { id: currentWorkspace.id },
+  const { handleContactUsClick } = useContactUs({
+    actionName: "Contact Us",
+    eventOriginLocation: "pricing-page",
   });
 
   const { trackEvent } = useTracking();
@@ -111,15 +112,6 @@ const PurchasePage = (props) => {
 
   const returnUrl =
     props.location.state?.from?.pathname || `/${currentWorkspace?.id}`;
-
-  const handleContactUsClick = useCallback(() => {
-    window.open(data?.contactUsLink, "_blank");
-    trackEvent({
-      eventName: AnalyticsEventNames.ContactUsButtonClick,
-      action: "Contact Us",
-      eventOriginLocation: "pricing-page",
-    });
-  }, [currentWorkspace.id, data?.contactUsLink]);
 
   const handleDowngradeClick = useCallback(() => {
     // This query param is used to open HubSpot chat with the downgrade flow
@@ -212,7 +204,7 @@ const PurchasePage = (props) => {
                 : `All core backend functionality:`;
             },
             planCTAButton: {
-              startTrial: () => "Contact us",
+              startTrial: () => "Upgrade now", //essential for existing users starts without a trial
               startNew: provisionSubscriptionLoading
                 ? "...Loading"
                 : "Upgrade now",
