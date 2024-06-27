@@ -1,4 +1,4 @@
-import { Module, forwardRef } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ModuleDtoService } from "./moduleDto.service";
 import { ModuleDtoResolver } from "./moduleDto.resolver";
 import { BlockModule } from "../block/block.module";
@@ -7,7 +7,6 @@ import { PrismaModule } from "../../prisma";
 import { UserModule } from "../user/user.module";
 import { BillingService } from "../billing/billing.service";
 import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
-import { ResourceModule } from "../resource/resource.module";
 @Module({
   imports: [
     UserModule,
@@ -15,7 +14,6 @@ import { ResourceModule } from "../resource/resource.module";
     PermissionsModule,
     PrismaModule,
     SegmentAnalyticsModule,
-    forwardRef(() => ResourceModule),
   ],
   providers: [ModuleDtoService, BillingService, ModuleDtoResolver],
   exports: [ModuleDtoService, ModuleDtoResolver],

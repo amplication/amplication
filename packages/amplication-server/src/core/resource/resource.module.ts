@@ -29,7 +29,7 @@ import { ActionModule } from "../action/action.module";
     PrismaModule,
     PermissionsModule,
     UserModule,
-    forwardRef(() => EntityModule),
+    EntityModule,
     ServiceSettingsModule,
     ServiceTopicsModule,
     TopicModule,
