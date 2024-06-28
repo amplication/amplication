@@ -65,7 +65,7 @@
     "@ntegral/nestjs-sendgrid": "^1.0.0",
     "@octokit/app": "^13.1.1",
     "@octokit/auth-app": "^4.0.8",
-    "@octokit/core": "^4.1.0",
+    "@octokit/core": "^4.2.4",
     "@octokit/oauth-app": "^4.2.0",
     "@octokit/oauth-authorization-url": "^5.0.0",
     "@octokit/openapi-types": "^19.0.0",
