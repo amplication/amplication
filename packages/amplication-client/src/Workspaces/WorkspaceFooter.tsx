@@ -64,7 +64,7 @@ const WorkspaceFooter: React.FC<{ lastCommit: Commit }> = ({ lastCommit }) => {
     />
   );
 
-  const gitUrl = useBuildGitUrl(lastResourceBuild);
+  const { gitUrl } = useBuildGitUrl(lastResourceBuild);
 
   return (
     currentProject && (

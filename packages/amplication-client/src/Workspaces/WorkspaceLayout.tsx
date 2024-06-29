@@ -116,7 +116,9 @@ const WorkspaceLayout: React.FC<Props> = ({
   useEffect(() => {
     if (!currentProject?.id) return;
     commitUtils.refetchCommitsData(true);
-  }, [currentProject?.id]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentProject?.id]); //do not include commitUtils to avoid infinite loop
 
   const { trackEvent, Track } = useTracking<{ [key: string]: any }>({
     workspaceId: currentWorkspace?.id,
