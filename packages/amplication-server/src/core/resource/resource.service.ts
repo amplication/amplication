@@ -716,8 +716,7 @@ export class ResourceService {
 
     if (installDefaultDbPlugin) {
       const defaultDbPlugin =
-        CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ===
-        EnumCodeGenerator.NodeJs
+        actualCodeGenerator === EnumCodeGenerator.NodeJs
           ? DEFAULT_NODEJS_DB_PLUGIN
           : DEFAULT_DOTNET_DB_PLUGIN;
       await this.installPlugins(resource.id, [defaultDbPlugin], user);
@@ -907,8 +906,7 @@ export class ResourceService {
         newResourcesMap.set(newService.id, resource);
 
         const defaultDbPlugin =
-          CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ===
-          EnumCodeGenerator.NodeJs
+          codeGenerator === EnumCodeGenerator.NodeJs
             ? DEFAULT_NODEJS_DB_PLUGIN
             : DEFAULT_DOTNET_DB_PLUGIN;
         await this.installPlugins(resource.id, [defaultDbPlugin], user);
