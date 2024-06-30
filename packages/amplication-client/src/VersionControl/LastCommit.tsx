@@ -1,5 +1,6 @@
 import {
   Button,
+  EnumButtonState,
   EnumButtonStyle,
   EnumFlexDirection,
   EnumFlexItemMargin,
@@ -16,11 +17,12 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { ClickableId } from "../Components/ClickableId";
 import { AppContext } from "../context/appContext";
-import { Commit } from "../models";
+import { Commit, EnumBuildStatus } from "../models";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 import "./LastCommit.scss";
 import { useCommitStatus } from "./hooks/useCommitStatus";
+import BuildGitLink from "./BuildGitLink";
 
 type Props = {
   lastCommit: Commit;
@@ -34,6 +36,8 @@ const LastCommit = ({ lastCommit }: Props) => {
 
   const { commitStatus, commitLastError } = useCommitStatus(lastCommit);
   if (!lastCommit) return null;
+
+  const singleBuild = lastCommit.builds && lastCommit.builds.length === 1;
 
   const ClickableCommitId = (
     <ClickableId
@@ -95,16 +99,21 @@ const LastCommit = ({ lastCommit }: Props) => {
           </Text>
         </FlexItem>
 
-        {lastCommit && (
+        {singleBuild ? (
+          <BuildGitLink build={lastCommit.builds[0]} />
+        ) : (
           <Link
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/code-view`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${lastCommit.id}`}
             className={`${CLASS_NAME}__view-code`}
           >
             <Button
               buttonStyle={EnumButtonStyle.Outline}
-              disabled={commitRunning}
+              disabled={
+                commitRunning || commitStatus === EnumBuildStatus.Running
+              }
+              buttonState={EnumButtonState.Success}
             >
-              Go to view code
+              View code (multiple builds)
             </Button>
           </Link>
         )}

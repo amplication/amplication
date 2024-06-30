@@ -64,7 +64,7 @@ const WorkspaceFooter: React.FC<{ lastCommit: Commit }> = ({ lastCommit }) => {
     />
   );
 
-  const gitUrl = useBuildGitUrl(lastResourceBuild);
+  const { gitUrl } = useBuildGitUrl(lastResourceBuild);
 
   return (
     currentProject && (
@@ -110,7 +110,7 @@ const WorkspaceFooter: React.FC<{ lastCommit: Commit }> = ({ lastCommit }) => {
                 <Link
                   className={`${CLASS_NAME}__connect-to-git`}
                   title={`Connect to git`}
-                  to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/git-sync`}
+                  to={`/${currentWorkspace?.id}/${currentProject?.id}/git-sync`}
                 >
                   <Text
                     textStyle={EnumTextStyle.Description}

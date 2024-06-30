@@ -11,7 +11,7 @@ import { ApolloError, useLazyQuery } from "@apollo/client";
 import { cloneDeep, groupBy } from "lodash";
 
 const MAX_ITEMS_PER_LOADING = 20;
-const POLL_INTERVAL = 3000;
+const POLL_INTERVAL = 1000; //update the last commit status frequently to get the latest log message
 
 export type CommitChangesByResource = (commitId: string) => {
   resourceId: string;
@@ -84,8 +84,24 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
         createdAt: SortOrder.Desc,
       },
     },
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data) => {
+      const updatedLastCommit = data.commits[0];
+      //only update in case the current last commit is still the last commit
+      if (updatedLastCommit && updatedLastCommit.id === lastCommit?.id) {
+        setLastCommit(updatedLastCommit);
+
+        const clonedCommits = cloneDeep(commits);
+        //find the commit that contains the build
+        const commitIdx = getCommitIdx(clonedCommits, updatedLastCommit.id);
+        if (commitIdx === -1) return;
+        clonedCommits[commitIdx] = updatedLastCommit;
+        setCommits(clonedCommits);
+      }
+    },
   });
 
+  //poll for the last commit status as long as there are running builds
   useEffect(() => {
     let shouldPoll = false;
 
@@ -103,14 +119,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     } else {
       getLastCommitStopPolling();
     }
-    getLastCommitData && setLastCommit(getLastCommitData.commits[0]);
-  }, [
-    getLastCommitData,
-    getLastCommitStopPolling,
-    getLastCommitStartPolling,
-    updateBuildStatus,
-    lastCommit,
-  ]);
+  }, [getLastCommitStopPolling, getLastCommitStartPolling, lastCommit]);
 
   //cleanup polling
   useEffect(() => {
@@ -160,8 +169,9 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     if (commitsLoading) return;
 
     setCommits(commitsData?.commits);
+
     setLastCommit(commitsData?.commits[0]);
-  }, [commitsData?.commits, commits]);
+  }, [commitsData?.commits, commits, commitsData, commitsLoading]);
 
   //refetch next page of commits, or refetch from start
   const refetchCommitsData = useCallback(
@@ -184,7 +194,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       skip: 0,
       take: 1,
     });
-  }, [currentProjectId]);
+  }, [currentProjectId, refetchCommits]);
 
   // pagination refetch - we received an updated list from the server, and we need to append it to the current list
   useEffect(() => {
@@ -193,15 +203,6 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
 
     setCommits([...commits, ...commitsData.commits]);
   }, [commitsData?.commits, commitsCount]);
-
-  // last commit refetch
-  useEffect(() => {
-    //check if the data from the server contains a single commit
-    if (!commitsData?.commits?.length || commitsData?.commits?.length > 1)
-      return;
-
-    setLastCommit(commitsData?.commits[0]);
-  }, [commitsData?.commits]);
 
   const getCommitIdx = (commits: Commit[], commitId: string): number =>
     commits.findIndex((commit) => commit.id === commitId);
