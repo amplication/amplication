@@ -887,7 +887,8 @@ export class AssistantFunctionsService {
     },
     createModuleAction: async (
       args: functionsArgsTypes.CreateModuleAction,
-      context: AssistantContext
+      context: AssistantContext,
+      loggerContext: MessageLoggerContext
     ) => {
       const name = pascalCase(args.actionName);
 
@@ -921,29 +922,45 @@ export class AssistantFunctionsService {
         },
         context.user
       );
-
-      const updatedAction = await this.moduleActionService.update(
-        {
-          data: {
-            displayName: args.actionName,
-            name: name,
-            description: args.actionDescription,
-            gqlOperation: args.gqlOperation,
-            restVerb: args.restVerb,
-            path: args.path,
-            inputType: args.inputType,
-            outputType: args.outputType,
+      try {
+        const updatedAction = await this.moduleActionService.update(
+          {
+            data: {
+              displayName: args.actionName,
+              name: name,
+              description: args.actionDescription,
+              gqlOperation: args.gqlOperation,
+              restVerb: args.restVerb,
+              path: args.path,
+              inputType: args.inputType,
+              outputType: args.outputType,
+            },
+            where: {
+              id: action.id,
+            },
           },
-          where: {
-            id: action.id,
+          context.user
+        );
+        return {
+          link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
+          result: updatedAction,
+        };
+      } catch (error) {
+        this.logger.warn(
+          `Chat: failed to update newly created ModuleAction ${action.id}: ${error.message}. Deleting the action.`,
+          error,
+          loggerContext
+        );
+        await this.moduleActionService.delete(
+          {
+            where: {
+              id: action.id,
+            },
           },
-        },
-        context.user
-      );
-      return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
-        result: updatedAction,
-      };
+          context.user
+        );
+        throw error;
+      }
     },
   };
 }
