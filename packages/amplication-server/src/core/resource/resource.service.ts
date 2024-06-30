@@ -87,12 +87,21 @@ export const INVALID_DELETE_PROJECT_CONFIGURATION =
 const SERVICE_LIMITATION_ERROR =
   "Can not create new services, The workspace reached your plan's resource limitation";
 
-const DEFAULT_DB_PLUGIN: PluginInstallationCreateInput = {
+const DEFAULT_NODEJS_DB_PLUGIN: PluginInstallationCreateInput = {
   pluginId: "db-postgres",
   enabled: true,
   npm: "@amplication/plugin-db-postgres",
   version: "latest",
   displayName: "db-postgres",
+  resource: undefined,
+};
+
+const DEFAULT_DOTNET_DB_PLUGIN: PluginInstallationCreateInput = {
+  pluginId: "dotnet-db-sqlserver",
+  enabled: true,
+  npm: "@amplication/plugin-dotnet-db-sqlserver",
+  version: "latest",
+  displayName: "dotnet-db-sqlserver",
   resource: undefined,
 };
 
@@ -613,7 +622,7 @@ export class ResourceService {
     );
 
     const plugins = [
-      DEFAULT_DB_PLUGIN,
+      DEFAULT_NODEJS_DB_PLUGIN,
       ...(requireAuthenticationEntity ? DEFAULT_AUTH_PLUGINS : []),
       ...nonDefaultPluginsToInstall,
     ];
@@ -706,7 +715,12 @@ export class ResourceService {
     const resource = await this.createService(args, user);
 
     if (installDefaultDbPlugin) {
-      await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
+      const defaultDbPlugin =
+        CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ===
+        EnumCodeGenerator.NodeJs
+          ? DEFAULT_NODEJS_DB_PLUGIN
+          : DEFAULT_DOTNET_DB_PLUGIN;
+      await this.installPlugins(resource.id, [defaultDbPlugin], user);
     }
 
     return resource;
@@ -892,7 +906,12 @@ export class ResourceService {
 
         newResourcesMap.set(newService.id, resource);
 
-        await this.installPlugins(resource.id, [DEFAULT_DB_PLUGIN], user);
+        const defaultDbPlugin =
+          CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ===
+          EnumCodeGenerator.NodeJs
+            ? DEFAULT_NODEJS_DB_PLUGIN
+            : DEFAULT_DOTNET_DB_PLUGIN;
+        await this.installPlugins(resource.id, [defaultDbPlugin], user);
       }
 
       // 3. update resourceId in copied entities list
