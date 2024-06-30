@@ -39,7 +39,7 @@ const PendingChangesListGroup = ({ group }: Props) => {
   return (
     <div className={`${CLASS_NAME}`}>
       <CollapsibleListItem
-        initiallyExpanded
+        initiallyExpanded={false}
         expandable
         icon={groupData.icon}
         childItems={group.typeChanges.map((change) => (
@@ -52,7 +52,7 @@ const PendingChangesListGroup = ({ group }: Props) => {
           className={`${CLASS_NAME}__header`}
           gap={EnumGapSize.Small}
         >
-          <Text textStyle={EnumTextStyle.Tag}>{groupData.type}</Text>{" "}
+          <Text textStyle={EnumTextStyle.Tag}>{groupData.pluralTypeName}</Text>{" "}
           {group.typeChanges.length}
         </FlexItem>
       </CollapsibleListItem>

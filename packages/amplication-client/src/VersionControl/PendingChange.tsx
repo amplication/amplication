@@ -11,6 +11,7 @@ export type EntityLinkAndDisplayName = {
   icon: string;
   displayName: string;
   type?: string;
+  pluralTypeName: string;
 };
 
 type Props = {
@@ -64,6 +65,7 @@ export const changeOriginMap = {
     icon: "entity_outline",
     displayName: change.displayName,
     type: "Entity",
+    pluralTypeName: "Entities",
   }),
   [models.EnumPendingChangeOriginType.Block]: (
     change: models.PendingChangeOrigin
@@ -76,6 +78,7 @@ export const changeOriginMap = {
         icon: "settings",
         displayName: "Service Settings",
         type: "Service Settings",
+        pluralTypeName: "Service Settings",
       },
       [models.EnumBlockType.ProjectConfigurationSettings]: {
         //Todo: link to project setting
@@ -83,30 +86,35 @@ export const changeOriginMap = {
         icon: "settings",
         displayName: "Project Settings",
         type: "Project Settings",
+        pluralTypeName: "Project Settings",
       },
       [models.EnumBlockType.Topic]: {
         relativeUrl: `topics/${change.id}`,
         icon: "topics_outline",
         displayName: change.displayName,
         type: "Topic",
+        pluralTypeName: "Topics",
       },
       [models.EnumBlockType.PluginInstallation]: {
         relativeUrl: "plugins/installed",
         icon: "plugins",
         displayName: change.displayName,
         type: "Plugin",
+        pluralTypeName: "Plugins",
       },
       [models.EnumBlockType.PluginOrder]: {
         relativeUrl: "plugins/installed",
         icon: "plugins",
         displayName: change.displayName,
         type: "Plugin Order",
+        pluralTypeName: "Plugin Order",
       },
       [models.EnumBlockType.Module]: {
         relativeUrl: `modules/${change.id}`,
         icon: "box",
         displayName: change.displayName,
         type: "Module",
+        pluralTypeName: "Modules",
       },
       //@todo: update the url, icon and display name
       [models.EnumBlockType.ModuleAction]: {
@@ -115,7 +123,8 @@ export const changeOriginMap = {
         }/actions/${change.id}`,
         icon: "api",
         displayName: change.displayName,
-        type: "Action",
+        type: "API",
+        pluralTypeName: "APIs",
       },
       [models.EnumBlockType.ModuleDto]: {
         relativeUrl: `modules/${
@@ -124,12 +133,14 @@ export const changeOriginMap = {
         icon: "zap",
         displayName: change.displayName,
         type: "DTO",
+        pluralTypeName: "DTOs",
       },
       [models.EnumBlockType.ServiceTopics]: {
         relativeUrl: "not supported",
         icon: "topics_outline",
         displayName: "not supported",
         type: "Service Topics",
+        pluralTypeName: "Service Topics",
       },
     };
     return blockTypeMap[(change as models.Block).blockType];
