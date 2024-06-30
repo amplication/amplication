@@ -87,7 +87,7 @@ export const generateCode = async (): Promise<void> => {
 
     await buildManagerNotifier.success();
   } catch (error) {
-    await context.logger.info(`Failed to generate code: ${error.message}`);
+    await context.logger.error(`Failed to generate code: ${error.message}`);
     await buildManagerNotifier.failure();
     throw error;
   }
