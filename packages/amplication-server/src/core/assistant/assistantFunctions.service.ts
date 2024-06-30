@@ -959,7 +959,9 @@ export class AssistantFunctionsService {
           },
           context.user
         );
-        throw error;
+        throw new Error(
+          `Failed to create the moduleAction ${name} because of the following error. please fix the error and try again. ${error.message}`
+        );
       }
     },
   };
