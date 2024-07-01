@@ -123,6 +123,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         options={{
           ...options,
           minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          padding: {
+            bottom: 200,
+          },
         }}
         path={path}
         theme={"vs-dark-amp"}
