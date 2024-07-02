@@ -12,11 +12,16 @@ import "./TitleAndIcon.scss";
 type Props = {
   icon: string;
   title: string;
+  color?: EnumTextColor;
 };
 
 const CLASS_NAME = "title-and-icon";
 
-export const TitleAndIcon = ({ icon, title }: Props) => {
+export const TitleAndIcon = ({
+  icon,
+  title,
+  color = EnumTextColor.White,
+}: Props) => {
   return (
     <FlexItem
       className={CLASS_NAME}
@@ -24,7 +29,7 @@ export const TitleAndIcon = ({ icon, title }: Props) => {
       gap={EnumGapSize.Small}
     >
       <Icon icon={icon} color={EnumTextColor.White} />
-      <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+      <Text textStyle={EnumTextStyle.Tag} textColor={color}>
         {title}
       </Text>
     </FlexItem>

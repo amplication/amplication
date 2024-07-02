@@ -1,5 +1,5 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
   BooleanEntitlement,
@@ -68,6 +68,7 @@ export class BillingService {
   constructor(
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
+    @Inject(forwardRef(() => SegmentAnalyticsService))
     private readonly analytics: SegmentAnalyticsService,
     configService: ConfigService
   ) {
@@ -243,6 +244,7 @@ export class BillingService {
       billingPeriod: billingPeriod,
       awaitPaymentConfirmation: true,
       unitQuantity: planId === BillingPlan.Essential ? 1 : undefined,
+      skipTrial: true,
       checkoutOptions: {
         allowPromoCodes: true,
         cancelUrl: new URL(cancelUrl, this.clientHost).href,

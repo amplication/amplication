@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from "@amplication/ui/design-system";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
 import {
   ButtonTypeEnum,
   IMessage,
@@ -21,6 +21,7 @@ import { useStiggContext } from "@stigg/react-sdk";
 import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory } from "react-router-dom";
+import AskJovuButton from "../../Assistant/AskJovuButton";
 import CommandPalette from "../../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../../Components/Button";
 import UserBadge from "../../Components/UserBadge";
@@ -40,13 +41,12 @@ import {
   AMPLICATION_DOC_URL,
 } from "../../util/constants";
 import { version } from "../../util/version";
+import { useContactUs } from "../hooks/useContactUs";
 import useFetchGithubStars from "../hooks/useFetchGithubStars";
-import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
 import UpgradeCtaButton from "./UpgradeCtaButton";
 import WorkspaceBanner from "./WorkspaceBanner";
 import "./WorkspaceHeader.scss";
 import styles from "./notificationStyle";
-import AskJovuButton from "../../Assistant/AskJovuButton";
 
 const CLASS_NAME = "workspace-header";
 const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
@@ -81,8 +81,9 @@ const HELP_MENU_LIST: HelpMenuItem[] = [
 const WorkspaceHeader: React.FC = () => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
 
-  const { data } = useQuery(GET_CONTACT_US_LINK, {
-    variables: { id: currentWorkspace.id },
+  const { handleContactUsClick } = useContactUs({
+    actionName: "Contact Us",
+    eventOriginLocation: "workspace-header-help-menu",
   });
 
   const apolloClient = useApolloClient();
@@ -128,15 +129,6 @@ const WorkspaceHeader: React.FC = () => {
     },
     []
   );
-
-  const handleContactUsClick = useCallback(() => {
-    window.open(data?.contactUsLink, "_blank");
-    trackEvent({
-      eventName: AnalyticsEventNames.HelpMenuItemClick,
-      action: "Contact Us",
-      eventOriginLocation: "workspace-header-help-menu",
-    });
-  }, [data?.contactUsLink, trackEvent]);
 
   const handleItemDataClicked = useCallback(
     (itemData: ItemDataCommand) => {

@@ -1,0 +1,56 @@
+name: release assistant function json files
+
+on:
+  push:
+    branches:
+      - next
+    paths:
+      - packages/amplication-server/src/core/assistant/functions/*.json
+
+jobs:
+  release-functions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          path: amplication
+
+      - uses: actions/checkout@v4
+        with:
+          repository: amplication/openai-assistant-configuration
+          path: openai-assistant-configuration
+          ref: next
+          token: ${{ secrets.RELEASE_FUNCTIONS_PAT }}
+
+      - name: copy json source files to target repository
+        run: |
+          cp amplication/packages/amplication-server/src/core/assistant/functions/*.json openai-assistant-configuration/src/assets/functions/
+
+      - name: configure git
+        run: |
+          git config --global user.email "engineering@amplication.com"
+          git config --global user.name "amplication-engineering"
+        working-directory: openai-assistant-configuration
+
+      - name: commit changes
+        run: |
+          git add src/assets/functions/
+          git commit -m "feat(openai-assistant): updated function json source files"
+        working-directory: openai-assistant-configuration
+
+      - name: push changes
+        run: |
+          git push origin HEAD:function-json-files-update
+        working-directory: openai-assistant-configuration
+
+      - name: create pull request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.RELEASE_FUNCTIONS_PAT }}
+          commit-message: "feat(openai-assistant): updated json source files"
+          path: openai-assistant-configuration
+          branch: function-json-files-update
+          base: next
+          title: "feat(openai-assistant): updated types"
+          body: "This is an auto-generated pull request."

@@ -46,7 +46,7 @@ export function TreeItem({
 
   const content = (
     <div className={`${CLASS_NAME}__Item__content`}>
-      <span>{label} </span> {farContent}
+      <span title={label}>{label} </span>
     </div>
   );
 
@@ -56,7 +56,7 @@ export function TreeItem({
       onClick={onClick}
       nodeId={nodeId}
       label={content}
-      icon={<Icon icon={icon} size="small" />}
+      icon={farContent || <Icon icon={icon} />}
     >
       {children}
     </MuiTreeItem>

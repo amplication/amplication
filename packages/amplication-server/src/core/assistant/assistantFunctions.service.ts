@@ -1,10 +1,10 @@
-import { EnumModuleDtoType } from "@amplication/code-gen-types";
+import { EnumDataType, EnumModuleDtoType } from "@amplication/code-gen-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { get, isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
-import { plural, singular } from "pluralize";
+import { isPlural, plural, singular } from "pluralize";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { Env } from "../../env";
 import { Block } from "../../models";
@@ -29,7 +29,6 @@ import {
 import { MessageLoggerContext } from "./assistant.service";
 import { AssistantContext } from "./dto/AssistantContext";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
-
 import * as functionArgsSchemas from "./functions/";
 import * as functionsArgsTypes from "./functions/types";
 import { USER_ENTITY_NAME } from "../entity/constants";
@@ -480,6 +479,14 @@ export class AssistantFunctionsService {
 
       const newFields = await Promise.all(
         args.fields?.map(async (field) => {
+          //Jovu currently supports only one-many relations.
+          //@todo: This validation should be changed after adding support for one-one/ many-many relations.
+          if (field.type === EnumDataType.Lookup && isPlural(field.name)) {
+            return {
+              error: `a lookup field [${field.name}] that is the many side of the relation can not be created because it is already created on the one side of the relation`,
+            };
+          }
+
           try {
             return this.entityService.createFieldByDisplayName(
               {
@@ -880,7 +887,8 @@ export class AssistantFunctionsService {
     },
     createModuleAction: async (
       args: functionsArgsTypes.CreateModuleAction,
-      context: AssistantContext
+      context: AssistantContext,
+      loggerContext: MessageLoggerContext
     ) => {
       const name = pascalCase(args.actionName);
 
@@ -914,29 +922,47 @@ export class AssistantFunctionsService {
         },
         context.user
       );
-
-      const updatedAction = await this.moduleActionService.update(
-        {
-          data: {
-            displayName: args.actionName,
-            name: name,
-            description: args.actionDescription,
-            gqlOperation: args.gqlOperation,
-            restVerb: args.restVerb,
-            path: args.path,
-            inputType: args.inputType,
-            outputType: args.outputType,
+      try {
+        const updatedAction = await this.moduleActionService.update(
+          {
+            data: {
+              displayName: args.actionName,
+              name: name,
+              description: args.actionDescription,
+              gqlOperation: args.gqlOperation,
+              restVerb: args.restVerb,
+              path: args.path,
+              inputType: args.inputType,
+              outputType: args.outputType,
+            },
+            where: {
+              id: action.id,
+            },
           },
-          where: {
-            id: action.id,
+          context.user
+        );
+        return {
+          link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
+          result: updatedAction,
+        };
+      } catch (error) {
+        this.logger.warn(
+          `Chat: failed to update newly created ModuleAction ${action.id}: ${error.message}. Deleting the action.`,
+          error,
+          loggerContext
+        );
+        await this.moduleActionService.delete(
+          {
+            where: {
+              id: action.id,
+            },
           },
-        },
-        context.user
-      );
-      return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
-        result: updatedAction,
-      };
+          context.user
+        );
+        throw new Error(
+          `Failed to create the moduleAction ${name} because of the following error. please fix the error and try again. ${error.message}`
+        );
+      }
     },
   };
 }

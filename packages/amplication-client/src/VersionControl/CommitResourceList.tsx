@@ -1,17 +1,16 @@
-import React from "react";
-import CommitResourceListItem from "./CommitResourceListItem";
-import * as models from "../models";
-import DataPanel, { TitleDataType } from "./DataPanel";
-import { EnumImages } from "../Components/SvgThemeImage";
-import { EmptyState } from "../Components/EmptyState";
-import { CommitChangesByResource } from "./hooks/useCommits";
 import {
   EnumFlexItemMargin,
   EnumTextStyle,
   FlexItem,
-  List,
   Text,
 } from "@amplication/ui/design-system";
+import React from "react";
+import { EmptyState } from "../Components/EmptyState";
+import { EnumImages } from "../Components/SvgThemeImage";
+import * as models from "../models";
+import CommitResourceListItem from "./CommitResourceListItem";
+import DataPanel, { TitleDataType } from "./DataPanel";
+import { CommitChangesByResource } from "./hooks/useCommits";
 
 type Props = {
   commit: models.Commit;
@@ -35,12 +34,12 @@ const CommitResourceList: React.FC<Props> = ({
       {commit.builds && commit.builds.length > 0 && (
         <FlexItem margin={EnumFlexItemMargin.Bottom}>
           <Text textStyle={EnumTextStyle.Tag}>
-            {commit.builds.length} resources
+            {commit.builds.length} builds
           </Text>
         </FlexItem>
       )}
       {commit.builds && commit.builds.length ? (
-        <List>
+        <>
           {commit.builds.map((build: models.Build) => (
             <CommitResourceListItem
               key={build.id}
@@ -48,7 +47,7 @@ const CommitResourceList: React.FC<Props> = ({
               commitChangesByResource={commitChangesByResource}
             />
           ))}
-        </List>
+        </>
       ) : (
         <EmptyState
           message="There are no builds to show"
