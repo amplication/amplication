@@ -297,7 +297,8 @@ export class EntityService {
       (!serviceEntityEntitlement.isUnlimited &&
         serviceEntityEntitlement.value <= (await resourceEntitiesCount))
     ) {
-      const message = "Your service reached its number of entities limitation.";
+      const message =
+        "Your service reached its maximum number of entities allowed. To continue using additional entities, please upgrade your plan";
       throw new BillingLimitationError(
         message,
         BillingFeature.EntitiesPerService
