@@ -448,7 +448,7 @@ export class AssistantFunctionsService {
           } catch (error) {
             this.logger.error(
               `Chat: Error creating entity ${entityName}`,
-              error,
+              null,
               loggerContext
             );
             return {
