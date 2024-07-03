@@ -10,24 +10,6 @@ $avatar-size: 30px;
 $input-line-height: 18px;
 $input-max-height: 100px;
 
-#root {
-  // --assistant-background: var(--theme-gradient);
-  // --assistant-message-background: var(--gray-base);
-  // --assistant-message-color: var(--gray-full);
-  // --assistant-title-color: var(--gray-base);
-  // --assistant-role-color: var(--gray-80);
-  // --assistant-handle-background: var(--theme-gradient);
-
-  --assistant-background: var(--surface);
-  --assistant-message-background: var(--gray-full);
-  --assistant-message-color: var(--gray-base);
-  --assistant-title-color: var(--gray-base);
-  --assistant-role-color: var(--gray-base);
-  --assistant-handle-background: var(--theme-gradient);
-
-  --assistant-box-shadow: 5px 0px 5px rgba(56, 28, 138, 0.06);
-}
-
 .assistant {
   height: 100vh;
   box-sizing: border-box;
@@ -79,12 +61,6 @@ $input-max-height: 100px;
     }
   }
 
-  &__limit {
-    padding: var(--default-spacing);
-    flex: 1;
-    text-align: center;
-  }
-
   &__header {
     display: flex;
     flex-direction: row;
@@ -110,121 +86,5 @@ $input-max-height: 100px;
   &__title {
     flex: 1;
     color: var(--assistant-title-color);
-  }
-
-  &__messages {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--default-spacing);
-    overflow-y: auto;
-    padding: var(--default-spacing);
-    padding-left: 0;
-    font-size: var(--tag-font-size);
-  }
-
-  &__chat_input {
-    display: flex;
-    gap: var(--default-spacing-small);
-    align-items: center;
-    background-color: var(--gray-full);
-    border-radius: var(--default-border-radius);
-    padding: var(--default-spacing) var(--icon-spacing);
-
-    form {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      gap: var(--default-spacing);
-      align-items: flex-end;
-
-      .text-input {
-        flex: 1;
-
-        label {
-          margin: 0;
-        }
-
-        textarea {
-          --input-line-height: #{$input-line-height};
-          --input-lines: 1;
-          max-width: none;
-          background: transparent;
-          border: none;
-          height: calc(
-            (var(--input-lines) * var(--input-line-height)) +
-              var(--default-spacing)
-          );
-          max-height: $input-max-height;
-
-          &:focus,
-          &:active,
-          &:hover {
-            outline: none;
-            border: none;
-          }
-        }
-      }
-    }
-
-    .amp-button {
-      height: calc((1 * var(--input-line-height)) + var(--default-spacing));
-    }
-  }
-
-  &__message {
-    background-color: var(--assistant-message-background);
-    border-radius: var(--default-border-radius);
-    padding: var(--default-spacing);
-    color: var(--assistant-message-color);
-    position: relative;
-
-    &__content {
-      overflow-wrap: break-word;
-    }
-
-    pre {
-      overflow: auto;
-      background: var(--gray-90);
-      padding: var(--default-spacing);
-    }
-
-    a {
-      color: var(--theme-turquoise);
-      text-decoration: underline;
-    }
-
-    &__options {
-      display: flex;
-      flex-direction: column;
-      gap: var(--default-spacing);
-      align-items: flex-start;
-      justify-content: flex-start;
-      flex-wrap: wrap;
-
-      > .amp-button.amp-button--gradient-outline {
-        max-width: 100%;
-        text-align: left;
-        white-space: normal;
-        height: auto;
-        color: var(--assistant-message-color);
-      }
-    }
-  }
-
-  &__message-role {
-    display: flex;
-    flex-direction: row;
-    gap: var(--default-spacing);
-    align-items: center;
-    justify-content: flex-start;
-    font-weight: semi-bold;
-    color: var(--assistant-role-color);
-
-    .user-avatar__initials {
-      width: $avatar-size;
-      height: $avatar-size;
-      font-size: var(--h4-font-size);
-    }
   }
 }
