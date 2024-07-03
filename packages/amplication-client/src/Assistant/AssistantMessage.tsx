@@ -7,7 +7,7 @@ import { AssistantMessageWithOptions } from "./hooks/useAssistant";
 
 import JovuLogo from "./JovuLogo";
 
-const CLASS_NAME = "assistant";
+const CLASS_NAME = "assistant-chat";
 
 type Props = {
   message: AssistantMessageWithOptions;
