@@ -84,7 +84,8 @@ const Commit = ({
 
   const { dotNetGeneratorEnabled } = useAvailableCodeGenerators();
 
-  const { setCommitRunning, currentWorkspace } = useContext(AppContext);
+  const { setCommitRunning, currentWorkspace, currentProject } =
+    useContext(AppContext);
 
   const {
     commitChanges,
