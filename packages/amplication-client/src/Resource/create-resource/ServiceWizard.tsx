@@ -328,7 +328,12 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                                 }
                               : goNextPage
                           }
-                          disabled={isInvalidStep}
+                          disabled={
+                            isInvalidStep ||
+                            (activePageIndex ===
+                              wizardPattern[wizardPattern.length - 2] &&
+                              (keepLoadingAnimation || submitLoader)) // disable continue button on the create service animation page
+                          }
                           buttonName={"Continue"}
                         />
                       )}
