@@ -18,7 +18,7 @@ import {
 } from "@amplication/ui/design-system";
 import { Reference, gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
@@ -54,6 +54,12 @@ function ResourceList() {
     errorResources,
     currentProject,
   } = useContext(AppContext);
+
+  const servicesLength = useMemo(() => {
+    return resources.filter(
+      (resource) => resource.resourceType === models.EnumResourceType.Service
+    ).length;
+  }, [resources]);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -118,7 +124,10 @@ function ResourceList() {
               itemsAlign={EnumItemsAlign.Center}
               direction={EnumFlexDirection.Row}
             >
-              <CreateResourceButton resourcesLength={resources.length} />
+              <CreateResourceButton
+                resourcesLength={resources.length}
+                servicesLength={servicesLength}
+              />
             </FlexItem>
           </>
         }

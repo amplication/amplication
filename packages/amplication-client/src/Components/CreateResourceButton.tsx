@@ -40,15 +40,21 @@ const ITEMS: CreateResourceButtonItemType[] = [
 
 type Props = {
   resourcesLength: number;
+  servicesLength: number;
 };
 
-const CreateResourceButton: React.FC<Props> = ({ resourcesLength }) => {
+const CreateResourceButton: React.FC<Props> = ({
+  resourcesLength,
+  servicesLength,
+}) => {
   return (
     <div className={CLASS_NAME}>
       <FeatureIndicatorContainer
         featureId={BillingFeature.Services}
         entitlementType={EntitlementType.Metered}
         limitationText="You have reached the maximum number of services allowed. "
+        actualUsage={servicesLength}
+        paidPlansExclusive={false}
       >
         <SelectMenu title="Add Resource" buttonStyle={EnumButtonStyle.Primary}>
           <SelectMenuModal align="right" withCaret>
