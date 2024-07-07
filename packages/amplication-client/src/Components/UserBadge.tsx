@@ -9,6 +9,7 @@ import { UserAvatar, Tooltip } from "@amplication/ui/design-system";
 import "./UserBadge.scss";
 import { identity } from "../util/analytics";
 import { GET_USER } from "../Profile/accountQueries";
+import OnboardingChecklist from "../OnboardingChecklist/OnboardingChecklist";
 
 type TData = {
   me: {
@@ -43,6 +44,7 @@ function UserBadge() {
         firstName={data.me.account.firstName}
         lastName={data.me.account.lastName}
       />
+      <OnboardingChecklist account={data?.me?.account} />
     </Tooltip>
   ) : null;
 }
