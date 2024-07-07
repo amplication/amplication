@@ -42,13 +42,21 @@ function OnboardingChecklist({ account }: Props) {
     if (!account) {
       return null;
     }
+    const currentProjectId = currentProject?.id || projectsList?.[0]?.id;
+    let currentResourceId = currentResource?.id;
+    if (!currentResourceId && currentProjectId) {
+      const projectResources = resources.filter(
+        (resource) => resource.projectId === currentProjectId
+      );
+      currentResourceId = projectResources?.[0]?.id;
+    }
 
     return {
       username: account.id,
       props: {
         workspaceId: currentWorkspace?.id,
-        projectId: currentProject?.id || projectsList?.[0]?.id,
-        resourceId: currentResource?.id || "clx1smm17002gq6o40kix76m2", //@todo - get the first resource of the project
+        projectId: currentProjectId,
+        resourceId: currentResourceId,
         ...currentOnboardingProps,
       },
     };
@@ -59,6 +67,7 @@ function OnboardingChecklist({ account }: Props) {
     projectsList,
     currentResource?.id,
     currentOnboardingProps,
+    resources,
   ]);
 
   return userInfo ? (
