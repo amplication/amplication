@@ -6,20 +6,18 @@ import {
   Snackbar,
   TextField,
 } from "@amplication/ui/design-system";
-import { ApolloError, gql, useMutation } from "@apollo/client";
+import { gql } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
-import { EnumSubscriptionPlan, type Commit as CommitType } from "../models";
-import { GraphQLErrorCode } from "@amplication/graphql-error-codes";
+import { EnumSubscriptionPlan } from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
-import { commitPath } from "../util/paths";
 import "./Commit.scss";
 import { BillingFeature } from "@amplication/util-billing-types";
 import {
@@ -27,6 +25,7 @@ import {
   LicensedResourceType,
 } from "../Components/LicenseIndicatorContainer";
 import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
+import useCommits from "./hooks/useCommits";
 
 const OPTIONS = [
   {
@@ -62,10 +61,6 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-type TData = {
-  commit: CommitType;
-};
-
 type RouteMatchProps = {
   workspace: string;
 };
@@ -75,19 +70,11 @@ export enum CommitBtnType {
   JumboButton = "jumboButton",
 }
 
-const formatLimitationError = (errorMessage: string) => {
-  const LIMITATION_ERROR_PREFIX = "LimitationError: ";
-
-  const limitationError = errorMessage.split(LIMITATION_ERROR_PREFIX)[1];
-  return limitationError;
-};
-
 const Commit = ({
   projectId,
   noChanges,
   commitBtnType,
   showCommitMessage = true,
-  commitMessage,
 }: Props) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
@@ -97,47 +84,19 @@ const Commit = ({
 
   const { dotNetGeneratorEnabled } = useAvailableCodeGenerators();
 
+  const { setCommitRunning, currentWorkspace } = useContext(AppContext);
+
   const {
-    setCommitRunning,
-    resetPendingChanges,
-    setPendingChangesError,
-    currentWorkspace,
-    currentProject,
-    commitUtils,
-  } = useContext(AppContext);
+    commitChanges,
+    commitChangesError,
+    commitChangesLoading,
+    commitChangesLimitationError,
+  } = useCommits(projectId);
 
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
     history.push(path, { from: { pathname: history.location.pathname } });
   };
-
-  const [commit, { error, loading }] = useMutation<TData>(COMMIT_CHANGES, {
-    onError: (error: ApolloError) => {
-      setCommitRunning(false);
-      setPendingChangesError(true);
-
-      setOpenLimitationDialog(
-        error?.graphQLErrors?.some(
-          (gqlError) =>
-            gqlError.extensions.code ===
-            GraphQLErrorCode.BILLING_LIMITATION_ERROR
-        ) ?? false
-      );
-    },
-    onCompleted: (response) => {
-      formikRef.current.values.bypassLimitations = false;
-      setCommitRunning(false);
-      setPendingChangesError(false);
-      resetPendingChanges();
-      commitUtils.refetchCommitsData(true);
-      const path = commitPath(
-        currentWorkspace?.id,
-        currentProject?.id,
-        response.commit.id
-      );
-      return history.push(path);
-    },
-  });
 
   const bypassLimitations = useMemo(() => {
     return (
@@ -146,34 +105,22 @@ const Commit = ({
     );
   }, [currentWorkspace]);
 
-  const limitationError = useMemo(() => {
-    if (!error) return;
-    const limitation = error?.graphQLErrors?.find(
-      (gqlError) =>
-        gqlError.extensions.code === GraphQLErrorCode.BILLING_LIMITATION_ERROR
-    );
+  const isLimitationError = commitChangesLimitationError !== undefined ?? false;
 
-    limitation.message = formatLimitationError(error.message);
-    return limitation;
-  }, [error]);
-
-  const isLimitationError = limitationError !== undefined ?? false;
-
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(commitChangesError);
 
   const handleSubmit = useCallback(
     (data, { resetForm }) => {
       setCommitRunning(true);
-      commit({
-        variables: {
-          message: data.message,
-          projectId,
-          bypassLimitations: data.bypassLimitations ?? false,
-        },
-      }).catch(console.error);
+      commitChanges({
+        message: data.message,
+        projectId,
+        bypassLimitations: data.bypassLimitations ?? false,
+      });
+      formikRef.current.values.bypassLimitations = false;
       resetForm(INITIAL_VALUES);
     },
-    [setCommitRunning, commit, projectId]
+    [setCommitRunning, commitChanges, projectId]
   );
 
   const handleOnSelectLanguageChange = useCallback(
@@ -206,7 +153,7 @@ const Commit = ({
 
           return (
             <Form>
-              {!loading && (
+              {!commitChangesLoading && (
                 <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
               )}
               {showCommitMessage && (
@@ -215,7 +162,7 @@ const Commit = ({
                   textarea
                   name="message"
                   label={noChanges ? "Build message" : "Commit message..."}
-                  disabled={loading}
+                  disabled={commitChangesLoading}
                   autoFocus
                   hideLabel
                   placeholder={
@@ -245,7 +192,7 @@ const Commit = ({
                     eventData={{
                       eventName: AnalyticsEventNames.CommitClicked,
                     }}
-                    disabled={loading}
+                    disabled={commitChangesLoading}
                   >
                     <>Generate the code </>
                   </Button>
@@ -262,18 +209,19 @@ const Commit = ({
           );
         }}
       </Formik>
-      {error && isLimitationError ? (
+      {commitChangesError && isLimitationError ? (
         <LimitationDialog
           isOpen={isOpenLimitationDialog}
-          message={limitationError.message}
+          message={commitChangesLimitationError.message}
           allowBypassLimitation={bypassLimitations}
           onConfirm={() => {
             redirectToPurchase();
             trackEvent({
               eventName: AnalyticsEventNames.UpgradeClick,
-              reason: limitationError.message,
+              reason: commitChangesLimitationError.message,
               eventOriginLocation: "commit-limitation-dialog",
-              billingFeature: limitationError.extensions.billingFeature,
+              billingFeature:
+                commitChangesLimitationError.extensions.billingFeature,
             });
             setOpenLimitationDialog(false);
           }}
@@ -281,7 +229,7 @@ const Commit = ({
             formikRef.current.values.bypassLimitations = false;
             trackEvent({
               eventName: AnalyticsEventNames.PassedLimitsNotificationClose,
-              reason: limitationError.message,
+              reason: commitChangesLimitationError.message,
               eventOriginLocation: "commit-limitation-dialog",
             });
             setOpenLimitationDialog(false);
@@ -294,15 +242,16 @@ const Commit = ({
 
             trackEvent({
               eventName: AnalyticsEventNames.UpgradeLaterClick,
-              reason: limitationError.message,
+              reason: commitChangesLimitationError.message,
               eventOriginLocation: "commit-limitation-dialog",
-              billingFeature: limitationError.extensions.billingFeature,
+              billingFeature:
+                commitChangesLimitationError.extensions.billingFeature,
             });
             setOpenLimitationDialog(false);
           }}
         />
       ) : (
-        <Snackbar open={Boolean(error)} message={errorMessage} />
+        <Snackbar open={Boolean(commitChangesError)} message={errorMessage} />
       )}
     </div>
   );

@@ -1,19 +1,27 @@
-import { HorizontalRule, Snackbar } from "@amplication/ui/design-system";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useCallback, useContext } from "react";
+import {
+  ConfirmationDialog,
+  HorizontalRule,
+  LimitationDialog,
+  Snackbar,
+} from "@amplication/ui/design-system";
+import { gql, useQuery } from "@apollo/client";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import PageContent from "../../Layout/PageContent";
 import { AppContext } from "../../context/appContext";
 import {
   EnumGitOrganizationType,
   EnumGitProvider,
   EnumResourceType,
+  EnumSubscriptionPlan,
   Resource,
 } from "../../models";
 import { formatError } from "../../util/error";
 import AuthWithGitProvider from "./AuthWithGitProvider";
 import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
-import { GitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
-import { CONNECT_GIT_REPOSITORY } from "./queries/gitProvider";
+import useCommits from "../../VersionControl/hooks/useCommits";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { useTracking } from "../../util/analytics";
+import { useHistory } from "react-router-dom";
 
 const TITLE = "Sync with Git Provider";
 const SUB_TITLE =
@@ -30,9 +38,31 @@ export type GitOrganizationFromGitRepository = {
 const SyncWithGithubPage: React.FC = () => {
   const {
     currentProjectConfiguration,
+    currentWorkspace,
     currentResource,
+    currentProject,
     refreshCurrentWorkspace,
   } = useContext(AppContext);
+
+  const { trackEvent } = useTracking();
+  const history = useHistory();
+
+  const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
+
+  const { commitChanges, commitChangesError, commitChangesLimitationError } =
+    useCommits(currentProject?.id);
+
+  const redirectToPurchase = () => {
+    const path = `/${currentWorkspace?.id}/purchase`;
+    history.push(path, { from: { pathname: history.location.pathname } });
+  };
+
+  const bypassLimitations = useMemo(() => {
+    return (
+      currentWorkspace?.subscription?.subscriptionPlan !==
+      EnumSubscriptionPlan.Pro
+    );
+  }, [currentWorkspace]);
 
   const resourceId = currentResource
     ? currentResource.id
@@ -47,30 +77,28 @@ const SyncWithGithubPage: React.FC = () => {
     skip: !resourceId,
   });
 
-  const [connectGitRepository] = useMutation(CONNECT_GIT_REPOSITORY);
+  const [openPr, setOpenPr] = useState<boolean>(false);
+  const isLimitationError = commitChangesLimitationError !== undefined ?? false;
 
   const handleOnDone = useCallback(() => {
     refreshCurrentWorkspace();
     refetch();
+    setOpenPr(true);
   }, [refreshCurrentWorkspace, refetch]);
+
+  const handleCommit = useCallback(() => {
+    commitChanges({
+      message: "This is an automatically pr from sync git repo",
+      projectId: currentProject.id,
+      bypassLimitations: false,
+    });
+    setOpenPr(false);
+  }, [commitChanges, currentProject]);
 
   const pageTitle = "Sync with Git Provider";
   const errorMessage = formatError(error);
   const isProjectConfiguration =
     data?.resource.resourceType === EnumResourceType.ProjectConfiguration;
-  const gitRepositorySelectedCb = useCallback(
-    (gitRepository: GitRepositorySelected) => {
-      connectGitRepository({
-        variables: {
-          name: gitRepository.repositoryName,
-          gitOrganizationId: gitRepository.gitOrganizationId,
-          resourceId: data?.resource.id,
-          groupName: gitRepository.groupName,
-        },
-      }).catch(console.error);
-    },
-    [connectGitRepository, data?.resource]
-  );
 
   return (
     <PageContent
@@ -84,7 +112,7 @@ const SyncWithGithubPage: React.FC = () => {
           type="resource"
           resource={data.resource}
           onDone={handleOnDone}
-          gitRepositorySelectedCb={gitRepositorySelectedCb}
+          gitRepositorySelectedCb={handleOnDone}
           gitRepositoryCreatedCb={handleOnDone}
         />
       )}
@@ -92,10 +120,63 @@ const SyncWithGithubPage: React.FC = () => {
         <ServiceConfigurationGitSettings
           resource={data.resource}
           onDone={handleOnDone}
-          gitRepositorySelectedCb={gitRepositorySelectedCb}
+          gitRepositorySelectedCb={handleOnDone}
           gitRepositoryCreatedCb={handleOnDone}
         />
       )}
+      <ConfirmationDialog
+        isOpen={openPr}
+        confirmButton={{ label: "Yes" }}
+        dismissButton={{ label: "Later" }}
+        message={
+          <span>
+            Successfully connected to your Git repository.
+            <br />
+            Do you want to regenerate the code and push it to this repository?
+          </span>
+        }
+        onConfirm={handleCommit}
+        onDismiss={() => setOpenPr(false)}
+      />
+      {commitChangesError && isLimitationError ? (
+        <LimitationDialog
+          isOpen={isOpenLimitationDialog}
+          message={commitChangesLimitationError.message}
+          allowBypassLimitation={bypassLimitations}
+          onConfirm={() => {
+            redirectToPurchase();
+            trackEvent({
+              eventName: AnalyticsEventNames.UpgradeClick,
+              reason: commitChangesLimitationError.message,
+              eventOriginLocation: "commit-limitation-dialog",
+              billingFeature:
+                commitChangesLimitationError.extensions.billingFeature,
+            });
+            setOpenLimitationDialog(false);
+          }}
+          onDismiss={() => {
+            trackEvent({
+              eventName: AnalyticsEventNames.PassedLimitsNotificationClose,
+              reason: commitChangesLimitationError.message,
+              eventOriginLocation: "commit-limitation-dialog",
+            });
+            setOpenLimitationDialog(false);
+          }}
+          onBypass={() => {
+            trackEvent({
+              eventName: AnalyticsEventNames.UpgradeLaterClick,
+              reason: commitChangesLimitationError.message,
+              eventOriginLocation: "commit-limitation-dialog",
+              billingFeature:
+                commitChangesLimitationError.extensions.billingFeature,
+            });
+            setOpenLimitationDialog(false);
+          }}
+        />
+      ) : (
+        <Snackbar open={Boolean(commitChangesError)} message={errorMessage} />
+      )}
+
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>
   );

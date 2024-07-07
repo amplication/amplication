@@ -68,6 +68,7 @@ export default function GitDialogsContainer({
           onGitRepositoryConnected={onSelectGitRepository}
           gitProvider={gitProvider}
           openCreateNewRepo={handleCreateNewRepoClick}
+          srcType={src}
         />
       </Dialog>
       <Dialog

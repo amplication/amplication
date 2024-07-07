@@ -35,6 +35,7 @@ type Props = {
   onGitRepositoryConnected: (data: GitRepositorySelected) => void;
   gitProvider: EnumGitProvider;
   openCreateNewRepo: () => void;
+  srcType: string;
 };
 
 export type GitRepositorySelected = {
@@ -43,6 +44,7 @@ export type GitRepositorySelected = {
   gitRepositoryUrl?: string;
   gitProvider: EnumGitProvider;
   groupName?: string;
+  srcType?: string;
 };
 
 export type GitRepositoryCreatedData = {
@@ -61,6 +63,7 @@ function GitRepos({
   onGitRepositoryConnected,
   gitProvider,
   openCreateNewRepo,
+  srcType,
 }: Props) {
   const [page, setPage] = useState(1);
 
@@ -131,6 +134,7 @@ function GitRepos({
         gitRepositoryUrl: data.url,
         gitProvider: gitOrganization.provider,
         groupName: data.groupName,
+        srcType,
       });
     },
     [gitOrganization.id, onGitRepositoryConnected]
