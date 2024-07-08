@@ -88,7 +88,7 @@ const SyncWithGithubPage: React.FC = () => {
 
   const handleCommit = useCallback(() => {
     commitChanges({
-      message: "This is an automatically pr from sync git repo",
+      message: "",
       projectId: currentProject.id,
       bypassLimitations: false,
     });
