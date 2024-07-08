@@ -110,7 +110,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
 
     if (entitlementType === EntitlementType.Metered) {
       const actualCurrentUsage =
-        actualUsage != null ? actualUsage : currentUsage;
+        actualUsage !== null ? actualUsage : currentUsage;
       const usageExceeded = usageLimit && actualCurrentUsage >= usageLimit;
       const isDisabled = usageExceeded ?? !hasMeteredAccess;
       if (isPreviewPlan(subscriptionPlan) && !isDisabled) {
@@ -118,7 +118,10 @@ export const FeatureIndicatorContainer: FC<Props> = ({
         setIcon(null);
         return;
       }
-      setDisabled(actualUsage != null ? usageExceeded : isDisabled);
+      if (actualUsage !== null) {
+        // do not consider metered access if actual usage is provided
+        setDisabled(usageExceeded);
+      } else setDisabled(isDisabled);
     }
   }, [
     featureId,
