@@ -8,7 +8,16 @@ import {
   validate,
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
-import { Snackbar, TextField } from "@amplication/ui/design-system";
+import {
+  EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumGapSize,
+  EnumTextStyle,
+  FlexItem,
+  Snackbar,
+  Text,
+  TextField,
+} from "@amplication/ui/design-system";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -88,6 +97,17 @@ const ProfileForm = () => {
             <>
               <hr className={`${CLASS_NAME}__divider`} />
               <Form>
+                <FlexItem
+                  direction={EnumFlexDirection.Column}
+                  margin={EnumFlexItemMargin.Bottom}
+                  gap={EnumGapSize.Small}
+                >
+                  <Text textStyle={EnumTextStyle.Label}>Account ID: </Text>
+                  <Text textStyle={EnumTextStyle.Tag}>
+                    {data.me.account.id}
+                  </Text>
+                </FlexItem>
+
                 <TextField name="email" label="Email" disabled />
                 <TextField
                   name="firstName"
