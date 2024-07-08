@@ -13,7 +13,6 @@ import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { COMMIT_CHANGES } from "../../../VersionControl/Commit";
-import { PUSH_TO_GIT_STEP_NAME } from "../../../VersionControl/BuildSteps";
 import { isEmpty } from "lodash";
 import { EnumGitProvider } from "@amplication/code-gen-types";
 
