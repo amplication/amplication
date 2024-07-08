@@ -45,6 +45,7 @@ function OnboardingChecklist({ account }: Props) {
     const currentProjectId = currentProject?.id || projectsList?.[0]?.id;
     let currentResourceId = currentResource?.id;
     if (!currentResourceId && currentProjectId) {
+      //@todo: handle case where there are no resources (need to load the resources for the project)
       const projectResources = resources.filter(
         (resource) => resource.projectId === currentProjectId
       );
