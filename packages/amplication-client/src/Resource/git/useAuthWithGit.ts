@@ -11,6 +11,7 @@ import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { ApolloError, useMutation } from "@apollo/client";
 import {
   CONNECT_GIT_PROVIDER_REPOSITORY,
+  CONNECT_GIT_REPOSITORY,
   UPDATE_GIT_REPOSITORY,
 } from "./queries/gitProvider";
 import * as models from "../../models";
@@ -87,6 +88,11 @@ const useGitHook: UseGitHook = ({
     { loading: connectGitRepoLoading, error: connectGitRepoError },
   ] = useMutation<Resource>(CONNECT_GIT_PROVIDER_REPOSITORY);
 
+  const [connectSelectGitRepository] = useMutation(CONNECT_GIT_REPOSITORY);
+  const closeSelectRepoDialog = useCallback(() => {
+    setSelectRepoOpen(false);
+  }, [setSelectRepoOpen]);
+
   useEffect(() => {
     const getGitOrganization = compose(
       gitOrganizationFromResource,
@@ -137,8 +143,9 @@ const useGitHook: UseGitHook = ({
     [updateGitRepositoryMutation]
   );
 
-  const handleRepoSelected = useCallback(
+  const handleAfterRepoConnected = useCallback(
     (data: GitRepositorySelected) => {
+      closeSelectRepoDialog();
       gitRepositorySelectedCb(data);
       gitRepositorySelected && setSelectRepoOpen(false);
       gitRepositorySelected && setGitRepositorySelectedData(data);
@@ -147,7 +154,34 @@ const useGitHook: UseGitHook = ({
         eventOriginLocation: "git-provider-settings",
       });
     },
-    [setSelectRepoOpen, setGitRepositorySelectedData]
+    [
+      closeSelectRepoDialog,
+      gitRepositorySelected,
+      gitRepositorySelectedCb,
+      trackEvent,
+    ]
+  );
+
+  const handleRepoSelected = useCallback(
+    (data: GitRepositorySelected) => {
+      if (data.srcType !== "serviceWizard") {
+        connectSelectGitRepository({
+          variables: {
+            name: data.repositoryName,
+            gitOrganizationId: data.gitOrganizationId,
+            resourceId: resource?.id,
+            groupName: data.groupName,
+          },
+
+          onCompleted() {
+            handleAfterRepoConnected(data);
+          },
+        }).catch(console.error);
+      } else {
+        handleAfterRepoConnected(data);
+      }
+    },
+    [connectSelectGitRepository, resource?.id, handleAfterRepoConnected]
   );
 
   const handleRepoCreated = useCallback(
@@ -218,10 +252,6 @@ const useGitHook: UseGitHook = ({
 
   const openSelectRepoDialog = useCallback(() => {
     setSelectRepoOpen(true);
-  }, [setSelectRepoOpen]);
-
-  const closeSelectRepoDialog = useCallback(() => {
-    setSelectRepoOpen(false);
   }, [setSelectRepoOpen]);
 
   const openCreateNewRepo = useCallback(() => {
