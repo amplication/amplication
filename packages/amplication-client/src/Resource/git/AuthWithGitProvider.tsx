@@ -91,7 +91,6 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
           gitProvider={gitProvider || gitOrganization.provider}
           src={type === "wizard" ? "serviceWizard" : "githubPage"}
           onSelectGitRepository={(data: GitRepositorySelected) => {
-            closeSelectRepoDialog();
             handleRepoSelected(data);
           }}
           onSelectGitRepositoryDialogClose={() => {
