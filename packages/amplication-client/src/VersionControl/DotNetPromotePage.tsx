@@ -21,15 +21,19 @@ import dotnetLogo from "../assets/images/dotnet-logo.svg";
 import { useAppContext } from "../context/appContext";
 import "./DotnetPromotePage.scss";
 import { EnumSubscriptionStatus } from "../models";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 const CLASS_NAME = "dotnet-promote-page";
+const eventOriginLocationName = "dotnet-promote-page";
 
 const DotNetPromotePage = () => {
   const { currentWorkspace, currentProject } = useAppContext();
+  const { trackEvent } = useTracking();
 
   const { handleContactUsClick } = useContactUs({
     actionName: "Contact Us",
-    eventOriginLocation: "dotnet-promote-page",
+    eventOriginLocation: eventOriginLocationName,
   });
 
   const history = useHistory();
@@ -37,6 +41,14 @@ const DotNetPromotePage = () => {
   const handleCloseClicked = useCallback(() => {
     history.push(`/${currentWorkspace?.id}/${currentProject?.id}`);
   }, [history, currentProject, currentWorkspace]);
+
+  const handleUpgradeClick = useCallback(() => {
+    window.open(`/${currentWorkspace?.id}/purchase`, "_blank");
+    trackEvent({
+      eventName: AnalyticsEventNames.UpgradeClick,
+      eventOriginLocation: eventOriginLocationName,
+    });
+  }, [currentWorkspace, trackEvent]);
 
   return (
     <Modal open fullScreen showCloseButton onCloseEvent={handleCloseClicked}>
@@ -105,7 +117,7 @@ const DotNetPromotePage = () => {
                 themeColor={EnumTextColor.ThemeGreen}
               >
                 <ListItem
-                  to={`/${currentWorkspace?.id}/purchase`}
+                  onClick={handleUpgradeClick}
                   direction={EnumFlexDirection.Column}
                   gap={EnumGapSize.Large}
                   end={
