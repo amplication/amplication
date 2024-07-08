@@ -904,8 +904,20 @@ describe("ResourceService", () => {
     ).resolves.toEqual(EXAMPLE_CREATE_RESOURCE_RESULTS);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
 
-    expect(prismaResourceFindManyMock).toBeCalledTimes(1);
+    expect(prismaResourceFindManyMock).toBeCalledTimes(2);
     expect(prismaResourceFindManyMock.mock.calls).toEqual([
+      [
+        {
+          where: {
+            deletedAt: null,
+            archived: {
+              not: true,
+            },
+            project: { id: EXAMPLE_PROJECT_ID },
+            resourceType: { equals: EnumResourceType.Service },
+          },
+        },
+      ],
       [
         {
           where: {

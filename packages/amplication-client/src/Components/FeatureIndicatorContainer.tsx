@@ -52,6 +52,8 @@ export type Props = {
   reversePosition?: boolean;
   showTooltip?: boolean;
   ctaType?: EnumCtaType;
+  actualUsage?: number | null;
+  paidPlansExclusive?: boolean;
 };
 
 export const FeatureIndicatorContainer: FC<Props> = ({
@@ -65,6 +67,8 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   reversePosition,
   showTooltip = true,
   ctaType = EnumCtaType.Upgrade,
+  actualUsage,
+  paidPlansExclusive = true,
 }) => {
   const { stigg } = useStiggContext();
   const { currentWorkspace } = useContext(AppContext);
@@ -105,14 +109,19 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
 
     if (entitlementType === EntitlementType.Metered) {
-      const usageExceeded = usageLimit && currentUsage >= usageLimit;
+      const actualCurrentUsage =
+        actualUsage !== null ? actualUsage : currentUsage;
+      const usageExceeded = usageLimit && actualCurrentUsage >= usageLimit;
       const isDisabled = usageExceeded ?? !hasMeteredAccess;
       if (isPreviewPlan(subscriptionPlan) && !isDisabled) {
         setDisabled(null);
         setIcon(null);
         return;
       }
-      setDisabled(isDisabled);
+      if (actualUsage !== null) {
+        // do not consider metered access if actual usage is provided
+        setDisabled(usageExceeded);
+      } else setDisabled(isDisabled);
     }
   }, [
     featureId,
@@ -123,6 +132,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     subscriptionPlan,
     status,
     entitlementType,
+    actualUsage,
   ]);
 
   const textStart = useMemo(() => {
@@ -130,7 +140,8 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       return limitationText;
     }
     if (
-      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Essential) &&
       status !== EnumSubscriptionStatus.Trailing
     ) {
       return fullEnterpriseText;
@@ -144,7 +155,8 @@ export const FeatureIndicatorContainer: FC<Props> = ({
       return DISABLED_DEFAULT_TEXT_END;
     }
     if (
-      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Essential) &&
       status !== EnumSubscriptionStatus.Trailing
     ) {
       return "";
@@ -156,7 +168,8 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   const showTooltipLink = useMemo(() => {
     if (
       isPreviewPlan(subscriptionPlan) ||
-      (subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      ((subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Essential) &&
         status !== EnumSubscriptionStatus.Trailing)
     ) {
       return false; // don't show the upgrade link when the plan is preview
@@ -176,12 +189,14 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
 
     if (
-      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
-      status === EnumSubscriptionStatus.Trailing
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Essential) &&
+      status === EnumSubscriptionStatus.Trailing &&
+      paidPlansExclusive
     ) {
       setIcon(IconType.Diamond);
     }
-  }, [featureId, subscriptionPlan, status, disabled]);
+  }, [featureId, subscriptionPlan, status, disabled, paidPlansExclusive]);
 
   const renderProps = {
     disabled: disabled,
