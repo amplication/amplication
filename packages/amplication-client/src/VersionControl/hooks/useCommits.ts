@@ -189,13 +189,11 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       if (!data) return;
       commit({
         variables: {
-          message: data.message,
-          projectId: currentProject?.id,
-          bypassLimitations: data.bypassLimitations ?? false,
+          data: data,
         },
       }).catch(console.error);
     },
-    [commit, currentProject?.id]
+    [commit]
   );
 
   const commitChangesLimitationError = useMemo(() => {

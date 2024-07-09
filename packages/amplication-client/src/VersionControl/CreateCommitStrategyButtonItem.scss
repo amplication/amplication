@@ -1,0 +1,8 @@
+@import "../style/index.scss";
+
+.create-commit-strategy-button-item {
+  display: grid;
+  grid-template: 1fr 1fr / repeat(6, 1fr);
+  align-items: end;
+  width: 100%;
+}

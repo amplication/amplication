@@ -89,7 +89,7 @@ const SyncWithGithubPage: React.FC = () => {
   const handleCommit = useCallback(() => {
     commitChanges({
       message: "",
-      projectId: currentProject.id,
+      project: { connect: { id: currentProject?.id } },
       bypassLimitations: false,
     });
     setOpenPr(false);
