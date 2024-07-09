@@ -80,11 +80,14 @@ const SyncWithGithubPage: React.FC = () => {
   const [openPr, setOpenPr] = useState<boolean>(false);
   const isLimitationError = commitChangesLimitationError !== undefined ?? false;
 
-  const handleOnDone = useCallback(() => {
-    refreshCurrentWorkspace();
-    refetch();
-    setOpenPr(true);
-  }, [refreshCurrentWorkspace, refetch]);
+  const handleOnDone = useCallback(
+    (openPr = true) => {
+      refreshCurrentWorkspace();
+      refetch();
+      openPr && setOpenPr(true);
+    },
+    [refreshCurrentWorkspace, refetch]
+  );
 
   const handleCommit = useCallback(() => {
     commitChanges({
@@ -111,17 +114,29 @@ const SyncWithGithubPage: React.FC = () => {
         <AuthWithGitProvider
           type="resource"
           resource={data.resource}
-          onDone={handleOnDone}
-          gitRepositorySelectedCb={handleOnDone}
-          gitRepositoryCreatedCb={handleOnDone}
+          onDone={() => {
+            handleOnDone(false);
+          }}
+          gitRepositorySelectedCb={() => {
+            handleOnDone();
+          }}
+          gitRepositoryCreatedCb={() => {
+            handleOnDone();
+          }}
         />
       )}
       {!isProjectConfiguration && data?.resource && (
         <ServiceConfigurationGitSettings
           resource={data.resource}
-          onDone={handleOnDone}
-          gitRepositorySelectedCb={handleOnDone}
-          gitRepositoryCreatedCb={handleOnDone}
+          onDone={() => {
+            handleOnDone(false);
+          }}
+          gitRepositorySelectedCb={() => {
+            handleOnDone();
+          }}
+          gitRepositoryCreatedCb={() => {
+            handleOnDone();
+          }}
         />
       )}
       <ConfirmationDialog
