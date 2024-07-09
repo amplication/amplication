@@ -17,6 +17,7 @@ import { Plugin, PluginVersion } from "./hooks/usePluginCatalog";
 
 import PluginInstallConfirmationDialog from "./PluginInstallConfirmationDialog";
 import PluginsCatalogItem from "./PluginsCatalogItem";
+import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -88,6 +89,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   }, [category, pluginCatalog]);
 
   const { addEntity } = useContext(AppContext);
+  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   const userEntity = useMemo(() => {
     const authEntity = resourceSettings?.serviceSettings?.authEntityName;
@@ -130,15 +132,21 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
             resource: { connect: { id: resource } },
           },
         },
-      }).catch(console.error);
+      })
+        .catch(console.error)
+        .then(() => {
+          setOnboardingProps({
+            pluginInstalled: true,
+          });
+        });
     },
     [
       createPluginInstallation,
       setConfirmInstall,
       resource,
       userEntity,
-      pluginInstallationData,
       setPluginInstallationData,
+      setOnboardingProps,
     ]
   );
 
