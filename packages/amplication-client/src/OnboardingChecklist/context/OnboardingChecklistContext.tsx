@@ -8,6 +8,7 @@ type OnboardingChecklistProps = {
   viewPRClicked: boolean;
   pluginInstalled: boolean;
   roleCreated: boolean;
+  messageBrokerCreated: boolean;
 };
 
 export interface OnboardingChecklistContextInterface {
@@ -24,6 +25,7 @@ const initialContext: OnboardingChecklistContextInterface = {
     viewPRClicked: false,
     pluginInstalled: false,
     roleCreated: false,
+    messageBrokerCreated: false,
   },
   setOnboardingProps: () => {},
 };
