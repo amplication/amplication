@@ -22,6 +22,7 @@ import { formatError } from "../util/error";
 import { DeleteModuleDto } from "./DeleteModuleDto";
 import ModuleDtoForm from "./ModuleDtoForm";
 import useModuleDto from "./hooks/useModuleDto";
+import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -40,6 +41,7 @@ const DEFAULT_DTO_MESSAGE =
   "This DTO was created automatically with the entity for its default CRUD operations.";
 const ModuleDto = ({ match }: Props) => {
   const { moduleDto: moduleDtoId } = match?.params ?? {};
+  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   const {
     addEntity,
@@ -89,9 +91,15 @@ const ModuleDto = ({ match }: Props) => {
             name: data.name,
           },
         },
-      }).catch(console.error);
+      })
+        .catch(console.error)
+        .then(() => {
+          setOnboardingProps({
+            dtoUpdated: true,
+          });
+        });
     },
-    [updateModuleDto, moduleDtoId, addEntity]
+    [updateModuleDto, moduleDtoId, addEntity, setOnboardingProps]
   );
 
   const onEnableChanged = useCallback(() => {

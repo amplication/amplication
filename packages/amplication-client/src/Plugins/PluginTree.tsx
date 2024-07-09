@@ -24,7 +24,7 @@ type Props = {
 export const PluginTree = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
     const location = useLocation();
-    const [chevronIcon, setChevronIcon] = useState("close");
+    const [chevronIcon, setChevronIcon] = useState("open");
     const history = useHistory();
     const { currentWorkspace, currentProject, currentResource } =
       useContext(AppContext);
@@ -44,12 +44,6 @@ export const PluginTree = React.memo(
     const handleCategoriesClick = useCallback(() => {
       setChevronIcon(chevronIcon === "close" ? "open" : "close");
     }, [chevronIcon]);
-
-    useEffect(() => {
-      setChevronIcon(
-        /catalog\/|!installed/.test(location.pathname) ? "open" : "close"
-      );
-    }, [location.pathname]);
 
     const setCategoriesLinks = useMemo(() => {
       return categories.map((category) => (

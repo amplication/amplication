@@ -25,6 +25,7 @@ import {
   AUTHENTICATION_ENTITY_DATA_TYPES,
   SYSTEM_DATA_TYPES,
 } from "./constants";
+import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 type TData = {
   entity: models.Entity;
@@ -44,6 +45,7 @@ const EntityField = () => {
     useContext(AppContext);
   const history = useHistory();
   const [error, setError] = useState<Error>();
+  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   const match = useRouteMatch<{
     resource: string;
@@ -123,9 +125,15 @@ const EntityField = () => {
           },
           data: rest,
         },
-      }).catch(console.error);
+      })
+        .catch(console.error)
+        .then(() => {
+          setOnboardingProps({
+            entityUpdated: true,
+          });
+        });
     },
-    [updateEntityField, field, entityField]
+    [updateEntityField, field, entityField, setOnboardingProps]
   );
 
   const handleRelatedFieldFormSubmit = useCallback(
