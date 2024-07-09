@@ -8,6 +8,14 @@ import { useAppContext } from "../context/appContext";
 import { REACT_APP_PRODUCT_FRUITS_WORKSPACE_CODE } from "../env";
 import { useOnboardingChecklistContext } from "./context/OnboardingChecklistContext";
 import useProjectResources from "../Workspaces/hooks/useprojectResources";
+import useCommits from "../VersionControl/hooks/useCommits";
+import { useAssistantContext } from "../Assistant/context/AssistantContext";
+
+const PRODUCT_FRUIT_API_ITEM_LAUNCHED = "item-launched";
+enum API_INTERNAL_IDS {
+  GenerateCode = "checklist-generate-code",
+  OpenJovu = "checklist-open-jovu",
+}
 
 type Props = {
   account?: models.Account;
@@ -21,13 +29,6 @@ function OnboardingChecklist({ account }: Props) {
     currentResource,
     resources: currentProjectResources,
   } = useAppContext();
-
-  // useProductFruitsApi((api) => {
-  //   api.checklists.listen("item-launched", (id, internalId) => {
-  //     console.log("Item launched", id, internalId);
-
-  //   });
-  // }, [resourceId,]);
 
   const { currentOnboardingProps, setOnboardingProps } =
     useOnboardingChecklistContext();
@@ -99,6 +100,36 @@ function OnboardingChecklist({ account }: Props) {
     currentProjectResources,
     currentProject,
   ]);
+
+  const { commits, commitsLoading, commitChanges } = useCommits(projectId);
+  const { setOpen: jovuSetOpen } = useAssistantContext();
+
+  useProductFruitsApi(
+    (api) => {
+      api.checklists.listen(
+        PRODUCT_FRUIT_API_ITEM_LAUNCHED,
+        (_, internalId) => {
+          switch (internalId) {
+            case API_INTERNAL_IDS.GenerateCode: {
+              if (!commitsLoading && commits.length === 0) {
+                commitChanges({
+                  message: "",
+                  projectId: projectId,
+                  bypassLimitations: false,
+                });
+              }
+              return;
+            }
+            case API_INTERNAL_IDS.OpenJovu: {
+              jovuSetOpen(true);
+              return;
+            }
+          }
+        }
+      );
+    },
+    [projectId, commitChanges, commits, commitsLoading, jovuSetOpen]
+  );
 
   const userInfo = useMemo(() => {
     if (!account) {
