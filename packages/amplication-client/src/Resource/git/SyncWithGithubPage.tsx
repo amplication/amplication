@@ -83,6 +83,11 @@ const SyncWithGithubPage: React.FC = () => {
   const handleOnDone = useCallback(() => {
     refreshCurrentWorkspace();
     refetch();
+  }, [refreshCurrentWorkspace, refetch]);
+
+  const handleRepositorySelected = useCallback(() => {
+    refreshCurrentWorkspace();
+    refetch();
     setOpenPr(true);
   }, [refreshCurrentWorkspace, refetch]);
 
@@ -112,16 +117,16 @@ const SyncWithGithubPage: React.FC = () => {
           type="resource"
           resource={data.resource}
           onDone={handleOnDone}
-          gitRepositorySelectedCb={handleOnDone}
-          gitRepositoryCreatedCb={handleOnDone}
+          gitRepositorySelectedCb={handleRepositorySelected}
+          gitRepositoryCreatedCb={handleRepositorySelected}
         />
       )}
       {!isProjectConfiguration && data?.resource && (
         <ServiceConfigurationGitSettings
           resource={data.resource}
           onDone={handleOnDone}
-          gitRepositorySelectedCb={handleOnDone}
-          gitRepositoryCreatedCb={handleOnDone}
+          gitRepositorySelectedCb={handleRepositorySelected}
+          gitRepositoryCreatedCb={handleRepositorySelected}
         />
       )}
       <ConfirmationDialog
