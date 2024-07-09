@@ -5,6 +5,7 @@ type OnboardingChecklistProps = {
   entityUpdated: boolean;
   dtoUpdated: boolean;
   apiUpdated: boolean;
+  viewPRClicked: boolean;
 };
 
 export interface OnboardingChecklistContextInterface {
@@ -18,6 +19,7 @@ const initialContext: OnboardingChecklistContextInterface = {
     entityUpdated: false,
     dtoUpdated: false,
     apiUpdated: false,
+    viewPRClicked: false,
   },
   setOnboardingProps: () => {},
 };
