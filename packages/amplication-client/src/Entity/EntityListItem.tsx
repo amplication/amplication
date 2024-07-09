@@ -154,8 +154,7 @@ export const EntityListItem = ({
   }, [
     resourceSettings?.serviceSettings,
     deleteEntity,
-    entity.id,
-    entity.name,
+    entity,
     onError,
     setOnboardingProps,
     handleSubmit,
