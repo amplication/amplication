@@ -70,7 +70,10 @@ function OnboardingChecklist({ account }: Props) {
   }, [projectId, currentProject]);
 
   const resourceId = useMemo(() => {
-    if (currentResource?.id) {
+    if (
+      currentResource?.id &&
+      currentResource?.resourceType === models.EnumResourceType.Service
+    ) {
       return currentResource?.id;
     }
 
