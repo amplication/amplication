@@ -1,4 +1,4 @@
-import { GET_COMMITS } from "./commitQueries";
+import { COMMIT_CHANGES, GET_COMMITS } from "./commitQueries";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   Commit,
@@ -9,7 +9,6 @@ import {
 } from "../../models";
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
 import { cloneDeep, groupBy } from "lodash";
-import { COMMIT_CHANGES } from "../Commit";
 import { GraphQLErrorCode } from "@amplication/graphql-error-codes";
 import { AppContext } from "../../context/appContext";
 import { commitPath } from "../../util/paths";

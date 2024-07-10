@@ -8,6 +8,7 @@ import { AppRouteProps } from "../routes/routesUtil";
 import CommitList from "./CommitList";
 import "./CommitsPage.scss";
 import BuildPage from "./BuildPage";
+import CommitButton from "./CommitButton";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -85,7 +86,9 @@ const CommitsPage: React.FC<Props> = ({ moduleClass, innerRoutes }) => {
           <EmptyState
             message="There are no commits to show. "
             image={EnumImages.CommitEmptyState}
-          />
+          >
+            <CommitButton />
+          </EmptyState>
         </>
       )}
     </PageContent>

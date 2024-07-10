@@ -12,9 +12,9 @@ import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/client";
-import { COMMIT_CHANGES } from "../../../VersionControl/Commit";
 import { isEmpty } from "lodash";
 import { EnumGitProvider } from "@amplication/code-gen-types";
+import { COMMIT_CHANGES } from "../../../VersionControl/hooks/commitQueries";
 
 const className = "create-service-code-generation";
 
