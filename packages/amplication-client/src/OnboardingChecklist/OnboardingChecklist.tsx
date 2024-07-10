@@ -8,7 +8,6 @@ import { useAppContext } from "../context/appContext";
 import { REACT_APP_PRODUCT_FRUITS_WORKSPACE_CODE } from "../env";
 import { useOnboardingChecklistContext } from "./context/OnboardingChecklistContext";
 import useProjectResources from "../Workspaces/hooks/useprojectResources";
-import useCommits from "../VersionControl/hooks/useCommits";
 import { useAssistantContext } from "../Assistant/context/AssistantContext";
 
 const PRODUCT_FRUIT_API_ITEM_LAUNCHED = "item-launched";
@@ -97,32 +96,20 @@ function OnboardingChecklist({ account }: Props) {
 
     return null;
   }, [
-    currentResource?.id,
+    currentResource,
     projectId,
     projectResourcesData?.resources,
     currentProjectResources,
     currentProject,
   ]);
 
-  const { commits, commitsLoading, commitChanges } = useCommits(projectId);
   const { setOpen: jovuSetOpen } = useAssistantContext();
-
   useProductFruitsApi(
     (api) => {
       api.checklists.listen(
         PRODUCT_FRUIT_API_ITEM_LAUNCHED,
         (_, internalId) => {
           switch (internalId) {
-            case API_INTERNAL_IDS.GenerateCode: {
-              if (!commitsLoading && commits.length === 0) {
-                commitChanges({
-                  message: "",
-                  projectId: projectId,
-                  bypassLimitations: false,
-                });
-              }
-              return;
-            }
             case API_INTERNAL_IDS.OpenJovu: {
               jovuSetOpen(true);
               return;
@@ -131,7 +118,7 @@ function OnboardingChecklist({ account }: Props) {
         }
       );
     },
-    [projectId, commitChanges, commits, commitsLoading, jovuSetOpen]
+    [jovuSetOpen]
   );
 
   const userInfo = useMemo(() => {
