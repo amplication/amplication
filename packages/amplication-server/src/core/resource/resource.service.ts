@@ -26,6 +26,8 @@ import {
   Prisma,
   PrismaService,
 } from "../../prisma";
+import { EnumResourceType as AmplicationEnumResourceType } from "../resource/dto/EnumResourceType";
+
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { prepareDeletedItemName } from "../../util/softDelete";
@@ -231,10 +233,17 @@ export class ResourceService {
           BillingFeature.Services
         );
 
+      const existingProjectResources = await this.resources({
+        where: {
+          project: { id: args.data.project.connect.id },
+          resourceType: { equals: AmplicationEnumResourceType.Service },
+        },
+      });
+
       if (
         serviceEntitlement &&
-        (!serviceEntitlement.hasAccess ||
-          serviceEntitlement.currentUsage >= serviceEntitlement.usageLimit)
+        existingProjectResources &&
+        existingProjectResources.length >= serviceEntitlement.usageLimit
       ) {
         const message = `You have reached the maximum number of services allowed. To continue using additional services, please upgrade your plan.`;
         throw new BillingLimitationError(message, BillingFeature.Services);

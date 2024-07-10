@@ -1,5 +1,5 @@
-import { GET_COMMITS } from "./commitQueries";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { COMMIT_CHANGES, GET_COMMITS } from "./commitQueries";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   Commit,
   PendingChange,
@@ -7,8 +7,12 @@ import {
   Build,
   EnumBuildStatus,
 } from "../../models";
-import { ApolloError, useLazyQuery } from "@apollo/client";
+import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
 import { cloneDeep, groupBy } from "lodash";
+import { GraphQLErrorCode } from "@amplication/graphql-error-codes";
+import { AppContext } from "../../context/appContext";
+import { commitPath } from "../../util/paths";
+import { useHistory } from "react-router-dom";
 
 const MAX_ITEMS_PER_LOADING = 20;
 const POLL_INTERVAL = 1000; //update the last commit status frequently to get the latest log message
@@ -17,6 +21,10 @@ export type CommitChangesByResource = (commitId: string) => {
   resourceId: string;
   changes: PendingChange[];
 }[];
+
+type TData = {
+  commit: Commit;
+};
 
 export interface CommitUtils {
   commits: Commit[];
@@ -38,6 +46,17 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
   const [lastCommit, setLastCommit] = useState<Commit>();
   const [commitsCount, setCommitsCount] = useState(1);
   const [disableLoadMore, setDisableLoadMore] = useState(false);
+  const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
+  const history = useHistory();
+
+  const {
+    setCommitRunning,
+    resetPendingChanges,
+    setPendingChangesError,
+    currentWorkspace,
+    currentProject,
+    commitUtils,
+  } = useContext(AppContext);
 
   const updateBuildStatus = useCallback(
     (build: Build) => {
@@ -127,6 +146,67 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       getLastCommitStopPolling();
     };
   }, [getLastCommitStopPolling]);
+
+  const formatLimitationError = (errorMessage: string) => {
+    const LIMITATION_ERROR_PREFIX = "LimitationError: ";
+
+    const limitationError = errorMessage.split(LIMITATION_ERROR_PREFIX)[1];
+    return limitationError;
+  };
+
+  //commits mutation
+  const [commit, { error: commitChangesError, loading: commitChangesLoading }] =
+    useMutation<TData>(COMMIT_CHANGES, {
+      onError: (error: ApolloError) => {
+        setCommitRunning(false);
+        setPendingChangesError(true);
+
+        setOpenLimitationDialog(
+          error?.graphQLErrors?.some(
+            (gqlError) =>
+              gqlError.extensions.code ===
+              GraphQLErrorCode.BILLING_LIMITATION_ERROR
+          ) ?? false
+        );
+      },
+      onCompleted: (response) => {
+        setCommitRunning(false);
+        setPendingChangesError(false);
+        resetPendingChanges();
+        commitUtils.refetchCommitsData(true);
+        const path = commitPath(
+          currentWorkspace?.id,
+          currentProject?.id,
+          response.commit.id
+        );
+        return history.push(path);
+      },
+    });
+
+  const commitChanges = useCallback(
+    (data) => {
+      if (!data) return;
+      commit({
+        variables: {
+          message: data.message,
+          projectId: currentProject?.id,
+          bypassLimitations: data.bypassLimitations ?? false,
+        },
+      }).catch(console.error);
+    },
+    [commit, currentProject?.id]
+  );
+
+  const commitChangesLimitationError = useMemo(() => {
+    if (!commitChangesError) return;
+    const limitation = commitChangesError?.graphQLErrors?.find(
+      (gqlError) =>
+        gqlError.extensions.code === GraphQLErrorCode.BILLING_LIMITATION_ERROR
+    );
+
+    limitation.message = formatLimitationError(commitChangesError.message);
+    return limitation;
+  }, [commitChangesError]);
 
   const [
     getInitialCommits,
@@ -237,6 +317,11 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     refetchLastCommit,
     disableLoadMore,
     updateBuildStatus,
+    isOpenLimitationDialog,
+    commitChanges,
+    commitChangesError,
+    commitChangesLoading,
+    commitChangesLimitationError,
   };
 };
 

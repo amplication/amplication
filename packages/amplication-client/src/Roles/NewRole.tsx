@@ -18,6 +18,7 @@ import {
   LicenseIndicatorContainer,
   LicensedResourceType,
 } from "../Components/LicenseIndicatorContainer";
+import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 const INITIAL_VALUES: Partial<models.ResourceRole> = {
   name: "",
@@ -50,6 +51,7 @@ const CLASS_NAME = "new-role";
 
 const NewRole = ({ onRoleAdd, resourceId }: Props) => {
   const { addEntity, currentResource } = useContext(AppContext);
+  const { setOnboardingProps } = useOnboardingChecklistContext();
   const licensed = currentResource?.licensed ?? true;
 
   const [createRole, { error, loading }] = useMutation(CREATE_ROLE, {
@@ -104,10 +106,13 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
           addEntity(result.data.createResourceRole.id);
           actions.resetForm();
           inputRef.current?.focus();
+          setOnboardingProps({
+            roleCreated: true,
+          });
         })
         .catch(console.error);
     },
-    [createRole, resourceId, onRoleAdd, addEntity]
+    [createRole, resourceId, onRoleAdd, addEntity, setOnboardingProps]
   );
 
   const errorMessage = formatError(error);

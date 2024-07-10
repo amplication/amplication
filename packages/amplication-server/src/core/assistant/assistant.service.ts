@@ -16,6 +16,8 @@ import { AssistantThread } from "./dto/AssistantThread";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 import { EnumAssistantMessageType } from "./dto/EnumAssistantMessageType";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
@@ -63,6 +65,7 @@ export class AssistantService {
     private readonly graphqlSubscriptionKafkaService: GraphqlSubscriptionPubSubKafkaService,
     private readonly billingService: BillingService,
     private readonly assistantFunctionsService: AssistantFunctionsService,
+    private readonly analytics: SegmentAnalyticsService,
 
     configService: ConfigService
   ) {
@@ -336,6 +339,10 @@ export class AssistantService {
     if (!threadId) {
       const thread = await openai.beta.threads.create();
       threadId = thread.id;
+
+      await this.analytics.trackWithContext({
+        event: EnumEventType.StartJovuThread,
+      });
     }
 
     const shortContext = this.getShortMessageContext(context);

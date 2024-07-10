@@ -21,6 +21,7 @@ import { DeleteModuleAction } from "./DeleteModuleAction";
 import ModuleActionForm from "./ModuleActionForm";
 import useModuleAction from "./hooks/useModuleAction";
 import { useModulesContext } from "../Modules/modulesContext";
+import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -52,6 +53,8 @@ const ModuleAction = ({ match }: Props) => {
     updateModuleActionError,
   } = useModuleAction();
 
+  const { setOnboardingProps } = useOnboardingChecklistContext();
+
   useEffect(() => {
     if (!moduleActionId) return;
     getModuleAction({
@@ -82,9 +85,15 @@ const ModuleAction = ({ match }: Props) => {
         onCompleted: () => {
           addEntity(moduleActionId);
         },
-      }).catch(console.error);
+      })
+        .catch(console.error)
+        .then(() => {
+          setOnboardingProps({
+            apiUpdated: true,
+          });
+        });
     },
-    [updateModuleAction, moduleActionId, addEntity]
+    [updateModuleAction, moduleActionId, addEntity, setOnboardingProps]
   );
 
   const onEnableChanged = useCallback(

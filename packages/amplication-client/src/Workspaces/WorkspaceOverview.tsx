@@ -65,7 +65,7 @@ export const WorkspaceOverview = () => {
       <FlexItem
         itemsAlign={EnumItemsAlign.Center}
         start={<TabContentTitle title="Workspace" />}
-        end={<AddNewProject />}
+        end={<AddNewProject projectsLength={projectsList.length} />}
         margin={EnumFlexItemMargin.None}
       />
       <HorizontalRule doubleSpacing />

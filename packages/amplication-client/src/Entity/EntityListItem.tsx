@@ -28,6 +28,7 @@ import "./EntityListItem.scss";
 import { USER_ENTITY } from "./constants";
 import useModule from "../Modules/hooks/useModule";
 import { DATE_CREATED_FIELD } from "../Modules/ModuleNavigationList";
+import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -65,6 +66,7 @@ export const EntityListItem = ({
 
   const { resourceSettings } = useResource(resourceId);
   const { findModuleRefetch } = useModule();
+  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -134,7 +136,13 @@ export const EntityListItem = ({
       variables: {
         entityId: entity.id,
       },
-    }).catch(onError);
+    })
+      .catch(onError)
+      .then(() => {
+        setOnboardingProps({
+          entityUpdated: true,
+        });
+      });
 
     if (authEntity === entity.name) {
       const updateServiceSettings = {
@@ -143,7 +151,14 @@ export const EntityListItem = ({
       };
       handleSubmit(updateServiceSettings);
     }
-  }, [entity, deleteEntity, onError]);
+  }, [
+    resourceSettings?.serviceSettings,
+    deleteEntity,
+    entity,
+    onError,
+    setOnboardingProps,
+    handleSubmit,
+  ]);
 
   const handleRowClick = useCallback(() => {
     history.push(

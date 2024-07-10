@@ -1,0 +1,78 @@
+@import "../style/index.scss";
+
+$avatar-size: 30px;
+
+.assistant-chat {
+  &__limit {
+    padding: var(--default-spacing);
+    flex: 1;
+    text-align: center;
+  }
+
+  &__messages {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--default-spacing);
+    overflow-y: auto;
+    padding: var(--default-spacing);
+    padding-left: 0;
+    font-size: var(--tag-font-size);
+  }
+
+  &__message {
+    background-color: var(--assistant-message-background);
+    border-radius: var(--default-border-radius);
+    padding: var(--default-spacing);
+    color: var(--assistant-message-color);
+    position: relative;
+
+    &__content {
+      overflow-wrap: break-word;
+    }
+
+    pre {
+      overflow: auto;
+      background: var(--gray-90);
+      padding: var(--default-spacing);
+    }
+
+    a {
+      color: var(--theme-turquoise);
+      text-decoration: underline;
+    }
+
+    &__options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--default-spacing);
+      align-items: flex-start;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+
+      > .amp-button.amp-button--gradient-outline {
+        max-width: 100%;
+        text-align: left;
+        white-space: normal;
+        height: auto;
+        color: var(--assistant-message-color);
+      }
+    }
+  }
+
+  &__message-role {
+    display: flex;
+    flex-direction: row;
+    gap: var(--default-spacing);
+    align-items: center;
+    justify-content: flex-start;
+    font-weight: semi-bold;
+    color: var(--assistant-role-color);
+
+    .user-avatar__initials {
+      width: $avatar-size;
+      height: $avatar-size;
+      font-size: var(--h4-font-size);
+    }
+  }
+}

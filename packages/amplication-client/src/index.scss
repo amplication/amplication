@@ -1,6 +1,17 @@
 @import "./style/dark-css-variables.css";
 @import "./style/index.scss";
 
+:root {
+  --assistant-background: var(--surface);
+  --assistant-message-background: var(--gray-full);
+  --assistant-message-color: var(--gray-base);
+  --assistant-title-color: var(--gray-base);
+  --assistant-role-color: var(--gray-base);
+  --assistant-handle-background: var(--theme-gradient);
+
+  --assistant-box-shadow: 5px 0px 5px rgba(56, 28, 138, 0.06);
+}
+
 body {
   color: var(--gray-base);
   -moz-osx-font-smoothing: auto;

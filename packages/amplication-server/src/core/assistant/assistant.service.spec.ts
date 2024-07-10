@@ -11,6 +11,7 @@ import { billingServiceMock } from "../billing/billing.service.mock";
 import { AssistantContext } from "./dto/AssistantContext";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 import { AssistantFunctionsService } from "./assistantFunctions.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const EXAMPLE_CHAT_OPENAI_KEY = "EXAMPLE_CHAT_OPENAI_KEY";
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
@@ -86,7 +87,14 @@ describe("AssistantService", () => {
             executeFunction: jest.fn(),
           },
         },
-
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            trackWithContext: jest.fn(() => {
+              return null;
+            }),
+          })),
+        },
         {
           provide: ConfigService,
           useValue: {

@@ -15,8 +15,9 @@ import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../../Components/Button";
 import { AppContext } from "../../context/appContext";
 import "./ApplyChangesNextSteps.scss";
-import Commit, { CommitBtnType } from "../../VersionControl/Commit";
+import { CommitBtnType } from "../../VersionControl/Commit";
 import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
+import CommitButton from "../../VersionControl/CommitButton";
 
 const className = "apply-changes-next-steps";
 
@@ -59,15 +60,11 @@ export const ApplyChangesNextSteps = ({
             buttonType={CommitBtnType.JumboButton}
           />
         ) : (
-          <Commit
-            projectId={currentProject.id}
-            noChanges
-            showCommitMessage={false}
-            commitMessage="Architecture redesign"
+          <CommitButton
             commitBtnType={CommitBtnType.JumboButton}
-          ></Commit>
+            commitMessage={""}
+          ></CommitButton>
         )}
-
         <JumboButton
           onClick={handleProjectOverviewClicked}
           text="Show my updated project overview"

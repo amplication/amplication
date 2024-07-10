@@ -21,7 +21,6 @@ export enum BillingFeature {
   RedesignArchitecture = "feature-redesign-architecture",
   Services = "feature-services",
   ServicesAboveEntitiesPerServiceLimit = "feature-services-above-entities-per-service-limit",
-  ServicesWithManyEntities = "feature-services-wth-many-entities",
   SmartGitSync = "feature-smart-git-sync",
   TeamMembers = "feature-team-members",
 }
