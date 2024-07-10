@@ -86,8 +86,9 @@ const CommitsPage: React.FC<Props> = ({ moduleClass, innerRoutes }) => {
           <EmptyState
             message="There are no commits to show. "
             image={EnumImages.CommitEmptyState}
-          />
-          <CommitButton />
+          >
+            <CommitButton />
+          </EmptyState>
         </>
       )}
     </PageContent>
