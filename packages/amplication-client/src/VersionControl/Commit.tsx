@@ -69,7 +69,7 @@ const Commit = ({
     resetForm(INITIAL_VALUES);
   }, []);
 
-  const handleSubmitTest = useCallback(() => {
+  const handleCommitBtnClicked = useCallback(() => {
     formikRef.current.submitForm();
   }, []);
 
@@ -134,7 +134,7 @@ const Commit = ({
               <CommitButton
                 commitBtnType={commitBtnType}
                 commitMessage={formikRef.current?.values?.message}
-                onCommitChanges={handleSubmitTest}
+                onCommitChanges={handleCommitBtnClicked}
               ></CommitButton>
             </Form>
           );
