@@ -123,18 +123,8 @@ export const GET_COMMIT = gql`
 `;
 
 export const COMMIT_CHANGES = gql`
-  mutation commit(
-    $message: String!
-    $projectId: String!
-    $bypassLimitations: Boolean
-  ) {
-    commit(
-      data: {
-        message: $message
-        bypassLimitations: $bypassLimitations
-        project: { connect: { id: $projectId } }
-      }
-    ) {
+  mutation commit($data: CommitCreateInput!) {
+    commit(data: $data) {
       id
       builds {
         id

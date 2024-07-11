@@ -1,13 +1,6 @@
-import {
-  Button,
-  EnumButtonStyle,
-  SelectMenuItem,
-} from "@amplication/ui/design-system";
+import { SelectMenuItem } from "@amplication/ui/design-system";
 import { commitStrategyOption } from "./Commit";
 import { EnumCommitStrategy } from "../models";
-import "./CreateCommitStrategyButtonItem.scss";
-
-const CLASS_NAME = "create-commit-strategy-button-item";
 
 type props = {
   item: commitStrategyOption;
@@ -20,25 +13,20 @@ const CreateCommitStrategyButtonItem = ({
   hasPendingChanges,
   onCommitStrategySelected,
 }: props) => {
+  if (
+    item.strategyType === EnumCommitStrategy.AllWithPendingChanges &&
+    !hasPendingChanges
+  )
+    return null;
+
   return (
     <SelectMenuItem
       closeAfterSelectionChange
       as="span"
-      itemData={item.strategyType}
+      itemData={item}
+      onSelectionChange={onCommitStrategySelected}
     >
-      <Button
-        disabled={
-          item.strategyType === EnumCommitStrategy.AllWithPendingChanges &&
-          !hasPendingChanges
-        }
-        name="commitStrategy"
-        onClick={() => {
-          onCommitStrategySelected(item);
-        }}
-        buttonStyle={EnumButtonStyle.Text}
-      >
-        <>{item.label} </>
-      </Button>
+      {item.label}
     </SelectMenuItem>
   );
 };

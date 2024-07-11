@@ -4,11 +4,11 @@ import {
   LimitationDialog,
   Snackbar,
 } from "@amplication/ui/design-system";
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useRef, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
-import { EnumSubscriptionPlan } from "../models";
+import { EnumCommitStrategy } from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
@@ -23,6 +23,8 @@ import useCommits from "./hooks/useCommits";
 type Props = {
   commitMessage?: string;
   commitBtnType?: CommitBtnType;
+  commitStrategy?: EnumCommitStrategy;
+  selectedService?: string;
   onCommitChanges?: () => void;
 };
 
@@ -38,51 +40,51 @@ export enum CommitBtnType {
 const CommitButton = ({
   commitBtnType = CommitBtnType.Button,
   commitMessage = "",
+  commitStrategy = EnumCommitStrategy.All,
+  selectedService = null,
   onCommitChanges,
 }: Props) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
   const match = useRouteMatch<RouteMatchProps>();
-  const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
+  const [isOpenLimitationDialog, setOpenLimitationDialog] =
+    useState<boolean>(false);
+
   const formikRef = useRef(null);
 
-  const { setCommitRunning, currentWorkspace, currentProject } =
-    useContext(AppContext);
+  const { currentProject } = useContext(AppContext);
 
   const {
     commitChanges,
     commitChangesError,
     commitChangesLoading,
     commitChangesLimitationError,
+    bypassLimitations,
   } = useCommits(currentProject?.id);
 
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
     history.push(path, { from: { pathname: history.location.pathname } });
   };
-  const bypassLimitations = useMemo(() => {
-    return (
-      currentWorkspace?.subscription?.subscriptionPlan !==
-      EnumSubscriptionPlan.Pro
-    );
-  }, [currentWorkspace]);
 
   const handleClick = useCallback(() => {
-    setCommitRunning(true);
     commitChanges({
       message: commitMessage,
-      projectId: currentProject?.id,
+      project: { connect: { id: currentProject?.id } },
       bypassLimitations: bypassLimitations ?? false,
+      commitStrategy,
+      resourceIds: selectedService && [selectedService],
     });
 
     onCommitChanges && onCommitChanges();
   }, [
-    setCommitRunning,
     commitChanges,
     currentProject,
     commitMessage,
     bypassLimitations,
     onCommitChanges,
+    commitStrategy,
+    selectedService,
   ]);
 
   const isLimitationError = commitChangesLimitationError !== undefined ?? false;
@@ -90,7 +92,7 @@ const CommitButton = ({
   const errorMessage = formatError(commitChangesError);
 
   return (
-    <div>
+    <>
       <LicenseIndicatorContainer
         blockByFeatureId={BillingFeature.BlockBuild}
         licensedResourceType={LicensedResourceType.Project}
@@ -159,7 +161,7 @@ const CommitButton = ({
       ) : (
         <Snackbar open={Boolean(commitChangesError)} message={errorMessage} />
       )}
-    </div>
+    </>
   );
 };
 
