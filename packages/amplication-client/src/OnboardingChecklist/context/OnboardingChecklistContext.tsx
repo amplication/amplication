@@ -3,6 +3,12 @@ import React, { useState } from "react";
 type OnboardingChecklistProps = {
   serviceCreated: boolean;
   entityUpdated: boolean;
+  dtoUpdated: boolean;
+  apiUpdated: boolean;
+  viewPRClicked: boolean;
+  pluginInstalled: boolean;
+  roleCreated: boolean;
+  messageBrokerCreated: boolean;
 };
 
 export interface OnboardingChecklistContextInterface {
@@ -14,6 +20,12 @@ const initialContext: OnboardingChecklistContextInterface = {
   currentOnboardingProps: {
     serviceCreated: false,
     entityUpdated: false,
+    dtoUpdated: false,
+    apiUpdated: false,
+    viewPRClicked: false,
+    pluginInstalled: false,
+    roleCreated: false,
+    messageBrokerCreated: false,
   },
   setOnboardingProps: () => {},
 };

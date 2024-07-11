@@ -1,47 +1,34 @@
 import {
+  Button,
   Dialog,
+  EnumButtonStyle,
   EnumFlexDirection,
   EnumGapSize,
   EnumItemsAlign,
-  EnumTextColor,
   FlexItem,
-  JumboButton,
-  LimitationDialog,
   MultiStateToggle,
   RadioButtonField,
   SelectMenu,
   SelectMenuList,
   SelectMenuModal,
-  Snackbar,
   TextField,
 } from "@amplication/ui/design-system";
-import { gql } from "@apollo/client";
 import { Form, Formik } from "formik";
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useRef, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
-import { useHistory, useRouteMatch } from "react-router-dom";
-import { Button, EnumButtonStyle } from "../Components/Button";
+import { useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
-import {
-  EnumCommitStrategy,
-  EnumResourceType,
-  EnumSubscriptionPlan,
-} from "../models";
+import { EnumCommitStrategy, EnumResourceType } from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { formatError } from "../util/error";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./Commit.scss";
-import { BillingFeature } from "@amplication/util-billing-types";
-import {
-  LicenseIndicatorContainer,
-  LicensedResourceType,
-} from "../Components/LicenseIndicatorContainer";
 import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
 import useCommits from "./hooks/useCommits";
 import CreateCommitStrategyButtonItem from "./CreateCommitStrategyButtonItem";
 import "./CreateCommitStrategyButton.scss";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
+import CommitButton from "./CommitButton";
 
 const OPTIONS = [
   {
@@ -54,16 +41,14 @@ const OPTIONS = [
   },
 ];
 
-type TCommit = {
+export type TCommit = {
   message: string;
-  bypassLimitations: boolean;
   commitStrategy: EnumCommitStrategy;
   selectedService: string;
 };
 
 const INITIAL_VALUES: TCommit = {
   message: "",
-  bypassLimitations: false,
   commitStrategy: EnumCommitStrategy.All,
   selectedService: null,
 };
@@ -79,10 +64,6 @@ const CLASS_NAME = "commit";
 
 const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
-};
-
-type RouteMatchProps = {
-  workspace: string;
 };
 
 export enum CommitBtnType {
@@ -118,57 +99,26 @@ const Commit = ({
 }: Props) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
-  const match = useRouteMatch<RouteMatchProps>();
-  const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
   const formikRef = useRef(null);
 
   const { dotNetGeneratorEnabled } = useAvailableCodeGenerators();
 
-  const { setCommitRunning, currentWorkspace, currentProject, resources } =
+  const { currentWorkspace, currentProject, resources } =
     useContext(AppContext);
 
-  const { pendingChanges } = usePendingChanges(currentProject);
   const [specificServiceSelected, setSpecificServiceSelected] =
-    useState<boolean>(false);
+    useState<boolean>();
 
-  const {
-    commitChanges,
-    commitChangesError,
-    commitChangesLoading,
-    commitChangesLimitationError,
-  } = useCommits(projectId);
+  const { commitChangesLoading } = useCommits(projectId);
+  const { pendingChanges } = usePendingChanges(currentProject);
 
-  const redirectToPurchase = () => {
-    const path = `/${match.params.workspace}/purchase`;
-    history.push(path, { from: { pathname: history.location.pathname } });
-  };
+  const handleSubmit = useCallback((data, { resetForm }) => {
+    resetForm(INITIAL_VALUES);
+  }, []);
 
-  const bypassLimitations = useMemo(() => {
-    return (
-      currentWorkspace?.subscription?.subscriptionPlan !==
-      EnumSubscriptionPlan.Pro
-    );
-  }, [currentWorkspace]);
-
-  const isLimitationError = commitChangesLimitationError !== undefined ?? false;
-
-  const errorMessage = formatError(commitChangesError);
-
-  const handleSubmit = useCallback(
-    (data, { resetForm }) => {
-      setCommitRunning(true);
-      commitChanges({
-        message: data.message,
-        project: { connect: { id: currentProject?.id } },
-        bypassLimitations: data.bypassLimitations ?? false,
-        commitStrategy: data.commitStrategy,
-        resourceIds: [data.selectedService],
-      });
-      formikRef.current.values.bypassLimitations = false;
-      resetForm(INITIAL_VALUES);
-    },
-    [setCommitRunning, commitChanges, currentProject]
-  );
+  const handleCommitBtnClicked = useCallback(() => {
+    formikRef.current.submitForm();
+  }, []);
 
   const handleOnSelectLanguageChange = useCallback(
     (selectedValue: string) => {
@@ -257,151 +207,83 @@ const Commit = ({
                   selectedValue={"node"}
                 />
               )}
-              <LicenseIndicatorContainer
-                blockByFeatureId={BillingFeature.BlockBuild}
-                licensedResourceType={LicensedResourceType.Project}
-              >
-                {commitBtnType === CommitBtnType.Button ? (
-                  <div>
-                    <FlexItem
-                      direction={EnumFlexDirection.Row}
-                      itemsAlign={EnumItemsAlign.Center}
-                      gap={EnumGapSize.None}
+              {commitBtnType === CommitBtnType.Button ? (
+                <div>
+                  <FlexItem
+                    direction={EnumFlexDirection.Row}
+                    itemsAlign={EnumItemsAlign.Center}
+                    gap={EnumGapSize.None}
+                  >
+                    <CommitButton
+                      commitBtnType={commitBtnType}
+                      commitMessage={formikRef.current?.values?.message}
+                      onCommitChanges={handleCommitBtnClicked}
+                    ></CommitButton>
+                    <SelectMenu
+                      title=""
+                      icon="chevron_down"
+                      buttonStyle={EnumButtonStyle.Text}
                     >
-                      <Button
-                        type="submit"
-                        buttonStyle={EnumButtonStyle.Primary}
-                        eventData={{
-                          eventName: AnalyticsEventNames.CommitClicked,
-                        }}
-                        disabled={commitChangesLoading}
-                      >
-                        <>Generate the code </>
-                      </Button>
-                      <SelectMenu
-                        title=""
-                        icon="chevron_down"
-                        buttonStyle={EnumButtonStyle.Text}
-                      >
-                        <SelectMenuModal align="right" withCaret>
-                          <SelectMenuList>
-                            {commitStrategyOptions.map((item, index) => (
-                              <CreateCommitStrategyButtonItem
-                                key={index}
-                                item={item}
-                                hasPendingChanges={pendingChanges?.length > 0}
-                                onCommitStrategySelected={
-                                  handleOnSelectCommitStrategyChange
-                                }
-                              ></CreateCommitStrategyButtonItem>
-                            ))}
-                          </SelectMenuList>
-                        </SelectMenuModal>
-                      </SelectMenu>
-                    </FlexItem>
-                    <Dialog
-                      title="Please Select a service to generate"
-                      isOpen={specificServiceSelected}
-                      onDismiss={handleSpecificServiceSelectedDismiss}
-                    >
-                      <FlexItem
-                        direction={EnumFlexDirection.Column}
-                        itemsAlign={EnumItemsAlign.Start}
-                      >
-                        {resources
-                          .filter(
-                            (r) => r.resourceType === EnumResourceType.Service
-                          )
-                          .map((resource, index) => (
-                            <RadioButtonField
-                              name="selectedService"
-                              checked={
-                                formik.values.selectedService === resource.id
+                      <SelectMenuModal align="right" withCaret>
+                        <SelectMenuList>
+                          {commitStrategyOptions.map((item, index) => (
+                            <CreateCommitStrategyButtonItem
+                              key={index}
+                              item={item}
+                              hasPendingChanges={pendingChanges?.length > 0}
+                              onCommitStrategySelected={
+                                handleOnSelectCommitStrategyChange
                               }
-                              label={resource.name}
-                              onChange={() => {
-                                handleSelectedServiceChanged(resource.id);
-                              }}
-                            />
+                            ></CreateCommitStrategyButtonItem>
                           ))}
-                        <Button onClick={handleOnSelectSpecificServiceChange}>
-                          generate the code
-                        </Button>
-                      </FlexItem>
-                    </Dialog>
-                  </div>
-                ) : commitBtnType === CommitBtnType.JumboButton ? (
-                  <JumboButton
-                    text="Generate the code for my new architecture"
-                    icon="pending_changes"
-                    onClick={formik.submitForm}
-                    circleColor={EnumTextColor.ThemeTurquoise}
-                  ></JumboButton>
-                ) : null}
-              </LicenseIndicatorContainer>
+                        </SelectMenuList>
+                      </SelectMenuModal>
+                    </SelectMenu>
+                  </FlexItem>
+                  <Dialog
+                    title="Please Select a service to generate"
+                    isOpen={specificServiceSelected}
+                    onDismiss={handleSpecificServiceSelectedDismiss}
+                  >
+                    <FlexItem
+                      direction={EnumFlexDirection.Column}
+                      itemsAlign={EnumItemsAlign.Start}
+                    >
+                      {resources
+                        .filter(
+                          (r) => r.resourceType === EnumResourceType.Service
+                        )
+                        .map((resource, index) => (
+                          <RadioButtonField
+                            name="selectedService"
+                            checked={
+                              formik.values.selectedService === resource.id
+                            }
+                            label={resource.name}
+                            onChange={() => {
+                              handleSelectedServiceChanged(resource.id);
+                            }}
+                          />
+                        ))}
+                      <Button onClick={handleOnSelectSpecificServiceChange}>
+                        generate the code
+                      </Button>
+                    </FlexItem>
+                  </Dialog>
+                </div>
+              ) : commitBtnType === CommitBtnType.JumboButton ? (
+                <CommitButton
+                  commitBtnType={commitBtnType}
+                  commitMessage={formikRef.current?.values?.message}
+                  onCommitChanges={handleCommitBtnClicked}
+                ></CommitButton>
+              ) : null}
             </Form>
           );
         }}
       </Formik>
-      {commitChangesError && isLimitationError ? (
-        <LimitationDialog
-          isOpen={isOpenLimitationDialog}
-          message={commitChangesLimitationError.message}
-          allowBypassLimitation={bypassLimitations}
-          onConfirm={() => {
-            redirectToPurchase();
-            trackEvent({
-              eventName: AnalyticsEventNames.UpgradeClick,
-              reason: commitChangesLimitationError.message,
-              eventOriginLocation: "commit-limitation-dialog",
-              billingFeature:
-                commitChangesLimitationError.extensions.billingFeature,
-            });
-            setOpenLimitationDialog(false);
-          }}
-          onDismiss={() => {
-            formikRef.current.values.bypassLimitations = false;
-            trackEvent({
-              eventName: AnalyticsEventNames.PassedLimitsNotificationClose,
-              reason: commitChangesLimitationError.message,
-              eventOriginLocation: "commit-limitation-dialog",
-            });
-            setOpenLimitationDialog(false);
-          }}
-          onBypass={() => {
-            formikRef.current.values.bypassLimitations = true;
-            formikRef.current.handleSubmit(formikRef.current.values, {
-              resetForm: formikRef.current.resetForm,
-            });
-
-            trackEvent({
-              eventName: AnalyticsEventNames.UpgradeLaterClick,
-              reason: commitChangesLimitationError.message,
-              eventOriginLocation: "commit-limitation-dialog",
-              billingFeature:
-                commitChangesLimitationError.extensions.billingFeature,
-            });
-            setOpenLimitationDialog(false);
-          }}
-        />
-      ) : (
-        <Snackbar open={Boolean(commitChangesError)} message={errorMessage} />
-      )}
     </div>
   );
 };
 
 export default Commit;
-
-export const COMMIT_CHANGES = gql`
-  mutation commit($data: CommitCreateInput!) {
-    commit(data: $data) {
-      id
-      builds {
-        id
-        resourceId
-        status
-      }
-    }
-  }
-`;

@@ -20,6 +20,7 @@ import { TEntities } from "../Entity/NewEntity";
 import { CREATE_DEFAULT_ENTITIES } from "../Workspaces/queries/entitiesQueries";
 import { AppContext, useAppContext } from "../context/appContext";
 import useResource from "../Resource/hooks/useResource";
+import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 // import DragPluginsCatalogItem from "./DragPluginCatalogItem";
 
 type Props = AppRouteProps & {
@@ -69,6 +70,8 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
 
   const { addEntity } = useContext(AppContext);
 
+  const { setOnboardingProps } = useOnboardingChecklistContext();
+
   const { data: entities, refetch } = useQuery<TData>(GET_ENTITIES, {
     variables: {
       id: resource,
@@ -101,9 +104,15 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
             resource: { connect: { id: resource } },
           },
         },
-      }).catch(console.error);
+      })
+        .catch(console.error)
+        .then(() => {
+          setOnboardingProps({
+            pluginInstalled: true,
+          });
+        });
     },
-    [createPluginInstallation, resource]
+    [createPluginInstallation, resource, setOnboardingProps]
   );
 
   const [createDefaultEntities] = useMutation<TEntities>(

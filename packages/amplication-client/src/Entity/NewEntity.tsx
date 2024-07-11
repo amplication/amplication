@@ -34,6 +34,7 @@ import "./NewEntity.scss";
 import { USER_ENTITY } from "./constants";
 import useModule from "../Modules/hooks/useModule";
 import CreateWithJovuButton from "../Assistant/CreateWithJovuButton";
+import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "resource">;
 
@@ -86,6 +87,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
 
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
   const { findModuleRefetch } = useModule();
+  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   const [createEntity, { error, data, loading }] = useMutation<DType>(
     CREATE_ENTITY,
@@ -195,9 +197,15 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
             resource: { connect: { id: resourceId } },
           },
         },
-      }).catch(console.error);
+      })
+        .catch(console.error)
+        .then(() => {
+          setOnboardingProps({
+            entityUpdated: true,
+          });
+        });
     },
-    [createEntity, setConfirmInstall, resourceId]
+    [createEntity, resourceId, setOnboardingProps]
   );
 
   const handleDismissConfirmationInstall = useCallback(() => {
