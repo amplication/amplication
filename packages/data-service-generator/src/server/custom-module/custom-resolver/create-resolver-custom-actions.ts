@@ -46,10 +46,11 @@ export function generateResolverCustomActionMethod(
   const inputParam = builders.identifier("args");
   inputParam.typeAnnotation = builders.tsTypeAnnotation(inputType);
 
-  const hasArgument = action.inputType.type !== EnumModuleDtoPropertyType.Dto;
+  const isPrimitiveArgs =
+    action.inputType.type !== EnumModuleDtoPropertyType.Dto;
 
   //@ts-ignore
-  inputParam.decorators = [createGraphqlArgsDecorator(hasArgument)];
+  inputParam.decorators = [createGraphqlArgsDecorator(isPrimitiveArgs)];
 
   //generate this code within the function
   //return this.service.[name]](args);
