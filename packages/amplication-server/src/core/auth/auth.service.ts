@@ -38,6 +38,7 @@ import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
 import { AuthProfile, AuthUser } from "./types";
 import { PreviewUserService } from "./previewUser.service";
 import { Auth0User } from "../idp/types";
+import { AwsMarketplaceService } from "../aws-marketplace/aws-marketplace.service";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
@@ -72,7 +73,8 @@ export class AuthService {
     private readonly analytics: SegmentAnalyticsService,
     private readonly auth0Service: Auth0Service,
     @Inject(forwardRef(() => PreviewUserService))
-    private readonly previewUserService: PreviewUserService
+    private readonly previewUserService: PreviewUserService,
+    private readonly awsMarketplaceService: AwsMarketplaceService
   ) {
     this.clientHost = configService.get(Env.CLIENT_HOST);
   }
@@ -577,6 +579,12 @@ export class AuthService {
         isNew = false;
       }
     }
+
+    await this.awsMarketplaceService.completeAwsMarketplaceIntegration(
+      profile.email,
+      user.account.id,
+      user.workspace.id
+    );
 
     this.trackCompleteEmailSignup(user.account, profile, existingUser);
 
