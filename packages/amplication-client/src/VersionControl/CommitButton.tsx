@@ -23,8 +23,6 @@ import useCommits from "./hooks/useCommits";
 type Props = {
   commitMessage?: string;
   commitBtnType?: CommitBtnType;
-  commitStrategy?: EnumCommitStrategy;
-  selectedService?: string;
   onCommitChanges?: () => void;
 };
 
@@ -40,8 +38,6 @@ export enum CommitBtnType {
 const CommitButton = ({
   commitBtnType = CommitBtnType.Button,
   commitMessage = "",
-  commitStrategy = EnumCommitStrategy.All,
-  selectedService = null,
   onCommitChanges,
 }: Props) => {
   const history = useHistory();
@@ -50,7 +46,7 @@ const CommitButton = ({
   const [isOpenLimitationDialog, setOpenLimitationDialog] =
     useState<boolean>(false);
 
-  const formikRef = useRef(null);
+  const bypassLimitationsRef = useRef(null);
 
   const { currentProject } = useContext(AppContext);
 
@@ -72,8 +68,7 @@ const CommitButton = ({
       message: commitMessage,
       project: { connect: { id: currentProject?.id } },
       bypassLimitations: bypassLimitations ?? false,
-      commitStrategy,
-      resourceIds: selectedService && [selectedService],
+      commitStrategy: EnumCommitStrategy.All,
     });
 
     onCommitChanges && onCommitChanges();
@@ -83,8 +78,6 @@ const CommitButton = ({
     commitMessage,
     bypassLimitations,
     onCommitChanges,
-    commitStrategy,
-    selectedService,
   ]);
 
   const isLimitationError = commitChangesLimitationError !== undefined ?? false;
@@ -134,7 +127,7 @@ const CommitButton = ({
             setOpenLimitationDialog(false);
           }}
           onDismiss={() => {
-            formikRef.current.values.bypassLimitations = false;
+            bypassLimitationsRef.current.values.bypassLimitations = false;
             trackEvent({
               eventName: AnalyticsEventNames.PassedLimitsNotificationClose,
               reason: commitChangesLimitationError.message,
@@ -143,10 +136,13 @@ const CommitButton = ({
             setOpenLimitationDialog(false);
           }}
           onBypass={() => {
-            formikRef.current.values.bypassLimitations = true;
-            formikRef.current.handleSubmit(formikRef.current.values, {
-              resetForm: formikRef.current.resetForm,
-            });
+            bypassLimitationsRef.current.values.bypassLimitations = true;
+            bypassLimitationsRef.current.handleSubmit(
+              bypassLimitationsRef.current.values,
+              {
+                resetForm: bypassLimitationsRef.current.resetForm,
+              }
+            );
 
             trackEvent({
               eventName: AnalyticsEventNames.UpgradeLaterClick,

@@ -49,8 +49,8 @@ export type TCommit = {
 
 const INITIAL_VALUES: TCommit = {
   message: "",
-  selectedService: null,
   commitStrategy: EnumCommitStrategy.All,
+  selectedService: null,
 };
 
 type Props = {
@@ -261,51 +261,39 @@ const Commit = ({
                     selectedValue={"node"}
                   />
                 )}
-                {commitBtnType === CommitBtnType.Button ? (
-                  <div>
-                    <FlexItem
-                      direction={EnumFlexDirection.Row}
-                      itemsAlign={EnumItemsAlign.Center}
-                      gap={EnumGapSize.None}
+                <div>
+                  <FlexItem
+                    direction={EnumFlexDirection.Row}
+                    itemsAlign={EnumItemsAlign.Center}
+                    gap={EnumGapSize.None}
+                  >
+                    <CommitButton
+                      commitMessage={formikRef.current?.values?.message}
+                      onCommitChanges={handleCommitBtnClicked}
+                    ></CommitButton>
+                    <SelectMenu
+                      title=""
+                      icon="chevron_down"
+                      buttonStyle={EnumButtonStyle.Text}
+                      className={`${CLASS_NAME}__commit-strategy`}
                     >
-                      <CommitButton
-                        commitBtnType={commitBtnType}
-                        commitMessage={formikRef.current?.values?.message}
-                        onCommitChanges={handleCommitBtnClicked}
-                        commitStrategy={
-                          formikRef.current?.values?.commitStrategy
-                        }
-                      ></CommitButton>
-                      <SelectMenu
-                        title=""
-                        icon="chevron_down"
-                        buttonStyle={EnumButtonStyle.Text}
-                        className={`${CLASS_NAME}__commit-strategy`}
-                      >
-                        <SelectMenuModal align="right" withCaret>
-                          <SelectMenuList>
-                            {COMMIT_STRATEGY_OPTIONS.map((item, index) => (
-                              <CreateCommitStrategyButtonItem
-                                key={index}
-                                item={item}
-                                hasPendingChanges={pendingChanges?.length > 0}
-                                onCommitStrategySelected={
-                                  handleOnSelectCommitStrategyChange
-                                }
-                              ></CreateCommitStrategyButtonItem>
-                            ))}
-                          </SelectMenuList>
-                        </SelectMenuModal>
-                      </SelectMenu>
-                    </FlexItem>
-                  </div>
-                ) : commitBtnType === CommitBtnType.JumboButton ? (
-                  <CommitButton
-                    commitBtnType={commitBtnType}
-                    commitMessage={formikRef.current?.values?.message}
-                    onCommitChanges={handleCommitBtnClicked}
-                  ></CommitButton>
-                ) : null}
+                      <SelectMenuModal align="right" withCaret>
+                        <SelectMenuList>
+                          {COMMIT_STRATEGY_OPTIONS.map((item, index) => (
+                            <CreateCommitStrategyButtonItem
+                              key={index}
+                              item={item}
+                              hasPendingChanges={pendingChanges?.length > 0}
+                              onCommitStrategySelected={
+                                handleOnSelectCommitStrategyChange
+                              }
+                            ></CreateCommitStrategyButtonItem>
+                          ))}
+                        </SelectMenuList>
+                      </SelectMenuModal>
+                    </SelectMenu>
+                  </FlexItem>
+                </div>
               </Form>
             );
           }}
