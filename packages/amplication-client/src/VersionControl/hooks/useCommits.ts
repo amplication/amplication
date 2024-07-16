@@ -6,6 +6,7 @@ import {
   SortOrder,
   Build,
   EnumBuildStatus,
+  EnumSubscriptionPlan,
 } from "../../models";
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
 import { cloneDeep, groupBy } from "lodash";
@@ -186,16 +187,22 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
   const commitChanges = useCallback(
     (data) => {
       if (!data) return;
+      setCommitRunning(true);
       commit({
         variables: {
-          message: data.message,
-          projectId: currentProject?.id,
-          bypassLimitations: data.bypassLimitations ?? false,
+          data: data,
         },
       }).catch(console.error);
     },
-    [commit, currentProject?.id]
+    [commit, setCommitRunning]
   );
+
+  const bypassLimitations = useMemo(() => {
+    return (
+      currentWorkspace?.subscription?.subscriptionPlan !==
+      EnumSubscriptionPlan.Pro
+    );
+  }, [currentWorkspace]);
 
   const commitChangesLimitationError = useMemo(() => {
     if (!commitChangesError) return;
@@ -203,6 +210,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       (gqlError) =>
         gqlError.extensions.code === GraphQLErrorCode.BILLING_LIMITATION_ERROR
     );
+    if (!limitation) return;
 
     limitation.message = formatLimitationError(commitChangesError.message);
     return limitation;
@@ -238,7 +246,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
 
     getInitialCommits();
     commitsCount !== 1 && setCommitsCount(1);
-  }, [currentProjectId]);
+  }, [commitsCount, currentProjectId, getInitialCommits]);
 
   // fetch the initial commit data and assign it
   useEffect(() => {
@@ -322,6 +330,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     commitChangesError,
     commitChangesLoading,
     commitChangesLimitationError,
+    bypassLimitations,
   };
 };
 
