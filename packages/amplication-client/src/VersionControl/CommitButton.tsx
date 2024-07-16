@@ -46,8 +46,6 @@ const CommitButton = ({
   const [isOpenLimitationDialog, setOpenLimitationDialog] =
     useState<boolean>(false);
 
-  const bypassLimitationsRef = useRef(null);
-
   const { currentProject } = useContext(AppContext);
 
   const {
@@ -58,6 +56,8 @@ const CommitButton = ({
     bypassLimitations,
   } = useCommits(currentProject?.id);
 
+  const bypassLimitationsRef = useRef(bypassLimitations);
+
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
     history.push(path, { from: { pathname: history.location.pathname } });
@@ -67,18 +67,12 @@ const CommitButton = ({
     commitChanges({
       message: commitMessage,
       project: { connect: { id: currentProject?.id } },
-      bypassLimitations: bypassLimitations ?? false,
+      bypassLimitations: bypassLimitationsRef ?? false,
       commitStrategy: EnumCommitStrategy.All,
     });
 
     onCommitChanges && onCommitChanges();
-  }, [
-    commitChanges,
-    currentProject,
-    commitMessage,
-    bypassLimitations,
-    onCommitChanges,
-  ]);
+  }, [commitChanges, currentProject, commitMessage, onCommitChanges]);
 
   const isLimitationError = commitChangesLimitationError !== undefined ?? false;
 
@@ -127,7 +121,7 @@ const CommitButton = ({
             setOpenLimitationDialog(false);
           }}
           onDismiss={() => {
-            bypassLimitationsRef.current.values.bypassLimitations = false;
+            bypassLimitationsRef.current = false;
             trackEvent({
               eventName: AnalyticsEventNames.PassedLimitsNotificationClose,
               reason: commitChangesLimitationError.message,
@@ -136,14 +130,7 @@ const CommitButton = ({
             setOpenLimitationDialog(false);
           }}
           onBypass={() => {
-            bypassLimitationsRef.current.values.bypassLimitations = true;
-            bypassLimitationsRef.current.handleSubmit(
-              bypassLimitationsRef.current.values,
-              {
-                resetForm: bypassLimitationsRef.current.resetForm,
-              }
-            );
-
+            bypassLimitationsRef.current = true;
             trackEvent({
               eventName: AnalyticsEventNames.UpgradeLaterClick,
               reason: commitChangesLimitationError.message,
