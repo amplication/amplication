@@ -67,7 +67,7 @@ const CommitButton = ({
     commitChanges({
       message: commitMessage,
       project: { connect: { id: currentProject?.id } },
-      bypassLimitations: bypassLimitationsRef ?? false,
+      bypassLimitations: bypassLimitationsRef.current ?? false,
       commitStrategy: EnumCommitStrategy.All,
     });
 
