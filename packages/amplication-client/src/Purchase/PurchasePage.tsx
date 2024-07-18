@@ -24,6 +24,7 @@ import { formatError } from "../util/error";
 import { FAQ } from "./FAQ";
 import { PromoBanner } from "./PromoBanner";
 import { PurchaseLoader } from "./PurchaseLoader";
+import { REACT_APP_PREFER_MONTHLY_CHECKOUT } from "../env";
 
 export type DType = {
   provisionSubscription: models.ProvisionSubscriptionResult;
@@ -229,6 +230,11 @@ const PurchasePage = (props) => {
             });
           }}
           onPlanSelected={onPlanSelected}
+          preferredBillingPeriod={
+            REACT_APP_PREFER_MONTHLY_CHECKOUT === "true"
+              ? BillingPeriod.Monthly
+              : BillingPeriod.Annually
+          }
         />
         <div className={`${CLASS_NAME}__contact`}>
           <div className={`${CLASS_NAME}__contact__content`}>
