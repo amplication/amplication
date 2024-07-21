@@ -232,12 +232,14 @@ export class ModuleDtoService extends BlockTypeService<
       };
     });
 
-    for (const property of properties) {
-      await this.validateTypes(
-        args.data.resource.connect.id,
-        property.propertyTypes,
-        UNSUPPORTED_TYPES
-      );
+    if (properties) {
+      for (const property of properties) {
+        await this.validateTypes(
+          args.data.resource.connect.id,
+          property.propertyTypes,
+          UNSUPPORTED_TYPES
+        );
+      }
     }
 
     return super.create(
