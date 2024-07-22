@@ -731,6 +731,7 @@ enum EnumBlockType {
   Module
   ModuleAction
   ModuleDto
+  Package
   PluginInstallation
   PluginOrder
   ProjectConfigurationSettings
@@ -896,6 +897,12 @@ enum EnumModuleDtoType {
   UpdateNestedManyInput
   WhereInput
   WhereUniqueInput
+}
+
+enum EnumPackageStatus {
+  Completed
+  Failed
+  Initial
 }
 
 enum EnumPendingChangeAction {
@@ -1412,6 +1419,7 @@ type Mutation {
   createModuleDtoProperty(data: ModuleDtoPropertyCreateInput!): ModuleDtoProperty!
   createOneEntity(data: EntityCreateInput!): Entity!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
+  createPackage(data: PackageCreateInput!): Package!
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   createProject(data: ProjectCreateInput!): Project!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
@@ -1432,6 +1440,7 @@ type Mutation {
   deleteModuleDto(where: WhereUniqueInput!): ModuleDto!
   deleteModuleDtoEnumMember(where: WhereEnumMemberUniqueInput!): ModuleDtoEnumMember!
   deleteModuleDtoProperty(where: WherePropertyUniqueInput!): ModuleDtoProperty!
+  deletePackage(where: WhereUniqueInput!): Package!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   deleteProject(where: WhereUniqueInput!): Project
   deleteResource(where: WhereUniqueInput!): Resource
@@ -1476,6 +1485,7 @@ type Mutation {
   updateModuleDto(data: ModuleDtoUpdateInput!, where: WhereUniqueInput!): ModuleDto!
   updateModuleDtoEnumMember(data: ModuleDtoEnumMemberUpdateInput!, where: WhereEnumMemberUniqueInput!): ModuleDtoEnumMember!
   updateModuleDtoProperty(data: ModuleDtoPropertyUpdateInput!, where: WherePropertyUniqueInput!): ModuleDtoProperty!
+  updatePackage(data: PackageUpdateInput!, where: WhereUniqueInput!): Package!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
@@ -1485,6 +1495,77 @@ type Mutation {
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
+}
+
+type Package implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  files: [PackageFile!]
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lastGeneratedAt: DateTime
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  originalFileChecksum: String!
+  outputParameters: [BlockInputOutput!]!
+  packageGenerationLogs: String
+  parentBlock: Block
+  parentBlockId: String
+  resourceId: String
+  status: EnumPackageStatus!
+  summary: String!
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input PackageCreateInput {
+  description: String
+  displayName: String!
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  resource: WhereParentIdInput!
+  summary: String!
+}
+
+type PackageFile {
+  content: String!
+  path: String!
+}
+
+input PackageFileInput {
+  content: String!
+  path: String!
+}
+
+input PackageOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input PackageUpdateInput {
+  description: String
+  displayName: String
+  files: [PackageFileInput!]
+  packageStatus: EnumPackageStatus
+  summary: String
+}
+
+input PackageWhereInput {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
 }
 
 """Returns a paginated list of repository groups available to select."""
@@ -1750,6 +1831,8 @@ type Query {
   moduleDto(where: WhereUniqueInput!): ModuleDto
   moduleDtos(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
   modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
+  package(where: WhereUniqueInput!): Package
+  packageList(orderBy: PackageOrderByInput, skip: Int, take: Int, where: PackageWhereInput): [Package!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   pluginInstallation(where: WhereUniqueInput!): PluginInstallation
   pluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!

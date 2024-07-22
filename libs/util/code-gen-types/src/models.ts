@@ -763,6 +763,7 @@ export enum EnumBlockType {
   Module = 'Module',
   ModuleAction = 'ModuleAction',
   ModuleDto = 'ModuleDto',
+  Package = 'Package',
   PluginInstallation = 'PluginInstallation',
   PluginOrder = 'PluginOrder',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
@@ -928,6 +929,12 @@ export enum EnumModuleDtoType {
   UpdateNestedManyInput = 'UpdateNestedManyInput',
   WhereInput = 'WhereInput',
   WhereUniqueInput = 'WhereUniqueInput'
+}
+
+export enum EnumPackageStatus {
+  Completed = 'Completed',
+  Failed = 'Failed',
+  Initial = 'Initial'
 }
 
 export enum EnumPendingChangeAction {
@@ -1434,6 +1441,7 @@ export type Mutation = {
   createModuleDtoProperty: ModuleDtoProperty;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
+  createPackage: Package;
   createPluginInstallation: PluginInstallation;
   createProject: Project;
   createRemoteGitRepository: RemoteGitRepository;
@@ -1454,6 +1462,7 @@ export type Mutation = {
   deleteModuleDto: ModuleDto;
   deleteModuleDtoEnumMember: ModuleDtoEnumMember;
   deleteModuleDtoProperty: ModuleDtoProperty;
+  deletePackage: Package;
   deletePluginInstallation: PluginInstallation;
   deleteProject?: Maybe<Project>;
   deleteResource?: Maybe<Resource>;
@@ -1495,6 +1504,7 @@ export type Mutation = {
   updateModuleDto: ModuleDto;
   updateModuleDtoEnumMember: ModuleDtoEnumMember;
   updateModuleDtoProperty: ModuleDtoProperty;
+  updatePackage: Package;
   updatePluginInstallation: PluginInstallation;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
@@ -1640,6 +1650,11 @@ export type MutationCreateOrganizationArgs = {
 };
 
 
+export type MutationCreatePackageArgs = {
+  data: PackageCreateInput;
+};
+
+
 export type MutationCreatePluginInstallationArgs = {
   data: PluginInstallationCreateInput;
 };
@@ -1738,6 +1753,11 @@ export type MutationDeleteModuleDtoEnumMemberArgs = {
 
 export type MutationDeleteModuleDtoPropertyArgs = {
   where: WherePropertyUniqueInput;
+};
+
+
+export type MutationDeletePackageArgs = {
+  where: WhereUniqueInput;
 };
 
 
@@ -1956,6 +1976,12 @@ export type MutationUpdateModuleDtoPropertyArgs = {
 };
 
 
+export type MutationUpdatePackageArgs = {
+  data: PackageUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationUpdatePluginInstallationArgs = {
   data: PluginInstallationUpdateInput;
   where: WhereUniqueInput;
@@ -2007,6 +2033,77 @@ export type MutationUpdateTopicArgs = {
 export type MutationUpdateWorkspaceArgs = {
   data: WorkspaceUpdateInput;
   where: WhereUniqueInput;
+};
+
+export type Package = IBlock & {
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
+  files?: Maybe<Array<PackageFile>>;
+  id: Scalars['String']['output'];
+  inputParameters: Array<BlockInputOutput>;
+  lastGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
+  lockedAt?: Maybe<Scalars['DateTime']['output']>;
+  lockedByUser?: Maybe<User>;
+  lockedByUserId?: Maybe<Scalars['String']['output']>;
+  originalFileChecksum: Scalars['String']['output'];
+  outputParameters: Array<BlockInputOutput>;
+  packageGenerationLogs?: Maybe<Scalars['String']['output']>;
+  parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  status: EnumPackageStatus;
+  summary: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  versionNumber: Scalars['Float']['output'];
+};
+
+export type PackageCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName: Scalars['String']['input'];
+  inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  parentBlock?: InputMaybe<WhereParentIdInput>;
+  resource: WhereParentIdInput;
+  summary: Scalars['String']['input'];
+};
+
+export type PackageFile = {
+  content: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+};
+
+export type PackageFileInput = {
+  content: Scalars['String']['input'];
+  path: Scalars['String']['input'];
+};
+
+export type PackageOrderByInput = {
+  blockType?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
+  displayName?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type PackageUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  files?: InputMaybe<Array<PackageFileInput>>;
+  packageStatus?: InputMaybe<EnumPackageStatus>;
+  summary?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PackageWhereInput = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  displayName?: InputMaybe<StringFilter>;
+  id?: InputMaybe<StringFilter>;
+  parentBlock?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 /** Returns a paginated list of repository groups available to select. */
@@ -2266,6 +2363,8 @@ export type Query = {
   moduleDto?: Maybe<ModuleDto>;
   moduleDtos: Array<ModuleDto>;
   modules: Array<Module>;
+  package?: Maybe<Package>;
+  packageList: Array<Package>;
   pendingChanges: Array<PendingChange>;
   pluginInstallation?: Maybe<PluginInstallation>;
   pluginInstallations: Array<PluginInstallation>;
@@ -2441,6 +2540,19 @@ export type QueryModulesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ModuleWhereInput>;
+};
+
+
+export type QueryPackageArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryPackageListArgs = {
+  orderBy?: InputMaybe<PackageOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PackageWhereInput>;
 };
 
 
