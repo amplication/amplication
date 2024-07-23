@@ -82,7 +82,7 @@ export const changeOriginMap = {
       },
       [models.EnumBlockType.Package]: {
         relativeUrl: `settings/packages`,
-        icon: "settings",
+        icon: "ai",
         displayName: "Service packages",
         type: "Service packages",
         pluralTypeName: "Service Packages",
