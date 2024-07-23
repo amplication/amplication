@@ -12,7 +12,7 @@ import { DeletePackageArgs } from "./dto/DeletePackageArgs";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
-export class PackagesService extends BlockTypeService<
+export class PackageService extends BlockTypeService<
   Package,
   FindManyPackageArgs,
   CreatePackageArgs,

@@ -31,7 +31,7 @@ import { GptModule } from "./gpt/gpt.module";
 import { UsageInsightsModule } from "./UsageInsights/usageInsights.module";
 import { AssistantModule } from "./assistant/assistant.module";
 import { AwsMarketplaceModule } from "./aws-marketplace/aws-marketplace.module";
-import { PackagesModule } from "./packages/packages.module";
+import { PackageModule } from "./package/package.module";
 
 @Module({
   imports: [
@@ -68,7 +68,7 @@ import { PackagesModule } from "./packages/packages.module";
     GptModule,
     AssistantModule,
     AwsMarketplaceModule,
-    PackagesModule,
+    PackageModule,
   ],
   exports: [
     AccountModule,

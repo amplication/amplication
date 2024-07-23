@@ -2040,16 +2040,12 @@ export type Package = IBlock & {
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
-  files?: Maybe<Array<PackageFile>>;
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
-  lastGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
   lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
-  originalFileChecksum: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
-  packageGenerationLogs?: Maybe<Scalars['String']['output']>;
   parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
@@ -2069,16 +2065,6 @@ export type PackageCreateInput = {
   summary: Scalars['String']['input'];
 };
 
-export type PackageFile = {
-  content: Scalars['String']['output'];
-  path: Scalars['String']['output'];
-};
-
-export type PackageFileInput = {
-  content: Scalars['String']['input'];
-  path: Scalars['String']['input'];
-};
-
 export type PackageOrderByInput = {
   blockType?: InputMaybe<SortOrder>;
   createdAt?: InputMaybe<SortOrder>;
@@ -2091,7 +2077,6 @@ export type PackageOrderByInput = {
 export type PackageUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
-  files?: InputMaybe<Array<PackageFileInput>>;
   packageStatus?: InputMaybe<EnumPackageStatus>;
   summary?: InputMaybe<Scalars['String']['input']>;
 };

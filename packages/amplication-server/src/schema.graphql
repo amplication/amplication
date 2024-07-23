@@ -1502,16 +1502,12 @@ type Package implements IBlock {
   createdAt: DateTime!
   description: String
   displayName: String!
-  files: [PackageFile!]
   id: String!
   inputParameters: [BlockInputOutput!]!
-  lastGeneratedAt: DateTime
   lockedAt: DateTime
   lockedByUser: User
   lockedByUserId: String
-  originalFileChecksum: String!
   outputParameters: [BlockInputOutput!]!
-  packageGenerationLogs: String
   parentBlock: Block
   parentBlockId: String
   resourceId: String
@@ -1531,16 +1527,6 @@ input PackageCreateInput {
   summary: String!
 }
 
-type PackageFile {
-  content: String!
-  path: String!
-}
-
-input PackageFileInput {
-  content: String!
-  path: String!
-}
-
 input PackageOrderByInput {
   blockType: SortOrder
   createdAt: SortOrder
@@ -1553,7 +1539,6 @@ input PackageOrderByInput {
 input PackageUpdateInput {
   description: String
   displayName: String
-  files: [PackageFileInput!]
   packageStatus: EnumPackageStatus
   summary: String
 }
