@@ -23,29 +23,21 @@ export class VersionServiceBase {
     return this.prisma.version.count(args);
   }
 
-  async versions<T extends Prisma.VersionFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.VersionFindManyArgs>
-  ): Promise<PrismaVersion[]> {
-    return this.prisma.version.findMany<Prisma.VersionFindManyArgs>(args);
+  async versions(args: Prisma.VersionFindManyArgs): Promise<PrismaVersion[]> {
+    return this.prisma.version.findMany(args);
   }
-  async version<T extends Prisma.VersionFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.VersionFindUniqueArgs>
+  async version(
+    args: Prisma.VersionFindUniqueArgs
   ): Promise<PrismaVersion | null> {
     return this.prisma.version.findUnique(args);
   }
-  async createVersion<T extends Prisma.VersionCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.VersionCreateArgs>
-  ): Promise<PrismaVersion> {
-    return this.prisma.version.create<T>(args);
+  async createVersion(args: Prisma.VersionCreateArgs): Promise<PrismaVersion> {
+    return this.prisma.version.create(args);
   }
-  async updateVersion<T extends Prisma.VersionUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.VersionUpdateArgs>
-  ): Promise<PrismaVersion> {
-    return this.prisma.version.update<T>(args);
+  async updateVersion(args: Prisma.VersionUpdateArgs): Promise<PrismaVersion> {
+    return this.prisma.version.update(args);
   }
-  async deleteVersion<T extends Prisma.VersionDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.VersionDeleteArgs>
-  ): Promise<PrismaVersion> {
+  async deleteVersion(args: Prisma.VersionDeleteArgs): Promise<PrismaVersion> {
     return this.prisma.version.delete(args);
   }
 

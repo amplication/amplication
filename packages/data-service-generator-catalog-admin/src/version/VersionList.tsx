@@ -6,8 +6,8 @@ import {
   ListProps,
   TextField,
   DateField,
-  ReferenceField,
   BooleanField,
+  ReferenceField,
 } from "react-admin";
 
 import Pagination from "../Components/Pagination";
@@ -23,9 +23,14 @@ export const VersionList = (props: ListProps): React.ReactElement => {
       pagination={<Pagination />}
     >
       <Datagrid rowClick="show">
-        <TextField label="Changelog" source="changelog" />
+        <TextField label="ID" source="id" />
         <DateField source="createdAt" label="Created At" />
+        <DateField source="updatedAt" label="Updated At" />
+        <TextField label="Name" source="name" />
+        <TextField label="Changelog" source="changelog" />
+        <BooleanField label="IsDeprecated" source="isDeprecated" />
         <TextField label="DeletedAt" source="deletedAt" />
+        <BooleanField label="IsActive" source="isActive" />
         <ReferenceField
           label="Generator"
           source="generator.id"
@@ -33,11 +38,6 @@ export const VersionList = (props: ListProps): React.ReactElement => {
         >
           <TextField source={GENERATOR_TITLE_FIELD} />
         </ReferenceField>
-        <TextField label="ID" source="id" />
-        <BooleanField label="IsActive" source="isActive" />
-        <BooleanField label="IsDeprecated" source="isDeprecated" />
-        <TextField label="Name" source="name" />
-        <DateField source="updatedAt" label="Updated At" />
       </Datagrid>
     </List>
   );

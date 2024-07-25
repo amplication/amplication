@@ -18,38 +18,38 @@ import { GeneratorService } from "../generator.service";
 const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
-  createdAt: new Date(),
-  fullName: "exampleFullName",
   id: "exampleId",
-  isActive: "true",
-  name: "exampleName",
+  createdAt: new Date(),
   updatedAt: new Date(),
+  name: "exampleName",
+  fullName: "exampleFullName",
+  isActive: "true",
 };
 const CREATE_RESULT = {
-  createdAt: new Date(),
-  fullName: "exampleFullName",
   id: "exampleId",
-  isActive: "true",
-  name: "exampleName",
+  createdAt: new Date(),
   updatedAt: new Date(),
+  name: "exampleName",
+  fullName: "exampleFullName",
+  isActive: "true",
 };
 const FIND_MANY_RESULT = [
   {
-    createdAt: new Date(),
-    fullName: "exampleFullName",
     id: "exampleId",
-    isActive: "true",
-    name: "exampleName",
+    createdAt: new Date(),
     updatedAt: new Date(),
+    name: "exampleName",
+    fullName: "exampleFullName",
+    isActive: "true",
   },
 ];
 const FIND_ONE_RESULT = {
-  createdAt: new Date(),
-  fullName: "exampleFullName",
   id: "exampleId",
-  isActive: "true",
-  name: "exampleName",
+  createdAt: new Date(),
   updatedAt: new Date(),
+  name: "exampleName",
+  fullName: "exampleFullName",
+  isActive: "true",
 };
 
 const service = {

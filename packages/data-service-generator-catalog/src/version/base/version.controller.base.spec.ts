@@ -18,46 +18,46 @@ import { VersionService } from "../version.service";
 const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
-  changelog: "exampleChangelog",
-  createdAt: new Date(),
-  deletedAt: new Date(),
   id: "exampleId",
-  isActive: "true",
-  isDeprecated: "true",
-  name: "exampleName",
+  createdAt: new Date(),
   updatedAt: new Date(),
+  name: "exampleName",
+  changelog: "exampleChangelog",
+  isDeprecated: "true",
+  deletedAt: new Date(),
+  isActive: "true",
 };
 const CREATE_RESULT = {
-  changelog: "exampleChangelog",
-  createdAt: new Date(),
-  deletedAt: new Date(),
   id: "exampleId",
-  isActive: "true",
-  isDeprecated: "true",
-  name: "exampleName",
+  createdAt: new Date(),
   updatedAt: new Date(),
+  name: "exampleName",
+  changelog: "exampleChangelog",
+  isDeprecated: "true",
+  deletedAt: new Date(),
+  isActive: "true",
 };
 const FIND_MANY_RESULT = [
   {
-    changelog: "exampleChangelog",
-    createdAt: new Date(),
-    deletedAt: new Date(),
     id: "exampleId",
-    isActive: "true",
-    isDeprecated: "true",
-    name: "exampleName",
+    createdAt: new Date(),
     updatedAt: new Date(),
+    name: "exampleName",
+    changelog: "exampleChangelog",
+    isDeprecated: "true",
+    deletedAt: new Date(),
+    isActive: "true",
   },
 ];
 const FIND_ONE_RESULT = {
-  changelog: "exampleChangelog",
-  createdAt: new Date(),
-  deletedAt: new Date(),
   id: "exampleId",
-  isActive: "true",
-  isDeprecated: "true",
-  name: "exampleName",
+  createdAt: new Date(),
   updatedAt: new Date(),
+  name: "exampleName",
+  changelog: "exampleChangelog",
+  isDeprecated: "true",
+  deletedAt: new Date(),
+  isActive: "true",
 };
 
 const service = {
@@ -143,8 +143,8 @@ describe("Version", () => {
       .expect({
         ...CREATE_RESULT,
         createdAt: CREATE_RESULT.createdAt.toISOString(),
-        deletedAt: CREATE_RESULT.deletedAt.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        deletedAt: CREATE_RESULT.deletedAt.toISOString(),
       });
   });
 
@@ -156,8 +156,8 @@ describe("Version", () => {
         {
           ...FIND_MANY_RESULT[0],
           createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
-          deletedAt: FIND_MANY_RESULT[0].deletedAt.toISOString(),
           updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+          deletedAt: FIND_MANY_RESULT[0].deletedAt.toISOString(),
         },
       ]);
   });
@@ -180,8 +180,8 @@ describe("Version", () => {
       .expect({
         ...FIND_ONE_RESULT,
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
-        deletedAt: FIND_ONE_RESULT.deletedAt.toISOString(),
         updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+        deletedAt: FIND_ONE_RESULT.deletedAt.toISOString(),
       });
   });
 
@@ -194,8 +194,8 @@ describe("Version", () => {
       .expect({
         ...CREATE_RESULT,
         createdAt: CREATE_RESULT.createdAt.toISOString(),
-        deletedAt: CREATE_RESULT.deletedAt.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        deletedAt: CREATE_RESULT.deletedAt.toISOString(),
       })
       .then(function () {
         agent

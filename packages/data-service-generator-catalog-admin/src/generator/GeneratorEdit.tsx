@@ -5,9 +5,9 @@ import {
   SimpleForm,
   EditProps,
   TextInput,
-  BooleanInput,
   ReferenceArrayInput,
   SelectArrayInput,
+  BooleanInput,
 } from "react-admin";
 
 import { VersionTitle } from "../version/VersionTitle";
@@ -16,9 +16,8 @@ export const GeneratorEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
-        <TextInput label="FullName" source="fullName" />
-        <BooleanInput label="IsActive" source="isActive" />
         <TextInput label="Name" source="name" />
+        <TextInput label="FullName" source="fullName" />
         <ReferenceArrayInput
           source="version"
           reference="Version"
@@ -27,6 +26,7 @@ export const GeneratorEdit = (props: EditProps): React.ReactElement => {
         >
           <SelectArrayInput optionText={VersionTitle} />
         </ReferenceArrayInput>
+        <BooleanInput label="IsActive" source="isActive" />
       </SimpleForm>
     </Edit>
   );

@@ -13,9 +13,10 @@ import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsString,
+  MaxLength,
   IsOptional,
-  IsBoolean,
   ValidateNested,
+  IsBoolean,
 } from "class-validator";
 import { VersionCreateNestedManyWithoutGeneratorsInput } from "./VersionCreateNestedManyWithoutGeneratorsInput";
 import { Type } from "class-transformer";
@@ -27,33 +28,24 @@ class GeneratorCreateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  fullName?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: Boolean,
-  })
-  @IsBoolean()
-  @IsOptional()
-  @Field(() => Boolean, {
-    nullable: true,
-  })
-  isActive?: boolean | null;
+  name?: string | null;
 
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  name?: string | null;
+  fullName?: string | null;
 
   @ApiProperty({
     required: false,
@@ -66,6 +58,17 @@ class GeneratorCreateInput {
     nullable: true,
   })
   version?: VersionCreateNestedManyWithoutGeneratorsInput;
+
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  isActive?: boolean | null;
 }
 
 export { GeneratorCreateInput as GeneratorCreateInput };

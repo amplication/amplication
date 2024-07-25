@@ -18,42 +18,42 @@ import { UserService } from "../user.service";
 const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
-  createdAt: new Date(),
-  firstName: "exampleFirstName",
   id: "exampleId",
-  lastName: "exampleLastName",
-  password: "examplePassword",
+  createdAt: new Date(),
   updatedAt: new Date(),
+  firstName: "exampleFirstName",
+  lastName: "exampleLastName",
   username: "exampleUsername",
+  password: "examplePassword",
 };
 const CREATE_RESULT = {
-  createdAt: new Date(),
-  firstName: "exampleFirstName",
   id: "exampleId",
-  lastName: "exampleLastName",
-  password: "examplePassword",
+  createdAt: new Date(),
   updatedAt: new Date(),
+  firstName: "exampleFirstName",
+  lastName: "exampleLastName",
   username: "exampleUsername",
+  password: "examplePassword",
 };
 const FIND_MANY_RESULT = [
   {
-    createdAt: new Date(),
-    firstName: "exampleFirstName",
     id: "exampleId",
-    lastName: "exampleLastName",
-    password: "examplePassword",
+    createdAt: new Date(),
     updatedAt: new Date(),
+    firstName: "exampleFirstName",
+    lastName: "exampleLastName",
     username: "exampleUsername",
+    password: "examplePassword",
   },
 ];
 const FIND_ONE_RESULT = {
-  createdAt: new Date(),
-  firstName: "exampleFirstName",
   id: "exampleId",
-  lastName: "exampleLastName",
-  password: "examplePassword",
+  createdAt: new Date(),
   updatedAt: new Date(),
+  firstName: "exampleFirstName",
+  lastName: "exampleLastName",
   username: "exampleUsername",
+  password: "examplePassword",
 };
 
 const service = {

@@ -8,37 +8,37 @@ generator client {
 }
 
 model User {
-  createdAt DateTime @default(now())
-  firstName String?
   id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  firstName String?
   lastName  String?
+  username  String   @unique
   password  String
   roles     Json
-  updatedAt DateTime @updatedAt
-  username  String   @unique
 }
 
 model Version {
-  changelog    String?
+  id           String     @id @default(cuid())
   createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  name         String
+  changelog    String?
+  isDeprecated Boolean?
   deletedAt    DateTime?
+  isActive     Boolean
   generator    Generator? @relation(fields: [generatorId], references: [id])
   generatorId  String?
-  id           String     @id @default(cuid())
-  isActive     Boolean
-  isDeprecated Boolean?
-  name         String
-  updatedAt    DateTime   @updatedAt
 
   @@unique([name, generatorId])
 }
 
 model Generator {
-  createdAt DateTime  @default(now())
-  fullName  String?   @unique
   id        String    @id @default(cuid())
-  isActive  Boolean?  @default(false)
-  name      String?   @unique
+  createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  name      String?   @unique
+  fullName  String?   @unique
   version   Version[]
+  isActive  Boolean?  @default(false)
 }

@@ -5,10 +5,10 @@ import {
   SimpleForm,
   EditProps,
   TextInput,
+  BooleanInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
-  BooleanInput,
 } from "react-admin";
 
 import { GeneratorTitle } from "../generator/GeneratorTitle";
@@ -17,8 +17,11 @@ export const VersionEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
+        <TextInput label="Name" source="name" />
         <TextInput label="Changelog" multiline source="changelog" />
+        <BooleanInput label="IsDeprecated" source="isDeprecated" />
         <DateTimeInput label="DeletedAt" source="deletedAt" />
+        <BooleanInput label="IsActive" source="isActive" />
         <ReferenceInput
           source="generator.id"
           reference="Generator"
@@ -26,9 +29,6 @@ export const VersionEdit = (props: EditProps): React.ReactElement => {
         >
           <SelectInput optionText={GeneratorTitle} />
         </ReferenceInput>
-        <BooleanInput label="IsActive" source="isActive" />
-        <BooleanInput label="IsDeprecated" source="isDeprecated" />
-        <TextInput label="Name" source="name" />
       </SimpleForm>
     </Edit>
   );

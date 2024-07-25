@@ -46,12 +46,12 @@ export class GeneratorControllerBase {
     return this.service.generators({
       ...args,
       select: {
-        createdAt: true,
-        fullName: true,
         id: true,
-        isActive: true,
-        name: true,
+        createdAt: true,
         updatedAt: true,
+        name: true,
+        fullName: true,
+        isActive: true,
       },
     });
   }
@@ -69,12 +69,12 @@ export class GeneratorControllerBase {
     const result = await this.service.generator({
       where: params,
       select: {
-        createdAt: true,
-        fullName: true,
         id: true,
-        isActive: true,
-        name: true,
+        createdAt: true,
         updatedAt: true,
+        name: true,
+        fullName: true,
+        isActive: true,
       },
     });
     if (result === null) {
@@ -96,21 +96,20 @@ export class GeneratorControllerBase {
     const results = await this.service.findVersion(params.id, {
       ...query,
       select: {
-        changelog: true,
+        id: true,
         createdAt: true,
+        updatedAt: true,
+        name: true,
+        changelog: true,
+        isDeprecated: true,
         deletedAt: true,
+        isActive: true,
 
         generator: {
           select: {
             id: true,
           },
         },
-
-        id: true,
-        isActive: true,
-        isDeprecated: true,
-        name: true,
-        updatedAt: true,
       },
     });
     if (results === null) {

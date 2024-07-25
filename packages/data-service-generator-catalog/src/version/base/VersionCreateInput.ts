@@ -13,10 +13,11 @@ import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsString,
+  MaxLength,
   IsOptional,
+  IsBoolean,
   IsDate,
   ValidateNested,
-  IsBoolean,
 } from "class-validator";
 import { Type } from "class-transformer";
 import { GeneratorWhereUniqueInput } from "../../generator/base/GeneratorWhereUniqueInput";
@@ -24,46 +25,25 @@ import { GeneratorWhereUniqueInput } from "../../generator/base/GeneratorWhereUn
 @InputType()
 class VersionCreateInput {
   @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @Field(() => String)
+  name!: string;
+
+  @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   changelog?: string | null;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsDate()
-  @Type(() => Date)
-  @IsOptional()
-  @Field(() => Date, {
-    nullable: true,
-  })
-  deletedAt?: Date | null;
-
-  @ApiProperty({
-    required: false,
-    type: () => GeneratorWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => GeneratorWhereUniqueInput)
-  @IsOptional()
-  @Field(() => GeneratorWhereUniqueInput, {
-    nullable: true,
-  })
-  generator?: GeneratorWhereUniqueInput | null;
-
-  @ApiProperty({
-    required: true,
-    type: Boolean,
-  })
-  @IsBoolean()
-  @Field(() => Boolean)
-  isActive!: boolean;
 
   @ApiProperty({
     required: false,
@@ -77,12 +57,35 @@ class VersionCreateInput {
   isDeprecated?: boolean | null;
 
   @ApiProperty({
-    required: true,
-    type: String,
+    required: false,
   })
-  @IsString()
-  @Field(() => String)
-  name!: string;
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  deletedAt?: Date | null;
+
+  @ApiProperty({
+    required: true,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @Field(() => Boolean)
+  isActive!: boolean;
+
+  @ApiProperty({
+    required: false,
+    type: () => GeneratorWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => GeneratorWhereUniqueInput)
+  @IsOptional()
+  @Field(() => GeneratorWhereUniqueInput, {
+    nullable: true,
+  })
+  generator?: GeneratorWhereUniqueInput | null;
 }
 
 export { VersionCreateInput as VersionCreateInput };
