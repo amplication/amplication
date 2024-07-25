@@ -48,9 +48,12 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.RELEASE_FUNCTIONS_PAT }}
+          author: ${{ github.actor }}
+          team-reviewers: amplication
           commit-message: "feat(openai-assistant): updated json source files"
           path: openai-assistant-configuration
           branch: function-json-files-update
+          delete-branch: true
           base: next
           title: "feat(openai-assistant): updated types"
-          body: "This is an auto-generated pull request."
+          body: "These are automated changes to update the Jovu assistants on the various environments. `sandbox` is updated by a push or pull request into `next`, `staging` is updated by a push or pull request into `staging` and `production` is updated by creating a `release`, which is done through the release to production workflow."
