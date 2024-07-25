@@ -24,7 +24,18 @@ class CategoryUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
-  description?: string | null;
+  name?: string;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  rank?: number | null;
 
   @ApiProperty({
     required: false,
@@ -46,18 +57,7 @@ class CategoryUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
-  name?: string;
-
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
-  @IsInt()
-  @IsOptional()
-  @Field(() => Number, {
-    nullable: true,
-  })
-  rank?: number | null;
+  description?: string | null;
 }
 
 export { CategoryUpdateInput as CategoryUpdateInput };

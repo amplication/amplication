@@ -11,13 +11,35 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsString, IsOptional, IsBoolean } from "class-validator";
 import { IsJSONValue } from "@app/custom-validators";
-import { IsOptional, IsString, IsBoolean } from "class-validator";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
 
 @InputType()
 class PluginVersionUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  pluginId?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  version?: string | null;
+
   @ApiProperty({
     required: false,
   })
@@ -26,7 +48,18 @@ class PluginVersionUpdateInput {
   @Field(() => GraphQLJSON, {
     nullable: true,
   })
-  configurations?: InputJsonValue;
+  settings?: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  pluginIdVersion?: string;
 
   @ApiProperty({
     required: false,
@@ -52,46 +85,13 @@ class PluginVersionUpdateInput {
 
   @ApiProperty({
     required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  pluginId?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  pluginIdVersion?: string;
-
-  @ApiProperty({
-    required: false,
   })
   @IsJSONValue()
   @IsOptional()
   @Field(() => GraphQLJSON, {
     nullable: true,
   })
-  settings?: InputJsonValue;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  version?: string | null;
+  configurations?: InputJsonValue;
 }
 
 export { PluginVersionUpdateInput as PluginVersionUpdateInput };

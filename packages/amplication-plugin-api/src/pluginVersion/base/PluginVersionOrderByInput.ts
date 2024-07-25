@@ -28,7 +28,7 @@ class PluginVersionOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  configurations?: SortOrder;
+  id?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -50,29 +50,7 @@ class PluginVersionOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  deprecated?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: ["asc", "desc"],
-  })
-  @IsOptional()
-  @IsEnum(SortOrder)
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  id?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: ["asc", "desc"],
-  })
-  @IsOptional()
-  @IsEnum(SortOrder)
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  isLatest?: SortOrder;
+  updatedAt?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -94,7 +72,7 @@ class PluginVersionOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  pluginIdVersion?: SortOrder;
+  version?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -116,7 +94,7 @@ class PluginVersionOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  updatedAt?: SortOrder;
+  pluginIdVersion?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -127,7 +105,29 @@ class PluginVersionOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  version?: SortOrder;
+  deprecated?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  isLatest?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  configurations?: SortOrder;
 }
 
 export { PluginVersionOrderByInput as PluginVersionOrderByInput };

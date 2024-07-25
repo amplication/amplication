@@ -8,41 +8,41 @@ generator client {
 }
 
 model Plugin {
-  categories        Json?    @default("[]")
-  codeGeneratorName String   @default("NodeJs")
-  createdAt         DateTime @default(now())
-  description       String?
-  downloads         Int?
-  github            String?
-  icon              String?
   id                String   @id @default(cuid())
-  name              String?
-  npm               String?
-  pluginId          String?  @unique
-  taggedVersions    Json?
+  createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  pluginId          String?  @unique
+  name              String?
+  description       String?
+  npm               String?
+  icon              String?
+  github            String?
   website           String?
+  taggedVersions    Json?
+  categories        Json?    @default("[]")
+  downloads         Int?
+  codeGeneratorName String   @default("NodeJs")
 }
 
 model PluginVersion {
-  configurations  Json?
-  createdAt       DateTime @default(now())
-  deprecated      String?
   id              String   @id @default(cuid())
-  isLatest        Boolean?
-  pluginId        String?
-  pluginIdVersion String   @unique
-  settings        Json?
+  createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  pluginId        String?
   version         String?
+  settings        Json?
+  pluginIdVersion String   @unique
+  deprecated      String?
+  isLatest        Boolean?
+  configurations  Json?
 }
 
 model Category {
-  createdAt   DateTime @default(now())
-  description String?
-  icon        String?
   id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   name        String   @unique
   rank        Int?     @unique
-  updatedAt   DateTime @updatedAt
+  icon        String?
+  description String?
 }

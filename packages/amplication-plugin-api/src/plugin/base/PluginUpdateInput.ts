@@ -11,8 +11,8 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsString, IsOptional, IsInt } from "class-validator";
 import { IsJSONValue } from "@app/custom-validators";
-import { IsOptional, IsString, IsInt } from "class-validator";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
 
@@ -20,16 +20,6 @@ import { InputJsonValue } from "../../types";
 class PluginUpdateInput {
   @ApiProperty({
     required: false,
-  })
-  @IsJSONValue()
-  @IsOptional()
-  @Field(() => GraphQLJSON, {
-    nullable: true,
-  })
-  categories?: InputJsonValue;
-
-  @ApiProperty({
-    required: false,
     type: String,
   })
   @IsString()
@@ -37,51 +27,7 @@ class PluginUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
-  codeGeneratorName?: string;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  description?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
-  @IsInt()
-  @IsOptional()
-  @Field(() => Number, {
-    nullable: true,
-  })
-  downloads?: number | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  github?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  icon?: string | null;
+  pluginId?: string | null;
 
   @ApiProperty({
     required: false,
@@ -103,6 +49,17 @@ class PluginUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
+  description?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
   npm?: string | null;
 
   @ApiProperty({
@@ -114,7 +71,29 @@ class PluginUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
-  pluginId?: string | null;
+  icon?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  github?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  website?: string | null;
 
   @ApiProperty({
     required: false,
@@ -128,6 +107,27 @@ class PluginUpdateInput {
 
   @ApiProperty({
     required: false,
+  })
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  categories?: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  downloads?: number | null;
+
+  @ApiProperty({
+    required: false,
     type: String,
   })
   @IsString()
@@ -135,7 +135,7 @@ class PluginUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
-  website?: string | null;
+  codeGeneratorName?: string;
 }
 
 export { PluginUpdateInput as PluginUpdateInput };
