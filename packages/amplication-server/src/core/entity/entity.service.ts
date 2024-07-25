@@ -13,7 +13,7 @@ import { DataConflictError } from "../../errors/DataConflictError";
 import { Prisma, PrismaService } from "../../prisma";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { camelCase } from "camel-case";
-import { isEmpty, pick, last, head, omit, isEqual } from "lodash";
+import { isEmpty, pick, last, head, omit, isEqual, orderBy } from "lodash";
 import {
   Entity,
   EntityField,
@@ -252,7 +252,10 @@ export class EntityService {
     return entityVersions.map(({ entity, fields, permissions }) => {
       return {
         ...entity,
-        fields: this.addDBNumericTypesIfMissing(fields),
+        fields: orderBy(
+          this.addDBNumericTypesIfMissing(fields),
+          (field) => field.name
+        ),
         permissions: permissions,
       };
     });
