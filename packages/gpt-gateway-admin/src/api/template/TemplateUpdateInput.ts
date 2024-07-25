@@ -1,11 +1,11 @@
-import { MessageUpdateManyWithoutTemplatesInput } from "./MessageUpdateManyWithoutTemplatesInput";
-import { ConversationTypeUpdateManyWithoutTemplatesInput } from "./ConversationTypeUpdateManyWithoutTemplatesInput";
 import { ModelWhereUniqueInput } from "../model/ModelWhereUniqueInput";
+import { ConversationTypeUpdateManyWithoutTemplatesInput } from "./ConversationTypeUpdateManyWithoutTemplatesInput";
+import { MessageUpdateManyWithoutTemplatesInput } from "./MessageUpdateManyWithoutTemplatesInput";
 
 export type TemplateUpdateInput = {
-  messages?: MessageUpdateManyWithoutTemplatesInput;
-  messageTypes?: ConversationTypeUpdateManyWithoutTemplatesInput;
   model?: ModelWhereUniqueInput;
   name?: string;
   params?: string | null;
+  messageTypes?: ConversationTypeUpdateManyWithoutTemplatesInput;
+  messages?: MessageUpdateManyWithoutTemplatesInput;
 };

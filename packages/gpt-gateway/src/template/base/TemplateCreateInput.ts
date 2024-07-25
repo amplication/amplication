@@ -11,38 +11,19 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { MessageCreateNestedManyWithoutTemplatesInput } from "./MessageCreateNestedManyWithoutTemplatesInput";
-import { ValidateNested, IsOptional, IsString } from "class-validator";
+import { ModelWhereUniqueInput } from "../../model/base/ModelWhereUniqueInput";
+import {
+  ValidateNested,
+  IsString,
+  MaxLength,
+  IsOptional,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { ConversationTypeCreateNestedManyWithoutTemplatesInput } from "./ConversationTypeCreateNestedManyWithoutTemplatesInput";
-import { ModelWhereUniqueInput } from "../../model/base/ModelWhereUniqueInput";
+import { MessageCreateNestedManyWithoutTemplatesInput } from "./MessageCreateNestedManyWithoutTemplatesInput";
 
 @InputType()
 class TemplateCreateInput {
-  @ApiProperty({
-    required: false,
-    type: () => MessageCreateNestedManyWithoutTemplatesInput,
-  })
-  @ValidateNested()
-  @Type(() => MessageCreateNestedManyWithoutTemplatesInput)
-  @IsOptional()
-  @Field(() => MessageCreateNestedManyWithoutTemplatesInput, {
-    nullable: true,
-  })
-  messages?: MessageCreateNestedManyWithoutTemplatesInput;
-
-  @ApiProperty({
-    required: false,
-    type: () => ConversationTypeCreateNestedManyWithoutTemplatesInput,
-  })
-  @ValidateNested()
-  @Type(() => ConversationTypeCreateNestedManyWithoutTemplatesInput)
-  @IsOptional()
-  @Field(() => ConversationTypeCreateNestedManyWithoutTemplatesInput, {
-    nullable: true,
-  })
-  messageTypes?: ConversationTypeCreateNestedManyWithoutTemplatesInput;
-
   @ApiProperty({
     required: true,
     type: () => ModelWhereUniqueInput,
@@ -57,6 +38,7 @@ class TemplateCreateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(256)
   @Field(() => String)
   name!: string;
 
@@ -65,11 +47,36 @@ class TemplateCreateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(256)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   params?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => ConversationTypeCreateNestedManyWithoutTemplatesInput,
+  })
+  @ValidateNested()
+  @Type(() => ConversationTypeCreateNestedManyWithoutTemplatesInput)
+  @IsOptional()
+  @Field(() => ConversationTypeCreateNestedManyWithoutTemplatesInput, {
+    nullable: true,
+  })
+  messageTypes?: ConversationTypeCreateNestedManyWithoutTemplatesInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => MessageCreateNestedManyWithoutTemplatesInput,
+  })
+  @ValidateNested()
+  @Type(() => MessageCreateNestedManyWithoutTemplatesInput)
+  @IsOptional()
+  @Field(() => MessageCreateNestedManyWithoutTemplatesInput, {
+    nullable: true,
+  })
+  messages?: MessageCreateNestedManyWithoutTemplatesInput;
 }
 
 export { TemplateCreateInput as TemplateCreateInput };

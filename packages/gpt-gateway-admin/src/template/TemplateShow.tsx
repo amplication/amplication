@@ -27,16 +27,14 @@ export const TemplateShow = (props: ShowProps): React.ReactElement => {
         <TextField label="Params" source="params" />
         <DateField source="updatedAt" label="Updated At" />
         <ReferenceManyField
-          reference="Message"
+          reference="ConversationType"
           target="templateId"
-          label="Messages"
+          label="ConversationTypes"
         >
           <Datagrid rowClick="show">
-            <TextField label="Content" source="content" />
             <DateField source="createdAt" label="Created At" />
             <TextField label="Id" source="id" />
-            <TextField label="Position" source="position" />
-            <TextField label="Role" source="role" />
+            <TextField label="Key" source="key" />
             <ReferenceField
               label="Template"
               source="template.id"
@@ -48,14 +46,16 @@ export const TemplateShow = (props: ShowProps): React.ReactElement => {
           </Datagrid>
         </ReferenceManyField>
         <ReferenceManyField
-          reference="ConversationType"
+          reference="Message"
           target="templateId"
-          label="ConversationTypes"
+          label="Messages"
         >
           <Datagrid rowClick="show">
+            <TextField label="Content" source="content" />
             <DateField source="createdAt" label="Created At" />
             <TextField label="Id" source="id" />
-            <TextField label="Key" source="key" />
+            <TextField label="Position" source="position" />
+            <TextField label="Role" source="role" />
             <ReferenceField
               label="Template"
               source="template.id"

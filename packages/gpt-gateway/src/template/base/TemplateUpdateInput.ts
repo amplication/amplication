@@ -11,38 +11,19 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { MessageUpdateManyWithoutTemplatesInput } from "./MessageUpdateManyWithoutTemplatesInput";
-import { ValidateNested, IsOptional, IsString } from "class-validator";
+import { ModelWhereUniqueInput } from "../../model/base/ModelWhereUniqueInput";
+import {
+  ValidateNested,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { ConversationTypeUpdateManyWithoutTemplatesInput } from "./ConversationTypeUpdateManyWithoutTemplatesInput";
-import { ModelWhereUniqueInput } from "../../model/base/ModelWhereUniqueInput";
+import { MessageUpdateManyWithoutTemplatesInput } from "./MessageUpdateManyWithoutTemplatesInput";
 
 @InputType()
 class TemplateUpdateInput {
-  @ApiProperty({
-    required: false,
-    type: () => MessageUpdateManyWithoutTemplatesInput,
-  })
-  @ValidateNested()
-  @Type(() => MessageUpdateManyWithoutTemplatesInput)
-  @IsOptional()
-  @Field(() => MessageUpdateManyWithoutTemplatesInput, {
-    nullable: true,
-  })
-  messages?: MessageUpdateManyWithoutTemplatesInput;
-
-  @ApiProperty({
-    required: false,
-    type: () => ConversationTypeUpdateManyWithoutTemplatesInput,
-  })
-  @ValidateNested()
-  @Type(() => ConversationTypeUpdateManyWithoutTemplatesInput)
-  @IsOptional()
-  @Field(() => ConversationTypeUpdateManyWithoutTemplatesInput, {
-    nullable: true,
-  })
-  messageTypes?: ConversationTypeUpdateManyWithoutTemplatesInput;
-
   @ApiProperty({
     required: false,
     type: () => ModelWhereUniqueInput,
@@ -60,6 +41,7 @@ class TemplateUpdateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(256)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -71,11 +53,36 @@ class TemplateUpdateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(256)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   params?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => ConversationTypeUpdateManyWithoutTemplatesInput,
+  })
+  @ValidateNested()
+  @Type(() => ConversationTypeUpdateManyWithoutTemplatesInput)
+  @IsOptional()
+  @Field(() => ConversationTypeUpdateManyWithoutTemplatesInput, {
+    nullable: true,
+  })
+  messageTypes?: ConversationTypeUpdateManyWithoutTemplatesInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => MessageUpdateManyWithoutTemplatesInput,
+  })
+  @ValidateNested()
+  @Type(() => MessageUpdateManyWithoutTemplatesInput)
+  @IsOptional()
+  @Field(() => MessageUpdateManyWithoutTemplatesInput, {
+    nullable: true,
+  })
+  messages?: MessageUpdateManyWithoutTemplatesInput;
 }
 
 export { TemplateUpdateInput as TemplateUpdateInput };

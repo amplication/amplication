@@ -23,29 +23,19 @@ export class ModelServiceBase {
     return this.prisma.model.count(args);
   }
 
-  async models<T extends Prisma.ModelFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ModelFindManyArgs>
-  ): Promise<PrismaModel[]> {
-    return this.prisma.model.findMany<Prisma.ModelFindManyArgs>(args);
+  async models(args: Prisma.ModelFindManyArgs): Promise<PrismaModel[]> {
+    return this.prisma.model.findMany(args);
   }
-  async model<T extends Prisma.ModelFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ModelFindUniqueArgs>
-  ): Promise<PrismaModel | null> {
+  async model(args: Prisma.ModelFindUniqueArgs): Promise<PrismaModel | null> {
     return this.prisma.model.findUnique(args);
   }
-  async createModel<T extends Prisma.ModelCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ModelCreateArgs>
-  ): Promise<PrismaModel> {
-    return this.prisma.model.create<T>(args);
+  async createModel(args: Prisma.ModelCreateArgs): Promise<PrismaModel> {
+    return this.prisma.model.create(args);
   }
-  async updateModel<T extends Prisma.ModelUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ModelUpdateArgs>
-  ): Promise<PrismaModel> {
-    return this.prisma.model.update<T>(args);
+  async updateModel(args: Prisma.ModelUpdateArgs): Promise<PrismaModel> {
+    return this.prisma.model.update(args);
   }
-  async deleteModel<T extends Prisma.ModelDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ModelDeleteArgs>
-  ): Promise<PrismaModel> {
+  async deleteModel(args: Prisma.ModelDeleteArgs): Promise<PrismaModel> {
     return this.prisma.model.delete(args);
   }
 

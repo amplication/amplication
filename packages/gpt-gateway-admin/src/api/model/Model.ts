@@ -4,6 +4,6 @@ export type Model = {
   createdAt: Date;
   id: string;
   name: string;
-  templates?: Array<Template>;
   updatedAt: Date;
+  templates?: Array<Template>;
 };

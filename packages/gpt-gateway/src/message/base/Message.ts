@@ -11,14 +11,18 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+
 import {
   IsString,
+  MaxLength,
   IsDate,
   IsInt,
+  Max,
   IsOptional,
   IsEnum,
   ValidateNested,
 } from "class-validator";
+
 import { Type } from "class-transformer";
 import { EnumMessageRole } from "./EnumMessageRole";
 import { Template } from "../../template/base/Template";
@@ -30,6 +34,7 @@ class Message {
     type: String,
   })
   @IsString()
+  @MaxLength(256)
   @Field(() => String)
   content!: string;
 
@@ -54,6 +59,7 @@ class Message {
     type: Number,
   })
   @IsInt()
+  @Max(99999999999)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,

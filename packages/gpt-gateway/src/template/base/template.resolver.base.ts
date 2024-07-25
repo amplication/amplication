@@ -26,10 +26,10 @@ import { TemplateFindUniqueArgs } from "./TemplateFindUniqueArgs";
 import { CreateTemplateArgs } from "./CreateTemplateArgs";
 import { UpdateTemplateArgs } from "./UpdateTemplateArgs";
 import { DeleteTemplateArgs } from "./DeleteTemplateArgs";
-import { MessageFindManyArgs } from "../../message/base/MessageFindManyArgs";
-import { Message } from "../../message/base/Message";
 import { ConversationTypeFindManyArgs } from "../../conversationType/base/ConversationTypeFindManyArgs";
 import { ConversationType } from "../../conversationType/base/ConversationType";
+import { MessageFindManyArgs } from "../../message/base/MessageFindManyArgs";
+import { Message } from "../../message/base/Message";
 import { Model } from "../../model/base/Model";
 import { TemplateService } from "../template.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
@@ -160,26 +160,6 @@ export class TemplateResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => [Message], { name: "messages" })
-  @nestAccessControl.UseRoles({
-    resource: "Message",
-    action: "read",
-    possession: "any",
-  })
-  async findMessages(
-    @graphql.Parent() parent: Template,
-    @graphql.Args() args: MessageFindManyArgs
-  ): Promise<Message[]> {
-    const results = await this.service.findMessages(parent.id, args);
-
-    if (!results) {
-      return [];
-    }
-
-    return results;
-  }
-
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [ConversationType], { name: "messageTypes" })
   @nestAccessControl.UseRoles({
     resource: "ConversationType",
@@ -191,6 +171,26 @@ export class TemplateResolverBase {
     @graphql.Args() args: ConversationTypeFindManyArgs
   ): Promise<ConversationType[]> {
     const results = await this.service.findMessageTypes(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Message], { name: "messages" })
+  @nestAccessControl.UseRoles({
+    resource: "Message",
+    action: "read",
+    possession: "any",
+  })
+  async findMessages(
+    @graphql.Parent() parent: Template,
+    @graphql.Args() args: MessageFindManyArgs
+  ): Promise<Message[]> {
+    const results = await this.service.findMessages(parent.id, args);
 
     if (!results) {
       return [];

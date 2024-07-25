@@ -23,29 +23,21 @@ export class MessageServiceBase {
     return this.prisma.message.count(args);
   }
 
-  async messages<T extends Prisma.MessageFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.MessageFindManyArgs>
-  ): Promise<PrismaMessage[]> {
-    return this.prisma.message.findMany<Prisma.MessageFindManyArgs>(args);
+  async messages(args: Prisma.MessageFindManyArgs): Promise<PrismaMessage[]> {
+    return this.prisma.message.findMany(args);
   }
-  async message<T extends Prisma.MessageFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.MessageFindUniqueArgs>
+  async message(
+    args: Prisma.MessageFindUniqueArgs
   ): Promise<PrismaMessage | null> {
     return this.prisma.message.findUnique(args);
   }
-  async createMessage<T extends Prisma.MessageCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.MessageCreateArgs>
-  ): Promise<PrismaMessage> {
-    return this.prisma.message.create<T>(args);
+  async createMessage(args: Prisma.MessageCreateArgs): Promise<PrismaMessage> {
+    return this.prisma.message.create(args);
   }
-  async updateMessage<T extends Prisma.MessageUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.MessageUpdateArgs>
-  ): Promise<PrismaMessage> {
-    return this.prisma.message.update<T>(args);
+  async updateMessage(args: Prisma.MessageUpdateArgs): Promise<PrismaMessage> {
+    return this.prisma.message.update(args);
   }
-  async deleteMessage<T extends Prisma.MessageDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.MessageDeleteArgs>
-  ): Promise<PrismaMessage> {
+  async deleteMessage(args: Prisma.MessageDeleteArgs): Promise<PrismaMessage> {
     return this.prisma.message.delete(args);
   }
 

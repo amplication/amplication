@@ -11,11 +11,17 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString, ValidateNested, IsOptional } from "class-validator";
+import {
+  IsDate,
+  IsString,
+  ValidateNested,
+  MaxLength,
+  IsOptional,
+} from "class-validator";
 import { Type } from "class-transformer";
-import { Message } from "../../message/base/Message";
-import { ConversationType } from "../../conversationType/base/ConversationType";
 import { Model } from "../../model/base/Model";
+import { ConversationType } from "../../conversationType/base/ConversationType";
+import { Message } from "../../message/base/Message";
 
 @ObjectType()
 class Template {
@@ -36,24 +42,6 @@ class Template {
   id!: string;
 
   @ApiProperty({
-    required: false,
-    type: () => [Message],
-  })
-  @ValidateNested()
-  @Type(() => Message)
-  @IsOptional()
-  messages?: Array<Message>;
-
-  @ApiProperty({
-    required: false,
-    type: () => [ConversationType],
-  })
-  @ValidateNested()
-  @Type(() => ConversationType)
-  @IsOptional()
-  messageTypes?: Array<ConversationType>;
-
-  @ApiProperty({
     required: true,
     type: () => Model,
   })
@@ -66,6 +54,7 @@ class Template {
     type: String,
   })
   @IsString()
+  @MaxLength(256)
   @Field(() => String)
   name!: string;
 
@@ -74,6 +63,7 @@ class Template {
     type: String,
   })
   @IsString()
+  @MaxLength(256)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -87,6 +77,24 @@ class Template {
   @Type(() => Date)
   @Field(() => Date)
   updatedAt!: Date;
+
+  @ApiProperty({
+    required: false,
+    type: () => [ConversationType],
+  })
+  @ValidateNested()
+  @Type(() => ConversationType)
+  @IsOptional()
+  messageTypes?: Array<ConversationType>;
+
+  @ApiProperty({
+    required: false,
+    type: () => [Message],
+  })
+  @ValidateNested()
+  @Type(() => Message)
+  @IsOptional()
+  messages?: Array<Message>;
 }
 
 export { Template as Template };

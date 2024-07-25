@@ -26,30 +26,28 @@ export class ConversationTypeServiceBase {
     return this.prisma.conversationType.count(args);
   }
 
-  async conversationTypes<T extends Prisma.ConversationTypeFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ConversationTypeFindManyArgs>
+  async conversationTypes(
+    args: Prisma.ConversationTypeFindManyArgs
   ): Promise<PrismaConversationType[]> {
-    return this.prisma.conversationType.findMany<Prisma.ConversationTypeFindManyArgs>(
-      args
-    );
+    return this.prisma.conversationType.findMany(args);
   }
-  async conversationType<T extends Prisma.ConversationTypeFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ConversationTypeFindUniqueArgs>
+  async conversationType(
+    args: Prisma.ConversationTypeFindUniqueArgs
   ): Promise<PrismaConversationType | null> {
     return this.prisma.conversationType.findUnique(args);
   }
-  async createConversationType<T extends Prisma.ConversationTypeCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ConversationTypeCreateArgs>
+  async createConversationType(
+    args: Prisma.ConversationTypeCreateArgs
   ): Promise<PrismaConversationType> {
-    return this.prisma.conversationType.create<T>(args);
+    return this.prisma.conversationType.create(args);
   }
-  async updateConversationType<T extends Prisma.ConversationTypeUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ConversationTypeUpdateArgs>
+  async updateConversationType(
+    args: Prisma.ConversationTypeUpdateArgs
   ): Promise<PrismaConversationType> {
-    return this.prisma.conversationType.update<T>(args);
+    return this.prisma.conversationType.update(args);
   }
-  async deleteConversationType<T extends Prisma.ConversationTypeDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ConversationTypeDeleteArgs>
+  async deleteConversationType(
+    args: Prisma.ConversationTypeDeleteArgs
   ): Promise<PrismaConversationType> {
     return this.prisma.conversationType.delete(args);
   }
