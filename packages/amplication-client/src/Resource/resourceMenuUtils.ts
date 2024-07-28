@@ -7,6 +7,7 @@ export type MenuItemLinks =
   | "git"
   | "settings"
   | "plugins"
+  | "packages"
   | "topics"
   | "services"
   | "connections"
@@ -21,6 +22,7 @@ export const resourceMenuLayout: {
     "entities",
     "roles",
     "plugins",
+    "packages",
     "git",
     "connections",
     "settings",
@@ -61,6 +63,11 @@ export const linksMap: {
     title: "Plugins",
     icon: "plugins",
     to: "/plugins",
+  },
+  packages: {
+    title: "Packages",
+    icon: "ai",
+    to: "/packages",
   },
   topics: {
     title: "Topics",
