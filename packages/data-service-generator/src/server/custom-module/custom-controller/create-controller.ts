@@ -98,7 +98,7 @@ async function createControllerModule({
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${
     serverDirectories.srcDirectory
-  }/${customModuleName}/${customModuleName.toLowerCase()}.controller.ts`;
+  }/${customModuleName.toLowerCase()}/${customModuleName.toLowerCase()}.controller.ts`;
 
   interpolate(template, templateMapping);
 

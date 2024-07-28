@@ -1,4 +1,7 @@
-import { ModuleAction } from "@amplication/code-gen-types";
+import {
+  EnumModuleDtoPropertyType,
+  ModuleAction,
+} from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
 import { createGraphQLOperationDecorator } from "./create-graphql-operation-decorator";
 import { PROMISE_ID } from "../../../utils/ast";
@@ -43,8 +46,11 @@ export function generateResolverCustomActionMethod(
   const inputParam = builders.identifier("args");
   inputParam.typeAnnotation = builders.tsTypeAnnotation(inputType);
 
+  const isPrimitiveArgs =
+    action.inputType.type !== EnumModuleDtoPropertyType.Dto;
+
   //@ts-ignore
-  inputParam.decorators = [createGraphqlArgsDecorator()];
+  inputParam.decorators = [createGraphqlArgsDecorator(isPrimitiveArgs)];
 
   //generate this code within the function
   //return this.service.[name]](args);

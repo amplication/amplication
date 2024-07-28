@@ -891,7 +891,12 @@ export class BuildService {
       include: ENTITIES_INCLUDE,
     });
     return orderBy(
-      entities,
+      entities.map((entity) => {
+        return {
+          ...entity,
+          fields: orderBy(entity.fields, (field) => field.name),
+        };
+      }),
       (entity) => entity.createdAt
     ) as unknown as CodeGenTypes.Entity[];
   }

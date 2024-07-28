@@ -4,11 +4,11 @@ import {
   LimitationDialog,
   Snackbar,
 } from "@amplication/ui/design-system";
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useRef, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
-import { EnumSubscriptionPlan } from "../models";
+import { EnumCommitStrategy } from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
@@ -43,54 +43,43 @@ const CommitButton = ({
   const history = useHistory();
   const { trackEvent } = useTracking();
   const match = useRouteMatch<RouteMatchProps>();
-  const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
-  const formikRef = useRef(null);
+  const [isOpenLimitationDialog, setOpenLimitationDialog] =
+    useState<boolean>(false);
 
-  const { setCommitRunning, currentWorkspace, currentProject } =
-    useContext(AppContext);
+  const { currentProject } = useContext(AppContext);
 
   const {
     commitChanges,
     commitChangesError,
     commitChangesLoading,
     commitChangesLimitationError,
+    bypassLimitations,
   } = useCommits(currentProject?.id);
+
+  const bypassLimitationsRef = useRef(bypassLimitations);
 
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
     history.push(path, { from: { pathname: history.location.pathname } });
   };
-  const bypassLimitations = useMemo(() => {
-    return (
-      currentWorkspace?.subscription?.subscriptionPlan !==
-      EnumSubscriptionPlan.Pro
-    );
-  }, [currentWorkspace]);
 
   const handleClick = useCallback(() => {
-    setCommitRunning(true);
     commitChanges({
       message: commitMessage,
-      projectId: currentProject?.id,
-      bypassLimitations: bypassLimitations ?? false,
+      project: { connect: { id: currentProject?.id } },
+      bypassLimitations: bypassLimitationsRef.current ?? false,
+      commitStrategy: EnumCommitStrategy.All,
     });
 
     onCommitChanges && onCommitChanges();
-  }, [
-    setCommitRunning,
-    commitChanges,
-    currentProject,
-    commitMessage,
-    bypassLimitations,
-    onCommitChanges,
-  ]);
+  }, [commitChanges, currentProject, commitMessage, onCommitChanges]);
 
   const isLimitationError = commitChangesLimitationError !== undefined ?? false;
 
   const errorMessage = formatError(commitChangesError);
 
   return (
-    <div>
+    <>
       <LicenseIndicatorContainer
         blockByFeatureId={BillingFeature.BlockBuild}
         licensedResourceType={LicensedResourceType.Project}
@@ -132,7 +121,7 @@ const CommitButton = ({
             setOpenLimitationDialog(false);
           }}
           onDismiss={() => {
-            formikRef.current.values.bypassLimitations = false;
+            bypassLimitationsRef.current = false;
             trackEvent({
               eventName: AnalyticsEventNames.PassedLimitsNotificationClose,
               reason: commitChangesLimitationError.message,
@@ -141,11 +130,7 @@ const CommitButton = ({
             setOpenLimitationDialog(false);
           }}
           onBypass={() => {
-            formikRef.current.values.bypassLimitations = true;
-            formikRef.current.handleSubmit(formikRef.current.values, {
-              resetForm: formikRef.current.resetForm,
-            });
-
+            bypassLimitationsRef.current = true;
             trackEvent({
               eventName: AnalyticsEventNames.UpgradeLaterClick,
               reason: commitChangesLimitationError.message,
@@ -159,7 +144,7 @@ const CommitButton = ({
       ) : (
         <Snackbar open={Boolean(commitChangesError)} message={errorMessage} />
       )}
-    </div>
+    </>
   );
 };
 

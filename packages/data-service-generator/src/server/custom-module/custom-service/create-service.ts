@@ -71,7 +71,7 @@ async function createServiceModule({
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${
     serverDirectories.srcDirectory
-  }/${customModuleName}/${customModuleName.toLowerCase()}.service.ts`;
+  }/${customModuleName.toLowerCase()}/${customModuleName.toLowerCase()}.service.ts`;
 
   interpolate(template, templateMapping);
 
