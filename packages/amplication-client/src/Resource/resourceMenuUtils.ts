@@ -27,6 +27,7 @@ export const resourceMenuLayout: {
   ],
   [EnumResourceType.ProjectConfiguration]: ["git", "settings"],
   [EnumResourceType.MessageBroker]: ["topics", "services", "git", "settings"],
+  [EnumResourceType.PluginRepository]: ["git", "settings"],
 };
 
 export const linksMap: {

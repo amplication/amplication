@@ -36,6 +36,12 @@ const ITEMS: CreateResourceButtonItemType[] = [
     route: "create-broker",
     info: "Create a message broker to facilitate communication between services",
   },
+  {
+    type: models.EnumResourceType.PluginRepository,
+    label: "Plugin Repository",
+    route: "create-plugin-repository",
+    info: "Create a plugin repository to upload and manage plugins",
+  },
 ];
 
 type Props = {

@@ -67,6 +67,10 @@ export enum AnalyticsEventNames {
   ImportPrismaSchemaSelectFile = "importPrismaSchemaSelectFile",
 
   // message broker
+  PluginRepositoryErrorCreate = "pluginRepositoryErrorCreate",
+  CreatePluginRepository = "createPluginRepository",
+
+  // plugin repository
   MessageBrokerConnectedServicesTileClick = "messageBrokerConnectedServicesTileClick",
   MessageBrokerTopicsTileClick = "messageBrokerTopicsTileClick",
   MessageBrokerErrorCreate = "messageBrokerErrorCreate",
