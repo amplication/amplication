@@ -132,6 +132,7 @@ const RESOURCE_TYPE_TO_EVENT_TYPE: {
   [EnumResourceType.Service]: EnumEventType.ServiceCreate,
   [EnumResourceType.MessageBroker]: EnumEventType.MessageBrokerCreate,
   [EnumResourceType.ProjectConfiguration]: EnumEventType.UnknownEvent,
+  [EnumResourceType.PluginRepository]: EnumEventType.PluginRepositoryCreate,
 };
 
 type CodeGeneratorName = "NodeJS" | "DotNET";

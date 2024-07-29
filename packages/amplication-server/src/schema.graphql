@@ -917,6 +917,7 @@ enum EnumPreviewAccountType {
 
 enum EnumResourceType {
   MessageBroker
+  PluginRepository
   ProjectConfiguration
   Service
 }
