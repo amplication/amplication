@@ -19,9 +19,9 @@ import {
   CreatePrFailure,
   CreatePrRequest,
   CreatePrSuccess,
-  PullPrivatePluginRequest,
-  PullPrivatePluginSuccess,
-  PullPrivatePluginFailure,
+  PullPrivatePluginsRequest,
+  PullPrivatePluginsSuccess,
+  PullPrivatePluginsFailure,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { LogLevel } from "@amplication/util/logging";
@@ -164,38 +164,38 @@ export class PullRequestController {
     });
   }
 
-  @EventPattern(KAFKA_TOPICS.PULL_PRIVATE_PLUGIN_REQUEST_TOPIC)
+  @EventPattern(KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_REQUEST_TOPIC)
   async pullPrivatePlugin(
-    @Payload() message: PullPrivatePluginRequest.Value,
+    @Payload() message: PullPrivatePluginsRequest.Value,
     @Ctx() context: KafkaContext
   ) {
     const eventKey = plainToInstance(
-      PullPrivatePluginRequest.Key,
+      PullPrivatePluginsRequest.Key,
       context.getMessage().key.toString()
     );
 
-    const validArgs = plainToInstance(PullPrivatePluginRequest.Value, message);
+    const validArgs = plainToInstance(PullPrivatePluginsRequest.Value, message);
     await validateOrReject(validArgs);
 
     try {
-      const { pluginPath } = await KafkaPacemaker.wrapLongRunningMethod<{
-        pluginPath: string;
+      const { pluginPaths } = await KafkaPacemaker.wrapLongRunningMethod<{
+        pluginPaths: string[];
       }>(context, () => this.pullRequestService.pullPrivatePlugin(validArgs));
 
-      const successEvent: PullPrivatePluginSuccess.KafkaEvent = {
+      const successEvent: PullPrivatePluginsSuccess.KafkaEvent = {
         key: {
           resourceId: eventKey.resourceId,
         },
         value: {
-          pluginPath,
+          pluginPaths,
         },
       };
       await this.producerService.emitMessage(
-        KAFKA_TOPICS.PULL_PRIVATE_PLUGIN_SUCCESS_TOPIC,
+        KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_SUCCESS_TOPIC,
         successEvent
       );
     } catch (error) {
-      const failureEvent: PullPrivatePluginFailure.KafkaEvent = {
+      const failureEvent: PullPrivatePluginsFailure.KafkaEvent = {
         key: {
           resourceId: eventKey.resourceId,
         },
@@ -204,7 +204,7 @@ export class PullRequestController {
         },
       };
       await this.producerService.emitMessage(
-        KAFKA_TOPICS.PULL_PRIVATE_PLUGIN_FAILURE_TOPIC,
+        KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_FAILURE_TOPIC,
         failureEvent
       );
     }

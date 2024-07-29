@@ -30,6 +30,7 @@ import {
   CurrentUser,
   OAuthTokens,
   UpdateFile,
+  PullPrivatePluginsArgs,
 } from "./types";
 import { AmplicationIgnoreManger } from "./utils/amplication-ignore-manger";
 import { isFolderEmpty } from "./utils/is-folder-empty";
@@ -99,6 +100,12 @@ export class GitClientService {
 
   async getOrganization(): Promise<RemoteGitOrganization> {
     return this.provider.getOrganization();
+  }
+
+  async pullPrivatePlugins(
+    pullPrivatePluginsArgs: PullPrivatePluginsArgs
+  ): Promise<{ pluginPaths: string[] }> {
+    return { pluginPaths: [] };
   }
 
   async createPullRequest(

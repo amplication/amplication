@@ -213,6 +213,13 @@ export interface GetFileArgs {
   ref?: string;
 }
 
+export interface PullPrivatePluginsArgs {
+  repositoryName: string;
+  repositoryGroupName?: string;
+  cloneDirPath: string;
+  resourceId: string;
+  baseBranchName: string;
+}
 export interface CreatePullRequestArgs {
   owner: string;
   repositoryName: string;

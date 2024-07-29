@@ -163,9 +163,34 @@ export class PullRequestService {
     repositoryGroupName,
     baseBranchName,
   }: PullPrivatePluginRequest.Value): Promise<{
-    pluginPath: string;
+    pluginPaths: string[];
   }> {
-    return { pluginPath: "" };
+    const logger = this.logger.child({ resourceId });
+    const gitClientService = TraceWrapper.trace(
+      await new GitClientService().create(
+        {
+          provider: gitProvider,
+          providerOrganizationProperties: gitProviderProperties,
+        },
+        this.gitProvidersConfiguration,
+        logger
+      ),
+      {
+        logger,
+        attributes: {
+          resourceId,
+          gitProvider,
+        },
+      }
+    );
+    const { pluginPaths } = await gitClientService.pullPrivatePlugins({
+      repositoryName: repo,
+      repositoryGroupName,
+      resourceId,
+      baseBranchName,
+      cloneDirPath: "", //TODO: complate this path
+    });
+    return { pluginPaths };
   }
 
   private static removeFirstSlashFromPath(changedFiles: File[]): File[] {
