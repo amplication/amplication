@@ -1,0 +1,59 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+model PackageModel {
+  createdAt           DateTime                             @default(now())
+  displayName         String?
+  generationLogs      GenerationLog[]
+  id                  String                               @id @default(cuid())
+  lastGeneratedAt     DateTime?
+  lastGeneratedStatus EnumPackageModelLastGeneratedStatus?
+  packageFiles        PackageFile[]
+  summary             String?
+  updatedAt           DateTime                             @updatedAt
+}
+
+model GenerationLog {
+  createdAt      DateTime      @default(now())
+  id             String        @id @default(cuid())
+  logLine        String?
+  packageField   PackageModel? @relation(fields: [packageFieldId], references: [id])
+  packageFieldId String?
+  updatedAt      DateTime      @updatedAt
+}
+
+model PackageFile {
+  createdAt            DateTime      @default(now())
+  diff                 String?
+  fullContent          String?
+  id                   String        @id @default(cuid())
+  originalFileChecksum String?
+  packageField         PackageModel? @relation(fields: [packageFieldId], references: [id])
+  packageFieldId       String?
+  path                 String?
+  updatedAt            DateTime      @updatedAt
+}
+
+enum EnumPackageModelLastGeneratedStatus {
+  Initial
+  Completed
+  Error
+}
