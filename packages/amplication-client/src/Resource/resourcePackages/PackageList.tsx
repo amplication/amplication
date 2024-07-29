@@ -30,7 +30,7 @@ export const PackageList = React.memo(({ resourceId }: Props) => {
           icon="ai"
           to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/packages/installed`}
         >
-          <span>Packages</span>
+          <span>All Packages</span>
         </InnerTabLink>
       </div>
     </div>

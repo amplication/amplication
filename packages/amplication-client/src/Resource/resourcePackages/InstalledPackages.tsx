@@ -14,8 +14,8 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const TITLE = "Installed Packages";
-const SUB_TITLE = "Manage your installed packages";
+const TITLE = "All Packages";
+const SUB_TITLE = "Manage your packages";
 
 const InstalledPackages: React.FC<Props> = ({ match }: Props) => {
   const { findPackagesData, findPackagesError } = usePackage();
