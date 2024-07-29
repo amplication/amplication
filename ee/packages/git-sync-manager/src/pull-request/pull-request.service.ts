@@ -9,7 +9,10 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { DiffService } from "../diff/diff.service";
-import { CreatePrRequest } from "@amplication/schema-registry";
+import {
+  CreatePrRequest,
+  PullPrivatePluginRequest,
+} from "@amplication/schema-registry";
 import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
 
 @Traceable()
@@ -148,6 +151,21 @@ export class PullRequestService {
 
     logger.info("Opened a new pull request", { pullRequestUrl, diffStat });
     return { pullRequestUrl, diffStat };
+  }
+
+  async pullPrivatePlugin({
+    resourceId,
+    resourceName,
+    gitProvider,
+    gitProviderProperties,
+    gitOrganizationName: owner,
+    gitRepositoryName: repo,
+    repositoryGroupName,
+    baseBranchName,
+  }: PullPrivatePluginRequest.Value): Promise<{
+    pluginPath: string;
+  }> {
+    return { pluginPath: "" };
   }
 
   private static removeFirstSlashFromPath(changedFiles: File[]): File[] {
