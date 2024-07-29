@@ -513,6 +513,7 @@ enum EnumBlockType {
   Module
   ModuleAction
   ModuleDto
+  PrivatePlugin
 }
 
 enum ActionStepStatus {
