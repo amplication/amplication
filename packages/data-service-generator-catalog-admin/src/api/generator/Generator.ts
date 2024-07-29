@@ -1,11 +1,11 @@
 import { Version } from "../version/Version";
 
 export type Generator = {
-  id: string;
   createdAt: Date;
-  updatedAt: Date;
-  name: string | null;
   fullName: string | null;
-  version?: Array<Version>;
+  id: string;
   isActive: boolean | null;
+  name: string | null;
+  updatedAt: Date;
+  version?: Array<Version>;
 };

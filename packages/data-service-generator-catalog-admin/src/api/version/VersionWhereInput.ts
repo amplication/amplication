@@ -1,16 +1,16 @@
-import { StringFilter } from "../../util/StringFilter";
 import { StringNullableFilter } from "../../util/StringNullableFilter";
-import { BooleanNullableFilter } from "../../util/BooleanNullableFilter";
 import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
-import { BooleanFilter } from "../../util/BooleanFilter";
 import { GeneratorWhereUniqueInput } from "../generator/GeneratorWhereUniqueInput";
+import { StringFilter } from "../../util/StringFilter";
+import { BooleanFilter } from "../../util/BooleanFilter";
+import { BooleanNullableFilter } from "../../util/BooleanNullableFilter";
 
 export type VersionWhereInput = {
-  id?: StringFilter;
-  name?: StringFilter;
   changelog?: StringNullableFilter;
-  isDeprecated?: BooleanNullableFilter;
   deletedAt?: DateTimeNullableFilter;
-  isActive?: BooleanFilter;
   generator?: GeneratorWhereUniqueInput;
+  id?: StringFilter;
+  isActive?: BooleanFilter;
+  isDeprecated?: BooleanNullableFilter;
+  name?: StringFilter;
 };

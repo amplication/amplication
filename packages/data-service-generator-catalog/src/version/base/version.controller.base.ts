@@ -59,20 +59,21 @@ export class VersionControllerBase {
           : undefined,
       },
       select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
         changelog: true,
-        isDeprecated: true,
+        createdAt: true,
         deletedAt: true,
-        isActive: true,
 
         generator: {
           select: {
             id: true,
           },
         },
+
+        id: true,
+        isActive: true,
+        isDeprecated: true,
+        name: true,
+        updatedAt: true,
       },
     });
   }
@@ -89,20 +90,21 @@ export class VersionControllerBase {
     return this.service.versions({
       ...args,
       select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
         changelog: true,
-        isDeprecated: true,
+        createdAt: true,
         deletedAt: true,
-        isActive: true,
 
         generator: {
           select: {
             id: true,
           },
         },
+
+        id: true,
+        isActive: true,
+        isDeprecated: true,
+        name: true,
+        updatedAt: true,
       },
     });
   }
@@ -120,20 +122,21 @@ export class VersionControllerBase {
     const result = await this.service.version({
       where: params,
       select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
         changelog: true,
-        isDeprecated: true,
+        createdAt: true,
         deletedAt: true,
-        isActive: true,
 
         generator: {
           select: {
             id: true,
           },
         },
+
+        id: true,
+        isActive: true,
+        isDeprecated: true,
+        name: true,
+        updatedAt: true,
       },
     });
     if (result === null) {
@@ -173,20 +176,21 @@ export class VersionControllerBase {
             : undefined,
         },
         select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          name: true,
           changelog: true,
-          isDeprecated: true,
+          createdAt: true,
           deletedAt: true,
-          isActive: true,
 
           generator: {
             select: {
               id: true,
             },
           },
+
+          id: true,
+          isActive: true,
+          isDeprecated: true,
+          name: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -217,20 +221,21 @@ export class VersionControllerBase {
       return await this.service.deleteVersion({
         where: params,
         select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          name: true,
           changelog: true,
-          isDeprecated: true,
+          createdAt: true,
           deletedAt: true,
-          isActive: true,
 
           generator: {
             select: {
               id: true,
             },
           },
+
+          id: true,
+          isActive: true,
+          isDeprecated: true,
+          name: true,
+          updatedAt: true,
         },
       });
     } catch (error) {

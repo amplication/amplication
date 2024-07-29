@@ -15,8 +15,8 @@ import {
   IsString,
   MaxLength,
   IsOptional,
-  ValidateNested,
   IsBoolean,
+  ValidateNested,
 } from "class-validator";
 import { VersionCreateNestedManyWithoutGeneratorsInput } from "./VersionCreateNestedManyWithoutGeneratorsInput";
 import { Type } from "class-transformer";
@@ -33,7 +33,18 @@ class GeneratorCreateInput {
   @Field(() => String, {
     nullable: true,
   })
-  name?: string | null;
+  fullName?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  isActive?: boolean | null;
 
   @ApiProperty({
     required: false,
@@ -45,7 +56,7 @@ class GeneratorCreateInput {
   @Field(() => String, {
     nullable: true,
   })
-  fullName?: string | null;
+  name?: string | null;
 
   @ApiProperty({
     required: false,
@@ -58,17 +69,6 @@ class GeneratorCreateInput {
     nullable: true,
   })
   version?: VersionCreateNestedManyWithoutGeneratorsInput;
-
-  @ApiProperty({
-    required: false,
-    type: Boolean,
-  })
-  @IsBoolean()
-  @IsOptional()
-  @Field(() => Boolean, {
-    nullable: true,
-  })
-  isActive?: boolean | null;
 }
 
 export { GeneratorCreateInput as GeneratorCreateInput };

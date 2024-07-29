@@ -4,8 +4,8 @@ import {
   Show,
   SimpleShowLayout,
   ShowProps,
-  TextField,
   DateField,
+  TextField,
   BooleanField,
   ReferenceManyField,
   Datagrid,
@@ -18,26 +18,21 @@ export const GeneratorShow = (props: ShowProps): React.ReactElement => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
-        <TextField label="ID" source="id" />
         <DateField source="createdAt" label="Created At" />
-        <DateField source="updatedAt" label="Updated At" />
-        <TextField label="Name" source="name" />
         <TextField label="FullName" source="fullName" />
+        <TextField label="ID" source="id" />
         <BooleanField label="IsActive" source="isActive" />
+        <TextField label="Name" source="name" />
+        <DateField source="updatedAt" label="Updated At" />
         <ReferenceManyField
           reference="Version"
           target="generatorId"
           label="Versions"
         >
           <Datagrid rowClick="show">
-            <TextField label="ID" source="id" />
-            <DateField source="createdAt" label="Created At" />
-            <DateField source="updatedAt" label="Updated At" />
-            <TextField label="Name" source="name" />
             <TextField label="Changelog" source="changelog" />
-            <BooleanField label="IsDeprecated" source="isDeprecated" />
+            <DateField source="createdAt" label="Created At" />
             <TextField label="DeletedAt" source="deletedAt" />
-            <BooleanField label="IsActive" source="isActive" />
             <ReferenceField
               label="Generator"
               source="generator.id"
@@ -45,6 +40,11 @@ export const GeneratorShow = (props: ShowProps): React.ReactElement => {
             >
               <TextField source={GENERATOR_TITLE_FIELD} />
             </ReferenceField>
+            <TextField label="ID" source="id" />
+            <BooleanField label="IsActive" source="isActive" />
+            <BooleanField label="IsDeprecated" source="isDeprecated" />
+            <TextField label="Name" source="name" />
+            <DateField source="updatedAt" label="Updated At" />
           </Datagrid>
         </ReferenceManyField>
       </SimpleShowLayout>

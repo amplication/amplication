@@ -11,39 +11,17 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringFilter } from "../../util/StringFilter";
+import { StringNullableFilter } from "../../util/StringNullableFilter";
 import { Type } from "class-transformer";
 import { IsOptional, ValidateNested } from "class-validator";
-import { StringNullableFilter } from "../../util/StringNullableFilter";
-import { BooleanNullableFilter } from "../../util/BooleanNullableFilter";
 import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
-import { BooleanFilter } from "../../util/BooleanFilter";
 import { GeneratorWhereUniqueInput } from "../../generator/base/GeneratorWhereUniqueInput";
+import { StringFilter } from "../../util/StringFilter";
+import { BooleanFilter } from "../../util/BooleanFilter";
+import { BooleanNullableFilter } from "../../util/BooleanNullableFilter";
 
 @InputType()
 class VersionWhereInput {
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  @Field(() => StringFilter, {
-    nullable: true,
-  })
-  id?: StringFilter;
-
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  @Field(() => StringFilter, {
-    nullable: true,
-  })
-  name?: StringFilter;
-
   @ApiProperty({
     required: false,
     type: StringNullableFilter,
@@ -54,17 +32,6 @@ class VersionWhereInput {
     nullable: true,
   })
   changelog?: StringNullableFilter;
-
-  @ApiProperty({
-    required: false,
-    type: BooleanNullableFilter,
-  })
-  @Type(() => BooleanNullableFilter)
-  @IsOptional()
-  @Field(() => BooleanNullableFilter, {
-    nullable: true,
-  })
-  isDeprecated?: BooleanNullableFilter;
 
   @ApiProperty({
     required: false,
@@ -79,6 +46,29 @@ class VersionWhereInput {
 
   @ApiProperty({
     required: false,
+    type: () => GeneratorWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => GeneratorWhereUniqueInput)
+  @IsOptional()
+  @Field(() => GeneratorWhereUniqueInput, {
+    nullable: true,
+  })
+  generator?: GeneratorWhereUniqueInput;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
     type: BooleanFilter,
   })
   @Type(() => BooleanFilter)
@@ -90,15 +80,25 @@ class VersionWhereInput {
 
   @ApiProperty({
     required: false,
-    type: () => GeneratorWhereUniqueInput,
+    type: BooleanNullableFilter,
   })
-  @ValidateNested()
-  @Type(() => GeneratorWhereUniqueInput)
+  @Type(() => BooleanNullableFilter)
   @IsOptional()
-  @Field(() => GeneratorWhereUniqueInput, {
+  @Field(() => BooleanNullableFilter, {
     nullable: true,
   })
-  generator?: GeneratorWhereUniqueInput;
+  isDeprecated?: BooleanNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  name?: StringFilter;
 }
 
 export { VersionWhereInput as VersionWhereInput };

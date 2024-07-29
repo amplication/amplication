@@ -1,13 +1,13 @@
 import { Generator } from "../generator/Generator";
 
 export type Version = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  name: string;
   changelog: string | null;
-  isDeprecated: boolean | null;
+  createdAt: Date;
   deletedAt: Date | null;
-  isActive: boolean;
   generator?: Generator | null;
+  id: string;
+  isActive: boolean;
+  isDeprecated: boolean | null;
+  name: string;
+  updatedAt: Date;
 };

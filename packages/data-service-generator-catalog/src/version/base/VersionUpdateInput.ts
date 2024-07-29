@@ -15,9 +15,9 @@ import {
   IsString,
   MaxLength,
   IsOptional,
-  IsBoolean,
   IsDate,
   ValidateNested,
+  IsBoolean,
 } from "class-validator";
 import { Type } from "class-transformer";
 import { GeneratorWhereUniqueInput } from "../../generator/base/GeneratorWhereUniqueInput";
@@ -34,30 +34,7 @@ class VersionUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
-  name?: string;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @MaxLength(1000)
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
   changelog?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: Boolean,
-  })
-  @IsBoolean()
-  @IsOptional()
-  @Field(() => Boolean, {
-    nullable: true,
-  })
-  isDeprecated?: boolean | null;
 
   @ApiProperty({
     required: false,
@@ -72,6 +49,18 @@ class VersionUpdateInput {
 
   @ApiProperty({
     required: false,
+    type: () => GeneratorWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => GeneratorWhereUniqueInput)
+  @IsOptional()
+  @Field(() => GeneratorWhereUniqueInput, {
+    nullable: true,
+  })
+  generator?: GeneratorWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: false,
     type: Boolean,
   })
   @IsBoolean()
@@ -83,15 +72,26 @@ class VersionUpdateInput {
 
   @ApiProperty({
     required: false,
-    type: () => GeneratorWhereUniqueInput,
+    type: Boolean,
   })
-  @ValidateNested()
-  @Type(() => GeneratorWhereUniqueInput)
+  @IsBoolean()
   @IsOptional()
-  @Field(() => GeneratorWhereUniqueInput, {
+  @Field(() => Boolean, {
     nullable: true,
   })
-  generator?: GeneratorWhereUniqueInput | null;
+  isDeprecated?: boolean | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  name?: string;
 }
 
 export { VersionUpdateInput as VersionUpdateInput };

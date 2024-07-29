@@ -6,8 +6,8 @@ import {
   ShowProps,
   TextField,
   DateField,
-  BooleanField,
   ReferenceField,
+  BooleanField,
 } from "react-admin";
 
 import { GENERATOR_TITLE_FIELD } from "../generator/GeneratorTitle";
@@ -16,14 +16,9 @@ export const VersionShow = (props: ShowProps): React.ReactElement => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
-        <TextField label="ID" source="id" />
-        <DateField source="createdAt" label="Created At" />
-        <DateField source="updatedAt" label="Updated At" />
-        <TextField label="Name" source="name" />
         <TextField label="Changelog" source="changelog" />
-        <BooleanField label="IsDeprecated" source="isDeprecated" />
+        <DateField source="createdAt" label="Created At" />
         <TextField label="DeletedAt" source="deletedAt" />
-        <BooleanField label="IsActive" source="isActive" />
         <ReferenceField
           label="Generator"
           source="generator.id"
@@ -31,6 +26,11 @@ export const VersionShow = (props: ShowProps): React.ReactElement => {
         >
           <TextField source={GENERATOR_TITLE_FIELD} />
         </ReferenceField>
+        <TextField label="ID" source="id" />
+        <BooleanField label="IsActive" source="isActive" />
+        <BooleanField label="IsDeprecated" source="isDeprecated" />
+        <TextField label="Name" source="name" />
+        <DateField source="updatedAt" label="Updated At" />
       </SimpleShowLayout>
     </Show>
   );

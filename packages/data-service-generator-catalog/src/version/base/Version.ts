@@ -13,50 +13,17 @@ import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsString,
-  IsDate,
   MaxLength,
   IsOptional,
-  IsBoolean,
+  IsDate,
   ValidateNested,
+  IsBoolean,
 } from "class-validator";
 import { Type } from "class-transformer";
 import { Generator } from "../../generator/base/Generator";
 
 @ObjectType()
 class Version {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  id!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsDate()
-  @Type(() => Date)
-  @Field(() => Date)
-  createdAt!: Date;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsDate()
-  @Type(() => Date)
-  @Field(() => Date)
-  updatedAt!: Date;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @MaxLength(1000)
-  @Field(() => String)
-  name!: string;
-
   @ApiProperty({
     required: false,
     type: String,
@@ -70,15 +37,12 @@ class Version {
   changelog!: string | null;
 
   @ApiProperty({
-    required: false,
-    type: Boolean,
+    required: true,
   })
-  @IsBoolean()
-  @IsOptional()
-  @Field(() => Boolean, {
-    nullable: true,
-  })
-  isDeprecated!: boolean | null;
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
 
   @ApiProperty({
     required: false,
@@ -92,6 +56,23 @@ class Version {
   deletedAt!: Date | null;
 
   @ApiProperty({
+    required: false,
+    type: () => Generator,
+  })
+  @ValidateNested()
+  @Type(() => Generator)
+  @IsOptional()
+  generator?: Generator | null;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+
+  @ApiProperty({
     required: true,
     type: Boolean,
   })
@@ -101,12 +82,31 @@ class Version {
 
   @ApiProperty({
     required: false,
-    type: () => Generator,
+    type: Boolean,
   })
-  @ValidateNested()
-  @Type(() => Generator)
+  @IsBoolean()
   @IsOptional()
-  generator?: Generator | null;
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  isDeprecated!: boolean | null;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @Field(() => String)
+  name!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 }
 
 export { Version as Version };

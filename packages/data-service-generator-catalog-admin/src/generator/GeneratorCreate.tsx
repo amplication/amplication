@@ -5,9 +5,9 @@ import {
   SimpleForm,
   CreateProps,
   TextInput,
+  BooleanInput,
   ReferenceArrayInput,
   SelectArrayInput,
-  BooleanInput,
 } from "react-admin";
 
 import { VersionTitle } from "../version/VersionTitle";
@@ -16,8 +16,9 @@ export const GeneratorCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
-        <TextInput label="Name" source="name" />
         <TextInput label="FullName" source="fullName" />
+        <BooleanInput label="IsActive" source="isActive" />
+        <TextInput label="Name" source="name" />
         <ReferenceArrayInput
           source="version"
           reference="Version"
@@ -26,7 +27,6 @@ export const GeneratorCreate = (props: CreateProps): React.ReactElement => {
         >
           <SelectArrayInput optionText={VersionTitle} />
         </ReferenceArrayInput>
-        <BooleanInput label="IsActive" source="isActive" />
       </SimpleForm>
     </Create>
   );

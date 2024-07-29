@@ -15,24 +15,15 @@ import {
   IsString,
   MaxLength,
   IsOptional,
-  IsBoolean,
   IsDate,
   ValidateNested,
+  IsBoolean,
 } from "class-validator";
 import { Type } from "class-transformer";
 import { GeneratorWhereUniqueInput } from "../../generator/base/GeneratorWhereUniqueInput";
 
 @InputType()
 class VersionCreateInput {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @MaxLength(1000)
-  @Field(() => String)
-  name!: string;
-
   @ApiProperty({
     required: false,
     type: String,
@@ -47,17 +38,6 @@ class VersionCreateInput {
 
   @ApiProperty({
     required: false,
-    type: Boolean,
-  })
-  @IsBoolean()
-  @IsOptional()
-  @Field(() => Boolean, {
-    nullable: true,
-  })
-  isDeprecated?: boolean | null;
-
-  @ApiProperty({
-    required: false,
   })
   @IsDate()
   @Type(() => Date)
@@ -66,14 +46,6 @@ class VersionCreateInput {
     nullable: true,
   })
   deletedAt?: Date | null;
-
-  @ApiProperty({
-    required: true,
-    type: Boolean,
-  })
-  @IsBoolean()
-  @Field(() => Boolean)
-  isActive!: boolean;
 
   @ApiProperty({
     required: false,
@@ -86,6 +58,34 @@ class VersionCreateInput {
     nullable: true,
   })
   generator?: GeneratorWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: true,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @Field(() => Boolean)
+  isActive!: boolean;
+
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  isDeprecated?: boolean | null;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @Field(() => String)
+  name!: string;
 }
 
 export { VersionCreateInput as VersionCreateInput };

@@ -1,10 +1,10 @@
 import { SortOrder } from "../../util/SortOrder";
 
 export type GeneratorOrderByInput = {
-  id?: SortOrder;
   createdAt?: SortOrder;
-  updatedAt?: SortOrder;
-  name?: SortOrder;
   fullName?: SortOrder;
+  id?: SortOrder;
   isActive?: SortOrder;
+  name?: SortOrder;
+  updatedAt?: SortOrder;
 };
