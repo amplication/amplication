@@ -15,6 +15,9 @@ export * as GptConversationStart from "./lib/gpt-conversion-start";
 export * as GptConversationComplete from "./lib/gpt-conversion-complete";
 export * as UserBuild from "./lib/user-build";
 export * as UserFeatureAnnouncement from "./lib/user-feature-announcement";
+export * as PullPrivatePluginRequest from "./lib/pull-private-plugin-request";
+export * as PullPrivatePluginSuccess from "./lib/pull-private-plugin-success";
+export * as PullPrivatePluginFailure from "./lib/pull-private-plugin-failure";
 
 export enum KAFKA_TOPICS {
   /// build-manager
@@ -30,6 +33,9 @@ export enum KAFKA_TOPICS {
   CREATE_PR_SUCCESS_TOPIC = "git.internal.create-pr.success.1",
   CREATE_PR_FAILURE_TOPIC = "git.internal.create-pr.failure.1",
   KAFKA_REPOSITORY_PUSH_QUEUE = "git.external.push.event.0",
+  PULL_PRIVATE_PLUGIN_REQUEST_TOPIC = "git.internal.pull-private-plugin.request.0",
+  PULL_PRIVATE_PLUGIN_SUCCESS_TOPIC = "git.internal.pull-private-plugin.success.0",
+  PULL_PRIVATE_PLUGIN_FAILURE_TOPIC = "git.internal.pull-private-plugin.failure.0",
   /// amplication-server
   CHECK_USER_ACCESS_TOPIC = "authorization.internal.can-access-build.request.0",
   DB_SCHEMA_IMPORT_TOPIC = "user-action.internal.db-schema-import.request.1",
