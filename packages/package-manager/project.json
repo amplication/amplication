@@ -1,34 +1,36 @@
 {
   "name": "package-manager",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/package-manager/src",
   "projectType": "application",
   "targets": {
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["packages/package-manager/**/*.ts"]
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/packages/package-manager"],
-      "options": {
-        "jestConfig": "packages/package-manager/jest.config.ts",
-        "passWithNoTests": true
-      }
-    },
     "build": {
       "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "target": "node",
+        "compiler": "tsc",
         "outputPath": "dist/packages/package-manager",
         "main": "packages/package-manager/src/main.ts",
         "tsConfig": "packages/package-manager/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "prisma",
+            "input": "packages/package-manager",
+            "output": "prisma"
+          },
+          {
+            "glob": "**/*.node",
+            "input": "packages/package-manager/prisma/generated-prisma-client",
+            "output": "./"
+          },
+          {
+            "glob": "schema.prisma",
+            "input": "packages/package-manager/prisma",
+            "output": "./"
+          }
+        ],
         "generatePackageJson": true,
-        "compiler": "tsc",
-        "target": "node",
         "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
@@ -44,7 +46,6 @@
       "options": {
         "buildTarget": "package-manager:build",
         "inspect": true,
-        "port": 7010,
         "watch": true
       },
       "configurations": {
@@ -53,11 +54,89 @@
         }
       }
     },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/package-manager/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/package-manager/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "db:prisma:generate": {
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/prisma/schema.prisma"],
+      "outputs": ["{projectRoot}/prisma/generated-prisma-client"],
+      "options": {
+        "command": "prisma generate --schema ./prisma/schema.prisma",
+        "cwd": "packages/package-manager"
+      }
+    },
+    "db:prisma:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma studio",
+        "cwd": "packages/package-manager"
+      }
+    },
+    "db:migrate:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate dev --name $([[ {args.name} = undefined ]] && echo migration || echo {args.name})",
+        "cwd": "packages/package-manager"
+      }
+    },
+    "db:migrate:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate deploy",
+        "cwd": "packages/package-manager"
+      }
+    },
+    "db:migrate:rollback": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate resolve --rolled-back",
+        "cwd": "packages/package-manager"
+      }
+    },
+    "db:init": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx db:migrate:dev package-manager",
+          "nx db:migrate:deploy package-manager",
+          "nx db:seed package-manager"
+        ],
+        "parallel": false,
+        "cwd": "packages/package-manager"
+      }
+    },
+    "db:seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/seed.ts",
+        "cwd": "packages/package-manager"
+      }
+    },
+    "db:clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate reset --force",
+        "cwd": "packages/package-manager"
+      }
+    },
     "package:container": {
       "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
-        "tags": ["amplication/build-manager:latest"],
+        "tags": ["amplication/package-manager:latest"],
         "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
       },
       "configurations": {

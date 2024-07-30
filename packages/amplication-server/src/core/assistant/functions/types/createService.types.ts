@@ -23,7 +23,7 @@ export interface CreateService {
    */
   codeGenerator?: "DotNet" | "NodeJs";
   /**
-   * a list of IDs of the plugins to install.
+   * a list of IDs of the plugins to install
    */
   pluginIds?: string[];
 }
