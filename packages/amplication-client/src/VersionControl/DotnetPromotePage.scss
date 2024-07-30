@@ -1,0 +1,17 @@
+@import "../style/index.scss";
+
+$margin-top: 24px;
+$options-max-width: 800px;
+
+.dotnet-promote-page {
+  margin-top: $margin-top;
+
+  &__content {
+    max-width: $options-max-width;
+    margin: auto;
+  }
+
+  &__sub-title {
+    margin-bottom: var(--double-spacing);
+  }
+}

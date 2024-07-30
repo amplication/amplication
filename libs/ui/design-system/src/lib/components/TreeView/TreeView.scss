@@ -1,0 +1,46 @@
+@import "../../style/index.scss";
+
+.amp-tree-view {
+  * {
+    box-sizing: border-box;
+  }
+  &.MuiTreeView-root {
+    .MuiTreeItem-label {
+      @include font-base;
+    }
+  }
+
+  &__Item__content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    white-space: nowrap;
+    span {
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .MuiCollapse-wrapperInner {
+    border-left: $border-dark;
+    padding-left: var(--icon-spacing);
+  }
+
+  .MuiTreeItem-group {
+    margin-left: var(--icon-spacing);
+  }
+  .MuiTreeItem-content {
+    padding: var(--icon-spacing);
+    border-radius: var(--default-border-radius);
+
+    &.Mui-selected {
+      background: var(--gray-70);
+    }
+
+    &:hover {
+      background: var(--gray-80);
+    }
+  }
+}

@@ -1,0 +1,118 @@
+@import "../style/index.scss";
+
+.purchase-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--gray-full);
+
+  &__layout {
+    height: 60px;
+    width: 100%;
+    border-bottom: 1px solid #373d57;
+    position: fixed;
+    display: block;
+    background-color: var(--gray-90);
+    z-index: 1000;
+    &__btn {
+      margin: 13px 0px 0px 15px;
+    }
+  }
+
+  &__header {
+    @include pageTitle;
+    //TODO: Remove overrides after design system alignment
+    font-weight: 600;
+    margin-top: 120px;
+    margin-bottom: var(--double-spacing);
+  }
+
+  .workspace-list {
+    margin-bottom: var(--header-spacing);
+    margin-top: 10px;
+  }
+
+  &__faq {
+    background-color: var(--gray-90);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--double-spacing);
+  }
+  &__contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: stretch;
+    padding: var(--header-spacing) 0;
+    gap: var(--double-spacing);
+    background: var(--gray-full);
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--gray-base);
+      gap: var(--default-spacing-small);
+
+      &__header {
+        @include pageTitle;
+        //TODO: Remove overrides after design system alignment
+        font-weight: 600;
+      }
+
+      &__description {
+        @include body1;
+        //TODO: Remove overrides after design system alignment
+        color: var(--gray-base);
+        font-size: 14px;
+      }
+    }
+
+    &_pro_btn {
+      color: var(--static-white);
+    }
+
+    &_pro_btn:hover {
+      background-color: var(--dark-purple);
+      border-color: var(--dark-purple);
+    }
+  }
+
+  &__footer {
+    margin: 80px 64px 0;
+    align-self: stretch;
+    display: flex;
+    justify-content: space-between;
+    padding: 32px 0;
+
+    border-top: 1px solid var(--gray-80);
+
+    &__copyright {
+      color: var(--gray-20);
+    }
+
+    &__links {
+      display: flex;
+      gap: var(--double-spacing);
+      //TODO: Remove overrides after design system alignment
+      size: 14px;
+      text-decoration-line: underline;
+    }
+  }
+}
+
+.stigg-skeleton-loader {
+  &-billing-period {
+    display: none;
+  }
+  &-plans-container > div {
+    max-width: 244px;
+    min-width: 244px;
+    padding-left: 24px;
+    padding-right: 24px;
+    background-color: #15192c;
+    border: 1px solid #373d57;
+  }
+}

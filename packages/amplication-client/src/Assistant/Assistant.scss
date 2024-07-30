@@ -1,0 +1,90 @@
+@import "../style/index.scss";
+
+$wide-assistant-width: 550px;
+$assistant-width: 350px;
+$assistant-handle-width: 24px;
+$assistant-handle-top: 150px;
+$assistant-handle-margin: 40px;
+$avatar-size: 30px;
+
+$input-line-height: 18px;
+$input-max-height: 100px;
+
+.assistant {
+  height: 100vh;
+  box-sizing: border-box;
+  width: $assistant-width;
+  box-sizing: border-box;
+  padding: var(--default-spacing);
+  background: var(--assistant-background);
+  box-shadow: var(--assistant-box-shadow);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--default-spacing);
+  overflow: hidden;
+  transition: width 0.15s;
+  &--wide {
+    width: $wide-assistant-width;
+  }
+
+  &--close {
+    width: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  &__handle {
+    position: absolute;
+    top: $assistant-handle-top;
+    z-index: 9999;
+    left: 0;
+    width: $assistant-handle-width;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: var(--gray-full);
+    font-size: var(--icon-font-size);
+    background: var(--assistant-handle-background);
+    border-radius: 0 var(--default-border-radius) var(--default-border-radius) 0;
+
+    padding: var(--default-spacing);
+
+    .assistant__title {
+      white-space: nowrap;
+      transform: rotate(-90deg);
+      margin-top: $assistant-handle-margin;
+      margin-bottom: $assistant-handle-margin;
+    }
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--icon-spacing);
+    background: var(--assistant-handle-background);
+    margin: calc(var(--default-spacing) * -1);
+    margin-bottom: 0;
+    padding: var(--default-spacing-small);
+
+    .amp-button {
+      color: var(--gray-full);
+
+      &:focus,
+      &:active,
+      &:hover {
+        color: var(--gray-base);
+      }
+    }
+  }
+
+  &__title {
+    flex: 1;
+    color: var(--assistant-title-color);
+  }
+}

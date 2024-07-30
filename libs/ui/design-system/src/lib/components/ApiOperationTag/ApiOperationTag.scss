@@ -1,0 +1,78 @@
+@import "../../style/index.scss";
+
+$height: 24px;
+$width: 70px;
+$color-green: var(--theme-green);
+$color-blue: var(--theme-blue);
+$color-orange: var(--theme-orange);
+$color-red: var(--theme-red);
+$color-pink: var(--theme-pink);
+$color-turquoise: var(--theme-turquoise);
+$color-yellow: var(--theme-yellow);
+$color-light-red: var(--theme-light-red);
+$color-dark: var(--gray-20);
+$color-white: var(--gray-base);
+
+.amp-api-operation-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: $height;
+  width: $width;
+  padding-left: var(--default-spacing);
+  padding-right: var(--default-spacing);
+  border-radius: var(--default-border-radius);
+  font-size: var(--tag-font-size);
+  border: $border-dark;
+  background-color: transparent;
+
+  &--get {
+    color: $color-green;
+    border-color: $color-green;
+  }
+
+  &--post {
+    color: $color-blue;
+    border-color: $color-blue;
+  }
+
+  &--put {
+    color: $color-orange;
+    border-color: $color-orange;
+  }
+
+  &--delete {
+    color: $color-red;
+    border-color: $color-red;
+  }
+
+  &--patch {
+    color: $color-turquoise;
+    border-color: $color-turquoise;
+  }
+
+  &--options {
+    color: $border-dark;
+    border-color: $border-dark;
+  }
+
+  &--head {
+    color: $color-white;
+    border-color: $color-white;
+  }
+
+  &--trace {
+    color: $color-light-red;
+    border-color: $color-light-red;
+  }
+
+  &--mutation {
+    color: $color-blue;
+    border-color: $color-blue;
+  }
+
+  &--query {
+    color: $color-green;
+    border-color: $color-green;
+  }
+}

@@ -1,0 +1,28 @@
+@import "../style/index.scss";
+
+.commit-resource-list-item {
+  &__link {
+    padding: var(--default-spacing);
+    width: 100%;
+    box-sizing: border-box;
+
+    &:hover {
+      background-color: var(--gray-80);
+    }
+  }
+
+  &__description-row {
+    box-sizing: border-box;
+    border-top: 1px solid var(--gray-80);
+    width: calc(100% - var(--default-spacing) * 2);
+    padding: var(--default-spacing);
+  }
+
+  &__vertical_border {
+    width: 1px;
+    height: var(--large-spacing);
+    background: var(--gray-70);
+    border: none;
+    margin: 0;
+  }
+}

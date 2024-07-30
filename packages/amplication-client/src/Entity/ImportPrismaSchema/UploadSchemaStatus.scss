@@ -1,0 +1,19 @@
+@import "../../style/index.scss";
+
+$header-image-size: 100px;
+$header-image-size-large: 150px;
+
+.upload-schema-state {
+  &__title {
+    flex-grow: 1;
+  }
+
+  &__message {
+    flex-grow: 1;
+  }
+
+  .svg-theme-image {
+    height: $header-image-size;
+    background-position: center;
+  }
+}

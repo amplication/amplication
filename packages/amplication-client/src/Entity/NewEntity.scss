@@ -1,0 +1,14 @@
+@import "../style/index.scss";
+
+$image-height: 130px;
+
+.new-entity {
+  @include modalForm;
+  svg {
+    height: $image-height;
+  }
+  &__dialog_btn {
+    display: flex;
+    gap: 20px;
+  }
+}

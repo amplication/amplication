@@ -1,0 +1,159 @@
+{
+  "name": "data-service-generator",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/data-service-generator/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/packages/data-service-generator",
+        "main": "packages/data-service-generator/src/main.ts",
+        "tsConfig": "packages/data-service-generator/tsconfig.app.json",
+        "assets": [
+          "**/*.template.env",
+          "packages/data-service-generator/src/**/package.json",
+          {
+            "glob": "**/*.template.(ts|env|json|yml)",
+            "input": "packages/data-service-generator/src/server",
+            "output": "src/server"
+          },
+          {
+            "glob": "**/*.db.template.(yml)",
+            "input": "packages/data-service-generator/src/server",
+            "output": "src/server"
+          },
+          {
+            "glob": "static/**",
+            "input": "packages/data-service-generator/src/server",
+            "output": "src/server"
+          },
+          {
+            "glob": "**/*.template.(ts|tsx|html|env|json)",
+            "input": "packages/data-service-generator/src/admin",
+            "output": "src/admin"
+          },
+          {
+            "glob": "static/**",
+            "input": "packages/data-service-generator/src/admin",
+            "output": "src/admin"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/data-service-generator/src/**/*",
+          "packages/data-service-generator/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/data-service-generator"],
+      "options": {
+        "jestConfig": "packages/data-service-generator/jest.config.ts"
+      }
+    },
+    "e2e": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/data-service-generator"],
+      "options": {
+        "jestConfig": "packages/data-service-generator/jest.e2e.config.ts",
+        "passWithNoTests": false
+      }
+    },
+    "generate-example-input-json": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./scripts/create-input-json.ts",
+        "cwd": "packages/data-service-generator",
+        "envFile": "packages/data-service-generator/.env"
+      }
+    },
+    "generate-local-code": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rimraf ../../.amplication/generate-local-code/generated",
+          "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts"
+        ],
+        "parallel": false,
+        "cwd": "packages/data-service-generator",
+        "envFile": "packages/data-service-generator/.env"
+      }
+    },
+    "generate-local-code-docker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rimraf ./.amplication/generate-local-code/generated",
+          "docker run --rm --env-file=packages/data-service-generator/.env --env BUILD_OUTPUT_PATH=/generate-local-code/generated --env BUILD_SPEC_PATH=/generate-local-code/input.json -v $(pwd)/.amplication/generate-local-code:/generate-local-code amplication/data-service-generator:latest node ./src/main.js"
+        ],
+        "parallel": false,
+        "envFile": "packages/data-service-generator/.env"
+      },
+      "dependsOn": ["package:container"]
+    },
+    "update-snapshot": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/tests/__snapshots__"],
+      "options": {
+        "commands": [
+          "jest --collectCoverage=false -u src/tests/*.spec.ts ",
+          "jest --collectCoverage=false -u src/tests/server"
+        ],
+        "parallel": false,
+        "cwd": "packages/data-service-generator"
+      }
+    },
+    "update-one-snapshot": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/tests/__snapshots__"],
+      "options": {
+        "commands": [
+          "jest --collectCoverage=false -u src/tests/create-data-service.spec.ts "
+        ],
+        "parallel": false,
+        "cwd": "packages/data-service-generator"
+      }
+    },
+    "package:container": {
+      "executor": "nx:run-script",
+      "dependsOn": ["build"],
+      "options": {
+        "script": "dsg:package:container"
+      }
+    },
+    "internal:package:container": {
+      "executor": "@nx-tools/nx-container:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/data-service-generator:latest"],
+        "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        },
+        "dev": {
+          "file": "packages/data-service-generator/Dockerfile.dev"
+        }
+      }
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,94 @@
+{
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx-cloud",
+      "options": {
+        "cacheableOperations": [
+          "prebuild",
+          "build",
+          "postbuild",
+          "prepare",
+          "test",
+          "db:init",
+          "lint",
+          "test:e2e",
+          "e2e",
+          "test:cov",
+          "build-storybook"
+        ],
+        "accessToken": "ZjczM2RhYjEtYzdmOS00MDVhLThkYWEtMDU4MmJkMTQ1ZWZjfHJlYWQ="
+      }
+    }
+  },
+  "pluginsConfig": {
+    "@nx/js": {
+      "analyzeSourceFiles": true
+    }
+  },
+  "extends": "nx/presets/npm.json",
+  "affected": {
+    "defaultBase": "master"
+  },
+  "targetDefaults": {
+    "test": {
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"],
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/jest.preset.js",
+        "{workspaceRoot}/jest.preset.js"
+      ]
+    },
+    "prebuild": {
+      "dependsOn": ["^prebuild"]
+    },
+    "build": {
+      "dependsOn": [
+        "prebuild",
+        "^build",
+        "db:prisma:generate",
+        "^db:prisma:generate"
+      ]
+    },
+    "postbuild": {
+      "dependsOn": ["build", "^postbuild"]
+    },
+    "serve": {
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
+    },
+    "lint": {
+      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
+    },
+    "package:container": {
+      "dependsOn": ["prebuild", "build", "postbuild"]
+    },
+    "e2e": {
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"],
+      "dependsOn": ["build"]
+    }
+  },
+  "generators": {
+    "@nx/react": {
+      "application": {
+        "style": "scss",
+        "linter": "eslint",
+        "bundler": "webpack",
+        "babel": true
+      },
+      "component": {
+        "style": "scss"
+      },
+      "library": {
+        "style": "scss",
+        "linter": "eslint",
+        "unitTestRunner": "none"
+      }
+    }
+  },
+  "workspaceLayout": {
+    "appsDir": "packages",
+    "libsDir": "libs"
+  },
+  "defaultProject": "amplication-client",
+  "$schema": "./node_modules/nx/schemas/nx-schema.json"
+}
