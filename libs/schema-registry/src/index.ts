@@ -18,6 +18,7 @@ export * as UserFeatureAnnouncement from "./lib/user-feature-announcement";
 export * as PullPrivatePluginsRequest from "./lib/pull-private-plugins-request";
 export * as PullPrivatePluginsSuccess from "./lib/pull-private-plugins-success";
 export * as PullPrivatePluginsFailure from "./lib/pull-private-plugins-failure";
+export * as PullPrivatePluginsLog from "./lib/pull-private-plugins-log";
 
 export enum KAFKA_TOPICS {
   /// build-manager
@@ -36,6 +37,7 @@ export enum KAFKA_TOPICS {
   PULL_PRIVATE_PLUGINS_REQUEST_TOPIC = "git.internal.pull-private-plugins.request.0",
   PULL_PRIVATE_PLUGINS_SUCCESS_TOPIC = "git.internal.pull-private-plugins.success.0",
   PULL_PRIVATE_PLUGINS_FAILURE_TOPIC = "git.internal.pull-private-plugins.failure.0",
+  PULL_PRIVATE_PLUGINS_LOG_TOPIC = "git.internal.pull-private-plugins.log.0",
   /// amplication-server
   CHECK_USER_ACCESS_TOPIC = "authorization.internal.can-access-build.request.0",
   DB_SCHEMA_IMPORT_TOPIC = "user-action.internal.db-schema-import.request.1",

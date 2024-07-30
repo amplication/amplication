@@ -105,7 +105,7 @@ export class GitClientService {
   async pullPrivatePlugins(
     pullPrivatePluginsArgs: PullPrivatePluginsArgs
   ): Promise<{ pluginPaths: string[] }> {
-    return { pluginPaths: [] };
+    return { pluginPaths: [] }; // TODO: implement
   }
 
   async createPullRequest(

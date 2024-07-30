@@ -1,5 +1,11 @@
 import { EnumGitProvider, GitProviderProperties } from "@amplication/util/git";
-import { IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
+import {
+  IsEnum,
+  IsOptional,
+  IsString,
+  ValidateNested,
+  IsArray,
+} from "class-validator";
 
 export class Value {
   @IsString()
@@ -14,6 +20,8 @@ export class Value {
   gitOrganizationName!: string;
   @IsString()
   gitRepositoryName!: string;
+  @IsArray()
+  pluginIds!: string[];
   @IsString()
   @IsOptional()
   repositoryGroupName?: string;

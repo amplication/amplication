@@ -219,6 +219,7 @@ export interface PullPrivatePluginsArgs {
   cloneDirPath: string;
   resourceId: string;
   baseBranchName: string;
+  pluginIds: string[];
 }
 export interface CreatePullRequestArgs {
   owner: string;

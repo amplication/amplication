@@ -1,24 +1,20 @@
 import {
-  EnumPullRequestMode,
   GitClientService,
-  File,
   GitProvidersConfiguration,
 } from "@amplication/util/git";
 import { Env } from "../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { DiffService } from "../diff/diff.service";
-import { CreatePrRequest } from "@amplication/schema-registry";
+import { PullPrivatePluginsRequest } from "@amplication/schema-registry";
 import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
 
 @Traceable()
 @Injectable()
-export class PullRequestService {
+export class PrivatePluginService {
   gitProvidersConfiguration: GitProvidersConfiguration;
 
   constructor(
-    private readonly diffService: DiffService,
     private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
@@ -58,55 +54,20 @@ export class PullRequestService {
     };
   }
 
-  async createPullRequest({
+  async pullPrivatePlugin({
     resourceId,
     resourceName,
-    oldBuildId,
-    newBuildId,
     gitProvider,
     gitProviderProperties,
     gitOrganizationName: owner,
     gitRepositoryName: repo,
-    commit,
-    gitResourceMeta,
-    pullRequestMode,
     repositoryGroupName,
     baseBranchName,
-    isBranchPerResource,
-  }: CreatePrRequest.Value): Promise<{
-    pullRequestUrl: string;
-    diffStat: string;
+    pluginIds,
+  }: PullPrivatePluginsRequest.Value): Promise<{
+    pluginPaths: string[];
   }> {
-    const logger = this.logger.child({ resourceId, buildId: newBuildId });
-    const { body, title } = commit;
-
-    let head = null,
-      pullRequestTitle = null;
-
-    if (pullRequestMode === EnumPullRequestMode.Accumulative) {
-      if (isBranchPerResource) {
-        head = `amplication-${resourceName}`;
-        pullRequestTitle = `for ${resourceName}`;
-      } else {
-        head = `amplication`;
-      }
-    } else {
-      head = `amplication-build-${newBuildId}`;
-    }
-
-    const changedFiles = await this.diffService.listOfChangedFiles(
-      resourceId,
-      oldBuildId,
-      newBuildId
-    );
-
-    logger.info(
-      "The changed files have returned from the diff service listOfChangedFiles are",
-      {
-        lengthOfFile: changedFiles.length,
-      }
-    );
-
+    const logger = this.logger.child({ resourceId });
     const gitClientService = TraceWrapper.trace(
       await new GitClientService().create(
         {
@@ -120,39 +81,18 @@ export class PullRequestService {
         logger,
         attributes: {
           resourceId,
-          buildId: newBuildId,
           gitProvider,
-          pullRequestMode,
         },
       }
     );
-    const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
-
-    const { pullRequestUrl, diffStat } =
-      await gitClientService.createPullRequest({
-        owner,
-        cloneDirPath,
-        repositoryName: repo,
-        repositoryGroupName,
-        branchName: head,
-        commitMessage: body,
-        pullRequestTitle: pullRequestTitle || title,
-        pullRequestBody: body,
-        pullRequestMode,
-        gitResourceMeta,
-        files: PullRequestService.removeFirstSlashFromPath(changedFiles),
-        resourceId,
-        buildId: newBuildId,
-        baseBranchName,
-      });
-
-    logger.info("Opened a new pull request", { pullRequestUrl, diffStat });
-    return { pullRequestUrl, diffStat };
-  }
-
-  private static removeFirstSlashFromPath(changedFiles: File[]): File[] {
-    return changedFiles.map((module) => {
-      return { ...module, path: module.path.replace(new RegExp("^/"), "") };
+    const { pluginPaths } = await gitClientService.pullPrivatePlugins({
+      repositoryName: repo,
+      repositoryGroupName,
+      resourceId,
+      baseBranchName,
+      cloneDirPath: "", //TODO: complate this path,
+      pluginIds,
     });
+    return { pluginPaths };
   }
 }
