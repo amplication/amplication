@@ -11,6 +11,7 @@ export type MenuItemLinks =
   | "services"
   | "connections"
   | "modules"
+  | "privatePlugins"
   | "pendingChanges";
 
 export const resourceMenuLayout: {
@@ -27,7 +28,7 @@ export const resourceMenuLayout: {
   ],
   [EnumResourceType.ProjectConfiguration]: ["git", "settings"],
   [EnumResourceType.MessageBroker]: ["topics", "services", "git", "settings"],
-  [EnumResourceType.PluginRepository]: ["git", "settings"],
+  [EnumResourceType.PluginRepository]: ["git", "settings", "privatePlugins"],
 };
 
 export const linksMap: {
@@ -88,6 +89,11 @@ export const linksMap: {
     icon: "box",
     to: "/modules",
     license: BillingFeature.CustomActions,
+  },
+  privatePlugins: {
+    title: "Private Plugins",
+    icon: "plugins",
+    to: "/private-plugins",
   },
 };
 

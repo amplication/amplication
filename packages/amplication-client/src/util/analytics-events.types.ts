@@ -82,6 +82,10 @@ export enum AnalyticsEventNames {
   TopicCreate = "createTopic",
   TopicUpdate = "updateTopic",
 
+  // private plugin
+  PrivatePluginCreate = "createPrivatePlugin",
+  PrivatePluginUpdate = "updatePrivatePlugin",
+
   // commit & build & pending changes
   CommitClicked = "commitClicked",
   CommitListBuildIdClick = "commitListBuildIdClick",
