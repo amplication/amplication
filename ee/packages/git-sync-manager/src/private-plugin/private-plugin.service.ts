@@ -85,12 +85,14 @@ export class PrivatePluginService {
         },
       }
     );
+    const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
     const { pluginPaths } = await gitClientService.pullPrivatePlugins({
+      owner,
       repositoryName: repo,
       repositoryGroupName,
       resourceId,
       baseBranchName,
-      cloneDirPath: "", //TODO: complate this path,
+      cloneDirPath,
       pluginIds,
     });
     return { pluginPaths };

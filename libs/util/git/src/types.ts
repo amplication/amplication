@@ -214,6 +214,7 @@ export interface GetFileArgs {
 }
 
 export interface PullPrivatePluginsArgs {
+  owner: string;
   repositoryName: string;
   repositoryGroupName?: string;
   cloneDirPath: string;

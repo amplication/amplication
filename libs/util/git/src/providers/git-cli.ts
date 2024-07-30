@@ -75,6 +75,22 @@ export class GitCli {
     }
   }
 
+  /**
+   * Sparse checkout of specific paths to branch if exists, otherwise create new branch
+   * @param branchName name of the branch to checkout
+   * @param pathsToCheckout array of paths to checkout (relative to the repository root)
+   */
+  async sparseCheckout(
+    branchName: string,
+    pathsToCheckout: string[]
+  ): Promise<void> {
+    await this.git.fetch();
+    await this.git.raw(["sparse-checkout", "init", "--cone"]);
+    await this.git.raw(["sparse-checkout", "set", ...pathsToCheckout]);
+    await this.git.checkout(branchName);
+    await this.git.raw(["sparse-checkout", "disable"]);
+  }
+
   async cherryPick(sha: string) {
     await this.git.raw([
       "cherry-pick",
