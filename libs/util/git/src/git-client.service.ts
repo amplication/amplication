@@ -30,7 +30,7 @@ import {
   CurrentUser,
   OAuthTokens,
   UpdateFile,
-  PullPrivatePluginsArgs,
+  DownloadPrivatePluginsArgs,
 } from "./types";
 import { AmplicationIgnoreManger } from "./utils/amplication-ignore-manger";
 import { isFolderEmpty } from "./utils/is-folder-empty";
@@ -111,7 +111,7 @@ export class GitClientService {
     pluginIds,
     resourceId,
     buildId,
-  }: PullPrivatePluginsArgs): Promise<{ pluginPaths: string[] }> {
+  }: DownloadPrivatePluginsArgs): Promise<{ pluginPaths: string[] }> {
     const gitRepoDir = normalize(
       join(
         cloneDirPath,
