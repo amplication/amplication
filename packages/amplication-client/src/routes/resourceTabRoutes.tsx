@@ -122,7 +122,7 @@ const resourceTabRoutes = [
     exactPath: false,
     routes: [
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/private-plugins/:topicId",
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/private-plugins/:pluginId",
         Component: lazy(() => import("../PrivatePlugins/PrivatePlugin")),
         moduleName: "",
         routeTrackType: "",

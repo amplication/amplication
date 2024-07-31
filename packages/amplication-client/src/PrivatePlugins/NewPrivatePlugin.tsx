@@ -36,13 +36,6 @@ const FORM_SCHEMA = {
 };
 const CLASS_NAME = "new-private-plugin";
 
-const prepareName = (displayName: string) => {
-  return displayName
-    .toLowerCase() // Convert to lowercase
-    .replace(/[ ]/g, ".") // Replace spaces with dots
-    .replace(/[^a-zA-Z0-9._-]/g, ""); // Remove all non-legit characters
-};
-
 const NewPrivatePlugin = ({ onPrivatePluginAdd, resourceId }: Props) => {
   const { trackEvent } = useTracking();
   const { addEntity } = useContext(AppContext);
@@ -64,7 +57,7 @@ const NewPrivatePlugin = ({ onPrivatePluginAdd, resourceId }: Props) => {
         variables: {
           data: {
             ...data,
-            pluginId: prepareName(data.displayName),
+            pluginId: data.displayName,
             enabled: true,
             resource: { connect: { id: resourceId } },
           },
