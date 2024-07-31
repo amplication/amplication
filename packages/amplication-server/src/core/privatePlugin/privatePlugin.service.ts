@@ -33,7 +33,8 @@ export class PrivatePluginService extends BlockTypeService<
     super(blockService, logger);
   }
 
-  //return all private plugins that are enabled in the resource's project
+  //return all private plugins in the resource's project
+  //disabled plugins can be used for setup - but should not be used in build time
   async availablePrivatePluginsForResource(
     args: FindManyPrivatePluginArgs
   ): Promise<PrivatePlugin[]> {
@@ -47,7 +48,7 @@ export class PrivatePluginService extends BlockTypeService<
       return [];
     }
 
-    const plugins = await this.findMany({
+    return await this.findMany({
       ...args,
       where: {
         ...args.where,
@@ -56,8 +57,6 @@ export class PrivatePluginService extends BlockTypeService<
         },
       },
     });
-
-    return plugins.filter((plugin) => plugin.enabled);
   }
 
   async create(
