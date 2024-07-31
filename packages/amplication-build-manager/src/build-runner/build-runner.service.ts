@@ -97,6 +97,7 @@ export class BuildRunnerService {
     codeGeneratorFullName: string
   ) {
     await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
+    await this.saveRelevantDsgAssets(resourceId, jobBuildId);
 
     const url = this.configService.get(Env.DSG_RUNNER_URL);
     try {
@@ -258,6 +259,21 @@ export class BuildRunnerService {
       savePath,
       JSON.stringify({ ...dsgResourceData, codeGeneratorVersion })
     );
+  }
+
+  async saveRelevantDsgAssets(resourceId: string, buildId: string) {
+    const dsgAssetsPathForResource = join(
+      this.configService.get(Env.DSG_ASSETS_FOLDER),
+      resourceId
+    );
+
+    const jobPathForDsgAssets = join(
+      this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
+      buildId,
+      "dsg-assets"
+    );
+
+    await copy(dsgAssetsPathForResource, jobPathForDsgAssets);
   }
 
   async getCodeGeneratorVersion(buildId: string) {
