@@ -490,6 +490,26 @@ export class ResourceService {
   }
 
   /**
+   * Create a resource of type "PluginRepository"
+   */
+  async createPluginRepository(
+    args: CreateOneResourceArgs,
+    user: User
+  ): Promise<Resource> {
+    const resource = await this.createResource(
+      {
+        data: {
+          ...args.data,
+          resourceType: EnumResourceType.PluginRepository,
+        },
+      },
+      user
+    );
+
+    return resource;
+  }
+
+  /**
    * Create a resource of type "Service", with the built-in "user" role
    */
   async createService(
