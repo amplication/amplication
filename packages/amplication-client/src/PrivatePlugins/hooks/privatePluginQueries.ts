@@ -22,6 +22,18 @@ export const GET_PRIVATE_PLUGINS = gql`
   }
 `;
 
+export const GET_AVAILABLE_PRIVATE_PLUGINS_FOR_RESOURCE = gql`
+  ${PRIVATE_PLUGINS_FIELDS_FRAGMENT}
+  query availablePrivatePluginsForResource(
+    $where: PrivatePluginWhereInput
+    $orderBy: PrivatePluginOrderByInput
+  ) {
+    availablePrivatePluginsForResource(where: $where, orderBy: $orderBy) {
+      ...PrivatePluginFields
+    }
+  }
+`;
+
 export const DELETE_PRIVATE_PLUGIN = gql`
   mutation deletePrivatePlugin($where: WhereUniqueInput!) {
     deletePrivatePlugin(where: $where) {

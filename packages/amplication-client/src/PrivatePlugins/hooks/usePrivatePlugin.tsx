@@ -5,6 +5,7 @@ import * as models from "../../models";
 import {
   CREATE_PRIVATE_PLUGIN,
   DELETE_PRIVATE_PLUGIN,
+  GET_AVAILABLE_PRIVATE_PLUGINS_FOR_RESOURCE,
   GET_PRIVATE_PLUGIN,
   GET_PRIVATE_PLUGINS,
   PRIVATE_PLUGINS_FIELDS_FRAGMENT,
@@ -19,14 +20,46 @@ type TGetPluginsData = {
   privatePlugins: models.PrivatePlugin[];
 };
 
+type TGetAvailablePrivatePluginsForResourceData = {
+  availablePrivatePluginsForResource: models.PrivatePlugin[];
+};
+
 type TGetData = {
   privatePlugin: models.PrivatePlugin;
 };
 
 const DATE_CREATED_FIELD = "createdAt";
+const NAME_FIELD = "displayName";
 
 const usePrivatePlugin = (resourceId: string) => {
   const { addBlock } = useContext(AppContext);
+
+  const [
+    getAvailablePrivatePluginsForResourceInternal,
+    {
+      data: getAvailablePrivatePluginsForResourceData,
+      loading: getAvailablePrivatePluginsForResourceLoading,
+      error: getAvailablePrivatePluginsForResourceError,
+    },
+  ] = useLazyQuery<TGetAvailablePrivatePluginsForResourceData>(
+    GET_AVAILABLE_PRIVATE_PLUGINS_FOR_RESOURCE,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
+
+  const getAvailablePrivatePluginsForResource = useCallback(() => {
+    getAvailablePrivatePluginsForResourceInternal({
+      variables: {
+        where: {
+          resource: { id: resourceId },
+        },
+        orderBy: {
+          [NAME_FIELD]: models.SortOrder.Asc,
+        },
+      },
+    });
+  }, [getAvailablePrivatePluginsForResourceInternal, resourceId]);
 
   const [
     getPrivatePluginsInternal,
@@ -144,6 +177,10 @@ const usePrivatePlugin = (resourceId: string) => {
     useMutation(UPDATE_PRIVATE_PLUGIN);
 
   return {
+    getAvailablePrivatePluginsForResource,
+    getAvailablePrivatePluginsForResourceData,
+    getAvailablePrivatePluginsForResourceLoading,
+    getAvailablePrivatePluginsForResourceError,
     updatePrivatePlugin,
     updatePrivatePluginError,
     getPrivatePlugin,
