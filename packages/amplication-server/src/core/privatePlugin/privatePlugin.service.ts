@@ -8,6 +8,10 @@ import { FindManyPrivatePluginArgs } from "./dto/FindManyPrivatePluginArgs";
 import { PrivatePlugin } from "./dto/PrivatePlugin";
 import { UpdatePrivatePluginArgs } from "./dto/UpdatePrivatePluginArgs";
 import { DeletePrivatePluginArgs } from "./dto/DeletePrivatePluginArgs";
+import { User } from "../../models";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { AmplicationError } from "../../errors/AmplicationError";
 
 @Injectable()
 export class PrivatePluginService extends BlockTypeService<
@@ -21,8 +25,30 @@ export class PrivatePluginService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    protected readonly logger: AmplicationLogger
+    protected readonly logger: AmplicationLogger,
+    protected readonly billingService: BillingService
   ) {
     super(blockService, logger);
+  }
+
+  async create(
+    args: CreatePrivatePluginArgs,
+    user: User
+  ): Promise<PrivatePlugin> {
+    await this.validateLicense(user.workspace?.id);
+
+    return super.create(args, user);
+  }
+
+  async validateLicense(workspaceId: string): Promise<void> {
+    const entitlement = await this.billingService.getBooleanEntitlement(
+      workspaceId,
+      BillingFeature.PrivatePlugins
+    );
+
+    if (entitlement && !entitlement.hasAccess)
+      throw new AmplicationError(
+        `Feature Unavailable. Please upgrade your plan to use the Private Plugins Module.`
+      );
   }
 }
