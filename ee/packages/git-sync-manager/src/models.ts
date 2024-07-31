@@ -949,6 +949,7 @@ export enum EnumPreviewAccountType {
 
 export enum EnumResourceType {
   MessageBroker = 'MessageBroker',
+  PluginRepository = 'PluginRepository',
   ProjectConfiguration = 'ProjectConfiguration',
   Service = 'Service'
 }
