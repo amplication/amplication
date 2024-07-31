@@ -109,6 +109,8 @@ export class GitClientService {
     cloneDirPath,
     baseBranchName,
     pluginIds,
+    resourceId,
+    buildId,
   }: PullPrivatePluginsArgs): Promise<{ pluginPaths: string[] }> {
     const gitRepoDir = normalize(
       join(
@@ -117,7 +119,8 @@ export class GitClientService {
         owner,
         repositoryGroupName
           ? join(repositoryGroupName, repositoryName)
-          : repositoryName
+          : repositoryName,
+        `${resourceId}-${buildId}`
       )
     );
     const cloneUrl = await this.provider.getCloneUrl({

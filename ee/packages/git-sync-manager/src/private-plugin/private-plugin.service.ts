@@ -58,6 +58,7 @@ export class PrivatePluginService {
 
   async downloadPrivatePlugins({
     resourceId,
+    buildId,
     gitProvider,
     gitProviderProperties,
     gitOrganizationName: owner,
@@ -92,25 +93,28 @@ export class PrivatePluginService {
       repositoryName: repo,
       repositoryGroupName,
       resourceId,
+      buildId,
       baseBranchName,
       cloneDirPath,
       pluginIds,
     });
 
-    const { newPluginPaths } = await this.copyPluginFilesToBuildDir(
+    const { newPluginPaths } = await this.copyPluginFilesToDsgAssetsDir(
       pluginPaths,
-      resourceId
+      resourceId,
+      buildId
     );
     return { pluginPaths: newPluginPaths };
   }
 
-  async copyPluginFilesToBuildDir(
+  async copyPluginFilesToDsgAssetsDir(
     pluginPaths: string[],
-    resourceId: string
+    resourceId: string,
+    buildId: string
   ): Promise<{ newPluginPaths: string[] }> {
     const dsgAssetsPath = join(
       this.configService.get(Env.DSG_ASSETS_FOLDER),
-      resourceId,
+      `${resourceId}-${buildId}`,
       "private-plugins"
     );
 

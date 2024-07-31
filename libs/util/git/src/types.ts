@@ -219,6 +219,7 @@ export interface PullPrivatePluginsArgs {
   repositoryGroupName?: string;
   cloneDirPath: string;
   resourceId: string;
+  buildId: string;
   baseBranchName: string;
   pluginIds: string[];
 }

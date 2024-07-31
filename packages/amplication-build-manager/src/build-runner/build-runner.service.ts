@@ -262,9 +262,9 @@ export class BuildRunnerService {
   }
 
   async saveRelevantDsgAssets(resourceId: string, buildId: string) {
-    const dsgAssetsPathForResource = join(
+    const dsgAssetsPathForBuild = join(
       this.configService.get(Env.DSG_ASSETS_FOLDER),
-      resourceId
+      `${resourceId}-${buildId}`
     );
 
     const jobPathForDsgAssets = join(
@@ -273,7 +273,7 @@ export class BuildRunnerService {
       "dsg-assets"
     );
 
-    await copy(dsgAssetsPathForResource, jobPathForDsgAssets);
+    await copy(dsgAssetsPathForBuild, jobPathForDsgAssets);
   }
 
   async getCodeGeneratorVersion(buildId: string) {
