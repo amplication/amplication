@@ -2080,6 +2080,7 @@ export type PluginInstallation = IBlock & {
   enabled: Scalars['Boolean']['output'];
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
+  isPrivate?: Maybe<Scalars['Boolean']['output']>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
   lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
@@ -2101,6 +2102,7 @@ export type PluginInstallationCreateInput = {
   displayName: Scalars['String']['input'];
   enabled: Scalars['Boolean']['input'];
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  isPrivate: Scalars['Boolean']['input'];
   npm: Scalars['String']['input'];
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;

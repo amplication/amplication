@@ -1540,6 +1540,7 @@ type PluginInstallation implements IBlock {
   enabled: Boolean!
   id: String!
   inputParameters: [BlockInputOutput!]!
+  isPrivate: Boolean
   lockedAt: DateTime
   lockedByUser: User
   lockedByUserId: String
@@ -1561,6 +1562,7 @@ input PluginInstallationCreateInput {
   displayName: String!
   enabled: Boolean!
   inputParameters: [BlockInputOutputInput!]
+  isPrivate: Boolean!
   npm: String!
   outputParameters: [BlockInputOutputInput!]
   parentBlock: WhereParentIdInput
