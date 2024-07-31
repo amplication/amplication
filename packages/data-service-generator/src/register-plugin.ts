@@ -7,6 +7,7 @@ import {
 } from "@amplication/code-gen-types";
 import { join } from "path";
 import { logger } from "./logging";
+import DsgContext from "./dsg-context";
 
 class EmptyPlugin implements AmplicationPlugin {
   init?: (name: string, version: string) => void;
@@ -17,6 +18,21 @@ class EmptyPlugin implements AmplicationPlugin {
 
 const functionsObject = ["[object Function]", "[object AsyncFunction]"];
 
+const DSG_ASSETS_FOLDER = "dsg-assets";
+const PRIVATE_PLUGINS_FOLDER = "private-plugins";
+
+const getPrivatePluginPath = (buildId: string, pluginId: string) => {
+  const basePath = process.env.DSG_JOBS_BASE_FOLDER;
+
+  return join(
+    basePath,
+    buildId,
+    DSG_ASSETS_FOLDER,
+    PRIVATE_PLUGINS_FOLDER,
+    pluginId
+  );
+};
+
 /**
  * generator function that import the plugin requested by user
  * @param pluginList
@@ -26,6 +42,8 @@ async function* getPluginFuncGenerator(
   pluginList: PluginInstallation[],
   pluginInstallationPath?: string
 ): AsyncGenerator<new () => AmplicationPlugin> {
+  const context = DsgContext.getInstance;
+
   try {
     const pluginListLength = pluginList.length;
     let index = 0;
@@ -33,6 +51,8 @@ async function* getPluginFuncGenerator(
     do {
       const localPackage = pluginList[index].settings?.local
         ? join("../../../../", pluginList[index].settings?.destPath)
+        : pluginList[index].isPrivate
+        ? getPrivatePluginPath(context.buildId, pluginList[index].pluginId)
         : undefined;
       const packageName = localPackage || pluginList[index].npm;
 
@@ -48,8 +68,9 @@ async function* getPluginFuncGenerator(
       yield func.default;
     } while (pluginListLength > index);
   } catch (error) {
+    await context.logger.error(`Failed to import plugin: ${error.message}`);
     logger.error(error);
-    return EmptyPlugin;
+    throw error;
   }
 }
 
