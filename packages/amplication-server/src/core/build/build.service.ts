@@ -64,20 +64,24 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
 };
 import { encryptString } from "../../util/encryptionUtil";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
+import { PluginInstallation } from "../pluginInstallation/dto/PluginInstallation";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
 export const GENERATE_STEP_MESSAGE = "Generating Application";
 export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
-export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = "Building Docker image";
-export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
-export const BUILD_DOCKER_IMAGE_STEP_FINISH_LOG =
-  "Built Docker image successfully";
-export const BUILD_DOCKER_IMAGE_STEP_FAILED_LOG = "Build Docker failed";
-export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
-  "Waiting for Docker image...";
-export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
-  "Starting to build Docker image. It should take a few minutes.";
+
+export const DOWNLOAD_PRIVATE_PLUGINS_STEP_MESSAGE =
+  "Downloading private plugins";
+export const DOWNLOAD_PRIVATE_PLUGINS_STEP_NAME = "DOWNLOAD_PRIVATE_PLUGINS";
+export const DOWNLOAD_PRIVATE_PLUGINS_STEP_FINISH_LOG =
+  "Successfully downloaded private plugins";
+export const DOWNLOAD_PRIVATE_PLUGINS_STEP_FAILED_LOG =
+  "Failed to download private plugins";
+export const DOWNLOAD_PRIVATE_PLUGINS_STEP_RUNNING_LOG =
+  "Downloading private plugins. It should take a few moments...";
+export const DOWNLOAD_PRIVATE_PLUGINS_STEP_START_LOG =
+  "Downloading private plugins job added to queue. Waiting for available worker...";
 
 export const PUSH_TO_GIT_STEP_NAME = "PUSH_TO_GIT_PROVIDER";
 export const PUSH_TO_GIT_STEP_MESSAGE = (gitProvider: EnumGitProvider) =>
@@ -286,8 +290,21 @@ export class BuildService {
       return;
     }
 
-    logger.info(JOB_STARTED_LOG);
-    await this.generate(logger, build, user);
+    const resourcePrivatePlugins: PluginInstallation[] =
+      this.resourceService.getPrivatePluginsForBuild(resourceId);
+
+    if (resourcePrivatePlugins.length > 0) {
+      logger.info("Private plugins found for build");
+      await this.downloadPrivatePlugins(
+        logger,
+        build,
+        user,
+        resourcePrivatePlugins
+      );
+    } else {
+      logger.info(JOB_STARTED_LOG);
+      await this.generate(logger, build, user);
+    }
 
     return build;
   }
@@ -324,7 +341,10 @@ export class BuildService {
     }
   }
 
-  async getGenerateCodeStep(buildId: string): Promise<ActionStep | undefined> {
+  async getBuildStep(
+    buildId: string,
+    buildStepName: string
+  ): Promise<ActionStep | undefined> {
     const [generateStep] = await this.prisma.build
       .findUnique({
         where: {
@@ -334,7 +354,7 @@ export class BuildService {
       .action()
       .steps({
         where: {
-          name: GENERATE_STEP_NAME,
+          name: buildStepName,
         },
       });
 
@@ -366,7 +386,7 @@ export class BuildService {
     status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
     codeGeneratorVersion: string
   ): Promise<void> {
-    const step = await this.getGenerateCodeStep(buildId);
+    const step = await this.getBuildStep(buildId, GENERATE_STEP_NAME);
     if (!step) {
       throw new Error("Could not find generate code step");
     }
@@ -464,6 +484,79 @@ export class BuildService {
       },
       true
     );
+  }
+
+  /**
+   * Downloads private plugins for given build
+   */
+  private async downloadPrivatePlugins(
+    logger: ILogger,
+    build: Build,
+    user: User,
+    privatePlugins: PluginInstallation[]
+  ): Promise<string> {
+    return this.actionService.run(
+      build.actionId,
+      DOWNLOAD_PRIVATE_PLUGINS_STEP_NAME,
+      DOWNLOAD_PRIVATE_PLUGINS_STEP_MESSAGE,
+      async (step) => {
+        const { resourceId, id: buildId } = build;
+
+        logger.info("Writing plugin download message to queue");
+
+        const codeGenerationEvent: CodeGenerationRequest.KafkaEvent = {
+          key: null,
+          value: {
+            resourceId,
+            buildId,
+            privateplugins: privatePlugins,
+          },
+        };
+
+        await this.kafkaProducerService.emitMessage(
+          KAFKA_TOPICS.CODE_GENERATION_REQUEST_TOPIC,
+          codeGenerationEvent
+        );
+
+        logger.info("Plugin download message sent");
+
+        return null;
+      },
+      true
+    );
+  }
+
+  async completeDownloadPrivatePluginsStep(
+    buildId: string,
+    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+  ): Promise<void> {
+    const step = await this.getBuildStep(
+      buildId,
+      DOWNLOAD_PRIVATE_PLUGINS_STEP_NAME
+    );
+    if (!step) {
+      throw new Error("Could not find download private plugins step");
+    }
+
+    const build = await this.findOne({ where: { id: buildId } });
+
+    const user = await this.userService.findUser({
+      where: { id: build.userId },
+    });
+
+    const logger = this.logger.child({
+      buildId: build.id,
+      resourceId: build.resourceId,
+      userId: build.userId,
+      user,
+    });
+
+    if (status === EnumActionStepStatus.Success) {
+      //once all plugins are downloaded, we can start the code generation
+      await this.generate(logger, build, user);
+    }
+
+    await this.actionService.complete(step, status);
   }
 
   private async getResourceRoles(resourceId: string): Promise<ResourceRole[]> {
@@ -627,7 +720,7 @@ export class BuildService {
   }
 
   public async onDsgLog(logEntry: CodeGenerationLog.Value): Promise<void> {
-    const step = await this.getGenerateCodeStep(logEntry.buildId);
+    const step = await this.getBuildStep(logEntry.buildId, GENERATE_STEP_NAME);
     await this.actionService.logByStepId(
       step.id,
       ACTION_LOG_LEVEL[logEntry.level],
