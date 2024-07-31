@@ -87,8 +87,7 @@ export class GitCli {
     await this.git.fetch();
     await this.git.raw(["sparse-checkout", "init", "--cone"]);
     await this.git.raw(["sparse-checkout", "set", ...pathsToCheckout]);
-    await this.git.checkout(branchName);
-    await this.git.raw(["sparse-checkout", "disable"]);
+    await this.git.raw(["checkout", branchName]);
   }
 
   async cherryPick(sha: string) {
