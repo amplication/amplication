@@ -874,7 +874,7 @@ export class BuildService {
             resourceId: build.resource.id,
             projectId: build.resource.project.id,
             message: logEntry.message,
-            tepName: DOWNLOAD_PRIVATE_PLUGINS_STEP_NAME,
+            stepName: DOWNLOAD_PRIVATE_PLUGINS_STEP_NAME,
           },
           event: EnumEventType.CodeGenerationError,
         },
