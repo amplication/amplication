@@ -37,4 +37,9 @@ export class PluginInstallation extends IBlock {
     nullable: false,
   })
   version!: string;
+
+  @Field(() => Boolean, {
+    nullable: false,
+  })
+  isPrivate!: boolean;
 }

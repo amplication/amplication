@@ -10,7 +10,9 @@ import {
   UPDATE_PLUGIN_INSTALLATION,
   UPDATE_PLUGIN_ORDER,
 } from "../queries/pluginsQueries";
-import usePluginCatalog from "./usePluginCatalog";
+import usePluginCatalog, { Plugin, PluginVersion } from "./usePluginCatalog";
+import usePrivatePlugin from "../../PrivatePlugins/hooks/usePrivatePlugin";
+import { LATEST_VERSION_TAG } from "../constant";
 
 export interface SortedPluginInstallation extends models.PluginInstallation {
   categories?: string[];
@@ -20,6 +22,31 @@ export type OnPluginDropped = (
   dragItem: models.PluginInstallation,
   hoverItem: models.PluginInstallation
 ) => void;
+
+const PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES: PluginVersion = {
+  version: LATEST_VERSION_TAG,
+  isLatest: true,
+  settings: {},
+  configurations: {},
+  id: "",
+  pluginId: "",
+};
+
+const PRIVATE_PLUGIN_DEFAULT_VALUES: Plugin = {
+  id: "",
+  pluginId: "",
+  name: "",
+  description: "",
+  repo: "",
+  npm: "",
+  icon: "",
+  github: "",
+  website: "",
+  categories: [],
+  type: "",
+  taggedVersions: {},
+  versions: [],
+};
 
 const setPluginOrderMap = (pluginOrder: models.PluginOrderItem[]) => {
   return pluginOrder.reduce(
@@ -44,9 +71,51 @@ const usePlugins = (
     codeGenerator || models.EnumCodeGenerator.NodeJs
   );
 
+  const {
+    getAvailablePrivatePluginsForResource: loadPrivatePluginsCatalog,
+    getAvailablePrivatePluginsForResourceData,
+  } = usePrivatePlugin(resourceId);
+
+  const [privatePluginCatalog, setPrivatePluginCatalog] = useState<{
+    [key: string]: Plugin;
+  }>({});
+
   const [pluginOrderObj, setPluginOrderObj] = useState<{
     [key: string]: number;
   }>();
+
+  useEffect(() => {
+    if (!getAvailablePrivatePluginsForResourceData) return;
+    const privatePluginCatalogObj =
+      getAvailablePrivatePluginsForResourceData.availablePrivatePluginsForResource?.reduce(
+        (
+          privatePluginCatalogObj: { [key: string]: Plugin },
+          privatePlugin: models.PrivatePlugin
+        ) => {
+          privatePluginCatalogObj[privatePlugin.pluginId] = {
+            ...PRIVATE_PLUGIN_DEFAULT_VALUES,
+            id: privatePlugin.id,
+            pluginId: privatePlugin.pluginId,
+            name: privatePlugin.enabled
+              ? privatePlugin.displayName
+              : `${privatePlugin.displayName} (Disabled)`,
+            description: privatePlugin.description,
+            versions: [
+              {
+                ...PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES,
+                id: privatePlugin.id,
+                pluginId: privatePlugin.pluginId,
+              },
+            ],
+          };
+
+          return privatePluginCatalogObj;
+        },
+        {}
+      );
+
+    setPrivatePluginCatalog(privatePluginCatalogObj);
+  }, [getAvailablePrivatePluginsForResourceData]);
 
   const {
     addBlock,
@@ -237,6 +306,8 @@ const usePlugins = (
   );
 
   return {
+    loadPrivatePluginsCatalog,
+    privatePluginCatalog,
     pluginInstallations: sortedPluginInstallation,
     loadingPluginInstallations,
     errorPluginInstallations,

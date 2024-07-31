@@ -2327,6 +2327,7 @@ export type Query = {
   account: Account;
   action: Action;
   availableDtosForResource: Array<ModuleDto>;
+  availablePrivatePluginsForResource: Array<PrivatePlugin>;
   block: Block;
   blocks: Array<Block>;
   build: Build;
@@ -2389,6 +2390,14 @@ export type QueryAvailableDtosForResourceArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ModuleDtoWhereInput>;
+};
+
+
+export type QueryAvailablePrivatePluginsForResourceArgs = {
+  orderBy?: InputMaybe<PrivatePluginOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PrivatePluginWhereInput>;
 };
 
 

@@ -5,9 +5,11 @@ import { BlockModule } from "../block/block.module";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { ResourceModule } from "../resource/resource.module";
 import { UserModule } from "../user/user.module";
+import { BillingModule } from "../billing/billing.module";
 @Module({
   imports: [
     UserModule,
+    BillingModule,
     BlockModule,
     forwardRef(() => ResourceModule),
     PermissionsModule,

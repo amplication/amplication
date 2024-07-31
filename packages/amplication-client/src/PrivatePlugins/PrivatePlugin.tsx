@@ -6,11 +6,21 @@ import PrivatePluginForm from "./PrivatePluginForm";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { DeletePrivatePlugin } from "./DeletePrivatePlugins";
-import { Snackbar, HorizontalRule } from "@amplication/ui/design-system";
-import "./PrivatePlugin.scss";
+import {
+  Snackbar,
+  HorizontalRule,
+  FlexItem,
+  TabContentTitle,
+  EnumFlexDirection,
+  EnumContentAlign,
+  Toggle,
+  Panel,
+  EnumPanelStyle,
+  Text,
+  EnumTextStyle,
+  EnumTextColor,
+} from "@amplication/ui/design-system";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
-
-const CLASS_NAME = "private-plugin";
 
 const PrivatePlugin = () => {
   const match = useRouteMatch<{
@@ -83,17 +93,56 @@ const PrivatePlugin = () => {
     getPrivatePlugin(privatePluginId);
   }, [getPrivatePlugin, privatePluginId]);
 
+  const onEnableChanged = useCallback(
+    (value: boolean) => {
+      handleSubmit({
+        enabled: value,
+      });
+    },
+    [handleSubmit]
+  );
+
   return (
     <>
-      <div className={`${CLASS_NAME}__header`}>
-        <h3>Private Plugin Settings</h3>
-        {data?.privatePlugin && (
-          <DeletePrivatePlugin
-            privatePlugin={data?.privatePlugin}
-            onDelete={handleDeletePrivatePlugin}
-          />
-        )}
-      </div>
+      <FlexItem>
+        <TabContentTitle
+          title={data?.privatePlugin?.displayName}
+          subTitle={data?.privatePlugin?.description}
+        />
+        <FlexItem.FlexEnd
+          direction={EnumFlexDirection.Row}
+          alignSelf={EnumContentAlign.Start}
+        >
+          <Toggle
+            name={"enabled"}
+            onValueChange={onEnableChanged}
+            checked={
+              data?.privatePlugin?.enabled
+                ? data?.privatePlugin?.enabled
+                : false
+            }
+          ></Toggle>
+          {data?.privatePlugin && (
+            <DeletePrivatePlugin
+              privatePlugin={data?.privatePlugin}
+              onDelete={handleDeletePrivatePlugin}
+            />
+          )}
+        </FlexItem.FlexEnd>
+      </FlexItem>
+      <Panel panelStyle={EnumPanelStyle.Bordered}>
+        <Text
+          textStyle={EnumTextStyle.Description}
+          textColor={EnumTextColor.ThemeOrange}
+        >
+          The plugin must be located in the connected git repository, in a
+          folder named "plugins" and in a subfolder with the plugin ID.
+        </Text>
+        <br />
+        <Text textStyle={EnumTextStyle.Description}>
+          e.g. './plugins/private-aws-terraform/'
+        </Text>
+      </Panel>
 
       <HorizontalRule />
       {!loading && (
