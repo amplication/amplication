@@ -48,6 +48,7 @@ import {
   CreatePrSuccess,
   KAFKA_TOPICS,
   UserBuild,
+  PullPrivatePluginsRequest,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
@@ -502,25 +503,52 @@ export class BuildService {
       DOWNLOAD_PRIVATE_PLUGINS_STEP_NAME,
       DOWNLOAD_PRIVATE_PLUGINS_STEP_MESSAGE,
       async (step) => {
-        const { resourceId, id: buildId } = build;
+        const { resourceId } = build;
 
-        logger.info("Writing plugin download message to queue");
+        logger.info("Writing 'plugin download' message to queue");
 
-        const codeGenerationEvent: CodeGenerationRequest.KafkaEvent = {
-          key: null,
-          value: {
-            resourceId,
-            buildId,
-            privateplugins: privatePlugins,
-          },
-        };
+        const gitOrganization =
+          await this.resourceService.gitOrganizationByResource({
+            where: { id: resourceId },
+          });
 
-        await this.kafkaProducerService.emitMessage(
-          KAFKA_TOPICS.CODE_GENERATION_REQUEST_TOPIC,
-          codeGenerationEvent
+        const resourceRepository = await this.resourceService.gitRepository(
+          build.resourceId
         );
 
-        logger.info("Plugin download message sent");
+        const gitProviderArgs =
+          await this.gitProviderService.getGitProviderProperties(
+            gitOrganization
+          );
+
+        const gitSettings = {
+          gitOrganizationName: gitOrganization.name,
+          gitRepositoryName: resourceRepository.name,
+          baseBranchName: resourceRepository.baseBranchName,
+          repositoryGroupName: resourceRepository.groupName,
+          gitProvider: gitProviderArgs.provider,
+          gitProviderProperties: gitProviderArgs.providerOrganizationProperties,
+        };
+
+        const pullPrivatePluginsRequest: PullPrivatePluginsRequest.KafkaEvent =
+          {
+            key: {
+              resourceId,
+            },
+            value: {
+              ...gitSettings,
+              resourceId,
+              resourceName: "resourceName",
+              pluginIds: privatePlugins.map((plugin) => plugin.pluginId),
+            },
+          };
+
+        await this.kafkaProducerService.emitMessage(
+          KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_REQUEST_TOPIC,
+          pullPrivatePluginsRequest
+        );
+
+        logger.info("The 'plugin download' message sent");
 
         return null;
       },
