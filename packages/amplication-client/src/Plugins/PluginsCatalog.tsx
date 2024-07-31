@@ -156,6 +156,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
             settings: settings,
             configurations: configurations,
             resource: { connect: { id: resource } },
+            isPrivate: category === PRIVATE_PLUGINS_CATEGORY,
           },
         },
       })
@@ -173,6 +174,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
       userEntity,
       setPluginInstallationData,
       setOnboardingProps,
+      category,
     ]
   );
 
@@ -247,6 +249,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
                 settings: pluginVersion.settings,
                 configurations: pluginVersion.configurations,
                 resource: { connect: { id: resource } },
+                isPrivate: category === PRIVATE_PLUGINS_CATEGORY,
               },
             },
           }).catch(console.error);
