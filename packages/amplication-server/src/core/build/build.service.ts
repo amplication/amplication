@@ -48,10 +48,10 @@ import {
   CreatePrSuccess,
   KAFKA_TOPICS,
   UserBuild,
-  PullPrivatePluginsRequest,
-  PullPrivatePluginsLog,
-  PullPrivatePluginsSuccess,
-  PullPrivatePluginsFailure,
+  DownloadPrivatePluginsRequest,
+  DownloadPrivatePluginsLog,
+  DownloadPrivatePluginsSuccess,
+  DownloadPrivatePluginsFailure,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
@@ -523,7 +523,7 @@ export class BuildService {
               resourceId
             );
 
-          const pullPrivatePluginsRequest: PullPrivatePluginsRequest.KafkaEvent =
+          const downloadPrivatePluginsRequest: DownloadPrivatePluginsRequest.KafkaEvent =
             {
               key: {
                 resourceId,
@@ -537,8 +537,8 @@ export class BuildService {
             };
 
           await this.kafkaProducerService.emitMessage(
-            KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_REQUEST_TOPIC,
-            pullPrivatePluginsRequest
+            KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_REQUEST_TOPIC,
+            downloadPrivatePluginsRequest
           );
 
           logger.info("The 'plugin download' message sent");
@@ -769,7 +769,7 @@ export class BuildService {
   }
 
   public async onDownloadPrivatePluginSuccess(
-    response: PullPrivatePluginsSuccess.Value
+    response: DownloadPrivatePluginsSuccess.Value
   ): Promise<void> {
     const { buildId } = response;
 
@@ -801,7 +801,7 @@ export class BuildService {
   }
 
   public async onDownloadPrivatePluginFailure(
-    response: PullPrivatePluginsFailure.Value
+    response: DownloadPrivatePluginsFailure.Value
   ): Promise<void> {
     const { buildId } = response;
 
@@ -835,7 +835,7 @@ export class BuildService {
   }
 
   public async onDownloadPrivatePluginLog(
-    logEntry: PullPrivatePluginsLog.Value
+    logEntry: DownloadPrivatePluginsLog.Value
   ): Promise<void> {
     const step = await this.getBuildStep(
       logEntry.buildId,

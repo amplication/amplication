@@ -14,9 +14,9 @@ import {
   KafkaPacemaker,
 } from "@amplication/util/nestjs/kafka";
 import {
-  PullPrivatePluginsRequest,
-  PullPrivatePluginsSuccess,
-  PullPrivatePluginsFailure,
+  DownloadPrivatePluginsRequest,
+  DownloadPrivatePluginsSuccess,
+  DownloadPrivatePluginsFailure,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 
@@ -35,7 +35,7 @@ export class PrivatePluginController {
     message: string
   ): Promise<void> {
     await this.producerService.emitMessage(
-      KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_LOG_TOPIC,
+      KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_LOG_TOPIC,
       {
         key: {
           buildId,
@@ -49,25 +49,30 @@ export class PrivatePluginController {
     );
   }
 
-  @EventPattern(KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_REQUEST_TOPIC)
-  async pullPrivatePlugin(
-    @Payload() message: PullPrivatePluginsRequest.Value,
+  @EventPattern(KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_REQUEST_TOPIC)
+  async downloadPrivatePlugins(
+    @Payload() message: DownloadPrivatePluginsRequest.Value,
     @Ctx() context: KafkaContext
   ) {
     const eventKey = plainToInstance(
-      PullPrivatePluginsRequest.Key,
+      DownloadPrivatePluginsRequest.Key,
       context.getMessage().key.toString()
     );
 
-    const validArgs = plainToInstance(PullPrivatePluginsRequest.Value, message);
+    const validArgs = plainToInstance(
+      DownloadPrivatePluginsRequest.Value,
+      message
+    );
     await validateOrReject(validArgs);
 
     try {
       const { pluginPaths } = await KafkaPacemaker.wrapLongRunningMethod<{
         pluginPaths: string[];
-      }>(context, () => this.privatePluginService.pullPrivatePlugin(validArgs));
+      }>(context, () =>
+        this.privatePluginService.downloadPrivatePlugins(validArgs)
+      );
 
-      const successEvent: PullPrivatePluginsSuccess.KafkaEvent = {
+      const successEvent: DownloadPrivatePluginsSuccess.KafkaEvent = {
         key: {
           resourceId: eventKey.resourceId,
         },
@@ -77,11 +82,11 @@ export class PrivatePluginController {
         },
       };
       await this.producerService.emitMessage(
-        KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_SUCCESS_TOPIC,
+        KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_SUCCESS_TOPIC,
         successEvent
       );
     } catch (error) {
-      const failureEvent: PullPrivatePluginsFailure.KafkaEvent = {
+      const failureEvent: DownloadPrivatePluginsFailure.KafkaEvent = {
         key: {
           resourceId: eventKey.resourceId,
         },
@@ -91,7 +96,7 @@ export class PrivatePluginController {
         },
       };
       await this.producerService.emitMessage(
-        KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_FAILURE_TOPIC,
+        KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_FAILURE_TOPIC,
         failureEvent
       );
     }

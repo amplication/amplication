@@ -6,5 +6,4 @@ export class Value {
 
   @IsString()
   buildId!: string;
-
 }

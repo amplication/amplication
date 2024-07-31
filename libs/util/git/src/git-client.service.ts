@@ -30,7 +30,7 @@ import {
   CurrentUser,
   OAuthTokens,
   UpdateFile,
-  PullPrivatePluginsArgs,
+  DownloadPrivatePluginsArgs,
 } from "./types";
 import { AmplicationIgnoreManger } from "./utils/amplication-ignore-manger";
 import { isFolderEmpty } from "./utils/is-folder-empty";
@@ -102,15 +102,16 @@ export class GitClientService {
     return this.provider.getOrganization();
   }
 
-  async pullPrivatePlugins({
+  async downloadPrivatePlugins({
     owner,
     repositoryName,
     repositoryGroupName,
     cloneDirPath,
-    resourceId,
     baseBranchName,
     pluginIds,
-  }: PullPrivatePluginsArgs): Promise<{ pluginPaths: string[] }> {
+    resourceId,
+    buildId,
+  }: DownloadPrivatePluginsArgs): Promise<{ pluginPaths: string[] }> {
     const gitRepoDir = normalize(
       join(
         cloneDirPath,
@@ -119,7 +120,7 @@ export class GitClientService {
         repositoryGroupName
           ? join(repositoryGroupName, repositoryName)
           : repositoryName,
-        `${resourceId}-private-plugins`
+        `${resourceId}-${buildId}`
       )
     );
     const cloneUrl = await this.provider.getCloneUrl({
@@ -162,6 +163,7 @@ export class GitClientService {
         }
       }
 
+      await gitCli.deleteRepositoryDir();
       await gitCli.clone();
       await gitCli.sparseCheckout(
         baseBranch,

@@ -15,9 +15,9 @@ import {
   CreatePrLog,
   CreatePrSuccess,
   KAFKA_TOPICS,
-  PullPrivatePluginsFailure,
-  PullPrivatePluginsLog,
-  PullPrivatePluginsSuccess,
+  DownloadPrivatePluginsFailure,
+  DownloadPrivatePluginsLog,
+  DownloadPrivatePluginsSuccess,
 } from "@amplication/schema-registry";
 
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -132,36 +132,45 @@ export class BuildController {
     }
   }
 
-  @EventPattern(KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_SUCCESS_TOPIC)
-  async onPullPrivatePluginsSuccess(
-    @Payload() message: PullPrivatePluginsSuccess.Value
+  @EventPattern(KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_SUCCESS_TOPIC)
+  async onDownloadPrivatePluginsSuccess(
+    @Payload() message: DownloadPrivatePluginsSuccess.Value
   ): Promise<void> {
     try {
-      const args = plainToInstance(PullPrivatePluginsSuccess.Value, message);
+      const args = plainToInstance(
+        DownloadPrivatePluginsSuccess.Value,
+        message
+      );
       await this.buildService.onDownloadPrivatePluginSuccess(args);
     } catch (error) {
       this.logger.error(error.message, error);
     }
   }
 
-  @EventPattern(KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_FAILURE_TOPIC)
-  async onPullPrivatePluginsFailure(
-    @Payload() message: PullPrivatePluginsFailure.Value
+  @EventPattern(KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_FAILURE_TOPIC)
+  async onDownloadPrivatePluginsFailure(
+    @Payload() message: DownloadPrivatePluginsFailure.Value
   ): Promise<void> {
     try {
-      const args = plainToInstance(PullPrivatePluginsFailure.Value, message);
+      const args = plainToInstance(
+        DownloadPrivatePluginsFailure.Value,
+        message
+      );
       await this.buildService.onDownloadPrivatePluginFailure(args);
     } catch (error) {
       this.logger.error(error.message, error);
     }
   }
 
-  @EventPattern(KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_LOG_TOPIC)
-  async onPullPrivatePluginsLog(
-    @Payload() message: PullPrivatePluginsLog.Value
+  @EventPattern(KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_LOG_TOPIC)
+  async onDownloadPrivatePluginsLog(
+    @Payload() message: DownloadPrivatePluginsLog.Value
   ): Promise<void> {
     try {
-      const logEntry = plainToInstance(PullPrivatePluginsLog.Value, message);
+      const logEntry = plainToInstance(
+        DownloadPrivatePluginsLog.Value,
+        message
+      );
 
       await this.buildService.onDownloadPrivatePluginLog(logEntry);
     } catch (error) {
