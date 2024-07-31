@@ -86,6 +86,7 @@ export class PrivatePluginController {
         successEvent
       );
     } catch (error) {
+      this.logger.error(error.message, error);
       const failureEvent: DownloadPrivatePluginsFailure.KafkaEvent = {
         key: {
           resourceId: eventKey.resourceId,
