@@ -160,6 +160,7 @@ export class GitClientService {
         }
       }
 
+      await gitCli.deleteRepositoryDir();
       await gitCli.clone();
       await gitCli.sparseCheckout(
         baseBranch,
