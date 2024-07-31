@@ -10,6 +10,8 @@ import {
 export class Value {
   @IsString()
   resourceId!: string;
+  @IsString()
+  buildId!: string;
   @IsEnum(EnumGitProvider)
   gitProvider!: EnumGitProvider;
   @ValidateNested()

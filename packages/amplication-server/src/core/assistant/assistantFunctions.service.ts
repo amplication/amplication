@@ -352,6 +352,7 @@ export class AssistantFunctionsService {
             settings: settings,
             configurations: configurations,
             resource: { connect: { id: serviceId } },
+            isPrivate: false,
           },
         },
         context.user

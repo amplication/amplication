@@ -77,6 +77,7 @@ export class PrivatePluginController {
           resourceId: eventKey.resourceId,
         },
         value: {
+          buildId: validArgs.buildId,
           pluginPaths,
         },
       };
@@ -90,6 +91,7 @@ export class PrivatePluginController {
           resourceId: eventKey.resourceId,
         },
         value: {
+          buildId: validArgs.buildId,
           errorMessage: error.message,
         },
       };

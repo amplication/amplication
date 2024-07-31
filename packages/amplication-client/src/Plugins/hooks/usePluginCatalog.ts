@@ -9,7 +9,7 @@ export type PluginVersion = {
   version: string;
   isLatest: boolean;
   settings: Record<string, unknown>;
-  configurations: string;
+  configurations: Record<string, unknown>;
   id: string;
   pluginId: string;
 };

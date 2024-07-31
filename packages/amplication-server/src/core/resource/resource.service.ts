@@ -73,6 +73,8 @@ import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExi
 import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
 
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { GitProviderService } from "../git/git.provider.service";
+import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -96,6 +98,7 @@ const DEFAULT_NODEJS_DB_PLUGIN: PluginInstallationCreateInput = {
   version: "latest",
   displayName: "db-postgres",
   resource: undefined,
+  isPrivate: false,
 };
 
 const DEFAULT_DOTNET_DB_PLUGIN: PluginInstallationCreateInput = {
@@ -105,6 +108,7 @@ const DEFAULT_DOTNET_DB_PLUGIN: PluginInstallationCreateInput = {
   version: "latest",
   displayName: "dotnet-db-sqlserver",
   resource: undefined,
+  isPrivate: false,
 };
 
 const DEFAULT_AUTH_PLUGINS: PluginInstallationCreateInput[] = [
@@ -115,6 +119,7 @@ const DEFAULT_AUTH_PLUGINS: PluginInstallationCreateInput[] = [
     version: "latest",
     enabled: true,
     resource: undefined,
+    isPrivate: false,
   },
   {
     displayName: "Auth-jwt",
@@ -123,6 +128,7 @@ const DEFAULT_AUTH_PLUGINS: PluginInstallationCreateInput[] = [
     version: "latest",
     enabled: true,
     resource: undefined,
+    isPrivate: false,
   },
 ];
 
@@ -177,7 +183,8 @@ export class ResourceService {
     private readonly analytics: SegmentAnalyticsService,
     private readonly subscriptionService: SubscriptionService,
     private readonly actionService: ActionService,
-    private readonly userActionService: UserActionService
+    private readonly userActionService: UserActionService,
+    private readonly gitProviderService: GitProviderService
   ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
@@ -485,6 +492,26 @@ export class ResourceService {
       user
     );
     await this.topicService.createDefault(resource, user);
+
+    return resource;
+  }
+
+  /**
+   * Create a resource of type "PluginRepository"
+   */
+  async createPluginRepository(
+    args: CreateOneResourceArgs,
+    user: User
+  ): Promise<Resource> {
+    const resource = await this.createResource(
+      {
+        data: {
+          ...args.data,
+          resourceType: EnumResourceType.PluginRepository,
+        },
+      },
+      user
+    );
 
     return resource;
   }
@@ -1712,6 +1739,61 @@ export class ResourceService {
         include: { gitRepository: { include: { gitOrganization: true } } },
       })
     ).gitRepository?.gitOrganization;
+  }
+
+  async getPluginRepositoryGitSettingsByResource(
+    resourceId: string
+  ): Promise<GitConnectionSettings> {
+    const resource = await this.resource({
+      where: { id: resourceId },
+    });
+
+    if (isEmpty(resource)) {
+      throw new Error(INVALID_RESOURCE_ID);
+    }
+
+    const pluginRepositoryResource = await this.prisma.resource.findFirst({
+      where: {
+        projectId: resource.projectId,
+        resourceType: EnumResourceType.PluginRepository,
+      },
+    });
+
+    if (isEmpty(resource)) {
+      throw new Error("Plugin repository resource not found in the project");
+    }
+
+    const gitOrganization = await this.gitOrganizationByResource({
+      where: { id: pluginRepositoryResource.id },
+    });
+
+    if (isEmpty(gitOrganization)) {
+      throw new Error("Git organization not found for the plugin repository");
+    }
+
+    const gitRepository = await this.gitRepository(pluginRepositoryResource.id);
+
+    if (isEmpty(gitRepository)) {
+      throw new Error("Git repository not found for the plugin repository");
+    }
+
+    const gitProviderArgs =
+      await this.gitProviderService.getGitProviderProperties(gitOrganization);
+
+    if (isEmpty(gitProviderArgs)) {
+      throw new Error("Git provider args not found for the plugin repository");
+    }
+
+    const gitSettings: GitConnectionSettings = {
+      gitOrganizationName: gitOrganization.name,
+      gitRepositoryName: gitRepository.name,
+      baseBranchName: gitRepository.baseBranchName,
+      repositoryGroupName: gitRepository.groupName,
+      gitProvider: gitProviderArgs.provider,
+      gitProviderProperties: gitProviderArgs.providerOrganizationProperties,
+    };
+
+    return gitSettings;
   }
 
   async project(resourceId: string): Promise<Project> {
