@@ -142,6 +142,13 @@ export const changeOriginMap = {
         type: "Service Topics",
         pluralTypeName: "Service Topics",
       },
+      [models.EnumBlockType.PrivatePlugin]: {
+        relativeUrl: `private-plugin/${change.id}`,
+        icon: "plugin",
+        displayName: change.displayName,
+        type: "Private Plugin",
+        pluralTypeName: "Private Plugins",
+      },
     };
     return blockTypeMap[(change as models.Block).blockType];
   },
