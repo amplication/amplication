@@ -8,6 +8,8 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { DownloadPrivatePluginsRequest } from "@amplication/schema-registry";
 import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
+import { copy } from "fs-extra";
+import { join } from "path";
 
 @Traceable()
 @Injectable()
@@ -94,6 +96,32 @@ export class PrivatePluginService {
       cloneDirPath,
       pluginIds,
     });
-    return { pluginPaths };
+
+    const { newPluginPaths } = await this.copyPluginFilesToBuildDir(
+      pluginPaths,
+      resourceId
+    );
+    return { pluginPaths: newPluginPaths };
+  }
+
+  async copyPluginFilesToBuildDir(
+    pluginPaths: string[],
+    resourceId: string
+  ): Promise<{ newPluginPaths: string[] }> {
+    const dsgAssetsPath = join(
+      this.configService.get(Env.DSG_ASSETS_FOLDER),
+      resourceId,
+      "private-plugins"
+    );
+
+    const newPluginPaths: string[] = [];
+    for (const pluginPath of pluginPaths) {
+      const pluginName = pluginPath.split("/").pop();
+      const pluginPathInAssets = join(dsgAssetsPath, pluginName);
+      await copy(pluginPath, pluginPathInAssets);
+      newPluginPaths.push(pluginPathInAssets);
+    }
+
+    return { newPluginPaths };
   }
 }
