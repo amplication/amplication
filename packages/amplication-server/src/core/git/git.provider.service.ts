@@ -60,6 +60,7 @@ export class GitProviderService {
 
   constructor(
     private readonly prisma: PrismaService,
+    @Inject(forwardRef(() => ResourceService))
     private readonly resourceService: ResourceService,
     private readonly configService: ConfigService,
     @Inject(AmplicationLogger)

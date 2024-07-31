@@ -56,7 +56,6 @@ export class PrivatePluginService {
 
   async pullPrivatePlugin({
     resourceId,
-    resourceName,
     gitProvider,
     gitProviderProperties,
     gitOrganizationName: owner,

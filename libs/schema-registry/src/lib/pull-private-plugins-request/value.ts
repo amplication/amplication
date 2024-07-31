@@ -11,7 +11,7 @@ export class Value {
   @IsString()
   resourceId!: string;
   @IsString()
-  resourceName!: string;
+  buildId!: string;
   @IsEnum(EnumGitProvider)
   gitProvider!: EnumGitProvider;
   @ValidateNested()
