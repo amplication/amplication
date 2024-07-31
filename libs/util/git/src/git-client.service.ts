@@ -102,12 +102,11 @@ export class GitClientService {
     return this.provider.getOrganization();
   }
 
-  async pullPrivatePlugins({
+  async downloadPrivatePlugins({
     owner,
     repositoryName,
     repositoryGroupName,
     cloneDirPath,
-    resourceId,
     baseBranchName,
     pluginIds,
   }: PullPrivatePluginsArgs): Promise<{ pluginPaths: string[] }> {
@@ -118,8 +117,7 @@ export class GitClientService {
         owner,
         repositoryGroupName
           ? join(repositoryGroupName, repositoryName)
-          : repositoryName,
-        `${resourceId}-private-plugins`
+          : repositoryName
       )
     );
     const cloneUrl = await this.provider.getCloneUrl({
