@@ -10,5 +10,8 @@ export class Value implements LogEntry {
   level!: string;
 
   @IsString()
+  buildId!: string;
+
+  @IsString()
   message!: string;
 }

@@ -49,6 +49,9 @@ import {
   KAFKA_TOPICS,
   UserBuild,
   PullPrivatePluginsRequest,
+  PullPrivatePluginsLog,
+  PullPrivatePluginsSuccess,
+  PullPrivatePluginsFailure,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
@@ -80,7 +83,7 @@ export const DOWNLOAD_PRIVATE_PLUGINS_STEP_FINISH_LOG =
 export const DOWNLOAD_PRIVATE_PLUGINS_STEP_FAILED_LOG =
   "Failed to download private plugins";
 export const DOWNLOAD_PRIVATE_PLUGINS_STEP_RUNNING_LOG =
-  "Downloading private plugins. It should take a few moments...";
+  "Downloading private plugins. It should take a few moments.";
 export const DOWNLOAD_PRIVATE_PLUGINS_STEP_START_LOG =
   "Downloading private plugins job added to queue. Waiting for available worker...";
 
@@ -430,7 +433,7 @@ export class BuildService {
           },
         })
         .catch((error) =>
-          this.logger.error(`Failed to que user build ${buildId}`, error)
+          this.logger.error(`Failed to queue user build ${buildId}`, error)
         );
     }
 
@@ -507,86 +510,60 @@ export class BuildService {
 
         logger.info("Writing 'plugin download' message to queue");
 
-        const gitOrganization =
-          await this.resourceService.gitOrganizationByResource({
-            where: { id: resourceId },
-          });
+        await this.onDownloadPrivatePluginLog({
+          resourceId: resourceId,
+          buildId: build.id,
+          level: "info",
+          message: DOWNLOAD_PRIVATE_PLUGINS_STEP_RUNNING_LOG,
+        });
 
-        const resourceRepository = await this.resourceService.gitRepository(
-          build.resourceId
-        );
+        try {
+          const pluginRepoGitSettings =
+            await this.resourceService.getPluginRepositoryGitSettingsByResource(
+              resourceId
+            );
 
-        const gitProviderArgs =
-          await this.gitProviderService.getGitProviderProperties(
-            gitOrganization
+          const pullPrivatePluginsRequest: PullPrivatePluginsRequest.KafkaEvent =
+            {
+              key: {
+                resourceId,
+              },
+              value: {
+                ...pluginRepoGitSettings,
+                buildId: build.id,
+                resourceId,
+                pluginIds: privatePlugins.map((plugin) => plugin.pluginId),
+              },
+            };
+
+          await this.kafkaProducerService.emitMessage(
+            KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_REQUEST_TOPIC,
+            pullPrivatePluginsRequest
           );
 
-        const gitSettings = {
-          gitOrganizationName: gitOrganization.name,
-          gitRepositoryName: resourceRepository.name,
-          baseBranchName: resourceRepository.baseBranchName,
-          repositoryGroupName: resourceRepository.groupName,
-          gitProvider: gitProviderArgs.provider,
-          gitProviderProperties: gitProviderArgs.providerOrganizationProperties,
-        };
+          logger.info("The 'plugin download' message sent");
 
-        const pullPrivatePluginsRequest: PullPrivatePluginsRequest.KafkaEvent =
-          {
-            key: {
-              resourceId,
-            },
-            value: {
-              ...gitSettings,
-              resourceId,
-              resourceName: "resourceName",
-              pluginIds: privatePlugins.map((plugin) => plugin.pluginId),
-            },
-          };
+          await this.onDownloadPrivatePluginLog({
+            resourceId: resourceId,
+            buildId: build.id,
+            level: "info",
+            message: DOWNLOAD_PRIVATE_PLUGINS_STEP_START_LOG,
+          });
 
-        await this.kafkaProducerService.emitMessage(
-          KAFKA_TOPICS.PULL_PRIVATE_PLUGINS_REQUEST_TOPIC,
-          pullPrivatePluginsRequest
-        );
-
-        logger.info("The 'plugin download' message sent");
-
-        return null;
+          return null;
+        } catch (error) {
+          logger.error(
+            "Failed to send 'plugin download' message to queue",
+            error
+          );
+          await this.onDownloadPrivatePluginFailure({
+            buildId: build.id,
+            errorMessage: error.message,
+          });
+        }
       },
       true
     );
-  }
-
-  async completeDownloadPrivatePluginsStep(
-    buildId: string,
-    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
-  ): Promise<void> {
-    const step = await this.getBuildStep(
-      buildId,
-      DOWNLOAD_PRIVATE_PLUGINS_STEP_NAME
-    );
-    if (!step) {
-      throw new Error("Could not find download private plugins step");
-    }
-
-    const build = await this.findOne({ where: { id: buildId } });
-
-    const user = await this.userService.findUser({
-      where: { id: build.userId },
-    });
-
-    const logger = this.logger.child({
-      buildId: build.id,
-      resourceId: build.resourceId,
-      userId: build.userId,
-      user,
-    });
-
-    if (status === EnumActionStepStatus.Success) {
-      //once all plugins are downloaded, we can start the code generation
-      await this.generate(logger, build, user);
-    }
-
-    await this.actionService.complete(step, status);
   }
 
   private async getResourceRoles(resourceId: string): Promise<ResourceRole[]> {
@@ -791,6 +768,119 @@ export class BuildService {
     }
   }
 
+  public async onDownloadPrivatePluginSuccess(
+    response: PullPrivatePluginsSuccess.Value
+  ): Promise<void> {
+    const { buildId } = response;
+
+    const step = await this.getBuildStep(
+      buildId,
+      DOWNLOAD_PRIVATE_PLUGINS_STEP_NAME
+    );
+    if (!step) {
+      throw new Error("Could not find download private plugins step");
+    }
+
+    const build = await this.findOne({ where: { id: buildId } });
+
+    const user = await this.userService.findUser({
+      where: { id: build.userId },
+    });
+
+    const logger = this.logger.child({
+      buildId: build.id,
+      resourceId: build.resourceId,
+      userId: build.userId,
+      user,
+    });
+
+    //once all plugins are downloaded, we can start the code generation
+    await this.generate(logger, build, user);
+
+    await this.actionService.complete(step, EnumActionStepStatus.Success);
+  }
+
+  public async onDownloadPrivatePluginFailure(
+    response: PullPrivatePluginsFailure.Value
+  ): Promise<void> {
+    const { buildId } = response;
+
+    const build = await this.prisma.build.findUnique({
+      where: { id: buildId },
+      include: {
+        createdBy: { include: { account: true } },
+        resource: {
+          include: { project: true },
+        },
+      },
+    });
+
+    //write the error message to the log
+    await this.onDownloadPrivatePluginLog({
+      buildId: buildId,
+      level: "error",
+      message: response.errorMessage,
+      resourceId: build.resourceId,
+    });
+
+    const step = await this.getBuildStep(
+      buildId,
+      DOWNLOAD_PRIVATE_PLUGINS_STEP_NAME
+    );
+    if (!step) {
+      throw new Error("Could not find download private plugins step");
+    }
+
+    await this.actionService.complete(step, EnumActionStepStatus.Failed);
+  }
+
+  public async onDownloadPrivatePluginLog(
+    logEntry: PullPrivatePluginsLog.Value
+  ): Promise<void> {
+    const step = await this.getBuildStep(
+      logEntry.buildId,
+      DOWNLOAD_PRIVATE_PLUGINS_STEP_NAME
+    );
+    await this.actionService.logByStepId(
+      step.id,
+      ACTION_LOG_LEVEL[logEntry.level],
+      logEntry.message
+    );
+
+    if (ACTION_LOG_LEVEL[logEntry.level] === EnumActionLogLevel.Error) {
+      const build = await this.prisma.build.findUnique({
+        where: { id: logEntry.buildId },
+        include: {
+          createdBy: { include: { account: true } },
+          resource: {
+            include: {
+              project: {
+                select: {
+                  id: true,
+                  workspaceId: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      await this.analytics.trackManual({
+        user: {
+          accountId: build.createdBy.account.id,
+          workspaceId: build.resource.project.workspaceId,
+        },
+        data: {
+          properties: {
+            resourceId: build.resource.id,
+            projectId: build.resource.project.id,
+            message: logEntry.message,
+            tepName: DOWNLOAD_PRIVATE_PLUGINS_STEP_NAME,
+          },
+          event: EnumEventType.CodeGenerationError,
+        },
+      });
+    }
+  }
   public async saveToGitProvider(buildId: string): Promise<void> {
     const build = await this.findOne({ where: { id: buildId } });
 
