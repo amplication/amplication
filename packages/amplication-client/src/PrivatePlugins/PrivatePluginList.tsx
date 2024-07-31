@@ -1,5 +1,8 @@
 import {
   CircularProgress,
+  EnabledIndicator,
+  EnumItemsAlign,
+  FlexItem,
   SearchField,
   Snackbar,
 } from "@amplication/ui/design-system";
@@ -10,7 +13,6 @@ import InnerTabLink from "../Layout/InnerTabLink";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
-import { pluralize } from "../util/pluralize";
 import NewPrivatePlugin from "./NewPrivatePlugin";
 import "./PrivatePluginList.scss";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
@@ -79,14 +81,7 @@ export const PrivatePluginList = React.memo(
           placeholder="search"
           onChange={handleSearchChange}
         />
-        <div className={`${CLASS_NAME}__header`}>
-          {data?.privatePlugins.length}{" "}
-          {pluralize(
-            data?.privatePlugins.length,
-            "Private Plugin",
-            "Private Plugins"
-          )}
-        </div>
+
         {loading && <CircularProgress />}
         <div className={`${CLASS_NAME}__list`}>
           {data?.privatePlugins?.map((privatePlugin) => (
@@ -95,7 +90,13 @@ export const PrivatePluginList = React.memo(
                 icon="plugin"
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/private-plugins/${privatePlugin.id}`}
               >
-                <span>{privatePlugin.displayName}</span>
+                <FlexItem
+                  itemsAlign={EnumItemsAlign.Center}
+                  end={<EnabledIndicator enabled={privatePlugin.enabled} />}
+                  singeChildWithEllipsis
+                >
+                  {privatePlugin.displayName}
+                </FlexItem>
               </InnerTabLink>
             </div>
           ))}

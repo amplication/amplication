@@ -5,6 +5,7 @@ export type MenuItemLinks =
   | "entities"
   | "roles"
   | "git"
+  | "git2"
   | "settings"
   | "plugins"
   | "topics"
@@ -28,7 +29,7 @@ export const resourceMenuLayout: {
   ],
   [EnumResourceType.ProjectConfiguration]: ["git", "settings"],
   [EnumResourceType.MessageBroker]: ["topics", "services", "git", "settings"],
-  [EnumResourceType.PluginRepository]: ["git", "settings", "privatePlugins"],
+  [EnumResourceType.PluginRepository]: ["privatePlugins", "git2", "settings"],
 };
 
 export const linksMap: {
@@ -51,6 +52,11 @@ export const linksMap: {
   },
   git: {
     title: "Sync with Git",
+    icon: "pending_changes",
+    to: "/git-sync",
+  },
+  git2: {
+    title: "Git Repo",
     icon: "pending_changes",
     to: "/git-sync",
   },
