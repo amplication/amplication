@@ -255,4 +255,23 @@ export class PluginInstallationService extends BlockTypeService<
       user
     );
   }
+
+  async getInstalledPrivatePluginsForBuild(
+    resourceId: string
+  ): Promise<PluginInstallation[]> {
+    const plugins = await this.findManyBySettings(
+      {
+        where: {
+          resource: {
+            id: resourceId,
+          },
+        },
+      },
+      {
+        path: ["isPrivate"],
+        equals: true,
+      }
+    );
+    return plugins.filter((plugin) => plugin.enabled);
+  }
 }

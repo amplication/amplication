@@ -291,10 +291,12 @@ export class BuildService {
     }
 
     const resourcePrivatePlugins: PluginInstallation[] =
-      this.resourceService.getPrivatePluginsForBuild(resourceId);
+      await this.pluginInstallationService.getInstalledPrivatePluginsForBuild(
+        resourceId
+      );
 
     if (resourcePrivatePlugins.length > 0) {
-      logger.info("Private plugins found for build");
+      logger.info(`${resourcePrivatePlugins.length} private plugins found.`);
       await this.downloadPrivatePlugins(
         logger,
         build,
