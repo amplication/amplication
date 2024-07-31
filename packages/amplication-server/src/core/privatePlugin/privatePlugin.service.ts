@@ -12,6 +12,7 @@ import { User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationError } from "../../errors/AmplicationError";
+import { ResourceService } from "../resource/resource.service";
 
 @Injectable()
 export class PrivatePluginService extends BlockTypeService<
@@ -26,9 +27,37 @@ export class PrivatePluginService extends BlockTypeService<
   constructor(
     protected readonly blockService: BlockService,
     protected readonly logger: AmplicationLogger,
-    protected readonly billingService: BillingService
+    protected readonly billingService: BillingService,
+    protected readonly resourceService: ResourceService
   ) {
     super(blockService, logger);
+  }
+
+  //return all private plugins that are enabled in the resource's project
+  async availablePrivatePluginsForResource(
+    args: FindManyPrivatePluginArgs
+  ): Promise<PrivatePlugin[]> {
+    const resource = await this.resourceService.resource({
+      where: {
+        id: args.where?.resource.id,
+      },
+    });
+
+    if (!resource) {
+      return [];
+    }
+
+    const plugins = await this.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        resource: {
+          projectId: resource.projectId,
+        },
+      },
+    });
+
+    return plugins.filter((plugin) => plugin.enabled);
   }
 
   async create(
