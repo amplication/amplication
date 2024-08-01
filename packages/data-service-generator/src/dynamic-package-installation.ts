@@ -20,7 +20,7 @@ export async function dynamicPackagesInstallations(
     context.logger
   );
 
-  for (const plugins of packages) {
+  for (const plugins of packages.filter((plugin) => !plugin.isPrivate)) {
     const plugin: PackageInstallation = {
       name: plugins.npm,
       version: plugins.version,

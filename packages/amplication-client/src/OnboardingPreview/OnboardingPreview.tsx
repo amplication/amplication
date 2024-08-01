@@ -92,6 +92,7 @@ const OnboardingPreview: React.FC<Props> = ({ workspaceId, projectId }) => {
           npm: pluginCatalogItem.npm,
           displayName: pluginCatalogItem.name,
           enabled: true,
+          isPrivate: false,
           resource: {
             connect: {
               id: "",

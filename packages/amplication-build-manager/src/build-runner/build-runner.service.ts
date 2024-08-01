@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { DSGResourceData } from "@amplication/code-gen-types";
 import axios from "axios";
 import { promises as fs } from "fs";
-import { copy } from "fs-extra";
+import { copy, exists } from "fs-extra";
 import { join, dirname } from "path";
 import { Env } from "../env";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
@@ -72,7 +72,8 @@ export class BuildRunnerService {
           jobBuildId,
           data,
           codeGeneratorVersion,
-          codeGeneratorFullName
+          codeGeneratorFullName,
+          buildId
         );
       }
     } catch (error) {
@@ -94,13 +95,15 @@ export class BuildRunnerService {
     jobBuildId: string,
     data: DSGResourceData,
     codeGeneratorVersion: string,
-    codeGeneratorFullName: string
+    codeGeneratorFullName: string,
+    plainBuildId: string
   ) {
-    await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
-    await this.saveRelevantDsgAssets(resourceId, jobBuildId);
-
-    const url = this.configService.get(Env.DSG_RUNNER_URL);
     try {
+      await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
+      await this.saveRelevantDsgAssets(resourceId, jobBuildId, plainBuildId);
+
+      const url = this.configService.get(Env.DSG_RUNNER_URL);
+
       const postBody: CodeGenerationRequest = {
         resourceId,
         buildId: jobBuildId,
@@ -261,11 +264,19 @@ export class BuildRunnerService {
     );
   }
 
-  async saveRelevantDsgAssets(resourceId: string, buildId: string) {
+  async saveRelevantDsgAssets(
+    resourceId: string,
+    buildId: string,
+    plainBuildId: string
+  ) {
     const dsgAssetsPathForBuild = join(
       this.configService.get(Env.DSG_ASSETS_FOLDER),
-      `${resourceId}-${buildId}`
+      `${resourceId}-${plainBuildId}`
     );
+
+    if (!(await exists(dsgAssetsPathForBuild))) {
+      return;
+    }
 
     const jobPathForDsgAssets = join(
       this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
