@@ -47,7 +47,8 @@ const InstalledPluginSettings: React.FC<Props> = ({
     useContext(AppContext);
   const editorRef: React.MutableRefObject<string | null> = useRef();
   const [isValid, setIsValid] = useState<boolean>(true);
-  const [configurations, setConfiguration] = useState<string>();
+  const [configurations, setConfiguration] =
+    useState<Record<string, unknown>>();
 
   const [resetKey, setResetKey] = useState<string>();
 

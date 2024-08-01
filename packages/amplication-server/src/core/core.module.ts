@@ -19,6 +19,7 @@ import { GitProviderModule } from "./git/git.provider.module";
 import { ProjectModule } from "./project/project.module";
 import { HealthModule } from "./health/health.module";
 import { PluginInstallationModule } from "./pluginInstallation/pluginInstallation.module";
+import { PrivatePluginModule } from "./privatePlugin/privatePlugin.module";
 import { TopicModule } from "./topic/topic.module";
 import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
 import { UserActionModule } from "./userAction/userAction.module";
@@ -67,6 +68,7 @@ import { AwsMarketplaceModule } from "./aws-marketplace/aws-marketplace.module";
     GptModule,
     AssistantModule,
     AwsMarketplaceModule,
+    PrivatePluginModule,
   ],
   exports: [
     AccountModule,
@@ -98,6 +100,7 @@ import { AwsMarketplaceModule } from "./aws-marketplace/aws-marketplace.module";
     ModuleDtoModule,
     GptModule,
     AssistantModule,
+    PrivatePluginModule,
   ],
 })
 export class CoreModule {}
