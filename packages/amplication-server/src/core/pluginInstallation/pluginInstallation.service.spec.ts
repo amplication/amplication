@@ -68,6 +68,7 @@ const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
   pluginId: EXAMPLE_PLUGIN_ID,
   npm: "ExampleNpm",
   version: "1.0.0",
+  isPrivate: false,
 };
 
 const resourceServiceGetAuthEntityNameMock = jest.fn(() => "User");
