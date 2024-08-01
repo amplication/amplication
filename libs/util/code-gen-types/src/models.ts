@@ -2049,7 +2049,6 @@ export type Package = IBlock & {
   parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
-  status: EnumPackageStatus;
   summary: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];

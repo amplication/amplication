@@ -8,6 +8,7 @@ import {
   Role,
   ServiceTopics,
   Topic,
+  Package,
 } from "./code-gen-types";
 import { EnumResourceType } from "./models";
 
@@ -19,6 +20,7 @@ export class DSGResourceData {
   roles?: Role[];
 
   pluginInstallations!: PluginInstallation[];
+  packages: Package[];
   moduleContainers?: ModuleContainer[];
   moduleActions?: ModuleAction[];
   moduleDtos?: ModuleDto[];
