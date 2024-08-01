@@ -275,6 +275,9 @@ export class BuildRunnerService {
     );
 
     if (!(await exists(dsgAssetsPathForBuild))) {
+      this.logger.warn(
+        `DSG assets folder ${dsgAssetsPathForBuild} does not exist for build ${buildId}`
+      );
       return;
     }
 
