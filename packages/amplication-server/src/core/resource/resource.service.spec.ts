@@ -68,6 +68,7 @@ import { ActionService } from "../action/action.service";
 import { UserActionService } from "../userAction/userAction.service";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { GitProviderService } from "../git/git.provider.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -556,6 +557,10 @@ describe("ResourceService", () => {
               return {};
             }),
           },
+        },
+        {
+          provide: GitProviderService,
+          useValue: {},
         },
         {
           provide: BuildService,
