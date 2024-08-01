@@ -14,6 +14,7 @@ import { EnumJobStatus } from "../types";
 export class BuildRunnerController {
   constructor(
     private readonly buildRunnerService: BuildRunnerService,
+    //packageRunner
     private readonly logger: AmplicationLogger
   ) {}
 
@@ -21,6 +22,7 @@ export class BuildRunnerController {
   async onCodeGenerationSuccess(
     @Payload() dto: CodeGenerationSuccessDto
   ): Promise<void> {
+    //get packages before
     await this.buildRunnerService.processBuildResult(
       dto.resourceId,
       dto.buildId, // jobBuildId

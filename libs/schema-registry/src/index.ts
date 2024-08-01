@@ -15,6 +15,8 @@ export * as GptConversationStart from "./lib/gpt-conversion-start";
 export * as GptConversationComplete from "./lib/gpt-conversion-complete";
 export * as UserBuild from "./lib/user-build";
 export * as UserFeatureAnnouncement from "./lib/user-feature-announcement";
+export * as PackageManagerCreateRequest from "./lib/package-manager-create-request";
+export * as PackageManagerCreateResponse from "./lib/package-manager-create-response";
 
 export enum KAFKA_TOPICS {
   /// build-manager
@@ -45,4 +47,8 @@ export enum KAFKA_TOPICS {
   AI_CONVERSATION_COMPLETED_TOPIC = "ai.internal.conversation.completed.1",
 
   SHARED_GRAPHQL_SUBSCRIPTION_PUBSUB_TOPIC = "shared.internal.graphql-subscrition-pubsub.1",
+
+  // package-manager
+  PACKAGE_MANAGER_CREATE_REQUEST = "package.manager.create-packages.request.0",
+  PACKAGE_MANAGER_CREATE_RESPONSE = "package.manager.create-packages.response.0",
 }
