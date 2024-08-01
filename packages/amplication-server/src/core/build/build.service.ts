@@ -64,6 +64,7 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
 };
 import { encryptString } from "../../util/encryptionUtil";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
+import { PackageService } from "../package/package.service";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -208,6 +209,8 @@ export class BuildService {
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
+    private readonly packageService: PackageService,
+
     private readonly moduleActionService: ModuleActionService,
     private readonly moduleDtoService: ModuleDtoService,
     private readonly moduleService: ModuleService,
@@ -925,6 +928,10 @@ export class BuildService {
     const allPlugins = await this.pluginInstallationService.findMany({
       where: { resource: { id: resourceId } },
     });
+
+    const packages = await this.packageService.findMany({
+      where: { resource: { id: resourceId } },
+    });
     const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
@@ -970,6 +977,7 @@ export class BuildService {
       entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: plugins,
+      packages,
       moduleContainers: modules,
       moduleActions: moduleActions,
       moduleDtos: moduleDtos,
