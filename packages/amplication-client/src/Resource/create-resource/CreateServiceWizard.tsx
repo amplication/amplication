@@ -266,6 +266,7 @@ const CreateServiceWizard: React.FC<Props> = ({
           resource: { connect: { id: "" } },
           settings: pluginVersion?.settings || JSON.parse("{}"),
           configurations: pluginVersion?.configurations || JSON.parse("{}"),
+          isPrivate: false,
         };
       });
 

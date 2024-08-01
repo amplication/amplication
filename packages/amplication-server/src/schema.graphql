@@ -733,6 +733,7 @@ enum EnumBlockType {
   ModuleDto
   PluginInstallation
   PluginOrder
+  PrivatePlugin
   ProjectConfigurationSettings
   ServiceSettings
   ServiceTopics
@@ -917,6 +918,7 @@ enum EnumPreviewAccountType {
 
 enum EnumResourceType {
   MessageBroker
+  PluginRepository
   ProjectConfiguration
   Service
 }
@@ -1413,6 +1415,8 @@ type Mutation {
   createOneEntity(data: EntityCreateInput!): Entity!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
+  createPluginRepository(data: ResourceCreateInput!): Resource!
+  createPrivatePlugin(data: PrivatePluginCreateInput!): PrivatePlugin!
   createProject(data: ProjectCreateInput!): Project!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
@@ -1433,6 +1437,7 @@ type Mutation {
   deleteModuleDtoEnumMember(where: WhereEnumMemberUniqueInput!): ModuleDtoEnumMember!
   deleteModuleDtoProperty(where: WherePropertyUniqueInput!): ModuleDtoProperty!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
+  deletePrivatePlugin(where: WhereUniqueInput!): PrivatePlugin!
   deleteProject(where: WhereUniqueInput!): Project
   deleteResource(where: WhereUniqueInput!): Resource
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
@@ -1477,6 +1482,7 @@ type Mutation {
   updateModuleDtoEnumMember(data: ModuleDtoEnumMemberUpdateInput!, where: WhereEnumMemberUniqueInput!): ModuleDtoEnumMember!
   updateModuleDtoProperty(data: ModuleDtoPropertyUpdateInput!, where: WherePropertyUniqueInput!): ModuleDtoProperty!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
+  updatePrivatePlugin(data: PrivatePluginUpdateInput!, where: WhereUniqueInput!): PrivatePlugin!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
@@ -1534,6 +1540,7 @@ type PluginInstallation implements IBlock {
   enabled: Boolean!
   id: String!
   inputParameters: [BlockInputOutput!]!
+  isPrivate: Boolean
   lockedAt: DateTime
   lockedByUser: User
   lockedByUserId: String
@@ -1555,6 +1562,7 @@ input PluginInstallationCreateInput {
   displayName: String!
   enabled: Boolean!
   inputParameters: [BlockInputOutputInput!]
+  isPrivate: Boolean!
   npm: String!
   outputParameters: [BlockInputOutputInput!]
   parentBlock: WhereParentIdInput
@@ -1622,6 +1630,62 @@ type PluginOrderItem {
 
 input PluginSetOrderInput {
   order: Int!
+}
+
+type PrivatePlugin implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  enabled: Boolean!
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  pluginId: String!
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input PrivatePluginCreateInput {
+  description: String
+  displayName: String!
+  enabled: Boolean!
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  pluginId: String!
+  resource: WhereParentIdInput!
+}
+
+input PrivatePluginOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input PrivatePluginUpdateInput {
+  description: String
+  displayName: String
+  enabled: Boolean!
+}
+
+input PrivatePluginWhereInput {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
 }
 
 type Project {
@@ -1722,6 +1786,7 @@ type Query {
   account: Account!
   action(where: WhereUniqueInput!): Action!
   availableDtosForResource(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
+  availablePrivatePluginsForResource(orderBy: PrivatePluginOrderByInput, skip: Int, take: Int, where: PrivatePluginWhereInput): [PrivatePlugin!]!
   block(where: WhereUniqueInput!): Block!
   blocks(orderBy: BlockOrderByInput, skip: Int, take: Int, where: BlockWhereInput): [Block!]!
   build(where: WhereUniqueInput!): Build!
@@ -1754,6 +1819,8 @@ type Query {
   pluginInstallation(where: WhereUniqueInput!): PluginInstallation
   pluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
+  privatePlugin(where: WhereUniqueInput!): PrivatePlugin
+  privatePlugins(orderBy: PrivatePluginOrderByInput, skip: Int, take: Int, where: PrivatePluginWhereInput): [PrivatePlugin!]!
   project(where: WhereUniqueInput!): Project
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   projects(orderBy: ProjectOrderByInput, skip: Int, take: Int, where: ProjectWhereInput): [Project!]!

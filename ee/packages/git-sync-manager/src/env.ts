@@ -21,4 +21,5 @@ export class Env {
   static readonly SERVICE_NAME = "git-sync-manager";
 
   static readonly CLONES_FOLDER = "CLONES_FOLDER";
+  static readonly DSG_ASSETS_FOLDER = "DSG_ASSETS_FOLDER";
 }

@@ -33,7 +33,7 @@ const ServiceSettingsPage: React.FC<{}> = () => {
       >
         General
       </InnerTabLink>
-      {currentResource.resourceType != EnumResourceType.MessageBroker && (
+      {currentResource.resourceType === EnumResourceType.Service && (
         <>
           <InnerTabLink
             to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/generationSettings`}

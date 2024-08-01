@@ -30,6 +30,7 @@ import {
   CurrentUser,
   OAuthTokens,
   UpdateFile,
+  DownloadPrivatePluginsArgs,
 } from "./types";
 import { AmplicationIgnoreManger } from "./utils/amplication-ignore-manger";
 import { isFolderEmpty } from "./utils/is-folder-empty";
@@ -99,6 +100,84 @@ export class GitClientService {
 
   async getOrganization(): Promise<RemoteGitOrganization> {
     return this.provider.getOrganization();
+  }
+
+  async downloadPrivatePlugins({
+    owner,
+    repositoryName,
+    repositoryGroupName,
+    cloneDirPath,
+    baseBranchName,
+    pluginIds,
+    resourceId,
+    buildId,
+  }: DownloadPrivatePluginsArgs): Promise<{ pluginPaths: string[] }> {
+    const gitRepoDir = normalize(
+      join(
+        cloneDirPath,
+        this.provider.name,
+        owner,
+        repositoryGroupName
+          ? join(repositoryGroupName, repositoryName)
+          : repositoryName,
+        `${resourceId}-${buildId}`
+      )
+    );
+    const cloneUrl = await this.provider.getCloneUrl({
+      owner,
+      repositoryName,
+      repositoryGroupName,
+    });
+
+    const gitCli = TraceWrapper.trace(
+      new GitCli(this.logger, {
+        originUrl: cloneUrl,
+        repositoryDir: gitRepoDir,
+      }),
+      { logger: this.logger }
+    );
+
+    try {
+      let baseBranch: string;
+
+      //if not base branch name is provided, use the default branch of the repository
+      if (isEmpty(baseBranchName)) {
+        const repo = await this.provider.getRepository({
+          owner,
+          repositoryName,
+          groupName: repositoryGroupName,
+        });
+        baseBranch = repo.defaultBranch;
+      } else {
+        baseBranch = baseBranchName;
+
+        const branch = await this.provider.getBranch({
+          owner,
+          repositoryName,
+          branchName: baseBranch,
+          repositoryGroupName,
+        });
+
+        if (!branch) {
+          throw new InvalidBaseBranch(baseBranch);
+        }
+      }
+
+      await gitCli.deleteRepositoryDir();
+      await gitCli.clone();
+      await gitCli.sparseCheckout(
+        baseBranch,
+        pluginIds.map((id) => `plugins/${id}`)
+      );
+
+      return {
+        pluginPaths: pluginIds.map((id) => `${gitRepoDir}/plugins/${id}`),
+      };
+    } catch (error) {
+      await gitCli.deleteRepositoryDir();
+
+      throw error;
+    }
   }
 
   async createPullRequest(
