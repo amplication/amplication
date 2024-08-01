@@ -55,6 +55,9 @@ export interface AppContextInterface {
   ) => void;
   loadingCreateMessageBroker: boolean;
   errorCreateMessageBroker: Error | undefined;
+  createPluginRepository: (data: models.ResourceCreateInput) => void;
+  loadingCreatePluginRepository: boolean;
+  errorCreatePluginRepository: Error | undefined;
   resetPendingChangesIndicator: boolean;
   setResetPendingChangesIndicator: (reset: boolean) => void;
   openHubSpotChat: () => void;
@@ -108,6 +111,9 @@ const initialContext: AppContextInterface = {
   createMessageBroker: () => {},
   loadingCreateMessageBroker: false,
   errorCreateMessageBroker: undefined,
+  createPluginRepository: () => {},
+  loadingCreatePluginRepository: false,
+  errorCreatePluginRepository: undefined,
   resetPendingChangesIndicator: false,
   setResetPendingChangesIndicator: () => {},
   openHubSpotChat: () => {},

@@ -23,6 +23,7 @@ import { ResourceBtmService } from "./resourceBtm.service";
 import { GptModule } from "../gpt/gpt.module";
 import { UserActionModule } from "../userAction/userAction.module";
 import { ActionModule } from "../action/action.module";
+import { GitProviderModule } from "../git/git.provider.module";
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { ActionModule } from "../action/action.module";
     forwardRef(() => GptModule),
     UserActionModule,
     ActionModule,
+    GitProviderModule,
   ],
   providers: [
     ResourceService,

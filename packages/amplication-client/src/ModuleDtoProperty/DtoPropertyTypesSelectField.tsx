@@ -167,9 +167,9 @@ const DtoPropertyTypesSelectField = ({ name, label }: Props) => {
   const selectedValue = useMemo(() => {
     if (meta.value?.type === EnumModuleDtoPropertyType.Dto) {
       const dto = data?.moduleDtos.find((dto) => dto.id === meta.value?.dtoId);
-      return field.value.isArray ? `${dto?.name}[]` : dto?.name;
+      return field.value?.isArray ? `${dto?.name}[]` : dto?.name;
     } else {
-      return field.value.isArray ? `${meta.value?.type}[]` : meta.value?.type;
+      return field.value?.isArray ? `${meta.value?.type}[]` : meta.value?.type;
     }
   }, [meta.value, data?.moduleDtos, field.value?.isArray]);
 

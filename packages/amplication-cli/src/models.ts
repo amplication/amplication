@@ -766,6 +766,7 @@ export enum EnumBlockType {
   Package = 'Package',
   PluginInstallation = 'PluginInstallation',
   PluginOrder = 'PluginOrder',
+  PrivatePlugin = 'PrivatePlugin',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
   ServiceSettings = 'ServiceSettings',
   ServiceTopics = 'ServiceTopics',
@@ -956,6 +957,7 @@ export enum EnumPreviewAccountType {
 
 export enum EnumResourceType {
   MessageBroker = 'MessageBroker',
+  PluginRepository = 'PluginRepository',
   ProjectConfiguration = 'ProjectConfiguration',
   Service = 'Service'
 }
@@ -1443,6 +1445,8 @@ export type Mutation = {
   createOrganization: GitOrganization;
   createPackage: Package;
   createPluginInstallation: PluginInstallation;
+  createPluginRepository: Resource;
+  createPrivatePlugin: PrivatePlugin;
   createProject: Project;
   createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
@@ -1464,6 +1468,7 @@ export type Mutation = {
   deleteModuleDtoProperty: ModuleDtoProperty;
   deletePackage: Package;
   deletePluginInstallation: PluginInstallation;
+  deletePrivatePlugin: PrivatePlugin;
   deleteProject?: Maybe<Project>;
   deleteResource?: Maybe<Resource>;
   deleteResourceRole?: Maybe<ResourceRole>;
@@ -1506,6 +1511,7 @@ export type Mutation = {
   updateModuleDtoProperty: ModuleDtoProperty;
   updatePackage: Package;
   updatePluginInstallation: PluginInstallation;
+  updatePrivatePlugin: PrivatePlugin;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
   updateResource?: Maybe<Resource>;
@@ -1660,6 +1666,16 @@ export type MutationCreatePluginInstallationArgs = {
 };
 
 
+export type MutationCreatePluginRepositoryArgs = {
+  data: ResourceCreateInput;
+};
+
+
+export type MutationCreatePrivatePluginArgs = {
+  data: PrivatePluginCreateInput;
+};
+
+
 export type MutationCreateProjectArgs = {
   data: ProjectCreateInput;
 };
@@ -1762,6 +1778,11 @@ export type MutationDeletePackageArgs = {
 
 
 export type MutationDeletePluginInstallationArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type MutationDeletePrivatePluginArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1988,6 +2009,12 @@ export type MutationUpdatePluginInstallationArgs = {
 };
 
 
+export type MutationUpdatePrivatePluginArgs = {
+  data: PrivatePluginUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationUpdateProjectArgs = {
   data: ProjectUpdateInput;
   where: WhereUniqueInput;
@@ -2135,6 +2162,7 @@ export type PluginInstallation = IBlock & {
   enabled: Scalars['Boolean']['output'];
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
+  isPrivate?: Maybe<Scalars['Boolean']['output']>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
   lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
@@ -2156,6 +2184,7 @@ export type PluginInstallationCreateInput = {
   displayName: Scalars['String']['input'];
   enabled: Scalars['Boolean']['input'];
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  isPrivate: Scalars['Boolean']['input'];
   npm: Scalars['String']['input'];
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
@@ -2223,6 +2252,62 @@ export type PluginOrderItem = {
 
 export type PluginSetOrderInput = {
   order: Scalars['Int']['input'];
+};
+
+export type PrivatePlugin = IBlock & {
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']['output']>;
+  lockedByUser?: Maybe<User>;
+  lockedByUserId?: Maybe<Scalars['String']['output']>;
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
+  pluginId: Scalars['String']['output'];
+  resourceId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  versionNumber: Scalars['Float']['output'];
+};
+
+export type PrivatePluginCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName: Scalars['String']['input'];
+  enabled: Scalars['Boolean']['input'];
+  inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  parentBlock?: InputMaybe<WhereParentIdInput>;
+  pluginId: Scalars['String']['input'];
+  resource: WhereParentIdInput;
+};
+
+export type PrivatePluginOrderByInput = {
+  blockType?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
+  displayName?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type PrivatePluginUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  enabled: Scalars['Boolean']['input'];
+};
+
+export type PrivatePluginWhereInput = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  displayName?: InputMaybe<StringFilter>;
+  id?: InputMaybe<StringFilter>;
+  parentBlock?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type Project = {
@@ -2323,6 +2408,7 @@ export type Query = {
   account: Account;
   action: Action;
   availableDtosForResource: Array<ModuleDto>;
+  availablePrivatePluginsForResource: Array<PrivatePlugin>;
   block: Block;
   blocks: Array<Block>;
   build: Build;
@@ -2354,6 +2440,8 @@ export type Query = {
   pluginInstallation?: Maybe<PluginInstallation>;
   pluginInstallations: Array<PluginInstallation>;
   pluginOrder: PluginOrder;
+  privatePlugin?: Maybe<PrivatePlugin>;
+  privatePlugins: Array<PrivatePlugin>;
   project?: Maybe<Project>;
   projectConfigurationSettings: ProjectConfigurationSettings;
   projects: Array<Project>;
@@ -2385,6 +2473,14 @@ export type QueryAvailableDtosForResourceArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ModuleDtoWhereInput>;
+};
+
+
+export type QueryAvailablePrivatePluginsForResourceArgs = {
+  orderBy?: InputMaybe<PrivatePluginOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PrivatePluginWhereInput>;
 };
 
 
@@ -2561,6 +2657,19 @@ export type QueryPluginInstallationsArgs = {
 
 export type QueryPluginOrderArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type QueryPrivatePluginArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryPrivatePluginsArgs = {
+  orderBy?: InputMaybe<PrivatePluginOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PrivatePluginWhereInput>;
 };
 
 

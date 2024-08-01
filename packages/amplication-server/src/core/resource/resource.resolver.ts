@@ -122,6 +122,19 @@ export class ResourceResolver {
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
   )
+  async createPluginRepository(
+    @Args() args: CreateOneResourceArgs,
+    @UserEntity() user: User
+  ): Promise<Resource> {
+    return this.resourceService.createPluginRepository(args, user);
+  }
+
+  @Mutation(() => Resource, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "data.project.connect.id"
+  )
   async createService(
     @Args() args: CreateOneResourceArgs,
     @UserEntity() user: User

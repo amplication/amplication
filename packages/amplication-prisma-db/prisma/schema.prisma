@@ -513,6 +513,7 @@ enum EnumBlockType {
   Module
   ModuleAction
   ModuleDto
+  PrivatePlugin
   Package
 }
 
@@ -616,6 +617,7 @@ enum EnumResourceType {
   Service
   ProjectConfiguration
   MessageBroker
+  PluginRepository
 }
 
 enum EnumGitProvider {

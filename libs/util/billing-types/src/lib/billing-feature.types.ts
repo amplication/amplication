@@ -17,6 +17,7 @@ export enum BillingFeature {
   ImportDBSchema = "feature-import-db-schema",
   JovuRequests = "feature-jovu-requests",
   Notification = "feature-notifications",
+  PrivatePlugins = "feature-private-plugins-module",
   Projects = "feature-projects",
   RedesignArchitecture = "feature-redesign-architecture",
   Services = "feature-services",

@@ -68,6 +68,7 @@ import { ActionService } from "../action/action.service";
 import { UserActionService } from "../userAction/userAction.service";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { GitProviderService } from "../git/git.provider.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -558,6 +559,10 @@ describe("ResourceService", () => {
           },
         },
         {
+          provide: GitProviderService,
+          useValue: {},
+        },
+        {
           provide: BuildService,
           useClass: jest.fn(() => ({
             create: buildServiceCreateMock,
@@ -841,6 +846,7 @@ describe("ResourceService", () => {
                 pluginId: "auth-jwt",
                 settings: {},
                 configurations: {},
+                isPrivate: false,
                 resource: { connect: { id: "" } },
               },
             ],
