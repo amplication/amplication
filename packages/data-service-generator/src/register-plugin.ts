@@ -21,12 +21,10 @@ const functionsObject = ["[object Function]", "[object AsyncFunction]"];
 const DSG_ASSETS_FOLDER = "dsg-assets";
 const PRIVATE_PLUGINS_FOLDER = "private-plugins";
 
-const getPrivatePluginPath = (buildId: string, pluginId: string) => {
-  const basePath = process.env.DSG_JOBS_BASE_FOLDER;
-
+const getPrivatePluginPath = (pluginId: string) => {
   return join(
-    basePath,
-    buildId,
+    "/",
+    "dsg-job",
     DSG_ASSETS_FOLDER,
     PRIVATE_PLUGINS_FOLDER,
     pluginId
@@ -52,7 +50,7 @@ async function* getPluginFuncGenerator(
       const localPackage = pluginList[index].settings?.local
         ? join("../../../../", pluginList[index].settings?.destPath)
         : pluginList[index].isPrivate
-        ? getPrivatePluginPath(context.buildId, pluginList[index].pluginId)
+        ? getPrivatePluginPath(pluginList[index].pluginId)
         : undefined;
       const packageName = localPackage || pluginList[index].npm;
 
@@ -82,7 +80,8 @@ async function getPlugin(
     try {
       return await import(packageName);
     } catch (error) {
-      logger.error(error);
+      logger.error(`failed to get plugin: ${error}`);
+      throw error;
     }
   }
   const path = join(customPath, packageName);
