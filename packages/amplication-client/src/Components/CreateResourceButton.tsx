@@ -4,7 +4,7 @@ import {
   SelectMenuList,
   SelectMenuModal,
 } from "@amplication/ui/design-system";
-import React from "react";
+import React, { useMemo } from "react";
 import * as models from "../models";
 import "./CreateResourceButton.scss";
 import CreateResourceButtonItem from "./CreateResourceButtonItem";
@@ -13,6 +13,7 @@ import {
   EntitlementType,
   FeatureIndicatorContainer,
 } from "./FeatureIndicatorContainer";
+import { useStiggContext } from "@stigg/react-sdk";
 
 const CLASS_NAME = "create-resource-button";
 
@@ -21,6 +22,7 @@ export type CreateResourceButtonItemType = {
   label: string;
   route: string;
   info: string;
+  licenseRequired?: BillingFeature;
 };
 
 const ITEMS: CreateResourceButtonItemType[] = [
@@ -36,6 +38,13 @@ const ITEMS: CreateResourceButtonItemType[] = [
     route: "create-broker",
     info: "Create a message broker to facilitate communication between services",
   },
+  {
+    type: models.EnumResourceType.PluginRepository,
+    label: "Plugin Repository",
+    route: "create-plugin-repository",
+    info: "Create a plugin repository to upload and manage plugins",
+    licenseRequired: BillingFeature.PrivatePlugins,
+  },
 ];
 
 type Props = {
@@ -47,6 +56,21 @@ const CreateResourceButton: React.FC<Props> = ({
   resourcesLength,
   servicesLength,
 }) => {
+  const { stigg } = useStiggContext();
+
+  const { hasAccess: canUsePrivatePlugins } = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.PrivatePlugins,
+  });
+
+  const licensedItems = useMemo(() => {
+    const licenses = {
+      [BillingFeature.PrivatePlugins]: canUsePrivatePlugins,
+    };
+    return ITEMS.filter(
+      (item) => !item.licenseRequired || licenses[item.licenseRequired]
+    );
+  }, [canUsePrivatePlugins]);
+
   return (
     <div className={CLASS_NAME}>
       <FeatureIndicatorContainer
@@ -59,7 +83,7 @@ const CreateResourceButton: React.FC<Props> = ({
         <SelectMenu title="Add Resource" buttonStyle={EnumButtonStyle.Primary}>
           <SelectMenuModal align="right" withCaret>
             <SelectMenuList>
-              {ITEMS.map((item, index) => (
+              {licensedItems.map((item, index) => (
                 <CreateResourceButtonItem item={item} key={index} />
               ))}
             </SelectMenuList>

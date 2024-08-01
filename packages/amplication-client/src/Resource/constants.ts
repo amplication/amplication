@@ -171,6 +171,22 @@ export function prepareMessageBrokerObject(
   };
 }
 
+export function preparePluginRepositoryObject(
+  projectId: string
+): models.ResourceCreateInput {
+  return {
+    name: "Plugin Repository",
+    description: "",
+    resourceType: models.EnumResourceType.PluginRepository,
+    codeGenerator: models.EnumCodeGenerator.NodeJs,
+    project: {
+      connect: {
+        id: projectId,
+      },
+    },
+  };
+}
+
 export const resourceThemeMap: {
   [key in models.EnumResourceType]: {
     icon: string;
@@ -188,6 +204,10 @@ export const resourceThemeMap: {
   [models.EnumResourceType.MessageBroker]: {
     icon: "queue",
     color: "#8DD9B9",
+  },
+  [models.EnumResourceType.PluginRepository]: {
+    icon: "plugin",
+    color: "#20a4f3",
   },
 };
 
