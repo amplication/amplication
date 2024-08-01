@@ -841,6 +841,7 @@ describe("ResourceService", () => {
                 pluginId: "auth-jwt",
                 settings: {},
                 configurations: {},
+                isPrivate: false,
                 resource: { connect: { id: "" } },
               },
             ],

@@ -5,6 +5,7 @@ import { Env } from "../../env";
 import { BlockService } from "../block/block.service";
 import { ResourceService } from "../resource/resource.service";
 import { PrivatePluginService } from "./privatePlugin.service";
+import { BillingService } from "../billing/billing.service";
 
 describe("PrivatePluginService", () => {
   let service: PrivatePluginService;
@@ -21,6 +22,10 @@ describe("PrivatePluginService", () => {
         },
         {
           provide: ResourceService,
+          useValue: {},
+        },
+        {
+          provide: BillingService,
           useValue: {},
         },
 
