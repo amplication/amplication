@@ -22,9 +22,14 @@ const DSG_ASSETS_FOLDER = "dsg-assets";
 const PRIVATE_PLUGINS_FOLDER = "private-plugins";
 
 const getPrivatePluginPath = (pluginId: string) => {
+  const buildSpecPath = process.env.BUILD_SPEC_PATH;
+
+  const buildJobFolder = buildSpecPath?.replace("/input.json", "");
+
+  logger.info(`buildJobFolder: ${buildJobFolder}`);
+
   return join(
-    "/",
-    "dsg-job",
+    buildJobFolder,
     DSG_ASSETS_FOLDER,
     PRIVATE_PLUGINS_FOLDER,
     pluginId
