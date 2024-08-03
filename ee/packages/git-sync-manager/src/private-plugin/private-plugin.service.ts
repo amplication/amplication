@@ -8,7 +8,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { DownloadPrivatePluginsRequest } from "@amplication/schema-registry";
 import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
-import { copy } from "fs-extra";
+import { copy, pathExists } from "fs-extra";
 import { join } from "path";
 
 @Traceable()
@@ -122,6 +122,13 @@ export class PrivatePluginService {
     for (const pluginPath of pluginPaths) {
       const pluginName = pluginPath.split("/").pop();
       const pluginPathInAssets = join(dsgAssetsPath, pluginName);
+
+      const pathExist = await pathExists(pluginPath);
+      if (!pathExist) {
+        throw new Error(
+          `Can't find plugin '${pluginName}' in the source repository`
+        );
+      }
       await copy(pluginPath, pluginPathInAssets);
       newPluginPaths.push(pluginPathInAssets);
     }
