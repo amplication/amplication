@@ -1752,16 +1752,24 @@ export class ResourceService {
       throw new Error(INVALID_RESOURCE_ID);
     }
 
-    const pluginRepositoryResource = await this.prisma.resource.findFirst({
+    const pluginRepositoryResourceList = await this.resources({
       where: {
         projectId: resource.projectId,
-        resourceType: EnumResourceType.PluginRepository,
+        resourceType: {
+          equals: AmplicationEnumResourceType.PluginRepository,
+        },
       },
     });
 
-    if (isEmpty(resource)) {
+    if (pluginRepositoryResourceList.length === 0) {
       throw new Error("Plugin repository resource not found in the project");
     }
+
+    if (pluginRepositoryResourceList.length > 1) {
+      throw new Error("Multiple plugin repositories found in the project");
+    }
+
+    const pluginRepositoryResource = pluginRepositoryResourceList[0];
 
     const gitOrganization = await this.gitOrganizationByResource({
       where: { id: pluginRepositoryResource.id },
