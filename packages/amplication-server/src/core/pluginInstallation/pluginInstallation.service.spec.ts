@@ -68,6 +68,7 @@ const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
   pluginId: EXAMPLE_PLUGIN_ID,
   npm: "ExampleNpm",
   version: "1.0.0",
+  isPrivate: false,
 };
 
 const resourceServiceGetAuthEntityNameMock = jest.fn(() => "User");
@@ -200,6 +201,7 @@ describe("PluginInstallationService", () => {
         npm: "ExampleNpm",
         version: "1.0.0",
         enabled: true,
+        isPrivate: false,
       },
     };
     expect(await service.create(args, EXAMPLE_USER)).toEqual(
@@ -236,6 +238,7 @@ describe("PluginInstallationService", () => {
         npm: "ExampleNpm",
         version: "1.0.0",
         enabled: true,
+        isPrivate: false,
       },
     };
     await expect(service.create(args, EXAMPLE_USER)).rejects.toThrow(
@@ -294,6 +297,7 @@ describe("PluginInstallationService", () => {
         npm: "ExampleNpm",
         version: "1.0.0",
         enabled: true,
+        isPrivate: false,
         configurations: {
           [REQUIRES_AUTHENTICATION_ENTITY]: "true",
         },
@@ -324,6 +328,7 @@ describe("PluginInstallationService", () => {
         npm: "ExampleNpm",
         version: "1.0.0",
         enabled: true,
+        isPrivate: false,
         configurations: {
           [REQUIRES_AUTHENTICATION_ENTITY]: "true",
         },

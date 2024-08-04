@@ -13,6 +13,7 @@ import {
 import { getGitRepositoryDetails } from "../../util/git-repository-details";
 import { GET_PROJECTS } from "../queries/projectQueries";
 import { UPDATE_CODE_GENERATOR_VERSION } from "../../Resource/codeGeneratorVersionSettings/queries";
+import { CREATE_PLUGIN_REPOSITORY } from "../queries/pluginRepositoryQueries";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -32,6 +33,10 @@ export type TUpdateCodeGeneratorVersion = {
 
 type TCreateMessageBroker = {
   createMessageBroker: models.Resource;
+};
+
+type TCreatePluginRepository = {
+  createPluginRepository: models.Resource;
 };
 
 const createGitRepositoryFullName = (
@@ -206,6 +211,30 @@ const useResources = (
   };
 
   const [
+    createPluginRepositoryInternal,
+    {
+      loading: loadingCreatePluginRepository,
+      error: errorCreatePluginRepository,
+    },
+  ] = useMutation<TCreatePluginRepository>(CREATE_PLUGIN_REPOSITORY);
+
+  const createPluginRepository = (data: models.ResourceCreateInput) => {
+    trackEvent({
+      eventName: AnalyticsEventNames.CreatePluginRepository,
+    });
+    createPluginRepositoryInternal({ variables: { data: data } }).then(
+      (result) => {
+        result.data?.createPluginRepository.id &&
+          addBlock(result.data.createPluginRepository.id);
+        result.data?.createPluginRepository.id &&
+          reloadResources().then(() => {
+            resourceRedirect(result.data?.createPluginRepository.id as string);
+          });
+      }
+    );
+  };
+
+  const [
     createBroker,
     { loading: loadingCreateMessageBroker, error: errorCreateMessageBroker },
   ] = useMutation<TCreateMessageBroker>(CREATE_MESSAGE_BROKER);
@@ -345,6 +374,9 @@ const useResources = (
     createMessageBroker,
     loadingCreateMessageBroker,
     errorCreateMessageBroker,
+    createPluginRepository,
+    loadingCreatePluginRepository,
+    errorCreatePluginRepository,
     gitRepositoryFullName,
     gitRepositoryUrl,
     gitRepositoryOrganizationProvider,
