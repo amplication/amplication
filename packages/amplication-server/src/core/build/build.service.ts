@@ -555,14 +555,14 @@ export class BuildService {
 
           return null;
         } catch (error) {
+          await this.onDownloadPrivatePluginFailure({
+            buildId: build.id,
+            errorMessage: `Failed to download plugins: ${error.message}`,
+          });
           logger.error(
             "Failed to send 'plugin download' message to queue",
             error
           );
-          await this.onDownloadPrivatePluginFailure({
-            buildId: build.id,
-            errorMessage: error.message,
-          });
         }
       },
       true
