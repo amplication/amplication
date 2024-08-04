@@ -13,6 +13,7 @@ import {
   CodeGenerationFailure,
   CodeGenerationSuccess,
   KAFKA_TOPICS,
+  PackageManagerCreateRequest,
 } from "@amplication/schema-registry";
 import { CodeGenerationRequest, EnumJobStatus } from "../types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -30,6 +31,17 @@ export class BuildRunnerService {
     private readonly buildJobsHandlerService: BuildJobsHandlerService,
     private readonly logger: AmplicationLogger
   ) {}
+
+  async runPackageGenerator(buildId: string, resourceId: string) {
+    const requestPackagesEvent: PackageManagerCreateRequest.KafkaEvent = {
+      key: null,
+      value: { resourceId: resourceId, buildId: buildId },
+    };
+    await this.producerService.emitMessage(
+      KAFKA_TOPICS.PACKAGE_MANAGER_CREATE_REQUEST,
+      requestPackagesEvent
+    );
+  }
 
   async runBuild(
     resourceId: string,

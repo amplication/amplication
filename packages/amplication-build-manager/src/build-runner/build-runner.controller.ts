@@ -7,6 +7,7 @@ import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import {
   CodeGenerationRequest,
   KAFKA_TOPICS,
+  PackageManagerCreateResponse,
 } from "@amplication/schema-registry";
 import { EnumJobStatus } from "../types";
 
@@ -14,7 +15,6 @@ import { EnumJobStatus } from "../types";
 export class BuildRunnerController {
   constructor(
     private readonly buildRunnerService: BuildRunnerService,
-    //packageRunner
     private readonly logger: AmplicationLogger
   ) {}
 
@@ -23,10 +23,9 @@ export class BuildRunnerController {
     @Payload() dto: CodeGenerationSuccessDto
   ): Promise<void> {
     //get packages before
-    await this.buildRunnerService.processBuildResult(
-      dto.resourceId,
-      dto.buildId, // jobBuildId
-      EnumJobStatus.Success
+    await this.buildRunnerService.runPackageGenerator(
+      dto.buildId,
+      dto.resourceId
     );
   }
 
@@ -39,6 +38,20 @@ export class BuildRunnerController {
       dto.buildId, // jobBuildId
       EnumJobStatus.Failure,
       dto.error
+    );
+  }
+
+  @EventPattern(KAFKA_TOPICS.PACKAGE_MANAGER_CREATE_RESPONSE)
+  async onPackageManagerCreateResponse(
+    @Payload() message: PackageManagerCreateResponse.Value
+  ): Promise<void> {
+    this.logger.info("Code package manager create response received", {
+      build: message.buildId,
+    });
+    await this.buildRunnerService.processBuildResult(
+      message.resourceId,
+      message.buildId, // jobBuildId
+      EnumJobStatus.Success
     );
   }
 
