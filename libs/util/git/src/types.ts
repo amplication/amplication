@@ -365,6 +365,7 @@ export interface PostCommitProcessArgs {
   diffFolder: string;
   diff: string;
   gitCli: GitCli;
+  commitMessage?: string;
 }
 
 export interface FindOneIssueInput {
