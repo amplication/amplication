@@ -327,7 +327,7 @@
     "style-loader": "^3.3.1",
     "supertest": "^4.0.2",
     "ts-jest": "29.1.1",
-    "ts-loader": "^9.4.1",
+    "ts-loader": "^9.5.1",
     "ts-node": "10.9.1",
     "tsconfig-paths": "^4.1.2",
     "typescript": "5.1.6",
