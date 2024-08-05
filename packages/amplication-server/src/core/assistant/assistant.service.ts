@@ -32,6 +32,7 @@ const ASSISTANT_INSTRUCTIONS: { [key in EnumAssistantMessageType]: string } = {
   [EnumAssistantMessageType.Onboarding]: `
   Use the current project, do not create a new project.
   The user is creating a new service and you need to generate everything needed for the service, including entities, fields, relations, apis, and install plugins. 
+  Before creating the service, ask the user to specify whether they want to use Node.js or .NET. Suggest the user to use Node.js if they don't have a preference.
   You can suggest names and different configuration as needed. 
   After you create entities, also create fields and relations for all entities. Aim to create as many fields and relations as needed. 
   Install any plugins that are needed for the service.
