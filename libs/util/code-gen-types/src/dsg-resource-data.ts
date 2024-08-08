@@ -20,7 +20,7 @@ export class DSGResourceData {
   roles?: Role[];
 
   pluginInstallations!: PluginInstallation[];
-  packages: Package[];
+  packages?: Package[];
   moduleContainers?: ModuleContainer[];
   moduleActions?: ModuleAction[];
   moduleDtos?: ModuleDto[];

@@ -1,4 +1,5 @@
-import { IsString } from "class-validator";
+import { DSGResourceData } from "@amplication/code-gen-types";
+import { IsString, ValidateNested } from "class-validator";
 
 export class Value {
   @IsString()
@@ -6,4 +7,7 @@ export class Value {
 
   @IsString()
   buildId!: string;
+
+  @ValidateNested()
+  dsgResourceData!: DSGResourceData;
 }

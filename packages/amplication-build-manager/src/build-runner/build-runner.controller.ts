@@ -22,7 +22,6 @@ export class BuildRunnerController {
   async onCodeGenerationSuccess(
     @Payload() dto: CodeGenerationSuccessDto
   ): Promise<void> {
-    //get packages before
     await this.buildRunnerService.runPackageGenerator(
       dto.buildId,
       dto.resourceId

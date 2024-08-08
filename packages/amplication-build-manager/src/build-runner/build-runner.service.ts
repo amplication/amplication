@@ -18,6 +18,7 @@ import {
 import { CodeGenerationRequest, EnumJobStatus } from "../types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
+import { RedisService } from "../redis/redis.service";
 
 const OLD_DSG_IMAGE_NAME = "data-service-generator";
 
@@ -29,13 +30,24 @@ export class BuildRunnerService {
     private readonly producerService: KafkaProducerService,
     private readonly codeGeneratorService: CodeGeneratorService,
     private readonly buildJobsHandlerService: BuildJobsHandlerService,
+    private readonly redisService: RedisService,
     private readonly logger: AmplicationLogger
   ) {}
 
   async runPackageGenerator(buildId: string, resourceId: string) {
+    const data = await fs.readFile(
+      join(
+        this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
+        buildId,
+        this.configService.get(Env.DSG_JOBS_RESOURCE_DATA_FILE)
+      )
+    );
+
+    const dsgResourceData = <DSGResourceData>JSON.parse(data.toString());
+
     const requestPackagesEvent: PackageManagerCreateRequest.KafkaEvent = {
       key: null,
-      value: { resourceId: resourceId, buildId: buildId },
+      value: { resourceId: resourceId, buildId: buildId, dsgResourceData },
     };
     await this.producerService.emitMessage(
       KAFKA_TOPICS.PACKAGE_MANAGER_CREATE_REQUEST,
