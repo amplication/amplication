@@ -233,6 +233,35 @@ const resourceTabRoutes = [
       },
     ],
   },
+  {
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/packages",
+    Component: lazy(() => import("../Resource/resourcePackages/PackagesPage")),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: false,
+    routes: [
+      {
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/packages/installed",
+        Component: lazy(
+          () => import("../Resource/resourcePackages/InstalledPackages")
+        ),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        routes: [],
+        isAnalytics: true,
+      },
+      {
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/packages/installed/:package",
+        Component: lazy(() => import("../Resource/resourcePackages/Package")),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        routes: [],
+        isAnalytics: true,
+      },
+    ],
+  },
 ];
 
 export default resourceTabRoutes;

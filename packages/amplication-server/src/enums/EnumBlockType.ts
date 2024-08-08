@@ -10,6 +10,7 @@ export enum EnumBlockType {
   Module = "Module",
   ModuleAction = "ModuleAction",
   ModuleDto = "ModuleDto",
+  Package = "Package",
   PrivatePlugin = "PrivatePlugin",
 }
 

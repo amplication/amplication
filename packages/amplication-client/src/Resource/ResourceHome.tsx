@@ -13,6 +13,7 @@ import {
   resourceMenuLayout,
   setResourceUrlLink,
 } from "./resourceMenuUtils";
+import { REACT_APP_PACKAGES_FEATURE_FLAG } from "../env";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -37,6 +38,12 @@ const ResourceHome = ({
   const tabs: TabItem[] = useMemo(() => {
     const fixedRoutes = resourceMenuLayout[currentResource?.resourceType]?.map(
       (menuItem: MenuItemLinks) => {
+        if (
+          menuItem === "packages" &&
+          REACT_APP_PACKAGES_FEATURE_FLAG === "false"
+        ) {
+          return null;
+        }
         const indicatorValue =
           menuItem === "pendingChanges" && pendingChanges?.length
             ? pendingChanges.length
@@ -64,7 +71,7 @@ const ResourceHome = ({
         to: match.url,
         exact: true,
       },
-      ...(fixedRoutes || []),
+      ...(fixedRoutes.filter((fixRoute) => fixRoute !== null) || []),
     ];
   }, [currentResource, currentWorkspace, currentProject, pendingChanges]);
 
