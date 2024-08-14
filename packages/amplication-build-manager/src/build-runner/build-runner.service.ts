@@ -18,7 +18,6 @@ import {
 import { CodeGenerationRequest, EnumJobStatus } from "../types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
-import { RedisService } from "../redis/redis.service";
 
 const OLD_DSG_IMAGE_NAME = "data-service-generator";
 
@@ -30,7 +29,6 @@ export class BuildRunnerService {
     private readonly producerService: KafkaProducerService,
     private readonly codeGeneratorService: CodeGeneratorService,
     private readonly buildJobsHandlerService: BuildJobsHandlerService,
-    private readonly redisService: RedisService,
     private readonly logger: AmplicationLogger
   ) {}
 
