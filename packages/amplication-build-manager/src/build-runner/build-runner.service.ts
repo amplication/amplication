@@ -33,14 +33,15 @@ export class BuildRunnerService {
   ) {}
 
   async onPackageManagerCreateResponse(buildId: string) {
-    await this.dsgCompleted(buildId);
+    await this.codeGenerationSuccess(buildId);
   }
 
-  async runPackageGenerator(jobBuildId: string, resourceId: string) {
+  async generatePackages(
+    jobBuildId: string,
+    resourceId: string,
+    dsgResourceData: DSGResourceData
+  ) {
     const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
-
-    const dsgResourceData =
-      await this.buildJobsHandlerService.extractDsgResourceData(jobBuildId);
 
     const requestPackagesEvent: PackageManagerCreateRequest.KafkaEvent = {
       key: null,
@@ -52,7 +53,7 @@ export class BuildRunnerService {
     );
   }
 
-  async dsgCompleted(buildId: string) {
+  async codeGenerationSuccess(buildId: string) {
     const codeGeneratorVersion = await this.getCodeGeneratorVersion(buildId);
 
     const successEvent: CodeGenerationSuccess.KafkaEvent = {
@@ -218,9 +219,9 @@ export class BuildRunnerService {
           await this.buildJobsHandlerService.extractDsgResourceData(jobBuildId);
 
         if (dsgResourceData.packages?.length > 0) {
-          await this.runPackageGenerator(jobBuildId, resourceId);
+          await this.generatePackages(jobBuildId, resourceId, dsgResourceData);
         } else {
-          await this.dsgCompleted(buildId);
+          await this.codeGenerationSuccess(buildId);
         }
       }
     } catch (error) {
