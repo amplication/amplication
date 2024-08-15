@@ -22,9 +22,10 @@ export class BuildRunnerController {
   async onCodeGenerationSuccess(
     @Payload() dto: CodeGenerationSuccessDto
   ): Promise<void> {
-    await this.buildRunnerService.runPackageGenerator(
-      dto.buildId,
-      dto.resourceId
+    await this.buildRunnerService.processBuildResult(
+      dto.resourceId,
+      dto.buildId, // jobBuildId
+      EnumJobStatus.Success
     );
   }
 
@@ -47,10 +48,8 @@ export class BuildRunnerController {
     this.logger.info("Code package manager create response received", {
       build: message.buildId,
     });
-    await this.buildRunnerService.processBuildResult(
-      message.resourceId,
-      message.buildId, // jobBuildId
-      EnumJobStatus.Success
+    await this.buildRunnerService.onPackageManagerCreateResponse(
+      message.resourceId
     );
   }
 

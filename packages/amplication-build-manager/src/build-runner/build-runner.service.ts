@@ -32,6 +32,20 @@ export class BuildRunnerService {
     private readonly logger: AmplicationLogger
   ) {}
 
+  async onPackageManagerCreateResponse(buildId: string) {
+    const codeGeneratorVersion = await this.getCodeGeneratorVersion(buildId);
+
+    const successEvent: CodeGenerationSuccess.KafkaEvent = {
+      key: null,
+      value: { buildId, codeGeneratorVersion },
+    };
+
+    await this.producerService.emitMessage(
+      KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
+      successEvent
+    );
+  }
+
   async runPackageGenerator(buildId: string, resourceId: string) {
     const data = await fs.readFile(
       join(
@@ -201,15 +215,7 @@ export class BuildRunnerService {
       }
 
       if (buildStatus === EnumJobStatus.Success) {
-        const successEvent: CodeGenerationSuccess.KafkaEvent = {
-          key: null,
-          value: { buildId, codeGeneratorVersion },
-        };
-
-        await this.producerService.emitMessage(
-          KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
-          successEvent
-        );
+        await this.runPackageGenerator(buildId, resourceId);
       }
     } catch (error) {
       if (otherJobsHaveNotFailed) {
