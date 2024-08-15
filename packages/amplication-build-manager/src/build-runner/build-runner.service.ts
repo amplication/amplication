@@ -33,6 +33,26 @@ export class BuildRunnerService {
   ) {}
 
   async onPackageManagerCreateResponse(buildId: string) {
+    await this.dsgCompleted(buildId);
+  }
+
+  async runPackageGenerator(jobBuildId: string, resourceId: string) {
+    const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
+
+    const dsgResourceData =
+      await this.buildJobsHandlerService.extractDsgResourceData(jobBuildId);
+
+    const requestPackagesEvent: PackageManagerCreateRequest.KafkaEvent = {
+      key: null,
+      value: { resourceId: resourceId, buildId: buildId, dsgResourceData },
+    };
+    await this.producerService.emitMessage(
+      KAFKA_TOPICS.PACKAGE_MANAGER_CREATE_REQUEST,
+      requestPackagesEvent
+    );
+  }
+
+  async dsgCompleted(buildId: string) {
     const codeGeneratorVersion = await this.getCodeGeneratorVersion(buildId);
 
     const successEvent: CodeGenerationSuccess.KafkaEvent = {
@@ -43,27 +63,6 @@ export class BuildRunnerService {
     await this.producerService.emitMessage(
       KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
       successEvent
-    );
-  }
-
-  async runPackageGenerator(buildId: string, resourceId: string) {
-    const data = await fs.readFile(
-      join(
-        this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
-        buildId,
-        this.configService.get(Env.DSG_JOBS_RESOURCE_DATA_FILE)
-      )
-    );
-
-    const dsgResourceData = <DSGResourceData>JSON.parse(data.toString());
-
-    const requestPackagesEvent: PackageManagerCreateRequest.KafkaEvent = {
-      key: null,
-      value: { resourceId: resourceId, buildId: buildId, dsgResourceData },
-    };
-    await this.producerService.emitMessage(
-      KAFKA_TOPICS.PACKAGE_MANAGER_CREATE_REQUEST,
-      requestPackagesEvent
     );
   }
 
@@ -215,7 +214,14 @@ export class BuildRunnerService {
       }
 
       if (buildStatus === EnumJobStatus.Success) {
-        await this.runPackageGenerator(buildId, resourceId);
+        const dsgResourceData =
+          await this.buildJobsHandlerService.extractDsgResourceData(jobBuildId);
+
+        if (dsgResourceData.packages?.length > 0) {
+          await this.runPackageGenerator(jobBuildId, resourceId);
+        } else {
+          await this.dsgCompleted(buildId);
+        }
       }
     } catch (error) {
       if (otherJobsHaveNotFailed) {
