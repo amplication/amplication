@@ -49,7 +49,7 @@ export class BuildRunnerController {
       build: message.buildId,
     });
     await this.buildRunnerService.onPackageManagerCreateResponse(
-      message.resourceId
+      message.buildId
     );
   }
 
