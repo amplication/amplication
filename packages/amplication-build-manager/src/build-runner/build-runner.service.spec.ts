@@ -16,7 +16,6 @@ import { CodeGeneratorService } from "../code-generator/code-generator-catalog.s
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import {
   CodeGenerationFailure,
-  CodeGenerationSuccess,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
@@ -634,14 +633,6 @@ describe("BuildRunnerService", () => {
           },
         } as unknown as CodeGenerationFailure.KafkaEvent;
 
-        const kafkaSuccessEventMock: CodeGenerationSuccess.KafkaEvent = {
-          key: null,
-          value: <CodeGenerationSuccess.Value>{
-            buildId,
-            codeGeneratorVersion,
-          },
-        };
-
         jest
           .spyOn(service, "getCodeGeneratorVersion")
           .mockResolvedValue(codeGeneratorVersion);
@@ -685,11 +676,9 @@ describe("BuildRunnerService", () => {
             );
             break;
           case "SUCCESS":
-            expect(mockKafkaServiceEmitMessage).toHaveBeenCalledTimes(1);
-            expect(mockKafkaServiceEmitMessage).toHaveBeenCalledWith(
-              KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
-              kafkaSuccessEventMock
-            );
+            jest
+              .spyOn(service, "runPackageGenerator")
+              .mockResolvedValue(undefined);
             break;
           default:
             break;
