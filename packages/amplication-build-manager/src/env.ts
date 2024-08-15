@@ -25,5 +25,5 @@ export class Env {
   static readonly DSG_CATALOG_SERVICE_URL = "DSG_CATALOG_SERVICE_URL";
 
   static readonly SERVICE_NAME = "amplication-build-manager";
-  static readonly PACKAGES_FEATURE_FLAG = "PACKAGES_FEATURE_FLAG";
+  static readonly ENABLE_PACKAGE_MANAGER = "ENABLE_PACKAGE_MANAGER";
 }

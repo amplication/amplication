@@ -218,11 +218,11 @@ export class BuildRunnerService {
         const dsgResourceData =
           await this.buildJobsHandlerService.extractDsgResourceData(jobBuildId);
 
-        const packagesFeatureFlag = this.configService.get(
-          Env.PACKAGES_FEATURE_FLAG
+        const enablePackageManager = Boolean(
+          this.configService.get<string>(Env.ENABLE_PACKAGE_MANAGER) === "true"
         );
 
-        if (dsgResourceData.packages?.length > 0 && packagesFeatureFlag) {
+        if (dsgResourceData.packages?.length > 0 && enablePackageManager) {
           await this.generatePackages(jobBuildId, resourceId, dsgResourceData);
         } else {
           await this.codeGenerationSuccess(buildId);
