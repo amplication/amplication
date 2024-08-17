@@ -52,6 +52,7 @@ import {
   DownloadPrivatePluginsLog,
   DownloadPrivatePluginsSuccess,
   DownloadPrivatePluginsFailure,
+  CodeGenerationFailure,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
@@ -400,9 +401,8 @@ export class BuildService {
     return EnumBuildStatus.Running;
   }
 
-  async completeCodeGenerationStep(
+  async onCodeGenerationSuccess(
     buildId: string,
-    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
     codeGeneratorVersion: string
   ): Promise<void> {
     const step = await this.getBuildStep(buildId, GENERATE_STEP_NAME);
@@ -427,31 +427,49 @@ export class BuildService {
       },
     });
 
-    if (status === EnumActionStepStatus.Success) {
-      this.kafkaProducerService
-        .emitMessage(KAFKA_TOPICS.USER_BUILD_TOPIC, <UserBuild.KafkaEvent>{
-          key: {},
-          value: {
-            commitId: commitWithAccount.commit.id,
-            commitMessage: commitWithAccount.commit.message,
-            resourceId: commitWithAccount.resourceId,
-            resourceName: commitWithAccount.resource.name,
-            workspaceId: commitWithAccount.commit.project.workspaceId,
-            projectId: commitWithAccount.commit.projectId,
-            buildId: buildId,
-            projectName: commitWithAccount.commit.project.name,
-            createdAt: Date.now(),
-            externalId: encryptString(commitWithAccount.commit.user.id),
-            envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
-          },
-        })
-        .catch((error) =>
-          this.logger.error(`Failed to queue user build ${buildId}`, error)
-        );
+    this.kafkaProducerService
+      .emitMessage(KAFKA_TOPICS.USER_BUILD_TOPIC, <UserBuild.KafkaEvent>{
+        key: {},
+        value: {
+          commitId: commitWithAccount.commit.id,
+          commitMessage: commitWithAccount.commit.message,
+          resourceId: commitWithAccount.resourceId,
+          resourceName: commitWithAccount.resource.name,
+          workspaceId: commitWithAccount.commit.project.workspaceId,
+          projectId: commitWithAccount.commit.projectId,
+          buildId: buildId,
+          projectName: commitWithAccount.commit.project.name,
+          createdAt: Date.now(),
+          externalId: encryptString(commitWithAccount.commit.user.id),
+          envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
+        },
+      })
+      .catch((error) =>
+        this.logger.error(`Failed to queue user build ${buildId}`, error)
+      );
+
+    await this.actionService.complete(step, EnumActionStepStatus.Success);
+    await this.updateCodeGeneratorVersion(buildId, codeGeneratorVersion);
+  }
+
+  public async onCodeGenerationFailure(
+    response: CodeGenerationFailure.Value
+  ): Promise<void> {
+    const { buildId } = response;
+
+    //write the error message to the log
+    await this.onDsgLog({
+      buildId: buildId,
+      level: "error",
+      message: response.errorMessage || "Code generation failed",
+    });
+
+    const step = await this.getBuildStep(buildId, GENERATE_STEP_NAME);
+    if (!step) {
+      throw new Error(`Could not find generate code step for build ${buildId}`);
     }
 
-    await this.actionService.complete(step, status);
-    await this.updateCodeGeneratorVersion(buildId, codeGeneratorVersion);
+    await this.actionService.complete(step, EnumActionStepStatus.Failed);
   }
 
   /**

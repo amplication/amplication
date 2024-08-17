@@ -57,9 +57,10 @@ export class BuildRunnerService {
   async onPackageManagerCreateFailure(
     response: PackageManagerCreateFailure.Value
   ) {
-    return this.emitCodeGenerationFailureWhenJobStatusFailed(
+    return this.emitCodeGenerationFailure(
       response.buildId,
-      new Error(response.errorMessage)
+      "",
+      response.errorMessage
     );
   }
 
@@ -153,14 +154,10 @@ export class BuildRunnerService {
       }
     } catch (error) {
       this.logger.error(error.message, error);
-      const failureEvent: CodeGenerationFailure.KafkaEvent = {
-        key: null,
-        value: { buildId, codeGeneratorVersion, error },
-      };
-
-      await this.producerService.emitMessage(
-        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-        failureEvent
+      await this.emitCodeGenerationFailure(
+        buildId,
+        codeGeneratorVersion,
+        error.message
       );
     }
   }
@@ -259,18 +256,10 @@ export class BuildRunnerService {
       this.logger.error(error.message, error);
 
       if (otherJobsHaveNotFailed) {
-        const failureEvent: CodeGenerationFailure.KafkaEvent = {
-          key: null,
-          value: {
-            buildId,
-            codeGeneratorVersion,
-            error,
-          },
-        };
-
-        await this.producerService.emitMessage(
-          KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-          failureEvent
+        await this.emitCodeGenerationFailure(
+          buildId,
+          codeGeneratorVersion,
+          error.message
         );
       }
     }
@@ -299,17 +288,31 @@ export class BuildRunnerService {
       this.logger.error(error.message, error, { causeError: jobError });
     } finally {
       if (otherJobsHaveNotFailed) {
-        const failureEvent: CodeGenerationFailure.KafkaEvent = {
-          key: null,
-          value: { buildId, codeGeneratorVersion, error: jobError },
-        };
-
-        await this.producerService.emitMessage(
-          KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-          failureEvent
+        await this.emitCodeGenerationFailure(
+          buildId,
+          codeGeneratorVersion,
+          jobError.message
         );
       }
     }
+  }
+
+  async emitCodeGenerationFailure(
+    buildId: string,
+    codeGeneratorVersion: string,
+    errorMessage?: string
+  ) {
+    const failureEvent: CodeGenerationFailure.KafkaEvent = {
+      key: null,
+      value: { buildId, codeGeneratorVersion, errorMessage },
+    };
+
+    this.logger.debug("Emitting code generation failure event", failureEvent);
+
+    await this.producerService.emitMessage(
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
+      failureEvent
+    );
   }
 
   async saveDsgResourceData(

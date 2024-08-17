@@ -2,7 +2,6 @@ import { Controller, Inject } from "@nestjs/common";
 import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
 import { plainToInstance } from "class-transformer";
 import { ActionService } from "../action/action.service";
-import { EnumActionStepStatus } from "../action/dto";
 import { ReplyResultMessage } from "./dto/ReplyResultMessage";
 import { ReplyStatusEnum } from "./dto/ReplyStatusEnum";
 import { BuildService } from "./build.service";
@@ -57,9 +56,8 @@ export class BuildController {
     try {
       await this.buildService.saveToGitProvider(args.buildId);
 
-      await this.buildService.completeCodeGenerationStep(
+      await this.buildService.onCodeGenerationSuccess(
         args.buildId,
-        EnumActionStepStatus.Success,
         args.codeGeneratorVersion
       );
     } catch (error) {
@@ -89,11 +87,7 @@ export class BuildController {
       return;
     }
 
-    await this.buildService.completeCodeGenerationStep(
-      args.buildId,
-      EnumActionStepStatus.Failed,
-      args.codeGeneratorVersion
-    );
+    await this.buildService.onCodeGenerationFailure(args);
   }
 
   @EventPattern(KAFKA_TOPICS.CREATE_PR_SUCCESS_TOPIC)
