@@ -70,6 +70,7 @@ import { encryptString } from "../../util/encryptionUtil";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { PluginInstallation } from "../pluginInstallation/dto/PluginInstallation";
 import { PackageService } from "../package/package.service";
+import omitDeep from "deepdash/omitDeep";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -194,6 +195,15 @@ export function createInitialStepData(
 }
 
 const PREVIEW_PR_BODY = `Welcome to your first sync with Amplication's Preview Repo! 🚀 \n\nYou’ve taken the first step in supercharging your development. This Preview Repo is a sandbox for you to see what Amplication can do.\n\nRemember, by connecting to your own repository, you’ll have even more power - like customizing the code to fit your needs.\n\nNow, head back to Amplication, connect to your own repo and keep building! Define data entities, set up roles, and extend your service’s functionality with our versatile plugin system. The possibilities are endless.\n\n[link]\n\nThank you, and let's build something amazing together! 🚀\n\n`;
+
+const DSG_RESOURCE_DATA_PROPERTIES_TO_REMOVE = [
+  "createdAt",
+  "updatedAt",
+  "versionNumber",
+  "lockedAt",
+  "lockedByUserId",
+  "deletedAt",
+];
 
 type DiffStatObject = {
   filesChanged: number;
@@ -1179,6 +1189,11 @@ export class BuildService {
       ? await Promise.all(
           resources
             .filter(({ id }) => id !== resourceId)
+            .filter(
+              ({ resourceType }) =>
+                resourceType !== EnumResourceType.ProjectConfiguration &&
+                resourceType !== EnumResourceType.PluginRepository
+            )
             .map((resource) =>
               this.getDSGResourceData(
                 resource.id,
@@ -1191,7 +1206,7 @@ export class BuildService {
         )
       : undefined;
 
-    return {
+    const dsgResourceData = {
       entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: plugins,
@@ -1224,6 +1239,8 @@ export class BuildService {
       },
       otherResources,
     };
+
+    return omitDeep(dsgResourceData, DSG_RESOURCE_DATA_PROPERTIES_TO_REMOVE);
   }
 
   public async onCreatePullRequestLog(
