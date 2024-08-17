@@ -52,7 +52,7 @@ export class BuildRunnerController {
     const args = plainToInstance(PackageManagerCreateFailure.Value, message);
 
     this.logger.info("Code package manager create failure response received", {
-      error: message.errorMessage,
+      error: args.errorMessage,
     });
     await this.buildRunnerService.onPackageManagerCreateFailure(args);
   }
