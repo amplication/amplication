@@ -22,19 +22,31 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
 import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
+import { BuildLoggerService } from "../build-logger/build-logger.service";
+import { LogLevel } from "@amplication/util/logging";
 
 const OLD_DSG_IMAGE_NAME = "data-service-generator";
 
 @Traceable()
 @Injectable()
 export class BuildRunnerService {
+  private enablePackageManager: boolean;
+
   constructor(
     private readonly configService: ConfigService<Env, true>,
     private readonly producerService: KafkaProducerService,
     private readonly codeGeneratorService: CodeGeneratorService,
     private readonly buildJobsHandlerService: BuildJobsHandlerService,
+    private readonly buildLoggerService: BuildLoggerService,
     private readonly logger: AmplicationLogger
-  ) {}
+  ) {
+    this.enablePackageManager = Boolean(
+      this.configService.get<string>(Env.ENABLE_PACKAGE_MANAGER) === "true"
+    );
+    this.logger.info(
+      `Package manager is ${this.enablePackageManager ? "enabled" : "disabled"}`
+    );
+  }
 
   async onPackageManagerCreateSuccess(
     response: PackageManagerCreateSuccess.Value
@@ -56,6 +68,12 @@ export class BuildRunnerService {
     resourceId: string,
     dsgResourceData: DSGResourceData
   ) {
+    this.buildLoggerService.addCodeGenerationLog({
+      buildId,
+      message: `Sending ${dsgResourceData.packages?.length} package(s) for generation`,
+      level: LogLevel.Info,
+    });
+
     const requestPackagesEvent: PackageManagerCreateRequest.KafkaEvent = {
       key: null,
       value: { resourceId: resourceId, buildId: buildId, dsgResourceData },
@@ -229,12 +247,8 @@ export class BuildRunnerService {
         const dsgResourceData =
           await this.buildJobsHandlerService.extractDsgResourceData(jobBuildId);
 
-        const enablePackageManager = Boolean(
-          this.configService.get<string>(Env.ENABLE_PACKAGE_MANAGER) === "true"
-        );
-
         //package manager is called only after all the jobs are completed
-        if (dsgResourceData.packages?.length > 0 && enablePackageManager) {
+        if (dsgResourceData.packages?.length > 0 && this.enablePackageManager) {
           await this.generatePackages(buildId, resourceId, dsgResourceData);
         } else {
           this.logger.info("No packages to generate - complete build");
