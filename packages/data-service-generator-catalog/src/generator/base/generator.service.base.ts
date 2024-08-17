@@ -25,28 +25,28 @@ export class GeneratorServiceBase {
     return this.prisma.generator.count(args);
   }
 
-  async generators<T extends Prisma.GeneratorFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.GeneratorFindManyArgs>
+  async generators(
+    args: Prisma.GeneratorFindManyArgs
   ): Promise<PrismaGenerator[]> {
-    return this.prisma.generator.findMany<Prisma.GeneratorFindManyArgs>(args);
+    return this.prisma.generator.findMany(args);
   }
-  async generator<T extends Prisma.GeneratorFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.GeneratorFindUniqueArgs>
+  async generator(
+    args: Prisma.GeneratorFindUniqueArgs
   ): Promise<PrismaGenerator | null> {
     return this.prisma.generator.findUnique(args);
   }
-  async createGenerator<T extends Prisma.GeneratorCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.GeneratorCreateArgs>
+  async createGenerator(
+    args: Prisma.GeneratorCreateArgs
   ): Promise<PrismaGenerator> {
-    return this.prisma.generator.create<T>(args);
+    return this.prisma.generator.create(args);
   }
-  async updateGenerator<T extends Prisma.GeneratorUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.GeneratorUpdateArgs>
+  async updateGenerator(
+    args: Prisma.GeneratorUpdateArgs
   ): Promise<PrismaGenerator> {
-    return this.prisma.generator.update<T>(args);
+    return this.prisma.generator.update(args);
   }
-  async deleteGenerator<T extends Prisma.GeneratorDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.GeneratorDeleteArgs>
+  async deleteGenerator(
+    args: Prisma.GeneratorDeleteArgs
   ): Promise<PrismaGenerator> {
     return this.prisma.generator.delete(args);
   }

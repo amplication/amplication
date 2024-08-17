@@ -13,6 +13,7 @@ import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsString,
+  MaxLength,
   IsOptional,
   IsDate,
   ValidateNested,
@@ -28,6 +29,7 @@ class Version {
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -94,6 +96,7 @@ class Version {
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @Field(() => String)
   name!: string;
 
