@@ -54,12 +54,19 @@ export class BuildController {
     @Payload() message: CodeGenerationSuccess.Value
   ): Promise<void> {
     const args = plainToInstance(CodeGenerationSuccess.Value, message);
-    await this.buildService.saveToGitProvider(args.buildId);
-    await this.buildService.completeCodeGenerationStep(
-      args.buildId,
-      EnumActionStepStatus.Success,
-      args.codeGeneratorVersion
-    );
+    try {
+      await this.buildService.saveToGitProvider(args.buildId);
+
+      await this.buildService.completeCodeGenerationStep(
+        args.buildId,
+        EnumActionStepStatus.Success,
+        args.codeGeneratorVersion
+      );
+    } catch (error) {
+      this.logger.error("Failed to Complete Code Generation Step ", error, {
+        buildId: args.buildId,
+      });
+    }
   }
 
   @EventPattern(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC)

@@ -16,7 +16,8 @@ export * as GptConversationComplete from "./lib/gpt-conversion-complete";
 export * as UserBuild from "./lib/user-build";
 export * as UserFeatureAnnouncement from "./lib/user-feature-announcement";
 export * as PackageManagerCreateRequest from "./lib/package-manager-create-request";
-export * as PackageManagerCreateResponse from "./lib/package-manager-create-response";
+export * as PackageManagerCreateSuccess from "./lib/package-manager-create-success";
+export * as PackageManagerCreateFailure from "./lib/package-manager-create-failure";
 export * as DownloadPrivatePluginsRequest from "./lib/download-private-plugins-request";
 export * as DownloadPrivatePluginsSuccess from "./lib/download-private-plugins-success";
 export * as DownloadPrivatePluginsFailure from "./lib/download-private-plugins-failure";
@@ -58,5 +59,6 @@ export enum KAFKA_TOPICS {
 
   // package-manager
   PACKAGE_MANAGER_CREATE_REQUEST = "package.manager.create-packages.request.0",
-  PACKAGE_MANAGER_CREATE_RESPONSE = "package.manager.create-packages.response.0",
+  PACKAGE_MANAGER_CREATE_SUCCESS = "package.manager.create-packages.success.0",
+  PACKAGE_MANAGER_CREATE_FAILURE = "package.manager.create-packages.failure.0",
 }
