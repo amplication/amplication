@@ -643,7 +643,9 @@ describe("BuildRunnerService", () => {
       "setJobStatus"
     );
 
-    Object.defineProperty(service, "enablePackageManager", () => true);
+    Object.defineProperty(service, "enablePackageManager", {
+      get: jest.fn(() => true),
+    });
 
     spyOnSetJobStatus.mockResolvedValue(undefined);
     jest
