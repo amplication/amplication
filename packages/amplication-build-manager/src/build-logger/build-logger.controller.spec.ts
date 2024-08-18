@@ -1,6 +1,5 @@
 import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
-
 import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
@@ -12,7 +11,6 @@ const addCodeGenerationLogMock = jest.fn();
 
 describe("Build Logger Controller", () => {
   let controller: BuildLoggerController;
-  let buildJobsHandlerService: BuildJobsHandlerService;
   const mockBuildJobsHandlerServiceExtractBuildId = jest.fn();
   const mockBuildJobsHandlerServiceExtractDomain = jest.fn();
 
@@ -68,9 +66,6 @@ describe("Build Logger Controller", () => {
     }).compile();
 
     controller = module.get<BuildLoggerController>(BuildLoggerController);
-    buildJobsHandlerService = module.get<BuildJobsHandlerService>(
-      BuildJobsHandlerService
-    );
   });
 
   it("should be defined", () => {
