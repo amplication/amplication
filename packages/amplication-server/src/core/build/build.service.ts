@@ -337,7 +337,7 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
-  private async updateCodeGeneratorVersion(
+  async updateCodeGeneratorVersion(
     buildId: string,
     codeGeneratorVersion: string
   ): Promise<void> {
@@ -349,7 +349,10 @@ export class BuildService {
       });
 
       if (!build) {
-        throw new Error(`Could not find build with id ${buildId}`);
+        this.logger.error(
+          `updateCodeGeneratorVersion: Could not find build with id ${buildId}`
+        );
+        return;
       }
 
       await this.prisma.build.update({
@@ -401,10 +404,7 @@ export class BuildService {
     return EnumBuildStatus.Running;
   }
 
-  async onCodeGenerationSuccess(
-    buildId: string,
-    codeGeneratorVersion: string
-  ): Promise<void> {
+  async onCodeGenerationSuccess(buildId: string): Promise<void> {
     const step = await this.getBuildStep(buildId, GENERATE_STEP_NAME);
     if (!step) {
       throw new Error("Could not find generate code step");
@@ -449,7 +449,6 @@ export class BuildService {
       );
 
     await this.actionService.complete(step, EnumActionStepStatus.Success);
-    await this.updateCodeGeneratorVersion(buildId, codeGeneratorVersion);
   }
 
   public async onCodeGenerationFailure(
