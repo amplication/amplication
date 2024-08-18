@@ -17,6 +17,7 @@ import { formatError } from "../../util/error";
 import { validate } from "../../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../../util/hotkeys";
 import usePackage from "../hooks/usePackage";
+import "./NewPackage.scss";
 
 type Props = {
   onSuccess: () => void;
@@ -29,6 +30,8 @@ type packageInputData = {
 const INITIAL_VALUES: packageInputData = {
   displayName: "",
 };
+
+const CLASS_NAME = "new-package";
 
 const FORM_SCHEMA = {
   required: ["displayName"],
@@ -80,7 +83,7 @@ const NewPackage = ({ onSuccess }: Props) => {
   const errorMessage = formatError(createPackageError);
 
   return (
-    <>
+    <div className={`${CLASS_NAME}`}>
       <SvgThemeImage image={EnumImages.Entities} />
       <Text textAlign={EnumTextAlign.Center}>
         Give your new package a descriptive name. <br />
@@ -98,34 +101,30 @@ const NewPackage = ({ onSuccess }: Props) => {
           return (
             <Form>
               <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-              <FlexItem
-                direction={EnumFlexDirection.Column}
-                margin={EnumFlexItemMargin.Top}
-              >
-                <TextField
-                  name="displayName"
-                  label="New Package Name"
-                  disabled={createPackageLoading}
-                  autoFocus
-                  hideLabel
-                  placeholder="Type New Package Name"
-                  autoComplete="off"
-                />
 
-                <Button
-                  type="submit"
-                  buttonStyle={EnumButtonStyle.Primary}
-                  disabled={!formik.isValid || createPackageLoading}
-                >
-                  Create Package
-                </Button>
-              </FlexItem>
+              <TextField
+                name="displayName"
+                label="New Package Name"
+                disabled={createPackageLoading}
+                autoFocus
+                hideLabel
+                placeholder="Type New Package Name"
+                autoComplete="off"
+              />
+
+              <Button
+                type="submit"
+                buttonStyle={EnumButtonStyle.Primary}
+                disabled={!formik.isValid || createPackageLoading}
+              >
+                Create Package
+              </Button>
             </Form>
           );
         }}
       </Formik>
       <Snackbar open={Boolean(createPackageError)} message={errorMessage} />
-    </>
+    </div>
   );
 };
 

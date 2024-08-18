@@ -11,5 +11,5 @@ export class Value {
   @IsString()
   codeGeneratorVersion!: string;
 
-  error?: Error;
+  errorMessage?: string;
 }

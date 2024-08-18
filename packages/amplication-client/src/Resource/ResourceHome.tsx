@@ -71,9 +71,15 @@ const ResourceHome = ({
         to: match.url,
         exact: true,
       },
-      ...(fixedRoutes.filter((fixRoute) => fixRoute !== null) || []),
+      ...(fixedRoutes?.filter((fixRoute) => fixRoute !== null) || []),
     ];
-  }, [currentResource, currentWorkspace, currentProject, pendingChanges]);
+  }, [
+    currentResource,
+    match.url,
+    pendingChanges,
+    currentWorkspace,
+    currentProject,
+  ]);
 
   useBreadcrumbs(currentResource?.name, match.url);
 

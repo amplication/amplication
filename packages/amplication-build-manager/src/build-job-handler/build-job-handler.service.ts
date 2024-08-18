@@ -60,7 +60,10 @@ export class BuildJobsHandlerService {
           cloneDeep(dsgResourceData);
         serverDSGResourceData.resourceInfo.settings.adminUISettings.generateAdminUI =
           false;
-        const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.Server}`;
+        const jobBuildId = this.generateJobBuildId(
+          buildId,
+          EnumDomainName.Server
+        );
         await this.setJobStatus(jobBuildId, EnumJobStatus.InProgress);
         jobs.push([jobBuildId, serverDSGResourceData]);
       }
@@ -70,7 +73,11 @@ export class BuildJobsHandlerService {
           cloneDeep(dsgResourceData);
         adminUiDSGResourceData.resourceInfo.settings.serverSettings.generateServer =
           false;
-        const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
+        const jobBuildId = this.generateJobBuildId(
+          buildId,
+          EnumDomainName.AdminUI
+        );
+
         await this.setJobStatus(jobBuildId, EnumJobStatus.InProgress);
         jobs.push([jobBuildId, adminUiDSGResourceData]);
       }
@@ -80,6 +87,13 @@ export class BuildJobsHandlerService {
     }
 
     return jobs;
+  }
+
+  generateJobBuildId(
+    buildId: BuildId,
+    domain: EnumDomainName
+  ): JobBuildId<BuildId> {
+    return `${buildId}-${domain}`;
   }
 
   // accumulate the status of the jobs and return the status of the whole build
