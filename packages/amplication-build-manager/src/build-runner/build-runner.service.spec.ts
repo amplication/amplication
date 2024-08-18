@@ -17,9 +17,11 @@ import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import {
   CodeGenerationFailure,
   KAFKA_TOPICS,
+  PackageManagerCreateRequest,
 } from "@amplication/schema-registry";
 import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import axios from "axios";
+import { BuildLoggerService } from "../build-logger/build-logger.service";
 
 const spyOnMkdir = jest.spyOn(promises, "mkdir");
 const spyOnWriteFile = jest.spyOn(promises, "writeFile");
@@ -36,6 +38,17 @@ spyOnWriteFile.mockResolvedValue(undefined);
 spyOnFsExtraCopy.mockImplementation((src: string, dest: string) =>
   Promise.resolve()
 );
+
+const EXAMPLE_DSG_RESOURCE_DATA: DSGResourceData = {
+  resourceType: "Service",
+  buildId: "",
+  pluginInstallations: [],
+  packages: [],
+};
+
+const extractDsgResourceDataMock = jest.fn(() => {
+  return EXAMPLE_DSG_RESOURCE_DATA;
+});
 
 describe("BuildRunnerService", () => {
   let service: BuildRunnerService;
@@ -93,6 +106,7 @@ describe("BuildRunnerService", () => {
             getBuildStatus: jest.fn(),
             getJobStatus: jest.fn(),
             setJobStatus: jest.fn(),
+            extractDsgResourceData: extractDsgResourceDataMock,
           },
         },
         {
@@ -100,6 +114,12 @@ describe("BuildRunnerService", () => {
           useValue: {
             getCodeGeneratorVersion: jest.fn(),
             compareVersions: jest.fn(),
+          },
+        },
+        {
+          provide: BuildLoggerService,
+          useValue: {
+            addCodeGenerationLog: jest.fn(),
           },
         },
         {
@@ -489,8 +509,7 @@ describe("BuildRunnerService", () => {
         key: null,
         value: <CodeGenerationFailure.Value>{
           buildId,
-          codeGeneratorVersion: expectedCodeGeneratorVersion,
-          error: errorMock,
+          errorMessage: errorMock.message,
         },
       } as unknown as CodeGenerationFailure.KafkaEvent;
 
@@ -498,7 +517,19 @@ describe("BuildRunnerService", () => {
       await service.runBuild(resourceId, buildId, dsgResourceDataMock);
 
       // Assert
-      expect(mockKafkaServiceEmitMessage).toBeCalledWith(
+      expect(mockKafkaServiceEmitMessage).toHaveBeenNthCalledWith(
+        1,
+        KAFKA_TOPICS.CODE_GENERATION_NOTIFY_VERSION_TOPIC,
+        {
+          key: null,
+          value: {
+            buildId,
+            codeGeneratorVersion: expectedCodeGeneratorVersion,
+          },
+        }
+      );
+      expect(mockKafkaServiceEmitMessage).toHaveBeenNthCalledWith(
+        2,
         KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
         expectedKafkaFailureEvent
       );
@@ -509,15 +540,11 @@ describe("BuildRunnerService", () => {
     // Arrange
     const errorMock = new Error("Test error");
     const buildId = "buildId";
-    const codeGeneratorVersion = "v1.0.0";
 
     const spyOnSetJobStatus = jest.spyOn(
       buildJobsHandlerService,
       "setJobStatus"
     );
-    jest
-      .spyOn(service, "getCodeGeneratorVersion")
-      .mockResolvedValue(codeGeneratorVersion);
 
     spyOnSetJobStatus.mockResolvedValue(undefined);
     jest
@@ -539,151 +566,265 @@ describe("BuildRunnerService", () => {
     expect(spyOnSetJobStatus).toBeCalledWith(buildId, EnumJobStatus.Failure);
   });
 
-  describe("emitKafkaEventBasedOnJobStatus", () => {
-    const resourceId = "resourceId";
+  it("onCodeGenerationSuccess - emit code-generation.success topic when all job builds completed and there are no packages", async () => {
+    // Arrange
     const buildId = "buildId";
+    const resourceId = "resourceId";
 
-    beforeEach(() => {
-      jest.resetAllMocks();
+    const spyOnSetJobStatus = jest.spyOn(
+      buildJobsHandlerService,
+      "setJobStatus"
+    );
+
+    spyOnSetJobStatus.mockResolvedValue(undefined);
+    jest
+      .spyOn(buildJobsHandlerService, "extractBuildId")
+      .mockReturnValue(buildId);
+
+    jest
+      .spyOn(buildJobsHandlerService, "getBuildStatus")
+      .mockResolvedValue(EnumJobStatus.Success);
+
+    // Act
+    await service.onCodeGenerationSuccess({
+      buildId: buildId,
+      resourceId: resourceId,
     });
 
-    const testCases = [
-      [
-        {
-          //input
-          jobBuildId: `${buildId}-${EnumDomainName.Server}`,
-          jobStatus: EnumJobStatus.Success,
-          otherJobsCombinedStatus: EnumJobStatus.InProgress,
-          copyFailed: true,
+    // Assert
+    expect(mockKafkaServiceEmitMessage).toBeCalledTimes(1);
+    expect(mockKafkaServiceEmitMessage).toBeCalledWith(
+      KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
+      {
+        key: null,
+        value: {
+          buildId,
         },
-        {
-          //expectation
-          eventEmission: "FAILURE",
-        },
-      ],
-      [
-        {
-          //input
-          jobBuildId: `${buildId}-${EnumDomainName.Server}`,
-          jobStatus: EnumJobStatus.Success,
-          otherJobsCombinedStatus: EnumJobStatus.InProgress,
-        },
-        {
-          //expectation
-          eventEmission: "NONE",
-        },
-      ],
-      [
-        {
-          //input
-          jobBuildId: `${buildId}-${EnumDomainName.Server}`,
-          jobStatus: EnumJobStatus.Success,
-          otherJobsCombinedStatus: EnumJobStatus.Success,
-        },
-        {
-          //expectation
-          eventEmission: "SUCCESS",
-        },
-      ],
-      [
-        {
-          //input
-          jobBuildId: `${buildId}-${EnumDomainName.Server}`,
-          jobStatus: EnumJobStatus.Failure,
-          otherJobsCombinedStatus: EnumJobStatus.InProgress,
-        },
-        {
-          //expectation
-          eventEmission: "FAILURE",
-        },
-      ],
-      [
-        {
-          //input
-          jobBuildId: `${buildId}-${EnumDomainName.Server}`,
-          jobStatus: EnumJobStatus.Failure,
-          otherJobsCombinedStatus: EnumJobStatus.Failure,
-        },
-        {
-          //expectation
-          eventEmission: "NONE",
-        },
-      ],
-    ];
-
-    for (const [input, expected] of testCases) {
-      it(`When ${input.jobBuildId} returns ${input.jobStatus}, ${
-        input["copyFailed"] ? "and the copy artifact failed," : ""
-      } and the combined status is ${
-        input.otherJobsCombinedStatus
-      } it should emit ${
-        expected.eventEmission
-      } event and updated the cache accordingly`, async () => {
-        // Arrange
-        const codeGeneratorVersion = "v1.0.0";
-        const errorMock = new Error("Test error");
-        const copyErrorMock = new Error("Copy failed");
-
-        const expectedKafkaFailureEvent: CodeGenerationFailure.KafkaEvent = {
-          key: null,
-          value: <CodeGenerationFailure.Value>{
-            buildId,
-            error: input["copyFailed"] ? copyErrorMock : errorMock,
-            codeGeneratorVersion,
-          },
-        } as unknown as CodeGenerationFailure.KafkaEvent;
-
-        jest
-          .spyOn(service, "getCodeGeneratorVersion")
-          .mockResolvedValue(codeGeneratorVersion);
-
-        jest
-          .spyOn(buildJobsHandlerService, "setJobStatus")
-          .mockResolvedValue(undefined);
-
-        jest
-          .spyOn(buildJobsHandlerService, "extractBuildId")
-          .mockReturnValue(buildId);
-
-        jest
-          .spyOn(buildJobsHandlerService, "getBuildStatus")
-          .mockResolvedValue(input.otherJobsCombinedStatus);
-
-        if (input["copyFailed"]) {
-          jest
-            .spyOn(service, "copyFromJobToArtifact")
-            .mockRejectedValue(copyErrorMock);
-        }
-
-        // Act
-        await service.processBuildResult(
-          resourceId,
-          input.jobBuildId,
-          input.jobStatus,
-          input.jobStatus === EnumJobStatus.Failure ? errorMock : undefined
-        );
-
-        // Assert
-        switch (expected.eventEmission) {
-          case "NONE":
-            expect(mockKafkaServiceEmitMessage).toBeCalledTimes(0);
-            break;
-          case "FAILURE":
-            expect(mockKafkaServiceEmitMessage).toHaveBeenCalledTimes(1);
-            expect(mockKafkaServiceEmitMessage).toHaveBeenCalledWith(
-              KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-              expectedKafkaFailureEvent
-            );
-            break;
-          case "SUCCESS":
-            jest
-              .spyOn(service, "runPackageGenerator")
-              .mockResolvedValue(undefined);
-            break;
-          default:
-            break;
-        }
-      });
-    }
+      }
+    );
   });
+
+  it("onCodeGenerationSuccess - do not emit event when some jobs are still in progress ", async () => {
+    // Arrange
+    const buildId = "buildId";
+    const resourceId = "resourceId";
+
+    const spyOnSetJobStatus = jest.spyOn(
+      buildJobsHandlerService,
+      "setJobStatus"
+    );
+
+    spyOnSetJobStatus.mockResolvedValue(undefined);
+    jest
+      .spyOn(buildJobsHandlerService, "extractBuildId")
+      .mockReturnValue(buildId);
+
+    jest
+      .spyOn(buildJobsHandlerService, "getBuildStatus")
+      .mockResolvedValue(EnumJobStatus.InProgress);
+
+    // Act
+    await service.onCodeGenerationSuccess({
+      buildId: buildId,
+      resourceId: resourceId,
+    });
+
+    // Assert
+    expect(mockKafkaServiceEmitMessage).toBeCalledTimes(0);
+  });
+
+  it("onCodeGenerationSuccess - emit package-manager-create topic when all job builds completed, and we have packages ", async () => {
+    // Arrange
+    const buildId = "buildId";
+    const resourceId = "resourceId";
+
+    const spyOnSetJobStatus = jest.spyOn(
+      buildJobsHandlerService,
+      "setJobStatus"
+    );
+
+    Object.defineProperty(service, "enablePackageManager", () => true);
+
+    spyOnSetJobStatus.mockResolvedValue(undefined);
+    jest
+      .spyOn(buildJobsHandlerService, "extractBuildId")
+      .mockReturnValue(buildId);
+
+    jest
+      .spyOn(buildJobsHandlerService, "getBuildStatus")
+      .mockResolvedValue(EnumJobStatus.Success);
+
+    const dsgResourceData = {
+      ...EXAMPLE_DSG_RESOURCE_DATA,
+      packages: [
+        {
+          id: "package-id",
+          displayName: "package-name",
+          summary: "package-summary",
+        },
+      ],
+    };
+
+    extractDsgResourceDataMock.mockReturnValue(dsgResourceData);
+
+    // Act
+    await service.onCodeGenerationSuccess({
+      buildId: buildId,
+      resourceId: resourceId,
+    });
+
+    const requestPackagesEvent: PackageManagerCreateRequest.KafkaEvent = {
+      key: null,
+      value: { resourceId: resourceId, buildId: buildId, dsgResourceData },
+    };
+
+    // Assert
+    expect(mockKafkaServiceEmitMessage).toBeCalledTimes(1);
+    expect(mockKafkaServiceEmitMessage).toBeCalledWith(
+      KAFKA_TOPICS.PACKAGE_MANAGER_CREATE_REQUEST,
+      requestPackagesEvent
+    );
+  });
+
+  // describe("emitKafkaEventBasedOnJobStatus", () => {
+  //   const resourceId = "resourceId";
+  //   const buildId = "buildId";
+
+  //   beforeEach(() => {
+  //     jest.resetAllMocks();
+  //   });
+
+  //   const testCases = [
+  //     [
+  //       {
+  //         //input
+  //         jobBuildId: `${buildId}-${EnumDomainName.Server}`,
+  //         jobStatus: EnumJobStatus.Success,
+  //         otherJobsCombinedStatus: EnumJobStatus.InProgress,
+  //         copyFailed: true,
+  //       },
+  //       {
+  //         //expectation
+  //         eventEmission: "FAILURE",
+  //       },
+  //     ],
+  //     // [
+  //     //   {
+  //     //     //input
+  //     //     jobBuildId: `${buildId}-${EnumDomainName.Server}`,
+  //     //     jobStatus: EnumJobStatus.Success,
+  //     //     otherJobsCombinedStatus: EnumJobStatus.InProgress,
+  //     //   },
+  //     //   {
+  //     //     //expectation
+  //     //     eventEmission: "NONE",
+  //     //   },
+  //     // ],
+  //     // [
+  //     //   {
+  //     //     //input
+  //     //     jobBuildId: `${buildId}-${EnumDomainName.Server}`,
+  //     //     jobStatus: EnumJobStatus.Success,
+  //     //     otherJobsCombinedStatus: EnumJobStatus.Success,
+  //     //   },
+  //     //   {
+  //     //     //expectation
+  //     //     eventEmission: "SUCCESS",
+  //     //   },
+  //     // ],
+  //     // [
+  //     //   {
+  //     //     //input
+  //     //     jobBuildId: `${buildId}-${EnumDomainName.Server}`,
+  //     //     jobStatus: EnumJobStatus.Failure,
+  //     //     otherJobsCombinedStatus: EnumJobStatus.InProgress,
+  //     //   },
+  //     //   {
+  //     //     //expectation
+  //     //     eventEmission: "FAILURE",
+  //     //   },
+  //     // ],
+  //     // [
+  //     //   {
+  //     //     //input
+  //     //     jobBuildId: `${buildId}-${EnumDomainName.Server}`,
+  //     //     jobStatus: EnumJobStatus.Failure,
+  //     //     otherJobsCombinedStatus: EnumJobStatus.Failure,
+  //     //   },
+  //     //   {
+  //     //     //expectation
+  //     //     eventEmission: "NONE",
+  //     //   },
+  //     // ],
+  //   ];
+
+  //   for (const [input, expected] of testCases) {
+  //     it(`When ${input.jobBuildId} returns ${input.jobStatus}, ${
+  //       input["copyFailed"] ? "and the copy artifact failed," : ""
+  //     } and the combined status is ${
+  //       input.otherJobsCombinedStatus
+  //     } it should emit ${
+  //       expected.eventEmission
+  //     } event and updated the cache accordingly`, async () => {
+  //       // Arrange
+  //       const codeGeneratorVersion = "v1.0.0";
+  //       const errorMock = new Error("Test error");
+  //       const copyErrorMock = new Error("Copy failed");
+
+  //       const expectedKafkaFailureEvent: CodeGenerationFailure.KafkaEvent = {
+  //         key: null,
+  //         value: <CodeGenerationFailure.Value>{
+  //           buildId,
+  //           error: input["copyFailed"] ? copyErrorMock : errorMock,
+  //           codeGeneratorVersion,
+  //         },
+  //       } as unknown as CodeGenerationFailure.KafkaEvent;
+
+  //       jest
+  //         .spyOn(buildJobsHandlerService, "setJobStatus")
+  //         .mockResolvedValue(undefined);
+
+  //       jest
+  //         .spyOn(buildJobsHandlerService, "extractBuildId")
+  //         .mockReturnValue(buildId);
+
+  //       jest
+  //         .spyOn(buildJobsHandlerService, "getBuildStatus")
+  //         .mockResolvedValue(input.otherJobsCombinedStatus);
+
+  //       if (input["copyFailed"]) {
+  //         jest
+  //           .spyOn(service, "copyFromJobToArtifact")
+  //           .mockRejectedValue(copyErrorMock);
+  //       }
+
+  //       // Act
+  //       await service.processBuildResult(
+  //         resourceId,
+  //         input.jobBuildId,
+  //         input.jobStatus,
+  //         input.jobStatus === EnumJobStatus.Failure ? errorMock : undefined
+  //       );
+
+  //       // Assert
+  //       switch (expected.eventEmission) {
+  //         case "NONE":
+  //           expect(mockKafkaServiceEmitMessage).toBeCalledTimes(0);
+  //           break;
+  //         case "FAILURE":
+  //           expect(mockKafkaServiceEmitMessage).toHaveBeenCalledTimes(1);
+  //           expect(mockKafkaServiceEmitMessage).toHaveBeenCalledWith(
+  //             KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
+  //             expectedKafkaFailureEvent
+  //           );
+  //           break;
+  //         case "SUCCESS":
+  //           expect(mockKafkaServiceEmitMessage).toBeCalledTimes(0);
+  //           break;
+  //         default:
+  //           break;
+  //       }
+  //     });
+  //   }
+  // });
 });

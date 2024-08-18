@@ -211,17 +211,20 @@ export class BuildRunnerService {
     let otherJobsHaveNotFailed = true;
 
     try {
+      //get the aggregated status of all the jobs
       const currentBuildStatus =
         await this.buildJobsHandlerService.getBuildStatus(buildId);
       otherJobsHaveNotFailed = currentBuildStatus !== EnumJobStatus.Failure;
 
       await this.copyFromJobToArtifact(resourceId, jobBuildId);
 
+      //update the status of the current job
       await this.buildJobsHandlerService.setJobStatus(
         jobBuildId,
         EnumJobStatus.Success
       );
 
+      //get the aggregated status of all the jobs, after the current job status was updated
       const buildStatus = await this.buildJobsHandlerService.getBuildStatus(
         buildId
       );
