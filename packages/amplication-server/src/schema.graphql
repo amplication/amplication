@@ -1517,7 +1517,6 @@ type Package implements IBlock {
   parentBlock: Block
   parentBlockId: String
   resourceId: String
-  status: EnumPackageStatus!
   summary: String!
   updatedAt: DateTime!
   versionNumber: Float!

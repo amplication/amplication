@@ -52,6 +52,7 @@ import {
   DownloadPrivatePluginsLog,
   DownloadPrivatePluginsSuccess,
   DownloadPrivatePluginsFailure,
+  CodeGenerationFailure,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
@@ -69,6 +70,8 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
 import { encryptString } from "../../util/encryptionUtil";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { PluginInstallation } from "../pluginInstallation/dto/PluginInstallation";
+import { PackageService } from "../package/package.service";
+import omitDeep from "deepdash/omitDeep";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -194,6 +197,15 @@ export function createInitialStepData(
 
 const PREVIEW_PR_BODY = `Welcome to your first sync with Amplication's Preview Repo! 🚀 \n\nYou’ve taken the first step in supercharging your development. This Preview Repo is a sandbox for you to see what Amplication can do.\n\nRemember, by connecting to your own repository, you’ll have even more power - like customizing the code to fit your needs.\n\nNow, head back to Amplication, connect to your own repo and keep building! Define data entities, set up roles, and extend your service’s functionality with our versatile plugin system. The possibilities are endless.\n\n[link]\n\nThank you, and let's build something amazing together! 🚀\n\n`;
 
+const DSG_RESOURCE_DATA_PROPERTIES_TO_REMOVE = [
+  "createdAt",
+  "updatedAt",
+  "versionNumber",
+  "lockedAt",
+  "lockedByUserId",
+  "deletedAt",
+];
+
 type DiffStatObject = {
   filesChanged: number;
   insertions: number;
@@ -216,6 +228,8 @@ export class BuildService {
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
+    private readonly packageService: PackageService,
+
     private readonly moduleActionService: ModuleActionService,
     private readonly moduleDtoService: ModuleDtoService,
     private readonly moduleService: ModuleService,
@@ -323,7 +337,7 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
-  private async updateCodeGeneratorVersion(
+  async updateCodeGeneratorVersion(
     buildId: string,
     codeGeneratorVersion: string
   ): Promise<void> {
@@ -335,7 +349,10 @@ export class BuildService {
       });
 
       if (!build) {
-        throw new Error(`Could not find build with id ${buildId}`);
+        this.logger.error(
+          `updateCodeGeneratorVersion: Could not find build with id ${buildId}`
+        );
+        return;
       }
 
       await this.prisma.build.update({
@@ -387,11 +404,7 @@ export class BuildService {
     return EnumBuildStatus.Running;
   }
 
-  async completeCodeGenerationStep(
-    buildId: string,
-    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
-    codeGeneratorVersion: string
-  ): Promise<void> {
+  async onCodeGenerationSuccess(buildId: string): Promise<void> {
     const step = await this.getBuildStep(buildId, GENERATE_STEP_NAME);
     if (!step) {
       throw new Error("Could not find generate code step");
@@ -414,31 +427,48 @@ export class BuildService {
       },
     });
 
-    if (status === EnumActionStepStatus.Success) {
-      this.kafkaProducerService
-        .emitMessage(KAFKA_TOPICS.USER_BUILD_TOPIC, <UserBuild.KafkaEvent>{
-          key: {},
-          value: {
-            commitId: commitWithAccount.commit.id,
-            commitMessage: commitWithAccount.commit.message,
-            resourceId: commitWithAccount.resourceId,
-            resourceName: commitWithAccount.resource.name,
-            workspaceId: commitWithAccount.commit.project.workspaceId,
-            projectId: commitWithAccount.commit.projectId,
-            buildId: buildId,
-            projectName: commitWithAccount.commit.project.name,
-            createdAt: Date.now(),
-            externalId: encryptString(commitWithAccount.commit.user.id),
-            envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
-          },
-        })
-        .catch((error) =>
-          this.logger.error(`Failed to queue user build ${buildId}`, error)
-        );
+    this.kafkaProducerService
+      .emitMessage(KAFKA_TOPICS.USER_BUILD_TOPIC, <UserBuild.KafkaEvent>{
+        key: {},
+        value: {
+          commitId: commitWithAccount.commit.id,
+          commitMessage: commitWithAccount.commit.message,
+          resourceId: commitWithAccount.resourceId,
+          resourceName: commitWithAccount.resource.name,
+          workspaceId: commitWithAccount.commit.project.workspaceId,
+          projectId: commitWithAccount.commit.projectId,
+          buildId: buildId,
+          projectName: commitWithAccount.commit.project.name,
+          createdAt: Date.now(),
+          externalId: encryptString(commitWithAccount.commit.user.id),
+          envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
+        },
+      })
+      .catch((error) =>
+        this.logger.error(`Failed to queue user build ${buildId}`, error)
+      );
+
+    await this.actionService.complete(step, EnumActionStepStatus.Success);
+  }
+
+  public async onCodeGenerationFailure(
+    response: CodeGenerationFailure.Value
+  ): Promise<void> {
+    const { buildId } = response;
+
+    //write the error message to the log
+    await this.onDsgLog({
+      buildId: buildId,
+      level: "error",
+      message: response.errorMessage || "Code generation failed",
+    });
+
+    const step = await this.getBuildStep(buildId, GENERATE_STEP_NAME);
+    if (!step) {
+      throw new Error(`Could not find generate code step for build ${buildId}`);
     }
 
-    await this.actionService.complete(step, status);
-    await this.updateCodeGeneratorVersion(buildId, codeGeneratorVersion);
+    await this.actionService.complete(step, EnumActionStepStatus.Failed);
   }
 
   /**
@@ -1143,6 +1173,10 @@ export class BuildService {
     const allPlugins = await this.pluginInstallationService.findMany({
       where: { resource: { id: resourceId } },
     });
+
+    const packages = await this.packageService.findMany({
+      where: { resource: { id: resourceId } },
+    });
     const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
@@ -1172,6 +1206,11 @@ export class BuildService {
       ? await Promise.all(
           resources
             .filter(({ id }) => id !== resourceId)
+            .filter(
+              ({ resourceType }) =>
+                resourceType !== EnumResourceType.ProjectConfiguration &&
+                resourceType !== EnumResourceType.PluginRepository
+            )
             .map((resource) =>
               this.getDSGResourceData(
                 resource.id,
@@ -1184,10 +1223,11 @@ export class BuildService {
         )
       : undefined;
 
-    return {
+    const dsgResourceData = {
       entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: plugins,
+      packages,
       moduleContainers: modules,
       moduleActions: moduleActions,
       moduleDtos: moduleDtos,
@@ -1216,6 +1256,8 @@ export class BuildService {
       },
       otherResources,
     };
+
+    return omitDeep(dsgResourceData, DSG_RESOURCE_DATA_PROPERTIES_TO_REMOVE);
   }
 
   public async onCreatePullRequestLog(

@@ -225,6 +225,18 @@ export type PropertyTypeDef = Omit<models.PropertyTypeDef, "type"> & {
 
 export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
 
+export type Package = BlockOmittedFields<models.Package> & {
+  displayName: string;
+};
+
+// export type PackageFile = {
+//   package: Package;
+//   path: string;
+//   originalFileChecksum: string;
+//   fullContent: string;
+//   diff: string;
+// };
+
 export type ModuleContainer = BlockOmittedFields<models.Module>;
 
 export type ModuleAction = Omit<

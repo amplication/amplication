@@ -2,6 +2,7 @@ export * as CodeGenerationFailure from "./lib/code-generation-failure";
 export * as CodeGenerationLog from "./lib/code-generation-log";
 export * as CodeGenerationRequest from "./lib/code-generation-request";
 export * as CodeGenerationSuccess from "./lib/code-generation-success";
+export * as CodeGenerationNotifyVersion from "./lib/code-generation-notify-version";
 export * as CreatePrFailure from "./lib/create-pr-failure";
 export * as CreatePrRequest from "./lib/create-pr-request";
 export * as CreatePrSuccess from "./lib/create-pr-success";
@@ -15,6 +16,9 @@ export * as GptConversationStart from "./lib/gpt-conversion-start";
 export * as GptConversationComplete from "./lib/gpt-conversion-complete";
 export * as UserBuild from "./lib/user-build";
 export * as UserFeatureAnnouncement from "./lib/user-feature-announcement";
+export * as PackageManagerCreateRequest from "./lib/package-manager-create-request";
+export * as PackageManagerCreateSuccess from "./lib/package-manager-create-success";
+export * as PackageManagerCreateFailure from "./lib/package-manager-create-failure";
 export * as DownloadPrivatePluginsRequest from "./lib/download-private-plugins-request";
 export * as DownloadPrivatePluginsSuccess from "./lib/download-private-plugins-success";
 export * as DownloadPrivatePluginsFailure from "./lib/download-private-plugins-failure";
@@ -26,6 +30,7 @@ export enum KAFKA_TOPICS {
   CODE_GENERATION_REQUEST_TOPIC = "build.internal.code-generation.request.1",
   CODE_GENERATION_SUCCESS_TOPIC = "build.internal.code-generation.success.1",
   CODE_GENERATION_FAILURE_TOPIC = "build.internal.code-generation.failure.1",
+  CODE_GENERATION_NOTIFY_VERSION_TOPIC = "build.internal.code-generation.notify-version.1",
   DSG_LOG_TOPIC = "build.internal.dsg-log.1",
   /// git-pull-request
   CREATE_PULL_REQUEST_COMPLETED_TOPIC = "git.internal.pull-request.completed.1",
@@ -53,4 +58,9 @@ export enum KAFKA_TOPICS {
   AI_CONVERSATION_COMPLETED_TOPIC = "ai.internal.conversation.completed.1",
 
   SHARED_GRAPHQL_SUBSCRIPTION_PUBSUB_TOPIC = "shared.internal.graphql-subscrition-pubsub.1",
+
+  // package-manager
+  PACKAGE_MANAGER_CREATE_REQUEST = "package.manager.create-packages.request.0",
+  PACKAGE_MANAGER_CREATE_SUCCESS = "package.manager.create-packages.success.0",
+  PACKAGE_MANAGER_CREATE_FAILURE = "package.manager.create-packages.failure.0",
 }

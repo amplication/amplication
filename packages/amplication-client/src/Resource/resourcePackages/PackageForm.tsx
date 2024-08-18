@@ -6,6 +6,7 @@ import { TextField, Form } from "@amplication/ui/design-system";
 import { validate } from "../../util/formikValidateJsonSchema";
 
 import FormikAutoSave from "../../util/formikAutoSave";
+import { DisplayNameField } from "../../Components/DisplayNameField";
 
 type Props = {
   onSubmit: (values: models.Package) => void;
@@ -24,12 +25,12 @@ export const INITIAL_VALUES: Partial<models.Package> = {
 };
 
 const FORM_SCHEMA = {
-  required: ["summary"],
+  required: ["displayName", "summary"],
   properties: {
-    summary: {
+    displayName: {
       type: "string",
-      minLength: 10,
-      maxLength: 2000,
+      minLength: 1,
+      maxLength: 249,
     },
   },
 };
@@ -55,12 +56,12 @@ const PackageForm = ({ onSubmit, defaultValues }: Props) => {
     >
       <Form childrenAsBlocks>
         <FormikAutoSave debounceMS={1000} />
+        <DisplayNameField name="displayName" label="Display Name" required />
         <TextField
           name="summary"
           label="Summary"
           textarea
-          textareaSize="small"
-          rows={3}
+          textareaSize="large"
         />
       </Form>
     </Formik>
