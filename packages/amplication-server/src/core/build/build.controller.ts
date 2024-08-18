@@ -17,6 +17,7 @@ import {
   DownloadPrivatePluginsFailure,
   DownloadPrivatePluginsLog,
   DownloadPrivatePluginsSuccess,
+  CodeGenerationNotifyVersion,
 } from "@amplication/schema-registry";
 
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -48,6 +49,24 @@ export class BuildController {
     };
   }
 
+  @EventPattern(KAFKA_TOPICS.CODE_GENERATION_NOTIFY_VERSION_TOPIC)
+  async onCodeGenerationNotifyVersion(
+    @Payload() message: CodeGenerationNotifyVersion.Value
+  ): Promise<void> {
+    const args = plainToInstance(CodeGenerationNotifyVersion.Value, message);
+    try {
+      await this.buildService.updateCodeGeneratorVersion(
+        args.buildId,
+        args.codeGeneratorVersion
+      );
+    } catch (error) {
+      this.logger.error("Failed to update code generator version ", error, {
+        buildId: args.buildId,
+        codeGeneratorVersion: args.codeGeneratorVersion,
+      });
+    }
+  }
+
   @EventPattern(KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC)
   async onCodeGenerationSuccess(
     @Payload() message: CodeGenerationSuccess.Value
@@ -56,10 +75,7 @@ export class BuildController {
     try {
       await this.buildService.saveToGitProvider(args.buildId);
 
-      await this.buildService.onCodeGenerationSuccess(
-        args.buildId,
-        args.codeGeneratorVersion
-      );
+      await this.buildService.onCodeGenerationSuccess(args.buildId);
     } catch (error) {
       this.logger.error("Failed to Complete Code Generation Step ", error, {
         buildId: args.buildId,
@@ -72,22 +88,13 @@ export class BuildController {
     @Payload() message: CodeGenerationFailure.Value
   ): Promise<void> {
     const args = plainToInstance(CodeGenerationFailure.Value, message);
-
-    const validationErrors = await validate(args);
-
-    if (validationErrors.length > 0) {
-      // Shallow error to avoid blocking the kafka message consumption of topic
-      // TODO remove this validation code https://github.com/amplication/amplication/pull/7478/files#diff-d5c5677256d985fd177eb124cf83fff2f5a963d813363cfcbd21208d957233f7R67
-      this.logger.error("Failed to decode kafka message", null, {
-        validationErrors: validationErrors.map((error) =>
-          error.toString().replace(/\n/g, " ")
-        ),
-        message,
+    try {
+      await this.buildService.onCodeGenerationFailure(args);
+    } catch (error) {
+      this.logger.error("Failed to execute onCodeGenerationFailure ", error, {
+        buildId: args.buildId,
       });
-      return;
     }
-
-    await this.buildService.onCodeGenerationFailure(args);
   }
 
   @EventPattern(KAFKA_TOPICS.CREATE_PR_SUCCESS_TOPIC)

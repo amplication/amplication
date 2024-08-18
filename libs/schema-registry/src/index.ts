@@ -2,6 +2,7 @@ export * as CodeGenerationFailure from "./lib/code-generation-failure";
 export * as CodeGenerationLog from "./lib/code-generation-log";
 export * as CodeGenerationRequest from "./lib/code-generation-request";
 export * as CodeGenerationSuccess from "./lib/code-generation-success";
+export * as CodeGenerationNotifyVersion from "./lib/code-generation-notify-version";
 export * as CreatePrFailure from "./lib/create-pr-failure";
 export * as CreatePrRequest from "./lib/create-pr-request";
 export * as CreatePrSuccess from "./lib/create-pr-success";
@@ -29,6 +30,7 @@ export enum KAFKA_TOPICS {
   CODE_GENERATION_REQUEST_TOPIC = "build.internal.code-generation.request.1",
   CODE_GENERATION_SUCCESS_TOPIC = "build.internal.code-generation.success.1",
   CODE_GENERATION_FAILURE_TOPIC = "build.internal.code-generation.failure.1",
+  CODE_GENERATION_NOTIFY_VERSION_TOPIC = "build.internal.code-generation.notify-version.1",
   DSG_LOG_TOPIC = "build.internal.dsg-log.1",
   /// git-pull-request
   CREATE_PULL_REQUEST_COMPLETED_TOPIC = "git.internal.pull-request.completed.1",
