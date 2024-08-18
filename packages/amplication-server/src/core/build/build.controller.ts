@@ -22,7 +22,6 @@ import {
 
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { validate } from "class-validator";
 
 @Controller("generated-apps")
 export class BuildController {
