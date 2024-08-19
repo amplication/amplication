@@ -150,22 +150,7 @@ export interface CreateMessageBrokerClientOptionsFactoryParams
 export interface CreateMessageBrokerServiceParams extends EventParams {}
 export interface CreateMessageBrokerServiceBaseParams extends EventParams {}
 
-export interface CreateProgramFileParams extends EventParams {
-  /**
-   * List of code blocks that will be added to the program file.
-   * The code blocks will be added to the `builder` object, before builder.Build() gets called.
-   * i.e. `builder.services.AddControllers();`
-   * @type {CodeBlock[]}
-   */
-  builderServicesBlocks: CodeBlock[];
-  /**
-   * List of code blocks that will be added to the program file.
-   * The code blocks will be added to the `app` object after builder.Build() gets called.
-   * i.e. `app.UseCors();`
-   * @type {CodeBlock[]}
-   */
-  appBlocks: CodeBlock[];
-}
+export interface CreateProgramFileParams extends EventParams {}
 
 export interface CreateSwaggerParams extends EventParams {
   fileDir: string;
