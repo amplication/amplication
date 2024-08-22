@@ -1,16 +1,16 @@
-import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigService } from "@nestjs/config";
-
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { Test, TestingModule } from "@nestjs/testing";
 import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
-import { BuildLoggerController } from "./build-logger.controller";
-import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
-import { EnumDomainName } from "../types";
+import { BuildLoggerController } from "./build-logger.controller";
+import { BuildLoggerService } from "./build-logger.service";
+import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
+
+const addCodeGenerationLogMock = jest.fn();
 
 describe("Build Logger Controller", () => {
   let controller: BuildLoggerController;
-  let buildJobsHandlerService: BuildJobsHandlerService;
   const mockBuildJobsHandlerServiceExtractBuildId = jest.fn();
   const mockBuildJobsHandlerServiceExtractDomain = jest.fn();
 
@@ -37,6 +37,12 @@ describe("Build Logger Controller", () => {
           })),
         },
         {
+          provide: BuildLoggerService,
+          useClass: jest.fn(() => ({
+            addCodeGenerationLog: addCodeGenerationLogMock,
+          })),
+        },
+        {
           provide: ConfigService,
           useValue: {
             get: (variable) => {
@@ -60,9 +66,6 @@ describe("Build Logger Controller", () => {
     }).compile();
 
     controller = module.get<BuildLoggerController>(BuildLoggerController);
-    buildJobsHandlerService = module.get<BuildJobsHandlerService>(
-      BuildJobsHandlerService
-    );
   });
 
   it("should be defined", () => {
@@ -70,67 +73,14 @@ describe("Build Logger Controller", () => {
   });
 
   it("should emit `CodeGenerationLog.KafkaEvent` message on Kafka producer service", async () => {
-    const spyOnBuildJobsHandlerServiceExtractBuildId = jest
-      .spyOn(buildJobsHandlerService, "extractBuildId")
-      .mockReturnValue("buildID");
-
     const mockRequestLogDOT: CodeGenerationLogRequestDto = {
       buildId: "buildID",
       level: "info",
       message: "test message",
     };
 
-    const logEvent: CodeGenerationLog.KafkaEvent = {
-      key: { buildId: mockRequestLogDOT.buildId },
-      value: mockRequestLogDOT,
-    };
-
     await controller.onCodeGenerationLog(mockRequestLogDOT);
 
-    expect(mockServiceEmitMessage).toBeCalledWith(
-      KAFKA_TOPICS.DSG_LOG_TOPIC,
-      logEvent
-    );
-
-    expect(spyOnBuildJobsHandlerServiceExtractBuildId).toBeCalledTimes(1);
-    await expect(mockServiceEmitMessage()).resolves.not.toThrow();
+    expect(addCodeGenerationLogMock).toBeCalledWith(mockRequestLogDOT);
   });
-
-  it.each([EnumDomainName.Server, EnumDomainName.AdminUI])(
-    "should emit `CodeGenerationLog.KafkaEvent` message with log message prefixed with job domain when exists",
-    async (domain) => {
-      const buildId = `buildID`;
-      const jobBuildId = `${buildId}-${domain}`;
-      mockBuildJobsHandlerServiceExtractBuildId.mockReturnValue(buildId);
-      mockBuildJobsHandlerServiceExtractDomain.mockReturnValue(domain);
-
-      const mockRequestLogDOT: CodeGenerationLogRequestDto = {
-        buildId: jobBuildId,
-        level: "info",
-        message: "test message",
-      };
-
-      const logEvent: CodeGenerationLog.KafkaEvent = {
-        key: { buildId },
-        value: mockRequestLogDOT,
-      };
-
-      await controller.onCodeGenerationLog(mockRequestLogDOT);
-
-      expect(mockServiceEmitMessage).toBeCalledWith(
-        KAFKA_TOPICS.DSG_LOG_TOPIC,
-        {
-          ...logEvent,
-          value: {
-            buildId,
-            level: mockRequestLogDOT.level,
-            message: `[${domain}] test message`,
-          },
-        }
-      );
-
-      expect(mockBuildJobsHandlerServiceExtractBuildId).toBeCalledTimes(1);
-      expect(mockBuildJobsHandlerServiceExtractDomain).toBeCalledTimes(1);
-    }
-  );
 });

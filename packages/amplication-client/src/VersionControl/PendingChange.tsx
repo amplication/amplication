@@ -80,6 +80,13 @@ export const changeOriginMap = {
         type: "Service Settings",
         pluralTypeName: "Service Settings",
       },
+      [models.EnumBlockType.Package]: {
+        relativeUrl: `settings/packages`,
+        icon: "ai",
+        displayName: "Service packages",
+        type: "Service packages",
+        pluralTypeName: "Service Packages",
+      },
       [models.EnumBlockType.ProjectConfigurationSettings]: {
         //Todo: link to project setting
         relativeUrl: `settings/update`,
