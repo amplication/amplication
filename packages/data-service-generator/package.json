@@ -5,11 +5,12 @@
     "dsg:package:container": "./scripts/package-container.sh"
   },
   "dependencies": {
+    "@amplication/util-logging": "0.0.2",
     "@amplication/code-gen-types": "*",
     "@amplication/code-gen-utils": "*",
     "@apollo/client": "^3.7.1",
-    "@babel/parser": "7.23.6",
-    "@babel/types": "7.23.6",
+    "@babel/parser": "7.25.4",
+    "@babel/types": "7.25.4",
     "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.3.12",
@@ -40,7 +41,7 @@
     "json-schema": "^0.4.0",
     "json-schema-to-typescript": "^14.0.4",
     "lodash": "^4.17.21",
-    "logform": "2.5.1",
+    "logform": "2.6.1",
     "nest-access-control": "^2.2.0",
     "normalize-path": "^3.0.0",
     "pacote": "^15.0.8",
@@ -63,7 +64,7 @@
     "tslib": "^2.6.2",
     "type-fest": "^3.13.0",
     "util": "0.12.5",
-    "validator": "13.11.0",
+    "validator": "13.12.0",
     "winston": "3.8.2",
     "yaml": "2.2.2",
     "@amplication/csharp-ast": "*"

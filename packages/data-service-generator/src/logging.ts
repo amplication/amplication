@@ -1,4 +1,4 @@
-import { Logger, LogLevel } from "@amplication/util/logging";
+import { Logger, LogLevel } from "@amplication/util-logging";
 
 const { LOG_LEVEL, NODE_ENV } = process.env;
 
