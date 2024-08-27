@@ -1,5 +1,5 @@
 import { BuildLogger as IBuildLogger } from "@amplication/code-gen-types";
-import { LogEntry, LogLevel } from "@amplication/util/logging";
+import { LogEntry, LogLevel } from "@amplication/util-logging";
 import { logger as applicationLogger } from "./logging";
 import { httpClient } from "./utils/http-client";
 

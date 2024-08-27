@@ -131,11 +131,7 @@
         "@nx/dependency-checks": [
           "error",
           {
-            "ignoredDependencies": [
-              "@amplication/util/logging",
-              "@amplication/dsg-utils",
-              "web-vitals"
-            ],
+            "ignoredDependencies": ["@amplication/dsg-utils", "web-vitals"],
             "includeTransitiveDependencies": true
           }
         ]

@@ -24,7 +24,7 @@ import {
   getDefaultActionsForEntity,
   getDefaultActionsForRelationField,
 } from "@amplication/dsg-utils";
-import { ILogger } from "@amplication/util/logging";
+import { ILogger } from "@amplication/util-logging";
 import { camelCase } from "camel-case";
 import { get, isEmpty, trim } from "lodash";
 import { join } from "path";

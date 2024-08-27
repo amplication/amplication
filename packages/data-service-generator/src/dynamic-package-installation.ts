@@ -3,7 +3,7 @@ import {
   DynamicPackageInstallationManager,
   PackageInstallation,
 } from "./utils/dynamic-installation/DynamicPackageInstallationManager";
-import { ILogger } from "@amplication/util/logging";
+import { ILogger } from "@amplication/util-logging";
 import DsgContext from "./dsg-context";
 
 export async function dynamicPackagesInstallations(

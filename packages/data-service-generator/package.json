@@ -5,6 +5,7 @@
     "dsg:package:container": "./scripts/package-container.sh"
   },
   "dependencies": {
+    "@amplication/util-logging": "0.0.2",
     "@amplication/code-gen-types": "*",
     "@amplication/code-gen-utils": "*",
     "@apollo/client": "^3.7.1",

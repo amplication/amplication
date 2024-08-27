@@ -1,6 +1,6 @@
 {
-  "name": "@amplication/util-logging",
-  "version": "0.0.2",
+  "name": "@amplication/util-nestjs-logging",
+  "version": "0.0.1",
   "description": "This library supplies a logger for Amplication Services",
   "main": "./src/index.js",
   "author": {
@@ -9,11 +9,8 @@
     "url": "https://amplication.com"
   },
   "dependencies": {
-    "tslib": "^2.6.2",
-    "winston": "3.8.2",
-    "logform": "2.5.1",
-    "@types/node": "18.14.2",
-    "@types/triple-beam": "^1.3.2"
+    "@amplication/util-logging": "0.0.2",
+    "@nestjs/common": "^9.4.0"
   },
   "type": "commonjs"
 }
