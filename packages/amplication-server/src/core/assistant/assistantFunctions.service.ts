@@ -437,13 +437,16 @@ export class AssistantFunctionsService {
 
             return {
               entityLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities/${entity.id}`,
-              entityFields: fields.map((field) => ({
-                id: field.id,
-                name: field.name,
-                type: field.dataType,
-              })),
+
               apisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${defaultModuleId}`,
-              result: entity,
+              result: {
+                entity,
+                fields: fields.map((field) => ({
+                  id: field.id,
+                  name: field.name,
+                  type: field.dataType,
+                })),
+              },
             };
           } catch (error) {
             this.logger.error(
