@@ -30,6 +30,7 @@ import { USER_ENTITY_NAME } from "../entity/constants";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { EnumResourceType } from "@amplication/code-gen-types";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+import exp from "constants";
 
 const EXAMPLE_CHAT_OPENAI_KEY = "EXAMPLE_CHAT_OPENAI_KEY";
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
@@ -645,13 +646,19 @@ describe("AssistantFunctionsService", () => {
         allApisLink: expect.any(String),
         result: [
           expect.objectContaining({
-            result: expect.objectContaining(entityResults),
+            result: expect.objectContaining({
+              entity: expect.objectContaining(entityResults),
+              fields: expect.any(Array),
+            }),
           }),
           expect.objectContaining({
             error: errorMessage,
           }),
           expect.objectContaining({
-            result: expect.objectContaining(entityResults),
+            result: expect.objectContaining({
+              entity: expect.objectContaining(entityResults),
+              fields: expect.any(Array),
+            }),
           }),
         ],
       })
