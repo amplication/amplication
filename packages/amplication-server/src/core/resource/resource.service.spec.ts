@@ -729,6 +729,63 @@ describe("ResourceService", () => {
     );
   });
 
+  it("should create a repo on the project when creating a service with a repo and there is no repo on the project ", async () => {
+    const createResourceArgs = {
+      args: {
+        data: {
+          name: EXAMPLE_RESOURCE_NAME,
+          description: EXAMPLE_RESOURCE_DESCRIPTION,
+          color: DEFAULT_RESOURCE_COLORS.service,
+          resourceType: EnumResourceType.Service,
+          wizardType: "create resource",
+          codeGenerator: EnumCodeGenerator.NodeJs,
+          project: {
+            connect: {
+              id: EXAMPLE_PROJECT_ID,
+            },
+          },
+          serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+          gitRepository: {
+            ...EXAMPLE_GIT_REPOSITORY_INPUT,
+            isOverrideGitRepository: false, //even if isOverride is false, it should create a repo on the project
+          },
+        },
+      },
+      user: EXAMPLE_USER,
+    };
+
+    jest.spyOn(service, "projectConfiguration").mockReturnValueOnce(
+      Promise.resolve({
+        ...EXAMPLE_PROJECT_CONFIGURATION_RESOURCE,
+
+        gitRepository: null,
+        gitRepositoryId: null,
+      })
+    );
+
+    expect(
+      await service.createService(
+        createResourceArgs.args,
+        createResourceArgs.user,
+        false,
+        true
+      )
+    ).toEqual(EXAMPLE_RESOURCE);
+
+    expect(prismaGitRepositoryCreateMock).toBeCalledTimes(1);
+    expect(prismaResourceUpdateMock).toBeCalledTimes(1);
+    expect(prismaResourceUpdateMock).toBeCalledWith({
+      where: { id: EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID },
+      data: {
+        gitRepository: {
+          connect: {
+            id: EXAMPLE_GIT_REPOSITORY.id,
+          },
+        },
+      },
+    });
+  });
+
   describe("createPreviewService", () => {
     it("should create a preview service", async () => {
       const createResourceArgs = {
