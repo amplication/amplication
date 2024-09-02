@@ -92,7 +92,7 @@
     "ast-types": "^0.14.2",
     "auth0": "^4.2.0",
     "aws-rum-web": "^1.17.1",
-    "axios": "^0.28.0",
+    "axios": "^1.7.7",
     "bcrypt": "^5.0.1",
     "chalk": "^5.1.2",
     "class-transformer": "^0.5.1",
