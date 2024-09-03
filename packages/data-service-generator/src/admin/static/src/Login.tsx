@@ -1,9 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { useLogin, useNotify, Notification, defaultTheme } from "react-admin";
-import { ThemeProvider } from "@material-ui/styles";
-import { createTheme } from "@material-ui/core/styles";
-import { Button } from "@material-ui/core";
+import { Button, createTheme, ThemeProvider } from "@mui/material";
 import "./login.scss";
 
 const CLASS_NAME = "login-page";
