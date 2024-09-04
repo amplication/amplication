@@ -267,7 +267,7 @@ export class GitClientService {
         });
       }
 
-      const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
+      const amplicationIgnoreManager = await this.manageAmplicationIgnoreFile(
         owner,
         repositoryName,
         repositoryGroupName,
@@ -277,7 +277,7 @@ export class GitClientService {
       const preparedFiles = await prepareFilesForPullRequest(
         gitResourceMeta,
         files,
-        amplicationIgnoreManger
+        amplicationIgnoreManager
       );
 
       this.logger.info(`Got a ${pullRequestMode} pull request mode`);
