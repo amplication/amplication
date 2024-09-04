@@ -66,6 +66,7 @@
     "util": "0.12.5",
     "winston": "3.8.2",
     "yaml": "2.2.2",
+    "validator": "13.11.0",
     "@amplication/csharp-ast": "*",
     "@mui/material": "^5.13.5",
     "vite": "~4.3.9",
