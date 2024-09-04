@@ -64,9 +64,11 @@
     "tslib": "^2.6.2",
     "type-fest": "^3.13.0",
     "util": "0.12.5",
-    "validator": "13.11.0",
     "winston": "3.8.2",
     "yaml": "2.2.2",
-    "@amplication/csharp-ast": "*"
+    "@amplication/csharp-ast": "*",
+    "@mui/material": "^5.13.5",
+    "vite": "~4.3.9",
+    "@vitejs/plugin-react": "3.1.0"
   }
 }
