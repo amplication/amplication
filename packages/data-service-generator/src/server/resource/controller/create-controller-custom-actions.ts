@@ -25,21 +25,21 @@ const BODY_PROPERTY_NAME = "body";
 const INPUT_PROPERTY_TYPE_TO_ID_AND_DECORATOR: Record<
   Exclude<keyof typeof EnumModuleActionRestInputSource, "Split">,
   {
-    id: namedTypes.Identifier;
-    decorator: namedTypes.Decorator;
+    getId: () => namedTypes.Identifier;
+    getDecorator: () => namedTypes.Decorator;
   }
 > = {
   Query: {
-    id: builders.identifier(QUERY_PROPERTY_NAME),
-    decorator: createControllerQueryDecorator(),
+    getId: () => builders.identifier(QUERY_PROPERTY_NAME),
+    getDecorator: () => createControllerQueryDecorator(),
   },
   Params: {
-    id: builders.identifier(PARAMS_PROPERTY_NAME),
-    decorator: createControllerParamDecorator(),
+    getId: () => builders.identifier(PARAMS_PROPERTY_NAME),
+    getDecorator: () => createControllerParamDecorator(),
   },
   Body: {
-    id: builders.identifier(BODY_PROPERTY_NAME),
-    decorator: createControllerBodyDecorator(),
+    getId: () => builders.identifier(BODY_PROPERTY_NAME),
+    getDecorator: () => createControllerBodyDecorator(),
   },
 };
 
@@ -179,10 +179,10 @@ function prepareInputParameter(
 ): namedTypes.Identifier | null {
   const parameterType = createPropTypeFromTypeDefList(typeDefs);
   const parameter =
-    INPUT_PROPERTY_TYPE_TO_ID_AND_DECORATOR[inputPropertyType].id;
+    INPUT_PROPERTY_TYPE_TO_ID_AND_DECORATOR[inputPropertyType].getId();
   parameter.typeAnnotation = builders.tsTypeAnnotation(parameterType);
   const decorators = [
-    INPUT_PROPERTY_TYPE_TO_ID_AND_DECORATOR[inputPropertyType].decorator,
+    INPUT_PROPERTY_TYPE_TO_ID_AND_DECORATOR[inputPropertyType].getDecorator(),
   ];
   //@ts-ignore - property is missing in ast-types
   parameter.decorators = decorators;
