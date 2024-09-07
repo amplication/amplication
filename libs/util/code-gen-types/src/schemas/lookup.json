@@ -23,7 +23,7 @@
     "fkFieldName": {
       "title": "Foreign Key Field Name (Optional)",
       "type": "string",
-      "default": null
+      "default": ""
     },
     "relatedFieldId": {
       "title": "Related Field",
