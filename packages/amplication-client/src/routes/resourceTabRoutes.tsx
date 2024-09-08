@@ -10,6 +10,7 @@ const resourceTabRoutes = [
     routeTrackType: "",
     exactPath: false,
     routes: resourceEntitiesRoutes,
+    isAnalytics: true,
   },
   {
     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules",
