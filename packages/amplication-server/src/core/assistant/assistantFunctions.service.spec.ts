@@ -645,13 +645,19 @@ describe("AssistantFunctionsService", () => {
         allApisLink: expect.any(String),
         result: [
           expect.objectContaining({
-            result: expect.objectContaining(entityResults),
+            result: expect.objectContaining({
+              entity: expect.objectContaining(entityResults),
+              fields: expect.any(Array),
+            }),
           }),
           expect.objectContaining({
             error: errorMessage,
           }),
           expect.objectContaining({
-            result: expect.objectContaining(entityResults),
+            result: expect.objectContaining({
+              entity: expect.objectContaining(entityResults),
+              fields: expect.any(Array),
+            }),
           }),
         ],
       })

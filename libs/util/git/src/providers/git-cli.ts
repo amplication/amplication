@@ -7,6 +7,7 @@ import {
 } from "simple-git";
 import { Commit, UpdateFile } from "../types";
 import { mkdir, writeFile, rm } from "node:fs/promises";
+import fs from "fs-extra";
 import { dirname, join } from "node:path";
 import { existsSync } from "node:fs";
 import { ILogger } from "@amplication/util/logging";
@@ -120,7 +121,8 @@ export class GitCli {
         const fileParentDir = dirname(filePath);
 
         if (file.deleted) {
-          await rm(filePath);
+          //remove the file or silently ignore if it does not exist
+          await fs.remove(filePath);
           return filePath;
         }
 

@@ -299,6 +299,10 @@ export class ResourceService {
     const { gitRepository } = args.data;
     let overrideGitRepository = false;
 
+    if (!projectConfiguration.gitRepositoryId) {
+      updateProjectGitRepository = true;
+    }
+
     //when requested, create a new git repository and connect to the resource, otherwise inherit the project's git repository
     if (
       gitRepository &&

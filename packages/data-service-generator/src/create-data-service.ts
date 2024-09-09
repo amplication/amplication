@@ -6,7 +6,7 @@ import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
 import { prepareContext } from "./prepare-context";
 import { createServer } from "./server/create-server";
-import { ILogger } from "@amplication/util/logging";
+import { ILogger } from "@amplication/util-logging";
 import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
 import { dynamicPackagesInstallations } from "./dynamic-package-installation";
 import { logger } from "./logging";

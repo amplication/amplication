@@ -32,7 +32,7 @@ import {
   CreateControllerBaseModuleFileParams,
 } from "./dotnet-plugin-events-params.types";
 import { DotnetEventNames, PluginEventType } from "./dotnet-plugins.types";
-import { CodeBlock, Interface } from "@amplication/csharp-ast";
+import { CodeBlock, Interface, ProgramClass } from "@amplication/csharp-ast";
 
 export type DotnetEvents = {
   [DotnetEventNames.CreateServerAuth]?: PluginEventType<CreateServerAuthParams>;
@@ -66,7 +66,7 @@ export type DotnetEvents = {
   [DotnetEventNames.CreateMessageBrokerServiceBase]?: PluginEventType<CreateMessageBrokerServiceBaseParams>;
   [DotnetEventNames.CreateProgramFile]?: PluginEventType<
     CreateProgramFileParams,
-    CodeBlock
+    ProgramClass
   >;
   [DotnetEventNames.CreateSwagger]?: PluginEventType<CreateSwaggerParams>;
   [DotnetEventNames.CreateSeed]?: PluginEventType<CreateSeedParams>;

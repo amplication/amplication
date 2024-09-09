@@ -72,6 +72,7 @@ class DsgContext implements types.DsgContext {
 
   public resourceType!: EnumResourceType;
   public pluginInstallations: types.PluginInstallation[] = [];
+  public packages: types.Package[] = [];
   public moduleActions: types.ModuleAction[] = [];
   public moduleContainers: types.ModuleContainer[] = [];
   public moduleDtos: types.ModuleDto[] = [];

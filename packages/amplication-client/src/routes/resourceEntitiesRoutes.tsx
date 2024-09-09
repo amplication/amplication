@@ -8,7 +8,7 @@ const resourceEntitiesRoutes = [
     routeTrackType: "",
     exactPath: false,
     routes: [],
-    isAnalytics: true,
+    isAnalytics: false,
   },
 
   {

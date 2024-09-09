@@ -24,6 +24,7 @@ import { GitProviderModule } from "../git/git.provider.module";
 import { ModuleModule } from "../module/module.module";
 import { ModuleActionModule } from "../moduleAction/moduleAction.module";
 import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
+import { PackageModule } from "../package/package.module";
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
     ModuleModule,
     ModuleActionModule,
     ModuleDtoModule,
+    PackageModule,
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],

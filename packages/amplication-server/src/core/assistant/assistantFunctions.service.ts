@@ -437,13 +437,16 @@ export class AssistantFunctionsService {
 
             return {
               entityLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities/${entity.id}`,
-              entityFields: fields.map((field) => ({
-                id: field.id,
-                name: field.name,
-                type: field.dataType,
-              })),
+
               apisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${defaultModuleId}`,
-              result: entity,
+              result: {
+                entity,
+                fields: fields.map((field) => ({
+                  id: field.id,
+                  name: field.name,
+                  type: field.dataType,
+                })),
+              },
             };
           } catch (error) {
             this.logger.error(
@@ -489,7 +492,7 @@ export class AssistantFunctionsService {
           }
 
           try {
-            return this.entityService.createFieldByDisplayName(
+            return await this.entityService.createFieldByDisplayName(
               {
                 data: {
                   displayName: field.name,
@@ -510,6 +513,17 @@ export class AssistantFunctionsService {
               error,
               loggerContext
             );
+            if (error.code === "P2002") {
+              return {
+                fieldName: field.name,
+                error:
+                  "Field name already exists, let the user know and ask to choose a different name or do not create the field",
+              };
+            }
+            return {
+              fieldName: field.name,
+              error: error.message,
+            };
           }
         })
       );
