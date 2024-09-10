@@ -7,7 +7,10 @@ const usePageTracking = () => {
 
   useEffect(() => {
     const url = `${window.location.origin}${match.path}`;
-    const path = match.path.replaceAll(":", "");
+    const path = match.path
+      .replaceAll(":", "")
+      .replaceAll("([A-Za-z0-9-]{20,})", "");
+
     analytics.page(path.replaceAll("/", "-"), {
       path,
       url,

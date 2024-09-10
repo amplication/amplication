@@ -31,7 +31,7 @@ function RouteWithAnalytics(props: Props) {
   );
 }
 
-function RouteWithAnalyticsContent({
+export function RouteWithAnalyticsContent({
   children,
 }: {
   children: React.ReactNode;
