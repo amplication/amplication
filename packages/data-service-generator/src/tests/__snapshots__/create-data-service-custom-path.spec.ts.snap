@@ -2938,6 +2938,8 @@ export class StringNullableFilter {
   not?: string;
 }
 ",
+  "test-ui/src/vite-env.d.ts": "/// <reference types="vite/client" />
+",
   "test-ui/tsconfig.json": "{
   "compilerOptions": {
     "target": "es5",
