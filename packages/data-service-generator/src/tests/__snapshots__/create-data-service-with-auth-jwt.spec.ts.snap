@@ -37,7 +37,7 @@ yarn-error.log*
     "graphql": "15.6.1",
     "lodash": "4.17.21",
     "pluralize": "8.0.0",
-    "ra-data-graphql-amplication": "1.0.0",
+    "ra-data-graphql-amplication": "1.0.2",
     "react": "^18.3.0",
     "react-admin": "^5.1.0",
     "react-dom": "^18.3.0",
@@ -97,7 +97,7 @@ yarn-error.log*
 }",
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from "react";
 import { Admin, DataProvider, Resource } from "react-admin";
-import buildGraphQLProvider from "./data-provider/graphqlDataProvider";
+import dataProvider from "./data-provider/graphqlDataProvider";
 import { theme } from "./theme/theme";
 import Login from "./Login";
 import "./App.scss";
@@ -129,19 +129,6 @@ import { EmptyShow } from "./empty/EmptyShow";
 import { jwtAuthProvider } from "./auth-provider/ra-auth-jwt";
 
 const App = (): React.ReactElement => {
-  const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
-  useEffect(() => {
-    buildGraphQLProvider
-      .then((provider: any) => {
-        setDataProvider(() => provider);
-      })
-      .catch((error: any) => {
-        console.log(error);
-      });
-  }, []);
-  if (!dataProvider) {
-    return <div>Loading</div>;
-  }
   return (
     <div className="App">
       <Admin
