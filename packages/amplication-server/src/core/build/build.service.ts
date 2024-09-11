@@ -1180,6 +1180,12 @@ export class BuildService {
     const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
+    const orderedPlugins =
+      await this.pluginInstallationService.orderInstalledPlugins(
+        resourceId,
+        plugins
+      );
+
     const moduleActions = await this.moduleActionService.findMany({
       where: { resource: { id: resourceId } },
     });
@@ -1226,7 +1232,7 @@ export class BuildService {
     const dsgResourceData = {
       entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],
       roles: await this.getResourceRoles(resourceId),
-      pluginInstallations: plugins,
+      pluginInstallations: orderedPlugins,
       packages,
       moduleContainers: modules,
       moduleActions: moduleActions,
