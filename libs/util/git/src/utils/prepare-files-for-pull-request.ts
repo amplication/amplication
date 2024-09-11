@@ -7,7 +7,7 @@ export async function prepareFilesForPullRequest(
   gitResourceMeta: GitResourceMeta,
   pullRequestModule: File[],
   amplicationIgnoreManger: AmplicationIgnoreManger,
-  skipCustomizableFiles = false
+  skipCustomizableFiles: boolean
 ): Promise<UpdateFile[]> {
   //do not override server/scripts/customSeed.ts
   let doNotOverride = [

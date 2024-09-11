@@ -1087,6 +1087,7 @@ export class BuildService {
               (branchPerResourceEntitlement &&
                 branchPerResourceEntitlement.hasAccess) ??
               false,
+            skipCustomizableFiles: false,
           };
 
           const createPullRequestEvent: CreatePrRequest.KafkaEvent = {

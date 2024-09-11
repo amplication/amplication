@@ -73,6 +73,7 @@ export class PullRequestService {
     repositoryGroupName,
     baseBranchName,
     isBranchPerResource,
+    skipCustomizableFiles,
   }: CreatePrRequest.Value): Promise<{
     pullRequestUrl: string;
     diffStat: string;
@@ -144,6 +145,7 @@ export class PullRequestService {
         resourceId,
         buildId: newBuildId,
         baseBranchName,
+        skipCustomizableFiles,
       });
 
     logger.info("Opened a new pull request", { pullRequestUrl, diffStat });
