@@ -26,8 +26,11 @@ import {
   EnumModuleDtoType,
 } from "@amplication/code-gen-types";
 import { validateCustomActionsEntitlement } from "../block/block.util";
+import { isReservedName } from "../entity/reservedNames";
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
+
+const RESERVED_MODULE_NAMES = ["auth"];
 
 @Injectable()
 export class ModuleService extends BlockTypeService<
@@ -62,6 +65,15 @@ export class ModuleService extends BlockTypeService<
     const regex = /^[a-zA-Z0-9._-]{1,249}$/;
     if (!regex.test(moduleName)) {
       throw new AmplicationError(`Invalid module name: ${moduleName}`);
+    }
+
+    if (
+      isReservedName(moduleName) ||
+      RESERVED_MODULE_NAMES.includes(moduleName.toLowerCase())
+    ) {
+      throw new AmplicationError(
+        `Module name ${moduleName} is reserved and cannot be used.`
+      );
     }
   }
 
