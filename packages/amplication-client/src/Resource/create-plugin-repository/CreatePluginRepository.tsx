@@ -17,7 +17,6 @@ import { formatError } from "../../util/error";
 import { preparePluginRepositoryObject } from "../constants";
 import "./CreatePluginRepository.scss";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import { useOnboardingChecklistContext } from "../../OnboardingChecklist/context/OnboardingChecklistContext";
 
 type Props = AppRouteProps & {
   match: match<{

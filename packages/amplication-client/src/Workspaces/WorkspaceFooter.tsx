@@ -18,7 +18,6 @@ import { AppContext } from "../context/appContext";
 import { Commit } from "../models";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import "./WorkspaceFooter.scss";
-import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 const CLASS_NAME = "workspace-footer";
 
@@ -30,7 +29,6 @@ const WorkspaceFooter: React.FC<{ lastCommit: Commit }> = ({ lastCommit }) => {
     commitRunning,
     gitRepositoryFullName,
     gitRepositoryUrl,
-    projectConfigurationResource,
     gitRepositoryOrganizationProvider,
   } = useContext(AppContext);
 
@@ -66,7 +64,6 @@ const WorkspaceFooter: React.FC<{ lastCommit: Commit }> = ({ lastCommit }) => {
   );
 
   const { gitUrl } = useBuildGitUrl(lastResourceBuild);
-  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   return (
     currentProject && (
@@ -91,13 +88,6 @@ const WorkspaceFooter: React.FC<{ lastCommit: Commit }> = ({ lastCommit }) => {
                     gitRepositoryOrganizationProvider?.toLocaleLowerCase() ||
                     "_blank"
                   }
-                  onClick={() => {
-                    if (gitUrl) {
-                      setOnboardingProps({
-                        viewPRClicked: true,
-                      });
-                    }
-                  }}
                 >
                   <Text textStyle={EnumTextStyle.Description}>
                     <GitRepoDetails

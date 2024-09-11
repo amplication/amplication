@@ -17,7 +17,6 @@ import { formatError } from "../../util/error";
 import { prepareMessageBrokerObject } from "../constants";
 import "./CreateMessageBroker.scss";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import { useOnboardingChecklistContext } from "../../OnboardingChecklist/context/OnboardingChecklistContext";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -37,7 +36,6 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
 
   const history = useHistory();
   const { trackEvent } = useTracking();
-  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   const errorMessage = formatError(errorCreateMessageBroker);
   const [isCreatingMessageBroker, setIsCreatingMessageBroker] = useState(false);
@@ -54,11 +52,8 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
     (data: models.ResourceCreateInput, eventName: string) => {
       trackEvent({ eventName: AnalyticsEventNames.MessageBrokerCreateClick });
       createMessageBroker(data, eventName);
-      setOnboardingProps({
-        messageBrokerCreated: true,
-      });
     },
-    [createMessageBroker, trackEvent, setOnboardingProps]
+    [createMessageBroker, trackEvent]
   );
 
   const handleBackToProjectClick = () => {
