@@ -5,7 +5,6 @@ import { ConfirmationDialog } from "@amplication/ui/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { SYSTEM_DATA_TYPES } from "./constants";
 import { AppContext } from "../context/appContext";
-import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -35,7 +34,6 @@ export const DeleteEntityField = ({
   const { relatedFieldId, relatedEntityId } = properties;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const { addEntity } = useContext(AppContext);
-  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   const { data: relatedFieldData } = useQuery(GET_ENTITY_WITH_SPECIFIC_FIELD, {
     variables: {
@@ -95,14 +93,8 @@ export const DeleteEntityField = ({
       variables: {
         entityFieldId: entityField.id,
       },
-    })
-      .catch(onError)
-      .then(() => {
-        setOnboardingProps({
-          entityUpdated: true,
-        });
-      });
-  }, [entityField, deleteEntityField, onError, setOnboardingProps]);
+    }).catch(onError);
+  }, [entityField, deleteEntityField, onError]);
 
   return (
     <>

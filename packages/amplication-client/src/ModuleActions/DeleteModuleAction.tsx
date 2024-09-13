@@ -6,7 +6,6 @@ import useModuleAction from "./hooks/useModuleAction";
 import { formatError } from "../util/error";
 import { AppContext } from "../context/appContext";
 import { useHistory } from "react-router-dom";
-import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -20,7 +19,6 @@ export const DeleteModuleAction = ({ moduleAction }: Props) => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
   const history = useHistory();
-  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   const { deleteModuleAction, deleteModuleActionError } = useModuleAction();
 
@@ -52,9 +50,6 @@ export const DeleteModuleAction = ({ moduleAction }: Props) => {
         history.push(
           `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules`
         );
-        setOnboardingProps({
-          apiUpdated: true,
-        });
       })
       .catch(console.error);
   }, [
@@ -64,7 +59,6 @@ export const DeleteModuleAction = ({ moduleAction }: Props) => {
     currentResource,
     currentWorkspace,
     history,
-    setOnboardingProps,
   ]);
 
   return (
