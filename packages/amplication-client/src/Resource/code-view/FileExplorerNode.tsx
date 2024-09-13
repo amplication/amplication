@@ -35,7 +35,7 @@ export const FileExplorerNode = ({ file, onSelect }: FileExplorerNodeProps) => {
     <TreeItem
       onNodeClick={handleNodeClick}
       data={file}
-      nodeId={file?.path}
+      itemId={file?.path}
       label={file?.name}
       icon={iconName}
       farContent={farIcon}
