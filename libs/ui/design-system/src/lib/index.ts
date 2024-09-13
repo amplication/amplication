@@ -261,3 +261,8 @@ export { NavigationFilter } from "./components/NavigationFilter/NavigationFilter
 export { NavigationFilterItem } from "./components/NavigationFilter/NavigationFilterItem";
 
 export type { Props as NavigationFilterItemProps } from "./components/NavigationFilter/NavigationFilterItem";
+
+export {
+  DataGrid,
+  Props as DataGridProps,
+} from "./components/DataGrid/DataGrid";

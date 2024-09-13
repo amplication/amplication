@@ -1,0 +1,84 @@
+@import "../../style/index.scss";
+
+/* General Styles for the DataGrid */
+.amp-data-grid {
+  --data-grid-background: var(--gray-full);
+
+  --DataGrid-containerBackground: var(--data-grid-background) !important;
+
+  & .MuiButtonBase-root {
+    color: var(--gray-base) !important;
+  }
+
+  &__root {
+    background-color: var(--data-grid-background);
+    border-color: var(--gray-60) !important;
+
+    .MuiDataGrid-container--top,
+    .MuiDataGrid-container--bottom {
+      background-color: var(--data-grid-background);
+    }
+  }
+
+  &__column-headers {
+    --DataGrid-rowBorderColor: var(--border-color);
+  }
+
+  &__column-header {
+    background-color: var(--data-grid-background);
+    color: var(--gray-base);
+  }
+
+  & &__row {
+    background-color: var(--gray-90);
+    border-color: var(--border-color);
+
+    &:hover {
+      background-color: var(--gray-80) !important;
+    }
+
+    &.Mui-selected {
+      background-color: var(--gray-90);
+    }
+
+    /* Alternating Row Colors */
+    &:nth-child(even) {
+      background-color: var(--gray-90);
+    }
+  }
+
+  & .MuiDataGrid-cellEmpty {
+    border-color: var(--border-color) !important;
+  }
+  & &__cell {
+    color: var(--gray-base);
+    border-color: var(--border-color) !important;
+
+    &:focus {
+      outline: none;
+      background-color: var(--gray-10);
+    }
+
+    &--editable {
+      background-color: var(--gray-10);
+    }
+
+    &--error {
+      border: 1px solid var(--theme-red);
+      background: var(--theme-light-red-transparent);
+    }
+  }
+
+  &__footer-container {
+    --DataGrid-rowBorderColor: var(--border-color);
+    color: var(--gray-base);
+    background: var(--gray-90);
+  }
+  & .MuiTablePagination-root {
+    color: var(--gray-base);
+  }
+
+  & .MuiDataGrid-withBorderColor {
+    border-color: var(--border-color) !important;
+  }
+}
