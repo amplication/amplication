@@ -139,6 +139,7 @@ const RESOURCE_TYPE_TO_EVENT_TYPE: {
   [EnumResourceType.MessageBroker]: EnumEventType.MessageBrokerCreate,
   [EnumResourceType.ProjectConfiguration]: EnumEventType.UnknownEvent,
   [EnumResourceType.PluginRepository]: EnumEventType.PluginRepositoryCreate,
+  [EnumResourceType.ServiceTemplate]: EnumEventType.ServiceTemplateCreate,
 };
 
 type CodeGeneratorName = "NodeJS" | "DotNET";
@@ -223,7 +224,7 @@ export class ResourceService {
    * Create a resource
    * This function should be called from one of the other "Create[ResourceType] functions like CreateService, CreateMessageBroker etc."
    */
-  private async createResource(
+  async createResource(
     args: CreateOneResourceArgs,
     user: User,
     updateProjectGitRepository = false
@@ -541,25 +542,12 @@ export class ResourceService {
       updateProjectGitRepository
     );
 
-    await this.prisma.resourceRole.create({
-      data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
-    });
-
-    if (requireAuthenticationEntity) {
-      const [userEntity] = await this.entityService.createDefaultUserEntity(
-        resource.id,
-        user
-      );
-      serviceSettings.authEntityName = userEntity.name;
-    }
-
-    await this.serviceSettingsService.createDefaultServiceSettings(
-      resource.id,
+    await this.createServiceDefaultObjects(
+      resource,
       user,
+      requireAuthenticationEntity,
       serviceSettings
     );
-
-    await this.environmentService.createDefaultEnvironment(resource.id);
 
     const project = await this.projectService.findUnique({
       where: { id: resource.projectId },
@@ -571,6 +559,31 @@ export class ResourceService {
     );
 
     return resource;
+  }
+
+  async createServiceDefaultObjects(
+    service: Resource,
+    user: User,
+    requireAuthenticationEntity: boolean,
+    serviceSettings: ServiceSettingsUpdateInput = null
+  ) {
+    await this.prisma.resourceRole.create({
+      data: { ...USER_RESOURCE_ROLE, resourceId: service.id },
+    });
+
+    if (requireAuthenticationEntity) {
+      const [userEntity] = await this.entityService.createDefaultUserEntity(
+        service.id,
+        user
+      );
+      serviceSettings.authEntityName = userEntity.name;
+    }
+
+    await this.serviceSettingsService.createDefaultServiceSettings(
+      service.id,
+      user,
+      serviceSettings
+    );
   }
 
   async createDefaultAuthEntity(

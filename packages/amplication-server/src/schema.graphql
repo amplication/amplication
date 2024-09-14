@@ -928,6 +928,7 @@ enum EnumResourceType {
   PluginRepository
   ProjectConfiguration
   Service
+  ServiceTemplate
 }
 
 input EnumResourceTypeFilter {
@@ -1429,6 +1430,7 @@ type Mutation {
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createService(data: ResourceCreateInput!): Resource!
+  createServiceTemplate(data: ServiceTemplateCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
   createTopic(data: TopicCreateInput!): Topic!
@@ -1897,6 +1899,7 @@ type Query {
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
+  serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceTopics(where: WhereUniqueInput!): ServiceTopics
   serviceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
   topic(where: WhereUniqueInput!): Topic
@@ -2153,6 +2156,11 @@ input ServiceSettingsUpdateInput {
   description: String
   displayName: String
   serverSettings: ServerSettingsUpdateInput!
+}
+
+input ServiceTemplateCreateInput {
+  plugins: PluginInstallationsCreateInput
+  resource: ResourceCreateInput!
 }
 
 type ServiceTopics implements IBlock {

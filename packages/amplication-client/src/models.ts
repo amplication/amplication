@@ -962,7 +962,8 @@ export enum EnumResourceType {
   MessageBroker = 'MessageBroker',
   PluginRepository = 'PluginRepository',
   ProjectConfiguration = 'ProjectConfiguration',
-  Service = 'Service'
+  Service = 'Service',
+  ServiceTemplate = 'ServiceTemplate'
 }
 
 export type EnumResourceTypeFilter = {
@@ -1454,6 +1455,7 @@ export type Mutation = {
   createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
   createService: Resource;
+  createServiceTemplate: Resource;
   createServiceTopics: ServiceTopics;
   createServiceWithEntities: ResourceCreateWithEntitiesResult;
   createTopic: Topic;
@@ -1696,6 +1698,11 @@ export type MutationCreateResourceRoleArgs = {
 
 export type MutationCreateServiceArgs = {
   data: ResourceCreateInput;
+};
+
+
+export type MutationCreateServiceTemplateArgs = {
+  data: ServiceTemplateCreateInput;
 };
 
 
@@ -2453,6 +2460,7 @@ export type Query = {
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
+  serviceTemplates: Array<Resource>;
   serviceTopics?: Maybe<ServiceTopics>;
   serviceTopicsList: Array<ServiceTopics>;
   topic?: Maybe<Topic>;
@@ -2727,6 +2735,14 @@ export type QueryResourcesArgs = {
 
 export type QueryServiceSettingsArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type QueryServiceTemplatesArgs = {
+  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ResourceWhereInput>;
 };
 
 
@@ -3024,6 +3040,11 @@ export type ServiceSettingsUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   serverSettings: ServerSettingsUpdateInput;
+};
+
+export type ServiceTemplateCreateInput = {
+  plugins?: InputMaybe<PluginInstallationsCreateInput>;
+  resource: ResourceCreateInput;
 };
 
 export type ServiceTopics = IBlock & {
