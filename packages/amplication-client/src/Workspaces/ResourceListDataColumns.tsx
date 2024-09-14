@@ -1,14 +1,15 @@
 import { EnumTextStyle, Text } from "@amplication/ui/design-system";
-import { ColumnOrColumnGroup } from "react-data-grid";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
-import { Resource } from "../models";
+import { EnumResourceType, Resource } from "../models";
 import DeleteResourceButton from "./DeleteResourceButton";
 import ResourceGitRepo from "./ResourceGitRepo";
 import ResourceLastBuild from "./ResourceLastBuild";
 import ResourceNameLink from "./ResourceNameLink";
+import ResourceLastBuildVersion from "./ResourceLastBuildVersion";
+import { DataGridColumn } from "@amplication/ui/design-system";
 
-export const RESOURCE_LIST_COLUMNS: ColumnOrColumnGroup<Resource>[] = [
+export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
     key: "resourceType",
     name: "Type",
@@ -35,6 +36,8 @@ export const RESOURCE_LIST_COLUMNS: ColumnOrColumnGroup<Resource>[] = [
     width: 150,
     resizable: true,
     sortable: true,
+    getValue: (row) =>
+      row.resourceType === EnumResourceType.Service ? row.codeGenerator : null,
   },
   {
     key: "git",
@@ -48,6 +51,8 @@ export const RESOURCE_LIST_COLUMNS: ColumnOrColumnGroup<Resource>[] = [
     },
     resizable: true,
     sortable: true,
+    getValue: (row) =>
+      row.gitRepository?.gitOrganization?.name && row.gitRepository?.name,
   },
   {
     key: "description",
@@ -69,13 +74,24 @@ export const RESOURCE_LIST_COLUMNS: ColumnOrColumnGroup<Resource>[] = [
     renderCell: (props) => {
       return (
         <div style={{ display: "inline-flex" }}>
-          {" "}
           <ResourceLastBuild hideLabel resource={props.row} />
         </div>
       );
     },
+    getValue: (row) =>
+      row.builds[0] ? new Date(row.builds[0]?.createdAt).getTime() : 0,
     resizable: true,
     sortable: true,
+  },
+  {
+    key: "codeGeneratorVersion",
+    name: "Code Gen Version",
+    resizable: true,
+    sortable: true,
+    renderCell: (props) => {
+      return <ResourceLastBuildVersion resource={props.row} />;
+    },
+    getValue: (row) => row.builds[0]?.codeGeneratorVersion ?? "",
   },
   {
     key: "actions",
