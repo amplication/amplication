@@ -12,7 +12,10 @@ import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { expireCookie, getCookie } from "../../util/cookie";
 import { formatError } from "../../util/error";
-import { prepareServiceObject } from "../constants";
+import {
+  prepareServiceObject,
+  prepareServiceTemplateObject,
+} from "../constants";
 import "./CreateServiceWizard.scss";
 import ServiceWizard, { WizardStep } from "./ServiceWizard";
 import CreateGenerationSettings from "./wizard-pages/CreateGenerationSettings";
@@ -30,9 +33,22 @@ import {
   ResourceInitialValues,
   WizardProgressBarInterface,
   schemaArray,
-  templateMapping,
   wizardProgressBarSchema,
 } from "./wizardResourceSchema";
+
+import {
+  CREATE_SERVICE_PATTERN,
+  CREATE_SERVICE_STEPS,
+} from "./wizard-types/wizard-type-create-service";
+import {
+  CREATE_SERVICE_TEMPLATE_PATTERN,
+  CREATE_SERVICE_TEMPLATE_STEPS,
+} from "./wizard-types/wizard-type-create-service-template";
+import {
+  ONBOARDING_PATTERN,
+  ONBOARDING_STEPS,
+} from "./wizard-types/wizard-type-onboarding";
+import useServiceTemplate from "../../ServiceTemplate/hooks/useServiceTemplate";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -44,113 +60,27 @@ type Props = AppRouteProps & {
 
 const FLOW_ONBOARDING = "Onboarding";
 const FLOW_CREATE_SERVICE = "Create Service";
+const FLOW_CREATE_SERVICE_TEMPLATE = "Create Service Template";
 const pluginUseLatest = REACT_APP_PLUGIN_VERSION_USE_LATEST === "true";
 
-export type DefineUser = "Onboarding" | "Create Service";
+export type WizardFlowType =
+  | "Onboarding"
+  | "Create Service"
+  | "Create Service Template";
 
-const ONBOARDING_STEPS: WizardStep[] = [
-  {
-    index: 0,
-    hideFooter: true,
-    hideBackButton: true,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Welcome,
-    stepName: "CreateServiceWelcome",
+const FLOW_SETTINGS: {
+  [key in WizardFlowType]: { steps: WizardStep[]; pattern: number[] };
+} = {
+  [FLOW_ONBOARDING]: { steps: ONBOARDING_STEPS, pattern: ONBOARDING_PATTERN },
+  [FLOW_CREATE_SERVICE]: {
+    steps: CREATE_SERVICE_STEPS,
+    pattern: CREATE_SERVICE_PATTERN,
   },
-  {
-    index: 1,
-    hideBackButton: true,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Name,
-    stepName: "CreateServiceName",
+  [FLOW_CREATE_SERVICE_TEMPLATE]: {
+    steps: CREATE_SERVICE_TEMPLATE_STEPS,
+    pattern: CREATE_SERVICE_TEMPLATE_PATTERN,
   },
-  {
-    index: 2,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Git,
-    stepName: "CreateGithubSync",
-  },
-  {
-    index: 3,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_APISettings,
-    stepName: "CreateGenerationSettings",
-  },
-  {
-    index: 4,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_RepoSettings,
-    stepName: "CreateServiceRepository",
-  },
-  {
-    index: 5,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_DBSettings,
-    stepName: "CreateServiceDatabase",
-  },
-  {
-    index: 6,
-    analyticsEventName:
-      AnalyticsEventNames.ViewServiceWizardStep_EntitiesSettings,
-    stepName: "CreateServiceTemplate",
-  },
-  {
-    index: 7,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_AuthSettings,
-    stepName: "CreateServiceAuth",
-  },
-  {
-    index: 8,
-    hideBackButton: true,
-    analyticsEventName:
-      AnalyticsEventNames.ViewServiceWizardStep_CodeGeneration,
-    stepName: "CreateServiceCodeGeneration",
-  },
-  {
-    index: 9,
-    hideBackButton: true,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Finish,
-    stepName: "CreateServiceNextSteps",
-  },
-];
-
-const ONBOARDING_PATTERN = ONBOARDING_STEPS.map((step) => step.index);
-
-const CREATE_SERVICE_STEPS: WizardStep[] = [
-  {
-    index: 1,
-    hideBackButton: true,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Name,
-    stepName: "CreateServiceName",
-  },
-  {
-    index: 2,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Git,
-    stepName: "CreateGithubSync",
-  },
-  {
-    index: 3,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_APISettings,
-    stepName: "CreateGenerationSettings",
-  },
-  {
-    index: 4,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_RepoSettings,
-    stepName: "CreateServiceRepository",
-  },
-  {
-    index: 5,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_DBSettings,
-    stepName: "CreateServiceDatabase",
-  },
-  {
-    index: 7,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_AuthSettings,
-    stepName: "CreateServiceAuth",
-  },
-  {
-    index: 9,
-    hideBackButton: true,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Finish,
-    stepName: "CreateServiceNextSteps",
-  },
-];
-
-const CREATE_SERVICE_PATTERN = CREATE_SERVICE_STEPS.map((step) => step.index);
+};
 
 const signupCookie = getCookie("signup");
 
@@ -159,6 +89,10 @@ const CreateServiceWizard: React.FC<Props> = ({
   innerRoutes,
   ...props
 }) => {
+  const isServiceTemplateFlow = props.match.path.endsWith(
+    "/create-service-template"
+  );
+
   const {
     errorCreateService,
     currentProject,
@@ -167,6 +101,13 @@ const CreateServiceWizard: React.FC<Props> = ({
     setNewService,
     createServiceWithEntitiesResult: createResult,
   } = useContext(AppContext);
+
+  const {
+    serviceTemplates,
+    createServiceTemplate,
+    loadingCreateServiceTemplate,
+    errorCreateServiceTemplate,
+  } = useServiceTemplate(currentProject);
 
   const { trackEvent } = useTracking();
   const history = useHistory();
@@ -181,31 +122,28 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const isSignupUser = signupCookie === "1";
 
-  const defineUser: DefineUser = isSignupUser
+  const wizardFlow: WizardFlowType = isServiceTemplateFlow
+    ? FLOW_CREATE_SERVICE_TEMPLATE
+    : isSignupUser
     ? FLOW_ONBOARDING
     : FLOW_CREATE_SERVICE;
 
-  const wizardSteps =
-    defineUser === FLOW_CREATE_SERVICE
-      ? CREATE_SERVICE_STEPS
-      : ONBOARDING_STEPS;
-
-  const wizardPattern =
-    defineUser === FLOW_CREATE_SERVICE
-      ? CREATE_SERVICE_PATTERN
-      : ONBOARDING_PATTERN;
+  const wizardSteps = FLOW_SETTINGS[wizardFlow].steps;
+  const wizardPattern = FLOW_SETTINGS[wizardFlow].pattern;
 
   const serviceNextStepStatus = {
     description: isSignupUser
       ? ["Invite", "my team"]
       : ["Add plugins", "to my service"],
-    defineUser,
+    defineUser: wizardFlow,
     icon: isSignupUser ? "users" : "plugins",
     iconBackgroundColor: isSignupUser ? "#8DD9B9" : "#f85b6e",
     eventActionName: isSignupUser ? "Invite Team" : "Add Plugins",
   };
 
-  const errorMessage = formatError(errorCreateService);
+  const errorMessage = formatError(
+    errorCreateService || errorCreateServiceTemplate
+  );
   const setWizardProgressItems = useCallback(() => {
     const pagesMap = {};
     return wizardPattern.reduce(
@@ -235,13 +173,6 @@ const CreateServiceWizard: React.FC<Props> = ({
       setCurrentBuild(build);
     },
     [currentBuild]
-  );
-
-  const createStarterResource = useCallback(
-    (data: models.ResourceCreateWithEntitiesInput, eventName: string) => {
-      setNewService(data, eventName);
-    },
-    [setNewService]
   );
 
   const createResourcePlugins = useCallback(
@@ -275,6 +206,21 @@ const CreateServiceWizard: React.FC<Props> = ({
     [pluginCatalog]
   );
 
+  const trackWizardPageEvent = useCallback(
+    (
+      eventName: AnalyticsEventNames,
+      additionalData?: { [key: string]: string }
+    ) => {
+      trackEvent({
+        eventName,
+        category: "Service Wizard",
+        WizardType: wizardFlow,
+        ...additionalData,
+      });
+    },
+    [trackEvent, wizardFlow]
+  );
+
   const handleCloseWizard = useCallback(
     (currentPage: string) => {
       trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CloseClick, {
@@ -282,7 +228,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       });
       history.push(`/${currentWorkspace.id}/${currentProject.id}`);
     },
-    [currentWorkspace, currentProject]
+    [trackWizardPageEvent, history, currentWorkspace, currentProject]
   );
 
   const handleWizardProgress = useCallback(
@@ -296,22 +242,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       trackWizardPageEvent(eventName, { step: page });
       trackWizardPageEvent(pageEventName);
     },
-    []
-  );
-
-  const trackWizardPageEvent = useCallback(
-    (
-      eventName: AnalyticsEventNames,
-      additionalData?: { [key: string]: string }
-    ) => {
-      trackEvent({
-        eventName,
-        category: "Service Wizard",
-        WizardType: defineUser,
-        ...additionalData,
-      });
-    },
-    []
+    [trackWizardPageEvent]
   );
 
   const createResource = useCallback(
@@ -328,7 +259,6 @@ const CreateServiceWizard: React.FC<Props> = ({
         isOverrideGitRepository,
         authType,
         databaseType,
-        templateType,
         structureType,
         baseDir,
         connectToDemoRepo,
@@ -343,7 +273,6 @@ const CreateServiceWizard: React.FC<Props> = ({
         structureType === "Mono"
           ? `${baseDir}/${kebabCaseServiceName}-admin`
           : "";
-      const templateSettings = templateMapping[templateType];
 
       if (currentProject) {
         const pluginIds: string[] = [databaseType];
@@ -365,29 +294,55 @@ const CreateServiceWizard: React.FC<Props> = ({
           };
         }
 
-        const resource = prepareServiceObject(
-          serviceName,
-          currentProject?.id,
-          templateSettings,
-          generateAdminUI,
-          generateGraphQL,
-          generateRestApi,
-          currentGitRepository,
-          serverDir,
-          adminDir,
-          plugins,
-          defineUser,
-          structureType,
-          databaseType,
-          authType,
-          connectToDemoRepo,
-          codeGenerator
-        );
-        createStarterResource(resource, templateSettings.eventName);
+        if (isServiceTemplateFlow) {
+          const serviceTemplateCreateInput = prepareServiceTemplateObject(
+            serviceName,
+            currentProject?.id,
+            generateAdminUI,
+            generateGraphQL,
+            generateRestApi,
+            serverDir,
+            adminDir,
+            plugins,
+            codeGenerator
+          );
+
+          createServiceTemplate(serviceTemplateCreateInput);
+        } else {
+          const resourceCreateInput = prepareServiceObject(
+            serviceName,
+            currentProject?.id,
+            generateAdminUI,
+            generateGraphQL,
+            generateRestApi,
+            currentGitRepository,
+            serverDir,
+            adminDir,
+            plugins,
+            wizardFlow,
+            structureType,
+            databaseType,
+            authType,
+            connectToDemoRepo,
+            codeGenerator
+          );
+
+          setNewService(
+            resourceCreateInput,
+            AnalyticsEventNames.ResourceFromScratchCreate
+          );
+        }
       }
       expireCookie("signup");
     },
-    [createResourcePlugins, createStarterResource, currentProject, defineUser]
+    [
+      createResourcePlugins,
+      createServiceTemplate,
+      currentProject,
+      isServiceTemplateFlow,
+      setNewService,
+      wizardFlow,
+    ]
   );
 
   return (
@@ -400,10 +355,10 @@ const CreateServiceWizard: React.FC<Props> = ({
         wizardSubmit={createResource}
         moduleCss={moduleClass}
         submitFormPage={7}
-        submitLoader={loadingCreateService}
+        submitLoader={loadingCreateService || loadingCreateServiceTemplate}
         handleCloseWizard={handleCloseWizard}
         handleWizardProgress={handleWizardProgress}
-        defineUser={defineUser}
+        defineUser={wizardFlow}
       >
         <CreateServiceWelcome
           moduleClass={moduleClass}
@@ -417,7 +372,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateGithubSync
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
-          defineUser={defineUser}
+          defineUser={wizardFlow}
         />
         <CreateGenerationSettings
           moduleClass={moduleClass}
@@ -428,10 +383,6 @@ const CreateServiceWizard: React.FC<Props> = ({
           trackWizardPageEvent={trackWizardPageEvent}
         />
         <CreateServiceDatabase
-          // PostgresPng={PostgresPng}
-          // MongoPng={MongoPng}
-          // MysqlPng={MysqlPng}
-          // MsSqlPng={MsSqlPng}
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
           pluginCatalog={pluginCatalog}
@@ -459,7 +410,12 @@ const CreateServiceWizard: React.FC<Props> = ({
           {...serviceNextStepStatus}
         />
       </ServiceWizard>
-      <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
+      <Snackbar
+        open={
+          Boolean(errorCreateService) || Boolean(errorCreateServiceTemplate)
+        }
+        message={errorMessage}
+      />
     </Modal>
   );
 };

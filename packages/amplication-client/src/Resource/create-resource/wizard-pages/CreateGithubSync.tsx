@@ -7,7 +7,7 @@ import {
   GitRepositorySelected,
 } from "../../git/dialogs/GitRepos/GithubRepos";
 import { WizardStepProps } from "./interfaces";
-import { DefineUser } from "../CreateServiceWizard";
+import { WizardFlowType } from "../CreateServiceWizard";
 import ServiceWizardConfigurationGitSettings from "../../git/ServiceWizardConfigurationGitSettings";
 import { getGitRepositoryDetails } from "../../../util/git-repository-details";
 import { Icon, ToggleField, Tooltip } from "@amplication/ui/design-system";
@@ -19,7 +19,7 @@ const DEMO_REPO_TOOLTIP =
   "Take Amplication for a test drive with a preview repository on our GitHub account. You can later connect to your own repository.";
 
 type props = {
-  defineUser: DefineUser;
+  defineUser: WizardFlowType;
 } & WizardStepProps;
 
 const CreateGithubSync: React.FC<props> = ({

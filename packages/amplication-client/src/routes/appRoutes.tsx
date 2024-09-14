@@ -247,6 +247,19 @@ export const Routes: RouteDef[] = [
                 routes: [],
               },
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-service-template",
+                Component: lazy(
+                  () =>
+                    import("../Resource/create-resource/CreateServiceWizard")
+                ),
+                moduleName: "CreateServiceWizard",
+                moduleClass: "create-service-wizard",
+                routeTrackType: "",
+                exactPath: false,
+                isAnalytics: true,
+                routes: [],
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-broker",
                 Component: lazy(
                   () =>

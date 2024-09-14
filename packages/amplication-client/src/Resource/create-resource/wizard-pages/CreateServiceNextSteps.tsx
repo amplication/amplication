@@ -5,13 +5,13 @@ import { WizardStepProps } from "./interfaces";
 import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
-import { DefineUser } from "../CreateServiceWizard";
+import { WizardFlowType } from "../CreateServiceWizard";
 
 const className = "create-service-next-steps";
 
 export const CreateServiceNextSteps: React.FC<
   WizardStepProps & {
-    defineUser: DefineUser;
+    defineUser: WizardFlowType;
     description: string[];
     icon: string;
     iconBackgroundColor: string;

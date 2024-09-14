@@ -29,6 +29,13 @@ export const resourceMenuLayout: {
     "connections",
     "settings",
   ],
+  [EnumResourceType.ServiceTemplate]: [
+    "modules",
+    "entities",
+    "roles",
+    "plugins",
+    "settings",
+  ],
   [EnumResourceType.ProjectConfiguration]: ["git", "settings"],
   [EnumResourceType.MessageBroker]: ["topics", "services", "git", "settings"],
   [EnumResourceType.PluginRepository]: ["privatePlugins", "git2", "settings"],

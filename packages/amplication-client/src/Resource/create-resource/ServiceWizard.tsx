@@ -14,7 +14,7 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { WizardProgressBarInterface } from "./wizardResourceSchema";
 import WizardProgressBar from "./WizardProgressBar";
 import CreateServiceLoader from "./CreateServiceLoader";
-import { DefineUser } from "./CreateServiceWizard";
+import { WizardFlowType } from "./CreateServiceWizard";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useTracking } from "../../util/analytics";
 import { GlobalHotKeys } from "react-hotkeys";
@@ -29,7 +29,7 @@ export type WizardStep = {
 
 interface ServiceWizardProps {
   children: ReactNode;
-  defineUser: DefineUser;
+  defineUser: WizardFlowType;
   wizardSteps: WizardStep[];
   wizardSchema: { [key: string]: any };
   wizardProgressBar: WizardProgressBarInterface[];
