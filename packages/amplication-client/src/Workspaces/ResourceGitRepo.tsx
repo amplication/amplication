@@ -34,13 +34,27 @@ function ResourceGitRepo({ resource }: Props) {
       gap={EnumGapSize.Small}
       margin={EnumFlexItemMargin.None}
     >
-      <Icon
-        icon={gitProviderIconMap[provider || models.EnumGitProvider.Github]}
-        size="xsmall"
-      />
-      <Text textStyle={EnumTextStyle.Subtle} textColor={EnumTextColor.White}>
-        {gitRepo ? gitRepo : "Not connected"}
-      </Text>
+      {gitRepo ? (
+        <>
+          <Icon
+            icon={gitProviderIconMap[provider || models.EnumGitProvider.Github]}
+            size="xsmall"
+          />
+          <Text
+            textStyle={EnumTextStyle.Subtle}
+            textColor={EnumTextColor.White}
+          >
+            gitRepo
+          </Text>
+        </>
+      ) : (
+        <Text
+          textStyle={EnumTextStyle.Subtle}
+          textColor={EnumTextColor.ThemeOrange}
+        >
+          Not connected
+        </Text>
+      )}
     </FlexItem>
   );
 }
