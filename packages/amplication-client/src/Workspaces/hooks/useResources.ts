@@ -93,6 +93,11 @@ const useResources = (
   const [resources, setResources] = useState<models.Resource[]>([]);
   const [projectConfigurationResource, setProjectConfigurationResource] =
     useState<models.Resource | undefined>(undefined);
+
+  const [pluginRepositoryResource, setPluginRepositoryResource] = useState<
+    models.Resource | undefined
+  >(undefined);
+
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
     createGitRepositoryFullName(
@@ -228,7 +233,9 @@ const useResources = (
           addBlock(result.data.createPluginRepository.id);
         result.data?.createPluginRepository.id &&
           reloadResources().then(() => {
-            resourceRedirect(result.data?.createPluginRepository.id as string);
+            history.push({
+              pathname: `/${currentWorkspace?.id}/${currentProject?.id}/private-plugins/git-settings`,
+            });
           });
       }
     );
@@ -332,8 +339,17 @@ const useResources = (
     );
     setProjectConfigurationResource(projectConfigurationResource);
 
+    const pluginRepositoryResource = resourcesData.resources.find(
+      (r) => r.resourceType === models.EnumResourceType.PluginRepository
+    );
+    setPluginRepositoryResource(pluginRepositoryResource);
+
     const resources = resourcesData.resources.filter(
-      (r) => r.resourceType !== models.EnumResourceType.ProjectConfiguration
+      (r) =>
+        ![
+          models.EnumResourceType.ProjectConfiguration,
+          models.EnumResourceType.PluginRepository,
+        ].includes(r.resourceType)
     );
     setResources(resources);
   }, [resourcesData, loadingResources]);
@@ -362,6 +378,7 @@ const useResources = (
   return {
     resources,
     projectConfigurationResource,
+    pluginRepositoryResource,
     handleSearchChange,
     loadingResources,
     errorResources,

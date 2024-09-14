@@ -92,6 +92,7 @@ const WorkspaceLayout: React.FC<Props> = ({
   const {
     resources,
     projectConfigurationResource,
+    pluginRepositoryResource,
     handleSearchChange,
     loadingResources,
     errorResources,
@@ -182,6 +183,7 @@ const WorkspaceLayout: React.FC<Props> = ({
         resources,
         setNewService: createService,
         projectConfigurationResource,
+        pluginRepositoryResource,
         handleSearchChange,
         loadingResources,
         reloadResources,
