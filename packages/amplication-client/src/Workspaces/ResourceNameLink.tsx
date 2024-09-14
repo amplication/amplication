@@ -3,7 +3,7 @@ import * as models from "../models";
 import { EnumTextStyle, Text } from "@amplication/ui/design-system";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../context/appContext";
-import "./resourceNameLink.scss";
+import "./ResourceNameLink.scss";
 
 type Props = {
   resource: models.Resource;
