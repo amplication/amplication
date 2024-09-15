@@ -1,4 +1,5 @@
 export enum BillingFeature {
+  AllowWorkspaceCreation = "feature-allow-workspace-creation",
   AwsCodeCommit = "feature-awscodecommit",
   Bitbucket = "feature-bitbucket",
   BlockBuild = "feature-block-build",
