@@ -198,7 +198,7 @@ export class GitClientService {
       buildId,
       resourceId,
       baseBranchName,
-      skipCustomizableFiles,
+      overrideCustomizableFilesInGit,
     } = createPullRequestArgs;
 
     const gitRepoDir = normalize(
@@ -279,7 +279,7 @@ export class GitClientService {
         gitResourceMeta,
         files,
         amplicationIgnoreManager,
-        skipCustomizableFiles
+        overrideCustomizableFilesInGit
       );
 
       this.logger.info(`Got a ${pullRequestMode} pull request mode`);

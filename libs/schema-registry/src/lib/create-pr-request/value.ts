@@ -52,5 +52,5 @@ export class Value {
   @IsBoolean()
   isBranchPerResource!: boolean;
   @IsBoolean()
-  skipCustomizableFiles!: boolean;
+  overrideCustomizableFilesInGit!: boolean;
 }
