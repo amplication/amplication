@@ -166,20 +166,20 @@ export class WorkspaceService {
     );
   }
 
-  private async shouldBlockWorkspaceCreation(
+  private async shouldAllowWorkspaceCreation(
     workspaceId: string
   ): Promise<boolean> {
     if (!this.billingService.isBillingEnabled) {
-      return false;
+      return true;
     }
 
-    const blockWorkspaceCreation =
+    const allowWorkspaceCreation =
       await this.billingService.getBooleanEntitlement(
         workspaceId,
-        BillingFeature.BlockWorkspaceCreation
+        BillingFeature.AllowWorkspaceCreation
       );
 
-    return blockWorkspaceCreation.hasAccess;
+    return allowWorkspaceCreation.hasAccess;
   }
 
   /**
@@ -194,11 +194,13 @@ export class WorkspaceService {
     currentWorkspaceId?: string,
     connectToDemoRepo?: boolean
   ): Promise<Workspace> {
-    if (await this.shouldBlockWorkspaceCreation(currentWorkspaceId)) {
+    if (
+      (await this.shouldAllowWorkspaceCreation(currentWorkspaceId)) === false
+    ) {
       const message = "Your current plan does not allow creating workspaces";
       throw new BillingLimitationError(
         message,
-        BillingFeature.BlockWorkspaceCreation
+        BillingFeature.AllowWorkspaceCreation
       );
     }
     // Create a new user and link it to the account
