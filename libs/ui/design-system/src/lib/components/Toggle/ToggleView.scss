@@ -1,0 +1,19 @@
+@import "../../style/index.scss";
+
+.amp-toggle-view {
+  &__view-toggle {
+    .toggle-field {
+      border: $border-dark;
+      border-radius: 20px;
+      .MuiSwitch-root {
+        border-radius: 8px;
+        .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
+          background-color: var(--gray-full);
+        }
+        .MuiSwitch-switchBase:not(.Mui-checked) + .MuiSwitch-track {
+          background-color: var(--gray-full);
+        }
+      }
+    }
+  }
+}
