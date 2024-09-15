@@ -170,7 +170,7 @@ export class WorkspaceService {
     workspaceId: string
   ): Promise<boolean> {
     if (!this.billingService.isBillingEnabled) {
-      return false;
+      return true;
     }
 
     const allowWorkspaceCreation =

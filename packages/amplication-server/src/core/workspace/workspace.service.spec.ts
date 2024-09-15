@@ -350,9 +350,9 @@ describe("WorkspaceService", () => {
     beforeEach(() => {
       billingServiceIsBillingEnabledMock.mockReturnValue(true);
     });
-    it("should create a workspace if block workspace creation is false", async () => {
+    it("should create a workspace if allow workspace creation is true", async () => {
       billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
-        hasAccess: false,
+        hasAccess: true,
       } as unknown as BooleanEntitlement);
 
       const args = {
@@ -419,7 +419,7 @@ describe("WorkspaceService", () => {
 
     it("should create a demo repo when creating a workspace ", async () => {
       billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
-        hasAccess: false,
+        hasAccess: true,
       } as unknown as BooleanEntitlement);
 
       const args = {
