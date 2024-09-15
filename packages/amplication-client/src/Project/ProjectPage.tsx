@@ -23,7 +23,7 @@ type Props = AppRouteProps & {
     project: string;
   }>;
 };
-const OVERVIEW = "Overview";
+const OVERVIEW = "Services";
 
 const ProjectPage: React.FC<Props> = ({
   innerRoutes,

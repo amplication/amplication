@@ -1,4 +1,4 @@
-import { Toggle } from "@amplication/ui/design-system";
+import { HorizontalRule, Toggle } from "@amplication/ui/design-system";
 import { useMutation } from "@apollo/client";
 import React, { useCallback, useState } from "react";
 import {
@@ -102,7 +102,7 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
   return (
     <div className={CLASS_NAME}>
       <ProjectConfigurationGitSettings isOverride={isOverride} />
-
+      <HorizontalRule doubleSpacing />
       <Toggle
         label="Override default settings"
         onValueChange={handleToggleChange}
