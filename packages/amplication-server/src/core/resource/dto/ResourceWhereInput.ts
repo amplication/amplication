@@ -1,5 +1,5 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { DateTimeFilter, StringFilter } from "../../../dto";
+import { BooleanFilter, DateTimeFilter, StringFilter } from "../../../dto";
 import { ProjectWhereInput } from "../../project/dto/ProjectWhereInput";
 import { EnumResourceTypeFilter } from "./EnumResourceTypeFilter";
 
@@ -42,4 +42,9 @@ export class ResourceWhereInput {
     nullable: true,
   })
   resourceType?: EnumResourceTypeFilter | null;
+
+  //do not expose to graphql
+  deletedAt?: DateTimeFilter;
+
+  archived?: BooleanFilter;
 }

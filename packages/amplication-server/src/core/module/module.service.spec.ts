@@ -63,6 +63,7 @@ const EXAMPLE_MODULE_DESCRIPTION = "Example Module Description";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_MODULE_ID = "exampleModuleId";
 const EXAMPLE_INVALID_MODULE_NAME = "example invalid name";
+const EXAMPLE_RESERVED_MODULE_NAME = "auth";
 const EXAMPLE_ENTITY_ID = "exampleEntityId";
 
 const EXAMPLE_MODULE: Module = {
@@ -264,6 +265,26 @@ describe("ModuleService", () => {
       )
     );
   });
+
+  it("should throw an error when creating a module with reserved name", async () => {
+    const args: CreateModuleArgs = {
+      data: {
+        resource: {
+          connect: {
+            id: EXAMPLE_RESOURCE_ID,
+          },
+        },
+        displayName: EXAMPLE_MODULE_DISPLAY_NAME,
+        name: EXAMPLE_RESERVED_MODULE_NAME,
+      },
+    };
+    await expect(service.create(args, EXAMPLE_USER)).rejects.toThrow(
+      new AmplicationError(
+        `Module name ${EXAMPLE_RESERVED_MODULE_NAME} is reserved and cannot be used.`
+      )
+    );
+  });
+
   it("should get one module", async () => {
     const args: FindOneArgs = {
       where: {

@@ -106,9 +106,6 @@ const WorkspaceHeader: React.FC = () => {
     unsetToken();
     apolloClient.clearStore();
 
-    //@ts-ignore
-    window.productFruits?.services?.destroy();
-
     window.location.replace(REACT_APP_AUTH_LOGOUT_URI);
   }, [apolloClient]);
 

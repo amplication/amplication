@@ -22,13 +22,16 @@ import {
 } from "@amplication/ui/design-system";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
 
-const PrivatePlugin = () => {
-  const match = useRouteMatch<{
-    resource: string;
-    privatePluginId: string;
-  }>("/:workspace/:project/:resource/private-plugins/:privatePluginId");
+type Props = {
+  pluginRepositoryResourceId: string;
+};
 
-  const { privatePluginId, resource } = match?.params ?? {};
+const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
+  const match = useRouteMatch<{
+    privatePluginId: string;
+  }>("/:workspace/:project/private-plugins/:privatePluginId");
+
+  const { privatePluginId } = match?.params ?? {};
   const {
     currentWorkspace,
     currentProject,
@@ -46,7 +49,7 @@ const PrivatePlugin = () => {
     getPrivatePluginRefetch: refetch,
     updatePrivatePlugin,
     updatePrivatePluginError: updateError,
-  } = usePrivatePlugin(resource);
+  } = usePrivatePlugin(pluginRepositoryResourceId);
 
   useEffect(() => {
     if (!resetPendingChangesIndicator) return;
@@ -85,9 +88,9 @@ const PrivatePlugin = () => {
 
   const handleDeletePrivatePlugin = useCallback(() => {
     history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/${resource}/private-plugins`
+      `/${currentWorkspace?.id}/${currentProject?.id}/private-plugins`
     );
-  }, [history, currentWorkspace?.id, currentProject?.id, resource]);
+  }, [history, currentWorkspace?.id, currentProject?.id]);
 
   useEffect(() => {
     getPrivatePlugin(privatePluginId);

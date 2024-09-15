@@ -26,7 +26,6 @@ import { TEntities } from "../Entity/NewEntity";
 import { CREATE_DEFAULT_ENTITIES } from "../Workspaces/queries/entitiesQueries";
 import { AppContext, useAppContext } from "../context/appContext";
 import useResource from "../Resource/hooks/useResource";
-import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
 // import DragPluginsCatalogItem from "./DragPluginCatalogItem";
@@ -89,8 +88,6 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
 
   const { addEntity } = useContext(AppContext);
 
-  const { setOnboardingProps } = useOnboardingChecklistContext();
-
   const { data: entities, refetch } = useQuery<TData>(GET_ENTITIES, {
     variables: {
       id: resource,
@@ -123,15 +120,9 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
             resource: { connect: { id: resource } },
           },
         },
-      })
-        .catch(console.error)
-        .then(() => {
-          setOnboardingProps({
-            pluginInstalled: true,
-          });
-        });
+      }).catch(console.error);
     },
-    [createPluginInstallation, resource, setOnboardingProps]
+    [createPluginInstallation, resource]
   );
 
   const [createDefaultEntities] = useMutation<TEntities>(

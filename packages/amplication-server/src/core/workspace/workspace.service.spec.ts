@@ -350,9 +350,9 @@ describe("WorkspaceService", () => {
     beforeEach(() => {
       billingServiceIsBillingEnabledMock.mockReturnValue(true);
     });
-    it("should create a workspace if block workspace creation is false", async () => {
+    it("should create a workspace if allow workspace creation is true", async () => {
       billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
-        hasAccess: false,
+        hasAccess: true,
       } as unknown as BooleanEntitlement);
 
       const args = {
@@ -391,9 +391,9 @@ describe("WorkspaceService", () => {
       expect(createDemoRepoMock).toBeCalledTimes(0);
     });
 
-    it("should throw a billing limitation error if the block workspace creation entitlement is true", async () => {
+    it("should throw a billing limitation error if the allow workspace creation entitlement is false", async () => {
       billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
-        hasAccess: true,
+        hasAccess: false,
       } as unknown as BooleanEntitlement);
 
       const args = {
@@ -410,7 +410,7 @@ describe("WorkspaceService", () => {
       ).rejects.toThrow(
         new BillingLimitationError(
           "Your current plan does not allow creating workspaces",
-          BillingFeature.BlockWorkspaceCreation
+          BillingFeature.AllowWorkspaceCreation
         )
       );
 
@@ -419,7 +419,7 @@ describe("WorkspaceService", () => {
 
     it("should create a demo repo when creating a workspace ", async () => {
       billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
-        hasAccess: false,
+        hasAccess: true,
       } as unknown as BooleanEntitlement);
 
       const args = {
@@ -468,9 +468,9 @@ describe("WorkspaceService", () => {
     beforeEach(() => {
       billingServiceIsBillingEnabledMock.mockReturnValue(false);
     });
-    it("should create a workspace even if the block workspace creation entitlement is true", async () => {
+    it("should create a workspace even if the allow workspace creation entitlement is false", async () => {
       billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
-        hasAccess: true,
+        hasAccess: false,
       } as unknown as BooleanEntitlement);
 
       const args = {

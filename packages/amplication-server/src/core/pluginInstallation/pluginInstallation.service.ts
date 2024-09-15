@@ -274,4 +274,25 @@ export class PluginInstallationService extends BlockTypeService<
     );
     return plugins.filter((plugin) => plugin.enabled);
   }
+
+  async orderInstalledPlugins(
+    resourceId: string,
+    pluginInstallations: PluginInstallation[]
+  ): Promise<PluginInstallation[]> {
+    const pluginOrder = await this.pluginOrderService.findByResourceId({
+      where: { id: resourceId },
+    });
+
+    const orderedPluginInstallations: PluginInstallation[] = [];
+    if (!pluginOrder) return pluginInstallations;
+
+    pluginOrder.order.forEach((pluginOrder) => {
+      const current = pluginInstallations.find(
+        (x) => x.pluginId === pluginOrder.pluginId
+      );
+      current && orderedPluginInstallations.push(current);
+    });
+
+    return orderedPluginInstallations;
+  }
 }

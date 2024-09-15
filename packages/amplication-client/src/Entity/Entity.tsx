@@ -19,7 +19,6 @@ import { AppContext } from "../context/appContext";
 import useModule from "../Modules/hooks/useModule";
 import { DATE_CREATED_FIELD } from "../Modules/ModuleNavigationList";
 import useBreadcrumbs from "../Layout/useBreadcrumbs";
-import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 type Props = {
   match: match<{ resource: string; entityId: string; fieldId: string }>;
@@ -39,7 +38,6 @@ const Entity = ({ match }: Props) => {
     useContext(AppContext);
 
   const { findModuleRefetch } = useModule();
-  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
     variables: {
@@ -87,15 +85,9 @@ const Entity = ({ match }: Props) => {
             id: id,
           },
         },
-      })
-        .catch(console.error)
-        .then(() => {
-          setOnboardingProps({
-            entityUpdated: true,
-          });
-        });
+      }).catch(console.error);
     },
-    [setOnboardingProps, updateEntity]
+    [updateEntity]
   );
 
   const errorMessage = formatError(error || updateError);

@@ -14,14 +14,4 @@
   &__header {
     margin-bottom: var(--default-spacing);
   }
-
-  &__list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--default-spacing-small);
-    margin-bottom: var(--default-spacing);
-    overflow-x: hidden;
-    overflow-y: auto;
-    @include scrollbars(16px, var(--gray-30), transparent);
-  }
 }
