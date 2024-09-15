@@ -410,7 +410,7 @@ describe("WorkspaceService", () => {
       ).rejects.toThrow(
         new BillingLimitationError(
           "Your current plan does not allow creating workspaces",
-          BillingFeature.BlockWorkspaceCreation
+          BillingFeature.AllowWorkspaceCreation
         )
       );
 
