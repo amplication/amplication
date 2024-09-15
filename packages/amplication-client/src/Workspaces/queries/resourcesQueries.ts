@@ -56,6 +56,7 @@ export const GET_RESOURCES = gql`
         version
         createdAt
         status
+        codeGeneratorVersion
         commit {
           user {
             account {

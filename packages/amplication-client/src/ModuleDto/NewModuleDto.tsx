@@ -7,7 +7,6 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import useModuleDto from "./hooks/useModuleDto";
-import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 type Props = {
   resourceId: string;
@@ -28,7 +27,6 @@ const NewModuleDto = ({
 }: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
-  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   const {
     createModuleDto,
@@ -65,9 +63,6 @@ const NewModuleDto = ({
               );
             }
           }
-          setOnboardingProps({
-            dtoUpdated: true,
-          });
         });
     },
     [
@@ -78,7 +73,6 @@ const NewModuleDto = ({
       currentWorkspace?.id,
       currentProject?.id,
       navigateToDtoOnCreate,
-      setOnboardingProps,
     ]
   );
 

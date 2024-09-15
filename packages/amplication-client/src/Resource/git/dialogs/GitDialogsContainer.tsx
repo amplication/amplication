@@ -8,7 +8,6 @@ import GitRepos, {
   GitRepositorySelected,
 } from "./GitRepos/GithubRepos";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
-import "./GitDialogsContainer.scss";
 import { useCallback } from "react";
 import { PROVIDERS_DISPLAY_NAME } from "../../constants";
 
@@ -80,7 +79,6 @@ export default function GitDialogsContainer({
         Please make sure that you allow popup windows in the browser
       </Dialog>
       <Dialog
-        className="git-create-dialog"
         isOpen={gitCreateRepoOpen}
         title="Create new repository"
         onDismiss={onGitCreateRepositoryClose}

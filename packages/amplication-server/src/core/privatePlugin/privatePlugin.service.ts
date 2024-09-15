@@ -53,6 +53,10 @@ export class PrivatePluginService extends BlockTypeService<
       where: {
         ...args.where,
         resource: {
+          deletedAt: null,
+          archived: {
+            not: true,
+          },
           projectId: resource.projectId,
         },
       },

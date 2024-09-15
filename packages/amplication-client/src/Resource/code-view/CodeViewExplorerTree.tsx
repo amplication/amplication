@@ -103,11 +103,7 @@ const CodeViewExplorerTree = ({
       {selectedBuild && (
         <div>
           {rootFile.children?.length ? (
-            <TreeView
-              expanded={expandedFolders}
-              defaultExpandIcon={<Icon icon="arrow_left" />}
-              defaultCollapseIcon={<Icon icon="arrow_left" />}
-            >
+            <TreeView expandedItems={expandedFolders}>
               {rootFile.children?.map((child) => (
                 <FileExplorerNode
                   file={child}
