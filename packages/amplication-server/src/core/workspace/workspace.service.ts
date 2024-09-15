@@ -194,7 +194,9 @@ export class WorkspaceService {
     currentWorkspaceId?: string,
     connectToDemoRepo?: boolean
   ): Promise<Workspace> {
-    if (await !this.shouldAllowWorkspaceCreation(currentWorkspaceId)) {
+    if (
+      (await this.shouldAllowWorkspaceCreation(currentWorkspaceId)) === false
+    ) {
       const message = "Your current plan does not allow creating workspaces";
       throw new BillingLimitationError(
         message,
