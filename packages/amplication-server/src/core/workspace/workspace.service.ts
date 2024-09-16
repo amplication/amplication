@@ -191,10 +191,12 @@ export class WorkspaceService {
   async createWorkspace(
     accountId: string,
     args: Prisma.WorkspaceCreateArgs,
+    isNewUserInitialWorkspace = false,
     currentWorkspaceId?: string,
     connectToDemoRepo?: boolean
   ): Promise<Workspace> {
     if (
+      !isNewUserInitialWorkspace &&
       (await this.shouldAllowWorkspaceCreation(currentWorkspaceId)) === false
     ) {
       const message = "Your current plan does not allow creating workspaces";
@@ -203,6 +205,7 @@ export class WorkspaceService {
         BillingFeature.AllowWorkspaceCreation
       );
     }
+
     // Create a new user and link it to the account
     // Assign the user an "ORGANIZATION_ADMIN" role
     const workspace = await this.prisma.workspace.create({
