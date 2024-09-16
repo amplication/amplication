@@ -417,7 +417,49 @@ describe("WorkspaceService", () => {
       expect(prismaWorkspaceCreateMock).toBeCalledTimes(0);
     });
 
+    it("should create a workspace even if allow workspace creation is false when it's the first workspace for a new user", async () => {
+      billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
+        hasAccess: false,
+      } as unknown as BooleanEntitlement);
+
+      const args = {
+        accountId: EXAMPLE_ACCOUNT_ID,
+        args: {
+          data: {
+            name: EXAMPLE_WORKSPACE_NAME,
+          },
+        },
+      };
+      const prismaArgs = {
+        ...args.args,
+        data: {
+          ...args.args.data,
+          users: {
+            create: {
+              account: { connect: { id: args.accountId } },
+              userRoles: {
+                create: {
+                  role: Role.OrganizationAdmin,
+                },
+              },
+              isOwner: true,
+            },
+          },
+        },
+        include: {
+          users: true,
+        },
+      };
+      expect(
+        await service.createWorkspace(args.accountId, args.args, true)
+      ).toEqual(EXAMPLE_WORKSPACE);
+      expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
+      expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
+      expect(createDemoRepoMock).toBeCalledTimes(0);
+    });
+
     it("should create a demo repo when creating a workspace ", async () => {
+      billingServiceMock.getBooleanEntitlement.mockReset();
       billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
         hasAccess: true,
       } as unknown as BooleanEntitlement);
@@ -454,6 +496,7 @@ describe("WorkspaceService", () => {
         await service.createWorkspace(
           args.accountId,
           args.args,
+          false,
           undefined,
           true
         )

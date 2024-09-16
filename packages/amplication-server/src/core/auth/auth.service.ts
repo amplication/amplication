@@ -540,6 +540,7 @@ export class AuthService {
         },
         include: WORKSPACE_INCLUDE,
       },
+      true,
       undefined,
       true
     );

@@ -131,6 +131,7 @@ export class WorkspaceResolver {
     return this.workspaceService.createWorkspace(
       currentUser.account.id,
       args,
+      false,
       currentUser.workspace.id
     );
   }
