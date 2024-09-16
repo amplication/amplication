@@ -125,18 +125,18 @@ const useProjectSelector = (
     }
 
     !!(!workspaceUtil && currentWorkspace?.id) &&
-      history.push(
-        `/${currentWorkspace?.id}/${projectsList[0].id}${
-          isFromSignup || isSignupCookieExist ? "/welcome" : ""
-        }`
-      );
+      (isFromSignup || isSignupCookieExist) &&
+      history.push(`/${currentWorkspace?.id}/${projectsList[0].id}/welcome`);
   }, [
+    currentProject,
     currentWorkspace?.id,
     history,
+    location.search,
     project,
     projectRedirect,
     projectsList,
     workspace,
+    workspaceUtil,
   ]);
 
   useEffect(() => {
