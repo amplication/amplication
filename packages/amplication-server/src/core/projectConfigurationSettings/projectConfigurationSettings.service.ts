@@ -22,6 +22,7 @@ export const DEFAULT_PROJECT_CONFIGURATION_SETTINGS: Omit<
   blockType: EnumBlockType.ProjectConfigurationSettings,
   description: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION,
   displayName: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME,
+  overrideCustomizableFilesInGit: true,
 };
 
 @Injectable()

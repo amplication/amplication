@@ -198,6 +198,7 @@ export class GitClientService {
       buildId,
       resourceId,
       baseBranchName,
+      overrideCustomizableFilesInGit,
     } = createPullRequestArgs;
 
     const gitRepoDir = normalize(
@@ -267,7 +268,7 @@ export class GitClientService {
         });
       }
 
-      const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
+      const amplicationIgnoreManager = await this.manageAmplicationIgnoreFile(
         owner,
         repositoryName,
         repositoryGroupName,
@@ -277,7 +278,8 @@ export class GitClientService {
       const preparedFiles = await prepareFilesForPullRequest(
         gitResourceMeta,
         files,
-        amplicationIgnoreManger
+        amplicationIgnoreManager,
+        overrideCustomizableFilesInGit
       );
 
       this.logger.info(`Got a ${pullRequestMode} pull request mode`);
