@@ -1,10 +1,11 @@
-import React from "react";
-import { match, useRouteMatch } from "react-router-dom";
+import React, { useEffect } from "react";
+import { match, useRouteMatch, useHistory } from "react-router-dom";
 import { isEmpty } from "lodash";
 import PageContent from "../Layout/PageContent";
 import PrivatePlugin from "./PrivatePlugin";
 import { PrivatePluginList } from "./PrivatePluginList";
 import { AppRouteProps } from "../routes/routesUtil";
+import { useAppContext } from "../context/appContext";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -13,11 +14,18 @@ type Props = AppRouteProps & {
 };
 
 const PrivatePluginsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
-  const { resource } = match.params;
-  const pageTitle = "PrivatePlugins";
+  const {
+    pluginRepositoryResource,
+    loadingResources,
+    currentWorkspace,
+    currentProject,
+  } = useAppContext();
+  const history = useHistory();
+
+  const pageTitle = "Private Plugins";
 
   const privatePluginMatch = useRouteMatch<{ privatePluginId: string }>(
-    "/:workspace/:project/:resource/private-plugins/:privatePluginId"
+    "/:workspace/:project/private-plugins/:privatePluginId"
   );
 
   let privatePluginId = null;
@@ -25,19 +33,33 @@ const PrivatePluginsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
     privatePluginId = privatePluginMatch.params.privatePluginId;
   }
 
+  useEffect(() => {
+    if (loadingResources) return;
+    if (!pluginRepositoryResource) {
+      history.push(
+        `/${currentWorkspace?.id}/${currentProject?.id}/create-plugin-repository`
+      );
+    }
+  }, [
+    currentProject?.id,
+    currentWorkspace?.id,
+    history,
+    loadingResources,
+    pluginRepositoryResource,
+  ]);
+
   return (
     <PageContent
       pageTitle={pageTitle}
       className="privatePlugins"
-      sideContent={
-        <PrivatePluginList
-          resourceId={resource}
-          selectFirst={null === privatePluginId}
-        />
-      }
+      sideContent={<PrivatePluginList selectFirst={null === privatePluginId} />}
     >
       {match.isExact
-        ? !isEmpty(privatePluginId) && <PrivatePlugin />
+        ? !isEmpty(privatePluginId) && (
+            <PrivatePlugin
+              pluginRepositoryResourceId={pluginRepositoryResource?.id}
+            />
+          )
         : innerRoutes}
     </PageContent>
   );

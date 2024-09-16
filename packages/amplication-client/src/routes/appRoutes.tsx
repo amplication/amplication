@@ -86,6 +86,40 @@ export const Routes: RouteDef[] = [
                 isAnalytics: true,
               },
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/private-plugins",
+                Component: lazy(
+                  () => import("../PrivatePlugins/PrivatePluginsPage")
+                ),
+                moduleName: "",
+                displayName: "Private Plugins",
+                routeTrackType: "",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/private-plugins/git-settings",
+                    Component: lazy(
+                      () => import("../PrivatePlugins/PrivatePluginGitSettings")
+                    ),
+                    moduleName: "",
+                    routeTrackType: "",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/private-plugins/:pluginId([A-Za-z0-9-]{20,})",
+                    Component: lazy(
+                      () => import("../PrivatePlugins/PrivatePlugin")
+                    ),
+                    moduleName: "",
+                    routeTrackType: "",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                ],
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits",
                 Component: lazy(() => import("../VersionControl/CommitsPage")),
                 moduleName: "CommitsPage",

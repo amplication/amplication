@@ -238,6 +238,7 @@ export interface CreatePullRequestArgs {
   resourceId: string;
   buildId: string;
   baseBranchName: string;
+  overrideCustomizableFilesInGit: boolean;
 }
 
 export interface CreatePullRequestFromFilesArgs {

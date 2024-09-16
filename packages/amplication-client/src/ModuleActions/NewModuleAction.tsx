@@ -10,7 +10,6 @@ import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import useModuleAction from "./hooks/useModuleAction";
-import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 type Props = {
   resourceId: string;
@@ -30,7 +29,6 @@ const NewModuleAction = ({
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
   const { customActionsLicenseEnabled } = useModulesContext();
-  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   const {
     createModuleAction,
@@ -66,9 +64,6 @@ const NewModuleAction = ({
             history.push(
               `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/actions/${result.data.createModuleAction.id}`
             );
-            setOnboardingProps({
-              apiUpdated: true,
-            });
           }
         });
       setDialogOpen(false);
@@ -80,7 +75,6 @@ const NewModuleAction = ({
       history,
       currentWorkspace?.id,
       currentProject?.id,
-      setOnboardingProps,
     ]
   );
 

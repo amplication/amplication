@@ -4,7 +4,7 @@ import { setContext } from "@apollo/client/link/context";
 import { CREDENTIALS_LOCAL_STORAGE_ITEM } from "../constants";
 
 const httpLink = createHttpLink({
-  uri: `${process.env.REACT_APP_SERVER_URL}/graphql`,
+  uri: `${import.meta.env.VITE_REACT_APP_SERVER_URL}/graphql`,
 });
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

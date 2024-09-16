@@ -12,7 +12,6 @@ import {
   LicenseIndicatorContainer,
   LicensedResourceType,
 } from "../Components/LicenseIndicatorContainer";
-import { useOnboardingChecklistContext } from "../OnboardingChecklist/context/OnboardingChecklistContext";
 
 type Props = {
   entity: models.Entity;
@@ -32,7 +31,6 @@ const CLASS_NAME = "new-entity-field";
 const NewEntityField = ({ entity, onFieldAdd }: Props) => {
   const { addEntity } = useContext(AppContext);
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
-  const { setOnboardingProps } = useOnboardingChecklistContext();
 
   const [createEntityField, { error, loading }] = useMutation<TData>(
     CREATE_ENTITY_FIELD,
@@ -97,14 +95,9 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
           actions.resetForm();
           setAutoFocus(true);
         })
-        .catch(console.error)
-        .then(() => {
-          setOnboardingProps({
-            entityUpdated: true,
-          });
-        });
+        .catch(console.error);
     },
-    [createEntityField, entity.id, onFieldAdd, setOnboardingProps]
+    [createEntityField, entity.id, onFieldAdd]
   );
 
   const errorMessage = formatError(error);

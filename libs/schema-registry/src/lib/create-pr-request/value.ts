@@ -51,4 +51,6 @@ export class Value {
   baseBranchName?: string;
   @IsBoolean()
   isBranchPerResource!: boolean;
+  @IsBoolean()
+  overrideCustomizableFilesInGit!: boolean;
 }

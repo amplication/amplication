@@ -49,10 +49,11 @@ const DATA_TYPE_TO_FIELD_INPUT: {
     if (isToManyRelationField(field)) {
       return jsxElement`<ReferenceArrayInput source="${field.name}" 
       reference="${relatedEntity.name}"
-      parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-      format={(value: any) => value && value.map((v: any) => v.id)}
       >
-        <SelectArrayInput optionText={${relatedEntity.name}Title} />
+        <SelectArrayInput optionText={${relatedEntity.name}Title} 
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+       />
       </ReferenceArrayInput>`;
     }
     return jsxElement`<ReferenceInput source="${field.name}.id" reference="${relatedEntity.name}" label="${field.displayName}">

@@ -1,5 +1,9 @@
 import React from "react";
-import { Dialog, Props as DialogProps } from "../Dialog/Dialog";
+import {
+  Dialog,
+  Props as DialogProps,
+  EnumDialogStyle,
+} from "../Dialog/Dialog";
 import { Button, EnumButtonStyle } from "../Button/Button";
 import "./ConfirmationDialog.scss";
 import classNames from "classnames";
@@ -40,6 +44,7 @@ export const ConfirmationDialog = ({
       onDismiss={onDismiss}
       title={title}
       showCloseButton={false}
+      dialogStyle={EnumDialogStyle.Warning}
     >
       <div className={`${CLASS_NAME}__message`}>{message}</div>
       <hr className={`${CLASS_NAME}__separator`} />

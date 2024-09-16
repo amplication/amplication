@@ -25,6 +25,7 @@ import { previousBuild } from "./utils";
 import { TopicService } from "../topic/topic.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { ModuleService } from "../module/module.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
@@ -229,6 +230,7 @@ export class BuildService {
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly packageService: PackageService,
+    private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
 
     private readonly moduleActionService: ModuleActionService,
     private readonly moduleDtoService: ModuleDtoService,
@@ -955,6 +957,17 @@ export class BuildService {
       },
     });
 
+    const existingProjectConfiguration = await this.prisma.resource.findFirst({
+      where: {
+        projectId: project.id,
+        resourceType: EnumResourceType.ProjectConfiguration,
+      },
+    });
+    const projectConfigurationSettings =
+      await this.projectConfigurationSettingsService.findOne({
+        where: { id: existingProjectConfiguration.id },
+      });
+
     let gitSettings: CreatePullRequestGitSettings = null;
     let kafkaEventKey: string = null;
 
@@ -1087,6 +1100,9 @@ export class BuildService {
               (branchPerResourceEntitlement &&
                 branchPerResourceEntitlement.hasAccess) ??
               false,
+            overrideCustomizableFilesInGit:
+              projectConfigurationSettings.overrideCustomizableFilesInGit ??
+              false,
           };
 
           const createPullRequestEvent: CreatePrRequest.KafkaEvent = {
@@ -1180,6 +1196,12 @@ export class BuildService {
     const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
+    const orderedPlugins =
+      await this.pluginInstallationService.orderInstalledPlugins(
+        resourceId,
+        plugins
+      );
+
     const moduleActions = await this.moduleActionService.findMany({
       where: { resource: { id: resourceId } },
     });
@@ -1226,7 +1248,7 @@ export class BuildService {
     const dsgResourceData = {
       entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],
       roles: await this.getResourceRoles(resourceId),
-      pluginInstallations: plugins,
+      pluginInstallations: orderedPlugins,
       packages,
       moduleContainers: modules,
       moduleActions: moduleActions,

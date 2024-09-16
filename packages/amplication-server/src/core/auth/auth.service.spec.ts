@@ -390,6 +390,7 @@ describe("AuthService", () => {
           },
         },
       },
+      true,
       undefined,
       true
     );
