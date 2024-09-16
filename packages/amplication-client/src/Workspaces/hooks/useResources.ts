@@ -72,9 +72,10 @@ const useResources = (
     workspace: string;
     project: string;
     resource: string;
-  }>(
-    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})"
-  );
+  }>([
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
+    "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
+  ]);
   const createResourceMatch:
     | (match & {
         params: { workspace: string; project: string };
@@ -234,7 +235,7 @@ const useResources = (
         result.data?.createPluginRepository.id &&
           reloadResources().then(() => {
             history.push({
-              pathname: `/${currentWorkspace?.id}/${currentProject?.id}/private-plugins/git-settings`,
+              pathname: `/${currentWorkspace?.id}/platform/${currentProject?.id}/private-plugins/git-settings`,
             });
           });
       }
@@ -349,6 +350,7 @@ const useResources = (
         ![
           models.EnumResourceType.ProjectConfiguration,
           models.EnumResourceType.PluginRepository,
+          //models.EnumResourceType.ServiceTemplate,
         ].includes(r.resourceType)
     );
     setResources(resources);

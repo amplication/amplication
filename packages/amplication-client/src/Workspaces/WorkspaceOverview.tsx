@@ -116,17 +116,8 @@ export const WorkspaceOverview = () => {
           </FlexItem.FlexEnd>
         </FlexItem>
       </Panel>
-      <FlexItem
-        className={`${CLASS_NAME}__content`}
-        direction={EnumFlexDirection.Column}
-        itemsAlign={EnumItemsAlign.Stretch}
-      >
-        <ProjectList
-          projects={projectsList}
-          workspaceId={currentWorkspace.id}
-        />
-        <UsageInsights projectIds={projectIds} />
-      </FlexItem>
+
+      <ProjectList projects={projectsList} workspaceId={currentWorkspace.id} />
     </PageContent>
   );
 };

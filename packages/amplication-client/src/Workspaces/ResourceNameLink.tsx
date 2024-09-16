@@ -15,10 +15,15 @@ function ResourceNameLink({ resource }: Props) {
   const { currentWorkspace, currentProject } = useAppContext();
   const { id, name } = resource;
 
+  const isPlatformLink =
+    resource.resourceType === models.EnumResourceType.ServiceTemplate;
+
   return (
     <Link
       className={CLASS_NAME}
-      to={`/${currentWorkspace?.id}/${currentProject?.id}/${id}`}
+      to={`/${currentWorkspace?.id}/${isPlatformLink ? "platform/" : ""}${
+        currentProject?.id
+      }/${id}`}
     >
       <Text textStyle={EnumTextStyle.Tag}>{name}</Text>
     </Link>

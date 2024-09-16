@@ -29,7 +29,7 @@ type Props = {
 const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
   const match = useRouteMatch<{
     privatePluginId: string;
-  }>("/:workspace/:project/private-plugins/:privatePluginId");
+  }>("/:workspace/platform/:project/private-plugins/:privatePluginId");
 
   const { privatePluginId } = match?.params ?? {};
   const {

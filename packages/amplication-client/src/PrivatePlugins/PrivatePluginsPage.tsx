@@ -6,6 +6,7 @@ import PrivatePlugin from "./PrivatePlugin";
 import { PrivatePluginList } from "./PrivatePluginList";
 import { AppRouteProps } from "../routes/routesUtil";
 import { useAppContext } from "../context/appContext";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -23,9 +24,10 @@ const PrivatePluginsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
   const history = useHistory();
 
   const pageTitle = "Private Plugins";
+  useBreadcrumbs(pageTitle, match.url);
 
   const privatePluginMatch = useRouteMatch<{ privatePluginId: string }>(
-    "/:workspace/:project/private-plugins/:privatePluginId"
+    "/:workspace/platform/:project/private-plugins/:privatePluginId"
   );
 
   let privatePluginId = null;

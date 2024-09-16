@@ -30,10 +30,10 @@ export const resourceMenuLayout: {
     "settings",
   ],
   [EnumResourceType.ServiceTemplate]: [
+    "plugins",
     "modules",
     "entities",
     "roles",
-    "plugins",
     "settings",
   ],
   [EnumResourceType.ProjectConfiguration]: ["git", "settings"],
