@@ -10,12 +10,13 @@ export const ENTITY_LIST = (props: ListProps): React.ReactElement => {
   return (
     <List
       {...props}
-      bulkActionButtons={false}
       title={ENTITY_PLURAL_DISPLAY_NAME}
       perPage={50}
       pagination={<Pagination />}
     >
-      <Datagrid rowClick="show">{CELLS}</Datagrid>
+      <Datagrid rowClick="show" bulkActionButtons={false}>
+        {CELLS}{" "}
+      </Datagrid>
     </List>
   );
 };
