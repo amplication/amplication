@@ -121,5 +121,9 @@ export const setResourceUrlLink = (
   workspace: string,
   project: string,
   resource: string,
-  itemUrl: string
-): string => `/${workspace}/${project}/${resource}${itemUrl}`;
+  itemUrl: string,
+  isPlatformConsole = false
+): string =>
+  !isPlatformConsole
+    ? `/${workspace}/${project}/${resource}${itemUrl}`
+    : `/${workspace}/platform/${project}/${resource}${itemUrl}`;

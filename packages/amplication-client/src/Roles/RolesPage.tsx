@@ -16,9 +16,10 @@ const RolesPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
   const { resource } = match.params;
   const pageTitle = "Roles";
 
-  const roleMatch = useRouteMatch<{ roleId: string }>(
-    "/:workspace/:project/:resource/roles/:roleId"
-  );
+  const roleMatch = useRouteMatch<{ roleId: string }>([
+    "/:workspace/platform/:project/:resource/roles/:roleId",
+    "/:workspace/:project/:resource/roles/:roleId",
+  ]);
 
   let roleId = null;
   if (roleMatch) {

@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import resourceEntitiesRoutes from "./resourceEntitiesRoutes";
-import resourceSettingsRoutes from "./resourceSettingsRoutes";
+import { resourceSettingsRoutes } from "./resourceSettingsRoutes";
 
 export const resourceTabRoutes = (projectBasePath) => [
   {
@@ -160,7 +160,9 @@ export const resourceTabRoutes = (projectBasePath) => [
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
-    routes: resourceSettingsRoutes,
+    routes: resourceSettingsRoutes(
+      `${projectBasePath}/:resource([A-Za-z0-9-]{20,})`
+    ),
   },
   {
     path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/pending-changes`,
@@ -168,7 +170,6 @@ export const resourceTabRoutes = (projectBasePath) => [
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
-    routes: resourceSettingsRoutes,
   },
   {
     path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/plugins`,
