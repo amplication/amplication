@@ -350,7 +350,6 @@ const useResources = (
         ![
           models.EnumResourceType.ProjectConfiguration,
           models.EnumResourceType.PluginRepository,
-          //models.EnumResourceType.ServiceTemplate,
         ].includes(r.resourceType)
     );
     setResources(resources);

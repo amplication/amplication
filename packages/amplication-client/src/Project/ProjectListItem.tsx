@@ -81,7 +81,6 @@ export const ProjectListItem = ({ project, workspaceId }: Props) => {
               direction={EnumFlexDirection.Row}
               gap={EnumGapSize.Small}
               itemsAlign={EnumItemsAlign.Center}
-              // contentAlign={EnumContentAlign.End}
             >
               <Link to={`/${workspaceId}/platform/${project.id}`}>
                 <Button
