@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import resourceEntitiesRoutes from "./resourceEntitiesRoutes";
+import { resourceEntitiesRoutes } from "./resourceEntitiesRoutes";
 import { resourceSettingsRoutes } from "./resourceSettingsRoutes";
 
 export const resourceTabRoutes = (projectBasePath) => [
@@ -9,7 +9,9 @@ export const resourceTabRoutes = (projectBasePath) => [
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
-    routes: resourceEntitiesRoutes,
+    routes: resourceEntitiesRoutes(
+      `${projectBasePath}/:resource([A-Za-z0-9-]{20,})`
+    ),
     isAnalytics: true,
   },
   {

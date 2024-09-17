@@ -19,7 +19,7 @@ import {
 import NewRole from "./NewRole";
 import InnerTabLink from "../Layout/InnerTabLink";
 import { pluralize } from "../util/pluralize";
-import { useResourceBaseUrl } from "../Resource/hooks/useResourceBaseUrl";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type TData = {
   resourceRoles: models.ResourceRole[];

@@ -25,6 +25,7 @@ import {
   AUTHENTICATION_ENTITY_DATA_TYPES,
   SYSTEM_DATA_TYPES,
 } from "./constants";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type TData = {
   entity: models.Entity;
@@ -49,9 +50,14 @@ const EntityField = () => {
     resource: string;
     entity: string;
     field: string;
-  }>("/:workspace/:project/:resource/entities/:entity/fields/:field");
+  }>([
+    "/:workspace/platform/:project/:resource/entities/:entity/fields/:field",
+    "/:workspace/:project/:resource/entities/:entity/fields/:field",
+  ]);
 
   const { resource, entity, field } = match?.params ?? {};
+
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resource });
 
   if (!resource) {
     throw new Error("resource parameters is required in the query string");
@@ -97,10 +103,8 @@ const EntityField = () => {
   );
 
   const handleDeleteField = useCallback(() => {
-    history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/${resource}/entities/${entity}/fields/`
-    );
-  }, [history, resource, entity, currentWorkspace, currentProject]);
+    history.push(`${baseUrl}/entities/${entity}/fields/`);
+  }, [history, entity, baseUrl]);
 
   const handleSubmit = useCallback(
     (data) => {

@@ -1,5 +1,5 @@
 import { useRouteMatch } from "react-router-dom";
-import { useAppContext } from "../../context/appContext";
+import { useAppContext } from "../context/appContext";
 
 type Props = {
   overrideResourceId?: string;

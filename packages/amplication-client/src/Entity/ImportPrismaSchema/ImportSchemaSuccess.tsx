@@ -5,20 +5,18 @@ import {
   EnumGapSize,
   FlexItem,
 } from "@amplication/ui/design-system";
-import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../Components/Button";
-import { AppContext } from "../../context/appContext";
 import {
   BtmButton,
   EnumButtonLocation,
 } from "../../Resource/break-the-monolith/BtmButton";
+import { useResourceBaseUrl } from "../../util/useResourceBaseUrl";
 
 export const ImportSchemaSuccess = () => {
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl();
 
-  const entitiesUrl = `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/entities`;
+  const entitiesUrl = `${baseUrl}/entities`;
 
   return (
     <FlexItem

@@ -14,8 +14,7 @@ import {
   setResourceUrlLink,
 } from "./resourceMenuUtils";
 import { REACT_APP_PACKAGES_FEATURE_FLAG } from "../env";
-import { EnumResourceType } from "../models";
-import { useResourceBaseUrl } from "./hooks/useResourceBaseUrl";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type Props = AppRouteProps & {
   match: match<{

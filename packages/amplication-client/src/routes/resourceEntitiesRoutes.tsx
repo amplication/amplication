@@ -1,8 +1,8 @@
 import { lazy } from "react";
 
-const resourceEntitiesRoutes = [
+export const resourceEntitiesRoutes = (resourceBasePath) => [
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/entities/:entityId([A-Za-z0-9-]{20,})",
+    path: `${resourceBasePath}/entities/:entityId([A-Za-z0-9-]{20,})`,
     Component: lazy(() => import("../Entity/Entity")),
     moduleName: "",
     routeTrackType: "",
@@ -12,7 +12,7 @@ const resourceEntitiesRoutes = [
   },
 
   {
-    path: "/:workspace/:project/:resource/entities/import-schema",
+    path: `${resourceBasePath}/entities/import-schema`,
     Component: lazy(
       () => import("../Entity/ImportPrismaSchema/EntitiesImport")
     ),
@@ -23,5 +23,3 @@ const resourceEntitiesRoutes = [
     isAnalytics: true,
   },
 ];
-
-export default resourceEntitiesRoutes;
