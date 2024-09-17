@@ -26,19 +26,11 @@ type Props = {
 };
 
 function ResourceListItem({ resource }: Props) {
-  const { currentWorkspace, currentProject, setResource } =
-    useContext(AppContext);
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   const { id, name, description } = resource;
 
-  const handleClick = useCallback(() => {
-    setResource(resource);
-  }, [resource, setResource]);
-
   return (
-    <ListItem
-      onClick={handleClick}
-      to={`/${currentWorkspace?.id}/${currentProject?.id}/${id}`}
-    >
+    <ListItem to={`/${currentWorkspace?.id}/${currentProject?.id}/${id}`}>
       <FlexItem
         margin={EnumFlexItemMargin.Bottom}
         start={<ResourceCircleBadge type={resource.resourceType} />}
