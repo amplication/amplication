@@ -9,6 +9,7 @@ import CommitList from "./CommitList";
 import "./CommitsPage.scss";
 import BuildPage from "./BuildPage";
 import CommitButton from "./CommitButton";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -39,8 +40,8 @@ const CommitsPage: React.FC<Props> = ({ moduleClass, innerRoutes }) => {
 
   const { build: buildId } = buildMatch?.params ?? {};
 
-  const { currentProject, currentWorkspace, commitUtils } =
-    useContext(AppContext);
+  const { commitUtils } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
   const handleOnLoadMoreClick = useCallback(() => {
     commitUtils.refetchCommitsData(false);
@@ -49,16 +50,8 @@ const CommitsPage: React.FC<Props> = ({ moduleClass, innerRoutes }) => {
   useEffect(() => {
     if (commitId) return;
     commitUtils.commits.length &&
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/commits/${commitUtils.commits[0].id}`
-      );
-  }, [
-    commitId,
-    commitUtils.commits,
-    currentProject?.id,
-    currentWorkspace?.id,
-    history,
-  ]);
+      history.push(`${baseUrl}/commits/${commitUtils.commits[0].id}`);
+  }, [commitId, commitUtils.commits, baseUrl, history]);
 
   return buildId ? (
     <BuildPage match={undefined} buildId={buildId} />

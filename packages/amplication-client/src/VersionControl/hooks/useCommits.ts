@@ -14,6 +14,7 @@ import { GraphQLErrorCode } from "@amplication/graphql-error-codes";
 import { AppContext } from "../../context/appContext";
 import { commitPath } from "../../util/paths";
 import { useHistory } from "react-router-dom";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 const MAX_ITEMS_PER_LOADING = 20;
 const POLL_INTERVAL = 1000; //update the last commit status frequently to get the latest log message
@@ -58,6 +59,8 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     currentProject,
     commitUtils,
   } = useContext(AppContext);
+
+  const { baseUrl: projectBaseUrl } = useProjectBaseUrl();
 
   const updateBuildStatus = useCallback(
     (build: Build) => {
@@ -175,11 +178,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
         setPendingChangesError(false);
         resetPendingChanges();
         commitUtils.refetchCommitsData(true);
-        const path = commitPath(
-          currentWorkspace?.id,
-          currentProject?.id,
-          response.commit.id
-        );
+        const path = commitPath(projectBaseUrl, response.commit.id);
         return history.push(path);
       },
     });

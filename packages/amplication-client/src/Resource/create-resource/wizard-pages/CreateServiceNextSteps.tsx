@@ -6,6 +6,7 @@ import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { WizardFlowType } from "../CreateServiceWizard";
+import { useProjectBaseUrl } from "../../../util/useProjectBaseUrl";
 
 const className = "create-service-next-steps";
 
@@ -27,44 +28,47 @@ export const CreateServiceNextSteps: React.FC<
   eventActionName,
 }) => {
   const history = useHistory();
-  const {
-    currentWorkspace,
-    currentProject,
-    createServiceWithEntitiesResult: serviceResults,
-  } = useContext(AppContext);
+  const { currentWorkspace, createServiceWithEntitiesResult: serviceResults } =
+    useContext(AppContext);
+
+  const { baseUrl } = useProjectBaseUrl();
 
   const handleClickEntities = useCallback(() => {
     trackWizardPageEvent(
       AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "Create Entities" }
     );
-    history.push(
-      `/${currentWorkspace.id}/${currentProject.id}/${serviceResults?.resource?.id}/entities`
-    );
-  }, [currentWorkspace, currentProject, serviceResults?.resource]);
+    history.push(`${baseUrl}/${serviceResults?.resource?.id}/entities`);
+  }, [baseUrl, history, serviceResults?.resource?.id, trackWizardPageEvent]);
 
   const handleClickRoute = useCallback(() => {
     const routeUrl =
       defineUser === "Onboarding"
         ? `/${currentWorkspace.id}/members`
-        : `/${currentWorkspace.id}/${currentProject.id}/${serviceResults?.resource?.id}/plugins/catalog`;
+        : `${baseUrl}/${serviceResults?.resource?.id}/plugins/catalog`;
 
     trackWizardPageEvent(
       AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: eventActionName }
     );
     history.push(routeUrl);
-  }, [currentWorkspace.id, currentProject.id, serviceResults?.resource?.id]);
+  }, [
+    defineUser,
+    currentWorkspace?.id,
+    baseUrl,
+    serviceResults?.resource?.id,
+    trackWizardPageEvent,
+    eventActionName,
+    history,
+  ]);
 
   const handleDone = useCallback(() => {
     trackWizardPageEvent(
       AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "View Service" }
     );
-    history.push(
-      `/${currentWorkspace.id}/${currentProject.id}/${serviceResults?.resource?.id}`
-    );
-  }, [currentWorkspace, currentProject, serviceResults?.resource]);
+    history.push(`${baseUrl}/${serviceResults?.resource?.id}`);
+  }, [baseUrl, history, serviceResults?.resource?.id, trackWizardPageEvent]);
 
   return (
     <div className={className}>
