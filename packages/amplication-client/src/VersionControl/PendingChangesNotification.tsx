@@ -16,12 +16,13 @@ import { Link } from "react-router-dom";
 import "./PendingChangesNotification.scss";
 
 import { AppContext } from "../context/appContext";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 const CLASS_NAME = "pending-changes-notification";
 
 const PendingChangesNotification = () => {
-  const { currentWorkspace, currentProject, pendingChanges } =
-    useContext(AppContext);
+  const { pendingChanges } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
   if (isEmpty(pendingChanges)) return null;
 
@@ -51,9 +52,7 @@ const PendingChangesNotification = () => {
         </FlexItem>
 
         <FlexItem.FlexEnd>
-          <Link
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
-          >
+          <Link to={`${baseUrl}/pending-changes`}>
             <Button buttonStyle={EnumButtonStyle.Outline}>View changes</Button>
           </Link>
         </FlexItem.FlexEnd>

@@ -47,6 +47,7 @@ import UpgradeCtaButton from "./UpgradeCtaButton";
 import WorkspaceBanner from "./WorkspaceBanner";
 import "./WorkspaceHeader.scss";
 import styles from "./notificationStyle";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 const CLASS_NAME = "workspace-header";
 const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
@@ -80,6 +81,7 @@ const HELP_MENU_LIST: HelpMenuItem[] = [
 
 const WorkspaceHeader: React.FC = () => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
   const { handleContactUsClick } = useContactUs({
     actionName: "Contact Us",
@@ -341,10 +343,7 @@ const WorkspaceHeader: React.FC = () => {
         <div className={`${CLASS_NAME}__highlight`}>
           Notice: You're currently using a preview repository for your generated
           code. For a full personalized experience, please&nbsp;
-          <Link
-            title={"Go to project settings"}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/git-sync`}
-          >
+          <Link title={"Go to project settings"} to={`${baseUrl}/git-sync`}>
             connect to your own repository
           </Link>
         </div>

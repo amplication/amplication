@@ -10,7 +10,6 @@ import {
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
-  Icon,
   List,
   ListItem,
   Panel,
@@ -18,20 +17,21 @@ import {
   Tooltip,
 } from "@amplication/ui/design-system";
 import { useCallback, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { TitleAndIcon } from "../Components/TitleAndIcon";
+import { PluginLogo } from "../Plugins/PluginLogo";
+import usePlugins, {
+  SortedPluginInstallation,
+} from "../Plugins/hooks/usePlugins";
+import { useAppContext } from "../context/appContext";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import "./PluginsTile.scss";
 import {
   PluginCategory,
   usedPluginCategories,
 } from "./hooks/useResourceSummary";
-import usePlugins, {
-  SortedPluginInstallation,
-} from "../Plugins/hooks/usePlugins";
-import { useAppContext } from "../context/appContext";
-import { PluginLogo } from "../Plugins/PluginLogo";
-import { TitleAndIcon } from "../Components/TitleAndIcon";
-import { Link } from "react-router-dom";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { useTracking } from "../util/analytics";
 
 type Props = {
   usedCategories: usedPluginCategories;
@@ -46,11 +46,11 @@ const AVAILABLE_CATEGORIES = "AvailableCategories";
 const INSTALLED_CATEGORIES = "InstalledCategories";
 
 function PluginsTile({ usedCategories, availableCategories }: Props) {
-  const { currentWorkspace, currentProject, currentResource } = useAppContext();
   const { trackEvent } = useTracking();
+  const { baseUrl } = useResourceBaseUrl();
 
-  const catalogUrl = `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/catalog`;
-  const installedUrl = `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/installed`;
+  const catalogUrl = `${baseUrl}/plugins/catalog`;
+  const installedUrl = `${baseUrl}/plugins/installed`;
 
   const installedCategories = useMemo(() => {
     if (!usedCategories) {
@@ -173,11 +173,9 @@ type AvailableCategoryProps = {
   onClick?: (location: string, category: PluginCategory) => void;
 };
 function AvailableCategory({ category, onClick }: AvailableCategoryProps) {
-  const { currentWorkspace, currentProject, currentResource } = useAppContext();
+  const { baseUrl } = useResourceBaseUrl();
 
-  const url = `/${currentWorkspace.id}/${currentProject.id}/${
-    currentResource.id
-  }/plugins/catalog/${encodeURIComponent(category.name)}`;
+  const url = `${baseUrl}/plugins/catalog/${encodeURIComponent(category.name)}`;
 
   return (
     <List listStyle={EnumListStyle.Dark}>
@@ -217,9 +215,9 @@ function InstalledCategory({
   installedPlugins,
   onClick,
 }: InstalledCategoryProps) {
-  const { currentWorkspace, currentProject, currentResource } = useAppContext();
+  const { baseUrl } = useResourceBaseUrl();
 
-  const url = `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/installed`;
+  const url = `${baseUrl}/plugins/installed`;
 
   return (
     <List listStyle={EnumListStyle.Default}>

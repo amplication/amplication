@@ -32,6 +32,7 @@ import { pluralize } from "../util/pluralize";
 import "./ResourceList.scss";
 import { RESOURCE_LIST_COLUMNS } from "./ResourceListDataColumns";
 import ResourceListItem from "./ResourceListItem";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
@@ -43,6 +44,10 @@ const VIEW_GRID = "Grid";
 function ResourceList() {
   const { refreshData } = useStiggContext();
   const [error, setError] = useState<Error | null>(null);
+
+  const { baseUrl: platformProjectBaseUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: true,
+  });
 
   const {
     resources,
@@ -117,9 +122,7 @@ function ResourceList() {
               itemsAlign={EnumItemsAlign.Center}
               direction={EnumFlexDirection.Row}
             >
-              <Link
-                to={`/${currentWorkspace?.id}/platform/${currentProject?.id}`}
-              >
+              <Link to={`${platformProjectBaseUrl}`}>
                 <Button buttonStyle={EnumButtonStyle.Outline}>
                   View Templates
                 </Button>
