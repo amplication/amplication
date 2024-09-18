@@ -75,19 +75,19 @@ export const PluginTree = React.memo(
           <InnerTabLink
             key={"catalog"}
             icon="plugins"
-            to={`${baseUrl}}/plugins/catalog`}
+            to={`${baseUrl}/plugins/catalog`}
           >
             <span>All Plugins</span>
           </InnerTabLink>
           {canUsePrivatePlugins && (
             <InnerTabLink
               icon="plugins"
-              to={`${baseUrl}}/plugins/catalog/${PRIVATE_PLUGINS_CATEGORY}`}
+              to={`${baseUrl}/plugins/catalog/${PRIVATE_PLUGINS_CATEGORY}`}
             >
               <span>Private Plugins</span>
             </InnerTabLink>
           )}
-          <InnerTabLink icon="plugins" to={`${baseUrl}}/plugins/installed`}>
+          <InnerTabLink icon="plugins" to={`${baseUrl}/plugins/installed`}>
             <span>Installed Plugins</span>
           </InnerTabLink>
           <ListItem
