@@ -7,12 +7,12 @@ import {
   VerticalNavigation,
   VerticalNavigationItem,
 } from "@amplication/ui/design-system";
-import React, { useContext, useEffect } from "react";
-import { AppContext } from "../context/appContext";
+import React, { useEffect } from "react";
 import * as models from "../models";
-import { formatError } from "../util/error";
-import useModuleAction from "./hooks/useModuleAction";
 import { ModulesFilter } from "../Modules/ModuleNavigationList";
+import { formatError } from "../util/error";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
+import useModuleAction from "./hooks/useModuleAction";
 
 const DATE_CREATED_FIELD = "createdAt";
 
@@ -24,7 +24,7 @@ type Props = {
 
 export const ModuleActionLinkList = React.memo(
   ({ moduleId, resourceId, filters }: Props) => {
-    const { currentWorkspace, currentProject } = useContext(AppContext);
+    const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
     const {
       findModuleActions,
@@ -62,7 +62,7 @@ export const ModuleActionLinkList = React.memo(
               <VerticalNavigationItem
                 key={action.id}
                 icon="api"
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/actions/${action.id}`}
+                to={`${baseUrl}/modules/${moduleId}/actions/${action.id}`}
               >
                 <FlexItem
                   itemsAlign={EnumItemsAlign.Center}

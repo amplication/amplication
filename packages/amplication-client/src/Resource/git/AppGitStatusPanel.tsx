@@ -16,6 +16,7 @@ import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import GitRepoDetails from "./GitRepoDetails";
 import { gitProviderIconMap } from "./git-provider-icon-map";
+import { useResourceBaseUrl } from "../../util/useResourceBaseUrl";
 
 type Props = {
   resource: models.Resource | null;
@@ -25,12 +26,12 @@ const DATE_FORMAT = "PP p";
 
 const AppGitStatusPanel = ({ resource }: Props) => {
   const {
-    currentWorkspace,
-    currentProject,
     gitRepositoryUrl,
     gitRepositoryFullName,
     gitRepositoryOrganizationProvider,
   } = useContext(AppContext);
+
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resource?.id });
 
   const lastSync = resource?.githubLastSync
     ? new Date(resource.githubLastSync)
@@ -39,10 +40,7 @@ const AppGitStatusPanel = ({ resource }: Props) => {
   const lastSyncDate = lastSync ? format(lastSync, DATE_FORMAT) : "Never";
 
   return isEmpty(resource?.gitRepository) ? (
-    <Link
-      title={"Connect to a git provider"}
-      to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource?.id}/git-sync`}
-    >
+    <Link title={"Connect to a git provider"} to={`${baseUrl}/git-sync`}>
       <FlexItem>
         <Text
           textStyle={EnumTextStyle.Subtle}

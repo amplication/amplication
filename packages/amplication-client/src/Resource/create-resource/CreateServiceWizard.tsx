@@ -49,6 +49,7 @@ import {
   ONBOARDING_STEPS,
 } from "./wizard-types/wizard-type-onboarding";
 import useServiceTemplate from "../../ServiceTemplate/hooks/useServiceTemplate";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -96,14 +97,13 @@ const CreateServiceWizard: React.FC<Props> = ({
   const {
     errorCreateService,
     currentProject,
-    currentWorkspace,
     loadingCreateService,
     setNewService,
     createServiceWithEntitiesResult: createResult,
   } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: true });
 
   const {
-    serviceTemplates,
     createServiceTemplate,
     loadingCreateServiceTemplate,
     errorCreateServiceTemplate,
@@ -168,12 +168,9 @@ const CreateServiceWizard: React.FC<Props> = ({
     if (createResult?.build) setCurrentBuild(createResult?.build);
   }, [createResult?.build]);
 
-  const handleRebuildClick = useCallback(
-    (build: models.Build) => {
-      setCurrentBuild(build);
-    },
-    [currentBuild]
-  );
+  const handleRebuildClick = useCallback((build: models.Build) => {
+    setCurrentBuild(build);
+  }, []);
 
   const createResourcePlugins = useCallback(
     (pluginIds: string[]): models.PluginInstallationsCreateInput => {
@@ -226,9 +223,9 @@ const CreateServiceWizard: React.FC<Props> = ({
       trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CloseClick, {
         step: currentPage,
       });
-      history.push(`/${currentWorkspace.id}/${currentProject.id}`);
+      history.push(`${baseUrl}`);
     },
-    [trackWizardPageEvent, history, currentWorkspace, currentProject]
+    [trackWizardPageEvent, history, baseUrl]
   );
 
   const handleWizardProgress = useCallback(
