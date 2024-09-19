@@ -317,7 +317,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         submitLoader={loadingCreateService || loadingCreateServiceTemplate}
         handleCloseWizard={handleCloseWizard}
         handleWizardProgress={handleWizardProgress}
-        defineUser={wizardFlow}
+        wizardFlowType={wizardFlow}
       >
         <CreateServiceWelcome
           moduleClass={moduleClass}
@@ -333,7 +333,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateGithubSync
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
-          defineUser={wizardFlow}
+          wizardFlowType={wizardFlow}
           flowSettings={flowSettings}
         />
         <CreateGenerationSettings

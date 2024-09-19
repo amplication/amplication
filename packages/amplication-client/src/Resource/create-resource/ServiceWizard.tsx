@@ -21,7 +21,7 @@ import { GlobalHotKeys } from "react-hotkeys";
 
 interface ServiceWizardProps {
   children: ReactNode;
-  defineUser: WizardFlowType;
+  wizardFlowType: WizardFlowType;
   wizardSteps: WizardStep[];
   wizardSchema: { [key: string]: any };
   wizardProgressBar: WizardProgressBarInterface[];
@@ -117,7 +117,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   submitLoader,
   handleCloseWizard,
   handleWizardProgress,
-  defineUser,
+  wizardFlowType,
 }) => {
   const { trackEvent } = useTracking();
   const wizardPattern = useMemo(() => {
@@ -154,7 +154,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     trackEvent({
       eventName: wizardSteps[currWizardPatternIndex].analyticsEventName,
       category: "Service Wizard",
-      WizardType: defineUser,
+      WizardType: wizardFlowType,
     });
   }, []);
 
@@ -234,7 +234,8 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     <div className={`${moduleCss}__wizard_container`}>
       <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
 
-      {defineUser === "Create Service" && (
+      {(wizardFlowType === "Create Service" ||
+        wizardFlowType === "Create Service Template") && (
         <Button
           buttonStyle={EnumButtonStyle.Text}
           className={`${moduleCss}__close`}
@@ -261,7 +262,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
             if (
               activePageIndex === 2 &&
               !values.isOverrideGitRepository &&
-              defineUser === "Create Service"
+              wizardFlowType === "Create Service"
             ) {
               setIsInvalidStep(false);
               return;

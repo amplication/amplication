@@ -19,13 +19,13 @@ const DEMO_REPO_TOOLTIP =
   "Take Amplication for a test drive with a preview repository on our GitHub account. You can later connect to your own repository.";
 
 type props = {
-  defineUser: WizardFlowType;
+  wizardFlowType: WizardFlowType;
 } & WizardStepProps;
 
 const CreateGithubSync: React.FC<props> = ({
   moduleClass,
   formik,
-  defineUser,
+  wizardFlowType,
 }) => {
   const { refreshCurrentWorkspace, currentProjectConfiguration, resources } =
     useContext(AppContext);
@@ -136,7 +136,7 @@ const CreateGithubSync: React.FC<props> = ({
       </Layout.LeftSide>
       <Layout.RightSide>
         <Layout.ContentWrapper>
-          {defineUser === "Onboarding" || isNeedToConnectGitProvider ? (
+          {wizardFlowType === "Onboarding" || isNeedToConnectGitProvider ? (
             <AuthWithGitProvider
               type="wizard"
               gitProvider={gitProvider}
@@ -162,7 +162,7 @@ const CreateGithubSync: React.FC<props> = ({
             />
           )}
 
-          {defineUser === "Onboarding" && (
+          {wizardFlowType === "Onboarding" && (
             <div className={`${CLASS_NAME}__demo`}>
               <Tooltip
                 wrap
