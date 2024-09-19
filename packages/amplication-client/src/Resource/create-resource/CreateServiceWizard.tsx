@@ -80,6 +80,7 @@ const CreateServiceWizard: React.FC<Props> = ({
     createServiceTemplate,
     loadingCreateServiceTemplate,
     errorCreateServiceTemplate,
+    createdServiceTemplateResults,
   } = useServiceTemplate(currentProject);
 
   const { trackEvent } = useTracking();
@@ -140,25 +141,27 @@ const CreateServiceWizard: React.FC<Props> = ({
         plugins: [],
       };
 
-      data.plugins = pluginIds.map((pluginId) => {
-        const plugin = pluginCatalog[pluginId];
+      data.plugins = pluginIds
+        .map((pluginId) => {
+          const plugin = pluginCatalog[pluginId];
+          if (!plugin) return null;
+          const pluginVersion = pluginUseLatest
+            ? plugin?.versions.find((x) => x.isLatest)
+            : plugin?.versions[0];
 
-        const pluginVersion = pluginUseLatest
-          ? plugin?.versions.find((x) => x.isLatest)
-          : plugin?.versions[0];
-
-        return {
-          displayName: plugin.name,
-          pluginId: plugin.pluginId,
-          enabled: true,
-          npm: plugin.npm,
-          version: "latest",
-          resource: { connect: { id: "" } },
-          settings: pluginVersion?.settings || JSON.parse("{}"),
-          configurations: pluginVersion?.configurations || JSON.parse("{}"),
-          isPrivate: false,
-        };
-      });
+          return {
+            displayName: plugin.name,
+            pluginId: plugin.pluginId,
+            enabled: true,
+            npm: plugin.npm,
+            version: "latest",
+            resource: { connect: { id: "" } },
+            settings: pluginVersion?.settings || JSON.parse("{}"),
+            configurations: pluginVersion?.configurations || JSON.parse("{}"),
+            isPrivate: false,
+          };
+        })
+        .filter((x) => x !== null);
 
       return data;
     },
@@ -206,7 +209,6 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const createResource = useCallback(
     (activeIndex: number, values: ResourceSettings) => {
-      if (activeIndex < 6) return;
       const {
         serviceName,
         generateAdminUI,
@@ -265,7 +267,6 @@ const CreateServiceWizard: React.FC<Props> = ({
             plugins,
             codeGenerator
           );
-
           createServiceTemplate(serviceTemplateCreateInput);
         } else {
           const resourceCreateInput = prepareServiceObject(
@@ -313,7 +314,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         wizardInitialValues={ResourceInitialValues}
         wizardSubmit={createResource}
         moduleCss={moduleClass}
-        submitFormPage={7}
+        submitFormPage={flowSettings.submitFormIndex}
         submitLoader={loadingCreateService || loadingCreateServiceTemplate}
         handleCloseWizard={handleCloseWizard}
         handleWizardProgress={handleWizardProgress}
@@ -377,6 +378,11 @@ const CreateServiceWizard: React.FC<Props> = ({
           trackWizardPageEvent={trackWizardPageEvent}
           flowSettings={flowSettings}
           wizardFlowType={wizardFlow}
+          createdResource={
+            wizardFlow === FLOW_CREATE_SERVICE_TEMPLATE
+              ? createdServiceTemplateResults?.createServiceTemplate
+              : createResult?.resource
+          }
         />
       </ServiceWizard>
       <Snackbar

@@ -3,25 +3,30 @@ import {
   EnumTextColor,
   Icon,
 } from "@amplication/ui/design-system";
-import { useCallback, useContext } from "react";
-import "./CreateServiceNextSteps.scss";
-import { WizardStepProps } from "./interfaces";
-import { AppContext } from "../../../context/appContext";
+import { useCallback } from "react";
 import { useHistory } from "react-router-dom";
+import { Resource } from "../../../models";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { useProjectBaseUrl } from "../../../util/useProjectBaseUrl";
 import { WizardFlowType } from "../types";
+import "./CreateServiceNextSteps.scss";
+import { WizardStepProps } from "./interfaces";
 
 const className = "create-service-next-steps";
 
 export const CreateServiceNextSteps: React.FC<
   WizardStepProps & {
     wizardFlowType: WizardFlowType;
+    createdResource: Resource;
   }
-> = ({ moduleClass, trackWizardPageEvent, flowSettings, wizardFlowType }) => {
+> = ({
+  moduleClass,
+  trackWizardPageEvent,
+  flowSettings,
+  wizardFlowType,
+  createdResource,
+}) => {
   const history = useHistory();
-  const { createServiceWithEntitiesResult: serviceResults } =
-    useContext(AppContext);
 
   const { baseUrl } = useProjectBaseUrl();
 
@@ -30,36 +35,26 @@ export const CreateServiceNextSteps: React.FC<
       AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "Create Entities" }
     );
-    history.push(`${baseUrl}/${serviceResults?.resource?.id}/entities`);
-  }, [baseUrl, history, serviceResults?.resource?.id, trackWizardPageEvent]);
+    history.push(`${baseUrl}/${createdResource?.id}/entities`);
+  }, [baseUrl, history, createdResource?.id, trackWizardPageEvent]);
 
   const handleClickRoute = useCallback(() => {
-    const routeUrl = `${baseUrl}/${serviceResults?.resource?.id}/plugins/catalog`;
+    const routeUrl = `${baseUrl}/${createdResource?.id}/plugins/catalog`;
 
     trackWizardPageEvent(
       AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "Add Plugins" }
     );
     history.push(routeUrl);
-  }, [baseUrl, serviceResults?.resource?.id, trackWizardPageEvent, history]);
+  }, [baseUrl, createdResource?.id, trackWizardPageEvent, history]);
 
   const handleDone = useCallback(() => {
     trackWizardPageEvent(
       AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "View Service" }
     );
-    if (wizardFlowType === "Create Service Template") {
-      history.push(`${baseUrl}`);
-    } else {
-      history.push(`${baseUrl}/${serviceResults?.resource?.id}`);
-    }
-  }, [
-    baseUrl,
-    history,
-    serviceResults?.resource?.id,
-    trackWizardPageEvent,
-    wizardFlowType,
-  ]);
+    history.push(`${baseUrl}/${createdResource?.id}`);
+  }, [baseUrl, history, trackWizardPageEvent, createdResource]);
 
   return (
     <div className={className}>

@@ -22,16 +22,19 @@ export const FLOW_SETTINGS: {
   [FLOW_ONBOARDING]: {
     steps: ONBOARDING_STEPS,
     pattern: ONBOARDING_PATTERN,
+    submitFormIndex: 7,
     texts: {},
   },
   [FLOW_CREATE_SERVICE]: {
     steps: CREATE_SERVICE_STEPS,
     pattern: CREATE_SERVICE_PATTERN,
+    submitFormIndex: 7,
     texts: {},
   },
   [FLOW_CREATE_SERVICE_TEMPLATE]: {
     steps: CREATE_SERVICE_TEMPLATE_STEPS,
     pattern: CREATE_SERVICE_TEMPLATE_PATTERN,
+    submitFormIndex: 5,
     texts: {
       chooseName: "First, we need to choose a name for the service template",
       chooseNameDescription: `Give your template a meaningful name. For example, ".NET with MSSQL and REST API"`,
@@ -46,7 +49,7 @@ export const FLOW_SETTINGS: {
       successPluginsLine1: "Add plugins to",
       successPluginsLine2: "the service template",
       successDoneLine1: "I'm done!",
-      successDoneLine2: "View my Templates",
+      successDoneLine2: "View my template",
     },
   },
 };

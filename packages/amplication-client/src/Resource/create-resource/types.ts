@@ -17,4 +17,5 @@ export type WizardFlowSettings = {
   steps: WizardStep[];
   pattern: number[];
   texts: { [key: string]: string };
+  submitFormIndex: number;
 };
