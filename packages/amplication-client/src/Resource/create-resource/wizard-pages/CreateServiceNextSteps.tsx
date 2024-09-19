@@ -10,14 +10,15 @@ import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { useProjectBaseUrl } from "../../../util/useProjectBaseUrl";
+import { WizardFlowType } from "../types";
 
 const className = "create-service-next-steps";
 
-export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
-  moduleClass,
-  trackWizardPageEvent,
-  flowSettings,
-}) => {
+export const CreateServiceNextSteps: React.FC<
+  WizardStepProps & {
+    wizardFlowType: WizardFlowType;
+  }
+> = ({ moduleClass, trackWizardPageEvent, flowSettings, wizardFlowType }) => {
   const history = useHistory();
   const { createServiceWithEntitiesResult: serviceResults } =
     useContext(AppContext);
@@ -47,8 +48,18 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
       AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "View Service" }
     );
-    history.push(`${baseUrl}/${serviceResults?.resource?.id}`);
-  }, [baseUrl, history, serviceResults?.resource?.id, trackWizardPageEvent]);
+    if (wizardFlowType === "Create Service Template") {
+      history.push(`${baseUrl}`);
+    } else {
+      history.push(`${baseUrl}/${serviceResults?.resource?.id}`);
+    }
+  }, [
+    baseUrl,
+    history,
+    serviceResults?.resource?.id,
+    trackWizardPageEvent,
+    wizardFlowType,
+  ]);
 
   return (
     <div className={className}>
@@ -101,8 +112,11 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
             <Icon icon="check" size="small" />
           </CircleBadge>
           <div className={`${className}__link_box__description`}>
-            <div>I'm done!</div>
-            <div>View my service</div>
+            <div>{flowSettings.texts?.successDoneLine1 || "I'm done!"}</div>
+            <div>
+              {flowSettings.texts?.successDoneLine2 || "View my service"}
+            </div>
+            <div></div>
           </div>
         </div>
       </div>

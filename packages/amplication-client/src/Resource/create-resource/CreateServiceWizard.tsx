@@ -376,6 +376,7 @@ const CreateServiceWizard: React.FC<Props> = ({
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
           flowSettings={flowSettings}
+          wizardFlowType={wizardFlow}
         />
       </ServiceWizard>
       <Snackbar

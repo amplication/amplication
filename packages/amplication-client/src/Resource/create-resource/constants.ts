@@ -45,6 +45,8 @@ export const FLOW_SETTINGS: {
       successEntitiesLine2: "the service template",
       successPluginsLine1: "Add plugins to",
       successPluginsLine2: "the service template",
+      successDoneLine1: "I'm done!",
+      successDoneLine2: "View my Templates",
     },
   },
 };
