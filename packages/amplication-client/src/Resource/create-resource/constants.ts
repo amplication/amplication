@@ -34,8 +34,7 @@ export const FLOW_SETTINGS: {
     pattern: CREATE_SERVICE_TEMPLATE_PATTERN,
     texts: {
       chooseName: "First, we need to choose a name for the service template",
-      chooseNameDescription:
-        'Give your template a meaningful name. The name may include spaces, e.g. ".NET with MSSQL and REST API',
+      chooseNameDescription: `Give your template a meaningful name. For example, ".NET with MSSQL and REST API"`,
       chooseNameField: "Template name",
       chooseNameFieldPlaceholder: ".NET with MSSQL and REST API",
       apisTitle: "How would you like to structure your service template?",
