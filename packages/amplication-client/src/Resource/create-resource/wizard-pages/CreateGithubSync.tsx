@@ -7,7 +7,7 @@ import {
   GitRepositorySelected,
 } from "../../git/dialogs/GitRepos/GithubRepos";
 import { WizardStepProps } from "./interfaces";
-import { WizardFlowType } from "../CreateServiceWizard";
+import { WizardFlowType } from "../types";
 import ServiceWizardConfigurationGitSettings from "../../git/ServiceWizardConfigurationGitSettings";
 import { getGitRepositoryDetails } from "../../../util/git-repository-details";
 import { Icon, ToggleField, Tooltip } from "@amplication/ui/design-system";

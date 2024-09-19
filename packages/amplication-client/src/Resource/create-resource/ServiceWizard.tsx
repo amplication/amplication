@@ -14,18 +14,10 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { WizardProgressBarInterface } from "./wizardResourceSchema";
 import WizardProgressBar from "./WizardProgressBar";
 import CreateServiceLoader from "./CreateServiceLoader";
-import { WizardFlowType } from "./CreateServiceWizard";
+import { WizardFlowType, WizardStep } from "./types";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useTracking } from "../../util/analytics";
 import { GlobalHotKeys } from "react-hotkeys";
-
-export type WizardStep = {
-  index: number;
-  hideFooter?: boolean;
-  hideBackButton?: boolean;
-  analyticsEventName: AnalyticsEventNames;
-  stepName: string;
-};
 
 interface ServiceWizardProps {
   children: ReactNode;

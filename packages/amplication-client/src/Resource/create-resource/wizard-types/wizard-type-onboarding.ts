@@ -1,4 +1,4 @@
-import { WizardStep } from "../ServiceWizard";
+import { WizardStep } from "../types";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
 export const ONBOARDING_STEPS: WizardStep[] = [
