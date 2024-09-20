@@ -4,6 +4,7 @@ import {
   EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Snackbar,
@@ -74,7 +75,17 @@ const PendingChanges = ({ projectId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <Text textStyle={EnumTextStyle.H4}>Pending changes</Text>
+      {resourceTypeGroup === EnumResourceTypeGroup.Platform ? (
+        <Text
+          textStyle={EnumTextStyle.H4}
+          textColor={EnumTextColor.ThemeOrange}
+        >
+          Platform Changes
+        </Text>
+      ) : (
+        <Text textStyle={EnumTextStyle.H4}>Pending changes</Text>
+      )}
+
       <FlexItem
         itemsAlign={EnumItemsAlign.Stretch}
         direction={EnumFlexDirection.Column}
@@ -102,7 +113,7 @@ const PendingChanges = ({ projectId }: Props) => {
           {pendingChangesDataLoading ? (
             <CircularProgress centerToParent />
           ) : (
-            <PendingChangesList />
+            <PendingChangesList resourceTypeGroup={resourceTypeGroup} />
           )}
           <hr className={`${CLASS_NAME}__divider`} />
           <div className={`${CLASS_NAME}__changes-header`}>

@@ -259,7 +259,7 @@ const WorkspaceLayout: React.FC<Props> = ({
                     {currentProject ? (
                       <div className={`${moduleClass}__changes_menu`}>
                         <PendingChanges projectId={currentProject.id} />
-                        {commitUtils.lastCommit && (
+                        {!isPlatformConsole && commitUtils.lastCommit && (
                           <LastCommit lastCommit={commitUtils.lastCommit} />
                         )}
                       </div>

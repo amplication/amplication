@@ -268,21 +268,26 @@ const Commit = ({
                     autoFocus
                     hideLabel
                     placeholder={
-                      noChanges ? "Build message" : "Commit message..."
+                      resourceTypeGroup === EnumResourceTypeGroup.Platform
+                        ? "Version message"
+                        : noChanges
+                        ? "Build message"
+                        : "Commit message..."
                     }
                     autoComplete="off"
                   />
                 )}
-                {!dotNetGeneratorEnabled && (
-                  <MultiStateToggle
-                    className={`${CLASS_NAME}__technology-toggle`}
-                    label=""
-                    name="action_"
-                    options={OPTIONS}
-                    onChange={handleOnSelectLanguageChange}
-                    selectedValue={"node"}
-                  />
-                )}
+                {!dotNetGeneratorEnabled &&
+                  resourceTypeGroup === EnumResourceTypeGroup.Services && (
+                    <MultiStateToggle
+                      className={`${CLASS_NAME}__technology-toggle`}
+                      label=""
+                      name="action_"
+                      options={OPTIONS}
+                      onChange={handleOnSelectLanguageChange}
+                      selectedValue={"node"}
+                    />
+                  )}
                 <div>
                   <FlexItem
                     direction={EnumFlexDirection.Row}
@@ -301,27 +306,29 @@ const Commit = ({
                         );
                       }}
                     ></CommitButton>
-                    <SelectMenu
-                      title=""
-                      icon="chevron_down"
-                      buttonStyle={EnumButtonStyle.Text}
-                      className={`${CLASS_NAME}__commit-strategy`}
-                    >
-                      <SelectMenuModal align="right" withCaret>
-                        <SelectMenuList>
-                          {COMMIT_STRATEGY_OPTIONS.map((item, index) => (
-                            <CreateCommitStrategyButtonItem
-                              key={index}
-                              item={item}
-                              hasPendingChanges={hasPendingChanges}
-                              onCommitStrategySelected={
-                                handleOnSelectCommitStrategyChange
-                              }
-                            ></CreateCommitStrategyButtonItem>
-                          ))}
-                        </SelectMenuList>
-                      </SelectMenuModal>
-                    </SelectMenu>
+                    {resourceTypeGroup === EnumResourceTypeGroup.Services && (
+                      <SelectMenu
+                        title=""
+                        icon="chevron_down"
+                        buttonStyle={EnumButtonStyle.Text}
+                        className={`${CLASS_NAME}__commit-strategy`}
+                      >
+                        <SelectMenuModal align="right" withCaret>
+                          <SelectMenuList>
+                            {COMMIT_STRATEGY_OPTIONS.map((item, index) => (
+                              <CreateCommitStrategyButtonItem
+                                key={index}
+                                item={item}
+                                hasPendingChanges={hasPendingChanges}
+                                onCommitStrategySelected={
+                                  handleOnSelectCommitStrategyChange
+                                }
+                              ></CreateCommitStrategyButtonItem>
+                            ))}
+                          </SelectMenuList>
+                        </SelectMenuModal>
+                      </SelectMenu>
+                    )}
                   </FlexItem>
                 </div>
               </Form>

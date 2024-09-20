@@ -111,31 +111,47 @@ const CommitButton = ({
 
   const errorMessage = formatError(commitChangesError);
 
+  const element =
+    commitBtnType === CommitBtnType.Button ? (
+      resourceTypeGroup === EnumResourceTypeGroup.Services ? (
+        <Button
+          onClick={handleClick}
+          buttonStyle={EnumButtonStyle.Primary}
+          eventData={{
+            eventName: AnalyticsEventNames.CommitClicked,
+          }}
+          disabled={commitChangesLoading}
+        >
+          Generate the code
+        </Button>
+      ) : (
+        <Button
+          onClick={handleClick}
+          buttonStyle={EnumButtonStyle.Primary}
+          eventData={{
+            eventName: AnalyticsEventNames.CommitClicked,
+          }}
+          disabled={commitChangesLoading}
+        >
+          Publish New Version
+        </Button>
+      )
+    ) : commitBtnType === CommitBtnType.JumboButton ? (
+      <JumboButton
+        text="Generate the code for my new architecture"
+        icon="pending_changes"
+        onClick={handleClick}
+        circleColor={EnumTextColor.ThemeTurquoise}
+      ></JumboButton>
+    ) : null;
+
   return (
     <>
       <LicenseIndicatorContainer
         blockByFeatureId={BillingFeature.BlockBuild}
         licensedResourceType={LicensedResourceType.Project}
       >
-        {commitBtnType === CommitBtnType.Button ? (
-          <Button
-            onClick={handleClick}
-            buttonStyle={EnumButtonStyle.Primary}
-            eventData={{
-              eventName: AnalyticsEventNames.CommitClicked,
-            }}
-            disabled={commitChangesLoading}
-          >
-            <>Generate the code </>
-          </Button>
-        ) : commitBtnType === CommitBtnType.JumboButton ? (
-          <JumboButton
-            text="Generate the code for my new architecture"
-            icon="pending_changes"
-            onClick={handleClick}
-            circleColor={EnumTextColor.ThemeTurquoise}
-          ></JumboButton>
-        ) : null}
+        {element}
       </LicenseIndicatorContainer>
       {commitChangesError && isLimitationError ? (
         <LimitationDialog
