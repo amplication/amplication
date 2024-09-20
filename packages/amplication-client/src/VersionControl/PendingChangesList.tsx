@@ -7,13 +7,21 @@ import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import { AppContext } from "../context/appContext";
 import "./PendingChangesList.scss";
 import PendingChangesListGroup from "./PendingChangesListGroup";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import { EnumResourceTypeGroup } from "../models";
 
 const CLASS_NAME = "pending-changes-list";
 
 const PendingChangesList = () => {
   const { currentProject } = useContext(AppContext);
+  const { isPlatformConsole } = useProjectBaseUrl();
 
-  const { pendingChangesByResourceAndType } = usePendingChanges(currentProject);
+  const { pendingChangesByResourceAndType } = usePendingChanges(
+    currentProject,
+    isPlatformConsole
+      ? EnumResourceTypeGroup.Platform
+      : EnumResourceTypeGroup.Services
+  );
 
   return (
     <div className={CLASS_NAME}>

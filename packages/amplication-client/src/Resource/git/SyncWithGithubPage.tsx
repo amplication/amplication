@@ -12,6 +12,7 @@ import {
   EnumGitOrganizationType,
   EnumGitProvider,
   EnumResourceType,
+  EnumResourceTypeGroup,
   EnumSubscriptionPlan,
   Resource,
 } from "../../models";
@@ -96,6 +97,7 @@ const SyncWithGithubPage: React.FC = () => {
       message: "",
       project: { connect: { id: currentProject?.id } },
       bypassLimitations: false,
+      resourceTypeGroup: EnumResourceTypeGroup.Services, //because we push to git, this will always be services
     });
     setOpenPr(false);
   }, [commitChanges, currentProject]);

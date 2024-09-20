@@ -24,6 +24,7 @@ import "./PendingChanges.scss";
 import PendingChangesList from "./PendingChangesList";
 import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import { EnumResourceTypeGroup } from "../models";
 
 const CLASS_NAME = "pending-changes";
 
@@ -37,7 +38,11 @@ const PendingChanges = ({ projectId }: Props) => {
   const { currentProject, pendingChanges, isPreviewPlan } =
     useContext(AppContext);
   const { baseUrl } = useResourceBaseUrl();
-  const { baseUrl: projectBaseUrl } = useProjectBaseUrl();
+  const { baseUrl: projectBaseUrl, isPlatformConsole } = useProjectBaseUrl();
+
+  const resourceTypeGroup = isPlatformConsole
+    ? EnumResourceTypeGroup.Platform
+    : EnumResourceTypeGroup.Services;
 
   const entityMatch = useRouteMatch<{
     workspace: string;
@@ -45,11 +50,13 @@ const PendingChanges = ({ projectId }: Props) => {
     resource: string;
     entity: string;
   }>("/:workspace/:project/:resource/entities/:entity");
+
   const {
     pendingChangesDataError,
     pendingChangesIsError,
     pendingChangesDataLoading,
-  } = usePendingChanges(currentProject);
+  } = usePendingChanges(currentProject, resourceTypeGroup);
+
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
   }, [discardDialogOpen, setDiscardDialogOpen]);
@@ -79,12 +86,14 @@ const PendingChanges = ({ projectId }: Props) => {
             projectId={projectId}
             noChanges={noChanges}
             commitBtnType={CommitBtnType.Button}
+            resourceTypeGroup={resourceTypeGroup}
           />
         )}
 
         <DiscardChanges
           isOpen={discardDialogOpen}
           projectId={projectId}
+          resourceTypeGroup={resourceTypeGroup}
           onComplete={handleDiscardDialogCompleted}
           onDismiss={handleToggleDiscardDialog}
         />

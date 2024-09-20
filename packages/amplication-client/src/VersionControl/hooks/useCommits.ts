@@ -7,6 +7,7 @@ import {
   Build,
   EnumBuildStatus,
   EnumSubscriptionPlan,
+  CommitCreateInput,
 } from "../../models";
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
 import { cloneDeep, groupBy } from "lodash";
@@ -184,7 +185,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     });
 
   const commitChanges = useCallback(
-    (data) => {
+    (data: CommitCreateInput) => {
       if (!data) return;
       setCommitRunning(true);
       commit({

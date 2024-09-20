@@ -13,11 +13,15 @@ import {
   TextField,
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
-import { useCallback, useContext, useRef, useState } from "react";
+import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
-import { EnumCommitStrategy, EnumResourceType } from "../models";
+import {
+  EnumCommitStrategy,
+  EnumResourceType,
+  EnumResourceTypeGroup,
+} from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
@@ -60,6 +64,7 @@ type Props = {
   showCommitMessage?: boolean;
   commitMessage?: string;
   commitBtnType: CommitBtnType;
+  resourceTypeGroup: EnumResourceTypeGroup;
 };
 const CLASS_NAME = "commit";
 
@@ -84,7 +89,7 @@ const COMMIT_STRATEGY_OPTIONS: commitStrategyOption[] = [
   },
   {
     strategyType: EnumCommitStrategy.AllWithPendingChanges,
-    label: "Pending changes",
+    label: "Pending changes (default)",
   },
   {
     strategyType: EnumCommitStrategy.Specific,
@@ -94,6 +99,7 @@ const COMMIT_STRATEGY_OPTIONS: commitStrategyOption[] = [
 
 const Commit = ({
   projectId,
+  resourceTypeGroup,
   noChanges,
   commitBtnType,
   showCommitMessage = true,
@@ -101,19 +107,32 @@ const Commit = ({
   const history = useHistory();
   const { trackEvent } = useTracking();
   const formikRef = useRef(null);
-  const { baseUrl } = useProjectBaseUrl();
+  const { baseUrl, isPlatformConsole } = useProjectBaseUrl();
 
   const { dotNetGeneratorEnabled } = useAvailableCodeGenerators();
 
   const { currentWorkspace, currentProject, resources } =
     useContext(AppContext);
 
+  const commitableResources = useMemo(() => {
+    return resources.filter(
+      (r) =>
+        r.resourceType === EnumResourceType.Service ||
+        r.resourceType === EnumResourceType.MessageBroker
+    );
+  }, [resources]);
+
   const [specificServiceSelected, setSpecificServiceSelected] =
     useState<boolean>();
 
   const { commitChangesLoading, commitChanges, bypassLimitations } =
     useCommits(projectId);
-  const { pendingChanges } = usePendingChanges(currentProject);
+  const { pendingChanges } = usePendingChanges(
+    currentProject,
+    isPlatformConsole
+      ? EnumResourceTypeGroup.Platform
+      : EnumResourceTypeGroup.Services
+  );
 
   const handleSubmit = useCallback((data, { resetForm }) => {
     resetForm(INITIAL_VALUES);
@@ -152,11 +171,12 @@ const Commit = ({
         bypassLimitations: bypassLimitations ?? false,
         commitStrategy: commitStrategy,
         resourceIds: selectedServiceId ? [selectedServiceId] : null,
+        resourceTypeGroup,
       });
 
       formikRef.current.submitForm();
     },
-    [bypassLimitations, commitChanges, currentProject?.id]
+    [bypassLimitations, commitChanges, currentProject?.id, resourceTypeGroup]
   );
 
   const handleOnSpecificServiceCommit = useCallback(
@@ -172,9 +192,9 @@ const Commit = ({
   );
 
   const handleOnSelectCommitStrategyChange = useCallback(
-    (selectedValue) => {
-      formikRef.current.values.commitStrategy = selectedValue.strategyType;
-      if (selectedValue.strategyType === EnumCommitStrategy.Specific) {
+    (strategyType: EnumCommitStrategy) => {
+      formikRef.current.values.commitStrategy = strategyType;
+      if (strategyType === EnumCommitStrategy.Specific) {
         setSpecificServiceSelected(true);
         return;
       }
@@ -188,6 +208,8 @@ const Commit = ({
     [handleCommit]
   );
 
+  const hasPendingChanges = pendingChanges?.length > 0;
+
   return (
     <>
       <Dialog
@@ -199,7 +221,7 @@ const Commit = ({
           direction={EnumFlexDirection.Column}
           itemsAlign={EnumItemsAlign.Start}
         >
-          {resources
+          {commitableResources
             .filter((r) => r.resourceType === EnumResourceType.Service)
             .map((resource, index) => (
               <Button
@@ -270,6 +292,14 @@ const Commit = ({
                     <CommitButton
                       commitMessage={formikRef.current?.values?.message}
                       onCommitChanges={handleCommitBtnClicked}
+                      resourceTypeGroup={resourceTypeGroup}
+                      hasPendingChanges={hasPendingChanges}
+                      hasMultipleServices={commitableResources.length > 1}
+                      onCommitSpecificService={() => {
+                        handleOnSelectCommitStrategyChange(
+                          EnumCommitStrategy.Specific
+                        );
+                      }}
                     ></CommitButton>
                     <SelectMenu
                       title=""
@@ -283,7 +313,7 @@ const Commit = ({
                             <CreateCommitStrategyButtonItem
                               key={index}
                               item={item}
-                              hasPendingChanges={pendingChanges?.length > 0}
+                              hasPendingChanges={hasPendingChanges}
                               onCommitStrategySelected={
                                 handleOnSelectCommitStrategyChange
                               }
