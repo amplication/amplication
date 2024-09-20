@@ -62,6 +62,7 @@ import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForE
 import { ModuleDto } from "../moduleDto/dto/ModuleDto";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 import { CreateOneResourceArgs } from "../resource/dto";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -946,6 +947,7 @@ export class WorkspaceService {
             await this.projectService.commit(
               {
                 data: {
+                  resourceTypeGroup: EnumResourceTypeGroup.Services,
                   message: "this is automatic commit for update custom actions",
                   project: {
                     connect: {
@@ -996,6 +998,7 @@ export class WorkspaceService {
           await this.projectService.commit(
             {
               data: {
+                resourceTypeGroup: EnumResourceTypeGroup.Services,
                 message:
                   "this is automatic commit to update custom actions and create default DTOs",
                 project: {
@@ -1091,6 +1094,7 @@ export class WorkspaceService {
           await this.projectService.commit(
             {
               data: {
+                resourceTypeGroup: EnumResourceTypeGroup.Services,
                 message: "this is automatic commit for update custom actions",
                 project: {
                   connect: {

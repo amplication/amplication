@@ -43,6 +43,8 @@ import {
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 import { JsonFilter } from "../../dto/JsonFilter";
 import { mergeAllSettings } from "./block.util";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
@@ -753,12 +755,19 @@ export class BlockService {
    */
   async getChangedBlocks(
     projectId: string,
+    resourceTypeGroup: EnumResourceTypeGroup,
     userId: string
   ): Promise<BlockPendingChange[]> {
+    const resourceTypes =
+      RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE[resourceTypeGroup];
+
     const changedBlocks = await this.prisma.block.findMany({
       where: {
         lockedByUserId: userId,
         resource: {
+          resourceType: {
+            in: resourceTypes,
+          },
           deletedAt: null,
           project: {
             id: projectId,
