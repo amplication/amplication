@@ -32,6 +32,7 @@ import { SubscriptionService } from "../subscription/subscription.service";
 import { EnumCommitStrategy } from "../resource/dto/EnumCommitStrategy";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
 
 @Injectable()
 export class ProjectService {
@@ -347,6 +348,9 @@ export class ProjectService {
     const resourceTypeGroup =
       EnumResourceTypeGroup[args.data.resourceTypeGroup];
 
+    const resourceTypes =
+      RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE[resourceTypeGroup];
+
     if (await this.shouldBlockBuild(userId)) {
       const message = "Your current plan does not allow code generation.";
       throw new BillingLimitationError(message, BillingFeature.BlockBuild);
@@ -357,6 +361,9 @@ export class ProjectService {
         projectId: projectId,
         deletedAt: null,
         archived: { not: true },
+        resourceType: {
+          in: resourceTypes,
+        },
         project: {
           workspace: {
             users: {

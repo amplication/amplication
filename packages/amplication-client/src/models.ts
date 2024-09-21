@@ -362,6 +362,7 @@ export type CommitWhereInput = {
   id?: InputMaybe<StringFilter>;
   message?: InputMaybe<StringFilter>;
   project: WhereUniqueInput;
+  resourceTypeGroup: EnumResourceTypeGroup;
   user?: InputMaybe<WhereUniqueInput>;
 };
 
@@ -2538,7 +2539,7 @@ export type QueryCommitsArgs = {
   orderBy?: InputMaybe<CommitOrderByInput>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<CommitWhereInput>;
+  where: CommitWhereInput;
 };
 
 
