@@ -1459,6 +1459,7 @@ export type Mutation = {
   createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
   createService: Resource;
+  createServiceFromTemplate: Resource;
   createServiceTemplate: Resource;
   createServiceTopics: ServiceTopics;
   createServiceWithEntities: ResourceCreateWithEntitiesResult;
@@ -1702,6 +1703,11 @@ export type MutationCreateResourceRoleArgs = {
 
 export type MutationCreateServiceArgs = {
   data: ResourceCreateInput;
+};
+
+
+export type MutationCreateServiceFromTemplateArgs = {
+  data: ServiceFromTemplateCreateInput;
 };
 
 
@@ -3015,6 +3021,13 @@ export type ServerSettingsUpdateInput = {
   generateRestApi?: InputMaybe<Scalars['Boolean']['input']>;
   generateServer?: InputMaybe<Scalars['Boolean']['input']>;
   serverPath?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ServiceFromTemplateCreateInput = {
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  project: WhereParentIdInput;
+  serviceTemplate: WhereUniqueInput;
 };
 
 export type ServiceSettings = IBlock & {
