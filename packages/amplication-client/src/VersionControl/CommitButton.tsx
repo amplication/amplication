@@ -74,8 +74,17 @@ const CommitButton = ({
   };
 
   const handleClick = useCallback(() => {
+    if (
+      resourceTypeGroup === EnumResourceTypeGroup.Platform &&
+      !hasPendingChanges
+    ) {
+      return;
+    }
+
     const strategy =
-      commitStrategy ?? hasPendingChanges //use the default strategy when provided
+      commitStrategy ?? resourceTypeGroup === EnumResourceTypeGroup.Platform
+        ? EnumCommitStrategy.AllWithPendingChanges
+        : hasPendingChanges //use the default strategy when provided
         ? EnumCommitStrategy.AllWithPendingChanges //default when there are pending changes
         : hasMultipleServices && onCommitSpecificService
         ? EnumCommitStrategy.Specific //let the user choose when there are multiple services and no changes
@@ -131,7 +140,7 @@ const CommitButton = ({
           eventData={{
             eventName: AnalyticsEventNames.CommitClicked,
           }}
-          disabled={commitChangesLoading}
+          disabled={!hasPendingChanges || commitChangesLoading}
         >
           Publish New Version
         </Button>
