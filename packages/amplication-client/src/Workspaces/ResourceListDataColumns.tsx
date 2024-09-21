@@ -8,6 +8,7 @@ import ResourceLastBuild from "./ResourceLastBuild";
 import ResourceNameLink from "./ResourceNameLink";
 import ResourceLastBuildVersion from "./ResourceLastBuildVersion";
 import { DataGridColumn } from "@amplication/ui/design-system";
+import ServiceTemplateChip from "../Platform/ServiceTemplateChip";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -92,6 +93,18 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
       return <ResourceLastBuildVersion resource={props.row} />;
     },
     getValue: (row) => row.builds[0]?.codeGeneratorVersion ?? "",
+  },
+  {
+    key: "template",
+    name: "Template",
+    sortable: true,
+    width: 150,
+    renderCell: (props) => {
+      return (
+        <ServiceTemplateChip serviceTemplate={props.row.serviceTemplate} />
+      );
+    },
+    resizable: true,
   },
   {
     key: "actions",

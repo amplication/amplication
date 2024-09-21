@@ -49,14 +49,8 @@ function ResourceList() {
     overrideIsPlatformConsole: true,
   });
 
-  const {
-    resources,
-    handleSearchChange,
-    loadingResources,
-    errorResources,
-    currentProject,
-    currentWorkspace,
-  } = useContext(AppContext);
+  const { resources, handleSearchChange, loadingResources, errorResources } =
+    useContext(AppContext);
 
   const relevantResources = useMemo(() => {
     return resources.filter(

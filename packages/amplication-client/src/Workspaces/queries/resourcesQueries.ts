@@ -34,6 +34,10 @@ export const GET_RESOURCES = gql`
       codeGeneratorVersion
       codeGenerator
       licensed
+      serviceTemplate {
+        id
+        name
+      }
       gitRepository {
         id
         name
