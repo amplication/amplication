@@ -2866,6 +2866,7 @@ export type Resource = {
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;
   resourceType: EnumResourceType;
+  serviceTemplate?: Maybe<Resource>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -3048,6 +3049,7 @@ export type ServiceSettings = IBlock & {
   parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
   serverSettings: ServerSettings;
+  serviceTemplateVersion?: Maybe<ServiceTemplateVersion>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
 };
@@ -3064,6 +3066,11 @@ export type ServiceSettingsUpdateInput = {
 export type ServiceTemplateCreateInput = {
   plugins?: InputMaybe<PluginInstallationsCreateInput>;
   resource: ResourceCreateInput;
+};
+
+export type ServiceTemplateVersion = {
+  serviceTemplateId: Scalars['String']['output'];
+  version: Scalars['String']['output'];
 };
 
 export type ServiceTopics = IBlock & {

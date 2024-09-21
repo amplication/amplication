@@ -110,6 +110,12 @@ export class ServiceTemplateService {
         user
       );
 
+    delete serviceSettings.resourceId;
+    serviceSettings.serviceTemplateVersion = {
+      serviceTemplateId: args.data.serviceTemplate.id,
+      version: "1",
+    };
+
     const newService = await this.resourceService.createService(
       {
         data: {
