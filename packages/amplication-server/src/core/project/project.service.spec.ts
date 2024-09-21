@@ -38,6 +38,8 @@ import { SubscriptionService } from "../subscription/subscription.service";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -437,6 +439,7 @@ describe("ProjectService", () => {
         data: {
           message: EXAMPLE_MESSAGE,
           project: { connect: { id: EXAMPLE_PROJECT_ID } },
+          resourceTypeGroup: EnumResourceTypeGroup.Services,
           user: { connect: { id: EXAMPLE_USER_ID } },
         },
       };
@@ -478,11 +481,18 @@ describe("ProjectService", () => {
           user: { connect: { id: EXAMPLE_USER_ID } },
         },
       };
+
+      const resourceTypes =
+        RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE[EnumResourceTypeGroup.Services];
+
       const findManyArgs = {
         where: {
           deletedAt: null,
           archived: {
             not: true,
+          },
+          resourceType: {
+            in: resourceTypes,
           },
           projectId: EXAMPLE_PROJECT_ID,
           project: {
@@ -549,7 +559,18 @@ describe("ProjectService", () => {
           message: args.data.message,
         },
       };
-      expect(await service.commit(args, EXAMPLE_USER)).toEqual(EXAMPLE_COMMIT);
+      expect(
+        await service.commit(
+          {
+            ...args,
+            data: {
+              ...args.data,
+              resourceTypeGroup: EnumResourceTypeGroup.Services,
+            },
+          },
+          EXAMPLE_USER
+        )
+      ).toEqual(EXAMPLE_COMMIT);
       expect(prismaResourceFindManyMock).toBeCalledTimes(1);
       expect(prismaResourceFindManyMock).toBeCalledWith(findManyArgs);
 
@@ -570,11 +591,13 @@ describe("ProjectService", () => {
       expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
       expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
         changesArgs.projectId,
+        EnumResourceTypeGroup.Services,
         changesArgs.userId
       );
       expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(1);
       expect(blockServiceGetChangedBlocksMock).toBeCalledWith(
         changesArgs.projectId,
+        EnumResourceTypeGroup.Services,
         changesArgs.userId
       );
       expect(buildServiceCreateMock).toBeCalledTimes(1);
