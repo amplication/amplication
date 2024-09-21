@@ -29,11 +29,6 @@ import { BuildService } from "../build/build.service";
 import { Build } from "../build/dto/Build";
 import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from "../entity/constants";
 import { EntityService } from "../entity/entity.service";
-import { Environment } from "../environment/dto/Environment";
-import {
-  DEFAULT_ENVIRONMENT_NAME,
-  EnvironmentService,
-} from "../environment/environment.service";
 import {
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
@@ -329,16 +324,6 @@ const EXAMPLE_COMMIT: Commit = {
   message: EXAMPLE_MESSAGE,
 };
 
-const EXAMPLE_ENVIRONMENT: Environment = {
-  id: "ExampleEnvironmentId",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  address: "ExampleEnvironmentAddress",
-  name: DEFAULT_ENVIRONMENT_NAME,
-  resourceId: EXAMPLE_RESOURCE_ID,
-  description: "ExampleEnvironmentDescription",
-};
-
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   createdAt: new Date(),
@@ -491,10 +476,6 @@ const mockedUpdateServiceLicensed = jest.fn();
 const pluginInstallationServiceCreateMock = jest.fn();
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
-const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
-  return EXAMPLE_ENVIRONMENT;
-});
-
 const projectServiceFindUniqueMock = jest.fn(() => ({
   ...EXAMPLE_PROJECT,
   resources: [EXAMPLE_RESOURCE, EXAMPLE_PROJECT_CONFIGURATION_RESOURCE],
@@ -622,13 +603,7 @@ describe("ResourceService", () => {
             releaseLock: blockServiceReleaseLockMock,
           },
         },
-        {
-          provide: EnvironmentService,
-          useClass: jest.fn().mockImplementation(() => ({
-            createDefaultEnvironment:
-              environmentServiceCreateDefaultEnvironmentMock,
-          })),
-        },
+
         {
           provide: ServiceSettingsService,
           useClass: jest.fn(() => ({
@@ -721,11 +696,6 @@ describe("ResourceService", () => {
     expect(entityServiceCreateDefaultUserEntityMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID,
       EXAMPLE_USER
-    );
-
-    expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledTimes(1);
-    expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
-      EXAMPLE_RESOURCE_ID
     );
   });
 
@@ -821,10 +791,6 @@ describe("ResourceService", () => {
 
       expect(result).toEqual(EXAMPLE_RESOURCE);
       expect(prismaResourceCreateMock).toBeCalledTimes(1);
-      expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledTimes(1);
-      expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
-        EXAMPLE_RESOURCE_ID
-      );
     });
   });
 
