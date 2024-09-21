@@ -104,6 +104,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
         <ServiceTemplateChip serviceTemplate={props.row.serviceTemplate} />
       );
     },
+    getValue: (row) => (row.serviceTemplate ? row.serviceTemplate.name : ""),
     resizable: true,
   },
   {
