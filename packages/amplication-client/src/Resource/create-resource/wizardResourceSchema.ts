@@ -153,7 +153,7 @@ export const ResourceInitialValues = {
   baseDir: "./apps",
   databaseType: "db-postgres",
   templateType: "empty",
-  authType: "auth-jwt",
+  authType: "no",
   gitProvider: null,
   connectToDemoRepo: false,
 };

@@ -7,6 +7,8 @@ import {
   Build,
   EnumBuildStatus,
   EnumSubscriptionPlan,
+  CommitCreateInput,
+  EnumResourceTypeGroup,
 } from "../../models";
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
 import { cloneDeep, groupBy } from "lodash";
@@ -101,6 +103,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
   ] = useLazyQuery<{ commits: Commit[] }>(GET_COMMITS, {
     variables: {
       projectId: currentProjectId,
+      resourceTypeGroup: EnumResourceTypeGroup.Services,
       skip: 0,
       take: 1,
       orderBy: {
@@ -184,7 +187,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     });
 
   const commitChanges = useCallback(
-    (data) => {
+    (data: CommitCreateInput) => {
       if (!data) return;
       setCommitRunning(true);
       commit({
@@ -227,6 +230,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     notifyOnNetworkStatusChange: true,
     variables: {
       projectId: currentProjectId,
+      resourceTypeGroup: EnumResourceTypeGroup.Services,
       take: maxCommits || MAX_ITEMS_PER_LOADING,
       skip: 0,
       orderBy: {

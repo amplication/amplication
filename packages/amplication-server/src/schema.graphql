@@ -320,6 +320,7 @@ input CommitCreateInput {
         If the commit strategy is Specific, it will be an array with one element. 
   """
   resourceIds: [String!]
+  resourceTypeGroup: EnumResourceTypeGroup!
 }
 
 input CommitOrderByInput {
@@ -333,6 +334,7 @@ input CommitWhereInput {
   id: StringFilter
   message: StringFilter
   project: WhereUniqueInput!
+  resourceTypeGroup: EnumResourceTypeGroup!
   user: WhereUniqueInput
 }
 
@@ -936,6 +938,11 @@ input EnumResourceTypeFilter {
   in: [EnumResourceType!]
   not: EnumResourceType
   notIn: [EnumResourceType!]
+}
+
+enum EnumResourceTypeGroup {
+  Platform
+  Services
 }
 
 enum EnumSchemaNames {
@@ -1592,10 +1599,12 @@ union PendingChangeOrigin = Block | Entity
 
 input PendingChangesDiscardInput {
   project: WhereParentIdInput!
+  resourceTypeGroup: EnumResourceTypeGroup!
 }
 
 input PendingChangesFindInput {
   project: WhereUniqueInput!
+  resourceTypeGroup: EnumResourceTypeGroup!
 }
 
 type PluginInstallation implements IBlock {
@@ -1859,7 +1868,7 @@ type Query {
   build(where: WhereUniqueInput!): Build!
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
   commit(where: CommitWhereUniqueInput!): Commit
-  commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput): [Commit!]
+  commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput!): [Commit!]
   contactUsLink(where: WhereUniqueInput!): String
   currentWorkspace: Workspace
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!

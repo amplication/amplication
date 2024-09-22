@@ -19,6 +19,7 @@ import { CommitBtnType } from "../../VersionControl/Commit";
 import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
 import CommitButton from "../../VersionControl/CommitButton";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import { EnumCommitStrategy, EnumResourceTypeGroup } from "../../models";
 
 const className = "apply-changes-next-steps";
 
@@ -65,6 +66,10 @@ export const ApplyChangesNextSteps = ({
           <CommitButton
             commitBtnType={CommitBtnType.JumboButton}
             commitMessage={""}
+            resourceTypeGroup={EnumResourceTypeGroup.Services} //this will always be services for BTM
+            hasPendingChanges={true}
+            hasMultipleServices={true}
+            commitStrategy={EnumCommitStrategy.AllWithPendingChanges} //commit all with pending changes
           ></CommitButton>
         )}
         <JumboButton

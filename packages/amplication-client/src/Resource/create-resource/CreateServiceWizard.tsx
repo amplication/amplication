@@ -73,6 +73,7 @@ const CreateServiceWizard: React.FC<Props> = ({
     loadingCreateService,
     setNewService,
     createServiceWithEntitiesResult: createResult,
+    addBlock,
   } = useContext(AppContext);
   const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: true });
 
@@ -81,7 +82,9 @@ const CreateServiceWizard: React.FC<Props> = ({
     loadingCreateServiceTemplate,
     errorCreateServiceTemplate,
     createdServiceTemplateResults,
-  } = useServiceTemplate(currentProject);
+  } = useServiceTemplate(currentProject, (ServiceTemplate) => {
+    addBlock(ServiceTemplate.id);
+  });
 
   const { trackEvent } = useTracking();
   const history = useHistory();

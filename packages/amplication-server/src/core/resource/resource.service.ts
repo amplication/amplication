@@ -75,6 +75,7 @@ import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { GitProviderService } from "../git/git.provider.service";
 import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings";
+import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -1458,6 +1459,7 @@ export class ResourceService {
         await this.projectService.commit(
           {
             data: {
+              resourceTypeGroup: EnumResourceTypeGroup.Services,
               message: INITIAL_COMMIT_MESSAGE,
               project: {
                 connect: {

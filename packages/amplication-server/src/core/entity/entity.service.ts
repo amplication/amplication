@@ -93,6 +93,8 @@ import { pascalCase } from "pascal-case";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { EnumRelatedFieldStrategy } from "./dto/EnumRelatedFieldStrategy";
 import pluralize from "pluralize";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -965,12 +967,19 @@ export class EntityService {
    */
   async getChangedEntities(
     projectId: string,
+    resourceTypeGroup: EnumResourceTypeGroup,
     userId: string
   ): Promise<EntityPendingChange[]> {
+    const resourceTypes =
+      RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE[resourceTypeGroup];
+
     const changedEntities = await this.prisma.entity.findMany({
       where: {
         lockedByUserId: userId,
         resource: {
+          resourceType: {
+            in: resourceTypes,
+          },
           deletedAt: null,
           project: {
             id: projectId,

@@ -345,6 +345,7 @@ export type CommitCreateInput = {
    *       If the commit strategy is Specific, it will be an array with one element.
    */
   resourceIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  resourceTypeGroup: EnumResourceTypeGroup;
 };
 
 export type CommitOrderByInput = {
@@ -358,6 +359,7 @@ export type CommitWhereInput = {
   id?: InputMaybe<StringFilter>;
   message?: InputMaybe<StringFilter>;
   project: WhereUniqueInput;
+  resourceTypeGroup: EnumResourceTypeGroup;
   user?: InputMaybe<WhereUniqueInput>;
 };
 
@@ -969,6 +971,11 @@ export type EnumResourceTypeFilter = {
   not?: InputMaybe<EnumResourceType>;
   notIn?: InputMaybe<Array<EnumResourceType>>;
 };
+
+export enum EnumResourceTypeGroup {
+  Platform = 'Platform',
+  Services = 'Services'
+}
 
 export enum EnumSchemaNames {
   Abby = 'Abby',
@@ -2153,10 +2160,12 @@ export type PendingChangeOrigin = Block | Entity;
 
 export type PendingChangesDiscardInput = {
   project: WhereParentIdInput;
+  resourceTypeGroup: EnumResourceTypeGroup;
 };
 
 export type PendingChangesFindInput = {
   project: WhereUniqueInput;
+  resourceTypeGroup: EnumResourceTypeGroup;
 };
 
 export type PluginInstallation = IBlock & {
@@ -2527,7 +2536,7 @@ export type QueryCommitsArgs = {
   orderBy?: InputMaybe<CommitOrderByInput>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<CommitWhereInput>;
+  where: CommitWhereInput;
 };
 
 

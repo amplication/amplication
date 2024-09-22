@@ -50,6 +50,12 @@ function DeleteResourceButton({ resource }: Props) {
                 deletedResourceId !== readField("id", resourceRef)
             );
           },
+          serviceTemplates(existingResourceRefs, { readField }) {
+            return existingResourceRefs.filter(
+              (resourceRef: Reference) =>
+                deletedResourceId !== readField("id", resourceRef)
+            );
+          },
         },
       });
       refreshData();

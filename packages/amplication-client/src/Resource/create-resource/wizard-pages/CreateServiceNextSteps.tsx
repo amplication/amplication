@@ -53,8 +53,8 @@ export const CreateServiceNextSteps: React.FC<
       AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "View Service" }
     );
-    history.push(`${baseUrl}/${createdResource?.id}`);
-  }, [baseUrl, history, trackWizardPageEvent, createdResource]);
+    history.push(`${baseUrl}`);
+  }, [baseUrl, history, trackWizardPageEvent]);
 
   return (
     <div className={className}>
@@ -109,7 +109,7 @@ export const CreateServiceNextSteps: React.FC<
           <div className={`${className}__link_box__description`}>
             <div>{flowSettings.texts?.successDoneLine1 || "I'm done!"}</div>
             <div>
-              {flowSettings.texts?.successDoneLine2 || "View my service"}
+              {flowSettings.texts?.successDoneLine2 || "View my services"}
             </div>
             <div></div>
           </div>

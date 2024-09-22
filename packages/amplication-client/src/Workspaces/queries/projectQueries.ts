@@ -42,8 +42,16 @@ export const CREATE_PROJECT = gql`
 `;
 
 export const GET_PENDING_CHANGES_STATUS = gql`
-  query pendingChanges($projectId: String!) {
-    pendingChanges(where: { project: { id: $projectId } }) {
+  query pendingChanges(
+    $projectId: String!
+    $resourceTypeGroup: EnumResourceTypeGroup!
+  ) {
+    pendingChanges(
+      where: {
+        project: { id: $projectId }
+        resourceTypeGroup: $resourceTypeGroup
+      }
+    ) {
       originId
       action
       originType
