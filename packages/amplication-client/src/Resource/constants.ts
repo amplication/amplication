@@ -235,7 +235,7 @@ export const resourceThemeMap: {
     color: "#f685a1",
   },
   [models.EnumResourceType.Service]: {
-    icon: "services",
+    icon: "code",
     color: "#A787FF",
   },
   [models.EnumResourceType.MessageBroker]: {
