@@ -14,7 +14,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
     key: "resourceType",
     name: "Type",
-    width: 50,
+    width: 60,
     renderCell: (props) => {
       return <ResourceCircleBadge type={props.row.resourceType} size="small" />;
     },
@@ -58,6 +58,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
     key: "description",
     name: "Description",
+    width: 200,
     renderCell: (props) => {
       return (
         <Text textStyle={EnumTextStyle.Description}>
@@ -111,7 +112,6 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     key: "actions",
     name: "Actions",
     sortable: false,
-    width: 150,
     renderCell: (props) => {
       return <DeleteResourceButton resource={props.row} />;
     },
