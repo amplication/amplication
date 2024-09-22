@@ -4,6 +4,7 @@ import {
   EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Snackbar,
@@ -24,6 +25,7 @@ import "./PendingChanges.scss";
 import PendingChangesList from "./PendingChangesList";
 import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import { EnumResourceTypeGroup } from "../models";
 
 const CLASS_NAME = "pending-changes";
 
@@ -37,7 +39,11 @@ const PendingChanges = ({ projectId }: Props) => {
   const { currentProject, pendingChanges, isPreviewPlan } =
     useContext(AppContext);
   const { baseUrl } = useResourceBaseUrl();
-  const { baseUrl: projectBaseUrl } = useProjectBaseUrl();
+  const { baseUrl: projectBaseUrl, isPlatformConsole } = useProjectBaseUrl();
+
+  const resourceTypeGroup = isPlatformConsole
+    ? EnumResourceTypeGroup.Platform
+    : EnumResourceTypeGroup.Services;
 
   const entityMatch = useRouteMatch<{
     workspace: string;
@@ -45,11 +51,13 @@ const PendingChanges = ({ projectId }: Props) => {
     resource: string;
     entity: string;
   }>("/:workspace/:project/:resource/entities/:entity");
+
   const {
     pendingChangesDataError,
     pendingChangesIsError,
     pendingChangesDataLoading,
-  } = usePendingChanges(currentProject);
+  } = usePendingChanges(currentProject, resourceTypeGroup);
+
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
   }, [discardDialogOpen, setDiscardDialogOpen]);
@@ -67,7 +75,17 @@ const PendingChanges = ({ projectId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <Text textStyle={EnumTextStyle.H4}>Pending changes</Text>
+      {resourceTypeGroup === EnumResourceTypeGroup.Platform ? (
+        <Text
+          textStyle={EnumTextStyle.H4}
+          textColor={EnumTextColor.ThemeOrange}
+        >
+          Platform Changes
+        </Text>
+      ) : (
+        <Text textStyle={EnumTextStyle.H4}>Pending changes</Text>
+      )}
+
       <FlexItem
         itemsAlign={EnumItemsAlign.Stretch}
         direction={EnumFlexDirection.Column}
@@ -79,12 +97,14 @@ const PendingChanges = ({ projectId }: Props) => {
             projectId={projectId}
             noChanges={noChanges}
             commitBtnType={CommitBtnType.Button}
+            resourceTypeGroup={resourceTypeGroup}
           />
         )}
 
         <DiscardChanges
           isOpen={discardDialogOpen}
           projectId={projectId}
+          resourceTypeGroup={resourceTypeGroup}
           onComplete={handleDiscardDialogCompleted}
           onDismiss={handleToggleDiscardDialog}
         />
@@ -93,7 +113,7 @@ const PendingChanges = ({ projectId }: Props) => {
           {pendingChangesDataLoading ? (
             <CircularProgress centerToParent />
           ) : (
-            <PendingChangesList />
+            <PendingChangesList resourceTypeGroup={resourceTypeGroup} />
           )}
           <hr className={`${CLASS_NAME}__divider`} />
           <div className={`${CLASS_NAME}__changes-header`}>

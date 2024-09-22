@@ -1,19 +1,34 @@
 import { useContext } from "react";
 
-import { EnumTextStyle, Text } from "@amplication/ui/design-system";
+import {
+  EnumFlexDirection,
+  EnumItemsAlign,
+  EnumTextAlign,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+} from "@amplication/ui/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import { AppContext } from "../context/appContext";
 import "./PendingChangesList.scss";
 import PendingChangesListGroup from "./PendingChangesListGroup";
+import { EnumResourceTypeGroup } from "../models";
 
 const CLASS_NAME = "pending-changes-list";
 
-const PendingChangesList = () => {
+type Props = {
+  resourceTypeGroup: EnumResourceTypeGroup;
+};
+
+const PendingChangesList = ({ resourceTypeGroup }: Props) => {
   const { currentProject } = useContext(AppContext);
 
-  const { pendingChangesByResourceAndType } = usePendingChanges(currentProject);
+  const { pendingChangesByResourceAndType } = usePendingChanges(
+    currentProject,
+    resourceTypeGroup
+  );
 
   return (
     <div className={CLASS_NAME}>
@@ -33,10 +48,26 @@ const PendingChangesList = () => {
       ))}
       {pendingChangesByResourceAndType.length === 0 && (
         <>
-          <SvgThemeImage image={EnumImages.NoChanges} />
-          <Text textStyle={EnumTextStyle.Description}>
-            No pending changes! keep working.
-          </Text>
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            itemsAlign={EnumItemsAlign.Center}
+          >
+            <SvgThemeImage
+              image={
+                resourceTypeGroup === EnumResourceTypeGroup.Platform
+                  ? EnumImages.AddResource
+                  : EnumImages.NoChanges
+              }
+            />
+            <Text
+              textStyle={EnumTextStyle.Description}
+              textAlign={EnumTextAlign.Center}
+            >
+              {resourceTypeGroup === EnumResourceTypeGroup.Platform
+                ? "No platform changes! keep working."
+                : "No pending changes! keep working."}
+            </Text>
+          </FlexItem>
         </>
       )}
     </div>

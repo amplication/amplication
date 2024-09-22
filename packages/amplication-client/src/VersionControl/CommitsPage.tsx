@@ -10,6 +10,7 @@ import "./CommitsPage.scss";
 import BuildPage from "./BuildPage";
 import CommitButton from "./CommitButton";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import { EnumCommitStrategy, EnumResourceTypeGroup } from "../models";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -86,7 +87,12 @@ const CommitsPage: React.FC<Props> = ({ moduleClass, innerRoutes }) => {
               message="There are no commits to show. "
               image={EnumImages.CommitEmptyState}
             >
-              <CommitButton />
+              <CommitButton
+                resourceTypeGroup={EnumResourceTypeGroup.Services}
+                hasMultipleServices={true}
+                hasPendingChanges={true}
+                commitStrategy={EnumCommitStrategy.All}
+              />
             </EmptyState>
           )}
         </>

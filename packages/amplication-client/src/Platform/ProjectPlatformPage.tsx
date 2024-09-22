@@ -7,6 +7,7 @@ import useTabRoutes from "../Layout/useTabRoutes";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import ServiceTemplateList from "./ServiceTemplateList";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -25,7 +26,13 @@ const ProjectPlatformPage: React.FC<Props> = ({
 }) => {
   const { currentProject } = useContext(AppContext);
 
-  useBreadcrumbs(`${currentProject?.name} - Platform`, match.url);
+  const { baseUrl: projectUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: false,
+  });
+
+  useBreadcrumbs(`${currentProject?.name} `, projectUrl);
+
+  useBreadcrumbs(`Platform Console`, match.url);
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
   const tabItems: TabItem[] = useMemo(() => {

@@ -232,7 +232,7 @@ export const resourceThemeMap: {
 } = {
   [models.EnumResourceType.ProjectConfiguration]: {
     icon: "app-settings",
-    color: "#FFBD70",
+    color: "#f685a1",
   },
   [models.EnumResourceType.Service]: {
     icon: "services",

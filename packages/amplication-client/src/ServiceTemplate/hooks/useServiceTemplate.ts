@@ -14,7 +14,10 @@ type TCreateServiceTemplate = {
   createServiceTemplate: models.Resource;
 };
 
-const useServiceTemplate = (currentProject: models.Project | undefined) => {
+const useServiceTemplate = (
+  currentProject: models.Project | undefined,
+  onServiceTemplateCreated?: (serviceTemplate: models.Resource) => void
+) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const {
@@ -44,8 +47,10 @@ const useServiceTemplate = (currentProject: models.Project | undefined) => {
 
   const createServiceTemplate = (data: models.ServiceTemplateCreateInput) => {
     createServiceTemplateInternal({ variables: { data: data } })
-      .then(() => {
+      .then((result) => {
         reloadServiceTemplates();
+        onServiceTemplateCreated &&
+          onServiceTemplateCreated(result.data.createServiceTemplate);
       })
       .catch(console.error);
   };

@@ -109,6 +109,7 @@ const CreateServiceCodeGeneration: React.FC<
       variables: {
         message: "Initial commit",
         projectId: currentProject.id,
+        resourceTypeGroup: models.EnumResourceTypeGroup.Services, //when creating new service, this will always be services
       },
     }).catch(console.error);
   }, [commit, currentProject?.id, trackWizardPageEvent]);

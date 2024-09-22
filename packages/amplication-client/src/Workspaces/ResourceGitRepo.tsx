@@ -50,7 +50,7 @@ function ResourceGitRepo({ resource }: Props) {
       ) : (
         <Text
           textStyle={EnumTextStyle.Subtle}
-          textColor={EnumTextColor.ThemeOrange}
+          textColor={EnumTextColor.ThemeRed}
         >
           Not connected
         </Text>
