@@ -1,4 +1,4 @@
-import { WizardStep } from "../ServiceWizard";
+import { WizardStep } from "../types";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
 export const CREATE_SERVICE_TEMPLATE_STEPS: WizardStep[] = [
@@ -17,11 +17,6 @@ export const CREATE_SERVICE_TEMPLATE_STEPS: WizardStep[] = [
     index: 5,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_DBSettings,
     stepName: "CreateServiceDatabase",
-  },
-  {
-    index: 7,
-    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_AuthSettings,
-    stepName: "CreateServiceAuth",
   },
   {
     index: 9,
