@@ -37,7 +37,9 @@ function ServiceTemplateList() {
 
   const { currentProject } = useContext(AppContext);
 
-  const { baseUrl: servicesBaseUrl } = useProjectBaseUrl();
+  const { baseUrl: servicesBaseUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: false,
+  });
   const { baseUrl: templatesBaseUrl } = useProjectBaseUrl({
     overrideIsPlatformConsole: true,
   });

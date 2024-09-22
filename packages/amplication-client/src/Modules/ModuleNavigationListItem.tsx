@@ -29,14 +29,14 @@ export const ModuleNavigationListItem = ({
       <>
         <VerticalNavigationItem
           icon={"box"}
-          to={`${baseUrl}}/modules/${module.id}`}
+          to={`${baseUrl}/modules/${module.id}`}
           expandable
           childItems={
             <>
               {filters.showActions && (
                 <VerticalNavigationItem
                   expandable
-                  to={`${baseUrl}}/modules/${module.id}/actions`}
+                  to={`${baseUrl}/modules/${module.id}/actions`}
                   icon="api"
                   childItems={
                     <ModuleActionLinkList
@@ -53,7 +53,7 @@ export const ModuleNavigationListItem = ({
                 filters.showDTOs && (
                   <VerticalNavigationItem
                     expandable
-                    to={`${baseUrl}}/modules/${module.id}/dtos`}
+                    to={`${baseUrl}/modules/${module.id}/dtos`}
                     icon="zap"
                     childItems={
                       <ModuleDtoLinkList

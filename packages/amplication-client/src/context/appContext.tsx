@@ -25,7 +25,6 @@ export interface AppContextInterface {
     data: models.ResourceCreateWithEntitiesInput,
     eventName: string
   ) => void;
-  setResource: (resource: models.Resource) => void;
   projectConfigurationResource: models.Resource | undefined;
   pluginRepositoryResource: models.Resource | undefined;
   handleSearchChange: (searchResults: string) => void;
@@ -85,7 +84,6 @@ const initialContext: AppContextInterface = {
   onNewProjectCompleted: () => {},
   resources: [],
   setNewService: () => {},
-  setResource: () => {},
   projectConfigurationResource: undefined,
   pluginRepositoryResource: undefined,
   handleSearchChange: () => {},

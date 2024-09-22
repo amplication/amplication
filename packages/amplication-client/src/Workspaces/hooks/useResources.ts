@@ -14,6 +14,7 @@ import { getGitRepositoryDetails } from "../../util/git-repository-details";
 import { GET_PROJECTS } from "../queries/projectQueries";
 import { UPDATE_CODE_GENERATOR_VERSION } from "../../Resource/codeGeneratorVersionSettings/queries";
 import { CREATE_PLUGIN_REPOSITORY } from "../queries/pluginRepositoryQueries";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -86,6 +87,10 @@ const useResources = (
   }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource"
   );
+  const { baseUrl: projectBaseUrl } = useProjectBaseUrl();
+  const { baseUrl: platformProjectBaseUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: true,
+  });
 
   const [currentResource, setCurrentResource] = useState<models.Resource>();
   const [createServiceWithEntitiesResult, setCreateServiceWithEntitiesResult] =
@@ -132,10 +137,10 @@ const useResources = (
   const resourceRedirect = useCallback(
     (resourceId: string) => {
       history.push({
-        pathname: `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}`, //todo:change the route
+        pathname: `${projectBaseUrl}/${resourceId}`, //todo:change the route
       });
     },
-    [currentWorkspace, history, currentProject]
+    [projectBaseUrl, history]
   );
 
   const [
@@ -235,7 +240,7 @@ const useResources = (
         result.data?.createPluginRepository.id &&
           reloadResources().then(() => {
             history.push({
-              pathname: `/${currentWorkspace?.id}/platform/${currentProject?.id}/private-plugins/git-settings`,
+              pathname: `${platformProjectBaseUrl}/private-plugins/git-settings`,
             });
           });
       }
@@ -361,20 +366,6 @@ const useResources = (
     },
     [setSearchPhrase]
   );
-  const setResource = useCallback(
-    (resource: models.Resource) => {
-      trackEvent({
-        eventName: AnalyticsEventNames.ResourceCardClick,
-      });
-      setCurrentResource(resource);
-      currentWorkspace &&
-        currentProject &&
-        history.push(
-          `/${currentWorkspace.id}/${currentProject.id}/${resource.id}`
-        );
-    },
-    [currentProject, currentWorkspace, history, trackEvent]
-  );
 
   return {
     resources,
@@ -385,7 +376,6 @@ const useResources = (
     errorResources,
     reloadResources,
     currentResource,
-    setResource,
     createService,
     loadingCreateService,
     errorCreateService,

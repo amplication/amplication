@@ -1,10 +1,10 @@
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 
 import { EnumTextColor } from "@amplication/ui/design-system";
 
-import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 };
 
 function TopicsTile({ resourceId }: Props) {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   const { trackEvent } = useTracking();
 
@@ -27,7 +27,7 @@ function TopicsTile({ resourceId }: Props) {
       message="Create topics to send and receive messages between services."
       onClick={handleClick}
       themeColor={EnumTextColor.ThemeBlue}
-      to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/topics`}
+      to={`${baseUrl}/topics`}
     />
   );
 }

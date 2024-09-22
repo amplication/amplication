@@ -29,6 +29,7 @@ import "./CreateCommitStrategyButton.scss";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import CommitButton from "./CommitButton";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 const OPTIONS = [
   {
@@ -100,6 +101,7 @@ const Commit = ({
   const history = useHistory();
   const { trackEvent } = useTracking();
   const formikRef = useRef(null);
+  const { baseUrl } = useProjectBaseUrl();
 
   const { dotNetGeneratorEnabled } = useAvailableCodeGenerators();
 
@@ -128,12 +130,10 @@ const Commit = ({
           eventName: AnalyticsEventNames.ChangedToDotNet,
           workspaceId: currentWorkspace.id,
         });
-        history.push(
-          `/${currentWorkspace?.id}/${currentProject?.id}/dotnet-upgrade`
-        );
+        history.push(`${baseUrl}/dotnet-upgrade`);
       }
     },
-    [currentProject?.id, currentWorkspace?.id, history, trackEvent]
+    [baseUrl, currentWorkspace?.id, history, trackEvent]
   );
 
   const handleSpecificServiceSelectedDismiss = useCallback(() => {
