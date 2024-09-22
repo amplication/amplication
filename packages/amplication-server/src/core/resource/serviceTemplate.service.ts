@@ -17,6 +17,7 @@ import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.
 import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { kebabCase } from "lodash";
 
 @Injectable()
 export class ServiceTemplateService {
@@ -115,6 +116,20 @@ export class ServiceTemplateService {
       serviceTemplateId: args.data.serviceTemplate.id,
       version: "1",
     };
+
+    const kebabCaseServiceName = kebabCase(args.data.name);
+
+    serviceSettings.adminUISettings.adminUIPath =
+      serviceSettings.adminUISettings.adminUIPath.replace(
+        "{{SERVICE_NAME}}",
+        kebabCaseServiceName
+      );
+
+    serviceSettings.serverSettings.serverPath =
+      serviceSettings.serverSettings.serverPath.replace(
+        "{{SERVICE_NAME}}",
+        kebabCaseServiceName
+      );
 
     const newService = await this.resourceService.createService(
       {
