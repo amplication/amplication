@@ -98,12 +98,16 @@ export const GET_COMMITS = gql`
   ${COMMIT_FIELDS_FRAGMENT}
   query commits(
     $projectId: String!
+    $resourceTypeGroup: EnumResourceTypeGroup!
     $take: Int!
     $skip: Int!
     $orderBy: CommitOrderByInput
   ) {
     commits(
-      where: { project: { id: $projectId } }
+      where: {
+        project: { id: $projectId }
+        resourceTypeGroup: $resourceTypeGroup
+      }
       take: $take
       skip: $skip
       orderBy: $orderBy

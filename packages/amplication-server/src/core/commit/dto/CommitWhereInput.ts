@@ -1,5 +1,6 @@
 import { Field, InputType } from "@nestjs/graphql";
 import { WhereUniqueInput, DateTimeFilter, StringFilter } from "../../../dto";
+import { EnumResourceTypeGroup } from "../../resource/dto/EnumResourceTypeGroup";
 
 @InputType({
   isAbstract: true,
@@ -27,4 +28,7 @@ export class CommitWhereInput {
     nullable: true,
   })
   message?: StringFilter | null;
+
+  @Field(() => EnumResourceTypeGroup, { nullable: false })
+  resourceTypeGroup!: keyof typeof EnumResourceTypeGroup;
 }

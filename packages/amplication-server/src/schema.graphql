@@ -334,6 +334,7 @@ input CommitWhereInput {
   id: StringFilter
   message: StringFilter
   project: WhereUniqueInput!
+  resourceTypeGroup: EnumResourceTypeGroup!
   user: WhereUniqueInput
 }
 
@@ -1867,7 +1868,7 @@ type Query {
   build(where: WhereUniqueInput!): Build!
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
   commit(where: CommitWhereUniqueInput!): Commit
-  commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput): [Commit!]
+  commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput!): [Commit!]
   contactUsLink(where: WhereUniqueInput!): String
   currentWorkspace: Workspace
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!
