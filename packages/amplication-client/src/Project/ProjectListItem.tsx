@@ -29,7 +29,9 @@ export const ProjectListItem = ({ project, workspaceId }: Props) => {
   const services = useMemo(
     () =>
       project.resources.filter(
-        (x) => x.resourceType === EnumResourceType.Service
+        (x) =>
+          x.resourceType === EnumResourceType.Service ||
+          x.resourceType === EnumResourceType.MessageBroker
       ),
     [project.resources]
   );
