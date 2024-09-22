@@ -27,6 +27,7 @@ import { pluralize } from "../util/pluralize";
 import "./ServiceTemplateList.scss";
 import { SERVICE_TEMPLATE_LIST_COLUMNS } from "./ServiceTemplateListDataColumns";
 import { Link } from "react-router-dom";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
@@ -34,7 +35,12 @@ const PAGE_TITLE = "Project Overview";
 function ServiceTemplateList() {
   const { refreshData } = useStiggContext();
 
-  const { currentProject, currentWorkspace } = useContext(AppContext);
+  const { currentProject } = useContext(AppContext);
+
+  const { baseUrl: servicesBaseUrl } = useProjectBaseUrl();
+  const { baseUrl: templatesBaseUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: true,
+  });
 
   const {
     serviceTemplates,
@@ -78,14 +84,12 @@ function ServiceTemplateList() {
               itemsAlign={EnumItemsAlign.Center}
               direction={EnumFlexDirection.Row}
             >
-              <Link to={`/${currentWorkspace?.id}/${currentProject?.id}`}>
+              <Link to={servicesBaseUrl}>
                 <Button buttonStyle={EnumButtonStyle.Outline}>
                   View Services
                 </Button>
               </Link>
-              <Link
-                to={`/${currentWorkspace?.id}/platform/${currentProject?.id}/create-service-template`}
-              >
+              <Link to={`${templatesBaseUrl}/create-service-template`}>
                 <Button buttonStyle={EnumButtonStyle.Primary}>
                   Create Template
                 </Button>

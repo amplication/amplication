@@ -1,11 +1,11 @@
-import React, { useCallback, useContext, useState } from "react";
-import * as models from "../models";
 import { ConfirmationDialog, Snackbar } from "@amplication/ui/design-system";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import useModuleAction from "./hooks/useModuleAction";
-import { formatError } from "../util/error";
-import { AppContext } from "../context/appContext";
+import { useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { Button, EnumButtonStyle } from "../Components/Button";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
+import useModuleAction from "./hooks/useModuleAction";
 
 const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -16,9 +16,9 @@ type Props = {
 
 export const DeleteModuleAction = ({ moduleAction }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+
   const history = useHistory();
+  const { baseUrl } = useResourceBaseUrl();
 
   const { deleteModuleAction, deleteModuleActionError } = useModuleAction();
 
@@ -47,19 +47,10 @@ export const DeleteModuleAction = ({ moduleAction }: Props) => {
       },
     })
       .then((result) => {
-        history.push(
-          `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules`
-        );
+        history.push(`${baseUrl}/modules`);
       })
       .catch(console.error);
-  }, [
-    deleteModuleAction,
-    moduleAction,
-    currentProject,
-    currentResource,
-    currentWorkspace,
-    history,
-  ]);
+  }, [deleteModuleAction, moduleAction, baseUrl, history]);
 
   return (
     <>

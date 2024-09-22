@@ -21,6 +21,7 @@ import {
   EnumTextColor,
 } from "@amplication/ui/design-system";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 type Props = {
   pluginRepositoryResourceId: string;
@@ -30,6 +31,8 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
   const match = useRouteMatch<{
     privatePluginId: string;
   }>("/:workspace/platform/:project/private-plugins/:privatePluginId");
+
+  const { baseUrl } = useProjectBaseUrl();
 
   const { privatePluginId } = match?.params ?? {};
   const {
@@ -87,9 +90,7 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
   const errorMessage = formatError(error) || formatError(updateError);
 
   const handleDeletePrivatePlugin = useCallback(() => {
-    history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/private-plugins`
-    );
+    history.push(`${baseUrl}/private-plugins`);
   }, [history, currentWorkspace?.id, currentProject?.id]);
 
   useEffect(() => {

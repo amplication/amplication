@@ -17,6 +17,7 @@ import { formatError } from "../../util/error";
 import { preparePluginRepositoryObject } from "../constants";
 import "./CreatePluginRepository.scss";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -33,6 +34,7 @@ const CreatePluginRepositoryWizard: React.FC<Props> = ({ moduleClass }) => {
     errorCreatePluginRepository,
     loadingCreatePluginRepository,
   } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
   const history = useHistory();
   const { trackEvent } = useTracking();
@@ -58,7 +60,7 @@ const CreatePluginRepositoryWizard: React.FC<Props> = ({ moduleClass }) => {
 
   const handleBackToProjectClick = () => {
     trackEvent({ eventName: AnalyticsEventNames.BackToProjectsClick });
-    history.push(`/${currentWorkspace?.id}/${currentProject?.id}/`);
+    history.push(`${baseUrl}/`);
   };
 
   const handleCreateServiceClick = () => {

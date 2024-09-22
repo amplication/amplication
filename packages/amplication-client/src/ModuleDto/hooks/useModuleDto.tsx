@@ -15,6 +15,7 @@ import {
   UPDATE_MODULE_DTO,
   UPDATE_MODULE_DTO_PROPERTY,
 } from "../queries/moduleDtosQueries";
+import { useResourceBaseUrl } from "../../util/useResourceBaseUrl";
 type TDeleteData = {
   deleteModuleDto: models.ModuleDto;
 };
@@ -64,13 +65,9 @@ const NEST_ONLY_DTO_TYPES = [
 ];
 
 const useModuleDto = () => {
-  const {
-    addBlock,
-    addEntity,
-    currentResource,
-    currentWorkspace,
-    currentProject,
-  } = useContext(AppContext);
+  const { addBlock, addEntity, currentResource } = useContext(AppContext);
+
+  const { baseUrl } = useResourceBaseUrl();
 
   const filterDtosByGeneratorName = useCallback(
     (allDTOs: models.ModuleDto[]) => {
@@ -102,7 +99,7 @@ const useModuleDto = () => {
   }>({ moduleDtos: [] });
 
   const getModuleDtoUrl = (dto: models.ModuleDto) => {
-    return `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${dto.parentBlockId}/dtos/${dto.id}`;
+    return `${baseUrl}/modules/${dto.parentBlockId}/dtos/${dto.id}`;
   };
 
   const [
