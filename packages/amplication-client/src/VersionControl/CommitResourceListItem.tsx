@@ -12,12 +12,12 @@ import {
   Panel,
   Text,
 } from "@amplication/ui/design-system";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 import { TruncatedId } from "../Components/TruncatedId";
-import { AppContext } from "../context/appContext";
 import { Build, EnumBuildStatus } from "../models";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import BuildGitLink from "./BuildGitLink";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 import "./CommitResourceListItem.scss";
@@ -32,8 +32,8 @@ type Props = {
 const CLASS_NAME = "commit-resource-list-item";
 
 const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
   const { data } = useBuildWatchStatus(build);
+  const { baseUrl } = useProjectBaseUrl();
 
   const resourceChangesCount = useMemo(() => {
     const resourcesChanges = commitChangesByResource(build.commitId);
@@ -73,7 +73,7 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
             removeDefaultPadding
           >
             <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${build.commitId}/builds/${build.id}`}
+              to={`${baseUrl}/commits/${build.commitId}/builds/${build.id}`}
               className={`${CLASS_NAME}__link`}
             >
               <FlexItem itemsAlign={EnumItemsAlign.Center}>
@@ -118,7 +118,7 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
                 end={
                   <FlexItem itemsAlign={EnumItemsAlign.Center}>
                     <Link
-                      to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${build.commitId}/builds/${build.id}`}
+                      to={`${baseUrl}/commits/${build.commitId}/builds/${build.id}`}
                     >
                       {logMessage}
                     </Link>
@@ -130,7 +130,7 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
                 }
               >
                 <Link
-                  to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/changes/${build.commitId}`}
+                  to={`${baseUrl}/${build.resourceId}/changes/${build.commitId}`}
                 >
                   <FlexItem
                     gap={EnumGapSize.Small}

@@ -21,6 +21,7 @@ import swagger from "../../../assets/images/swagger.svg";
 const CreateGenerationSettings: React.FC<WizardStepProps> = ({
   formik,
   trackWizardPageEvent,
+  flowSettings,
 }) => {
   useEffect(() => {
     if (
@@ -48,11 +49,17 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
     <Layout.Split>
       <Layout.LeftSide>
         <Layout.Description
-          header="How would you like to build your service?"
-          text={`Do you want to use GraphQL API? REST API? both?
+          header={
+            flowSettings.texts?.apisTitle ||
+            "How would you like to build your service?"
+          }
+          text={
+            flowSettings.texts?.apisDescription ||
+            `Do you want to use GraphQL API? REST API? both?
             Also, select whether you want to generate the Admin UI for your service with forms to create, update and delete data in your service.
             
-          `}
+          `
+          }
         />
         {isDotNet && (
           <Panel panelStyle={EnumPanelStyle.Bordered}>

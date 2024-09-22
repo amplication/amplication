@@ -23,6 +23,7 @@ import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 import "./LastCommit.scss";
 import { useCommitStatus } from "./hooks/useCommitStatus";
 import BuildGitLink from "./BuildGitLink";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 type Props = {
   lastCommit: Commit;
@@ -31,8 +32,8 @@ type Props = {
 const CLASS_NAME = "last-commit";
 
 const LastCommit = ({ lastCommit }: Props) => {
-  const { currentWorkspace, currentProject, commitRunning } =
-    useContext(AppContext);
+  const { commitRunning } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
   const { commitStatus, commitLastError } = useCommitStatus(lastCommit);
   if (!lastCommit) return null;
@@ -41,7 +42,7 @@ const LastCommit = ({ lastCommit }: Props) => {
 
   const ClickableCommitId = (
     <ClickableId
-      to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${lastCommit.id}`}
+      to={`${baseUrl}/commits/${lastCommit.id}`}
       id={lastCommit.id}
       label="Commit"
       eventData={{
@@ -69,9 +70,7 @@ const LastCommit = ({ lastCommit }: Props) => {
             direction={EnumFlexDirection.Column}
             margin={EnumFlexItemMargin.Top}
           >
-            <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${lastCommit.id}`}
-            >
+            <Link to={`${baseUrl}/commits/${lastCommit.id}`}>
               <Text
                 textStyle={EnumTextStyle.Tag}
                 textColor={EnumTextColor.ThemeRed}
@@ -103,7 +102,7 @@ const LastCommit = ({ lastCommit }: Props) => {
           <BuildGitLink build={lastCommit.builds[0]} />
         ) : (
           <Link
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${lastCommit.id}`}
+            to={`${baseUrl}/commits/${lastCommit.id}`}
             className={`${CLASS_NAME}__view-code`}
           >
             <Button

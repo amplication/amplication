@@ -17,7 +17,7 @@ import {
   prepareServiceTemplateObject,
 } from "../constants";
 import "./CreateServiceWizard.scss";
-import ServiceWizard, { WizardStep } from "./ServiceWizard";
+import ServiceWizard from "./ServiceWizard";
 import CreateGenerationSettings from "./wizard-pages/CreateGenerationSettings";
 import CreateGithubSync from "./wizard-pages/CreateGithubSync";
 import CreateServiceAuth from "./wizard-pages/CreateServiceAuth";
@@ -36,20 +36,15 @@ import {
   wizardProgressBarSchema,
 } from "./wizardResourceSchema";
 
-import {
-  CREATE_SERVICE_PATTERN,
-  CREATE_SERVICE_STEPS,
-} from "./wizard-types/wizard-type-create-service";
-import {
-  CREATE_SERVICE_TEMPLATE_PATTERN,
-  CREATE_SERVICE_TEMPLATE_STEPS,
-} from "./wizard-types/wizard-type-create-service-template";
-import {
-  ONBOARDING_PATTERN,
-  ONBOARDING_STEPS,
-} from "./wizard-types/wizard-type-onboarding";
 import useServiceTemplate from "../../ServiceTemplate/hooks/useServiceTemplate";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import {
+  FLOW_CREATE_SERVICE,
+  FLOW_CREATE_SERVICE_TEMPLATE,
+  FLOW_ONBOARDING,
+  FLOW_SETTINGS,
+} from "./constants";
+import { WizardFlowType } from "./types";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -59,29 +54,7 @@ type Props = AppRouteProps & {
   location: H.Location;
 };
 
-const FLOW_ONBOARDING = "Onboarding";
-const FLOW_CREATE_SERVICE = "Create Service";
-const FLOW_CREATE_SERVICE_TEMPLATE = "Create Service Template";
 const pluginUseLatest = REACT_APP_PLUGIN_VERSION_USE_LATEST === "true";
-
-export type WizardFlowType =
-  | "Onboarding"
-  | "Create Service"
-  | "Create Service Template";
-
-const FLOW_SETTINGS: {
-  [key in WizardFlowType]: { steps: WizardStep[]; pattern: number[] };
-} = {
-  [FLOW_ONBOARDING]: { steps: ONBOARDING_STEPS, pattern: ONBOARDING_PATTERN },
-  [FLOW_CREATE_SERVICE]: {
-    steps: CREATE_SERVICE_STEPS,
-    pattern: CREATE_SERVICE_PATTERN,
-  },
-  [FLOW_CREATE_SERVICE_TEMPLATE]: {
-    steps: CREATE_SERVICE_TEMPLATE_STEPS,
-    pattern: CREATE_SERVICE_TEMPLATE_PATTERN,
-  },
-};
 
 const signupCookie = getCookie("signup");
 
@@ -107,6 +80,7 @@ const CreateServiceWizard: React.FC<Props> = ({
     createServiceTemplate,
     loadingCreateServiceTemplate,
     errorCreateServiceTemplate,
+    createdServiceTemplateResults,
   } = useServiceTemplate(currentProject);
 
   const { trackEvent } = useTracking();
@@ -128,25 +102,14 @@ const CreateServiceWizard: React.FC<Props> = ({
     ? FLOW_ONBOARDING
     : FLOW_CREATE_SERVICE;
 
-  const wizardSteps = FLOW_SETTINGS[wizardFlow].steps;
-  const wizardPattern = FLOW_SETTINGS[wizardFlow].pattern;
-
-  const serviceNextStepStatus = {
-    description: isSignupUser
-      ? ["Invite", "my team"]
-      : ["Add plugins", "to my service"],
-    defineUser: wizardFlow,
-    icon: isSignupUser ? "users" : "plugins",
-    iconBackgroundColor: isSignupUser ? "#8DD9B9" : "#f85b6e",
-    eventActionName: isSignupUser ? "Invite Team" : "Add Plugins",
-  };
+  const flowSettings = FLOW_SETTINGS[wizardFlow];
 
   const errorMessage = formatError(
     errorCreateService || errorCreateServiceTemplate
   );
   const setWizardProgressItems = useCallback(() => {
     const pagesMap = {};
-    return wizardPattern.reduce(
+    return flowSettings.pattern.reduce(
       (wizardArr: WizardProgressBarInterface[], page: number) => {
         const findPage = wizardProgressBarSchema.find(
           (item: WizardProgressBarInterface) => item.activePages.includes(page)
@@ -162,7 +125,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       },
       []
     );
-  }, [wizardPattern]);
+  }, [flowSettings]);
 
   useEffect(() => {
     if (createResult?.build) setCurrentBuild(createResult?.build);
@@ -178,25 +141,27 @@ const CreateServiceWizard: React.FC<Props> = ({
         plugins: [],
       };
 
-      data.plugins = pluginIds.map((pluginId) => {
-        const plugin = pluginCatalog[pluginId];
+      data.plugins = pluginIds
+        .map((pluginId) => {
+          const plugin = pluginCatalog[pluginId];
+          if (!plugin) return null;
+          const pluginVersion = pluginUseLatest
+            ? plugin?.versions.find((x) => x.isLatest)
+            : plugin?.versions[0];
 
-        const pluginVersion = pluginUseLatest
-          ? plugin?.versions.find((x) => x.isLatest)
-          : plugin?.versions[0];
-
-        return {
-          displayName: plugin.name,
-          pluginId: plugin.pluginId,
-          enabled: true,
-          npm: plugin.npm,
-          version: "latest",
-          resource: { connect: { id: "" } },
-          settings: pluginVersion?.settings || JSON.parse("{}"),
-          configurations: pluginVersion?.configurations || JSON.parse("{}"),
-          isPrivate: false,
-        };
-      });
+          return {
+            displayName: plugin.name,
+            pluginId: plugin.pluginId,
+            enabled: true,
+            npm: plugin.npm,
+            version: "latest",
+            resource: { connect: { id: "" } },
+            settings: pluginVersion?.settings || JSON.parse("{}"),
+            configurations: pluginVersion?.configurations || JSON.parse("{}"),
+            isPrivate: false,
+          };
+        })
+        .filter((x) => x !== null);
 
       return data;
     },
@@ -244,7 +209,6 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const createResource = useCallback(
     (activeIndex: number, values: ResourceSettings) => {
-      if (activeIndex < 6) return;
       const {
         serviceName,
         generateAdminUI,
@@ -303,7 +267,6 @@ const CreateServiceWizard: React.FC<Props> = ({
             plugins,
             codeGenerator
           );
-
           createServiceTemplate(serviceTemplateCreateInput);
         } else {
           const resourceCreateInput = prepareServiceObject(
@@ -345,54 +308,62 @@ const CreateServiceWizard: React.FC<Props> = ({
   return (
     <Modal open fullScreen css={moduleClass}>
       <ServiceWizard
-        wizardSteps={wizardSteps}
+        wizardSteps={flowSettings.steps}
         wizardProgressBar={setWizardProgressItems()}
         wizardSchema={schemaArray}
         wizardInitialValues={ResourceInitialValues}
         wizardSubmit={createResource}
         moduleCss={moduleClass}
-        submitFormPage={7}
+        submitFormPage={flowSettings.submitFormIndex}
         submitLoader={loadingCreateService || loadingCreateServiceTemplate}
         handleCloseWizard={handleCloseWizard}
         handleWizardProgress={handleWizardProgress}
-        defineUser={wizardFlow}
+        wizardFlowType={wizardFlow}
       >
         <CreateServiceWelcome
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          flowSettings={flowSettings}
         />
         <CreateServiceName
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
           setCurrentCodeGenerator={setCurrentCodeGenerator}
+          flowSettings={flowSettings}
         />
         <CreateGithubSync
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
-          defineUser={wizardFlow}
+          wizardFlowType={wizardFlow}
+          flowSettings={flowSettings}
         />
         <CreateGenerationSettings
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          flowSettings={flowSettings}
         />
         <CreateServiceRepository
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          flowSettings={flowSettings}
         />
         <CreateServiceDatabase
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
           pluginCatalog={pluginCatalog}
+          flowSettings={flowSettings}
         />
         <CreateServiceTemplate
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          flowSettings={flowSettings}
         />
 
         <CreateServiceAuth
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
           pluginCatalog={pluginCatalog}
+          flowSettings={flowSettings}
         />
         <CreateServiceCodeGeneration
           moduleClass="create-service-code-generation"
@@ -400,11 +371,18 @@ const CreateServiceWizard: React.FC<Props> = ({
           build={currentBuild}
           trackWizardPageEvent={trackWizardPageEvent}
           rebuildClick={handleRebuildClick}
+          flowSettings={flowSettings}
         />
         <CreateServiceNextSteps
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
-          {...serviceNextStepStatus}
+          flowSettings={flowSettings}
+          wizardFlowType={wizardFlow}
+          createdResource={
+            wizardFlow === FLOW_CREATE_SERVICE_TEMPLATE
+              ? createdServiceTemplateResults?.createServiceTemplate
+              : createResult?.resource
+          }
         />
       </ServiceWizard>
       <Snackbar

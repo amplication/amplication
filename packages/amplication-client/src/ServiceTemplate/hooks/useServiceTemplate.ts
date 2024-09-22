@@ -38,6 +38,7 @@ const useServiceTemplate = (currentProject: models.Project | undefined) => {
     {
       loading: loadingCreateServiceTemplate,
       error: errorCreateServiceTemplate,
+      data: createServiceTemplateData,
     },
   ] = useMutation<TCreateServiceTemplate>(CREATE_SERVICE_TEMPLATE, {});
 
@@ -65,6 +66,7 @@ const useServiceTemplate = (currentProject: models.Project | undefined) => {
     createServiceTemplate,
     loadingCreateServiceTemplate,
     errorCreateServiceTemplate,
+    createdServiceTemplateResults: createServiceTemplateData,
   };
 };
 

@@ -1,5 +1,5 @@
 import { useRouteMatch } from "react-router-dom";
-import { useAppContext } from "../context/appContext";
+import { useMemo } from "react";
 
 type Props = {
   overrideResourceId?: string;
@@ -17,9 +17,8 @@ export const useResourceBaseUrl = (
   isPlatformConsole: boolean;
 } => {
   const { overrideIsPlatformConsole, overrideResourceId } = props || {};
-  const { currentResource, currentProject, currentWorkspace } = useAppContext();
 
-  const platformMatch = useRouteMatch<{
+  const match = useRouteMatch<{
     workspace: string;
     project: string;
     resource: string;
@@ -30,16 +29,27 @@ export const useResourceBaseUrl = (
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/",
   ]);
 
-  const isPlatformConsole =
-    overrideIsPlatformConsole === undefined
-      ? platformMatch?.path.includes("/platform/")
-      : overrideIsPlatformConsole;
+  const results = useMemo(() => {
+    if (!match) {
+      return {
+        baseUrl: "",
+        isPlatformConsole: false,
+      };
+    }
 
-  const resourceId = overrideResourceId || currentResource?.id;
-  const platformPath = isPlatformConsole ? "/platform" : "";
+    const isPlatformConsole =
+      overrideIsPlatformConsole === undefined
+        ? match?.path.includes("/platform/")
+        : overrideIsPlatformConsole;
 
-  return {
-    baseUrl: `/${currentWorkspace?.id}${platformPath}/${currentProject?.id}/${resourceId}`,
-    isPlatformConsole,
-  };
+    const resourceId = overrideResourceId || match.params.resource;
+    const platformPath = isPlatformConsole ? "/platform" : "";
+
+    return {
+      baseUrl: `/${match.params.workspace}${platformPath}/${match.params.project}/${resourceId}`,
+      isPlatformConsole,
+    };
+  }, [match, overrideIsPlatformConsole, overrideResourceId]);
+
+  return results;
 };

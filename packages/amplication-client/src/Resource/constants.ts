@@ -1,7 +1,6 @@
 import * as models from "../models";
 import { EnumAuthProviderType, EnumGitProvider } from "../models";
-import { WizardFlowType } from "./create-resource/CreateServiceWizard";
-import { TemplateSettings } from "./create-resource/wizardResourceSchema";
+import { WizardFlowType } from "./create-resource/types";
 
 export const serviceSettingsFieldsInitValues = {
   generateAdminUI: true,

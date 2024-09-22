@@ -30,6 +30,7 @@ import { resourceThemeMap } from "./constants";
 import AppGitStatusPanel from "./git/AppGitStatusPanel";
 import { useResourceSummary } from "./hooks/useResourceSummary";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -43,8 +44,9 @@ type UsageDataItem = {
 const CLASS_NAME = "resource-overview";
 
 const ResourceOverview = () => {
-  const { currentResource, currentProject, currentWorkspace } = useAppContext();
+  const { currentResource } = useAppContext();
   const { refreshData } = useStiggContext();
+  const { baseUrl } = useResourceBaseUrl();
 
   const {
     summaryData,
@@ -60,29 +62,29 @@ const ResourceOverview = () => {
       {
         icon: "database",
         title: "Entities",
-        link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/entities`,
+        link: `${baseUrl}/entities`,
         value: summaryData.models,
       },
       {
         icon: "api",
         title: "APIs",
-        link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/modules`,
+        link: `${baseUrl}/modules`,
         value: summaryData.apis,
       },
       {
         icon: "plugin",
         title: "Installed Plugins",
-        link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/installed`,
+        link: `${baseUrl}/plugins/installed`,
         value: summaryData.installedPlugins,
       },
       {
         icon: "roles_outline",
         title: "Roles",
-        link: `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/roles`,
+        link: `${baseUrl}/roles`,
         value: summaryData.roles,
       },
     ];
-  }, [currentProject.id, currentResource, currentWorkspace, summaryData]);
+  }, [baseUrl, summaryData]);
 
   useEffect(() => {
     refreshData();
