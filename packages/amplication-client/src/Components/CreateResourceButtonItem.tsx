@@ -1,12 +1,12 @@
 import { SelectMenuItem } from "@amplication/ui/design-system";
-import React, { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { Link } from "react-router-dom";
-import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import { CreateResourceButtonItemType } from "./CreateResourceButton";
-import ResourceCircleBadge from "./ResourceCircleBadge";
 import "./CreateResourceButtonItem.scss";
+import ResourceCircleBadge from "./ResourceCircleBadge";
 
 type props = {
   item: CreateResourceButtonItemType;
@@ -14,16 +14,16 @@ type props = {
 
 const CLASS_NAME = "create-resource-button-item";
 
+const RESOURCE_TYPE_TO_EVENT_NAME = {
+  Service: AnalyticsEventNames.CreateService,
+  MessageBroker: AnalyticsEventNames.CreateMessageBroker,
+  ProjectConfiguration: AnalyticsEventNames.CreateProjectConfiguration,
+};
+
 const CreateResourceButtonItem = ({ item }: props) => {
   const { trackEvent } = useTracking();
 
-  const { currentWorkspace, currentProject } = useContext(AppContext);
-
-  const RESOURCE_TYPE_TO_EVENT_NAME = {
-    Service: AnalyticsEventNames.CreateService,
-    MessageBroker: AnalyticsEventNames.CreateMessageBroker,
-    ProjectConfiguration: AnalyticsEventNames.CreateProjectConfiguration,
-  };
+  const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: false });
 
   const handleClick = useCallback(() => {
     trackEvent({
@@ -35,7 +35,7 @@ const CreateResourceButtonItem = ({ item }: props) => {
     <SelectMenuItem closeAfterSelectionChange as="span">
       <Link
         onClick={handleClick}
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/${item.route}`}
+        to={`${baseUrl}/${item.route}`}
         className={CLASS_NAME}
       >
         <ResourceCircleBadge type={item.type} size="medium" />

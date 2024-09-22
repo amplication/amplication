@@ -3,7 +3,7 @@ import { AppContext } from "../../context/appContext";
 import InnerTabLink from "../../Layout/InnerTabLink";
 import { useHistory } from "react-router-dom";
 import { EnumResourceType } from "../../models";
-import { useResourceBaseUrl } from "../hooks/useResourceBaseUrl";
+import { useResourceBaseUrl } from "../../util/useResourceBaseUrl";
 
 const CLASS_NAME = "service-settings";
 
