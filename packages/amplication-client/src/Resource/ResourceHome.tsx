@@ -14,6 +14,8 @@ import {
   setResourceUrlLink,
 } from "./resourceMenuUtils";
 import { REACT_APP_PACKAGES_FEATURE_FLAG } from "../env";
+import { EnumResourceType } from "../models";
+import { useResourceBaseUrl } from "./hooks/useResourceBaseUrl";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -34,6 +36,8 @@ const ResourceHome = ({
 }: Props) => {
   const { currentResource, currentWorkspace, currentProject, pendingChanges } =
     useContext(AppContext);
+
+  const { isPlatformConsole } = useResourceBaseUrl();
 
   const tabs: TabItem[] = useMemo(() => {
     const fixedRoutes = resourceMenuLayout[currentResource?.resourceType]?.map(
@@ -57,7 +61,8 @@ const ResourceHome = ({
             currentWorkspace.id,
             currentProject.id,
             currentResource.id,
-            toUrl
+            toUrl,
+            isPlatformConsole
           ),
           iconName: linksMap[menuItem].icon,
           exact: false,
@@ -75,6 +80,7 @@ const ResourceHome = ({
     ];
   }, [
     currentResource,
+    isPlatformConsole,
     match.url,
     pendingChanges,
     currentWorkspace,

@@ -24,9 +24,10 @@ const useProjectSelector = (
   ]);
   const projectMatch: {
     params: { workspace: string; project: string };
-  } | null = useRouteMatch<{ workspace: string; project: string }>(
-    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
-  );
+  } | null = useRouteMatch<{ workspace: string; project: string }>([
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})",
+    "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})",
+  ]);
 
   const project = projectMatch?.params?.project;
 
@@ -125,18 +126,18 @@ const useProjectSelector = (
     }
 
     !!(!workspaceUtil && currentWorkspace?.id) &&
-      history.push(
-        `/${currentWorkspace?.id}/${projectsList[0].id}${
-          isFromSignup || isSignupCookieExist ? "/welcome" : ""
-        }`
-      );
+      (isFromSignup || isSignupCookieExist) &&
+      history.push(`/${currentWorkspace?.id}/${projectsList[0].id}/welcome`);
   }, [
+    currentProject,
     currentWorkspace?.id,
     history,
+    location.search,
     project,
     projectRedirect,
     projectsList,
     workspace,
+    workspaceUtil,
   ]);
 
   useEffect(() => {

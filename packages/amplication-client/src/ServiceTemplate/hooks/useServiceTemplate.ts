@@ -57,7 +57,7 @@ const useServiceTemplate = (currentProject: models.Project | undefined) => {
   );
 
   return {
-    serviceTemplates,
+    serviceTemplates: serviceTemplates?.serviceTemplates || [],
     handleSearchChange,
     loadingServiceTemplates,
     errorServiceTemplates,

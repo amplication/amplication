@@ -49,7 +49,7 @@ export const PrivatePluginList = React.memo(
 
     const handlePrivatePluginChange = useCallback(
       (privatePlugin: models.PrivatePlugin) => {
-        const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/private-plugins/${privatePlugin.id}`;
+        const fieldUrl = `/${currentWorkspace?.id}/platform/${currentProject?.id}/private-plugins/${privatePlugin.id}`;
         history.push(fieldUrl);
       },
       [history, currentWorkspace, currentProject]
@@ -58,7 +58,7 @@ export const PrivatePluginList = React.memo(
     useEffect(() => {
       if (selectFirst && data && !isEmpty(data.privatePlugins)) {
         const privatePlugin = data.privatePlugins[0];
-        const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/private-plugins/${privatePlugin.id}`;
+        const fieldUrl = `/${currentWorkspace?.id}/platform/${currentProject?.id}/private-plugins/${privatePlugin.id}`;
         history.push(fieldUrl);
       }
     }, [data, selectFirst, history, currentWorkspace, currentProject]);
@@ -71,7 +71,7 @@ export const PrivatePluginList = React.memo(
       <div className={CLASS_NAME}>
         <InnerTabLink
           icon="settings"
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/private-plugins/git-settings`}
+          to={`/${currentWorkspace?.id}/platform/${currentProject?.id}/private-plugins/git-settings`}
         >
           <FlexItem itemsAlign={EnumItemsAlign.Center}>Git Settings</FlexItem>
         </InnerTabLink>
@@ -88,7 +88,7 @@ export const PrivatePluginList = React.memo(
             <InnerTabLink
               key={privatePlugin.id}
               icon="plugin"
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/private-plugins/${privatePlugin.id}`}
+              to={`/${currentWorkspace?.id}/platform/${currentProject?.id}/private-plugins/${privatePlugin.id}`}
             >
               <FlexItem
                 itemsAlign={EnumItemsAlign.Center}

@@ -1,0 +1,13 @@
+@import "../style/index.scss";
+
+$resource-list-width: 400px;
+
+.resource-list {
+  &__resources {
+    min-width: $resource-list-width;
+  }
+
+  &__grid-container {
+    height: calc(100% - 80px);
+  }
+}

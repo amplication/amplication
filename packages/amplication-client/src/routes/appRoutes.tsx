@@ -1,6 +1,6 @@
 import { ComponentType, lazy, LazyExoticComponent } from "react";
 import resourceRoutes from "./resourceRoutes";
-import resourceTabRoutes from "./resourceTabRoutes";
+import { resourceTabRoutes } from "./resourceTabRoutes";
 
 export interface RouteDef {
   path: string;
@@ -54,6 +54,89 @@ export const Routes: RouteDef[] = [
         ],
         routes: [
           {
+            path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})",
+            Component: lazy(() => import("../Platform/ProjectPlatformPage")),
+            moduleName: "ProjectPlatformPage",
+            moduleClass: "project-platform-page",
+            exactPath: false,
+            tabRoutes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins",
+                Component: lazy(
+                  () => import("../PrivatePlugins/PrivatePluginsPage")
+                ),
+                moduleName: "",
+                displayName: "Private Plugins",
+                routeTrackType: "",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins/git-settings",
+                    Component: lazy(
+                      () => import("../PrivatePlugins/PrivatePluginGitSettings")
+                    ),
+                    moduleName: "",
+                    routeTrackType: "",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins/:pluginId([A-Za-z0-9-]{20,})",
+                    Component: lazy(
+                      () => import("../PrivatePlugins/PrivatePlugin")
+                    ),
+                    moduleName: "",
+                    routeTrackType: "",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                ],
+              },
+            ],
+            routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/create-service-template",
+                Component: lazy(
+                  () =>
+                    import("../Resource/create-resource/CreateServiceWizard")
+                ),
+                moduleName: "CreateServiceWizard",
+                moduleClass: "create-service-wizard",
+                routeTrackType: "",
+                exactPath: false,
+                isAnalytics: true,
+                routes: [],
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/create-plugin-repository",
+                Component: lazy(
+                  () =>
+                    import(
+                      "../Resource/create-plugin-repository/CreatePluginRepository"
+                    )
+                ),
+                moduleName: "CreatePluginRepository",
+                moduleClass: "create-plugin-repository",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
+                Component: lazy(() => import("../Resource/ResourceHome")),
+                moduleName: "",
+                routeTrackType: "",
+                exactPath: false,
+                routes: resourceRoutes,
+                tabRoutes: resourceTabRoutes(
+                  "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})"
+                ),
+              },
+            ],
+          },
+          {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})",
             Component: lazy(() => import("../Project/ProjectPage")),
             moduleName: "ProjectPage",
@@ -84,40 +167,6 @@ export const Routes: RouteDef[] = [
                 routeTrackType: "",
                 exactPath: false,
                 isAnalytics: true,
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/private-plugins",
-                Component: lazy(
-                  () => import("../PrivatePlugins/PrivatePluginsPage")
-                ),
-                moduleName: "",
-                displayName: "Private Plugins",
-                routeTrackType: "",
-                exactPath: false,
-                routes: [
-                  {
-                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/private-plugins/git-settings",
-                    Component: lazy(
-                      () => import("../PrivatePlugins/PrivatePluginGitSettings")
-                    ),
-                    moduleName: "",
-                    routeTrackType: "",
-                    exactPath: true,
-                    routes: [],
-                    isAnalytics: true,
-                  },
-                  {
-                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/private-plugins/:pluginId([A-Za-z0-9-]{20,})",
-                    Component: lazy(
-                      () => import("../PrivatePlugins/PrivatePlugin")
-                    ),
-                    moduleName: "",
-                    routeTrackType: "",
-                    exactPath: true,
-                    routes: [],
-                    isAnalytics: true,
-                  },
-                ],
               },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits",
@@ -247,19 +296,6 @@ export const Routes: RouteDef[] = [
                 routes: [],
               },
               {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-service-template",
-                Component: lazy(
-                  () =>
-                    import("../Resource/create-resource/CreateServiceWizard")
-                ),
-                moduleName: "CreateServiceWizard",
-                moduleClass: "create-service-wizard",
-                routeTrackType: "",
-                exactPath: false,
-                isAnalytics: true,
-                routes: [],
-              },
-              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-broker",
                 Component: lazy(
                   () =>
@@ -269,20 +305,6 @@ export const Routes: RouteDef[] = [
                 ),
                 moduleName: "CreateMessageBroker",
                 moduleClass: "create-message-broker",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-plugin-repository",
-                Component: lazy(
-                  () =>
-                    import(
-                      "../Resource/create-plugin-repository/CreatePluginRepository"
-                    )
-                ),
-                moduleName: "CreatePluginRepository",
-                moduleClass: "create-plugin-repository",
                 routeTrackType: "",
                 exactPath: true,
                 isAnalytics: true,
@@ -305,7 +327,9 @@ export const Routes: RouteDef[] = [
                 routeTrackType: "",
                 exactPath: false,
                 routes: resourceRoutes,
-                tabRoutes: resourceTabRoutes,
+                tabRoutes: resourceTabRoutes(
+                  "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
+                ),
               },
             ],
           },

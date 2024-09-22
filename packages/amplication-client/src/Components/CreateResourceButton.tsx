@@ -38,12 +38,6 @@ const ITEMS: CreateResourceButtonItemType[] = [
     route: "create-broker",
     info: "Create a message broker to facilitate communication between services",
   },
-  {
-    type: models.EnumResourceType.ServiceTemplate,
-    label: "Service Template",
-    route: "create-service-template",
-    info: "Create a template for a service that can be reused ",
-  },
 ];
 
 type Props = {
