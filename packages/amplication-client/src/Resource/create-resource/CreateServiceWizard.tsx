@@ -75,7 +75,7 @@ const CreateServiceWizard: React.FC<Props> = ({
     createServiceWithEntitiesResult: createResult,
     addBlock,
   } = useContext(AppContext);
-  const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: true });
+  const { baseUrl } = useProjectBaseUrl();
 
   const {
     createServiceTemplate,
@@ -212,6 +212,10 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const createResource = useCallback(
     (activeIndex: number, values: ResourceSettings) => {
+      if (activeIndex !== flowSettings.submitFormIndex) {
+        return;
+      }
+
       const {
         serviceName,
         generateAdminUI,
