@@ -26,6 +26,7 @@ import { ResourceCreateInput } from "./dto";
 import { ResourceResolver } from "./resource.resolver";
 import { ResourceService } from "./resource.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -336,6 +337,18 @@ const findManyEnvironmentsMock = jest.fn(() => {
 });
 const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 
+const getServiceSettingsBlockMock = jest.fn(() => {
+  return {
+    id: "exampleServiceSettingsBlockId",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    resource: EXAMPLE_RESOURCE,
+    settings: {
+      exampleSetting: "exampleValue",
+    },
+  };
+});
+
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
 describe("ResourceResolver", () => {
@@ -372,6 +385,12 @@ describe("ResourceResolver", () => {
           provide: BuildService,
           useClass: jest.fn(() => ({
             findMany: findManyBuildMock,
+          })),
+        },
+        {
+          provide: ServiceSettingsService,
+          useClass: jest.fn(() => ({
+            getServiceSettingsBlock: getServiceSettingsBlockMock,
           })),
         },
         {
