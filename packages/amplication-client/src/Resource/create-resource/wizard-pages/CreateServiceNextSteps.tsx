@@ -74,20 +74,28 @@ export const CreateServiceNextSteps: React.FC<
         </div>
       </div>
       <div className={`${className}__link_box_container`}>
-        <div className={`${className}__link_box`} onClick={handleClickEntities}>
-          <CircleBadge themeColor={EnumTextColor.ThemeTurquoise} size="medium">
-            <Icon icon="entity_outline" size="small" />
-          </CircleBadge>
-          <div className={`${className}__link_box__description`}>
-            <div>
-              {flowSettings.texts?.successEntitiesLine1 || "Create entities"}
+        {wizardFlowType !== "Create Service Template" && (
+          <div
+            className={`${className}__link_box`}
+            onClick={handleClickEntities}
+          >
+            <CircleBadge
+              themeColor={EnumTextColor.ThemeTurquoise}
+              size="medium"
+            >
+              <Icon icon="entity_outline" size="small" />
+            </CircleBadge>
+            <div className={`${className}__link_box__description`}>
+              <div>
+                {flowSettings.texts?.successEntitiesLine1 || "Create entities"}
+              </div>
+              <div>
+                {flowSettings.texts?.successEntitiesLine2 || "for my service"}
+              </div>
+              <div></div>
             </div>
-            <div>
-              {flowSettings.texts?.successEntitiesLine2 || "for my service"}
-            </div>
-            <div></div>
           </div>
-        </div>
+        )}
         <div className={`${className}__link_box`} onClick={handleClickRoute}>
           <CircleBadge themeColor={EnumTextColor.ThemeOrange} size="medium">
             <Icon icon="plugins" size="small" />
