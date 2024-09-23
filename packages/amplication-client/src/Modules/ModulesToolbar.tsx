@@ -52,7 +52,6 @@ const ModulesToolbar: React.FC<Props> = ({ moduleId, resourceId }) => {
       >
         <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
           <FlexItem itemsAlign={EnumItemsAlign.Center}>
-            {customActionsLicenseEnabled && <BetaFeatureTag />}
             <NewModuleDtoSelectButton
               resourceId={resourceId}
               moduleId={moduleId}
