@@ -1789,6 +1789,7 @@ type ProjectConfigurationSettings implements IBlock {
   lockedByUser: User
   lockedByUserId: String
   outputParameters: [BlockInputOutput!]!
+  overrideCustomizableFilesInGit: Boolean
   parentBlock: Block
   parentBlockId: String
   resourceId: String
@@ -1800,6 +1801,7 @@ input ProjectConfigurationSettingsUpdateInput {
   baseDirectory: String
   description: String
   displayName: String
+  overrideCustomizableFilesInGit: Boolean
 }
 
 input ProjectCreateInput {

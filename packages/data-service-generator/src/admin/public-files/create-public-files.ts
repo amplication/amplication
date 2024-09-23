@@ -19,7 +19,7 @@ const createIndexHTMLModule = async (): Promise<Module> => {
   const html = await readCode(indexHTMLPath);
   const { appInfo, clientDirectories } = DsgContext.getInstance;
   return {
-    path: `${clientDirectories.publicDirectory}/index.html`,
+    path: `${clientDirectories.baseDirectory}/index.html`,
     code: html
       .replace("{{description}}", appInfo.description)
       .replace("{{title}}", appInfo.name),

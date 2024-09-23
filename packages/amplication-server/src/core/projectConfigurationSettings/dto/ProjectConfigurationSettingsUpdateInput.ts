@@ -5,4 +5,7 @@ import { BlockUpdateInput } from "../../block/dto/BlockUpdateInput";
 export class ProjectConfigurationSettingsUpdateInput extends BlockUpdateInput {
   @Field(() => String, { nullable: true })
   baseDirectory?: string | undefined;
+
+  @Field(() => Boolean, { nullable: true })
+  overrideCustomizableFilesInGit?: boolean | undefined;
 }

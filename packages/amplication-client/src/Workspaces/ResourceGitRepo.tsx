@@ -44,7 +44,7 @@ function ResourceGitRepo({ resource }: Props) {
             textStyle={EnumTextStyle.Subtle}
             textColor={EnumTextColor.White}
           >
-            gitRepo
+            {gitRepo}
           </Text>
         </>
       ) : (
