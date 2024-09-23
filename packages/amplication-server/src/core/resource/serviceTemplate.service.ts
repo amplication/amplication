@@ -80,7 +80,7 @@ export class ServiceTemplateService {
   }
 
   /**
-   * Create a resource of type "Service Template"
+   * Create a resource of type "Service" from a Service Template
    */
   async createServiceFromTemplate(
     args: CreateServiceFromTemplateArgs,
