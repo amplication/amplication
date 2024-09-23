@@ -13,8 +13,6 @@ import { DeleteUserArgs } from "./dto";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { ProjectService } from "../project/project.service";
 import { BillingService } from "../billing/billing.service";
-import { ModuleService } from "../module/module.service";
-import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Env } from "../../env";
@@ -23,7 +21,6 @@ import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
-import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
@@ -203,25 +200,6 @@ describe("WorkspaceService", () => {
               }
             },
           },
-        },
-        {
-          provide: ModuleService,
-          useClass: jest.fn(() => {
-            return {};
-          }),
-        },
-
-        {
-          provide: ModuleDtoService,
-          useClass: jest.fn(() => {
-            return {};
-          }),
-        },
-        {
-          provide: ModuleActionService,
-          useClass: jest.fn(() => {
-            return {};
-          }),
         },
         {
           provide: AmplicationLogger,
