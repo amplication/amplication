@@ -10,6 +10,7 @@ import { Resource, User } from "../../models";
 import { ServiceTemplateService } from "./serviceTemplate.service";
 import { CreateServiceTemplateArgs } from "./dto/CreateServiceTemplateArgs";
 import { FindManyResourceArgs } from "./dto";
+import { CreateServiceFromTemplateArgs } from "./dto/CreateServiceFromTemplateArgs";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -39,5 +40,22 @@ export class ServiceTemplateResolver {
     @Args() args: FindManyResourceArgs
   ): Promise<Resource[]> {
     return this.service.serviceTemplates(args);
+  }
+
+  @Mutation(() => Resource, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "data.project.connect.id"
+  )
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "data.serviceTemplate.id"
+  )
+  async createServiceFromTemplate(
+    @Args() args: CreateServiceFromTemplateArgs,
+    @UserEntity() user: User
+  ): Promise<Resource> {
+    return this.service.createServiceFromTemplate(args, user);
   }
 }

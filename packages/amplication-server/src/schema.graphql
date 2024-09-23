@@ -1437,6 +1437,7 @@ type Mutation {
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createService(data: ResourceCreateInput!): Resource!
+  createServiceFromTemplate(data: ServiceFromTemplateCreateInput!): Resource!
   createServiceTemplate(data: ServiceTemplateCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
@@ -2134,6 +2135,13 @@ input ServerSettingsUpdateInput {
   generateRestApi: Boolean
   generateServer: Boolean = true
   serverPath: String
+}
+
+input ServiceFromTemplateCreateInput {
+  description: String!
+  name: String!
+  project: WhereParentIdInput!
+  serviceTemplate: WhereUniqueInput!
 }
 
 type ServiceSettings implements IBlock {

@@ -44,7 +44,6 @@ import {
   CreateBulkFieldsInput,
   EntityService,
 } from "../entity/entity.service";
-import { EnvironmentService } from "../environment/environment.service";
 import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { ProjectService } from "../project/project.service";
@@ -173,7 +172,6 @@ export class ResourceService {
     private readonly prisma: PrismaService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger,
     private entityService: EntityService,
-    private environmentService: EnvironmentService,
     private serviceSettingsService: ServiceSettingsService,
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
     @Inject(forwardRef(() => ProjectService))
@@ -683,8 +681,6 @@ export class ResourceService {
     ];
 
     await this.installPlugins(resource.id, plugins, user);
-
-    await this.environmentService.createDefaultEnvironment(resource.id);
 
     const project = await this.projectService.findUnique({
       where: { id: resource.projectId },

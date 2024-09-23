@@ -31,6 +31,7 @@ export enum EnumEventType {
   MessageBrokerCreate = "createMessageBroker",
   PluginRepositoryCreate = "createPluginRepository",
   ServiceTemplateCreate = "createServiceTemplate",
+  CreateServiceFromTemplate = "createServiceFromTemplate",
 
   //Import Prisma Schema
   ImportPrismaSchemaStart = "importPrismaSchemaStart",

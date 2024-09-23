@@ -9,6 +9,7 @@ import {
   CREATE_SERVICE_WITH_ENTITIES,
   GET_RESOURCES,
   CREATE_MESSAGE_BROKER,
+  CREATE_SERVICE_FROM_TEMPLATE,
 } from "../queries/resourcesQueries";
 import { getGitRepositoryDetails } from "../../util/git-repository-details";
 import { GET_PROJECTS } from "../queries/projectQueries";
@@ -22,6 +23,10 @@ type TGetResources = {
 
 type TCreateService = {
   createServiceWithEntities: models.ResourceCreateWithEntitiesResult;
+};
+
+type TCreateServiceFromTemplate = {
+  createServiceFromTemplate: models.Resource;
 };
 
 export type TUpdateCodeGeneratorVersion = {
@@ -87,7 +92,9 @@ const useResources = (
   }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource"
   );
-  const { baseUrl: projectBaseUrl } = useProjectBaseUrl();
+  const { baseUrl: projectBaseUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: false,
+  });
   const { baseUrl: platformProjectBaseUrl } = useProjectBaseUrl({
     overrideIsPlatformConsole: true,
   });
@@ -367,6 +374,34 @@ const useResources = (
     [setSearchPhrase]
   );
 
+  // ***** section Create Service From Template *****
+
+  const [
+    createServiceFromTemplateInternal,
+    {
+      loading: loadingCreateServiceFromTemplate,
+      error: errorCreateServiceFromTemplate,
+    },
+  ] = useMutation<TCreateServiceFromTemplate>(CREATE_SERVICE_FROM_TEMPLATE, {});
+
+  const createServiceFromTemplate = (
+    data: models.ServiceFromTemplateCreateInput
+  ) => {
+    createServiceFromTemplateInternal({ variables: { data: data } }).then(
+      (result) => {
+        result.data?.createServiceFromTemplate.id &&
+          reloadResources().then(() => {
+            resourceRedirect(
+              result.data?.createServiceFromTemplate.id as string
+            );
+            result.data?.createServiceFromTemplate.id &&
+              addBlock(result.data.createServiceFromTemplate.id);
+          });
+      }
+    );
+  };
+  // ***** end section Create Service From Template *****
+
   return {
     resources,
     projectConfigurationResource,
@@ -392,6 +427,9 @@ const useResources = (
     updateCodeGeneratorVersion,
     loadingUpdateCodeGeneratorVersion,
     errorUpdateCodeGeneratorVersion,
+    createServiceFromTemplate,
+    loadingCreateServiceFromTemplate,
+    errorCreateServiceFromTemplate,
   };
 };
 

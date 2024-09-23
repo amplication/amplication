@@ -122,6 +122,9 @@ const WorkspaceLayout: React.FC<Props> = ({
     updateCodeGeneratorVersion,
     loadingUpdateCodeGeneratorVersion,
     errorUpdateCodeGeneratorVersion,
+    createServiceFromTemplate,
+    loadingCreateServiceFromTemplate,
+    errorCreateServiceFromTemplate,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
   useEffect(() => {
@@ -227,6 +230,9 @@ const WorkspaceLayout: React.FC<Props> = ({
         updateCodeGeneratorVersion,
         loadingUpdateCodeGeneratorVersion,
         errorUpdateCodeGeneratorVersion,
+        createServiceFromTemplate,
+        loadingCreateServiceFromTemplate,
+        errorCreateServiceFromTemplate,
       }}
     >
       <AssistantContextProvider>

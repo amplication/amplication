@@ -204,3 +204,13 @@ export const UPDATE_RESOURCE = gql`
     }
   }
 `;
+
+export const CREATE_SERVICE_FROM_TEMPLATE = gql`
+  mutation createServiceFromTemplate($data: ServiceFromTemplateCreateInput!) {
+    createServiceFromTemplate(data: $data) {
+      id
+      name
+      description
+    }
+  }
+`;

@@ -66,6 +66,11 @@ export interface AppContextInterface {
   updateCodeGeneratorVersion: (input: TUpdateCodeGeneratorVersion) => void;
   loadingUpdateCodeGeneratorVersion: boolean;
   errorUpdateCodeGeneratorVersion: ApolloError | undefined;
+  createServiceFromTemplate: (
+    data: models.ServiceFromTemplateCreateInput
+  ) => void;
+  loadingCreateServiceFromTemplate: boolean;
+  errorCreateServiceFromTemplate: Error | undefined;
 }
 
 const initialContext: AppContextInterface = {
@@ -137,6 +142,9 @@ const initialContext: AppContextInterface = {
   updateCodeGeneratorVersion: (input: TUpdateCodeGeneratorVersion) => {},
   loadingUpdateCodeGeneratorVersion: false,
   errorUpdateCodeGeneratorVersion: undefined,
+  createServiceFromTemplate: () => {},
+  loadingCreateServiceFromTemplate: false,
+  errorCreateServiceFromTemplate: undefined,
 };
 
 export const AppContext =
