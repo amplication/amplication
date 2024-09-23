@@ -3,11 +3,7 @@ import { ServiceSettings, UpdateServiceSettingsArgs } from "./dto";
 import { FindOneArgs } from "../../dto";
 import { BlockService } from "../block/block.service";
 import { EnumBlockType } from "../../enums/EnumBlockType";
-import {
-  DEFAULT_SERVICE_SETTINGS,
-  ServiceSettingsValues,
-  ServiceSettingsValuesExtended,
-} from "./constants";
+import { DEFAULT_SERVICE_SETTINGS, ServiceSettingsValues } from "./constants";
 import { User } from "../../models";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
 import { ServiceSettingsUpdateInput } from "./dto/ServiceSettingsUpdateInput";
@@ -164,10 +160,6 @@ export class ServiceSettingsService {
   ): Promise<ServiceSettings> {
     const defaultSettings = DEFAULT_SERVICE_SETTINGS;
 
-    // if (serviceSettings)
-    //   // for backwards compatibility, we need to update the service settings with the new field (generateServer)
-    //   this.updateServiceGenerationSettings(settings, serviceSettings);
-
     const mergedSettings = merge(defaultSettings, serviceSettings);
 
     return this.blockService.create<ServiceSettings>(
@@ -184,29 +176,5 @@ export class ServiceSettingsService {
       },
       user.id
     );
-  }
-  private updateServiceGenerationSettings(
-    settings: ServiceSettingsValuesExtended,
-    serviceSettings: ServiceSettingsUpdateInput
-  ): void {
-    const { generateAdminUI, adminUIPath } = serviceSettings.adminUISettings;
-    const {
-      generateGraphQL,
-      generateRestApi,
-      generateServer = true,
-      serverPath,
-    } = serviceSettings.serverSettings;
-
-    (settings.adminUISettings = {
-      generateAdminUI: generateAdminUI,
-      adminUIPath: adminUIPath,
-    }),
-      (settings.serverSettings = {
-        generateGraphQL,
-        generateRestApi,
-        generateServer,
-        serverPath,
-      }),
-      (settings.authEntityName = serviceSettings.authEntityName);
   }
 }

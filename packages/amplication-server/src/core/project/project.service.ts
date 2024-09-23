@@ -417,26 +417,14 @@ export class ProjectService {
 
     let changedEntities: EntityPendingChange[] = [];
     let changedBlocks: BlockPendingChange[] = [];
-    if (skipBuild) {
-      changedBlocks =
-        await this.blockService.getChangedBlocksForCustomActionsMigration(
-          projectId,
-          userId
-        );
-    } else {
-      [changedEntities, changedBlocks] = await Promise.all([
-        this.entityService.getChangedEntities(
-          projectId,
-          resourceTypeGroup,
-          userId
-        ),
-        this.blockService.getChangedBlocks(
-          projectId,
-          resourceTypeGroup,
-          userId
-        ),
-      ]);
-    }
+    [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedEntities(
+        projectId,
+        resourceTypeGroup,
+        userId
+      ),
+      this.blockService.getChangedBlocks(projectId, resourceTypeGroup, userId),
+    ]);
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
