@@ -75,7 +75,7 @@ const CreateServiceWizard: React.FC<Props> = ({
     createServiceWithEntitiesResult: createResult,
     addBlock,
   } = useContext(AppContext);
-  const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: true });
+  const { baseUrl } = useProjectBaseUrl();
 
   const {
     createServiceTemplate,
@@ -212,6 +212,10 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const createResource = useCallback(
     (activeIndex: number, values: ResourceSettings) => {
+      if (activeIndex !== flowSettings.submitFormIndex) {
+        return;
+      }
+
       const {
         serviceName,
         generateAdminUI,
@@ -231,12 +235,16 @@ const CreateServiceWizard: React.FC<Props> = ({
 
       const kebabCaseServiceName = kebabCase(serviceName);
 
-      const serverDir =
-        structureType === "Mono" ? `${baseDir}/${kebabCaseServiceName}` : "";
-      const adminDir =
-        structureType === "Mono"
-          ? `${baseDir}/${kebabCaseServiceName}-admin`
-          : "";
+      const serverDir = isServiceTemplateFlow
+        ? `${baseDir}/{{SERVICE_NAME}}`
+        : structureType === "Mono"
+        ? `${baseDir}/${kebabCaseServiceName}`
+        : "";
+      const adminDir = isServiceTemplateFlow
+        ? `${baseDir}/{{SERVICE_NAME}}-admin`
+        : structureType === "Mono"
+        ? `${baseDir}/${kebabCaseServiceName}-admin`
+        : "";
 
       if (currentProject) {
         const pluginIds: string[] = [databaseType];

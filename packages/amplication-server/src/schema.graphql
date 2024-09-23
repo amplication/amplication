@@ -1996,6 +1996,7 @@ type Resource {
   project: Project
   projectId: String
   resourceType: EnumResourceType!
+  serviceTemplate: Resource
   updatedAt: DateTime!
 }
 
@@ -2162,6 +2163,7 @@ type ServiceSettings implements IBlock {
   parentBlockId: String
   resourceId: String
   serverSettings: ServerSettings!
+  serviceTemplateVersion: ServiceTemplateVersion
   updatedAt: DateTime!
   versionNumber: Float!
 }
@@ -2178,6 +2180,11 @@ input ServiceSettingsUpdateInput {
 input ServiceTemplateCreateInput {
   plugins: PluginInstallationsCreateInput
   resource: ResourceCreateInput!
+}
+
+type ServiceTemplateVersion {
+  serviceTemplateId: String!
+  version: String!
 }
 
 type ServiceTopics implements IBlock {

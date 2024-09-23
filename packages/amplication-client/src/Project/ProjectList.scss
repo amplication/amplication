@@ -3,7 +3,7 @@
 .project-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: var(--default-spacing);
+  gap: var(--double-spacing);
 
   .project-card {
     height: 200px;

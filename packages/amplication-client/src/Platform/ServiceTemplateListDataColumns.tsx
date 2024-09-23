@@ -17,7 +17,7 @@ export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
     key: "resourceType",
     name: "Type",
-    width: 50,
+    width: 60,
     renderCell: (props) => {
       return <ResourceCircleBadge type={props.row.resourceType} size="small" />;
     },

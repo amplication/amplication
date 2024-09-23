@@ -94,11 +94,13 @@ const ResourceOverview = () => {
     <PageContent pageTitle={PAGE_TITLE}>
       <FlexItem>
         <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
-          {currentResource?.resourceType === EnumResourceType.Service && (
-            <AddResourceFunctionalityButton
-              availableCategories={availableCategories}
-            />
-          )}
+          {currentResource?.resourceType === EnumResourceType.Service ||
+            (currentResource?.resourceType ===
+              EnumResourceType.ServiceTemplate && (
+              <AddResourceFunctionalityButton
+                availableCategories={availableCategories}
+              />
+            ))}
         </FlexItem.FlexEnd>
       </FlexItem>
 
@@ -126,7 +128,9 @@ const ResourceOverview = () => {
             <Text textStyle={EnumTextStyle.Description}>
               {currentResource?.description}
             </Text>
-            <AppGitStatusPanel resource={currentResource} />
+            {currentResource?.resourceType === EnumResourceType.Service && (
+              <AppGitStatusPanel resource={currentResource} />
+            )}
           </FlexItem.FlexStart>
           {currentResource?.resourceType === EnumResourceType.Service && (
             <FlexItem.FlexEnd>
@@ -163,6 +167,17 @@ const ResourceOverview = () => {
           )}
         </FlexItem>
       </Panel>
+
+      {currentResource?.resourceType === EnumResourceType.ServiceTemplate && (
+        <>
+          {!pluginsDataLoading && (
+            <PluginsTile
+              usedCategories={usedCategories}
+              availableCategories={availableCategories}
+            />
+          )}
+        </>
+      )}
 
       {currentResource?.resourceType === EnumResourceType.Service && (
         <>
