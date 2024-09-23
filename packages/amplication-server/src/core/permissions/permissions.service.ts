@@ -221,6 +221,12 @@ export class PermissionsService {
       const matching = await this.prisma.build.count(checkByResourceParameters);
       return matching === 1;
     }
+    if (originType === AuthorizableOriginParameter.ResourceVersionId) {
+      const matching = await this.prisma.resourceVersion.count(
+        checkByResourceParameters
+      );
+      return matching === 1;
+    }
     if (originType === AuthorizableOriginParameter.UserActionId) {
       const matching = await this.prisma.userAction.count(
         checkByResourceParameters

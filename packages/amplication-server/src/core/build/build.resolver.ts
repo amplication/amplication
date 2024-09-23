@@ -79,17 +79,4 @@ export class BuildResolver {
   status(@Parent() build: Build): Promise<EnumBuildStatus> {
     return this.service.calcBuildStatus(build.id);
   }
-
-  @Mutation(() => Build)
-  @InjectContextValue(
-    InjectableOriginParameter.UserId,
-    "data.createdBy.connect.id"
-  )
-  @AuthorizeContext(
-    AuthorizableOriginParameter.ResourceId,
-    "data.resource.connect.id"
-  )
-  async createBuild(@Args() args: CreateBuildArgs): Promise<Build> {
-    return this.service.create(args);
-  }
 }

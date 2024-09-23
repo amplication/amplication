@@ -1004,4 +1004,35 @@ export class BlockService {
       },
     });
   }
+
+  async getLatestVersions(args: {
+    where: Prisma.BlockWhereInput;
+  }): Promise<Block[]> {
+    const blocks = await this.prisma.block.findMany({
+      where: {
+        ...args.where,
+        resourceId: args.where.resourceId,
+        deletedAt: null,
+      },
+      include: {
+        versions: {
+          where: {
+            versionNumber: {
+              not: CURRENT_VERSION_NUMBER,
+            },
+          },
+          take: 1,
+          orderBy: {
+            versionNumber: Prisma.SortOrder.desc,
+          },
+        },
+        parentBlock: true,
+      },
+    });
+
+    return (await blocks).map((block) => {
+      const [version] = block.versions;
+      return this.versionToIBlock({ ...version, block });
+    });
+  }
 }

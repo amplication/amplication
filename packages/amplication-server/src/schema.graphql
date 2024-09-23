@@ -246,12 +246,6 @@ type Build {
   version: String!
 }
 
-input BuildCreateInput {
-  commit: WhereParentIdInput!
-  message: String!
-  resource: WhereParentIdInput!
-}
-
 input BuildOrderByInput {
   createdAt: SortOrder
   id: SortOrder
@@ -1414,7 +1408,6 @@ type Mutation {
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
-  createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
   createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
@@ -1909,6 +1902,8 @@ type Query {
   resource(where: WhereUniqueInput!): Resource
   resourceRole(version: Float, where: WhereUniqueInput!): ResourceRole
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
+  resourceVersion(where: WhereUniqueInput!): ResourceVersion!
+  resourceVersions(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): [ResourceVersion!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
   serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
@@ -2100,6 +2095,37 @@ input ResourceUpdateInput {
   description: String
   gitRepositoryOverride: Boolean
   name: String
+}
+
+type ResourceVersion {
+  commit: Commit
+  commitId: String!
+  createdAt: DateTime!
+  createdBy: User
+  id: String!
+  message: String
+  resource: Resource
+  resourceId: String!
+  userId: String!
+  version: String!
+}
+
+input ResourceVersionOrderByInput {
+  createdAt: SortOrder
+  id: SortOrder
+  message: SortOrder
+  userId: SortOrder
+  version: SortOrder
+}
+
+input ResourceVersionWhereInput {
+  commit: WhereUniqueInput
+  createdAt: DateTimeFilter
+  createdBy: WhereUniqueInput
+  id: StringFilter
+  message: StringFilter
+  resource: WhereUniqueInput!
+  version: StringFilter
 }
 
 input ResourceWhereInput {
