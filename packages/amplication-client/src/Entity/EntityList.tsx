@@ -17,7 +17,7 @@ import {
 } from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, match, useLocation } from "react-router-dom";
+import { Link, match } from "react-router-dom";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import * as models from "../models";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -41,6 +41,7 @@ import { pluralize } from "../util/pluralize";
 import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import EntitiesERD from "./EntityERD/EntitiesERD";
 import "./EntityList.scss";
+import { useUrlQuery } from "../util/useUrlQuery";
 
 type TData = {
   entities: models.Entity[];
@@ -60,10 +61,6 @@ const NAME_FIELD = "displayName";
 const CLASS_NAME = "entity-list";
 
 const POLL_INTERVAL = 30000;
-
-function useUrlQuery() {
-  return new URLSearchParams(useLocation().search);
-}
 
 const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource } = match.params;

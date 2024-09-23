@@ -33,6 +33,7 @@ import "./ResourceList.scss";
 import { RESOURCE_LIST_COLUMNS } from "./ResourceListDataColumns";
 import ResourceListItem from "./ResourceListItem";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import NewServiceFromTemplateDialogWithUrlTrigger from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
@@ -84,6 +85,7 @@ function ResourceList() {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+      <NewServiceFromTemplateDialogWithUrlTrigger />
       <FlexItem
         itemsAlign={EnumItemsAlign.Center}
         contentAlign={EnumContentAlign.Start}
