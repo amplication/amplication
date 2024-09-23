@@ -1,19 +1,21 @@
 import { lazy } from "react";
-import resourceEntitiesRoutes from "./resourceEntitiesRoutes";
-import resourceSettingsRoutes from "./resourceSettingsRoutes";
+import { resourceEntitiesRoutes } from "./resourceEntitiesRoutes";
+import { resourceSettingsRoutes } from "./resourceSettingsRoutes";
 
-const resourceTabRoutes = [
+export const resourceTabRoutes = (projectBasePath) => [
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/entities",
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/entities`,
     Component: lazy(() => import("../Entity/EntityList")),
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
-    routes: resourceEntitiesRoutes,
+    routes: resourceEntitiesRoutes(
+      `${projectBasePath}/:resource([A-Za-z0-9-]{20,})`
+    ),
     isAnalytics: true,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules",
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/modules`,
     Component: lazy(() => import("../Modules/ModulesPage")),
     moduleName: "",
     displayName: "APIs",
@@ -21,7 +23,7 @@ const resourceTabRoutes = [
     exactPath: false,
     routes: [
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})",
+        path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})`,
         Component: lazy(() => import("../Modules/ModuleOverview")),
         moduleName: "",
         routeTrackType: "",
@@ -29,7 +31,7 @@ const resourceTabRoutes = [
         isAnalytics: true,
         routes: [
           {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/edit",
+            path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/edit`,
             Component: lazy(() => import("../Modules/ModulePage")),
             moduleName: "",
             routeTrackType: "",
@@ -38,7 +40,7 @@ const resourceTabRoutes = [
             isAnalytics: true,
           },
           {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/actions",
+            path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/actions`,
             Component: lazy(() => import("../ModuleActions/ModuleActions")),
             moduleName: "",
             routeTrackType: "",
@@ -46,7 +48,7 @@ const resourceTabRoutes = [
             isAnalytics: true,
             routes: [
               {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/actions/:moduleAction([A-Za-z0-9-]{20,})",
+                path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/actions/:moduleAction([A-Za-z0-9-]{20,})`,
                 Component: lazy(() => import("../ModuleActions/ModuleAction")),
                 moduleName: "",
                 routeTrackType: "",
@@ -57,7 +59,7 @@ const resourceTabRoutes = [
             ],
           },
           {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/dtos",
+            path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/dtos`,
             Component: lazy(() => import("../ModuleDto/ModuleDtos")),
             moduleName: "",
             routeTrackType: "",
@@ -65,7 +67,7 @@ const resourceTabRoutes = [
             isAnalytics: true,
             routes: [
               {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/dtos/:moduleDto([A-Za-z0-9-]{20,})",
+                path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/modules/:module([A-Za-z0-9-]{20,})/dtos/:moduleDto([A-Za-z0-9-]{20,})`,
                 Component: lazy(() => import("../ModuleDto/ModuleDto")),
                 moduleName: "",
                 routeTrackType: "",
@@ -80,14 +82,14 @@ const resourceTabRoutes = [
     ],
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/roles",
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/roles`,
     Component: lazy(() => import("../Roles/RolesPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
     routes: [
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/roles/:roleId",
+        path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/roles/:roleId`,
         Component: lazy(() => import("../Roles/Role")),
         moduleName: "",
         routeTrackType: "",
@@ -98,14 +100,14 @@ const resourceTabRoutes = [
     ],
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/topics",
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/topics`,
     Component: lazy(() => import("../Topics/TopicsPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
     routes: [
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/topics/:topicId",
+        path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/topics/:topicId`,
         Component: lazy(() => import("../Topics/Topic")),
         moduleName: "",
         routeTrackType: "",
@@ -116,14 +118,14 @@ const resourceTabRoutes = [
     ],
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/services",
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/services`,
     Component: lazy(() => import("../MessageBrokerServices/ServicesPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/service-connections",
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/service-connections`,
     Component: lazy(
       () => import("../ServiceConnections/ServiceConnectionsPage")
     ),
@@ -132,7 +134,7 @@ const resourceTabRoutes = [
     exactPath: false,
     routes: [
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/service-connections/:connectedResourceId",
+        path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/service-connections/:connectedResourceId`,
         Component: lazy(() => import("../ServiceConnections/ServiceTopics")),
         moduleName: "",
         routeTrackType: "",
@@ -144,7 +146,7 @@ const resourceTabRoutes = [
   },
 
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/git-sync",
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/git-sync`,
     Component: lazy(() => import("../Resource/git/SyncWithGithubPage")),
     moduleName: "",
     routeTrackType: "",
@@ -153,32 +155,33 @@ const resourceTabRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings",
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/settings`,
     Component: lazy(
       () => import("../Resource/resourceSettings/ResourceSettingsPage")
     ),
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
-    routes: resourceSettingsRoutes,
+    routes: resourceSettingsRoutes(
+      `${projectBasePath}/:resource([A-Za-z0-9-]{20,})`
+    ),
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/pending-changes",
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/pending-changes`,
     Component: lazy(() => import("../VersionControl/PendingChangesPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
-    routes: resourceSettingsRoutes,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins",
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/plugins`,
     Component: lazy(() => import("../Plugins/PluginsPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
     routes: [
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins/installed",
+        path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/plugins/installed`,
         Component: lazy(() => import("../Plugins/InstalledPlugins")),
         moduleName: "",
         routeTrackType: "",
@@ -187,7 +190,7 @@ const resourceTabRoutes = [
         isAnalytics: true,
       },
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins/catalog",
+        path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/plugins/catalog`,
         Component: lazy(() => import("../Plugins/PluginsCatalog")),
         moduleName: "",
         routeTrackType: "",
@@ -196,7 +199,7 @@ const resourceTabRoutes = [
         isAnalytics: true,
       },
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins/catalog/:category",
+        path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/plugins/catalog/:category`,
         Component: lazy(() => import("../Plugins/PluginsCatalog")),
         moduleName: "",
         routeTrackType: "",
@@ -205,7 +208,7 @@ const resourceTabRoutes = [
         isAnalytics: true,
       },
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins/installed/:plugin",
+        path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/plugins/installed/:plugin`,
         Component: lazy(() => import("../Plugins/InstalledPluginSettings")),
         moduleName: "",
         moduleClass: "installed-plugin-settings",
@@ -216,35 +219,4 @@ const resourceTabRoutes = [
       },
     ],
   },
-  {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/packages",
-    Component: lazy(() => import("../Resource/resourcePackages/PackagesPage")),
-    moduleName: "",
-    routeTrackType: "",
-    exactPath: false,
-    routes: [
-      {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/packages/installed",
-        Component: lazy(
-          () => import("../Resource/resourcePackages/InstalledPackages")
-        ),
-        moduleName: "",
-        routeTrackType: "",
-        exactPath: true,
-        routes: [],
-        isAnalytics: true,
-      },
-      {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/packages/installed/:package",
-        Component: lazy(() => import("../Resource/resourcePackages/Package")),
-        moduleName: "",
-        routeTrackType: "",
-        exactPath: true,
-        routes: [],
-        isAnalytics: true,
-      },
-    ],
-  },
 ];
-
-export default resourceTabRoutes;

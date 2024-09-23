@@ -10,6 +10,7 @@ import { formatError } from "../util/error";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
 import "./PendingChangesPage.scss";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 const CLASS_NAME = "changes-page";
 const SPLIT = "Split";
@@ -34,8 +35,8 @@ const ChangesPage: React.FC<Props> = ({ match }) => {
   const resourceId = match.params.resource;
   const [splitView, setSplitView] = useState<boolean>(false);
   const pageTitle = "Changes";
-  const { currentProject, currentWorkspace, commitUtils } =
-    useContext(AppContext);
+  const { commitUtils } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
   const commitResourceChanges = commitUtils
     .commitChangesByResource(commitId)
@@ -54,7 +55,7 @@ const ChangesPage: React.FC<Props> = ({ match }) => {
     <>
       <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
         <BackNavigation
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${commitId}`}
+          to={`${baseUrl}/commits/${commitId}`}
           label="Back to Commits"
         />
 

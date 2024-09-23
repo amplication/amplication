@@ -618,6 +618,7 @@ enum EnumResourceType {
   ProjectConfiguration
   MessageBroker
   PluginRepository
+  ServiceTemplate
 }
 
 enum EnumGitProvider {

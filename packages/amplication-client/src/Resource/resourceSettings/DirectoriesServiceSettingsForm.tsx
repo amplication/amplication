@@ -83,7 +83,6 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
                     value={
                       data?.serviceSettings.serverSettings.serverPath || ""
                     }
-                    helpText={data?.serviceSettings.serverSettings.serverPath}
                     labelType="normal"
                   />
                 </>
@@ -98,9 +97,6 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
                       }
                       value={
                         data?.serviceSettings.adminUISettings.adminUIPath || ""
-                      }
-                      helpText={
-                        data?.serviceSettings.adminUISettings.adminUIPath
                       }
                       labelType="normal"
                     />

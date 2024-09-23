@@ -8,6 +8,8 @@ import { AppContext } from "../context/appContext";
 import { gql } from "@apollo/client";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import { formatError } from "../util/error";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import { EnumResourceTypeGroup } from "../models";
 
 const CLASS_NAME = "pending-changes-page";
 const SPLIT = "Split";
@@ -22,11 +24,19 @@ const PendingChangesPage = () => {
   const [splitView, setSplitView] = useState<boolean>(false);
   const pageTitle = "Pending Changes";
   const { currentProject } = useContext(AppContext);
+
+  const { isPlatformConsole } = useProjectBaseUrl();
+
   const {
     pendingChangesByResource,
     pendingChangesDataError,
     pendingChangesIsError,
-  } = usePendingChanges(currentProject);
+  } = usePendingChanges(
+    currentProject,
+    isPlatformConsole
+      ? EnumResourceTypeGroup.Platform
+      : EnumResourceTypeGroup.Services
+  );
 
   const handleChangeType = useCallback(
     (type: string) => {

@@ -1,11 +1,10 @@
-import { Icon, Form } from "@amplication/ui/design-system";
+import { Form, Icon } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import { Formik } from "formik";
 import { isEmpty } from "lodash";
-import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { AppContext } from "../context/appContext";
 import * as models from "../models";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import "./EntityRelationFieldsChart.scss";
 
 export type FormValues = {
@@ -40,7 +39,8 @@ export const EntityRelationFieldsChart = ({
   };
 
   const relatedFieldIsMissing = isEmpty(field.properties.relatedFieldId);
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   return (
     <Formik
@@ -56,17 +56,13 @@ export const EntityRelationFieldsChart = ({
           key={field.id}
         >
           <div className={`${CLASS_NAME}__entity`}>
-            <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityId}`}
-            >
+            <Link to={`${baseUrl}/entities/${entityId}`}>
               <Icon icon="entity_outline" />
               {entityName}
             </Link>
           </div>
           <div className={`${CLASS_NAME}__field`}>
-            <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityId}`}
-            >
+            <Link to={`${baseUrl}/entities/${entityId}`}>
               {field.displayName}
             </Link>
           </div>
@@ -91,7 +87,7 @@ export const EntityRelationFieldsChart = ({
           </div>
           <div className={`${CLASS_NAME}__entity`}>
             <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${field.properties.relatedEntityId}`}
+              to={`${baseUrl}/entities/${field.properties.relatedEntityId}`}
             >
               <Icon icon="entity_outline" />
               {relatedEntityName}
@@ -101,13 +97,13 @@ export const EntityRelationFieldsChart = ({
             {relatedFieldIsMissing ? (
               <Link
                 className={`${CLASS_NAME}__field__textbox`}
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/fix-related-entities`}
+                to={`${baseUrl}/fix-related-entities`}
               >
                 Fix it
               </Link>
             ) : (
               <Link
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${field.properties.relatedEntityId}/fields/${relatedField?.id}`}
+                to={`${baseUrl}/entities/${field.properties.relatedEntityId}/fields/${relatedField?.id}`}
               >
                 {relatedField?.displayName}
               </Link>

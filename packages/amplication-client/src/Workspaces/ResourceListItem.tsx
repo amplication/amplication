@@ -1,5 +1,3 @@
-import { useCallback, useContext } from "react";
-
 import * as models from "../models";
 
 import {
@@ -15,7 +13,7 @@ import {
 } from "@amplication/ui/design-system";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
-import { AppContext } from "../context/appContext";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import DeleteResourceButton from "./DeleteResourceButton";
 import ResourceGitRepo from "./ResourceGitRepo";
 import ResourceLastBuild from "./ResourceLastBuild";
@@ -26,11 +24,12 @@ type Props = {
 };
 
 function ResourceListItem({ resource }: Props) {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
   const { id, name, description } = resource;
 
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: id });
+
   return (
-    <ListItem to={`/${currentWorkspace?.id}/${currentProject?.id}/${id}`}>
+    <ListItem to={`${baseUrl}`}>
       <FlexItem
         margin={EnumFlexItemMargin.Bottom}
         start={<ResourceCircleBadge type={resource.resourceType} />}

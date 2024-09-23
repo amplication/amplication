@@ -8,12 +8,13 @@ import ResourceLastBuild from "./ResourceLastBuild";
 import ResourceNameLink from "./ResourceNameLink";
 import ResourceLastBuildVersion from "./ResourceLastBuildVersion";
 import { DataGridColumn } from "@amplication/ui/design-system";
+import ServiceTemplateChip from "../Platform/ServiceTemplateChip";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
     key: "resourceType",
     name: "Type",
-    width: 50,
+    width: 60,
     renderCell: (props) => {
       return <ResourceCircleBadge type={props.row.resourceType} size="small" />;
     },
@@ -57,6 +58,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
     key: "description",
     name: "Description",
+    width: 200,
     renderCell: (props) => {
       return (
         <Text textStyle={EnumTextStyle.Description}>
@@ -94,10 +96,22 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     getValue: (row) => row.builds[0]?.codeGeneratorVersion ?? "",
   },
   {
+    key: "template",
+    name: "Template",
+    sortable: true,
+    width: 150,
+    renderCell: (props) => {
+      return (
+        <ServiceTemplateChip serviceTemplate={props.row.serviceTemplate} />
+      );
+    },
+    getValue: (row) => (row.serviceTemplate ? row.serviceTemplate.name : ""),
+    resizable: true,
+  },
+  {
     key: "actions",
     name: "Actions",
     sortable: false,
-    width: 150,
     renderCell: (props) => {
       return <DeleteResourceButton resource={props.row} />;
     },

@@ -28,6 +28,7 @@ import usePlugins from "./hooks/usePlugins";
 import { PluginVersion } from "./hooks/usePluginCatalog";
 import "./InstalledPluginSettings.scss";
 import { PluginLogo } from "./PluginLogo";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -43,8 +44,9 @@ const InstalledPluginSettings: React.FC<Props> = ({
   moduleClass,
 }: Props) => {
   const { plugin: pluginInstallationId } = match.params;
-  const { currentProject, currentWorkspace, currentResource } =
-    useContext(AppContext);
+  const { currentResource } = useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl();
+
   const editorRef: React.MutableRefObject<string | null> = useRef();
   const [isValid, setIsValid] = useState<boolean>(true);
   const [configurations, setConfiguration] =
@@ -165,7 +167,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
     <div className={moduleClass}>
       <div className={`${moduleClass}__row`}>
         <BackNavigation
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource.id}/plugins/installed`}
+          to={`${baseUrl}/plugins/installed`}
           label="Back to Plugins"
         />
       </div>

@@ -6,6 +6,8 @@ import PrivatePlugin from "./PrivatePlugin";
 import { PrivatePluginList } from "./PrivatePluginList";
 import { AppRouteProps } from "../routes/routesUtil";
 import { useAppContext } from "../context/appContext";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -14,18 +16,16 @@ type Props = AppRouteProps & {
 };
 
 const PrivatePluginsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
-  const {
-    pluginRepositoryResource,
-    loadingResources,
-    currentWorkspace,
-    currentProject,
-  } = useAppContext();
+  const { pluginRepositoryResource, loadingResources } = useAppContext();
   const history = useHistory();
 
+  const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: true });
+
   const pageTitle = "Private Plugins";
+  useBreadcrumbs(pageTitle, match.url);
 
   const privatePluginMatch = useRouteMatch<{ privatePluginId: string }>(
-    "/:workspace/:project/private-plugins/:privatePluginId"
+    "/:workspace/platform/:project/private-plugins/:privatePluginId"
   );
 
   let privatePluginId = null;
@@ -36,17 +36,9 @@ const PrivatePluginsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
   useEffect(() => {
     if (loadingResources) return;
     if (!pluginRepositoryResource) {
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/create-plugin-repository`
-      );
+      history.push(`${baseUrl}/create-plugin-repository`);
     }
-  }, [
-    currentProject?.id,
-    currentWorkspace?.id,
-    history,
-    loadingResources,
-    pluginRepositoryResource,
-  ]);
+  }, [baseUrl, history, loadingResources, pluginRepositoryResource]);
 
   return (
     <PageContent

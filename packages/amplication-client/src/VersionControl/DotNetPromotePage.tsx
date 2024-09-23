@@ -23,6 +23,7 @@ import "./DotnetPromotePage.scss";
 import { EnumSubscriptionStatus } from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 const CLASS_NAME = "dotnet-promote-page";
 const eventOriginLocationName = "dotnet-promote-page";
@@ -30,6 +31,7 @@ const eventOriginLocationName = "dotnet-promote-page";
 const DotNetPromotePage = () => {
   const { currentWorkspace, currentProject } = useAppContext();
   const { trackEvent } = useTracking();
+  const { baseUrl } = useProjectBaseUrl();
 
   const { handleContactUsClick } = useContactUs({
     actionName: "Contact Us",
@@ -39,8 +41,8 @@ const DotNetPromotePage = () => {
   const history = useHistory();
 
   const handleCloseClicked = useCallback(() => {
-    history.push(`/${currentWorkspace?.id}/${currentProject?.id}`);
-  }, [history, currentProject, currentWorkspace]);
+    history.push(`${baseUrl}`);
+  }, [history, baseUrl]);
 
   const handleUpgradeClick = useCallback(() => {
     window.open(`/${currentWorkspace?.id}/purchase`, "_blank");

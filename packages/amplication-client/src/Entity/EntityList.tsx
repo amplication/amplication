@@ -16,8 +16,8 @@ import {
   Toggle,
 } from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Link, match, useLocation } from "react-router-dom";
+import React, { useCallback, useEffect, useState } from "react";
+import { Link, match } from "react-router-dom";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import * as models from "../models";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -36,11 +36,12 @@ import {
   LicensedResourceType,
 } from "../Components/LicenseIndicatorContainer";
 import usePlugins from "../Plugins/hooks/usePlugins";
-import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import { pluralize } from "../util/pluralize";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import EntitiesERD from "./EntityERD/EntitiesERD";
 import "./EntityList.scss";
+import { useUrlQuery } from "../util/useUrlQuery";
 
 type TData = {
   entities: models.Entity[];
@@ -61,10 +62,6 @@ const CLASS_NAME = "entity-list";
 
 const POLL_INTERVAL = 30000;
 
-function useUrlQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-
 const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource } = match.params;
   const [error, setError] = useState<Error>();
@@ -73,8 +70,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const [newEntity, setNewEntity] = useState<boolean>(false);
   const { pluginInstallations } = usePlugins(resource);
 
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl();
 
   const query = useUrlQuery();
   const view = query.get("view");
@@ -219,9 +215,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 reversePosition={true}
                 render={(props) => {
                   return (
-                    <Link
-                      to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
-                    >
+                    <Link to={`${baseUrl}/entities/import-schema`}>
                       <Button
                         disabled={props.disabled}
                         className={`${CLASS_NAME}__install`}

@@ -28,6 +28,7 @@ import "./EntityListItem.scss";
 import { USER_ENTITY } from "./constants";
 import useModule from "../Modules/hooks/useModule";
 import { DATE_CREATED_FIELD } from "../Modules/ModuleNavigationList";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -59,11 +60,13 @@ export const EntityListItem = ({
   relatedEntities,
   isUserEntityMandatory,
 }: Props) => {
-  const { addEntity, currentWorkspace, currentProject } =
-    useContext(AppContext);
+  const { addEntity } = useContext(AppContext);
   const history = useHistory();
 
   const { resourceSettings } = useResource(resourceId);
+
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
+
   const { findModuleRefetch } = useModule();
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
@@ -152,10 +155,8 @@ export const EntityListItem = ({
   ]);
 
   const handleRowClick = useCallback(() => {
-    history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}`
-    );
-  }, [history, resourceId, entity, currentWorkspace, currentProject]);
+    history.push(`${baseUrl}/entities/${entity.id}`);
+  }, [history, entity, baseUrl]);
 
   const [latestVersion] = entity.versions || [];
 
@@ -205,7 +206,7 @@ export const EntityListItem = ({
             >
               <Link
                 title={entity.displayName}
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}`}
+                to={`${baseUrl}/entities/${entity.id}`}
               >
                 <FlexItem gap={EnumGapSize.Small}>
                   <Icon icon="entity_outline" size="xsmall" />

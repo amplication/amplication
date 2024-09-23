@@ -1,10 +1,8 @@
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 
-import { EnumTextColor } from "@amplication/ui/design-system";
-
-import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 
 type Props = {
@@ -13,7 +11,7 @@ type Props = {
 
 function ViewCodeViewTile({ resourceId }: Props) {
   const { trackEvent } = useTracking();
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
   const handleClick = useCallback(() => {
     trackEvent({ eventName: AnalyticsEventNames.CodeViewTileClick });
@@ -25,7 +23,7 @@ function ViewCodeViewTile({ resourceId }: Props) {
       title="Code View"
       message="Amplication generates the code automatically. You can use the 'Code View' page to view and explore the generated code."
       onClick={handleClick}
-      to={`/${currentWorkspace?.id}/${currentProject?.id}/code-view`}
+      to={`${baseUrl}/code-view`}
     />
   );
 }

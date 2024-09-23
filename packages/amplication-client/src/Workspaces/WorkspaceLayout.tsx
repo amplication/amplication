@@ -28,10 +28,11 @@ import useCommits from "../VersionControl/hooks/useCommits";
 import RedeemCoupon from "../User/RedeemCoupon";
 import PendingChanges from "../VersionControl/PendingChanges";
 import LastCommit from "../VersionControl/LastCommit";
-import { EnumSubscriptionStatus } from "../models";
+import { EnumResourceTypeGroup, EnumSubscriptionStatus } from "../models";
 import Assistant from "../Assistant/Assistant";
 import ResponsiveContainer from "../Components/ResponsiveContainer";
 import { AssistantContextProvider } from "../Assistant/context/AssistantContext";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -73,6 +74,8 @@ const WorkspaceLayout: React.FC<Props> = ({
     currentProjectConfiguration,
   } = useProjectSelector(authenticated, currentWorkspace);
 
+  const { isPlatformConsole } = useProjectBaseUrl();
+
   const {
     pendingChanges,
     commitRunning,
@@ -85,7 +88,12 @@ const WorkspaceLayout: React.FC<Props> = ({
     setPendingChangesError,
     resetPendingChangesIndicator,
     setResetPendingChangesIndicator,
-  } = usePendingChanges(currentProject);
+  } = usePendingChanges(
+    currentProject,
+    isPlatformConsole
+      ? EnumResourceTypeGroup.Platform
+      : EnumResourceTypeGroup.Services
+  );
 
   const commitUtils = useCommits(currentProject?.id);
 
@@ -98,7 +106,6 @@ const WorkspaceLayout: React.FC<Props> = ({
     errorResources,
     reloadResources,
     currentResource,
-    setResource,
     createService,
     loadingCreateService,
     errorCreateService,
@@ -115,6 +122,9 @@ const WorkspaceLayout: React.FC<Props> = ({
     updateCodeGeneratorVersion,
     loadingUpdateCodeGeneratorVersion,
     errorUpdateCodeGeneratorVersion,
+    createServiceFromTemplate,
+    loadingCreateServiceFromTemplate,
+    errorCreateServiceFromTemplate,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
   useEffect(() => {
@@ -191,7 +201,6 @@ const WorkspaceLayout: React.FC<Props> = ({
         loadingCreateService,
         errorCreateService,
         currentResource,
-        setResource,
         pendingChanges,
         commitRunning,
         pendingChangesIsError,
@@ -221,6 +230,9 @@ const WorkspaceLayout: React.FC<Props> = ({
         updateCodeGeneratorVersion,
         loadingUpdateCodeGeneratorVersion,
         errorUpdateCodeGeneratorVersion,
+        createServiceFromTemplate,
+        loadingCreateServiceFromTemplate,
+        errorCreateServiceFromTemplate,
       }}
     >
       <AssistantContextProvider>
@@ -253,7 +265,7 @@ const WorkspaceLayout: React.FC<Props> = ({
                     {currentProject ? (
                       <div className={`${moduleClass}__changes_menu`}>
                         <PendingChanges projectId={currentProject.id} />
-                        {commitUtils.lastCommit && (
+                        {!isPlatformConsole && commitUtils.lastCommit && (
                           <LastCommit lastCommit={commitUtils.lastCommit} />
                         )}
                       </div>

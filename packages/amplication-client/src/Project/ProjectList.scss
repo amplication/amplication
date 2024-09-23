@@ -1,0 +1,25 @@
+@import "../style/index.scss";
+
+.project-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: var(--double-spacing);
+
+  .project-card {
+    height: 200px;
+    border-radius: var(--default-border-radius);
+    margin-bottom: 0;
+
+    &__content {
+      height: 100%;
+    }
+    &__title {
+      flex: 0;
+    }
+
+    &__actions-bar {
+      margin-top: auto;
+      width: 100%;
+    }
+  }
+}

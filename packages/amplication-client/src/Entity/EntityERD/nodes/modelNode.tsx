@@ -1,17 +1,16 @@
-import { memo, type FC, useContext } from "react";
+import { memo, type FC } from "react";
 import { Handle, Position } from "reactflow";
 
-import * as models from "../../../models";
-import { CLASS_NAME } from "../EntitiesERD";
-import { AppContext } from "../../../context/appContext";
-import { Link } from "react-router-dom";
 import { Icon } from "@amplication/ui/design-system";
+import { Link } from "react-router-dom";
+import * as models from "../../../models";
+import { useResourceBaseUrl } from "../../../util/useResourceBaseUrl";
+import { CLASS_NAME } from "../EntitiesERD";
 interface ModelProps {
   data: models.Entity;
 }
 const ModelNode: FC<ModelProps> = memo(({ data }) => {
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl();
   return (
     <div
       className={`${CLASS_NAME}__node_container`}
@@ -23,7 +22,7 @@ const ModelNode: FC<ModelProps> = memo(({ data }) => {
         {data.displayName}
         <Link
           className={`${CLASS_NAME}__display_icon`}
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/${data.id}`}
+          to={`${baseUrl}/entities/${data.id}`}
         >
           <Icon icon="edit_2" size="small" />
         </Link>

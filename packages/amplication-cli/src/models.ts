@@ -345,6 +345,7 @@ export type CommitCreateInput = {
    *       If the commit strategy is Specific, it will be an array with one element.
    */
   resourceIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  resourceTypeGroup: EnumResourceTypeGroup;
 };
 
 export type CommitOrderByInput = {
@@ -358,6 +359,7 @@ export type CommitWhereInput = {
   id?: InputMaybe<StringFilter>;
   message?: InputMaybe<StringFilter>;
   project: WhereUniqueInput;
+  resourceTypeGroup: EnumResourceTypeGroup;
   user?: InputMaybe<WhereUniqueInput>;
 };
 
@@ -959,7 +961,8 @@ export enum EnumResourceType {
   MessageBroker = 'MessageBroker',
   PluginRepository = 'PluginRepository',
   ProjectConfiguration = 'ProjectConfiguration',
-  Service = 'Service'
+  Service = 'Service',
+  ServiceTemplate = 'ServiceTemplate'
 }
 
 export type EnumResourceTypeFilter = {
@@ -968,6 +971,11 @@ export type EnumResourceTypeFilter = {
   not?: InputMaybe<EnumResourceType>;
   notIn?: InputMaybe<Array<EnumResourceType>>;
 };
+
+export enum EnumResourceTypeGroup {
+  Platform = 'Platform',
+  Services = 'Services'
+}
 
 export enum EnumSchemaNames {
   Abby = 'Abby',
@@ -1451,6 +1459,8 @@ export type Mutation = {
   createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
   createService: Resource;
+  createServiceFromTemplate: Resource;
+  createServiceTemplate: Resource;
   createServiceTopics: ServiceTopics;
   createServiceWithEntities: ResourceCreateWithEntitiesResult;
   createTopic: Topic;
@@ -1693,6 +1703,16 @@ export type MutationCreateResourceRoleArgs = {
 
 export type MutationCreateServiceArgs = {
   data: ResourceCreateInput;
+};
+
+
+export type MutationCreateServiceFromTemplateArgs = {
+  data: ServiceFromTemplateCreateInput;
+};
+
+
+export type MutationCreateServiceTemplateArgs = {
+  data: ServiceTemplateCreateInput;
 };
 
 
@@ -2146,10 +2166,12 @@ export type PendingChangeOrigin = Block | Entity;
 
 export type PendingChangesDiscardInput = {
   project: WhereParentIdInput;
+  resourceTypeGroup: EnumResourceTypeGroup;
 };
 
 export type PendingChangesFindInput = {
   project: WhereUniqueInput;
+  resourceTypeGroup: EnumResourceTypeGroup;
 };
 
 export type PluginInstallation = IBlock & {
@@ -2450,6 +2472,7 @@ export type Query = {
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
+  serviceTemplates: Array<Resource>;
   serviceTopics?: Maybe<ServiceTopics>;
   serviceTopicsList: Array<ServiceTopics>;
   topic?: Maybe<Topic>;
@@ -2519,7 +2542,7 @@ export type QueryCommitsArgs = {
   orderBy?: InputMaybe<CommitOrderByInput>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<CommitWhereInput>;
+  where: CommitWhereInput;
 };
 
 
@@ -2727,6 +2750,14 @@ export type QueryServiceSettingsArgs = {
 };
 
 
+export type QueryServiceTemplatesArgs = {
+  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ResourceWhereInput>;
+};
+
+
 export type QueryServiceTopicsArgs = {
   where: WhereUniqueInput;
 };
@@ -2835,6 +2866,7 @@ export type Resource = {
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;
   resourceType: EnumResourceType;
+  serviceTemplate?: Maybe<Resource>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -2992,6 +3024,13 @@ export type ServerSettingsUpdateInput = {
   serverPath?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type ServiceFromTemplateCreateInput = {
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  project: WhereParentIdInput;
+  serviceTemplate: WhereUniqueInput;
+};
+
 export type ServiceSettings = IBlock & {
   adminUISettings: AdminUiSettings;
   authEntityName?: Maybe<Scalars['String']['output']>;
@@ -3010,6 +3049,7 @@ export type ServiceSettings = IBlock & {
   parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
   serverSettings: ServerSettings;
+  serviceTemplateVersion?: Maybe<ServiceTemplateVersion>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
 };
@@ -3021,6 +3061,16 @@ export type ServiceSettingsUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   serverSettings: ServerSettingsUpdateInput;
+};
+
+export type ServiceTemplateCreateInput = {
+  plugins?: InputMaybe<PluginInstallationsCreateInput>;
+  resource: ResourceCreateInput;
+};
+
+export type ServiceTemplateVersion = {
+  serviceTemplateId: Scalars['String']['output'];
+  version: Scalars['String']['output'];
 };
 
 export type ServiceTopics = IBlock & {

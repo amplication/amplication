@@ -1,0 +1,23 @@
+@import "../style/index.scss";
+
+$image-height: 130px;
+$dropdown-max-height: 150px;
+
+.new-service-from-template {
+  @include modalForm;
+  .svg-theme-image {
+    height: $image-height;
+  }
+  &__dialog_btn {
+    display: flex;
+    gap: 20px;
+  }
+
+  .select-field {
+    max-width: none;
+
+    &__menu-list {
+      max-height: $dropdown-max-height;
+    }
+  }
+}

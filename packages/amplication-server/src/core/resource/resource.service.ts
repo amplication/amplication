@@ -44,7 +44,6 @@ import {
   CreateBulkFieldsInput,
   EntityService,
 } from "../entity/entity.service";
-import { EnvironmentService } from "../environment/environment.service";
 import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { ProjectService } from "../project/project.service";
@@ -75,6 +74,7 @@ import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { GitProviderService } from "../git/git.provider.service";
 import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings";
+import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -139,6 +139,7 @@ const RESOURCE_TYPE_TO_EVENT_TYPE: {
   [EnumResourceType.MessageBroker]: EnumEventType.MessageBrokerCreate,
   [EnumResourceType.ProjectConfiguration]: EnumEventType.UnknownEvent,
   [EnumResourceType.PluginRepository]: EnumEventType.PluginRepositoryCreate,
+  [EnumResourceType.ServiceTemplate]: EnumEventType.ServiceTemplateCreate,
 };
 
 type CodeGeneratorName = "NodeJS" | "DotNET";
@@ -171,7 +172,6 @@ export class ResourceService {
     private readonly prisma: PrismaService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger,
     private entityService: EntityService,
-    private environmentService: EnvironmentService,
     private serviceSettingsService: ServiceSettingsService,
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
     @Inject(forwardRef(() => ProjectService))
@@ -223,7 +223,7 @@ export class ResourceService {
    * Create a resource
    * This function should be called from one of the other "Create[ResourceType] functions like CreateService, CreateMessageBroker etc."
    */
-  private async createResource(
+  async createResource(
     args: CreateOneResourceArgs,
     user: User,
     updateProjectGitRepository = false
@@ -541,25 +541,12 @@ export class ResourceService {
       updateProjectGitRepository
     );
 
-    await this.prisma.resourceRole.create({
-      data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
-    });
-
-    if (requireAuthenticationEntity) {
-      const [userEntity] = await this.entityService.createDefaultUserEntity(
-        resource.id,
-        user
-      );
-      serviceSettings.authEntityName = userEntity.name;
-    }
-
-    await this.serviceSettingsService.createDefaultServiceSettings(
-      resource.id,
+    await this.createServiceDefaultObjects(
+      resource,
       user,
+      requireAuthenticationEntity,
       serviceSettings
     );
-
-    await this.environmentService.createDefaultEnvironment(resource.id);
 
     const project = await this.projectService.findUnique({
       where: { id: resource.projectId },
@@ -571,6 +558,31 @@ export class ResourceService {
     );
 
     return resource;
+  }
+
+  async createServiceDefaultObjects(
+    service: Resource,
+    user: User,
+    requireAuthenticationEntity: boolean,
+    serviceSettings: ServiceSettingsUpdateInput = null
+  ) {
+    await this.prisma.resourceRole.create({
+      data: { ...USER_RESOURCE_ROLE, resourceId: service.id },
+    });
+
+    if (requireAuthenticationEntity) {
+      const [userEntity] = await this.entityService.createDefaultUserEntity(
+        service.id,
+        user
+      );
+      serviceSettings.authEntityName = userEntity.name;
+    }
+
+    await this.serviceSettingsService.createDefaultServiceSettings(
+      service.id,
+      user,
+      serviceSettings
+    );
   }
 
   async createDefaultAuthEntity(
@@ -669,8 +681,6 @@ export class ResourceService {
     ];
 
     await this.installPlugins(resource.id, plugins, user);
-
-    await this.environmentService.createDefaultEnvironment(resource.id);
 
     const project = await this.projectService.findUnique({
       where: { id: resource.projectId },
@@ -1445,6 +1455,7 @@ export class ResourceService {
         await this.projectService.commit(
           {
             data: {
+              resourceTypeGroup: EnumResourceTypeGroup.Services,
               message: INITIAL_COMMIT_MESSAGE,
               project: {
                 connect: {

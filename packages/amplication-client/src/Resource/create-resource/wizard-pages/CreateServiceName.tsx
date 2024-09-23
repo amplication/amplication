@@ -13,6 +13,7 @@ const CreateServiceName: React.FC<Props> = ({
   moduleClass,
   formik,
   setCurrentCodeGenerator,
+  flowSettings,
 }) => {
   useEffect(() => {
     formik.validateForm();
@@ -36,20 +37,28 @@ const CreateServiceName: React.FC<Props> = ({
     <Layout.Split>
       <Layout.LeftSide>
         <Layout.Description
-          header="First, we need to choose a name for the service"
-          text={`
+          header={
+            flowSettings.texts?.chooseName ||
+            "First, we need to choose a name for the service"
+          }
+          text={
+            flowSettings.texts?.chooseNameDescription ||
+            `
           Give your service a meaningful name. It will be used in the generated
           code and the folder structure of the project. It may include spaces.
           e.g. Order Service, Notification Manager
-          `}
+          `
+          }
         />
       </Layout.LeftSide>
       <Layout.RightSide>
         <Layout.ContentWrapper>
           <TextField
             name="serviceName"
-            label="Service name"
-            placeholder="Order Service"
+            label={flowSettings.texts?.chooseNameField || "Service name"}
+            placeholder={
+              flowSettings.texts?.chooseNameFieldPlaceholder || "Order Service"
+            }
           />
           {availableCodeGenerators.length > 1 && (
             <SelectField
