@@ -114,7 +114,7 @@ export class ServiceTemplateService {
     delete serviceSettings.resourceId;
     serviceSettings.serviceTemplateVersion = {
       serviceTemplateId: args.data.serviceTemplate.id,
-      version: "1",
+      version: "1", //@Todo: get versions
     };
 
     const kebabCaseServiceName = kebabCase(args.data.name);
