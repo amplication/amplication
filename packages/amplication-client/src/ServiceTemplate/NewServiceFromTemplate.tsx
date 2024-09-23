@@ -29,7 +29,7 @@ type CreateType = Omit<
 };
 
 type Props = {
-  serviceTemplateId: string;
+  serviceTemplateId?: string;
   projectId: string;
 };
 
@@ -88,7 +88,7 @@ const NewServiceFromTemplate = ({ serviceTemplateId, projectId }: Props) => {
 
   const initialValues = {
     ...INITIAL_VALUES,
-    serviceTemplateId,
+    serviceTemplateId: serviceTemplateId || options[0]?.value,
   };
 
   return (
