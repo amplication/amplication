@@ -13,8 +13,6 @@ import NewModuleAction from "../ModuleActions/NewModuleAction";
 import NewModuleDtoSelectButton from "../ModuleDto/NewModuleDtoSelectButton";
 import "./ModulesToolbar.scss";
 import { useModulesContext } from "./modulesContext";
-import NewModuleDtoButton from "../ModuleDto/NewModuleDtoButton";
-import BetaFeatureTag from "../Components/BetaFeatureTag";
 
 type Props = {
   resourceId: string;
