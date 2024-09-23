@@ -28,6 +28,8 @@ import "./ServiceTemplateList.scss";
 import { SERVICE_TEMPLATE_LIST_COLUMNS } from "./ServiceTemplateListDataColumns";
 import { Link } from "react-router-dom";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import BetaFeatureTag from "../Components/BetaFeatureTag";
+import PlatformBetaContent from "../Workspaces/WorkspaceHeader/PlatformBetaContent";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
@@ -77,6 +79,9 @@ function ServiceTemplateList() {
                 placeholder="search"
                 onChange={handleSearchChange}
               />
+              <BetaFeatureTag>
+                <PlatformBetaContent />
+              </BetaFeatureTag>
             </FlexItem>
           </>
         }
