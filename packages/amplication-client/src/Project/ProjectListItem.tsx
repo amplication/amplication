@@ -29,7 +29,9 @@ export const ProjectListItem = ({ project, workspaceId }: Props) => {
   const services = useMemo(
     () =>
       project.resources.filter(
-        (x) => x.resourceType === EnumResourceType.Service
+        (x) =>
+          x.resourceType === EnumResourceType.Service ||
+          x.resourceType === EnumResourceType.MessageBroker
       ),
     [project.resources]
   );
@@ -37,6 +39,7 @@ export const ProjectListItem = ({ project, workspaceId }: Props) => {
   return (
     <Link to={`/${workspaceId}/${project.id}`}>
       <Panel
+        themeColor={EnumTextColor.Secondary}
         className={CLASS_NAME}
         panelStyle={EnumPanelStyle.Bordered}
         clickable
@@ -79,7 +82,7 @@ export const ProjectListItem = ({ project, workspaceId }: Props) => {
 
             <FlexItem
               direction={EnumFlexDirection.Row}
-              gap={EnumGapSize.Small}
+              gap={EnumGapSize.Large}
               itemsAlign={EnumItemsAlign.Center}
             >
               <Link to={`/${workspaceId}/platform/${project.id}`}>
