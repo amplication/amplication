@@ -33,6 +33,7 @@ import { EnumCommitStrategy } from "../resource/dto/EnumCommitStrategy";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
 import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
+import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 
 @Injectable()
 export class ProjectService {
@@ -46,7 +47,8 @@ export class ProjectService {
     private readonly analytics: SegmentAnalyticsService,
     private readonly gitProviderService: GitProviderService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private readonly resourceVersionService: ResourceVersionService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -339,8 +341,7 @@ export class ProjectService {
 
   async commit(
     args: CreateCommitArgs,
-    currentUser: User,
-    skipBuild = false
+    currentUser: User
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
@@ -378,7 +379,7 @@ export class ProjectService {
     const project = await this.findFirst({ where: { id: projectId } });
 
     //check if billing enabled first to skip calculation
-    if (this.billingService.isBillingEnabled && !skipBuild) {
+    if (this.billingService.isBillingEnabled) {
       const usageReport = await this.calculateMeteredUsage(project.workspaceId);
       await this.billingService.resetUsage(project.workspaceId, usageReport);
 
@@ -527,7 +528,7 @@ export class ProjectService {
       });
     }
 
-    if (!skipBuild) {
+    if (resourceTypeGroup === EnumResourceTypeGroup.Services) {
       const promises = resourcesToBuild
         .filter(
           //filter out resources that are not services
@@ -563,6 +564,48 @@ export class ProjectService {
 
       await this.analytics.trackWithContext({
         event: EnumEventType.CommitCreate,
+        properties: {
+          projectId,
+        },
+      });
+    } else {
+      //platform
+      const promises = resourcesToBuild
+        .filter(
+          //filter out resources that are not services
+          (resource) =>
+            resource.resourceType === EnumResourceType.ServiceTemplate
+        )
+        .map((resource: Resource) => {
+          this.logger.debug("Creating version for resource", {
+            resourceId: resource.id,
+            commitStrategy: args.data.commitStrategy,
+            commitId: commit.id,
+          });
+          return this.resourceVersionService.create({
+            data: {
+              resource: {
+                connect: { id: resource.id },
+              },
+              commit: {
+                connect: {
+                  id: commit.id,
+                },
+              },
+              createdBy: {
+                connect: {
+                  id: userId,
+                },
+              },
+              message: args.data.message,
+            },
+          });
+        });
+
+      await Promise.all(promises);
+
+      await this.analytics.trackWithContext({
+        event: EnumEventType.ResourceVersionCreate,
         properties: {
           projectId,
         },
