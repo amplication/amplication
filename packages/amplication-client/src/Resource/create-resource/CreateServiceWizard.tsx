@@ -235,12 +235,16 @@ const CreateServiceWizard: React.FC<Props> = ({
 
       const kebabCaseServiceName = kebabCase(serviceName);
 
-      const serverDir =
-        structureType === "Mono" ? `${baseDir}/${kebabCaseServiceName}` : "";
-      const adminDir =
-        structureType === "Mono"
-          ? `${baseDir}/${kebabCaseServiceName}-admin`
-          : "";
+      const serverDir = isServiceTemplateFlow
+        ? `${baseDir}/{{SERVICE_NAME}}`
+        : structureType === "Mono"
+        ? `${baseDir}/${kebabCaseServiceName}`
+        : "";
+      const adminDir = isServiceTemplateFlow
+        ? `${baseDir}/{{SERVICE_NAME}}-admin`
+        : structureType === "Mono"
+        ? `${baseDir}/${kebabCaseServiceName}-admin`
+        : "";
 
       if (currentProject) {
         const pluginIds: string[] = [databaseType];
