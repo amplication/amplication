@@ -1,3 +1,5 @@
+import { Icon } from "@amplication/ui/design-system";
+import { Collapse, ListItem, ListItemText } from "@mui/material";
 import React, {
   useCallback,
   useContext,
@@ -8,13 +10,9 @@ import React, {
 import { useHistory, useLocation } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import InnerTabLink from "../Layout/InnerTabLink";
-import "./PluginTree.scss";
-import usePlugins from "./hooks/usePlugins";
-import { Icon } from "@amplication/ui/design-system";
-import { Collapse, ListItem, ListItemText } from "@mui/material";
-import { useStiggContext } from "@stigg/react-sdk";
-import { BillingFeature } from "@amplication/util-billing-types";
 import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
+import usePlugins from "./hooks/usePlugins";
+import "./PluginTree.scss";
 
 const CLASS_NAME = "plugin-tree";
 
@@ -39,12 +37,6 @@ export const PluginTree = React.memo(
       null,
       currentResource?.codeGenerator
     );
-
-    const { stigg } = useStiggContext();
-
-    const { hasAccess: canUsePrivatePlugins } = stigg.getBooleanEntitlement({
-      featureId: BillingFeature.PrivatePlugins,
-    });
 
     useLayoutEffect(() => {
       const urlArr = location.pathname.split("/");
@@ -79,14 +71,12 @@ export const PluginTree = React.memo(
           >
             <span>All Plugins</span>
           </InnerTabLink>
-          {canUsePrivatePlugins && (
-            <InnerTabLink
-              icon="plugins"
-              to={`${baseUrl}/plugins/catalog/${PRIVATE_PLUGINS_CATEGORY}`}
-            >
-              <span>Private Plugins</span>
-            </InnerTabLink>
-          )}
+          <InnerTabLink
+            icon="plugins"
+            to={`${baseUrl}/plugins/catalog/${PRIVATE_PLUGINS_CATEGORY}`}
+          >
+            <span>Private Plugins</span>
+          </InnerTabLink>
           <InnerTabLink icon="plugins" to={`${baseUrl}/plugins/installed`}>
             <span>Installed Plugins</span>
           </InnerTabLink>
