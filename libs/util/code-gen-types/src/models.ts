@@ -340,6 +340,8 @@ export type CommitCreateInput = {
    */
   resourceIds?: InputMaybe<Array<Scalars['String']['input']>>;
   resourceTypeGroup: EnumResourceTypeGroup;
+  /** The version number when publishing platform changes. */
+  version?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CommitOrderByInput = {
@@ -2873,6 +2875,7 @@ export type Resource = {
   resourceType: EnumResourceType;
   serviceTemplate?: Maybe<Resource>;
   updatedAt: Scalars['DateTime']['output'];
+  version?: Maybe<ResourceVersion>;
 };
 
 

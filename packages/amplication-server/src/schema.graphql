@@ -315,6 +315,9 @@ input CommitCreateInput {
   """
   resourceIds: [String!]
   resourceTypeGroup: EnumResourceTypeGroup!
+
+  """The version number when publishing platform changes."""
+  version: String
 }
 
 input CommitOrderByInput {
@@ -1995,6 +1998,7 @@ type Resource {
   resourceType: EnumResourceType!
   serviceTemplate: Resource
   updatedAt: DateTime!
+  version: ResourceVersion
 }
 
 input ResourceCreateInput {
