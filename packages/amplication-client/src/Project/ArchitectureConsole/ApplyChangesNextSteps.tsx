@@ -18,6 +18,8 @@ import "./ApplyChangesNextSteps.scss";
 import { CommitBtnType } from "../../VersionControl/Commit";
 import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
 import CommitButton from "../../VersionControl/CommitButton";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import { EnumCommitStrategy, EnumResourceTypeGroup } from "../../models";
 
 const className = "apply-changes-next-steps";
 
@@ -29,12 +31,13 @@ export const ApplyChangesNextSteps = ({
   onDisplayArchitectureClicked,
 }: Props) => {
   const history = useHistory();
-  const { currentWorkspace, currentProject, isPreviewPlan } =
-    useContext(AppContext);
+  const { isPreviewPlan } = useContext(AppContext);
+
+  const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: false });
 
   const handleProjectOverviewClicked = useCallback(() => {
-    history.push(`/${currentWorkspace.id}/${currentProject.id}`);
-  }, [currentWorkspace, currentProject, history]);
+    history.push(`${baseUrl}`);
+  }, [baseUrl, history]);
 
   return (
     <div className={className}>
@@ -63,6 +66,10 @@ export const ApplyChangesNextSteps = ({
           <CommitButton
             commitBtnType={CommitBtnType.JumboButton}
             commitMessage={""}
+            resourceTypeGroup={EnumResourceTypeGroup.Services} //this will always be services for BTM
+            hasPendingChanges={true}
+            hasMultipleServices={true}
+            commitStrategy={EnumCommitStrategy.AllWithPendingChanges} //commit all with pending changes
           ></CommitButton>
         )}
         <JumboButton

@@ -7,6 +7,8 @@ import {
   Build,
   EnumBuildStatus,
   EnumSubscriptionPlan,
+  CommitCreateInput,
+  EnumResourceTypeGroup,
 } from "../../models";
 import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
 import { cloneDeep, groupBy } from "lodash";
@@ -14,6 +16,7 @@ import { GraphQLErrorCode } from "@amplication/graphql-error-codes";
 import { AppContext } from "../../context/appContext";
 import { commitPath } from "../../util/paths";
 import { useHistory } from "react-router-dom";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 const MAX_ITEMS_PER_LOADING = 20;
 const POLL_INTERVAL = 1000; //update the last commit status frequently to get the latest log message
@@ -59,6 +62,8 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     commitUtils,
   } = useContext(AppContext);
 
+  const { baseUrl: projectBaseUrl } = useProjectBaseUrl();
+
   const updateBuildStatus = useCallback(
     (build: Build) => {
       const clonedCommits = cloneDeep(commits);
@@ -98,6 +103,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
   ] = useLazyQuery<{ commits: Commit[] }>(GET_COMMITS, {
     variables: {
       projectId: currentProjectId,
+      resourceTypeGroup: EnumResourceTypeGroup.Services,
       skip: 0,
       take: 1,
       orderBy: {
@@ -170,31 +176,38 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
           ) ?? false
         );
       },
-      onCompleted: (response) => {
-        setCommitRunning(false);
-        setPendingChangesError(false);
-        resetPendingChanges();
-        commitUtils.refetchCommitsData(true);
-        const path = commitPath(
-          currentWorkspace?.id,
-          currentProject?.id,
-          response.commit.id
-        );
-        return history.push(path);
-      },
     });
 
   const commitChanges = useCallback(
-    (data) => {
+    (data: CommitCreateInput) => {
       if (!data) return;
       setCommitRunning(true);
       commit({
         variables: {
           data: data,
         },
-      }).catch(console.error);
+      })
+        .then((response) => {
+          setCommitRunning(false);
+          setPendingChangesError(false);
+          resetPendingChanges();
+          commitUtils.refetchCommitsData(true);
+          if (data.resourceTypeGroup === EnumResourceTypeGroup.Services) {
+            const path = commitPath(projectBaseUrl, response.data.commit.id);
+            history.push(path);
+          }
+        })
+        .catch(console.error);
     },
-    [commit, setCommitRunning]
+    [
+      commit,
+      commitUtils,
+      history,
+      projectBaseUrl,
+      resetPendingChanges,
+      setCommitRunning,
+      setPendingChangesError,
+    ]
   );
 
   const bypassLimitations = useMemo(() => {
@@ -228,6 +241,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     notifyOnNetworkStatusChange: true,
     variables: {
       projectId: currentProjectId,
+      resourceTypeGroup: EnumResourceTypeGroup.Services,
       take: maxCommits || MAX_ITEMS_PER_LOADING,
       skip: 0,
       orderBy: {

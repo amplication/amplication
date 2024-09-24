@@ -18,8 +18,8 @@ import {
 } from "@amplication/ui/design-system";
 import NewRole from "./NewRole";
 import InnerTabLink from "../Layout/InnerTabLink";
-import { AppContext } from "../context/appContext";
 import { pluralize } from "../util/pluralize";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type TData = {
   resourceRoles: models.ResourceRole[];
@@ -36,7 +36,10 @@ type Props = {
 export const RoleList = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
     const [searchPhrase, setSearchPhrase] = useState<string>("");
-    const { currentWorkspace, currentProject } = useContext(AppContext);
+
+    const { baseUrl } = useResourceBaseUrl({
+      overrideResourceId: resourceId,
+    });
 
     const handleSearchChange = useCallback(
       (value) => {
@@ -66,26 +69,19 @@ export const RoleList = React.memo(
 
     const handleRoleChange = useCallback(
       (role: models.ResourceRole) => {
-        const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`;
+        const fieldUrl = `${baseUrl}/roles/${role.id}`;
         history.push(fieldUrl);
       },
-      [history, resourceId, currentWorkspace, currentProject]
+      [history, baseUrl]
     );
 
     useEffect(() => {
       if (selectFirst && data && !isEmpty(data.resourceRoles)) {
         const role = data.resourceRoles[0];
-        const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`;
+        const fieldUrl = `${baseUrl}/roles/${role.id}`;
         history.push(fieldUrl);
       }
-    }, [
-      data,
-      selectFirst,
-      resourceId,
-      history,
-      currentWorkspace,
-      currentProject,
-    ]);
+    }, [data, selectFirst, history, baseUrl]);
 
     return (
       <div className={CLASS_NAME}>
@@ -110,10 +106,7 @@ export const RoleList = React.memo(
           gap={EnumGapSize.None}
         >
           {data?.resourceRoles?.map((role) => (
-            <InnerTabLink
-              icon="roles"
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`}
-            >
+            <InnerTabLink icon="roles" to={`${baseUrl}/roles/${role.id}`}>
               <span>{role.displayName}</span>
             </InnerTabLink>
           ))}

@@ -8,7 +8,7 @@ import { useCallback, useContext, useRef, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
-import { EnumCommitStrategy } from "../models";
+import { EnumCommitStrategy, EnumResourceTypeGroup } from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
@@ -24,6 +24,11 @@ type Props = {
   commitMessage?: string;
   commitBtnType?: CommitBtnType;
   onCommitChanges?: () => void;
+  resourceTypeGroup: EnumResourceTypeGroup;
+  hasPendingChanges: boolean;
+  hasMultipleServices: boolean;
+  commitStrategy?: EnumCommitStrategy;
+  onCommitSpecificService?: () => void;
 };
 
 type RouteMatchProps = {
@@ -39,6 +44,11 @@ const CommitButton = ({
   commitBtnType = CommitBtnType.Button,
   commitMessage = "",
   onCommitChanges,
+  resourceTypeGroup,
+  hasPendingChanges,
+  hasMultipleServices,
+  commitStrategy,
+  onCommitSpecificService,
 }: Props) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
@@ -64,19 +74,85 @@ const CommitButton = ({
   };
 
   const handleClick = useCallback(() => {
+    if (
+      resourceTypeGroup === EnumResourceTypeGroup.Platform &&
+      !hasPendingChanges
+    ) {
+      return;
+    }
+
+    const strategy =
+      commitStrategy ?? resourceTypeGroup === EnumResourceTypeGroup.Platform
+        ? EnumCommitStrategy.AllWithPendingChanges
+        : hasPendingChanges //use the default strategy when provided
+        ? EnumCommitStrategy.AllWithPendingChanges //default when there are pending changes
+        : hasMultipleServices && onCommitSpecificService
+        ? EnumCommitStrategy.Specific //let the user choose when there are multiple services and no changes
+        : EnumCommitStrategy.All; //use all when there is only one service
+
+    if (strategy === EnumCommitStrategy.Specific) {
+      onCommitSpecificService();
+      return;
+    }
+
     commitChanges({
       message: commitMessage,
       project: { connect: { id: currentProject?.id } },
       bypassLimitations: bypassLimitationsRef.current ?? false,
-      commitStrategy: EnumCommitStrategy.All,
+      commitStrategy: strategy,
+      resourceTypeGroup,
     });
 
     onCommitChanges && onCommitChanges();
-  }, [commitChanges, currentProject, commitMessage, onCommitChanges]);
+  }, [
+    onCommitSpecificService,
+    commitStrategy,
+    hasPendingChanges,
+    hasMultipleServices,
+    commitChanges,
+    currentProject,
+    commitMessage,
+    onCommitChanges,
+    resourceTypeGroup,
+  ]);
 
   const isLimitationError = commitChangesLimitationError !== undefined ?? false;
 
   const errorMessage = formatError(commitChangesError);
+
+  const element =
+    commitBtnType === CommitBtnType.Button ? (
+      resourceTypeGroup === EnumResourceTypeGroup.Services ? (
+        <Button
+          onClick={handleClick}
+          buttonStyle={EnumButtonStyle.Primary}
+          eventData={{
+            eventName: AnalyticsEventNames.CommitClicked,
+          }}
+          disabled={commitChangesLoading}
+        >
+          Generate the code
+        </Button>
+      ) : (
+        <Button
+          onClick={handleClick}
+          buttonStyle={EnumButtonStyle.Primary}
+          eventData={{
+            eventName: AnalyticsEventNames.CommitClicked,
+          }}
+          disabled={!hasPendingChanges || commitChangesLoading}
+        >
+          Publish New Version
+        </Button>
+      )
+    ) : commitBtnType === CommitBtnType.JumboButton ? (
+      <JumboButton
+        text="Generate the code for my new architecture"
+        icon="pending_changes"
+        onClick={handleClick}
+        circleColor={EnumTextColor.ThemeTurquoise}
+      ></JumboButton>
+    ) : null;
 
   return (
     <>
@@ -84,25 +160,7 @@ const CommitButton = ({
         blockByFeatureId={BillingFeature.BlockBuild}
         licensedResourceType={LicensedResourceType.Project}
       >
-        {commitBtnType === CommitBtnType.Button ? (
-          <Button
-            onClick={handleClick}
-            buttonStyle={EnumButtonStyle.Primary}
-            eventData={{
-              eventName: AnalyticsEventNames.CommitClicked,
-            }}
-            disabled={commitChangesLoading}
-          >
-            <>Generate the code </>
-          </Button>
-        ) : commitBtnType === CommitBtnType.JumboButton ? (
-          <JumboButton
-            text="Generate the code for my new architecture"
-            icon="pending_changes"
-            onClick={handleClick}
-            circleColor={EnumTextColor.ThemeTurquoise}
-          ></JumboButton>
-        ) : null}
+        {element}
       </LicenseIndicatorContainer>
       {commitChangesError && isLimitationError ? (
         <LimitationDialog

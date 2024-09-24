@@ -43,6 +43,8 @@ import {
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 import { JsonFilter } from "../../dto/JsonFilter";
 import { mergeAllSettings } from "./block.util";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
@@ -753,74 +755,19 @@ export class BlockService {
    */
   async getChangedBlocks(
     projectId: string,
+    resourceTypeGroup: EnumResourceTypeGroup,
     userId: string
   ): Promise<BlockPendingChange[]> {
+    const resourceTypes =
+      RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE[resourceTypeGroup];
+
     const changedBlocks = await this.prisma.block.findMany({
       where: {
         lockedByUserId: userId,
         resource: {
-          deletedAt: null,
-          project: {
-            id: projectId,
+          resourceType: {
+            in: resourceTypes,
           },
-        },
-      },
-      include: {
-        lockedByUser: true,
-        resource: true,
-        versions: {
-          orderBy: {
-            versionNumber: Prisma.SortOrder.desc,
-          },
-          /**find the first two versions to decide whether it is an update or a create */
-          take: 2,
-        },
-      },
-    });
-
-    return changedBlocks.map((block) => {
-      const [lastVersion] = block.versions;
-      const action = block.deletedAt
-        ? EnumPendingChangeAction.Delete
-        : block.versions.length > 1
-        ? EnumPendingChangeAction.Update
-        : EnumPendingChangeAction.Create;
-
-      block.versions =
-        undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
-
-      //prepare name fields for display
-      if (action === EnumPendingChangeAction.Delete) {
-        block.displayName = revertDeletedItemName(block.displayName, block.id);
-      }
-
-      return {
-        originId: block.id,
-        action: action,
-        originType: EnumPendingChangeOriginType.Block,
-        versionNumber: lastVersion.versionNumber + 1,
-        origin: block,
-        resource: block.resource,
-      };
-    });
-  }
-
-  /**
-   * @todo REMOVE this after we finish with the custom actions blocks migration
-   *
-   * Gets Blocks of types Module and ModuleAction (ONLY) changed since the last resource commit
-   * @param projectId the resource ID to find changes to
-   * @param userId the user ID the resource ID relates to
-   */
-  async getChangedBlocksForCustomActionsMigration(
-    projectId: string,
-    userId: string
-  ): Promise<BlockPendingChange[]> {
-    const changedBlocks = await this.prisma.block.findMany({
-      where: {
-        lockedByUserId: userId,
-        blockType: { equals: EnumBlockType.ModuleDto },
-        resource: {
           deletedAt: null,
           project: {
             id: projectId,

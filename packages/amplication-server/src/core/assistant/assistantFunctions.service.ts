@@ -33,6 +33,7 @@ import * as functionArgsSchemas from "./functions/";
 import * as functionsArgsTypes from "./functions/types";
 import { USER_ENTITY_NAME } from "../entity/constants";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
@@ -640,6 +641,7 @@ export class AssistantFunctionsService {
       const commit = await this.projectService.commit(
         {
           data: {
+            resourceTypeGroup: EnumResourceTypeGroup.Services,
             message: args.commitMessage,
             project: {
               connect: {
@@ -669,6 +671,8 @@ export class AssistantFunctionsService {
         {
           where: {
             project: { id: args.projectId },
+            //@todo: add support for platform changes via Jovu
+            resourceTypeGroup: EnumResourceTypeGroup.Services,
           },
         },
         context.user

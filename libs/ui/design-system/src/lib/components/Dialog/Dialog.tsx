@@ -37,6 +37,7 @@ export const Dialog: React.FC<Props> = ({
     <MuiDialog
       fullScreen={false}
       open={isOpen}
+      onClick={(e) => e.stopPropagation()}
       onClose={onDismiss}
       className={classNames(
         CLASS_NAME,

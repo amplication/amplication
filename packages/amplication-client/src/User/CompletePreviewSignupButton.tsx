@@ -1,16 +1,16 @@
-import React, { useCallback } from "react";
-import { useHistory } from "react-router-dom";
 import {
   Button,
   EnumTextColor,
   JumboButton,
 } from "@amplication/ui/design-system";
+import { useMutation } from "@apollo/client";
+import React, { useCallback } from "react";
+import { useHistory } from "react-router-dom";
+import { CommitBtnType } from "../VersionControl/Commit";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { useMutation } from "@apollo/client";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import { COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL } from "./UserQueries";
-import { CommitBtnType } from "../VersionControl/Commit";
-import { useAppContext } from "../context/appContext";
 
 type Props = {
   buttonText?: string;
@@ -23,8 +23,8 @@ export const CompletePreviewSignupButton: React.FC<Props> = ({
 }) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
-  const { currentWorkspace, currentProject } = useAppContext();
   const [completeSignup] = useMutation(COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL);
+  const { baseUrl } = useProjectBaseUrl();
 
   const handleGenerateCodeClicked = useCallback(() => {
     trackEvent({
@@ -33,10 +33,8 @@ export const CompletePreviewSignupButton: React.FC<Props> = ({
 
     completeSignup().catch(console.error);
 
-    history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/complete-preview-signup`
-    );
-  }, [completeSignup, history, currentWorkspace, currentProject, trackEvent]);
+    history.push(`${baseUrl}/complete-preview-signup`);
+  }, [completeSignup, history, baseUrl, trackEvent]);
 
   return (
     <>

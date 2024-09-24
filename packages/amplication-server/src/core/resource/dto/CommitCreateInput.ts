@@ -1,6 +1,7 @@
 import { Field, InputType } from "@nestjs/graphql";
 import { WhereParentIdInput } from "../../../dto";
 import { EnumCommitStrategy } from "./EnumCommitStrategy";
+import { EnumResourceTypeGroup } from "./EnumResourceTypeGroup";
 
 @InputType({
   isAbstract: true,
@@ -15,6 +16,9 @@ export class CommitCreateInput {
     nullable: false,
   })
   project!: WhereParentIdInput;
+
+  @Field(() => EnumResourceTypeGroup, { nullable: false })
+  resourceTypeGroup!: keyof typeof EnumResourceTypeGroup;
 
   @Field(() => Boolean, {
     nullable: true,

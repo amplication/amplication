@@ -5,7 +5,7 @@ import { EnumCommitStrategy } from "../models";
 type props = {
   item: commitStrategyOption;
   hasPendingChanges: boolean;
-  onCommitStrategySelected: (itemSelected: commitStrategyOption) => void;
+  onCommitStrategySelected: (itemSelected: EnumCommitStrategy) => void;
 };
 
 const CreateCommitStrategyButtonItem = ({
@@ -24,7 +24,9 @@ const CreateCommitStrategyButtonItem = ({
       closeAfterSelectionChange
       as="span"
       itemData={item}
-      onSelectionChange={onCommitStrategySelected}
+      onSelectionChange={(item: commitStrategyOption) => {
+        onCommitStrategySelected(item.strategyType);
+      }}
     >
       {item.label}
     </SelectMenuItem>

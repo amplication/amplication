@@ -11,14 +11,14 @@ import {
 } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useAppContext } from "../context/appContext";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { expireCookie } from "../util/cookie";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import AssistantChatInput from "./AssistantChatInput";
 import JovuLogo, { EnumLogoSize } from "./JovuLogo";
 import "./OnboardingWithJovu.scss";
 import { useAssistantContext } from "./context/AssistantContext";
-import { expireCookie } from "../util/cookie";
-import { useTracking } from "../util/analytics";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 const CLASS_NAME = "onboarding-with-jovu";
 
@@ -33,7 +33,7 @@ const OnboardingWithJovu: React.FC = () => {
   const { trackEvent } = useTracking();
 
   const { setOpen, sendOnboardingMessage } = useAssistantContext();
-  const { currentWorkspace, currentProject } = useAppContext();
+  const { baseUrl } = useProjectBaseUrl();
 
   const history = useHistory();
 
@@ -45,16 +45,9 @@ const OnboardingWithJovu: React.FC = () => {
       trackEvent({
         eventName: AnalyticsEventNames.SendPromptOnboardingWithJovu,
       });
-      history.push(`/${currentWorkspace.id}/${currentProject.id}`);
+      history.push(`${baseUrl}`);
     },
-    [
-      currentProject?.id,
-      currentWorkspace?.id,
-      history,
-      sendOnboardingMessage,
-      setOpen,
-      trackEvent,
-    ]
+    [baseUrl, history, sendOnboardingMessage, setOpen, trackEvent]
   );
 
   useEffect(() => {

@@ -8,6 +8,7 @@ import * as models from "../models";
 import { formatError } from "../util/error";
 import "./ServiceConnectionsList.scss";
 import ServiceConnectionsListItem from "./ServiceConnectionsListItem";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type MessageBrokerListItem = {
   resource: models.Resource;
@@ -36,13 +37,15 @@ export const ServiceConnectionsList = React.memo(
     const history = useHistory();
     const errorMessage = formatError(error);
 
+    const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
+
     useEffect(() => {
       if (selectFirst && !isEmpty(messageBrokerList)) {
         const resource = messageBrokerList[0].resource;
-        const connectionUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/service-connections/${resource.id}`;
+        const connectionUrl = `${baseUrl}/service-connections/${resource.id}`;
         history.push(connectionUrl);
       }
-    }, [selectFirst, resourceId, history, currentWorkspace, currentProject]);
+    }, [selectFirst, resourceId, history, baseUrl, messageBrokerList]);
 
     return (
       <div className={CLASS_NAME}>

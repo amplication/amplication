@@ -1,22 +1,18 @@
 import React, { useContext, useMemo } from "react";
 import { match, useHistory } from "react-router-dom";
-import * as models from "../models";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
+import * as models from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
+import { isEmpty } from "lodash";
 import useServiceConnection from "./hooks/useServiceConnection";
 import { ServiceConnectionsList } from "./ServiceConnectionsList";
-import { isEmpty } from "lodash";
-import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import "./ServiceConnectionsPage.scss";
-import { BillingFeature } from "@amplication/util-billing-types";
-import {
-  EntitlementType,
-  FeatureIndicatorContainer,
-} from "../Components/FeatureIndicatorContainer";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 type MessageBrokerListItem = {
   resource: models.Resource;
@@ -39,10 +35,10 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
     errorServiceTopics: error,
   } = useServiceConnection(resourceId);
 
+  const { baseUrl } = useProjectBaseUrl();
   const history = useHistory();
 
-  const { resources, currentWorkspace, currentProject } =
-    useContext(AppContext);
+  const { resources } = useContext(AppContext);
 
   const messageBrokerList = useMemo((): MessageBrokerListItem[] => {
     return resources
@@ -86,11 +82,7 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
           image={EnumImages.MessageBrokerEmptyState}
         >
           <Button
-            onClick={() =>
-              history.push(
-                `/${currentWorkspace?.id}/${currentProject?.id}/create-broker`
-              )
-            }
+            onClick={() => history.push(`${baseUrl}/create-broker`)}
             type="button"
             buttonStyle={EnumButtonStyle.Outline}
             iconSize="xsmall"

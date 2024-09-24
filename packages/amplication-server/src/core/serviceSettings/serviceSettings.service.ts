@@ -3,14 +3,11 @@ import { ServiceSettings, UpdateServiceSettingsArgs } from "./dto";
 import { FindOneArgs } from "../../dto";
 import { BlockService } from "../block/block.service";
 import { EnumBlockType } from "../../enums/EnumBlockType";
-import {
-  DEFAULT_SERVICE_SETTINGS,
-  ServiceSettingsValues,
-  ServiceSettingsValuesExtended,
-} from "./constants";
+import { DEFAULT_SERVICE_SETTINGS, ServiceSettingsValues } from "./constants";
 import { User } from "../../models";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
 import { ServiceSettingsUpdateInput } from "./dto/ServiceSettingsUpdateInput";
+import { merge } from "lodash";
 
 export const isStringBool = (val: string | boolean): boolean =>
   typeof val === "boolean" || typeof val === "string";
@@ -161,11 +158,9 @@ export class ServiceSettingsService {
     user: User,
     serviceSettings: ServiceSettingsUpdateInput = null
   ): Promise<ServiceSettings> {
-    const settings = DEFAULT_SERVICE_SETTINGS;
+    const defaultSettings = DEFAULT_SERVICE_SETTINGS;
 
-    if (serviceSettings)
-      // for backwards compatibility, we need to update the service settings with the new field (generateServer)
-      this.updateServiceGenerationSettings(settings, serviceSettings);
+    const mergedSettings = merge(defaultSettings, serviceSettings);
 
     return this.blockService.create<ServiceSettings>(
       {
@@ -175,35 +170,11 @@ export class ServiceSettingsService {
               id: resourceId,
             },
           },
-          ...settings,
+          ...mergedSettings,
           blockType: EnumBlockType.ServiceSettings,
         },
       },
       user.id
     );
-  }
-  private updateServiceGenerationSettings(
-    settings: ServiceSettingsValuesExtended,
-    serviceSettings: ServiceSettingsUpdateInput
-  ): void {
-    const { generateAdminUI, adminUIPath } = serviceSettings.adminUISettings;
-    const {
-      generateGraphQL,
-      generateRestApi,
-      generateServer = true,
-      serverPath,
-    } = serviceSettings.serverSettings;
-
-    (settings.adminUISettings = {
-      generateAdminUI: generateAdminUI,
-      adminUIPath: adminUIPath,
-    }),
-      (settings.serverSettings = {
-        generateGraphQL,
-        generateRestApi,
-        generateServer,
-        serverPath,
-      }),
-      (settings.authEntityName = serviceSettings.authEntityName);
   }
 }

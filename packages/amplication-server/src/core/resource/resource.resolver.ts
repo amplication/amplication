@@ -35,6 +35,8 @@ import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { UserAction } from "../userAction/dto";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { EnumResourceType } from "./dto/EnumResourceType";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -44,7 +46,8 @@ export class ResourceResolver {
     private readonly resourceService: ResourceService,
     private readonly entityService: EntityService,
     private readonly buildService: BuildService,
-    private readonly environmentService: EnvironmentService
+    private readonly environmentService: EnvironmentService,
+    private readonly serviceSettingsService: ServiceSettingsService
   ) {}
 
   @Query(() => Resource, { nullable: true })
@@ -221,5 +224,36 @@ export class ResourceResolver {
     }
 
     return codeGenerator;
+  }
+
+  @ResolveField(() => Resource, { nullable: true })
+  async serviceTemplate(
+    @Parent() resource: Resource,
+    @UserEntity() user: User
+  ): Promise<Resource> {
+    if (!resource.id) {
+      return null;
+    }
+
+    if (resource.resourceType !== EnumResourceType.Service) {
+      return null;
+    }
+
+    const settings = await this.serviceSettingsService.getServiceSettingsBlock(
+      {
+        where: { id: resource.id },
+      },
+      user
+    );
+
+    if (!settings?.serviceTemplateVersion) {
+      return null;
+    }
+
+    return this.resourceService.resource({
+      where: {
+        id: settings.serviceTemplateVersion.serviceTemplateId,
+      },
+    });
   }
 }

@@ -1,9 +1,10 @@
 import {
+  Button,
   CircularProgress,
   DataGrid,
+  EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
-  EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
   EnumTextStyle,
@@ -18,6 +19,8 @@ import {
 import { useStiggContext } from "@stigg/react-sdk";
 import { isEmpty } from "lodash";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import useLocalStorage from "react-use-localstorage";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
@@ -29,10 +32,12 @@ import { pluralize } from "../util/pluralize";
 import "./ResourceList.scss";
 import { RESOURCE_LIST_COLUMNS } from "./ResourceListDataColumns";
 import ResourceListItem from "./ResourceListItem";
-import useLocalStorage from "react-use-localstorage";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import NewServiceFromTemplateDialogWithUrlTrigger from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
+const LOCAL_STORAGE_KEY = "resource-list-view-mode";
 
 const VIEW_CARDS = "Cards";
 const VIEW_GRID = "Grid";
@@ -41,16 +46,31 @@ function ResourceList() {
   const { refreshData } = useStiggContext();
   const [error, setError] = useState<Error | null>(null);
 
+  const { baseUrl: platformProjectBaseUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: true,
+  });
+
   const { resources, handleSearchChange, loadingResources, errorResources } =
     useContext(AppContext);
 
-  const [viewMode, setViewMode] = useLocalStorage(VIEW_CARDS);
+  const relevantResources = useMemo(() => {
+    return resources.filter(
+      (resource) =>
+        resource.resourceType === models.EnumResourceType.Service ||
+        resource.resourceType === models.EnumResourceType.MessageBroker
+    );
+  }, [resources]);
+
+  const [viewMode, setViewMode] = useLocalStorage(
+    LOCAL_STORAGE_KEY,
+    VIEW_CARDS
+  );
 
   const servicesLength = useMemo(() => {
-    return resources.filter(
+    return relevantResources.filter(
       (resource) => resource.resourceType === models.EnumResourceType.Service
     ).length;
-  }, [resources]);
+  }, [relevantResources]);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -65,6 +85,7 @@ function ResourceList() {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+      <NewServiceFromTemplateDialogWithUrlTrigger />
       <FlexItem
         itemsAlign={EnumItemsAlign.Center}
         contentAlign={EnumContentAlign.Start}
@@ -75,8 +96,8 @@ function ResourceList() {
               itemsAlign={EnumItemsAlign.Center}
             >
               <Text textStyle={EnumTextStyle.Tag}>
-                {resources.length}{" "}
-                {pluralize(resources.length, "Resource", "Resources")}
+                {relevantResources.length}{" "}
+                {pluralize(relevantResources.length, "Resource", "Resources")}
               </Text>
               <SearchField
                 label="search"
@@ -97,8 +118,13 @@ function ResourceList() {
               itemsAlign={EnumItemsAlign.Center}
               direction={EnumFlexDirection.Row}
             >
+              <Link to={`${platformProjectBaseUrl}`}>
+                <Button buttonStyle={EnumButtonStyle.Outline}>
+                  View Templates
+                </Button>
+              </Link>
               <CreateResourceButton
-                resourcesLength={resources.length}
+                resourcesLength={relevantResources.length}
                 servicesLength={servicesLength}
               />
             </FlexItem>
@@ -109,7 +135,7 @@ function ResourceList() {
 
       {loadingResources && <CircularProgress centerToParent />}
 
-      {isEmpty(resources) && !loadingResources ? (
+      {isEmpty(relevantResources) && !loadingResources ? (
         <EmptyState
           message="There are no resources to show"
           image={EnumImages.AddResource}
@@ -120,13 +146,13 @@ function ResourceList() {
             <div className={`${CLASS_NAME}__grid-container`}>
               <DataGrid
                 columns={RESOURCE_LIST_COLUMNS}
-                rows={resources}
+                rows={relevantResources}
               ></DataGrid>
             </div>
           ) : (
             <List>
               {!loadingResources &&
-                resources.map((resource) => (
+                relevantResources.map((resource) => (
                   <ResourceListItem key={resource.id} resource={resource} />
                 ))}
             </List>

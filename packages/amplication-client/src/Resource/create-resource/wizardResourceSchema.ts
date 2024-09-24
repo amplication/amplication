@@ -153,7 +153,7 @@ export const ResourceInitialValues = {
   baseDir: "./apps",
   databaseType: "db-postgres",
   templateType: "empty",
-  authType: "auth-jwt",
+  authType: "no",
   gitProvider: null,
   connectToDemoRepo: false,
 };
@@ -169,21 +169,6 @@ export interface TemplateSettings {
   eventName: string;
   entities: any;
 }
-
-export const templateMapping: { [key: string]: TemplateSettings } = {
-  [EnumTemplateType.empty]: {
-    type: EnumTemplateType.empty,
-    description: "",
-    eventName: AnalyticsEventNames.ResourceFromScratchCreate,
-    entities: [],
-  },
-  [EnumTemplateType.orderManagement]: {
-    type: EnumTemplateType.orderManagement,
-    description: "Sample service for e-commerce",
-    eventName: AnalyticsEventNames.ResourceFromSampleCreate,
-    entities: sampleServiceResourceWithEntities,
-  },
-};
 
 export const wizardProgressBarSchema = [
   {

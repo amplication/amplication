@@ -24,6 +24,8 @@ import { GptModule } from "../gpt/gpt.module";
 import { UserActionModule } from "../userAction/userAction.module";
 import { ActionModule } from "../action/action.module";
 import { GitProviderModule } from "../git/git.provider.module";
+import { ServiceTemplateService } from "./serviceTemplate.service";
+import { ServiceTemplateResolver } from "./serviceTemplate.resolver";
 
 @Module({
   imports: [
@@ -54,6 +56,8 @@ import { GitProviderModule } from "../git/git.provider.module";
     ResourceResolver,
     ResourceBtmResolver,
     ResourceBtmService,
+    ServiceTemplateService,
+    ServiceTemplateResolver,
   ],
   exports: [ResourceBtmService, ResourceService, ResourceResolver],
 })

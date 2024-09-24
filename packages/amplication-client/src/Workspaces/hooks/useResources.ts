@@ -9,11 +9,13 @@ import {
   CREATE_SERVICE_WITH_ENTITIES,
   GET_RESOURCES,
   CREATE_MESSAGE_BROKER,
+  CREATE_SERVICE_FROM_TEMPLATE,
 } from "../queries/resourcesQueries";
 import { getGitRepositoryDetails } from "../../util/git-repository-details";
 import { GET_PROJECTS } from "../queries/projectQueries";
 import { UPDATE_CODE_GENERATOR_VERSION } from "../../Resource/codeGeneratorVersionSettings/queries";
 import { CREATE_PLUGIN_REPOSITORY } from "../queries/pluginRepositoryQueries";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -21,6 +23,10 @@ type TGetResources = {
 
 type TCreateService = {
   createServiceWithEntities: models.ResourceCreateWithEntitiesResult;
+};
+
+type TCreateServiceFromTemplate = {
+  createServiceFromTemplate: models.Resource;
 };
 
 export type TUpdateCodeGeneratorVersion = {
@@ -72,9 +78,10 @@ const useResources = (
     workspace: string;
     project: string;
     resource: string;
-  }>(
-    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})"
-  );
+  }>([
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
+    "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
+  ]);
   const createResourceMatch:
     | (match & {
         params: { workspace: string; project: string };
@@ -85,6 +92,12 @@ const useResources = (
   }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource"
   );
+  const { baseUrl: projectBaseUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: false,
+  });
+  const { baseUrl: platformProjectBaseUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: true,
+  });
 
   const [currentResource, setCurrentResource] = useState<models.Resource>();
   const [createServiceWithEntitiesResult, setCreateServiceWithEntitiesResult] =
@@ -131,10 +144,10 @@ const useResources = (
   const resourceRedirect = useCallback(
     (resourceId: string) => {
       history.push({
-        pathname: `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}`, //todo:change the route
+        pathname: `${projectBaseUrl}/${resourceId}`, //todo:change the route
       });
     },
-    [currentWorkspace, history, currentProject]
+    [projectBaseUrl, history]
   );
 
   const [
@@ -234,7 +247,7 @@ const useResources = (
         result.data?.createPluginRepository.id &&
           reloadResources().then(() => {
             history.push({
-              pathname: `/${currentWorkspace?.id}/${currentProject?.id}/private-plugins/git-settings`,
+              pathname: `${platformProjectBaseUrl}/private-plugins/git-settings`,
             });
           });
       }
@@ -360,20 +373,34 @@ const useResources = (
     },
     [setSearchPhrase]
   );
-  const setResource = useCallback(
-    (resource: models.Resource) => {
-      trackEvent({
-        eventName: AnalyticsEventNames.ResourceCardClick,
-      });
-      setCurrentResource(resource);
-      currentWorkspace &&
-        currentProject &&
-        history.push(
-          `/${currentWorkspace.id}/${currentProject.id}/${resource.id}`
-        );
+
+  // ***** section Create Service From Template *****
+
+  const [
+    createServiceFromTemplateInternal,
+    {
+      loading: loadingCreateServiceFromTemplate,
+      error: errorCreateServiceFromTemplate,
     },
-    [currentProject, currentWorkspace, history, trackEvent]
-  );
+  ] = useMutation<TCreateServiceFromTemplate>(CREATE_SERVICE_FROM_TEMPLATE, {});
+
+  const createServiceFromTemplate = (
+    data: models.ServiceFromTemplateCreateInput
+  ) => {
+    createServiceFromTemplateInternal({ variables: { data: data } }).then(
+      (result) => {
+        result.data?.createServiceFromTemplate.id &&
+          reloadResources().then(() => {
+            resourceRedirect(
+              result.data?.createServiceFromTemplate.id as string
+            );
+            result.data?.createServiceFromTemplate.id &&
+              addBlock(result.data.createServiceFromTemplate.id);
+          });
+      }
+    );
+  };
+  // ***** end section Create Service From Template *****
 
   return {
     resources,
@@ -384,7 +411,6 @@ const useResources = (
     errorResources,
     reloadResources,
     currentResource,
-    setResource,
     createService,
     loadingCreateService,
     errorCreateService,
@@ -401,6 +427,9 @@ const useResources = (
     updateCodeGeneratorVersion,
     loadingUpdateCodeGeneratorVersion,
     errorUpdateCodeGeneratorVersion,
+    createServiceFromTemplate,
+    loadingCreateServiceFromTemplate,
+    errorCreateServiceFromTemplate,
   };
 };
 

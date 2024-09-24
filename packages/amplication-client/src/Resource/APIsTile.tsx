@@ -1,10 +1,10 @@
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 
 import { EnumTextColor } from "@amplication/ui/design-system";
 
-import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 };
 
 function APIsTile({ resourceId }: Props) {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   const { trackEvent } = useTracking();
 
@@ -22,7 +22,7 @@ function APIsTile({ resourceId }: Props) {
 
   return (
     <OverviewSecondaryTile
-      to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules`}
+      to={`${baseUrl}/modules`}
       icon="api"
       title="APIs"
       message="Manage your application's API. Create and update API endpoints and types."

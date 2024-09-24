@@ -26,6 +26,8 @@ import ActionLog from "./ActionLog";
 import BuildGitLink from "./BuildGitLink";
 import "./BuildPage.scss";
 import useBuildWatchStatus, { GET_BUILD } from "./useBuildWatchStatus";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 export type LogData = {
   action: models.Action;
@@ -45,8 +47,9 @@ const BuildPage = ({ match, buildId }: Props) => {
     return truncateId(build);
   }, [build]);
 
-  const { currentProject, currentWorkspace, resources } =
-    useContext(AppContext);
+  const { resources } = useContext(AppContext);
+
+  const { baseUrl } = useProjectBaseUrl();
 
   const location = useLocation();
 
@@ -69,6 +72,10 @@ const BuildPage = ({ match, buildId }: Props) => {
       ),
     [resources, updatedBuild]
   );
+
+  const { baseUrl: resourceBaseUrl } = useResourceBaseUrl({
+    overrideResourceId: updatedBuild.build?.resourceId,
+  });
 
   const actionLog = useMemo<LogData | null>(() => {
     if (!updatedBuild?.build) return null;
@@ -109,7 +116,7 @@ const BuildPage = ({ match, buildId }: Props) => {
               >
                 <Text textStyle={EnumTextStyle.Tag}>
                   <BackNavigation
-                    to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${updatedBuild.build.commitId}`}
+                    to={`${baseUrl}/commits/${updatedBuild.build.commitId}`}
                     label={
                       <>
                         &nbsp;Return to Commit&nbsp;
@@ -132,9 +139,7 @@ const BuildPage = ({ match, buildId }: Props) => {
                   }
                   start={
                     <>
-                      <Link
-                        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}`}
-                      >
+                      <Link to={`${resourceBaseUrl}`}>
                         <FlexItem
                           itemsAlign={EnumItemsAlign.Center}
                           gap={EnumGapSize.Small}

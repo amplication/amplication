@@ -320,6 +320,7 @@ input CommitCreateInput {
         If the commit strategy is Specific, it will be an array with one element. 
   """
   resourceIds: [String!]
+  resourceTypeGroup: EnumResourceTypeGroup!
 }
 
 input CommitOrderByInput {
@@ -333,6 +334,7 @@ input CommitWhereInput {
   id: StringFilter
   message: StringFilter
   project: WhereUniqueInput!
+  resourceTypeGroup: EnumResourceTypeGroup!
   user: WhereUniqueInput
 }
 
@@ -928,6 +930,7 @@ enum EnumResourceType {
   PluginRepository
   ProjectConfiguration
   Service
+  ServiceTemplate
 }
 
 input EnumResourceTypeFilter {
@@ -935,6 +938,11 @@ input EnumResourceTypeFilter {
   in: [EnumResourceType!]
   not: EnumResourceType
   notIn: [EnumResourceType!]
+}
+
+enum EnumResourceTypeGroup {
+  Platform
+  Services
 }
 
 enum EnumSchemaNames {
@@ -1429,6 +1437,8 @@ type Mutation {
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createService(data: ResourceCreateInput!): Resource!
+  createServiceFromTemplate(data: ServiceFromTemplateCreateInput!): Resource!
+  createServiceTemplate(data: ServiceTemplateCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
   createTopic(data: TopicCreateInput!): Topic!
@@ -1590,10 +1600,12 @@ union PendingChangeOrigin = Block | Entity
 
 input PendingChangesDiscardInput {
   project: WhereParentIdInput!
+  resourceTypeGroup: EnumResourceTypeGroup!
 }
 
 input PendingChangesFindInput {
   project: WhereUniqueInput!
+  resourceTypeGroup: EnumResourceTypeGroup!
 }
 
 type PluginInstallation implements IBlock {
@@ -1859,7 +1871,7 @@ type Query {
   build(where: WhereUniqueInput!): Build!
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
   commit(where: CommitWhereUniqueInput!): Commit
-  commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput): [Commit!]
+  commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput!): [Commit!]
   contactUsLink(where: WhereUniqueInput!): String
   currentWorkspace: Workspace
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!
@@ -1899,6 +1911,7 @@ type Query {
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
+  serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceTopics(where: WhereUniqueInput!): ServiceTopics
   serviceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
   topic(where: WhereUniqueInput!): Topic
@@ -1985,6 +1998,7 @@ type Resource {
   project: Project
   projectId: String
   resourceType: EnumResourceType!
+  serviceTemplate: Resource
   updatedAt: DateTime!
 }
 
@@ -2126,6 +2140,13 @@ input ServerSettingsUpdateInput {
   serverPath: String
 }
 
+input ServiceFromTemplateCreateInput {
+  description: String!
+  name: String!
+  project: WhereParentIdInput!
+  serviceTemplate: WhereUniqueInput!
+}
+
 type ServiceSettings implements IBlock {
   adminUISettings: AdminUISettings!
   authEntityName: String
@@ -2144,6 +2165,7 @@ type ServiceSettings implements IBlock {
   parentBlockId: String
   resourceId: String
   serverSettings: ServerSettings!
+  serviceTemplateVersion: ServiceTemplateVersion
   updatedAt: DateTime!
   versionNumber: Float!
 }
@@ -2155,6 +2177,16 @@ input ServiceSettingsUpdateInput {
   description: String
   displayName: String
   serverSettings: ServerSettingsUpdateInput!
+}
+
+input ServiceTemplateCreateInput {
+  plugins: PluginInstallationsCreateInput
+  resource: ResourceCreateInput!
+}
+
+type ServiceTemplateVersion {
+  serviceTemplateId: String!
+  version: String!
 }
 
 type ServiceTopics implements IBlock {
