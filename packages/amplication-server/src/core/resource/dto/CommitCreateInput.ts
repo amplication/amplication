@@ -44,6 +44,12 @@ export class CommitCreateInput {
   })
   resourceIds?: string[];
 
+  @Field(() => String, {
+    nullable: true,
+    description: "The version number when publishing platform changes.",
+  })
+  version?: string;
+
   /**do not expose to GraphQL - This field should be injected from context  */
   user!: WhereParentIdInput;
 }

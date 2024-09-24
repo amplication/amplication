@@ -598,6 +598,7 @@ export class ProjectService {
                 },
               },
               message: args.data.message,
+              version: args.data.version,
             },
           });
         });

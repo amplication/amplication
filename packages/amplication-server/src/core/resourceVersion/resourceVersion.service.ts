@@ -10,6 +10,7 @@ import { FindManyResourceVersionArgs } from "./dto/FindManyResourceVersionArgs";
 import { FindOneResourceVersionArgs } from "./dto/FindOneResourceVersionArgs";
 import { ResourceVersion } from "./dto/ResourceVersion";
 import { BlockService } from "../block/block.service";
+import { valid } from "semver";
 
 @Injectable()
 export class ResourceVersionService {
@@ -30,16 +31,14 @@ export class ResourceVersionService {
    */
   async create(args: CreateResourceVersionArgs): Promise<ResourceVersion> {
     const resourceId = args.data.resource.connect.id;
+
+    await this.validateVersion(args.data.version, resourceId);
+
     const user = await this.userService.findUser({
       where: {
         id: args.data.createdBy.connect.id,
       },
     });
-
-    const commitId = args.data.commit.connect.id;
-
-    /**@todo: set version based on semver and latest version */
-    const version = commitId.slice(commitId.length - 8);
 
     const latestEntityVersions = await this.entityService.getLatestVersions({
       where: { resourceId: resourceId },
@@ -53,7 +52,6 @@ export class ResourceVersionService {
       ...args,
       data: {
         ...args.data,
-        version,
         createdAt: new Date(),
         blockVersions: {
           connect: latestBlockVersions.map((version) => ({ id: version.id })),
@@ -84,6 +82,29 @@ export class ResourceVersionService {
     }
 
     return resourceVersion;
+  }
+
+  async validateVersion(version: string, resourceId): Promise<void> {
+    if (!version) {
+      throw new Error("Version is required");
+    }
+
+    if (!valid(version)) {
+      throw new Error(`Version ${version} is not a valid semver version`);
+    }
+
+    const existingVersion = await this.prisma.resourceVersion.findFirst({
+      where: {
+        resourceId: resourceId,
+        version: version,
+      },
+    });
+
+    if (existingVersion) {
+      throw new Error(
+        `Version ${version} already exists for resource ${resourceId}`
+      );
+    }
   }
 
   async findMany(

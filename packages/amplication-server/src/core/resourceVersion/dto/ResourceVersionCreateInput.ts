@@ -16,4 +16,7 @@ export class ResourceVersionCreateInput {
 
   @Field(() => WhereParentIdInput)
   commit: WhereParentIdInput;
+
+  @Field(() => String)
+  version: string;
 }

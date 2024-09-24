@@ -945,7 +945,7 @@ export class BlockService {
 
   async getLatestVersions(args: {
     where: Prisma.BlockWhereInput;
-  }): Promise<Block[]> {
+  }): Promise<BlockVersion[]> {
     const blocks = await this.prisma.block.findMany({
       where: {
         ...args.where,
@@ -968,9 +968,9 @@ export class BlockService {
       },
     });
 
-    return (await blocks).map((block) => {
+    return blocks.map((block) => {
       const [version] = block.versions;
-      return this.versionToIBlock({ ...version, block });
+      return version;
     });
   }
 }
