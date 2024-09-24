@@ -57,7 +57,7 @@ const Assistant = () => {
         <div className={`${CLASS_NAME}__handle`} onClick={() => setOpen(true)}>
           <Icon icon="ai" color={EnumTextColor.White} size="large" />
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
-            Jovu (Beta)
+            Jovu
           </Text>
         </div>
       )}
@@ -77,7 +77,7 @@ const Assistant = () => {
             style={{ background: "white", borderRadius: "50%" }}
           />
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
-            Jovu (Beta)
+            Jovu
           </Text>
           <Tooltip
             aria-label={WIDTH_STATE_SETTINGS[widthState].tooltip}

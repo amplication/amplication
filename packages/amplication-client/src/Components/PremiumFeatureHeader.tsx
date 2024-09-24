@@ -51,7 +51,6 @@ export const PremiumFeatureHeader = ({ title, message }: Props) => {
         </Text>
         <Text
           textWeight={EnumTextWeight.Regular}
-          textColor={EnumTextColor.Black20}
           textAlign={EnumTextAlign.Center}
         >
           {message}

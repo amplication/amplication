@@ -50,7 +50,6 @@ const BuildPage = ({ match, buildId }: Props) => {
   const { resources } = useContext(AppContext);
 
   const { baseUrl } = useProjectBaseUrl();
-  const { baseUrl: resourceBaseUrl } = useResourceBaseUrl();
 
   const location = useLocation();
 
@@ -73,6 +72,10 @@ const BuildPage = ({ match, buildId }: Props) => {
       ),
     [resources, updatedBuild]
   );
+
+  const { baseUrl: resourceBaseUrl } = useResourceBaseUrl({
+    overrideResourceId: updatedBuild.build?.resourceId,
+  });
 
   const actionLog = useMemo<LogData | null>(() => {
     if (!updatedBuild?.build) return null;

@@ -8,6 +8,9 @@ import { AppRouteProps } from "../routes/routesUtil";
 import { useAppContext } from "../context/appContext";
 import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useStiggContext } from "@stigg/react-sdk";
+import PrivatePluginFeature from "../Plugins/PrivatePluginsFeature";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -21,6 +24,11 @@ const PrivatePluginsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
 
   const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: true });
 
+  const { stigg } = useStiggContext();
+
+  const { hasAccess: canUsePrivatePlugins } = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.PrivatePlugins,
+  });
   const pageTitle = "Private Plugins";
   useBreadcrumbs(pageTitle, match.url);
 
@@ -40,19 +48,31 @@ const PrivatePluginsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
     }
   }, [baseUrl, history, loadingResources, pluginRepositoryResource]);
 
+  if (!canUsePrivatePlugins) {
+    return (
+      <PageContent pageTitle={pageTitle} className="privatePlugins">
+        <PrivatePluginFeature />
+      </PageContent>
+    );
+  }
+
   return (
     <PageContent
       pageTitle={pageTitle}
       className="privatePlugins"
       sideContent={<PrivatePluginList selectFirst={null === privatePluginId} />}
     >
-      {match.isExact
-        ? !isEmpty(privatePluginId) && (
-            <PrivatePlugin
-              pluginRepositoryResourceId={pluginRepositoryResource?.id}
-            />
-          )
-        : innerRoutes}
+      {!canUsePrivatePlugins ? (
+        <PrivatePluginFeature />
+      ) : match.isExact ? (
+        !isEmpty(privatePluginId) && (
+          <PrivatePlugin
+            pluginRepositoryResourceId={pluginRepositoryResource?.id}
+          />
+        )
+      ) : (
+        innerRoutes
+      )}
     </PageContent>
   );
 };
