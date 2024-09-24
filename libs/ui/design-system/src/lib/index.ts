@@ -272,3 +272,8 @@ export {
   ToggleView,
   Props as ToggleViewProps,
 } from "./components/Toggle/ToggleView";
+
+export {
+  VersionTag,
+  Props as VersionTagProps,
+} from "./components/VersionTag/VersionTag";
