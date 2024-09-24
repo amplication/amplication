@@ -30,9 +30,10 @@ export const GET_SERVICE_TEMPLATES = gql`
       codeGeneratorVersion
       codeGenerator
       licensed
-      entities {
+      version {
         id
-        name
+        version
+        message
       }
     }
   }
