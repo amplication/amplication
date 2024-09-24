@@ -26,6 +26,7 @@ import PluginsCatalogItem from "./PluginsCatalogItem";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { PRIVATE_PLUGINS_CATEGORY } from "./PluginTree";
+import PrivatePluginFeature from "./PrivatePluginsFeature";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -274,6 +275,10 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
       },
     }).catch(console.error);
   }, [createDefaultEntities, resource]);
+
+  if (category === PRIVATE_PLUGINS_CATEGORY && !canUsePrivatePlugins) {
+    return <PrivatePluginFeature />;
+  }
 
   return (
     <div>

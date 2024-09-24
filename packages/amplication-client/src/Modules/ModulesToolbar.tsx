@@ -13,8 +13,6 @@ import NewModuleAction from "../ModuleActions/NewModuleAction";
 import NewModuleDtoSelectButton from "../ModuleDto/NewModuleDtoSelectButton";
 import "./ModulesToolbar.scss";
 import { useModulesContext } from "./modulesContext";
-import NewModuleDtoButton from "../ModuleDto/NewModuleDtoButton";
-import BetaFeatureTag from "../Components/BetaFeatureTag";
 
 type Props = {
   resourceId: string;
@@ -52,7 +50,6 @@ const ModulesToolbar: React.FC<Props> = ({ moduleId, resourceId }) => {
       >
         <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
           <FlexItem itemsAlign={EnumItemsAlign.Center}>
-            {customActionsLicenseEnabled && <BetaFeatureTag />}
             <NewModuleDtoSelectButton
               resourceId={resourceId}
               moduleId={moduleId}

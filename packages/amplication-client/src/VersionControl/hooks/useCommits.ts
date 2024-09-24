@@ -176,14 +176,6 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
           ) ?? false
         );
       },
-      onCompleted: (response) => {
-        setCommitRunning(false);
-        setPendingChangesError(false);
-        resetPendingChanges();
-        commitUtils.refetchCommitsData(true);
-        const path = commitPath(projectBaseUrl, response.commit.id);
-        return history.push(path);
-      },
     });
 
   const commitChanges = useCallback(
@@ -194,9 +186,28 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
         variables: {
           data: data,
         },
-      }).catch(console.error);
+      })
+        .then((response) => {
+          setCommitRunning(false);
+          setPendingChangesError(false);
+          resetPendingChanges();
+          commitUtils.refetchCommitsData(true);
+          if (data.resourceTypeGroup === EnumResourceTypeGroup.Services) {
+            const path = commitPath(projectBaseUrl, response.data.commit.id);
+            history.push(path);
+          }
+        })
+        .catch(console.error);
     },
-    [commit, setCommitRunning]
+    [
+      commit,
+      commitUtils,
+      history,
+      projectBaseUrl,
+      resetPendingChanges,
+      setCommitRunning,
+      setPendingChangesError,
+    ]
   );
 
   const bypassLimitations = useMemo(() => {

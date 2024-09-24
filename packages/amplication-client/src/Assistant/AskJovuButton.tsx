@@ -25,7 +25,7 @@ const AskJovuButton = () => {
         setOpen(true);
       }}
     >
-      Ask Jovu (Beta)
+      Ask Jovu
     </Button>
   );
 };
