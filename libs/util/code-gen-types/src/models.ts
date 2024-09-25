@@ -340,14 +340,18 @@ export type CommitCreateInput = {
    */
   resourceIds?: InputMaybe<Array<Scalars['String']['input']>>;
   resourceTypeGroup: EnumResourceTypeGroup;
-  /** The version number when publishing platform changes. */
-  version?: InputMaybe<Scalars['String']['input']>;
+  resourceVersions?: InputMaybe<Array<CommitResourceVersionCreateInput>>;
 };
 
 export type CommitOrderByInput = {
   createdAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
   message?: InputMaybe<SortOrder>;
+};
+
+export type CommitResourceVersionCreateInput = {
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+  version?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CommitWhereInput = {

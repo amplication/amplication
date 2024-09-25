@@ -315,15 +315,18 @@ input CommitCreateInput {
   """
   resourceIds: [String!]
   resourceTypeGroup: EnumResourceTypeGroup!
-
-  """The version number when publishing platform changes."""
-  version: String
+  resourceVersions: [CommitResourceVersionCreateInput!]
 }
 
 input CommitOrderByInput {
   createdAt: SortOrder
   id: SortOrder
   message: SortOrder
+}
+
+input CommitResourceVersionCreateInput {
+  resourceId: String
+  version: String
 }
 
 input CommitWhereInput {
