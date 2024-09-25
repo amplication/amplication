@@ -5,24 +5,33 @@ import {
   EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
+  EnumFlexItemMargin,
   EnumItemsAlign,
+  EnumPanelStyle,
   EnumTextStyle,
   FlexItem,
   MultiStateToggle,
+  Panel,
   Text,
   TextInput,
   VersionTag,
 } from "@amplication/ui/design-system";
 import React, { useCallback, useMemo, useState } from "react";
 import { inc as incrementVersion, ReleaseType, valid } from "semver";
+import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { useAppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
-import { EnumResourceType, EnumResourceTypeGroup, Resource } from "../models";
+import {
+  EnumCommitStrategy,
+  EnumResourceType,
+  EnumResourceTypeGroup,
+  Resource,
+} from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import "./PublishChangesPage.scss";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import PublishTemplatesChangesButton from "./PublishTemplatesChangesbutton";
 
 const CLASS_NAME = "publish-changes-page";
 
@@ -83,7 +92,21 @@ const TEMPLATE_COLUMNS: DataGridColumn<resourceWithVersions>[] = [
     sortable: false,
     width: 120,
     renderCell: (props) => {
-      return <Button buttonStyle={EnumButtonStyle.Primary}>Publish</Button>;
+      return (
+        <PublishTemplatesChangesButton
+          buttonText="Publish"
+          commitMessage="commitMessage"
+          projectId={props.row.resource.projectId}
+          strategy={EnumCommitStrategy.Specific}
+          resourceId={props.row.resource.id}
+          resourceVersions={[
+            {
+              resourceId: props.row.resource.id,
+              version: props.row.newVersion,
+            },
+          ]}
+        />
+      );
     },
   },
 ];
@@ -147,6 +170,8 @@ const PublishChangesPage: React.FC<Props> = () => {
       .map((resourceChanges) => {
         const { resource } = resourceChanges;
 
+        resource.projectId = currentProject?.id;
+
         const currentVersion = resource?.version?.version;
         const newVersion = incrementVersion(
           !valid(currentVersion) ? "0.0.0" : currentVersion,
@@ -155,7 +180,7 @@ const PublishChangesPage: React.FC<Props> = () => {
 
         return { resource, currentVersion, newVersion };
       });
-  }, [pendingChangesByResource, version]);
+  }, [currentProject?.id, pendingChangesByResource, version]);
 
   const otherResources = useMemo((): Resource[] => {
     return pendingChangesByResource
@@ -200,26 +225,62 @@ const PublishChangesPage: React.FC<Props> = () => {
         />
         <FlexItem
           direction={EnumFlexDirection.Row}
+          margin={EnumFlexItemMargin.Bottom}
           end={
-            <Button buttonStyle={EnumButtonStyle.Primary}>Publish All</Button>
+            <PublishTemplatesChangesButton
+              buttonText="Publish All"
+              commitMessage="commitMessage"
+              projectId={currentProject?.id}
+              strategy={EnumCommitStrategy.AllWithPendingChanges}
+              resourceVersions={templates.map((template) => ({
+                resourceId: template.resource.id,
+                version: template.newVersion,
+              }))}
+            />
           }
         ></FlexItem>
 
-        <Text textStyle={EnumTextStyle.H4}>Templates</Text>
+        <Panel panelStyle={EnumPanelStyle.Transparent}>
+          <FlexItem margin={EnumFlexItemMargin.Bottom}>
+            <Text textStyle={EnumTextStyle.H4}>Templates</Text>
+          </FlexItem>
+          {templates.length === 0 ? (
+            <FlexItem margin={EnumFlexItemMargin.Top}>
+              <Text textStyle={EnumTextStyle.Description}>
+                No pending changes
+              </Text>
+            </FlexItem>
+          ) : (
+            <>
+              <MultiStateToggle
+                className={`${CLASS_NAME}__toggle`}
+                label="Version"
+                name="version"
+                options={OPTIONS}
+                onChange={handleChangeType}
+                selectedValue={version}
+              />
+              <DataGrid rows={templates} columns={TEMPLATE_COLUMNS} />
+            </>
+          )}
+        </Panel>
+        <Panel panelStyle={EnumPanelStyle.Transparent}>
+          <FlexItem margin={EnumFlexItemMargin.Bottom}>
+            <Text textStyle={EnumTextStyle.H4}>Plugins</Text>
+          </FlexItem>
 
-        <MultiStateToggle
-          className={`${CLASS_NAME}__toggle`}
-          label="Version"
-          name="version"
-          options={OPTIONS}
-          onChange={handleChangeType}
-          selectedValue={version}
-        />
-        <DataGrid rows={templates} columns={TEMPLATE_COLUMNS} />
-
-        <Text textStyle={EnumTextStyle.H4}>Plugins</Text>
-
-        <DataGrid rows={otherResources} columns={OTHERS_COLUMNS} />
+          {otherResources.length === 0 ? (
+            <FlexItem margin={EnumFlexItemMargin.Top}>
+              <Text textStyle={EnumTextStyle.Description}>
+                No pending changes
+              </Text>
+            </FlexItem>
+          ) : (
+            <>
+              <DataGrid rows={otherResources} columns={OTHERS_COLUMNS} />
+            </>
+          )}
+        </Panel>
       </FlexItem>
     </PageContent>
   );
