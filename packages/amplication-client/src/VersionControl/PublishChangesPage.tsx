@@ -25,13 +25,14 @@ import {
   EnumCommitStrategy,
   EnumResourceType,
   EnumResourceTypeGroup,
+  PendingChange,
   Resource,
 } from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import "./PublishChangesPage.scss";
-import PublishTemplatesChangesButton from "./PublishTemplatesChangesbutton";
+import PublishTemplatesChangesButton from "./PublishTemplatesChangesButton";
 
 const CLASS_NAME = "publish-changes-page";
 
@@ -39,6 +40,13 @@ type resourceWithVersions = {
   resource: Resource;
   currentVersion: string;
   newVersion: string;
+  commitMessage: string;
+};
+
+type resourceWithChanges = {
+  resource: Resource;
+  changes: PendingChange[];
+  commitMessage: string;
 };
 
 const TEMPLATE_COLUMNS: DataGridColumn<resourceWithVersions>[] = [
@@ -95,7 +103,7 @@ const TEMPLATE_COLUMNS: DataGridColumn<resourceWithVersions>[] = [
       return (
         <PublishTemplatesChangesButton
           buttonText="Publish"
-          commitMessage="commitMessage"
+          commitMessage={props.row.commitMessage}
           projectId={props.row.resource.projectId}
           strategy={EnumCommitStrategy.Specific}
           resourceId={props.row.resource.id}
@@ -111,13 +119,18 @@ const TEMPLATE_COLUMNS: DataGridColumn<resourceWithVersions>[] = [
   },
 ];
 
-const OTHERS_COLUMNS: DataGridColumn<Resource>[] = [
+const OTHERS_COLUMNS: DataGridColumn<resourceWithChanges>[] = [
   {
     key: "resourceType",
     name: "Type",
     width: 60,
     renderCell: (props) => {
-      return <ResourceCircleBadge type={props.row.resourceType} size="small" />;
+      return (
+        <ResourceCircleBadge
+          type={props.row.resource.resourceType}
+          size="small"
+        />
+      );
     },
   },
   {
@@ -126,7 +139,23 @@ const OTHERS_COLUMNS: DataGridColumn<Resource>[] = [
     resizable: false,
     sortable: false,
     renderCell: (props) => {
-      return <ResourceNameLink resource={props.row} />;
+      return <ResourceNameLink resource={props.row.resource} />;
+    },
+  },
+  {
+    key: "changes",
+    name: "Changes",
+    resizable: false,
+    sortable: false,
+    width: 150,
+    renderCell: (props) => {
+      console.log({ props });
+      return (
+        <Text textStyle={EnumTextStyle.Description}>
+          {props.row.changes.length}{" "}
+          {props.row.changes.length === 1 ? "Plugin" : "Plugins"}
+        </Text>
+      );
     },
   },
   {
@@ -156,6 +185,7 @@ const PublishChangesPage: React.FC<Props> = () => {
   const [version, setVersion] = useState<ReleaseType>("minor");
   const pageTitle = "Changes";
   const { currentProject } = useAppContext();
+  const [commitMessage, setCommitMessage] = useState<string>("");
 
   const { pendingChangesByResource } = usePendingChanges(
     currentProject,
@@ -178,19 +208,21 @@ const PublishChangesPage: React.FC<Props> = () => {
           version
         );
 
-        return { resource, currentVersion, newVersion };
+        return { resource, currentVersion, newVersion, commitMessage };
       });
-  }, [currentProject?.id, pendingChangesByResource, version]);
+  }, [commitMessage, currentProject?.id, pendingChangesByResource, version]);
 
-  const otherResources = useMemo((): Resource[] => {
+  const otherResources = useMemo((): resourceWithChanges[] => {
     return pendingChangesByResource
       .filter(
         (x) => x.resource.resourceType !== EnumResourceType.ServiceTemplate
       )
       .map((resourceChanges) => {
-        return resourceChanges.resource;
+        const { resource, changes } = resourceChanges;
+
+        return { resource, changes, commitMessage };
       });
-  }, [pendingChangesByResource]);
+  }, [commitMessage, pendingChangesByResource]);
 
   const handleChangeType = useCallback(
     (type: ReleaseType) => {
@@ -217,6 +249,10 @@ const PublishChangesPage: React.FC<Props> = () => {
           textareaSize="small"
           name="message"
           label={"Version message..."}
+          value={commitMessage}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            setCommitMessage(event.target.value);
+          }}
           //disabled={commitChangesLoading}
           autoFocus
           hideLabel

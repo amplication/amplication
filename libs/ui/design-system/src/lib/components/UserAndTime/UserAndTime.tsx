@@ -17,6 +17,7 @@ export type Props = {
   label?: string;
   emptyText?: string;
   valueColor?: EnumTextColor;
+  overrideTooltipDirection?: DirectionType;
 };
 
 const DIRECTION_UP = "n";
@@ -24,7 +25,7 @@ const DIRECTION_DOWN = "s";
 const DIRECTION_THRESHOLD = 100;
 const NEVER = "never";
 const CLASS_NAME = "amp-user-and-time";
-type DirectionType = "n" | "s";
+type DirectionType = "n" | "s" | "e" | "w";
 
 export function UserAndTime({
   account,
@@ -32,9 +33,11 @@ export function UserAndTime({
   label,
   emptyText = NEVER,
   valueColor = EnumTextColor.White,
+  overrideTooltipDirection,
 }: Props) {
-  const [tooltipDirection, setTooltipDirection] =
-    useState<DirectionType>(DIRECTION_DOWN);
+  const [tooltipDirection, setTooltipDirection] = useState<DirectionType>(
+    overrideTooltipDirection || DIRECTION_DOWN
+  );
 
   const { firstName, lastName } = account || {};
 
@@ -43,6 +46,7 @@ export function UserAndTime({
   }, [time]);
 
   const changeTooltipDirection = (pageY: number) =>
+    !overrideTooltipDirection &&
     setTooltipDirection(
       pageY < DIRECTION_THRESHOLD ? DIRECTION_DOWN : DIRECTION_UP
     );

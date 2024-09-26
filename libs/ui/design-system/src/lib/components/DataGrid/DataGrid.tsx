@@ -72,7 +72,7 @@ export const DataGrid: React.FC<Props<any>> = ({
       });
     }
     return rows;
-  }, [clientSideSort, rows, sortColumns]);
+  }, [clientSideSort, columnValueGetters, rows, sortColumns]);
 
   return (
     <ReactDataGrid

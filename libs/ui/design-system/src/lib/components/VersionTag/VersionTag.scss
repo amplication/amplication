@@ -16,8 +16,8 @@ $width: 70px;
   font-size: var(--tag-font-size);
   border: $border-dark;
   background-color: transparent;
-  color: var(--theme-green);
-  border-color: var(--theme-green);
+  color: var(--theme-blue);
+  border-color: var(--theme-blue);
   font-weight: normal;
 
   &--none {
@@ -31,7 +31,7 @@ $width: 70px;
   }
 
   &--current {
-    color: var(--theme-green);
-    border-color: var(--theme-green);
+    color: var(--theme-blue);
+    border-color: var(--theme-blue);
   }
 }
