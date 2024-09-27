@@ -107,6 +107,10 @@ export class ResourceVersionService {
     }
   }
 
+  async count(args: FindManyResourceVersionArgs): Promise<number> {
+    return this.prisma.resourceVersion.count(args);
+  }
+
   async findMany(
     args: FindManyResourceVersionArgs
   ): Promise<ResourceVersion[]> {

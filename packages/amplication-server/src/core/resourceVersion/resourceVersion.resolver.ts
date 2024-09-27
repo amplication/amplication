@@ -12,6 +12,7 @@ import { FindManyResourceVersionArgs } from "./dto/FindManyResourceVersionArgs";
 import { FindOneResourceVersionArgs } from "./dto/FindOneResourceVersionArgs";
 import { ResourceVersion } from "./dto/ResourceVersion";
 import { ResourceVersionService } from "./resourceVersion.service";
+import { MetaQueryPayload } from "../../dto/MetaQueryPayload";
 
 @Resolver(() => ResourceVersion)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -30,6 +31,15 @@ export class ResourceVersionResolver {
     @Args() args: FindManyResourceVersionArgs
   ): Promise<ResourceVersion[]> {
     return this.service.findMany(args);
+  }
+  @Query(() => MetaQueryPayload)
+  async _resourceVersionsMeta(
+    @Args() args: FindManyResourceVersionArgs
+  ): Promise<MetaQueryPayload> {
+    const result = await this.service.count(args);
+    return {
+      count: result,
+    };
   }
 
   @Query(() => ResourceVersion)
