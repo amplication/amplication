@@ -10,6 +10,17 @@ import { ResourceVersion } from "../models";
 export const RESOURCE_VERSION_LIST_COLUMNS: DataGridColumn<ResourceVersion>[] =
   [
     {
+      key: "version",
+      name: "Version",
+      resizable: true,
+      sortable: true,
+      width: 150,
+
+      renderCell: (props) => {
+        return <VersionTag version={props.row.version} />;
+      },
+    },
+    {
       key: "createdAt",
       name: "Date",
       renderCell: (props) => {
@@ -24,17 +35,6 @@ export const RESOURCE_VERSION_LIST_COLUMNS: DataGridColumn<ResourceVersion>[] =
       width: 250,
       resizable: true,
       sortable: true,
-    },
-    {
-      key: "version",
-      name: "Version",
-      resizable: true,
-      sortable: true,
-      width: 150,
-
-      renderCell: (props) => {
-        return <VersionTag version={props.row.version} />;
-      },
     },
     {
       key: "message",

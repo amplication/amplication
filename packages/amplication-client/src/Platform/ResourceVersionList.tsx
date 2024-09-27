@@ -1,18 +1,20 @@
 import {
   CircularProgress,
   DataGrid,
+  DataGridSortColumn,
   EnumContentAlign,
   EnumGapSize,
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
+  Pagination,
   SearchField,
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
@@ -20,11 +22,11 @@ import PageContent from "../Layout/PageContent";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import useResourceVersion from "./hooks/useResourceVersion";
-//import "./ResourceVersionList.scss";
+import "./ResourceVersionList.scss";
 import { RESOURCE_VERSION_LIST_COLUMNS } from "./ResourceVersionListDataColumns";
 
-const CLASS_NAME = "resource-list";
-const PAGE_TITLE = "Project Overview";
+const CLASS_NAME = "resource-version-list";
+const PAGE_TITLE = "Version List";
 
 function ResourceVersionList() {
   const { currentResource } = useContext(AppContext);
@@ -33,10 +35,29 @@ function ResourceVersionList() {
     resourceVersions,
     errorResourceVersions,
     loadingResourceVersions,
-    handleSearchChange,
+    setSearchPhrase,
+    pageSize,
+    setPageNumber,
+    pageNumber,
+    setOrderBy,
+    resourceVersionsCount,
   } = useResourceVersion(currentResource?.id);
 
   const errorMessage = formatError(errorResourceVersions);
+
+  const onSortColumnsChange = useCallback(
+    (sortColumns: DataGridSortColumn[]) => {
+      setPageNumber(1);
+      const [sortColumn] = sortColumns;
+      if (!sortColumn) {
+        setOrderBy(undefined);
+        return;
+      }
+
+      setOrderBy(sortColumn);
+    },
+    [setOrderBy, setPageNumber]
+  );
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
@@ -50,16 +71,30 @@ function ResourceVersionList() {
               itemsAlign={EnumItemsAlign.Center}
             >
               <Text textStyle={EnumTextStyle.Tag}>
-                {resourceVersions.length}{" "}
-                {pluralize(resourceVersions.length, "Version", "Versions")}
+                {resourceVersionsCount}{" "}
+                {pluralize(resourceVersionsCount, "Version", "Versions")}
               </Text>
               <SearchField
                 label="search"
                 placeholder="search"
-                onChange={handleSearchChange}
+                onChange={setSearchPhrase}
               />
             </FlexItem>
           </>
+        }
+        end={
+          <Pagination
+            count={
+              resourceVersionsCount > 0
+                ? Math.ceil(resourceVersionsCount / pageSize)
+                : 1
+            }
+            page={pageNumber}
+            onChange={(event, page) => {
+              setPageNumber(page);
+              event.preventDefault();
+            }}
+          />
         }
       ></FlexItem>
       <HorizontalRule doubleSpacing />
@@ -75,6 +110,8 @@ function ResourceVersionList() {
         <div className={`${CLASS_NAME}__grid-container`}>
           <DataGrid
             columns={RESOURCE_VERSION_LIST_COLUMNS}
+            clientSideSort={false}
+            onSortColumnsChange={onSortColumnsChange}
             rows={resourceVersions}
           ></DataGrid>
         </div>

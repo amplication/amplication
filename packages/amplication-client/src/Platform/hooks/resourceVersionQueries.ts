@@ -19,10 +19,17 @@ export const GET_RESOURCE_VERSION = gql`
 `;
 
 export const GET_RESOURCE_VERSIONS = gql`
-  query getResourceVersions($resourceId: String!, $whereName: StringFilter) {
+  query getResourceVersions(
+    $where: ResourceVersionWhereInput
+    $orderBy: ResourceVersionOrderByInput
+    $take: Int
+    $skip: Int
+  ) {
     resourceVersions(
-      where: { resource: { id: $resourceId }, message: $whereName }
-      orderBy: { createdAt: Desc }
+      where: $where
+      orderBy: $orderBy
+      take: $take
+      skip: $skip
     ) {
       id
       createdAt
@@ -35,6 +42,9 @@ export const GET_RESOURCE_VERSIONS = gql`
           lastName
         }
       }
+    }
+    _resourceVersionsMeta(where: $where) {
+      count
     }
   }
 `;
