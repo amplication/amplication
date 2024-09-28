@@ -1434,6 +1434,7 @@ type Mutation {
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   createPluginRepository(data: ResourceCreateInput!): Resource!
   createPrivatePlugin(data: PrivatePluginCreateInput!): PrivatePlugin!
+  createPrivatePluginVersion(data: PrivatePluginVersionCreateInput!): PrivatePluginVersion!
   createProject(data: ProjectCreateInput!): Project!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
@@ -1504,6 +1505,7 @@ type Mutation {
   updatePackage(data: PackageUpdateInput!, where: WhereUniqueInput!): Package!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updatePrivatePlugin(data: PrivatePluginUpdateInput!, where: WhereUniqueInput!): PrivatePlugin!
+  updatePrivatePluginVersion(data: PrivatePluginVersionUpdateInput!, where: WherePrivatePluginVersionUniqueInput!): PrivatePluginVersion!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
@@ -1728,6 +1730,7 @@ type PrivatePlugin implements IBlock {
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
+  versions: [PrivatePluginVersion!]!
 }
 
 input PrivatePluginCreateInput {
@@ -1754,6 +1757,26 @@ input PrivatePluginUpdateInput {
   description: String
   displayName: String
   enabled: Boolean!
+}
+
+type PrivatePluginVersion {
+  configurations: JSONObject
+  deprecated: Boolean!
+  enabled: Boolean!
+  settings: JSONObject
+  version: String!
+}
+
+input PrivatePluginVersionCreateInput {
+  privatePlugin: WhereParentIdInput!
+  version: String!
+}
+
+input PrivatePluginVersionUpdateInput {
+  configurations: JSONObject
+  deprecated: Boolean
+  enabled: Boolean
+  settings: JSONObject
 }
 
 input PrivatePluginWhereInput {
@@ -2439,6 +2462,11 @@ input WhereEnumMemberUniqueInput {
 
 input WhereParentIdInput {
   connect: WhereUniqueInput!
+}
+
+input WherePrivatePluginVersionUniqueInput {
+  privatePlugin: WhereUniqueInput!
+  version: String!
 }
 
 input WherePropertyUniqueInput {

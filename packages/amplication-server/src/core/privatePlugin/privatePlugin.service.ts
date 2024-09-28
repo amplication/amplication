@@ -13,6 +13,16 @@ import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { ResourceService } from "../resource/resource.service";
+import { CreatePrivatePluginVersionArgs } from "./dto/CreatePrivatePluginVersionArgs";
+import { PrivatePluginVersion } from "./dto/PrivatePluginVersion";
+import { UpdatePrivatePluginVersionArgs } from "./dto/UpdatePrivatePluginVersionArgs";
+
+const DEFAULT_PRIVATE_PLUGIN_VERSION: Omit<PrivatePluginVersion, "version"> = {
+  deprecated: false,
+  enabled: true,
+  settings: null,
+  configurations: null,
+};
 
 @Injectable()
 export class PrivatePluginService extends BlockTypeService<
@@ -82,5 +92,92 @@ export class PrivatePluginService extends BlockTypeService<
       throw new AmplicationError(
         `Feature Unavailable. Please upgrade your plan to use the Private Plugins Module.`
       );
+  }
+
+  async createVersion(
+    args: CreatePrivatePluginVersionArgs,
+    user: User
+  ): Promise<PrivatePluginVersion> {
+    const plugin = await super.findOne({
+      where: { id: args.data.privatePlugin.connect.id },
+    });
+    if (!plugin) {
+      throw new AmplicationError(
+        `Private Plugin not found, ID: ${args.data.privatePlugin.connect.id}`
+      );
+    }
+
+    const existingVersion = plugin.versions?.find(
+      (property) => property.version === args.data.version
+    );
+    if (existingVersion) {
+      throw new AmplicationError(
+        `Version already exists, version: ${args.data.version}, Private Plugin ID: ${args.data.privatePlugin.connect.id}`
+      );
+    }
+
+    const newVersion: PrivatePluginVersion = {
+      ...DEFAULT_PRIVATE_PLUGIN_VERSION,
+      version: args.data.version,
+    };
+
+    await super.update(
+      {
+        where: { id: plugin.id },
+        data: {
+          enabled: plugin.enabled,
+          versions: [...(plugin.versions || []), newVersion],
+        },
+      },
+      user
+    );
+
+    return newVersion;
+  }
+
+  async updateVersion(
+    args: UpdatePrivatePluginVersionArgs,
+    user: User
+  ): Promise<PrivatePluginVersion> {
+    const plugin = await super.findOne({
+      where: { id: args.where.privatePlugin.id },
+    });
+    if (!plugin) {
+      throw new AmplicationError(
+        `Private Plugin not found, ID: ${args.where.privatePlugin.id}`
+      );
+    }
+
+    const existingVersionIndex = plugin.versions?.findIndex(
+      (version) => version.version === args.where.version
+    );
+
+    if (existingVersionIndex === -1) {
+      throw new AmplicationError(
+        `Private Plugin Version not found, version: ${args.where.version}, Private Plugin ID: ${args.where.privatePlugin.id}`
+      );
+    }
+
+    const existingVersion = plugin.versions[existingVersionIndex];
+
+    const updatedVersion = {
+      ...existingVersion,
+      ...args.data,
+    };
+
+    plugin.versions[existingVersionIndex] = updatedVersion;
+
+    await super.update(
+      {
+        where: { id: plugin.id },
+        data: {
+          enabled: plugin.enabled,
+          versions: plugin.versions,
+        },
+      },
+      user
+    );
+
+    return updatedVersion;
   }
 }
