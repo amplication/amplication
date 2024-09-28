@@ -40,6 +40,7 @@ import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
 import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
+import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -382,6 +383,10 @@ describe("ProjectService", () => {
             archiveProjectResources: jest.fn(() => Promise.resolve([])),
           })),
         },
+        {
+          provide: ResourceVersionService,
+          useClass: jest.fn(() => ({})),
+        },
         MockedSegmentAnalyticsProvider(),
         {
           provide: GitProviderService,
@@ -592,6 +597,7 @@ describe("ProjectService", () => {
       expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
         changesArgs.projectId,
         EnumResourceTypeGroup.Services,
+        null,
         changesArgs.userId
       );
       expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(1);
