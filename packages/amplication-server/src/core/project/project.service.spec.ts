@@ -604,6 +604,7 @@ describe("ProjectService", () => {
       expect(blockServiceGetChangedBlocksMock).toBeCalledWith(
         changesArgs.projectId,
         EnumResourceTypeGroup.Services,
+        null,
         changesArgs.userId
       );
       expect(buildServiceCreateMock).toBeCalledTimes(1);
