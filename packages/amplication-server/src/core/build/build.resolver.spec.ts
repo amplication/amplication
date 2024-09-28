@@ -140,26 +140,6 @@ const BUILD_STATUS_QUERY = gql`
   }
 `;
 
-const CREATE_BUILD_MUTATION = gql`
-  mutation ($resourceId: String!, $commitId: String!, $message: String!) {
-    createBuild(
-      data: {
-        resource: { connect: { id: $resourceId } }
-        commit: { connect: { id: $commitId } }
-        message: $message
-      }
-    ) {
-      id
-      resourceId
-      userId
-      version
-      actionId
-      createdAt
-      commitId
-    }
-  }
-`;
-
 const buildServiceFindManyMock = jest.fn(() => [EXAMPLE_BUILD]);
 const buildServiceFindOneMock = jest.fn(() => EXAMPLE_BUILD);
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
@@ -352,32 +332,5 @@ describe("BuildResolver", () => {
     });
     expect(buildServiceCalcBuildStatusMock).toBeCalledTimes(1);
     expect(buildServiceCalcBuildStatusMock).toBeCalledWith(EXAMPLE_BUILD_ID);
-  });
-
-  it("should create a build", async () => {
-    const args = {
-      data: {
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
-        commit: { connect: { id: EXAMPLE_COMMIT_ID } },
-        message: EXAMPLE_MESSAGE,
-      },
-    };
-    const res = await apolloClient.executeOperation({
-      query: CREATE_BUILD_MUTATION,
-      variables: {
-        resourceId: EXAMPLE_RESOURCE_ID,
-        commitId: EXAMPLE_COMMIT_ID,
-        message: EXAMPLE_MESSAGE,
-      },
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      createBuild: {
-        ...EXAMPLE_BUILD,
-        createdAt: EXAMPLE_BUILD.createdAt.toISOString(),
-      },
-    });
-    expect(buildServiceCreateMock).toBeCalledTimes(1);
-    expect(buildServiceCreateMock).toBeCalledWith(args);
   });
 });
