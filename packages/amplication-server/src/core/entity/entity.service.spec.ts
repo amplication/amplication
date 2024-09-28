@@ -1584,6 +1584,7 @@ describe("EntityService", () => {
       await service.getChangedEntities(
         EXAMPLE_PROJECT_ID,
         EnumResourceTypeGroup.Services,
+        null,
         EXAMPLE_USER_ID
       )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_CREATE]);
@@ -1603,6 +1604,7 @@ describe("EntityService", () => {
       await service.getChangedEntities(
         EXAMPLE_PROJECT_ID,
         EnumResourceTypeGroup.Services,
+        null,
         EXAMPLE_USER_ID
       )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_UPDATE]);
@@ -1615,6 +1617,7 @@ describe("EntityService", () => {
       await service.getChangedEntities(
         EXAMPLE_PROJECT_ID,
         EnumResourceTypeGroup.Services,
+        null,
         EXAMPLE_USER_ID
       )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_DELETE]);
