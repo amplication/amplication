@@ -2,6 +2,7 @@ import {
   EnumFlexDirection,
   EnumItemsAlign,
   EnumPanelStyle,
+  EnumVersionTagState,
   FlexItem,
   Form,
   Panel,
@@ -79,10 +80,10 @@ const PrivatePluginVersionForm = ({
                   version={initialValues.version}
                   state={
                     !formik.values.enabled
-                      ? "disabled"
+                      ? EnumVersionTagState.Disabled
                       : formik.values.deprecated
-                      ? "deprecated"
-                      : "current"
+                      ? EnumVersionTagState.Deprecated
+                      : EnumVersionTagState.Current
                   }
                 />
 
