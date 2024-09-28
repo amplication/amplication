@@ -1,5 +1,12 @@
 import { UseFilters, UseGuards } from "@nestjs/common";
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from "@nestjs/graphql";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { BlockTypeResolver } from "../block/blockType.resolver";
@@ -49,7 +56,7 @@ export class PrivatePluginResolver extends BlockTypeResolver(
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.BlockId,
-    "data.moduleDto.connect.id"
+    "data.privatePlugin.connect.id"
   )
   async createPrivatePluginVersion(
     @UserEntity() user: User,
@@ -61,11 +68,25 @@ export class PrivatePluginResolver extends BlockTypeResolver(
   @Mutation(() => PrivatePluginVersion, {
     nullable: false,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.moduleDto.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlockId,
+    "where.privatePlugin.id"
+  )
   async updatePrivatePluginVersion(
     @UserEntity() user: User,
     @Args() args: UpdatePrivatePluginVersionArgs
   ): Promise<PrivatePluginVersion> {
     return this.service.updateVersion(args, user);
+  }
+
+  @ResolveField(() => User)
+  async versions(
+    @Parent() privatePlugin: PrivatePlugin
+  ): Promise<PrivatePluginVersion[]> {
+    if (!privatePlugin.versions) {
+      return [];
+    } else {
+      return privatePlugin.versions;
+    }
   }
 }
