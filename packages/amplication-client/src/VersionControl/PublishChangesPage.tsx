@@ -170,7 +170,7 @@ const OTHERS_COLUMNS: DataGridColumn<resourceWithChanges>[] = [
   },
 ];
 
-const OPTIONS: {
+export const SEMVER_OPTIONS: {
   label: string;
   value: ReleaseType;
 }[] = [
@@ -292,7 +292,7 @@ const PublishChangesPage: React.FC<Props> = () => {
                 className={`${CLASS_NAME}__toggle`}
                 label="Version"
                 name="version"
-                options={OPTIONS}
+                options={SEMVER_OPTIONS}
                 onChange={handleChangeType}
                 selectedValue={version}
               />

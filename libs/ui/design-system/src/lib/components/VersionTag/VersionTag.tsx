@@ -4,7 +4,7 @@ import "./VersionTag.scss";
 export type Props = {
   className?: string;
   version: string;
-  state?: "previous" | "current";
+  state?: "previous" | "current" | "deprecated" | "disabled";
 };
 
 const CLASS_NAME = "amp-version-tag";
