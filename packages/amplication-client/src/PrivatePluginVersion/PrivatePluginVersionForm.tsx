@@ -1,5 +1,8 @@
 import {
+  Button,
+  EnumButtonStyle,
   EnumFlexDirection,
+  EnumFlexItemMargin,
   EnumItemsAlign,
   EnumPanelStyle,
   EnumVersionTagState,
@@ -11,10 +14,11 @@ import {
 } from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import { omit } from "lodash";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import * as models from "../models";
-import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
+import PrivatePluginVersionCodeField from "./PrivatePluginVersionCodeField";
+import "./PrivatePluginVersionForm.scss";
 
 type Props = {
   onSubmit: (values: models.PrivatePluginVersion) => void;
@@ -36,6 +40,8 @@ export const INITIAL_VALUES: Partial<models.PrivatePluginVersion> = {
 
 const FORM_SCHEMA = {};
 
+const CLASS_NAME = "private-plugin-version-form";
+
 const PrivatePluginVersionForm = ({
   onSubmit,
   onVersionClose,
@@ -43,6 +49,8 @@ const PrivatePluginVersionForm = ({
   disabled,
   privatePlugin,
 }: Props) => {
+  const [showDetails, setShowDetails] = useState<boolean>(false);
+
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       {
@@ -57,6 +65,11 @@ const PrivatePluginVersionForm = ({
     } as models.PrivatePluginVersion;
   }, [defaultValues]);
 
+  //we are not using auto-save to allow the use to save the changes only after they have finished editing
+  const handleChange = (formik) => {
+    formik.submitForm();
+  };
+
   return (
     <Formik
       initialValues={initialValues}
@@ -68,13 +81,22 @@ const PrivatePluginVersionForm = ({
     >
       {(formik) => {
         return (
-          <Panel style={{ padding: 0 }} panelStyle={EnumPanelStyle.Transparent}>
+          <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
             <Form>
-              {!disabled && <FormikAutoSave debounceMS={1000} />}
-
               <FlexItem
                 itemsAlign={EnumItemsAlign.Center}
                 direction={EnumFlexDirection.Row}
+                end={
+                  <>
+                    <Button
+                      buttonStyle={EnumButtonStyle.Text}
+                      icon="edit_2"
+                      onClick={() => {
+                        setShowDetails(!showDetails);
+                      }}
+                    />
+                  </>
+                }
               >
                 <VersionTag
                   version={initialValues.version}
@@ -87,9 +109,52 @@ const PrivatePluginVersionForm = ({
                   }
                 />
 
-                <ToggleField label="Enabled" name="enabled" />
-                <ToggleField label="Deprecated" name="deprecated" />
+                <ToggleField
+                  label="Enabled"
+                  name="enabled"
+                  onValueChange={() => {
+                    handleChange(formik);
+                  }}
+                />
+                <ToggleField
+                  label="Deprecated"
+                  name="deprecated"
+                  onValueChange={() => {
+                    handleChange(formik);
+                  }}
+                />
               </FlexItem>
+              {showDetails && (
+                <FlexItem
+                  direction={EnumFlexDirection.Column}
+                  itemsAlign={EnumItemsAlign.End}
+                >
+                  <FlexItem
+                    direction={EnumFlexDirection.Row}
+                    margin={EnumFlexItemMargin.Top}
+                  >
+                    <PrivatePluginVersionCodeField
+                      name="settings"
+                      label="Settings"
+                      initialValue={initialValues.settings}
+                    />
+                    <PrivatePluginVersionCodeField
+                      name="configurations"
+                      label="Configurations"
+                      initialValue={initialValues.configurations}
+                    />
+                  </FlexItem>
+                  <Button
+                    buttonStyle={EnumButtonStyle.Primary}
+                    disabled={disabled || !formik.isValid || !formik.dirty}
+                    onClick={() => {
+                      handleChange(formik);
+                    }}
+                  >
+                    Save
+                  </Button>
+                </FlexItem>
+              )}
             </Form>
           </Panel>
         );
