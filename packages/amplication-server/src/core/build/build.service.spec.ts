@@ -33,7 +33,6 @@ import { BillingService } from "../billing/billing.service";
 import { GitProviderService } from "../git/git.provider.service";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
-import { info } from "console";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";

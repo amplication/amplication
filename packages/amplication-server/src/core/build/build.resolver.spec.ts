@@ -16,7 +16,6 @@ import { UserService } from "../user/user.service";
 import { Build } from "./dto/Build";
 import { Commit, Resource, User } from "../../models";
 import { Action } from "../action/dto";
-import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 import { CommitService } from "../commit/commit.service";
 import { EnumResourceType } from "@amplication/code-gen-types";
 import { ResourceService } from "../resource/resource.service";
@@ -128,14 +127,6 @@ const ARCHIVE_URI_QUERY = gql`
   query ($id: String!) {
     build(where: { id: $id }) {
       archiveURI
-    }
-  }
-`;
-
-const BUILD_STATUS_QUERY = gql`
-  query ($id: String!) {
-    build(where: { id: $id }) {
-      status
     }
   }
 `;

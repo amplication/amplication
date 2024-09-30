@@ -12,7 +12,6 @@ import { ResourceService } from "../resource/resource.service";
 import { UserService } from "../user/user.service";
 import { BuildService } from "./build.service";
 import { Build } from "./dto/Build";
-import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
 import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
 
