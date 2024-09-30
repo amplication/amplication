@@ -1,6 +1,6 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Prisma, PrismaService } from "../../prisma";
+import { EnumBuildGitStatus, Prisma, PrismaService } from "../../prisma";
 import { orderBy } from "lodash";
 import * as CodeGenTypes from "@amplication/code-gen-types";
 import { ResourceRole, User } from "../../models";
@@ -275,6 +275,8 @@ export class BuildService {
         ...args.data,
         version,
         createdAt: new Date(),
+        status: EnumBuildStatus.Running,
+        gitStatus: EnumBuildGitStatus.Waiting,
         blockVersions: {
           connect: [],
         },
@@ -386,26 +388,6 @@ export class BuildService {
     return generateStep;
   }
 
-  async calcBuildStatus(buildId: string): Promise<EnumBuildStatus> {
-    const build = await this.prisma.build.findUnique({
-      where: {
-        id: buildId,
-      },
-      include: ACTION_INCLUDE,
-    });
-
-    if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;
-    const steps = build.action.steps;
-
-    if (steps.every((step) => step.status === EnumActionStepStatus.Success))
-      return EnumBuildStatus.Completed;
-
-    if (steps.some((step) => step.status === EnumActionStepStatus.Failed))
-      return EnumBuildStatus.Failed;
-
-    return EnumBuildStatus.Running;
-  }
-
   async onCodeGenerationSuccess(buildId: string): Promise<void> {
     const step = await this.getBuildStep(buildId, GENERATE_STEP_NAME);
     if (!step) {
@@ -453,6 +435,20 @@ export class BuildService {
     await this.actionService.complete(step, EnumActionStepStatus.Success);
   }
 
+  async updateBuildStatuses(
+    buildId: string,
+    status: EnumBuildStatus | undefined,
+    gitStatus?: EnumBuildGitStatus | undefined
+  ): Promise<void> {
+    await this.prisma.build.update({
+      where: { id: buildId },
+      data: {
+        status,
+        gitStatus,
+      },
+    });
+  }
+
   public async onCodeGenerationFailure(
     response: CodeGenerationFailure.Value
   ): Promise<void> {
@@ -471,6 +467,11 @@ export class BuildService {
     }
 
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
+    await this.updateBuildStatuses(
+      buildId,
+      EnumBuildStatus.Failed,
+      EnumBuildGitStatus.Canceled
+    );
   }
 
   /**
@@ -681,6 +682,11 @@ export class BuildService {
         PUSH_TO_GIT_STEP_FINISH_LOG(response.gitProvider)
       );
       await this.actionService.complete(step, EnumActionStepStatus.Success);
+      await this.updateBuildStatuses(
+        build.id,
+        EnumBuildStatus.Completed,
+        EnumBuildGitStatus.Completed
+      );
 
       //In case this is a preview user - a success email will be sent after the first code generation
       await this.userService.handleUserPullRequestCompleted(
@@ -703,6 +709,11 @@ export class BuildService {
       );
       await this.actionService.logInfo(step, error);
       await this.actionService.complete(step, EnumActionStepStatus.Failed);
+      await this.updateBuildStatuses(
+        build.id,
+        EnumBuildStatus.Failed,
+        EnumBuildGitStatus.Failed
+      );
       await this.resourceService.reportSyncMessage(
         build.resourceId,
         `Error: ${error}`
@@ -741,6 +752,11 @@ export class BuildService {
       response.errorMessage
     );
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
+    await this.updateBuildStatuses(
+      build.id,
+      EnumBuildStatus.Failed,
+      EnumBuildGitStatus.Failed
+    );
 
     await this.analytics.trackManual({
       user: {
@@ -864,6 +880,11 @@ export class BuildService {
     }
 
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
+    await this.updateBuildStatuses(
+      buildId,
+      EnumBuildStatus.Failed,
+      EnumBuildGitStatus.Canceled
+    );
   }
 
   public async onDownloadPrivatePluginLog(
@@ -1009,6 +1030,11 @@ export class BuildService {
       );
 
       if (!resourceRepository) {
+        await this.updateBuildStatuses(
+          build.id,
+          EnumBuildStatus.Completed,
+          EnumBuildGitStatus.NotConnected
+        );
         return;
       }
       kafkaEventKey = resourceRepository.id;

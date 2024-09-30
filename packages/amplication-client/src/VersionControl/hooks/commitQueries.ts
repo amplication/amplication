@@ -89,6 +89,7 @@ export const COMMIT_FIELDS_FRAGMENT = gql`
         }
       }
       status
+      gitStatus
       archiveURI
     }
   }

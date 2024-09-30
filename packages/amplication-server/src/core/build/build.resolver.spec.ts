@@ -148,10 +148,6 @@ const actionServiceFindOneMock = jest.fn(() => EXAMPLE_ACTION);
 const commitServiceFindOneMock = jest.fn(() => EXAMPLE_COMMIT);
 const resourceServiceFindOneMock = jest.fn(() => EXAMPLE_RESOURCE);
 
-const buildServiceCalcBuildStatusMock = jest.fn(() => {
-  return EnumBuildStatus.Completed;
-});
-
 const mockCanActivate = jest.fn(() => true);
 
 describe("BuildResolver", () => {
@@ -168,7 +164,6 @@ describe("BuildResolver", () => {
           useClass: jest.fn(() => ({
             findMany: buildServiceFindManyMock,
             findOne: buildServiceFindOneMock,
-            calcBuildStatus: buildServiceCalcBuildStatusMock,
             create: buildServiceCreateMock,
           })),
         },
@@ -198,9 +193,9 @@ describe("BuildResolver", () => {
         },
         {
           provide: AmplicationLogger,
-          useClass: jest.fn(() => ({
-            error: jest.fn(),
-          })),
+          useValue: {
+            child: jest.fn().mockReturnThis(),
+          },
         },
         {
           provide: ConfigService,
@@ -317,20 +312,5 @@ describe("BuildResolver", () => {
         archiveURI: `/generated-apps/${EXAMPLE_BUILD_ID}.zip`,
       },
     });
-  });
-
-  it("should get a build status", async () => {
-    const res = await apolloClient.executeOperation({
-      query: BUILD_STATUS_QUERY,
-      variables: { id: EXAMPLE_BUILD_ID },
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      build: {
-        status: EnumBuildStatus.Completed,
-      },
-    });
-    expect(buildServiceCalcBuildStatusMock).toBeCalledTimes(1);
-    expect(buildServiceCalcBuildStatusMock).toBeCalledWith(EXAMPLE_BUILD_ID);
   });
 });

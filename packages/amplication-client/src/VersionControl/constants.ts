@@ -47,6 +47,14 @@ export const BUILD_STATUS_TO_STYLE: {
     style: EnumCircleIconStyle.Positive,
     icon: "check",
   },
+  [models.EnumBuildStatus.Canceled]: {
+    style: EnumCircleIconStyle.Warning,
+    icon: "",
+  },
+  [models.EnumBuildStatus.Unknown]: {
+    style: EnumCircleIconStyle.Warning,
+    icon: "",
+  },
 };
 
 export const BUILD_STATUS_TO_ICON: {
@@ -56,6 +64,8 @@ export const BUILD_STATUS_TO_ICON: {
   [models.EnumBuildStatus.Failed]: "close",
   [models.EnumBuildStatus.Invalid]: "circle_loader",
   [models.EnumBuildStatus.Running]: "",
+  [models.EnumBuildStatus.Canceled]: "",
+  [models.EnumBuildStatus.Unknown]: "",
 };
 
 export const STEP_STATUS_TO_ICON: {

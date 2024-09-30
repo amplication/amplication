@@ -235,13 +235,14 @@ type Build {
   createdAt: DateTime!
   createdBy: User
   filesChanged: Float
+  gitStatus: EnumBuildGitStatus!
   id: String!
   linesOfCodeAdded: Float
   linesOfCodeDeleted: Float
   message: String
   resource: Resource
   resourceId: String!
-  status: EnumBuildStatus
+  status: EnumBuildStatus!
   userId: String!
   version: String!
 }
@@ -748,11 +749,22 @@ input EnumBlockTypeFilter {
   notIn: [EnumBlockType!]
 }
 
+enum EnumBuildGitStatus {
+  Canceled
+  Completed
+  Failed
+  NotConnected
+  Unknown
+  Waiting
+}
+
 enum EnumBuildStatus {
+  Canceled
   Completed
   Failed
   Invalid
   Running
+  Unknown
 }
 
 enum EnumCodeGenerator {

@@ -64,9 +64,4 @@ export class BuildResolver {
   archiveURI(@Parent() build: Build): string {
     return `/generated-apps/${build.id}.zip`;
   }
-
-  @ResolveField()
-  status(@Parent() build: Build): Promise<EnumBuildStatus> {
-    return this.service.calcBuildStatus(build.id);
-  }
 }
