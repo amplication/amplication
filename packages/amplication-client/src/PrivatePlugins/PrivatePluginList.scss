@@ -5,6 +5,7 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  gap: vat(--default-spacing);
 
   .search-field {
     margin-left: 0;

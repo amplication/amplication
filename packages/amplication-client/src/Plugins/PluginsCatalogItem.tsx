@@ -20,6 +20,7 @@ import { PluginLogo } from "./PluginLogo";
 import "./PluginsCatalogItem.scss";
 import { LATEST_VERSION_TAG } from "./constant";
 import { Plugin, PluginVersion } from "./hooks/usePluginCatalog";
+import InstalledPluginVersionIndicator from "./InstalledPluginVersionIndicator";
 
 type Props = {
   plugin: Plugin;
@@ -99,6 +100,10 @@ function PluginsCatalogItem({
                   checked={pluginInstallation.enabled}
                 />
               </FlexItem.FlexStart>
+              <InstalledPluginVersionIndicator
+                plugin={plugin}
+                pluginInstallation={pluginInstallation}
+              />
               <FlexItem.FlexEnd>
                 {isDraggable && (
                   <div className={`${CLASS_NAME}__order`}>
