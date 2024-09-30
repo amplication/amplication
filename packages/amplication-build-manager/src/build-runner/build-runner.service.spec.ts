@@ -538,7 +538,6 @@ describe("BuildRunnerService", () => {
 
   it("emitCodeGenerationFailureWhenJobStatusFailed should not emit Kafka failure event when build already failed", async () => {
     // Arrange
-    const errorMock = new Error("Test error");
     const buildId = "buildId";
 
     const spyOnSetJobStatus = jest.spyOn(
