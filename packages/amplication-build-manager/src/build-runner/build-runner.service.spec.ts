@@ -556,10 +556,7 @@ describe("BuildRunnerService", () => {
       .mockResolvedValue(EnumJobStatus.Failure);
 
     // Act
-    await service.emitCodeGenerationFailureWhenJobStatusFailed(
-      buildId,
-      errorMock
-    );
+    await service.emitCodeGenerationFailureWhenJobStatusFailed(buildId);
 
     // Assert
     expect(mockKafkaServiceEmitMessage).not.toBeCalled();
