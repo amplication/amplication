@@ -278,4 +278,5 @@ export {
 export {
   VersionTag,
   Props as VersionTagProps,
+  EnumVersionTagState,
 } from "./components/VersionTag/VersionTag";

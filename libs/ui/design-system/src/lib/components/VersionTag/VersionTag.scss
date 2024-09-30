@@ -44,4 +44,9 @@ $width: 70px;
     color: var(--gray-60);
     border-color: var(--gray-60);
   }
+
+  &--updateAvailable {
+    color: var(--theme-orange);
+    border-color: var(--theme-orange);
+  }
 }

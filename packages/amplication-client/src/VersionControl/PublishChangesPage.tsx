@@ -9,6 +9,7 @@ import {
   EnumItemsAlign,
   EnumPanelStyle,
   EnumTextStyle,
+  EnumVersionTagState,
   FlexItem,
   MultiStateToggle,
   Panel,
@@ -79,7 +80,12 @@ const TEMPLATE_COLUMNS: DataGridColumn<resourceWithVersions>[] = [
     sortable: false,
     width: 150,
     renderCell: (props) => {
-      return <VersionTag version={props.row.currentVersion} state="previous" />;
+      return (
+        <VersionTag
+          version={props.row.currentVersion}
+          state={EnumVersionTagState.Previous}
+        />
+      );
     },
   },
   {
