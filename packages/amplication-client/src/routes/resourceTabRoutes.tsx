@@ -219,4 +219,12 @@ export const resourceTabRoutes = (projectBasePath) => [
       },
     ],
   },
+  {
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/versions`,
+    Component: lazy(() => import("../Platform/ResourceVersionList")),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: false,
+    routes: [],
+  },
 ];

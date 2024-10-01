@@ -10,6 +10,7 @@ import {
 import { EnumTextColor, EnumTextStyle, Text } from "../Text/Text";
 import { Tooltip } from "../Tooltip/Tooltip";
 import "./UserAndTime.scss";
+import { UserAvatar } from "../UserAvatar/UserAvatar";
 
 export type Props = {
   account?: { firstName?: string; lastName?: string };
@@ -60,17 +61,21 @@ export function UserAndTime({
     >
       {label && <Text textStyle={EnumTextStyle.Subtle}>{label}</Text>}
       {formattedTime ? (
-        <Text textStyle={EnumTextStyle.Subtle} textColor={valueColor}>
+        <>
           <Tooltip
             aria-label={`${firstName} ${lastName}`}
             direction={tooltipDirection}
             noDelay
           >
+            <UserAvatar firstName={firstName} lastName={lastName} />
+          </Tooltip>
+
+          <Text textStyle={EnumTextStyle.Subtle} textColor={valueColor}>
             <span onMouseOver={(e) => changeTooltipDirection(e.pageY)}>
               {formattedTime}
             </span>
-          </Tooltip>
-        </Text>
+          </Text>
+        </>
       ) : (
         <Text textStyle={EnumTextStyle.Subtle} textColor={valueColor}>
           {emptyText}

@@ -6,6 +6,7 @@ import ReactDataGrid, {
   DataGridProps,
   RenderSortStatusProps,
   SortColumn,
+  SortDirection,
 } from "react-data-grid";
 
 import "./DataGrid.scss";
@@ -13,13 +14,32 @@ import "./DataGrid.scss";
 import classNames from "classnames";
 import { Icon } from "../Icon/Icon";
 
+//These value similar to the ones we use in the backend
+export type DataGridSortOrder = "Asc" | "Desc";
+
+export type DataGridSortColumn = {
+  [key: string]: DataGridSortOrder;
+};
+
 export type DataGridColumn<T> = ColumnOrColumnGroup<T> & {
   getValue?: (row: T) => any;
 };
 
-export type Props<T> = Omit<DataGridProps<T>, "columns"> & {
+export type Props<T> = Omit<
+  DataGridProps<T>,
+  "columns" | "onSortColumnsChange"
+> & {
   clientSideSort?: boolean;
   columns: DataGridColumn<T>[];
+  onSortColumnsChange?: (sortColumns: DataGridSortColumn[]) => void;
+};
+
+const SORT_DIRECTION_TO_DATA_GRID_SORT_ORDER: Record<
+  SortDirection,
+  DataGridSortOrder
+> = {
+  ASC: "Asc",
+  DESC: "Desc",
 };
 
 const CLASS_NAME = "amp-data-grid";
@@ -30,13 +50,25 @@ export const DataGrid: React.FC<Props<any>> = ({
   clientSideSort = true,
   rows,
   columns,
+  onSortColumnsChange,
   ...rest
 }) => {
   const [sortColumns, setSortColumns] = useState<SortColumn[]>([]);
 
-  const onSortColumnsChange = useCallback((sortColumns: SortColumn[]) => {
-    setSortColumns(sortColumns);
-  }, []);
+  const handleSortColumnsChange = useCallback(
+    (sortColumns: SortColumn[]) => {
+      setSortColumns(sortColumns);
+
+      onSortColumnsChange &&
+        onSortColumnsChange(
+          sortColumns.map((sortColumn) => ({
+            [sortColumn.columnKey]:
+              SORT_DIRECTION_TO_DATA_GRID_SORT_ORDER[sortColumn.direction],
+          }))
+        );
+    },
+    [onSortColumnsChange]
+  );
 
   const columnValueGetters = useMemo(() => {
     return columns.reduce((acc, column) => {
@@ -81,7 +113,7 @@ export const DataGrid: React.FC<Props<any>> = ({
       rowHeight={rowHeight}
       defaultColumnOptions={{}}
       rows={sortedRows}
-      onSortColumnsChange={onSortColumnsChange}
+      onSortColumnsChange={handleSortColumnsChange}
       sortColumns={sortColumns}
       className={classNames(CLASS_NAME, className)}
       renderers={{

@@ -266,6 +266,8 @@ export {
   DataGrid,
   Props as DataGridProps,
   DataGridColumn,
+  DataGridSortColumn,
+  DataGridSortOrder,
 } from "./components/DataGrid/DataGrid";
 
 export {
