@@ -60,7 +60,6 @@ describe("BuildRunnerController", () => {
       const dto: CodeGenerationFailureDto = {
         buildId: "buildId",
         resourceId: "resourceId",
-        error: new Error("Test Error"),
       };
 
       await controller.onCodeGenerationFailure(dto);
