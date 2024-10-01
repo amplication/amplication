@@ -26,6 +26,8 @@ import { ProjectResolver } from "./project.resolver";
 import { ProjectService } from "./project.service";
 import { EnumCommitStrategy } from "../resource/dto/EnumCommitStrategy";
 import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
+import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -79,6 +81,8 @@ const EXAMPLE_BUILD: Build = {
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
   commitId: EXAMPLE_COMMIT_ID,
+  status: EnumBuildStatus.Completed,
+  gitStatus: EnumBuildGitStatus.Completed,
 };
 
 const EXAMPLE_ENTITY: Entity = {

@@ -64,6 +64,8 @@ import { UserActionService } from "../userAction/userAction.service";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { GitProviderService } from "../git/git.provider.service";
+import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
+import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -333,6 +335,8 @@ const EXAMPLE_BUILD: Build = {
   message: "new build",
   actionId: "ExampleActionId",
   commitId: EXAMPLE_COMMIT_ID,
+  status: EnumBuildStatus.Completed,
+  gitStatus: EnumBuildGitStatus.Completed,
 };
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {

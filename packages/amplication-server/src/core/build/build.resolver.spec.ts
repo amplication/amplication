@@ -21,6 +21,8 @@ import { EnumResourceType } from "@amplication/code-gen-types";
 import { ResourceService } from "../resource/resource.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ApolloServerBase } from "apollo-server-core";
+import { EnumBuildStatus } from "./dto/EnumBuildStatus";
+import { EnumBuildGitStatus } from "./dto/EnumBuildGitStatus";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
@@ -57,6 +59,8 @@ const EXAMPLE_BUILD: Build = {
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
   commitId: EXAMPLE_COMMIT_ID,
+  status: EnumBuildStatus.Completed,
+  gitStatus: EnumBuildGitStatus.Completed,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
