@@ -134,6 +134,8 @@ const FIND_ONE_RESOURCE_QUERY = gql`
         actionId
         createdAt
         commitId
+        status
+        gitStatus
       }
       environments {
         id
@@ -175,6 +177,8 @@ const FIND_MANY_BUILDS_QUERY = gql`
         actionId
         createdAt
         commitId
+        status
+        gitStatus
       }
     }
   }
@@ -224,6 +228,8 @@ const CREATE_SERVICE_MUTATION = gql`
         actionId
         createdAt
         commitId
+        status
+        gitStatus
       }
       environments {
         id
@@ -265,6 +271,8 @@ const DELETE_RESOURCE_MUTATION = gql`
         actionId
         createdAt
         commitId
+        status
+        gitStatus
       }
       environments {
         id
@@ -306,6 +314,8 @@ const UPDATE_RESOURCE_MUTATION = gql`
         actionId
         createdAt
         commitId
+        status
+        gitStatus
       }
       environments {
         id
