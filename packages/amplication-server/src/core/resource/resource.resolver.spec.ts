@@ -27,6 +27,7 @@ import { ResourceResolver } from "./resource.resolver";
 import { ResourceService } from "./resource.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -380,6 +381,10 @@ describe("ResourceResolver", () => {
           useClass: jest.fn(() => ({
             entities: entitiesMock,
           })),
+        },
+        {
+          provide: ResourceVersionService,
+          useClass: jest.fn(() => ({})),
         },
         {
           provide: BuildService,

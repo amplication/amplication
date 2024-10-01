@@ -10,6 +10,7 @@ import {
 import { EnumTextColor, EnumTextStyle, Text } from "../Text/Text";
 import { Tooltip } from "../Tooltip/Tooltip";
 import "./UserAndTime.scss";
+import { UserAvatar } from "../UserAvatar/UserAvatar";
 
 export type Props = {
   account?: { firstName?: string; lastName?: string };
@@ -17,6 +18,7 @@ export type Props = {
   label?: string;
   emptyText?: string;
   valueColor?: EnumTextColor;
+  overrideTooltipDirection?: DirectionType;
 };
 
 const DIRECTION_UP = "n";
@@ -24,7 +26,7 @@ const DIRECTION_DOWN = "s";
 const DIRECTION_THRESHOLD = 100;
 const NEVER = "never";
 const CLASS_NAME = "amp-user-and-time";
-type DirectionType = "n" | "s";
+type DirectionType = "n" | "s" | "e" | "w";
 
 export function UserAndTime({
   account,
@@ -32,9 +34,11 @@ export function UserAndTime({
   label,
   emptyText = NEVER,
   valueColor = EnumTextColor.White,
+  overrideTooltipDirection,
 }: Props) {
-  const [tooltipDirection, setTooltipDirection] =
-    useState<DirectionType>(DIRECTION_DOWN);
+  const [tooltipDirection, setTooltipDirection] = useState<DirectionType>(
+    overrideTooltipDirection || DIRECTION_DOWN
+  );
 
   const { firstName, lastName } = account || {};
 
@@ -43,6 +47,7 @@ export function UserAndTime({
   }, [time]);
 
   const changeTooltipDirection = (pageY: number) =>
+    !overrideTooltipDirection &&
     setTooltipDirection(
       pageY < DIRECTION_THRESHOLD ? DIRECTION_DOWN : DIRECTION_UP
     );
@@ -56,17 +61,21 @@ export function UserAndTime({
     >
       {label && <Text textStyle={EnumTextStyle.Subtle}>{label}</Text>}
       {formattedTime ? (
-        <Text textStyle={EnumTextStyle.Subtle} textColor={valueColor}>
+        <>
           <Tooltip
             aria-label={`${firstName} ${lastName}`}
             direction={tooltipDirection}
             noDelay
           >
+            <UserAvatar firstName={firstName} lastName={lastName} />
+          </Tooltip>
+
+          <Text textStyle={EnumTextStyle.Subtle} textColor={valueColor}>
             <span onMouseOver={(e) => changeTooltipDirection(e.pageY)}>
               {formattedTime}
             </span>
-          </Tooltip>
-        </Text>
+          </Text>
+        </>
       ) : (
         <Text textStyle={EnumTextStyle.Subtle} textColor={valueColor}>
           {emptyText}

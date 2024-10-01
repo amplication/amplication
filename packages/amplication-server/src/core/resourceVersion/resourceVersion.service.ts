@@ -107,6 +107,10 @@ export class ResourceVersionService {
     }
   }
 
+  async count(args: FindManyResourceVersionArgs): Promise<number> {
+    return this.prisma.resourceVersion.count(args);
+  }
+
   async findMany(
     args: FindManyResourceVersionArgs
   ): Promise<ResourceVersion[]> {
@@ -117,5 +121,16 @@ export class ResourceVersionService {
     args: FindOneResourceVersionArgs
   ): Promise<ResourceVersion | null> {
     return this.prisma.resourceVersion.findUnique(args);
+  }
+
+  async getLatest(resourceId: string): Promise<ResourceVersion | null> {
+    return this.prisma.resourceVersion.findFirst({
+      where: {
+        resourceId: resourceId,
+      },
+      orderBy: {
+        createdAt: "desc", //@todo: order by semver and consider adding status and returning the latest published version
+      },
+    });
   }
 }

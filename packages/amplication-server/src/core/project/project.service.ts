@@ -202,11 +202,13 @@ export class ProjectService {
       this.entityService.getChangedEntities(
         projectId,
         EnumResourceTypeGroup[resourceTypeGroup],
+        null,
         user.id
       ),
       this.blockService.getChangedBlocks(
         projectId,
         EnumResourceTypeGroup[resourceTypeGroup],
+        null,
         user.id
       ),
     ]);
@@ -349,6 +351,12 @@ export class ProjectService {
     const resourceTypeGroup =
       EnumResourceTypeGroup[args.data.resourceTypeGroup];
 
+    //when committing platform resources, we commit only the resources that were selected
+    //for services, all changes for all resources are committed
+    const commitChangesForResourceIds =
+      resourceTypeGroup === EnumResourceTypeGroup.Platform
+        ? args.data.resourceIds
+        : null;
     const resourceTypes =
       RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE[resourceTypeGroup];
 
@@ -422,9 +430,15 @@ export class ProjectService {
       this.entityService.getChangedEntities(
         projectId,
         resourceTypeGroup,
+        commitChangesForResourceIds,
         userId
       ),
-      this.blockService.getChangedBlocks(projectId, resourceTypeGroup, userId),
+      this.blockService.getChangedBlocks(
+        projectId,
+        resourceTypeGroup,
+        commitChangesForResourceIds,
+        userId
+      ),
     ]);
 
     /**@todo: consider discarding locked objects that have no actual changes */
@@ -598,7 +612,9 @@ export class ProjectService {
                 },
               },
               message: args.data.message,
-              version: args.data.version,
+              version: args.data.resourceVersions.find(
+                (x) => x.resourceId === resource.id
+              )?.version,
             },
           });
         });
@@ -648,11 +664,13 @@ export class ProjectService {
       this.entityService.getChangedEntities(
         projectId,
         EnumResourceTypeGroup[resourceTypeGroup],
+        null,
         userId
       ),
       this.blockService.getChangedBlocks(
         projectId,
         EnumResourceTypeGroup[resourceTypeGroup],
+        null,
         userId
       ),
     ]);

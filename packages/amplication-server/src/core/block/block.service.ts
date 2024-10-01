@@ -756,6 +756,7 @@ export class BlockService {
   async getChangedBlocks(
     projectId: string,
     resourceTypeGroup: EnumResourceTypeGroup,
+    resourceIds: string[] | null,
     userId: string
   ): Promise<BlockPendingChange[]> {
     const resourceTypes =
@@ -765,6 +766,11 @@ export class BlockService {
       where: {
         lockedByUserId: userId,
         resource: {
+          id: resourceIds
+            ? {
+                in: resourceIds,
+              }
+            : undefined,
           resourceType: {
             in: resourceTypes,
           },

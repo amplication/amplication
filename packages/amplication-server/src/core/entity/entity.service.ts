@@ -968,6 +968,7 @@ export class EntityService {
   async getChangedEntities(
     projectId: string,
     resourceTypeGroup: EnumResourceTypeGroup,
+    resourceIds: string[] | null,
     userId: string
   ): Promise<EntityPendingChange[]> {
     const resourceTypes =
@@ -977,6 +978,11 @@ export class EntityService {
       where: {
         lockedByUserId: userId,
         resource: {
+          id: resourceIds
+            ? {
+                in: resourceIds,
+              }
+            : undefined,
           resourceType: {
             in: resourceTypes,
           },
