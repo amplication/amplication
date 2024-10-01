@@ -85,6 +85,8 @@ const FIND_MANY_BUILDS_QUERY = gql`
       actionId
       createdAt
       commitId
+      status
+      gitStatus
     }
   }
 `;
@@ -99,6 +101,8 @@ const FIND_ONE_BUILD_QUERY = gql`
       actionId
       createdAt
       commitId
+      status
+      gitStatus
     }
   }
 `;
@@ -135,6 +139,14 @@ const ARCHIVE_URI_QUERY = gql`
   }
 `;
 
+const BUILD_STATUS_QUERY = gql`
+  query ($id: String!) {
+    build(where: { id: $id }) {
+      status
+    }
+  }
+`;
+
 const buildServiceFindManyMock = jest.fn(() => [EXAMPLE_BUILD]);
 const buildServiceFindOneMock = jest.fn(() => EXAMPLE_BUILD);
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
@@ -142,7 +154,9 @@ const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 const actionServiceFindOneMock = jest.fn(() => EXAMPLE_ACTION);
 const commitServiceFindOneMock = jest.fn(() => EXAMPLE_COMMIT);
 const resourceServiceFindOneMock = jest.fn(() => EXAMPLE_RESOURCE);
-
+const buildServiceCalcBuildStatusMock = jest.fn(() => {
+  return EnumBuildStatus.Completed;
+});
 const mockCanActivate = jest.fn(() => true);
 
 describe("BuildResolver", () => {
@@ -159,6 +173,7 @@ describe("BuildResolver", () => {
           useClass: jest.fn(() => ({
             findMany: buildServiceFindManyMock,
             findOne: buildServiceFindOneMock,
+            calcBuildStatus: buildServiceCalcBuildStatusMock,
             create: buildServiceCreateMock,
           })),
         },
@@ -307,5 +322,39 @@ describe("BuildResolver", () => {
         archiveURI: `/generated-apps/${EXAMPLE_BUILD_ID}.zip`,
       },
     });
+  });
+
+  it("should return the build status without recalculating it when status is not Unknown", async () => {
+    const res = await apolloClient.executeOperation({
+      query: BUILD_STATUS_QUERY,
+      variables: { id: EXAMPLE_BUILD_ID },
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      build: {
+        status: EnumBuildStatus.Completed,
+      },
+    });
+    expect(buildServiceCalcBuildStatusMock).toBeCalledTimes(0);
+  });
+
+  it("should recalculate the build status when it is Unknown", async () => {
+    buildServiceFindOneMock.mockReturnValueOnce({
+      ...EXAMPLE_BUILD,
+      status: EnumBuildStatus.Unknown,
+    });
+
+    const res = await apolloClient.executeOperation({
+      query: BUILD_STATUS_QUERY,
+      variables: { id: EXAMPLE_BUILD_ID },
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      build: {
+        status: EnumBuildStatus.Completed,
+      },
+    });
+    expect(buildServiceCalcBuildStatusMock).toBeCalledTimes(1);
+    expect(buildServiceCalcBuildStatusMock).toBeCalledWith(EXAMPLE_BUILD_ID);
   });
 });

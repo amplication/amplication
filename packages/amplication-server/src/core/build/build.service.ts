@@ -1331,4 +1331,45 @@ export class BuildService {
       message
     );
   }
+
+  async calcBuildStatus(buildId: string): Promise<EnumBuildStatus> {
+    const build = await this.prisma.build.findUnique({
+      where: {
+        id: buildId,
+      },
+      include: ACTION_INCLUDE,
+    });
+    //if the build status is not unknown, return the status
+    //the function recalculates the status only if the status is unknown
+    if (build.status !== EnumBuildStatus.Unknown)
+      return build.status as EnumBuildStatus;
+
+    if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;
+    const steps = build.action.steps;
+
+    if (steps.every((step) => step.status === EnumActionStepStatus.Success)) {
+      await this.updateBuildStatuses(
+        buildId,
+        EnumBuildStatus.Completed,
+        EnumBuildGitStatus.Completed
+      );
+      return EnumBuildStatus.Completed;
+    }
+    if (steps.some((step) => step.status === EnumActionStepStatus.Failed)) {
+      await this.updateBuildStatuses(
+        buildId,
+        EnumBuildStatus.Failed,
+        EnumBuildGitStatus.Failed
+      );
+      return EnumBuildStatus.Failed;
+    }
+
+    //since the build.status is unknown, it means this is a old record and we need to update the status with failed
+    await this.updateBuildStatuses(
+      buildId,
+      EnumBuildStatus.Failed,
+      EnumBuildGitStatus.Failed
+    );
+    return EnumBuildStatus.Failed;
+  }
 }
