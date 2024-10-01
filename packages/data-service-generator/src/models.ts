@@ -333,11 +333,7 @@ export type CommitCreateInput = {
   commitStrategy?: InputMaybe<EnumCommitStrategy>;
   message: Scalars['String']['input'];
   project: WhereParentIdInput;
-  /**
-   * The resources to commit. By default, it contains all the project resources.
-   *       If the commit strategy is AllWithPendingChanges, it will contain the resources with pending changes.
-   *       If the commit strategy is Specific, it will be an array with one element.
-   */
+  /** The resources to commit, when strategy is "Specific". On other strategies, this field will be ignored. */
   resourceIds?: InputMaybe<Array<Scalars['String']['input']>>;
   resourceTypeGroup: EnumResourceTypeGroup;
   resourceVersions?: InputMaybe<Array<CommitResourceVersionCreateInput>>;
@@ -1172,6 +1168,10 @@ export type MessagePattern = {
 export type MessagePatternCreateInput = {
   topicId: Scalars['String']['input'];
   type: EnumMessagePatternConnectionOptions;
+};
+
+export type MetaQueryPayload = {
+  count: Scalars['Float']['output'];
 };
 
 export type Metrics = {
@@ -2422,6 +2422,7 @@ export type ProvisionSubscriptionResult = {
 };
 
 export type Query = {
+  _resourceVersionsMeta: MetaQueryPayload;
   account: Account;
   action: Action;
   availableDtosForResource: Array<ModuleDto>;
@@ -2480,6 +2481,14 @@ export type Query = {
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
   workspaces: Array<Workspace>;
+};
+
+
+export type Query_ResourceVersionsMetaArgs = {
+  orderBy?: InputMaybe<ResourceVersionOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ResourceVersionWhereInput>;
 };
 
 
