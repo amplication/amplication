@@ -8,7 +8,7 @@ import { prepareContext } from "./prepare-context";
 import { createServer } from "./server/create-server";
 import { ILogger } from "@amplication/util-logging";
 import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
-import { dynamicPackagesInstallations } from "./dynamic-package-installation";
+import { dynamicPackagesInstallations } from "@amplication/dsg-utils";
 import { logger } from "@amplication/dsg-utils";
 import { createDTOs } from "./server/resource/create-dtos";
 
@@ -34,7 +34,8 @@ export async function createDataService(
   await dynamicPackagesInstallations(
     dSGResourceData.pluginInstallations,
     pluginInstallationPath,
-    internalLogger
+    internalLogger,
+    context.logger
   );
 
   try {
