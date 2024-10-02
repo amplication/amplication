@@ -9,7 +9,7 @@ import { createServer } from "./server/create-server";
 import { ILogger } from "@amplication/util-logging";
 import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
 import { dynamicPackagesInstallations } from "./dynamic-package-installation";
-import { logger } from "./logging";
+import { logger } from "@amplication/dsg-utils";
 import { createDTOs } from "./server/resource/create-dtos";
 
 export async function createDataService(

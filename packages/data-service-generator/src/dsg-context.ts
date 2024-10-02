@@ -14,7 +14,7 @@ import {
   USER_PASSWORD_FIELD_NAME,
   USER_ROLES_FIELD_NAME,
 } from "./server/user-entity/user-entity";
-import { BuildLogger } from "./build-logger";
+import { BuildLogger } from "@amplication/dsg-utils";
 
 class DsgContext implements types.DsgContext {
   public appInfo!: types.AppInfo;

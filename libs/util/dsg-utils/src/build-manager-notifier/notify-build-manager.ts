@@ -1,5 +1,5 @@
-import { httpClient } from "./utils/http-client";
-import { logger } from "./logging";
+import { httpClient } from "../http-client/http-client";
+import { logger } from "../logger/logging";
 
 interface BuildManagerNotifierOptions {
   buildManagerUrl: string;

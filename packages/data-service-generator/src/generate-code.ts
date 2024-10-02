@@ -2,8 +2,8 @@ import { DSGResourceData, ModuleMap } from "@amplication/code-gen-types";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 import { createDataService } from "./create-data-service";
-import { BuildManagerNotifier } from "./notify-build-manager";
-import { logger as internalLogger } from "./logging";
+import { BuildManagerNotifier } from "@amplication/dsg-utils";
+import { logger as internalLogger } from "@amplication/dsg-utils";
 import { getFileEncoding } from "./utils/get-file-encoding";
 import DsgContext from "./dsg-context";
 
