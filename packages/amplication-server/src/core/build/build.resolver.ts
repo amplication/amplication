@@ -14,6 +14,7 @@ import { BuildService } from "./build.service";
 import { Build } from "./dto/Build";
 import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
 import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
+import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -62,5 +63,13 @@ export class BuildResolver {
   @ResolveField()
   archiveURI(@Parent() build: Build): string {
     return `/generated-apps/${build.id}.zip`;
+  }
+
+  @ResolveField()
+  status(@Parent() build: Build): Promise<EnumBuildStatus> {
+    if (build.status === EnumBuildStatus.Unknown) {
+      return this.service.calcBuildStatus(build.id);
+    }
+    return Promise.resolve(EnumBuildStatus[build.status]);
   }
 }

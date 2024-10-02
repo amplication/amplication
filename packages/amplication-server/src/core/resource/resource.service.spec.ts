@@ -151,6 +151,8 @@ const EXAMPLE_RESOURCE: Resource = {
       message: "new build",
       actionId: "ExampleActionId",
       commitId: "exampleCommitId",
+      status: EnumBuildStatus.Completed,
+      gitStatus: EnumBuildGitStatus.Completed,
     },
   ],
   gitRepository: EXAMPLE_GIT_REPOSITORY,

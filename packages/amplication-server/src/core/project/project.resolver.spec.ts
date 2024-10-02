@@ -208,6 +208,8 @@ const PENDING_CHANGE_QUERY = gql`
           actionId
           createdAt
           commitId
+          status
+          gitStatus
         }
         environments {
           id
