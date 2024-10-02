@@ -1344,7 +1344,12 @@ export class BuildService {
     if (build.status !== EnumBuildStatus.Unknown)
       return build.status as EnumBuildStatus;
 
-    if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;
+    if (!build.action?.steps?.length) {
+      this.logger.error(
+        `calcBuildStatus: Could not find steps for build with id ${buildId}`
+      );
+      return EnumBuildStatus.Invalid;
+    }
     const steps = build.action.steps;
 
     if (steps.every((step) => step.status === EnumActionStepStatus.Success)) {
