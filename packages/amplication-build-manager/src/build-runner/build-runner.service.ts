@@ -17,6 +17,7 @@ import {
   PackageManagerCreateFailure,
   PackageManagerCreateRequest,
   PackageManagerCreateSuccess,
+  PluginNotifyVersion,
 } from "@amplication/schema-registry";
 import { CodeGenerationRequest, EnumJobStatus } from "../types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -25,6 +26,7 @@ import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
 import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import { BuildLoggerService } from "../build-logger/build-logger.service";
 import { LogLevel } from "@amplication/util/logging";
+import { NotifyPluginVersionDto } from "./dto/NotifyPluginVersion";
 
 const OLD_DSG_IMAGE_NAME = "data-service-generator";
 
@@ -311,6 +313,20 @@ export class BuildRunnerService {
     await this.producerService.emitMessage(
       KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       failureEvent
+    );
+  }
+
+  async emitBuildPluginNotifyVersion(args: NotifyPluginVersionDto) {
+    const event: PluginNotifyVersion.KafkaEvent = {
+      key: null,
+      value: args,
+    };
+
+    this.logger.debug("Emitting notify plugin version event", event);
+
+    await this.producerService.emitMessage(
+      KAFKA_TOPICS.BUILD_PLUGIN_NOTIFY_VERSION_TOPIC,
+      event
     );
   }
 
