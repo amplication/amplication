@@ -30,7 +30,7 @@ export class Tarball {
     const response = await packument(fullPackageName);
     const latestTag = response["dist-tags"].latest;
     const latestVersion = response.versions[latestTag];
-    const requestedVersion = response.versions[version];
+    const requestedVersion = response.versions[version || ""];
 
     if (!version || version === "latest") {
       return latestVersion.dist.tarball;

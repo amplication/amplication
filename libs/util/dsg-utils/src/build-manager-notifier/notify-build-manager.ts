@@ -10,7 +10,7 @@ interface BuildManagerNotifierOptions {
 export class BuildManagerNotifier {
   constructor(private readonly options: BuildManagerNotifierOptions) {}
   async success(): Promise<void> {
-    if (process.env.REMOTE_ENV !== "true") {
+    if (process.env["REMOTE_ENV"] !== "true") {
       logger.info("Running locally, skipping log reporting");
       return;
     }
@@ -28,7 +28,7 @@ export class BuildManagerNotifier {
   }
 
   async failure(): Promise<void> {
-    if (process.env.REMOTE_ENV !== "true") {
+    if (process.env["REMOTE_ENV"] !== "true") {
       logger.info("Running locally, skipping log reporting");
       return;
     }

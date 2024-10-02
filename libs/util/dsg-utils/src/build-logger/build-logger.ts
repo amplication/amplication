@@ -6,8 +6,8 @@ import { httpClient } from "../http-client/http-client";
 export class BuildLogger implements IBuildLogger {
   private async createLog(log: LogEntry): Promise<void> {
     try {
-      const logContext = { buildId: process.env.BUILD_ID, ...log };
-      if (process.env.REMOTE_ENV !== "true") {
+      const logContext = { buildId: process.env["BUILD_ID"], ...log };
+      if (process.env["REMOTE_ENV"] !== "true") {
         // applicationLogger.info(
         //   "Running locally, skipping log reporting",
         //   logContext
@@ -15,7 +15,8 @@ export class BuildLogger implements IBuildLogger {
         return;
       }
       await httpClient.post(
-        new URL("build-logger/create-log", process.env.BUILD_MANAGER_URL).href,
+        new URL("build-logger/create-log", process.env["BUILD_MANAGER_URL"])
+          .href,
         logContext
       );
     } catch (error) {
