@@ -507,6 +507,19 @@ export class ResourceService {
     args: CreateOneResourceArgs,
     user: User
   ): Promise<Resource> {
+    const existingResource = await this.resources({
+      where: {
+        project: { id: args.data.project.connect.id },
+        resourceType: {
+          equals: AmplicationEnumResourceType.ProjectConfiguration,
+        },
+      },
+    });
+
+    if (existingResource && existingResource.length > 0) {
+      return existingResource[0];
+    }
+
     const resource = await this.createResource(
       {
         data: {
