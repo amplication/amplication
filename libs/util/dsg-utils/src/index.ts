@@ -6,3 +6,4 @@ export * from "./build-logger/build-logger";
 export * from "./logger/logging";
 export * from "./build-manager-notifier/notify-build-manager";
 export * from "./field/field";
+export * from "./git-ignore/format-gitignore-paths";
