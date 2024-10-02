@@ -9,3 +9,4 @@ export * from "./field/field";
 export * from "./git-ignore/format-gitignore-paths";
 export * from "./file-encoding/get-file-encoding";
 export * from "./message-broker/message-broker";
+export * from "./yaml/prepare-yaml-file";
