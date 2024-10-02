@@ -1,6 +1,6 @@
 {
   "name": "@amplication/dsg-utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This library supplies common utils for Amplication DSG",
   "main": "./src/index.js",
   "author": {
