@@ -347,15 +347,16 @@ const useResources = (
 
   useEffect(() => {
     if (loadingResources || !resourcesData) return;
-    const projectConfigurationResource = resourcesData.resources.find(
-      (r) => r.resourceType === models.EnumResourceType.ProjectConfiguration
-    );
-    setProjectConfigurationResource(projectConfigurationResource);
 
     const pluginRepositoryResource = resourcesData.resources.find(
       (r) => r.resourceType === models.EnumResourceType.PluginRepository
     );
     setPluginRepositoryResource(pluginRepositoryResource);
+
+    const projectConfigurationResource = resourcesData.resources.find(
+      (r) => r.resourceType === models.EnumResourceType.ProjectConfiguration
+    );
+    setProjectConfigurationResource(projectConfigurationResource);
 
     const resources = resourcesData.resources.filter(
       (r) =>
