@@ -35,7 +35,7 @@ import {
 import {
   isOneToOneRelationField,
   isToManyRelationField,
-} from "../../../utils/field";
+} from "@amplication/dsg-utils";
 import { relativeImportPath } from "../../../utils/module";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";

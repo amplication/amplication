@@ -1,5 +1,5 @@
 import { Entity, EntityField } from "@amplication/code-gen-types";
-import { isEnumField, isToManyRelationField } from "./field";
+import { isEnumField, isToManyRelationField } from "@amplication/dsg-utils";
 import { camelCase } from "camel-case";
 import { getNamedProperties } from "./ast";
 import DsgContext from "../dsg-context";
