@@ -30,6 +30,11 @@ type TData = {
   commit: Commit;
 };
 
+type BillingError = {
+  message: string;
+  billingFeature: string;
+};
+
 export interface CommitUtils {
   commits: Commit[];
   lastCommit: Commit;
@@ -217,7 +222,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     );
   }, [currentWorkspace]);
 
-  const commitChangesLimitationError = useMemo(() => {
+  const commitChangesLimitationError = useMemo((): BillingError => {
     if (!commitChangesError) return;
     const limitation = commitChangesError?.graphQLErrors?.find(
       (gqlError) =>
@@ -225,8 +230,12 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     );
     if (!limitation) return;
 
-    limitation.message = formatLimitationError(commitChangesError.message);
-    return limitation;
+    const results = {
+      message: formatLimitationError(limitation.message),
+      billingFeature: limitation.extensions.billingFeature as string,
+    };
+
+    return results;
   }, [commitChangesError]);
 
   const [
