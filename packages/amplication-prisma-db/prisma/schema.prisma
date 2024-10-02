@@ -444,8 +444,10 @@ model BuildPlugin {
   buildId                  String
   build                    Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
   requestedFullPackageName String // @amplication/db-postgres@latest
-  pacakgeName              String // @amplication/db-postgres
-  pacakgeVersion           String // 1.0.1
+  packageName              String // @amplication/db-postgres
+  packageVersion           String // 1.0.1
+
+  @@unique([buildId, packageName], map: "BuildPlugin.buildId_packageName_unique")
 }
 
 model ResourceVersion {
