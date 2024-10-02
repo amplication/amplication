@@ -2,7 +2,7 @@ import { PluginInstallation } from "@amplication/code-gen-types";
 import {
   DynamicPackageInstallationManager,
   PackageInstallation,
-} from "./utils/dynamic-installation/DynamicPackageInstallationManager";
+} from "@amplication/dsg-utils";
 import { ILogger } from "@amplication/util-logging";
 import DsgContext from "./dsg-context";
 
