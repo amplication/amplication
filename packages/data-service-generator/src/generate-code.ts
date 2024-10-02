@@ -4,7 +4,7 @@ import { dirname, join } from "path";
 import { createDataService } from "./create-data-service";
 import { BuildManagerNotifier } from "@amplication/dsg-utils";
 import { logger as internalLogger } from "@amplication/dsg-utils";
-import { getFileEncoding } from "./utils/get-file-encoding";
+import { getFileEncoding } from "@amplication/dsg-utils";
 import DsgContext from "./dsg-context";
 
 export const AMPLICATION_MODULES = "amplication_modules";
