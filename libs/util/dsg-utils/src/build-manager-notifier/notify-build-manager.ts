@@ -7,7 +7,7 @@ interface BuildManagerNotifierOptions {
   buildId: string;
 }
 
-interface NotifyPluginVersionDto {
+export interface NotifyPluginVersionDto {
   requestedFullPackageName: string;
   packageName: string;
   packageVersion: string;
