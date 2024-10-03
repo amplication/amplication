@@ -33,6 +33,7 @@ import Assistant from "../Assistant/Assistant";
 import ResponsiveContainer from "../Components/ResponsiveContainer";
 import { AssistantContextProvider } from "../Assistant/context/AssistantContext";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import classNames from "classnames";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -174,6 +175,8 @@ const WorkspaceLayout: React.FC<Props> = ({
     }
   }, [currentWorkspace, trackEvent]);
 
+  const showSideBar = !!currentProject;
+
   return currentWorkspace ? (
     <AppContextProvider
       newVal={{
@@ -250,7 +253,11 @@ const WorkspaceLayout: React.FC<Props> = ({
                     <Assistant />
                   </div>
                 )}
-                <div className={moduleClass}>
+                <div
+                  className={classNames(moduleClass, {
+                    [`${moduleClass}--with-side-panel`]: showSideBar,
+                  })}
+                >
                   <WorkspaceHeader />
                   <CompleteInvitation />
                   <RedeemCoupon />
@@ -262,7 +269,7 @@ const WorkspaceLayout: React.FC<Props> = ({
                       {innerRoutes}
                     </ResponsiveContainer>
 
-                    {currentProject ? (
+                    {showSideBar ? (
                       <div className={`${moduleClass}__changes_menu`}>
                         <PendingChanges projectId={currentProject.id} />
                         {!isPlatformConsole && commitUtils.lastCommit && (
