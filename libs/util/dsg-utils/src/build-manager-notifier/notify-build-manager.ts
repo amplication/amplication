@@ -7,6 +7,12 @@ interface BuildManagerNotifierOptions {
   buildId: string;
 }
 
+interface NotifyPluginVersionDto {
+  requestedFullPackageName: string;
+  packageName: string;
+  packageVersion: string;
+}
+
 export class BuildManagerNotifier {
   constructor(private readonly options: BuildManagerNotifierOptions) {}
   async success(): Promise<void> {
@@ -40,6 +46,24 @@ export class BuildManagerNotifier {
       ).href,
       {
         resourceId: this.options.resourceId,
+        buildId: this.options.buildId,
+      }
+    );
+  }
+
+  async notifyPluginVersion(args: NotifyPluginVersionDto): Promise<void> {
+    if (process.env["REMOTE_ENV"] !== "true") {
+      logger.info("Running locally, skipping log reporting");
+      return;
+    }
+
+    await httpClient.post(
+      new URL(
+        "build-runner/notify-plugin-version",
+        this.options.buildManagerUrl
+      ).href,
+      {
+        ...args,
         buildId: this.options.buildId,
       }
     );

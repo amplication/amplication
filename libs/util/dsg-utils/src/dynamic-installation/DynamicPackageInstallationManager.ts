@@ -12,7 +12,7 @@ export class DynamicPackageInstallationManager {
     plugin: PackageInstallation,
     hooks: {
       onBeforeInstall?: HookFunction;
-      onAfterInstall?: HookFunction;
+      onAfterInstall?: HookSuccessFunction;
       onError?: HookErrorFunction;
     }
   ): Promise<void> {
@@ -30,8 +30,12 @@ export class DynamicPackageInstallationManager {
       );
 
       if (!settings?.local) {
-        await tarball.download();
-        onAfterInstall && (await onAfterInstall(plugin));
+        const installedVersion = await tarball.download();
+        onAfterInstall &&
+          (await onAfterInstall(plugin, {
+            ...installedVersion,
+            requestedFullPackageName: `${name}@${version}`, //use the original requested version
+          }));
       }
     } catch (error) {
       onError && (await onError(plugin));
@@ -53,7 +57,18 @@ export interface PackageInstallation {
   };
 }
 
+export interface InstalledPluginVersion {
+  requestedFullPackageName: string;
+  packageName: string;
+  packageVersion: string;
+}
+
 export type HookFunction = (plugin: PackageInstallation) => Promisable<void>;
+export type HookSuccessFunction = (
+  plugin: PackageInstallation,
+  installedPluginVersion: InstalledPluginVersion
+) => Promisable<void>;
+
 export type HookErrorFunction = (
   plugin: PackageInstallation,
   error?: Error
