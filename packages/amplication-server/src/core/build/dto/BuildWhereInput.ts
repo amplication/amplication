@@ -1,5 +1,7 @@
 import { InputType, Field } from "@nestjs/graphql";
 import { WhereUniqueInput, DateTimeFilter, StringFilter } from "../../../dto";
+import { EnumBuildGitStatusFilter } from "./EnumBuildGitStatusFilter";
+import { EnumBuildStatusFilter } from "./EnumBuildStatusFilter";
 
 @InputType({
   isAbstract: true,
@@ -15,7 +17,9 @@ export class BuildWhereInput {
   })
   createdAt?: DateTimeFilter | null | undefined;
 
-  @Field(() => WhereUniqueInput)
+  @Field(() => WhereUniqueInput, {
+    nullable: true,
+  })
   resource?: WhereUniqueInput;
 
   @Field(() => WhereUniqueInput, {
@@ -37,4 +41,14 @@ export class BuildWhereInput {
     nullable: true,
   })
   commit?: WhereUniqueInput;
+
+  @Field(() => EnumBuildStatusFilter, {
+    nullable: true,
+  })
+  status?: EnumBuildStatusFilter | null;
+
+  @Field(() => EnumBuildGitStatusFilter, {
+    nullable: true,
+  })
+  gitStatus?: EnumBuildGitStatusFilter | null;
 }

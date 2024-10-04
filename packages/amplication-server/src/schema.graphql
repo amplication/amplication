@@ -260,9 +260,11 @@ input BuildWhereInput {
   commit: WhereUniqueInput
   createdAt: DateTimeFilter
   createdBy: WhereUniqueInput
+  gitStatus: EnumBuildGitStatusFilter
   id: StringFilter
   message: StringFilter
   resource: WhereUniqueInput!
+  status: EnumBuildStatusFilter
   version: StringFilter
 }
 
@@ -758,6 +760,13 @@ enum EnumBuildGitStatus {
   Waiting
 }
 
+input EnumBuildGitStatusFilter {
+  equals: EnumBuildGitStatus
+  in: [EnumBuildGitStatus!]
+  not: EnumBuildGitStatus
+  notIn: [EnumBuildGitStatus!]
+}
+
 enum EnumBuildStatus {
   Canceled
   Completed
@@ -765,6 +774,13 @@ enum EnumBuildStatus {
   Invalid
   Running
   Unknown
+}
+
+input EnumBuildStatusFilter {
+  equals: EnumBuildStatus
+  in: [EnumBuildStatus!]
+  not: EnumBuildStatus
+  notIn: [EnumBuildStatus!]
 }
 
 enum EnumCodeGenerator {

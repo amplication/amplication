@@ -286,9 +286,11 @@ export type BuildWhereInput = {
   commit?: InputMaybe<WhereUniqueInput>;
   createdAt?: InputMaybe<DateTimeFilter>;
   createdBy?: InputMaybe<WhereUniqueInput>;
+  gitStatus?: InputMaybe<EnumBuildGitStatusFilter>;
   id?: InputMaybe<StringFilter>;
   message?: InputMaybe<StringFilter>;
   resource: WhereUniqueInput;
+  status?: InputMaybe<EnumBuildStatusFilter>;
   version?: InputMaybe<StringFilter>;
 };
 
@@ -791,6 +793,13 @@ export enum EnumBuildGitStatus {
   Waiting = 'Waiting'
 }
 
+export type EnumBuildGitStatusFilter = {
+  equals?: InputMaybe<EnumBuildGitStatus>;
+  in?: InputMaybe<Array<EnumBuildGitStatus>>;
+  not?: InputMaybe<EnumBuildGitStatus>;
+  notIn?: InputMaybe<Array<EnumBuildGitStatus>>;
+};
+
 export enum EnumBuildStatus {
   Canceled = 'Canceled',
   Completed = 'Completed',
@@ -799,6 +808,13 @@ export enum EnumBuildStatus {
   Running = 'Running',
   Unknown = 'Unknown'
 }
+
+export type EnumBuildStatusFilter = {
+  equals?: InputMaybe<EnumBuildStatus>;
+  in?: InputMaybe<Array<EnumBuildStatus>>;
+  not?: InputMaybe<EnumBuildStatus>;
+  notIn?: InputMaybe<Array<EnumBuildStatus>>;
+};
 
 export enum EnumCodeGenerator {
   DotNet = 'DotNet',
