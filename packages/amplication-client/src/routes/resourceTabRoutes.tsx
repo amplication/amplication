@@ -227,4 +227,17 @@ export const resourceTabRoutes = (projectBasePath) => [
     exactPath: false,
     routes: [],
   },
+  {
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/template-services`,
+    Component: lazy(
+      () =>
+        import(
+          "../ServiceTemplate/ServiceTemplateServiceList/ServiceTemplateServiceList"
+        )
+    ),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: false,
+    routes: [],
+  },
 ];

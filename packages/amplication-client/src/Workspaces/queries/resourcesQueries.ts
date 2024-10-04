@@ -17,9 +17,9 @@ export const GET_RESOURCE = gql`
 `;
 
 export const GET_RESOURCES = gql`
-  query getResources($projectId: String!, $whereName: StringFilter) {
+  query getResources($where: ResourceWhereInput) {
     resources(
-      where: { project: { id: $projectId }, name: $whereName }
+      where: $where
       orderBy: [{ resourceType: Asc }, { createdAt: Desc }]
     ) {
       id

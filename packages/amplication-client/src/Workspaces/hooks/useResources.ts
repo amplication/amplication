@@ -132,11 +132,13 @@ const useResources = (
     refetch: reloadResources,
   } = useQuery<TGetResources>(GET_RESOURCES, {
     variables: {
-      projectId: currentProject?.id,
-      whereName:
-        searchPhrase !== ""
-          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
-          : undefined,
+      where: {
+        project: { id: currentProject?.id },
+        name:
+          searchPhrase !== ""
+            ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
+            : undefined,
+      },
     },
     skip: !currentProject?.id,
   });

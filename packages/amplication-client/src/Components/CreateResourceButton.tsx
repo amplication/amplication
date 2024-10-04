@@ -48,14 +48,10 @@ const ITEMS: CreateResourceButtonItemType[] = [
 ];
 
 type Props = {
-  resourcesLength: number;
   servicesLength: number;
 };
 
-const CreateResourceButton: React.FC<Props> = ({
-  resourcesLength,
-  servicesLength,
-}) => {
+const CreateResourceButton: React.FC<Props> = ({ servicesLength }) => {
   const { stigg } = useStiggContext();
 
   const { hasAccess: canUsePrivatePlugins } = stigg.getBooleanEntitlement({
