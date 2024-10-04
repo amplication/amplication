@@ -286,7 +286,7 @@ export type BuildWhereInput = {
   gitStatus?: InputMaybe<EnumBuildGitStatusFilter>;
   id?: InputMaybe<StringFilter>;
   message?: InputMaybe<StringFilter>;
-  resource: WhereUniqueInput;
+  resource?: InputMaybe<WhereUniqueInput>;
   status?: InputMaybe<EnumBuildStatusFilter>;
   version?: InputMaybe<StringFilter>;
 };
@@ -957,6 +957,32 @@ export enum EnumModuleDtoType {
   WhereInput = 'WhereInput',
   WhereUniqueInput = 'WhereUniqueInput'
 }
+
+export enum EnumOutdatedVersionAlertStatus {
+  Ignored = 'Ignored',
+  New = 'New',
+  Resolved = 'Resolved'
+}
+
+export type EnumOutdatedVersionAlertStatusFilter = {
+  equals?: InputMaybe<EnumOutdatedVersionAlertStatus>;
+  in?: InputMaybe<Array<EnumOutdatedVersionAlertStatus>>;
+  not?: InputMaybe<EnumOutdatedVersionAlertStatus>;
+  notIn?: InputMaybe<Array<EnumOutdatedVersionAlertStatus>>;
+};
+
+export enum EnumOutdatedVersionAlertType {
+  CodeEngineVersion = 'CodeEngineVersion',
+  PluginVersion = 'PluginVersion',
+  TemplateVersion = 'TemplateVersion'
+}
+
+export type EnumOutdatedVersionAlertTypeFilter = {
+  equals?: InputMaybe<EnumOutdatedVersionAlertType>;
+  in?: InputMaybe<Array<EnumOutdatedVersionAlertType>>;
+  not?: InputMaybe<EnumOutdatedVersionAlertType>;
+  notIn?: InputMaybe<Array<EnumOutdatedVersionAlertType>>;
+};
 
 export enum EnumPackageStatus {
   Completed = 'Completed',
@@ -2117,6 +2143,42 @@ export type MutationUpdateWorkspaceArgs = {
   where: WhereUniqueInput;
 };
 
+export type OutdatedVersionAlert = {
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  latestVersion: Scalars['String']['output'];
+  outdatedVersion: Scalars['String']['output'];
+  resource?: Maybe<Resource>;
+  resourceId: Scalars['String']['output'];
+  status: EnumOutdatedVersionAlertStatus;
+  type: EnumOutdatedVersionAlertType;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type OutdatedVersionAlertOrderByInput = {
+  block?: InputMaybe<BlockOrderByInput>;
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  latestVersion?: InputMaybe<SortOrder>;
+  outdatedVersion?: InputMaybe<SortOrder>;
+  resource?: InputMaybe<ResourceOrderByInput>;
+  status?: InputMaybe<SortOrder>;
+  type?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type OutdatedVersionAlertWhereInput = {
+  block: WhereUniqueInput;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<StringFilter>;
+  latestVersion?: InputMaybe<StringFilter>;
+  outdatedVersion?: InputMaybe<StringFilter>;
+  resource: WhereUniqueInput;
+  status?: InputMaybe<EnumOutdatedVersionAlertStatusFilter>;
+  type?: InputMaybe<EnumOutdatedVersionAlertTypeFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
 export type Package = IBlock & {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -2484,6 +2546,7 @@ export type ProvisionSubscriptionResult = {
 };
 
 export type Query = {
+  _outdatedVersionAlertsMeta: MetaQueryPayload;
   _resourceVersionsMeta: MetaQueryPayload;
   account: Account;
   action: Action;
@@ -2514,6 +2577,8 @@ export type Query = {
   moduleDto?: Maybe<ModuleDto>;
   moduleDtos: Array<ModuleDto>;
   modules: Array<Module>;
+  outdatedVersionAlert: OutdatedVersionAlert;
+  outdatedVersionAlerts: Array<OutdatedVersionAlert>;
   package?: Maybe<Package>;
   packageList: Array<Package>;
   pendingChanges: Array<PendingChange>;
@@ -2543,6 +2608,14 @@ export type Query = {
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
   workspaces: Array<Workspace>;
+};
+
+
+export type Query_OutdatedVersionAlertsMetaArgs = {
+  orderBy?: InputMaybe<OutdatedVersionAlertOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<OutdatedVersionAlertWhereInput>;
 };
 
 
@@ -2712,6 +2785,19 @@ export type QueryModulesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ModuleWhereInput>;
+};
+
+
+export type QueryOutdatedVersionAlertArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryOutdatedVersionAlertsArgs = {
+  orderBy?: InputMaybe<OutdatedVersionAlertOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<OutdatedVersionAlertWhereInput>;
 };
 
 
