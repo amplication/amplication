@@ -177,4 +177,29 @@ export class ServiceSettingsService {
       user.id
     );
   }
+
+  async getServiceIdsByTemplateId(
+    projectId: string,
+    templateId: string
+  ): Promise<string[]> {
+    const blocks = await this.blockService.findManyByBlockTypeAndSettings(
+      {
+        where: {
+          resource: {
+            deletedAt: null,
+            archived: { not: true },
+
+            projectId,
+          },
+        },
+      },
+      EnumBlockType.ServiceSettings,
+      {
+        path: ["serviceTemplateVersion", "serviceTemplateId"],
+        equals: templateId,
+      }
+    );
+
+    return blocks.map((block) => block.resourceId);
+  }
 }

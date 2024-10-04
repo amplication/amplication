@@ -11,6 +11,7 @@ import { FindOneResourceVersionArgs } from "./dto/FindOneResourceVersionArgs";
 import { ResourceVersion } from "./dto/ResourceVersion";
 import { BlockService } from "../block/block.service";
 import { valid } from "semver";
+import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
 
 @Injectable()
 export class ResourceVersionService {
@@ -22,7 +23,8 @@ export class ResourceVersionService {
     private readonly resourceService: ResourceService,
     private readonly userService: UserService,
     @Inject(AmplicationLogger)
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private readonly outdatedVersionAlertService: OutdatedVersionAlertService
   ) {}
 
   /**
@@ -40,6 +42,17 @@ export class ResourceVersionService {
       },
     });
 
+    const resource = await this.resourceService.findOne({
+      where: { id: resourceId },
+    });
+
+    if (resource.resourceType !== EnumResourceType.ServiceTemplate) {
+      this.logger.error(
+        `Resource version is supported only for service templates, but received resource of type ${resource.resourceType} with id ${resourceId}`
+      );
+      return;
+    }
+
     const latestEntityVersions = await this.entityService.getLatestVersions({
       where: { resourceId: resourceId },
     });
@@ -47,6 +60,8 @@ export class ResourceVersionService {
     const latestBlockVersions = await this.blockService.getLatestVersions({
       where: { resourceId: resourceId },
     });
+
+    const previousVersion = await this.getLatest(resourceId);
 
     const resourceVersion = await this.prisma.resourceVersion.create({
       ...args,
@@ -73,13 +88,11 @@ export class ResourceVersionService {
       user,
     });
 
-    const resource = await this.resourceService.findOne({
-      where: { id: resourceId },
-    });
-    if (resource.resourceType !== EnumResourceType.ServiceTemplate) {
-      logger.info("Resource version is supported only for service templates");
-      return;
-    }
+    await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
+      resourceId,
+      previousVersion.version,
+      args.data.version
+    );
 
     return resourceVersion;
   }

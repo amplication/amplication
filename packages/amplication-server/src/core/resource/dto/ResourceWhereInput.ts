@@ -38,6 +38,9 @@ export class ResourceWhereInput {
   @Field(() => String, { nullable: true })
   projectId?: string | null;
 
+  @Field(() => String, { nullable: true })
+  serviceTemplateId?: string | null;
+
   @Field(() => EnumResourceTypeFilter, {
     nullable: true,
   })
