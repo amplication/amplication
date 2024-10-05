@@ -49,6 +49,23 @@ export class OutdatedVersionAlertService {
     return outdatedVersionAlert;
   }
 
+  async resolvesServiceTemplateUpdated({
+    resourceId,
+  }: {
+    resourceId: string;
+  }): Promise<void> {
+    await this.prisma.outdatedVersionAlert.updateMany({
+      where: {
+        resourceId: resourceId,
+        type: EnumOutdatedVersionAlertType.TemplateVersion,
+        status: EnumOutdatedVersionAlertStatus.New,
+      },
+      data: {
+        status: EnumOutdatedVersionAlertStatus.Resolved,
+      },
+    });
+  }
+
   async count(args: FindManyOutdatedVersionAlertArgs): Promise<number> {
     return this.prisma.outdatedVersionAlert.count(args);
   }
