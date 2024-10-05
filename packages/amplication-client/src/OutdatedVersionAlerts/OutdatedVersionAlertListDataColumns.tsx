@@ -39,7 +39,7 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     sortable: true,
     width: 200,
     renderCell: (props) => {
-      return <OutdatedVersionAlertType outdatedVersionAlert={props.row} />;
+      return <OutdatedVersionAlertType type={props.row.type} />;
     },
   },
   {
@@ -80,7 +80,7 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     sortable: true,
     width: 200,
     renderCell: (props) => {
-      return <OutdatedVersionAlertStatus outdatedVersionAlert={props.row} />;
+      return <OutdatedVersionAlertStatus status={props.row.status} />;
     },
   },
 ];

@@ -15,6 +15,14 @@ const useOutdatedVersionAlerts = (projectId: string) => {
   const [orderBy, setOrderBy] =
     useState<models.OutdatedVersionAlertOrderByInput>(undefined);
 
+  const [status, setStatus] = useState<
+    keyof typeof models.EnumOutdatedVersionAlertStatus | null
+  >(null);
+
+  const [type, setType] = useState<
+    keyof typeof models.EnumOutdatedVersionAlertType | null
+  >(null);
+
   const {
     data: outdatedVersionAlert,
     loading: loadingOutdatedVersionAlerts,
@@ -27,6 +35,8 @@ const useOutdatedVersionAlerts = (projectId: string) => {
       skip: (pageNumber - 1) * pageSize,
       where: {
         resource: { project: { id: projectId } },
+        status: status ? { equals: status } : undefined,
+        type: type ? { equals: type } : undefined,
         // message:
         //   searchPhrase !== ""
         //     ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
@@ -49,6 +59,10 @@ const useOutdatedVersionAlerts = (projectId: string) => {
     pageSize,
     setOrderBy,
     setSearchPhrase,
+    status,
+    setStatus,
+    type,
+    setType,
   };
 };
 

@@ -1,23 +1,23 @@
 import { Tooltip } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React from "react";
-import {
-  EnumOutdatedVersionAlertStatus,
-  OutdatedVersionAlert,
-} from "../models";
+import { EnumOutdatedVersionAlertStatus } from "../models";
 import "./OutdatedVersionAlertStatus.scss";
 
 type Props = {
-  outdatedVersionAlert: OutdatedVersionAlert;
+  status: keyof typeof EnumOutdatedVersionAlertStatus | null;
+  hideTooltip?: boolean;
+};
+
+type StatusValues = {
+  message: string;
+  name: string;
+  className: string;
 };
 
 const OUTDATED_ALERT_STATUS_TO_MESSAGE: Record<
   EnumOutdatedVersionAlertStatus,
-  {
-    message: string;
-    name: string;
-    className: string;
-  }
+  StatusValues
 > = {
   [EnumOutdatedVersionAlertStatus.New]: {
     message: "Update available.",
@@ -34,23 +34,43 @@ const OUTDATED_ALERT_STATUS_TO_MESSAGE: Record<
     name: "Ignored",
     className: "ignored",
   },
+  [EnumOutdatedVersionAlertStatus.Canceled]: {
+    message: "This update was canceled because a newer update was available.",
+    name: "Canceled",
+    className: "canceled",
+  },
+};
+
+const nullValues: StatusValues = {
+  message: "",
+  name: "All",
+  className: "all",
 };
 
 const CLASS_NAME = "outdated-version-alert-status";
 
 const OutdatedVersionAlertStatus: React.FC<Props> = ({
-  outdatedVersionAlert,
+  status,
+  hideTooltip = false,
 }) => {
-  const values = OUTDATED_ALERT_STATUS_TO_MESSAGE[outdatedVersionAlert.status];
+  const values = status ? OUTDATED_ALERT_STATUS_TO_MESSAGE[status] : nullValues;
+
+  const content = (
+    <span
+      className={classNames(CLASS_NAME, `${CLASS_NAME}--${values.className}`)}
+    >
+      {values.name}
+    </span>
+  );
 
   return (
-    <Tooltip title={values.message}>
-      <span
-        className={classNames(CLASS_NAME, `${CLASS_NAME}--${values.className}`)}
-      >
-        {values.name}
-      </span>
-    </Tooltip>
+    <>
+      {hideTooltip ? (
+        content
+      ) : (
+        <Tooltip title={values.message}>{content}</Tooltip>
+      )}
+    </>
   );
 };
 

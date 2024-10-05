@@ -5,16 +5,19 @@ import { EnumOutdatedVersionAlertType, OutdatedVersionAlert } from "../models";
 import "./OutdatedVersionAlertType.scss";
 
 type Props = {
-  outdatedVersionAlert: OutdatedVersionAlert;
+  type: keyof typeof EnumOutdatedVersionAlertType | null;
+  hideTooltip?: boolean;
+};
+
+type TypeValues = {
+  message: string;
+  name: string;
+  className: string;
 };
 
 const OUTDATED_ALERT_TYPE_TO_MESSAGE: Record<
   EnumOutdatedVersionAlertType,
-  {
-    message: string;
-    name: string;
-    className: string;
-  }
+  TypeValues
 > = {
   [EnumOutdatedVersionAlertType.TemplateVersion]: {
     message: "New version of the template is available.",
@@ -33,21 +36,36 @@ const OUTDATED_ALERT_TYPE_TO_MESSAGE: Record<
   },
 };
 
+const nullValues: TypeValues = {
+  message: "",
+  name: "All",
+  className: "all",
+};
+
 const CLASS_NAME = "outdated-version-alert-type";
 
 const OutdatedVersionAlertType: React.FC<Props> = ({
-  outdatedVersionAlert,
+  type,
+  hideTooltip = false,
 }) => {
-  const values = OUTDATED_ALERT_TYPE_TO_MESSAGE[outdatedVersionAlert.type];
+  const values = type ? OUTDATED_ALERT_TYPE_TO_MESSAGE[type] : nullValues;
+
+  const content = (
+    <span
+      className={classNames(CLASS_NAME, `${CLASS_NAME}--${values.className}`)}
+    >
+      {values.name}
+    </span>
+  );
 
   return (
-    <Tooltip title={values.message}>
-      <span
-        className={classNames(CLASS_NAME, `${CLASS_NAME}--${values.className}`)}
-      >
-        {values.name}
-      </span>
-    </Tooltip>
+    <>
+      {hideTooltip ? (
+        content
+      ) : (
+        <Tooltip title={values.message}>{content}</Tooltip>
+      )}
+    </>
   );
 };
 
