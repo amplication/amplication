@@ -12,6 +12,9 @@ import { ResourceVersion } from "./dto/ResourceVersion";
 import { BlockService } from "../block/block.service";
 import { valid } from "semver";
 import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
+import { Block } from "../../models";
+import { ResourceVersionDiff } from "./dto/ResourceVersionDiff";
+import { ResourceVersionDiffBlock } from "./dto/ResourceVersionDiffBlock";
 
 @Injectable()
 export class ResourceVersionService {
@@ -35,12 +38,6 @@ export class ResourceVersionService {
     const resourceId = args.data.resource.connect.id;
 
     await this.validateVersion(args.data.version, resourceId);
-
-    const user = await this.userService.findUser({
-      where: {
-        id: args.data.createdBy.connect.id,
-      },
-    });
 
     const resource = await this.resourceService.findOne({
       where: { id: resourceId },
@@ -79,13 +76,6 @@ export class ResourceVersionService {
         commit: true,
         resource: true,
       },
-    });
-
-    const logger = this.logger.child({
-      resourceVersionId: resourceVersion.id,
-      resourceId: resourceVersion.resourceId,
-      userId: resourceVersion.userId,
-      user,
     });
 
     await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
@@ -145,5 +135,74 @@ export class ResourceVersionService {
         createdAt: "desc", //@todo: order by semver and consider adding status and returning the latest published version
       },
     });
+  }
+
+  async getVersionsDiff({
+    resourceId,
+    sourceVersion,
+    targetVersion,
+  }: {
+    resourceId: string;
+    sourceVersion: string;
+    targetVersion: string;
+  }): Promise<ResourceVersionDiff> {
+    const sourceResourceVersion = await this.prisma.resourceVersion.findFirst({
+      where: {
+        resourceId: resourceId,
+        version: sourceVersion,
+      },
+    });
+
+    const sourceBlocks = await this.blockService.getBlocksByResourceVersions(
+      sourceResourceVersion.id
+    );
+
+    const targetResourceVersion = await this.prisma.resourceVersion.findFirst({
+      where: {
+        resourceId: resourceId,
+        version: targetVersion,
+      },
+    });
+
+    const targetBlocks = await this.blockService.getBlocksByResourceVersions(
+      targetResourceVersion.id
+    );
+
+    const updated: ResourceVersionDiffBlock[] = [];
+    const deleted: Block[] = [];
+    const created: Block[] = [];
+
+    for (const sourceBlock of sourceBlocks) {
+      const targetBlock = targetBlocks.find(
+        (block) => block.id === sourceBlock.id
+      );
+
+      if (targetBlock) {
+        if (sourceBlock.versionNumber !== targetBlock.versionNumber) {
+          updated.push({
+            sourceBlock,
+            targetBlock,
+          });
+        }
+      } else {
+        deleted.push(sourceBlock);
+      }
+    }
+
+    for (const targetBlock of targetBlocks) {
+      const sourceBlock = sourceBlocks.find(
+        (block) => block.id === targetBlock.id
+      );
+
+      if (!sourceBlock) {
+        created.push(targetBlock);
+      }
+    }
+
+    return {
+      updatedBlocks: updated,
+      createdBlocks: created,
+      deletedBlocks: deleted,
+    };
   }
 }
