@@ -11,6 +11,7 @@
   --rdg-row-selected-hover-background-color: var(--gray-60);
 
   border-radius: var(--default-border-radius);
+  @include scrollbars($default-scroll-width, var(--gray-30), transparent);
 
   .rdg-cell {
     border-right-color: transparent;
