@@ -26,6 +26,18 @@ export class OutdatedVersionAlertService {
   async create(
     args: CreateOutdatedVersionAlertArgs
   ): Promise<OutdatedVersionAlert> {
+    //update all previous alerts for the same resource and type that are still in status "new" to be canceled
+    await this.prisma.outdatedVersionAlert.updateMany({
+      where: {
+        resourceId: args.data.resource.connect.id,
+        type: args.data.type,
+        status: EnumOutdatedVersionAlertStatus.New,
+      },
+      data: {
+        status: EnumOutdatedVersionAlertStatus.Canceled,
+      },
+    });
+
     const outdatedVersionAlert = await this.prisma.outdatedVersionAlert.create({
       ...args,
       data: {

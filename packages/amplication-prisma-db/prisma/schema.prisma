@@ -502,6 +502,7 @@ enum EnumOutdatedVersionAlertStatus {
   New
   Resolved
   Ignored
+  Canceled
 }
 
 enum EnumOutdatedVersionAlertType {
