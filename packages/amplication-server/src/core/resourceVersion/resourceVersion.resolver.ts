@@ -32,7 +32,9 @@ export class ResourceVersionResolver {
   ): Promise<ResourceVersion[]> {
     return this.service.findMany(args);
   }
+
   @Query(() => MetaQueryPayload)
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.resource.id")
   async _resourceVersionsMeta(
     @Args() args: FindManyResourceVersionArgs
   ): Promise<MetaQueryPayload> {
