@@ -17,7 +17,7 @@ const useOutdatedVersionAlerts = (projectId: string) => {
 
   const [status, setStatus] = useState<
     keyof typeof models.EnumOutdatedVersionAlertStatus | null
-  >(null);
+  >(models.EnumOutdatedVersionAlertStatus.New);
 
   const [type, setType] = useState<
     keyof typeof models.EnumOutdatedVersionAlertType | null
