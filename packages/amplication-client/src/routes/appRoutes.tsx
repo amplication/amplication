@@ -95,6 +95,18 @@ export const Routes: RouteDef[] = [
                 ],
               },
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/tech-debt",
+                Component: lazy(
+                  () =>
+                    import("../OutdatedVersionAlerts/OutdatedVersionAlertList")
+                ),
+                moduleName: "",
+                displayName: "Tech Debt",
+                routeTrackType: "",
+                exactPath: false,
+                routes: [],
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/publish",
                 Component: lazy(
                   () => import("../VersionControl/PublishChangesPage")
