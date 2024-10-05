@@ -16,6 +16,10 @@
     border-right-color: transparent;
     padding-right: var(--default-spacing);
     padding-left: var(--default-spacing);
+
+    &[aria-selected="true"] {
+      outline: none;
+    }
   }
 
   .rdg-header-row {
