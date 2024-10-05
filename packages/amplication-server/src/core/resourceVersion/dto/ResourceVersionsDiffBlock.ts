@@ -4,7 +4,7 @@ import { Block } from "../../../models/Block";
 @ObjectType({
   isAbstract: true,
 })
-export class ResourceVersionDiffBlock {
+export class ResourceVersionsDiffBlock {
   @Field(() => Block, { nullable: false })
   sourceBlock: Block;
 

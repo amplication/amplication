@@ -1,13 +1,13 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Block } from "../../../models/Block";
-import { ResourceVersionDiffBlock } from "./ResourceVersionDiffBlock";
+import { ResourceVersionsDiffBlock } from "./ResourceVersionsDiffBlock";
 
 @ObjectType({
   isAbstract: true,
 })
-export class ResourceVersionDiff {
-  @Field(() => [ResourceVersionDiffBlock], { nullable: true })
-  updatedBlocks?: ResourceVersionDiffBlock[] | null | undefined;
+export class ResourceVersionsDiff {
+  @Field(() => [ResourceVersionsDiffBlock], { nullable: true })
+  updatedBlocks?: ResourceVersionsDiffBlock[] | null | undefined;
 
   @Field(() => [Block], { nullable: true })
   createdBlocks?: Block[] | null | undefined;

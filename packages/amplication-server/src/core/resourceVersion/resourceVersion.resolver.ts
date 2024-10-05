@@ -13,6 +13,8 @@ import { FindOneResourceVersionArgs } from "./dto/FindOneResourceVersionArgs";
 import { ResourceVersion } from "./dto/ResourceVersion";
 import { ResourceVersionService } from "./resourceVersion.service";
 import { MetaQueryPayload } from "../../dto/MetaQueryPayload";
+import { ResourceVersionsDiff } from "./dto/ResourceVersionsDiff";
+import { CompareResourceVersionsArgs } from "./dto/CompareResourceVersionsArgs";
 
 @Resolver(() => ResourceVersion)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -74,5 +76,13 @@ export class ResourceVersionResolver {
     return this.resourceService.resource({
       where: { id: resourceVersion.resourceId },
     });
+  }
+
+  @Query(() => ResourceVersionsDiff)
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.resource.id")
+  async compareResourceVersions(
+    @Args() args: CompareResourceVersionsArgs
+  ): Promise<ResourceVersionsDiff> {
+    return this.service.compareResourceVersions(args);
   }
 }

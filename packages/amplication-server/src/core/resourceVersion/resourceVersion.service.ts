@@ -13,8 +13,9 @@ import { BlockService } from "../block/block.service";
 import { valid } from "semver";
 import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
 import { Block } from "../../models";
-import { ResourceVersionDiff } from "./dto/ResourceVersionDiff";
-import { ResourceVersionDiffBlock } from "./dto/ResourceVersionDiffBlock";
+import { ResourceVersionsDiff } from "./dto/ResourceVersionsDiff";
+import { ResourceVersionsDiffBlock } from "./dto/ResourceVersionsDiffBlock";
+import { CompareResourceVersionsArgs } from "./dto/CompareResourceVersionsArgs";
 
 @Injectable()
 export class ResourceVersionService {
@@ -137,15 +138,13 @@ export class ResourceVersionService {
     });
   }
 
-  async getVersionsDiff({
-    resourceId,
-    sourceVersion,
-    targetVersion,
-  }: {
-    resourceId: string;
-    sourceVersion: string;
-    targetVersion: string;
-  }): Promise<ResourceVersionDiff> {
+  async compareResourceVersions(
+    args: CompareResourceVersionsArgs
+  ): Promise<ResourceVersionsDiff> {
+    const { sourceVersion, targetVersion, resource } = args.where;
+
+    const resourceId = resource.id;
+
     const sourceResourceVersion = await this.prisma.resourceVersion.findFirst({
       where: {
         resourceId: resourceId,
@@ -168,7 +167,7 @@ export class ResourceVersionService {
       targetResourceVersion.id
     );
 
-    const updated: ResourceVersionDiffBlock[] = [];
+    const updated: ResourceVersionsDiffBlock[] = [];
     const deleted: Block[] = [];
     const created: Block[] = [];
 

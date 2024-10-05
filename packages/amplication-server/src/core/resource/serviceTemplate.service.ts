@@ -290,10 +290,12 @@ export class ServiceTemplateService {
       );
     }
 
-    const changes = await this.resourceVersionService.getVersionsDiff({
-      resourceId: template.id,
-      sourceVersion: serviceTemplateVersion.version,
-      targetVersion: latestVersion.version,
+    const changes = await this.resourceVersionService.compareResourceVersions({
+      where: {
+        resource: { id: template.id },
+        sourceVersion: serviceTemplateVersion.version,
+        targetVersion: latestVersion.version,
+      },
     });
 
     //create new plugins from the template
