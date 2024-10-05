@@ -98,13 +98,28 @@ export const Routes: RouteDef[] = [
                 path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/tech-debt",
                 Component: lazy(
                   () =>
-                    import("../OutdatedVersionAlerts/OutdatedVersionAlertList")
+                    import("../OutdatedVersionAlerts/OutdatedVersionAlertsPage")
                 ),
                 moduleName: "",
                 displayName: "Tech Debt",
                 routeTrackType: "",
                 exactPath: false,
-                routes: [],
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/tech-debt/:alert([A-Za-z0-9-]{20,})",
+                    Component: lazy(
+                      () =>
+                        import(
+                          "../OutdatedVersionAlerts/OutdatedVersionAlertPage"
+                        )
+                    ),
+                    moduleName: "",
+                    displayName: "Tech Debt Alert",
+                    routeTrackType: "",
+                    exactPath: false,
+                    routes: [],
+                  },
+                ],
               },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/publish",

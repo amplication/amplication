@@ -4,7 +4,7 @@ import * as models from "../../models";
 import { GET_OUTDATED_VERSION_ALERTS } from "./outdatedVersionAlertsQueries";
 
 type TGetOutdatedVersionAlerts = {
-  outdatedVersionAlerts: models.Resource[];
+  outdatedVersionAlerts: models.OutdatedVersionAlert[];
   _outdatedVersionAlertsMeta: { count: number };
 };
 
