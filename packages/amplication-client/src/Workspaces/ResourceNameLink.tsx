@@ -12,9 +12,15 @@ type Props = {
 const CLASS_NAME = "resource-name-link";
 
 function ResourceNameLink({ resource }: Props) {
-  const { id, name } = resource;
+  const { id, name, resourceType } = resource;
 
-  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: id });
+  const overrideIsPlatformConsole =
+    models.EnumResourceType.ServiceTemplate === resourceType;
+
+  const { baseUrl } = useResourceBaseUrl({
+    overrideResourceId: id,
+    overrideIsPlatformConsole: overrideIsPlatformConsole,
+  });
 
   return (
     <Link className={CLASS_NAME} to={baseUrl}>
