@@ -8,6 +8,12 @@
   color: var(--gray-base);
   flex: 1;
 
+  &--with-side-panel {
+    .amp-page-layout {
+      max-width: calc(100vw - var(--changes-menu-width) - 2px);
+    }
+  }
+
   &__page_content {
     display: flex;
     flex: 1;

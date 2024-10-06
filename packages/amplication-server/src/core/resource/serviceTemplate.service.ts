@@ -18,6 +18,7 @@ import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginI
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { kebabCase } from "lodash";
+import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 
 @Injectable()
 export class ServiceTemplateService {
@@ -26,7 +27,8 @@ export class ServiceTemplateService {
     private readonly analyticsService: SegmentAnalyticsService,
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly logger: AmplicationLogger,
-    private readonly resourceService: ResourceService
+    private readonly resourceService: ResourceService,
+    private readonly resourceVersionService: ResourceVersionService
   ) {}
 
   /**
@@ -101,6 +103,12 @@ export class ServiceTemplateService {
       throw new AmplicationError(`Service template not found`);
     }
 
+    const template = serviceTemplates[0];
+
+    const templateVersion = await this.resourceVersionService.getLatest(
+      template.id
+    );
+
     const serviceSettings =
       await this.serviceSettingsService.getServiceSettingsValues(
         {
@@ -114,7 +122,7 @@ export class ServiceTemplateService {
     delete serviceSettings.resourceId;
     serviceSettings.serviceTemplateVersion = {
       serviceTemplateId: args.data.serviceTemplate.id,
-      version: "1", //@Todo: get versions
+      version: templateVersion.version,
     };
 
     const kebabCaseServiceName = kebabCase(args.data.name);
@@ -139,8 +147,8 @@ export class ServiceTemplateService {
           resourceType: EnumResourceType.Service,
           project: args.data.project,
           serviceSettings: serviceSettings,
-          codeGenerator: serviceTemplates[0].codeGeneratorName
-            ? CODE_GENERATOR_NAME_TO_ENUM[serviceTemplates[0].codeGeneratorName]
+          codeGenerator: template.codeGeneratorName
+            ? CODE_GENERATOR_NAME_TO_ENUM[template.codeGeneratorName]
             : EnumCodeGenerator.NodeJs,
         },
       },
@@ -156,7 +164,7 @@ export class ServiceTemplateService {
     await this.analyticsService.trackWithContext({
       event: EnumEventType.CreateServiceFromTemplate,
       properties: {
-        templateName: serviceTemplates[0].name,
+        templateName: template.name,
         serviceName: newService.name,
       },
     });

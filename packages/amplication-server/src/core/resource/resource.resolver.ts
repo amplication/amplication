@@ -260,6 +260,33 @@ export class ResourceResolver {
     });
   }
 
+  @ResolveField(() => String, { nullable: true })
+  async serviceTemplateVersion(
+    @Parent() resource: Resource,
+    @UserEntity() user: User
+  ): Promise<string> {
+    if (!resource.id) {
+      return null;
+    }
+
+    if (resource.resourceType !== EnumResourceType.Service) {
+      return null;
+    }
+
+    const settings = await this.serviceSettingsService.getServiceSettingsBlock(
+      {
+        where: { id: resource.id },
+      },
+      user
+    );
+
+    if (!settings?.serviceTemplateVersion) {
+      return null;
+    }
+
+    return settings.serviceTemplateVersion.version;
+  }
+
   @ResolveField(() => ResourceVersion, { nullable: true })
   async version(
     @Parent() resource: Resource,

@@ -2936,6 +2936,7 @@ export type Resource = {
   projectId?: Maybe<Scalars['String']['output']>;
   resourceType: EnumResourceType;
   serviceTemplate?: Maybe<Resource>;
+  serviceTemplateVersion?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   version?: Maybe<ResourceVersion>;
 };

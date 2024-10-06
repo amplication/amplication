@@ -2038,6 +2038,7 @@ type Resource {
   projectId: String
   resourceType: EnumResourceType!
   serviceTemplate: Resource
+  serviceTemplateVersion: String
   updatedAt: DateTime!
   version: ResourceVersion
 }
