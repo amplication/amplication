@@ -260,9 +260,11 @@ input BuildWhereInput {
   commit: WhereUniqueInput
   createdAt: DateTimeFilter
   createdBy: WhereUniqueInput
+  gitStatus: EnumBuildGitStatusFilter
   id: StringFilter
   message: StringFilter
-  resource: WhereUniqueInput!
+  resource: WhereUniqueInput
+  status: EnumBuildStatusFilter
   version: StringFilter
 }
 
@@ -758,6 +760,13 @@ enum EnumBuildGitStatus {
   Waiting
 }
 
+input EnumBuildGitStatusFilter {
+  equals: EnumBuildGitStatus
+  in: [EnumBuildGitStatus!]
+  not: EnumBuildGitStatus
+  notIn: [EnumBuildGitStatus!]
+}
+
 enum EnumBuildStatus {
   Canceled
   Completed
@@ -765,6 +774,13 @@ enum EnumBuildStatus {
   Invalid
   Running
   Unknown
+}
+
+input EnumBuildStatusFilter {
+  equals: EnumBuildStatus
+  in: [EnumBuildStatus!]
+  not: EnumBuildStatus
+  notIn: [EnumBuildStatus!]
 }
 
 enum EnumCodeGenerator {
@@ -910,6 +926,32 @@ enum EnumModuleDtoType {
   UpdateNestedManyInput
   WhereInput
   WhereUniqueInput
+}
+
+enum EnumOutdatedVersionAlertStatus {
+  Ignored
+  New
+  Resolved
+}
+
+input EnumOutdatedVersionAlertStatusFilter {
+  equals: EnumOutdatedVersionAlertStatus
+  in: [EnumOutdatedVersionAlertStatus!]
+  not: EnumOutdatedVersionAlertStatus
+  notIn: [EnumOutdatedVersionAlertStatus!]
+}
+
+enum EnumOutdatedVersionAlertType {
+  CodeEngineVersion
+  PluginVersion
+  TemplateVersion
+}
+
+input EnumOutdatedVersionAlertTypeFilter {
+  equals: EnumOutdatedVersionAlertType
+  in: [EnumOutdatedVersionAlertType!]
+  not: EnumOutdatedVersionAlertType
+  notIn: [EnumOutdatedVersionAlertType!]
 }
 
 enum EnumPackageStatus {
@@ -1528,6 +1570,42 @@ type Mutation {
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
 }
 
+type OutdatedVersionAlert {
+  createdAt: DateTime!
+  id: String!
+  latestVersion: String!
+  outdatedVersion: String!
+  resource: Resource
+  resourceId: String!
+  status: EnumOutdatedVersionAlertStatus!
+  type: EnumOutdatedVersionAlertType!
+  updatedAt: DateTime!
+}
+
+input OutdatedVersionAlertOrderByInput {
+  block: BlockOrderByInput
+  createdAt: SortOrder
+  id: SortOrder
+  latestVersion: SortOrder
+  outdatedVersion: SortOrder
+  resource: ResourceOrderByInput
+  status: SortOrder
+  type: SortOrder
+  updatedAt: SortOrder
+}
+
+input OutdatedVersionAlertWhereInput {
+  block: WhereUniqueInput!
+  createdAt: DateTimeFilter
+  id: StringFilter
+  latestVersion: StringFilter
+  outdatedVersion: StringFilter
+  resource: WhereUniqueInput!
+  status: EnumOutdatedVersionAlertStatusFilter
+  type: EnumOutdatedVersionAlertTypeFilter
+  updatedAt: DateTimeFilter
+}
+
 type Package implements IBlock {
   blockType: EnumBlockType!
   createdAt: DateTime!
@@ -1898,6 +1976,7 @@ type ProvisionSubscriptionResult {
 }
 
 type Query {
+  _outdatedVersionAlertsMeta(orderBy: OutdatedVersionAlertOrderByInput, skip: Int, take: Int, where: OutdatedVersionAlertWhereInput): MetaQueryPayload!
   _resourceVersionsMeta(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): MetaQueryPayload!
   account: Account!
   action(where: WhereUniqueInput!): Action!
@@ -1931,6 +2010,8 @@ type Query {
   moduleDto(where: WhereUniqueInput!): ModuleDto
   moduleDtos(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
   modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
+  outdatedVersionAlert(where: WhereUniqueInput!): OutdatedVersionAlert!
+  outdatedVersionAlerts(orderBy: OutdatedVersionAlertOrderByInput, skip: Int, take: Int, where: OutdatedVersionAlertWhereInput): [OutdatedVersionAlert!]!
   package(where: WhereUniqueInput!): Package
   packageList(orderBy: PackageOrderByInput, skip: Int, take: Int, where: PackageWhereInput): [Package!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
