@@ -756,6 +756,7 @@ export class BlockService {
   async getChangedBlocks(
     projectId: string,
     resourceTypeGroup: EnumResourceTypeGroup,
+    resourceIds: string[] | null,
     userId: string
   ): Promise<BlockPendingChange[]> {
     const resourceTypes =
@@ -765,6 +766,11 @@ export class BlockService {
       where: {
         lockedByUserId: userId,
         resource: {
+          id: resourceIds
+            ? {
+                in: resourceIds,
+              }
+            : undefined,
           resourceType: {
             in: resourceTypes,
           },
@@ -940,6 +946,37 @@ export class BlockService {
         inputParameters: sourceVersion.inputParameters,
         outputParameters: sourceVersion.outputParameters,
       },
+    });
+  }
+
+  async getLatestVersions(args: {
+    where: Prisma.BlockWhereInput;
+  }): Promise<BlockVersion[]> {
+    const blocks = await this.prisma.block.findMany({
+      where: {
+        ...args.where,
+        resourceId: args.where.resourceId,
+        deletedAt: null,
+      },
+      include: {
+        versions: {
+          where: {
+            versionNumber: {
+              not: CURRENT_VERSION_NUMBER,
+            },
+          },
+          take: 1,
+          orderBy: {
+            versionNumber: Prisma.SortOrder.desc,
+          },
+        },
+        parentBlock: true,
+      },
+    });
+
+    return blocks.map((block) => {
+      const [version] = block.versions;
+      return version;
     });
   }
 }

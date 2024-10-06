@@ -33,6 +33,7 @@ import { UsageInsightsModule } from "./UsageInsights/usageInsights.module";
 import { AssistantModule } from "./assistant/assistant.module";
 import { AwsMarketplaceModule } from "./aws-marketplace/aws-marketplace.module";
 import { PackageModule } from "./package/package.module";
+import { ResourceVersionModule } from "./resourceVersion/resourceVersion.module";
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { PackageModule } from "./package/package.module";
     AwsMarketplaceModule,
     PrivatePluginModule,
     PackageModule,
+    ResourceVersionModule,
   ],
   exports: [
     AccountModule,
@@ -103,6 +105,7 @@ import { PackageModule } from "./package/package.module";
     GptModule,
     AssistantModule,
     PrivatePluginModule,
+    ResourceVersionModule,
   ],
 })
 export class CoreModule {}

@@ -1,0 +1,37 @@
+@import "../../style/index.scss";
+
+$height: 20px;
+$border-radius: 10px;
+$width: 70px;
+
+.amp-version-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: $height;
+  width: $width;
+  padding-left: var(--default-spacing);
+  padding-right: var(--default-spacing);
+  border-radius: $border-radius;
+  font-size: var(--tag-font-size);
+  border: $border-dark;
+  background-color: transparent;
+  color: var(--theme-blue);
+  border-color: var(--theme-blue);
+  font-weight: normal;
+
+  &--none {
+    color: var(--gray-60);
+    border-color: var(--gray-60);
+  }
+
+  &--previous {
+    color: var(--gray-20);
+    border-color: var(--gray-20);
+  }
+
+  &--current {
+    color: var(--theme-blue);
+    border-color: var(--theme-blue);
+  }
+}

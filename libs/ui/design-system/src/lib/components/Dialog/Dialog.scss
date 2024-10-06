@@ -21,6 +21,10 @@ $modal-max-height: 80vh;
     box-sizing: border-box;
   }
 
+  .MuiDialog-container {
+    align-items: flex-start;
+  }
+
   &__title {
     font-size: 18px;
     font-weight: 600;
@@ -42,6 +46,7 @@ $modal-max-height: 80vh;
   & &__body {
     background-color: transparent;
     box-sizing: border-box;
+    color: var(--gray-base);
   }
 
   &--warning {

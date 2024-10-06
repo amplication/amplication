@@ -246,12 +246,6 @@ type Build {
   version: String!
 }
 
-input BuildCreateInput {
-  commit: WhereParentIdInput!
-  message: String!
-  resource: WhereParentIdInput!
-}
-
 input BuildOrderByInput {
   createdAt: SortOrder
   id: SortOrder
@@ -315,18 +309,22 @@ input CommitCreateInput {
   project: WhereParentIdInput!
 
   """
-  The resources to commit. By default, it contains all the project resources. 
-        If the commit strategy is AllWithPendingChanges, it will contain the resources with pending changes. 
-        If the commit strategy is Specific, it will be an array with one element. 
+  The resources to commit, when strategy is "Specific". On other strategies, this field will be ignored.
   """
   resourceIds: [String!]
   resourceTypeGroup: EnumResourceTypeGroup!
+  resourceVersions: [CommitResourceVersionCreateInput!]
 }
 
 input CommitOrderByInput {
   createdAt: SortOrder
   id: SortOrder
   message: SortOrder
+}
+
+input CommitResourceVersionCreateInput {
+  resourceId: String
+  version: String
 }
 
 input CommitWhereInput {
@@ -1152,6 +1150,10 @@ input MessagePatternCreateInput {
   type: EnumMessagePatternConnectionOptions!
 }
 
+type MetaQueryPayload {
+  count: Float!
+}
+
 type Metrics {
   count: Int!
   month: Int!
@@ -1414,7 +1416,6 @@ type Mutation {
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
-  createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
   createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
@@ -1862,6 +1863,7 @@ type ProvisionSubscriptionResult {
 }
 
 type Query {
+  _resourceVersionsMeta(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): MetaQueryPayload!
   account: Account!
   action(where: WhereUniqueInput!): Action!
   availableDtosForResource(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
@@ -1909,6 +1911,8 @@ type Query {
   resource(where: WhereUniqueInput!): Resource
   resourceRole(version: Float, where: WhereUniqueInput!): ResourceRole
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
+  resourceVersion(where: WhereUniqueInput!): ResourceVersion!
+  resourceVersions(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): [ResourceVersion!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
   serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
@@ -2000,6 +2004,7 @@ type Resource {
   resourceType: EnumResourceType!
   serviceTemplate: Resource
   updatedAt: DateTime!
+  version: ResourceVersion
 }
 
 input ResourceCreateInput {
@@ -2100,6 +2105,37 @@ input ResourceUpdateInput {
   description: String
   gitRepositoryOverride: Boolean
   name: String
+}
+
+type ResourceVersion {
+  commit: Commit
+  commitId: String!
+  createdAt: DateTime!
+  createdBy: User
+  id: String!
+  message: String
+  resource: Resource
+  resourceId: String!
+  userId: String!
+  version: String!
+}
+
+input ResourceVersionOrderByInput {
+  createdAt: SortOrder
+  id: SortOrder
+  message: SortOrder
+  userId: SortOrder
+  version: SortOrder
+}
+
+input ResourceVersionWhereInput {
+  commit: WhereUniqueInput
+  createdAt: DateTimeFilter
+  createdBy: WhereUniqueInput
+  id: StringFilter
+  message: StringFilter
+  resource: WhereUniqueInput!
+  version: StringFilter
 }
 
 input ResourceWhereInput {

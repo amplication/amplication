@@ -26,6 +26,7 @@ import { ActionModule } from "../action/action.module";
 import { GitProviderModule } from "../git/git.provider.module";
 import { ServiceTemplateService } from "./serviceTemplate.service";
 import { ServiceTemplateResolver } from "./serviceTemplate.resolver";
+import { ResourceVersionModule } from "../resourceVersion/resourceVersion.module";
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { ServiceTemplateResolver } from "./serviceTemplate.resolver";
     UserActionModule,
     ActionModule,
     GitProviderModule,
+    ResourceVersionModule,
   ],
   providers: [
     ResourceService,

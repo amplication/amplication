@@ -272,12 +272,6 @@ export type Build = {
   version: Scalars['String']['output'];
 };
 
-export type BuildCreateInput = {
-  commit: WhereParentIdInput;
-  message: Scalars['String']['input'];
-  resource: WhereParentIdInput;
-};
-
 export type BuildOrderByInput = {
   createdAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
@@ -342,19 +336,21 @@ export type CommitCreateInput = {
   commitStrategy?: InputMaybe<EnumCommitStrategy>;
   message: Scalars['String']['input'];
   project: WhereParentIdInput;
-  /**
-   * The resources to commit. By default, it contains all the project resources.
-   *       If the commit strategy is AllWithPendingChanges, it will contain the resources with pending changes.
-   *       If the commit strategy is Specific, it will be an array with one element.
-   */
+  /** The resources to commit, when strategy is "Specific". On other strategies, this field will be ignored. */
   resourceIds?: InputMaybe<Array<Scalars['String']['input']>>;
   resourceTypeGroup: EnumResourceTypeGroup;
+  resourceVersions?: InputMaybe<Array<CommitResourceVersionCreateInput>>;
 };
 
 export type CommitOrderByInput = {
   createdAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
   message?: InputMaybe<SortOrder>;
+};
+
+export type CommitResourceVersionCreateInput = {
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+  version?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CommitWhereInput = {
@@ -1177,6 +1173,10 @@ export type MessagePatternCreateInput = {
   type: EnumMessagePatternConnectionOptions;
 };
 
+export type MetaQueryPayload = {
+  count: Scalars['Float']['output'];
+};
+
 export type Metrics = {
   count: Scalars['Int']['output'];
   month: Scalars['Int']['output'];
@@ -1439,7 +1439,6 @@ export type Mutation = {
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
-  createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
   createEntitiesFromPredefinedSchema: UserAction;
   createEntitiesFromPrismaSchema: UserAction;
@@ -1583,11 +1582,6 @@ export type MutationConnectResourceToProjectRepositoryArgs = {
 
 export type MutationCreateApiTokenArgs = {
   data: ApiTokenCreateInput;
-};
-
-
-export type MutationCreateBuildArgs = {
-  data: BuildCreateInput;
 };
 
 
@@ -2358,6 +2352,7 @@ export type ProjectConfigurationSettings = IBlock & {
   lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   outputParameters: Array<BlockInputOutput>;
+  overrideCustomizableFilesInGit?: Maybe<Scalars['Boolean']['output']>;
   parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
@@ -2369,6 +2364,7 @@ export type ProjectConfigurationSettingsUpdateInput = {
   baseDirectory?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
+  overrideCustomizableFilesInGit?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type ProjectCreateInput = {
@@ -2429,6 +2425,7 @@ export type ProvisionSubscriptionResult = {
 };
 
 export type Query = {
+  _resourceVersionsMeta: MetaQueryPayload;
   account: Account;
   action: Action;
   availableDtosForResource: Array<ModuleDto>;
@@ -2473,6 +2470,8 @@ export type Query = {
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
+  resourceVersion: ResourceVersion;
+  resourceVersions: Array<ResourceVersion>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
   serviceTemplates: Array<Resource>;
@@ -2485,6 +2484,14 @@ export type Query = {
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
   workspaces: Array<Workspace>;
+};
+
+
+export type Query_ResourceVersionsMetaArgs = {
+  orderBy?: InputMaybe<ResourceVersionOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ResourceVersionWhereInput>;
 };
 
 
@@ -2740,6 +2747,19 @@ export type QueryResourceRolesArgs = {
 };
 
 
+export type QueryResourceVersionArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryResourceVersionsArgs = {
+  orderBy?: InputMaybe<ResourceVersionOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ResourceVersionWhereInput>;
+};
+
+
 export type QueryResourcesArgs = {
   orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -2871,6 +2891,7 @@ export type Resource = {
   resourceType: EnumResourceType;
   serviceTemplate?: Maybe<Resource>;
   updatedAt: Scalars['DateTime']['output'];
+  version?: Maybe<ResourceVersion>;
 };
 
 
@@ -2987,6 +3008,37 @@ export type ResourceUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   gitRepositoryOverride?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ResourceVersion = {
+  commit?: Maybe<Commit>;
+  commitId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  createdBy?: Maybe<User>;
+  id: Scalars['String']['output'];
+  message?: Maybe<Scalars['String']['output']>;
+  resource?: Maybe<Resource>;
+  resourceId: Scalars['String']['output'];
+  userId: Scalars['String']['output'];
+  version: Scalars['String']['output'];
+};
+
+export type ResourceVersionOrderByInput = {
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  message?: InputMaybe<SortOrder>;
+  userId?: InputMaybe<SortOrder>;
+  version?: InputMaybe<SortOrder>;
+};
+
+export type ResourceVersionWhereInput = {
+  commit?: InputMaybe<WhereUniqueInput>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  createdBy?: InputMaybe<WhereUniqueInput>;
+  id?: InputMaybe<StringFilter>;
+  message?: InputMaybe<StringFilter>;
+  resource: WhereUniqueInput;
+  version?: InputMaybe<StringFilter>;
 };
 
 export type ResourceWhereInput = {

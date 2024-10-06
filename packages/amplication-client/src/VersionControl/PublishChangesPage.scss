@@ -1,0 +1,12 @@
+@import "../style/index.scss";
+
+.publish-changes-page {
+  &__toggle {
+    min-width: 200px;
+  }
+
+  &__form {
+    max-width: 800px;
+    margin: auto;
+  }
+}

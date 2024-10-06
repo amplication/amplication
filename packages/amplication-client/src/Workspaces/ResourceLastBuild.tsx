@@ -14,6 +14,7 @@ function ResourceLastBuild({ resource, hideLabel }: Props) {
       account={lastBuild?.commit?.user?.account || {}}
       time={lastBuild?.createdAt}
       label={hideLabel ? "" : "Last commit:"}
+      overrideTooltipDirection="e"
     />
   );
 }

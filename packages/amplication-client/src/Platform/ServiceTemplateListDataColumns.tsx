@@ -4,6 +4,7 @@ import {
   EnumTextStyle,
   FlexItem,
   Text,
+  VersionTag,
 } from "@amplication/ui/design-system";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
@@ -29,6 +30,15 @@ export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     sortable: true,
     renderCell: (props) => {
       return <ResourceNameLink resource={props.row} />;
+    },
+  },
+  {
+    key: "version",
+    name: "Version",
+    resizable: true,
+    sortable: true,
+    renderCell: (props) => {
+      return <VersionTag version={props.row.version?.version} />;
     },
   },
   {

@@ -95,14 +95,14 @@ model GitRepository {
 }
 
 model User {
-  id                    String       @id @default(cuid())
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
+  id                    String            @id @default(cuid())
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
   accountId             String
   workspaceId           String
-  isOwner               Boolean      @default(false)
-  account               Account      @relation("AccountOnUser", fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  workspace             Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  isOwner               Boolean           @default(false)
+  account               Account           @relation("AccountOnUser", fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace             Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   assignedCurrentTo     Account?
   apiTokens             ApiToken[]
   lockedBlocks          Block[]
@@ -111,12 +111,13 @@ model User {
   deployments           Deployment[]
   lockedEntitis         Entity[]
   userRoles             UserRole[]
-  sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
+  sentInvitations       Invitation[]      @relation("InvitedByUserOnInvitation")
   createdFromInvitation Invitation?
   createdFromCoupon     Coupon?
   deletedAt             DateTime?
   userAction            UserAction[]
-  lastActive            DateTime?    @default(now())
+  lastActive            DateTime?         @default(now())
+  resourceVersions      ResourceVersion[]
 
   @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
 }
@@ -172,6 +173,7 @@ model Resource {
   codeGeneratorStrategy CodeGeneratorVersionStrategy @default(LatestMajor)
   codeGeneratorName     String?
   licensed              Boolean                      @default(true)
+  resourceVersions      ResourceVersion[]
 
   @@unique([projectId, name], map: "Resource.projectId_name_unique")
 }
@@ -192,17 +194,18 @@ model ResourceRole {
 }
 
 model Commit {
-  id             String          @id @default(cuid())
-  createdAt      DateTime        @default(now())
-  userId         String
-  message        String
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  blockVersions  BlockVersion[]
-  builds         Build[]
-  entityVersions EntityVersion[]
-  releases       Release[]
-  project        Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId      String
+  id               String            @id @default(cuid())
+  createdAt        DateTime          @default(now())
+  userId           String
+  message          String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blockVersions    BlockVersion[]
+  builds           Build[]
+  entityVersions   EntityVersion[]
+  releases         Release[]
+  project          Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId        String
+  resourceVersions ResourceVersion[]
 }
 
 model Entity {
@@ -245,6 +248,7 @@ model EntityVersion {
   fields            EntityField[]
   permissions       EntityPermission[]
   builds            Build[]
+  resourceVersions  ResourceVersion[]
 
   @@unique([entityId, versionNumber], map: "EntityVersion.entityId_versionNumber_unique")
 }
@@ -331,21 +335,22 @@ model Block {
 }
 
 model BlockVersion {
-  id               String   @id @default(cuid())
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id               String            @id @default(cuid())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
   blockId          String
   versionNumber    Int
   inputParameters  Json?
   outputParameters Json?
   settings         Json
-  displayName      String   @default("")
+  displayName      String            @default("")
   description      String?
   commitId         String?
   deleted          Boolean?
-  block            Block    @relation(fields: [blockId], references: [id], onDelete: Cascade)
-  commit           Commit?  @relation(fields: [commitId], references: [id])
+  block            Block             @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  commit           Commit?           @relation(fields: [commitId], references: [id])
   builds           Build[]
+  resourceVersions ResourceVersion[]
 
   @@unique([blockId, versionNumber], map: "BlockVersion.blockId_versionNumber_unique")
 }
@@ -410,6 +415,23 @@ model Build {
   filesChanged             Int?
 
   @@unique([resourceId, version], map: "Build.resourceId_version_unique")
+}
+
+model ResourceVersion {
+  id             String          @id @default(cuid())
+  createdAt      DateTime        @default(now())
+  resourceId     String
+  userId         String
+  version        String
+  message        String?
+  commitId       String?
+  resource       Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  commit         Commit?         @relation(fields: [commitId], references: [id])
+  createdBy      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blockVersions  BlockVersion[]
+  entityVersions EntityVersion[]
+
+  @@unique([resourceId, version], map: "ResouceVersion.resourceId_version_unique")
 }
 
 model UserAction {

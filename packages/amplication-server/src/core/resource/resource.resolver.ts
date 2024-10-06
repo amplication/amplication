@@ -37,6 +37,8 @@ import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { EnumResourceType } from "./dto/EnumResourceType";
+import { ResourceVersion } from "../resourceVersion/dto/ResourceVersion";
+import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -47,7 +49,8 @@ export class ResourceResolver {
     private readonly entityService: EntityService,
     private readonly buildService: BuildService,
     private readonly environmentService: EnvironmentService,
-    private readonly serviceSettingsService: ServiceSettingsService
+    private readonly serviceSettingsService: ServiceSettingsService,
+    private readonly resourceVersionService: ResourceVersionService
   ) {}
 
   @Query(() => Resource, { nullable: true })
@@ -255,5 +258,17 @@ export class ResourceResolver {
         id: settings.serviceTemplateVersion.serviceTemplateId,
       },
     });
+  }
+
+  @ResolveField(() => ResourceVersion, { nullable: true })
+  async version(
+    @Parent() resource: Resource,
+    @UserEntity() user: User
+  ): Promise<ResourceVersion | null> {
+    if (!resource.id) {
+      return null;
+    }
+
+    return this.resourceVersionService.getLatest(resource.id);
   }
 }

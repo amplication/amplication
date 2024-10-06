@@ -85,6 +85,11 @@ export const GET_PENDING_CHANGES_STATUS = gql`
         name
         resourceType
         licensed
+        version {
+          id
+          version
+          message
+        }
       }
     }
   }

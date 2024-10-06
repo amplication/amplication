@@ -2,6 +2,7 @@ import { Field, InputType } from "@nestjs/graphql";
 import { WhereParentIdInput } from "../../../dto";
 import { EnumCommitStrategy } from "./EnumCommitStrategy";
 import { EnumResourceTypeGroup } from "./EnumResourceTypeGroup";
+import { CommitResourceVersionCreateInput } from "./CommitResourceVersionCreateInput";
 
 @InputType({
   isAbstract: true,
@@ -38,11 +39,14 @@ export class CommitCreateInput {
 
   @Field(() => [String], {
     nullable: true,
-    description: `The resources to commit. By default, it contains all the project resources. 
-      If the commit strategy is AllWithPendingChanges, it will contain the resources with pending changes. 
-      If the commit strategy is Specific, it will be an array with one element. `,
+    description: `The resources to commit, when strategy is "Specific". On other strategies, this field will be ignored.`,
   })
   resourceIds?: string[];
+
+  @Field(() => [CommitResourceVersionCreateInput], {
+    nullable: true,
+  })
+  resourceVersions?: CommitResourceVersionCreateInput[];
 
   /**do not expose to GraphQL - This field should be injected from context  */
   user!: WhereParentIdInput;
