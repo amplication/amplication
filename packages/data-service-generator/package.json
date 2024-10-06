@@ -10,8 +10,8 @@
     "@amplication/code-gen-utils": "*",
     "@amplication/dsg-utils": "*",
     "@apollo/client": "^3.7.1",
-    "@babel/parser": "7.25.6",
-    "@babel/types": "7.25.6",
+    "@babel/parser": "7.25.7",
+    "@babel/types": "7.25.7",
     "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.3.12",
@@ -71,6 +71,6 @@
     "@mui/material": "^6.1.0",
     "vite": "~4.3.9",
     "@vitejs/plugin-react": "3.1.0",
-    "pacote": "^18.0.6"
+    "pacote": "^19.0.0"
   }
 }
