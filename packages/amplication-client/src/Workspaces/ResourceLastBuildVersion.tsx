@@ -57,6 +57,10 @@ function ResourceLastBuildVersion({ resource }: Props) {
 
   const { title, ...props } = STRATEGY_TO_ICON[resource.codeGeneratorStrategy];
 
+  const titleWithVersion = resource.codeGeneratorVersion
+    ? `${title} (${resource.codeGeneratorVersion})`
+    : title;
+
   return (
     <Link to={url}>
       <FlexItem
@@ -65,7 +69,7 @@ function ResourceLastBuildVersion({ resource }: Props) {
         itemsAlign={EnumItemsAlign.Center}
       >
         <VersionTag version={validVersion} />
-        <Tooltip title={title}>
+        <Tooltip title={titleWithVersion}>
           <Icon {...props} />
         </Tooltip>
       </FlexItem>
