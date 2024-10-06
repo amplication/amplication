@@ -331,6 +331,7 @@ export class ServiceTemplateService {
     changes.deletedBlocks.forEach(async (block) => {
       if (block.blockType === EnumBlockType.PluginInstallation) {
         const plugin = block as PluginInstallation;
+        plugin.isPrivate = plugin.isPrivate ?? false; //@todo - remove. added to pass linter until code is completed
       }
     });
 
@@ -339,6 +340,7 @@ export class ServiceTemplateService {
     changes.updatedBlocks.forEach(async (diff) => {
       if (diff.sourceBlock.blockType === EnumBlockType.PluginInstallation) {
         const plugin = diff.sourceBlock as PluginInstallation;
+        plugin.isPrivate = plugin.isPrivate ?? false; //@todo - remove. added to pass linter until code is completed
       }
     });
 
