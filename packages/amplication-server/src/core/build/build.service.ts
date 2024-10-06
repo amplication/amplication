@@ -54,6 +54,7 @@ import {
   DownloadPrivatePluginsSuccess,
   DownloadPrivatePluginsFailure,
   CodeGenerationFailure,
+  PluginNotifyVersion,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
@@ -368,6 +369,39 @@ export class BuildService {
     }
   }
 
+  async notifyBuildPluginVersion(
+    args: PluginNotifyVersion.Value
+  ): Promise<void> {
+    try {
+      await this.prisma.buildPlugin.upsert({
+        where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          buildId_packageName: {
+            buildId: args.buildId,
+            packageName: args.packageName,
+          },
+        },
+        update: {
+          packageVersion: args.packageVersion,
+        },
+        create: {
+          build: {
+            connect: {
+              id: args.buildId,
+            },
+          },
+          packageName: args.packageName,
+          packageVersion: args.packageVersion,
+          requestedFullPackageName: args.requestedFullPackageName,
+        },
+      });
+    } catch (error) {
+      this.logger.error(
+        `Failed to notify build plugin version  ${error.message}`,
+        error
+      );
+    }
+  }
   async getBuildStep(
     buildId: string,
     buildStepName: string

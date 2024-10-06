@@ -33,6 +33,8 @@ import { BillingService } from "../billing/billing.service";
 import { GitProviderService } from "../git/git.provider.service";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { PluginNotifyVersion } from "@amplication/schema-registry";
+import { BuildPlugin } from "./dto/BuildPlugin";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
@@ -85,6 +87,15 @@ const EXAMPLE_RESOURCE: Resource = {
   licensed: true,
 };
 
+const EXAMPLE_BUILD_PLUGIN: BuildPlugin = {
+  id: "exampleBuildPluginId",
+  createdAt: new Date(),
+  buildId: EXAMPLE_BUILD_ID,
+  requestedFullPackageName: "exampleRequestedFullPackageName",
+  packageName: "examplePackageName",
+  packageVersion: "examplePackageVersion",
+};
+
 const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 const actionServiceFindOneMock = jest.fn(() => EXAMPLE_ACTION);
 const commitServiceFindOneMock = jest.fn(() => EXAMPLE_COMMIT);
@@ -95,6 +106,10 @@ const prismaServiceBuildCreateMock = jest.fn(() => EXAMPLE_BUILD);
 const prismaServiceBuildFindManyMock = jest.fn(() => [EXAMPLE_BUILD]);
 const prismaServiceBuildFindUniqueMock = jest.fn(() => EXAMPLE_BUILD);
 const prismaServiceBuildUpdateMock = jest.fn();
+
+const prismaServiceBuildPluginUpsertMock = jest.fn(() => {
+  return EXAMPLE_BUILD_PLUGIN;
+});
 
 const pluginInstallationServiceGetInstalledPrivatePluginsForBuildMock = jest.fn(
   () => {
@@ -237,6 +252,9 @@ describe("BuildService", () => {
               findUnique: prismaServiceBuildFindUniqueMock,
               update: prismaServiceBuildUpdateMock,
             },
+            buildPlugin: {
+              upsert: prismaServiceBuildPluginUpsertMock,
+            },
           })),
         },
         BuildService,
@@ -350,5 +368,40 @@ describe("BuildService", () => {
     const result = await service.create(createBuildArgs);
 
     expect(result).toBeUndefined();
+  });
+
+  it("should update plugin version successfully", async () => {
+    const args: PluginNotifyVersion.Value = {
+      buildId: EXAMPLE_BUILD_ID,
+      packageName: "examplePackageName",
+      packageVersion: "1.0.0",
+      requestedFullPackageName: "examplePackageName@latest",
+    };
+
+    await service.notifyBuildPluginVersion(args);
+
+    expect(prismaServiceBuildPluginUpsertMock).toHaveBeenCalledTimes(1);
+    expect(prismaServiceBuildPluginUpsertMock).toHaveBeenCalledWith({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        buildId_packageName: {
+          buildId: args.buildId,
+          packageName: args.packageName,
+        },
+      },
+      update: {
+        packageVersion: args.packageVersion,
+      },
+      create: {
+        build: {
+          connect: {
+            id: args.buildId,
+          },
+        },
+        packageName: args.packageName,
+        packageVersion: args.packageVersion,
+        requestedFullPackageName: args.requestedFullPackageName,
+      },
+    });
   });
 });
