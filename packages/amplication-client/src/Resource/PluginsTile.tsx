@@ -102,6 +102,35 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
           development with Amplication's wide range of plugins and integrations.
         </Text>
       </FlexItem>
+      <HorizontalRule />
+      <FlexItem
+        margin={EnumFlexItemMargin.Both}
+        itemsAlign={EnumItemsAlign.Center}
+      >
+        <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+          Installed Plugins
+        </Text>
+        <FlexItem.FlexEnd>
+          <Link to={installedUrl}>
+            <Text
+              textStyle={EnumTextStyle.Subtle}
+              textColor={EnumTextColor.ThemeTurquoise}
+            >
+              Manage installed plugins
+            </Text>
+          </Link>
+        </FlexItem.FlexEnd>
+      </FlexItem>
+
+      <div className={CLASS_NAME}>
+        {installedCategories.map((category) => (
+          <InstalledCategory
+            key={category.category.name}
+            {...category}
+            onClick={handleCategoryClick}
+          />
+        ))}
+      </div>
       {availableCategoriesList && availableCategoriesList.length > 0 && (
         <>
           <HorizontalRule />
@@ -135,35 +164,6 @@ function PluginsTile({ usedCategories, availableCategories }: Props) {
           </div>
         </>
       )}
-      <HorizontalRule />
-      <FlexItem
-        margin={EnumFlexItemMargin.Both}
-        itemsAlign={EnumItemsAlign.Center}
-      >
-        <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-          Installed Plugins
-        </Text>
-        <FlexItem.FlexEnd>
-          <Link to={installedUrl}>
-            <Text
-              textStyle={EnumTextStyle.Subtle}
-              textColor={EnumTextColor.ThemeTurquoise}
-            >
-              Manage installed plugins
-            </Text>
-          </Link>
-        </FlexItem.FlexEnd>
-      </FlexItem>
-
-      <div className={CLASS_NAME}>
-        {installedCategories.map((category) => (
-          <InstalledCategory
-            key={category.category.name}
-            {...category}
-            onClick={handleCategoryClick}
-          />
-        ))}
-      </div>
     </Panel>
   );
 }
@@ -178,7 +178,7 @@ function AvailableCategory({ category, onClick }: AvailableCategoryProps) {
   const url = `${baseUrl}/plugins/catalog/${encodeURIComponent(category.name)}`;
 
   return (
-    <List listStyle={EnumListStyle.Dark}>
+    <List listStyle={EnumListStyle.Default}>
       <ListItem
         to={url}
         onClick={() => onClick(AVAILABLE_CATEGORIES, category)}
@@ -220,7 +220,7 @@ function InstalledCategory({
   const url = `${baseUrl}/plugins/installed`;
 
   return (
-    <List listStyle={EnumListStyle.Default}>
+    <List listStyle={EnumListStyle.Dark}>
       <ListItem
         to={url}
         onClick={() => {

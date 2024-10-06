@@ -1,7 +1,7 @@
 import { EnumResourceType } from "@amplication/code-gen-types";
 import {
   CircleBadge,
-  EnumButtonStyle,
+  EnumContentAlign,
   EnumFlexDirection,
   EnumGapSize,
   EnumItemsAlign,
@@ -13,6 +13,7 @@ import {
   Icon,
   Panel,
   Text,
+  VersionTag,
 } from "@amplication/ui/design-system";
 import { useStiggContext } from "@stigg/react-sdk";
 import { useEffect, useMemo } from "react";
@@ -163,6 +164,12 @@ const ResourceOverview = () => {
                   </FlexItem>
                 </Link>
               ))}
+            </FlexItem.FlexEnd>
+          )}
+          {currentResource?.resourceType ===
+            EnumResourceType.ServiceTemplate && (
+            <FlexItem.FlexEnd alignSelf={EnumContentAlign.Start}>
+              <VersionTag version={currentResource.version?.version} />
             </FlexItem.FlexEnd>
           )}
         </FlexItem>

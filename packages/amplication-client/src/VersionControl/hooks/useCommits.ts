@@ -63,8 +63,8 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     resetPendingChanges,
     setPendingChangesError,
     currentWorkspace,
-    currentProject,
     commitUtils,
+    reloadResources,
   } = useContext(AppContext);
 
   const { baseUrl: projectBaseUrl } = useProjectBaseUrl();
@@ -196,6 +196,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
           setCommitRunning(false);
           setPendingChangesError(false);
           resetPendingChanges();
+          reloadResources();
           commitUtils.refetchCommitsData(true);
           if (data.resourceTypeGroup === EnumResourceTypeGroup.Services) {
             const path = commitPath(projectBaseUrl, response.data.commit.id);
