@@ -5,6 +5,7 @@ import { EntityVersion } from "../../../models/EntityVersion";
 import { User } from "../../../models/User";
 import { Action } from "../../action/dto/Action";
 import { EnumBuildStatus } from "./EnumBuildStatus";
+import { EnumBuildGitStatus } from "./EnumBuildGitStatus";
 
 @ObjectType({
   isAbstract: true,
@@ -28,8 +29,11 @@ export class Build {
   @Field(() => String, { nullable: false })
   userId!: string;
 
-  @Field(() => EnumBuildStatus, { nullable: true })
-  status?: keyof typeof EnumBuildStatus;
+  @Field(() => EnumBuildStatus, { nullable: false })
+  status: keyof typeof EnumBuildStatus;
+
+  @Field(() => EnumBuildGitStatus, { nullable: false })
+  gitStatus: keyof typeof EnumBuildGitStatus;
 
   @Field(() => String, { nullable: true })
   archiveURI?: string;

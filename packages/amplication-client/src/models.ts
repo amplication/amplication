@@ -261,13 +261,14 @@ export type Build = {
   createdAt: Scalars['DateTime']['output'];
   createdBy?: Maybe<User>;
   filesChanged?: Maybe<Scalars['Float']['output']>;
+  gitStatus: EnumBuildGitStatus;
   id: Scalars['String']['output'];
   linesOfCodeAdded?: Maybe<Scalars['Float']['output']>;
   linesOfCodeDeleted?: Maybe<Scalars['Float']['output']>;
   message?: Maybe<Scalars['String']['output']>;
   resource?: Maybe<Resource>;
   resourceId: Scalars['String']['output'];
-  status?: Maybe<EnumBuildStatus>;
+  status: EnumBuildStatus;
   userId: Scalars['String']['output'];
   version: Scalars['String']['output'];
 };
@@ -781,11 +782,22 @@ export type EnumBlockTypeFilter = {
   notIn?: InputMaybe<Array<EnumBlockType>>;
 };
 
+export enum EnumBuildGitStatus {
+  Canceled = 'Canceled',
+  Completed = 'Completed',
+  Failed = 'Failed',
+  NotConnected = 'NotConnected',
+  Unknown = 'Unknown',
+  Waiting = 'Waiting'
+}
+
 export enum EnumBuildStatus {
+  Canceled = 'Canceled',
   Completed = 'Completed',
   Failed = 'Failed',
   Invalid = 'Invalid',
-  Running = 'Running'
+  Running = 'Running',
+  Unknown = 'Unknown'
 }
 
 export enum EnumCodeGenerator {

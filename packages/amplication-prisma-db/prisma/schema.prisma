@@ -391,8 +391,8 @@ model ActionLog {
 }
 
 model Build {
-  id                       String          @id @default(cuid())
-  createdAt                DateTime        @default(now())
+  id                       String             @id @default(cuid())
+  createdAt                DateTime           @default(now())
   resourceId               String
   userId                   String
   version                  String
@@ -402,19 +402,52 @@ model Build {
   containerStatusQuery     Json?
   containerStatusUpdatedAt DateTime?
   commitId                 String?
-  action                   Action          @relation(fields: [actionId], references: [id], onDelete: Cascade)
-  resource                 Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-  commit                   Commit?         @relation(fields: [commitId], references: [id])
-  createdBy                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action                   Action             @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  resource                 Resource           @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  commit                   Commit?            @relation(fields: [commitId], references: [id])
+  createdBy                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   deployments              Deployment[]
   blockVersions            BlockVersion[]
   entityVersions           EntityVersion[]
   codeGeneratorVersion     String?
-  linesOfCodeAdded         Int?            @map("linesOfCode")
+  linesOfCodeAdded         Int?               @map("linesOfCode")
   linesOfCodeDeleted       Int?
   filesChanged             Int?
+  buildPlugins             BuildPlugin[]
+  status                   EnumBuildStatus    @default(Unknown)
+  gitStatus                EnumBuildGitStatus @default(Unknown)
 
   @@unique([resourceId, version], map: "Build.resourceId_version_unique")
+}
+
+enum EnumBuildStatus {
+  Running
+  Completed
+  Failed
+  Invalid
+  Canceled
+  Unknown
+}
+
+enum EnumBuildGitStatus {
+  NotConnected
+  Waiting
+  Completed
+  Failed
+  Canceled
+  Unknown
+}
+
+model BuildPlugin {
+  id                       String   @id @default(cuid())
+  createdAt                DateTime @default(now())
+  buildId                  String
+  build                    Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
+  requestedFullPackageName String // @amplication/db-postgres@latest
+  packageName              String // @amplication/db-postgres
+  packageVersion           String // 1.0.1
+
+  @@unique([buildId, packageName], map: "BuildPlugin.buildId_packageName_unique")
 }
 
 model ResourceVersion {

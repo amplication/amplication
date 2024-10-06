@@ -18,6 +18,7 @@ import {
   DownloadPrivatePluginsLog,
   DownloadPrivatePluginsSuccess,
   CodeGenerationNotifyVersion,
+  PluginNotifyVersion,
 } from "@amplication/schema-registry";
 
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -62,6 +63,23 @@ export class BuildController {
       this.logger.error("Failed to update code generator version ", error, {
         buildId: args.buildId,
         codeGeneratorVersion: args.codeGeneratorVersion,
+      });
+    }
+  }
+
+  @EventPattern(KAFKA_TOPICS.BUILD_PLUGIN_NOTIFY_VERSION_TOPIC)
+  async onPluginNotifyVersion(
+    @Payload() message: PluginNotifyVersion.Value
+  ): Promise<void> {
+    const args = plainToInstance(PluginNotifyVersion.Value, message);
+    try {
+      await this.buildService.notifyBuildPluginVersion(args);
+    } catch (error) {
+      this.logger.error("Failed to update plugin version ", error, {
+        buildId: args.buildId,
+        requestedFullPackageName: args.requestedFullPackageName,
+        packageName: args.packageName,
+        packageVersion: args.packageVersion,
       });
     }
   }

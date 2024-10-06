@@ -19,7 +19,11 @@ type Props = AppRouteProps & {
 };
 
 const PrivatePluginsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
-  const { pluginRepositoryResource, loadingResources } = useAppContext();
+  const {
+    pluginRepositoryResource,
+    loadingResources,
+    projectConfigurationResource,
+  } = useAppContext();
   const history = useHistory();
 
   const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: true });
@@ -42,11 +46,17 @@ const PrivatePluginsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
   }
 
   useEffect(() => {
-    if (loadingResources) return;
+    if (loadingResources || !projectConfigurationResource) return;
     if (!pluginRepositoryResource) {
       history.push(`${baseUrl}/create-plugin-repository`);
     }
-  }, [baseUrl, history, loadingResources, pluginRepositoryResource]);
+  }, [
+    baseUrl,
+    history,
+    loadingResources,
+    pluginRepositoryResource,
+    projectConfigurationResource,
+  ]);
 
   if (!canUsePrivatePlugins) {
     return (

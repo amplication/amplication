@@ -3,7 +3,7 @@ import {
   EntityField,
   NamedClassDeclaration,
 } from "@amplication/code-gen-types";
-import { isScalarListField, isPasswordField } from "../../../utils/field";
+import { isScalarListField, isPasswordField } from "@amplication/dsg-utils";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";

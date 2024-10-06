@@ -12,9 +12,9 @@ import { ResourceService } from "../resource/resource.service";
 import { UserService } from "../user/user.service";
 import { BuildService } from "./build.service";
 import { Build } from "./dto/Build";
-import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
 import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
+import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -67,6 +67,9 @@ export class BuildResolver {
 
   @ResolveField()
   status(@Parent() build: Build): Promise<EnumBuildStatus> {
-    return this.service.calcBuildStatus(build.id);
+    if (build.status === EnumBuildStatus.Unknown) {
+      return this.service.calcBuildStatus(build.id);
+    }
+    return Promise.resolve(EnumBuildStatus[build.status]);
   }
 }

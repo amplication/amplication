@@ -1,7 +1,10 @@
 import downloadHelper from "download";
 import { packument } from "pacote";
 import { BuildLogger } from "@amplication/code-gen-types";
-import { PackageInstallation } from "./DynamicPackageInstallationManager";
+import {
+  InstalledPluginVersion,
+  PackageInstallation,
+} from "./DynamicPackageInstallationManager";
 
 export class Tarball {
   constructor(
@@ -9,31 +12,41 @@ export class Tarball {
     private readonly modulesPath: string,
     private readonly logger: BuildLogger
   ) {}
-  async download(): Promise<void> {
+  async download(): Promise<InstalledPluginVersion> {
     const tarball = await this.packageTarball(this.plugin);
     const { name } = this.plugin;
-    await downloadHelper(tarball, this.modulesPath, {
+    await downloadHelper(tarball.tarball, this.modulesPath, {
       extract: true,
       map(file) {
         file.path = file.path.replace("package/", `${name}/`);
         return file;
       },
     });
-    return;
+    return tarball.version;
   }
 
   private async packageTarball({
     name,
     version,
-  }: PackageInstallation): Promise<string> {
+  }: PackageInstallation): Promise<{
+    tarball: string;
+    version: InstalledPluginVersion;
+  }> {
     const fullPackageName = `${name}@${version}`;
     const response = await packument(fullPackageName);
     const latestTag = response["dist-tags"].latest;
     const latestVersion = response.versions[latestTag];
-    const requestedVersion = response.versions[version];
+    const requestedVersion = response.versions[version || ""];
 
     if (!version || version === "latest") {
-      return latestVersion.dist.tarball;
+      return {
+        tarball: latestVersion.dist.tarball,
+        version: {
+          requestedFullPackageName: fullPackageName,
+          packageName: name,
+          packageVersion: latestVersion.version,
+        },
+      };
     }
 
     if (!requestedVersion.version) {
@@ -56,6 +69,13 @@ export class Tarball {
       );
     }
 
-    return requestedVersion.dist.tarball;
+    return {
+      tarball: requestedVersion.dist.tarball,
+      version: {
+        requestedFullPackageName: fullPackageName,
+        packageName: name,
+        packageVersion: requestedVersion.version,
+      },
+    };
   }
 }
