@@ -14,4 +14,10 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../../coverage/libs/util/dsg-utils",
+  coverageThreshold: {
+    global: {
+      branches: 50,
+      lines: 50,
+    },
+  },
 };

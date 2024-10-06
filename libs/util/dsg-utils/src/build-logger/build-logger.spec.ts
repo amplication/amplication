@@ -2,8 +2,8 @@ import { logger as applicationLogger } from "../logger/logging";
 import { httpClient } from "../http-client/http-client";
 import { LogLevel } from "@amplication/util/logging";
 import { BuildLogger } from "./build-logger";
-jest.mock("./logging");
-jest.mock("./utils/http-client");
+jest.mock("../logger/logging");
+jest.mock("../http-client/http-client");
 
 describe("BuildLogger", () => {
   let buildLogger: BuildLogger;

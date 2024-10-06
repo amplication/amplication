@@ -1,7 +1,12 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
-import { DynamicPackageInstallationManager, PackageInstallation } from "../";
+import {
+  DynamicPackageInstallationManager,
+  InstalledPluginVersion,
+  PackageInstallation,
+} from "../";
 import { ILogger } from "@amplication/util-logging";
 import { BuildLogger as IBuildLogger } from "@amplication/code-gen-types";
+import { BuildManagerNotifier } from "../build-manager-notifier/notify-build-manager";
 
 export async function dynamicPackagesInstallations(
   packages: PluginInstallation[],
@@ -10,6 +15,12 @@ export async function dynamicPackagesInstallations(
   buildLogger: IBuildLogger
 ): Promise<void> {
   logger.info("Installing dynamic packages");
+
+  const buildManagerNotifier = new BuildManagerNotifier({
+    buildManagerUrl: process.env["BUILD_MANAGER_URL"] || "",
+    resourceId: process.env["RESOURCE_ID"] || "",
+    buildId: process.env["BUILD_ID"] || "",
+  });
 
   const manager = new DynamicPackageInstallationManager(
     pluginInstallationPath,
@@ -29,7 +40,11 @@ export async function dynamicPackagesInstallations(
           `Installing plugin: ${plugin.name}@${plugin.version}`
         );
       },
-      onAfterInstall: async (plugin) => {
+      onAfterInstall: async (
+        plugin,
+        installedPluginVersion: InstalledPluginVersion
+      ) => {
+        buildManagerNotifier.notifyPluginVersion(installedPluginVersion);
         await buildLogger.info(
           `Successfully installed plugin: ${plugin.name}@${plugin.version}`
         );

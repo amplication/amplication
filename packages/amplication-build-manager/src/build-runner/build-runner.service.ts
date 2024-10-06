@@ -317,9 +317,11 @@ export class BuildRunnerService {
   }
 
   async emitBuildPluginNotifyVersion(args: NotifyPluginVersionDto) {
+    const buildId = this.buildJobsHandlerService.extractBuildId(args.buildId);
+
     const event: PluginNotifyVersion.KafkaEvent = {
       key: null,
-      value: args,
+      value: { ...args, buildId },
     };
 
     this.logger.debug("Emitting notify plugin version event", event);
