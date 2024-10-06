@@ -34,6 +34,7 @@ import { AssistantModule } from "./assistant/assistant.module";
 import { AwsMarketplaceModule } from "./aws-marketplace/aws-marketplace.module";
 import { PackageModule } from "./package/package.module";
 import { ResourceVersionModule } from "./resourceVersion/resourceVersion.module";
+import { OutdatedVersionAlertModule } from "./outdatedVersionAlert/outdatedVersionAlert.module";
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { ResourceVersionModule } from "./resourceVersion/resourceVersion.module"
     PrivatePluginModule,
     PackageModule,
     ResourceVersionModule,
+    OutdatedVersionAlertModule,
   ],
   exports: [
     AccountModule,
@@ -106,6 +108,7 @@ import { ResourceVersionModule } from "./resourceVersion/resourceVersion.module"
     AssistantModule,
     PrivatePluginModule,
     ResourceVersionModule,
+    OutdatedVersionAlertModule,
   ],
 })
 export class CoreModule {}
