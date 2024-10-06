@@ -93,7 +93,7 @@
     "auth0": "^4.2.0",
     "aws-rum-web": "^1.17.1",
     "axios": "^0.28.0",
-    "bcrypt": "^5.0.1",
+    "bcrypt": "^5.0.0",
     "chalk": "^5.1.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
