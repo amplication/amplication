@@ -14,15 +14,12 @@ import {
   ListItem,
   Panel,
   Text,
-  Tooltip,
 } from "@amplication/ui/design-system";
 import { useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { TitleAndIcon } from "../Components/TitleAndIcon";
-import { PluginLogo } from "../Plugins/PluginLogo";
-import usePlugins, {
-  SortedPluginInstallation,
-} from "../Plugins/hooks/usePlugins";
+import PluginLogoGroup from "../Plugins/PluginLogoGroup";
+import { SortedPluginInstallation } from "../Plugins/hooks/usePlugins";
 import { useAppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -39,8 +36,6 @@ type Props = {
 };
 
 const CLASS_NAME = "plugins-tile";
-const PLUGIN_LOGOS_CLASS_NAME = "plugin-logos";
-const TOOLTIP_DIRECTION = "n";
 
 const AVAILABLE_CATEGORIES = "AvailableCategories";
 const INSTALLED_CATEGORIES = "InstalledCategories";
@@ -216,6 +211,7 @@ function InstalledCategory({
   onClick,
 }: InstalledCategoryProps) {
   const { baseUrl } = useResourceBaseUrl();
+  const { currentResource } = useAppContext();
 
   const url = `${baseUrl}/plugins/installed`;
 
@@ -228,7 +224,12 @@ function InstalledCategory({
         }}
         direction={EnumFlexDirection.Column}
         gap={EnumGapSize.Large}
-        end={<PluginLogos installedPlugins={installedPlugins} />}
+        end={
+          <PluginLogoGroup
+            installedPlugins={installedPlugins}
+            resource={currentResource}
+          />
+        }
       >
         <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.Small}>
           <EnabledIndicator enabled={true} />
@@ -236,56 +237,6 @@ function InstalledCategory({
         </FlexItem>
       </ListItem>
     </List>
-  );
-}
-
-type pluginLogosProps = {
-  installedPlugins: SortedPluginInstallation[];
-};
-function PluginLogos({ installedPlugins }: pluginLogosProps) {
-  const { currentResource } = useAppContext();
-  const { pluginCatalog } = usePlugins(
-    currentResource?.id,
-    null,
-    currentResource?.codeGenerator
-  );
-
-  const firstPlugins = installedPlugins.slice(0, 4);
-  const restPlugins = installedPlugins.slice(4);
-
-  return (
-    <div className={PLUGIN_LOGOS_CLASS_NAME}>
-      {firstPlugins.map((plugin) => (
-        <Tooltip
-          wrap
-          direction={TOOLTIP_DIRECTION}
-          aria-label={plugin.displayName}
-          noDelay
-          key={plugin.id}
-        >
-          <PluginLogo plugin={pluginCatalog[plugin.pluginId]} />
-        </Tooltip>
-      ))}
-      {restPlugins.length > 0 && (
-        <Tooltip
-          wrap
-          direction={TOOLTIP_DIRECTION}
-          aria-label={restPlugins
-            .map((plugin) => plugin.displayName)
-            .join(", ")}
-          noDelay
-        >
-          <div className={`${PLUGIN_LOGOS_CLASS_NAME}__more-plugins`}>
-            <Text
-              textStyle={EnumTextStyle.Subtle}
-              textColor={EnumTextColor.White}
-            >
-              +{restPlugins.length}
-            </Text>
-          </div>
-        </Tooltip>
-      )}
-    </div>
   );
 }
 

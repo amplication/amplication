@@ -1,5 +1,8 @@
 import * as models from "../models";
-import { EnumCircleIconStyle } from "@amplication/ui/design-system";
+import {
+  EnumCircleIconStyle,
+  EnumTextColor,
+} from "@amplication/ui/design-system";
 
 export const STEP_STATUS_TO_STYLE: {
   [key in models.EnumActionStepStatus]: {
@@ -75,4 +78,15 @@ export const STEP_STATUS_TO_ICON: {
   [models.EnumActionStepStatus.Failed]: "close",
   [models.EnumActionStepStatus.Waiting]: "circle_loader",
   [models.EnumActionStepStatus.Running]: "",
+};
+
+export const BUILD_STATUS_TO_COLOR: {
+  [key in models.EnumBuildStatus]: EnumTextColor;
+} = {
+  [models.EnumBuildStatus.Completed]: EnumTextColor.ThemeGreen,
+  [models.EnumBuildStatus.Failed]: EnumTextColor.ThemeRed,
+  [models.EnumBuildStatus.Invalid]: EnumTextColor.ThemeRed,
+  [models.EnumBuildStatus.Running]: EnumTextColor.White,
+  [models.EnumBuildStatus.Canceled]: EnumTextColor.Black20,
+  [models.EnumBuildStatus.Unknown]: EnumTextColor.White,
 };

@@ -28,7 +28,6 @@ export const RESOURCE_VERSION_LIST_COLUMNS: DataGridColumn<ResourceVersion>[] =
           <UserAndTime
             account={props.row.createdBy?.account}
             time={props.row.createdAt}
-            overrideTooltipDirection="e"
           />
         );
       },

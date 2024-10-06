@@ -19,6 +19,7 @@ export type Props = {
   emptyText?: string;
   valueColor?: EnumTextColor;
   overrideTooltipDirection?: DirectionType;
+  showUserAvatar?: boolean;
 };
 
 const DIRECTION_UP = "n";
@@ -35,6 +36,7 @@ export function UserAndTime({
   emptyText = NEVER,
   valueColor = EnumTextColor.White,
   overrideTooltipDirection,
+  showUserAvatar = true,
 }: Props) {
   const [tooltipDirection, setTooltipDirection] = useState<DirectionType>(
     overrideTooltipDirection || DIRECTION_DOWN
@@ -62,13 +64,15 @@ export function UserAndTime({
       {label && <Text textStyle={EnumTextStyle.Subtle}>{label}</Text>}
       {formattedTime ? (
         <>
-          <Tooltip
-            aria-label={`${firstName} ${lastName}`}
-            direction={tooltipDirection}
-            noDelay
-          >
-            <UserAvatar firstName={firstName} lastName={lastName} />
-          </Tooltip>
+          {showUserAvatar && (
+            <Tooltip
+              aria-label={`${firstName} ${lastName}`}
+              direction={tooltipDirection}
+              noDelay
+            >
+              <UserAvatar firstName={firstName} lastName={lastName} />
+            </Tooltip>
+          )}
 
           <Text textStyle={EnumTextStyle.Subtle} textColor={valueColor}>
             <span onMouseOver={(e) => changeTooltipDirection(e.pageY)}>

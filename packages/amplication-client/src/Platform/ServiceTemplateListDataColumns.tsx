@@ -13,6 +13,7 @@ import DeleteResourceButton from "../Workspaces/DeleteResourceButton";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import { DataGridColumn } from "@amplication/ui/design-system";
 import NewServiceFromTemplateButton from "../ServiceTemplate/NewServiceFromTemplateButton";
+import ResourcePluginLogoGroup from "../Plugins/ResourcePluginLogoGroup";
 
 export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -55,7 +56,15 @@ export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
         ? row.codeGenerator
         : null,
   },
-
+  {
+    key: "plugins",
+    name: "Plugins",
+    resizable: true,
+    sortable: false,
+    renderCell: (props) => {
+      return <ResourcePluginLogoGroup resource={props.row} />;
+    },
+  },
   {
     key: "description",
     name: "Description",
