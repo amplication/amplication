@@ -245,6 +245,12 @@ export class PermissionsService {
       );
       return matching === 1;
     }
+    if (originType === AuthorizableOriginParameter.OutdatedVersionAlertId) {
+      const matching = await this.prisma.outdatedVersionAlert.count(
+        checkByResourceParameters
+      );
+      return matching === 1;
+    }
     if (originType === AuthorizableOriginParameter.CommitId) {
       const matching = await this.prisma.commit.count({
         where: {
