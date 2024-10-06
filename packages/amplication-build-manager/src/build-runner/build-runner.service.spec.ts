@@ -22,6 +22,7 @@ import {
 import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import axios from "axios";
 import { BuildLoggerService } from "../build-logger/build-logger.service";
+import { NotifyPluginVersionDto } from "./dto/NotifyPluginVersion";
 
 const spyOnMkdir = jest.spyOn(promises, "mkdir");
 const spyOnWriteFile = jest.spyOn(promises, "writeFile");
@@ -48,6 +49,10 @@ const EXAMPLE_DSG_RESOURCE_DATA: DSGResourceData = {
 
 const extractDsgResourceDataMock = jest.fn(() => {
   return EXAMPLE_DSG_RESOURCE_DATA;
+});
+
+const buildJobsHandlerServiceExtractBuildIdMock = jest.fn(() => {
+  return "buildId";
 });
 
 describe("BuildRunnerService", () => {
@@ -101,7 +106,7 @@ describe("BuildRunnerService", () => {
         {
           provide: BuildJobsHandlerService,
           useValue: {
-            extractBuildId: jest.fn(),
+            extractBuildId: buildJobsHandlerServiceExtractBuildIdMock,
             splitBuildsIntoJobs: jest.fn(),
             getBuildStatus: jest.fn(),
             getJobStatus: jest.fn(),
@@ -685,6 +690,32 @@ describe("BuildRunnerService", () => {
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
       KAFKA_TOPICS.PACKAGE_MANAGER_CREATE_REQUEST,
       requestPackagesEvent
+    );
+  });
+
+  it("should emit plugin notify event", async () => {
+    const BUILD_ID = "buildId";
+    buildJobsHandlerServiceExtractBuildIdMock.mockReturnValueOnce(BUILD_ID);
+
+    const pluginVersion: NotifyPluginVersionDto = {
+      requestedFullPackageName: "plugin@latest",
+      packageName: "plugin",
+      packageVersion: "1.0.1",
+      buildId: "buildId-server",
+    };
+
+    // Act
+    await service.emitBuildPluginNotifyVersion(pluginVersion);
+
+    // Assert
+    expect(buildJobsHandlerServiceExtractBuildIdMock).toHaveBeenCalledTimes(1);
+    expect(mockKafkaServiceEmitMessage).toHaveBeenCalledTimes(1);
+    expect(mockKafkaServiceEmitMessage).toHaveBeenCalledWith(
+      KAFKA_TOPICS.BUILD_PLUGIN_NOTIFY_VERSION_TOPIC,
+      {
+        key: null,
+        value: { ...pluginVersion, buildId: BUILD_ID },
+      }
     );
   });
 });

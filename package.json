@@ -144,7 +144,7 @@
     "openai": "^4.46.0",
     "opentelemetry-instrumentation-kafkajs": "^0.35.0",
     "ora": "5.4.0",
-    "pacote": "^15.0.8",
+    "pacote": "^18.0.6",
     "pascal-case": "^3.1.2",
     "passport": "^0.5.3",
     "passport-github2": "^0.1.12",

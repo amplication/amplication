@@ -6,10 +6,7 @@ import {
   ScalarType,
 } from "prisma-schema-dsl-types";
 import { Entity, EntityField } from "@amplication/code-gen-types";
-import {
-  isRelationField,
-  isToManyRelationField,
-} from "../../../../utils/field";
+import { isRelationField, isToManyRelationField } from "@amplication/dsg-utils";
 import {
   BOOLEAN_ID,
   DATE_ID,

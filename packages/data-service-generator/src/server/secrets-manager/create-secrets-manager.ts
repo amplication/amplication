@@ -13,7 +13,7 @@ import { pascalCase } from "pascal-case";
 import path from "path";
 import fg from "fast-glob";
 import { promises as fsPromises } from "fs";
-import { getFileEncoding } from "../../utils/get-file-encoding";
+import { getFileEncoding } from "@amplication/dsg-utils";
 
 export function createSecretsManager(
   eventParams: CreateServerSecretsManagerParams

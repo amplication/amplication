@@ -7,7 +7,7 @@ import {
   LookupResolvedProperties,
 } from "@amplication/code-gen-types";
 import { jsxElement } from "../util";
-import { isToManyRelationField } from "../../utils/field";
+import { isToManyRelationField } from "@amplication/dsg-utils";
 
 /**
  * Creates an input element to be placed inside a Formik form for editing the given entity field
