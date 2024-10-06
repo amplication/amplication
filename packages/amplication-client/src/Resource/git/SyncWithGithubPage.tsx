@@ -156,8 +156,7 @@ const SyncWithGithubPage: React.FC = () => {
               eventName: AnalyticsEventNames.UpgradeClick,
               reason: commitChangesLimitationError.message,
               eventOriginLocation: "commit-limitation-dialog",
-              billingFeature:
-                commitChangesLimitationError.extensions.billingFeature,
+              billingFeature: commitChangesLimitationError.billingFeature,
             });
             setOpenLimitationDialog(false);
           }}
@@ -174,8 +173,7 @@ const SyncWithGithubPage: React.FC = () => {
               eventName: AnalyticsEventNames.UpgradeLaterClick,
               reason: commitChangesLimitationError.message,
               eventOriginLocation: "commit-limitation-dialog",
-              billingFeature:
-                commitChangesLimitationError.extensions.billingFeature,
+              billingFeature: commitChangesLimitationError.billingFeature,
             });
             setOpenLimitationDialog(false);
           }}
