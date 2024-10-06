@@ -58,6 +58,8 @@ const InstalledPluginSettings: React.FC<Props> = ({
     pluginInstallation,
     loadingPluginInstallation,
     pluginCatalog,
+    loadPrivatePluginsCatalog,
+    privatePluginCatalog,
     updatePluginInstallation,
     updateError,
   } = usePlugins(
@@ -69,12 +71,24 @@ const InstalledPluginSettings: React.FC<Props> = ({
     pluginInstallation?.pluginInstallation.version
   );
 
+  useEffect(() => {
+    if (pluginInstallation?.pluginInstallation.isPrivate) {
+      loadPrivatePluginsCatalog();
+    }
+  }, [pluginInstallation, loadPrivatePluginsCatalog]);
+
   const plugin = useMemo(() => {
+    if (pluginInstallation?.pluginInstallation.isPrivate) {
+      return privatePluginCatalog[
+        pluginInstallation?.pluginInstallation.pluginId
+      ];
+    }
+
     return (
       pluginInstallation &&
       pluginCatalog[pluginInstallation?.pluginInstallation.pluginId]
     );
-  }, [pluginInstallation, pluginCatalog]);
+  }, [pluginInstallation, pluginCatalog, privatePluginCatalog]);
 
   const [value, setEditorValue] = useState<string>(
     JsonFormatting(pluginInstallation?.pluginInstallation.settings)

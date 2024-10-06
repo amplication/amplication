@@ -1,5 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { IBlock } from "../../../models";
+import { PrivatePluginVersion } from "./PrivatePluginVersion";
 
 @ObjectType({
   isAbstract: true,
@@ -15,4 +16,9 @@ export class PrivatePlugin extends IBlock {
     nullable: false,
   })
   enabled!: boolean;
+
+  @Field(() => [PrivatePluginVersion], {
+    nullable: false,
+  })
+  versions: PrivatePluginVersion[];
 }

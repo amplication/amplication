@@ -34,4 +34,19 @@ $width: 70px;
     color: var(--theme-blue);
     border-color: var(--theme-blue);
   }
+
+  &--deprecated {
+    color: var(--color-negative);
+    border-color: var(--color-negative);
+  }
+
+  &--disabled {
+    color: var(--gray-60);
+    border-color: var(--gray-60);
+  }
+
+  &--updateAvailable {
+    color: var(--theme-orange);
+    border-color: var(--theme-orange);
+  }
 }

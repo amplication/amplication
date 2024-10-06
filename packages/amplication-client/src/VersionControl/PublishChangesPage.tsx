@@ -9,6 +9,7 @@ import {
   EnumItemsAlign,
   EnumPanelStyle,
   EnumTextStyle,
+  EnumVersionTagState,
   FlexItem,
   MultiStateToggle,
   Panel,
@@ -79,7 +80,12 @@ const TEMPLATE_COLUMNS: DataGridColumn<resourceWithVersions>[] = [
     sortable: false,
     width: 150,
     renderCell: (props) => {
-      return <VersionTag version={props.row.currentVersion} state="previous" />;
+      return (
+        <VersionTag
+          version={props.row.currentVersion}
+          state={EnumVersionTagState.Previous}
+        />
+      );
     },
   },
   {
@@ -170,7 +176,7 @@ const OTHERS_COLUMNS: DataGridColumn<resourceWithChanges>[] = [
   },
 ];
 
-const OPTIONS: {
+export const SEMVER_OPTIONS: {
   label: string;
   value: ReleaseType;
 }[] = [
@@ -292,7 +298,7 @@ const PublishChangesPage: React.FC<Props> = () => {
                 className={`${CLASS_NAME}__toggle`}
                 label="Version"
                 name="version"
-                options={OPTIONS}
+                options={SEMVER_OPTIONS}
                 onChange={handleChangeType}
                 selectedValue={version}
               />

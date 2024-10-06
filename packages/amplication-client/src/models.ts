@@ -1457,6 +1457,7 @@ export type Mutation = {
   createPluginInstallation: PluginInstallation;
   createPluginRepository: Resource;
   createPrivatePlugin: PrivatePlugin;
+  createPrivatePluginVersion: PrivatePluginVersion;
   createProject: Project;
   createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
@@ -1524,6 +1525,7 @@ export type Mutation = {
   updatePackage: Package;
   updatePluginInstallation: PluginInstallation;
   updatePrivatePlugin: PrivatePlugin;
+  updatePrivatePluginVersion: PrivatePluginVersion;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
   updateResource?: Maybe<Resource>;
@@ -1680,6 +1682,11 @@ export type MutationCreatePluginRepositoryArgs = {
 
 export type MutationCreatePrivatePluginArgs = {
   data: PrivatePluginCreateInput;
+};
+
+
+export type MutationCreatePrivatePluginVersionArgs = {
+  data: PrivatePluginVersionCreateInput;
 };
 
 
@@ -2032,6 +2039,12 @@ export type MutationUpdatePrivatePluginArgs = {
 };
 
 
+export type MutationUpdatePrivatePluginVersionArgs = {
+  data: PrivatePluginVersionUpdateInput;
+  where: WherePrivatePluginVersionUniqueInput;
+};
+
+
 export type MutationUpdateProjectArgs = {
   data: ProjectUpdateInput;
   where: WhereUniqueInput;
@@ -2290,6 +2303,7 @@ export type PrivatePlugin = IBlock & {
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
+  versions: Array<PrivatePluginVersion>;
 };
 
 export type PrivatePluginCreateInput = {
@@ -2316,6 +2330,26 @@ export type PrivatePluginUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   enabled: Scalars['Boolean']['input'];
+};
+
+export type PrivatePluginVersion = {
+  configurations?: Maybe<Scalars['JSONObject']['output']>;
+  deprecated: Scalars['Boolean']['output'];
+  enabled: Scalars['Boolean']['output'];
+  settings?: Maybe<Scalars['JSONObject']['output']>;
+  version: Scalars['String']['output'];
+};
+
+export type PrivatePluginVersionCreateInput = {
+  privatePlugin: WhereParentIdInput;
+  version: Scalars['String']['input'];
+};
+
+export type PrivatePluginVersionUpdateInput = {
+  configurations?: InputMaybe<Scalars['JSONObject']['input']>;
+  deprecated?: InputMaybe<Scalars['Boolean']['input']>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  settings?: InputMaybe<Scalars['JSONObject']['input']>;
 };
 
 export type PrivatePluginWhereInput = {
@@ -3344,6 +3378,11 @@ export type WhereEnumMemberUniqueInput = {
 
 export type WhereParentIdInput = {
   connect: WhereUniqueInput;
+};
+
+export type WherePrivatePluginVersionUniqueInput = {
+  privatePlugin: WhereUniqueInput;
+  version: Scalars['String']['input'];
 };
 
 export type WherePropertyUniqueInput = {
