@@ -33,7 +33,6 @@ const PrivatePluginVersionCodeField = ({
 
       if (validateChange) {
         const jsonValue = JsonFormatting(value);
-        console.log(jsonValue);
         setValue(JSON.parse(jsonValue));
         setError(undefined);
       } else {

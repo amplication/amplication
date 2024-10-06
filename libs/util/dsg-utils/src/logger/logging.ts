@@ -3,7 +3,7 @@ import { Logger, LogLevel } from "@amplication/util-logging";
 //const { LOG_LEVEL, NODE_ENV } = process.env;
 
 const LOG_LEVEL = process.env["LOG_LEVEL"] || "INFO";
-const NODE_ENV = process.env["NODE_ENV"] || "Development";
+const NODE_ENV = process.env["NODE_ENV"] || "production";
 
 export const logger = new Logger({
   isProduction: NODE_ENV !== "Development",

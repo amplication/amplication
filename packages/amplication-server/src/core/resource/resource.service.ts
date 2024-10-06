@@ -511,7 +511,7 @@ export class ResourceService {
       where: {
         project: { id: args.data.project.connect.id },
         resourceType: {
-          equals: AmplicationEnumResourceType.ProjectConfiguration,
+          equals: AmplicationEnumResourceType.PluginRepository,
         },
       },
     });
