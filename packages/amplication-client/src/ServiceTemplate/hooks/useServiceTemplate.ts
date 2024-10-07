@@ -1,10 +1,15 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useState } from "react";
 import * as models from "../../models";
 import {
   CREATE_SERVICE_TEMPLATE,
   GET_SERVICE_TEMPLATES,
 } from "./serviceTemplateQueries";
+import { GET_RESOURCES } from "../../Workspaces/queries/resourcesQueries";
+
+type TFindResourcesData = {
+  resources: models.Resource[];
+};
 
 type TGetServiceTemplates = {
   serviceTemplates: models.Resource[];
@@ -62,6 +67,27 @@ const useServiceTemplate = (
     [setSearchPhrase]
   );
 
+  const [
+    findResourcesByTemplateInternal,
+    {
+      data: findResourcesByTemplateData,
+      loading: findResourcesByTemplateLoading,
+      error: findResourcesByTemplateError,
+      refetch: findResourcesByTemplateRefetch,
+    },
+  ] = useLazyQuery<TFindResourcesData>(GET_RESOURCES);
+
+  const findResourcesByTemplate = (templateId: string) => {
+    findResourcesByTemplateInternal({
+      variables: {
+        where: {
+          project: { id: currentProject?.id },
+          serviceTemplateId: templateId,
+        },
+      },
+    });
+  };
+
   return {
     serviceTemplates: serviceTemplates?.serviceTemplates || [],
     handleSearchChange,
@@ -72,6 +98,11 @@ const useServiceTemplate = (
     loadingCreateServiceTemplate,
     errorCreateServiceTemplate,
     createdServiceTemplateResults: createServiceTemplateData,
+    findResourcesByTemplate,
+    findResourcesByTemplateData: findResourcesByTemplateData?.resources,
+    findResourcesByTemplateLoading,
+    findResourcesByTemplateError,
+    findResourcesByTemplateRefetch,
   };
 };
 

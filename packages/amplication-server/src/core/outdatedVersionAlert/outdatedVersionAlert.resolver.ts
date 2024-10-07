@@ -26,13 +26,21 @@ export class OutdatedVersionAlertResolver {
   ) {}
 
   @Query(() => [OutdatedVersionAlert])
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.resource.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "where.resource.project.id"
+  )
   async outdatedVersionAlerts(
     @Args() args: FindManyOutdatedVersionAlertArgs
   ): Promise<OutdatedVersionAlert[]> {
     return this.service.findMany(args);
   }
+
   @Query(() => MetaQueryPayload)
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "where.resource.project.id"
+  )
   async _outdatedVersionAlertsMeta(
     @Args() args: FindManyOutdatedVersionAlertArgs
   ): Promise<MetaQueryPayload> {
