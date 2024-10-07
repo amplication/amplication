@@ -67,6 +67,10 @@ export class BuildResolver {
 
   @ResolveField()
   status(@Parent() build: Build): Promise<EnumBuildStatus> {
+    if (this.service.isBuildStale(build)) {
+      return this.service.calcBuildStatus(build.id);
+    }
+
     if (build.status === EnumBuildStatus.Unknown) {
       return this.service.calcBuildStatus(build.id);
     }
