@@ -49,3 +49,15 @@ export const CREATE_SERVICE_TEMPLATE = gql`
     }
   }
 `;
+
+export const UPGRADE_SERVICE_TO_LATEST_TEMPLATE_VERSION = gql`
+  mutation upgradeServiceToLatestTemplateVersion($resourceId: String!) {
+    upgradeServiceToLatestTemplateVersion(where: { id: $resourceId }) {
+      id
+      name
+      description
+      resourceType
+      serviceTemplateVersion
+    }
+  }
+`;

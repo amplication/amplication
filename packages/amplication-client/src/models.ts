@@ -1589,6 +1589,7 @@ export type Mutation = {
   updateServiceTopics: ServiceTopics;
   updateTopic: Topic;
   updateWorkspace?: Maybe<Workspace>;
+  upgradeServiceToLatestTemplateVersion: Resource;
 };
 
 
@@ -2144,6 +2145,11 @@ export type MutationUpdateTopicArgs = {
 
 export type MutationUpdateWorkspaceArgs = {
   data: WorkspaceUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationUpgradeServiceToLatestTemplateVersionArgs = {
   where: WhereUniqueInput;
 };
 

@@ -1569,6 +1569,7 @@ type Mutation {
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
+  upgradeServiceToLatestTemplateVersion(where: WhereUniqueInput!): Resource!
 }
 
 type OutdatedVersionAlert {
