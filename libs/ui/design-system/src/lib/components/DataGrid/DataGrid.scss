@@ -11,11 +11,16 @@
   --rdg-row-selected-hover-background-color: var(--gray-60);
 
   border-radius: var(--default-border-radius);
+  @include scrollbars($default-scroll-width, var(--gray-30), transparent);
 
   .rdg-cell {
     border-right-color: transparent;
     padding-right: var(--default-spacing);
     padding-left: var(--default-spacing);
+
+    &[aria-selected="true"] {
+      outline: none;
+    }
   }
 
   .rdg-header-row {

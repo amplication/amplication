@@ -11,6 +11,11 @@ import { FindOneResourceVersionArgs } from "./dto/FindOneResourceVersionArgs";
 import { ResourceVersion } from "./dto/ResourceVersion";
 import { BlockService } from "../block/block.service";
 import { valid } from "semver";
+import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
+import { Block } from "../../models";
+import { ResourceVersionsDiff } from "./dto/ResourceVersionsDiff";
+import { ResourceVersionsDiffBlock } from "./dto/ResourceVersionsDiffBlock";
+import { CompareResourceVersionsArgs } from "./dto/CompareResourceVersionsArgs";
 
 @Injectable()
 export class ResourceVersionService {
@@ -22,7 +27,8 @@ export class ResourceVersionService {
     private readonly resourceService: ResourceService,
     private readonly userService: UserService,
     @Inject(AmplicationLogger)
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private readonly outdatedVersionAlertService: OutdatedVersionAlertService
   ) {}
 
   /**
@@ -34,11 +40,16 @@ export class ResourceVersionService {
 
     await this.validateVersion(args.data.version, resourceId);
 
-    const user = await this.userService.findUser({
-      where: {
-        id: args.data.createdBy.connect.id,
-      },
+    const resource = await this.resourceService.findOne({
+      where: { id: resourceId },
     });
+
+    if (resource.resourceType !== EnumResourceType.ServiceTemplate) {
+      this.logger.error(
+        `Resource version is supported only for service templates, but received resource of type ${resource.resourceType} with id ${resourceId}`
+      );
+      return;
+    }
 
     const latestEntityVersions = await this.entityService.getLatestVersions({
       where: { resourceId: resourceId },
@@ -47,6 +58,8 @@ export class ResourceVersionService {
     const latestBlockVersions = await this.blockService.getLatestVersions({
       where: { resourceId: resourceId },
     });
+
+    const previousVersion = await this.getLatest(resourceId);
 
     const resourceVersion = await this.prisma.resourceVersion.create({
       ...args,
@@ -66,20 +79,11 @@ export class ResourceVersionService {
       },
     });
 
-    const logger = this.logger.child({
-      resourceVersionId: resourceVersion.id,
-      resourceId: resourceVersion.resourceId,
-      userId: resourceVersion.userId,
-      user,
-    });
-
-    const resource = await this.resourceService.findOne({
-      where: { id: resourceId },
-    });
-    if (resource.resourceType !== EnumResourceType.ServiceTemplate) {
-      logger.info("Resource version is supported only for service templates");
-      return;
-    }
+    await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
+      resourceId,
+      previousVersion.version,
+      args.data.version
+    );
 
     return resourceVersion;
   }
@@ -132,5 +136,72 @@ export class ResourceVersionService {
         createdAt: "desc", //@todo: order by semver and consider adding status and returning the latest published version
       },
     });
+  }
+
+  async compareResourceVersions(
+    args: CompareResourceVersionsArgs
+  ): Promise<ResourceVersionsDiff> {
+    const { sourceVersion, targetVersion, resource } = args.where;
+
+    const resourceId = resource.id;
+
+    const sourceResourceVersion = await this.prisma.resourceVersion.findFirst({
+      where: {
+        resourceId: resourceId,
+        version: sourceVersion,
+      },
+    });
+
+    const sourceBlocks = await this.blockService.getBlocksByResourceVersions(
+      sourceResourceVersion.id
+    );
+
+    const targetResourceVersion = await this.prisma.resourceVersion.findFirst({
+      where: {
+        resourceId: resourceId,
+        version: targetVersion,
+      },
+    });
+
+    const targetBlocks = await this.blockService.getBlocksByResourceVersions(
+      targetResourceVersion.id
+    );
+
+    const updated: ResourceVersionsDiffBlock[] = [];
+    const deleted: Block[] = [];
+    const created: Block[] = [];
+
+    for (const sourceBlock of sourceBlocks) {
+      const targetBlock = targetBlocks.find(
+        (block) => block.id === sourceBlock.id
+      );
+
+      if (targetBlock) {
+        if (sourceBlock.versionNumber !== targetBlock.versionNumber) {
+          updated.push({
+            sourceBlock,
+            targetBlock,
+          });
+        }
+      } else {
+        deleted.push(sourceBlock);
+      }
+    }
+
+    for (const targetBlock of targetBlocks) {
+      const sourceBlock = sourceBlocks.find(
+        (block) => block.id === targetBlock.id
+      );
+
+      if (!sourceBlock) {
+        created.push(targetBlock);
+      }
+    }
+
+    return {
+      updatedBlocks: updated,
+      createdBlocks: created,
+      deletedBlocks: deleted,
+    };
   }
 }

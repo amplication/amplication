@@ -13,12 +13,16 @@ import {
   ResourceService,
 } from "./resource.service";
 
+import { EnumBlockType } from "@amplication/code-gen-types";
+import { kebabCase } from "lodash";
+import { FindOneArgs } from "../../dto";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
+import { PluginInstallation } from "../pluginInstallation/dto/PluginInstallation";
 import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
-import { kebabCase } from "lodash";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 
 @Injectable()
 export class ServiceTemplateService {
@@ -28,7 +32,8 @@ export class ServiceTemplateService {
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly logger: AmplicationLogger,
     private readonly resourceService: ResourceService,
-    private readonly resourceVersionService: ResourceVersionService
+    private readonly resourceVersionService: ResourceVersionService,
+    private readonly outdatedVersionAlertService: OutdatedVersionAlertService
   ) {}
 
   /**
@@ -213,5 +218,142 @@ export class ServiceTemplateService {
         user
       );
     }
+  }
+
+  //@todo:
+  // service update settings :
+  // service template only
+  // service template first, and individual plugins that are not part of the template
+  // service template and all plugins, including the ones that are part of the template
+
+  async upgradeServiceToLatestTemplateVersion(
+    args: FindOneArgs,
+    user: User
+  ): Promise<Resource> {
+    const resourceId = args.where.id;
+
+    const resource = await this.resourceService.resource({
+      where: {
+        id: resourceId,
+      },
+    });
+
+    if (!resource) {
+      throw new AmplicationError(`Resource with id ${resourceId} not found `);
+    }
+
+    if (resource.resourceType !== EnumResourceType.Service) {
+      throw new AmplicationError(
+        `Resource with id ${resourceId} is not a service `
+      );
+    }
+
+    //todo :check if the service has any locked blocks or entities and throw an error if it does
+
+    const serviceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
+          where: {
+            id: resourceId,
+          },
+        },
+        user
+      );
+
+    const serviceTemplateVersion = serviceSettings.serviceTemplateVersion;
+
+    if (!serviceTemplateVersion) {
+      throw new AmplicationError(
+        `Service with id ${resourceId} is not based on a template `
+      );
+    }
+
+    const template = await this.resourceService.resource({
+      where: {
+        id: serviceTemplateVersion.serviceTemplateId,
+      },
+    });
+
+    if (!template) {
+      throw new AmplicationError(
+        `Template with id ${serviceTemplateVersion.serviceTemplateId} not found `
+      );
+    }
+
+    const latestVersion = await this.resourceVersionService.getLatest(
+      template.id
+    );
+
+    if (latestVersion.version === serviceTemplateVersion.version) {
+      throw new AmplicationError(
+        `Service with id ${resourceId} is already up to date `
+      );
+    }
+
+    const changes = await this.resourceVersionService.compareResourceVersions({
+      where: {
+        resource: { id: template.id },
+        sourceVersion: serviceTemplateVersion.version,
+        targetVersion: latestVersion.version,
+      },
+    });
+
+    //create new plugins from the template
+    changes.createdBlocks.forEach(async (block) => {
+      if (block.blockType === EnumBlockType.PluginInstallation) {
+        const plugin = block as PluginInstallation;
+
+        await this.pluginInstallationService.create(
+          {
+            data: {
+              pluginId: plugin.pluginId,
+              enabled: plugin.enabled,
+              npm: plugin.npm,
+              version: plugin.version,
+              displayName: plugin.displayName,
+              isPrivate: plugin.isPrivate ?? false,
+              settings: plugin.settings,
+              configurations: plugin.configurations,
+              resource: {
+                connect: {
+                  id: resourceId,
+                },
+              },
+            },
+          },
+          user
+        );
+      }
+    });
+
+    //delete plugins that were removed from the template
+    //@todo - allow the user to decide if they want to delete the plugin or keep it
+    changes.deletedBlocks.forEach(async (block) => {
+      if (block.blockType === EnumBlockType.PluginInstallation) {
+        const plugin = block as PluginInstallation;
+        plugin.isPrivate = plugin.isPrivate ?? false; //@todo - remove. added to pass linter until code is completed
+      }
+    });
+
+    //update plugins that were changed in the template
+    //@todo - allow the user to decide if they want to update the plugin or keep it
+    changes.updatedBlocks.forEach(async (diff) => {
+      if (diff.sourceBlock.blockType === EnumBlockType.PluginInstallation) {
+        const plugin = diff.sourceBlock as PluginInstallation;
+        plugin.isPrivate = plugin.isPrivate ?? false; //@todo - remove. added to pass linter until code is completed
+      }
+    });
+
+    await this.serviceSettingsService.updateServiceTemplateVersion(
+      resourceId,
+      latestVersion.version,
+      user
+    );
+
+    await this.outdatedVersionAlertService.resolvesServiceTemplateUpdated({
+      resourceId: resourceId,
+    });
+
+    return resource;
   }
 }

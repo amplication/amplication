@@ -862,6 +862,31 @@ export class BlockService {
     });
   }
 
+  async getBlocksByResourceVersions(
+    resourceVersionId: string
+  ): Promise<Block[]> {
+    const blockVersion = await this.prisma.blockVersion.findMany({
+      where: {
+        resourceVersions: {
+          some: {
+            id: resourceVersionId,
+          },
+        },
+      },
+      include: {
+        block: {
+          include: {
+            parentBlock: true,
+          },
+        },
+      },
+    });
+
+    return blockVersion.map((version) => {
+      return this.versionToIBlock(version);
+    });
+  }
+
   async discardPendingChanges(
     block: BlockPendingChange,
     user: User

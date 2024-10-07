@@ -166,6 +166,8 @@ Remember, [Amplication](https://amplication.com/) is the fastest way in the worl
 
 Happy coding!`;
 
+const STALE_BUILD_HOURS = 5;
+
 export function createInitialStepData(
   version: string,
   message: string
@@ -1366,6 +1368,22 @@ export class BuildService {
     );
   }
 
+  async isBuildStale(build: Build): Promise<boolean> {
+    if (!build) {
+      this.logger.error(`isBuildStale: build is not available `);
+      return false;
+    }
+
+    //if build is running more than 5 hours old, set the status to failed
+    if (build.status === EnumBuildStatus.Running) {
+      const stalePeriod = STALE_BUILD_HOURS * 60 * 60 * 1000;
+      if (Date.now() - build.createdAt.getTime() > stalePeriod) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async calcBuildStatus(buildId: string): Promise<EnumBuildStatus> {
     const build = await this.prisma.build.findUnique({
       where: {
@@ -1373,6 +1391,17 @@ export class BuildService {
       },
       include: ACTION_INCLUDE,
     });
+
+    //if build is running more than 5 hours old, set the status to failed
+    if (this.isBuildStale(build)) {
+      await this.updateBuildStatuses(
+        buildId,
+        EnumBuildStatus.Failed,
+        EnumBuildGitStatus.Failed
+      );
+      return EnumBuildStatus.Failed;
+    }
+
     //if the build status is not unknown, return the status
     //the function recalculates the status only if the status is unknown
     if (build.status !== EnumBuildStatus.Unknown)

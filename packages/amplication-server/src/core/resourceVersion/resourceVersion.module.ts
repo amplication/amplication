@@ -8,6 +8,7 @@ import { UserModule } from "../user/user.module";
 import { ResourceVersionResolver } from "./resourceVersion.resolver";
 import { ResourceVersionService } from "./resourceVersion.service";
 import { BlockModule } from "../block/block.module";
+import { OutdatedVersionAlertModule } from "../outdatedVersionAlert/outdatedVersionAlert.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { BlockModule } from "../block/block.module";
     UserModule,
     forwardRef(() => ResourceModule),
     forwardRef(() => CommitModule),
+    OutdatedVersionAlertModule,
   ],
   providers: [ResourceVersionService, ResourceVersionResolver],
   exports: [ResourceVersionService, ResourceVersionResolver],

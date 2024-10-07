@@ -1552,10 +1552,27 @@ export class ResourceService {
   }
 
   async resources(args: FindManyResourceArgs): Promise<Resource[]> {
+    const { serviceTemplateId, ...where } = args.where;
+
+    let resourceIds: string[] = undefined;
+    if (serviceTemplateId) {
+      if (!args.where?.project?.id) {
+        throw new Error(
+          "project.id is required when searching by serviceTemplateId"
+        );
+      }
+
+      resourceIds = await this.serviceSettingsService.getServiceIdsByTemplateId(
+        args.where.project.id,
+        serviceTemplateId
+      );
+    }
+
     return this.prisma.resource.findMany({
       ...args,
       where: {
-        ...args.where,
+        ...where,
+        id: resourceIds ? { in: resourceIds } : where.id,
         deletedAt: null,
         archived: { not: true },
       },

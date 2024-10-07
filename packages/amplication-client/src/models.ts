@@ -369,6 +369,12 @@ export type CommitWhereUniqueInput = {
   id: Scalars['String']['input'];
 };
 
+export type CompareResourceVersionsWhereInput = {
+  resource: WhereUniqueInput;
+  sourceVersion: Scalars['String']['input'];
+  targetVersion: Scalars['String']['input'];
+};
+
 export type CompleteInvitationInput = {
   token: Scalars['String']['input'];
 };
@@ -962,6 +968,7 @@ export enum EnumModuleDtoType {
 }
 
 export enum EnumOutdatedVersionAlertStatus {
+  Canceled = 'Canceled',
   Ignored = 'Ignored',
   New = 'New',
   Resolved = 'Resolved'
@@ -1588,6 +1595,7 @@ export type Mutation = {
   updateServiceTopics: ServiceTopics;
   updateTopic: Topic;
   updateWorkspace?: Maybe<Workspace>;
+  upgradeServiceToLatestTemplateVersion: Resource;
 };
 
 
@@ -2146,6 +2154,11 @@ export type MutationUpdateWorkspaceArgs = {
   where: WhereUniqueInput;
 };
 
+
+export type MutationUpgradeServiceToLatestTemplateVersionArgs = {
+  where: WhereUniqueInput;
+};
+
 export type OutdatedVersionAlert = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
@@ -2171,12 +2184,12 @@ export type OutdatedVersionAlertOrderByInput = {
 };
 
 export type OutdatedVersionAlertWhereInput = {
-  block: WhereUniqueInput;
+  block?: InputMaybe<WhereUniqueInput>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<StringFilter>;
   latestVersion?: InputMaybe<StringFilter>;
   outdatedVersion?: InputMaybe<StringFilter>;
-  resource: WhereUniqueInput;
+  resource: ResourceWhereInput;
   status?: InputMaybe<EnumOutdatedVersionAlertStatusFilter>;
   type?: InputMaybe<EnumOutdatedVersionAlertTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -2561,6 +2574,7 @@ export type Query = {
   builds: Array<Build>;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
+  compareResourceVersions: ResourceVersionsDiff;
   contactUsLink?: Maybe<Scalars['String']['output']>;
   currentWorkspace?: Maybe<Workspace>;
   entities: Array<Entity>;
@@ -2688,6 +2702,11 @@ export type QueryCommitsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where: CommitWhereInput;
+};
+
+
+export type QueryCompareResourceVersionsArgs = {
+  where: CompareResourceVersionsWhereInput;
 };
 
 
@@ -3190,6 +3209,17 @@ export type ResourceVersionWhereInput = {
   version?: InputMaybe<StringFilter>;
 };
 
+export type ResourceVersionsDiff = {
+  createdBlocks?: Maybe<Array<Block>>;
+  deletedBlocks?: Maybe<Array<Block>>;
+  updatedBlocks?: Maybe<Array<ResourceVersionsDiffBlock>>;
+};
+
+export type ResourceVersionsDiffBlock = {
+  sourceBlock: Block;
+  targetBlock: Block;
+};
+
 export type ResourceWhereInput = {
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
@@ -3198,6 +3228,7 @@ export type ResourceWhereInput = {
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']['input']>;
   resourceType?: InputMaybe<EnumResourceTypeFilter>;
+  serviceTemplateId?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 

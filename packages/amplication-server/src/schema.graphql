@@ -343,6 +343,12 @@ input CommitWhereUniqueInput {
   id: String!
 }
 
+input CompareResourceVersionsWhereInput {
+  resource: WhereUniqueInput!
+  sourceVersion: String!
+  targetVersion: String!
+}
+
 input CompleteInvitationInput {
   token: String!
 }
@@ -929,6 +935,7 @@ enum EnumModuleDtoType {
 }
 
 enum EnumOutdatedVersionAlertStatus {
+  Canceled
   Ignored
   New
   Resolved
@@ -1568,6 +1575,7 @@ type Mutation {
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
+  upgradeServiceToLatestTemplateVersion(where: WhereUniqueInput!): Resource!
 }
 
 type OutdatedVersionAlert {
@@ -1595,12 +1603,12 @@ input OutdatedVersionAlertOrderByInput {
 }
 
 input OutdatedVersionAlertWhereInput {
-  block: WhereUniqueInput!
+  block: WhereUniqueInput
   createdAt: DateTimeFilter
   id: StringFilter
   latestVersion: StringFilter
   outdatedVersion: StringFilter
-  resource: WhereUniqueInput!
+  resource: ResourceWhereInput!
   status: EnumOutdatedVersionAlertStatusFilter
   type: EnumOutdatedVersionAlertTypeFilter
   updatedAt: DateTimeFilter
@@ -1988,6 +1996,7 @@ type Query {
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput!): [Commit!]
+  compareResourceVersions(where: CompareResourceVersionsWhereInput!): ResourceVersionsDiff!
   contactUsLink(where: WhereUniqueInput!): String
   currentWorkspace: Workspace
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!
@@ -2255,6 +2264,17 @@ input ResourceVersionWhereInput {
   version: StringFilter
 }
 
+type ResourceVersionsDiff {
+  createdBlocks: [Block!]
+  deletedBlocks: [Block!]
+  updatedBlocks: [ResourceVersionsDiffBlock!]
+}
+
+type ResourceVersionsDiffBlock {
+  sourceBlock: Block!
+  targetBlock: Block!
+}
+
 input ResourceWhereInput {
   createdAt: DateTimeFilter
   description: StringFilter
@@ -2263,6 +2283,7 @@ input ResourceWhereInput {
   project: ProjectWhereInput
   projectId: String
   resourceType: EnumResourceTypeFilter
+  serviceTemplateId: String
   updatedAt: DateTimeFilter
 }
 

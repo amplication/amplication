@@ -2,6 +2,7 @@ import { InputType, Field } from "@nestjs/graphql";
 import { WhereUniqueInput, DateTimeFilter, StringFilter } from "../../../dto";
 import { EnumOutdatedVersionAlertTypeFilter } from "./EnumOutdatedVersionAlertTypeFilter";
 import { EnumOutdatedVersionAlertStatusFilter } from "./EnumOutdatedVersionAlertStatusFilter";
+import { ResourceWhereInput } from "../../resource/dto/ResourceWhereInput";
 
 @InputType({
   isAbstract: true,
@@ -22,11 +23,13 @@ export class OutdatedVersionAlertWhereInput {
   })
   updatedAt?: DateTimeFilter | null | undefined;
 
-  @Field(() => WhereUniqueInput)
-  resource?: WhereUniqueInput;
+  @Field(() => ResourceWhereInput)
+  resource?: ResourceWhereInput;
 
-  @Field(() => WhereUniqueInput)
-  block?: WhereUniqueInput;
+  @Field(() => WhereUniqueInput, {
+    nullable: true,
+  })
+  block?: WhereUniqueInput | null | undefined;
 
   @Field(() => StringFilter, {
     nullable: true,

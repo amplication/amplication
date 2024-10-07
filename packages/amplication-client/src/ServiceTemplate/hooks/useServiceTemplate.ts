@@ -1,10 +1,17 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useState } from "react";
 import * as models from "../../models";
 import {
   CREATE_SERVICE_TEMPLATE,
   GET_SERVICE_TEMPLATES,
+  UPGRADE_SERVICE_TO_LATEST_TEMPLATE_VERSION,
 } from "./serviceTemplateQueries";
+import { GET_RESOURCES } from "../../Workspaces/queries/resourcesQueries";
+import { GET_OUTDATED_VERSION_ALERTS } from "../../OutdatedVersionAlerts/hooks/outdatedVersionAlertsQueries";
+
+type TFindResourcesData = {
+  resources: models.Resource[];
+};
 
 type TGetServiceTemplates = {
   serviceTemplates: models.Resource[];
@@ -12,6 +19,10 @@ type TGetServiceTemplates = {
 
 type TCreateServiceTemplate = {
   createServiceTemplate: models.Resource;
+};
+
+type TUpgradeServiceToLatestTemplateVersion = {
+  upgradeServiceToLatestTemplateVersion: models.Resource;
 };
 
 const useServiceTemplate = (
@@ -35,6 +46,28 @@ const useServiceTemplate = (
     },
     skip: !currentProject?.id,
   });
+
+  const [
+    upgradeServiceToLatestTemplateVersionInternal,
+    {
+      loading: loadingUpgradeServiceToLatestTemplateVersion,
+      error: errorUpgradeServiceToLatestTemplateVersion,
+      data: UpgradeServiceToLatestTemplateVersionData,
+    },
+  ] = useMutation<TUpgradeServiceToLatestTemplateVersion>(
+    UPGRADE_SERVICE_TO_LATEST_TEMPLATE_VERSION,
+    {
+      refetchQueries: [GET_OUTDATED_VERSION_ALERTS],
+    }
+  );
+
+  const upgradeServiceToLatestTemplateVersion = (resourceId: string) => {
+    upgradeServiceToLatestTemplateVersionInternal({ variables: { resourceId } })
+      .then((result) => {
+        //todo: update cache
+      })
+      .catch(console.error);
+  };
 
   const [
     createServiceTemplateInternal,
@@ -62,6 +95,27 @@ const useServiceTemplate = (
     [setSearchPhrase]
   );
 
+  const [
+    findResourcesByTemplateInternal,
+    {
+      data: findResourcesByTemplateData,
+      loading: findResourcesByTemplateLoading,
+      error: findResourcesByTemplateError,
+      refetch: findResourcesByTemplateRefetch,
+    },
+  ] = useLazyQuery<TFindResourcesData>(GET_RESOURCES);
+
+  const findResourcesByTemplate = (templateId: string) => {
+    findResourcesByTemplateInternal({
+      variables: {
+        where: {
+          project: { id: currentProject?.id },
+          serviceTemplateId: templateId,
+        },
+      },
+    });
+  };
+
   return {
     serviceTemplates: serviceTemplates?.serviceTemplates || [],
     handleSearchChange,
@@ -72,6 +126,16 @@ const useServiceTemplate = (
     loadingCreateServiceTemplate,
     errorCreateServiceTemplate,
     createdServiceTemplateResults: createServiceTemplateData,
+    findResourcesByTemplate,
+    findResourcesByTemplateData: findResourcesByTemplateData?.resources,
+    findResourcesByTemplateLoading,
+    findResourcesByTemplateError,
+    findResourcesByTemplateRefetch,
+    upgradeServiceToLatestTemplateVersion,
+    loadingUpgradeServiceToLatestTemplateVersion,
+    errorUpgradeServiceToLatestTemplateVersion,
+    upgradeServiceToLatestTemplateVersionData:
+      UpgradeServiceToLatestTemplateVersionData?.upgradeServiceToLatestTemplateVersion,
   };
 };
 
