@@ -929,6 +929,7 @@ enum EnumModuleDtoType {
 }
 
 enum EnumOutdatedVersionAlertStatus {
+  Canceled
   Ignored
   New
   Resolved

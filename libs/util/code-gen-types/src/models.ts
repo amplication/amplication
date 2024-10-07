@@ -959,6 +959,7 @@ export enum EnumModuleDtoType {
 }
 
 export enum EnumOutdatedVersionAlertStatus {
+  Canceled = 'Canceled',
   Ignored = 'Ignored',
   New = 'New',
   Resolved = 'Resolved'
