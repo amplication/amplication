@@ -192,10 +192,7 @@ export class BuildRunnerService {
   }
 
   onCodeGenerationFailure(response: CodeGenerationFailureDto) {
-    return this.emitCodeGenerationFailureWhenJobStatusFailed(
-      response.buildId,
-      response.error
-    );
+    return this.emitCodeGenerationFailureWhenJobStatusFailed(response.buildId);
   }
 
   onCodeGenerationSuccess(response: CodeGenerationSuccessDto) {
@@ -257,10 +254,7 @@ export class BuildRunnerService {
     }
   }
 
-  async emitCodeGenerationFailureWhenJobStatusFailed(
-    jobBuildId: string,
-    jobError: Error
-  ) {
+  async emitCodeGenerationFailureWhenJobStatusFailed(jobBuildId: string) {
     let otherJobsHaveNotFailed = true;
 
     const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
@@ -274,10 +268,10 @@ export class BuildRunnerService {
         EnumJobStatus.Failure
       );
     } catch (error) {
-      this.logger.error(error.message, error, { causeError: jobError });
+      this.logger.error(error.message, error);
     } finally {
       if (otherJobsHaveNotFailed) {
-        await this.emitCodeGenerationFailure(buildId, jobError.message);
+        await this.emitCodeGenerationFailure(buildId);
       }
     }
   }

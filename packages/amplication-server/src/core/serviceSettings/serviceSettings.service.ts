@@ -7,7 +7,7 @@ import { DEFAULT_SERVICE_SETTINGS, ServiceSettingsValues } from "./constants";
 import { User } from "../../models";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
 import { ServiceSettingsUpdateInput } from "./dto/ServiceSettingsUpdateInput";
-import { merge } from "lodash";
+import { cloneDeep, merge } from "lodash";
 
 export const isStringBool = (val: string | boolean): boolean =>
   typeof val === "boolean" || typeof val === "string";
@@ -158,7 +158,7 @@ export class ServiceSettingsService {
     user: User,
     serviceSettings: ServiceSettingsUpdateInput = null
   ): Promise<ServiceSettings> {
-    const defaultSettings = DEFAULT_SERVICE_SETTINGS;
+    const defaultSettings = cloneDeep(DEFAULT_SERVICE_SETTINGS);
 
     const mergedSettings = merge(defaultSettings, serviceSettings);
 

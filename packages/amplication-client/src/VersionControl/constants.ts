@@ -86,7 +86,7 @@ export const BUILD_STATUS_TO_COLOR: {
   [models.EnumBuildStatus.Completed]: EnumTextColor.ThemeGreen,
   [models.EnumBuildStatus.Failed]: EnumTextColor.ThemeRed,
   [models.EnumBuildStatus.Invalid]: EnumTextColor.ThemeRed,
-  [models.EnumBuildStatus.Running]: EnumTextColor.ThemeGreen,
+  [models.EnumBuildStatus.Running]: EnumTextColor.White,
   [models.EnumBuildStatus.Canceled]: EnumTextColor.Black20,
   [models.EnumBuildStatus.Unknown]: EnumTextColor.White,
 };
