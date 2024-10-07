@@ -8,7 +8,7 @@ import { OutdatedVersionAlert } from "../models";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import OutdatedVersionAlertType from "./OutdatedVersionAlertType";
 import OutdatedVersionAlertStatus from "./OutdatedVersionAlertStatus";
-import UpgradeServiceToLatestTemplateVersionButton from "../ServiceTemplate/UpgradeServiceToLatestTemplateVersionButton";
+import AlertLink from "./AlertLink";
 
 export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
   {
@@ -28,7 +28,7 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     key: "name",
     name: "Name",
     resizable: true,
-    sortable: true,
+    sortable: false,
     renderCell: (props) => {
       return <ResourceNameLink resource={props.row.resource} />;
     },
@@ -90,13 +90,9 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Action",
     resizable: false,
     sortable: false,
-    width: 60,
+    width: 100,
     renderCell: (props) => {
-      return (
-        <UpgradeServiceToLatestTemplateVersionButton
-          resourceId={props.row.resource.id}
-        />
-      );
+      return <AlertLink alert={props.row} />;
     },
   },
 ];

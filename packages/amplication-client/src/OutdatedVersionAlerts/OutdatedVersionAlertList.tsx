@@ -9,7 +9,6 @@ import {
   FlexItem,
   HorizontalRule,
   Pagination,
-  SelectMenu,
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
@@ -27,7 +26,7 @@ import { AlertStatusFilter } from "./AlertStatusFilter";
 import { AlertTypeFilter } from "./AlertTypeFilter";
 
 const CLASS_NAME = "resource-version-list";
-const PAGE_TITLE = "Version List";
+const PAGE_TITLE = "Tech Debt";
 
 function OutdatedVersionAlertList() {
   const { currentProject } = useContext(AppContext);
@@ -87,7 +86,7 @@ function OutdatedVersionAlertList() {
                 }}
                 selectedValue={type}
               />
-
+              {loadingOutdatedVersionAlerts && <CircularProgress />}
               {/* <SearchField
                 label="search"
                 placeholder="search"
@@ -118,8 +117,6 @@ function OutdatedVersionAlertList() {
         }
       ></FlexItem>
       <HorizontalRule doubleSpacing />
-
-      {loadingOutdatedVersionAlerts && <CircularProgress centerToParent />}
 
       {isEmpty(outdatedVersionAlerts) && !loadingOutdatedVersionAlerts ? (
         <EmptyState
