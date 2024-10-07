@@ -2171,12 +2171,12 @@ export type OutdatedVersionAlertOrderByInput = {
 };
 
 export type OutdatedVersionAlertWhereInput = {
-  block: WhereUniqueInput;
+  block?: InputMaybe<WhereUniqueInput>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<StringFilter>;
   latestVersion?: InputMaybe<StringFilter>;
   outdatedVersion?: InputMaybe<StringFilter>;
-  resource: WhereUniqueInput;
+  resource: ResourceWhereInput;
   status?: InputMaybe<EnumOutdatedVersionAlertStatusFilter>;
   type?: InputMaybe<EnumOutdatedVersionAlertTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -3198,6 +3198,7 @@ export type ResourceWhereInput = {
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']['input']>;
   resourceType?: InputMaybe<EnumResourceTypeFilter>;
+  serviceTemplateId?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 

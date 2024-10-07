@@ -1595,12 +1595,12 @@ input OutdatedVersionAlertOrderByInput {
 }
 
 input OutdatedVersionAlertWhereInput {
-  block: WhereUniqueInput!
+  block: WhereUniqueInput
   createdAt: DateTimeFilter
   id: StringFilter
   latestVersion: StringFilter
   outdatedVersion: StringFilter
-  resource: WhereUniqueInput!
+  resource: ResourceWhereInput!
   status: EnumOutdatedVersionAlertStatusFilter
   type: EnumOutdatedVersionAlertTypeFilter
   updatedAt: DateTimeFilter
@@ -2263,6 +2263,7 @@ input ResourceWhereInput {
   project: ProjectWhereInput
   projectId: String
   resourceType: EnumResourceTypeFilter
+  serviceTemplateId: String
   updatedAt: DateTimeFilter
 }
 
