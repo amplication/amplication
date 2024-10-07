@@ -369,6 +369,12 @@ export type CommitWhereUniqueInput = {
   id: Scalars['String']['input'];
 };
 
+export type CompareResourceVersionsWhereInput = {
+  resource: WhereUniqueInput;
+  sourceVersion: Scalars['String']['input'];
+  targetVersion: Scalars['String']['input'];
+};
+
 export type CompleteInvitationInput = {
   token: Scalars['String']['input'];
 };
@@ -2568,6 +2574,7 @@ export type Query = {
   builds: Array<Build>;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
+  compareResourceVersions: ResourceVersionsDiff;
   contactUsLink?: Maybe<Scalars['String']['output']>;
   currentWorkspace?: Maybe<Workspace>;
   entities: Array<Entity>;
@@ -2695,6 +2702,11 @@ export type QueryCommitsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where: CommitWhereInput;
+};
+
+
+export type QueryCompareResourceVersionsArgs = {
+  where: CompareResourceVersionsWhereInput;
 };
 
 
@@ -3195,6 +3207,17 @@ export type ResourceVersionWhereInput = {
   message?: InputMaybe<StringFilter>;
   resource: WhereUniqueInput;
   version?: InputMaybe<StringFilter>;
+};
+
+export type ResourceVersionsDiff = {
+  createdBlocks?: Maybe<Array<Block>>;
+  deletedBlocks?: Maybe<Array<Block>>;
+  updatedBlocks?: Maybe<Array<ResourceVersionsDiffBlock>>;
+};
+
+export type ResourceVersionsDiffBlock = {
+  sourceBlock: Block;
+  targetBlock: Block;
 };
 
 export type ResourceWhereInput = {

@@ -13,14 +13,16 @@ import {
   ResourceService,
 } from "./resource.service";
 
+import { EnumBlockType } from "@amplication/code-gen-types";
+import { kebabCase } from "lodash";
+import { FindOneArgs } from "../../dto";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
+import { PluginInstallation } from "../pluginInstallation/dto/PluginInstallation";
 import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
-import { kebabCase } from "lodash";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
-import { FindOneArgs } from "../../dto";
-import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 
 @Injectable()
 export class ServiceTemplateService {
@@ -246,6 +248,8 @@ export class ServiceTemplateService {
       );
     }
 
+    //todo :check if the service has any locked blocks or entities and throw an error if it does
+
     const serviceSettings =
       await this.serviceSettingsService.getServiceSettingsValues(
         {
@@ -285,6 +289,58 @@ export class ServiceTemplateService {
         `Service with id ${resourceId} is already up to date `
       );
     }
+
+    const changes = await this.resourceVersionService.compareResourceVersions({
+      where: {
+        resource: { id: template.id },
+        sourceVersion: serviceTemplateVersion.version,
+        targetVersion: latestVersion.version,
+      },
+    });
+
+    //create new plugins from the template
+    changes.createdBlocks.forEach(async (block) => {
+      if (block.blockType === EnumBlockType.PluginInstallation) {
+        const plugin = block as PluginInstallation;
+
+        await this.pluginInstallationService.create(
+          {
+            data: {
+              pluginId: plugin.pluginId,
+              enabled: plugin.enabled,
+              npm: plugin.npm,
+              version: plugin.version,
+              displayName: plugin.displayName,
+              isPrivate: plugin.isPrivate ?? false,
+              settings: plugin.settings,
+              configurations: plugin.configurations,
+              resource: {
+                connect: {
+                  id: resourceId,
+                },
+              },
+            },
+          },
+          user
+        );
+      }
+    });
+
+    //delete plugins that were removed from the template
+    //@todo - allow the user to decide if they want to delete the plugin or keep it
+    changes.deletedBlocks.forEach(async (block) => {
+      if (block.blockType === EnumBlockType.PluginInstallation) {
+        const plugin = block as PluginInstallation;
+      }
+    });
+
+    //update plugins that were changed in the template
+    //@todo - allow the user to decide if they want to update the plugin or keep it
+    changes.updatedBlocks.forEach(async (diff) => {
+      if (diff.sourceBlock.blockType === EnumBlockType.PluginInstallation) {
+        const plugin = diff.sourceBlock as PluginInstallation;
+      }
+    });
 
     await this.serviceSettingsService.updateServiceTemplateVersion(
       resourceId,
