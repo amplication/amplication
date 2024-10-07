@@ -101,7 +101,7 @@ function OutdatedVersionAlertList() {
 
       {isEmpty(outdatedVersionAlerts) && !loadingOutdatedVersionAlerts ? (
         <EmptyState
-          message="The template was not published yet"
+          message="There are no alerts to show"
           image={EnumImages.CommitEmptyState}
         />
       ) : (
