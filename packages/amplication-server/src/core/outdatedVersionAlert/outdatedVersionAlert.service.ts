@@ -8,6 +8,7 @@ import { FindManyOutdatedVersionAlertArgs } from "./dto/FindManyOutdatedVersionA
 import { FindOneOutdatedVersionAlertArgs } from "./dto/FindOneOutdatedVersionAlertArgs";
 import { OutdatedVersionAlert } from "./dto/OutdatedVersionAlert";
 import { AmplicationError } from "../../errors/AmplicationError";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 @Injectable()
 export class OutdatedVersionAlertService {
@@ -67,6 +68,12 @@ export class OutdatedVersionAlertService {
     if (!template) {
       throw new AmplicationError(
         `Cannot trigger alerts. Template with id ${templateResourceId} not found`
+      );
+    }
+
+    if (template.resourceType !== EnumResourceType.ServiceTemplate) {
+      throw new AmplicationError(
+        `Cannot trigger alerts. Resource with id ${templateResourceId} is not a template`
       );
     }
 
