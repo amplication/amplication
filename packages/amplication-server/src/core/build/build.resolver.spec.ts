@@ -175,6 +175,9 @@ describe("BuildResolver", () => {
             findOne: buildServiceFindOneMock,
             calcBuildStatus: buildServiceCalcBuildStatusMock,
             create: buildServiceCreateMock,
+            isBuildStale: jest.fn(() => {
+              return false;
+            }),
           })),
         },
         {
