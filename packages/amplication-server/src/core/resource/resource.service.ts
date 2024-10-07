@@ -1553,7 +1553,6 @@ export class ResourceService {
 
   async resources(args: FindManyResourceArgs): Promise<Resource[]> {
     const { serviceTemplateId, ...where } = args.where;
-    delete args.where?.serviceTemplateId;
 
     let resourceIds: string[] = undefined;
     if (serviceTemplateId) {
