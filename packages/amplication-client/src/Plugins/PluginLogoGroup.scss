@@ -30,7 +30,7 @@ $icon-size-medium: var(--icon-size-medium);
 
   &--medium {
     .plugin-logo,
-    &__more-plugins {
+    .plugin-logos__more-plugins {
       width: $icon-size-medium;
       height: $icon-size-medium;
       margin-left: -$icon-overlap-medium;
