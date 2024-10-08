@@ -1368,7 +1368,7 @@ export class BuildService {
     );
   }
 
-  async isBuildStale(build: Build): Promise<boolean> {
+  isBuildStale(build: Build): boolean {
     if (!build) {
       this.logger.error(`isBuildStale: build is not available `);
       return false;
