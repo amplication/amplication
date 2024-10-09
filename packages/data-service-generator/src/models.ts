@@ -1046,7 +1046,8 @@ export enum EnumSubscriptionPlan {
   Essential = 'Essential',
   Free = 'Free',
   PreviewBreakTheMonolith = 'PreviewBreakTheMonolith',
-  Pro = 'Pro'
+  Pro = 'Pro',
+  Team = 'Team'
 }
 
 export enum EnumSubscriptionStatus {

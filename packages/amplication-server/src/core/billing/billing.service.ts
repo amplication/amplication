@@ -36,6 +36,7 @@ const SUBSCRIPTION_PLAN_MAP: Record<BillingPlan, EnumSubscriptionPlan> = {
     EnumSubscriptionPlan.PreviewBreakTheMonolith,
   [BillingPlan.Pro]: EnumSubscriptionPlan.Pro,
   [BillingPlan.ProWithTrial]: EnumSubscriptionPlan.Pro,
+  [BillingPlan.Team]: EnumSubscriptionPlan.Team,
 };
 
 @Injectable()
@@ -50,13 +51,10 @@ export class BillingService {
 
   private get defaultSubscriptionPlan() {
     return {
-      planId: BillingPlan.Enterprise,
+      planId: BillingPlan.Team,
       addons: [
         {
-          addonId: BillingAddon.BreakingTheMonolith,
-        },
-        {
-          addonId: BillingAddon.CustomActions,
+          addonId: BillingAddon.EssentialTrialJovuRequests,
         },
       ],
     };
