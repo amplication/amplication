@@ -108,7 +108,7 @@ export class GitClientService {
     repositoryGroupName,
     cloneDirPath,
     baseBranchName,
-    pluginIds,
+    pluginsToDownload,
     resourceId,
     buildId,
   }: DownloadPrivatePluginsArgs): Promise<{ pluginPaths: string[] }> {
@@ -150,28 +150,19 @@ export class GitClientService {
         baseBranch = repo.defaultBranch;
       } else {
         baseBranch = baseBranchName;
-
-        const branch = await this.provider.getBranch({
-          owner,
-          repositoryName,
-          branchName: baseBranch,
-          repositoryGroupName,
-        });
-
-        if (!branch) {
-          throw new InvalidBaseBranch(baseBranch);
-        }
       }
 
       await gitCli.deleteRepositoryDir();
       await gitCli.clone();
       await gitCli.sparseCheckout(
         baseBranch,
-        pluginIds.map((id) => `plugins/${id}`)
+        pluginsToDownload.map((plugin) => `plugins/${plugin.pluginId}`)
       );
 
       return {
-        pluginPaths: pluginIds.map((id) => `${gitRepoDir}/plugins/${id}`),
+        pluginPaths: pluginsToDownload.map(
+          (plugin) => `${gitRepoDir}/plugins/${plugin.pluginId}`
+        ),
       };
     } catch (error) {
       await gitCli.deleteRepositoryDir();
