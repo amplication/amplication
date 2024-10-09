@@ -677,6 +677,7 @@ enum EnumSubscriptionPlan {
   Enterprise
   PreviewBreakTheMonolith
   Essential
+  Team
 }
 
 enum EnumSubscriptionStatus {

@@ -128,7 +128,7 @@ const PurchasePage = (props) => {
         variables: {
           data: {
             workspaceId: currentWorkspace.id,
-            planId: BillingPlan.Essential,
+            planId: BillingPlan.Team,
             billingPeriod: selectedBillingPeriod,
             intentionType,
             successUrl: returnUrl,
@@ -162,6 +162,7 @@ const PurchasePage = (props) => {
           handleContactUsClick();
           break;
         case BillingPlan.Essential:
+        case BillingPlan.Team:
           setLoading(true);
           await upgradeToPro(selectedBillingPeriod, intentionType);
           break;
@@ -202,7 +203,7 @@ const PurchasePage = (props) => {
             entitlementsTitle: (plan) => {
               return plan.basePlan
                 ? `Everything in ${plan.basePlan.displayName} plan, plus:`
-                : `All core backend functionality:`;
+                : `All core functionality:`;
             },
             planCTAButton: {
               startTrial: () => "Upgrade now", //essential for existing users starts without a trial
