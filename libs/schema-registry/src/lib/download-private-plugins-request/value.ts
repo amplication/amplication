@@ -7,6 +7,14 @@ import {
   IsArray,
 } from "class-validator";
 
+export class PluginDownloadItem {
+  @IsString()
+  pluginId!: string;
+  @IsString()
+  @IsOptional()
+  pluginVersion?: string;
+}
+
 export class Value {
   @IsString()
   resourceId!: string;
@@ -21,7 +29,7 @@ export class Value {
   @IsString()
   gitRepositoryName!: string;
   @IsArray()
-  pluginIds!: string[];
+  pluginsToDownload!: PluginDownloadItem[];
   @IsString()
   @IsOptional()
   repositoryGroupName?: string;

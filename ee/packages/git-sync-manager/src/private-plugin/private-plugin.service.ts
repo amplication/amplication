@@ -65,7 +65,7 @@ export class PrivatePluginService {
     gitRepositoryName: repo,
     repositoryGroupName,
     baseBranchName,
-    pluginIds,
+    pluginsToDownload,
   }: DownloadPrivatePluginsRequest.Value): Promise<{
     pluginPaths: string[];
   }> {
@@ -96,7 +96,7 @@ export class PrivatePluginService {
       buildId,
       baseBranchName,
       cloneDirPath,
-      pluginIds,
+      pluginsToDownload,
     });
 
     const { newPluginPaths } = await this.copyPluginFilesToDsgAssetsDir(

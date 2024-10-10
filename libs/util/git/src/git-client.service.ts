@@ -108,7 +108,7 @@ export class GitClientService {
     repositoryGroupName,
     cloneDirPath,
     baseBranchName,
-    pluginIds,
+    pluginsToDownload,
     resourceId,
     buildId,
   }: DownloadPrivatePluginsArgs): Promise<{ pluginPaths: string[] }> {
@@ -129,55 +129,74 @@ export class GitClientService {
       repositoryGroupName,
     });
 
-    const gitCli = TraceWrapper.trace(
-      new GitCli(this.logger, {
-        originUrl: cloneUrl,
-        repositoryDir: gitRepoDir,
-      }),
-      { logger: this.logger }
+    let baseBranch: string;
+
+    //if not base branch name is provided, use the default branch of the repository
+    if (isEmpty(baseBranchName)) {
+      const repo = await this.provider.getRepository({
+        owner,
+        repositoryName,
+        groupName: repositoryGroupName,
+      });
+      baseBranch = repo.defaultBranch;
+    } else {
+      baseBranch = baseBranchName;
+      const branch = await this.provider.getBranch({
+        owner,
+        repositoryName,
+        branchName: baseBranch,
+        repositoryGroupName,
+      });
+
+      if (!branch) {
+        throw new InvalidBaseBranch(baseBranch);
+      }
+    }
+
+    const pluginsByGitRef = pluginsToDownload.reduce(
+      (acc: { [key: string]: string[] }, plugin) => {
+        const versionKey = plugin.pluginVersion || baseBranch; // no version means use the base branch, otherwise use the version (tag/branch)
+        if (!acc[versionKey]) {
+          acc[versionKey] = [];
+        }
+        acc[versionKey].push(plugin.pluginId);
+        return acc;
+      },
+      {}
     );
 
-    try {
-      let baseBranch: string;
-
-      //if not base branch name is provided, use the default branch of the repository
-      if (isEmpty(baseBranchName)) {
-        const repo = await this.provider.getRepository({
-          owner,
-          repositoryName,
-          groupName: repositoryGroupName,
-        });
-        baseBranch = repo.defaultBranch;
-      } else {
-        baseBranch = baseBranchName;
-
-        const branch = await this.provider.getBranch({
-          owner,
-          repositoryName,
-          branchName: baseBranch,
-          repositoryGroupName,
-        });
-
-        if (!branch) {
-          throw new InvalidBaseBranch(baseBranch);
-        }
-      }
-
-      await gitCli.deleteRepositoryDir();
-      await gitCli.clone();
-      await gitCli.sparseCheckout(
-        baseBranch,
-        pluginIds.map((id) => `plugins/${id}`)
+    const pluginPaths: string[] = [];
+    for (const [pluginVersion, pluginIds] of Object.entries(pluginsByGitRef)) {
+      const pluginVersionDir = join(gitRepoDir, pluginVersion);
+      const gitCli = TraceWrapper.trace(
+        new GitCli(this.logger, {
+          originUrl: cloneUrl,
+          repositoryDir: pluginVersionDir,
+        }),
+        { logger: this.logger }
       );
 
-      return {
-        pluginPaths: pluginIds.map((id) => `${gitRepoDir}/plugins/${id}`),
-      };
-    } catch (error) {
-      await gitCli.deleteRepositoryDir();
+      try {
+        await gitCli.deleteRepositoryDir();
+        await gitCli.clone();
 
-      throw error;
+        await gitCli.sparseCheckout(
+          pluginVersion,
+          pluginIds.map((id) => `plugins/${id}`)
+        );
+
+        pluginPaths.push(
+          ...pluginIds.map((id) => `${pluginVersionDir}/plugins/${id}`)
+        );
+      } catch (error) {
+        await gitCli.deleteRepositoryDir();
+        throw error;
+      }
     }
+
+    return {
+      pluginPaths,
+    };
   }
 
   async createPullRequest(

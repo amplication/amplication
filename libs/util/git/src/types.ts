@@ -212,6 +212,10 @@ export interface GetFileArgs {
    */
   ref?: string;
 }
+export interface PluginDownloadItem {
+  pluginId: string;
+  pluginVersion?: string;
+}
 
 export interface DownloadPrivatePluginsArgs {
   owner: string;
@@ -221,7 +225,7 @@ export interface DownloadPrivatePluginsArgs {
   resourceId: string;
   buildId: string;
   baseBranchName: string;
-  pluginIds: string[];
+  pluginsToDownload: PluginDownloadItem[];
 }
 export interface CreatePullRequestArgs {
   owner: string;
