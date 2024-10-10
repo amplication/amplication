@@ -128,7 +128,7 @@ const PurchasePage = (props) => {
         variables: {
           data: {
             workspaceId: currentWorkspace.id,
-            planId: BillingPlan.Team,
+            planId: BillingPlan.Essential,
             billingPeriod: selectedBillingPeriod,
             intentionType,
             successUrl: returnUrl,
@@ -202,8 +202,8 @@ const PurchasePage = (props) => {
           textOverrides={{
             entitlementsTitle: (plan) => {
               return plan.basePlan
-                ? `Everything in ${plan.basePlan.displayName} plan, plus:`
-                : `All core functionality:`;
+                ? `Backend standardization and optimization:`
+                : `Code generation functionality:`;
             },
             planCTAButton: {
               startTrial: () => "Upgrade now", //essential for existing users starts without a trial
