@@ -107,7 +107,8 @@ export const BtmButton: React.FC<Props> = ({
   useEffect(() => {
     if (
       hasRedesignArchitectureFeature &&
-      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
       subscriptionStatus === EnumSubscriptionStatus.Trailing
     ) {
       setTooltipTextStart(DEFAULT_TEXT_START);
@@ -130,7 +131,8 @@ export const BtmButton: React.FC<Props> = ({
 
     if (
       hasRedesignArchitectureFeature &&
-      ((subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      (((subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
         subscriptionStatus !== EnumSubscriptionStatus.Trailing) ||
         isPreviewPlan)
     ) {

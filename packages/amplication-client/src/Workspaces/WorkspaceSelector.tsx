@@ -30,6 +30,7 @@ export const getWorkspaceColor = (plan: EnumSubscriptionPlan) => {
       return FREE_WORKSPACE_COLOR;
     case EnumSubscriptionPlan.Essential:
     case EnumSubscriptionPlan.Pro:
+    case EnumSubscriptionPlan.Team:
       return PRO_WORKSPACE_COLOR;
     case EnumSubscriptionPlan.Enterprise:
       return ENTERPRISE_WORKSPACE_COLOR;

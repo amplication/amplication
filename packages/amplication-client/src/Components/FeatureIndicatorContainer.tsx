@@ -141,7 +141,8 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
     if (
       (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
-        subscriptionPlan === EnumSubscriptionPlan.Essential) &&
+        subscriptionPlan === EnumSubscriptionPlan.Essential ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
       status !== EnumSubscriptionStatus.Trailing
     ) {
       return fullEnterpriseText;
@@ -156,7 +157,8 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
     if (
       (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
-        subscriptionPlan === EnumSubscriptionPlan.Essential) &&
+        subscriptionPlan === EnumSubscriptionPlan.Essential ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
       status !== EnumSubscriptionStatus.Trailing
     ) {
       return "";
@@ -169,7 +171,8 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     if (
       isPreviewPlan(subscriptionPlan) ||
       ((subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
-        subscriptionPlan === EnumSubscriptionPlan.Essential) &&
+        subscriptionPlan === EnumSubscriptionPlan.Essential ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
         status !== EnumSubscriptionStatus.Trailing)
     ) {
       return false; // don't show the upgrade link when the plan is preview
@@ -190,7 +193,8 @@ export const FeatureIndicatorContainer: FC<Props> = ({
 
     if (
       (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
-        subscriptionPlan === EnumSubscriptionPlan.Essential) &&
+        subscriptionPlan === EnumSubscriptionPlan.Essential ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
       status === EnumSubscriptionStatus.Trailing &&
       paidPlansExclusive
     ) {

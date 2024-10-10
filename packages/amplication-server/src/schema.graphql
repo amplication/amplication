@@ -958,6 +958,7 @@ enum EnumSubscriptionPlan {
   Free
   PreviewBreakTheMonolith
   Pro
+  Team
 }
 
 enum EnumSubscriptionStatus {

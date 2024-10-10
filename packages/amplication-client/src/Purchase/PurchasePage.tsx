@@ -162,6 +162,7 @@ const PurchasePage = (props) => {
           handleContactUsClick();
           break;
         case BillingPlan.Essential:
+        case BillingPlan.Team:
           setLoading(true);
           await upgradeToPro(selectedBillingPeriod, intentionType);
           break;
@@ -201,8 +202,8 @@ const PurchasePage = (props) => {
           textOverrides={{
             entitlementsTitle: (plan) => {
               return plan.basePlan
-                ? `Everything in ${plan.basePlan.displayName} plan, plus:`
-                : `All core backend functionality:`;
+                ? `Backend standardization and optimization:`
+                : `Code generation functionality:`;
             },
             planCTAButton: {
               startTrial: () => "Upgrade now", //essential for existing users starts without a trial
