@@ -114,6 +114,10 @@ export class ServiceTemplateService {
       template.id
     );
 
+    if (!templateVersion) {
+      throw new AmplicationError(`Template version not found`);
+    }
+
     const serviceSettings =
       await this.serviceSettingsService.getServiceSettingsValues(
         {
