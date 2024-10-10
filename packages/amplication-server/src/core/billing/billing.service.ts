@@ -51,8 +51,14 @@ export class BillingService {
 
   private get defaultSubscriptionPlan() {
     return {
-      planId: BillingPlan.Team,
+      planId: BillingPlan.Enterprise,
       addons: [
+        {
+          addonId: BillingAddon.BreakingTheMonolith,
+        },
+        {
+          addonId: BillingAddon.CustomActions,
+        },
         {
           addonId: BillingAddon.EssentialTrialJovuRequests,
         },
