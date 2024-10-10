@@ -31,6 +31,10 @@ const useServiceTemplate = (
 ) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
+  const [publishedServiceTemplates, setPublishedServiceTemplates] = useState<
+    models.Resource[]
+  >([]);
+
   const {
     data: serviceTemplates,
     loading: loadingServiceTemplates,
@@ -45,6 +49,13 @@ const useServiceTemplate = (
           : undefined,
     },
     skip: !currentProject?.id,
+    onCompleted: (data) => {
+      const publishedServiceTemplates = data.serviceTemplates.filter(
+        (serviceTemplate) => serviceTemplate.version
+      );
+
+      setPublishedServiceTemplates(publishedServiceTemplates);
+    },
   });
 
   const [
@@ -136,6 +147,7 @@ const useServiceTemplate = (
     errorUpgradeServiceToLatestTemplateVersion,
     upgradeServiceToLatestTemplateVersionData:
       UpgradeServiceToLatestTemplateVersionData?.upgradeServiceToLatestTemplateVersion,
+    publishedServiceTemplates,
   };
 };
 
