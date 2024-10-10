@@ -168,7 +168,7 @@ describe("BillingService", () => {
     });
   });
 
-  it("should provision customer with default plan: Team with addons", async () => {
+  it("should provision customer with default plan: Enterprise with addons", async () => {
     const expectedWorkspaceId = "id";
     const spyOnStiggProvisionCustomer = jest.spyOn(
       Stigg.prototype,
@@ -182,8 +182,14 @@ describe("BillingService", () => {
       expect.objectContaining({
         customerId: expectedWorkspaceId,
         subscriptionParams: {
-          planId: BillingPlan.Team,
+          planId: BillingPlan.Enterprise,
           addons: [
+            {
+              addonId: BillingAddon.BreakingTheMonolith,
+            },
+            {
+              addonId: BillingAddon.CustomActions,
+            },
             {
               addonId: BillingAddon.EssentialTrialJovuRequests,
             },
