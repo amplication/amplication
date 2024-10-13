@@ -94,6 +94,44 @@ export const Routes: RouteDef[] = [
                   },
                 ],
               },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/tech-debt",
+                Component: lazy(
+                  () =>
+                    import("../OutdatedVersionAlerts/OutdatedVersionAlertsPage")
+                ),
+                moduleName: "",
+                displayName: "Tech Debt",
+                routeTrackType: "",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/tech-debt/:alert([A-Za-z0-9-]{20,})",
+                    Component: lazy(
+                      () =>
+                        import(
+                          "../OutdatedVersionAlerts/OutdatedVersionAlertPage"
+                        )
+                    ),
+                    moduleName: "",
+                    displayName: "Tech Debt Alert",
+                    routeTrackType: "",
+                    exactPath: false,
+                    routes: [],
+                  },
+                ],
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/publish",
+                Component: lazy(
+                  () => import("../VersionControl/PublishChangesPage")
+                ),
+                moduleName: "",
+                displayName: "Publish",
+                routeTrackType: "",
+                exactPath: false,
+                routes: [],
+              },
             ],
             routes: [
               {
@@ -119,6 +157,17 @@ export const Routes: RouteDef[] = [
                 ),
                 moduleName: "CreatePluginRepository",
                 moduleClass: "create-plugin-repository",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/pending-changes",
+                Component: lazy(
+                  () => import("../VersionControl/PendingChangesPage")
+                ),
+                moduleName: "PendingChangesPage",
+                moduleClass: "pending-changes-page",
                 routeTrackType: "",
                 exactPath: true,
                 isAnalytics: true,

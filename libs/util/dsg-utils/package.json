@@ -1,3 +1,27 @@
 {
-  "name": "@amplication/dsg-utils"
+  "name": "@amplication/dsg-utils",
+  "version": "1.0.2",
+  "description": "This library supplies common utils for Amplication DSG",
+  "main": "./src/index.js",
+  "author": {
+    "name": "Amplication",
+    "email": "contact@amplication.com",
+    "url": "https://amplication.com"
+  },
+  "dependencies": {
+    "@amplication/code-gen-types": "2.0.37",
+    "pascal-case": "^3.1.2",
+    "lodash": "^4.17.21",
+    "pluralize": "^8.0.0",
+    "camel-case": "4.1.2",
+    "@amplication/util-logging": "0.0.2",
+    "semver": "^7.5.2",
+    "type-fest": "^3.13.0",
+    "download": "^8.0.0",
+    "pacote": "^19.0.0",
+    "axios": "^0.28.0",
+    "yaml": "2.2.2",
+    "tslib": "^2.6.2"
+  },
+  "type": "commonjs"
 }

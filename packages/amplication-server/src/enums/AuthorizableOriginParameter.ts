@@ -13,6 +13,7 @@ export enum AuthorizableOriginParameter {
   BlockId,
   ResourceRoleId,
   BuildId,
+  ResourceVersionId,
   ActionId,
   EnvironmentId,
   DeploymentId,
@@ -23,4 +24,5 @@ export enum AuthorizableOriginParameter {
   InvitationId,
   ProjectId,
   UserActionId,
+  OutdatedVersionAlertId,
 }

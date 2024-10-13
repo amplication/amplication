@@ -5,7 +5,6 @@ import { EnumCompareType } from "./PendingChangeDiffEntity";
 import { MultiStateToggle, Snackbar } from "@amplication/ui/design-system";
 import "./PendingChangesPage.scss";
 import { AppContext } from "../context/appContext";
-import { gql } from "@apollo/client";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import { formatError } from "../util/error";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";

@@ -1,4 +1,4 @@
-import { EnumTextStyle, Text } from "@amplication/ui/design-system";
+import { EnumTextStyle, Text, VersionTag } from "@amplication/ui/design-system";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { EnumResourceType, Resource } from "../models";
@@ -106,6 +106,24 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
       );
     },
     getValue: (row) => (row.serviceTemplate ? row.serviceTemplate.name : ""),
+    resizable: true,
+  },
+  {
+    key: "templateVersion",
+    name: "Template Version",
+    sortable: true,
+    width: 150,
+    renderCell: (props) => {
+      return (
+        <>
+          {props.row.serviceTemplateVersion && (
+            <VersionTag version={props.row.serviceTemplateVersion} />
+          )}
+        </>
+      );
+    },
+    getValue: (row) =>
+      row.serviceTemplateVersion ? row.serviceTemplateVersion : "",
     resizable: true,
   },
   {

@@ -132,11 +132,13 @@ const useResources = (
     refetch: reloadResources,
   } = useQuery<TGetResources>(GET_RESOURCES, {
     variables: {
-      projectId: currentProject?.id,
-      whereName:
-        searchPhrase !== ""
-          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
-          : undefined,
+      where: {
+        project: { id: currentProject?.id },
+        name:
+          searchPhrase !== ""
+            ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
+            : undefined,
+      },
     },
     skip: !currentProject?.id,
   });
@@ -347,15 +349,16 @@ const useResources = (
 
   useEffect(() => {
     if (loadingResources || !resourcesData) return;
-    const projectConfigurationResource = resourcesData.resources.find(
-      (r) => r.resourceType === models.EnumResourceType.ProjectConfiguration
-    );
-    setProjectConfigurationResource(projectConfigurationResource);
 
     const pluginRepositoryResource = resourcesData.resources.find(
       (r) => r.resourceType === models.EnumResourceType.PluginRepository
     );
     setPluginRepositoryResource(pluginRepositoryResource);
+
+    const projectConfigurationResource = resourcesData.resources.find(
+      (r) => r.resourceType === models.EnumResourceType.ProjectConfiguration
+    );
+    setProjectConfigurationResource(projectConfigurationResource);
 
     const resources = resourcesData.resources.filter(
       (r) =>

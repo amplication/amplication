@@ -30,6 +30,11 @@ type TData = {
   commit: Commit;
 };
 
+type BillingError = {
+  message: string;
+  billingFeature: string;
+};
+
 export interface CommitUtils {
   commits: Commit[];
   lastCommit: Commit;
@@ -58,8 +63,8 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     resetPendingChanges,
     setPendingChangesError,
     currentWorkspace,
-    currentProject,
     commitUtils,
+    reloadResources,
   } = useContext(AppContext);
 
   const { baseUrl: projectBaseUrl } = useProjectBaseUrl();
@@ -191,6 +196,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
           setCommitRunning(false);
           setPendingChangesError(false);
           resetPendingChanges();
+          reloadResources();
           commitUtils.refetchCommitsData(true);
           if (data.resourceTypeGroup === EnumResourceTypeGroup.Services) {
             const path = commitPath(projectBaseUrl, response.data.commit.id);
@@ -217,7 +223,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     );
   }, [currentWorkspace]);
 
-  const commitChangesLimitationError = useMemo(() => {
+  const commitChangesLimitationError = useMemo((): BillingError => {
     if (!commitChangesError) return;
     const limitation = commitChangesError?.graphQLErrors?.find(
       (gqlError) =>
@@ -225,8 +231,12 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     );
     if (!limitation) return;
 
-    limitation.message = formatLimitationError(commitChangesError.message);
-    return limitation;
+    const results = {
+      message: formatLimitationError(limitation.message),
+      billingFeature: limitation.extensions.billingFeature as string,
+    };
+
+    return results;
   }, [commitChangesError]);
 
   const [

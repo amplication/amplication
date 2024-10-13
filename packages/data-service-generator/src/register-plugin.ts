@@ -6,7 +6,7 @@ import {
   PluginMap,
 } from "@amplication/code-gen-types";
 import { join } from "path";
-import { logger } from "./logging";
+import { logger } from "@amplication/dsg-utils";
 import DsgContext from "./dsg-context";
 
 class EmptyPlugin implements AmplicationPlugin {

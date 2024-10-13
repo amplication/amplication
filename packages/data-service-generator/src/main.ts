@@ -1,5 +1,5 @@
 import { generateCode } from "./generate-code";
-import { logger } from "./logging";
+import { logger } from "@amplication/dsg-utils";
 
 if (require.main === module) {
   generateCode().catch(async (err) => {

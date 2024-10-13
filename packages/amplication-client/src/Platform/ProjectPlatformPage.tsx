@@ -1,4 +1,4 @@
-import { TabItem } from "@amplication/ui/design-system";
+import { EnumTextColor, TabItem } from "@amplication/ui/design-system";
 import React, { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
@@ -24,27 +24,39 @@ const ProjectPlatformPage: React.FC<Props> = ({
   tabRoutes,
   tabRoutesDef,
 }) => {
-  const { currentProject } = useContext(AppContext);
+  const { currentProject, pendingChanges } = useContext(AppContext);
 
   const { baseUrl: projectUrl } = useProjectBaseUrl({
     overrideIsPlatformConsole: false,
   });
 
   useBreadcrumbs(`${currentProject?.name} `, projectUrl);
-
   useBreadcrumbs(`Platform Console`, match.url);
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
   const tabItems: TabItem[] = useMemo(() => {
+    const tabsWithPendingChanges = tabs.map((tab) => {
+      if (tab.name === "Publish") {
+        return {
+          ...tab,
+          indicatorValue: pendingChanges?.length
+            ? pendingChanges.length
+            : undefined,
+          indicatorColor: EnumTextColor.ThemeOrange,
+        };
+      }
+      return tab;
+    });
+
     return [
       {
         name: OVERVIEW,
         to: match.url,
         exact: true,
       },
-      ...(tabs || []),
+      ...(tabsWithPendingChanges || []),
     ];
-  }, [match.url, tabs]);
+  }, [match.url, pendingChanges?.length, tabs]);
 
   return match.isExact || currentRouteIsTab ? (
     <>

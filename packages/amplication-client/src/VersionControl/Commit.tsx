@@ -258,25 +258,22 @@ const Commit = ({
                 {!commitChangesLoading && (
                   <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
                 )}
-                {showCommitMessage && (
-                  <TextField
-                    rows={3}
-                    textarea
-                    name="message"
-                    label={noChanges ? "Build message" : "Commit message..."}
-                    disabled={commitChangesLoading}
-                    autoFocus
-                    hideLabel
-                    placeholder={
-                      resourceTypeGroup === EnumResourceTypeGroup.Platform
-                        ? "Version message"
-                        : noChanges
-                        ? "Build message"
-                        : "Commit message..."
-                    }
-                    autoComplete="off"
-                  />
-                )}
+                {showCommitMessage &&
+                  resourceTypeGroup !== EnumResourceTypeGroup.Platform && (
+                    <TextField
+                      rows={3}
+                      textarea
+                      name="message"
+                      label={noChanges ? "Build message" : "Commit message..."}
+                      disabled={commitChangesLoading}
+                      autoFocus
+                      hideLabel
+                      placeholder={
+                        noChanges ? "Build message" : "Commit message..."
+                      }
+                      autoComplete="off"
+                    />
+                  )}
                 {!dotNetGeneratorEnabled &&
                   resourceTypeGroup === EnumResourceTypeGroup.Services && (
                     <MultiStateToggle

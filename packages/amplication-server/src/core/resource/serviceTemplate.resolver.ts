@@ -11,6 +11,7 @@ import { ServiceTemplateService } from "./serviceTemplate.service";
 import { CreateServiceTemplateArgs } from "./dto/CreateServiceTemplateArgs";
 import { FindManyResourceArgs } from "./dto";
 import { CreateServiceFromTemplateArgs } from "./dto/CreateServiceFromTemplateArgs";
+import { FindOneArgs } from "../../dto";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -57,5 +58,15 @@ export class ServiceTemplateResolver {
     @UserEntity() user: User
   ): Promise<Resource> {
     return this.service.createServiceFromTemplate(args, user);
+  }
+
+  @Mutation(() => Resource, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  async upgradeServiceToLatestTemplateVersion(
+    @Args() args: FindOneArgs,
+    @UserEntity() user: User
+  ): Promise<Resource> {
+    return this.service.upgradeServiceToLatestTemplateVersion(args, user);
   }
 }

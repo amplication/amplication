@@ -6,7 +6,7 @@
 
   & &__initials {
     box-sizing: border-box;
-    background-color: var(--theme-blue);
+    border: 1px solid var(--gray-base);
     border-radius: 100px;
     display: inline-flex;
     flex-direction: row;

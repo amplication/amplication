@@ -47,6 +47,8 @@ import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
 import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
+import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -83,6 +85,8 @@ const EXAMPLE_BUILD: Build = {
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
   commitId: EXAMPLE_COMMIT_ID,
+  status: EnumBuildStatus.Completed,
+  gitStatus: EnumBuildGitStatus.Completed,
 };
 
 const EXAMPLE_ENVIRONMENT: Environment = {
@@ -1584,6 +1588,7 @@ describe("EntityService", () => {
       await service.getChangedEntities(
         EXAMPLE_PROJECT_ID,
         EnumResourceTypeGroup.Services,
+        null,
         EXAMPLE_USER_ID
       )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_CREATE]);
@@ -1603,6 +1608,7 @@ describe("EntityService", () => {
       await service.getChangedEntities(
         EXAMPLE_PROJECT_ID,
         EnumResourceTypeGroup.Services,
+        null,
         EXAMPLE_USER_ID
       )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_UPDATE]);
@@ -1615,6 +1621,7 @@ describe("EntityService", () => {
       await service.getChangedEntities(
         EXAMPLE_PROJECT_ID,
         EnumResourceTypeGroup.Services,
+        null,
         EXAMPLE_USER_ID
       )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_DELETE]);

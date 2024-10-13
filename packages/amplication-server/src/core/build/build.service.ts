@@ -1,6 +1,6 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Prisma, PrismaService } from "../../prisma";
+import { EnumBuildGitStatus, Prisma, PrismaService } from "../../prisma";
 import { orderBy } from "lodash";
 import * as CodeGenTypes from "@amplication/code-gen-types";
 import { ResourceRole, User } from "../../models";
@@ -54,6 +54,7 @@ import {
   DownloadPrivatePluginsSuccess,
   DownloadPrivatePluginsFailure,
   CodeGenerationFailure,
+  PluginNotifyVersion,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
@@ -165,6 +166,8 @@ Remember, [Amplication](https://amplication.com/) is the fastest way in the worl
 
 Happy coding!`;
 
+const STALE_BUILD_HOURS = 5;
+
 export function createInitialStepData(
   version: string,
   message: string
@@ -275,6 +278,8 @@ export class BuildService {
         ...args.data,
         version,
         createdAt: new Date(),
+        status: EnumBuildStatus.Running,
+        gitStatus: EnumBuildGitStatus.Waiting,
         blockVersions: {
           connect: [],
         },
@@ -366,6 +371,39 @@ export class BuildService {
     }
   }
 
+  async notifyBuildPluginVersion(
+    args: PluginNotifyVersion.Value
+  ): Promise<void> {
+    try {
+      await this.prisma.buildPlugin.upsert({
+        where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          buildId_packageName: {
+            buildId: args.buildId,
+            packageName: args.packageName,
+          },
+        },
+        update: {
+          packageVersion: args.packageVersion,
+        },
+        create: {
+          build: {
+            connect: {
+              id: args.buildId,
+            },
+          },
+          packageName: args.packageName,
+          packageVersion: args.packageVersion,
+          requestedFullPackageName: args.requestedFullPackageName,
+        },
+      });
+    } catch (error) {
+      this.logger.error(
+        `Failed to notify build plugin version  ${error.message}`,
+        error
+      );
+    }
+  }
   async getBuildStep(
     buildId: string,
     buildStepName: string
@@ -384,26 +422,6 @@ export class BuildService {
       });
 
     return generateStep;
-  }
-
-  async calcBuildStatus(buildId: string): Promise<EnumBuildStatus> {
-    const build = await this.prisma.build.findUnique({
-      where: {
-        id: buildId,
-      },
-      include: ACTION_INCLUDE,
-    });
-
-    if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;
-    const steps = build.action.steps;
-
-    if (steps.every((step) => step.status === EnumActionStepStatus.Success))
-      return EnumBuildStatus.Completed;
-
-    if (steps.some((step) => step.status === EnumActionStepStatus.Failed))
-      return EnumBuildStatus.Failed;
-
-    return EnumBuildStatus.Running;
   }
 
   async onCodeGenerationSuccess(buildId: string): Promise<void> {
@@ -453,6 +471,20 @@ export class BuildService {
     await this.actionService.complete(step, EnumActionStepStatus.Success);
   }
 
+  async updateBuildStatuses(
+    buildId: string,
+    status: EnumBuildStatus | undefined,
+    gitStatus?: EnumBuildGitStatus | undefined
+  ): Promise<void> {
+    await this.prisma.build.update({
+      where: { id: buildId },
+      data: {
+        status,
+        gitStatus,
+      },
+    });
+  }
+
   public async onCodeGenerationFailure(
     response: CodeGenerationFailure.Value
   ): Promise<void> {
@@ -471,6 +503,11 @@ export class BuildService {
     }
 
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
+    await this.updateBuildStatuses(
+      buildId,
+      EnumBuildStatus.Failed,
+      EnumBuildGitStatus.Canceled
+    );
   }
 
   /**
@@ -681,6 +718,11 @@ export class BuildService {
         PUSH_TO_GIT_STEP_FINISH_LOG(response.gitProvider)
       );
       await this.actionService.complete(step, EnumActionStepStatus.Success);
+      await this.updateBuildStatuses(
+        build.id,
+        EnumBuildStatus.Completed,
+        EnumBuildGitStatus.Completed
+      );
 
       //In case this is a preview user - a success email will be sent after the first code generation
       await this.userService.handleUserPullRequestCompleted(
@@ -703,6 +745,11 @@ export class BuildService {
       );
       await this.actionService.logInfo(step, error);
       await this.actionService.complete(step, EnumActionStepStatus.Failed);
+      await this.updateBuildStatuses(
+        build.id,
+        EnumBuildStatus.Failed,
+        EnumBuildGitStatus.Failed
+      );
       await this.resourceService.reportSyncMessage(
         build.resourceId,
         `Error: ${error}`
@@ -741,6 +788,11 @@ export class BuildService {
       response.errorMessage
     );
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
+    await this.updateBuildStatuses(
+      build.id,
+      EnumBuildStatus.Failed,
+      EnumBuildGitStatus.Failed
+    );
 
     await this.analytics.trackManual({
       user: {
@@ -864,6 +916,11 @@ export class BuildService {
     }
 
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
+    await this.updateBuildStatuses(
+      buildId,
+      EnumBuildStatus.Failed,
+      EnumBuildGitStatus.Canceled
+    );
   }
 
   public async onDownloadPrivatePluginLog(
@@ -1009,6 +1066,11 @@ export class BuildService {
       );
 
       if (!resourceRepository) {
+        await this.updateBuildStatuses(
+          build.id,
+          EnumBuildStatus.Completed,
+          EnumBuildGitStatus.NotConnected
+        );
         return;
       }
       kafkaEventKey = resourceRepository.id;
@@ -1304,5 +1366,78 @@ export class BuildService {
       ACTION_LOG_LEVEL[level],
       message
     );
+  }
+
+  isBuildStale(build: Build): boolean {
+    if (!build) {
+      this.logger.error(`isBuildStale: build is not available `);
+      return false;
+    }
+
+    //if build is running more than 5 hours old, set the status to failed
+    if (build.status === EnumBuildStatus.Running) {
+      const stalePeriod = STALE_BUILD_HOURS * 60 * 60 * 1000;
+      if (Date.now() - build.createdAt.getTime() > stalePeriod) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async calcBuildStatus(buildId: string): Promise<EnumBuildStatus> {
+    const build = await this.prisma.build.findUnique({
+      where: {
+        id: buildId,
+      },
+      include: ACTION_INCLUDE,
+    });
+
+    //if build is running more than 5 hours old, set the status to failed
+    if (this.isBuildStale(build)) {
+      await this.updateBuildStatuses(
+        buildId,
+        EnumBuildStatus.Failed,
+        EnumBuildGitStatus.Failed
+      );
+      return EnumBuildStatus.Failed;
+    }
+
+    //if the build status is not unknown, return the status
+    //the function recalculates the status only if the status is unknown
+    if (build.status !== EnumBuildStatus.Unknown)
+      return build.status as EnumBuildStatus;
+
+    if (!build.action?.steps?.length) {
+      this.logger.error(
+        `calcBuildStatus: Could not find steps for build with id ${buildId}`
+      );
+      return EnumBuildStatus.Invalid;
+    }
+    const steps = build.action.steps;
+
+    if (steps.every((step) => step.status === EnumActionStepStatus.Success)) {
+      await this.updateBuildStatuses(
+        buildId,
+        EnumBuildStatus.Completed,
+        EnumBuildGitStatus.Completed
+      );
+      return EnumBuildStatus.Completed;
+    }
+    if (steps.some((step) => step.status === EnumActionStepStatus.Failed)) {
+      await this.updateBuildStatuses(
+        buildId,
+        EnumBuildStatus.Failed,
+        EnumBuildGitStatus.Failed
+      );
+      return EnumBuildStatus.Failed;
+    }
+
+    //since the build.status is unknown, it means this is a old record and we need to update the status with failed
+    await this.updateBuildStatuses(
+      buildId,
+      EnumBuildStatus.Failed,
+      EnumBuildGitStatus.Failed
+    );
+    return EnumBuildStatus.Failed;
   }
 }

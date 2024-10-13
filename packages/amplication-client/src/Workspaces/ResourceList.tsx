@@ -123,10 +123,7 @@ function ResourceList() {
                   View Templates
                 </Button>
               </Link>
-              <CreateResourceButton
-                resourcesLength={relevantResources.length}
-                servicesLength={servicesLength}
-              />
+              <CreateResourceButton servicesLength={servicesLength} />
             </FlexItem>
           </>
         }

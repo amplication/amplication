@@ -106,6 +106,10 @@ const usePlugins = (
                 id: privatePlugin.id,
                 pluginId: privatePlugin.pluginId,
               },
+              ...privatePlugin.versions.map((version) => ({
+                ...PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES,
+                ...version,
+              })),
             ],
           };
 

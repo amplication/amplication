@@ -258,21 +258,16 @@ export type Build = {
   createdAt: Scalars['DateTime']['output'];
   createdBy?: Maybe<User>;
   filesChanged?: Maybe<Scalars['Float']['output']>;
+  gitStatus: EnumBuildGitStatus;
   id: Scalars['String']['output'];
   linesOfCodeAdded?: Maybe<Scalars['Float']['output']>;
   linesOfCodeDeleted?: Maybe<Scalars['Float']['output']>;
   message?: Maybe<Scalars['String']['output']>;
   resource?: Maybe<Resource>;
   resourceId: Scalars['String']['output'];
-  status?: Maybe<EnumBuildStatus>;
+  status: EnumBuildStatus;
   userId: Scalars['String']['output'];
   version: Scalars['String']['output'];
-};
-
-export type BuildCreateInput = {
-  commit: WhereParentIdInput;
-  message: Scalars['String']['input'];
-  resource: WhereParentIdInput;
 };
 
 export type BuildOrderByInput = {
@@ -288,9 +283,11 @@ export type BuildWhereInput = {
   commit?: InputMaybe<WhereUniqueInput>;
   createdAt?: InputMaybe<DateTimeFilter>;
   createdBy?: InputMaybe<WhereUniqueInput>;
+  gitStatus?: InputMaybe<EnumBuildGitStatusFilter>;
   id?: InputMaybe<StringFilter>;
   message?: InputMaybe<StringFilter>;
-  resource: WhereUniqueInput;
+  resource?: InputMaybe<WhereUniqueInput>;
+  status?: InputMaybe<EnumBuildStatusFilter>;
   version?: InputMaybe<StringFilter>;
 };
 
@@ -339,19 +336,21 @@ export type CommitCreateInput = {
   commitStrategy?: InputMaybe<EnumCommitStrategy>;
   message: Scalars['String']['input'];
   project: WhereParentIdInput;
-  /**
-   * The resources to commit. By default, it contains all the project resources.
-   *       If the commit strategy is AllWithPendingChanges, it will contain the resources with pending changes.
-   *       If the commit strategy is Specific, it will be an array with one element.
-   */
+  /** The resources to commit, when strategy is "Specific". On other strategies, this field will be ignored. */
   resourceIds?: InputMaybe<Array<Scalars['String']['input']>>;
   resourceTypeGroup: EnumResourceTypeGroup;
+  resourceVersions?: InputMaybe<Array<CommitResourceVersionCreateInput>>;
 };
 
 export type CommitOrderByInput = {
   createdAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
   message?: InputMaybe<SortOrder>;
+};
+
+export type CommitResourceVersionCreateInput = {
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+  version?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CommitWhereInput = {
@@ -365,6 +364,12 @@ export type CommitWhereInput = {
 
 export type CommitWhereUniqueInput = {
   id: Scalars['String']['input'];
+};
+
+export type CompareResourceVersionsWhereInput = {
+  resource: WhereUniqueInput;
+  sourceVersion: Scalars['String']['input'];
+  targetVersion: Scalars['String']['input'];
 };
 
 export type CompleteInvitationInput = {
@@ -782,12 +787,37 @@ export type EnumBlockTypeFilter = {
   notIn?: InputMaybe<Array<EnumBlockType>>;
 };
 
+export enum EnumBuildGitStatus {
+  Canceled = 'Canceled',
+  Completed = 'Completed',
+  Failed = 'Failed',
+  NotConnected = 'NotConnected',
+  Unknown = 'Unknown',
+  Waiting = 'Waiting'
+}
+
+export type EnumBuildGitStatusFilter = {
+  equals?: InputMaybe<EnumBuildGitStatus>;
+  in?: InputMaybe<Array<EnumBuildGitStatus>>;
+  not?: InputMaybe<EnumBuildGitStatus>;
+  notIn?: InputMaybe<Array<EnumBuildGitStatus>>;
+};
+
 export enum EnumBuildStatus {
+  Canceled = 'Canceled',
   Completed = 'Completed',
   Failed = 'Failed',
   Invalid = 'Invalid',
-  Running = 'Running'
+  Running = 'Running',
+  Unknown = 'Unknown'
 }
+
+export type EnumBuildStatusFilter = {
+  equals?: InputMaybe<EnumBuildStatus>;
+  in?: InputMaybe<Array<EnumBuildStatus>>;
+  not?: InputMaybe<EnumBuildStatus>;
+  notIn?: InputMaybe<Array<EnumBuildStatus>>;
+};
 
 export enum EnumCodeGenerator {
   DotNet = 'DotNet',
@@ -933,6 +963,33 @@ export enum EnumModuleDtoType {
   WhereInput = 'WhereInput',
   WhereUniqueInput = 'WhereUniqueInput'
 }
+
+export enum EnumOutdatedVersionAlertStatus {
+  Canceled = 'Canceled',
+  Ignored = 'Ignored',
+  New = 'New',
+  Resolved = 'Resolved'
+}
+
+export type EnumOutdatedVersionAlertStatusFilter = {
+  equals?: InputMaybe<EnumOutdatedVersionAlertStatus>;
+  in?: InputMaybe<Array<EnumOutdatedVersionAlertStatus>>;
+  not?: InputMaybe<EnumOutdatedVersionAlertStatus>;
+  notIn?: InputMaybe<Array<EnumOutdatedVersionAlertStatus>>;
+};
+
+export enum EnumOutdatedVersionAlertType {
+  CodeEngineVersion = 'CodeEngineVersion',
+  PluginVersion = 'PluginVersion',
+  TemplateVersion = 'TemplateVersion'
+}
+
+export type EnumOutdatedVersionAlertTypeFilter = {
+  equals?: InputMaybe<EnumOutdatedVersionAlertType>;
+  in?: InputMaybe<Array<EnumOutdatedVersionAlertType>>;
+  not?: InputMaybe<EnumOutdatedVersionAlertType>;
+  notIn?: InputMaybe<Array<EnumOutdatedVersionAlertType>>;
+};
 
 export enum EnumPackageStatus {
   Completed = 'Completed',
@@ -1173,6 +1230,10 @@ export type MessagePattern = {
 export type MessagePatternCreateInput = {
   topicId: Scalars['String']['input'];
   type: EnumMessagePatternConnectionOptions;
+};
+
+export type MetaQueryPayload = {
+  count: Scalars['Float']['output'];
 };
 
 export type Metrics = {
@@ -1437,7 +1498,6 @@ export type Mutation = {
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
-  createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
   createEntitiesFromPredefinedSchema: UserAction;
   createEntitiesFromPrismaSchema: UserAction;
@@ -1456,6 +1516,7 @@ export type Mutation = {
   createPluginInstallation: PluginInstallation;
   createPluginRepository: Resource;
   createPrivatePlugin: PrivatePlugin;
+  createPrivatePluginVersion: PrivatePluginVersion;
   createProject: Project;
   createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
@@ -1523,6 +1584,7 @@ export type Mutation = {
   updatePackage: Package;
   updatePluginInstallation: PluginInstallation;
   updatePrivatePlugin: PrivatePlugin;
+  updatePrivatePluginVersion: PrivatePluginVersion;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
   updateResource?: Maybe<Resource>;
@@ -1531,6 +1593,7 @@ export type Mutation = {
   updateServiceTopics: ServiceTopics;
   updateTopic: Topic;
   updateWorkspace?: Maybe<Workspace>;
+  upgradeServiceToLatestTemplateVersion: Resource;
 };
 
 
@@ -1581,11 +1644,6 @@ export type MutationConnectResourceToProjectRepositoryArgs = {
 
 export type MutationCreateApiTokenArgs = {
   data: ApiTokenCreateInput;
-};
-
-
-export type MutationCreateBuildArgs = {
-  data: BuildCreateInput;
 };
 
 
@@ -1684,6 +1742,11 @@ export type MutationCreatePluginRepositoryArgs = {
 
 export type MutationCreatePrivatePluginArgs = {
   data: PrivatePluginCreateInput;
+};
+
+
+export type MutationCreatePrivatePluginVersionArgs = {
+  data: PrivatePluginVersionCreateInput;
 };
 
 
@@ -2036,6 +2099,12 @@ export type MutationUpdatePrivatePluginArgs = {
 };
 
 
+export type MutationUpdatePrivatePluginVersionArgs = {
+  data: PrivatePluginVersionUpdateInput;
+  where: WherePrivatePluginVersionUniqueInput;
+};
+
+
 export type MutationUpdateProjectArgs = {
   data: ProjectUpdateInput;
   where: WhereUniqueInput;
@@ -2081,6 +2150,47 @@ export type MutationUpdateTopicArgs = {
 export type MutationUpdateWorkspaceArgs = {
   data: WorkspaceUpdateInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationUpgradeServiceToLatestTemplateVersionArgs = {
+  where: WhereUniqueInput;
+};
+
+export type OutdatedVersionAlert = {
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  latestVersion: Scalars['String']['output'];
+  outdatedVersion: Scalars['String']['output'];
+  resource?: Maybe<Resource>;
+  resourceId: Scalars['String']['output'];
+  status: EnumOutdatedVersionAlertStatus;
+  type: EnumOutdatedVersionAlertType;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type OutdatedVersionAlertOrderByInput = {
+  block?: InputMaybe<BlockOrderByInput>;
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  latestVersion?: InputMaybe<SortOrder>;
+  outdatedVersion?: InputMaybe<SortOrder>;
+  resource?: InputMaybe<ResourceOrderByInput>;
+  status?: InputMaybe<SortOrder>;
+  type?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type OutdatedVersionAlertWhereInput = {
+  block?: InputMaybe<WhereUniqueInput>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<StringFilter>;
+  latestVersion?: InputMaybe<StringFilter>;
+  outdatedVersion?: InputMaybe<StringFilter>;
+  resource: ResourceWhereInput;
+  status?: InputMaybe<EnumOutdatedVersionAlertStatusFilter>;
+  type?: InputMaybe<EnumOutdatedVersionAlertTypeFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type Package = IBlock & {
@@ -2294,6 +2404,7 @@ export type PrivatePlugin = IBlock & {
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
+  versions: Array<PrivatePluginVersion>;
 };
 
 export type PrivatePluginCreateInput = {
@@ -2320,6 +2431,26 @@ export type PrivatePluginUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   enabled: Scalars['Boolean']['input'];
+};
+
+export type PrivatePluginVersion = {
+  configurations?: Maybe<Scalars['JSONObject']['output']>;
+  deprecated: Scalars['Boolean']['output'];
+  enabled: Scalars['Boolean']['output'];
+  settings?: Maybe<Scalars['JSONObject']['output']>;
+  version: Scalars['String']['output'];
+};
+
+export type PrivatePluginVersionCreateInput = {
+  privatePlugin: WhereParentIdInput;
+  version: Scalars['String']['input'];
+};
+
+export type PrivatePluginVersionUpdateInput = {
+  configurations?: InputMaybe<Scalars['JSONObject']['input']>;
+  deprecated?: InputMaybe<Scalars['Boolean']['input']>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  settings?: InputMaybe<Scalars['JSONObject']['input']>;
 };
 
 export type PrivatePluginWhereInput = {
@@ -2356,6 +2487,7 @@ export type ProjectConfigurationSettings = IBlock & {
   lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   outputParameters: Array<BlockInputOutput>;
+  overrideCustomizableFilesInGit?: Maybe<Scalars['Boolean']['output']>;
   parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
@@ -2367,6 +2499,7 @@ export type ProjectConfigurationSettingsUpdateInput = {
   baseDirectory?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
+  overrideCustomizableFilesInGit?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type ProjectCreateInput = {
@@ -2427,6 +2560,8 @@ export type ProvisionSubscriptionResult = {
 };
 
 export type Query = {
+  _outdatedVersionAlertsMeta: MetaQueryPayload;
+  _resourceVersionsMeta: MetaQueryPayload;
   account: Account;
   action: Action;
   availableDtosForResource: Array<ModuleDto>;
@@ -2437,6 +2572,7 @@ export type Query = {
   builds: Array<Build>;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
+  compareResourceVersions: ResourceVersionsDiff;
   contactUsLink?: Maybe<Scalars['String']['output']>;
   currentWorkspace?: Maybe<Workspace>;
   entities: Array<Entity>;
@@ -2456,6 +2592,8 @@ export type Query = {
   moduleDto?: Maybe<ModuleDto>;
   moduleDtos: Array<ModuleDto>;
   modules: Array<Module>;
+  outdatedVersionAlert: OutdatedVersionAlert;
+  outdatedVersionAlerts: Array<OutdatedVersionAlert>;
   package?: Maybe<Package>;
   packageList: Array<Package>;
   pendingChanges: Array<PendingChange>;
@@ -2471,6 +2609,8 @@ export type Query = {
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
+  resourceVersion: ResourceVersion;
+  resourceVersions: Array<ResourceVersion>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
   serviceTemplates: Array<Resource>;
@@ -2483,6 +2623,22 @@ export type Query = {
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
   workspaces: Array<Workspace>;
+};
+
+
+export type Query_OutdatedVersionAlertsMetaArgs = {
+  orderBy?: InputMaybe<OutdatedVersionAlertOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<OutdatedVersionAlertWhereInput>;
+};
+
+
+export type Query_ResourceVersionsMetaArgs = {
+  orderBy?: InputMaybe<ResourceVersionOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ResourceVersionWhereInput>;
 };
 
 
@@ -2544,6 +2700,11 @@ export type QueryCommitsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where: CommitWhereInput;
+};
+
+
+export type QueryCompareResourceVersionsArgs = {
+  where: CompareResourceVersionsWhereInput;
 };
 
 
@@ -2647,6 +2808,19 @@ export type QueryModulesArgs = {
 };
 
 
+export type QueryOutdatedVersionAlertArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryOutdatedVersionAlertsArgs = {
+  orderBy?: InputMaybe<OutdatedVersionAlertOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<OutdatedVersionAlertWhereInput>;
+};
+
+
 export type QueryPackageArgs = {
   where: WhereUniqueInput;
 };
@@ -2735,6 +2909,19 @@ export type QueryResourceRolesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ResourceRoleWhereInput>;
+};
+
+
+export type QueryResourceVersionArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryResourceVersionsArgs = {
+  orderBy?: InputMaybe<ResourceVersionOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ResourceVersionWhereInput>;
 };
 
 
@@ -2868,7 +3055,9 @@ export type Resource = {
   projectId?: Maybe<Scalars['String']['output']>;
   resourceType: EnumResourceType;
   serviceTemplate?: Maybe<Resource>;
+  serviceTemplateVersion?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
+  version?: Maybe<ResourceVersion>;
 };
 
 
@@ -2987,6 +3176,48 @@ export type ResourceUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type ResourceVersion = {
+  commit?: Maybe<Commit>;
+  commitId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  createdBy?: Maybe<User>;
+  id: Scalars['String']['output'];
+  message?: Maybe<Scalars['String']['output']>;
+  resource?: Maybe<Resource>;
+  resourceId: Scalars['String']['output'];
+  userId: Scalars['String']['output'];
+  version: Scalars['String']['output'];
+};
+
+export type ResourceVersionOrderByInput = {
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  message?: InputMaybe<SortOrder>;
+  userId?: InputMaybe<SortOrder>;
+  version?: InputMaybe<SortOrder>;
+};
+
+export type ResourceVersionWhereInput = {
+  commit?: InputMaybe<WhereUniqueInput>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  createdBy?: InputMaybe<WhereUniqueInput>;
+  id?: InputMaybe<StringFilter>;
+  message?: InputMaybe<StringFilter>;
+  resource: WhereUniqueInput;
+  version?: InputMaybe<StringFilter>;
+};
+
+export type ResourceVersionsDiff = {
+  createdBlocks?: Maybe<Array<Block>>;
+  deletedBlocks?: Maybe<Array<Block>>;
+  updatedBlocks?: Maybe<Array<ResourceVersionsDiffBlock>>;
+};
+
+export type ResourceVersionsDiffBlock = {
+  sourceBlock: Block;
+  targetBlock: Block;
+};
+
 export type ResourceWhereInput = {
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
@@ -2995,6 +3226,7 @@ export type ResourceWhereInput = {
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']['input']>;
   resourceType?: InputMaybe<EnumResourceTypeFilter>;
+  serviceTemplateId?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -3290,6 +3522,11 @@ export type WhereEnumMemberUniqueInput = {
 
 export type WhereParentIdInput = {
   connect: WhereUniqueInput;
+};
+
+export type WherePrivatePluginVersionUniqueInput = {
+  privatePlugin: WhereUniqueInput;
+  version: Scalars['String']['input'];
 };
 
 export type WherePropertyUniqueInput = {

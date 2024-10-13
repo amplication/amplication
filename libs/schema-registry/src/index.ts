@@ -23,6 +23,7 @@ export * as DownloadPrivatePluginsRequest from "./lib/download-private-plugins-r
 export * as DownloadPrivatePluginsSuccess from "./lib/download-private-plugins-success";
 export * as DownloadPrivatePluginsFailure from "./lib/download-private-plugins-failure";
 export * as DownloadPrivatePluginsLog from "./lib/download-private-plugins-log";
+export * as PluginNotifyVersion from "./lib/plugin-notify-version";
 
 export enum KAFKA_TOPICS {
   /// build-manager
@@ -31,6 +32,7 @@ export enum KAFKA_TOPICS {
   CODE_GENERATION_SUCCESS_TOPIC = "build.internal.code-generation.success.1",
   CODE_GENERATION_FAILURE_TOPIC = "build.internal.code-generation.failure.1",
   CODE_GENERATION_NOTIFY_VERSION_TOPIC = "build.internal.code-generation.notify-version.1",
+  BUILD_PLUGIN_NOTIFY_VERSION_TOPIC = "build.internal.plugin.notify-version.1",
   DSG_LOG_TOPIC = "build.internal.dsg-log.1",
   /// git-pull-request
   CREATE_PULL_REQUEST_COMPLETED_TOPIC = "git.internal.pull-request.completed.1",
