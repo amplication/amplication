@@ -116,13 +116,6 @@ const PrivatePluginVersionForm = ({
                     handleChange(formik);
                   }}
                 />
-                <ToggleField
-                  label="Deprecated"
-                  name="deprecated"
-                  onValueChange={() => {
-                    handleChange(formik);
-                  }}
-                />
               </FlexItem>
               {showDetails && (
                 <FlexItem
