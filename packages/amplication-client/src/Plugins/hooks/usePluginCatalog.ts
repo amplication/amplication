@@ -12,6 +12,7 @@ export type PluginVersion = {
   configurations: Record<string, unknown>;
   id: string;
   pluginId: string;
+  enabled: boolean;
 };
 
 export type Plugin = {
