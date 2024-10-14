@@ -125,20 +125,22 @@ export class OutdatedVersionAlertService {
       },
     });
 
-    //create outdatedVersionAlert for each service
-    for (const service of services) {
-      await this.create({
-        data: {
-          resource: {
-            connect: {
-              id: service.id,
+    if (outdatedVersion !== null) {
+      //create outdatedVersionAlert for each service
+      for (const service of services) {
+        await this.create({
+          data: {
+            resource: {
+              connect: {
+                id: service.id,
+              },
             },
+            type: EnumOutdatedVersionAlertType.TemplateVersion,
+            outdatedVersion,
+            latestVersion,
           },
-          type: EnumOutdatedVersionAlertType.TemplateVersion,
-          outdatedVersion,
-          latestVersion,
-        },
-      });
+        });
+      }
     }
   }
 }
