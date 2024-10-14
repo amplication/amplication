@@ -74,7 +74,16 @@ export class OutdatedVersionAlertService {
   async findMany(
     args: FindManyOutdatedVersionAlertArgs
   ): Promise<OutdatedVersionAlert[]> {
-    return this.prisma.outdatedVersionAlert.findMany(args);
+    return this.prisma.outdatedVersionAlert.findMany({
+      where: {
+        ...args.where,
+        resource: {
+          ...args.where?.resource,
+          deletedAt: null,
+          archived: { not: true },
+        },
+      },
+    });
   }
 
   async findOne(
