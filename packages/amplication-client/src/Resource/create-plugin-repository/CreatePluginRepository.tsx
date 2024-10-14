@@ -102,10 +102,16 @@ const CreatePluginRepositoryWizard: React.FC<Props> = ({ moduleClass }) => {
               size="large"
             />
             <div className={`${moduleClass}__description_top`}>
-              <h2>Create a Plugin Repository</h2>
+              <h2>Unlock the Power of Private Plugins</h2>
             </div>
             <div className={`${moduleClass}__description_bottom`}>
-              <h3>Create a plugin repository to upload and manage plugins.</h3>
+              <h3>
+                Private plugins let you extend and customize your Amplication
+                services with unique functionality tailored to your
+                organization's standards and unique requirements. Get started by
+                managing your private plugins and enhancing your development
+                workflow.
+              </h3>
             </div>
           </div>
         </div>
@@ -124,7 +130,7 @@ const CreatePluginRepositoryWizard: React.FC<Props> = ({ moduleClass }) => {
           onClick={handleCreateServiceClick}
           disabled={isCreatingPluginRepository}
         >
-          <label>Create Plugin Repository</label>
+          <label>Get Started with Private Plugins</label>
         </Button>
       </div>
       <Snackbar
