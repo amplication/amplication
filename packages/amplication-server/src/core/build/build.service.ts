@@ -601,7 +601,9 @@ export class BuildService {
                 ...pluginRepoGitSettings,
                 buildId: build.id,
                 resourceId,
-                pluginIds: privatePlugins.map((plugin) => plugin.pluginId),
+                pluginsToDownload: privatePlugins.map((plugin) => {
+                  return { pluginId: plugin.pluginId };
+                }),
               },
             };
 
