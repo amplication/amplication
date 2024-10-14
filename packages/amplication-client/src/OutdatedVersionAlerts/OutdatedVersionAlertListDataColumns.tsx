@@ -4,7 +4,7 @@ import {
   VersionTag,
 } from "@amplication/ui/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
-import { OutdatedVersionAlert } from "../models";
+import { EnumResourceType, OutdatedVersionAlert } from "../models";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import OutdatedVersionAlertType from "./OutdatedVersionAlertType";
 import OutdatedVersionAlertStatus from "./OutdatedVersionAlertStatus";
@@ -18,7 +18,7 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     renderCell: (props) => {
       return (
         <ResourceCircleBadge
-          type={props.row.resource.resourceType}
+          type={props.row.resource?.resourceType || EnumResourceType.Service}
           size="small"
         />
       );
@@ -30,7 +30,15 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     resizable: true,
     sortable: false,
     renderCell: (props) => {
-      return <ResourceNameLink resource={props.row.resource} />;
+      return (
+        <>
+          {props.row.resource ? (
+            "(unavailable)"
+          ) : (
+            <ResourceNameLink resource={props.row.resource} />
+          )}
+        </>
+      );
     },
   },
   {
