@@ -81,7 +81,7 @@ export class ResourceVersionService {
 
     await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
       resourceId,
-      previousVersion.version,
+      previousVersion?.version,
       args.data.version
     );
 
