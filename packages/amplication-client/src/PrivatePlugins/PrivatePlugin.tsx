@@ -161,10 +161,10 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
         />
       )}
 
-      <PrivatePluginVersionList
+      {/* <PrivatePluginVersionList
         privatePlugin={data?.privatePlugin}
         onVersionAdd={onVersionChanged}
-      />
+      /> */}
 
       <Snackbar open={hasError} message={errorMessage} />
     </>
