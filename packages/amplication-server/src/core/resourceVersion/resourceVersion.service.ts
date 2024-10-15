@@ -79,11 +79,11 @@ export class ResourceVersionService {
       },
     });
 
-    await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
-      resourceId,
-      previousVersion?.version,
-      args.data.version
-    );
+    // await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
+    //   resourceId,
+    //   previousVersion?.version,
+    //   args.data.version
+    // );
 
     return resourceVersion;
   }
