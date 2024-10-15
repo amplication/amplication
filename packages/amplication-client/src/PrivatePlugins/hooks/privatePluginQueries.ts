@@ -1,8 +1,6 @@
 import { gql } from "@apollo/client";
-import { PRIVATE_PLUGIN_VERSION_FIELDS_FRAGMENT } from "../../PrivatePluginVersion/queries/privatePluginVersionQueries";
 
 export const PRIVATE_PLUGINS_FIELDS_FRAGMENT = gql`
-  ${PRIVATE_PLUGIN_VERSION_FIELDS_FRAGMENT}
   fragment PrivatePluginFields on PrivatePlugin {
     id
     pluginId
@@ -10,7 +8,11 @@ export const PRIVATE_PLUGINS_FIELDS_FRAGMENT = gql`
     description
     enabled
     versions {
-      ...PrivatePluginVersionFields
+      version
+      deprecated
+      enabled
+      settings
+      configurations
     }
   }
 `;
