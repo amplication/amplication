@@ -77,7 +77,6 @@ export const PrivatePluginList = React.memo(
         >
           <FlexItem itemsAlign={EnumItemsAlign.Center}>Git Settings</FlexItem>
         </InnerTabLink>
-        <HorizontalRule />
         <SearchField
           label="search"
           placeholder="search"
@@ -101,13 +100,14 @@ export const PrivatePluginList = React.memo(
               </FlexItem>
             </InnerTabLink>
           ))}
+
+          {data?.privatePlugins && (
+            <NewPrivatePlugin
+              onPrivatePluginAdd={handlePrivatePluginChange}
+              resourceId={pluginRepositoryResource?.id}
+            />
+          )}
         </div>
-        {data?.privatePlugins && (
-          <NewPrivatePlugin
-            onPrivatePluginAdd={handlePrivatePluginChange}
-            resourceId={pluginRepositoryResource?.id}
-          />
-        )}
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </div>
     );

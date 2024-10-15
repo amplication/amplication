@@ -1,0 +1,39 @@
+@import "../style/index.scss";
+
+$icon-overlap-small: 10px;
+$icon-size-small: var(--icon-size-small);
+
+$icon-overlap-medium: 15px;
+$icon-size-medium: var(--icon-size-medium);
+
+.plugin-logos {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 0;
+
+  .plugin-logo,
+  &__more-plugins {
+    position: relative;
+    width: $icon-size-small;
+    height: $icon-size-small;
+    border-radius: 50%;
+    margin-left: -$icon-overlap-small;
+    border: 1px solid var(--gray-70);
+  }
+
+  &__more-plugins {
+    background-color: var(--gray-full);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &--medium {
+    .plugin-logo,
+    .plugin-logos__more-plugins {
+      width: $icon-size-medium;
+      height: $icon-size-medium;
+      margin-left: -$icon-overlap-medium;
+    }
+  }
+}

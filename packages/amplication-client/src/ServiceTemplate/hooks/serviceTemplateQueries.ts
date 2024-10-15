@@ -30,9 +30,10 @@ export const GET_SERVICE_TEMPLATES = gql`
       codeGeneratorVersion
       codeGenerator
       licensed
-      entities {
+      version {
         id
-        name
+        version
+        message
       }
     }
   }
@@ -45,6 +46,18 @@ export const CREATE_SERVICE_TEMPLATE = gql`
       name
       description
       resourceType
+    }
+  }
+`;
+
+export const UPGRADE_SERVICE_TO_LATEST_TEMPLATE_VERSION = gql`
+  mutation upgradeServiceToLatestTemplateVersion($resourceId: String!) {
+    upgradeServiceToLatestTemplateVersion(where: { id: $resourceId }) {
+      id
+      name
+      description
+      resourceType
+      serviceTemplateVersion
     }
   }
 `;

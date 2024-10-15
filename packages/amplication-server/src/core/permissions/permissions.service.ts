@@ -221,6 +221,12 @@ export class PermissionsService {
       const matching = await this.prisma.build.count(checkByResourceParameters);
       return matching === 1;
     }
+    if (originType === AuthorizableOriginParameter.ResourceVersionId) {
+      const matching = await this.prisma.resourceVersion.count(
+        checkByResourceParameters
+      );
+      return matching === 1;
+    }
     if (originType === AuthorizableOriginParameter.UserActionId) {
       const matching = await this.prisma.userAction.count(
         checkByResourceParameters
@@ -235,6 +241,12 @@ export class PermissionsService {
     }
     if (originType === AuthorizableOriginParameter.EnvironmentId) {
       const matching = await this.prisma.environment.count(
+        checkByResourceParameters
+      );
+      return matching === 1;
+    }
+    if (originType === AuthorizableOriginParameter.OutdatedVersionAlertId) {
+      const matching = await this.prisma.outdatedVersionAlert.count(
         checkByResourceParameters
       );
       return matching === 1;

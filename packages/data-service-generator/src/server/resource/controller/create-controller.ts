@@ -35,7 +35,7 @@ import {
   getMethods,
   removeClassMethodByName,
 } from "../../../utils/ast";
-import { isToManyRelationField } from "../../../utils/field";
+import { isToManyRelationField } from "@amplication/dsg-utils";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";

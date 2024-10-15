@@ -1,0 +1,44 @@
+@import "../../style/index.scss";
+
+$border-radius: var(--default-border-radius);
+$width: 70px;
+
+.amp-version-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $width;
+  padding-left: var(--icon-spacing);
+  padding-right: var(--icon-spacing);
+  border-radius: $border-radius;
+  font-size: var(--tag-font-size);
+  border: $border-dark;
+  background-color: var(--gray-90);
+  color: var(--theme-blue);
+  border-color: var(--gray-10);
+  font-weight: normal;
+
+  &--none {
+    color: var(--gray-60);
+  }
+
+  &--previous {
+    color: var(--gray-20);
+  }
+
+  &--current {
+    color: var(--theme-blue);
+  }
+
+  &--deprecated {
+    color: var(--color-negative);
+  }
+
+  &--disabled {
+    color: var(--gray-60);
+  }
+
+  &--updateAvailable {
+    color: var(--theme-orange);
+  }
+}

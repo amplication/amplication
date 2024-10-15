@@ -63,14 +63,14 @@ const NewServiceFromTemplate = ({ serviceTemplateId, projectId }: Props) => {
     currentProject,
   } = useContext(AppContext);
 
-  const { serviceTemplates } = useServiceTemplate(currentProject);
+  const { publishedServiceTemplates } = useServiceTemplate(currentProject);
 
   const options = useMemo(() => {
-    return serviceTemplates.map((serviceTemplate) => ({
+    return publishedServiceTemplates.map((serviceTemplate) => ({
       value: serviceTemplate.id,
       label: serviceTemplate.name,
     }));
-  }, [serviceTemplates]);
+  }, [publishedServiceTemplates]);
 
   const handleSubmit = useCallback(
     (data: CreateType) => {

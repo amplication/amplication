@@ -11,6 +11,7 @@ import {
   PackageManagerCreateFailure,
 } from "@amplication/schema-registry";
 import { plainToInstance } from "class-transformer";
+import { NotifyPluginVersionDto } from "./dto/NotifyPluginVersion";
 
 @Controller("build-runner")
 export class BuildRunnerController {
@@ -24,6 +25,13 @@ export class BuildRunnerController {
     @Payload() dto: CodeGenerationSuccessDto
   ): Promise<void> {
     await this.buildRunnerService.onCodeGenerationSuccess(dto);
+  }
+
+  @Post("notify-plugin-version")
+  async onNotifyPluginVersion(
+    @Payload() dto: NotifyPluginVersionDto
+  ): Promise<void> {
+    await this.buildRunnerService.emitBuildPluginNotifyVersion(dto);
   }
 
   @Post("code-generation-failure")

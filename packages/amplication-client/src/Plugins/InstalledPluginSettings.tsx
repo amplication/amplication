@@ -58,6 +58,8 @@ const InstalledPluginSettings: React.FC<Props> = ({
     pluginInstallation,
     loadingPluginInstallation,
     pluginCatalog,
+    loadPrivatePluginsCatalog,
+    privatePluginCatalog,
     updatePluginInstallation,
     updateError,
   } = usePlugins(
@@ -69,12 +71,31 @@ const InstalledPluginSettings: React.FC<Props> = ({
     pluginInstallation?.pluginInstallation.version
   );
 
+  useEffect(() => {
+    if (pluginInstallation?.pluginInstallation.isPrivate) {
+      loadPrivatePluginsCatalog();
+    }
+  }, [pluginInstallation, loadPrivatePluginsCatalog]);
+
   const plugin = useMemo(() => {
+    if (pluginInstallation?.pluginInstallation.isPrivate) {
+      return privatePluginCatalog[
+        pluginInstallation?.pluginInstallation.pluginId
+      ];
+    }
+
     return (
       pluginInstallation &&
       pluginCatalog[pluginInstallation?.pluginInstallation.pluginId]
     );
-  }, [pluginInstallation, pluginCatalog]);
+  }, [pluginInstallation, pluginCatalog, privatePluginCatalog]);
+
+  const enabledPluginVersions = useMemo(() => {
+    if (!plugin) return;
+    return pluginInstallation.pluginInstallation.isPrivate
+      ? plugin.versions.filter((version) => version.enabled)
+      : plugin.versions;
+  }, [plugin, pluginInstallation]);
 
   const [value, setEditorValue] = useState<string>(
     JsonFormatting(pluginInstallation?.pluginInstallation.settings)
@@ -199,19 +220,21 @@ const InstalledPluginSettings: React.FC<Props> = ({
                 <SelectMenuModal>
                   <SelectMenuList>
                     <>
-                      {plugin.versions.map((pluginVersion: PluginVersion) => (
-                        <SelectMenuItem
-                          closeAfterSelectionChange
-                          itemData={pluginVersion}
-                          selected={pluginVersion.version === selectedVersion}
-                          key={pluginVersion.id}
-                          onSelectionChange={(pluginVersion) => {
-                            handleSelectVersion(pluginVersion);
-                          }}
-                        >
-                          {pluginVersion.version}
-                        </SelectMenuItem>
-                      ))}
+                      {enabledPluginVersions.map(
+                        (pluginVersion: PluginVersion) => (
+                          <SelectMenuItem
+                            closeAfterSelectionChange
+                            itemData={pluginVersion}
+                            selected={pluginVersion.version === selectedVersion}
+                            key={pluginVersion.id}
+                            onSelectionChange={(pluginVersion) => {
+                              handleSelectVersion(pluginVersion);
+                            }}
+                          >
+                            {pluginVersion.version}
+                          </SelectMenuItem>
+                        )
+                      )}
                     </>
                   </SelectMenuList>
                 </SelectMenuModal>

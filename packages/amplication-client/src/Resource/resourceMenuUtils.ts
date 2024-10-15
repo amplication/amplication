@@ -13,7 +13,9 @@ export type MenuItemLinks =
   | "connections"
   | "modules"
   | "privatePlugins"
-  | "pendingChanges";
+  | "pendingChanges"
+  | "versions"
+  | "templateServices";
 
 export const resourceMenuLayout: {
   [key in EnumResourceType]: MenuItemLinks[];
@@ -27,7 +29,12 @@ export const resourceMenuLayout: {
     "connections",
     "settings",
   ],
-  [EnumResourceType.ServiceTemplate]: ["plugins", "settings"],
+  [EnumResourceType.ServiceTemplate]: [
+    "plugins",
+    "settings",
+    "versions",
+    "templateServices",
+  ],
   [EnumResourceType.ProjectConfiguration]: ["git", "settings"],
   [EnumResourceType.MessageBroker]: ["topics", "services", "git", "settings"],
   [EnumResourceType.PluginRepository]: ["privatePlugins", "git2", "settings"],
@@ -101,6 +108,16 @@ export const linksMap: {
     title: "Private Plugins",
     icon: "plugins",
     to: "/private-plugins",
+  },
+  versions: {
+    title: "Versions",
+    icon: "publish",
+    to: "/versions",
+  },
+  templateServices: {
+    title: "Services",
+    icon: "services",
+    to: "/template-services",
   },
 };
 

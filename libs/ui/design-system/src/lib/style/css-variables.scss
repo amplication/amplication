@@ -46,7 +46,7 @@
   --color-negative: var(--theme-red);
   --theme-gradient: linear-gradient(45deg, #6c37ff 0%, #23c4da 100%);
 
-  --tooltip-background: #1b1f23;
+  --tooltip-background: var(--gray-60);
 
   --panel-background: var(--gray-80);
   --panel-hover-background: var(--gray-70);

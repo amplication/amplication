@@ -19,6 +19,7 @@ import {
   LicensedResourceType,
 } from "../Components/LicenseIndicatorContainer";
 import useCommits from "./hooks/useCommits";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 type Props = {
   commitMessage?: string;
@@ -57,6 +58,9 @@ const CommitButton = ({
     useState<boolean>(false);
 
   const { currentProject } = useContext(AppContext);
+  const { baseUrl: platformBaseUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: true,
+  });
 
   const {
     commitChanges,
@@ -74,21 +78,16 @@ const CommitButton = ({
   };
 
   const handleClick = useCallback(() => {
-    if (
-      resourceTypeGroup === EnumResourceTypeGroup.Platform &&
-      !hasPendingChanges
-    ) {
+    if (resourceTypeGroup === EnumResourceTypeGroup.Platform) {
+      history.push(`${platformBaseUrl}/publish`);
       return;
     }
 
-    const strategy =
-      commitStrategy ?? resourceTypeGroup === EnumResourceTypeGroup.Platform
-        ? EnumCommitStrategy.AllWithPendingChanges
-        : hasPendingChanges //use the default strategy when provided
-        ? EnumCommitStrategy.AllWithPendingChanges //default when there are pending changes
-        : hasMultipleServices && onCommitSpecificService
-        ? EnumCommitStrategy.Specific //let the user choose when there are multiple services and no changes
-        : EnumCommitStrategy.All; //use all when there is only one service
+    const strategy = hasPendingChanges //use the default strategy when provided
+      ? EnumCommitStrategy.AllWithPendingChanges //default when there are pending changes
+      : hasMultipleServices && onCommitSpecificService
+      ? EnumCommitStrategy.Specific //let the user choose when there are multiple services and no changes
+      : EnumCommitStrategy.All; //use all when there is only one service
 
     if (strategy === EnumCommitStrategy.Specific) {
       onCommitSpecificService();
@@ -173,8 +172,7 @@ const CommitButton = ({
               eventName: AnalyticsEventNames.UpgradeClick,
               reason: commitChangesLimitationError.message,
               eventOriginLocation: "commit-limitation-dialog",
-              billingFeature:
-                commitChangesLimitationError.extensions.billingFeature,
+              billingFeature: commitChangesLimitationError.billingFeature,
             });
             setOpenLimitationDialog(false);
           }}
@@ -193,8 +191,7 @@ const CommitButton = ({
               eventName: AnalyticsEventNames.UpgradeLaterClick,
               reason: commitChangesLimitationError.message,
               eventOriginLocation: "commit-limitation-dialog",
-              billingFeature:
-                commitChangesLimitationError.extensions.billingFeature,
+              billingFeature: commitChangesLimitationError.billingFeature,
             });
             setOpenLimitationDialog(false);
           }}

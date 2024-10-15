@@ -235,21 +235,16 @@ type Build {
   createdAt: DateTime!
   createdBy: User
   filesChanged: Float
+  gitStatus: EnumBuildGitStatus!
   id: String!
   linesOfCodeAdded: Float
   linesOfCodeDeleted: Float
   message: String
   resource: Resource
   resourceId: String!
-  status: EnumBuildStatus
+  status: EnumBuildStatus!
   userId: String!
   version: String!
-}
-
-input BuildCreateInput {
-  commit: WhereParentIdInput!
-  message: String!
-  resource: WhereParentIdInput!
 }
 
 input BuildOrderByInput {
@@ -265,9 +260,11 @@ input BuildWhereInput {
   commit: WhereUniqueInput
   createdAt: DateTimeFilter
   createdBy: WhereUniqueInput
+  gitStatus: EnumBuildGitStatusFilter
   id: StringFilter
   message: StringFilter
-  resource: WhereUniqueInput!
+  resource: WhereUniqueInput
+  status: EnumBuildStatusFilter
   version: StringFilter
 }
 
@@ -315,18 +312,22 @@ input CommitCreateInput {
   project: WhereParentIdInput!
 
   """
-  The resources to commit. By default, it contains all the project resources. 
-        If the commit strategy is AllWithPendingChanges, it will contain the resources with pending changes. 
-        If the commit strategy is Specific, it will be an array with one element. 
+  The resources to commit, when strategy is "Specific". On other strategies, this field will be ignored.
   """
   resourceIds: [String!]
   resourceTypeGroup: EnumResourceTypeGroup!
+  resourceVersions: [CommitResourceVersionCreateInput!]
 }
 
 input CommitOrderByInput {
   createdAt: SortOrder
   id: SortOrder
   message: SortOrder
+}
+
+input CommitResourceVersionCreateInput {
+  resourceId: String
+  version: String
 }
 
 input CommitWhereInput {
@@ -340,6 +341,12 @@ input CommitWhereInput {
 
 input CommitWhereUniqueInput {
   id: String!
+}
+
+input CompareResourceVersionsWhereInput {
+  resource: WhereUniqueInput!
+  sourceVersion: String!
+  targetVersion: String!
 }
 
 input CompleteInvitationInput {
@@ -750,11 +757,36 @@ input EnumBlockTypeFilter {
   notIn: [EnumBlockType!]
 }
 
+enum EnumBuildGitStatus {
+  Canceled
+  Completed
+  Failed
+  NotConnected
+  Unknown
+  Waiting
+}
+
+input EnumBuildGitStatusFilter {
+  equals: EnumBuildGitStatus
+  in: [EnumBuildGitStatus!]
+  not: EnumBuildGitStatus
+  notIn: [EnumBuildGitStatus!]
+}
+
 enum EnumBuildStatus {
+  Canceled
   Completed
   Failed
   Invalid
   Running
+  Unknown
+}
+
+input EnumBuildStatusFilter {
+  equals: EnumBuildStatus
+  in: [EnumBuildStatus!]
+  not: EnumBuildStatus
+  notIn: [EnumBuildStatus!]
 }
 
 enum EnumCodeGenerator {
@@ -900,6 +932,33 @@ enum EnumModuleDtoType {
   UpdateNestedManyInput
   WhereInput
   WhereUniqueInput
+}
+
+enum EnumOutdatedVersionAlertStatus {
+  Canceled
+  Ignored
+  New
+  Resolved
+}
+
+input EnumOutdatedVersionAlertStatusFilter {
+  equals: EnumOutdatedVersionAlertStatus
+  in: [EnumOutdatedVersionAlertStatus!]
+  not: EnumOutdatedVersionAlertStatus
+  notIn: [EnumOutdatedVersionAlertStatus!]
+}
+
+enum EnumOutdatedVersionAlertType {
+  CodeEngineVersion
+  PluginVersion
+  TemplateVersion
+}
+
+input EnumOutdatedVersionAlertTypeFilter {
+  equals: EnumOutdatedVersionAlertType
+  in: [EnumOutdatedVersionAlertType!]
+  not: EnumOutdatedVersionAlertType
+  notIn: [EnumOutdatedVersionAlertType!]
 }
 
 enum EnumPackageStatus {
@@ -1151,6 +1210,10 @@ type MessagePattern {
 input MessagePatternCreateInput {
   topicId: String!
   type: EnumMessagePatternConnectionOptions!
+}
+
+type MetaQueryPayload {
+  count: Float!
 }
 
 type Metrics {
@@ -1415,7 +1478,6 @@ type Mutation {
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
-  createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
   createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
@@ -1434,6 +1496,7 @@ type Mutation {
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   createPluginRepository(data: ResourceCreateInput!): Resource!
   createPrivatePlugin(data: PrivatePluginCreateInput!): PrivatePlugin!
+  createPrivatePluginVersion(data: PrivatePluginVersionCreateInput!): PrivatePluginVersion!
   createProject(data: ProjectCreateInput!): Project!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
@@ -1504,6 +1567,7 @@ type Mutation {
   updatePackage(data: PackageUpdateInput!, where: WhereUniqueInput!): Package!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updatePrivatePlugin(data: PrivatePluginUpdateInput!, where: WhereUniqueInput!): PrivatePlugin!
+  updatePrivatePluginVersion(data: PrivatePluginVersionUpdateInput!, where: WherePrivatePluginVersionUniqueInput!): PrivatePluginVersion!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
@@ -1512,6 +1576,43 @@ type Mutation {
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
+  upgradeServiceToLatestTemplateVersion(where: WhereUniqueInput!): Resource!
+}
+
+type OutdatedVersionAlert {
+  createdAt: DateTime!
+  id: String!
+  latestVersion: String!
+  outdatedVersion: String!
+  resource: Resource
+  resourceId: String!
+  status: EnumOutdatedVersionAlertStatus!
+  type: EnumOutdatedVersionAlertType!
+  updatedAt: DateTime!
+}
+
+input OutdatedVersionAlertOrderByInput {
+  block: BlockOrderByInput
+  createdAt: SortOrder
+  id: SortOrder
+  latestVersion: SortOrder
+  outdatedVersion: SortOrder
+  resource: ResourceOrderByInput
+  status: SortOrder
+  type: SortOrder
+  updatedAt: SortOrder
+}
+
+input OutdatedVersionAlertWhereInput {
+  block: WhereUniqueInput
+  createdAt: DateTimeFilter
+  id: StringFilter
+  latestVersion: StringFilter
+  outdatedVersion: StringFilter
+  resource: ResourceWhereInput!
+  status: EnumOutdatedVersionAlertStatusFilter
+  type: EnumOutdatedVersionAlertTypeFilter
+  updatedAt: DateTimeFilter
 }
 
 type Package implements IBlock {
@@ -1728,6 +1829,7 @@ type PrivatePlugin implements IBlock {
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
+  versions: [PrivatePluginVersion!]!
 }
 
 input PrivatePluginCreateInput {
@@ -1754,6 +1856,26 @@ input PrivatePluginUpdateInput {
   description: String
   displayName: String
   enabled: Boolean!
+}
+
+type PrivatePluginVersion {
+  configurations: JSONObject
+  deprecated: Boolean!
+  enabled: Boolean!
+  settings: JSONObject
+  version: String!
+}
+
+input PrivatePluginVersionCreateInput {
+  privatePlugin: WhereParentIdInput!
+  version: String!
+}
+
+input PrivatePluginVersionUpdateInput {
+  configurations: JSONObject
+  deprecated: Boolean
+  enabled: Boolean
+  settings: JSONObject
 }
 
 input PrivatePluginWhereInput {
@@ -1863,6 +1985,8 @@ type ProvisionSubscriptionResult {
 }
 
 type Query {
+  _outdatedVersionAlertsMeta(orderBy: OutdatedVersionAlertOrderByInput, skip: Int, take: Int, where: OutdatedVersionAlertWhereInput): MetaQueryPayload!
+  _resourceVersionsMeta(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): MetaQueryPayload!
   account: Account!
   action(where: WhereUniqueInput!): Action!
   availableDtosForResource(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
@@ -1873,6 +1997,7 @@ type Query {
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput!): [Commit!]
+  compareResourceVersions(where: CompareResourceVersionsWhereInput!): ResourceVersionsDiff!
   contactUsLink(where: WhereUniqueInput!): String
   currentWorkspace: Workspace
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!
@@ -1895,6 +2020,8 @@ type Query {
   moduleDto(where: WhereUniqueInput!): ModuleDto
   moduleDtos(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
   modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
+  outdatedVersionAlert(where: WhereUniqueInput!): OutdatedVersionAlert!
+  outdatedVersionAlerts(orderBy: OutdatedVersionAlertOrderByInput, skip: Int, take: Int, where: OutdatedVersionAlertWhereInput): [OutdatedVersionAlert!]!
   package(where: WhereUniqueInput!): Package
   packageList(orderBy: PackageOrderByInput, skip: Int, take: Int, where: PackageWhereInput): [Package!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
@@ -1910,6 +2037,8 @@ type Query {
   resource(where: WhereUniqueInput!): Resource
   resourceRole(version: Float, where: WhereUniqueInput!): ResourceRole
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
+  resourceVersion(where: WhereUniqueInput!): ResourceVersion!
+  resourceVersions(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): [ResourceVersion!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
   serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
@@ -2000,7 +2129,9 @@ type Resource {
   projectId: String
   resourceType: EnumResourceType!
   serviceTemplate: Resource
+  serviceTemplateVersion: String
   updatedAt: DateTime!
+  version: ResourceVersion
 }
 
 input ResourceCreateInput {
@@ -2103,6 +2234,48 @@ input ResourceUpdateInput {
   name: String
 }
 
+type ResourceVersion {
+  commit: Commit
+  commitId: String!
+  createdAt: DateTime!
+  createdBy: User
+  id: String!
+  message: String
+  resource: Resource
+  resourceId: String!
+  userId: String!
+  version: String!
+}
+
+input ResourceVersionOrderByInput {
+  createdAt: SortOrder
+  id: SortOrder
+  message: SortOrder
+  userId: SortOrder
+  version: SortOrder
+}
+
+input ResourceVersionWhereInput {
+  commit: WhereUniqueInput
+  createdAt: DateTimeFilter
+  createdBy: WhereUniqueInput
+  id: StringFilter
+  message: StringFilter
+  resource: WhereUniqueInput!
+  version: StringFilter
+}
+
+type ResourceVersionsDiff {
+  createdBlocks: [Block!]
+  deletedBlocks: [Block!]
+  updatedBlocks: [ResourceVersionsDiffBlock!]
+}
+
+type ResourceVersionsDiffBlock {
+  sourceBlock: Block!
+  targetBlock: Block!
+}
+
 input ResourceWhereInput {
   createdAt: DateTimeFilter
   description: StringFilter
@@ -2111,6 +2284,7 @@ input ResourceWhereInput {
   project: ProjectWhereInput
   projectId: String
   resourceType: EnumResourceTypeFilter
+  serviceTemplateId: String
   updatedAt: DateTimeFilter
 }
 
@@ -2404,6 +2578,11 @@ input WhereEnumMemberUniqueInput {
 
 input WhereParentIdInput {
   connect: WhereUniqueInput!
+}
+
+input WherePrivatePluginVersionUniqueInput {
+  privatePlugin: WhereUniqueInput!
+  version: String!
 }
 
 input WherePropertyUniqueInput {

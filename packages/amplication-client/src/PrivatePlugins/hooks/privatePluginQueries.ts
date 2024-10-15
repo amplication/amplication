@@ -7,6 +7,13 @@ export const PRIVATE_PLUGINS_FIELDS_FRAGMENT = gql`
     displayName
     description
     enabled
+    versions {
+      version
+      deprecated
+      enabled
+      settings
+      configurations
+    }
   }
 `;
 

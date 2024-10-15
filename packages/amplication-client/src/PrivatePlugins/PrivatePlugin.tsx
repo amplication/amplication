@@ -22,6 +22,7 @@ import {
 } from "@amplication/ui/design-system";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import PrivatePluginVersionList from "../PrivatePluginVersion/PrivatePluginVersionList";
 
 type Props = {
   pluginRepositoryResourceId: string;
@@ -53,6 +54,10 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
     updatePrivatePlugin,
     updatePrivatePluginError: updateError,
   } = usePrivatePlugin(pluginRepositoryResourceId);
+
+  const onVersionChanged = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   useEffect(() => {
     if (!resetPendingChangesIndicator) return;
@@ -155,6 +160,12 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
           defaultValues={data?.privatePlugin}
         />
       )}
+
+      {/* <PrivatePluginVersionList
+        privatePlugin={data?.privatePlugin}
+        onVersionAdd={onVersionChanged}
+      /> */}
+
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );

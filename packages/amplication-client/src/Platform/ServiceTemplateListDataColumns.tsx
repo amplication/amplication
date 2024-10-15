@@ -4,6 +4,7 @@ import {
   EnumTextStyle,
   FlexItem,
   Text,
+  VersionTag,
 } from "@amplication/ui/design-system";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
@@ -12,6 +13,7 @@ import DeleteResourceButton from "../Workspaces/DeleteResourceButton";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import { DataGridColumn } from "@amplication/ui/design-system";
 import NewServiceFromTemplateButton from "../ServiceTemplate/NewServiceFromTemplateButton";
+import ResourcePluginLogoGroup from "../Plugins/ResourcePluginLogoGroup";
 
 export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -32,6 +34,15 @@ export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     },
   },
   {
+    key: "version",
+    name: "Version",
+    resizable: true,
+    sortable: true,
+    renderCell: (props) => {
+      return <VersionTag version={props.row.version?.version} />;
+    },
+  },
+  {
     key: "codeGenerator",
     name: "Code Generator",
     renderCell: (props) => {
@@ -45,7 +56,15 @@ export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
         ? row.codeGenerator
         : null,
   },
-
+  {
+    key: "plugins",
+    name: "Plugins",
+    resizable: true,
+    sortable: false,
+    renderCell: (props) => {
+      return <ResourcePluginLogoGroup resource={props.row} />;
+    },
+  },
   {
     key: "description",
     name: "Description",

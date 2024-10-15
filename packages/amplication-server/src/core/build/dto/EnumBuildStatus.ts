@@ -5,6 +5,8 @@ export enum EnumBuildStatus {
   Completed = "Completed",
   Failed = "Failed",
   Invalid = "Invalid",
+  Unknown = "Unknown",
+  Canceled = "Canceled",
 }
 
 registerEnumType(EnumBuildStatus, {

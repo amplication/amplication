@@ -266,9 +266,17 @@ export {
   DataGrid,
   Props as DataGridProps,
   DataGridColumn,
+  DataGridSortColumn,
+  DataGridSortOrder,
 } from "./components/DataGrid/DataGrid";
 
 export {
   ToggleView,
   Props as ToggleViewProps,
 } from "./components/Toggle/ToggleView";
+
+export {
+  VersionTag,
+  Props as VersionTagProps,
+  EnumVersionTagState,
+} from "./components/VersionTag/VersionTag";

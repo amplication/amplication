@@ -27,6 +27,9 @@ import { ResourceResolver } from "./resource.resolver";
 import { ResourceService } from "./resource.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
+import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
+import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -66,6 +69,8 @@ const EXAMPLE_BUILD: Build = {
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
   commitId: EXAMPLE_COMMIT_ID,
+  status: EnumBuildStatus.Completed,
+  gitStatus: EnumBuildGitStatus.Completed,
 };
 
 const EXAMPLE_ENTITY: Entity = {
@@ -129,6 +134,8 @@ const FIND_ONE_RESOURCE_QUERY = gql`
         actionId
         createdAt
         commitId
+        status
+        gitStatus
       }
       environments {
         id
@@ -170,6 +177,8 @@ const FIND_MANY_BUILDS_QUERY = gql`
         actionId
         createdAt
         commitId
+        status
+        gitStatus
       }
     }
   }
@@ -219,6 +228,8 @@ const CREATE_SERVICE_MUTATION = gql`
         actionId
         createdAt
         commitId
+        status
+        gitStatus
       }
       environments {
         id
@@ -260,6 +271,8 @@ const DELETE_RESOURCE_MUTATION = gql`
         actionId
         createdAt
         commitId
+        status
+        gitStatus
       }
       environments {
         id
@@ -301,6 +314,8 @@ const UPDATE_RESOURCE_MUTATION = gql`
         actionId
         createdAt
         commitId
+        status
+        gitStatus
       }
       environments {
         id
@@ -380,6 +395,10 @@ describe("ResourceResolver", () => {
           useClass: jest.fn(() => ({
             entities: entitiesMock,
           })),
+        },
+        {
+          provide: ResourceVersionService,
+          useClass: jest.fn(() => ({})),
         },
         {
           provide: BuildService,

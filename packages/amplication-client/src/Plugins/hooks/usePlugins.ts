@@ -30,6 +30,7 @@ const PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES: PluginVersion = {
   configurations: {},
   id: "",
   pluginId: "",
+  enabled: true,
 };
 
 const PRIVATE_PLUGIN_DEFAULT_VALUES: Plugin = {
@@ -86,6 +87,7 @@ const usePlugins = (
 
   useEffect(() => {
     if (!getAvailablePrivatePluginsForResourceData) return;
+
     const privatePluginCatalogObj =
       getAvailablePrivatePluginsForResourceData.availablePrivatePluginsForResource?.reduce(
         (
@@ -106,6 +108,10 @@ const usePlugins = (
                 id: privatePlugin.id,
                 pluginId: privatePlugin.pluginId,
               },
+              ...privatePlugin.versions.map((version) => ({
+                ...PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES,
+                ...version,
+              })),
             ],
           };
 
