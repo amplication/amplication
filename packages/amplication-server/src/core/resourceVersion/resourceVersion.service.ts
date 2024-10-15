@@ -59,7 +59,7 @@ export class ResourceVersionService {
       where: { resourceId: resourceId },
     });
 
-    const previousVersion = await this.getLatest(resourceId);
+    // const previousVersion = await this.getLatest(resourceId);
 
     const resourceVersion = await this.prisma.resourceVersion.create({
       ...args,
@@ -79,11 +79,11 @@ export class ResourceVersionService {
       },
     });
 
-    await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
-      resourceId,
-      previousVersion?.version,
-      args.data.version
-    );
+    // await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
+    //   resourceId,
+    //   previousVersion?.version,
+    //   args.data.version
+    // );
 
     return resourceVersion;
   }
