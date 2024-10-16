@@ -21,6 +21,13 @@ $expandable-transition-duration: 0.1s;
       }
     }
   }
+
+  &--no-padding {
+    .amp-panel-collapsible__body {
+      padding: 0;
+    }
+  }
+
   &__header {
     @include flexFullRow;
     justify-content: stretch;
