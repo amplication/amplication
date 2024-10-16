@@ -128,6 +128,12 @@ export class OutdatedVersionAlertService {
     if (outdatedVersion !== null) {
       //create outdatedVersionAlert for each service
       for (const service of services) {
+        const currentTemplateVersion =
+          await this.resourceService.getServiceTemplateSettings(
+            service.id,
+            null
+          );
+
         await this.create({
           data: {
             resource: {
@@ -136,7 +142,7 @@ export class OutdatedVersionAlertService {
               },
             },
             type: EnumOutdatedVersionAlertType.TemplateVersion,
-            outdatedVersion,
+            outdatedVersion: currentTemplateVersion.version,
             latestVersion,
           },
         });
