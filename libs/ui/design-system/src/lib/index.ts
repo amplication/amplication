@@ -96,7 +96,7 @@ export {
 
 export type { Props as UserAndTimeProps } from "./components/UserAndTime/UserAndTime";
 
-export { TimeSince, EnumTimeSinceSize } from "./components/TimeSince/TimeSince";
+export { TimeSince } from "./components/TimeSince/TimeSince";
 
 export type { Props as TimeSinceProps } from "./components/TimeSince/TimeSince";
 

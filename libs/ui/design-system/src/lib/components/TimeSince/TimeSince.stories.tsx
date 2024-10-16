@@ -1,6 +1,6 @@
 import React from "react";
 import { Meta } from "@storybook/react";
-import { TimeSince, EnumTimeSinceSize } from "./TimeSince";
+import { TimeSince } from "./TimeSince";
 
 export default {
   title: "TimeSince",
@@ -18,6 +18,6 @@ export const Default = {
 
 export const Short = {
   render: (props: any) => {
-    return <TimeSince time={SAMPLE_DATE} size={EnumTimeSinceSize.short} />;
+    return <TimeSince time={SAMPLE_DATE} />;
   },
 };
