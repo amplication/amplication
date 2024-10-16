@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { Block } from "../../../models/Block";
+import { BlockVersion } from "../../../models";
 import { ResourceVersionsDiffBlock } from "./ResourceVersionsDiffBlock";
 
 @ObjectType({
@@ -9,9 +9,9 @@ export class ResourceVersionsDiff {
   @Field(() => [ResourceVersionsDiffBlock], { nullable: true })
   updatedBlocks?: ResourceVersionsDiffBlock[] | null | undefined;
 
-  @Field(() => [Block], { nullable: true })
-  createdBlocks?: Block[] | null | undefined;
+  @Field(() => [BlockVersion], { nullable: true })
+  createdBlocks?: BlockVersion[] | null | undefined;
 
-  @Field(() => [Block], { nullable: true })
-  deletedBlocks?: Block[] | null | undefined;
+  @Field(() => [BlockVersion], { nullable: true })
+  deletedBlocks?: BlockVersion[] | null | undefined;
 }

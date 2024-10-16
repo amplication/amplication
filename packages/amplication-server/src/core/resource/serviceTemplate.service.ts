@@ -291,51 +291,51 @@ export class ServiceTemplateService {
       },
     });
 
-    //create new plugins from the template
-    changes.createdBlocks.forEach(async (block) => {
-      if (block.blockType === EnumBlockType.PluginInstallation) {
-        const plugin = block as PluginInstallation;
+    // //create new plugins from the template
+    // changes.createdBlocks.forEach(async (blockVersion) => {
+    //   if (blockVersion.block.blockType === EnumBlockType.PluginInstallation) {
+    //     const plugin = blockVersion.block as PluginInstallation;
 
-        await this.pluginInstallationService.create(
-          {
-            data: {
-              pluginId: plugin.pluginId,
-              enabled: plugin.enabled,
-              npm: plugin.npm,
-              version: plugin.version,
-              displayName: plugin.displayName,
-              isPrivate: plugin.isPrivate ?? false,
-              settings: plugin.settings,
-              configurations: plugin.configurations,
-              resource: {
-                connect: {
-                  id: resourceId,
-                },
-              },
-            },
-          },
-          user
-        );
-      }
-    });
+    //     await this.pluginInstallationService.create(
+    //       {
+    //         data: {
+    //           pluginId: plugin.pluginId,
+    //           enabled: plugin.enabled,
+    //           npm: plugin.npm,
+    //           version: plugin.version,
+    //           displayName: plugin.displayName,
+    //           isPrivate: plugin.isPrivate ?? false,
+    //           settings: plugin.settings,
+    //           configurations: plugin.configurations,
+    //           resource: {
+    //             connect: {
+    //               id: resourceId,
+    //             },
+    //           },
+    //         },
+    //       },
+    //       user
+    //     );
+    //   }
+    // });
 
-    //delete plugins that were removed from the template
-    //@todo - allow the user to decide if they want to delete the plugin or keep it
-    changes.deletedBlocks.forEach(async (block) => {
-      if (block.blockType === EnumBlockType.PluginInstallation) {
-        const plugin = block as PluginInstallation;
-        plugin.isPrivate = plugin.isPrivate ?? false; //@todo - remove. added to pass linter until code is completed
-      }
-    });
+    // //delete plugins that were removed from the template
+    // //@todo - allow the user to decide if they want to delete the plugin or keep it
+    // changes.deletedBlocks.forEach(async (block) => {
+    //   if (block.blockType === EnumBlockType.PluginInstallation) {
+    //     const plugin = block as PluginInstallation;
+    //     plugin.isPrivate = plugin.isPrivate ?? false; //@todo - remove. added to pass linter until code is completed
+    //   }
+    // });
 
-    //update plugins that were changed in the template
-    //@todo - allow the user to decide if they want to update the plugin or keep it
-    changes.updatedBlocks.forEach(async (diff) => {
-      if (diff.sourceBlock.blockType === EnumBlockType.PluginInstallation) {
-        const plugin = diff.sourceBlock as PluginInstallation;
-        plugin.isPrivate = plugin.isPrivate ?? false; //@todo - remove. added to pass linter until code is completed
-      }
-    });
+    // //update plugins that were changed in the template
+    // //@todo - allow the user to decide if they want to update the plugin or keep it
+    // changes.updatedBlocks.forEach(async (diff) => {
+    //   if (diff.sourceBlock.blockType === EnumBlockType.PluginInstallation) {
+    //     const plugin = diff.sourceBlock as PluginInstallation;
+    //     plugin.isPrivate = plugin.isPrivate ?? false; //@todo - remove. added to pass linter until code is completed
+    //   }
+    // });
 
     await this.serviceSettingsService.updateServiceTemplateVersion(
       resourceId,

@@ -22,8 +22,6 @@ export class OutdatedVersionAlert {
   @Field(() => String, { nullable: false })
   resourceId!: string;
 
-  blocks?: Block[] | null | undefined;
-
   @Field(() => EnumOutdatedVersionAlertType, { nullable: false })
   type!: keyof typeof EnumOutdatedVersionAlertType;
 
