@@ -252,19 +252,8 @@ export class ServiceTemplateService {
       );
     }
 
-    //todo :check if the service has any locked blocks or entities and throw an error if it does
-
-    const serviceSettings =
-      await this.serviceSettingsService.getServiceSettingsValues(
-        {
-          where: {
-            id: resourceId,
-          },
-        },
-        user
-      );
-
-    const serviceTemplateVersion = serviceSettings.serviceTemplateVersion;
+    const serviceTemplateVersion =
+      await this.resourceService.getServiceTemplateSettings(resourceId, user);
 
     if (!serviceTemplateVersion) {
       throw new AmplicationError(

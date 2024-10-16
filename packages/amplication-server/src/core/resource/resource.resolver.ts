@@ -36,7 +36,6 @@ import { UserAction } from "../userAction/dto";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { EnumResourceType } from "./dto/EnumResourceType";
 import { ResourceVersion } from "../resourceVersion/dto/ResourceVersion";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 
@@ -234,28 +233,16 @@ export class ResourceResolver {
     @Parent() resource: Resource,
     @UserEntity() user: User
   ): Promise<Resource> {
-    if (!resource.id) {
-      return null;
-    }
+    const serviceTemplateVersion =
+      await this.resourceService.getServiceTemplateSettings(resource.id, user);
 
-    if (resource.resourceType !== EnumResourceType.Service) {
-      return null;
-    }
-
-    const settings = await this.serviceSettingsService.getServiceSettingsBlock(
-      {
-        where: { id: resource.id },
-      },
-      user
-    );
-
-    if (!settings?.serviceTemplateVersion) {
+    if (!serviceTemplateVersion) {
       return null;
     }
 
     return this.resourceService.resource({
       where: {
-        id: settings.serviceTemplateVersion.serviceTemplateId,
+        id: serviceTemplateVersion.serviceTemplateId,
       },
     });
   }
@@ -265,26 +252,10 @@ export class ResourceResolver {
     @Parent() resource: Resource,
     @UserEntity() user: User
   ): Promise<string> {
-    if (!resource.id) {
-      return null;
-    }
+    const serviceTemplateVersion =
+      await this.resourceService.getServiceTemplateSettings(resource.id, user);
 
-    if (resource.resourceType !== EnumResourceType.Service) {
-      return null;
-    }
-
-    const settings = await this.serviceSettingsService.getServiceSettingsBlock(
-      {
-        where: { id: resource.id },
-      },
-      user
-    );
-
-    if (!settings?.serviceTemplateVersion) {
-      return null;
-    }
-
-    return settings.serviceTemplateVersion.version;
+    return serviceTemplateVersion ? serviceTemplateVersion.version : null;
   }
 
   @ResolveField(() => ResourceVersion, { nullable: true })
