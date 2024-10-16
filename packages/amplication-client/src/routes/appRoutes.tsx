@@ -104,22 +104,6 @@ export const Routes: RouteDef[] = [
                 displayName: "Tech Debt",
                 routeTrackType: "",
                 exactPath: false,
-                routes: [
-                  {
-                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/tech-debt/:alert([A-Za-z0-9-]{20,})",
-                    Component: lazy(
-                      () =>
-                        import(
-                          "../OutdatedVersionAlerts/OutdatedVersionAlertPage"
-                        )
-                    ),
-                    moduleName: "",
-                    displayName: "Tech Debt Alert",
-                    routeTrackType: "",
-                    exactPath: false,
-                    routes: [],
-                  },
-                ],
               },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/publish",

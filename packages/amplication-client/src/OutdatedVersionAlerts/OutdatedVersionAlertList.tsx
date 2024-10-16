@@ -29,7 +29,7 @@ const CLASS_NAME = "resource-version-list";
 const PAGE_TITLE = "Tech Debt";
 
 function OutdatedVersionAlertList() {
-  const { currentProject } = useContext(AppContext);
+  const { currentProject, currentResource } = useContext(AppContext);
 
   const {
     outdatedVersionAlerts,
@@ -45,7 +45,7 @@ function OutdatedVersionAlertList() {
     setStatus,
     type,
     setType,
-  } = useOutdatedVersionAlerts(currentProject?.id);
+  } = useOutdatedVersionAlerts(currentProject?.id, currentResource?.id);
 
   const errorMessage = formatError(errorOutdatedVersionAlerts);
 
@@ -121,7 +121,7 @@ function OutdatedVersionAlertList() {
       {isEmpty(outdatedVersionAlerts) && !loadingOutdatedVersionAlerts ? (
         <EmptyState
           message="There are no alerts to show"
-          image={EnumImages.CommitEmptyState}
+          image={EnumImages.NoChanges}
         />
       ) : (
         <div className={`${CLASS_NAME}__grid-container`}>

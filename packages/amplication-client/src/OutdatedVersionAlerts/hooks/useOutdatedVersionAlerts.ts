@@ -8,7 +8,7 @@ type TGetOutdatedVersionAlerts = {
   _outdatedVersionAlertsMeta: { count: number };
 };
 
-const useOutdatedVersionAlerts = (projectId: string) => {
+const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(30);
@@ -34,7 +34,10 @@ const useOutdatedVersionAlerts = (projectId: string) => {
       take: pageSize,
       skip: (pageNumber - 1) * pageSize,
       where: {
-        resource: { project: { id: projectId } },
+        resource: {
+          id: resourceId ?? undefined,
+          project: { id: projectId },
+        },
         status: status ? { equals: status } : undefined,
         type: type ? { equals: type } : undefined,
         // message:

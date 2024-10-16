@@ -24,7 +24,7 @@ function OutdatedVersionPage() {
     alert: string;
   }>([
     "/:workspace/platform/:project/tech-debt/:alert",
-    "/:workspace/:project/tech-debt/:alert",
+    "/:workspace/:project/:resource/tech-debt/:alert",
   ]);
 
   const { alert: alertId } = match?.params ?? {};

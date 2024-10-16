@@ -15,7 +15,8 @@ export type MenuItemLinks =
   | "privatePlugins"
   | "pendingChanges"
   | "versions"
-  | "templateServices";
+  | "templateServices"
+  | "techDebt";
 
 export const resourceMenuLayout: {
   [key in EnumResourceType]: MenuItemLinks[];
@@ -26,6 +27,7 @@ export const resourceMenuLayout: {
     "roles",
     "plugins",
     "git",
+    "techDebt",
     "connections",
     "settings",
   ],
@@ -118,6 +120,11 @@ export const linksMap: {
     title: "Services",
     icon: "services",
     to: "/template-services",
+  },
+  techDebt: {
+    title: "Tech Debt",
+    icon: "cloud_drizzle",
+    to: "/tech-debt",
   },
 };
 
