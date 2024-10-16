@@ -24,7 +24,7 @@ import useLocalStorage from "react-use-localstorage";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
-import PageContent from "../Layout/PageContent";
+import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
@@ -84,7 +84,11 @@ function ResourceList() {
     formatError(errorResources) || (error && formatError(error));
 
   return (
-    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+    <PageContent
+      className={CLASS_NAME}
+      pageTitle={PAGE_TITLE}
+      pageWidth={EnumPageWidth.Full}
+    >
       <NewServiceFromTemplateDialogWithUrlTrigger />
       <FlexItem
         itemsAlign={EnumItemsAlign.Center}

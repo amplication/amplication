@@ -19,7 +19,7 @@ import { isEmpty } from "lodash";
 import { useContext, useEffect } from "react";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
-import PageContent from "../Layout/PageContent";
+import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import useServiceTemplate from "../ServiceTemplate/hooks/useServiceTemplate";
 import { AppContext } from "../context/appContext";
 import { formatError } from "../util/error";
@@ -60,7 +60,11 @@ function ServiceTemplateList() {
   const errorMessage = formatError(errorServiceTemplates);
 
   return (
-    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+    <PageContent
+      className={CLASS_NAME}
+      pageTitle={PAGE_TITLE}
+      pageWidth={EnumPageWidth.Full}
+    >
       <FlexItem
         itemsAlign={EnumItemsAlign.Center}
         contentAlign={EnumContentAlign.Start}
