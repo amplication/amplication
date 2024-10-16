@@ -240,4 +240,27 @@ export const resourceTabRoutes = (projectBasePath) => [
     exactPath: false,
     routes: [],
   },
+  {
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/tech-debt`,
+    Component: lazy(
+      () => import("../OutdatedVersionAlerts/OutdatedVersionAlertsPage")
+    ),
+    moduleName: "",
+    displayName: "Tech Debt",
+    routeTrackType: "",
+    exactPath: false,
+    routes: [
+      {
+        path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/tech-debt/:alert([A-Za-z0-9-]{20,})`,
+        Component: lazy(
+          () => import("../OutdatedVersionAlerts/OutdatedVersionAlertPage")
+        ),
+        moduleName: "",
+        displayName: "Tech Debt Alert",
+        routeTrackType: "",
+        exactPath: false,
+        routes: [],
+      },
+    ],
+  },
 ];
