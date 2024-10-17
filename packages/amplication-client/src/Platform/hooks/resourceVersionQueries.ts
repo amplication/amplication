@@ -48,3 +48,44 @@ export const GET_RESOURCE_VERSIONS = gql`
     }
   }
 `;
+
+export const DIFF_BLOCK_VERSION_FIELDS_FRAGMENT = gql`
+  fragment DiffBlockVersionFields on BlockVersion {
+    id
+    versionNumber
+    settings
+    displayName
+    description
+    block {
+      id
+      blockType
+      displayName
+      parentBlock {
+        id
+      }
+    }
+  }
+`;
+
+export const COMPARE_RESOURCE_VERSIONS = gql`
+  ${DIFF_BLOCK_VERSION_FIELDS_FRAGMENT}
+
+  query compareResourceVersions($where: CompareResourceVersionsWhereInput!) {
+    compareResourceVersions(where: $where) {
+      updatedBlocks {
+        sourceBlockVersion {
+          ...DiffBlockVersionFields
+        }
+        targetBlockVersion {
+          ...DiffBlockVersionFields
+        }
+      }
+      createdBlocks {
+        ...DiffBlockVersionFields
+      }
+      deletedBlocks {
+        ...DiffBlockVersionFields
+      }
+    }
+  }
+`;

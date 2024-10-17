@@ -1,8 +1,16 @@
-import React, { ReactNode } from "react";
-import { Link, LinkProps } from "react-router-dom";
+import {
+  EnumGapSize,
+  EnumItemsAlign,
+  EnumTextStyle,
+  FlexItem,
+  Icon,
+  IconProps,
+  Text,
+} from "@amplication/ui/design-system";
 import classNames from "classnames";
+import { ReactNode } from "react";
+import { Link, LinkProps } from "react-router-dom";
 import "./BackNavigation.scss";
-import { Icon, IconProps } from "@amplication/ui/design-system";
 
 type Props = LinkProps & {
   label?: string | ReactNode;
@@ -20,7 +28,11 @@ export const BackNavigation = ({
 }: Props) => {
   return (
     <Link className={classNames(CLASS_NAME, className)} to={to} {...rest}>
-      <Icon icon="arrow_left" size={iconSize} /> {label}
+      <Text textStyle={EnumTextStyle.Tag}>
+        <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.None}>
+          <Icon icon="arrow_left" size={iconSize} /> {label}
+        </FlexItem>
+      </Text>
     </Link>
   );
 };

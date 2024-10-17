@@ -33,7 +33,9 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
         />
       );
 
-    const data = changeOriginMap[change.originType](change.origin);
+    const data = PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP[change.originType](
+      change.origin
+    );
 
     return (
       <PendingChangeContent
@@ -57,7 +59,7 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
 
 export default PendingChange;
 
-export const changeOriginMap = {
+export const PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP = {
   [models.EnumPendingChangeOriginType.Entity]: (
     change: models.PendingChangeOrigin
   ): EntityLinkAndDisplayName => ({

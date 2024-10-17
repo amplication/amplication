@@ -12,7 +12,7 @@ import { ResourceVersion } from "./dto/ResourceVersion";
 import { BlockService } from "../block/block.service";
 import { valid } from "semver";
 import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
-import { Block } from "../../models";
+import { BlockVersion } from "../../models";
 import { ResourceVersionsDiff } from "./dto/ResourceVersionsDiff";
 import { ResourceVersionsDiffBlock } from "./dto/ResourceVersionsDiffBlock";
 import { CompareResourceVersionsArgs } from "./dto/CompareResourceVersionsArgs";
@@ -152,9 +152,10 @@ export class ResourceVersionService {
       },
     });
 
-    const sourceBlocks = await this.blockService.getBlocksByResourceVersions(
-      sourceResourceVersion.id
-    );
+    const sourceBlockVersions =
+      await this.blockService.getBlockVersionsByResourceVersions(
+        sourceResourceVersion.id
+      );
 
     const targetResourceVersion = await this.prisma.resourceVersion.findFirst({
       where: {
@@ -163,38 +164,41 @@ export class ResourceVersionService {
       },
     });
 
-    const targetBlocks = await this.blockService.getBlocksByResourceVersions(
-      targetResourceVersion.id
-    );
-
-    const updated: ResourceVersionsDiffBlock[] = [];
-    const deleted: Block[] = [];
-    const created: Block[] = [];
-
-    for (const sourceBlock of sourceBlocks) {
-      const targetBlock = targetBlocks.find(
-        (block) => block.id === sourceBlock.id
+    const targetBlockVersions =
+      await this.blockService.getBlockVersionsByResourceVersions(
+        targetResourceVersion.id
       );
 
-      if (targetBlock) {
-        if (sourceBlock.versionNumber !== targetBlock.versionNumber) {
+    const updated: ResourceVersionsDiffBlock[] = [];
+    const deleted: BlockVersion[] = [];
+    const created: BlockVersion[] = [];
+
+    for (const sourceBlockVersion of sourceBlockVersions) {
+      const targetBlockVersion = targetBlockVersions.find(
+        (blockVersion) => blockVersion.block.id === sourceBlockVersion.block.id
+      );
+
+      if (targetBlockVersion) {
+        if (
+          sourceBlockVersion.versionNumber !== targetBlockVersion.versionNumber
+        ) {
           updated.push({
-            sourceBlock,
-            targetBlock,
+            sourceBlockVersion,
+            targetBlockVersion,
           });
         }
       } else {
-        deleted.push(sourceBlock);
+        deleted.push(sourceBlockVersion);
       }
     }
 
-    for (const targetBlock of targetBlocks) {
-      const sourceBlock = sourceBlocks.find(
-        (block) => block.id === targetBlock.id
+    for (const targetBlockVersion of targetBlockVersions) {
+      const sourceBlockVersion = sourceBlockVersions.find(
+        (blockVersion) => blockVersion.block.id === targetBlockVersion.block.id
       );
 
-      if (!sourceBlock) {
-        created.push(targetBlock);
+      if (!sourceBlockVersion) {
+        created.push(targetBlockVersion);
       }
     }
 

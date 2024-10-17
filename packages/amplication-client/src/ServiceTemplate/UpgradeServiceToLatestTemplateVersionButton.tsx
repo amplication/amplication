@@ -62,13 +62,15 @@ function UpgradeServiceToLatestTemplateVersionButton({ resourceId }: Props) {
       </Dialog>
 
       <Button
-        buttonStyle={EnumButtonStyle.Text}
+        buttonStyle={EnumButtonStyle.Outline}
         icon="plus"
         disabled={loading}
         onClick={() => {
           setIsOpen(true);
         }}
-      />
+      >
+        Upgrade
+      </Button>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );

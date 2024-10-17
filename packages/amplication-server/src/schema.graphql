@@ -2266,14 +2266,14 @@ input ResourceVersionWhereInput {
 }
 
 type ResourceVersionsDiff {
-  createdBlocks: [Block!]
-  deletedBlocks: [Block!]
+  createdBlocks: [BlockVersion!]
+  deletedBlocks: [BlockVersion!]
   updatedBlocks: [ResourceVersionsDiffBlock!]
 }
 
 type ResourceVersionsDiffBlock {
-  sourceBlock: Block!
-  targetBlock: Block!
+  sourceBlockVersion: BlockVersion!
+  targetBlockVersion: BlockVersion!
 }
 
 input ResourceWhereInput {

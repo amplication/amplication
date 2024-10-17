@@ -280,3 +280,8 @@ export {
   Props as VersionTagProps,
   EnumVersionTagState,
 } from "./components/VersionTag/VersionTag";
+
+export {
+  CodeCompare,
+  Props as CodeCompareProps,
+} from "./components/CodeCompare/CodeCompare";

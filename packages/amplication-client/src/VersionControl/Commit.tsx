@@ -225,6 +225,7 @@ const Commit = ({
             .filter((r) => r.resourceType === EnumResourceType.Service)
             .map((resource, index) => (
               <Button
+                key={index}
                 buttonStyle={EnumButtonStyle.Text}
                 onClick={() => {
                   handleOnSpecificServiceCommit(resource.id);

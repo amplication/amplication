@@ -3208,14 +3208,14 @@ export type ResourceVersionWhereInput = {
 };
 
 export type ResourceVersionsDiff = {
-  createdBlocks?: Maybe<Array<Block>>;
-  deletedBlocks?: Maybe<Array<Block>>;
+  createdBlocks?: Maybe<Array<BlockVersion>>;
+  deletedBlocks?: Maybe<Array<BlockVersion>>;
   updatedBlocks?: Maybe<Array<ResourceVersionsDiffBlock>>;
 };
 
 export type ResourceVersionsDiffBlock = {
-  sourceBlock: Block;
-  targetBlock: Block;
+  sourceBlockVersion: BlockVersion;
+  targetBlockVersion: BlockVersion;
 };
 
 export type ResourceWhereInput = {

@@ -19,6 +19,7 @@ export type Props = {
   collapseEnabled?: boolean;
   /**The content of the panel header */
   headerContent: ReactNode;
+  noPadding?: boolean;
 } & Omit<PanelProps, "panelStyle">;
 
 const CLASS_NAME = "amp-panel-collapsible";
@@ -31,6 +32,8 @@ export const PanelCollapsible = (props: Props) => {
     children,
     className,
     manualCollapseDisabled = false,
+    noPadding = false,
+
     onCollapseChange,
     ...rest
   } = props;
@@ -53,6 +56,7 @@ export const PanelCollapsible = (props: Props) => {
       {...rest}
       className={classNames(CLASS_NAME, className, {
         "amp-panel-collapsible--open": isOpen && collapseEnabled,
+        "amp-panel-collapsible--no-padding": noPadding,
       })}
     >
       <PanelCollapsibleHeader

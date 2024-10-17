@@ -7,7 +7,10 @@ import {
   UPGRADE_SERVICE_TO_LATEST_TEMPLATE_VERSION,
 } from "./serviceTemplateQueries";
 import { GET_RESOURCES } from "../../Workspaces/queries/resourcesQueries";
-import { GET_OUTDATED_VERSION_ALERTS } from "../../OutdatedVersionAlerts/hooks/outdatedVersionAlertsQueries";
+import {
+  GET_OUTDATED_VERSION_ALERT,
+  GET_OUTDATED_VERSION_ALERTS,
+} from "../../OutdatedVersionAlerts/hooks/outdatedVersionAlertsQueries";
 
 type TFindResourcesData = {
   resources: models.Resource[];
@@ -68,16 +71,14 @@ const useServiceTemplate = (
   ] = useMutation<TUpgradeServiceToLatestTemplateVersion>(
     UPGRADE_SERVICE_TO_LATEST_TEMPLATE_VERSION,
     {
-      refetchQueries: [GET_OUTDATED_VERSION_ALERTS],
+      refetchQueries: [GET_OUTDATED_VERSION_ALERTS, GET_OUTDATED_VERSION_ALERT],
     }
   );
 
   const upgradeServiceToLatestTemplateVersion = (resourceId: string) => {
-    upgradeServiceToLatestTemplateVersionInternal({ variables: { resourceId } })
-      .then((result) => {
-        //todo: update cache
-      })
-      .catch(console.error);
+    upgradeServiceToLatestTemplateVersionInternal({
+      variables: { resourceId },
+    }).catch(console.error);
   };
 
   const [

@@ -862,10 +862,10 @@ export class BlockService {
     });
   }
 
-  async getBlocksByResourceVersions(
+  async getBlockVersionsByResourceVersions(
     resourceVersionId: string
-  ): Promise<Block[]> {
-    const blockVersion = await this.prisma.blockVersion.findMany({
+  ): Promise<BlockVersion[]> {
+    return this.prisma.blockVersion.findMany({
       where: {
         resourceVersions: {
           some: {
@@ -880,10 +880,6 @@ export class BlockService {
           },
         },
       },
-    });
-
-    return blockVersion.map((version) => {
-      return this.versionToIBlock(version);
     });
   }
 
