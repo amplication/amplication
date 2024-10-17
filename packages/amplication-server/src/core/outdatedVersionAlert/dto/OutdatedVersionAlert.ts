@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { Block, Resource } from "../../../models";
+import { Resource } from "../../../models";
 import { EnumOutdatedVersionAlertStatus } from "./EnumOutdatedVersionAlertStatus";
 import { EnumOutdatedVersionAlertType } from "./EnumOutdatedVersionAlertType";
 
