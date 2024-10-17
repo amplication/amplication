@@ -34,14 +34,23 @@ const ProjectPlatformPage: React.FC<Props> = ({
   useBreadcrumbs(`Platform Console`, match.url);
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
+  //count how many unique resources in the pending changes
+  const pendingChangesCount = useMemo(() => {
+    return pendingChanges?.reduce((acc, change) => {
+      if (!acc.includes(change.resource.id)) {
+        acc.push(change.resource.id);
+      }
+      return acc;
+    }, [] as string[]).length;
+  }, [pendingChanges]);
+
   const tabItems: TabItem[] = useMemo(() => {
     const tabsWithPendingChanges = tabs.map((tab) => {
       if (tab.name === "Publish") {
         return {
           ...tab,
-          indicatorValue: pendingChanges?.length
-            ? pendingChanges.length
-            : undefined,
+          indicatorValue:
+            pendingChangesCount > 0 ? pendingChangesCount : undefined,
           indicatorColor: EnumTextColor.ThemeOrange,
         };
       }
@@ -56,7 +65,7 @@ const ProjectPlatformPage: React.FC<Props> = ({
       },
       ...(tabsWithPendingChanges || []),
     ];
-  }, [match.url, pendingChanges?.length, tabs]);
+  }, [match.url, pendingChangesCount, tabs]);
 
   return match.isExact || currentRouteIsTab ? (
     <>
