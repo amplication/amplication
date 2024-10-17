@@ -330,6 +330,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         handleCloseWizard={handleCloseWizard}
         handleWizardProgress={handleWizardProgress}
         wizardFlowType={wizardFlow}
+        flowSettings={flowSettings}
       >
         <CreateServiceWelcome
           moduleClass={moduleClass}
