@@ -1,22 +1,27 @@
-import ReactDiffViewer, {
-  DiffMethod,
-} from "@amplication/react-diff-viewer-continued";
-import { useMemo, useRef, useState } from "react";
-import YAML from "yaml";
-import * as models from "../models";
-import { DIFF_STYLES } from "./PendingChangeDiffEntity";
-import omitDeep from "deepdash/omitDeep";
-import { DiffEditor, Monaco } from "@monaco-editor/react";
-import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import {
-  EnumPanelStyle,
+  CodeCompare,
+  EnumTextColor,
   EnumTextStyle,
-  Panel,
+  FlexItem,
   PanelCollapsible,
   Text,
 } from "@amplication/ui/design-system";
+import omitDeep from "deepdash/omitDeep";
+import { useMemo } from "react";
+import YAML from "yaml";
+import * as models from "../models";
+import { EnumPendingChangeOriginType } from "../models";
+import { PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP } from "./PendingChange";
 
 const CLASS_NAME = "pending-change-diff";
+
+const CHANGE_ORIGIN_TYPE = EnumPendingChangeOriginType.Block;
+
+enum EnumActionType {
+  CREATE = "CREATE",
+  UPDATE = "UPDATE",
+  DELETE = "DELETE",
+}
 
 const NON_COMPARABLE_PROPERTIES = [
   "id",
@@ -31,15 +36,24 @@ type Props = {
   splitView: boolean;
 };
 
-const setEditorTheme = (monaco: Monaco) => {
-  monaco.editor.defineTheme("vs-dark-amp", {
-    base: "vs-dark",
-    inherit: true,
-    rules: [],
-    colors: {
-      "editor.background": "#15192c",
-    },
-  });
+const ACTION_TYPE_TO_DISPLAY_MAP: {
+  [key in EnumActionType]: {
+    label: string;
+    color: EnumTextColor;
+  };
+} = {
+  [EnumActionType.CREATE]: {
+    label: "Added",
+    color: EnumTextColor.ThemeGreen,
+  },
+  [EnumActionType.UPDATE]: {
+    label: "Updated",
+    color: EnumTextColor.ThemeBlue,
+  },
+  [EnumActionType.DELETE]: {
+    label: "Removed",
+    color: EnumTextColor.ThemeRed,
+  },
 };
 
 const CompareBlockVersions = ({ oldVersion, newVersion, splitView }: Props) => {
@@ -51,69 +65,49 @@ const CompareBlockVersions = ({ oldVersion, newVersion, splitView }: Props) => {
     return getBlockVersionYAML(oldVersion);
   }, [oldVersion]);
 
-  const editorRef = useRef(null);
-  const [editorHeight, setEditorHeight] = useState(200); // Initial height
+  const actionType = useMemo(() => {
+    if (oldVersion && !newVersion) {
+      return EnumActionType.DELETE;
+    }
+    if (!oldVersion && newVersion) {
+      return EnumActionType.CREATE;
+    }
+    return EnumActionType.UPDATE;
+  }, [oldVersion, newVersion]);
 
-  const handleBeforeMount = (monaco: Monaco) => {
-    setEditorTheme(monaco);
-  };
+  const block = newVersion?.block || oldVersion?.block;
 
-  const handleEditorDidMount = (editor, monaco) => {
-    editorRef.current = editor;
+  const headerContent = (
+    <FlexItem>
+      <Text
+        singleLineEllipsis
+        textStyle={EnumTextStyle.Description}
+        textColor={ACTION_TYPE_TO_DISPLAY_MAP[actionType].color}
+      >
+        {PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP[CHANGE_ORIGIN_TYPE](block).type}{" "}
+        {ACTION_TYPE_TO_DISPLAY_MAP[actionType].label}
+      </Text>
 
-    const originalModel = editor.getModel().original;
-    const modifiedModel = editor.getModel().modified;
-
-    // Function to calculate the maximum content height from both models
-    const updateEditorHeight = () => {
-      const lineHeight = editor
-        .getOriginalEditor()
-        .getOption(monaco.editor.EditorOption.lineHeight);
-      const originalLineCount = originalModel.getLineCount();
-      const modifiedLineCount = modifiedModel.getLineCount();
-
-      // Calculate the height based on the largest model (original or modified)
-      const maxLineCount = Math.max(originalLineCount, modifiedLineCount);
-      const height = maxLineCount * lineHeight;
-
-      setEditorHeight(height); // Set the new height
-    };
-
-    // Attach event listener to changes in both models (original and modified)
-    originalModel.onDidChangeContent(() => updateEditorHeight());
-    modifiedModel.onDidChangeContent(() => updateEditorHeight());
-
-    // Initial height adjustment
-    updateEditorHeight();
-  };
+      <FlexItem.FlexEnd>
+        <Text
+          singleLineEllipsis
+          textStyle={EnumTextStyle.Tag}
+          textColor={EnumTextColor.White}
+        >
+          {newVersion?.displayName}
+        </Text>
+      </FlexItem.FlexEnd>
+    </FlexItem>
+  );
 
   return (
     <PanelCollapsible
       noPadding
-      headerContent={
-        <Text textStyle={EnumTextStyle.Normal}>{newVersion?.displayName}</Text>
-      }
+      headerContent={headerContent}
       initiallyOpen={true}
       className={CLASS_NAME}
     >
-      <DiffEditor
-        height={editorHeight}
-        language="yaml"
-        original={oldValue}
-        modified={newValue}
-        beforeMount={handleBeforeMount}
-        onMount={handleEditorDidMount}
-        options={{
-          readOnly: true,
-          minimap: { enabled: false },
-          automaticLayout: true,
-          scrollBeyondLastLine: false,
-          scrollbar: {
-            alwaysConsumeMouseWheel: false,
-          },
-        }}
-        theme={"vs-dark-amp"}
-      />
+      <CodeCompare oldVersion={oldValue} newVersion={newValue} />
     </PanelCollapsible>
   );
 };

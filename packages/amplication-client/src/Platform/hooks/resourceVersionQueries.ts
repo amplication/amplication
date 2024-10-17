@@ -56,6 +56,14 @@ export const DIFF_BLOCK_VERSION_FIELDS_FRAGMENT = gql`
     settings
     displayName
     description
+    block {
+      id
+      blockType
+      displayName
+      parentBlock {
+        id
+      }
+    }
   }
 `;
 

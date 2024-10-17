@@ -1,5 +1,5 @@
 import PendingChange, {
-  changeOriginMap,
+  PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP,
   EntityLinkAndDisplayName,
 } from "./PendingChange";
 
@@ -26,13 +26,13 @@ type Props = {
 const PendingChangesListGroup = ({ group }: Props) => {
   const groupData: EntityLinkAndDisplayName = useMemo(() => {
     if (group.type === "Entity") {
-      return changeOriginMap[models.EnumPendingChangeOriginType.Entity](
-        group.typeChanges[0].origin
-      );
+      return PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP[
+        models.EnumPendingChangeOriginType.Entity
+      ](group.typeChanges[0].origin);
     } else {
-      return changeOriginMap[models.EnumPendingChangeOriginType.Block](
-        group.typeChanges[0].origin
-      );
+      return PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP[
+        models.EnumPendingChangeOriginType.Block
+      ](group.typeChanges[0].origin);
     }
   }, [group]);
 
