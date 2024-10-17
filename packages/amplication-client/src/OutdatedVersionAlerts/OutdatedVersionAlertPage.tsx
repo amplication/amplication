@@ -14,8 +14,8 @@ import {
   VersionTag,
 } from "@amplication/ui/design-system";
 import { ReactNode } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
-import { BackNavigation } from "../Components/BackNavigation";
+import { useRouteMatch } from "react-router-dom";
+import { AutoBackNavigation } from "../Components/AutoBackNavigation";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { useAppContext } from "../context/appContext";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
@@ -28,7 +28,6 @@ import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import useOutdatedVersionAlert from "./hooks/useOutdatedVersionAlert";
 import OutdatedVersionAlertStatus from "./OutdatedVersionAlertStatus";
 import OutdatedVersionAlertType from "./OutdatedVersionAlertType";
-import { AutoBackNavigation } from "../Components/AutoBackNavigation";
 
 const CLASS_NAME = "outdated-version-page";
 const PAGE_TITLE = "Tech Debt Alert";
