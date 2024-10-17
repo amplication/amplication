@@ -747,6 +747,7 @@ enum EnumBlockType {
   ProjectConfigurationSettings
   ServiceSettings
   ServiceTopics
+  TemplateCodeEngineVersion
   Topic
 }
 

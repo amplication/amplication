@@ -777,6 +777,7 @@ export enum EnumBlockType {
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
   ServiceSettings = 'ServiceSettings',
   ServiceTopics = 'ServiceTopics',
+  TemplateCodeEngineVersion = 'TemplateCodeEngineVersion',
   Topic = 'Topic'
 }
 
