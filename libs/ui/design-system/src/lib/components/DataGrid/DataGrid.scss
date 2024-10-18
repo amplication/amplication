@@ -42,4 +42,12 @@
       }
     }
   }
+
+  &__expand-button {
+    transform: rotate(0deg);
+    transition: transform 0.1s ease-in;
+    &--expanded {
+      transform: rotate(90deg);
+    }
+  }
 }
