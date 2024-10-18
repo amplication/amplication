@@ -20,7 +20,6 @@ const OPTIONS = [
 ];
 
 const PendingChangesPage = () => {
-  const [splitView, setSplitView] = useState<boolean>(false);
   const pageTitle = "Pending Changes";
   const { currentProject } = useContext(AppContext);
 
@@ -37,28 +36,15 @@ const PendingChangesPage = () => {
       : EnumResourceTypeGroup.Services
   );
 
-  const handleChangeType = useCallback(
-    (type: string) => {
-      setSplitView(type === SPLIT);
-    },
-    [setSplitView]
-  );
-
   const errorMessage = formatError(pendingChangesDataError);
 
   return (
     <>
-      <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
-        <div className={`${CLASS_NAME}__header`}>
-          <h1>Pending Changes</h1>
-          <MultiStateToggle
-            label=""
-            name="compareMode"
-            options={OPTIONS}
-            onChange={handleChangeType}
-            selectedValue={splitView ? SPLIT : UNIFIED}
-          />
-        </div>
+      <PageContent
+        className={CLASS_NAME}
+        pageTitle={pageTitle}
+        contentTitle="Pending Changes"
+      >
         <div className={`${CLASS_NAME}__changes`}>
           {pendingChangesByResource.map((resourceChanges) => (
             <div key={resourceChanges.resource.id}>
@@ -70,7 +56,6 @@ const PendingChangesPage = () => {
                   key={change.originId}
                   change={change}
                   compareType={EnumCompareType.Pending}
-                  splitView={splitView}
                 />
               ))}
             </div>

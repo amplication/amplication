@@ -32,7 +32,6 @@
     "@amplication/csharp-ast": "^0.0.4",
     "@amplication/opentelemetry-nestjs": "^5.0.3",
     "@amplication/react-compound-timer": "^2.1.0",
-    "@amplication/react-diff-viewer-continued": "^3.4.3",
     "@amplication/util-logging": "0.0.2",
     "@apollo/client": "^3.7.1",
     "@aws-sdk/client-codecommit": "^3.362.0",

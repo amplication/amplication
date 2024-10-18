@@ -154,7 +154,6 @@ function OutdatedVersionPage() {
                     oldVersion={null}
                     newVersion={block}
                     key={block.id}
-                    splitView={true}
                   ></CompareBlockVersions>
                 )
               )}
@@ -164,7 +163,6 @@ function OutdatedVersionPage() {
                     oldVersion={block}
                     newVersion={null}
                     key={block.id}
-                    splitView={true}
                   ></CompareBlockVersions>
                 )
               )}
@@ -174,7 +172,6 @@ function OutdatedVersionPage() {
                     oldVersion={diff.sourceBlockVersion}
                     newVersion={diff.targetBlockVersion}
                     key={diff.sourceBlockVersion.id}
-                    splitView={true}
                   ></CompareBlockVersions>
                 )
               )}
