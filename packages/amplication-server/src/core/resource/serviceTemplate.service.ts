@@ -25,6 +25,7 @@ import { ResourceVersionsDiffBlock } from "../resourceVersion/dto/ResourceVersio
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 import { TemplateCodeEngineVersion } from "../templateCodeEngineVersion/dto/TemplateCodeEngineVersion";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { BlockSettingsProperties } from "../block/types";
 
 @Injectable()
 export class ServiceTemplateService {
@@ -352,16 +353,15 @@ export class ServiceTemplateService {
     if (
       blockVersion.block.blockType === EnumBlockType.TemplateCodeEngineVersion
     ) {
-      const templateCodeEngineVersion =
-        blockVersion.block as TemplateCodeEngineVersion;
+      const settings =
+        blockVersion.settings as unknown as BlockSettingsProperties<TemplateCodeEngineVersion>;
+
       return this.resourceService.updateCodeGeneratorVersion(
         {
           data: {
             codeGeneratorVersionOptions: {
-              codeGeneratorVersion:
-                templateCodeEngineVersion.codeGeneratorVersion,
-              codeGeneratorStrategy:
-                templateCodeEngineVersion.codeGeneratorStrategy,
+              codeGeneratorVersion: settings.codeGeneratorVersion,
+              codeGeneratorStrategy: settings.codeGeneratorStrategy,
             },
           },
           where: {
@@ -403,17 +403,15 @@ export class ServiceTemplateService {
       diff.sourceBlockVersion.block.blockType ===
       EnumBlockType.TemplateCodeEngineVersion
     ) {
-      const templateCodeEngineVersion = diff.targetBlockVersion
-        .block as TemplateCodeEngineVersion;
+      const settings = diff.targetBlockVersion
+        .settings as unknown as BlockSettingsProperties<TemplateCodeEngineVersion>;
 
       return this.resourceService.updateCodeGeneratorVersion(
         {
           data: {
             codeGeneratorVersionOptions: {
-              codeGeneratorVersion:
-                templateCodeEngineVersion.codeGeneratorVersion,
-              codeGeneratorStrategy:
-                templateCodeEngineVersion.codeGeneratorStrategy,
+              codeGeneratorVersion: settings.codeGeneratorVersion,
+              codeGeneratorStrategy: settings.codeGeneratorStrategy,
             },
           },
           where: {
