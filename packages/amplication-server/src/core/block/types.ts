@@ -1,3 +1,5 @@
+import { Block } from "../../models";
+
 export type BlockValues<T> = Omit<
   T,
   "blockType" | "description" | "displayName"
@@ -14,4 +16,9 @@ export type BlockValuesExtended<T> = Omit<
   | "lockedByUserId"
   | "lockedAt"
   | "resourceId"
+>;
+
+export type BlockSettingsProperties<T> = Omit<
+  T,
+  keyof Block | "inputParameters" | "outputParameters"
 >;

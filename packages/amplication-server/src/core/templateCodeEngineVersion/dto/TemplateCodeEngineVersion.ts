@@ -3,5 +3,5 @@ import { CodeGeneratorVersionStrategy } from "../../resource/dto";
 
 export class TemplateCodeEngineVersion extends IBlock {
   codeGeneratorVersion?: string;
-  codeGeneratorStrategy?: keyof typeof CodeGeneratorVersionStrategy;
+  codeGeneratorStrategy?: CodeGeneratorVersionStrategy;
 }
