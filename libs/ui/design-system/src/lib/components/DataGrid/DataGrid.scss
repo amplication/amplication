@@ -9,7 +9,7 @@
   --rdg-row-hover-background-color: vaR(--gray-80);
   --rdg-row-selected-background-color: var(--gray-60);
   --rdg-row-selected-hover-background-color: var(--gray-60);
-
+  overflow-y: scroll;
   border-radius: var(--default-border-radius);
   @include scrollbars($default-scroll-width, var(--gray-30), transparent);
 
@@ -40,6 +40,14 @@
           background-color: var(--theme-turquoise);
         }
       }
+    }
+  }
+
+  &__expand-button {
+    transform: rotate(0deg);
+    transition: transform 0.1s ease-in;
+    &--expanded {
+      transform: rotate(90deg);
     }
   }
 }
