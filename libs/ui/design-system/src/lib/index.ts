@@ -268,7 +268,10 @@ export {
   DataGridColumn,
   DataGridSortColumn,
   DataGridSortOrder,
+  ExpandableDataGridRow,
 } from "./components/DataGrid/DataGrid";
+
+export { DataGridRowExpander } from "./components/DataGrid/DataGridRowExpander";
 
 export {
   ToggleView,

@@ -1,10 +1,11 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "react-data-grid/lib/styles.css";
 
 import ReactDataGrid, {
   ColumnOrColumnGroup,
   DataGridProps,
   RenderSortStatusProps,
+  RowsChangeData,
   SortColumn,
   SortDirection,
 } from "react-data-grid";
@@ -25,14 +26,20 @@ export type DataGridColumn<T> = ColumnOrColumnGroup<T> & {
   getValue?: (row: T) => any;
 };
 
+export type ExpandableDataGridRow<T> = T & {
+  dataGridRowType: "MASTER" | "DETAIL";
+  dataGridRowExpanded?: boolean;
+};
+
 export type Props<T> = Omit<
   DataGridProps<T>,
-  "columns" | "onSortColumnsChange"
+  "columns" | "onSortColumnsChange" | "rows"
 > & {
   clientSideSort?: boolean;
   columns: DataGridColumn<T>[];
   onSortColumnsChange?: (sortColumns: DataGridSortColumn[]) => void;
   rows: T[];
+  enableRowDetails?: boolean;
 };
 
 const SORT_DIRECTION_TO_DATA_GRID_SORT_ORDER: Record<
@@ -43,22 +50,20 @@ const SORT_DIRECTION_TO_DATA_GRID_SORT_ORDER: Record<
   DESC: "Desc",
 };
 
-const CLASS_NAME = "amp-data-grid";
+export const CLASS_NAME = "amp-data-grid";
 
-type BaseRowType = {
-  [key: string]: any;
-};
-
-export function DataGrid<T extends BaseRowType>({
+export function DataGrid<T>({
   className,
   rowHeight = 50,
   clientSideSort = true,
   rows: incomingRows,
   columns,
   onSortColumnsChange,
+  enableRowDetails,
   ...rest
 }: Props<T>) {
   const [sortColumns, setSortColumns] = useState<SortColumn[]>([]);
+  const [rows, setRows] = useState<T[]>(incomingRows);
 
   const handleSortColumnsChange = useCallback(
     (sortColumns: SortColumn[]) => {
@@ -91,11 +96,11 @@ export function DataGrid<T extends BaseRowType>({
         for (const { columnKey, direction } of sortColumns) {
           const valueA = columnValueGetters[columnKey]
             ? columnValueGetters[columnKey](a)
-            : a[columnKey];
+            : (a as any)[columnKey];
 
           const valueB = columnValueGetters[columnKey]
             ? columnValueGetters[columnKey](b)
-            : b[columnKey];
+            : (b as any)[columnKey];
 
           if (valueA < valueB) {
             return direction === "ASC" ? -1 : 1;
@@ -111,13 +116,38 @@ export function DataGrid<T extends BaseRowType>({
     return incomingRows;
   }, [clientSideSort, columnValueGetters, incomingRows, sortColumns]);
 
+  useEffect(() => {
+    setRows(sortedRows);
+  }, [sortedRows]);
+
+  function onRowsChange(rows: T[], { indexes }: RowsChangeData<T>) {
+    if (enableRowDetails) {
+      const row = rows[indexes[0]] as unknown as ExpandableDataGridRow<T>;
+
+      if (row.dataGridRowType !== "DETAIL") {
+        if (row.dataGridRowExpanded) {
+          rows.splice(indexes[0] + 1, 0, {
+            ...row,
+            dataGridRowType: "DETAIL",
+            dataGridRowExpanded: false,
+          } as ExpandableDataGridRow<T>);
+        } else {
+          rows.splice(indexes[0] + 1, 1);
+        }
+
+        setRows(rows);
+      }
+    }
+  }
+
   return (
     <ReactDataGrid
       columns={columns}
       style={{ maxHeight: "100%", height: "auto" }}
       rowHeight={rowHeight}
+      onRowsChange={onRowsChange}
       defaultColumnOptions={{}}
-      rows={sortedRows}
+      rows={rows}
       onSortColumnsChange={handleSortColumnsChange}
       sortColumns={sortColumns}
       className={classNames(CLASS_NAME, className)}
