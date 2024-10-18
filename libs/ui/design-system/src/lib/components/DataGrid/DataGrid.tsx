@@ -32,6 +32,7 @@ export type Props<T> = Omit<
   clientSideSort?: boolean;
   columns: DataGridColumn<T>[];
   onSortColumnsChange?: (sortColumns: DataGridSortColumn[]) => void;
+  rows: T[];
 };
 
 const SORT_DIRECTION_TO_DATA_GRID_SORT_ORDER: Record<
@@ -44,15 +45,19 @@ const SORT_DIRECTION_TO_DATA_GRID_SORT_ORDER: Record<
 
 const CLASS_NAME = "amp-data-grid";
 
-export const DataGrid: React.FC<Props<any>> = ({
+type BaseRowType = {
+  [key: string]: any;
+};
+
+export function DataGrid<T extends BaseRowType>({
   className,
   rowHeight = 50,
   clientSideSort = true,
-  rows,
+  rows: incomingRows,
   columns,
   onSortColumnsChange,
   ...rest
-}) => {
+}: Props<T>) {
   const [sortColumns, setSortColumns] = useState<SortColumn[]>([]);
 
   const handleSortColumnsChange = useCallback(
@@ -76,13 +81,13 @@ export const DataGrid: React.FC<Props<any>> = ({
         acc[column.key] = column.getValue;
       }
       return acc;
-    }, {} as Record<string, (row: any) => any>);
+    }, {} as Record<string, (row: T) => any>);
   }, [columns]);
 
   const sortedRows = useMemo(() => {
     if (clientSideSort) {
       // Sort the rows based on the sort columns
-      return [...rows].sort((a, b) => {
+      return [...incomingRows].sort((a, b) => {
         for (const { columnKey, direction } of sortColumns) {
           const valueA = columnValueGetters[columnKey]
             ? columnValueGetters[columnKey](a)
@@ -103,8 +108,8 @@ export const DataGrid: React.FC<Props<any>> = ({
         return 0;
       });
     }
-    return rows;
-  }, [clientSideSort, columnValueGetters, rows, sortColumns]);
+    return incomingRows;
+  }, [clientSideSort, columnValueGetters, incomingRows, sortColumns]);
 
   return (
     <ReactDataGrid
@@ -122,7 +127,7 @@ export const DataGrid: React.FC<Props<any>> = ({
       {...rest}
     />
   );
-};
+}
 
 export default DataGrid;
 
