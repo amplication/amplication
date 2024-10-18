@@ -1,23 +1,23 @@
-import React, { useState, useCallback, useContext } from "react";
-import PageContent from "../Layout/PageContent";
-import PendingChangeWithCompare from "./PendingChangeWithCompare";
-import { EnumCompareType } from "./PendingChangeDiffEntity";
-import { MultiStateToggle, Snackbar } from "@amplication/ui/design-system";
-import "./PendingChangesPage.scss";
+import {
+  EnumFlexItemMargin,
+  FlexItem,
+  HorizontalRule,
+  Snackbar,
+} from "@amplication/ui/design-system";
+import { useContext } from "react";
+import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
-import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
+import PageContent from "../Layout/PageContent";
+import { EnumResourceTypeGroup } from "../models";
 import { formatError } from "../util/error";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
-import { EnumResourceTypeGroup } from "../models";
+import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
+import ResourceNameLink from "../Workspaces/ResourceNameLink";
+import { EnumCompareType } from "./PendingChangeDiffEntity";
+import "./PendingChangesPage.scss";
+import PendingChangeWithCompare from "./PendingChangeWithCompare";
 
 const CLASS_NAME = "pending-changes-page";
-const SPLIT = "Split";
-const UNIFIED = "Unified";
-
-const OPTIONS = [
-  { value: UNIFIED, label: UNIFIED },
-  { value: SPLIT, label: SPLIT },
-];
 
 const PendingChangesPage = () => {
   const pageTitle = "Pending Changes";
@@ -48,9 +48,14 @@ const PendingChangesPage = () => {
         <div className={`${CLASS_NAME}__changes`}>
           {pendingChangesByResource.map((resourceChanges) => (
             <div key={resourceChanges.resource.id}>
-              <div className={`${CLASS_NAME}__title`}>
-                {resourceChanges.resource.name}
-              </div>
+              <FlexItem margin={EnumFlexItemMargin.Both}>
+                <ResourceCircleBadge
+                  type={resourceChanges.resource.resourceType}
+                  size="small"
+                />
+                <ResourceNameLink resource={resourceChanges.resource} />
+              </FlexItem>
+              <HorizontalRule />
               {resourceChanges.changes.map((change) => (
                 <PendingChangeWithCompare
                   key={change.originId}
