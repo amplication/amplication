@@ -14,6 +14,7 @@ import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import { DataGridColumn } from "@amplication/ui/design-system";
 import NewServiceFromTemplateButton from "../ServiceTemplate/NewServiceFromTemplateButton";
 import ResourcePluginLogoGroup from "../Plugins/ResourcePluginLogoGroup";
+import ResourceCodeEngineVersion from "../Workspaces/ResourceCodeEngineVersion";
 
 export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -35,7 +36,7 @@ export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   },
   {
     key: "version",
-    name: "Version",
+    name: "Template Version",
     resizable: true,
     sortable: true,
     renderCell: (props) => {
@@ -55,6 +56,21 @@ export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
       row.resourceType === EnumResourceType.ServiceTemplate
         ? row.codeGenerator
         : null,
+  },
+  {
+    key: "codeGeneratorVersion",
+    name: "Code Gen Version",
+    resizable: true,
+    sortable: true,
+    renderCell: (props) => {
+      return (
+        <ResourceCodeEngineVersion
+          codeGeneratorStrategy={props.row.codeGeneratorStrategy}
+          version={props.row.codeGeneratorVersion}
+          resourceId={props.row.id}
+        />
+      );
+    },
   },
   {
     key: "plugins",

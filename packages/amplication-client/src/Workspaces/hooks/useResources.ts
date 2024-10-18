@@ -175,6 +175,8 @@ const useResources = (
           id: input.resourceId,
         },
       },
+    }).then(() => {
+      addEntity(input.resourceId);
     });
   };
 
