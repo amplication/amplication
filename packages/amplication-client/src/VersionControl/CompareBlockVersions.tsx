@@ -33,7 +33,6 @@ const NON_COMPARABLE_PROPERTIES = [
 type Props = {
   oldVersion: models.BlockVersion;
   newVersion: models.BlockVersion;
-  splitView: boolean;
 };
 
 const ACTION_TYPE_TO_DISPLAY_MAP: {
@@ -56,7 +55,7 @@ const ACTION_TYPE_TO_DISPLAY_MAP: {
   },
 };
 
-const CompareBlockVersions = ({ oldVersion, newVersion, splitView }: Props) => {
+const CompareBlockVersions = ({ oldVersion, newVersion }: Props) => {
   const newValue = useMemo(() => {
     return getBlockVersionYAML(newVersion);
   }, [newVersion]);

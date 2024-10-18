@@ -15,14 +15,9 @@ const CLASS_NAME = "pending-change-with-compare";
 type Props = {
   change: models.PendingChange;
   compareType?: EnumCompareType;
-  splitView: boolean;
 };
 
-const PendingChangeWithCompare = ({
-  change,
-  compareType,
-  splitView,
-}: Props) => {
+const PendingChangeWithCompare = ({ change, compareType }: Props) => {
   return (
     <PanelCollapsible
       initiallyOpen={false}
@@ -34,14 +29,12 @@ const PendingChangeWithCompare = ({
           key={change.originId}
           change={change}
           compareType={compareType}
-          splitView={splitView}
         />
       ) : (
         <PendingChangeDiffBlock
           key={change.originId}
           change={change}
           compareType={compareType}
-          splitView={splitView}
         />
       )}
     </PanelCollapsible>
