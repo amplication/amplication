@@ -13,12 +13,10 @@ import {
   ResourceService,
 } from "./resource.service";
 
-import { EnumBlockType } from "@amplication/code-gen-types";
 import { kebabCase } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
-import { PluginInstallation } from "../pluginInstallation/dto/PluginInstallation";
 import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
@@ -283,13 +281,13 @@ export class ServiceTemplateService {
       );
     }
 
-    const changes = await this.resourceVersionService.compareResourceVersions({
-      where: {
-        resource: { id: template.id },
-        sourceVersion: serviceTemplateVersion.version,
-        targetVersion: latestVersion.version,
-      },
-    });
+    // const changes = await this.resourceVersionService.compareResourceVersions({
+    //   where: {
+    //     resource: { id: template.id },
+    //     sourceVersion: serviceTemplateVersion.version,
+    //     targetVersion: latestVersion.version,
+    //   },
+    // });
 
     // //create new plugins from the template
     // changes.createdBlocks.forEach(async (blockVersion) => {
