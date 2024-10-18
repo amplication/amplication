@@ -172,6 +172,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       update: (cache, { data }) => {
         //evict the cache of all alert after commit
         cache.evict({ fieldName: "outdatedVersionAlerts" });
+        cache.evict({ fieldName: "resourceVersions" });
       },
       onError: (error: ApolloError) => {
         setCommitRunning(false);

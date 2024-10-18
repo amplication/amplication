@@ -78,21 +78,12 @@ const CreatePluginRepositoryWizard: React.FC<Props> = ({ moduleClass }) => {
           <div
             className={`${moduleClass}__processing__message_title_container`}
           >
-            <div className={`${moduleClass}__processing__title`}>
-              All set! We’re currently generating your service.
-            </div>
+            <div className={`${moduleClass}__processing__title`}>All set!</div>
             <div className={`${moduleClass}__processing__message`}>
               It should only take a few seconds to finish. Don't go away!
             </div>
           </div>
           <SvgThemeImage image={EnumImages.CreateServiceWizard} />
-          <div className={`${moduleClass}__processing__tagline`}>
-            <div>For a full experience, connect with a GitHub repository</div>
-            <div>
-              and get a new Pull Request every time you make changes in your
-              data model.
-            </div>
-          </div>
         </div>
       ) : (
         <div className={`${moduleClass}__wrapper`}>
