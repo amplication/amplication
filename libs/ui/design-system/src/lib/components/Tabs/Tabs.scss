@@ -38,6 +38,8 @@ $tab-height: 26px;
       margin-left: var(--icon-spacing);
       font-weight: 500;
       color: var(--gray-full);
+      border-radius: var(--default-border-radius);
+      background-color: var(--gray-base);
     }
 
     &:not(:last-child):before {
