@@ -1,7 +1,7 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Injectable } from "@nestjs/common";
 import { AmplicationError } from "../../errors/AmplicationError";
-import { Resource, User } from "../../models";
+import { BlockVersion, IBlock, Resource, User } from "../../models";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { FindManyResourceArgs } from "./dto";
@@ -15,11 +15,15 @@ import {
 
 import { kebabCase } from "lodash";
 import { FindOneArgs } from "../../dto";
+import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { BlockMergeOptions } from "../block/dto/BlockMergeOptions";
 import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
 import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ResourceVersionsDiffBlock } from "../resourceVersion/dto/ResourceVersionsDiffBlock";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
+import { TemplateCodeEngineVersion } from "../templateCodeEngineVersion/dto/TemplateCodeEngineVersion";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 
 @Injectable()
@@ -281,59 +285,41 @@ export class ServiceTemplateService {
       );
     }
 
-    // const changes = await this.resourceVersionService.compareResourceVersions({
-    //   where: {
-    //     resource: { id: template.id },
-    //     sourceVersion: serviceTemplateVersion.version,
-    //     targetVersion: latestVersion.version,
-    //   },
-    // });
+    const changes = await this.resourceVersionService.compareResourceVersions({
+      where: {
+        resource: { id: template.id },
+        sourceVersion: serviceTemplateVersion.version,
+        targetVersion: latestVersion.version,
+      },
+    });
 
-    // //create new plugins from the template
-    // changes.createdBlocks.forEach(async (blockVersion) => {
-    //   if (blockVersion.block.blockType === EnumBlockType.PluginInstallation) {
-    //     const plugin = blockVersion.block as PluginInstallation;
+    const mergeOptions: BlockMergeOptions = {
+      updatedManuallyCreatedBlocks: true,
+    };
 
-    //     await this.pluginInstallationService.create(
-    //       {
-    //         data: {
-    //           pluginId: plugin.pluginId,
-    //           enabled: plugin.enabled,
-    //           npm: plugin.npm,
-    //           version: plugin.version,
-    //           displayName: plugin.displayName,
-    //           isPrivate: plugin.isPrivate ?? false,
-    //           settings: plugin.settings,
-    //           configurations: plugin.configurations,
-    //           resource: {
-    //             connect: {
-    //               id: resourceId,
-    //             },
-    //           },
-    //         },
-    //       },
-    //       user
-    //     );
-    //   }
-    // });
+    //create new plugins from the template
+    const createdPromises = changes.createdBlocks.map(async (blockVersion) => {
+      return this.handleMergeCreatedBlock(
+        resourceId,
+        blockVersion,
+        user,
+        mergeOptions
+      );
+    });
 
-    // //delete plugins that were removed from the template
-    // //@todo - allow the user to decide if they want to delete the plugin or keep it
-    // changes.deletedBlocks.forEach(async (block) => {
-    //   if (block.blockType === EnumBlockType.PluginInstallation) {
-    //     const plugin = block as PluginInstallation;
-    //     plugin.isPrivate = plugin.isPrivate ?? false; //@todo - remove. added to pass linter until code is completed
-    //   }
-    // });
+    //delete plugins that were removed from the template
+    //@todo - allow the user to decide if they want to delete the plugin or keep it
+    const deletedPromises = changes.deletedBlocks.map(async (blockVersion) => {
+      return this.handleMergeDeletedBlock(resourceId, blockVersion, user);
+    });
 
-    // //update plugins that were changed in the template
-    // //@todo - allow the user to decide if they want to update the plugin or keep it
-    // changes.updatedBlocks.forEach(async (diff) => {
-    //   if (diff.sourceBlock.blockType === EnumBlockType.PluginInstallation) {
-    //     const plugin = diff.sourceBlock as PluginInstallation;
-    //     plugin.isPrivate = plugin.isPrivate ?? false; //@todo - remove. added to pass linter until code is completed
-    //   }
-    // });
+    //update plugins that were changed in the template
+    //@todo - allow the user to decide if they want to update the plugin or keep it
+    const updatedPromises = changes.updatedBlocks.forEach(async (diff) => {
+      return this.handleMergeUpdatedBlock(resourceId, diff, user, mergeOptions);
+    });
+
+    await Promise.all([createdPromises, deletedPromises, updatedPromises]);
 
     await this.serviceSettingsService.updateServiceTemplateVersion(
       resourceId,
@@ -346,5 +332,96 @@ export class ServiceTemplateService {
     });
 
     return resource;
+  }
+
+  async handleMergeCreatedBlock(
+    targetResourceId: string,
+    blockVersion: BlockVersion,
+    user: User,
+    options: BlockMergeOptions
+  ): Promise<IBlock | Resource> {
+    if (blockVersion.block.blockType === EnumBlockType.PluginInstallation) {
+      return this.pluginInstallationService.mergeVersionIntoLatest(
+        blockVersion,
+        targetResourceId,
+        user,
+        options
+      );
+    }
+
+    if (
+      blockVersion.block.blockType === EnumBlockType.TemplateCodeEngineVersion
+    ) {
+      const templateCodeEngineVersion =
+        blockVersion.block as TemplateCodeEngineVersion;
+      return this.resourceService.updateCodeGeneratorVersion(
+        {
+          data: {
+            codeGeneratorVersionOptions: {
+              codeGeneratorVersion:
+                templateCodeEngineVersion.codeGeneratorVersion,
+              codeGeneratorStrategy:
+                templateCodeEngineVersion.codeGeneratorStrategy,
+            },
+          },
+          where: {
+            id: targetResourceId,
+          },
+        },
+        user
+      );
+    }
+  }
+
+  async handleMergeDeletedBlock(
+    targetResourceId: string,
+    blockVersion: BlockVersion,
+    user: User
+  ): Promise<void> {
+    return;
+  }
+
+  async handleMergeUpdatedBlock(
+    targetResourceId: string,
+    diff: ResourceVersionsDiffBlock,
+    user: User,
+    options: BlockMergeOptions
+  ): Promise<IBlock | Resource> {
+    if (
+      diff.sourceBlockVersion.block.blockType ===
+      EnumBlockType.PluginInstallation
+    ) {
+      return this.pluginInstallationService.mergeVersionIntoLatest(
+        diff.targetBlockVersion,
+        targetResourceId,
+        user,
+        options
+      );
+    }
+
+    if (
+      diff.sourceBlockVersion.block.blockType ===
+      EnumBlockType.TemplateCodeEngineVersion
+    ) {
+      const templateCodeEngineVersion = diff.targetBlockVersion
+        .block as TemplateCodeEngineVersion;
+
+      return this.resourceService.updateCodeGeneratorVersion(
+        {
+          data: {
+            codeGeneratorVersionOptions: {
+              codeGeneratorVersion:
+                templateCodeEngineVersion.codeGeneratorVersion,
+              codeGeneratorStrategy:
+                templateCodeEngineVersion.codeGeneratorStrategy,
+            },
+          },
+          where: {
+            id: targetResourceId,
+          },
+        },
+        user
+      );
+    }
   }
 }
