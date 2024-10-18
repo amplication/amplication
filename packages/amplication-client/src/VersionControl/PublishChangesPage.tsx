@@ -271,7 +271,7 @@ const PublishChangesPage: React.FC<Props> = () => {
           end={
             <PublishTemplatesChangesButton
               buttonText="Publish All"
-              commitMessage="commitMessage"
+              commitMessage={commitMessage}
               projectId={currentProject?.id}
               strategy={EnumCommitStrategy.AllWithPendingChanges}
               resourceVersions={templates.map((template) => ({
