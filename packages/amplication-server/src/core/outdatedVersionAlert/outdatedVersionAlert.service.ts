@@ -77,6 +77,7 @@ export class OutdatedVersionAlertService {
     args: FindManyOutdatedVersionAlertArgs
   ): Promise<OutdatedVersionAlert[]> {
     return this.prisma.outdatedVersionAlert.findMany({
+      ...args,
       where: {
         ...args.where,
         resource: {
