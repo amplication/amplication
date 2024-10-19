@@ -38,8 +38,11 @@ const useServiceTemplate = (
     models.Resource[]
   >([]);
 
+  const [serviceTemplates, setServiceTemplates] = useState<models.Resource[]>(
+    []
+  );
+
   const {
-    data: serviceTemplates,
     loading: loadingServiceTemplates,
     error: errorServiceTemplates,
     refetch: reloadServiceTemplates,
@@ -56,6 +59,7 @@ const useServiceTemplate = (
       const publishedServiceTemplates = data.serviceTemplates.filter(
         (serviceTemplate) => serviceTemplate.version
       );
+      setServiceTemplates(data.serviceTemplates);
 
       setPublishedServiceTemplates(publishedServiceTemplates);
     },
@@ -129,7 +133,7 @@ const useServiceTemplate = (
   };
 
   return {
-    serviceTemplates: serviceTemplates?.serviceTemplates || [],
+    serviceTemplates: serviceTemplates,
     handleSearchChange,
     loadingServiceTemplates,
     errorServiceTemplates,
