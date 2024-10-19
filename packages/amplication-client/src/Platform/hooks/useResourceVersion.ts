@@ -2,8 +2,8 @@ import { useQuery } from "@apollo/client";
 import * as models from "../../models";
 import { GET_RESOURCE_VERSION } from "./resourceVersionQueries";
 
-type TGetResourceVersions = {
-  resourceVersions: models.ResourceVersion[];
+type TGetResourceVersion = {
+  resourceVersion: models.ResourceVersion;
   _resourceVersionsMeta: { count: number };
 };
 
