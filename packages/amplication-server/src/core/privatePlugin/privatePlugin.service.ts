@@ -90,12 +90,10 @@ export class PrivatePluginService extends BlockTypeService<
     delete args.where?.codeGenerator;
 
     if (codeGeneratorFilter) {
-      console.log("codeGeneratorFilter", codeGeneratorFilter);
       const filter = {
         path: ["codeGenerator"],
         equals: codeGeneratorFilter.equals,
       };
-      console.log("filter", filter);
 
       return this.findManyBySettings(args, filter);
     }
