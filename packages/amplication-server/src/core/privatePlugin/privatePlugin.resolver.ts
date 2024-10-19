@@ -23,6 +23,7 @@ import { CreatePrivatePluginVersionArgs } from "./dto/CreatePrivatePluginVersion
 import { PrivatePluginVersion } from "./dto/PrivatePluginVersion";
 import { UpdatePrivatePluginVersionArgs } from "./dto/UpdatePrivatePluginVersionArgs";
 import { User } from "../../models";
+import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 
 @Resolver(() => PrivatePlugin)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -87,6 +88,17 @@ export class PrivatePluginResolver extends BlockTypeResolver(
       return [];
     } else {
       return privatePlugin.versions;
+    }
+  }
+
+  @ResolveField(() => EnumCodeGenerator)
+  async codeGenerator(
+    @Parent() privatePlugin: PrivatePlugin
+  ): Promise<keyof typeof EnumCodeGenerator> {
+    if (!privatePlugin.codeGenerator) {
+      return EnumCodeGenerator.DotNet;
+    } else {
+      return privatePlugin.codeGenerator;
     }
   }
 }

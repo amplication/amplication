@@ -828,6 +828,10 @@ export enum EnumCodeGenerator {
   NodeJs = 'NodeJs'
 }
 
+export type EnumCodeGeneratorFilter = {
+  equals?: InputMaybe<EnumCodeGenerator>;
+};
+
 export enum EnumCommitStrategy {
   All = 'All',
   AllWithPendingChanges = 'AllWithPendingChanges',
@@ -2403,6 +2407,7 @@ export type PluginSetOrderInput = {
 
 export type PrivatePlugin = IBlock & {
   blockType: EnumBlockType;
+  codeGenerator: EnumCodeGenerator;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
@@ -2443,6 +2448,7 @@ export type PrivatePluginOrderByInput = {
 };
 
 export type PrivatePluginUpdateInput = {
+  codeGenerator?: InputMaybe<EnumCodeGenerator>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   enabled: Scalars['Boolean']['input'];
@@ -2469,6 +2475,7 @@ export type PrivatePluginVersionUpdateInput = {
 };
 
 export type PrivatePluginWhereInput = {
+  codeGenerator?: InputMaybe<EnumCodeGeneratorFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
   displayName?: InputMaybe<StringFilter>;

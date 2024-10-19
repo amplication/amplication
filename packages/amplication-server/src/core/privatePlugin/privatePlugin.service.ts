@@ -12,10 +12,14 @@ import { User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { AmplicationError } from "../../errors/AmplicationError";
-import { ResourceService } from "../resource/resource.service";
+import {
+  CODE_GENERATOR_NAME_TO_ENUM,
+  ResourceService,
+} from "../resource/resource.service";
 import { CreatePrivatePluginVersionArgs } from "./dto/CreatePrivatePluginVersionArgs";
 import { PrivatePluginVersion } from "./dto/PrivatePluginVersion";
 import { UpdatePrivatePluginVersionArgs } from "./dto/UpdatePrivatePluginVersionArgs";
+import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 
 const DEFAULT_PRIVATE_PLUGIN_VERSION: Omit<PrivatePluginVersion, "version"> = {
   deprecated: false,
@@ -69,8 +73,34 @@ export class PrivatePluginService extends BlockTypeService<
           },
           projectId: resource.projectId,
         },
+        codeGenerator: {
+          equals:
+            CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
+            EnumCodeGenerator.NodeJs,
+        },
       },
     });
+  }
+
+  async findMany(
+    args: FindManyPrivatePluginArgs,
+    user?: User
+  ): Promise<PrivatePlugin[]> {
+    const codeGeneratorFilter = args.where?.codeGenerator;
+    delete args.where?.codeGenerator;
+
+    if (codeGeneratorFilter) {
+      console.log("codeGeneratorFilter", codeGeneratorFilter);
+      const filter = {
+        path: ["codeGenerator"],
+        equals: codeGeneratorFilter.equals,
+      };
+      console.log("filter", filter);
+
+      return this.findManyBySettings(args, filter);
+    }
+
+    return super.findMany(args, user);
   }
 
   async create(

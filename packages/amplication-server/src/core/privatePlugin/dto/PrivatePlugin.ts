@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { IBlock } from "../../../models";
 import { PrivatePluginVersion } from "./PrivatePluginVersion";
+import { EnumCodeGenerator } from "../../resource/dto/EnumCodeGenerator";
 
 @ObjectType({
   isAbstract: true,
@@ -16,6 +17,11 @@ export class PrivatePlugin extends IBlock {
     nullable: false,
   })
   enabled!: boolean;
+
+  @Field(() => EnumCodeGenerator, {
+    nullable: false,
+  })
+  codeGenerator: keyof typeof EnumCodeGenerator;
 
   @Field(() => [PrivatePluginVersion], {
     nullable: false,
