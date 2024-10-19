@@ -1,19 +1,16 @@
 import {
   CircularProgress,
-  EnumContentAlign,
   EnumFlexDirection,
-  EnumGapSize,
   EnumItemsAlign,
-  EnumTextStyle,
   EnumVersionTagState,
   FlexItem,
+  HeaderItemsStripe,
+  HeaderItemsStripeItem,
   HorizontalRule,
   Snackbar,
   TabContentTitle,
-  Text,
   VersionTag,
 } from "@amplication/ui/design-system";
-import { ReactNode } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { AutoBackNavigation } from "../Components/AutoBackNavigation";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
@@ -82,16 +79,12 @@ function OutdatedVersionPage() {
               itemsAlign={EnumItemsAlign.Center}
             >
               <FlexItem.FlexStart>
-                <FlexItem
-                  itemsAlign={EnumItemsAlign.Start}
-                  contentAlign={EnumContentAlign.Start}
-                  gap={EnumGapSize.Large}
-                >
-                  <HeaderItem
+                <HeaderItemsStripe>
+                  <HeaderItemsStripeItem
                     label="Alert Type"
                     content={<OutdatedVersionAlertType type={data.type} />}
                   />
-                  <HeaderItem
+                  <HeaderItemsStripeItem
                     label="Outdated Version"
                     content={
                       <VersionTag
@@ -100,7 +93,7 @@ function OutdatedVersionPage() {
                       />
                     }
                   />
-                  <HeaderItem
+                  <HeaderItemsStripeItem
                     label="Latest Version"
                     content={
                       <VersionTag
@@ -109,13 +102,13 @@ function OutdatedVersionPage() {
                       />
                     }
                   />
-                  <HeaderItem
+                  <HeaderItemsStripeItem
                     label="Status"
                     content={
                       <OutdatedVersionAlertStatus status={data.status} />
                     }
                   />
-                </FlexItem>
+                </HeaderItemsStripe>
               </FlexItem.FlexStart>
               <FlexItem.FlexEnd>
                 {data.status === EnumOutdatedVersionAlertStatus.New && (
@@ -138,25 +131,6 @@ function OutdatedVersionPage() {
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>
-  );
-}
-
-type HeaderItemProps = {
-  label: string;
-  content: ReactNode;
-};
-
-function HeaderItem({ label, content }: HeaderItemProps) {
-  return (
-    <div>
-      <FlexItem direction={EnumFlexDirection.Column}>
-        <Text noWrap textStyle={EnumTextStyle.Description}>
-          {label}
-        </Text>
-
-        {content}
-      </FlexItem>
-    </div>
   );
 }
 

@@ -28,8 +28,6 @@ function CompareResourceVersions({
     targetVersion
   );
 
-  console.log({ resourceId, sourceVersion, targetVersion });
-
   const errorMessage = formatError(error);
 
   return (

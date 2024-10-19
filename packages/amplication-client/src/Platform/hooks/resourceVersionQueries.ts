@@ -1,24 +1,33 @@
 import { gql } from "@apollo/client";
 
-export const GET_RESOURCE_VERSION = gql`
-  query getResourceVersion($id: String!) {
-    resourceVersion(where: { id: $id }) {
+export const RESOURCE_VERSION_FRAGMENT = gql`
+  fragment ResourceVersionFields on ResourceVersion {
+    id
+    createdAt
+    version
+    message
+    resourceId
+    createdBy {
       id
-      createdAt
-      version
-      message
-      createdBy {
-        id
-        account {
-          firstName
-          lastName
-        }
+      account {
+        firstName
+        lastName
       }
     }
   }
 `;
 
+export const GET_RESOURCE_VERSION = gql`
+  ${RESOURCE_VERSION_FRAGMENT}
+  query getResourceVersion($id: String!) {
+    resourceVersion(where: { id: $id }) {
+      ...ResourceVersionFields
+    }
+  }
+`;
+
 export const GET_RESOURCE_VERSIONS = gql`
+  ${RESOURCE_VERSION_FRAGMENT}
   query getResourceVersions(
     $where: ResourceVersionWhereInput
     $orderBy: ResourceVersionOrderByInput
@@ -31,18 +40,7 @@ export const GET_RESOURCE_VERSIONS = gql`
       take: $take
       skip: $skip
     ) {
-      id
-      createdAt
-      version
-      message
-      resourceId
-      createdBy {
-        id
-        account {
-          firstName
-          lastName
-        }
-      }
+      ...ResourceVersionFields
     }
     _resourceVersionsMeta(where: $where) {
       count
