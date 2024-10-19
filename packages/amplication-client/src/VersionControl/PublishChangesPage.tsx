@@ -171,7 +171,16 @@ const OTHERS_COLUMNS: DataGridColumn<resourceWithChanges>[] = [
     sortable: false,
     width: 120,
     renderCell: (props) => {
-      return <Button buttonStyle={EnumButtonStyle.Primary}>Publish</Button>;
+      return (
+        <PublishTemplatesChangesButton
+          buttonText="Publish"
+          commitMessage={props.row.commitMessage}
+          projectId={props.row.resource.projectId}
+          strategy={EnumCommitStrategy.Specific}
+          resourceId={props.row.resource.id}
+          resourceVersions={[]}
+        />
+      );
     },
   },
 ];
@@ -225,10 +234,11 @@ const PublishChangesPage: React.FC<Props> = () => {
       )
       .map((resourceChanges) => {
         const { resource, changes } = resourceChanges;
+        resource.projectId = currentProject?.id;
 
         return { resource, changes, commitMessage };
       });
-  }, [commitMessage, pendingChangesByResource]);
+  }, [commitMessage, currentProject?.id, pendingChangesByResource]);
 
   const handleChangeType = useCallback(
     (type: ReleaseType) => {
