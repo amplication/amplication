@@ -4,7 +4,7 @@ import * as models from "../../models";
 import { GET_RESOURCE_VERSIONS } from "./resourceVersionQueries";
 
 type TGetResourceVersions = {
-  resourceVersions: models.Resource[];
+  resourceVersions: models.ResourceVersion[];
   _resourceVersionsMeta: { count: number };
 };
 
