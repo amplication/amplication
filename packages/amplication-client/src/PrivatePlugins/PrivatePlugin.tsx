@@ -96,7 +96,7 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
 
   const handleDeletePrivatePlugin = useCallback(() => {
     history.push(`${baseUrl}/private-plugins`);
-  }, [history, currentWorkspace?.id, currentProject?.id]);
+  }, [history, baseUrl]);
 
   useEffect(() => {
     getPrivatePlugin(privatePluginId);
@@ -161,10 +161,10 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
         />
       )}
 
-      {/* <PrivatePluginVersionList
+      <PrivatePluginVersionList
         privatePlugin={data?.privatePlugin}
         onVersionAdd={onVersionChanged}
-      /> */}
+      />
 
       <Snackbar open={hasError} message={errorMessage} />
     </>

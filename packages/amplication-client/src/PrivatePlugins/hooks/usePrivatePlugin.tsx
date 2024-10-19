@@ -1,5 +1,5 @@
 import { Reference, useLazyQuery, useMutation } from "@apollo/client";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useState } from "react";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import {
@@ -34,6 +34,9 @@ const NAME_FIELD = "displayName";
 const usePrivatePlugin = (resourceId: string) => {
   const { addBlock } = useContext(AppContext);
 
+  const [privatePluginsByCodeGenerator, setPrivatePluginsByCodeGenerator] =
+    useState<Record<string, models.PrivatePlugin[]> | null>(null);
+
   const [
     getAvailablePrivatePluginsForResourceInternal,
     {
@@ -64,13 +67,29 @@ const usePrivatePlugin = (resourceId: string) => {
   const [
     getPrivatePluginsInternal,
     {
-      data: getPrivatePluginsData,
-      loading: getPrivatePluginsLoading,
-      error: getPrivatePluginsError,
+      loading: getPrivatePluginsByCodeGeneratorLoading,
+      error: getPrivatePluginsByCodeGeneratorError,
     },
-  ] = useLazyQuery<TGetPluginsData>(GET_PRIVATE_PLUGINS, {});
+  ] = useLazyQuery<TGetPluginsData>(GET_PRIVATE_PLUGINS, {
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data) => {
+      const pluginsByCodeGenerator = data.privatePlugins.reduce(
+        (acc, plugin) => {
+          const codeGenerator = plugin.codeGenerator;
+          if (!acc[codeGenerator]) {
+            acc[codeGenerator] = [];
+          }
+          acc[codeGenerator].push(plugin);
+          return acc;
+        },
+        {} as Record<string, models.PrivatePlugin[]>
+      );
 
-  const getPrivatePlugins = useCallback(
+      setPrivatePluginsByCodeGenerator(pluginsByCodeGenerator);
+    },
+  });
+
+  const getPrivatePluginsByCodeGenerator = useCallback(
     (searchPhrase: string) => {
       getPrivatePluginsInternal({
         variables: {
@@ -111,7 +130,7 @@ const usePrivatePlugin = (resourceId: string) => {
           },
         });
       },
-
+      refetchQueries: [GET_PRIVATE_PLUGINS],
       onCompleted: (data) => {
         addBlock(data.deletePrivatePlugin.id);
       },
@@ -121,6 +140,7 @@ const usePrivatePlugin = (resourceId: string) => {
     createPrivatePlugin,
     { error: createPrivatePluginError, loading: createPrivatePluginLoading },
   ] = useMutation(CREATE_PRIVATE_PLUGIN, {
+    refetchQueries: [GET_PRIVATE_PLUGINS],
     update(cache, { data }) {
       if (!data) {
         return;
@@ -174,7 +194,9 @@ const usePrivatePlugin = (resourceId: string) => {
   );
 
   const [updatePrivatePlugin, { error: updatePrivatePluginError }] =
-    useMutation(UPDATE_PRIVATE_PLUGIN);
+    useMutation(UPDATE_PRIVATE_PLUGIN, {
+      refetchQueries: [GET_PRIVATE_PLUGINS],
+    });
 
   return {
     getAvailablePrivatePluginsForResource,
@@ -191,10 +213,10 @@ const usePrivatePlugin = (resourceId: string) => {
     createPrivatePlugin,
     createPrivatePluginError,
     createPrivatePluginLoading,
-    getPrivatePlugins,
-    getPrivatePluginsData,
-    getPrivatePluginsLoading,
-    getPrivatePluginsError,
+    getPrivatePluginsByCodeGenerator,
+    getPrivatePluginsByCodeGeneratorData: privatePluginsByCodeGenerator,
+    getPrivatePluginsByCodeGeneratorLoading,
+    getPrivatePluginsByCodeGeneratorError,
     deletePrivatePlugin,
     deletePrivatePluginError,
   };

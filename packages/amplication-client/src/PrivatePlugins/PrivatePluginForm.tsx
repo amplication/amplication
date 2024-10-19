@@ -2,11 +2,12 @@ import React, { useMemo } from "react";
 import { Formik } from "formik";
 import { omit } from "lodash";
 import * as models from "../models";
-import { TextField, Form } from "@amplication/ui/design-system";
+import { TextField, Form, SelectField } from "@amplication/ui/design-system";
 import { validate } from "../util/formikValidateJsonSchema";
 
 import FormikAutoSave from "../util/formikAutoSave";
 import { DisplayNameField } from "../Components/DisplayNameField";
+import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
 
 type Props = {
   onSubmit: (values: models.PrivatePlugin) => void;
@@ -44,6 +45,8 @@ const FORM_SCHEMA = {
 };
 
 const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
+  const { availableCodeGenerators } = useAvailableCodeGenerators();
+
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -66,6 +69,11 @@ const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
         <FormikAutoSave debounceMS={1000} />
         <TextField disabled label="Plugin Id" name="pluginId" />
         <DisplayNameField name="displayName" label="Display Name" required />
+        <SelectField
+          name="codeGenerator"
+          label="Code Generator"
+          options={availableCodeGenerators}
+        />
 
         <TextField name="description" label="Description" textarea rows={3} />
       </Form>
