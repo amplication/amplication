@@ -11,6 +11,7 @@ import {
   GET_OUTDATED_VERSION_ALERT,
   GET_OUTDATED_VERSION_ALERTS,
 } from "../../OutdatedVersionAlerts/hooks/outdatedVersionAlertsQueries";
+import { useAppContext } from "../../context/appContext";
 
 type TFindResourcesData = {
   resources: models.Resource[];
@@ -32,6 +33,8 @@ const useServiceTemplate = (
   currentProject: models.Project | undefined,
   onServiceTemplateCreated?: (serviceTemplate: models.Resource) => void
 ) => {
+  const { addBlock } = useAppContext();
+
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const [publishedServiceTemplates, setPublishedServiceTemplates] = useState<
@@ -76,6 +79,9 @@ const useServiceTemplate = (
     UPGRADE_SERVICE_TO_LATEST_TEMPLATE_VERSION,
     {
       refetchQueries: [GET_OUTDATED_VERSION_ALERTS, GET_OUTDATED_VERSION_ALERT],
+      onCompleted: (data) => {
+        addBlock(data.upgradeServiceToLatestTemplateVersion.id);
+      },
     }
   );
 
