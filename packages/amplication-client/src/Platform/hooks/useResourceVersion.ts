@@ -2,8 +2,9 @@ import { useQuery } from "@apollo/client";
 import * as models from "../../models";
 import { GET_RESOURCE_VERSION } from "./resourceVersionQueries";
 
-type TGetResourceVersion = {
-  resourceVersion: models.ResourceVersion;
+type TGetResourceVersions = {
+  resourceVersions: models.ResourceVersion[];
+  _resourceVersionsMeta: { count: number };
 };
 
 const useResourceVersion = (resourceVersionId: string | undefined) => {
