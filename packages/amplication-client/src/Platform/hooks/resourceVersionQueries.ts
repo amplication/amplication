@@ -35,6 +35,7 @@ export const GET_RESOURCE_VERSIONS = gql`
       createdAt
       version
       message
+      resourceId
       createdBy {
         id
         account {

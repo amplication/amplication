@@ -20,10 +20,9 @@ import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { useAppContext } from "../context/appContext";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import { EnumOutdatedVersionAlertStatus } from "../models";
-import useCompareResourceVersions from "../Platform/hooks/useCompareResourceVersions";
+import CompareResourceVersions from "../Platform/CompareResourceVersions";
 import UpgradeServiceToLatestTemplateVersionButton from "../ServiceTemplate/UpgradeServiceToLatestTemplateVersionButton";
 import { formatError } from "../util/error";
-import CompareBlockVersions from "../VersionControl/CompareBlockVersions";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import useOutdatedVersionAlert from "./hooks/useOutdatedVersionAlert";
 import OutdatedVersionAlertStatus from "./OutdatedVersionAlertStatus";
@@ -48,17 +47,7 @@ function OutdatedVersionPage() {
     reloadOutdatedVersionAlert: reload,
   } = useOutdatedVersionAlert(alertId);
 
-  const {
-    data: compareData,
-    loading: compareLoading,
-    error: compareError,
-  } = useCompareResourceVersions(
-    currentResource?.serviceTemplate?.id,
-    data?.outdatedVersion,
-    data?.latestVersion
-  );
-
-  const errorMessage = formatError(error) || formatError(compareError);
+  const errorMessage = formatError(error);
 
   return (
     <PageContent
@@ -139,51 +128,15 @@ function OutdatedVersionPage() {
           </FlexItem>
 
           <HorizontalRule doubleSpacing />
-          {compareLoading ? (
-            <CircularProgress centerToParent />
-          ) : (
-            <FlexItem
-              direction={EnumFlexDirection.Column}
-              gap={EnumGapSize.None}
-              itemsAlign={EnumItemsAlign.Stretch}
-              contentAlign={EnumContentAlign.Start}
-            >
-              {compareData?.compareResourceVersions?.createdBlocks?.map(
-                (block) => (
-                  <CompareBlockVersions
-                    oldVersion={null}
-                    newVersion={block}
-                    key={block.id}
-                  ></CompareBlockVersions>
-                )
-              )}
-              {compareData?.compareResourceVersions?.deletedBlocks?.map(
-                (block) => (
-                  <CompareBlockVersions
-                    oldVersion={block}
-                    newVersion={null}
-                    key={block.id}
-                  ></CompareBlockVersions>
-                )
-              )}
-              {compareData?.compareResourceVersions?.updatedBlocks?.map(
-                (diff) => (
-                  <CompareBlockVersions
-                    oldVersion={diff.sourceBlockVersion}
-                    newVersion={diff.targetBlockVersion}
-                    key={diff.sourceBlockVersion.id}
-                  ></CompareBlockVersions>
-                )
-              )}
-            </FlexItem>
-          )}
+          <CompareResourceVersions
+            resourceId={currentResource?.serviceTemplate?.id}
+            sourceVersion={data.outdatedVersion}
+            targetVersion={data.latestVersion}
+          />
         </>
       )}
 
-      <Snackbar
-        open={Boolean(error) || Boolean(compareError)}
-        message={errorMessage}
-      />
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>
   );
 }
