@@ -21,8 +21,8 @@ import CompareResourceVersions from "../Platform/CompareResourceVersions";
 import UpgradeServiceToLatestTemplateVersionButton from "../ServiceTemplate/UpgradeServiceToLatestTemplateVersionButton";
 import { formatError } from "../util/error";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
+import { AlertStatusSelector } from "./AlertStatusSelector";
 import useOutdatedVersionAlert from "./hooks/useOutdatedVersionAlert";
-import OutdatedVersionAlertStatus from "./OutdatedVersionAlertStatus";
 import OutdatedVersionAlertType from "./OutdatedVersionAlertType";
 
 const CLASS_NAME = "outdated-version-page";
@@ -41,10 +41,26 @@ function OutdatedVersionPage() {
     outdatedVersionAlert: data,
     loadingOutdatedVersionAlert: loading,
     errorOutdatedVersionAlert: error,
-    reloadOutdatedVersionAlert: reload,
+    updateAlert,
+    updateError,
+    updateLoading,
   } = useOutdatedVersionAlert(alertId);
 
-  const errorMessage = formatError(error);
+  const updateAlertStatus = async (status: EnumOutdatedVersionAlertStatus) => {
+    if (!data) {
+      return;
+    }
+    await updateAlert({
+      variables: {
+        id: data.id,
+        data: {
+          status,
+        },
+      },
+    }).catch(console.error);
+  };
+
+  const errorMessage = formatError(error) || formatError(updateError);
 
   return (
     <PageContent
@@ -105,7 +121,13 @@ function OutdatedVersionPage() {
                   <HeaderItemsStripeItem
                     label="Status"
                     content={
-                      <OutdatedVersionAlertStatus status={data.status} />
+                      <AlertStatusSelector
+                        onChange={(value) => {
+                          updateAlertStatus(value);
+                        }}
+                        selectedValue={data.status}
+                        disabled={updateLoading}
+                      />
                     }
                   />
                 </HeaderItemsStripe>
@@ -129,7 +151,10 @@ function OutdatedVersionPage() {
         </>
       )}
 
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar
+        open={Boolean(error) || Boolean(updateError)}
+        message={errorMessage}
+      />
     </PageContent>
   );
 }
