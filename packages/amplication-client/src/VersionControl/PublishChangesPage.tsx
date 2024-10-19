@@ -42,6 +42,7 @@ type resourceWithVersions = {
   currentVersion: string;
   newVersion: string;
   commitMessage: string;
+  changes: PendingChange[];
 };
 
 type resourceWithChanges = {
@@ -71,6 +72,21 @@ const TEMPLATE_COLUMNS: DataGridColumn<resourceWithVersions>[] = [
     sortable: false,
     renderCell: (props) => {
       return <ResourceNameLink resource={props.row.resource} />;
+    },
+  },
+  {
+    key: "changes",
+    name: "Changes",
+    resizable: false,
+    sortable: false,
+    width: 150,
+    renderCell: (props) => {
+      return (
+        <Text textStyle={EnumTextStyle.Description}>
+          {props.row.changes.length}{" "}
+          {props.row.changes.length === 1 ? "Change" : "Changes"}
+        </Text>
+      );
     },
   },
   {
@@ -213,7 +229,7 @@ const PublishChangesPage: React.FC<Props> = () => {
         (x) => x.resource.resourceType === EnumResourceType.ServiceTemplate
       )
       .map((resourceChanges) => {
-        const { resource } = resourceChanges;
+        const { resource, changes } = resourceChanges;
 
         resource.projectId = currentProject?.id;
 
@@ -223,7 +239,7 @@ const PublishChangesPage: React.FC<Props> = () => {
           version
         );
 
-        return { resource, currentVersion, newVersion, commitMessage };
+        return { resource, changes, currentVersion, newVersion, commitMessage };
       });
   }, [commitMessage, currentProject?.id, pendingChangesByResource, version]);
 
