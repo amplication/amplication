@@ -113,6 +113,7 @@ function ResourceList() {
                 selectedValue={viewMode}
                 onValueChange={(selectedValue) => setViewMode(selectedValue)}
               />
+              {loadingResources && <CircularProgress />}
             </FlexItem>
           </>
         }
@@ -133,8 +134,6 @@ function ResourceList() {
         }
       ></FlexItem>
       <HorizontalRule doubleSpacing />
-
-      {loadingResources && <CircularProgress centerToParent />}
 
       {isEmpty(relevantResources) && !loadingResources ? (
         <EmptyState

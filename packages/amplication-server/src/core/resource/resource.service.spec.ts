@@ -30,6 +30,7 @@ import { Build } from "../build/dto/Build";
 import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from "../entity/constants";
 import { EntityService } from "../entity/entity.service";
 import {
+  CodeGeneratorVersionStrategy,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
   ResourceCreateInput,
@@ -66,6 +67,7 @@ import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { GitProviderService } from "../git/git.provider.service";
 import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
 import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
+import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -482,6 +484,8 @@ const mockedUpdateServiceLicensed = jest.fn();
 const pluginInstallationServiceCreateMock = jest.fn();
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
+const templateCodeEngineVersionServiceUpdateMock = jest.fn();
+
 const projectServiceFindUniqueMock = jest.fn(() => ({
   ...EXAMPLE_PROJECT,
   resources: [EXAMPLE_RESOURCE, EXAMPLE_PROJECT_CONFIGURATION_RESOURCE],
@@ -538,7 +542,9 @@ describe("ResourceService", () => {
               return {};
             }),
             getBooleanEntitlement: jest.fn(() => {
-              return {};
+              return {
+                hasAccess: true,
+              };
             }),
             reportUsage: jest.fn(() => {
               return {};
@@ -553,6 +559,13 @@ describe("ResourceService", () => {
           provide: BuildService,
           useClass: jest.fn(() => ({
             create: buildServiceCreateMock,
+          })),
+        },
+        {
+          provide: TemplateCodeEngineVersionService,
+          useClass: jest.fn(() => ({
+            update: templateCodeEngineVersionServiceUpdateMock,
+            getCurrent: jest.fn(),
           })),
         },
         {
@@ -1218,5 +1231,39 @@ describe("ResourceService", () => {
 
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
     expect(pluginInstallationServiceCreateMock).toBeCalledTimes(0);
+  });
+
+  it("should update the code engine version block when updating the code engine version, when the resource type is template", async () => {
+    prismaResourceFindOneMock.mockImplementationOnce(() => {
+      return {
+        ...EXAMPLE_RESOURCE,
+        resourceType: EnumResourceType.ServiceTemplate,
+      };
+    });
+
+    const version = "1.0.0";
+    const strategy: CodeGeneratorVersionStrategy =
+      CodeGeneratorVersionStrategy.LatestMinor;
+
+    await service.updateCodeGeneratorVersion(
+      {
+        where: { id: EXAMPLE_RESOURCE_ID },
+        data: {
+          codeGeneratorVersionOptions: {
+            codeGeneratorVersion: version,
+            codeGeneratorStrategy: strategy,
+          },
+        },
+      },
+      EXAMPLE_USER
+    );
+
+    expect(templateCodeEngineVersionServiceUpdateMock).toHaveBeenCalledTimes(1);
+    expect(templateCodeEngineVersionServiceUpdateMock).toHaveBeenCalledWith(
+      EXAMPLE_RESOURCE_ID,
+      version,
+      strategy,
+      EXAMPLE_USER
+    );
   });
 });

@@ -158,6 +158,13 @@ export const PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP = {
         type: "Private Plugin",
         pluralTypeName: "Private Plugins",
       },
+      [models.EnumBlockType.TemplateCodeEngineVersion]: {
+        relativeUrl: `settings/code-generator-version`,
+        icon: "code",
+        displayName: "Code Engine Version",
+        type: "Code Engine Version",
+        pluralTypeName: "Code Engine Version",
+      },
     };
     return blockTypeMap[(change as models.Block).blockType];
   },

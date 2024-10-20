@@ -1,24 +1,26 @@
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { isEmpty } from "lodash";
+import { JsonValue } from "type-fest";
 import { EnumBlockType } from "../../enums/EnumBlockType";
-import { User } from "../../models";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { BlockVersion, User } from "../../models";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
+import { BlockMergeOptions } from "../block/dto/BlockMergeOptions";
+import { BlockSettingsProperties } from "../block/types";
+import { ResourceService } from "../resource/resource.service";
 import { CreatePluginInstallationArgs } from "./dto/CreatePluginInstallationArgs";
+import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 import { FindManyPluginInstallationArgs } from "./dto/FindManyPluginInstallationArgs";
 import { PluginInstallation } from "./dto/PluginInstallation";
-import { UpdatePluginInstallationArgs } from "./dto/UpdatePluginInstallationArgs";
-import { BlockService } from "../block/block.service";
-import { PluginOrderService } from "./pluginOrder.service";
 import { PluginOrder } from "./dto/PluginOrder";
-import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
 import { PluginOrderItem } from "./dto/PluginOrderItem";
-import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
-import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { ResourceService } from "../resource/resource.service";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { AmplicationError } from "../../errors/AmplicationError";
-import { JsonValue } from "type-fest";
-import { isEmpty } from "lodash";
+import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
+import { UpdatePluginInstallationArgs } from "./dto/UpdatePluginInstallationArgs";
+import { PluginOrderService } from "./pluginOrder.service";
 
 export const REQUIRES_AUTHENTICATION_ENTITY = "requireAuthenticationEntity";
 
@@ -294,5 +296,68 @@ export class PluginInstallationService extends BlockTypeService<
     });
 
     return orderedPluginInstallations;
+  }
+
+  async mergeVersionIntoLatest(
+    blockVersion: BlockVersion,
+    targetResourceId: string,
+    user: User,
+    options: BlockMergeOptions
+  ) {
+    if (blockVersion.block.blockType !== EnumBlockType.PluginInstallation) {
+      throw new AmplicationError(
+        `The provided block (${blockVersion.block.blockType}) is not a PluginInstallation block.`
+      );
+    }
+
+    const settings =
+      blockVersion.settings as unknown as BlockSettingsProperties<PluginInstallation>;
+
+    const existingPluginInstallations =
+      await this.findPluginInstallationByPluginId(
+        settings.pluginId,
+        targetResourceId
+      );
+
+    if (existingPluginInstallations.length > 0) {
+      const existingPluginInstallation = existingPluginInstallations[0];
+      if (options.updatedManuallyCreatedBlocks) {
+        return this.update(
+          {
+            data: {
+              //@todo: merge settings.settings with existing plugin installation
+              ...settings,
+              displayName: blockVersion.displayName,
+            },
+            where: {
+              id: existingPluginInstallation.id,
+            },
+          },
+          user
+        );
+      } else {
+        //@todo: replace exception with logger or skip
+        throw new AmplicationError(
+          `The Plugin ${settings.pluginId} already installed in resource ${targetResourceId}`
+        );
+      }
+    } else {
+      return this.create(
+        {
+          data: {
+            ...settings,
+            isPrivate: settings.isPrivate,
+            displayName: blockVersion.displayName,
+
+            resource: {
+              connect: {
+                id: targetResourceId,
+              },
+            },
+          },
+        },
+        user
+      );
+    }
   }
 }
