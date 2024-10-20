@@ -1,14 +1,19 @@
-import { EnumTextStyle, Text, VersionTag } from "@amplication/ui/design-system";
+import {
+  DataGridColumn,
+  EnumTextStyle,
+  Text,
+  VersionTag,
+} from "@amplication/ui/design-system";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { EnumResourceType, Resource } from "../models";
+import ServiceTemplateChip from "../Platform/ServiceTemplateChip";
 import DeleteResourceButton from "./DeleteResourceButton";
 import ResourceGitRepo from "./ResourceGitRepo";
 import ResourceLastBuild from "./ResourceLastBuild";
-import ResourceNameLink from "./ResourceNameLink";
 import ResourceLastBuildVersion from "./ResourceLastBuildVersion";
-import { DataGridColumn } from "@amplication/ui/design-system";
-import ServiceTemplateChip from "../Platform/ServiceTemplateChip";
+import ResourceNameLink from "./ResourceNameLink";
+import ResourcePendingChangesCount from "./ResourcePendingChangesCount";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -68,6 +73,17 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     },
     resizable: true,
     sortable: true,
+  },
+  {
+    key: "pendingChanges",
+    name: "Pending Changes",
+    width: 130,
+    renderCell: (props) => {
+      return <ResourcePendingChangesCount resource={props.row} />;
+    },
+
+    resizable: true,
+    sortable: false,
   },
   {
     key: "lastBuild",
