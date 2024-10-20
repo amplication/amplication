@@ -48,3 +48,15 @@ export const GET_OUTDATED_VERSION_ALERT = gql`
     }
   }
 `;
+
+export const UPDATE_OUTDATED_VERSION_ALERT = gql`
+  ${OUTDATED_VERSION_ALERT_FIELDS_FRAGMENT}
+  mutation updateOutdatedVersionAlert(
+    $id: String!
+    $data: OutdatedVersionAlertUpdateInput!
+  ) {
+    updateOutdatedVersionAlert(where: { id: $id }, data: $data) {
+      ...OutdatedVersionAlertFields
+    }
+  }
+`;
