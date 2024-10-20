@@ -15,7 +15,7 @@ export const DEFAULT_VALUE: Omit<
   BlockValuesExtended<TemplateCodeEngineVersion>,
   "id"
 > = {
-  blockType: EnumBlockType.TemplateCodeEngineVersion,
+  blockType: EnumBlockType.CodeEngineVersion,
   description: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION,
   displayName: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME,
   codeGeneratorStrategy: CodeGeneratorVersionStrategy.LatestMajor,
@@ -78,7 +78,7 @@ export class TemplateCodeEngineVersionService {
             },
           },
         },
-        EnumBlockType.TemplateCodeEngineVersion
+        EnumBlockType.CodeEngineVersion
       );
     return templateCodeEngineVersion;
   }

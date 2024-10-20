@@ -737,6 +737,7 @@ enum EnumAuthProviderType {
 }
 
 enum EnumBlockType {
+  CodeEngineVersion
   Module
   ModuleAction
   ModuleDto
@@ -747,7 +748,6 @@ enum EnumBlockType {
   ProjectConfigurationSettings
   ServiceSettings
   ServiceTopics
-  TemplateCodeEngineVersion
   Topic
 }
 

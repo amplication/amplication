@@ -350,9 +350,7 @@ export class ServiceTemplateService {
       );
     }
 
-    if (
-      blockVersion.block.blockType === EnumBlockType.TemplateCodeEngineVersion
-    ) {
+    if (blockVersion.block.blockType === EnumBlockType.CodeEngineVersion) {
       const settings =
         blockVersion.settings as unknown as BlockSettingsProperties<TemplateCodeEngineVersion>;
 
@@ -401,7 +399,7 @@ export class ServiceTemplateService {
 
     if (
       diff.sourceBlockVersion.block.blockType ===
-      EnumBlockType.TemplateCodeEngineVersion
+      EnumBlockType.CodeEngineVersion
     ) {
       const settings = diff.targetBlockVersion
         .settings as unknown as BlockSettingsProperties<TemplateCodeEngineVersion>;
