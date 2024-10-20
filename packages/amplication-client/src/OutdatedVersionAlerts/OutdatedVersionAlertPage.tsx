@@ -1,32 +1,28 @@
 import {
   CircularProgress,
-  EnumContentAlign,
   EnumFlexDirection,
-  EnumGapSize,
   EnumItemsAlign,
-  EnumTextStyle,
   EnumVersionTagState,
   FlexItem,
+  HeaderItemsStripe,
+  HeaderItemsStripeItem,
   HorizontalRule,
   Snackbar,
   TabContentTitle,
-  Text,
   VersionTag,
 } from "@amplication/ui/design-system";
-import { ReactNode } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { AutoBackNavigation } from "../Components/AutoBackNavigation";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { useAppContext } from "../context/appContext";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import { EnumOutdatedVersionAlertStatus } from "../models";
-import useCompareResourceVersions from "../Platform/hooks/useCompareResourceVersions";
+import CompareResourceVersions from "../Platform/CompareResourceVersions";
 import UpgradeServiceToLatestTemplateVersionButton from "../ServiceTemplate/UpgradeServiceToLatestTemplateVersionButton";
 import { formatError } from "../util/error";
-import CompareBlockVersions from "../VersionControl/CompareBlockVersions";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
+import { AlertStatusSelector } from "./AlertStatusSelector";
 import useOutdatedVersionAlert from "./hooks/useOutdatedVersionAlert";
-import OutdatedVersionAlertStatus from "./OutdatedVersionAlertStatus";
 import OutdatedVersionAlertType from "./OutdatedVersionAlertType";
 
 const CLASS_NAME = "outdated-version-page";
@@ -45,20 +41,26 @@ function OutdatedVersionPage() {
     outdatedVersionAlert: data,
     loadingOutdatedVersionAlert: loading,
     errorOutdatedVersionAlert: error,
-    reloadOutdatedVersionAlert: reload,
+    updateAlert,
+    updateError,
+    updateLoading,
   } = useOutdatedVersionAlert(alertId);
 
-  const {
-    data: compareData,
-    loading: compareLoading,
-    error: compareError,
-  } = useCompareResourceVersions(
-    currentResource?.serviceTemplate?.id,
-    data?.outdatedVersion,
-    data?.latestVersion
-  );
+  const updateAlertStatus = async (status: EnumOutdatedVersionAlertStatus) => {
+    if (!data) {
+      return;
+    }
+    await updateAlert({
+      variables: {
+        id: data.id,
+        data: {
+          status,
+        },
+      },
+    }).catch(console.error);
+  };
 
-  const errorMessage = formatError(error) || formatError(compareError);
+  const errorMessage = formatError(error) || formatError(updateError);
 
   return (
     <PageContent
@@ -93,16 +95,12 @@ function OutdatedVersionPage() {
               itemsAlign={EnumItemsAlign.Center}
             >
               <FlexItem.FlexStart>
-                <FlexItem
-                  itemsAlign={EnumItemsAlign.Start}
-                  contentAlign={EnumContentAlign.Start}
-                  gap={EnumGapSize.Large}
-                >
-                  <HeaderItem
+                <HeaderItemsStripe>
+                  <HeaderItemsStripeItem
                     label="Alert Type"
                     content={<OutdatedVersionAlertType type={data.type} />}
                   />
-                  <HeaderItem
+                  <HeaderItemsStripeItem
                     label="Outdated Version"
                     content={
                       <VersionTag
@@ -111,7 +109,7 @@ function OutdatedVersionPage() {
                       />
                     }
                   />
-                  <HeaderItem
+                  <HeaderItemsStripeItem
                     label="Latest Version"
                     content={
                       <VersionTag
@@ -120,13 +118,19 @@ function OutdatedVersionPage() {
                       />
                     }
                   />
-                  <HeaderItem
+                  <HeaderItemsStripeItem
                     label="Status"
                     content={
-                      <OutdatedVersionAlertStatus status={data.status} />
+                      <AlertStatusSelector
+                        onChange={(value) => {
+                          updateAlertStatus(value);
+                        }}
+                        selectedValue={data.status}
+                        disabled={updateLoading}
+                      />
                     }
                   />
-                </FlexItem>
+                </HeaderItemsStripe>
               </FlexItem.FlexStart>
               <FlexItem.FlexEnd>
                 {data.status === EnumOutdatedVersionAlertStatus.New && (
@@ -139,74 +143,19 @@ function OutdatedVersionPage() {
           </FlexItem>
 
           <HorizontalRule doubleSpacing />
-          {compareLoading ? (
-            <CircularProgress centerToParent />
-          ) : (
-            <FlexItem
-              direction={EnumFlexDirection.Column}
-              gap={EnumGapSize.None}
-              itemsAlign={EnumItemsAlign.Stretch}
-              contentAlign={EnumContentAlign.Start}
-            >
-              {compareData?.compareResourceVersions?.createdBlocks?.map(
-                (block) => (
-                  <CompareBlockVersions
-                    oldVersion={null}
-                    newVersion={block}
-                    key={block.id}
-                    splitView={true}
-                  ></CompareBlockVersions>
-                )
-              )}
-              {compareData?.compareResourceVersions?.deletedBlocks?.map(
-                (block) => (
-                  <CompareBlockVersions
-                    oldVersion={block}
-                    newVersion={null}
-                    key={block.id}
-                    splitView={true}
-                  ></CompareBlockVersions>
-                )
-              )}
-              {compareData?.compareResourceVersions?.updatedBlocks?.map(
-                (diff) => (
-                  <CompareBlockVersions
-                    oldVersion={diff.sourceBlockVersion}
-                    newVersion={diff.targetBlockVersion}
-                    key={diff.sourceBlockVersion.id}
-                    splitView={true}
-                  ></CompareBlockVersions>
-                )
-              )}
-            </FlexItem>
-          )}
+          <CompareResourceVersions
+            resourceId={currentResource?.serviceTemplate?.id}
+            sourceVersion={data.outdatedVersion}
+            targetVersion={data.latestVersion}
+          />
         </>
       )}
 
       <Snackbar
-        open={Boolean(error) || Boolean(compareError)}
+        open={Boolean(error) || Boolean(updateError)}
         message={errorMessage}
       />
     </PageContent>
-  );
-}
-
-type HeaderItemProps = {
-  label: string;
-  content: ReactNode;
-};
-
-function HeaderItem({ label, content }: HeaderItemProps) {
-  return (
-    <div>
-      <FlexItem direction={EnumFlexDirection.Column}>
-        <Text noWrap textStyle={EnumTextStyle.Description}>
-          {label}
-        </Text>
-
-        {content}
-      </FlexItem>
-    </div>
   );
 }
 

@@ -3,9 +3,9 @@ import {
   EnumTextStyle,
   Text,
   UserAndTime,
-  VersionTag,
 } from "@amplication/ui/design-system";
 import { ResourceVersion } from "../models";
+import ResourceVersionLink from "./ResourceVersionLink";
 
 export const RESOURCE_VERSION_LIST_COLUMNS: DataGridColumn<ResourceVersion>[] =
   [
@@ -17,7 +17,7 @@ export const RESOURCE_VERSION_LIST_COLUMNS: DataGridColumn<ResourceVersion>[] =
       width: 150,
 
       renderCell: (props) => {
-        return <VersionTag version={props.row.version} />;
+        return <ResourceVersionLink resourceVersion={props.row} />;
       },
     },
     {
@@ -37,7 +37,7 @@ export const RESOURCE_VERSION_LIST_COLUMNS: DataGridColumn<ResourceVersion>[] =
     },
     {
       key: "message",
-      name: "message",
+      name: "Message",
       renderCell: (props) => {
         return (
           <Text textStyle={EnumTextStyle.Description}>{props.row.message}</Text>
