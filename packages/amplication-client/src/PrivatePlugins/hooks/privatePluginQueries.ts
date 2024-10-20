@@ -7,6 +7,7 @@ export const PRIVATE_PLUGINS_FIELDS_FRAGMENT = gql`
     displayName
     description
     enabled
+    codeGenerator
     versions {
       version
       deprecated

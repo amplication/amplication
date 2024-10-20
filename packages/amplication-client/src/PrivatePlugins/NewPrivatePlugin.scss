@@ -3,6 +3,10 @@
 .new-private-plugin {
   .text-input input {
     border-style: dashed;
+
+    border-color: var(--gray-base);
+    width: 100%;
+    max-width: none;
   }
 
   &__add-field {

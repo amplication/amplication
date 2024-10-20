@@ -1,11 +1,14 @@
 import {
   CircularProgress,
+  CollapsibleListItem,
   EnabledIndicator,
   EnumItemsAlign,
   FlexItem,
   HorizontalRule,
   SearchField,
   Snackbar,
+  VerticalNavigation,
+  VerticalNavigationItem,
 } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
 import React, { useCallback, useContext, useEffect, useState } from "react";
@@ -33,10 +36,10 @@ export const PrivatePluginList = React.memo(
     const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: true });
 
     const {
-      getPrivatePluginsData: data,
-      getPrivatePlugins,
-      getPrivatePluginsError: error,
-      getPrivatePluginsLoading: loading,
+      getPrivatePluginsByCodeGeneratorData: data,
+      getPrivatePluginsByCodeGenerator,
+      getPrivatePluginsByCodeGeneratorError: error,
+      getPrivatePluginsByCodeGeneratorLoading: loading,
     } = usePrivatePlugin(pluginRepositoryResource?.id);
 
     const handleSearchChange = useCallback(
@@ -58,56 +61,79 @@ export const PrivatePluginList = React.memo(
     );
 
     useEffect(() => {
-      if (selectFirst && data && !isEmpty(data.privatePlugins)) {
-        const privatePlugin = data.privatePlugins[0];
+      if (selectFirst && data) {
+        const firstCodeGenerator = data[0];
+        if (isEmpty(firstCodeGenerator) || firstCodeGenerator.length === 0) {
+          return;
+        }
+
+        const privatePlugin = firstCodeGenerator[0];
         const fieldUrl = `${baseUrl}/private-plugins/${privatePlugin.id}`;
         history.push(fieldUrl);
       }
     }, [data, selectFirst, history, baseUrl]);
 
     useEffect(() => {
-      getPrivatePlugins(searchPhrase);
-    }, [getPrivatePlugins, searchPhrase]);
+      getPrivatePluginsByCodeGenerator(searchPhrase);
+    }, [getPrivatePluginsByCodeGenerator, searchPhrase]);
 
     return (
       <div className={CLASS_NAME}>
-        <InnerTabLink
-          icon="settings"
+        <VerticalNavigationItem
+          icon="git_branch"
           to={`${baseUrl}/private-plugins/git-settings`}
         >
           <FlexItem itemsAlign={EnumItemsAlign.Center}>Git Settings</FlexItem>
-        </InnerTabLink>
+        </VerticalNavigationItem>
+
+        <NewPrivatePlugin
+          onPrivatePluginAdd={handlePrivatePluginChange}
+          resourceId={pluginRepositoryResource?.id}
+        />
+        <HorizontalRule />
+
         <SearchField
           label="search"
           placeholder="search"
           onChange={handleSearchChange}
         />
 
-        {loading && <CircularProgress />}
-        <div className={`${CLASS_NAME}__list`}>
-          {data?.privatePlugins?.map((privatePlugin) => (
-            <InnerTabLink
-              key={privatePlugin.id}
-              icon="plugin"
-              to={`${baseUrl}/private-plugins/${privatePlugin.id}`}
+        {data &&
+          Object.entries(data).map(([codeGenerator, privatePlugins]) => (
+            <CollapsibleListItem
+              initiallyExpanded
+              icon={"code"}
+              expandable
+              childItems={
+                <>
+                  <VerticalNavigation>
+                    {privatePlugins.map((privatePlugin) => (
+                      <VerticalNavigationItem
+                        key={privatePlugin.id}
+                        icon="plugin"
+                        to={`${baseUrl}/private-plugins/${privatePlugin.id}`}
+                      >
+                        <FlexItem
+                          itemsAlign={EnumItemsAlign.Center}
+                          end={
+                            <EnabledIndicator enabled={privatePlugin.enabled} />
+                          }
+                          singeChildWithEllipsis
+                        >
+                          {privatePlugin.displayName}
+                        </FlexItem>
+                      </VerticalNavigationItem>
+                    ))}
+                  </VerticalNavigation>
+                </>
+              }
             >
-              <FlexItem
-                itemsAlign={EnumItemsAlign.Center}
-                end={<EnabledIndicator enabled={privatePlugin.enabled} />}
-                singeChildWithEllipsis
-              >
-                {privatePlugin.displayName}
-              </FlexItem>
-            </InnerTabLink>
+              <span>{codeGenerator} </span>&nbsp; Plugins
+            </CollapsibleListItem>
           ))}
 
-          {data?.privatePlugins && (
-            <NewPrivatePlugin
-              onPrivatePluginAdd={handlePrivatePluginChange}
-              resourceId={pluginRepositoryResource?.id}
-            />
-          )}
-        </div>
+        {loading && <CircularProgress />}
+
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </div>
     );

@@ -795,6 +795,10 @@ enum EnumCodeGenerator {
   NodeJs
 }
 
+input EnumCodeGeneratorFilter {
+  equals: EnumCodeGenerator
+}
+
 enum EnumCommitStrategy {
   All
   AllWithPendingChanges
@@ -1819,6 +1823,7 @@ input PluginSetOrderInput {
 
 type PrivatePlugin implements IBlock {
   blockType: EnumBlockType!
+  codeGenerator: EnumCodeGenerator!
   createdAt: DateTime!
   description: String
   displayName: String!
@@ -1839,6 +1844,7 @@ type PrivatePlugin implements IBlock {
 }
 
 input PrivatePluginCreateInput {
+  codeGenerator: EnumCodeGenerator!
   description: String
   displayName: String!
   enabled: Boolean!
@@ -1859,6 +1865,7 @@ input PrivatePluginOrderByInput {
 }
 
 input PrivatePluginUpdateInput {
+  codeGenerator: EnumCodeGenerator
   description: String
   displayName: String
   enabled: Boolean!
@@ -1885,6 +1892,7 @@ input PrivatePluginVersionUpdateInput {
 }
 
 input PrivatePluginWhereInput {
+  codeGenerator: EnumCodeGeneratorFilter
   createdAt: DateTimeFilter
   description: StringFilter
   displayName: StringFilter
