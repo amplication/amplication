@@ -169,6 +169,11 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
   //commits mutation
   const [commit, { error: commitChangesError, loading: commitChangesLoading }] =
     useMutation<TData>(COMMIT_CHANGES, {
+      update: (cache, { data }) => {
+        //evict the cache of all alert after commit
+        cache.evict({ fieldName: "outdatedVersionAlerts" });
+        cache.evict({ fieldName: "resourceVersions" });
+      },
       onError: (error: ApolloError) => {
         setCommitRunning(false);
         setPendingChangesError(true);

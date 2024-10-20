@@ -3,24 +3,9 @@
 .back-navigation {
   @include body2;
   @include semiBold;
-  color: var(--gray-base);
+  color: var(--gray-20);
   display: inline-flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-
-  a {
-    color: var(--primary);
-
-    &:hover,
-    &:active,
-    &:visited {
-      color: var(--primary);
-    }
-
-    &:hover,
-    &:active {
-      text-decoration: underline;
-    }
-  }
 }

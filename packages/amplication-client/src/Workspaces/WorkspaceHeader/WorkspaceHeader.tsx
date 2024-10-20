@@ -48,6 +48,7 @@ import WorkspaceBanner from "./WorkspaceBanner";
 import "./WorkspaceHeader.scss";
 import styles from "./notificationStyle";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import ConsoleNavigationButton from "../../Assistant/ConsoleNavigationButton";
 
 const CLASS_NAME = "workspace-header";
 const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
@@ -216,6 +217,8 @@ const WorkspaceHeader: React.FC = () => {
         <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>
           <div className={`${CLASS_NAME}__links`}>
+            <ConsoleNavigationButton />
+            <hr className={`${CLASS_NAME}__vertical_border`} />
             <AskJovuButton />
             <UpgradeCtaButton />
           </div>

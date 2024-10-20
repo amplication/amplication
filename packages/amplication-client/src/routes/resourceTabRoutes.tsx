@@ -221,11 +221,20 @@ export const resourceTabRoutes = (projectBasePath) => [
   },
   {
     path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/versions`,
-    Component: lazy(() => import("../Platform/ResourceVersionList")),
+    Component: lazy(() => import("../Platform/ResourceVersionsPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
-    routes: [],
+    routes: [
+      {
+        path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/versions/:version([A-Za-z0-9-]{20,})`,
+        Component: lazy(() => import("../Platform/ResourceVersionPage")),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: false,
+        routes: [],
+      },
+    ],
   },
   {
     path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/template-services`,
@@ -239,5 +248,28 @@ export const resourceTabRoutes = (projectBasePath) => [
     routeTrackType: "",
     exactPath: false,
     routes: [],
+  },
+  {
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/tech-debt`,
+    Component: lazy(
+      () => import("../OutdatedVersionAlerts/OutdatedVersionAlertsPage")
+    ),
+    moduleName: "",
+    displayName: "Tech Debt",
+    routeTrackType: "",
+    exactPath: false,
+    routes: [
+      {
+        path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/tech-debt/:alert([A-Za-z0-9-]{20,})`,
+        Component: lazy(
+          () => import("../OutdatedVersionAlerts/OutdatedVersionAlertPage")
+        ),
+        moduleName: "",
+        displayName: "Tech Debt Alert",
+        routeTrackType: "",
+        exactPath: false,
+        routes: [],
+      },
+    ],
   },
 ];

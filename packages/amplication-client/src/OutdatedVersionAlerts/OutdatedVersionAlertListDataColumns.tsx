@@ -1,6 +1,7 @@
 import {
   DataGridColumn,
   EnumVersionTagState,
+  TimeSince,
   VersionTag,
 } from "@amplication/ui/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
@@ -32,7 +33,7 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     renderCell: (props) => {
       return (
         <>
-          {props.row.resource ? (
+          {!props.row.resource ? (
             "(unavailable)"
           ) : (
             <ResourceNameLink resource={props.row.resource} />
@@ -42,8 +43,18 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     },
   },
   {
+    key: "createdAt",
+    name: "Created",
+    resizable: true,
+    sortable: true,
+    width: 200,
+    renderCell: (props) => {
+      return <TimeSince time={new Date(props.row.createdAt)} />;
+    },
+  },
+  {
     key: "type",
-    name: "Type",
+    name: "Alert Type",
     resizable: true,
     sortable: true,
     width: 200,
