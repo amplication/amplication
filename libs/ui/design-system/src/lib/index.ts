@@ -268,7 +268,10 @@ export {
   DataGridColumn,
   DataGridSortColumn,
   DataGridSortOrder,
+  ExpandableDataGridRow,
 } from "./components/DataGrid/DataGrid";
+
+export { DataGridRowExpander } from "./components/DataGrid/DataGridRowExpander";
 
 export {
   ToggleView,
@@ -280,3 +283,18 @@ export {
   Props as VersionTagProps,
   EnumVersionTagState,
 } from "./components/VersionTag/VersionTag";
+
+export {
+  CodeCompare,
+  Props as CodeCompareProps,
+} from "./components/CodeCompare/CodeCompare";
+
+export {
+  HeaderItemsStripe,
+  Props as HeaderItemsStripeProps,
+} from "./components/HeaderItemsStripe/HeaderItemsStripe";
+
+export {
+  HeaderItemsStripeItem,
+  Props as HeaderItemsStripeItemProps,
+} from "./components/HeaderItemsStripe/HeaderItemsStripeItem";

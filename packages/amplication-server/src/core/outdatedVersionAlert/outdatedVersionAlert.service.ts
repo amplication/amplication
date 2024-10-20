@@ -9,6 +9,8 @@ import { FindOneOutdatedVersionAlertArgs } from "./dto/FindOneOutdatedVersionAle
 import { OutdatedVersionAlert } from "./dto/OutdatedVersionAlert";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { UpdateOutdatedVersionAlertArgs } from "./dto/UpdateOutdatedVersionAlertArgs";
+import { User } from "../../models";
 
 @Injectable()
 export class OutdatedVersionAlertService {
@@ -75,6 +77,7 @@ export class OutdatedVersionAlertService {
     args: FindManyOutdatedVersionAlertArgs
   ): Promise<OutdatedVersionAlert[]> {
     return this.prisma.outdatedVersionAlert.findMany({
+      ...args,
       where: {
         ...args.where,
         resource: {
@@ -128,6 +131,12 @@ export class OutdatedVersionAlertService {
     if (outdatedVersion !== null) {
       //create outdatedVersionAlert for each service
       for (const service of services) {
+        const currentTemplateVersion =
+          await this.resourceService.getServiceTemplateSettings(
+            service.id,
+            null
+          );
+
         await this.create({
           data: {
             resource: {
@@ -136,11 +145,20 @@ export class OutdatedVersionAlertService {
               },
             },
             type: EnumOutdatedVersionAlertType.TemplateVersion,
-            outdatedVersion,
+            outdatedVersion: currentTemplateVersion.version,
             latestVersion,
           },
         });
       }
     }
+  }
+
+  async update(
+    args: UpdateOutdatedVersionAlertArgs,
+    user: User
+  ): Promise<OutdatedVersionAlert> {
+    //todo: add tracking for changes (use action log?)
+
+    return this.prisma.outdatedVersionAlert.update(args);
   }
 }
