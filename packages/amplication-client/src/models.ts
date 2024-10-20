@@ -2428,6 +2428,7 @@ export type PrivatePlugin = IBlock & {
 };
 
 export type PrivatePluginCreateInput = {
+  codeGenerator: EnumCodeGenerator;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName: Scalars['String']['input'];
   enabled: Scalars['Boolean']['input'];
