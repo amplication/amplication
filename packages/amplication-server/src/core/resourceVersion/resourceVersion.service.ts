@@ -10,7 +10,7 @@ import { FindManyResourceVersionArgs } from "./dto/FindManyResourceVersionArgs";
 import { FindOneResourceVersionArgs } from "./dto/FindOneResourceVersionArgs";
 import { ResourceVersion } from "./dto/ResourceVersion";
 import { BlockService } from "../block/block.service";
-import { valid } from "semver";
+import { sort, valid } from "semver";
 import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
 import { BlockVersion } from "../../models";
 import { ResourceVersionsDiff } from "./dto/ResourceVersionsDiff";
@@ -138,6 +138,36 @@ export class ResourceVersionService {
     });
   }
 
+  async getPreviousVersion(
+    resourceId: string,
+    version: string
+  ): Promise<ResourceVersion | null> {
+    const versions = await this.prisma.resourceVersion.findMany({
+      where: {
+        resourceId: resourceId,
+      },
+      orderBy: {
+        createdAt: "desc", //@todo: order by semver and consider adding status and returning the latest published version
+      },
+    });
+
+    const sortedVersions = sort(versions.map((v) => v.version));
+
+    const index = sortedVersions.indexOf(version);
+
+    if (index === -1) {
+      //not found
+      return null;
+    }
+
+    if (index === 0) {
+      //there is no previous version
+      return null;
+    }
+
+    return versions.find((v) => v.version === sortedVersions[index - 1]);
+  }
+
   async compareResourceVersions(
     args: CompareResourceVersionsArgs
   ): Promise<ResourceVersionsDiff> {
@@ -145,17 +175,28 @@ export class ResourceVersionService {
 
     const resourceId = resource.id;
 
-    const sourceResourceVersion = await this.prisma.resourceVersion.findFirst({
-      where: {
-        resourceId: resourceId,
-        version: sourceVersion,
-      },
-    });
+    let sourceResourceVersion;
 
-    const sourceBlockVersions =
-      await this.blockService.getBlockVersionsByResourceVersions(
-        sourceResourceVersion.id
+    //when source version is not provided, we need to find the previous version based on the target version
+    if (sourceVersion) {
+      sourceResourceVersion = await this.prisma.resourceVersion.findFirst({
+        where: {
+          resourceId: resourceId,
+          version: sourceVersion,
+        },
+      });
+    } else {
+      sourceResourceVersion = await this.getPreviousVersion(
+        resourceId,
+        targetVersion
       );
+    }
+
+    const sourceBlockVersions = sourceResourceVersion
+      ? await this.blockService.getBlockVersionsByResourceVersions(
+          sourceResourceVersion.id
+        )
+      : [];
 
     const targetResourceVersion = await this.prisma.resourceVersion.findFirst({
       where: {
@@ -163,6 +204,12 @@ export class ResourceVersionService {
         version: targetVersion,
       },
     });
+
+    if (!targetResourceVersion) {
+      throw new Error(
+        `Resource version with version ${targetVersion} not found for resource ${resourceId}`
+      );
+    }
 
     const targetBlockVersions =
       await this.blockService.getBlockVersionsByResourceVersions(

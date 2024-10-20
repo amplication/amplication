@@ -1,53 +1,28 @@
 import { useQuery } from "@apollo/client";
-import { useState } from "react";
 import * as models from "../../models";
-import { GET_RESOURCE_VERSIONS } from "./resourceVersionQueries";
+import { GET_RESOURCE_VERSION } from "./resourceVersionQueries";
 
-type TGetResourceVersions = {
-  resourceVersions: models.ResourceVersion[];
+type TGetResourceVersion = {
+  resourceVersion: models.ResourceVersion;
   _resourceVersionsMeta: { count: number };
 };
 
-const useResourceVersion = (resourceId: string | undefined) => {
-  const [searchPhrase, setSearchPhrase] = useState<string>("");
-  const [pageNumber, setPageNumber] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [orderBy, setOrderBy] =
-    useState<models.ResourceVersionOrderByInput>(undefined);
-
-  const {
-    data: resourceVersions,
-    loading: loadingResourceVersions,
-    error: errorResourceVersions,
-    refetch: reloadResourceVersions,
-  } = useQuery<TGetResourceVersions>(GET_RESOURCE_VERSIONS, {
-    variables: {
-      orderBy: orderBy || { createdAt: models.SortOrder.Desc },
-      take: pageSize,
-      skip: (pageNumber - 1) * pageSize,
-      where: {
-        resource: { id: resourceId },
-        message:
-          searchPhrase !== ""
-            ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
-            : undefined,
+const useResourceVersion = (resourceVersionId: string | undefined) => {
+  const { data, loading, error, refetch } = useQuery<TGetResourceVersion>(
+    GET_RESOURCE_VERSION,
+    {
+      variables: {
+        id: resourceVersionId,
       },
-    },
-    skip: !resourceId,
-  });
+      skip: !resourceVersionId,
+    }
+  );
 
   return {
-    resourceVersions: resourceVersions?.resourceVersions || [],
-    resourceVersionsCount: resourceVersions?._resourceVersionsMeta.count || 0,
-    loadingResourceVersions,
-    errorResourceVersions,
-    reloadResourceVersions,
-    setPageNumber,
-    pageNumber,
-    setPageSize,
-    pageSize,
-    setOrderBy,
-    setSearchPhrase,
+    data: data?.resourceVersion,
+    loading,
+    error,
+    refetch,
   };
 };
 
