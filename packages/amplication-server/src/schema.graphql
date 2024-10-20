@@ -1844,6 +1844,7 @@ type PrivatePlugin implements IBlock {
 }
 
 input PrivatePluginCreateInput {
+  codeGenerator: EnumCodeGenerator!
   description: String
   displayName: String!
   enabled: Boolean!
