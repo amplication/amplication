@@ -35,7 +35,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^2.8.8",
     "typescript": "^5.1.6",
-    "vite": "^4.3.9",
+    "vite": "^4.5.5",
     "@types/lodash": "4.14.178",
     "type-fest": "0.13.1"
   }
