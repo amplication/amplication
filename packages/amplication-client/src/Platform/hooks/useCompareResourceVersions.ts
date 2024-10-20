@@ -21,7 +21,7 @@ const useCompareResourceVersions = (
           targetVersion: targetVersion,
         },
       },
-      skip: !resourceId || !sourceVersion || !targetVersion,
+      skip: !resourceId || !targetVersion,
     }
   );
 

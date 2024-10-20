@@ -17,6 +17,7 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "id",
   "createdAt",
   "updatedAt",
+  "versions",
   "__typename",
 ];
 

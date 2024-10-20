@@ -1,13 +1,9 @@
-import React, { useMemo } from "react";
-import YAML from "yaml";
+import { CircularProgress, CodeCompare } from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
-import ReactDiffViewer, {
-  DiffMethod,
-  ReactDiffViewerStylesOverride,
-} from "@amplication/react-diff-viewer-continued";
+import { useMemo } from "react";
+import YAML from "yaml";
 import * as models from "../models";
 import "./PendingChangeDiff.scss";
-import { CircularProgress } from "@amplication/ui/design-system";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -34,50 +30,11 @@ type TData = {
 type Props = {
   change: models.PendingChange;
   compareType?: EnumCompareType;
-  splitView: boolean;
-};
-
-export const DIFF_STYLES: ReactDiffViewerStylesOverride = {
-  variables: {
-    light: {
-      diffViewerBackground: "var(--diffViewerBackground)",
-      diffViewerColor: "var(--diffViewerColor)",
-      addedBackground: "var(--addedBackground)",
-      addedColor: "var(--addedColor)",
-      removedBackground: "var(--removedBackground)",
-      removedColor: "var(--removedColor)",
-      wordAddedBackground: "var(--wordAddedBackground)",
-      wordRemovedBackground: "var(--wordRemovedBackground)",
-      addedGutterBackground: "var(--addedGutterBackground)",
-      removedGutterBackground: "var(--removedGutterBackground)",
-      gutterBackground: "var(--gutterBackground)",
-      gutterBackgroundDark: "var(--gutterBackgroundDark)",
-      highlightBackground: "var(--highlightBackground)",
-      highlightGutterBackground: "var(--highlightGutterBackground)",
-      codeFoldGutterBackground: "var(--codeFoldGutterBackground)",
-      codeFoldBackground: "var(--codeFoldBackground)",
-      emptyLineBackground: "var(--emptyLineBackground)",
-      gutterColor: "var(--gutterColor)",
-      addedGutterColor: "var(--addedGutterColor)",
-      removedGutterColor: "var(--removedGutterColor)",
-      codeFoldContentColor: "var(--codeFoldContentColor)",
-      diffViewerTitleBackground: "var(--diffViewerTitleBackground)",
-      diffViewerTitleColor: "var(--diffViewerTitleColor)",
-      diffViewerTitleBorderColor: "var(--diffViewerTitleBorderColor)",
-    },
-  },
-};
-
-export const UNIFIED_VIEW_STYLE: ReactDiffViewerStylesOverride = {
-  titleBlock: {
-    padding: "0",
-  },
 };
 
 const PendingChangeDiffEntity = ({
   change,
   compareType = EnumCompareType.Pending,
-  splitView,
 }: Props) => {
   const { data: dataOtherVersion, loading: loadingOtherVersion } =
     useQuery<TData>(GET_ENTITY_VERSION, {
@@ -125,17 +82,7 @@ const PendingChangeDiffEntity = ({
       {loadingCurrentVersion || loadingOtherVersion ? (
         <CircularProgress centerToParent />
       ) : (
-        <ReactDiffViewer
-          styles={
-            splitView ? DIFF_STYLES : { ...DIFF_STYLES, ...UNIFIED_VIEW_STYLE }
-          }
-          compareMethod={DiffMethod.WORDS}
-          oldValue={otherValue}
-          newValue={newValue}
-          leftTitle={splitView ? "Previous Version" : undefined}
-          rightTitle="This Version"
-          splitView={splitView}
-        />
+        <CodeCompare oldVersion={otherValue} newVersion={newValue} />
       )}
     </div>
   );

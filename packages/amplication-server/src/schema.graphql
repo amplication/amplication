@@ -747,6 +747,7 @@ enum EnumBlockType {
   ProjectConfigurationSettings
   ServiceSettings
   ServiceTopics
+  TemplateCodeEngineVersion
   Topic
 }
 
@@ -1564,6 +1565,7 @@ type Mutation {
   updateModuleDto(data: ModuleDtoUpdateInput!, where: WhereUniqueInput!): ModuleDto!
   updateModuleDtoEnumMember(data: ModuleDtoEnumMemberUpdateInput!, where: WhereEnumMemberUniqueInput!): ModuleDtoEnumMember!
   updateModuleDtoProperty(data: ModuleDtoPropertyUpdateInput!, where: WherePropertyUniqueInput!): ModuleDtoProperty!
+  updateOutdatedVersionAlert(data: OutdatedVersionAlertUpdateInput!, where: WhereUniqueInput!): OutdatedVersionAlert!
   updatePackage(data: PackageUpdateInput!, where: WhereUniqueInput!): Package!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updatePrivatePlugin(data: PrivatePluginUpdateInput!, where: WhereUniqueInput!): PrivatePlugin!
@@ -1601,6 +1603,10 @@ input OutdatedVersionAlertOrderByInput {
   status: SortOrder
   type: SortOrder
   updatedAt: SortOrder
+}
+
+input OutdatedVersionAlertUpdateInput {
+  status: String
 }
 
 input OutdatedVersionAlertWhereInput {

@@ -1,11 +1,18 @@
 import { UseFilters, UseGuards } from "@nestjs/common";
-import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { MetaQueryPayload } from "../../dto/MetaQueryPayload";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Resource } from "../../models";
+import { Resource, User } from "../../models";
 import { CommitService } from "../commit/commit.service";
 import { ResourceService } from "../resource/resource.service";
 import { UserService } from "../user/user.service";
@@ -13,6 +20,8 @@ import { FindManyOutdatedVersionAlertArgs } from "./dto/FindManyOutdatedVersionA
 import { FindOneOutdatedVersionAlertArgs } from "./dto/FindOneOutdatedVersionAlertArgs";
 import { OutdatedVersionAlert } from "./dto/OutdatedVersionAlert";
 import { OutdatedVersionAlertService } from "./outdatedVersionAlert.service";
+import { UserEntity } from "../../decorators/user.decorator";
+import { UpdateOutdatedVersionAlertArgs } from "./dto/UpdateOutdatedVersionAlertArgs";
 
 @Resolver(() => OutdatedVersionAlert)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -59,6 +68,20 @@ export class OutdatedVersionAlertResolver {
     @Args() args: FindOneOutdatedVersionAlertArgs
   ): Promise<OutdatedVersionAlert> {
     return this.service.findOne(args);
+  }
+
+  @Mutation(() => OutdatedVersionAlert, {
+    nullable: false,
+  })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.OutdatedVersionAlertId,
+    "where.id"
+  )
+  async updateOutdatedVersionAlert(
+    @UserEntity() user: User,
+    @Args() args: UpdateOutdatedVersionAlertArgs
+  ): Promise<OutdatedVersionAlert> {
+    return this.service.update(args, user);
   }
 
   @ResolveField()

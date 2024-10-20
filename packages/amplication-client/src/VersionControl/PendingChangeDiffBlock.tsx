@@ -1,13 +1,10 @@
-import React, { useMemo } from "react";
-import YAML from "yaml";
+import { CircularProgress, CodeCompare } from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
-import ReactDiffViewer, {
-  DiffMethod,
-} from "@amplication/react-diff-viewer-continued";
+import { useMemo } from "react";
+import YAML from "yaml";
 import * as models from "../models";
-import { EnumCompareType, DIFF_STYLES } from "./PendingChangeDiffEntity";
 import "./PendingChangeDiff.scss";
-import { CircularProgress } from "@amplication/ui/design-system";
+import { EnumCompareType } from "./PendingChangeDiffEntity";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -29,13 +26,11 @@ type TData = {
 type Props = {
   change: models.PendingChange;
   compareType?: EnumCompareType;
-  splitView: boolean;
 };
 
 const PendingChangeDiffBlock = ({
   change,
   compareType = EnumCompareType.Pending,
-  splitView,
 }: Props) => {
   const { data: dataOtherVersion, loading: loadingOtherVersion } =
     useQuery<TData>(GET_BLOCK_VERSION, {
@@ -83,15 +78,7 @@ const PendingChangeDiffBlock = ({
       {loadingCurrentVersion || loadingOtherVersion ? (
         <CircularProgress centerToParent />
       ) : (
-        <ReactDiffViewer
-          styles={DIFF_STYLES}
-          compareMethod={DiffMethod.WORDS}
-          oldValue={otherValue}
-          newValue={newValue}
-          leftTitle={splitView ? "This Version" : undefined}
-          rightTitle="Previous Version"
-          splitView={splitView}
-        />
+        <CodeCompare oldVersion={otherValue} newVersion={newValue} />
       )}
     </div>
   );

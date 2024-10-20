@@ -50,6 +50,7 @@ export const FLOW_SETTINGS: {
       successPluginsLine2: "the service template",
       successDoneLine1: "I'm done!",
       successDoneLine2: "View my templates",
+      successLoading: "All set! We’re currently creating your template.",
     },
   },
 };
