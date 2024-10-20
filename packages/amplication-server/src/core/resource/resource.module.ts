@@ -28,6 +28,7 @@ import { ServiceTemplateService } from "./serviceTemplate.service";
 import { ServiceTemplateResolver } from "./serviceTemplate.resolver";
 import { ResourceVersionModule } from "../resourceVersion/resourceVersion.module";
 import { OutdatedVersionAlertModule } from "../outdatedVersionAlert/outdatedVersionAlert.module";
+import { TemplateCodeEngineVersionModule } from "../templateCodeEngineVersion/templateCodeEngineVersion.module";
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { OutdatedVersionAlertModule } from "../outdatedVersionAlert/outdatedVers
     GitProviderModule,
     ResourceVersionModule,
     OutdatedVersionAlertModule,
+    TemplateCodeEngineVersionModule,
   ],
   providers: [
     ResourceService,
