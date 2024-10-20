@@ -14,7 +14,7 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { WizardProgressBarInterface } from "./wizardResourceSchema";
 import WizardProgressBar from "./WizardProgressBar";
 import CreateServiceLoader from "./CreateServiceLoader";
-import { WizardFlowType, WizardStep } from "./types";
+import { WizardFlowSettings, WizardFlowType, WizardStep } from "./types";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useTracking } from "../../util/analytics";
 import { GlobalHotKeys } from "react-hotkeys";
@@ -38,6 +38,7 @@ interface ServiceWizardProps {
     page: string,
     pageEventName: AnalyticsEventNames
   ) => void;
+  flowSettings: WizardFlowSettings;
 }
 
 type BackButtonProps = {
@@ -118,6 +119,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   handleCloseWizard,
   handleWizardProgress,
   wizardFlowType,
+  flowSettings,
 }) => {
   const { trackEvent } = useTracking();
   const wizardPattern = useMemo(() => {
@@ -281,7 +283,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
               <>
                 <Form>
                   {keepLoadingAnimation || submitLoader ? (
-                    <CreateServiceLoader />
+                    <CreateServiceLoader flowSettings={flowSettings} />
                   ) : (
                     React.cloneElement(
                       currentPage as React.ReactElement<
