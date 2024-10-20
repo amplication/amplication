@@ -35,7 +35,7 @@ const ProjectPlatformPage: React.FC<Props> = ({
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
   //count how many unique resources in the pending changes
-  const pendingChangesCount = useMemo(() => {
+  const publishCount = useMemo(() => {
     return pendingChanges?.reduce((acc, change) => {
       if (!acc.includes(change.resource.id)) {
         acc.push(change.resource.id);
@@ -49,9 +49,18 @@ const ProjectPlatformPage: React.FC<Props> = ({
       if (tab.name === "Publish") {
         return {
           ...tab,
-          indicatorValue:
-            pendingChangesCount > 0 ? pendingChangesCount : undefined,
-          indicatorColor: EnumTextColor.ThemeOrange,
+          indicatorValue: publishCount > 0 ? publishCount : undefined,
+          indicatorColor: EnumTextColor.White,
+        };
+      }
+      if (tab.name === "Pending Changes") {
+        return {
+          ...tab,
+          name: "Platform Changes",
+          indicatorValue: pendingChanges?.length
+            ? pendingChanges.length
+            : undefined,
+          indicatorColor: EnumTextColor.White,
         };
       }
       return tab;
@@ -65,7 +74,7 @@ const ProjectPlatformPage: React.FC<Props> = ({
       },
       ...(tabsWithPendingChanges || []),
     ];
-  }, [match.url, pendingChangesCount, tabs]);
+  }, [match.url, publishCount, tabs, pendingChanges]);
 
   return match.isExact || currentRouteIsTab ? (
     <>

@@ -86,6 +86,7 @@ function ServiceTemplateList() {
               <BetaFeatureTag>
                 <PlatformBetaContent />
               </BetaFeatureTag>
+              {loadingServiceTemplates && <CircularProgress />}
             </FlexItem>
           </>
         }
@@ -110,8 +111,6 @@ function ServiceTemplateList() {
         }
       ></FlexItem>
       <HorizontalRule doubleSpacing />
-
-      {loadingServiceTemplates && <CircularProgress centerToParent />}
 
       {isEmpty(serviceTemplates) && !loadingServiceTemplates ? (
         <EmptyState
