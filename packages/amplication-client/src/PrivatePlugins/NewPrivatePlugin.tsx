@@ -12,6 +12,7 @@ import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
+import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
 
 const INITIAL_VALUES: Partial<models.PrivatePlugin> = {
   pluginId: "",
@@ -46,6 +47,8 @@ const NewPrivatePlugin = ({ onPrivatePluginAdd, resourceId }: Props) => {
     createPrivatePluginLoading: loading,
   } = usePrivatePlugin(resourceId);
 
+  const { defaultCodeGenerator } = useAvailableCodeGenerators();
+
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
 
@@ -59,6 +62,7 @@ const NewPrivatePlugin = ({ onPrivatePluginAdd, resourceId }: Props) => {
             ...data,
             pluginId: data.displayName,
             enabled: true,
+            codeGenerator: defaultCodeGenerator,
             resource: { connect: { id: resourceId } },
           },
         },
@@ -73,7 +77,14 @@ const NewPrivatePlugin = ({ onPrivatePluginAdd, resourceId }: Props) => {
         })
         .catch(console.error);
     },
-    [createPrivatePlugin, resourceId, onPrivatePluginAdd, addEntity, trackEvent]
+    [
+      trackEvent,
+      createPrivatePlugin,
+      defaultCodeGenerator,
+      resourceId,
+      onPrivatePluginAdd,
+      addEntity,
+    ]
   );
 
   const errorMessage = formatError(error);

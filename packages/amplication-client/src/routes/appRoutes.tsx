@@ -94,33 +94,29 @@ export const Routes: RouteDef[] = [
                   },
                 ],
               },
-              // {
-              //   path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/tech-debt",
-              //   Component: lazy(
-              //     () =>
-              //       import("../OutdatedVersionAlerts/OutdatedVersionAlertsPage")
-              //   ),
-              //   moduleName: "",
-              //   displayName: "Tech Debt",
-              //   routeTrackType: "",
-              //   exactPath: false,
-              //   routes: [
-              //     {
-              //       path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/tech-debt/:alert([A-Za-z0-9-]{20,})",
-              //       Component: lazy(
-              //         () =>
-              //           import(
-              //             "../OutdatedVersionAlerts/OutdatedVersionAlertPage"
-              //           )
-              //       ),
-              //       moduleName: "",
-              //       displayName: "Tech Debt Alert",
-              //       routeTrackType: "",
-              //       exactPath: false,
-              //       routes: [],
-              //     },
-              //   ],
-              // },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/tech-debt",
+                Component: lazy(
+                  () =>
+                    import("../OutdatedVersionAlerts/OutdatedVersionAlertsPage")
+                ),
+                moduleName: "",
+                displayName: "Tech Debt",
+                routeTrackType: "",
+                exactPath: false,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/pending-changes",
+                Component: lazy(
+                  () => import("../VersionControl/PendingChangesPage")
+                ),
+                moduleName: "PendingChangesPage",
+                moduleClass: "pending-changes-page",
+                displayName: "Pending Changes",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/publish",
                 Component: lazy(
@@ -157,17 +153,6 @@ export const Routes: RouteDef[] = [
                 ),
                 moduleName: "CreatePluginRepository",
                 moduleClass: "create-plugin-repository",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/pending-changes",
-                Component: lazy(
-                  () => import("../VersionControl/PendingChangesPage")
-                ),
-                moduleName: "PendingChangesPage",
-                moduleClass: "pending-changes-page",
                 routeTrackType: "",
                 exactPath: true,
                 isAnalytics: true,
@@ -262,6 +247,18 @@ export const Routes: RouteDef[] = [
                 isAnalytics: true,
               },
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
+                Component: lazy(
+                  () => import("../VersionControl/PendingChangesPage")
+                ),
+                moduleName: "PendingChangesPage",
+                moduleClass: "pending-changes-page",
+                displayName: "Pending Changes",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings",
                 Component: lazy(() => import("../Project/ProjectSettingsPage")),
                 moduleName: "ProjectSettings",
@@ -299,17 +296,6 @@ export const Routes: RouteDef[] = [
               },
             ],
             routes: [
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
-                Component: lazy(
-                  () => import("../VersionControl/PendingChangesPage")
-                ),
-                moduleName: "PendingChangesPage",
-                moduleClass: "pending-changes-page",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/dotnet-upgrade",
                 Component: lazy(

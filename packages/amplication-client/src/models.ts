@@ -780,6 +780,7 @@ export enum EnumBlockType {
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
   ServiceSettings = 'ServiceSettings',
   ServiceTopics = 'ServiceTopics',
+  TemplateCodeEngineVersion = 'TemplateCodeEngineVersion',
   Topic = 'Topic'
 }
 
@@ -826,6 +827,10 @@ export enum EnumCodeGenerator {
   DotNet = 'DotNet',
   NodeJs = 'NodeJs'
 }
+
+export type EnumCodeGeneratorFilter = {
+  equals?: InputMaybe<EnumCodeGenerator>;
+};
 
 export enum EnumCommitStrategy {
   All = 'All',
@@ -1584,6 +1589,7 @@ export type Mutation = {
   updateModuleDto: ModuleDto;
   updateModuleDtoEnumMember: ModuleDtoEnumMember;
   updateModuleDtoProperty: ModuleDtoProperty;
+  updateOutdatedVersionAlert: OutdatedVersionAlert;
   updatePackage: Package;
   updatePluginInstallation: PluginInstallation;
   updatePrivatePlugin: PrivatePlugin;
@@ -2084,6 +2090,12 @@ export type MutationUpdateModuleDtoPropertyArgs = {
 };
 
 
+export type MutationUpdateOutdatedVersionAlertArgs = {
+  data: OutdatedVersionAlertUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationUpdatePackageArgs = {
   data: PackageUpdateInput;
   where: WhereUniqueInput;
@@ -2182,6 +2194,10 @@ export type OutdatedVersionAlertOrderByInput = {
   status?: InputMaybe<SortOrder>;
   type?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type OutdatedVersionAlertUpdateInput = {
+  status?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type OutdatedVersionAlertWhereInput = {
@@ -2391,6 +2407,7 @@ export type PluginSetOrderInput = {
 
 export type PrivatePlugin = IBlock & {
   blockType: EnumBlockType;
+  codeGenerator: EnumCodeGenerator;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
@@ -2411,6 +2428,7 @@ export type PrivatePlugin = IBlock & {
 };
 
 export type PrivatePluginCreateInput = {
+  codeGenerator: EnumCodeGenerator;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName: Scalars['String']['input'];
   enabled: Scalars['Boolean']['input'];
@@ -2431,6 +2449,7 @@ export type PrivatePluginOrderByInput = {
 };
 
 export type PrivatePluginUpdateInput = {
+  codeGenerator?: InputMaybe<EnumCodeGenerator>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   enabled: Scalars['Boolean']['input'];
@@ -2457,6 +2476,7 @@ export type PrivatePluginVersionUpdateInput = {
 };
 
 export type PrivatePluginWhereInput = {
+  codeGenerator?: InputMaybe<EnumCodeGeneratorFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
   displayName?: InputMaybe<StringFilter>;
@@ -3211,14 +3231,14 @@ export type ResourceVersionWhereInput = {
 };
 
 export type ResourceVersionsDiff = {
-  createdBlocks?: Maybe<Array<Block>>;
-  deletedBlocks?: Maybe<Array<Block>>;
+  createdBlocks?: Maybe<Array<BlockVersion>>;
+  deletedBlocks?: Maybe<Array<BlockVersion>>;
   updatedBlocks?: Maybe<Array<ResourceVersionsDiffBlock>>;
 };
 
 export type ResourceVersionsDiffBlock = {
-  sourceBlock: Block;
-  targetBlock: Block;
+  sourceBlockVersion: BlockVersion;
+  targetBlockVersion: BlockVersion;
 };
 
 export type ResourceWhereInput = {

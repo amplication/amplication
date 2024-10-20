@@ -75,6 +75,8 @@ import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { GitProviderService } from "../git/git.provider.service";
 import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings";
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
+import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVersion";
+import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -184,7 +186,8 @@ export class ResourceService {
     private readonly subscriptionService: SubscriptionService,
     private readonly actionService: ActionService,
     private readonly userActionService: UserActionService,
-    private readonly gitProviderService: GitProviderService
+    private readonly gitProviderService: GitProviderService,
+    private readonly templateCodeEngineVersionService: TemplateCodeEngineVersionService
   ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
@@ -404,7 +407,7 @@ export class ResourceService {
       event: EnumEventType.CodeGeneratorVersionUpdate,
     });
 
-    return this.prisma.resource.update({
+    const updatedResource = await this.prisma.resource.update({
       where: args.where,
       data: {
         codeGeneratorVersion:
@@ -413,6 +416,17 @@ export class ResourceService {
           args.data.codeGeneratorVersionOptions.codeGeneratorStrategy,
       },
     });
+
+    //update the template code engine version, to keep history of the code engine used in each version of the template
+    if (resource.resourceType === EnumResourceType.ServiceTemplate) {
+      await this.templateCodeEngineVersionService.update(
+        resource.id,
+        args.data.codeGeneratorVersionOptions.codeGeneratorVersion,
+        args.data.codeGeneratorVersionOptions.codeGeneratorStrategy,
+        user
+      );
+    }
+    return updatedResource;
   }
 
   async getAndValidateCodeGeneratorName(
@@ -1916,5 +1930,33 @@ export class ResourceService {
     );
 
     return this.prisma.$transaction(archiveResources);
+  }
+
+  async getServiceTemplateSettings(
+    resourceId: string,
+    user: User
+  ): Promise<ServiceTemplateVersion> {
+    const resource = await this.resource({
+      where: {
+        id: resourceId,
+      },
+    });
+
+    if (!resource || resource.resourceType !== EnumResourceType.Service) {
+      return null;
+    }
+
+    const settings = await this.serviceSettingsService.getServiceSettingsBlock(
+      {
+        where: { id: resource.id },
+      },
+      user
+    );
+
+    if (!settings?.serviceTemplateVersion) {
+      return null;
+    }
+
+    return settings.serviceTemplateVersion;
   }
 }
