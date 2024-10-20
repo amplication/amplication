@@ -11,6 +11,7 @@ import {
   GET_OUTDATED_VERSION_ALERT,
   GET_OUTDATED_VERSION_ALERTS,
 } from "../../OutdatedVersionAlerts/hooks/outdatedVersionAlertsQueries";
+import { useAppContext } from "../../context/appContext";
 
 type TFindResourcesData = {
   resources: models.Resource[];
@@ -32,14 +33,19 @@ const useServiceTemplate = (
   currentProject: models.Project | undefined,
   onServiceTemplateCreated?: (serviceTemplate: models.Resource) => void
 ) => {
+  const { addBlock } = useAppContext();
+
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const [publishedServiceTemplates, setPublishedServiceTemplates] = useState<
     models.Resource[]
   >([]);
 
+  const [serviceTemplates, setServiceTemplates] = useState<models.Resource[]>(
+    []
+  );
+
   const {
-    data: serviceTemplates,
     loading: loadingServiceTemplates,
     error: errorServiceTemplates,
     refetch: reloadServiceTemplates,
@@ -56,6 +62,7 @@ const useServiceTemplate = (
       const publishedServiceTemplates = data.serviceTemplates.filter(
         (serviceTemplate) => serviceTemplate.version
       );
+      setServiceTemplates(data.serviceTemplates);
 
       setPublishedServiceTemplates(publishedServiceTemplates);
     },
@@ -72,6 +79,9 @@ const useServiceTemplate = (
     UPGRADE_SERVICE_TO_LATEST_TEMPLATE_VERSION,
     {
       refetchQueries: [GET_OUTDATED_VERSION_ALERTS, GET_OUTDATED_VERSION_ALERT],
+      onCompleted: (data) => {
+        addBlock(data.upgradeServiceToLatestTemplateVersion.id);
+      },
     }
   );
 
@@ -129,7 +139,7 @@ const useServiceTemplate = (
   };
 
   return {
-    serviceTemplates: serviceTemplates?.serviceTemplates || [],
+    serviceTemplates: serviceTemplates,
     handleSearchChange,
     loadingServiceTemplates,
     errorServiceTemplates,

@@ -15,6 +15,13 @@ const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
   const [orderBy, setOrderBy] =
     useState<models.OutdatedVersionAlertOrderByInput>(undefined);
 
+  const [outdatedVersionAlerts, setOutdatedVersionAlerts] = useState<
+    models.OutdatedVersionAlert[]
+  >([]);
+
+  const [outdatedVersionAlertsCount, setOutdatedVersionAlertsCount] =
+    useState<number>(0);
+
   const [status, setStatus] = useState<
     keyof typeof models.EnumOutdatedVersionAlertStatus | null
   >(models.EnumOutdatedVersionAlertStatus.New);
@@ -24,7 +31,6 @@ const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
   >(null);
 
   const {
-    data: outdatedVersionAlert,
     loading: loadingOutdatedVersionAlerts,
     error: errorOutdatedVersionAlerts,
     refetch: reloadOutdatedVersionAlerts,
@@ -47,12 +53,15 @@ const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
       },
     },
     skip: !projectId,
+    onCompleted: (data) => {
+      setOutdatedVersionAlerts(data.outdatedVersionAlerts);
+      setOutdatedVersionAlertsCount(data._outdatedVersionAlertsMeta.count);
+    },
   });
 
   return {
-    outdatedVersionAlerts: outdatedVersionAlert?.outdatedVersionAlerts || [],
-    outdatedVersionAlertsCount:
-      outdatedVersionAlert?._outdatedVersionAlertsMeta.count || 0,
+    outdatedVersionAlerts,
+    outdatedVersionAlertsCount,
     loadingOutdatedVersionAlerts,
     errorOutdatedVersionAlerts,
     reloadOutdatedVersionAlerts,
