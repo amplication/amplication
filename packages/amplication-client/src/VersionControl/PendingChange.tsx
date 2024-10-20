@@ -158,7 +158,7 @@ export const PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP = {
         type: "Private Plugin",
         pluralTypeName: "Private Plugins",
       },
-      [models.EnumBlockType.TemplateCodeEngineVersion]: {
+      [models.EnumBlockType.CodeEngineVersion]: {
         relativeUrl: `settings/code-generator-version`,
         icon: "code",
         displayName: "Code Engine Version",

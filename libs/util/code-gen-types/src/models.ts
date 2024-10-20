@@ -767,6 +767,7 @@ export enum EnumAuthProviderType {
 }
 
 export enum EnumBlockType {
+  CodeEngineVersion = 'CodeEngineVersion',
   Module = 'Module',
   ModuleAction = 'ModuleAction',
   ModuleDto = 'ModuleDto',
@@ -777,7 +778,6 @@ export enum EnumBlockType {
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
   ServiceSettings = 'ServiceSettings',
   ServiceTopics = 'ServiceTopics',
-  TemplateCodeEngineVersion = 'TemplateCodeEngineVersion',
   Topic = 'Topic'
 }
 
