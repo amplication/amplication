@@ -15,6 +15,7 @@ import { DataGridColumn } from "@amplication/ui/design-system";
 import NewServiceFromTemplateButton from "../ServiceTemplate/NewServiceFromTemplateButton";
 import ResourcePluginLogoGroup from "../Plugins/ResourcePluginLogoGroup";
 import ResourceCodeEngineVersion from "../Workspaces/ResourceCodeEngineVersion";
+import ResourcePendingChangesCount from "../Workspaces/ResourcePendingChangesCount";
 
 export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -42,6 +43,17 @@ export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     renderCell: (props) => {
       return <VersionTag version={props.row.version?.version} />;
     },
+  },
+  {
+    key: "pendingChanges",
+    name: "Pending Changes",
+    width: 130,
+    renderCell: (props) => {
+      return <ResourcePendingChangesCount resource={props.row} />;
+    },
+
+    resizable: true,
+    sortable: false,
   },
   {
     key: "codeGenerator",
