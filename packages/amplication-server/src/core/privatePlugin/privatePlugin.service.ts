@@ -62,40 +62,75 @@ export class PrivatePluginService extends BlockTypeService<
       return [];
     }
 
-    return await this.findMany({
-      ...args,
-      where: {
-        ...args.where,
-        resource: {
-          deletedAt: null,
-          archived: {
-            not: true,
+    const privatePluginBlocks = await this.findMany(
+      {
+        ...args,
+        where: {
+          ...args.where,
+          resource: {
+            deletedAt: null,
+            archived: {
+              not: true,
+            },
+            projectId: resource.projectId,
           },
-          projectId: resource.projectId,
-        },
-        codeGenerator: {
-          equals:
-            CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
-            EnumCodeGenerator.NodeJs,
+          codeGenerator: {
+            equals:
+              CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
+              EnumCodeGenerator.NodeJs,
+          },
         },
       },
-    });
+      null,
+      true
+    );
+
+    return privatePluginBlocks.filter((block) => block.versions !== undefined);
   }
 
   async findMany(
     args: FindManyPrivatePluginArgs,
-    user?: User
+    user?: User,
+    takeLatestVersion?: boolean
   ): Promise<PrivatePlugin[]> {
     const codeGeneratorFilter = args.where?.codeGenerator;
+    const pluginId = args.where?.pluginId;
     delete args.where?.codeGenerator;
+    delete args.where?.pluginId;
 
-    if (codeGeneratorFilter) {
-      const filter = {
-        path: ["codeGenerator"],
-        equals: codeGeneratorFilter.equals,
-      };
+    if (codeGeneratorFilter || pluginId) {
+      const filter =
+        codeGeneratorFilter && pluginId
+          ? [
+              {
+                path: ["codeGenerator"],
+                equals: codeGeneratorFilter.equals,
+              },
+              {
+                path: ["pluginId"],
+                equals: pluginId,
+              },
+            ]
+          : codeGeneratorFilter
+          ? {
+              path: ["codeGenerator"],
+              equals: codeGeneratorFilter.equals,
+            }
+          : pluginId
+          ? {
+              path: ["pluginId"],
+              equals: pluginId,
+            }
+          : [];
 
-      return this.findManyBySettings(args, filter);
+      const settingsFilterOperator = Array.isArray(filter) ? "AND" : "OR";
+
+      return this.findManyBySettings(
+        args,
+        filter,
+        settingsFilterOperator,
+        takeLatestVersion
+      );
     }
 
     return super.findMany(args, user);
