@@ -2482,6 +2482,7 @@ export type PrivatePluginWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
+  pluginId?: InputMaybe<Scalars['String']['input']>;
   resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
