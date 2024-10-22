@@ -737,6 +737,7 @@ enum EnumAuthProviderType {
 }
 
 enum EnumBlockType {
+  CodeEngineVersion
   Module
   ModuleAction
   ModuleDto
@@ -792,6 +793,10 @@ input EnumBuildStatusFilter {
 enum EnumCodeGenerator {
   DotNet
   NodeJs
+}
+
+input EnumCodeGeneratorFilter {
+  equals: EnumCodeGenerator
 }
 
 enum EnumCommitStrategy {
@@ -1564,6 +1569,7 @@ type Mutation {
   updateModuleDto(data: ModuleDtoUpdateInput!, where: WhereUniqueInput!): ModuleDto!
   updateModuleDtoEnumMember(data: ModuleDtoEnumMemberUpdateInput!, where: WhereEnumMemberUniqueInput!): ModuleDtoEnumMember!
   updateModuleDtoProperty(data: ModuleDtoPropertyUpdateInput!, where: WherePropertyUniqueInput!): ModuleDtoProperty!
+  updateOutdatedVersionAlert(data: OutdatedVersionAlertUpdateInput!, where: WhereUniqueInput!): OutdatedVersionAlert!
   updatePackage(data: PackageUpdateInput!, where: WhereUniqueInput!): Package!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updatePrivatePlugin(data: PrivatePluginUpdateInput!, where: WhereUniqueInput!): PrivatePlugin!
@@ -1601,6 +1607,10 @@ input OutdatedVersionAlertOrderByInput {
   status: SortOrder
   type: SortOrder
   updatedAt: SortOrder
+}
+
+input OutdatedVersionAlertUpdateInput {
+  status: String
 }
 
 input OutdatedVersionAlertWhereInput {
@@ -1813,6 +1823,7 @@ input PluginSetOrderInput {
 
 type PrivatePlugin implements IBlock {
   blockType: EnumBlockType!
+  codeGenerator: EnumCodeGenerator!
   createdAt: DateTime!
   description: String
   displayName: String!
@@ -1833,6 +1844,7 @@ type PrivatePlugin implements IBlock {
 }
 
 input PrivatePluginCreateInput {
+  codeGenerator: EnumCodeGenerator!
   description: String
   displayName: String!
   enabled: Boolean!
@@ -1853,6 +1865,7 @@ input PrivatePluginOrderByInput {
 }
 
 input PrivatePluginUpdateInput {
+  codeGenerator: EnumCodeGenerator
   description: String
   displayName: String
   enabled: Boolean!
@@ -1879,6 +1892,7 @@ input PrivatePluginVersionUpdateInput {
 }
 
 input PrivatePluginWhereInput {
+  codeGenerator: EnumCodeGeneratorFilter
   createdAt: DateTimeFilter
   description: StringFilter
   displayName: StringFilter
@@ -2266,14 +2280,14 @@ input ResourceVersionWhereInput {
 }
 
 type ResourceVersionsDiff {
-  createdBlocks: [Block!]
-  deletedBlocks: [Block!]
+  createdBlocks: [BlockVersion!]
+  deletedBlocks: [BlockVersion!]
   updatedBlocks: [ResourceVersionsDiffBlock!]
 }
 
 type ResourceVersionsDiffBlock {
-  sourceBlock: Block!
-  targetBlock: Block!
+  sourceBlockVersion: BlockVersion!
+  targetBlockVersion: BlockVersion!
 }
 
 input ResourceWhereInput {

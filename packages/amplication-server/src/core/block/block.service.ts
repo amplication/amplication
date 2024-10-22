@@ -95,6 +95,7 @@ export class BlockService {
     [EnumBlockType.ModuleDto]: new Set([EnumBlockType.Module]),
     [EnumBlockType.PrivatePlugin]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.Package]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.CodeEngineVersion]: ALLOW_NO_PARENT_ONLY,
   };
 
   private async resolveParentBlock(
@@ -862,10 +863,10 @@ export class BlockService {
     });
   }
 
-  async getBlocksByResourceVersions(
+  async getBlockVersionsByResourceVersions(
     resourceVersionId: string
-  ): Promise<Block[]> {
-    const blockVersion = await this.prisma.blockVersion.findMany({
+  ): Promise<BlockVersion[]> {
+    return this.prisma.blockVersion.findMany({
       where: {
         resourceVersions: {
           some: {
@@ -880,10 +881,6 @@ export class BlockService {
           },
         },
       },
-    });
-
-    return blockVersion.map((version) => {
-      return this.versionToIBlock(version);
     });
   }
 

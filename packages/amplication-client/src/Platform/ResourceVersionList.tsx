@@ -21,7 +21,7 @@ import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
-import useResourceVersion from "./hooks/useResourceVersion";
+import useResourceVersions from "./hooks/useResourceVersions";
 import "./ResourceVersionList.scss";
 import { RESOURCE_VERSION_LIST_COLUMNS } from "./ResourceVersionListDataColumns";
 
@@ -41,7 +41,7 @@ function ResourceVersionList() {
     pageNumber,
     setOrderBy,
     resourceVersionsCount,
-  } = useResourceVersion(currentResource?.id);
+  } = useResourceVersions(currentResource?.id);
 
   const errorMessage = formatError(errorResourceVersions);
 

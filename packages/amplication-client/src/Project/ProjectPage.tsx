@@ -1,4 +1,4 @@
-import { Dialog, TabItem } from "@amplication/ui/design-system";
+import { Dialog, EnumTextColor, TabItem } from "@amplication/ui/design-system";
 import React, {
   useCallback,
   useContext,
@@ -61,6 +61,7 @@ const ProjectPage: React.FC<Props> = ({
           indicatorValue: pendingChanges?.length
             ? pendingChanges.length
             : undefined,
+          indicatorColor: EnumTextColor.White,
         };
       } else return tab;
     });
@@ -73,7 +74,7 @@ const ProjectPage: React.FC<Props> = ({
       },
       ...(tabsWithPendingChanges || []),
     ];
-  }, [tabs, pendingChanges]);
+  }, [tabs, match.url, pendingChanges]);
 
   return match.isExact || currentRouteIsTab ? (
     <>

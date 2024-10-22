@@ -600,6 +600,7 @@ enum EnumBlockType {
   ModuleDto
   PrivatePlugin
   Package
+  CodeEngineVersion
 }
 
 enum ActionStepStatus {

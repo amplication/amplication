@@ -8,12 +8,19 @@ type TGetOutdatedVersionAlerts = {
   _outdatedVersionAlertsMeta: { count: number };
 };
 
-const useOutdatedVersionAlerts = (projectId: string) => {
+const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(30);
   const [orderBy, setOrderBy] =
     useState<models.OutdatedVersionAlertOrderByInput>(undefined);
+
+  const [outdatedVersionAlerts, setOutdatedVersionAlerts] = useState<
+    models.OutdatedVersionAlert[]
+  >([]);
+
+  const [outdatedVersionAlertsCount, setOutdatedVersionAlertsCount] =
+    useState<number>(0);
 
   const [status, setStatus] = useState<
     keyof typeof models.EnumOutdatedVersionAlertStatus | null
@@ -24,7 +31,6 @@ const useOutdatedVersionAlerts = (projectId: string) => {
   >(null);
 
   const {
-    data: outdatedVersionAlert,
     loading: loadingOutdatedVersionAlerts,
     error: errorOutdatedVersionAlerts,
     refetch: reloadOutdatedVersionAlerts,
@@ -34,7 +40,10 @@ const useOutdatedVersionAlerts = (projectId: string) => {
       take: pageSize,
       skip: (pageNumber - 1) * pageSize,
       where: {
-        resource: { project: { id: projectId } },
+        resource: {
+          id: resourceId ?? undefined,
+          project: { id: projectId },
+        },
         status: status ? { equals: status } : undefined,
         type: type ? { equals: type } : undefined,
         // message:
@@ -44,12 +53,15 @@ const useOutdatedVersionAlerts = (projectId: string) => {
       },
     },
     skip: !projectId,
+    onCompleted: (data) => {
+      setOutdatedVersionAlerts(data.outdatedVersionAlerts);
+      setOutdatedVersionAlertsCount(data._outdatedVersionAlertsMeta.count);
+    },
   });
 
   return {
-    outdatedVersionAlerts: outdatedVersionAlert?.outdatedVersionAlerts || [],
-    outdatedVersionAlertsCount:
-      outdatedVersionAlert?._outdatedVersionAlertsMeta.count || 0,
+    outdatedVersionAlerts,
+    outdatedVersionAlertsCount,
     loadingOutdatedVersionAlerts,
     errorOutdatedVersionAlerts,
     reloadOutdatedVersionAlerts,

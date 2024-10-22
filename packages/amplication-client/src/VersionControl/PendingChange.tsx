@@ -33,7 +33,9 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
         />
       );
 
-    const data = changeOriginMap[change.originType](change.origin);
+    const data = PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP[change.originType](
+      change.origin
+    );
 
     return (
       <PendingChangeContent
@@ -57,7 +59,7 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
 
 export default PendingChange;
 
-export const changeOriginMap = {
+export const PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP = {
   [models.EnumPendingChangeOriginType.Entity]: (
     change: models.PendingChangeOrigin
   ): EntityLinkAndDisplayName => ({
@@ -155,6 +157,13 @@ export const changeOriginMap = {
         displayName: change.displayName,
         type: "Private Plugin",
         pluralTypeName: "Private Plugins",
+      },
+      [models.EnumBlockType.CodeEngineVersion]: {
+        relativeUrl: `settings/code-generator-version`,
+        icon: "code",
+        displayName: "Code Engine Version",
+        type: "Code Engine Version",
+        pluralTypeName: "Code Engine Version",
       },
     };
     return blockTypeMap[(change as models.Block).blockType];

@@ -66,6 +66,7 @@ const EXAMPLE_PRIVATE_PLUGIN: PrivatePlugin = {
   versionNumber: 0,
   inputParameters: [],
   outputParameters: [],
+  codeGenerator: "DotNet",
 };
 
 const blockServiceFindOneMock = jest.fn(() => {

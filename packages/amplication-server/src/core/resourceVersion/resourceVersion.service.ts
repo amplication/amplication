@@ -10,9 +10,9 @@ import { FindManyResourceVersionArgs } from "./dto/FindManyResourceVersionArgs";
 import { FindOneResourceVersionArgs } from "./dto/FindOneResourceVersionArgs";
 import { ResourceVersion } from "./dto/ResourceVersion";
 import { BlockService } from "../block/block.service";
-import { valid } from "semver";
+import { sort, valid } from "semver";
 import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
-import { Block } from "../../models";
+import { BlockVersion } from "../../models";
 import { ResourceVersionsDiff } from "./dto/ResourceVersionsDiff";
 import { ResourceVersionsDiffBlock } from "./dto/ResourceVersionsDiffBlock";
 import { CompareResourceVersionsArgs } from "./dto/CompareResourceVersionsArgs";
@@ -59,7 +59,7 @@ export class ResourceVersionService {
       where: { resourceId: resourceId },
     });
 
-    // const previousVersion = await this.getLatest(resourceId);
+    const previousVersion = await this.getLatest(resourceId);
 
     const resourceVersion = await this.prisma.resourceVersion.create({
       ...args,
@@ -79,11 +79,11 @@ export class ResourceVersionService {
       },
     });
 
-    // await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
-    //   resourceId,
-    //   previousVersion?.version,
-    //   args.data.version
-    // );
+    await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
+      resourceId,
+      previousVersion?.version,
+      args.data.version
+    );
 
     return resourceVersion;
   }
@@ -138,6 +138,36 @@ export class ResourceVersionService {
     });
   }
 
+  async getPreviousVersion(
+    resourceId: string,
+    version: string
+  ): Promise<ResourceVersion | null> {
+    const versions = await this.prisma.resourceVersion.findMany({
+      where: {
+        resourceId: resourceId,
+      },
+      orderBy: {
+        createdAt: "desc", //@todo: order by semver and consider adding status and returning the latest published version
+      },
+    });
+
+    const sortedVersions = sort(versions.map((v) => v.version));
+
+    const index = sortedVersions.indexOf(version);
+
+    if (index === -1) {
+      //not found
+      return null;
+    }
+
+    if (index === 0) {
+      //there is no previous version
+      return null;
+    }
+
+    return versions.find((v) => v.version === sortedVersions[index - 1]);
+  }
+
   async compareResourceVersions(
     args: CompareResourceVersionsArgs
   ): Promise<ResourceVersionsDiff> {
@@ -145,16 +175,28 @@ export class ResourceVersionService {
 
     const resourceId = resource.id;
 
-    const sourceResourceVersion = await this.prisma.resourceVersion.findFirst({
-      where: {
-        resourceId: resourceId,
-        version: sourceVersion,
-      },
-    });
+    let sourceResourceVersion;
 
-    const sourceBlocks = await this.blockService.getBlocksByResourceVersions(
-      sourceResourceVersion.id
-    );
+    //when source version is not provided, we need to find the previous version based on the target version
+    if (sourceVersion) {
+      sourceResourceVersion = await this.prisma.resourceVersion.findFirst({
+        where: {
+          resourceId: resourceId,
+          version: sourceVersion,
+        },
+      });
+    } else {
+      sourceResourceVersion = await this.getPreviousVersion(
+        resourceId,
+        targetVersion
+      );
+    }
+
+    const sourceBlockVersions = sourceResourceVersion
+      ? await this.blockService.getBlockVersionsByResourceVersions(
+          sourceResourceVersion.id
+        )
+      : [];
 
     const targetResourceVersion = await this.prisma.resourceVersion.findFirst({
       where: {
@@ -163,38 +205,47 @@ export class ResourceVersionService {
       },
     });
 
-    const targetBlocks = await this.blockService.getBlocksByResourceVersions(
-      targetResourceVersion.id
-    );
+    if (!targetResourceVersion) {
+      throw new Error(
+        `Resource version with version ${targetVersion} not found for resource ${resourceId}`
+      );
+    }
 
-    const updated: ResourceVersionsDiffBlock[] = [];
-    const deleted: Block[] = [];
-    const created: Block[] = [];
-
-    for (const sourceBlock of sourceBlocks) {
-      const targetBlock = targetBlocks.find(
-        (block) => block.id === sourceBlock.id
+    const targetBlockVersions =
+      await this.blockService.getBlockVersionsByResourceVersions(
+        targetResourceVersion.id
       );
 
-      if (targetBlock) {
-        if (sourceBlock.versionNumber !== targetBlock.versionNumber) {
+    const updated: ResourceVersionsDiffBlock[] = [];
+    const deleted: BlockVersion[] = [];
+    const created: BlockVersion[] = [];
+
+    for (const sourceBlockVersion of sourceBlockVersions) {
+      const targetBlockVersion = targetBlockVersions.find(
+        (blockVersion) => blockVersion.block.id === sourceBlockVersion.block.id
+      );
+
+      if (targetBlockVersion) {
+        if (
+          sourceBlockVersion.versionNumber !== targetBlockVersion.versionNumber
+        ) {
           updated.push({
-            sourceBlock,
-            targetBlock,
+            sourceBlockVersion,
+            targetBlockVersion,
           });
         }
       } else {
-        deleted.push(sourceBlock);
+        deleted.push(sourceBlockVersion);
       }
     }
 
-    for (const targetBlock of targetBlocks) {
-      const sourceBlock = sourceBlocks.find(
-        (block) => block.id === targetBlock.id
+    for (const targetBlockVersion of targetBlockVersions) {
+      const sourceBlockVersion = sourceBlockVersions.find(
+        (blockVersion) => blockVersion.block.id === targetBlockVersion.block.id
       );
 
-      if (!sourceBlock) {
-        created.push(targetBlock);
+      if (!sourceBlockVersion) {
+        created.push(targetBlockVersion);
       }
     }
 

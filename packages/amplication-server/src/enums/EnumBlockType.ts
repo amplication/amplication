@@ -12,6 +12,7 @@ export enum EnumBlockType {
   ModuleDto = "ModuleDto",
   Package = "Package",
   PrivatePlugin = "PrivatePlugin",
+  CodeEngineVersion = "CodeEngineVersion",
 }
 
 registerEnumType(EnumBlockType, { name: "EnumBlockType" });

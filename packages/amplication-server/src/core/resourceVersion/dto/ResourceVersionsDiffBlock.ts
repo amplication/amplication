@@ -1,13 +1,13 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { Block } from "../../../models/Block";
+import { BlockVersion } from "../../../models/BlockVersion";
 
 @ObjectType({
   isAbstract: true,
 })
 export class ResourceVersionsDiffBlock {
-  @Field(() => Block, { nullable: false })
-  sourceBlock: Block;
+  @Field(() => BlockVersion, { nullable: false })
+  sourceBlockVersion: BlockVersion;
 
-  @Field(() => Block, { nullable: false })
-  targetBlock: Block;
+  @Field(() => BlockVersion, { nullable: false })
+  targetBlockVersion: BlockVersion;
 }

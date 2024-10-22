@@ -1,37 +1,28 @@
-import React, { useMemo } from "react";
-import { Icon } from "../Icon/Icon";
-import { Tooltip } from "../Tooltip/Tooltip";
-import classNames from "classnames";
 import { formatDistanceToNow } from "date-fns";
-import "./TimeSince.scss";
+import { useMemo } from "react";
+import { formatDateAndTime } from "../../util/dateFormat";
+import { Tooltip } from "../Tooltip/Tooltip";
+import { EnumTextStyle, Text } from "../Text/Text";
 
 const CLASS_NAME = "time-since";
 
-export enum EnumTimeSinceSize {
-  short = "short",
-  Default = "default",
-}
-
 export type Props = {
   time: Date;
-  size?: EnumTimeSinceSize;
 };
 
-export function TimeSince({ time, size = EnumTimeSinceSize.Default }: Props) {
+export function TimeSince({ time }: Props) {
   const formattedTime = useMemo(() => {
     return formatTimeToNow(time);
   }, [time]);
 
+  const fullTime = formatDateAndTime(time, "Never");
+
   return (
-    <span className={classNames(CLASS_NAME, `${CLASS_NAME}--${size}`)}>
-      <Tooltip
-        className={`${CLASS_NAME}__tooltip`}
-        aria-label={formattedTime || ""}
-      >
-        <span className={`${CLASS_NAME}__icon`}>
-          <Icon icon="calendar" />
-        </span>
-        <span className={`${CLASS_NAME}__time`}>{formattedTime}</span>
+    <span className={CLASS_NAME}>
+      <Tooltip className={`${CLASS_NAME}__tooltip`} aria-label={fullTime || ""}>
+        <Text textStyle={EnumTextStyle.Subtle}>
+          <span className={`${CLASS_NAME}__time`}>{formattedTime}</span>
+        </Text>
       </Tooltip>
     </span>
   );
