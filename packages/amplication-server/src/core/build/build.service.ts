@@ -11,7 +11,10 @@ import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
 import { EntityService } from "../entity/entity.service";
 import { ResourceRoleService } from "../resourceRole/resourceRole.service";
-import { ResourceService } from "../resource/resource.service";
+import {
+  CODE_GENERATOR_NAME_TO_ENUM,
+  ResourceService,
+} from "../resource/resource.service";
 import {
   EnumActionStepStatus,
   EnumActionLogLevel,
@@ -36,6 +39,7 @@ import {
   EnumGitProvider,
   EnumPullRequestMode,
   GitProviderProperties,
+  PluginDownloadItem,
 } from "@amplication/util/git";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { ILogger } from "@amplication/util/logging";
@@ -74,6 +78,8 @@ import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { PluginInstallation } from "../pluginInstallation/dto/PluginInstallation";
 import { PackageService } from "../package/package.service";
 import omitDeep from "deepdash/omitDeep";
+import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+import { PrivatePluginService } from "../privatePlugin/privatePlugin.service";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -242,7 +248,8 @@ export class BuildService {
     private readonly gitProviderService: GitProviderService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
-    private analytics: SegmentAnalyticsService
+    private analytics: SegmentAnalyticsService,
+    private readonly privatePluginService: PrivatePluginService
   ) {
     this.host = this.configService.get(HOST_VAR);
     if (!this.host) {
@@ -601,9 +608,10 @@ export class BuildService {
                 ...pluginRepoGitSettings,
                 buildId: build.id,
                 resourceId,
-                pluginsToDownload: privatePlugins.map((plugin) => {
-                  return { pluginId: plugin.pluginId };
-                }),
+                pluginsToDownload: await this.getPrivatePluginsWithVersion(
+                  resourceId,
+                  privatePlugins
+                ),
               },
             };
 
@@ -635,6 +643,59 @@ export class BuildService {
       },
       true
     );
+  }
+
+  private async getPrivatePluginsWithVersion(
+    resourceId: string,
+    privatePlugins: PluginInstallation[]
+  ): Promise<PluginDownloadItem[]> {
+    const resource = await this.resourceService.findOne({
+      where: { id: resourceId },
+    });
+    const pluginsToDownload: PluginDownloadItem[] = [];
+
+    for (const privatePlugin of privatePlugins) {
+      if (privatePlugin.version !== "latest") {
+        pluginsToDownload.push({
+          pluginId: privatePlugin.pluginId,
+          pluginVersion: privatePlugin.version,
+        });
+        continue;
+      }
+      const privatePluginBlocks = await this.privatePluginService.findMany(
+        {
+          where: {
+            resource: {
+              deletedAt: null,
+              archived: {
+                not: true,
+              },
+              projectId: resource.projectId,
+            },
+            codeGenerator: {
+              equals:
+                CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
+                EnumCodeGenerator.NodeJs,
+            },
+            pluginId: privatePlugin.pluginId,
+          },
+        },
+        null,
+        true
+      );
+      const sortedVersions = privatePluginBlocks[0].versions.sort((a, b) =>
+        b.version.localeCompare(a.version)
+      );
+
+      const pluginVersion = sortedVersions.find((version) => version.enabled);
+
+      pluginsToDownload.push({
+        pluginId: privatePlugin.pluginId,
+        pluginVersion: pluginVersion.version,
+      });
+    }
+
+    return pluginsToDownload;
   }
 
   private async getResourceRoles(resourceId: string): Promise<ResourceRole[]> {

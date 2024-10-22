@@ -26,6 +26,7 @@ import { ModuleActionModule } from "../moduleAction/moduleAction.module";
 import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
 import { PackageModule } from "../package/package.module";
 import { ProjectConfigurationSettingsModule } from "../projectConfigurationSettings/projectConfigurationSettings.module";
+import { PrivatePluginModule } from "../privatePlugin/privatePlugin.module";
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ProjectConfigurationSettingsModule } from "../projectConfigurationSetti
     ModuleDtoModule,
     PackageModule,
     ProjectConfigurationSettingsModule,
+    PrivatePluginModule,
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],
