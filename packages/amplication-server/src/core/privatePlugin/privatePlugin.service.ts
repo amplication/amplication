@@ -1,5 +1,5 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
@@ -42,6 +42,7 @@ export class PrivatePluginService extends BlockTypeService<
     protected readonly blockService: BlockService,
     protected readonly logger: AmplicationLogger,
     protected readonly billingService: BillingService,
+    @Inject(forwardRef(() => ResourceService))
     protected readonly resourceService: ResourceService
   ) {
     super(blockService, logger);
