@@ -32,20 +32,30 @@ export abstract class BlockTypeService<
     return this.blockService.findOne<T>(args);
   }
 
-  async findMany(args: FindManyArgs, user?: User): Promise<T[]> {
-    return this.blockService.findManyByBlockType(args, this.blockType);
+  async findMany(
+    args: FindManyArgs,
+    user?: User,
+    takeLatestVersion?: boolean
+  ): Promise<T[]> {
+    return this.blockService.findManyByBlockType(
+      args,
+      this.blockType,
+      takeLatestVersion
+    );
   }
 
   async findManyBySettings(
     args: FindManyArgs,
     settingsFilter: JsonFilter | JsonFilter[],
-    settingsFilterOperator?: SettingsFilterOperator
+    settingsFilterOperator?: SettingsFilterOperator,
+    takeLatestVersion?: boolean
   ): Promise<T[]> {
     return this.blockService.findManyByBlockTypeAndSettings(
       args,
       this.blockType,
       settingsFilter,
-      settingsFilterOperator
+      settingsFilterOperator,
+      takeLatestVersion
     );
   }
 

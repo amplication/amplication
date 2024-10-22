@@ -337,7 +337,8 @@ export class BlockService {
     args: FindManyBlockTypeArgs,
     blockType: EnumBlockType,
     settingsFilter?: JsonFilter | JsonFilter[],
-    settingsFilterOperator?: SettingsFilterOperator
+    settingsFilterOperator?: SettingsFilterOperator,
+    takeLatestVersion?: boolean
   ): Promise<T[]> {
     const filter = {
       [settingsFilterOperator || "OR"]: Array.isArray(settingsFilter)
@@ -350,7 +351,6 @@ export class BlockService {
             },
           ],
     };
-
     const blocks = this.prisma.block.findMany({
       ...args,
       where: {
@@ -365,18 +365,33 @@ export class BlockService {
         },
       },
       include: {
-        versions: {
-          where: {
-            versionNumber: CURRENT_VERSION_NUMBER,
-          },
-        },
+        versions: takeLatestVersion
+          ? {
+              orderBy: { versionNumber: Prisma.SortOrder.desc },
+              take: 1,
+              where: {
+                versionNumber: {
+                  not: CURRENT_VERSION_NUMBER,
+                },
+              },
+            }
+          : {
+              where: {
+                versionNumber: CURRENT_VERSION_NUMBER,
+              },
+            },
         parentBlock: true,
       },
     });
-    return (await blocks).map((block) => {
-      const [version] = block.versions;
-      return this.versionToIBlock({ ...version, block });
-    });
+    return (await blocks)
+      .map((block) => {
+        const [version] = block.versions;
+        if (!version) {
+          return null;
+        }
+        return this.versionToIBlock({ ...version, block });
+      })
+      .filter((block) => block !== null) as T[];
   }
 
   /**@todo: return latest version number */
@@ -384,7 +399,8 @@ export class BlockService {
 
   async findManyByBlockType<T extends IBlock>(
     args: FindManyBlockTypeArgs,
-    blockType: EnumBlockType
+    blockType: EnumBlockType,
+    takeLatestVersion?: boolean
   ): Promise<T[]> {
     const blocks = this.prisma.block.findMany({
       ...args,
@@ -394,20 +410,34 @@ export class BlockService {
         deletedAt: null,
       },
       include: {
-        versions: {
-          where: {
-            versionNumber: CURRENT_VERSION_NUMBER,
-          },
-        },
+        versions: takeLatestVersion
+          ? {
+              orderBy: { versionNumber: Prisma.SortOrder.desc },
+              take: 1,
+              where: {
+                versionNumber: {
+                  not: CURRENT_VERSION_NUMBER,
+                },
+              },
+            }
+          : {
+              where: {
+                versionNumber: CURRENT_VERSION_NUMBER,
+              },
+            },
         parentBlock: true,
       },
     });
-    return (await blocks).map((block) => {
-      const [version] = block.versions;
-      return this.versionToIBlock({ ...version, block });
-    });
+    return (await blocks)
+      .map((block) => {
+        const [version] = block.versions;
+        if (!version) {
+          return null;
+        }
+        return this.versionToIBlock({ ...version, block });
+      })
+      .filter((block) => block !== null) as T[];
   }
-
   async createVersion(args: CreateBlockVersionArgs): Promise<BlockVersion> {
     const blockId = args.data.block.connect.id;
     const versions = await this.prisma.blockVersion.findMany({
