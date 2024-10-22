@@ -1,5 +1,5 @@
 import useLocalStorage from "react-use-localstorage";
-import { DataGridColumn } from "../../../../libs/ui/design-system/src/lib/components/DataGrid/DataGrid";
+import { DataGridColumn } from "@amplication/ui/design-system";
 import { useEffect, useState } from "react";
 
 type SavedColumnData = {
