@@ -1,5 +1,5 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Controller, Inject, LogLevel } from "@nestjs/common";
+import { Controller, Inject } from "@nestjs/common";
 import {
   Ctx,
   EventPattern,
@@ -28,26 +28,6 @@ export class PrivatePluginController {
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
-
-  private async log(
-    buildId: string,
-    level: LogLevel,
-    message: string
-  ): Promise<void> {
-    await this.producerService.emitMessage(
-      KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_LOG_TOPIC,
-      {
-        key: {
-          buildId,
-        },
-        value: {
-          buildId,
-          level,
-          message,
-        },
-      }
-    );
-  }
 
   @EventPattern(KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_REQUEST_TOPIC)
   async downloadPrivatePlugins(

@@ -35,6 +35,7 @@ import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segment
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { PluginNotifyVersion } from "@amplication/schema-registry";
 import { BuildPlugin } from "./dto/BuildPlugin";
+import { PrivatePluginService } from "../privatePlugin/privatePlugin.service";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
@@ -169,6 +170,13 @@ describe("BuildService", () => {
           provide: PluginInstallationService,
           useClass: jest.fn(() => ({
             getInstalledPrivatePluginsForBuild:
+              pluginInstallationServiceGetInstalledPrivatePluginsForBuildMock,
+          })),
+        },
+        {
+          provide: PrivatePluginService,
+          useClass: jest.fn(() => ({
+            findMany:
               pluginInstallationServiceGetInstalledPrivatePluginsForBuildMock,
           })),
         },

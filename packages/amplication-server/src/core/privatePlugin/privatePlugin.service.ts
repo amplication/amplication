@@ -1,5 +1,5 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
@@ -42,6 +42,7 @@ export class PrivatePluginService extends BlockTypeService<
     protected readonly blockService: BlockService,
     protected readonly logger: AmplicationLogger,
     protected readonly billingService: BillingService,
+    @Inject(forwardRef(() => ResourceService))
     protected readonly resourceService: ResourceService
   ) {
     super(blockService, logger);
@@ -62,29 +63,34 @@ export class PrivatePluginService extends BlockTypeService<
       return [];
     }
 
-    return await this.findMany({
-      ...args,
-      where: {
-        ...args.where,
-        resource: {
-          deletedAt: null,
-          archived: {
-            not: true,
+    return await this.findMany(
+      {
+        ...args,
+        where: {
+          ...args.where,
+          resource: {
+            deletedAt: null,
+            archived: {
+              not: true,
+            },
+            projectId: resource.projectId,
           },
-          projectId: resource.projectId,
-        },
-        codeGenerator: {
-          equals:
-            CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
-            EnumCodeGenerator.NodeJs,
+          codeGenerator: {
+            equals:
+              CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
+              EnumCodeGenerator.NodeJs,
+          },
         },
       },
-    });
+      undefined,
+      true
+    );
   }
 
   async findMany(
     args: FindManyPrivatePluginArgs,
-    user?: User
+    user?: User,
+    takeLatestVersion?: boolean
   ): Promise<PrivatePlugin[]> {
     const codeGeneratorFilter = args.where?.codeGenerator;
     delete args.where?.codeGenerator;
@@ -95,10 +101,15 @@ export class PrivatePluginService extends BlockTypeService<
         equals: codeGeneratorFilter.equals,
       };
 
-      return this.findManyBySettings(args, filter);
+      return this.findManyBySettings(
+        args,
+        filter,
+        undefined,
+        takeLatestVersion
+      );
     }
 
-    return super.findMany(args, user);
+    return super.findMany(args, user, takeLatestVersion);
   }
 
   async create(
