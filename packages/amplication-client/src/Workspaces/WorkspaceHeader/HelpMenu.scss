@@ -1,0 +1,15 @@
+@import "../../style/index.scss";
+
+.header-help_menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &__name {
+    @include regular-12();
+    width: 100%;
+    color: var(--gray-20);
+    white-space: nowrap;
+    padding: 2px var(--default-spacing-small);
+  }
+}

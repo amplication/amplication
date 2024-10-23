@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
-import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import useTabRoutes from "../Layout/useTabRoutes";
 import ResourceList from "../Workspaces/ResourceList";
 import { AppContext } from "../context/appContext";
@@ -32,7 +31,7 @@ const ProjectPage: React.FC<Props> = ({
   tabRoutes,
   tabRoutesDef,
 }) => {
-  const { currentProject, pendingChanges } = useContext(AppContext);
+  const { pendingChanges } = useContext(AppContext);
   const [fromPreviewUserDialog, setFromPreviewUserDialog] =
     useState<boolean>(false);
 
@@ -50,7 +49,6 @@ const ProjectPage: React.FC<Props> = ({
     setFromPreviewUserDialog(false);
   }, [setFromPreviewUserDialog]);
 
-  useBreadcrumbs(currentProject?.name, match.url);
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
   const tabItems: TabItem[] = useMemo(() => {
@@ -71,6 +69,7 @@ const ProjectPage: React.FC<Props> = ({
         name: OVERVIEW,
         to: match.url,
         exact: true,
+        textColor: EnumTextColor.ThemeBlue,
       },
       ...(tabsWithPendingChanges || []),
     ];

@@ -26,6 +26,7 @@ $tab-height: 26px;
 
     .amp-icon {
       margin-right: var(--icon-spacing);
+      margin-bottom: 0;
     }
 
     &__indicator {
@@ -67,6 +68,31 @@ $tab-height: 26px;
         bottom: calc(var(--default-spacing-small) * -1);
         height: 3px;
         background-color: var(--primary);
+      }
+    }
+  }
+
+  &--header {
+    padding-left: 0;
+    padding-right: 0;
+    min-height: calc($tab-height + var(--default-spacing) * 2) !important;
+
+    .amp-tab {
+      margin: var(--default-spacing);
+
+      &:before {
+        display: none;
+      }
+
+      &.active {
+        color: var(--theme-turquoise);
+
+        &:after {
+          bottom: calc(var(--default-spacing) * -1);
+          background-color: var(--gray-base);
+          height: 2px;
+          display: none;
+        }
       }
     }
   }
