@@ -1,5 +1,5 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Controller, Inject, LogLevel } from "@nestjs/common";
+import { Controller, Inject } from "@nestjs/common";
 import {
   Ctx,
   EventPattern,

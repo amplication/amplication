@@ -11,10 +11,7 @@ import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
 import { EntityService } from "../entity/entity.service";
 import { ResourceRoleService } from "../resourceRole/resourceRole.service";
-import {
-  CODE_GENERATOR_NAME_TO_ENUM,
-  ResourceService,
-} from "../resource/resource.service";
+import { ResourceService } from "../resource/resource.service";
 import {
   EnumActionStepStatus,
   EnumActionLogLevel,
