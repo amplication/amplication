@@ -6,10 +6,15 @@ import { Env } from "../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { DownloadPrivatePluginsRequest } from "@amplication/schema-registry";
+import {
+  DownloadPrivatePluginsRequest,
+  KAFKA_TOPICS,
+} from "@amplication/schema-registry";
 import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
 import { copy, pathExists } from "fs-extra";
 import { join } from "path";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { LogLevel } from "@amplication/util/logging";
 
 @Traceable()
 @Injectable()
@@ -19,7 +24,8 @@ export class PrivatePluginService {
   constructor(
     private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private readonly producerService: KafkaProducerService
   ) {
     const bitbucketClientId = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_ID
@@ -56,6 +62,26 @@ export class PrivatePluginService {
     };
   }
 
+  private async log(
+    buildId: string,
+    level: LogLevel,
+    message: string
+  ): Promise<void> {
+    await this.producerService.emitMessage(
+      KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_LOG_TOPIC,
+      {
+        key: {
+          buildId,
+        },
+        value: {
+          buildId,
+          level,
+          message,
+        },
+      }
+    );
+  }
+
   async downloadPrivatePlugins({
     resourceId,
     buildId,
@@ -88,15 +114,24 @@ export class PrivatePluginService {
       }
     );
     const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
-    const { pluginPaths } = await gitClientService.downloadPrivatePlugins({
-      owner,
-      repositoryName: repo,
-      repositoryGroupName,
-      resourceId,
-      buildId,
-      baseBranchName,
-      cloneDirPath,
-      pluginsToDownload,
+    const { pluginPaths, pluginVersions } =
+      await gitClientService.downloadPrivatePlugins({
+        owner,
+        repositoryName: repo,
+        repositoryGroupName,
+        resourceId,
+        buildId,
+        baseBranchName,
+        cloneDirPath,
+        pluginsToDownload,
+      });
+
+    pluginVersions.forEach(async (pluginVersion) => {
+      await this.log(
+        buildId,
+        LogLevel.Info,
+        `Downloaded plugin: ${pluginVersion}`
+      );
     });
 
     const { newPluginPaths } = await this.copyPluginFilesToDsgAssetsDir(

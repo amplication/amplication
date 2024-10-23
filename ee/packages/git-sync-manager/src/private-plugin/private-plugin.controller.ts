@@ -29,26 +29,6 @@ export class PrivatePluginController {
     private readonly logger: AmplicationLogger
   ) {}
 
-  private async log(
-    buildId: string,
-    level: LogLevel,
-    message: string
-  ): Promise<void> {
-    await this.producerService.emitMessage(
-      KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_LOG_TOPIC,
-      {
-        key: {
-          buildId,
-        },
-        value: {
-          buildId,
-          level,
-          message,
-        },
-      }
-    );
-  }
-
   @EventPattern(KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_REQUEST_TOPIC)
   async downloadPrivatePlugins(
     @Payload() message: DownloadPrivatePluginsRequest.Value,
