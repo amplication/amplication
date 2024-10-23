@@ -78,8 +78,8 @@ import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { PluginInstallation } from "../pluginInstallation/dto/PluginInstallation";
 import { PackageService } from "../package/package.service";
 import omitDeep from "deepdash/omitDeep";
-import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 import { PrivatePluginService } from "../privatePlugin/privatePlugin.service";
+import { compareBuild } from "semver";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -649,10 +649,16 @@ export class BuildService {
     resourceId: string,
     privatePlugins: PluginInstallation[]
   ): Promise<PluginDownloadItem[]> {
-    const resource = await this.resourceService.findOne({
-      where: { id: resourceId },
-    });
     const pluginsToDownload: PluginDownloadItem[] = [];
+
+    const privatePluginBlocks =
+      await this.privatePluginService.availablePrivatePluginsForResource({
+        where: {
+          resource: {
+            id: resourceId,
+          },
+        },
+      });
 
     for (const privatePlugin of privatePlugins) {
       if (privatePlugin.version !== "latest") {
@@ -662,32 +668,22 @@ export class BuildService {
         });
         continue;
       }
-      const privatePluginBlocks = await this.privatePluginService.findMany(
-        {
-          where: {
-            resource: {
-              deletedAt: null,
-              archived: {
-                not: true,
-              },
-              projectId: resource.projectId,
-            },
-            codeGenerator: {
-              equals:
-                CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
-                EnumCodeGenerator.NodeJs,
-            },
-            pluginId: privatePlugin.pluginId,
-          },
-        },
-        null,
-        true
-      );
-      const sortedVersions = privatePluginBlocks[0].versions.sort((a, b) =>
-        b.version.localeCompare(a.version)
+
+      const privatePluginBlock = privatePluginBlocks.find(
+        (block) => block.pluginId === privatePlugin.pluginId
       );
 
-      const pluginVersion = sortedVersions.find((version) => version.enabled);
+      const sortedEnabledVersions = privatePluginBlock.versions
+        .filter((version) => version.enabled)
+        .sort((a, b) => compareBuild(b.version, a.version));
+
+      const pluginVersion = sortedEnabledVersions[0];
+
+      if (!pluginVersion) {
+        throw new Error(
+          `Could not find enabled version for plugin ${privatePlugin.pluginId}`
+        );
+      }
 
       pluginsToDownload.push({
         pluginId: privatePlugin.pluginId,

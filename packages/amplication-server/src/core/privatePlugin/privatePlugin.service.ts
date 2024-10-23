@@ -63,7 +63,7 @@ export class PrivatePluginService extends BlockTypeService<
       return [];
     }
 
-    const privatePluginBlocks = await this.findMany(
+    return await this.findMany(
       {
         ...args,
         where: {
@@ -82,11 +82,9 @@ export class PrivatePluginService extends BlockTypeService<
           },
         },
       },
-      null,
+      undefined,
       true
     );
-
-    return privatePluginBlocks.filter((block) => block.versions !== undefined);
   }
 
   async findMany(
@@ -95,46 +93,23 @@ export class PrivatePluginService extends BlockTypeService<
     takeLatestVersion?: boolean
   ): Promise<PrivatePlugin[]> {
     const codeGeneratorFilter = args.where?.codeGenerator;
-    const pluginId = args.where?.pluginId;
     delete args.where?.codeGenerator;
-    delete args.where?.pluginId;
 
-    if (codeGeneratorFilter || pluginId) {
-      const filter =
-        codeGeneratorFilter && pluginId
-          ? [
-              {
-                path: ["codeGenerator"],
-                equals: codeGeneratorFilter.equals,
-              },
-              {
-                path: ["pluginId"],
-                equals: pluginId,
-              },
-            ]
-          : codeGeneratorFilter
-          ? {
-              path: ["codeGenerator"],
-              equals: codeGeneratorFilter.equals,
-            }
-          : pluginId
-          ? {
-              path: ["pluginId"],
-              equals: pluginId,
-            }
-          : [];
-
-      const settingsFilterOperator = Array.isArray(filter) ? "AND" : "OR";
+    if (codeGeneratorFilter) {
+      const filter = {
+        path: ["codeGenerator"],
+        equals: codeGeneratorFilter.equals,
+      };
 
       return this.findManyBySettings(
         args,
         filter,
-        settingsFilterOperator,
+        undefined,
         takeLatestVersion
       );
     }
 
-    return super.findMany(args, user);
+    return super.findMany(args, user, takeLatestVersion);
   }
 
   async create(

@@ -10,9 +10,4 @@ export class PrivatePluginWhereInput extends BlockTypeWhereInput {
     nullable: true,
   })
   codeGenerator?: EnumCodeGeneratorFilter | null;
-
-  @Field(() => String, {
-    nullable: true,
-  })
-  pluginId?: string | null;
 }
