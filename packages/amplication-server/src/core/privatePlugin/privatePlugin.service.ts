@@ -20,6 +20,7 @@ import { CreatePrivatePluginVersionArgs } from "./dto/CreatePrivatePluginVersion
 import { PrivatePluginVersion } from "./dto/PrivatePluginVersion";
 import { UpdatePrivatePluginVersionArgs } from "./dto/UpdatePrivatePluginVersionArgs";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+import { BlockSettingsProperties } from "../block/types";
 
 const DEFAULT_PRIVATE_PLUGIN_VERSION: Omit<PrivatePluginVersion, "version"> = {
   deprecated: false,
@@ -27,6 +28,11 @@ const DEFAULT_PRIVATE_PLUGIN_VERSION: Omit<PrivatePluginVersion, "version"> = {
   settings: null,
   configurations: null,
 };
+
+export type PrivatePluginBlockVersionSettings =
+  BlockSettingsProperties<PrivatePlugin> & {
+    versions: PrivatePluginVersion[];
+  };
 
 @Injectable()
 export class PrivatePluginService extends BlockTypeService<
