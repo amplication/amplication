@@ -55,33 +55,10 @@ $select-menu-max-width: 300px;
     }
   }
 
-  &__help_popover {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    &__name {
-      @include regular-12();
-      width: 100%;
-      color: var(--gray-20);
-      white-space: nowrap;
-      padding: 2px var(--default-spacing-small);
-    }
-  }
-
   &__right {
     @include flexFullRowWithSpacingBothSides;
     padding: var(--default-spacing);
     justify-content: flex-end;
-  }
-
-  &__divider {
-    border: none;
-    width: $border-dark;
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-top: 0;
-    margin-bottom: 0;
   }
 
   &__links {

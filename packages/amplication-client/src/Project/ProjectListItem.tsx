@@ -102,7 +102,7 @@ export const ProjectListItem = ({ project, workspaceId }: Props) => {
                   iconSize="small"
                   iconPosition={EnumIconPosition.Left}
                 >
-                  Services
+                  Catalog
                 </Button>
               </Link>
             </FlexItem>

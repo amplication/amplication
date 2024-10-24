@@ -2,10 +2,6 @@ import {
   Breadcrumbs,
   Dialog,
   Icon,
-  SelectMenu,
-  SelectMenuItem,
-  SelectMenuList,
-  SelectMenuModal,
   Tooltip,
 } from "@amplication/ui/design-system";
 import { BillingFeature } from "@amplication/util-billing-types";
@@ -20,8 +16,9 @@ import {
 import { useStiggContext } from "@stigg/react-sdk";
 import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import AskJovuButton from "../../Assistant/AskJovuButton";
+import ConsoleNavigationButton from "../../Assistant/ConsoleNavigationButton";
 import CommandPalette from "../../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../../Components/Button";
 import UserBadge from "../../Components/UserBadge";
@@ -36,19 +33,13 @@ import {
 } from "../../env";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import {
-  AMPLICATION_DISCORD_URL,
-  AMPLICATION_DOC_URL,
-} from "../../util/constants";
-import { version } from "../../util/version";
-import { useContactUs } from "../hooks/useContactUs";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 import useFetchGithubStars from "../hooks/useFetchGithubStars";
+import HelpMenu from "./HelpMenu";
 import UpgradeCtaButton from "./UpgradeCtaButton";
 import WorkspaceBanner from "./WorkspaceBanner";
 import "./WorkspaceHeader.scss";
 import styles from "./notificationStyle";
-import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
-import ConsoleNavigationButton from "../../Assistant/ConsoleNavigationButton";
 
 const CLASS_NAME = "workspace-header";
 const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
@@ -56,44 +47,14 @@ const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
-enum ItemDataCommand {
-  COMMAND_CONTACT_US = "command_contact_us",
-}
-
-type HelpMenuItem = {
-  name: string;
-  url: string | null;
-  itemData: ItemDataCommand | null;
-};
-
-const HELP_MENU_LIST: HelpMenuItem[] = [
-  { name: "Docs", url: AMPLICATION_DOC_URL, itemData: null },
-  {
-    name: "Technical Support",
-    url: AMPLICATION_DISCORD_URL,
-    itemData: null,
-  },
-  {
-    name: "Contact Us",
-    url: null,
-    itemData: ItemDataCommand.COMMAND_CONTACT_US,
-  },
-];
-
 const WorkspaceHeader: React.FC = () => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const { baseUrl } = useProjectBaseUrl();
-
-  const { handleContactUsClick } = useContactUs({
-    actionName: "Contact Us",
-    eventOriginLocation: "workspace-header-help-menu",
-  });
 
   const apolloClient = useApolloClient();
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
   const stars = useFetchGithubStars();
-  const history = useHistory();
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
@@ -133,15 +94,6 @@ const WorkspaceHeader: React.FC = () => {
     []
   );
 
-  const handleItemDataClicked = useCallback(
-    (itemData: ItemDataCommand) => {
-      if (itemData === ItemDataCommand.COMMAND_CONTACT_US) {
-        handleContactUsClick();
-      }
-      return;
-    },
-    [handleContactUsClick]
-  );
   const handleShowProfileForm = useCallback(() => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
@@ -196,16 +148,9 @@ const WorkspaceHeader: React.FC = () => {
               <Icon icon="logo" size="medium" />
             </Link>
           </div>
-          <span>
-            <a
-              href="https://github.com/amplication/amplication/releases"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${CLASS_NAME}__version`}
-            >
-              v{version}
-            </a>
-          </span>
+
+          <ConsoleNavigationButton />
+
           <Breadcrumbs>
             {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
               <Breadcrumbs.Item key={item.url} to={item.url}>
@@ -217,7 +162,6 @@ const WorkspaceHeader: React.FC = () => {
         <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>
           <div className={`${CLASS_NAME}__links`}>
-            <ConsoleNavigationButton />
             <hr className={`${CLASS_NAME}__vertical_border`} />
             <AskJovuButton />
             <UpgradeCtaButton />
@@ -241,50 +185,7 @@ const WorkspaceHeader: React.FC = () => {
             }
           />
           <hr className={`${CLASS_NAME}__vertical_border`} />
-          <div className={`${CLASS_NAME}__help_popover`}>
-            <SelectMenu
-              title="Help"
-              buttonStyle={EnumButtonStyle.Text}
-              icon="chevron_down"
-              openIcon="chevron_up"
-              className={`${CLASS_NAME}__help_popover__menu`}
-            >
-              <SelectMenuModal align="right">
-                <SelectMenuList>
-                  {HELP_MENU_LIST.map((route: HelpMenuItem, index) => (
-                    <SelectMenuItem
-                      closeAfterSelectionChange
-                      onSelectionChange={() => {
-                        !route.url && handleItemDataClicked(route.itemData);
-                      }}
-                      key={index}
-                      {...(route.url
-                        ? {
-                            rel: "noopener noreferrer",
-                            href: route.url,
-                            target: "_blank",
-                          }
-                        : {})}
-                    >
-                      <div className={`${CLASS_NAME}__help_popover__name`}>
-                        {route.name}
-                      </div>
-                    </SelectMenuItem>
-                  ))}
-                  <SelectMenuItem
-                    closeAfterSelectionChange
-                    onSelectionChange={() => {
-                      history.push(`/${currentWorkspace?.id}/purchase`);
-                    }}
-                  >
-                    <div className={`${CLASS_NAME}__help_popover__name`}>
-                      Pricing Plans
-                    </div>
-                  </SelectMenuItem>
-                </SelectMenuList>
-              </SelectMenuModal>
-            </SelectMenu>
-          </div>
+          <HelpMenu />
           {canShowNotification && (
             <>
               <hr className={`${CLASS_NAME}__vertical_border`} />
