@@ -10,6 +10,7 @@ import { ConfirmationDialog, Snackbar } from "@amplication/ui/design-system";
 import { useStiggContext } from "@stigg/react-sdk";
 import { useAppContext } from "../context/appContext";
 import { formatError } from "../util/error";
+import { GET_OUTDATED_VERSION_ALERTS } from "../OutdatedVersionAlerts/hooks/outdatedVersionAlertsQueries";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
@@ -38,6 +39,7 @@ function DeleteResourceButton({ resource }: Props) {
   const errorMessage = error && formatError(error);
 
   const [deleteResource] = useMutation<TDeleteResourceData>(DELETE_RESOURCE, {
+    refetchQueries: [GET_OUTDATED_VERSION_ALERTS],
     update(cache, { data }) {
       if (!data) return;
       const deletedResourceId = data.deleteResource.id;
