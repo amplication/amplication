@@ -31,6 +31,7 @@
     height: var(--double-spacing);
     background: var(--gray-70);
     border: none;
-    margin-right: 0;
+    margin-left: var(--default-spacing-small);
+    margin-right: var(--default-spacing-small);
   }
 }
