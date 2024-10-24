@@ -34,6 +34,7 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
 import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
+import { PrivatePluginService } from "../privatePlugin/privatePlugin.service";
 
 @Injectable()
 export class ProjectService {
@@ -48,7 +49,8 @@ export class ProjectService {
     private readonly gitProviderService: GitProviderService,
     private readonly subscriptionService: SubscriptionService,
     private readonly logger: AmplicationLogger,
-    private readonly resourceVersionService: ResourceVersionService
+    private readonly resourceVersionService: ResourceVersionService,
+    private readonly privatePluginService: PrivatePluginService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -584,13 +586,8 @@ export class ProjectService {
       });
     } else {
       //platform
-      const promises = resourcesToBuild
-        .filter(
-          //filter out resources that are not services
-          (resource) =>
-            resource.resourceType === EnumResourceType.ServiceTemplate
-        )
-        .map((resource: Resource) => {
+      const resourceVersionPromises = resourcesToBuild.map(
+        (resource: Resource) => {
           this.logger.debug("Creating version for resource", {
             resourceId: resource.id,
             commitStrategy: args.data.commitStrategy,
@@ -617,9 +614,10 @@ export class ProjectService {
               )?.version,
             },
           });
-        });
+        }
+      );
 
-      await Promise.all(promises);
+      await Promise.all(resourceVersionPromises);
 
       await this.analytics.trackWithContext({
         event: EnumEventType.ResourceVersionCreate,

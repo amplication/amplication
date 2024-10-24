@@ -11,6 +11,7 @@ import { AmplicationError } from "../../errors/AmplicationError";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { UpdateOutdatedVersionAlertArgs } from "./dto/UpdateOutdatedVersionAlertArgs";
 import { User } from "../../models";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 
 @Injectable()
 export class OutdatedVersionAlertService {
@@ -19,7 +20,8 @@ export class OutdatedVersionAlertService {
     @Inject(forwardRef(() => ResourceService))
     private readonly resourceService: ResourceService,
     @Inject(AmplicationLogger)
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private readonly pluginInstallationService: PluginInstallationService
   ) {}
 
   /**
@@ -150,6 +152,54 @@ export class OutdatedVersionAlertService {
           },
         });
       }
+    }
+  }
+
+  /**
+   * Triggers alerts for all plugin installations in the given project with the given plugin id
+   * when the updated plugin is a public plugin - we need to run this function for all projects (or maybe run it once without the projectId)
+   *
+   * @param projectId - the project id
+   * @param pluginId - the plugin id e.g. "plugin-aws-s3"
+   * @param newVersion - the new version of the plugin e.g. "1.0.0"
+   */
+  async triggerAlertsForNewPluginVersion(
+    projectId: string,
+    pluginId: string,
+    newVersion: string
+  ) {
+    //get all plugin installations in the project with the pluginId
+    const pluginInstallations =
+      await this.pluginInstallationService.findPluginInstallationByPluginId(
+        pluginId,
+        {
+          resource: {
+            project: {
+              id: projectId,
+            },
+          },
+        }
+      );
+
+    //create outdatedVersionAlert for each service
+    for (const pluginInstallation of pluginInstallations) {
+      await this.create({
+        data: {
+          resource: {
+            connect: {
+              id: pluginInstallation.resourceId,
+            },
+          },
+          block: {
+            connect: {
+              id: pluginInstallation.id,
+            },
+          },
+          type: EnumOutdatedVersionAlertType.PluginVersion,
+          outdatedVersion: pluginInstallation.version,
+          latestVersion: newVersion,
+        },
+      });
     }
   }
 
