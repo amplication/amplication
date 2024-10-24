@@ -4,7 +4,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { Commit, Resource, User } from "../../models";
 import { ActionService } from "../action/action.service";
 import {
-  Action,
+  ActionStep,
   EnumActionLogLevel,
   EnumActionStepStatus,
 } from "../action/dto";
@@ -36,6 +36,8 @@ import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { PluginNotifyVersion } from "@amplication/schema-registry";
 import { BuildPlugin } from "./dto/BuildPlugin";
 import { PrivatePluginService } from "../privatePlugin/privatePlugin.service";
+import { PluginInstallation } from "../pluginInstallation/dto/PluginInstallation";
+import { EnumBlockType } from "@amplication/code-gen-types";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
@@ -52,9 +54,12 @@ const EXAMPLE_USER: User = {
   isOwner: true,
 };
 
-const EXAMPLE_ACTION: Action = {
-  id: EXAMPLE_ACTION_ID,
+const EXAMPLE_ACTION_STEP: ActionStep = {
+  id: "exampleActionStepId",
   createdAt: new Date(),
+  name: "exampleName",
+  message: "exampleMessage",
+  status: EnumActionStepStatus.Running,
 };
 
 const EXAMPLE_COMMIT: Commit = {
@@ -97,10 +102,40 @@ const EXAMPLE_BUILD_PLUGIN: BuildPlugin = {
   packageVersion: "examplePackageVersion",
 };
 
+const EXAMPLE_PRIVATE_PLUGIN_INSTALLATION: PluginInstallation = {
+  id: "examplePluginId",
+  createdAt: new Date(),
+  pluginId: "examplePluginId",
+  version: "latest",
+  isPrivate: true,
+  enabled: false,
+  npm: "",
+  updatedAt: new Date(),
+  parentBlock: undefined,
+  displayName: "examplePluginName",
+  description: "examplePluginDescription",
+  blockType: EnumBlockType.PluginInstallation,
+  versionNumber: 1,
+  inputParameters: [],
+  outputParameters: [],
+};
+
+const EXAMPLE_PRIVATE_PLUGIN_INSTALLATION_WITH_SPECIFIC_VERSION: PluginInstallation =
+  {
+    ...EXAMPLE_PRIVATE_PLUGIN_INSTALLATION,
+    id: "examplePluginIdWithSpecificVersion",
+    version: "1.0.0",
+  };
+
+const EXAMPLE_PRIVATE_PLUGIN_INSTALLATIONS: PluginInstallation[] = [
+  EXAMPLE_PRIVATE_PLUGIN_INSTALLATION,
+  EXAMPLE_PRIVATE_PLUGIN_INSTALLATION_WITH_SPECIFIC_VERSION,
+];
+
 const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
-const actionServiceFindOneMock = jest.fn(() => EXAMPLE_ACTION);
 const commitServiceFindOneMock = jest.fn(() => EXAMPLE_COMMIT);
 const resourceServiceFindOneMock = jest.fn(() => EXAMPLE_RESOURCE);
+const resourceServiceFindManyMock = jest.fn(() => [EXAMPLE_RESOURCE]);
 const entityServiceGetLatestVersionsMock = jest.fn(() => []);
 
 const prismaServiceBuildCreateMock = jest.fn(() => EXAMPLE_BUILD);
@@ -112,13 +147,13 @@ const prismaServiceBuildPluginUpsertMock = jest.fn(() => {
   return EXAMPLE_BUILD_PLUGIN;
 });
 
+const prismaServiceActionStepCreateMock = jest.fn(() => EXAMPLE_ACTION_STEP);
+
 const pluginInstallationServiceGetInstalledPrivatePluginsForBuildMock = jest.fn(
   () => {
     return [];
   }
 );
-
-const actionServiceRunMock = jest.fn();
 
 describe("BuildService", () => {
   let service: BuildService;
@@ -142,15 +177,20 @@ describe("BuildService", () => {
           provide: EntityService,
           useClass: jest.fn(() => ({
             getLatestVersions: entityServiceGetLatestVersionsMock,
+            getEntitiesByVersions: jest.fn(() => []),
           })),
         },
         {
           provide: ResourceRoleService,
-          useClass: jest.fn(() => ({})),
+          useClass: jest.fn(() => ({
+            getResourceRoles: jest.fn(() => []),
+          })),
         },
         {
           provide: ServiceSettingsService,
-          useClass: jest.fn(() => ({})),
+          useClass: jest.fn(() => ({
+            getServiceSettingsValues: jest.fn(),
+          })),
         },
         {
           provide: KafkaProducerService,
@@ -160,17 +200,23 @@ describe("BuildService", () => {
         },
         {
           provide: TopicService,
-          useClass: jest.fn(() => ({})),
+          useClass: jest.fn(() => ({
+            findMany: jest.fn(() => []),
+          })),
         },
         {
           provide: ServiceTopicsService,
-          useClass: jest.fn(() => ({})),
+          useClass: jest.fn(() => ({
+            findMany: jest.fn(() => []),
+          })),
         },
         {
           provide: PluginInstallationService,
           useClass: jest.fn(() => ({
+            findMany: jest.fn(() => []),
             getInstalledPrivatePluginsForBuild:
               pluginInstallationServiceGetInstalledPrivatePluginsForBuildMock,
+            orderInstalledPlugins: jest.fn(() => []),
           })),
         },
         {
@@ -190,11 +236,15 @@ describe("BuildService", () => {
         },
         {
           provide: ModuleDtoService,
-          useClass: jest.fn(() => ({})),
+          useClass: jest.fn(() => ({
+            findMany: jest.fn(() => []),
+          })),
         },
         {
           provide: ModuleActionService,
-          useClass: jest.fn(() => ({})),
+          useClass: jest.fn(() => ({
+            findMany: jest.fn(() => []),
+          })),
         },
         {
           provide: SegmentAnalyticsService,
@@ -210,13 +260,8 @@ describe("BuildService", () => {
         },
         {
           provide: ModuleService,
-          useClass: jest.fn(() => ({})),
-        },
-        {
-          provide: ActionService,
           useClass: jest.fn(() => ({
-            findOne: actionServiceFindOneMock,
-            run: actionServiceRunMock,
+            findMany: jest.fn(() => []),
           })),
         },
         {
@@ -228,7 +273,8 @@ describe("BuildService", () => {
         {
           provide: ResourceService,
           useClass: jest.fn(() => ({
-            findOne: resourceServiceFindOneMock,
+            resource: resourceServiceFindOneMock,
+            resources: resourceServiceFindManyMock,
           })),
         },
         {
@@ -263,8 +309,16 @@ describe("BuildService", () => {
             buildPlugin: {
               upsert: prismaServiceBuildPluginUpsertMock,
             },
+            actionStep: {
+              create: prismaServiceActionStepCreateMock,
+              update: jest.fn(),
+            },
+            actionLog: {
+              create: jest.fn(),
+            },
           })),
         },
+        ActionService, //we use the real service here in order to execute actionService.run() with the inner step function
         BuildService,
       ],
     }).compile();

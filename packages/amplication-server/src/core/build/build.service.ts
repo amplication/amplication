@@ -311,7 +311,7 @@ export class BuildService {
       user,
     });
 
-    const resource = await this.resourceService.findOne({
+    const resource = await this.resourceService.resource({
       where: { id: resourceId },
     });
     if (resource.resourceType !== EnumResourceType.Service) {
@@ -596,6 +596,23 @@ export class BuildService {
               resourceId
             );
 
+          const pluginVersions = await this.getPrivatePluginsWithVersion(
+            resourceId,
+            privatePlugins
+          );
+
+          //report the private plugins build version
+          const buildPluginPromises = pluginVersions.map((pluginVersion) =>
+            this.notifyBuildPluginVersion({
+              buildId: build.id,
+              packageName: pluginVersion.pluginId,
+              packageVersion: pluginVersion.pluginVersion,
+              requestedFullPackageName: pluginVersion.requestedFullPackageName,
+            })
+          );
+
+          await Promise.all(buildPluginPromises);
+
           const downloadPrivatePluginsRequest: DownloadPrivatePluginsRequest.KafkaEvent =
             {
               key: {
@@ -605,10 +622,10 @@ export class BuildService {
                 ...pluginRepoGitSettings,
                 buildId: build.id,
                 resourceId,
-                pluginsToDownload: await this.getPrivatePluginsWithVersion(
-                  resourceId,
-                  privatePlugins
-                ),
+                pluginsToDownload: pluginVersions.map((pluginVersion) => ({
+                  pluginId: pluginVersion.pluginId,
+                  pluginVersion: pluginVersion.pluginVersion,
+                })),
               },
             };
 
@@ -645,8 +662,14 @@ export class BuildService {
   private async getPrivatePluginsWithVersion(
     resourceId: string,
     privatePlugins: PluginInstallation[]
-  ): Promise<PluginDownloadItem[]> {
-    const pluginsToDownload: PluginDownloadItem[] = [];
+  ): Promise<
+    (PluginDownloadItem & {
+      requestedFullPackageName: string;
+    })[]
+  > {
+    const pluginsToDownload: (PluginDownloadItem & {
+      requestedFullPackageName: string;
+    })[] = [];
 
     const privatePluginBlocks =
       await this.privatePluginService.availablePrivatePluginsForResource({
@@ -662,6 +685,7 @@ export class BuildService {
         pluginsToDownload.push({
           pluginId: privatePlugin.pluginId,
           pluginVersion: privatePlugin.version,
+          requestedFullPackageName: `${privatePlugin.pluginId}@${privatePlugin.version}`,
         });
         continue;
       }
@@ -685,6 +709,7 @@ export class BuildService {
       pluginsToDownload.push({
         pluginId: privatePlugin.pluginId,
         pluginVersion: pluginVersion.version,
+        requestedFullPackageName: `${privatePlugin.pluginId}@latest`,
       });
     }
 
@@ -1308,9 +1333,6 @@ export class BuildService {
       where: { resource: { id: resourceId } },
     });
 
-    const packages = await this.packageService.findMany({
-      where: { resource: { id: resourceId } },
-    });
     const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
@@ -1367,7 +1389,6 @@ export class BuildService {
       entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: orderedPlugins,
-      packages,
       moduleContainers: modules,
       moduleActions: moduleActions,
       moduleDtos: moduleDtos,
