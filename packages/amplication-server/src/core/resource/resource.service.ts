@@ -190,10 +190,6 @@ export class ResourceService {
     private readonly templateCodeEngineVersionService: TemplateCodeEngineVersionService
   ) {}
 
-  async findOne(args: FindOneArgs): Promise<Resource | null> {
-    return this.prisma.resource.findUnique(args);
-  }
-
   async createProjectConfiguration(
     projectId: string,
     projectName: string,
@@ -1286,7 +1282,7 @@ export class ResourceService {
       });
 
       //pass limitation validation
-      const currentResource = await this.findOne({
+      const currentResource = await this.resource({
         where: {
           id: resourceId,
         },
