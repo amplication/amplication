@@ -143,8 +143,14 @@ export class ResourceVersionService {
           )
       );
 
-      const latestNewVersion = newVersions.reduce((prev, current) =>
-        compareBuild(prev.version, current.version) === -1 ? current : prev
+      const latestNewVersion = newVersions.reduce(
+        (prev, current) =>
+          !prev
+            ? current
+            : compareBuild(prev?.version, current.version) === -1
+            ? current
+            : prev,
+        null
       );
 
       if (latestNewVersion) {

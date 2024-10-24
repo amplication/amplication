@@ -2,6 +2,7 @@ import {
   CircularProgress,
   EnumFlexDirection,
   EnumItemsAlign,
+  EnumTextStyle,
   EnumVersionTagState,
   FlexItem,
   HeaderItemsStripe,
@@ -9,6 +10,7 @@ import {
   HorizontalRule,
   Snackbar,
   TabContentTitle,
+  Text,
   VersionTag,
 } from "@amplication/ui/design-system";
 import { useRouteMatch } from "react-router-dom";
@@ -16,7 +18,10 @@ import { AutoBackNavigation } from "../Components/AutoBackNavigation";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { useAppContext } from "../context/appContext";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
-import { EnumOutdatedVersionAlertStatus } from "../models";
+import {
+  EnumOutdatedVersionAlertStatus,
+  EnumOutdatedVersionAlertType,
+} from "../models";
 import CompareResourceVersions from "../Platform/CompareResourceVersions";
 import UpgradeServiceToLatestTemplateVersionButton from "../ServiceTemplate/UpgradeServiceToLatestTemplateVersionButton";
 import { formatError } from "../util/error";
@@ -100,6 +105,17 @@ function OutdatedVersionPage() {
                     label="Alert Type"
                     content={<OutdatedVersionAlertType type={data.type} />}
                   />
+                  {data.type === EnumOutdatedVersionAlertType.PluginVersion && (
+                    <HeaderItemsStripeItem
+                      label="Plugin"
+                      content={
+                        <Text textStyle={EnumTextStyle.Description}>
+                          {data.block?.displayName}
+                        </Text>
+                      }
+                    />
+                  )}
+
                   <HeaderItemsStripeItem
                     label="Outdated Version"
                     content={
@@ -133,11 +149,12 @@ function OutdatedVersionPage() {
                 </HeaderItemsStripe>
               </FlexItem.FlexStart>
               <FlexItem.FlexEnd>
-                {data.status === EnumOutdatedVersionAlertStatus.New && (
-                  <UpgradeServiceToLatestTemplateVersionButton
-                    resourceId={data.resource.id}
-                  />
-                )}
+                {data.type === EnumOutdatedVersionAlertType.TemplateVersion &&
+                  data.status === EnumOutdatedVersionAlertStatus.New && (
+                    <UpgradeServiceToLatestTemplateVersionButton
+                      resourceId={data.resource.id}
+                    />
+                  )}
               </FlexItem.FlexEnd>
             </FlexItem>
           </FlexItem>

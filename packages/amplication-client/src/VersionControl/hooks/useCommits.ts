@@ -17,6 +17,7 @@ import { AppContext } from "../../context/appContext";
 import { commitPath } from "../../util/paths";
 import { useHistory } from "react-router-dom";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import { GET_OUTDATED_VERSION_ALERTS } from "../../OutdatedVersionAlerts/hooks/outdatedVersionAlertsQueries";
 
 const MAX_ITEMS_PER_LOADING = 20;
 const POLL_INTERVAL = 1000; //update the last commit status frequently to get the latest log message
@@ -169,9 +170,9 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
   //commits mutation
   const [commit, { error: commitChangesError, loading: commitChangesLoading }] =
     useMutation<TData>(COMMIT_CHANGES, {
+      refetchQueries: [GET_OUTDATED_VERSION_ALERTS],
       update: (cache, { data }) => {
         //evict the cache of all alert after commit
-        cache.evict({ fieldName: "outdatedVersionAlerts" });
         cache.evict({ fieldName: "resourceVersions" });
       },
       onError: (error: ApolloError) => {
@@ -215,6 +216,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       commitUtils,
       history,
       projectBaseUrl,
+      reloadResources,
       resetPendingChanges,
       setCommitRunning,
       setPendingChangesError,

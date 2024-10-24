@@ -12,7 +12,7 @@ import { MetaQueryPayload } from "../../dto/MetaQueryPayload";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Resource, User } from "../../models";
+import { Block, Resource, User } from "../../models";
 import { CommitService } from "../commit/commit.service";
 import { ResourceService } from "../resource/resource.service";
 import { UserService } from "../user/user.service";
@@ -22,6 +22,7 @@ import { OutdatedVersionAlert } from "./dto/OutdatedVersionAlert";
 import { OutdatedVersionAlertService } from "./outdatedVersionAlert.service";
 import { UserEntity } from "../../decorators/user.decorator";
 import { UpdateOutdatedVersionAlertArgs } from "./dto/UpdateOutdatedVersionAlertArgs";
+import { BlockService } from "../block/block.service";
 
 @Resolver(() => OutdatedVersionAlert)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -31,7 +32,8 @@ export class OutdatedVersionAlertResolver {
     private readonly service: OutdatedVersionAlertService,
     private readonly userService: UserService,
     private readonly commitService: CommitService,
-    private readonly resourceService: ResourceService
+    private readonly resourceService: ResourceService,
+    private readonly blockService: BlockService
   ) {}
 
   @Query(() => [OutdatedVersionAlert])
@@ -84,12 +86,25 @@ export class OutdatedVersionAlertResolver {
     return this.service.update(args, user);
   }
 
-  @ResolveField()
+  @ResolveField(() => Resource, { nullable: false })
   async resource(
     @Parent() outdatedVersionAlert: OutdatedVersionAlert
   ): Promise<Resource> {
     return this.resourceService.resource({
       where: { id: outdatedVersionAlert.resourceId },
+    });
+  }
+
+  @ResolveField(() => Block, { nullable: true })
+  async block(@Parent() alert: OutdatedVersionAlert): Promise<Block> {
+    if (!alert.blockId) {
+      return null;
+    }
+
+    return this.blockService.block({
+      where: {
+        id: alert.blockId,
+      },
     });
   }
 }

@@ -1586,6 +1586,8 @@ type Mutation {
 }
 
 type OutdatedVersionAlert {
+  block: Block
+  blockId: String
   createdAt: DateTime!
   id: String!
   latestVersion: String!
@@ -1898,7 +1900,6 @@ input PrivatePluginWhereInput {
   displayName: StringFilter
   id: StringFilter
   parentBlock: WhereUniqueInput
-  pluginId: String
   resource: ResourceWhereInput
   updatedAt: DateTimeFilter
 }

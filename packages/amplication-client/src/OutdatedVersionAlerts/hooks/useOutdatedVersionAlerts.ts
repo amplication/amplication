@@ -53,6 +53,7 @@ const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
       },
     },
     skip: !projectId,
+    fetchPolicy: "no-cache",
     onCompleted: (data) => {
       setOutdatedVersionAlerts(data.outdatedVersionAlerts);
       setOutdatedVersionAlertsCount(data._outdatedVersionAlertsMeta.count);

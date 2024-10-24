@@ -28,10 +28,10 @@ type Props = {
 
 const OPTIONS: { value: AlertStatusFilterOption; label: string }[] = [
   { value: null, label: "All" },
-  { value: "New", label: "New" },
-  { value: "Resolved", label: "Resolved" },
-  { value: "Ignored", label: "Ignored" },
-  { value: "Canceled", label: "Canceled" },
+  { value: EnumOutdatedVersionAlertStatus.New, label: "Active" },
+  { value: EnumOutdatedVersionAlertStatus.Resolved, label: "Resolved" },
+  { value: EnumOutdatedVersionAlertStatus.Ignored, label: "Ignored" },
+  { value: EnumOutdatedVersionAlertStatus.Canceled, label: "Canceled" },
 ];
 
 export const AlertStatusFilter = ({ selectedValue, onChange }: Props) => {

@@ -21,7 +21,7 @@ const OUTDATED_ALERT_STATUS_TO_MESSAGE: Record<
 > = {
   [EnumOutdatedVersionAlertStatus.New]: {
     message: "Update available.",
-    name: "Update available",
+    name: "Active",
     className: "new",
   },
   [EnumOutdatedVersionAlertStatus.Resolved]: {
