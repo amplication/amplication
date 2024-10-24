@@ -170,9 +170,9 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
   //commits mutation
   const [commit, { error: commitChangesError, loading: commitChangesLoading }] =
     useMutation<TData>(COMMIT_CHANGES, {
+      refetchQueries: [GET_OUTDATED_VERSION_ALERTS],
       update: (cache, { data }) => {
         //evict the cache of all alert after commit
-        cache.evict({ fieldName: "outdatedVersionAlerts" });
         cache.evict({ fieldName: "resourceVersions" });
       },
       onError: (error: ApolloError) => {
