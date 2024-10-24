@@ -81,6 +81,7 @@ $tab-height: 26px;
       margin: var(--default-spacing) var(--default-spacing-small);
       padding-left: var(--default-spacing);
       padding-right: var(--default-spacing);
+      border: 1px solid transparent;
 
       &:before {
         display: none;
