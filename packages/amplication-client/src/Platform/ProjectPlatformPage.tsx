@@ -2,6 +2,7 @@ import { EnumTextColor, TabItem } from "@amplication/ui/design-system";
 import React, { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import useTabRoutes from "../Layout/useTabRoutes";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
@@ -22,7 +23,9 @@ const ProjectPlatformPage: React.FC<Props> = ({
   tabRoutes,
   tabRoutesDef,
 }) => {
-  const { pendingChanges } = useContext(AppContext);
+  const { currentProject, pendingChanges } = useContext(AppContext);
+
+  useBreadcrumbs(currentProject?.name, match.url);
 
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
