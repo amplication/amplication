@@ -8,13 +8,14 @@ import React, {
 } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import useTabRoutes from "../Layout/useTabRoutes";
 import ResourceList from "../Workspaces/ResourceList";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
-import "./ProjectPage.scss";
 import { expireCookie, getCookie } from "../util/cookie";
 import PreviewUserLoginModal from "./ArchitectureConsole/PreviewUserLoginModal";
+import "./ProjectPage.scss";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -31,7 +32,7 @@ const ProjectPage: React.FC<Props> = ({
   tabRoutes,
   tabRoutesDef,
 }) => {
-  const { pendingChanges } = useContext(AppContext);
+  const { currentProject, pendingChanges } = useContext(AppContext);
   const [fromPreviewUserDialog, setFromPreviewUserDialog] =
     useState<boolean>(false);
 
@@ -49,6 +50,7 @@ const ProjectPage: React.FC<Props> = ({
     setFromPreviewUserDialog(false);
   }, [setFromPreviewUserDialog]);
 
+  useBreadcrumbs(currentProject?.name, match.url);
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
   const tabItems: TabItem[] = useMemo(() => {
