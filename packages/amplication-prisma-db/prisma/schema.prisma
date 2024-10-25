@@ -46,6 +46,7 @@ model Workspace {
   gitOrganizations          GitOrganization[]
   projects                  Project[]
   AwsMarketplaceIntegration AwsMarketplaceIntegration?
+  teams                     Team[]
 }
 
 model Project {
@@ -118,6 +119,7 @@ model User {
   userAction            UserAction[]
   lastActive            DateTime?         @default(now())
   resourceVersions      ResourceVersion[]
+  teams                 Team[]
 
   @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
 }
@@ -131,6 +133,19 @@ model UserRole {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, role], map: "UserRole.userId_role_unique")
+}
+
+model Team {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  name        String
+  description String?
+  members     User[]
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([workspaceId, name], map: "Team.workspaceId_name_unique")
 }
 
 model ApiToken {
