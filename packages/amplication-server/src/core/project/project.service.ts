@@ -34,7 +34,6 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
 import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
-import { PrivatePluginService } from "../privatePlugin/privatePlugin.service";
 
 @Injectable()
 export class ProjectService {
