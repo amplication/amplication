@@ -11,6 +11,7 @@ import useTeam from "./hooks/useTeams";
 import TeamForm from "./TeamForm";
 import { DeleteTeam } from "./DeleteTeam";
 import { useAppContext } from "../context/appContext";
+import TeamMemberList from "./TeamMemberList";
 
 const Team = () => {
   const match = useRouteMatch<{
@@ -68,6 +69,8 @@ const Team = () => {
       {!loading && (
         <TeamForm onSubmit={handleSubmit} defaultValues={data?.team} />
       )}
+      <TabContentTitle title="Members" subTitle="Add or remove team members" />
+      <TeamMemberList team={data?.team} />
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );

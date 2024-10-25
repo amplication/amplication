@@ -5,6 +5,15 @@ export const TEAM_FIELDS_FRAGMENT = gql`
     id
     name
     description
+    members {
+      id
+      account {
+        id
+        email
+        firstName
+        lastName
+      }
+    }
   }
 `;
 
@@ -47,6 +56,30 @@ export const FIND_TEAMS = gql`
   ${TEAM_FIELDS_FRAGMENT}
   query teams($where: TeamWhereInput, $orderBy: TeamOrderByInput) {
     teams(where: $where, orderBy: $orderBy) {
+      ...TeamFields
+    }
+  }
+`;
+
+export const ADD_MEMBERS_TO_TEAM = gql`
+  ${TEAM_FIELDS_FRAGMENT}
+  mutation addMembersToTeam(
+    $data: TeamUpdateMembersInput!
+    $where: WhereUniqueInput!
+  ) {
+    addMembersToTeam(data: $data, where: $where) {
+      ...TeamFields
+    }
+  }
+`;
+
+export const REMOVE_MEMBERS_FROM_TEAM = gql`
+  ${TEAM_FIELDS_FRAGMENT}
+  mutation removeMembersFromTeam(
+    $data: TeamUpdateMembersInput!
+    $where: WhereUniqueInput!
+  ) {
+    removeMembersFromTeam(data: $data, where: $where) {
       ...TeamFields
     }
   }
