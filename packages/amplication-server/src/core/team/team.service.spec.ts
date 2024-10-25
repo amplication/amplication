@@ -4,7 +4,6 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { TeamService } from "./team.service";
-import exp from "constants";
 
 const EXAMPLE_TEAM_ID = "exampleTeamId";
 const EXAMPLE_NAME = "exampleName";
