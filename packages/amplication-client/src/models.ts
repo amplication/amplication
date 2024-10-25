@@ -3491,6 +3491,7 @@ export type TeamOrderByInput = {
 };
 
 export type TeamUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
