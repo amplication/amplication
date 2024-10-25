@@ -1473,6 +1473,7 @@ input ModuleWhereInput {
 
 type Mutation {
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
+  addMembersToTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
   bulkUpdateWorkspaceProjectsAndResourcesLicensed(useUserLastActive: Boolean): Boolean!
   changePassword(data: ChangePasswordInput!): Account!
   commit(data: CommitCreateInput!): Commit
@@ -1544,6 +1545,7 @@ type Mutation {
   provisionSubscription(data: ProvisionSubscriptionInput!): ProvisionSubscriptionResult
   redeemCoupon(data: RedeemCouponInput!): Coupon!
   redesignProject(data: RedesignProjectInput!): UserAction!
+  removeMembersFromTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
   sendAssistantMessageWithStream(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
@@ -2508,6 +2510,10 @@ input TeamOrderByInput {
 input TeamUpdateInput {
   description: String
   name: String
+}
+
+input TeamUpdateMembersInput {
+  userIds: [String!]!
 }
 
 input TeamWhereInput {

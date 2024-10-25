@@ -1496,6 +1496,7 @@ export type ModuleWhereInput = {
 
 export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
+  addMembersToTeam: Team;
   bulkUpdateWorkspaceProjectsAndResourcesLicensed: Scalars['Boolean']['output'];
   changePassword: Account;
   commit?: Maybe<Commit>;
@@ -1567,6 +1568,7 @@ export type Mutation = {
   provisionSubscription?: Maybe<ProvisionSubscriptionResult>;
   redeemCoupon: Coupon;
   redesignProject: UserAction;
+  removeMembersFromTeam: Team;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   sendAssistantMessageWithStream: AssistantThread;
@@ -1611,6 +1613,12 @@ export type Mutation = {
 
 export type MutationAddEntityPermissionFieldArgs = {
   data: EntityAddPermissionFieldInput;
+};
+
+
+export type MutationAddMembersToTeamArgs = {
+  data: TeamUpdateMembersInput;
+  where: WhereUniqueInput;
 };
 
 
@@ -1970,6 +1978,12 @@ export type MutationRedeemCouponArgs = {
 
 export type MutationRedesignProjectArgs = {
   data: RedesignProjectInput;
+};
+
+
+export type MutationRemoveMembersFromTeamArgs = {
+  data: TeamUpdateMembersInput;
+  where: WhereUniqueInput;
 };
 
 
@@ -3493,6 +3507,10 @@ export type TeamOrderByInput = {
 export type TeamUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TeamUpdateMembersInput = {
+  userIds: Array<Scalars['String']['input']>;
 };
 
 export type TeamWhereInput = {
