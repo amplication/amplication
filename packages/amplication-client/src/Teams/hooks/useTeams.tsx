@@ -38,7 +38,7 @@ type TUpdateData = {
 
 const NAME_FIELD = "name";
 
-const useTeam = (teamId?: string) => {
+const useTeams = (teamId?: string) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [availableWorkspaceMembers, setAvailableWorkspaceMembers] = useState<
     models.User[]
@@ -106,7 +106,7 @@ const useTeam = (teamId?: string) => {
   } = useQuery<TFindData>(FIND_TEAMS, {
     variables: {
       where: {
-        displayName:
+        name:
           searchPhrase !== ""
             ? {
                 contains: searchPhrase,
@@ -248,4 +248,4 @@ const useTeam = (teamId?: string) => {
   };
 };
 
-export default useTeam;
+export default useTeams;

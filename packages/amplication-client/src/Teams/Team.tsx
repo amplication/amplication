@@ -7,7 +7,7 @@ import { useCallback } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 
 import { formatError } from "../util/error";
-import useTeam from "./hooks/useTeams";
+import useTeams from "./hooks/useTeams";
 import TeamForm from "./TeamForm";
 import { DeleteTeam } from "./DeleteTeam";
 import { useAppContext } from "../context/appContext";
@@ -30,7 +30,7 @@ const Team = () => {
     getTeamLoading: loading,
     updateTeam,
     updateTeamError: updateError,
-  } = useTeam(teamId);
+  } = useTeams(teamId);
 
   const handleSubmit = useCallback(
     (data) => {
