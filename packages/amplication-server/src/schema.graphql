@@ -1510,6 +1510,7 @@ type Mutation {
   createServiceTemplate(data: ServiceTemplateCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
+  createTeam(data: TeamCreateInput!): Team!
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
@@ -1530,6 +1531,7 @@ type Mutation {
   deleteResource(where: WhereUniqueInput!): Resource
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
   deleteServiceTopics(where: WhereUniqueInput!): ServiceTopics!
+  deleteTeam(where: WhereUniqueInput!): Team
   deleteTopic(where: WhereUniqueInput!): Topic!
   deleteUser(where: WhereUniqueInput!): User
   deleteWorkspace(where: WhereUniqueInput!): Workspace
@@ -1580,6 +1582,7 @@ type Mutation {
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
+  updateTeam(data: TeamUpdateInput!, where: WhereUniqueInput!): Team!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
   upgradeServiceToLatestTemplateVersion(where: WhereUniqueInput!): Resource!
@@ -2060,6 +2063,8 @@ type Query {
   serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceTopics(where: WhereUniqueInput!): ServiceTopics
   serviceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
+  team(where: WhereUniqueInput!): Team
+  teams(orderBy: TeamOrderByInput, skip: Int, take: Int, where: TeamWhereInput): [Team!]!
   topic(where: WhereUniqueInput!): Topic
   topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
   userAction(where: WhereUniqueInput!): UserAction!
@@ -2479,6 +2484,36 @@ input StringFilter {
 
 type Subscription {
   assistantMessageUpdated(threadId: String!): AssistantMessageDelta!
+}
+
+type Team {
+  createdAt: DateTime!
+  description: String
+  id: String!
+  members: [User!]
+  name: String!
+  updatedAt: DateTime!
+}
+
+input TeamCreateInput {
+  name: String!
+}
+
+input TeamOrderByInput {
+  deletedAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+}
+
+input TeamUpdateInput {
+  name: String
+}
+
+input TeamWhereInput {
+  deletedAt: DateTimeFilter
+  id: String
+  name: StringFilter
+  resources: ResourceListRelationFilter
 }
 
 type Topic implements IBlock {

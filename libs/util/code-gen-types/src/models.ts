@@ -1530,6 +1530,7 @@ export type Mutation = {
   createServiceTemplate: Resource;
   createServiceTopics: ServiceTopics;
   createServiceWithEntities: ResourceCreateWithEntitiesResult;
+  createTeam: Team;
   createTopic: Topic;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
@@ -1550,6 +1551,7 @@ export type Mutation = {
   deleteResource?: Maybe<Resource>;
   deleteResourceRole?: Maybe<ResourceRole>;
   deleteServiceTopics: ServiceTopics;
+  deleteTeam?: Maybe<Team>;
   deleteTopic: Topic;
   deleteUser?: Maybe<User>;
   deleteWorkspace?: Maybe<Workspace>;
@@ -1597,6 +1599,7 @@ export type Mutation = {
   updateResourceRole?: Maybe<ResourceRole>;
   updateServiceSettings?: Maybe<ServiceSettings>;
   updateServiceTopics: ServiceTopics;
+  updateTeam: Team;
   updateTopic: Topic;
   updateWorkspace?: Maybe<Workspace>;
   upgradeServiceToLatestTemplateVersion: Resource;
@@ -1796,6 +1799,11 @@ export type MutationCreateServiceWithEntitiesArgs = {
 };
 
 
+export type MutationCreateTeamArgs = {
+  data: TeamCreateInput;
+};
+
+
 export type MutationCreateTopicArgs = {
   data: TopicCreateInput;
 };
@@ -1893,6 +1901,11 @@ export type MutationDeleteResourceRoleArgs = {
 
 
 export type MutationDeleteServiceTopicsArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteTeamArgs = {
   where: WhereUniqueInput;
 };
 
@@ -2149,6 +2162,12 @@ export type MutationUpdateServiceSettingsArgs = {
 
 export type MutationUpdateServiceTopicsArgs = {
   data: ServiceTopicsUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateTeamArgs = {
+  data: TeamUpdateInput;
   where: WhereUniqueInput;
 };
 
@@ -2638,6 +2657,8 @@ export type Query = {
   serviceTemplates: Array<Resource>;
   serviceTopics?: Maybe<ServiceTopics>;
   serviceTopicsList: Array<ServiceTopics>;
+  team?: Maybe<Team>;
+  teams: Array<Team>;
   topic?: Maybe<Topic>;
   topics: Array<Topic>;
   userAction: UserAction;
@@ -2978,6 +2999,19 @@ export type QueryServiceTopicsListArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ServiceTopicsWhereInput>;
+};
+
+
+export type QueryTeamArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryTeamsArgs = {
+  orderBy?: InputMaybe<TeamOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TeamWhereInput>;
 };
 
 
@@ -3432,6 +3466,36 @@ export type Subscription = {
 
 export type SubscriptionAssistantMessageUpdatedArgs = {
   threadId: Scalars['String']['input'];
+};
+
+export type Team = {
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  members?: Maybe<Array<User>>;
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type TeamCreateInput = {
+  name: Scalars['String']['input'];
+};
+
+export type TeamOrderByInput = {
+  deletedAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+};
+
+export type TeamUpdateInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TeamWhereInput = {
+  deletedAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<StringFilter>;
+  resources?: InputMaybe<ResourceListRelationFilter>;
 };
 
 export type Topic = IBlock & {

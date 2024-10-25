@@ -51,4 +51,9 @@ export enum EnumEventType {
   ArchitectureRedesignApply = "architectureRedesign__Apply",
   ArchitectureRedesignStartBreakTheMonolith = "architectureRedesign__StartBreakTheMonolith",
   StartJovuThread = "StartJovuThread",
+
+  //Teams
+  TeamCreate = "TeamCreate",
+  TeamUpdate = "TeamUpdate",
+  TeamDelete = "TeamDelete",
 }
