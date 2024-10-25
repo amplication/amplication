@@ -49,8 +49,7 @@ export class ProjectService {
     private readonly gitProviderService: GitProviderService,
     private readonly subscriptionService: SubscriptionService,
     private readonly logger: AmplicationLogger,
-    private readonly resourceVersionService: ResourceVersionService,
-    private readonly privatePluginService: PrivatePluginService
+    private readonly resourceVersionService: ResourceVersionService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
