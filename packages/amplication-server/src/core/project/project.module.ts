@@ -11,7 +11,6 @@ import { ProjectService } from "./project.service";
 import { GitProviderModule } from "../git/git.provider.module";
 import { SubscriptionModule } from "../subscription/subscription.module";
 import { ResourceVersionModule } from "../resourceVersion/resourceVersion.module";
-import { PrivatePluginModule } from "../privatePlugin/privatePlugin.module";
 
 @Module({
   imports: [
@@ -25,7 +24,6 @@ import { PrivatePluginModule } from "../privatePlugin/privatePlugin.module";
     GitProviderModule,
     SubscriptionModule,
     ResourceVersionModule,
-    PrivatePluginModule,
   ],
   providers: [ProjectResolver, ProjectService],
   exports: [ProjectResolver, ProjectService],
