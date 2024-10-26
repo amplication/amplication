@@ -2247,6 +2247,8 @@ export type OutdatedVersionAlertWhereInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
+export type Owner = Team | User;
+
 export type Package = IBlock & {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -3124,6 +3126,7 @@ export type Resource = {
   id: Scalars['String']['output'];
   licensed: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  owner?: Maybe<Owner>;
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;
   resourceType: EnumResourceType;

@@ -11,9 +11,6 @@ export enum EnumOwnershipType {
   isAbstract: true,
 })
 export class Ownership {
-  @Field(() => String, {
-    nullable: false,
-  })
   id!: string;
 
   ownershipType: EnumOwnershipType;

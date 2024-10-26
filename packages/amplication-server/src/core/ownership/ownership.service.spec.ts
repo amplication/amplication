@@ -55,10 +55,15 @@ const prismaServiceUpdateOwnershipMock = jest.fn(
   () => EXAMPLE_PRISMA_TEAM_OWNERSHIP
 );
 
+const prismaServiceFindUniqueMock = jest.fn(
+  () => EXAMPLE_PRISMA_TEAM_OWNERSHIP
+);
+
 const prismaService = {
   ownership: {
     create: prismaServiceCreateOwnershipMock,
     update: prismaServiceUpdateOwnershipMock,
+    findUnique: prismaServiceFindUniqueMock,
   },
 };
 
@@ -142,8 +147,8 @@ describe("OwnershipService", () => {
     it("should update a team ownership", async () => {
       const result = await service.updateOwnership(
         "1",
-        "team1",
-        EnumOwnershipType.Team
+        EnumOwnershipType.Team,
+        "team1"
       );
 
       expect(result).toEqual(EXAMPLE_TEAM_OWNERSHIP);
@@ -175,8 +180,8 @@ describe("OwnershipService", () => {
 
       const result = await service.updateOwnership(
         "2",
-        "user1",
-        EnumOwnershipType.User
+        EnumOwnershipType.User,
+        "user1"
       );
 
       expect(result).toEqual(EXAMPLE_USER_OWNERSHIP);
@@ -193,6 +198,46 @@ describe("OwnershipService", () => {
           team: {
             disconnect: true,
           },
+        },
+        include: {
+          team: true,
+          user: true,
+        },
+      });
+    });
+  });
+
+  describe("getOwnership", () => {
+    it("should return a team ownership", async () => {
+      prismaService.ownership.findUnique.mockReturnValueOnce(
+        EXAMPLE_PRISMA_TEAM_OWNERSHIP
+      );
+
+      const result = await service.getOwnership("1");
+
+      expect(result).toEqual(EXAMPLE_TEAM_OWNERSHIP);
+      expect(prismaService.ownership.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: "1",
+        },
+        include: {
+          team: true,
+          user: true,
+        },
+      });
+    });
+
+    it("should return a user ownership", async () => {
+      prismaService.ownership.findUnique.mockReturnValueOnce(
+        EXAMPLE_PRISMA_USER_OWNERSHIP
+      );
+
+      const result = await service.getOwnership("2");
+
+      expect(result).toEqual(EXAMPLE_USER_OWNERSHIP);
+      expect(prismaService.ownership.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: "2",
         },
         include: {
           team: true,

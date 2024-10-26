@@ -41,13 +41,13 @@ export class OwnershipService {
       },
     });
 
-    return this.ownershipRecordToOwnership(ownership, ownershipType);
+    return this.ownershipRecordToOwnership(ownership);
   }
 
   async updateOwnership(
     ownershipId: string,
-    ownerId: string,
-    ownershipType: EnumOwnershipType
+    ownershipType: EnumOwnershipType,
+    ownerId: string
   ): Promise<Ownership> {
     const ownership = await this.prisma.ownership.update({
       where: {
@@ -81,27 +81,44 @@ export class OwnershipService {
       },
     });
 
-    return this.ownershipRecordToOwnership(ownership, ownershipType);
+    return this.ownershipRecordToOwnership(ownership);
+  }
+
+  async getOwnership(ownershipId: string): Promise<Ownership> {
+    const ownership = await this.prisma.ownership.findUnique({
+      where: {
+        id: ownershipId,
+      },
+      include: {
+        team: true,
+        user: true,
+      },
+    });
+
+    if (!ownership) {
+      throw new Error(INVALID_OWNERSHIP_ID);
+    }
+
+    return this.ownershipRecordToOwnership(ownership);
   }
 
   private async ownershipRecordToOwnership(
     ownership: PrismaOwnership & {
       team: PrismaTeam;
       user: PrismaUser;
-    },
-    ownershipType: EnumOwnershipType
+    }
   ): Promise<Ownership> {
-    if (ownershipType === EnumOwnershipType.Team) {
+    if (ownership.team) {
       return {
         id: ownership.id,
         owner: ownership.team,
-        ownershipType,
+        ownershipType: EnumOwnershipType.Team,
       };
     } else {
       return {
         id: ownership.id,
         owner: ownership.user,
-        ownershipType,
+        ownershipType: EnumOwnershipType.User,
       };
     }
   }
