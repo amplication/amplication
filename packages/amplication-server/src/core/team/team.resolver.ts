@@ -1,5 +1,12 @@
 import { UseFilters, UseGuards } from "@nestjs/common";
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
 import { Roles } from "../../decorators/roles.decorator";
@@ -81,5 +88,10 @@ export class TeamResolver {
     @Args() args: RemoveMembersFromTeamArgs
   ): Promise<Team> {
     return this.teamService.removeMembersFromTeam(args);
+  }
+
+  @ResolveField(() => [User], { nullable: false })
+  async members(@Parent() parent: Team): Promise<User[]> {
+    return this.teamService.members(parent.id);
   }
 }

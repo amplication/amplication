@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
-import { Team } from "../../models";
+import { Team, User } from "../../models";
 import { PrismaService } from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
@@ -203,5 +203,15 @@ export class TeamService {
     });
 
     return updatedTeam;
+  }
+
+  async members(teamId: string): Promise<User[]> {
+    return this.prisma.team
+      .findUnique({
+        where: {
+          id: teamId,
+        },
+      })
+      .members();
   }
 }

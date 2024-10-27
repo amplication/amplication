@@ -14,7 +14,7 @@ import {
   validate,
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
-import useTeam from "./hooks/useTeams";
+import useTeams from "./hooks/useTeams";
 import "./NewTeam.scss";
 
 const INITIAL_VALUES: Partial<models.Team> = {
@@ -23,6 +23,7 @@ const INITIAL_VALUES: Partial<models.Team> = {
 
 type Props = {
   onTeamAdd?: (team: models.Team) => void;
+  disabled?: boolean;
 };
 
 const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
@@ -43,12 +44,12 @@ const FORM_SCHEMA = {
 };
 const CLASS_NAME = "new-team";
 
-const NewTeam = ({ onTeamAdd }: Props) => {
+const NewTeam = ({ onTeamAdd, disabled }: Props) => {
   const {
     createTeam,
     createTeamError: error,
     createTeamLoading: loading,
-  } = useTeam();
+  } = useTeams();
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
@@ -91,7 +92,7 @@ const NewTeam = ({ onTeamAdd }: Props) => {
               required
               name="name"
               label="New Team Name"
-              disabled={loading}
+              disabled={loading || disabled}
               inputRef={inputRef}
               placeholder="Add team"
               autoComplete="off"

@@ -1,14 +1,21 @@
-import { Reference, useMutation, useQuery } from "@apollo/client";
-import { useState } from "react";
+import { Reference, useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useCallback, useState } from "react";
 import * as models from "../../models";
 import {
+  ADD_MEMBERS_TO_TEAM,
   CREATE_TEAM,
   DELETE_TEAM,
   FIND_TEAMS,
   GET_TEAM,
+  REMOVE_MEMBERS_FROM_TEAM,
   TEAM_FIELDS_FRAGMENT,
   UPDATE_TEAM,
 } from "../queries/teamsQueries";
+import {
+  GET_WORKSPACE_MEMBERS,
+  TData as MemberListData,
+} from "../../Workspaces/MemberList";
+
 type TDeleteData = {
   deleteTeam: models.Team;
 };
@@ -31,8 +38,11 @@ type TUpdateData = {
 
 const NAME_FIELD = "name";
 
-const useTeam = (teamId?: string) => {
+const useTeams = (teamId?: string) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const [availableWorkspaceMembers, setAvailableWorkspaceMembers] = useState<
+    models.User[]
+  >([]);
 
   const [deleteTeam, { error: deleteTeamError, loading: deleteTeamLoading }] =
     useMutation<TDeleteData>(DELETE_TEAM, {
@@ -96,7 +106,7 @@ const useTeam = (teamId?: string) => {
   } = useQuery<TFindData>(FIND_TEAMS, {
     variables: {
       where: {
-        displayName:
+        name:
           searchPhrase !== ""
             ? {
                 contains: searchPhrase,
@@ -125,7 +135,91 @@ const useTeam = (teamId?: string) => {
   const [updateTeam, { error: updateTeamError, loading: updateTeamLoading }] =
     useMutation<TUpdateData>(UPDATE_TEAM, {});
 
+  // members section
+
+  const [getAvailableWorkspaceMembers, { refetch: refetchAvailableMembers }] =
+    useLazyQuery<MemberListData>(GET_WORKSPACE_MEMBERS, {
+      fetchPolicy: "no-cache",
+      onCompleted: (data) => {
+        const availableWorkspaceMembers = data.workspaceMembers
+          .filter(
+            (member) => member.type === models.EnumWorkspaceMemberType.User
+          )
+          .filter(
+            (member) =>
+              !getTeamData?.team.members.some(
+                (teamMember) =>
+                  teamMember.id === (member.member as models.User).id
+              )
+          );
+
+        setAvailableWorkspaceMembers(
+          availableWorkspaceMembers.map(
+            (member) => member.member as models.User
+          )
+        );
+      },
+    });
+
+  const [
+    addMembersToTeamInternal,
+    { error: addMembersToTeamError, loading: addMembersToTeamLoading },
+  ] = useMutation<TUpdateData>(ADD_MEMBERS_TO_TEAM, {});
+
+  const addMembersToTeam = useCallback(
+    (userIds: string[]) => {
+      addMembersToTeamInternal({
+        variables: {
+          where: {
+            id: teamId,
+          },
+          data: {
+            userIds: userIds,
+          },
+        },
+      }).then(() => {
+        refetchAvailableMembers();
+        getTeamRefetch();
+      });
+    },
+    [addMembersToTeamInternal, teamId, refetchAvailableMembers, getTeamRefetch]
+  );
+
+  const [
+    removeMembersFromTeamInternal,
+    {
+      error: removeMembersFromTeamError,
+      loading: removeMembersFromTeamLoading,
+    },
+  ] = useMutation<TUpdateData>(REMOVE_MEMBERS_FROM_TEAM, {});
+
+  const removeMembersFromTeam = useCallback(
+    (userIds: string[]) => {
+      removeMembersFromTeamInternal({
+        variables: {
+          where: {
+            id: teamId,
+          },
+          data: {
+            userIds: userIds,
+          },
+        },
+      }).then(() => {
+        refetchAvailableMembers();
+        getTeamRefetch();
+      });
+    },
+    [
+      removeMembersFromTeamInternal,
+      teamId,
+      refetchAvailableMembers,
+      getTeamRefetch,
+    ]
+  );
+
   return {
+    getAvailableWorkspaceMembers,
+    availableWorkspaceMembers,
     deleteTeam,
     deleteTeamError,
     deleteTeamLoading,
@@ -145,7 +239,13 @@ const useTeam = (teamId?: string) => {
     updateTeamError,
     updateTeamLoading,
     setSearchPhrase,
+    addMembersToTeam,
+    addMembersToTeamError,
+    addMembersToTeamLoading,
+    removeMembersFromTeam,
+    removeMembersFromTeamError,
+    removeMembersFromTeamLoading,
   };
 };
 
-export default useTeam;
+export default useTeams;
