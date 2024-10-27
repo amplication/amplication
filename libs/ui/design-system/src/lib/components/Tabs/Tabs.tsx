@@ -12,6 +12,7 @@ import "./Tabs.scss";
 export enum EnumTabsStyle {
   Default = "default",
   Header = "header",
+  Inner = "inner",
 }
 
 export type Props = MuiTabsProps & {

@@ -43,6 +43,25 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
+            path: "/:workspace([A-Za-z0-9-]{20,})/teams",
+            Component: lazy(() => import("../Teams/TeamsPage")),
+            moduleName: "",
+            displayName: "Teams",
+            exactPath: false,
+            routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/teams/:team([A-Za-z0-9-]{20,})",
+                Component: lazy(() => import("../Teams/Team")),
+                moduleName: "",
+                displayName: "Team",
+                exactPath: true,
+                routes: [],
+                isAnalytics: true,
+              },
+            ],
+            isAnalytics: true,
+          },
+          {
             path: "/:workspace([A-Za-z0-9-]{20,})/settings",
             Component: lazy(() => import("../Workspaces/WorkspaceForm")),
             moduleName: "",
