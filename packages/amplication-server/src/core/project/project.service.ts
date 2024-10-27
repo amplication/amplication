@@ -584,13 +584,8 @@ export class ProjectService {
       });
     } else {
       //platform
-      const promises = resourcesToBuild
-        .filter(
-          //filter out resources that are not services
-          (resource) =>
-            resource.resourceType === EnumResourceType.ServiceTemplate
-        )
-        .map((resource: Resource) => {
+      const resourceVersionPromises = resourcesToBuild.map(
+        (resource: Resource) => {
           this.logger.debug("Creating version for resource", {
             resourceId: resource.id,
             commitStrategy: args.data.commitStrategy,
@@ -617,9 +612,10 @@ export class ProjectService {
               )?.version,
             },
           });
-        });
+        }
+      );
 
-      await Promise.all(promises);
+      await Promise.all(resourceVersionPromises);
 
       await this.analytics.trackWithContext({
         event: EnumEventType.ResourceVersionCreate,
