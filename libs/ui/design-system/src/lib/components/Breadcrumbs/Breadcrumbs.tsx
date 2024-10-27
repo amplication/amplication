@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Children } from "react";
 import "./Breadcrumbs.scss";
 import MuiBreadcrumbs, {
   BreadcrumbsProps as MuiBreadcrumbsProps,
@@ -12,16 +12,21 @@ const CLASS_NAME = "amp-breadcrumbs";
 
 export const Breadcrumbs = ({ children }: Props) => {
   return (
-    <MuiBreadcrumbs
-      classes={{
-        separator: `${CLASS_NAME}__separator`,
-        li: `${CLASS_NAME}__item_wrapper`,
-      }}
-      className={CLASS_NAME}
-      aria-label="breadcrumb"
-    >
-      {children}
-    </MuiBreadcrumbs>
+    <>
+      {children && Children.count(children) > 0 && (
+        <div className={`${CLASS_NAME}__first-separator`} />
+      )}
+      <MuiBreadcrumbs
+        classes={{
+          separator: `${CLASS_NAME}__separator`,
+          li: `${CLASS_NAME}__item_wrapper`,
+        }}
+        className={CLASS_NAME}
+        aria-label="breadcrumb"
+      >
+        {children}
+      </MuiBreadcrumbs>
+    </>
   );
 };
 

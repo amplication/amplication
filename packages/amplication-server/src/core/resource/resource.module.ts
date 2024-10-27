@@ -29,6 +29,7 @@ import { ServiceTemplateResolver } from "./serviceTemplate.resolver";
 import { ResourceVersionModule } from "../resourceVersion/resourceVersion.module";
 import { OutdatedVersionAlertModule } from "../outdatedVersionAlert/outdatedVersionAlert.module";
 import { TemplateCodeEngineVersionModule } from "../templateCodeEngineVersion/templateCodeEngineVersion.module";
+import { OwnershipModule } from "../ownership/ownership.module";
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { TemplateCodeEngineVersionModule } from "../templateCodeEngineVersion/te
     ResourceVersionModule,
     OutdatedVersionAlertModule,
     TemplateCodeEngineVersionModule,
+    OwnershipModule,
   ],
   providers: [
     ResourceService,

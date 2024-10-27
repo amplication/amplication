@@ -13,9 +13,9 @@ import useTabRoutes from "../Layout/useTabRoutes";
 import ResourceList from "../Workspaces/ResourceList";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
-import "./ProjectPage.scss";
 import { expireCookie, getCookie } from "../util/cookie";
 import PreviewUserLoginModal from "./ArchitectureConsole/PreviewUserLoginModal";
+import "./ProjectPage.scss";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -51,6 +51,7 @@ const ProjectPage: React.FC<Props> = ({
   }, [setFromPreviewUserDialog]);
 
   useBreadcrumbs(currentProject?.name, match.url);
+
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
   const tabItems: TabItem[] = useMemo(() => {
@@ -71,6 +72,7 @@ const ProjectPage: React.FC<Props> = ({
         name: OVERVIEW,
         to: match.url,
         exact: true,
+        textColor: EnumTextColor.ThemeBlue,
       },
       ...(tabsWithPendingChanges || []),
     ];

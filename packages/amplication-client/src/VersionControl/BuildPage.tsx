@@ -12,22 +12,21 @@ import {
 } from "@amplication/ui/design-system";
 import { useQuery } from "@apollo/client";
 import { useContext, useMemo } from "react";
-import { Link, match, useLocation } from "react-router-dom";
+import { Link, match } from "react-router-dom";
 import { BackNavigation } from "../Components/BackNavigation";
 import { TruncatedId } from "../Components/TruncatedId";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
-import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import { resourceThemeMap } from "../Resource/constants";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { truncateId } from "../util/truncatedId";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import ActionLog from "./ActionLog";
 import BuildGitLink from "./BuildGitLink";
 import "./BuildPage.scss";
 import useBuildWatchStatus, { GET_BUILD } from "./useBuildWatchStatus";
-import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
-import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 export type LogData = {
   action: models.Action;
@@ -51,8 +50,6 @@ const BuildPage = ({ match, buildId }: Props) => {
 
   const { baseUrl } = useProjectBaseUrl();
 
-  const location = useLocation();
-
   const { data: buildData, error: errorLoading } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
@@ -62,8 +59,6 @@ const BuildPage = ({ match, buildId }: Props) => {
   });
 
   const { data: updatedBuild } = useBuildWatchStatus(buildData?.build);
-
-  useBreadcrumbs(buildData?.build?.version, location.pathname);
 
   const currentResource = useMemo(
     () =>

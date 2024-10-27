@@ -7,6 +7,7 @@ import { UserModule } from "../user/user.module";
 import { OutdatedVersionAlertResolver } from "./outdatedVersionAlert.resolver";
 import { OutdatedVersionAlertService } from "./outdatedVersionAlert.service";
 import { BlockModule } from "../block/block.module";
+import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { BlockModule } from "../block/block.module";
     UserModule,
     forwardRef(() => ResourceModule),
     forwardRef(() => CommitModule),
+    PluginInstallationModule,
   ],
   providers: [OutdatedVersionAlertService, OutdatedVersionAlertResolver],
   exports: [OutdatedVersionAlertService, OutdatedVersionAlertResolver],

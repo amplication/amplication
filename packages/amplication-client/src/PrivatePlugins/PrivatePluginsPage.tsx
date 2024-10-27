@@ -6,7 +6,6 @@ import PrivatePlugin from "./PrivatePlugin";
 import { PrivatePluginList } from "./PrivatePluginList";
 import { AppRouteProps } from "../routes/routesUtil";
 import { useAppContext } from "../context/appContext";
-import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { useStiggContext } from "@stigg/react-sdk";
@@ -34,7 +33,6 @@ const PrivatePluginsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
     featureId: BillingFeature.PrivatePlugins,
   });
   const pageTitle = "Private Plugins";
-  useBreadcrumbs(pageTitle, match.url);
 
   const privatePluginMatch = useRouteMatch<{ privatePluginId: string }>(
     "/:workspace/platform/:project/private-plugins/:privatePluginId"
