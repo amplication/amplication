@@ -19,14 +19,7 @@ import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import {
-  Entity,
-  GitOrganization,
-  Project,
-  Resource,
-  Team,
-  User,
-} from "../../models";
+import { Entity, GitOrganization, Project, Resource, User } from "../../models";
 import {
   EnumResourceType,
   GitRepository,
