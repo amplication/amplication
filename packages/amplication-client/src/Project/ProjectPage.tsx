@@ -51,6 +51,7 @@ const ProjectPage: React.FC<Props> = ({
   }, [setFromPreviewUserDialog]);
 
   useBreadcrumbs(currentProject?.name, match.url);
+  
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
   const tabItems: TabItem[] = useMemo(() => {
