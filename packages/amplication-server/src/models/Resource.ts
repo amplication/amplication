@@ -101,4 +101,7 @@ export class Resource {
 
   // no need to expose to GraphQL
   deletedAt?: Date;
+
+  // we do not expose this field to the client. instead, we use resolveField on the resourceResolver for Owner
+  ownershipId?: string;
 }
