@@ -2,10 +2,12 @@ import { EnumTextColor, TabItem } from "@amplication/ui/design-system";
 import React, { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import useTabRoutes from "../Layout/useTabRoutes";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import ServiceTemplateList from "./ServiceTemplateList";
+import { EnumResourceType } from "../models";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -22,14 +24,18 @@ const ProjectPlatformPage: React.FC<Props> = ({
   tabRoutes,
   tabRoutesDef,
 }) => {
-  const { pendingChanges } = useContext(AppContext);
+  const { currentProject, pendingChanges } = useContext(AppContext);
+
+  useBreadcrumbs(currentProject?.name, match.url);
 
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
   //count how many unique resources in the pending changes
   const publishCount = useMemo(() => {
     return pendingChanges?.reduce((acc, change) => {
-      if (!acc.includes(change.resource.id)) {
+      if (change.resource.resourceType === EnumResourceType.PluginRepository) {
+        acc.push(change.originId);
+      } else if (!acc.includes(change.resource.id)) {
         acc.push(change.resource.id);
       }
       return acc;

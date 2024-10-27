@@ -35,6 +35,7 @@ import { AwsMarketplaceModule } from "./aws-marketplace/aws-marketplace.module";
 import { PackageModule } from "./package/package.module";
 import { ResourceVersionModule } from "./resourceVersion/resourceVersion.module";
 import { OutdatedVersionAlertModule } from "./outdatedVersionAlert/outdatedVersionAlert.module";
+import { TeamModule } from "./team/team.module";
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { OutdatedVersionAlertModule } from "./outdatedVersionAlert/outdatedVersi
     PackageModule,
     ResourceVersionModule,
     OutdatedVersionAlertModule,
+    TeamModule,
   ],
   exports: [
     AccountModule,
@@ -109,6 +111,7 @@ import { OutdatedVersionAlertModule } from "./outdatedVersionAlert/outdatedVersi
     PrivatePluginModule,
     ResourceVersionModule,
     OutdatedVersionAlertModule,
+    TeamModule,
   ],
 })
 export class CoreModule {}

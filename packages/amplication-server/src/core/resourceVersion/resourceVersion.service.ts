@@ -10,12 +10,14 @@ import { FindManyResourceVersionArgs } from "./dto/FindManyResourceVersionArgs";
 import { FindOneResourceVersionArgs } from "./dto/FindOneResourceVersionArgs";
 import { ResourceVersion } from "./dto/ResourceVersion";
 import { BlockService } from "../block/block.service";
-import { sort, valid } from "semver";
+import { compareBuild, sort, valid } from "semver";
 import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
-import { BlockVersion } from "../../models";
+import { BlockVersion, Resource } from "../../models";
 import { ResourceVersionsDiff } from "./dto/ResourceVersionsDiff";
 import { ResourceVersionsDiffBlock } from "./dto/ResourceVersionsDiffBlock";
 import { CompareResourceVersionsArgs } from "./dto/CompareResourceVersionsArgs";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { PrivatePluginBlockVersionSettings } from "../privatePlugin/privatePlugin.service";
 
 @Injectable()
 export class ResourceVersionService {
@@ -38,15 +40,24 @@ export class ResourceVersionService {
   async create(args: CreateResourceVersionArgs): Promise<ResourceVersion> {
     const resourceId = args.data.resource.connect.id;
 
-    await this.validateVersion(args.data.version, resourceId);
-
-    const resource = await this.resourceService.findOne({
+    const resource = await this.resourceService.resource({
       where: { id: resourceId },
     });
 
-    if (resource.resourceType !== EnumResourceType.ServiceTemplate) {
+    if (resource.resourceType === EnumResourceType.ServiceTemplate) {
+      await this.validateVersion(args.data.version, resourceId);
+    } else {
+      //@todo: do we need to use real semver for plugin repo?
+      const commitId = args.data.commit.connect.id;
+      args.data.version = commitId.slice(commitId.length - 8);
+    }
+
+    if (
+      resource.resourceType !== EnumResourceType.ServiceTemplate &&
+      resource.resourceType !== EnumResourceType.PluginRepository
+    ) {
       this.logger.error(
-        `Resource version is supported only for service templates, but received resource of type ${resource.resourceType} with id ${resourceId}`
+        `Resource version is supported only for service templates and plugin repository, but received resource of type ${resource.resourceType} with id ${resourceId}`
       );
       return;
     }
@@ -79,13 +90,77 @@ export class ResourceVersionService {
       },
     });
 
-    await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
-      resourceId,
-      previousVersion?.version,
-      args.data.version
-    );
+    if (resource.resourceType === EnumResourceType.ServiceTemplate) {
+      await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
+        resourceId,
+        previousVersion?.version,
+        args.data.version
+      );
+    } else if (resource.resourceType === EnumResourceType.PluginRepository) {
+      await this.checkForAlertsForNewPrivatePluginVersions(
+        resource,
+        previousVersion?.version,
+        args.data.version
+      );
+    }
 
     return resourceVersion;
+  }
+
+  async checkForAlertsForNewPrivatePluginVersions(
+    resource: Resource,
+    previousVersion: string,
+    newVersion: string
+  ) {
+    const changes = await this.compareResourceVersions({
+      where: {
+        sourceVersion: previousVersion,
+        targetVersion: newVersion,
+        resource: { id: resource.id },
+      },
+    });
+
+    //find all the private plugins that includes a new published version
+    const changedPrivatePlugins = changes.updatedBlocks.filter(
+      (block) =>
+        block.targetBlockVersion.block.blockType === EnumBlockType.PrivatePlugin
+    );
+
+    for (const diff of changedPrivatePlugins) {
+      const sourceSettings = diff.sourceBlockVersion
+        .settings as unknown as PrivatePluginBlockVersionSettings;
+
+      const targetSettings = diff.targetBlockVersion
+        .settings as unknown as PrivatePluginBlockVersionSettings;
+
+      //find the latest version on the target that is active and was not exist or active on the source
+      const newVersions = targetSettings.versions.filter(
+        (version) =>
+          version.enabled &&
+          !sourceSettings.versions.some(
+            (sourceVersion) =>
+              sourceVersion.version === version.version && sourceVersion.enabled
+          )
+      );
+
+      const latestNewVersion = newVersions.reduce(
+        (prev, current) =>
+          !prev
+            ? current
+            : compareBuild(prev?.version, current.version) === -1
+            ? current
+            : prev,
+        null
+      );
+
+      if (latestNewVersion) {
+        await this.outdatedVersionAlertService.triggerAlertsForNewPluginVersion(
+          resource.projectId,
+          targetSettings.pluginId,
+          latestNewVersion.version
+        );
+      }
+    }
   }
 
   async validateVersion(version: string, resourceId): Promise<void> {

@@ -50,16 +50,14 @@ export default function ExistingConnectionsMenu({
             "select organization" // temporary
           )
         }
-        buttonStyle={EnumButtonStyle.Text}
-        className={`${CLASS_NAME}__menu`}
+        buttonStyle={EnumButtonStyle.Outline}
         icon="chevron_down"
       >
-        <SelectMenuModal className={`${CLASS_NAME}__list`}>
-          <SelectMenuList className={`${CLASS_NAME}__select-menu`}>
+        <SelectMenuModal>
+          <SelectMenuList>
             <>
               {gitOrganizations.map((gitOrganization) => (
                 <SelectMenuItem
-                  className={`${CLASS_NAME}__item`}
                   closeAfterSelectionChange
                   selected={selectedGitOrganization?.id === gitOrganization.id}
                   key={gitOrganization.id}
@@ -74,17 +72,19 @@ export default function ExistingConnectionsMenu({
                 </SelectMenuItem>
               ))}
             </>
+            <SelectMenuItem
+              closeAfterSelectionChange
+              selected={false}
+              onSelectionChange={() => {
+                onAddGitOrganization && onAddGitOrganization();
+              }}
+            >
+              <div className={`${CLASS_NAME}__add-item`}>
+                <Icon icon="plus" size="xsmall" />
+                <span>Add Organization</span>
+              </div>
+            </SelectMenuItem>
           </SelectMenuList>
-          <div
-            className={`${CLASS_NAME}__add-item`}
-            onClick={() => {
-              selectRef.current.firstChild.click();
-              onAddGitOrganization && onAddGitOrganization();
-            }}
-          >
-            <Icon icon="plus" size="xsmall" />
-            <span>Add Organization</span>
-          </div>
         </SelectMenuModal>
       </SelectMenu>
     </>
