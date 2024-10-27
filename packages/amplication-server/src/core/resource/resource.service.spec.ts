@@ -68,6 +68,8 @@ import { GitProviderService } from "../git/git.provider.service";
 import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
 import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
+import { OwnershipService } from "../ownership/ownership.service";
+import { EnumOwnershipType } from "../ownership/dto/Ownership";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -494,6 +496,12 @@ const projectServiceFindUniqueMock = jest.fn(() => ({
   },
 }));
 
+const ownershipServiceGetOwnershipMock = jest.fn(() => ({
+  id: "exampleOwnershipId",
+  owner: EXAMPLE_USER,
+  ownershipType: EnumOwnershipType.User,
+}));
+
 const prismaTransactionMock = jest.fn(() => [
   EXAMPLE_RESOURCE,
   EXAMPLE_PROJECT_CONFIGURATION_RESOURCE,
@@ -664,6 +672,12 @@ describe("ResourceService", () => {
         {
           provide: UserActionService,
           useClass: jest.fn(() => ({})),
+        },
+        {
+          provide: OwnershipService,
+          useClass: jest.fn(() => ({
+            getOwnership: ownershipServiceGetOwnershipMock,
+          })),
         },
 
         MockedAmplicationLoggerProvider,
