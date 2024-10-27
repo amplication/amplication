@@ -23,6 +23,7 @@ import {
   GET_RESOURCE,
   UPDATE_RESOURCE,
 } from "../Workspaces/queries/resourcesQueries";
+import { OwnerSelector } from "../Components/OwnerSelector";
 
 type Props = {
   resourceId: string;
@@ -107,26 +108,29 @@ function ResourceForm({ resourceId }: Props) {
         >
           {() => {
             return (
-              <Form>
-                <FlexItem margin={EnumFlexItemMargin.Bottom}>
-                  <Text textStyle={EnumTextStyle.H4}>
-                    {data.resource.resourceType ===
-                    models.EnumResourceType.ProjectConfiguration
-                      ? "Project"
-                      : "Resource"}{" "}
-                    Settings
-                  </Text>
-                </FlexItem>
-                <FormikAutoSave debounceMS={1000} />
-                <TextField name="name" label="Name" />
-                <TextField
-                  autoComplete="off"
-                  textarea
-                  rows={3}
-                  name="description"
-                  label="Description"
-                />
-              </Form>
+              <>
+                <Form>
+                  <FlexItem margin={EnumFlexItemMargin.Bottom}>
+                    <Text textStyle={EnumTextStyle.H4}>
+                      {data.resource.resourceType ===
+                      models.EnumResourceType.ProjectConfiguration
+                        ? "Project"
+                        : "Resource"}{" "}
+                      Settings
+                    </Text>
+                  </FlexItem>
+                  <FormikAutoSave debounceMS={1000} />
+                  <TextField name="name" label="Name" />
+                  <TextField
+                    autoComplete="off"
+                    textarea
+                    rows={3}
+                    name="description"
+                    label="Description"
+                  />
+                </Form>
+                <OwnerSelector resource={data.resource} />
+              </>
             );
           }}
         </Formik>
