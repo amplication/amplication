@@ -19,7 +19,7 @@ import InnerTabLink from "../Layout/InnerTabLink";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
-import useTeam from "./hooks/useTeams";
+import useTeams from "./hooks/useTeams";
 import NewTeam from "./NewTeam";
 
 const CLASS_NAME = "team-list";
@@ -38,7 +38,7 @@ export const TeamList = React.memo(({ selectFirst = false }: Props) => {
     findTeamsData: data,
     findTeamsError: error,
     findTeamsLoading: loading,
-  } = useTeam();
+  } = useTeams();
 
   const handleSearchChange = useCallback(
     (value) => {
@@ -68,12 +68,16 @@ export const TeamList = React.memo(({ selectFirst = false }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <FlexItem margin={EnumFlexItemMargin.Bottom}>
+      <FlexItem
+        margin={EnumFlexItemMargin.Bottom}
+        end={loading && <CircularProgress centerToParent />}
+      >
         <Text textStyle={EnumTextStyle.Tag}>
-          {data?.teams.length} {pluralize(data?.teams.length, "Team", "Teams")}
+          {data?.teams.length || "0"}{" "}
+          {pluralize(data?.teams.length, "Team", "Teams")}
         </Text>
       </FlexItem>
-      {data?.teams && <NewTeam onTeamAdd={handleTeamChange} />}
+      {<NewTeam disabled={!data?.teams} onTeamAdd={handleTeamChange} />}
       <HorizontalRule />
       <SearchField
         label="search"
@@ -81,7 +85,6 @@ export const TeamList = React.memo(({ selectFirst = false }: Props) => {
         onChange={handleSearchChange}
       />
 
-      {loading && <CircularProgress centerToParent />}
       <FlexItem
         margin={EnumFlexItemMargin.Top}
         direction={EnumFlexDirection.Column}
@@ -90,7 +93,18 @@ export const TeamList = React.memo(({ selectFirst = false }: Props) => {
       >
         {data?.teams?.map((team) => (
           <InnerTabLink icon="teams" to={`${baseUrl}/teams/${team.id}`}>
-            <span>{team.name}</span>
+            <FlexItem
+              singeChildWithEllipsis
+              itemsAlign={EnumItemsAlign.Center}
+              end={
+                <Text textStyle={EnumTextStyle.Description}>
+                  {team.members.length}{" "}
+                  {pluralize(team.members.length, "Member", "Members")}
+                </Text>
+              }
+            >
+              <span>{team.name}</span>
+            </FlexItem>
           </InnerTabLink>
         ))}
       </FlexItem>

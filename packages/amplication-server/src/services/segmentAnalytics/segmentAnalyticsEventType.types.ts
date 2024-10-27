@@ -56,4 +56,6 @@ export enum EnumEventType {
   TeamCreate = "TeamCreate",
   TeamUpdate = "TeamUpdate",
   TeamDelete = "TeamDelete",
+  TeamAddMembers = "TeamAddMembers",
+  TeamRemoveMembers = "TeamRemoveMembers",
 }
