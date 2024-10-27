@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import { useAppContext } from "../context/appContext";
 import { useUrlQuery } from "../util/useUrlQuery";
 import NewServiceFromTemplate from "./NewServiceFromTemplate";
+import { EnumDialogStyle } from "@amplication/ui/design-system/components/Dialog/Dialog";
 
 export const CREATE_SERVICE_FROM_TEMPLATE_TRIGGER_URL =
   "create-service-from-template";
@@ -34,9 +35,10 @@ const NewServiceFromTemplateDialogWithUrlTrigger = () => {
 
   return (
     <Dialog
+      dialogStyle={EnumDialogStyle.Success}
       isOpen={createFromTemplateIsOpen}
       onDismiss={handleDismissCreateFromTemplate}
-      title="Create Service"
+      title="Create Service from template"
     >
       <NewServiceFromTemplate projectId={currentProject?.id} />
     </Dialog>

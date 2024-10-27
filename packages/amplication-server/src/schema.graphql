@@ -1632,6 +1632,8 @@ input OutdatedVersionAlertWhereInput {
   updatedAt: DateTimeFilter
 }
 
+union Owner = Team | User
+
 type Package implements IBlock {
   blockType: EnumBlockType!
   createdAt: DateTime!
@@ -2148,6 +2150,7 @@ type Resource {
   id: String!
   licensed: Boolean!
   name: String!
+  owner: Owner
   project: Project
   projectId: String
   resourceType: EnumResourceType!
