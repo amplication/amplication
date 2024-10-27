@@ -12,6 +12,22 @@ export const GET_RESOURCE = gql`
       githubLastMessage
       resourceType
       licensed
+      owner {
+        ... on User {
+          id
+          account {
+            id
+            email
+            firstName
+            lastName
+          }
+        }
+        ... on Team {
+          id
+          name
+          description
+        }
+      }
     }
   }
 `;
@@ -34,6 +50,22 @@ export const GET_RESOURCES = gql`
       codeGeneratorVersion
       codeGenerator
       licensed
+      owner {
+        ... on User {
+          id
+          account {
+            id
+            email
+            firstName
+            lastName
+          }
+        }
+        ... on Team {
+          id
+          name
+          description
+        }
+      }
       version {
         id
         createdAt

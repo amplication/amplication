@@ -77,6 +77,8 @@ import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings"
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVersion";
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
+import { OwnershipService } from "../ownership/ownership.service";
+import { EnumOwnershipType, Ownership } from "../ownership/dto/Ownership";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -187,7 +189,8 @@ export class ResourceService {
     private readonly actionService: ActionService,
     private readonly userActionService: UserActionService,
     private readonly gitProviderService: GitProviderService,
-    private readonly templateCodeEngineVersionService: TemplateCodeEngineVersionService
+    private readonly templateCodeEngineVersionService: TemplateCodeEngineVersionService,
+    private readonly ownershipService: OwnershipService
   ) {}
 
   async createProjectConfiguration(
@@ -1954,5 +1957,21 @@ export class ResourceService {
     }
 
     return settings.serviceTemplateVersion;
+  }
+
+  async setOwner(
+    resource: Resource,
+    ownershipType: EnumOwnershipType,
+    ownerId: string
+  ): Promise<Ownership> {
+    if (resource.ownershipId) {
+      return this.ownershipService.updateOwnership(
+        resource.ownershipId,
+        ownershipType,
+        ownerId
+      );
+    } else {
+      return this.ownershipService.createOwnership(ownershipType, ownerId);
+    }
   }
 }
