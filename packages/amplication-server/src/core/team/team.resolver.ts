@@ -1,5 +1,12 @@
 import { UseFilters, UseGuards } from "@nestjs/common";
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
 import { Roles } from "../../decorators/roles.decorator";
@@ -14,6 +21,8 @@ import { TeamCreateArgs } from "./dto/TeamCreateArgs";
 import { TeamFindManyArgs } from "./dto/TeamFindManyArgs";
 import { UpdateTeamArgs } from "./dto/UpdateTeamArgs";
 import { TeamService } from "./team.service";
+import { AddMembersToTeamArgs } from "./dto/AddMembersToTeamArgs";
+import { RemoveMembersFromTeamArgs } from "./dto/RemoveMembersFromTeamArgs";
 
 @Resolver(() => Team)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -63,5 +72,26 @@ export class TeamResolver {
   @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
   async updateTeam(@Args() args: UpdateTeamArgs): Promise<Team> {
     return this.teamService.updateTeam(args);
+  }
+
+  @Mutation(() => Team, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
+  async addMembersToTeam(@Args() args: AddMembersToTeamArgs): Promise<Team> {
+    return this.teamService.addMembersToTeam(args);
+  }
+
+  @Mutation(() => Team, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
+  async removeMembersFromTeam(
+    @Args() args: RemoveMembersFromTeamArgs
+  ): Promise<Team> {
+    return this.teamService.removeMembersFromTeam(args);
+  }
+
+  @ResolveField(() => [User], { nullable: false })
+  async members(@Parent() parent: Team): Promise<User[]> {
+    return this.teamService.members(parent.id);
   }
 }

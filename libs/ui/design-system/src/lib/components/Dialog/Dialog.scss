@@ -57,7 +57,7 @@ $modal-max-height: 80vh;
 
   &--success {
     .MuiDialog-paper {
-      border-top: 3px solid var(positive-default);
+      border-top: 3px solid var(--theme-green);
     }
   }
 

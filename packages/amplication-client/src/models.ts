@@ -1496,6 +1496,7 @@ export type ModuleWhereInput = {
 
 export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
+  addMembersToTeam: Team;
   bulkUpdateWorkspaceProjectsAndResourcesLicensed: Scalars['Boolean']['output'];
   changePassword: Account;
   commit?: Maybe<Commit>;
@@ -1567,6 +1568,7 @@ export type Mutation = {
   provisionSubscription?: Maybe<ProvisionSubscriptionResult>;
   redeemCoupon: Coupon;
   redesignProject: UserAction;
+  removeMembersFromTeam: Team;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   sendAssistantMessageWithStream: AssistantThread;
@@ -1611,6 +1613,12 @@ export type Mutation = {
 
 export type MutationAddEntityPermissionFieldArgs = {
   data: EntityAddPermissionFieldInput;
+};
+
+
+export type MutationAddMembersToTeamArgs = {
+  data: TeamUpdateMembersInput;
+  where: WhereUniqueInput;
 };
 
 
@@ -1973,6 +1981,12 @@ export type MutationRedesignProjectArgs = {
 };
 
 
+export type MutationRemoveMembersFromTeamArgs = {
+  data: TeamUpdateMembersInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationResendInvitationArgs = {
   where: WhereUniqueInput;
 };
@@ -2232,6 +2246,8 @@ export type OutdatedVersionAlertWhereInput = {
   type?: InputMaybe<EnumOutdatedVersionAlertTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
+
+export type Owner = Team | User;
 
 export type Package = IBlock & {
   blockType: EnumBlockType;
@@ -3110,6 +3126,7 @@ export type Resource = {
   id: Scalars['String']['output'];
   licensed: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  owner?: Maybe<Owner>;
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;
   resourceType: EnumResourceType;
@@ -3493,6 +3510,10 @@ export type TeamOrderByInput = {
 export type TeamUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TeamUpdateMembersInput = {
+  userIds: Array<Scalars['String']['input']>;
 };
 
 export type TeamWhereInput = {

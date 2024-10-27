@@ -18,6 +18,7 @@ import {
 } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { UserInfo } from "../Components/UserInfo";
 
 type DType = {
   deleteUser: models.User;
@@ -135,9 +136,6 @@ function MemberListItem({ member, onDelete, onError }: Props) {
       />
       <ListItem
         direction={EnumFlexDirection.Row}
-        start={
-          <UserAvatar firstName={data.firstName} lastName={data.lastName} />
-        }
         end={
           <FlexItem direction={EnumFlexDirection.Row}>
             {data.isInvitation && (
@@ -171,7 +169,12 @@ function MemberListItem({ member, onDelete, onError }: Props) {
           </FlexItem>
         }
       >
-        <Text textStyle={EnumTextStyle.Normal}>{data.email}</Text>
+        {member.type === models.EnumWorkspaceMemberType.User ? (
+          <UserInfo user={member.member as models.User} />
+        ) : (
+          <Text textStyle={EnumTextStyle.Normal}>{data.email}</Text>
+        )}
+
         {data.isOwner && <Chip chipStyle={EnumChipStyle.ThemeBlue}>Owner</Chip>}
         {data.isInvitation && (
           <Chip chipStyle={EnumChipStyle.ThemePurple}>Pending</Chip>
