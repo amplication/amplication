@@ -30,6 +30,8 @@ import { ServiceSettingsService } from "../serviceSettings/serviceSettings.servi
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
 import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
+import { OwnershipService } from "../ownership/ownership.service";
+import { EnumOwnershipType } from "../ownership/dto/Ownership";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -364,6 +366,12 @@ const getServiceSettingsBlockMock = jest.fn(() => {
   };
 });
 
+const ownershipServiceGetOwnershipMock = jest.fn(() => ({
+  id: "exampleOwnershipId",
+  owner: EXAMPLE_USER,
+  ownershipType: EnumOwnershipType.User,
+}));
+
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
 describe("ResourceResolver", () => {
@@ -432,6 +440,12 @@ describe("ResourceResolver", () => {
           provide: ConfigService,
           useClass: jest.fn(() => ({
             get: jest.fn(),
+          })),
+        },
+        {
+          provide: OwnershipService,
+          useClass: jest.fn(() => ({
+            getOwnership: ownershipServiceGetOwnershipMock,
           })),
         },
       ],
