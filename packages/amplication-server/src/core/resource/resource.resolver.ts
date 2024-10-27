@@ -14,7 +14,7 @@ import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Resource, Entity, User, Project } from "../../models";
+import { Resource, Entity, User, Project, Team } from "../../models";
 import { GitRepository } from "../../models/GitRepository";
 import { ResourceService, EntityService } from "..";
 import { BuildService } from "../build/build.service";
@@ -38,6 +38,8 @@ import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ResourceVersion } from "../resourceVersion/dto/ResourceVersion";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
+import { Owner } from "../ownership/dto/Owner";
+import { OwnershipService } from "../ownership/ownership.service";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -49,7 +51,8 @@ export class ResourceResolver {
     private readonly buildService: BuildService,
     private readonly environmentService: EnvironmentService,
     private readonly serviceSettingsService: ServiceSettingsService,
-    private readonly resourceVersionService: ResourceVersionService
+    private readonly resourceVersionService: ResourceVersionService,
+    private readonly ownershipService: OwnershipService
   ) {}
 
   @Query(() => Resource, { nullable: true })
@@ -268,5 +271,19 @@ export class ResourceResolver {
     }
 
     return this.resourceVersionService.getLatest(resource.id);
+  }
+
+  @ResolveField(() => Owner, { nullable: true })
+  async owner(@Parent() resource: Resource): Promise<User | Team> {
+    if (!resource.id) {
+      return null;
+    }
+
+    if (!resource.ownershipId) {
+      return null;
+    }
+
+    return (await this.ownershipService.getOwnership(resource.ownershipId))
+      .owner;
   }
 }
