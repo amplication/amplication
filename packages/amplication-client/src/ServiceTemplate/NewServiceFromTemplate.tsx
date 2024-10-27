@@ -94,10 +94,11 @@ const NewServiceFromTemplate = ({ serviceTemplateId, projectId }: Props) => {
   return (
     <div className={CLASS_NAME}>
       <SvgThemeImage image={EnumImages.AddResource} />
-      <Text textAlign={EnumTextAlign.Center}>
-        Give your new service a name and description. <br />
-      </Text>
-
+      <FlexItem margin={EnumFlexItemMargin.Bottom}>
+        <Text textAlign={EnumTextAlign.Center}>
+          Choose a template and name your new service
+        </Text>
+      </FlexItem>
       <Formik
         initialValues={initialValues}
         validate={(values: CreateType) => validate(values, FORM_SCHEMA)}

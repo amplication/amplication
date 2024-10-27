@@ -32,6 +32,7 @@ import AppGitStatusPanel from "./git/AppGitStatusPanel";
 import { useResourceSummary } from "./hooks/useResourceSummary";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
+import ResourceOwner from "../Workspaces/ResourceOwner";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -129,6 +130,18 @@ const ResourceOverview = () => {
             <Text textStyle={EnumTextStyle.Description}>
               {currentResource?.description}
             </Text>
+            <FlexItem
+              direction={EnumFlexDirection.Row}
+              itemsAlign={EnumItemsAlign.Center}
+              gap={EnumGapSize.Default}
+            >
+              {currentResource && (
+                <>
+                  <Text textStyle={EnumTextStyle.Description}>Owner</Text>
+                  <ResourceOwner resource={currentResource} />
+                </>
+              )}
+            </FlexItem>
             {currentResource?.resourceType === EnumResourceType.Service && (
               <AppGitStatusPanel resource={currentResource} />
             )}
