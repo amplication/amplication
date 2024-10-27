@@ -40,7 +40,7 @@ function DeleteResourceButton({ resource }: Props) {
 
   const [deleteResource] = useMutation<TDeleteResourceData>(DELETE_RESOURCE, {
     refetchQueries: [GET_OUTDATED_VERSION_ALERTS],
-    
+
     update(cache, { data }) {
       if (!data) return;
       const deletedResourceId = data.deleteResource.id;
