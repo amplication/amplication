@@ -35,6 +35,7 @@ export class OutdatedVersionAlertService {
     await this.prisma.outdatedVersionAlert.updateMany({
       where: {
         resourceId: args.data.resource.connect.id,
+        blockId: args.data.block?.connect?.id,
         type: args.data.type,
         status: EnumOutdatedVersionAlertStatus.New,
       },

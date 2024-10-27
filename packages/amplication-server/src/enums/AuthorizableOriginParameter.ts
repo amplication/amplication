@@ -25,4 +25,5 @@ export enum AuthorizableOriginParameter {
   ProjectId,
   UserActionId,
   OutdatedVersionAlertId,
+  TeamId,
 }

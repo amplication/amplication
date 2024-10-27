@@ -40,7 +40,7 @@ export class ResourceVersionService {
   async create(args: CreateResourceVersionArgs): Promise<ResourceVersion> {
     const resourceId = args.data.resource.connect.id;
 
-    const resource = await this.resourceService.findOne({
+    const resource = await this.resourceService.resource({
       where: { id: resourceId },
     });
 
@@ -143,8 +143,14 @@ export class ResourceVersionService {
           )
       );
 
-      const latestNewVersion = newVersions.reduce((prev, current) =>
-        compareBuild(prev.version, current.version) === -1 ? current : prev
+      const latestNewVersion = newVersions.reduce(
+        (prev, current) =>
+          !prev
+            ? current
+            : compareBuild(prev?.version, current.version) === -1
+            ? current
+            : prev,
+        null
       );
 
       if (latestNewVersion) {

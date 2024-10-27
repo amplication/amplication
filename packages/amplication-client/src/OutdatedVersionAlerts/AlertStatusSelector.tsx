@@ -25,7 +25,7 @@ type Props = {
 };
 
 const OPTIONS: { value: EnumOutdatedVersionAlertStatus; label: string }[] = [
-  { value: EnumOutdatedVersionAlertStatus.New, label: "New" },
+  { value: EnumOutdatedVersionAlertStatus.New, label: "Active" },
   { value: EnumOutdatedVersionAlertStatus.Resolved, label: "Resolved" },
   { value: EnumOutdatedVersionAlertStatus.Ignored, label: "Ignored" },
 ];

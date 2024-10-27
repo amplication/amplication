@@ -74,12 +74,14 @@ export class ProjectResolver {
 
   @Mutation(() => Project, { nullable: true })
   @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "where.id")
   async deleteProject(@Args() args: FindOneArgs): Promise<Project | null> {
     return this.projectService.deleteProject(args);
   }
 
   @Mutation(() => Project, { nullable: false })
   @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "where.id")
   async updateProject(@Args() args: UpdateProjectArgs): Promise<Project> {
     return this.projectService.updateProject(args);
   }
