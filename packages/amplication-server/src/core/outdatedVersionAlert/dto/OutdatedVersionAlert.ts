@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { Resource } from "../../../models";
+import { Block, Resource } from "../../../models";
 import { EnumOutdatedVersionAlertStatus } from "./EnumOutdatedVersionAlertStatus";
 import { EnumOutdatedVersionAlertType } from "./EnumOutdatedVersionAlertType";
 
@@ -21,6 +21,12 @@ export class OutdatedVersionAlert {
 
   @Field(() => String, { nullable: false })
   resourceId!: string;
+
+  @Field(() => String, { nullable: true })
+  blockId?: string;
+
+  @Field(() => Block, { nullable: true })
+  block?: Block | null;
 
   @Field(() => EnumOutdatedVersionAlertType, { nullable: false })
   type!: keyof typeof EnumOutdatedVersionAlertType;

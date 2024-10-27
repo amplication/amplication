@@ -3,6 +3,7 @@
   height: var(--small-menu-item-height);
   position: relative;
   width: var(--small-menu-item-width);
+  display: flex;
 
   & &__initials {
     box-sizing: border-box;

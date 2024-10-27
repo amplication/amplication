@@ -21,6 +21,7 @@ import { PluginOrderItem } from "./dto/PluginOrderItem";
 import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
 import { UpdatePluginInstallationArgs } from "./dto/UpdatePluginInstallationArgs";
 import { PluginOrderService } from "./pluginOrder.service";
+import { PluginInstallationWhereInput } from "./dto/PluginInstallationWhereInput";
 
 export const REQUIRES_AUTHENTICATION_ENTITY = "requireAuthenticationEntity";
 
@@ -80,15 +81,11 @@ export class PluginInstallationService extends BlockTypeService<
 
   async findPluginInstallationByPluginId(
     pluginId: string,
-    resourceId: string
+    where: PluginInstallationWhereInput
   ): Promise<PluginInstallation[]> {
     return this.findManyBySettings(
       {
-        where: {
-          resource: {
-            id: resourceId,
-          },
-        },
+        where,
       },
       {
         path: ["pluginId"],
@@ -135,7 +132,11 @@ export class PluginInstallationService extends BlockTypeService<
 
     const existingPlugin = await this.findPluginInstallationByPluginId(
       args.data.pluginId,
-      resource.connect.id
+      {
+        resource: {
+          id: resource.connect.id,
+        },
+      }
     );
 
     if (existingPlugin.length > 0) {
@@ -314,10 +315,11 @@ export class PluginInstallationService extends BlockTypeService<
       blockVersion.settings as unknown as BlockSettingsProperties<PluginInstallation>;
 
     const existingPluginInstallations =
-      await this.findPluginInstallationByPluginId(
-        settings.pluginId,
-        targetResourceId
-      );
+      await this.findPluginInstallationByPluginId(settings.pluginId, {
+        resource: {
+          id: targetResourceId,
+        },
+      });
 
     if (existingPluginInstallations.length > 0) {
       const existingPluginInstallation = existingPluginInstallations[0];

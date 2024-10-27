@@ -277,6 +277,7 @@ export {
 } from "./components/DataGrid/DataGrid";
 
 export { DataGridRowExpander } from "./components/DataGrid/DataGridRowExpander";
+export { DataGridColumnFilter } from "./components/DataGrid/DataGridColumnFilter";
 
 export {
   ToggleView,

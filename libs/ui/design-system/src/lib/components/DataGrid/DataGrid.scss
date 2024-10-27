@@ -12,6 +12,7 @@
   overflow-y: scroll;
   border-radius: var(--default-border-radius);
   @include scrollbars($default-scroll-width, var(--gray-30), transparent);
+  block-size: 100%;
 
   .rdg-cell {
     border-right-color: transparent;
