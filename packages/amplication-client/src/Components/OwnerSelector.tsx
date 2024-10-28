@@ -14,10 +14,12 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { Resource, Team, User } from "../models";
-import ResourceOwner from "../Workspaces/ResourceOwner";
 import { EnumButtonStyle } from "./Button";
 import { UserInfo } from "./UserInfo";
 import { TeamInfo } from "./TeamInfo";
+import useTeams from "../Teams/hooks/useTeams";
+import { useCallback, useEffect } from "react";
+import useResource from "../Resource/hooks/useResource";
 
 const CLASS_NAME = "alert-status-selector";
 
@@ -27,9 +29,35 @@ type Props = {
 };
 
 export const OwnerSelector = ({ resource, disabled }: Props) => {
-  const { id, resourceType, owner } = resource;
+  const { id, owner } = resource;
+
+  const { findTeamsData, getAvailableWorkspaceUsers, availableWorkspaceUsers } =
+    useTeams();
+
+  const { setResourceOwner } = useResource(id);
 
   let content = null;
+
+  useEffect(() => {
+    getAvailableWorkspaceUsers();
+  }, []);
+
+  const handleOwnerChanged = useCallback(
+    (data) => {
+      const isUserOwner = data.__typename === "User";
+
+      setResourceOwner({
+        variables: {
+          data: {
+            resourceId: id,
+            userId: isUserOwner ? data.id : null,
+            teamId: !isUserOwner ? data.id : null,
+          },
+        },
+      }).catch(console.error);
+    },
+    [setResourceOwner, id]
+  );
 
   if (!owner) {
     content = <Text textStyle={EnumTextStyle.Description}>(not set)</Text>;
@@ -61,59 +89,45 @@ export const OwnerSelector = ({ resource, disabled }: Props) => {
           />
 
           <Text textStyle={EnumTextStyle.Normal}>Users</Text>
-          <SelectMenuItem closeAfterSelectionChange>
-            <FlexItem
-              gap={EnumGapSize.Small}
-              itemsAlign={EnumItemsAlign.Center}
+          {availableWorkspaceUsers?.map((user) => (
+            <SelectMenuItem
+              itemData={user}
+              closeAfterSelectionChange
+              onSelectionChange={handleOwnerChanged}
             >
-              <Text
-                textColor={EnumTextColor.White}
-                textStyle={EnumTextStyle.Tag}
+              <FlexItem
+                gap={EnumGapSize.Small}
+                itemsAlign={EnumItemsAlign.Center}
               >
-                User Name 1
-              </Text>
-            </FlexItem>
-          </SelectMenuItem>
-          <SelectMenuItem closeAfterSelectionChange>
-            <FlexItem
-              gap={EnumGapSize.Small}
-              itemsAlign={EnumItemsAlign.Center}
-            >
-              <Text
-                textColor={EnumTextColor.White}
-                textStyle={EnumTextStyle.Tag}
-              >
-                User Name 3
-              </Text>
-            </FlexItem>
-          </SelectMenuItem>
+                <Text
+                  textColor={EnumTextColor.White}
+                  textStyle={EnumTextStyle.Tag}
+                >
+                  {user.account.email}
+                </Text>
+              </FlexItem>
+            </SelectMenuItem>
+          ))}
           <Text textStyle={EnumTextStyle.Normal}>Teams</Text>
-          <SelectMenuItem closeAfterSelectionChange>
-            <FlexItem
-              gap={EnumGapSize.Small}
-              itemsAlign={EnumItemsAlign.Center}
+          {findTeamsData?.teams?.map((team) => (
+            <SelectMenuItem
+              closeAfterSelectionChange
+              itemData={team}
+              onSelectionChange={handleOwnerChanged}
             >
-              <Text
-                textColor={EnumTextColor.White}
-                textStyle={EnumTextStyle.Tag}
+              <FlexItem
+                gap={EnumGapSize.Small}
+                itemsAlign={EnumItemsAlign.Center}
               >
-                Team Name 1
-              </Text>
-            </FlexItem>
-          </SelectMenuItem>
-          <SelectMenuItem closeAfterSelectionChange>
-            <FlexItem
-              gap={EnumGapSize.Small}
-              itemsAlign={EnumItemsAlign.Center}
-            >
-              <Text
-                textColor={EnumTextColor.White}
-                textStyle={EnumTextStyle.Tag}
-              >
-                Team Name 2
-              </Text>
-            </FlexItem>
-          </SelectMenuItem>
+                <Text
+                  textColor={EnumTextColor.White}
+                  textStyle={EnumTextStyle.Tag}
+                >
+                  {team.name}
+                </Text>
+              </FlexItem>
+            </SelectMenuItem>
+          ))}
         </SelectMenuList>
       </SelectMenuModal>
     </SelectMenu>

@@ -111,3 +111,24 @@ export const GET_WORKSPACE_MEMBERS = gql`
     }
   }
 `;
+
+export const GET_WORKSPACE_USERS = gql`
+  query workspaceUsers {
+    workspaceMembers {
+      type
+      member {
+        __typename
+        ... on User {
+          id
+          isOwner
+          account {
+            id
+            email
+            firstName
+            lastName
+          }
+        }
+      }
+    }
+  }
+`;
