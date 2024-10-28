@@ -1550,6 +1550,7 @@ type Mutation {
   revokeInvitation(where: WhereUniqueInput!): Invitation
   sendAssistantMessageWithStream(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
+  setOwner(data: ResourceSetOwnerInput!): Resource!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   signup(data: SignupInput!): Auth!
   signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
@@ -2254,10 +2255,17 @@ input ResourceRoleWhereInput {
   updatedAt: DateTimeFilter
 }
 
+input ResourceSetOwnerInput {
+  resourceId: String!
+  teamId: String
+  userId: String
+}
+
 input ResourceUpdateInput {
   description: String
   gitRepositoryOverride: Boolean
   name: String
+  ownershipId: String
 }
 
 type ResourceVersion {

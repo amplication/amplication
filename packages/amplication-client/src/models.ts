@@ -1573,6 +1573,7 @@ export type Mutation = {
   revokeInvitation?: Maybe<Invitation>;
   sendAssistantMessageWithStream: AssistantThread;
   setCurrentWorkspace: Auth;
+  setOwner: Resource;
   setPluginOrder?: Maybe<PluginOrder>;
   signup: Auth;
   signupPreviewAccount: AuthPreviewAccount;
@@ -2005,6 +2006,11 @@ export type MutationSendAssistantMessageWithStreamArgs = {
 
 export type MutationSetCurrentWorkspaceArgs = {
   data: WhereUniqueInput;
+};
+
+
+export type MutationSetOwnerArgs = {
+  data: ResourceSetOwnerInput;
 };
 
 
@@ -3246,10 +3252,17 @@ export type ResourceRoleWhereInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
+export type ResourceSetOwnerInput = {
+  resourceId: Scalars['String']['input'];
+  teamId?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type ResourceUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   gitRepositoryOverride?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  ownershipId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ResourceVersion = {
