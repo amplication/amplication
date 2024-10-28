@@ -16,4 +16,9 @@ export class ResourceUpdateInput {
 
   @Field(() => Boolean, { nullable: true })
   gitRepositoryOverride?: boolean | null;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  ownershipId?: string | null;
 }

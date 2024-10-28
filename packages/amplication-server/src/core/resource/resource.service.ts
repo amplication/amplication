@@ -1960,10 +1960,21 @@ export class ResourceService {
   }
 
   async setOwner(
-    resource: Resource,
-    ownershipType: EnumOwnershipType,
-    ownerId: string
+    resourceId: string,
+    userId?: string,
+    teamId?: string
   ): Promise<Ownership> {
+    if (isEmpty(userId) && isEmpty(teamId))
+      throw new AmplicationError("ownerId does not provide");
+
+    const ownershipType: EnumOwnershipType = userId
+      ? EnumOwnershipType.User
+      : EnumOwnershipType.Team;
+
+    const ownerId = userId ? userId : teamId;
+
+    const resource = await this.resource({ where: { id: resourceId } });
+
     if (resource.ownershipId) {
       return this.ownershipService.updateOwnership(
         resource.ownershipId,
@@ -1971,7 +1982,17 @@ export class ResourceService {
         ownerId
       );
     } else {
-      return this.ownershipService.createOwnership(ownershipType, ownerId);
+      const ownerShip = await this.ownershipService.createOwnership(
+        ownershipType,
+        ownerId
+      );
+
+      await this.updateResource({
+        where: { id: resourceId },
+        data: { ownershipId: ownerShip.id },
+      });
+
+      return ownerShip;
     }
   }
 }

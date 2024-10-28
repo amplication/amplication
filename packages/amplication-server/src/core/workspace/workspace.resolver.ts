@@ -182,6 +182,14 @@ export class WorkspaceResolver {
     });
   }
 
+  async workspaceUsers(
+    @UserEntity() currentUser: User
+  ): Promise<WorkspaceMember[]> {
+    return this.workspaceService.findWorkspaceUsers({
+      where: { id: currentUser.workspace.id },
+    });
+  }
+
   @ResolveField(() => Subscription, { nullable: true })
   async subscription(@Parent() workspace: Workspace): Promise<Subscription> {
     return await this.subscriptionService.resolveSubscription(workspace.id);

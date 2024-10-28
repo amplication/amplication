@@ -580,6 +580,21 @@ export class WorkspaceService {
       );
   }
 
+  async findWorkspaceUsers(args: FindOneArgs): Promise<WorkspaceMember[]> {
+    const users = await this.userService.findUsers({
+      where: {
+        workspaceId: args.where.id,
+      },
+    });
+
+    return users.map((user): WorkspaceMember => {
+      return {
+        member: user,
+        type: EnumWorkspaceMemberType.User,
+      };
+    });
+  }
+
   async deleteUser(currentUser: User, args: DeleteUserArgs): Promise<User> {
     const user = await this.userService.findUser({
       ...args,
