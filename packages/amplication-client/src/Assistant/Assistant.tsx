@@ -53,14 +53,6 @@ const Assistant = () => {
 
   return (
     <>
-      {!open && (
-        <div className={`${CLASS_NAME}__handle`} onClick={() => setOpen(true)}>
-          <Icon icon="ai" color={EnumTextColor.White} size="large" />
-          <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
-            Jovu
-          </Text>
-        </div>
-      )}
       <div
         className={classNames(
           CLASS_NAME,

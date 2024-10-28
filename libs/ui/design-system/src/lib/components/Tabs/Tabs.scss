@@ -78,19 +78,14 @@ $tab-height: 26px;
     min-height: calc($tab-height + var(--default-spacing) * 2) !important;
 
     .amp-tab {
-      margin: var(--default-spacing) var(--default-spacing-small);
-      padding-left: var(--default-spacing);
-      padding-right: var(--default-spacing);
-      border: 1px solid transparent;
+      margin: var(--default-spacing) var(--icon-spacing);
 
       &:before {
         display: none;
       }
 
       &.active {
-        background-color: var(--gray-80);
-        border-radius: var(--default-border-radius);
-        border: 1px solid var(--primary);
+        color: var(--theme-turquoise);
 
         &:after {
           bottom: calc(var(--default-spacing) * -1);
