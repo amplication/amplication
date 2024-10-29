@@ -7,15 +7,19 @@ import {
   DELETE_TEAM,
   FIND_TEAMS,
   GET_TEAM,
+  GET_WORKSPACE_USERS,
   REMOVE_MEMBERS_FROM_TEAM,
   TEAM_FIELDS_FRAGMENT,
   UPDATE_TEAM,
 } from "../queries/teamsQueries";
 import {
   GET_WORKSPACE_MEMBERS,
-  GET_WORKSPACE_USERS,
   TData as MemberListData,
 } from "../../Workspaces/MemberList";
+
+export type WorkspaceUsersData = {
+  workspaceUsers: Array<models.User>;
+};
 
 type TDeleteData = {
   deleteTeam: models.Team;
@@ -166,14 +170,12 @@ const useTeams = (teamId?: string) => {
       },
     });
 
-  const [getAvailableWorkspaceUsers] = useLazyQuery<MemberListData>(
+  const [getAvailableWorkspaceUsers] = useLazyQuery<WorkspaceUsersData>(
     GET_WORKSPACE_USERS,
     {
       fetchPolicy: "no-cache",
       onCompleted: (data) => {
-        setAvailableWorkspaceUsers(
-          data.workspaceMembers.map((member) => member.member as models.User)
-        );
+        setAvailableWorkspaceUsers(data.workspaceUsers);
       },
     }
   );

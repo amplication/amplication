@@ -84,3 +84,17 @@ export const REMOVE_MEMBERS_FROM_TEAM = gql`
     }
   }
 `;
+export const GET_WORKSPACE_USERS = gql`
+  query workspaceUsers {
+    workspaceUsers {
+      id
+      isOwner
+      account {
+        id
+        email
+        firstName
+        lastName
+      }
+    }
+  }
+`;

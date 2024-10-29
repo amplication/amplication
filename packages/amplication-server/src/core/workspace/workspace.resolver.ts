@@ -182,9 +182,10 @@ export class WorkspaceResolver {
     });
   }
 
-  async workspaceUsers(
-    @UserEntity() currentUser: User
-  ): Promise<WorkspaceMember[]> {
+  @Query(() => [User], {
+    nullable: true,
+  })
+  async workspaceUsers(@UserEntity() currentUser: User): Promise<User[]> {
     return this.workspaceService.findWorkspaceUsers({
       where: { id: currentUser.workspace.id },
     });
