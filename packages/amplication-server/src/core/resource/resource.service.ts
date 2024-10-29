@@ -1987,7 +1987,7 @@ export class ResourceService {
         ownerId
       );
 
-      await this.updateResource({
+      await this.prisma.resource.update({
         where: { id: resourceId },
         data: { ownershipId: ownerShip.id },
       });
