@@ -12,6 +12,22 @@ export const GET_RESOURCE = gql`
       githubLastMessage
       resourceType
       licensed
+      owner {
+        ... on User {
+          id
+          account {
+            id
+            email
+            firstName
+            lastName
+          }
+        }
+        ... on Team {
+          id
+          name
+          description
+        }
+      }
     }
   }
 `;
@@ -34,6 +50,22 @@ export const GET_RESOURCES = gql`
       codeGeneratorVersion
       codeGenerator
       licensed
+      owner {
+        ... on User {
+          id
+          account {
+            id
+            email
+            firstName
+            lastName
+          }
+        }
+        ... on Team {
+          id
+          name
+          description
+        }
+      }
       version {
         id
         createdAt
@@ -222,6 +254,29 @@ export const CREATE_SERVICE_FROM_TEMPLATE = gql`
       id
       name
       description
+    }
+  }
+`;
+
+export const SET_RESOURCE_OWNER = gql`
+  mutation setResourceOwner($data: ResourceSetOwnerInput!) {
+    setResourceOwner(data: $data) {
+      owner {
+        ... on User {
+          id
+          account {
+            id
+            email
+            firstName
+            lastName
+          }
+        }
+        ... on Team {
+          id
+          name
+          description
+        }
+      }
     }
   }
 `;

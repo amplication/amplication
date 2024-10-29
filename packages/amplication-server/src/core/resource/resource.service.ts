@@ -77,6 +77,8 @@ import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings"
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVersion";
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
+import { OwnershipService } from "../ownership/ownership.service";
+import { EnumOwnershipType, Ownership } from "../ownership/dto/Ownership";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -187,12 +189,9 @@ export class ResourceService {
     private readonly actionService: ActionService,
     private readonly userActionService: UserActionService,
     private readonly gitProviderService: GitProviderService,
-    private readonly templateCodeEngineVersionService: TemplateCodeEngineVersionService
+    private readonly templateCodeEngineVersionService: TemplateCodeEngineVersionService,
+    private readonly ownershipService: OwnershipService
   ) {}
-
-  async findOne(args: FindOneArgs): Promise<Resource | null> {
-    return this.prisma.resource.findUnique(args);
-  }
 
   async createProjectConfiguration(
     projectId: string,
@@ -1286,7 +1285,7 @@ export class ResourceService {
       });
 
       //pass limitation validation
-      const currentResource = await this.findOne({
+      const currentResource = await this.resource({
         where: {
           id: resourceId,
         },
@@ -1958,5 +1957,42 @@ export class ResourceService {
     }
 
     return settings.serviceTemplateVersion;
+  }
+
+  async setOwner(
+    resourceId: string,
+    userId?: string,
+    teamId?: string
+  ): Promise<Ownership> {
+    if (isEmpty(userId) && isEmpty(teamId))
+      throw new AmplicationError("ownerId does not provide");
+
+    const ownershipType: EnumOwnershipType = userId
+      ? EnumOwnershipType.User
+      : EnumOwnershipType.Team;
+
+    const ownerId = userId ? userId : teamId;
+
+    const resource = await this.resource({ where: { id: resourceId } });
+
+    if (resource.ownershipId) {
+      return this.ownershipService.updateOwnership(
+        resource.ownershipId,
+        ownershipType,
+        ownerId
+      );
+    } else {
+      const ownerShip = await this.ownershipService.createOwnership(
+        ownershipType,
+        ownerId
+      );
+
+      await this.prisma.resource.update({
+        where: { id: resourceId },
+        data: { ownershipId: ownerShip.id },
+      });
+
+      return ownerShip;
+    }
   }
 }

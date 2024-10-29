@@ -2,6 +2,7 @@ import {
   Button,
   CircularProgress,
   DataGrid,
+  DataGridColumnFilter,
   EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
@@ -28,17 +29,20 @@ import "./ServiceTemplateList.scss";
 import { SERVICE_TEMPLATE_LIST_COLUMNS } from "./ServiceTemplateListDataColumns";
 import { Link } from "react-router-dom";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
-import BetaFeatureTag from "../Components/BetaFeatureTag";
-import PlatformBetaContent from "../Workspaces/WorkspaceHeader/PlatformBetaContent";
+import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
+const COLUMNS_LOCAL_STORAGE_KEY = "service-template-list-columns";
 
 function ServiceTemplateList() {
   const { refreshData } = useStiggContext();
 
   const { currentProject } = useContext(AppContext);
-
+  const { columns, setColumns } = useDataGridColumnFilter(
+    SERVICE_TEMPLATE_LIST_COLUMNS,
+    COLUMNS_LOCAL_STORAGE_KEY
+  );
   const { baseUrl: servicesBaseUrl } = useProjectBaseUrl({
     overrideIsPlatformConsole: false,
   });
@@ -83,9 +87,10 @@ function ServiceTemplateList() {
                 placeholder="search"
                 onChange={handleSearchChange}
               />
-              <BetaFeatureTag>
-                <PlatformBetaContent />
-              </BetaFeatureTag>
+              <DataGridColumnFilter
+                columns={columns}
+                onColumnsChanged={setColumns}
+              />
               {loadingServiceTemplates && <CircularProgress />}
             </FlexItem>
           </>
@@ -119,10 +124,7 @@ function ServiceTemplateList() {
         />
       ) : (
         <div className={`${CLASS_NAME}__grid-container`}>
-          <DataGrid
-            columns={SERVICE_TEMPLATE_LIST_COLUMNS}
-            rows={serviceTemplates}
-          ></DataGrid>
+          <DataGrid columns={columns} rows={serviceTemplates}></DataGrid>
         </div>
       )}
 

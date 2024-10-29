@@ -2,6 +2,7 @@ import {
   Button,
   CircularProgress,
   DataGrid,
+  DataGridColumnFilter,
   EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
@@ -34,6 +35,7 @@ import { RESOURCE_LIST_COLUMNS } from "./ResourceListDataColumns";
 import ResourceListItem from "./ResourceListItem";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import NewServiceFromTemplateDialogWithUrlTrigger from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
+import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
@@ -41,10 +43,15 @@ const LOCAL_STORAGE_KEY = "resource-list-view-mode";
 
 const VIEW_CARDS = "Cards";
 const VIEW_GRID = "Grid";
+const COLUMNS_LOCAL_STORAGE_KEY = "resource-list-columns";
 
 function ResourceList() {
   const { refreshData } = useStiggContext();
   const [error, setError] = useState<Error | null>(null);
+  const { columns, setColumns } = useDataGridColumnFilter(
+    RESOURCE_LIST_COLUMNS,
+    COLUMNS_LOCAL_STORAGE_KEY
+  );
 
   const { baseUrl: platformProjectBaseUrl } = useProjectBaseUrl({
     overrideIsPlatformConsole: true,
@@ -108,6 +115,10 @@ function ResourceList() {
                 placeholder="search"
                 onChange={handleSearchChange}
               />
+              <DataGridColumnFilter
+                columns={columns}
+                onColumnsChanged={setColumns}
+              />
               <ToggleView
                 values={[VIEW_CARDS, VIEW_GRID]}
                 selectedValue={viewMode}
@@ -144,10 +155,7 @@ function ResourceList() {
         <>
           {viewMode === VIEW_GRID ? (
             <div className={`${CLASS_NAME}__grid-container`}>
-              <DataGrid
-                columns={RESOURCE_LIST_COLUMNS}
-                rows={relevantResources}
-              ></DataGrid>
+              <DataGrid columns={columns} rows={relevantResources}></DataGrid>
             </div>
           ) : (
             <List>

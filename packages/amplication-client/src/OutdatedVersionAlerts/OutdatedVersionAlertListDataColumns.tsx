@@ -1,6 +1,8 @@
 import {
   DataGridColumn,
+  EnumTextStyle,
   EnumVersionTagState,
+  Text,
   TimeSince,
   VersionTag,
 } from "@amplication/ui/design-system";
@@ -47,7 +49,7 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Created",
     resizable: true,
     sortable: true,
-    width: 200,
+    width: 100,
     renderCell: (props) => {
       return <TimeSince time={new Date(props.row.createdAt)} />;
     },
@@ -57,10 +59,24 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Alert Type",
     resizable: true,
     sortable: true,
-    width: 200,
+    width: 150,
     renderCell: (props) => {
       return <OutdatedVersionAlertType type={props.row.type} />;
     },
+  },
+  {
+    key: "blockDisplayName",
+    name: "Plugin", //we only support alerts for blocks of plugin installation - we may need to change this in the future
+    resizable: true,
+    sortable: true,
+    renderCell: (props) => {
+      return (
+        <Text textStyle={EnumTextStyle.Description}>
+          {props.row.block?.displayName}
+        </Text>
+      );
+    },
+    getValue: (row) => row.block?.displayName || "",
   },
   {
     key: "outdatedVersion",

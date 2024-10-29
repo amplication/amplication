@@ -111,7 +111,10 @@ export class GitClientService {
     pluginsToDownload,
     resourceId,
     buildId,
-  }: DownloadPrivatePluginsArgs): Promise<{ pluginPaths: string[] }> {
+  }: DownloadPrivatePluginsArgs): Promise<{
+    pluginPaths: string[];
+    pluginVersions: string[];
+  }> {
     const gitRepoDir = normalize(
       join(
         cloneDirPath,
@@ -155,7 +158,9 @@ export class GitClientService {
 
     const pluginsByGitRef = pluginsToDownload.reduce(
       (acc: { [key: string]: string[] }, plugin) => {
-        const versionKey = plugin.pluginVersion || baseBranch; // no version means use the base branch, otherwise use the version (tag/branch)
+        const versionKey = plugin.pluginVersion
+          ? `${plugin.pluginId}@${plugin.pluginVersion}`
+          : baseBranch; // no version means use the base branch, otherwise use the version (tag/branch)
         if (!acc[versionKey]) {
           acc[versionKey] = [];
         }
@@ -166,8 +171,12 @@ export class GitClientService {
     );
 
     const pluginPaths: string[] = [];
+    const pluginVersions: string[] = [];
+
     for (const [pluginVersion, pluginIds] of Object.entries(pluginsByGitRef)) {
       const pluginVersionDir = join(gitRepoDir, pluginVersion);
+      pluginVersions.push(pluginVersion);
+
       const gitCli = TraceWrapper.trace(
         new GitCli(this.logger, {
           originUrl: cloneUrl,
@@ -196,6 +205,7 @@ export class GitClientService {
 
     return {
       pluginPaths,
+      pluginVersions,
     };
   }
 

@@ -11,6 +11,11 @@ export const OUTDATED_VERSION_ALERT_FIELDS_FRAGMENT = gql`
       resourceType
     }
     resourceId
+    blockId
+    block {
+      id
+      displayName
+    }
     type
     outdatedVersion
     latestVersion

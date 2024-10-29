@@ -1496,6 +1496,7 @@ export type ModuleWhereInput = {
 
 export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
+  addMembersToTeam: Team;
   bulkUpdateWorkspaceProjectsAndResourcesLicensed: Scalars['Boolean']['output'];
   changePassword: Account;
   commit?: Maybe<Commit>;
@@ -1533,6 +1534,7 @@ export type Mutation = {
   createServiceTemplate: Resource;
   createServiceTopics: ServiceTopics;
   createServiceWithEntities: ResourceCreateWithEntitiesResult;
+  createTeam: Team;
   createTopic: Topic;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
@@ -1553,6 +1555,7 @@ export type Mutation = {
   deleteResource?: Maybe<Resource>;
   deleteResourceRole?: Maybe<ResourceRole>;
   deleteServiceTopics: ServiceTopics;
+  deleteTeam?: Maybe<Team>;
   deleteTopic: Topic;
   deleteUser?: Maybe<User>;
   deleteWorkspace?: Maybe<Workspace>;
@@ -1565,11 +1568,13 @@ export type Mutation = {
   provisionSubscription?: Maybe<ProvisionSubscriptionResult>;
   redeemCoupon: Coupon;
   redesignProject: UserAction;
+  removeMembersFromTeam: Team;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   sendAssistantMessageWithStream: AssistantThread;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
+  setResourceOwner: Ownership;
   signup: Auth;
   signupPreviewAccount: AuthPreviewAccount;
   signupWithBusinessEmail: Scalars['Boolean']['output'];
@@ -1600,6 +1605,7 @@ export type Mutation = {
   updateResourceRole?: Maybe<ResourceRole>;
   updateServiceSettings?: Maybe<ServiceSettings>;
   updateServiceTopics: ServiceTopics;
+  updateTeam: Team;
   updateTopic: Topic;
   updateWorkspace?: Maybe<Workspace>;
   upgradeServiceToLatestTemplateVersion: Resource;
@@ -1608,6 +1614,12 @@ export type Mutation = {
 
 export type MutationAddEntityPermissionFieldArgs = {
   data: EntityAddPermissionFieldInput;
+};
+
+
+export type MutationAddMembersToTeamArgs = {
+  data: TeamUpdateMembersInput;
+  where: WhereUniqueInput;
 };
 
 
@@ -1799,6 +1811,11 @@ export type MutationCreateServiceWithEntitiesArgs = {
 };
 
 
+export type MutationCreateTeamArgs = {
+  data: TeamCreateInput;
+};
+
+
 export type MutationCreateTopicArgs = {
   data: TopicCreateInput;
 };
@@ -1900,6 +1917,11 @@ export type MutationDeleteServiceTopicsArgs = {
 };
 
 
+export type MutationDeleteTeamArgs = {
+  where: WhereUniqueInput;
+};
+
+
 export type MutationDeleteTopicArgs = {
   where: WhereUniqueInput;
 };
@@ -1960,6 +1982,12 @@ export type MutationRedesignProjectArgs = {
 };
 
 
+export type MutationRemoveMembersFromTeamArgs = {
+  data: TeamUpdateMembersInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationResendInvitationArgs = {
   where: WhereUniqueInput;
 };
@@ -1984,6 +2012,11 @@ export type MutationSetCurrentWorkspaceArgs = {
 export type MutationSetPluginOrderArgs = {
   data: PluginSetOrderInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationSetResourceOwnerArgs = {
+  data: ResourceSetOwnerInput;
 };
 
 
@@ -2156,6 +2189,12 @@ export type MutationUpdateServiceTopicsArgs = {
 };
 
 
+export type MutationUpdateTeamArgs = {
+  data: TeamUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationUpdateTopicArgs = {
   data: TopicUpdateInput;
   where: WhereUniqueInput;
@@ -2173,6 +2212,8 @@ export type MutationUpgradeServiceToLatestTemplateVersionArgs = {
 };
 
 export type OutdatedVersionAlert = {
+  block?: Maybe<Block>;
+  blockId?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
   latestVersion: Scalars['String']['output'];
@@ -2210,6 +2251,12 @@ export type OutdatedVersionAlertWhereInput = {
   status?: InputMaybe<EnumOutdatedVersionAlertStatusFilter>;
   type?: InputMaybe<EnumOutdatedVersionAlertTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type Owner = Team | User;
+
+export type Ownership = {
+  owner: Owner;
 };
 
 export type Package = IBlock & {
@@ -2639,12 +2686,15 @@ export type Query = {
   serviceTemplates: Array<Resource>;
   serviceTopics?: Maybe<ServiceTopics>;
   serviceTopicsList: Array<ServiceTopics>;
+  team?: Maybe<Team>;
+  teams: Array<Team>;
   topic?: Maybe<Topic>;
   topics: Array<Topic>;
   userAction: UserAction;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
+  workspaceUsers?: Maybe<Array<User>>;
   workspaces: Array<Workspace>;
 };
 
@@ -2982,6 +3032,19 @@ export type QueryServiceTopicsListArgs = {
 };
 
 
+export type QueryTeamArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryTeamsArgs = {
+  orderBy?: InputMaybe<TeamOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TeamWhereInput>;
+};
+
+
 export type QueryTopicArgs = {
   where: WhereUniqueInput;
 };
@@ -3074,6 +3137,7 @@ export type Resource = {
   id: Scalars['String']['output'];
   licensed: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  owner?: Maybe<Owner>;
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;
   resourceType: EnumResourceType;
@@ -3191,6 +3255,12 @@ export type ResourceRoleWhereInput = {
   name?: InputMaybe<StringFilter>;
   resource?: InputMaybe<WhereUniqueInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type ResourceSetOwnerInput = {
+  resourceId: Scalars['String']['input'];
+  teamId?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ResourceUpdateInput = {
@@ -3433,6 +3503,41 @@ export type Subscription = {
 
 export type SubscriptionAssistantMessageUpdatedArgs = {
   threadId: Scalars['String']['input'];
+};
+
+export type Team = {
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  members?: Maybe<Array<User>>;
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type TeamCreateInput = {
+  name: Scalars['String']['input'];
+};
+
+export type TeamOrderByInput = {
+  deletedAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+};
+
+export type TeamUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TeamUpdateMembersInput = {
+  userIds: Array<Scalars['String']['input']>;
+};
+
+export type TeamWhereInput = {
+  deletedAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<StringFilter>;
+  resources?: InputMaybe<ResourceListRelationFilter>;
 };
 
 export type Topic = IBlock & {

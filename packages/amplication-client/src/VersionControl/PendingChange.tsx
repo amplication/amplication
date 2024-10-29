@@ -152,7 +152,7 @@ export const PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP = {
         pluralTypeName: "Service Topics",
       },
       [models.EnumBlockType.PrivatePlugin]: {
-        relativeUrl: `private-plugin/${change.id}`,
+        relativeUrl: `../private-plugins/${change.id}`,
         icon: "plugin",
         displayName: change.displayName,
         type: "Private Plugin",

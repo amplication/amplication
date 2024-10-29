@@ -1,5 +1,5 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
@@ -20,6 +20,7 @@ import { CreatePrivatePluginVersionArgs } from "./dto/CreatePrivatePluginVersion
 import { PrivatePluginVersion } from "./dto/PrivatePluginVersion";
 import { UpdatePrivatePluginVersionArgs } from "./dto/UpdatePrivatePluginVersionArgs";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+import { BlockSettingsProperties } from "../block/types";
 
 const DEFAULT_PRIVATE_PLUGIN_VERSION: Omit<PrivatePluginVersion, "version"> = {
   deprecated: false,
@@ -27,6 +28,11 @@ const DEFAULT_PRIVATE_PLUGIN_VERSION: Omit<PrivatePluginVersion, "version"> = {
   settings: null,
   configurations: null,
 };
+
+export type PrivatePluginBlockVersionSettings =
+  BlockSettingsProperties<PrivatePlugin> & {
+    versions: PrivatePluginVersion[];
+  };
 
 @Injectable()
 export class PrivatePluginService extends BlockTypeService<
@@ -42,6 +48,7 @@ export class PrivatePluginService extends BlockTypeService<
     protected readonly blockService: BlockService,
     protected readonly logger: AmplicationLogger,
     protected readonly billingService: BillingService,
+    @Inject(forwardRef(() => ResourceService))
     protected readonly resourceService: ResourceService
   ) {
     super(blockService, logger);
@@ -62,29 +69,34 @@ export class PrivatePluginService extends BlockTypeService<
       return [];
     }
 
-    return await this.findMany({
-      ...args,
-      where: {
-        ...args.where,
-        resource: {
-          deletedAt: null,
-          archived: {
-            not: true,
+    return await this.findMany(
+      {
+        ...args,
+        where: {
+          ...args.where,
+          resource: {
+            deletedAt: null,
+            archived: {
+              not: true,
+            },
+            projectId: resource.projectId,
           },
-          projectId: resource.projectId,
-        },
-        codeGenerator: {
-          equals:
-            CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
-            EnumCodeGenerator.NodeJs,
+          codeGenerator: {
+            equals:
+              CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
+              EnumCodeGenerator.NodeJs,
+          },
         },
       },
-    });
+      undefined,
+      true
+    );
   }
 
   async findMany(
     args: FindManyPrivatePluginArgs,
-    user?: User
+    user?: User,
+    takeLatestVersion?: boolean
   ): Promise<PrivatePlugin[]> {
     const codeGeneratorFilter = args.where?.codeGenerator;
     delete args.where?.codeGenerator;
@@ -95,10 +107,15 @@ export class PrivatePluginService extends BlockTypeService<
         equals: codeGeneratorFilter.equals,
       };
 
-      return this.findManyBySettings(args, filter);
+      return this.findManyBySettings(
+        args,
+        filter,
+        undefined,
+        takeLatestVersion
+      );
     }
 
-    return super.findMany(args, user);
+    return super.findMany(args, user, takeLatestVersion);
   }
 
   async create(

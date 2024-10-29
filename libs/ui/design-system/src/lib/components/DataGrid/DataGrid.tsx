@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "react-data-grid/lib/styles.css";
 
 import ReactDataGrid, {
-  ColumnOrColumnGroup,
+  Column,
   DataGridProps,
   RenderSortStatusProps,
   RowsChangeData,
@@ -22,8 +22,9 @@ export type DataGridSortColumn = {
   [key: string]: DataGridSortOrder;
 };
 
-export type DataGridColumn<T> = ColumnOrColumnGroup<T> & {
+export type DataGridColumn<T> = Column<T> & {
   getValue?: (row: T) => any;
+  hidden?: boolean;
 };
 
 export type ExpandableDataGridRow<T> = T & {
@@ -65,6 +66,11 @@ export function DataGrid<T>({
   const [sortColumns, setSortColumns] = useState<SortColumn[]>([]);
   const [rows, setRows] = useState<T[]>(incomingRows);
 
+  const visibleColumns = useMemo(
+    () => columns.filter((c) => !c.hidden),
+    [columns]
+  );
+
   const handleSortColumnsChange = useCallback(
     (sortColumns: SortColumn[]) => {
       setSortColumns(sortColumns);
@@ -82,7 +88,7 @@ export function DataGrid<T>({
 
   const columnValueGetters = useMemo(() => {
     return columns.reduce((acc, column) => {
-      if (column.getValue && "key" in column) {
+      if ("getValue" in column && "key" in column && column.getValue) {
         acc[column.key] = column.getValue;
       }
       return acc;
@@ -142,7 +148,8 @@ export function DataGrid<T>({
 
   return (
     <ReactDataGrid
-      columns={columns}
+      key={visibleColumns.length}
+      columns={visibleColumns}
       style={{ maxHeight: "100%", height: "auto" }}
       rowHeight={rowHeight}
       onRowsChange={onRowsChange}

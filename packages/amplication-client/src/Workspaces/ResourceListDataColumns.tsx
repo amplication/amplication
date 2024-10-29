@@ -14,6 +14,7 @@ import ResourceLastBuild from "./ResourceLastBuild";
 import ResourceLastBuildVersion from "./ResourceLastBuildVersion";
 import ResourceNameLink from "./ResourceNameLink";
 import ResourcePendingChangesCount from "./ResourcePendingChangesCount";
+import ResourceOwner from "./ResourceOwner";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -31,6 +32,15 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     sortable: true,
     renderCell: (props) => {
       return <ResourceNameLink resource={props.row} />;
+    },
+  },
+  {
+    key: "owner",
+    name: "Owner",
+    resizable: true,
+    sortable: true,
+    renderCell: (props) => {
+      return <ResourceOwner resource={props.row} />;
     },
   },
   {

@@ -161,7 +161,8 @@ describe("BlockTypeService", () => {
     expect(blockServiceFindManyByBlockTypeMock).toBeCalledTimes(1);
     expect(blockServiceFindManyByBlockTypeMock).toBeCalledWith(
       args,
-      service.blockType
+      service.blockType,
+      undefined
     );
   });
 

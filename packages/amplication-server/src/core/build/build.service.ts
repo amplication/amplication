@@ -36,6 +36,7 @@ import {
   EnumGitProvider,
   EnumPullRequestMode,
   GitProviderProperties,
+  PluginDownloadItem,
 } from "@amplication/util/git";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { ILogger } from "@amplication/util/logging";
@@ -74,6 +75,8 @@ import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { PluginInstallation } from "../pluginInstallation/dto/PluginInstallation";
 import { PackageService } from "../package/package.service";
 import omitDeep from "deepdash/omitDeep";
+import { PrivatePluginService } from "../privatePlugin/privatePlugin.service";
+import { compareBuild } from "semver";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -242,7 +245,8 @@ export class BuildService {
     private readonly gitProviderService: GitProviderService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
-    private analytics: SegmentAnalyticsService
+    private analytics: SegmentAnalyticsService,
+    private readonly privatePluginService: PrivatePluginService
   ) {
     this.host = this.configService.get(HOST_VAR);
     if (!this.host) {
@@ -307,7 +311,7 @@ export class BuildService {
       user,
     });
 
-    const resource = await this.resourceService.findOne({
+    const resource = await this.resourceService.resource({
       where: { id: resourceId },
     });
     if (resource.resourceType !== EnumResourceType.Service) {
@@ -592,6 +596,23 @@ export class BuildService {
               resourceId
             );
 
+          const pluginVersions = await this.getPrivatePluginsWithVersion(
+            resourceId,
+            privatePlugins
+          );
+
+          //report the private plugins build version
+          const buildPluginPromises = pluginVersions.map((pluginVersion) =>
+            this.notifyBuildPluginVersion({
+              buildId: build.id,
+              packageName: pluginVersion.pluginId,
+              packageVersion: pluginVersion.pluginVersion,
+              requestedFullPackageName: pluginVersion.requestedFullPackageName,
+            })
+          );
+
+          await Promise.all(buildPluginPromises);
+
           const downloadPrivatePluginsRequest: DownloadPrivatePluginsRequest.KafkaEvent =
             {
               key: {
@@ -601,9 +622,10 @@ export class BuildService {
                 ...pluginRepoGitSettings,
                 buildId: build.id,
                 resourceId,
-                pluginsToDownload: privatePlugins.map((plugin) => {
-                  return { pluginId: plugin.pluginId };
-                }),
+                pluginsToDownload: pluginVersions.map((pluginVersion) => ({
+                  pluginId: pluginVersion.pluginId,
+                  pluginVersion: pluginVersion.pluginVersion,
+                })),
               },
             };
 
@@ -635,6 +657,63 @@ export class BuildService {
       },
       true
     );
+  }
+
+  private async getPrivatePluginsWithVersion(
+    resourceId: string,
+    privatePlugins: PluginInstallation[]
+  ): Promise<
+    (PluginDownloadItem & {
+      requestedFullPackageName: string;
+    })[]
+  > {
+    const pluginsToDownload: (PluginDownloadItem & {
+      requestedFullPackageName: string;
+    })[] = [];
+
+    const privatePluginBlocks =
+      await this.privatePluginService.availablePrivatePluginsForResource({
+        where: {
+          resource: {
+            id: resourceId,
+          },
+        },
+      });
+
+    for (const privatePlugin of privatePlugins) {
+      if (privatePlugin.version !== "latest") {
+        pluginsToDownload.push({
+          pluginId: privatePlugin.pluginId,
+          pluginVersion: privatePlugin.version,
+          requestedFullPackageName: `${privatePlugin.pluginId}@${privatePlugin.version}`,
+        });
+        continue;
+      }
+
+      const privatePluginBlock = privatePluginBlocks.find(
+        (block) => block.pluginId === privatePlugin.pluginId
+      );
+
+      const sortedEnabledVersions = privatePluginBlock.versions
+        .filter((version) => version.enabled)
+        .sort((a, b) => compareBuild(b.version, a.version));
+
+      const pluginVersion = sortedEnabledVersions[0];
+
+      if (!pluginVersion) {
+        throw new Error(
+          `Could not find enabled version for plugin ${privatePlugin.pluginId}`
+        );
+      }
+
+      pluginsToDownload.push({
+        pluginId: privatePlugin.pluginId,
+        pluginVersion: pluginVersion.version,
+        requestedFullPackageName: `${privatePlugin.pluginId}@latest`,
+      });
+    }
+
+    return pluginsToDownload;
   }
 
   private async getResourceRoles(resourceId: string): Promise<ResourceRole[]> {
@@ -1254,9 +1333,6 @@ export class BuildService {
       where: { resource: { id: resourceId } },
     });
 
-    const packages = await this.packageService.findMany({
-      where: { resource: { id: resourceId } },
-    });
     const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
@@ -1313,7 +1389,6 @@ export class BuildService {
       entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: orderedPlugins,
-      packages,
       moduleContainers: modules,
       moduleActions: moduleActions,
       moduleDtos: moduleDtos,

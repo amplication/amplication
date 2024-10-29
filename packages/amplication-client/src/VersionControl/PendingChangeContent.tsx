@@ -36,8 +36,15 @@ const PendingChangeContent = ({
     change.resource.resourceType ===
     models.EnumResourceType.ProjectConfiguration;
 
+  const isPrivatePlugin =
+    change.originType === models.EnumPendingChangeOriginType.Block &&
+    (change.origin as models.Block).blockType ===
+      models.EnumBlockType.PrivatePlugin;
+
   const url = isProjectConfigResourceType
     ? `${baseUrl}/settings/general`
+    : isPrivatePlugin
+    ? `${baseUrl}/private-plugins/${change.originId}`
     : `${baseUrl}/${change.resource.id}/${relativeUrl}`;
 
   const nameElement = (
