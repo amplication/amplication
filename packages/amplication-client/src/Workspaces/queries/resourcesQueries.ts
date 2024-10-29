@@ -259,8 +259,8 @@ export const CREATE_SERVICE_FROM_TEMPLATE = gql`
 `;
 
 export const SET_RESOURCE_OWNER = gql`
-  mutation setOwner($data: ResourceSetOwnerInput!) {
-    setOwner(data: $data) {
+  mutation setResourceOwner($data: ResourceSetOwnerInput!) {
+    setResourceOwner(data: $data) {
       owner {
         ... on User {
           id

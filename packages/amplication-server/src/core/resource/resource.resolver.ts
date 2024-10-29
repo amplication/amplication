@@ -188,7 +188,7 @@ export class ResourceResolver {
 
   @Mutation(() => Ownership, { nullable: false })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
-  async setOwner(
+  async setResourceOwner(
     @Args() args: SetResourceOwnerArgs,
     @UserEntity() user: User
   ): Promise<Ownership> {
