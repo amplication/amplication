@@ -1573,8 +1573,8 @@ export type Mutation = {
   revokeInvitation?: Maybe<Invitation>;
   sendAssistantMessageWithStream: AssistantThread;
   setCurrentWorkspace: Auth;
-  setOwner: Resource;
   setPluginOrder?: Maybe<PluginOrder>;
+  setResourceOwner: Ownership;
   signup: Auth;
   signupPreviewAccount: AuthPreviewAccount;
   signupWithBusinessEmail: Scalars['Boolean']['output'];
@@ -2009,14 +2009,14 @@ export type MutationSetCurrentWorkspaceArgs = {
 };
 
 
-export type MutationSetOwnerArgs = {
-  data: ResourceSetOwnerInput;
-};
-
-
 export type MutationSetPluginOrderArgs = {
   data: PluginSetOrderInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationSetResourceOwnerArgs = {
+  data: ResourceSetOwnerInput;
 };
 
 
@@ -2254,6 +2254,10 @@ export type OutdatedVersionAlertWhereInput = {
 };
 
 export type Owner = Team | User;
+
+export type Ownership = {
+  owner: Owner;
+};
 
 export type Package = IBlock & {
   blockType: EnumBlockType;
@@ -2690,6 +2694,7 @@ export type Query = {
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
+  workspaceUsers?: Maybe<Array<User>>;
   workspaces: Array<Workspace>;
 };
 
@@ -3262,7 +3267,6 @@ export type ResourceUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   gitRepositoryOverride?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  ownershipId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ResourceVersion = {
