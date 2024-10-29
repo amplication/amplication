@@ -40,6 +40,8 @@ import { ResourceVersion } from "../resourceVersion/dto/ResourceVersion";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 import { Owner } from "../ownership/dto/Owner";
 import { OwnershipService } from "../ownership/ownership.service";
+import { Ownership } from "../ownership/dto/Ownership";
+import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -182,6 +184,19 @@ export class ResourceResolver {
     @Args() args: UpdateOneResourceArgs
   ): Promise<Resource | null> {
     return this.resourceService.updateResource(args);
+  }
+
+  @Mutation(() => Ownership, { nullable: false })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
+  async setResourceOwner(
+    @Args() args: SetResourceOwnerArgs,
+    @UserEntity() user: User
+  ): Promise<Ownership> {
+    return this.resourceService.setOwner(
+      args.data.resourceId,
+      args.data.userId,
+      args.data.teamId
+    );
   }
 
   @Mutation(() => UserAction, { nullable: false })

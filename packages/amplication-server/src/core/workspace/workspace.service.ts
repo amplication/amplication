@@ -580,6 +580,14 @@ export class WorkspaceService {
       );
   }
 
+  async findWorkspaceUsers(args: FindOneArgs): Promise<User[]> {
+    return await this.userService.findUsers({
+      where: {
+        workspaceId: args.where.id,
+      },
+    });
+  }
+
   async deleteUser(currentUser: User, args: DeleteUserArgs): Promise<User> {
     const user = await this.userService.findUser({
       ...args,

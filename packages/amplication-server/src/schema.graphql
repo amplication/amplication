@@ -1551,6 +1551,7 @@ type Mutation {
   sendAssistantMessageWithStream(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  setResourceOwner(data: ResourceSetOwnerInput!): Ownership!
   signup(data: SignupInput!): Auth!
   signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
@@ -1633,6 +1634,10 @@ input OutdatedVersionAlertWhereInput {
 }
 
 union Owner = Team | User
+
+type Ownership {
+  owner: Owner!
+}
 
 type Package implements IBlock {
   blockType: EnumBlockType!
@@ -2075,6 +2080,7 @@ type Query {
   userApiTokens: [ApiToken!]!
   workspace(where: WhereUniqueInput!): Workspace
   workspaceMembers: [WorkspaceMember!]
+  workspaceUsers: [User!]
   workspaces: [Workspace!]!
 }
 
@@ -2252,6 +2258,12 @@ input ResourceRoleWhereInput {
   name: StringFilter
   resource: WhereUniqueInput
   updatedAt: DateTimeFilter
+}
+
+input ResourceSetOwnerInput {
+  resourceId: String!
+  teamId: String
+  userId: String
 }
 
 input ResourceUpdateInput {

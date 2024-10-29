@@ -7,6 +7,7 @@ import {
   DELETE_TEAM,
   FIND_TEAMS,
   GET_TEAM,
+  GET_WORKSPACE_USERS,
   REMOVE_MEMBERS_FROM_TEAM,
   TEAM_FIELDS_FRAGMENT,
   UPDATE_TEAM,
@@ -15,6 +16,10 @@ import {
   GET_WORKSPACE_MEMBERS,
   TData as MemberListData,
 } from "../../Workspaces/MemberList";
+
+export type WorkspaceUsersData = {
+  workspaceUsers: Array<models.User>;
+};
 
 type TDeleteData = {
   deleteTeam: models.Team;
@@ -41,6 +46,10 @@ const NAME_FIELD = "name";
 const useTeams = (teamId?: string) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [availableWorkspaceMembers, setAvailableWorkspaceMembers] = useState<
+    models.User[]
+  >([]);
+
+  const [availableWorkspaceUsers, setAvailableWorkspaceUsers] = useState<
     models.User[]
   >([]);
 
@@ -135,7 +144,7 @@ const useTeams = (teamId?: string) => {
   const [updateTeam, { error: updateTeamError, loading: updateTeamLoading }] =
     useMutation<TUpdateData>(UPDATE_TEAM, {});
 
-  // members section
+  // members/users section
 
   const [getAvailableWorkspaceMembers, { refetch: refetchAvailableMembers }] =
     useLazyQuery<MemberListData>(GET_WORKSPACE_MEMBERS, {
@@ -160,6 +169,16 @@ const useTeams = (teamId?: string) => {
         );
       },
     });
+
+  const [getAvailableWorkspaceUsers] = useLazyQuery<WorkspaceUsersData>(
+    GET_WORKSPACE_USERS,
+    {
+      fetchPolicy: "no-cache",
+      onCompleted: (data) => {
+        setAvailableWorkspaceUsers(data.workspaceUsers);
+      },
+    }
+  );
 
   const [
     addMembersToTeamInternal,
@@ -220,6 +239,8 @@ const useTeams = (teamId?: string) => {
   return {
     getAvailableWorkspaceMembers,
     availableWorkspaceMembers,
+    getAvailableWorkspaceUsers,
+    availableWorkspaceUsers,
     deleteTeam,
     deleteTeamError,
     deleteTeamLoading,

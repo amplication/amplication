@@ -1574,6 +1574,7 @@ export type Mutation = {
   sendAssistantMessageWithStream: AssistantThread;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
+  setResourceOwner: Ownership;
   signup: Auth;
   signupPreviewAccount: AuthPreviewAccount;
   signupWithBusinessEmail: Scalars['Boolean']['output'];
@@ -2014,6 +2015,11 @@ export type MutationSetPluginOrderArgs = {
 };
 
 
+export type MutationSetResourceOwnerArgs = {
+  data: ResourceSetOwnerInput;
+};
+
+
 export type MutationSignupArgs = {
   data: SignupInput;
 };
@@ -2248,6 +2254,10 @@ export type OutdatedVersionAlertWhereInput = {
 };
 
 export type Owner = Team | User;
+
+export type Ownership = {
+  owner: Owner;
+};
 
 export type Package = IBlock & {
   blockType: EnumBlockType;
@@ -2684,6 +2694,7 @@ export type Query = {
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
+  workspaceUsers?: Maybe<Array<User>>;
   workspaces: Array<Workspace>;
 };
 
@@ -3244,6 +3255,12 @@ export type ResourceRoleWhereInput = {
   name?: InputMaybe<StringFilter>;
   resource?: InputMaybe<WhereUniqueInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type ResourceSetOwnerInput = {
+  resourceId: Scalars['String']['input'];
+  teamId?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ResourceUpdateInput = {
