@@ -90,7 +90,7 @@ export const OwnerSelector = ({ resource, disabled }: Props) => {
               <SelectMenuItem
                 closeAfterSelectionChange
                 itemData={team}
-                onSelectionChange={(data) => handleOwnerChanged(data, "User")}
+                onSelectionChange={(data) => handleOwnerChanged(data, "Team")}
               >
                 <FlexItem
                   gap={EnumGapSize.Small}
@@ -117,7 +117,7 @@ export const OwnerSelector = ({ resource, disabled }: Props) => {
               <SelectMenuItem
                 itemData={user}
                 closeAfterSelectionChange
-                onSelectionChange={(data) => handleOwnerChanged(data, "Team")}
+                onSelectionChange={(data) => handleOwnerChanged(data, "User")}
               >
                 <FlexItem
                   gap={EnumGapSize.Small}
