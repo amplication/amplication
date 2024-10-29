@@ -1,27 +1,27 @@
 import {
+  CollapsibleListItem,
   EnumGapSize,
   EnumItemsAlign,
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
-  HorizontalRule,
   Icon,
-  SearchField,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
-import { Resource, Team, User } from "../models";
-import { EnumButtonStyle } from "./Button";
-import { UserInfo } from "./UserInfo";
-import { TeamInfo } from "./TeamInfo";
-import useTeams from "../Teams/hooks/useTeams";
 import { useCallback, useEffect } from "react";
+import { Resource, Team, User } from "../models";
 import useResource from "../Resource/hooks/useResource";
+import useTeams from "../Teams/hooks/useTeams";
+import { EnumButtonStyle } from "./Button";
+import "./OwnerSelector.scss";
+import { TeamInfo } from "./TeamInfo";
+import { UserInfo } from "./UserInfo";
 
-const CLASS_NAME = "alert-status-selector";
+const CLASS_NAME = "owner-selector";
 
 type Props = {
   resource: Resource;
@@ -82,52 +82,60 @@ export const OwnerSelector = ({ resource, disabled }: Props) => {
     >
       <SelectMenuModal>
         <SelectMenuList>
-          <SearchField
-            placeholder="Search for owner"
-            onChange={() => {}}
-            label="search"
-          />
-
-          <Text textStyle={EnumTextStyle.Normal}>Users</Text>
-          {availableWorkspaceUsers?.map((user) => (
-            <SelectMenuItem
-              itemData={user}
-              closeAfterSelectionChange
-              onSelectionChange={handleOwnerChanged}
-            >
-              <FlexItem
-                gap={EnumGapSize.Small}
-                itemsAlign={EnumItemsAlign.Center}
+          <CollapsibleListItem
+            initiallyExpanded
+            expandable
+            icon={"users"}
+            childItems={findTeamsData?.teams?.map((team) => (
+              <SelectMenuItem
+                closeAfterSelectionChange
+                itemData={team}
+                onSelectionChange={handleOwnerChanged}
               >
-                <Text
-                  textColor={EnumTextColor.White}
-                  textStyle={EnumTextStyle.Tag}
+                <FlexItem
+                  gap={EnumGapSize.Small}
+                  itemsAlign={EnumItemsAlign.Center}
+                  start={<Icon icon="users" color={EnumTextColor.Black20} />}
                 >
-                  {user.account.email}
-                </Text>
-              </FlexItem>
-            </SelectMenuItem>
-          ))}
-          <Text textStyle={EnumTextStyle.Normal}>Teams</Text>
-          {findTeamsData?.teams?.map((team) => (
-            <SelectMenuItem
-              closeAfterSelectionChange
-              itemData={team}
-              onSelectionChange={handleOwnerChanged}
-            >
-              <FlexItem
-                gap={EnumGapSize.Small}
-                itemsAlign={EnumItemsAlign.Center}
+                  <Text
+                    textColor={EnumTextColor.White}
+                    textStyle={EnumTextStyle.Tag}
+                  >
+                    {team.name}
+                  </Text>
+                </FlexItem>
+              </SelectMenuItem>
+            ))}
+          >
+            Teams
+          </CollapsibleListItem>
+          <CollapsibleListItem
+            initiallyExpanded
+            expandable
+            icon={"user"}
+            childItems={availableWorkspaceUsers?.map((user) => (
+              <SelectMenuItem
+                itemData={user}
+                closeAfterSelectionChange
+                onSelectionChange={handleOwnerChanged}
               >
-                <Text
-                  textColor={EnumTextColor.White}
-                  textStyle={EnumTextStyle.Tag}
+                <FlexItem
+                  gap={EnumGapSize.Small}
+                  itemsAlign={EnumItemsAlign.Center}
+                  start={<Icon icon="user" color={EnumTextColor.Black20} />}
                 >
-                  {team.name}
-                </Text>
-              </FlexItem>
-            </SelectMenuItem>
-          ))}
+                  <Text
+                    textColor={EnumTextColor.White}
+                    textStyle={EnumTextStyle.Tag}
+                  >
+                    {user.account.email}
+                  </Text>
+                </FlexItem>
+              </SelectMenuItem>
+            ))}
+          >
+            Users
+          </CollapsibleListItem>
         </SelectMenuList>
       </SelectMenuModal>
     </SelectMenu>
