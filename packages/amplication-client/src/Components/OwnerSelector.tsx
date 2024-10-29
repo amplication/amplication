@@ -43,8 +43,8 @@ export const OwnerSelector = ({ resource, disabled }: Props) => {
   }, []);
 
   const handleOwnerChanged = useCallback(
-    (data) => {
-      const isUserOwner = data.__typename === "User";
+    (data, typeName: string) => {
+      const isUserOwner = typeName === "User";
 
       setResourceOwner({
         variables: {
@@ -90,7 +90,7 @@ export const OwnerSelector = ({ resource, disabled }: Props) => {
               <SelectMenuItem
                 closeAfterSelectionChange
                 itemData={team}
-                onSelectionChange={handleOwnerChanged}
+                onSelectionChange={(data) => handleOwnerChanged(data, "User")}
               >
                 <FlexItem
                   gap={EnumGapSize.Small}
@@ -117,7 +117,7 @@ export const OwnerSelector = ({ resource, disabled }: Props) => {
               <SelectMenuItem
                 itemData={user}
                 closeAfterSelectionChange
-                onSelectionChange={handleOwnerChanged}
+                onSelectionChange={(data) => handleOwnerChanged(data, "Team")}
               >
                 <FlexItem
                   gap={EnumGapSize.Small}
