@@ -52,7 +52,7 @@ const Login = () => {
       JSON.parse(REACT_APP_GITHUB_AUTH_ENABLED) ? (
         <>
           <div className={`${CLASS_NAME}__message`}>
-            Start a 7-days free trial of our Enterprise plan
+            Start a 14-days free trial of our Enterprise plan
           </div>
           <GitHubLoginButton />
 
