@@ -304,3 +304,8 @@ export {
   HeaderItemsStripeItem,
   Props as HeaderItemsStripeItemProps,
 } from "./components/HeaderItemsStripe/HeaderItemsStripeItem";
+
+export { ColorPicker } from "./components/ColorPicker/ColorPicker";
+
+export { ColorPickerField } from "./components/ColorPicker/ColorPickerField";
+export { useTagColorStyle } from "./components/ColorPicker/useTagColorStyle";
