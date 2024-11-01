@@ -15,6 +15,7 @@ import CustomPropertyForm from "./CustomPropertyForm";
 import { DeleteCustomProperty } from "./DeleteCustomProperty";
 import { useAppContext } from "../context/appContext";
 import { EnumCustomPropertyType } from "../models";
+import CustomPropertyOptionList from "./CustomPropertyOptions/CustomPropertyOptionList";
 
 const CustomProperty = () => {
   const match = useRouteMatch<{
@@ -33,6 +34,7 @@ const CustomProperty = () => {
     getCustomPropertyLoading: loading,
     updateCustomProperty,
     updateCustomPropertyError: updateError,
+    getCustomPropertyRefetch: refetch,
   } = useCustomProperties(customPropertyId);
 
   const handleSubmit = useCallback(
@@ -59,6 +61,10 @@ const CustomProperty = () => {
       enabled: !data.customProperty.enabled,
     });
   }, [data?.customProperty, handleSubmit]);
+
+  const onOptionListChanged = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   const hasError = Boolean(error) || Boolean(updateError);
   const errorMessage = formatError(error) || formatError(updateError);
@@ -101,9 +107,14 @@ const CustomProperty = () => {
       ].includes(data?.customProperty.type) && (
         <>
           <TabContentTitle title="Options" subTitle="Add or remove options" />
-          <Snackbar open={hasError} message={errorMessage} />
+          <CustomPropertyOptionList
+            customProperty={data?.customProperty}
+            onOptionDelete={onOptionListChanged}
+            onOptionAdd={onOptionListChanged}
+          />
         </>
       )}
+      <Snackbar open={hasError} message={errorMessage} />
     </>
   );
 };

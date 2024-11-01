@@ -13,17 +13,24 @@ export type Props = {
   selectedColor: string;
   onChange: (color: string) => void;
   label?: string;
+  closeOnSelect?: boolean;
+  iconOnlyMode?: boolean;
 };
 
 export const ColorPicker: React.FC<Props> = ({
   selectedColor,
   onChange,
   label,
+  closeOnSelect = true,
+  iconOnlyMode,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleChange = (color: ColorResult) => {
     onChange(color.hex);
+    if (closeOnSelect) {
+      setIsOpen(false);
+    }
   };
 
   const { style } = useTagColorStyle(selectedColor);
@@ -69,14 +76,24 @@ export const ColorPicker: React.FC<Props> = ({
       >
         <label className={LABEL_CLASS}>
           {label && <Label text={label} />}
-          <Button
-            className={`${CLASS_NAME}__button`}
-            buttonStyle={EnumButtonStyle.Outline}
-            style={style}
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            Choose
-          </Button>
+          {iconOnlyMode ? (
+            <Button
+              buttonStyle={EnumButtonStyle.Text}
+              onClick={() => setIsOpen(!isOpen)}
+              type="button"
+              icon="color"
+            />
+          ) : (
+            <Button
+              className={`${CLASS_NAME}__button`}
+              buttonStyle={EnumButtonStyle.Outline}
+              style={style}
+              onClick={() => setIsOpen(!isOpen)}
+              type="button"
+            >
+              Choose
+            </Button>
+          )}
         </label>
       </Popover>
     </div>
