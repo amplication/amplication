@@ -405,6 +405,41 @@ input CreateGitRepositoryInput {
   resourceId: String
 }
 
+type CustomProperty {
+  createdAt: DateTime!
+  description: String
+  enabled: Boolean!
+  id: String!
+  key: String!
+  name: String!
+  type: EnumCustomPropertyType!
+  updatedAt: DateTime!
+}
+
+input CustomPropertyCreateInput {
+  name: String!
+}
+
+input CustomPropertyOrderByInput {
+  deletedAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+}
+
+input CustomPropertyUpdateInput {
+  description: String
+  enabled: Boolean
+  key: String
+  name: String
+}
+
+input CustomPropertyWhereInput {
+  deletedAt: DateTimeFilter
+  id: String
+  name: StringFilter
+  resources: ResourceListRelationFilter
+}
+
 input DBSchemaImportCreateInput {
   resource: WhereParentIdInput!
   userActionType: EnumUserActionType!
@@ -803,6 +838,13 @@ enum EnumCommitStrategy {
   All
   AllWithPendingChanges
   Specific
+}
+
+enum EnumCustomPropertyType {
+  Link
+  MultiSelect
+  Select
+  Text
 }
 
 enum EnumDataType {
@@ -1484,6 +1526,7 @@ type Mutation {
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
+  createCustomProperty(data: CustomPropertyCreateInput!): CustomProperty!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
   createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
@@ -1515,6 +1558,7 @@ type Mutation {
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
+  deleteCustomProperty(where: WhereUniqueInput!): CustomProperty
   deleteEntity(where: WhereUniqueInput!): Entity
   deleteEntityField(where: WhereUniqueInput!): EntityField!
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
@@ -1563,6 +1607,7 @@ type Mutation {
   triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
+  updateCustomProperty(data: CustomPropertyUpdateInput!, where: WhereUniqueInput!): CustomProperty!
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   updateEntityField(data: EntityFieldUpdateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
   updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
@@ -2028,6 +2073,8 @@ type Query {
   compareResourceVersions(where: CompareResourceVersionsWhereInput!): ResourceVersionsDiff!
   contactUsLink(where: WhereUniqueInput!): String
   currentWorkspace: Workspace
+  customProperties(orderBy: CustomPropertyOrderByInput, skip: Int, take: Int, where: CustomPropertyWhereInput): [CustomProperty!]!
+  customProperty(where: WhereUniqueInput!): CustomProperty
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!
   entity(where: WhereUniqueInput!): Entity
 

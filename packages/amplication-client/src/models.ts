@@ -422,6 +422,41 @@ export type CreateGitRepositoryInput = {
   resourceId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CustomProperty = {
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  type: EnumCustomPropertyType;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type CustomPropertyCreateInput = {
+  name: Scalars['String']['input'];
+};
+
+export type CustomPropertyOrderByInput = {
+  deletedAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+};
+
+export type CustomPropertyUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  key?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CustomPropertyWhereInput = {
+  deletedAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<StringFilter>;
+  resources?: InputMaybe<ResourceListRelationFilter>;
+};
+
 export type DbSchemaImportCreateInput = {
   resource: WhereParentIdInput;
   userActionType: EnumUserActionType;
@@ -836,6 +871,13 @@ export enum EnumCommitStrategy {
   All = 'All',
   AllWithPendingChanges = 'AllWithPendingChanges',
   Specific = 'Specific'
+}
+
+export enum EnumCustomPropertyType {
+  Link = 'Link',
+  MultiSelect = 'MultiSelect',
+  Select = 'Select',
+  Text = 'Text'
 }
 
 export enum EnumDataType {
@@ -1507,6 +1549,7 @@ export type Mutation = {
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
+  createCustomProperty: CustomProperty;
   createDefaultEntities?: Maybe<Array<Entity>>;
   createEntitiesFromPredefinedSchema: UserAction;
   createEntitiesFromPrismaSchema: UserAction;
@@ -1538,6 +1581,7 @@ export type Mutation = {
   createTopic: Topic;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
+  deleteCustomProperty?: Maybe<CustomProperty>;
   deleteEntity?: Maybe<Entity>;
   deleteEntityField: EntityField;
   deleteEntityPermissionField: EntityPermissionField;
@@ -1583,6 +1627,7 @@ export type Mutation = {
   triggerBreakServiceIntoMicroservices?: Maybe<UserAction>;
   updateAccount: Account;
   updateCodeGeneratorVersion?: Maybe<Resource>;
+  updateCustomProperty: CustomProperty;
   updateEntity?: Maybe<Entity>;
   updateEntityField: EntityField;
   updateEntityPermission: EntityPermission;
@@ -1665,6 +1710,11 @@ export type MutationConnectResourceToProjectRepositoryArgs = {
 
 export type MutationCreateApiTokenArgs = {
   data: ApiTokenCreateInput;
+};
+
+
+export type MutationCreateCustomPropertyArgs = {
+  data: CustomPropertyCreateInput;
 };
 
 
@@ -1827,6 +1877,11 @@ export type MutationCreateWorkspaceArgs = {
 
 
 export type MutationDeleteApiTokenArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteCustomPropertyArgs = {
   where: WhereUniqueInput;
 };
 
@@ -2052,6 +2107,12 @@ export type MutationUpdateAccountArgs = {
 
 export type MutationUpdateCodeGeneratorVersionArgs = {
   data: CodeGeneratorVersionUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateCustomPropertyArgs = {
+  data: CustomPropertyUpdateInput;
   where: WhereUniqueInput;
 };
 
@@ -2645,6 +2706,8 @@ export type Query = {
   compareResourceVersions: ResourceVersionsDiff;
   contactUsLink?: Maybe<Scalars['String']['output']>;
   currentWorkspace?: Maybe<Workspace>;
+  customProperties: Array<CustomProperty>;
+  customProperty?: Maybe<CustomProperty>;
   entities: Array<Entity>;
   entity?: Maybe<Entity>;
   /** Get the changes to apply to the model in order to break a resource into microservices */
@@ -2782,6 +2845,19 @@ export type QueryCompareResourceVersionsArgs = {
 
 
 export type QueryContactUsLinkArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryCustomPropertiesArgs = {
+  orderBy?: InputMaybe<CustomPropertyOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<CustomPropertyWhereInput>;
+};
+
+
+export type QueryCustomPropertyArgs = {
   where: WhereUniqueInput;
 };
 
