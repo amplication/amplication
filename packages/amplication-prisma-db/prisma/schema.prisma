@@ -783,7 +783,7 @@ model CustomProperty {
   type        CustomPropertyType
   workspaceId String
   workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  options     Json
+  options     Json?
 }
 
 enum CustomPropertyType {
