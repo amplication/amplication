@@ -26,6 +26,7 @@ export const GET_RESOURCE = gql`
           id
           name
           description
+          color
         }
       }
     }
@@ -64,6 +65,7 @@ export const GET_RESOURCES = gql`
           id
           name
           description
+          color
         }
       }
       version {
@@ -275,6 +277,7 @@ export const SET_RESOURCE_OWNER = gql`
           id
           name
           description
+          color
         }
       }
     }
