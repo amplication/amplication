@@ -440,6 +440,16 @@ export type CustomPropertyOption = {
   value: Scalars['String']['output'];
 };
 
+export type CustomPropertyOptionCreateInput = {
+  customProperty: WhereParentIdInput;
+  value?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CustomPropertyOptionUpdateInput = {
+  color: Scalars['String']['input'];
+  value: Scalars['String']['input'];
+};
+
 export type CustomPropertyOrderByInput = {
   deletedAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
@@ -451,6 +461,7 @@ export type CustomPropertyUpdateInput = {
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   key?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<EnumCustomPropertyType>;
 };
 
 export type CustomPropertyWhereInput = {
@@ -1553,6 +1564,7 @@ export type Mutation = {
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createCustomProperty: CustomProperty;
+  createCustomPropertyOption: CustomPropertyOption;
   createDefaultEntities?: Maybe<Array<Entity>>;
   createEntitiesFromPredefinedSchema: UserAction;
   createEntitiesFromPrismaSchema: UserAction;
@@ -1585,6 +1597,7 @@ export type Mutation = {
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
   deleteCustomProperty?: Maybe<CustomProperty>;
+  deleteCustomPropertyOption: CustomPropertyOption;
   deleteEntity?: Maybe<Entity>;
   deleteEntityField: EntityField;
   deleteEntityPermissionField: EntityPermissionField;
@@ -1631,6 +1644,7 @@ export type Mutation = {
   updateAccount: Account;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateCustomProperty: CustomProperty;
+  updateCustomPropertyOption: CustomPropertyOption;
   updateEntity?: Maybe<Entity>;
   updateEntityField: EntityField;
   updateEntityPermission: EntityPermission;
@@ -1718,6 +1732,11 @@ export type MutationCreateApiTokenArgs = {
 
 export type MutationCreateCustomPropertyArgs = {
   data: CustomPropertyCreateInput;
+};
+
+
+export type MutationCreateCustomPropertyOptionArgs = {
+  data: CustomPropertyOptionCreateInput;
 };
 
 
@@ -1886,6 +1905,11 @@ export type MutationDeleteApiTokenArgs = {
 
 export type MutationDeleteCustomPropertyArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteCustomPropertyOptionArgs = {
+  where: WhereCustomPropertyOptionUniqueInput;
 };
 
 
@@ -2117,6 +2141,12 @@ export type MutationUpdateCodeGeneratorVersionArgs = {
 export type MutationUpdateCustomPropertyArgs = {
   data: CustomPropertyUpdateInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateCustomPropertyOptionArgs = {
+  data: CustomPropertyOptionUpdateInput;
+  where: WhereCustomPropertyOptionUniqueInput;
 };
 
 
@@ -3722,6 +3752,11 @@ export type UserRole = {
   id: Scalars['String']['output'];
   role: Role;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type WhereCustomPropertyOptionUniqueInput = {
+  customProperty: WhereUniqueInput;
+  value: Scalars['String']['input'];
 };
 
 export type WhereEnumMemberUniqueInput = {

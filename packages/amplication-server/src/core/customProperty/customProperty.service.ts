@@ -96,6 +96,7 @@ export class CustomPropertyService {
       where: args.where,
       data: {
         name: prepareDeletedItemName(customProperty.name, customProperty.id),
+        key: prepareDeletedItemName(customProperty.key, customProperty.id),
         deletedAt: new Date(),
       },
     });

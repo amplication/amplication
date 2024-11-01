@@ -784,6 +784,9 @@ model CustomProperty {
   workspaceId String
   workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   options     Json?
+
+  @@unique([workspaceId, key], map: "CustomProperty.workspaceId_key_unique")
+  @@unique([workspaceId, name], map: "CustomProperty.workspaceId_name_unique")
 }
 
 enum CustomPropertyType {

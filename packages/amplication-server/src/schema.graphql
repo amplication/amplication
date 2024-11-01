@@ -426,6 +426,16 @@ type CustomPropertyOption {
   value: String!
 }
 
+input CustomPropertyOptionCreateInput {
+  customProperty: WhereParentIdInput!
+  value: String
+}
+
+input CustomPropertyOptionUpdateInput {
+  color: String!
+  value: String!
+}
+
 input CustomPropertyOrderByInput {
   deletedAt: SortOrder
   id: SortOrder
@@ -437,6 +447,7 @@ input CustomPropertyUpdateInput {
   enabled: Boolean
   key: String
   name: String
+  type: EnumCustomPropertyType
 }
 
 input CustomPropertyWhereInput {
@@ -1533,6 +1544,7 @@ type Mutation {
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createCustomProperty(data: CustomPropertyCreateInput!): CustomProperty!
+  createCustomPropertyOption(data: CustomPropertyOptionCreateInput!): CustomPropertyOption!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
   createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
@@ -1565,6 +1577,7 @@ type Mutation {
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
   deleteCustomProperty(where: WhereUniqueInput!): CustomProperty
+  deleteCustomPropertyOption(where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
   deleteEntity(where: WhereUniqueInput!): Entity
   deleteEntityField(where: WhereUniqueInput!): EntityField!
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
@@ -1614,6 +1627,7 @@ type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateCustomProperty(data: CustomPropertyUpdateInput!, where: WhereUniqueInput!): CustomProperty!
+  updateCustomPropertyOption(data: CustomPropertyOptionUpdateInput!, where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   updateEntityField(data: EntityFieldUpdateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
   updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
@@ -2697,6 +2711,11 @@ type UserRole {
   id: String!
   role: Role!
   updatedAt: DateTime!
+}
+
+input WhereCustomPropertyOptionUniqueInput {
+  customProperty: WhereUniqueInput!
+  value: String!
 }
 
 input WhereEnumMemberUniqueInput {
