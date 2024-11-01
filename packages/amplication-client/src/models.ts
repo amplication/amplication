@@ -3506,6 +3506,7 @@ export type SubscriptionAssistantMessageUpdatedArgs = {
 };
 
 export type Team = {
+  color?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
@@ -3525,6 +3526,7 @@ export type TeamOrderByInput = {
 };
 
 export type TeamUpdateInput = {
+  color?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };

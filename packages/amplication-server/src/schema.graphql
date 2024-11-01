@@ -2504,6 +2504,7 @@ type Subscription {
 }
 
 type Team {
+  color: String
   createdAt: DateTime!
   description: String
   id: String!
@@ -2523,6 +2524,7 @@ input TeamOrderByInput {
 }
 
 input TeamUpdateInput {
+  color: String
   description: String
   name: String
 }
