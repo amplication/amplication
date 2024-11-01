@@ -15,6 +15,13 @@ export const CUSTOM_PROPERTY_FIELDS_FRAGMENT = gql`
   }
 `;
 
+export const CUSTOM_PROPERTY_OPTION_FIELDS_FRAGMENT = gql`
+  fragment CustomPropertyOptionFields on CustomPropertyOption {
+    value
+    color
+  }
+`;
+
 export const DELETE_CUSTOM_PROPERTY = gql`
   mutation deleteCustomProperty($where: WhereUniqueInput!) {
     deleteCustomProperty(where: $where) {
@@ -61,6 +68,36 @@ export const FIND_CUSTOM_PROPERTIES = gql`
   ) {
     customProperties(where: $where, orderBy: $orderBy) {
       ...CustomPropertyFields
+    }
+  }
+`;
+
+export const CREATE_CUSTOM_PROPERTY_OPTION = gql`
+  ${CUSTOM_PROPERTY_OPTION_FIELDS_FRAGMENT}
+  mutation createCustomPropertyOption($data: CustomPropertyOptionCreateInput!) {
+    createCustomPropertyOption(data: $data) {
+      ...CustomPropertyOptionFields
+    }
+  }
+`;
+
+export const UPDATE_CUSTOM_PROPERTY_OPTION = gql`
+  ${CUSTOM_PROPERTY_OPTION_FIELDS_FRAGMENT}
+  mutation updateCustomPropertyOption(
+    $where: WherePropertyUniqueInput!
+    $data: CustomPropertyOptionUpdateInput!
+  ) {
+    updateCustomPropertyOption(data: $data, where: $where) {
+      ...CustomPropertyOptionFields
+    }
+  }
+`;
+
+export const DELETE_CUSTOM_PROPERTY_OPTION = gql`
+  ${CUSTOM_PROPERTY_OPTION_FIELDS_FRAGMENT}
+  mutation deleteCustomPropertyOption($where: WherePropertyUniqueInput!) {
+    deleteCustomPropertyOption(where: $where) {
+      ...CustomPropertyOptionFields
     }
   }
 `;

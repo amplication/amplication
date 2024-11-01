@@ -3,11 +3,14 @@ import { useState } from "react";
 import * as models from "../../models";
 import {
   CREATE_CUSTOM_PROPERTY,
+  CREATE_CUSTOM_PROPERTY_OPTION,
   CUSTOM_PROPERTY_FIELDS_FRAGMENT,
   DELETE_CUSTOM_PROPERTY,
+  DELETE_CUSTOM_PROPERTY_OPTION,
   FIND_CUSTOM_PROPERTIES,
   GET_CUSTOM_PROPERTY,
   UPDATE_CUSTOM_PROPERTY,
+  UPDATE_CUSTOM_PROPERTY_OPTION,
 } from "../queries/customPropertiesQueries";
 
 type TDeleteData = {
@@ -28,6 +31,18 @@ type TCreateData = {
 
 type TUpdateData = {
   updateCustomProperty: models.CustomProperty;
+};
+
+type TCreateOptionData = {
+  createCustomPropertyOption: models.CustomPropertyOption;
+};
+
+type TUpdateOptionData = {
+  updateCustomPropertyOption: models.CustomPropertyOption;
+};
+
+type TDeleteOptionData = {
+  deleteCustomPropertyOption: models.CustomPropertyOption;
 };
 
 const NAME_FIELD = "name";
@@ -131,6 +146,31 @@ const useCustomProperties = (customPropertyId?: string) => {
     { error: updateCustomPropertyError, loading: updateCustomPropertyLoading },
   ] = useMutation<TUpdateData>(UPDATE_CUSTOM_PROPERTY, {});
 
+  const [
+    createCustomPropertyOption,
+    {
+      data: createCustomPropertyOptionData,
+      error: createCustomPropertyOptionError,
+      loading: createCustomPropertyOptionLoading,
+    },
+  ] = useMutation<TCreateOptionData>(CREATE_CUSTOM_PROPERTY_OPTION, {});
+
+  const [
+    updateCustomPropertyOption,
+    {
+      error: updateCustomPropertyOptionError,
+      loading: updateCustomPropertyOptionLoading,
+    },
+  ] = useMutation<TUpdateOptionData>(UPDATE_CUSTOM_PROPERTY_OPTION, {});
+
+  const [
+    deleteCustomPropertyOption,
+    {
+      error: deleteCustomPropertyOptionError,
+      loading: deleteCustomPropertyOptionLoading,
+    },
+  ] = useMutation<TDeleteOptionData>(DELETE_CUSTOM_PROPERTY_OPTION, {});
+
   return {
     deleteCustomProperty,
     deleteCustomPropertyError,
@@ -151,6 +191,16 @@ const useCustomProperties = (customPropertyId?: string) => {
     updateCustomPropertyError,
     updateCustomPropertyLoading,
     setSearchPhrase,
+    createCustomPropertyOption,
+    createCustomPropertyOptionData,
+    createCustomPropertyOptionError,
+    createCustomPropertyOptionLoading,
+    updateCustomPropertyOption,
+    updateCustomPropertyOptionError,
+    updateCustomPropertyOptionLoading,
+    deleteCustomPropertyOption,
+    deleteCustomPropertyOptionError,
+    deleteCustomPropertyOptionLoading,
   };
 };
 

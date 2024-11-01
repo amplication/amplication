@@ -1,7 +1,10 @@
 import {
+  EnumContentAlign,
+  EnumFlexDirection,
   FlexItem,
   Snackbar,
   TabContentTitle,
+  Toggle,
 } from "@amplication/ui/design-system";
 import { useCallback } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -47,8 +50,15 @@ const CustomProperty = () => {
   );
 
   const handleDeleteModule = useCallback(() => {
-    history.push(`${baseUrl}/customProperties`);
+    history.push(`${baseUrl}/properties`);
   }, [history, baseUrl]);
+
+  const onEnableChanged = useCallback(() => {
+    if (!data?.customProperty) return;
+    handleSubmit({
+      enabled: !data.customProperty.enabled,
+    });
+  }, [data?.customProperty, handleSubmit]);
 
   const hasError = Boolean(error) || Boolean(updateError);
   const errorMessage = formatError(error) || formatError(updateError);
@@ -60,12 +70,22 @@ const CustomProperty = () => {
           title={data?.customProperty?.name}
           subTitle={data?.customProperty?.description}
         />
-        <FlexItem.FlexEnd>
+        <FlexItem.FlexEnd
+          direction={EnumFlexDirection.Row}
+          alignSelf={EnumContentAlign.Start}
+        >
           {data?.customProperty && (
-            <DeleteCustomProperty
-              customProperty={data?.customProperty}
-              onDelete={handleDeleteModule}
-            />
+            <>
+              <Toggle
+                name={"enabled"}
+                onValueChange={onEnableChanged}
+                checked={data?.customProperty?.enabled}
+              ></Toggle>
+              <DeleteCustomProperty
+                customProperty={data?.customProperty}
+                onDelete={handleDeleteModule}
+              />
+            </>
           )}
         </FlexItem.FlexEnd>
       </FlexItem>

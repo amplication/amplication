@@ -13,7 +13,7 @@ type Props = {
   onDelete?: () => void;
 };
 
-const CLASS_NAME = "delete-customProperty";
+const CLASS_NAME = "delete-custom-property";
 
 export const DeleteCustomProperty = ({ customProperty, onDelete }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
@@ -57,9 +57,7 @@ export const DeleteCustomProperty = ({ customProperty, onDelete }: Props) => {
         title={`Delete '${customProperty.name}' ?`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
-        message={
-          <div>Are you sure you want to delete this customProperty?</div>
-        }
+        message={<div>Are you sure you want to delete this property?</div>}
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
