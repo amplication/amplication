@@ -1,4 +1,5 @@
 import { Field, InputType } from "@nestjs/graphql";
+import { EnumCustomPropertyType } from "./EnumCustomPropertyType";
 
 @InputType({ isAbstract: true })
 export class CustomPropertyUpdateInput {
@@ -13,4 +14,9 @@ export class CustomPropertyUpdateInput {
 
   @Field(() => Boolean, { nullable: true })
   enabled?: boolean | undefined;
+
+  @Field(() => EnumCustomPropertyType, {
+    nullable: false,
+  })
+  type?: keyof typeof EnumCustomPropertyType | undefined;
 }
