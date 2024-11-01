@@ -429,12 +429,18 @@ export type CustomProperty = {
   id: Scalars['String']['output'];
   key: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  options?: Maybe<Array<CustomPropertyOption>>;
   type: EnumCustomPropertyType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
 export type CustomPropertyCreateInput = {
   name: Scalars['String']['input'];
+};
+
+export type CustomPropertyOption = {
+  color: Scalars['String']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type CustomPropertyOrderByInput = {

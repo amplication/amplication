@@ -412,12 +412,18 @@ type CustomProperty {
   id: String!
   key: String!
   name: String!
+  options: [CustomPropertyOption!]
   type: EnumCustomPropertyType!
   updatedAt: DateTime!
 }
 
 input CustomPropertyCreateInput {
   name: String!
+}
+
+type CustomPropertyOption {
+  color: String!
+  value: String!
 }
 
 input CustomPropertyOrderByInput {

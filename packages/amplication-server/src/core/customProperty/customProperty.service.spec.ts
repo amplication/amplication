@@ -1,10 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { AmplicationError } from "../../errors/AmplicationError";
 import { CustomProperty, Workspace } from "../../models";
 import { PrismaService } from "../../prisma/prisma.service";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { prepareDeletedItemName } from "../../util/softDelete";
-import { CustomPropertyService } from "./customProperty.service";
 import { EnumCustomPropertyType } from "./dto/EnumCustomPropertyType";
+import { CustomPropertyService } from "./customProperty.service";
 
 const EXAMPLE_CUSTOM_PROPERTY_ID = "exampleCustomPropertyId";
 const EXAMPLE_CUSTOM_PROPERTY_KEY = "exampleCustomPropertyKey";
@@ -30,6 +31,7 @@ const EXAMPLE_CUSTOM_PROPERTY: CustomProperty = {
   key: EXAMPLE_CUSTOM_PROPERTY_KEY,
   enabled: true,
   type: EnumCustomPropertyType.Select,
+  options: null,
 };
 
 const prismaCustomPropertyUpdateMock = jest.fn(() => {
@@ -175,5 +177,158 @@ describe("CustomPropertyService", () => {
     );
     expect(prismaMock.customProperty.update).toHaveBeenCalledTimes(1);
     expect(prismaMock.customProperty.update).toHaveBeenCalledWith(args);
+  });
+
+  it("should create custom property option", async () => {
+    await service.createOption({
+      data: {
+        customProperty: {
+          connect: {
+            id: EXAMPLE_CUSTOM_PROPERTY_ID,
+          },
+        },
+        value: "optionValue",
+      },
+    });
+
+    expect(prismaMock.customProperty.update).toHaveBeenCalledTimes(1);
+  });
+
+  it("createOption should throw an exception when custom property not found", async () => {
+    prismaMock.customProperty.findUnique.mockReturnValueOnce(null);
+
+    await expect(
+      service.createOption({
+        data: {
+          customProperty: {
+            connect: {
+              id: EXAMPLE_CUSTOM_PROPERTY_ID,
+            },
+          },
+          value: "optionValue",
+        },
+      })
+    ).rejects.toThrow(
+      new AmplicationError(
+        `Custom Property not found, ID: ${EXAMPLE_CUSTOM_PROPERTY_ID}`
+      )
+    );
+  });
+
+  it("createOption should throw an exception when property name already being used", async () => {
+    prismaMock.customProperty.findUnique.mockReturnValueOnce({
+      ...EXAMPLE_CUSTOM_PROPERTY,
+      options: [
+        {
+          value: "existingOptionValue",
+          color: "#FFF",
+        },
+      ],
+    });
+
+    const args = {
+      data: {
+        customProperty: {
+          connect: {
+            id: EXAMPLE_CUSTOM_PROPERTY_ID,
+          },
+        },
+        value: "existingOptionValue",
+      },
+    };
+
+    await expect(service.createOption(args)).rejects.toThrow(
+      new AmplicationError(
+        `Option already exists, name: ${args.data.value}, Custom Property ID: ${args.data.customProperty.connect.id}`
+      )
+    );
+  });
+
+  it("should update custom property option", async () => {
+    prismaMock.customProperty.findUnique.mockReturnValueOnce({
+      ...EXAMPLE_CUSTOM_PROPERTY,
+      options: [
+        {
+          value: "optionValue",
+          color: "#FFF",
+        },
+      ],
+    });
+
+    await service.updateOption({
+      where: {
+        customProperty: {
+          id: EXAMPLE_CUSTOM_PROPERTY_ID,
+        },
+        value: "optionValue",
+      },
+      data: {
+        value: "optionValue",
+        color: "#000",
+      },
+    });
+
+    expect(prismaMock.customProperty.update).toHaveBeenCalledTimes(1);
+  });
+
+  it("should throw an error when updating a missing option", async () => {
+    const args = {
+      where: {
+        customProperty: {
+          id: EXAMPLE_CUSTOM_PROPERTY_ID,
+        },
+        value: "value",
+      },
+      data: {
+        value: "value",
+        color: "#000",
+      },
+    };
+
+    await expect(service.updateOption(args)).rejects.toThrow(
+      new AmplicationError(
+        `Option not found, name: ${args.where.value}, Custom Property ID: ${args.where.customProperty.id}`
+      )
+    );
+  });
+
+  it("should delete custom property option", async () => {
+    prismaMock.customProperty.findUnique.mockReturnValueOnce({
+      ...EXAMPLE_CUSTOM_PROPERTY,
+      options: [
+        {
+          value: "optionValue",
+          color: "#FFF",
+        },
+        {
+          value: "optionValue2",
+          color: "#FFF",
+        },
+      ],
+    });
+
+    await service.deleteOption({
+      where: {
+        customProperty: {
+          id: EXAMPLE_CUSTOM_PROPERTY_ID,
+        },
+        value: "optionValue",
+      },
+    });
+
+    expect(prismaMock.customProperty.update).toHaveBeenCalledTimes(1);
+    expect(prismaMock.customProperty.update).toHaveBeenCalledWith({
+      where: {
+        id: EXAMPLE_CUSTOM_PROPERTY_ID,
+      },
+      data: {
+        options: [
+          {
+            value: "optionValue2",
+            color: "#FFF",
+          },
+        ],
+      },
+    });
   });
 });

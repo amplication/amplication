@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { EnumCustomPropertyType } from "../core/customProperty/dto/EnumCustomPropertyType";
 import { Workspace } from "./Workspace";
+import { CustomPropertyOption } from "./CustomPropertyOption";
 
 @ObjectType({
   isAbstract: true,
@@ -41,6 +42,11 @@ export class CustomProperty {
     nullable: false,
   })
   type: keyof typeof EnumCustomPropertyType;
+
+  @Field(() => [CustomPropertyOption], {
+    nullable: true,
+  })
+  options?: CustomPropertyOption[] | null | undefined;
 
   workspace?: Workspace;
 
