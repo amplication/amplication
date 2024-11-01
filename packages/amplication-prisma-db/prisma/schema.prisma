@@ -47,6 +47,7 @@ model Workspace {
   projects                  Project[]
   AwsMarketplaceIntegration AwsMarketplaceIntegration?
   teams                     Team[]
+  customProperties          CustomProperty[]
 }
 
 model Project {
@@ -768,4 +769,26 @@ enum PreviewAccountType {
   None
   BreakingTheMonolith
   PreviewOnboarding
+}
+
+model CustomProperty {
+  id          String             @id @default(cuid())
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  deletedAt   DateTime?
+  name        String
+  key         String
+  description String?
+  enabled     Boolean            @default(true)
+  type        CustomPropertyType
+  workspaceId String
+  workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  options     Json
+}
+
+enum CustomPropertyType {
+  Text
+  Link
+  Select
+  MultiSelect
 }
