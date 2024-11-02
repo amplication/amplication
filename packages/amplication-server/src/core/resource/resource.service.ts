@@ -64,6 +64,7 @@ import {
   FindManyResourceArgs,
   ResourceCreateWithEntitiesInput,
   ResourceCreateWithEntitiesResult,
+  ResourceWhereInput,
   UpdateCodeGeneratorVersionArgs,
   UpdateOneResourceArgs,
 } from "./dto";
@@ -79,6 +80,7 @@ import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVe
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
 import { OwnershipService } from "../ownership/ownership.service";
 import { EnumOwnershipType, Ownership } from "../ownership/dto/Ownership";
+import { jsonPathStringFilterToPrismaFilter } from "../../prisma/JsonPathStringFilterToPrismaFilter";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -1604,25 +1606,27 @@ export class ResourceService {
       );
     }
 
+    const { properties: whereProperties, ...whereElse } = where;
+    const wherePropertiesFilter = jsonPathStringFilterToPrismaFilter(
+      whereProperties,
+      "properties"
+    );
+
     return this.prisma.resource.findMany({
       ...args,
       where: {
-        ...where,
+        ...(whereElse as Prisma.ResourceWhereInput),
         id: resourceIds ? { in: resourceIds } : where.id,
         deletedAt: null,
         archived: { not: true },
+        ...wherePropertiesFilter,
       },
     });
   }
 
-  async resourcesByIds(
-    args: FindManyResourceArgs,
-    ids: string[]
-  ): Promise<Resource[]> {
+  async resourcesByIds(ids: string[]): Promise<Resource[]> {
     return this.prisma.resource.findMany({
-      ...args,
       where: {
-        ...args.where,
         id: { in: ids },
         deletedAt: null,
         archived: { not: true },
@@ -1640,7 +1644,6 @@ export class ResourceService {
     );
 
     const resources = this.resourcesByIds(
-      {},
       brokerServiceTopics.map((x) => x.resourceId)
     );
 
@@ -1883,12 +1886,6 @@ export class ResourceService {
     };
 
     return gitSettings;
-  }
-
-  async project(resourceId: string): Promise<Project> {
-    return this.projectService.findFirst({
-      where: { resources: { some: { id: resourceId } } },
-    });
   }
 
   async projectConfiguration(projectId: string): Promise<Resource | null> {

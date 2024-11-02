@@ -42,6 +42,7 @@ import { Owner } from "../ownership/dto/Owner";
 import { OwnershipService } from "../ownership/ownership.service";
 import { Ownership } from "../ownership/dto/Ownership";
 import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
+import { ProjectService } from "../project/project.service";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -54,7 +55,8 @@ export class ResourceResolver {
     private readonly environmentService: EnvironmentService,
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly resourceVersionService: ResourceVersionService,
-    private readonly ownershipService: OwnershipService
+    private readonly ownershipService: OwnershipService,
+    private readonly projectService: ProjectService
   ) {}
 
   @Query(() => Resource, { nullable: true })
@@ -242,7 +244,9 @@ export class ResourceResolver {
 
   @ResolveField(() => Project)
   async project(@Parent() resource: Resource): Promise<Project> {
-    return this.resourceService.project(resource.id);
+    return this.projectService.findUnique({
+      where: { id: resource.projectId },
+    });
   }
 
   @ResolveField(() => EnumCodeGenerator, { nullable: true })
