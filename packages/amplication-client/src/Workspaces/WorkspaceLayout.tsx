@@ -127,6 +127,9 @@ const WorkspaceLayout: React.FC<Props> = ({
     createServiceFromTemplate,
     loadingCreateServiceFromTemplate,
     errorCreateServiceFromTemplate,
+    createComponent,
+    loadingCreateComponent,
+    errorCreateComponent,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
   const { customPropertiesMap } = useCustomPropertiesMap();
@@ -240,6 +243,9 @@ const WorkspaceLayout: React.FC<Props> = ({
         loadingCreateServiceFromTemplate,
         errorCreateServiceFromTemplate,
         customPropertiesMap,
+        createComponent,
+        loadingCreateComponent,
+        errorCreateComponent,
       }}
     >
       <AssistantContextProvider>

@@ -97,7 +97,8 @@ function ResourceList() {
     return resources.filter(
       (resource) =>
         resource.resourceType === models.EnumResourceType.Service ||
-        resource.resourceType === models.EnumResourceType.MessageBroker
+        resource.resourceType === models.EnumResourceType.MessageBroker ||
+        resource.resourceType === models.EnumResourceType.Component
     );
   }, [resources]);
 
