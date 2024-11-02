@@ -208,8 +208,10 @@ model Resource {
   outdatedVersionAlerts OutdatedVersionAlert[]
   ownershipId           String?
   ownership             Ownership?                   @relation(fields: [ownershipId], references: [id], onDelete: Cascade)
+  properties            Json?
 
   @@unique([projectId, name], map: "Resource.projectId_name_unique")
+  @@index([properties(ops: JsonbOps)], type: Gin)
 }
 
 model ResourceRole {
