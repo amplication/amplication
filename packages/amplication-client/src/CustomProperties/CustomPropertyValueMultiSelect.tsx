@@ -14,9 +14,6 @@ type Props = {
 function CustomPropertyValueMultiSelect({ property, value }: Props) {
   const isArray = Array.isArray(value);
 
-  if (isArray) {
-    console.log(value);
-  }
   return !isArray ? (
     <CustomPropertyValueSelect property={property} value={value} />
   ) : (
