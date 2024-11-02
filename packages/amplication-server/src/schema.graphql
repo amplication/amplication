@@ -1544,6 +1544,7 @@ type Mutation {
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
+  createComponent(data: ResourceCreateInput!): Resource!
   createCustomProperty(data: CustomPropertyCreateInput!): CustomProperty!
   createCustomPropertyOption(data: CustomPropertyOptionCreateInput!): CustomPropertyOption!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]

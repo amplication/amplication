@@ -433,6 +433,8 @@ export class ResourceService {
     codeGenerator: keyof typeof EnumCodeGenerator,
     user: User
   ): Promise<string | null> {
+    if (!codeGenerator) return null;
+
     const blockEntitlement = await this.billingService.getBooleanEntitlement(
       user.workspace.id,
       BillingFeature.CodeGeneratorNodeJsOnly
@@ -539,6 +541,26 @@ export class ResourceService {
         data: {
           ...args.data,
           resourceType: EnumResourceType.PluginRepository,
+        },
+      },
+      user
+    );
+
+    return resource;
+  }
+
+  /**
+   * Create a resource of type "PluginRepository"
+   */
+  async createComponent(
+    args: CreateOneResourceArgs,
+    user: User
+  ): Promise<Resource> {
+    const resource = await this.createResource(
+      {
+        data: {
+          ...args.data,
+          resourceType: EnumResourceType.Component,
         },
       },
       user

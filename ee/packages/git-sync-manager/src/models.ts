@@ -1564,6 +1564,7 @@ export type Mutation = {
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
+  createComponent: Resource;
   createCustomProperty: CustomProperty;
   createCustomPropertyOption: CustomPropertyOption;
   createDefaultEntities?: Maybe<Array<Entity>>;
@@ -1728,6 +1729,11 @@ export type MutationConnectResourceToProjectRepositoryArgs = {
 
 export type MutationCreateApiTokenArgs = {
   data: ApiTokenCreateInput;
+};
+
+
+export type MutationCreateComponentArgs = {
+  data: ResourceCreateInput;
 };
 
 
