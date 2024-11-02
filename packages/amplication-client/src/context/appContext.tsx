@@ -71,6 +71,7 @@ export interface AppContextInterface {
   ) => void;
   loadingCreateServiceFromTemplate: boolean;
   errorCreateServiceFromTemplate: Error | undefined;
+  customPropertiesMap: Record<string, models.CustomProperty>;
 }
 
 const initialContext: AppContextInterface = {
@@ -145,6 +146,7 @@ const initialContext: AppContextInterface = {
   createServiceFromTemplate: () => {},
   loadingCreateServiceFromTemplate: false,
   errorCreateServiceFromTemplate: undefined,
+  customPropertiesMap: {},
 };
 
 export const AppContext =

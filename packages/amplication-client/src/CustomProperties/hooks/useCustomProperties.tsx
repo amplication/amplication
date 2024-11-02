@@ -8,6 +8,7 @@ import {
   DELETE_CUSTOM_PROPERTY,
   DELETE_CUSTOM_PROPERTY_OPTION,
   FIND_CUSTOM_PROPERTIES,
+  GET_CUSTOM_PROPERTIES_MAP,
   GET_CUSTOM_PROPERTY,
   UPDATE_CUSTOM_PROPERTY,
   UPDATE_CUSTOM_PROPERTY_OPTION,
@@ -54,6 +55,7 @@ const useCustomProperties = (customPropertyId?: string) => {
     deleteCustomProperty,
     { error: deleteCustomPropertyError, loading: deleteCustomPropertyLoading },
   ] = useMutation<TDeleteData>(DELETE_CUSTOM_PROPERTY, {
+    refetchQueries: [GET_CUSTOM_PROPERTIES_MAP],
     update(cache, { data }) {
       if (!data || data === undefined) return;
       const deletedCustomPropertyId = data.deleteCustomProperty.id;
@@ -78,6 +80,7 @@ const useCustomProperties = (customPropertyId?: string) => {
       loading: createCustomPropertyLoading,
     },
   ] = useMutation<TCreateData>(CREATE_CUSTOM_PROPERTY, {
+    refetchQueries: [GET_CUSTOM_PROPERTIES_MAP],
     update(cache, { data }) {
       if (!data) return;
 
@@ -144,7 +147,9 @@ const useCustomProperties = (customPropertyId?: string) => {
   const [
     updateCustomProperty,
     { error: updateCustomPropertyError, loading: updateCustomPropertyLoading },
-  ] = useMutation<TUpdateData>(UPDATE_CUSTOM_PROPERTY, {});
+  ] = useMutation<TUpdateData>(UPDATE_CUSTOM_PROPERTY, {
+    refetchQueries: [GET_CUSTOM_PROPERTIES_MAP],
+  });
 
   const [
     createCustomPropertyOption,
@@ -153,7 +158,9 @@ const useCustomProperties = (customPropertyId?: string) => {
       error: createCustomPropertyOptionError,
       loading: createCustomPropertyOptionLoading,
     },
-  ] = useMutation<TCreateOptionData>(CREATE_CUSTOM_PROPERTY_OPTION, {});
+  ] = useMutation<TCreateOptionData>(CREATE_CUSTOM_PROPERTY_OPTION, {
+    refetchQueries: [GET_CUSTOM_PROPERTIES_MAP],
+  });
 
   const [
     updateCustomPropertyOption,
@@ -161,7 +168,9 @@ const useCustomProperties = (customPropertyId?: string) => {
       error: updateCustomPropertyOptionError,
       loading: updateCustomPropertyOptionLoading,
     },
-  ] = useMutation<TUpdateOptionData>(UPDATE_CUSTOM_PROPERTY_OPTION, {});
+  ] = useMutation<TUpdateOptionData>(UPDATE_CUSTOM_PROPERTY_OPTION, {
+    refetchQueries: [GET_CUSTOM_PROPERTIES_MAP],
+  });
 
   const [
     deleteCustomPropertyOption,
@@ -169,7 +178,9 @@ const useCustomProperties = (customPropertyId?: string) => {
       error: deleteCustomPropertyOptionError,
       loading: deleteCustomPropertyOptionLoading,
     },
-  ] = useMutation<TDeleteOptionData>(DELETE_CUSTOM_PROPERTY_OPTION, {});
+  ] = useMutation<TDeleteOptionData>(DELETE_CUSTOM_PROPERTY_OPTION, {
+    refetchQueries: [GET_CUSTOM_PROPERTIES_MAP],
+  });
 
   return {
     deleteCustomProperty,

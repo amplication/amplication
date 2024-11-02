@@ -12,6 +12,7 @@ export const GET_RESOURCE = gql`
       githubLastMessage
       resourceType
       licensed
+      properties
       owner {
         ... on User {
           id
@@ -51,6 +52,7 @@ export const GET_RESOURCES = gql`
       codeGeneratorVersion
       codeGenerator
       licensed
+      properties
       owner {
         ... on User {
           id
@@ -246,6 +248,7 @@ export const UPDATE_RESOURCE = gql`
       name
       description
       gitRepositoryOverride
+      properties
     }
   }
 `;
