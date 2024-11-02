@@ -69,6 +69,9 @@ function ResourceList() {
             />
           );
         },
+        getValue: (row) => {
+          return row.properties ? row.properties[property.key] : "";
+        },
       };
     });
 
@@ -78,7 +81,7 @@ function ResourceList() {
     return [...otherCols, ...propCols, lastCol];
   }, [customPropertiesMap]);
 
-  const { columns, setColumns } = useDataGridColumnFilter(
+  const { columns, setColumns, onColumnsReorder } = useDataGridColumnFilter(
     columnsWithAllProps,
     COLUMNS_LOCAL_STORAGE_KEY
   );
@@ -185,7 +188,11 @@ function ResourceList() {
         <>
           {viewMode === VIEW_GRID ? (
             <div className={`${CLASS_NAME}__grid-container`}>
-              <DataGrid columns={columns} rows={relevantResources}></DataGrid>
+              <DataGrid
+                columns={columns}
+                rows={relevantResources}
+                onColumnsReorder={onColumnsReorder}
+              ></DataGrid>
             </div>
           ) : (
             <List>
