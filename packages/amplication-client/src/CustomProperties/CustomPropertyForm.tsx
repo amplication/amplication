@@ -8,6 +8,7 @@ import { validate } from "../util/formikValidateJsonSchema";
 
 import FormikAutoSave from "../util/formikAutoSave";
 import CustomPropertyTypeSelectField from "./CustomPropertyTypeSelectField";
+import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 
 type Props = {
   onSubmit: (values: models.CustomProperty) => void;
@@ -59,10 +60,9 @@ const CustomPropertyForm = ({ onSubmit, defaultValues }: Props) => {
           <FormikAutoSave debounceMS={1000} />
 
           <DisplayNameField name="name" label="Name" minLength={1} />
-
-          <TextField name="description" label="Description" textarea rows={3} />
-
           <TextField name="key" label="Key" />
+
+          <OptionalDescriptionField name="description" label="Description" />
 
           <CustomPropertyTypeSelectField name="type" label="Type" />
         </Form>
