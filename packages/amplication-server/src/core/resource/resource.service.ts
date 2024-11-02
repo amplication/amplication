@@ -28,8 +28,8 @@ import {
 } from "../../prisma";
 import { EnumResourceType as AmplicationEnumResourceType } from "../resource/dto/EnumResourceType";
 
-import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { ActionService } from "../action/action.service";
 import { EnumActionLogLevel } from "../action/dto/EnumActionLogLevel";
@@ -38,6 +38,7 @@ import {
   DATA_TYPE_TO_DEFAULT_PROPERTIES,
   USER_ENTITY_NAME,
 } from "../entity/constants";
+import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
 import {
   CreateBulkEntitiesAndFieldsArgs,
   CreateBulkEntitiesInput,
@@ -64,23 +65,21 @@ import {
   FindManyResourceArgs,
   ResourceCreateWithEntitiesInput,
   ResourceCreateWithEntitiesResult,
-  ResourceWhereInput,
   UpdateCodeGeneratorVersionArgs,
   UpdateOneResourceArgs,
 } from "./dto";
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
-import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
 
-import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
-import { GitProviderService } from "../git/git.provider.service";
+import { jsonPathStringFilterToPrismaFilter } from "../../prisma/JsonPathStringFilterToPrismaFilter";
 import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings";
-import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
+import { GitProviderService } from "../git/git.provider.service";
+import { EnumOwnershipType, Ownership } from "../ownership/dto/Ownership";
+import { OwnershipService } from "../ownership/ownership.service";
 import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVersion";
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
-import { OwnershipService } from "../ownership/ownership.service";
-import { EnumOwnershipType, Ownership } from "../ownership/dto/Ownership";
-import { jsonPathStringFilterToPrismaFilter } from "../../prisma/JsonPathStringFilterToPrismaFilter";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
