@@ -1,0 +1,13 @@
+.custom-property-value-link {
+  display: inline-block;
+  width: 100%;
+  max-width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  &:hover {
+    .amp-text {
+      color: var(--theme-turquoise);
+      text-decoration: underline;
+    }
+  }
+}

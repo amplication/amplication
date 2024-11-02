@@ -2,6 +2,7 @@ import {
   Button,
   CircularProgress,
   DataGrid,
+  DataGridColumn,
   DataGridColumnFilter,
   EnumButtonStyle,
   EnumContentAlign,
@@ -26,7 +27,7 @@ import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
-import { AppContext } from "../context/appContext";
+import { AppContext, useAppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
@@ -36,6 +37,7 @@ import ResourceListItem from "./ResourceListItem";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import NewServiceFromTemplateDialogWithUrlTrigger from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
 import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
+import CustomPropertyValue from "../CustomProperties/CustomPropertyValue";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
@@ -48,8 +50,36 @@ const COLUMNS_LOCAL_STORAGE_KEY = "resource-list-columns";
 function ResourceList() {
   const { refreshData } = useStiggContext();
   const [error, setError] = useState<Error | null>(null);
+
+  const { customPropertiesMap } = useAppContext();
+
+  const columnsWithAllProps = useMemo<DataGridColumn<models.Resource>[]>(() => {
+    const propCols = Object.values(customPropertiesMap).map((property) => {
+      return {
+        key: property.key,
+        name: property.name,
+        resizable: true,
+        sortable: true,
+        hidden: false,
+        renderCell: (props) => {
+          return (
+            <CustomPropertyValue
+              propertyKey={property.key}
+              allValues={props.row.properties}
+            />
+          );
+        },
+      };
+    });
+
+    const lastCol = RESOURCE_LIST_COLUMNS[RESOURCE_LIST_COLUMNS.length - 1];
+    const otherCols = RESOURCE_LIST_COLUMNS.slice(0, -1);
+
+    return [...otherCols, ...propCols, lastCol];
+  }, [customPropertiesMap]);
+
   const { columns, setColumns } = useDataGridColumnFilter(
-    RESOURCE_LIST_COLUMNS,
+    columnsWithAllProps,
     COLUMNS_LOCAL_STORAGE_KEY
   );
 
