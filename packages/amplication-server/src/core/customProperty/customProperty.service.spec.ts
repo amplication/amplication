@@ -125,6 +125,10 @@ describe("CustomPropertyService", () => {
           EXAMPLE_CUSTOM_PROPERTY.name,
           EXAMPLE_CUSTOM_PROPERTY.id
         ),
+        key: prepareDeletedItemName(
+          EXAMPLE_CUSTOM_PROPERTY.key,
+          EXAMPLE_CUSTOM_PROPERTY.id
+        ),
       },
     });
   });
