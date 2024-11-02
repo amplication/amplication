@@ -2226,6 +2226,7 @@ type Resource {
   owner: Owner
   project: Project
   projectId: String
+  properties: JSONObject
   resourceType: EnumResourceType!
   serviceTemplate: Resource
   serviceTemplateVersion: String
@@ -2337,6 +2338,7 @@ input ResourceUpdateInput {
   description: String
   gitRepositoryOverride: Boolean
   name: String
+  properties: JSONObject
 }
 
 type ResourceVersion {

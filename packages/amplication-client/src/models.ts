@@ -3252,6 +3252,7 @@ export type Resource = {
   owner?: Maybe<Owner>;
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;
+  properties?: Maybe<Scalars['JSONObject']['output']>;
   resourceType: EnumResourceType;
   serviceTemplate?: Maybe<Resource>;
   serviceTemplateVersion?: Maybe<Scalars['String']['output']>;
@@ -3379,6 +3380,7 @@ export type ResourceUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   gitRepositoryOverride?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  properties?: InputMaybe<Scalars['JSONObject']['input']>;
 };
 
 export type ResourceVersion = {
