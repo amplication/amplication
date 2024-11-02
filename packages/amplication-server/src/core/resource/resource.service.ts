@@ -144,6 +144,7 @@ const RESOURCE_TYPE_TO_EVENT_TYPE: {
   [EnumResourceType.ProjectConfiguration]: EnumEventType.UnknownEvent,
   [EnumResourceType.PluginRepository]: EnumEventType.PluginRepositoryCreate,
   [EnumResourceType.ServiceTemplate]: EnumEventType.ServiceTemplateCreate,
+  [EnumResourceType.Component]: EnumEventType.ComponentCreate,
 };
 
 type CodeGeneratorName = "NodeJS" | "DotNET";

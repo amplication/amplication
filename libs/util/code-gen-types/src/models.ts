@@ -1079,6 +1079,7 @@ export enum EnumPreviewAccountType {
 }
 
 export enum EnumResourceType {
+  Component = 'Component',
   MessageBroker = 'MessageBroker',
   PluginRepository = 'PluginRepository',
   ProjectConfiguration = 'ProjectConfiguration',
