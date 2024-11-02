@@ -250,6 +250,10 @@ export const resourceThemeMap: {
     icon: "services",
     color: "#f6aa50",
   },
+  [models.EnumResourceType.Component]: {
+    icon: "code",
+    color: "#FF6E6E",
+  },
 };
 
 export const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
