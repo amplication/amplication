@@ -9,6 +9,7 @@ function CustomPropertiesFormFieldSelect({ property }: Props) {
   const options = property.options?.map((option) => ({
     value: option.value,
     label: option.value,
+    color: option.color,
   }));
 
   return (
