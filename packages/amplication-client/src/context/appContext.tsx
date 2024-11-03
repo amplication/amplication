@@ -28,6 +28,7 @@ export interface AppContextInterface {
   projectConfigurationResource: models.Resource | undefined;
   pluginRepositoryResource: models.Resource | undefined;
   handleSearchChange: (searchResults: string) => void;
+  setResourcePropertiesFilter: (filters: models.JsonPathStringFilter) => void;
   loadingResources: boolean;
   reloadResources: () => void;
   errorResources: Error | undefined;
@@ -71,6 +72,10 @@ export interface AppContextInterface {
   ) => void;
   loadingCreateServiceFromTemplate: boolean;
   errorCreateServiceFromTemplate: Error | undefined;
+  customPropertiesMap: Record<string, models.CustomProperty>;
+  createComponent: (data: models.ResourceCreateInput) => void;
+  loadingCreateComponent: boolean;
+  errorCreateComponent: Error | undefined;
 }
 
 const initialContext: AppContextInterface = {
@@ -92,6 +97,7 @@ const initialContext: AppContextInterface = {
   projectConfigurationResource: undefined,
   pluginRepositoryResource: undefined,
   handleSearchChange: () => {},
+  setResourcePropertiesFilter: () => {},
   loadingResources: true,
   errorResources: undefined,
   reloadResources: () => {},
@@ -145,6 +151,10 @@ const initialContext: AppContextInterface = {
   createServiceFromTemplate: () => {},
   loadingCreateServiceFromTemplate: false,
   errorCreateServiceFromTemplate: undefined,
+  customPropertiesMap: {},
+  createComponent: () => {},
+  loadingCreateComponent: false,
+  errorCreateComponent: undefined,
 };
 
 export const AppContext =

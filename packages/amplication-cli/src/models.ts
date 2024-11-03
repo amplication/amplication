@@ -440,6 +440,16 @@ export type CustomPropertyOption = {
   value: Scalars['String']['output'];
 };
 
+export type CustomPropertyOptionCreateInput = {
+  customProperty: WhereParentIdInput;
+  value?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CustomPropertyOptionUpdateInput = {
+  color: Scalars['String']['input'];
+  value: Scalars['String']['input'];
+};
+
 export type CustomPropertyOrderByInput = {
   deletedAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
@@ -451,13 +461,13 @@ export type CustomPropertyUpdateInput = {
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   key?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<EnumCustomPropertyType>;
 };
 
 export type CustomPropertyWhereInput = {
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
-  resources?: InputMaybe<ResourceListRelationFilter>;
 };
 
 export type DbSchemaImportCreateInput = {
@@ -1068,6 +1078,7 @@ export enum EnumPreviewAccountType {
 }
 
 export enum EnumResourceType {
+  Component = 'Component',
   MessageBroker = 'MessageBroker',
   PluginRepository = 'PluginRepository',
   ProjectConfiguration = 'ProjectConfiguration',
@@ -1268,6 +1279,17 @@ export type Invitation = {
 
 export type InviteUserInput = {
   email: Scalars['String']['input'];
+};
+
+export type JsonPathStringFilter = {
+  matchAll: Array<JsonPathStringFilterItem>;
+};
+
+export type JsonPathStringFilterItem = {
+  arrayContains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  path: Scalars['String']['input'];
+  stringContains?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type LoginInput = {
@@ -1552,7 +1574,9 @@ export type Mutation = {
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
+  createComponent: Resource;
   createCustomProperty: CustomProperty;
+  createCustomPropertyOption: CustomPropertyOption;
   createDefaultEntities?: Maybe<Array<Entity>>;
   createEntitiesFromPredefinedSchema: UserAction;
   createEntitiesFromPrismaSchema: UserAction;
@@ -1585,6 +1609,7 @@ export type Mutation = {
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
   deleteCustomProperty?: Maybe<CustomProperty>;
+  deleteCustomPropertyOption: CustomPropertyOption;
   deleteEntity?: Maybe<Entity>;
   deleteEntityField: EntityField;
   deleteEntityPermissionField: EntityPermissionField;
@@ -1631,6 +1656,7 @@ export type Mutation = {
   updateAccount: Account;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateCustomProperty: CustomProperty;
+  updateCustomPropertyOption: CustomPropertyOption;
   updateEntity?: Maybe<Entity>;
   updateEntityField: EntityField;
   updateEntityPermission: EntityPermission;
@@ -1716,8 +1742,18 @@ export type MutationCreateApiTokenArgs = {
 };
 
 
+export type MutationCreateComponentArgs = {
+  data: ResourceCreateInput;
+};
+
+
 export type MutationCreateCustomPropertyArgs = {
   data: CustomPropertyCreateInput;
+};
+
+
+export type MutationCreateCustomPropertyOptionArgs = {
+  data: CustomPropertyOptionCreateInput;
 };
 
 
@@ -1886,6 +1922,11 @@ export type MutationDeleteApiTokenArgs = {
 
 export type MutationDeleteCustomPropertyArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteCustomPropertyOptionArgs = {
+  where: WhereCustomPropertyOptionUniqueInput;
 };
 
 
@@ -2117,6 +2158,12 @@ export type MutationUpdateCodeGeneratorVersionArgs = {
 export type MutationUpdateCustomPropertyArgs = {
   data: CustomPropertyUpdateInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateCustomPropertyOptionArgs = {
+  data: CustomPropertyOptionUpdateInput;
+  where: WhereCustomPropertyOptionUniqueInput;
 };
 
 
@@ -2654,7 +2701,6 @@ export type ProjectWhereInput = {
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
-  resources?: InputMaybe<ResourceListRelationFilter>;
 };
 
 export type PropertySelector = {
@@ -3081,7 +3127,7 @@ export type QueryResourcesArgs = {
   orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ResourceWhereInput>;
+  where?: InputMaybe<ResourceWhereInputWithPropertiesFilter>;
 };
 
 
@@ -3094,7 +3140,7 @@ export type QueryServiceTemplatesArgs = {
   orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ResourceWhereInput>;
+  where?: InputMaybe<ResourceWhereInputWithPropertiesFilter>;
 };
 
 
@@ -3219,6 +3265,7 @@ export type Resource = {
   owner?: Maybe<Owner>;
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;
+  properties?: Maybe<Scalars['JSONObject']['output']>;
   resourceType: EnumResourceType;
   serviceTemplate?: Maybe<Resource>;
   serviceTemplateVersion?: Maybe<Scalars['String']['output']>;
@@ -3243,7 +3290,7 @@ export type ResourceEntitiesArgs = {
 };
 
 export type ResourceCreateInput = {
-  codeGenerator: EnumCodeGenerator;
+  codeGenerator?: InputMaybe<EnumCodeGenerator>;
   description: Scalars['String']['input'];
   gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String']['input'];
@@ -3278,12 +3325,6 @@ export type ResourceCreateWithEntitiesInput = {
 export type ResourceCreateWithEntitiesResult = {
   build?: Maybe<Build>;
   resource: Resource;
-};
-
-export type ResourceListRelationFilter = {
-  every?: InputMaybe<ResourceWhereInput>;
-  none?: InputMaybe<ResourceWhereInput>;
-  some?: InputMaybe<ResourceWhereInput>;
 };
 
 export type ResourceOrderByInput = {
@@ -3346,6 +3387,7 @@ export type ResourceUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   gitRepositoryOverride?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  properties?: InputMaybe<Scalars['JSONObject']['input']>;
 };
 
 export type ResourceVersion = {
@@ -3397,6 +3439,19 @@ export type ResourceWhereInput = {
   name?: InputMaybe<StringFilter>;
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']['input']>;
+  resourceType?: InputMaybe<EnumResourceTypeFilter>;
+  serviceTemplateId?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type ResourceWhereInputWithPropertiesFilter = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<StringFilter>;
+  project?: InputMaybe<ProjectWhereInput>;
+  projectId?: InputMaybe<Scalars['String']['input']>;
+  properties?: InputMaybe<JsonPathStringFilter>;
   resourceType?: InputMaybe<EnumResourceTypeFilter>;
   serviceTemplateId?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -3618,7 +3673,6 @@ export type TeamWhereInput = {
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
-  resources?: InputMaybe<ResourceListRelationFilter>;
 };
 
 export type Topic = IBlock & {
@@ -3722,6 +3776,11 @@ export type UserRole = {
   id: Scalars['String']['output'];
   role: Role;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type WhereCustomPropertyOptionUniqueInput = {
+  customProperty: WhereUniqueInput;
+  value: Scalars['String']['input'];
 };
 
 export type WhereEnumMemberUniqueInput = {
