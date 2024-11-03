@@ -29,8 +29,6 @@ import "./ServiceTemplateList.scss";
 import { SERVICE_TEMPLATE_LIST_COLUMNS } from "./ServiceTemplateListDataColumns";
 import { Link } from "react-router-dom";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
-import BetaFeatureTag from "../Components/BetaFeatureTag";
-import PlatformBetaContent from "../Workspaces/WorkspaceHeader/PlatformBetaContent";
 import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
 
 const CLASS_NAME = "resource-list";
@@ -93,9 +91,6 @@ function ServiceTemplateList() {
                 columns={columns}
                 onColumnsChanged={setColumns}
               />
-              <BetaFeatureTag>
-                <PlatformBetaContent />
-              </BetaFeatureTag>
               {loadingServiceTemplates && <CircularProgress />}
             </FlexItem>
           </>
