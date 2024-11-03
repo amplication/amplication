@@ -741,6 +741,7 @@ enum EnumResourceType {
   MessageBroker
   PluginRepository
   ServiceTemplate
+  Component
 }
 
 enum EnumGitProvider {

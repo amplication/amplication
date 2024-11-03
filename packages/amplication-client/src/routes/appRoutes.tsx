@@ -387,6 +387,17 @@ export const Routes: RouteDef[] = [
                 isAnalytics: true,
               },
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-component",
+                Component: lazy(
+                  () => import("../Resource/create-component/CreateComponent")
+                ),
+                moduleName: "CreateComponent",
+                moduleClass: "create-component",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/complete-preview-signup",
                 Component: lazy(
                   () => import("../User/CompletePreviewSignupPage")
