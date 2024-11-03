@@ -591,27 +591,30 @@ export class ProjectService {
             commitStrategy: args.data.commitStrategy,
             commitId: commit.id,
           });
-          return this.resourceVersionService.create({
-            data: {
-              resource: {
-                connect: { id: resource.id },
-              },
-              commit: {
-                connect: {
-                  id: commit.id,
+          return this.resourceVersionService.create(
+            {
+              data: {
+                resource: {
+                  connect: { id: resource.id },
                 },
-              },
-              createdBy: {
-                connect: {
-                  id: userId,
+                commit: {
+                  connect: {
+                    id: commit.id,
+                  },
                 },
+                createdBy: {
+                  connect: {
+                    id: userId,
+                  },
+                },
+                message: args.data.message,
+                version: args.data.resourceVersions.find(
+                  (x) => x.resourceId === resource.id
+                )?.version,
               },
-              message: args.data.message,
-              version: args.data.resourceVersions.find(
-                (x) => x.resourceId === resource.id
-              )?.version,
             },
-          });
+            userId
+          );
         }
       );
 

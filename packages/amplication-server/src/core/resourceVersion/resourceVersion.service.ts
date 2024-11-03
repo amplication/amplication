@@ -37,7 +37,10 @@ export class ResourceVersionService {
    * create function creates a new resourceVersion for given resource in the DB
    * @returns the resourceVersion object that return after prisma.resourceVersion.create
    */
-  async create(args: CreateResourceVersionArgs): Promise<ResourceVersion> {
+  async create(
+    args: CreateResourceVersionArgs,
+    userId: string
+  ): Promise<ResourceVersion> {
     const resourceId = args.data.resource.connect.id;
 
     const resource = await this.resourceService.resource({
@@ -94,13 +97,15 @@ export class ResourceVersionService {
       await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
         resourceId,
         previousVersion?.version,
-        args.data.version
+        args.data.version,
+        userId
       );
     } else if (resource.resourceType === EnumResourceType.PluginRepository) {
       await this.checkForAlertsForNewPrivatePluginVersions(
         resource,
         previousVersion?.version,
-        args.data.version
+        args.data.version,
+        userId
       );
     }
 
@@ -110,7 +115,8 @@ export class ResourceVersionService {
   async checkForAlertsForNewPrivatePluginVersions(
     resource: Resource,
     previousVersion: string,
-    newVersion: string
+    newVersion: string,
+    userId: string
   ) {
     const changes = await this.compareResourceVersions({
       where: {
@@ -157,7 +163,8 @@ export class ResourceVersionService {
         await this.outdatedVersionAlertService.triggerAlertsForNewPluginVersion(
           resource.projectId,
           targetSettings.pluginId,
-          latestNewVersion.version
+          latestNewVersion.version,
+          userId
         );
       }
     }

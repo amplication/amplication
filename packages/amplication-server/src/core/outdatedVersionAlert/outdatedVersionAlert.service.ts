@@ -12,6 +12,12 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { UpdateOutdatedVersionAlertArgs } from "./dto/UpdateOutdatedVersionAlertArgs";
 import { User } from "../../models";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { KAFKA_TOPICS, TechDebt } from "@amplication/schema-registry";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
+import { encryptString } from "../../util/encryptionUtil";
+import { ProjectService } from "../project/project.service";
 
 @Injectable()
 export class OutdatedVersionAlertService {
@@ -21,7 +27,11 @@ export class OutdatedVersionAlertService {
     private readonly resourceService: ResourceService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
-    private readonly pluginInstallationService: PluginInstallationService
+    private readonly pluginInstallationService: PluginInstallationService,
+    private readonly kafkaProducerService: KafkaProducerService,
+    private readonly configService: ConfigService,
+    @Inject(forwardRef(() => ProjectService))
+    private readonly projectService: ProjectService
   ) {}
 
   /**
@@ -101,7 +111,8 @@ export class OutdatedVersionAlertService {
   async triggerAlertsForTemplateVersion(
     templateResourceId: string,
     outdatedVersion: string,
-    latestVersion: string
+    latestVersion: string,
+    userId: string
   ) {
     const template = await this.resourceService.resource({
       where: {
@@ -121,6 +132,13 @@ export class OutdatedVersionAlertService {
       );
     }
 
+    const workspace = await this.resourceService.getResourceWorkspace(
+      templateResourceId
+    );
+
+    const project = await this.projectService.findFirst({
+      where: { id: template.projectId },
+    });
     //find all services using this template
     const services = await this.resourceService.resources({
       where: {
@@ -140,7 +158,7 @@ export class OutdatedVersionAlertService {
             null
           );
 
-        await this.create({
+        const alert = await this.create({
           data: {
             resource: {
               connect: {
@@ -152,6 +170,33 @@ export class OutdatedVersionAlertService {
             latestVersion,
           },
         });
+
+        this.kafkaProducerService
+          .emitMessage(KAFKA_TOPICS.TECH_DEBT_CREATED_TOPIC, <
+            TechDebt.KafkaEvent
+          >{
+            key: {},
+            value: {
+              resourceId: service.id,
+              resourceName: service.name,
+              workspaceId: workspace.id,
+              projectId: template.projectId,
+              createdAt: Date.now(),
+              techDebtId: alert.id,
+              envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
+              externalId: encryptString(userId),
+              resourceType: service.resourceType,
+              projectName: project.name,
+              alertType: alert.type,
+              alertInitiator: template.name,
+            },
+          })
+          .catch((error) =>
+            this.logger.error(
+              `Failed to queue tech debt for service ${service.id}`,
+              error
+            )
+          );
       }
     }
   }
@@ -167,7 +212,8 @@ export class OutdatedVersionAlertService {
   async triggerAlertsForNewPluginVersion(
     projectId: string,
     pluginId: string,
-    newVersion: string
+    newVersion: string,
+    userId: string
   ) {
     //get all plugin installations in the project with the pluginId
     const pluginInstallations =
@@ -182,9 +228,13 @@ export class OutdatedVersionAlertService {
         }
       );
 
+    const project = await this.projectService.findFirst({
+      where: { id: projectId },
+    });
+
     //create outdatedVersionAlert for each service
     for (const pluginInstallation of pluginInstallations) {
-      await this.create({
+      const alert = await this.create({
         data: {
           resource: {
             connect: {
@@ -201,6 +251,37 @@ export class OutdatedVersionAlertService {
           latestVersion: newVersion,
         },
       });
+
+      const resource = await this.resourceService.resource({
+        where: { id: alert.resourceId },
+      });
+
+      this.kafkaProducerService
+        .emitMessage(KAFKA_TOPICS.TECH_DEBT_CREATED_TOPIC, <
+          TechDebt.KafkaEvent
+        >{
+          key: {},
+          value: {
+            resourceId: pluginInstallation.resourceId,
+            resourceName: resource.name,
+            workspaceId: project.workspaceId,
+            projectId: projectId,
+            createdAt: Date.now(),
+            techDebtId: alert.id,
+            envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
+            externalId: encryptString(userId),
+            resourceType: resource.resourceType,
+            projectName: project.name,
+            alertType: alert.type,
+            alertInitiator: pluginInstallation.displayName,
+          },
+        })
+        .catch((error) =>
+          this.logger.error(
+            `Failed to queue tech debt for plugin ${pluginInstallation.id}`,
+            error
+          )
+        );
     }
   }
 

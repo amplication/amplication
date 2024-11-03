@@ -1,6 +1,6 @@
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Resource } from "../../models";
+import { Project, Resource, Workspace } from "../../models";
 import { PrismaService } from "../../prisma/prisma.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { ResourceService } from "../resource/resource.service";
@@ -9,9 +9,15 @@ import { PluginInstallationService } from "../pluginInstallation/pluginInstallat
 import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVersion";
 import { EnumOutdatedVersionAlertType } from "./dto/EnumOutdatedVersionAlertType";
 import { EnumOutdatedVersionAlertStatus } from "./dto/EnumOutdatedVersionAlertStatus";
+import { ProjectService } from "../project/project.service";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { ConfigService } from "@nestjs/config";
+import { OutdatedVersionAlert } from "./dto/OutdatedVersionAlert";
+import { TechDebt } from "@amplication/schema-registry";
 
 const EXAMPLE_RESOURCE_ID = "EXAMPLE_RESOURCE_ID";
 const EXAMPLE_TEMPLATE_RESOURCE_ID = "EXAMPLE_TEMPLATE_RESOURCE_ID";
+const EXAMPLE_USER_ID = "EXAMPLE_USER_ID";
 
 const EXAMPLE_RESOURCE: Resource = {
   id: EXAMPLE_RESOURCE_ID,
@@ -25,9 +31,42 @@ const EXAMPLE_RESOURCE: Resource = {
   licensed: true,
 };
 
+const EXAMPLE_PROJECT: Project = {
+  id: "ExampleProjectId",
+  name: "ExampleProjectName",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  useDemoRepo: false,
+  licensed: false,
+};
+
+const EXAMPLE_ALERT: OutdatedVersionAlert = {
+  id: "ExampleAlertId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  resourceId: "ExampleResourceId",
+  type: "TemplateVersion",
+  outdatedVersion: "",
+  latestVersion: "",
+  status: "Canceled",
+};
+
+const EXAMPLE_WORKSPACE: Workspace = {
+  id: "ExampleWorkspaceId",
+  name: "ExampleWorkspaceName",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  allowLLMFeatures: false,
+};
+
 const resourceServiceResourcesMock = jest.fn(() => [EXAMPLE_RESOURCE]);
+
 const resourceServiceResourceMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
+});
+
+const projectServiceProjectMock = jest.fn(() => {
+  return EXAMPLE_PROJECT;
 });
 
 const resourceServiceGetServiceTemplateSettingsMock = jest.fn(
@@ -40,7 +79,15 @@ const resourceServiceGetServiceTemplateSettingsMock = jest.fn(
 );
 
 const prismaServiceOutdatedVersionAlertUpdateManyMock = jest.fn();
-const prismaServiceOutdatedVersionAlertCreateMock = jest.fn();
+const prismaServiceOutdatedVersionAlertCreateMock = jest.fn(() => {
+  return EXAMPLE_ALERT;
+});
+
+const mockServiceEmitMessage = jest
+  .fn()
+  .mockImplementation((topic: string, message: TechDebt.KafkaEvent) =>
+    Promise.resolve()
+  );
 
 describe("OutdatedVersionAlertService", () => {
   let service: OutdatedVersionAlertService;
@@ -67,12 +114,33 @@ describe("OutdatedVersionAlertService", () => {
             resources: resourceServiceResourcesMock,
             getServiceTemplateSettings:
               resourceServiceGetServiceTemplateSettingsMock,
+            getResourceWorkspace: jest.fn(() => {
+              return EXAMPLE_WORKSPACE;
+            }),
+          },
+        },
+        {
+          provide: KafkaProducerService,
+          useValue: {
+            emitMessage: mockServiceEmitMessage,
+          },
+        },
+        {
+          provide: ProjectService,
+          useValue: {
+            findFirst: projectServiceProjectMock,
           },
         },
         {
           provide: PluginInstallationService,
           useValue: {
             create: jest.fn(),
+          },
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn(),
           },
         },
         MockedAmplicationLoggerProvider,
@@ -104,7 +172,8 @@ describe("OutdatedVersionAlertService", () => {
       service.triggerAlertsForTemplateVersion(
         templateResourceId,
         outdatedVersion,
-        latestVersion
+        latestVersion,
+        EXAMPLE_USER_ID
       )
     ).rejects.toThrow(
       `Cannot trigger alerts. Resource with id ${templateResourceId} is not a template`
@@ -122,7 +191,8 @@ describe("OutdatedVersionAlertService", () => {
       service.triggerAlertsForTemplateVersion(
         templateResourceId,
         outdatedVersion,
-        latestVersion
+        latestVersion,
+        EXAMPLE_USER_ID
       )
     ).rejects.toThrow(
       `Cannot trigger alerts. Template with id ${templateResourceId} not found`
@@ -142,7 +212,8 @@ describe("OutdatedVersionAlertService", () => {
     await service.triggerAlertsForTemplateVersion(
       templateResourceId,
       outdatedVersion,
-      latestVersion
+      latestVersion,
+      EXAMPLE_USER_ID
     );
 
     expect(resourceServiceResourceMock).toHaveBeenCalledTimes(1);
