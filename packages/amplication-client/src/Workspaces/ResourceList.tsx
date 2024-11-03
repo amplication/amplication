@@ -71,7 +71,9 @@ function ResourceList() {
           );
         },
         getValue: (row) => {
-          return row.properties ? row.properties[property.key] : "";
+          return row.properties && row.properties[property.key]
+            ? row.properties[property.key]
+            : "";
         },
       };
     });

@@ -1,4 +1,5 @@
 import {
+  Button,
   EnumGapSize,
   EnumItemsAlign,
   EnumTextColor,
@@ -22,6 +23,7 @@ const CLASS_NAME = "custom-property-filter";
 type Props = {
   customProperty: CustomProperty;
   onChange: (propertyKey: string, value: string) => void;
+  onRemove: (propertyKey: string) => void;
   selectedValue: string;
 };
 
@@ -29,6 +31,7 @@ export const CustomPropertyFilter = ({
   customProperty,
   selectedValue,
   onChange,
+  onRemove,
 }: Props) => {
   const options = useMemo(() => {
     return customProperty.options.map(
@@ -42,6 +45,13 @@ export const CustomPropertyFilter = ({
 
   return (
     <div className={CLASS_NAME}>
+      <Button
+        buttonStyle={EnumButtonStyle.Text}
+        icon="close"
+        onClick={() => {
+          onRemove(customProperty.key);
+        }}
+      ></Button>
       <SelectMenu
         title={
           <FlexItem gap={EnumGapSize.Small} itemsAlign={EnumItemsAlign.Center}>
