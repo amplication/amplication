@@ -104,6 +104,7 @@ const WorkspaceLayout: React.FC<Props> = ({
     projectConfigurationResource,
     pluginRepositoryResource,
     handleSearchChange,
+    setPropertiesFilter: setResourcePropertiesFilter,
     loadingResources,
     errorResources,
     reloadResources,
@@ -127,6 +128,9 @@ const WorkspaceLayout: React.FC<Props> = ({
     createServiceFromTemplate,
     loadingCreateServiceFromTemplate,
     errorCreateServiceFromTemplate,
+    createComponent,
+    loadingCreateComponent,
+    errorCreateComponent,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
   const { customPropertiesMap } = useCustomPropertiesMap();
@@ -201,6 +205,7 @@ const WorkspaceLayout: React.FC<Props> = ({
         projectConfigurationResource,
         pluginRepositoryResource,
         handleSearchChange,
+        setResourcePropertiesFilter,
         loadingResources,
         reloadResources,
         errorResources,
@@ -240,6 +245,9 @@ const WorkspaceLayout: React.FC<Props> = ({
         loadingCreateServiceFromTemplate,
         errorCreateServiceFromTemplate,
         customPropertiesMap,
+        createComponent,
+        loadingCreateComponent,
+        errorCreateComponent,
       }}
     >
       <AssistantContextProvider>

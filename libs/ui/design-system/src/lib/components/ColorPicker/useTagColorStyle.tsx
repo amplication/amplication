@@ -13,23 +13,10 @@ export const useTagColorStyle = (
 } => {
   const validColor = chroma.valid(color) ? color : DEFAULT_COLOR;
 
-  //varian 1
-  // const luminance = chroma(validColor).luminance();
-  // const textColor = luminance > 0.5 ? "var(--gray-full)" : "var(--gray-base)";
-  // const backgroundColor = validColor;
-
-  //varian 2
-  const textColor = chroma(validColor).darken(1).mix("#000", 0.8).css();
-  const backgroundColor = chroma(validColor)
-    .brighten(0.6)
-    .mix("#fff", 0.1)
-    .css();
-
   //varian 3
-  // const textColor = chroma(validColor).brighten(0.7).css();
-  // const backgroundColor = "var(--gray-80)";
-
-  const borderColor = "transparent";
+  const textColor = chroma(validColor).brighten(0.7).css();
+  const backgroundColor = "var(--gray-80)";
+  const borderColor = chroma(validColor).brighten(0.7).mix("#000", 0.5).css();
 
   return {
     backgroundColor,

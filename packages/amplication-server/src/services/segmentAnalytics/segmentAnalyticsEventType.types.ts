@@ -33,6 +33,7 @@ export enum EnumEventType {
   ServiceTemplateCreate = "createServiceTemplate",
   CreateServiceFromTemplate = "createServiceFromTemplate",
   ResourceVersionCreate = "createResourceVersion",
+  ComponentCreate = "createComponent",
 
   //Import Prisma Schema
   ImportPrismaSchemaStart = "importPrismaSchemaStart",

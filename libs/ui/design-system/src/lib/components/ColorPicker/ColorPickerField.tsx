@@ -25,7 +25,7 @@ export const ColorPickerField: React.FC<Props> = ({
   return (
     <ColorPicker
       onChange={handleChange}
-      selectedColor={field.value}
+      selectedColor={field.value || "#ffffff"}
       label={label}
       iconOnlyMode={iconOnlyMode}
     />
