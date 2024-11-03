@@ -1,0 +1,10 @@
+@import "../../style/index.scss";
+
+.custom-property-option-form {
+  flex: 1;
+  width: 100%;
+
+  .toggle-field {
+    margin-bottom: 0;
+  }
+}

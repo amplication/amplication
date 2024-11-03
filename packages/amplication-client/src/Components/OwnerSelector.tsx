@@ -92,18 +92,7 @@ export const OwnerSelector = ({ resource, disabled }: Props) => {
                 itemData={team}
                 onSelectionChange={(data) => handleOwnerChanged(data, "Team")}
               >
-                <FlexItem
-                  gap={EnumGapSize.Small}
-                  itemsAlign={EnumItemsAlign.Center}
-                  start={<Icon icon="users" color={EnumTextColor.Black20} />}
-                >
-                  <Text
-                    textColor={EnumTextColor.White}
-                    textStyle={EnumTextStyle.Tag}
-                  >
-                    {team.name}
-                  </Text>
-                </FlexItem>
+                <TeamInfo team={team} />
               </SelectMenuItem>
             ))}
           >
@@ -119,18 +108,7 @@ export const OwnerSelector = ({ resource, disabled }: Props) => {
                 closeAfterSelectionChange
                 onSelectionChange={(data) => handleOwnerChanged(data, "User")}
               >
-                <FlexItem
-                  gap={EnumGapSize.Small}
-                  itemsAlign={EnumItemsAlign.Center}
-                  start={<Icon icon="user" color={EnumTextColor.Black20} />}
-                >
-                  <Text
-                    textColor={EnumTextColor.White}
-                    textStyle={EnumTextStyle.Tag}
-                  >
-                    {user.account.email}
-                  </Text>
-                </FlexItem>
+                <UserInfo user={user} showEmail={false} />
               </SelectMenuItem>
             ))}
           >
