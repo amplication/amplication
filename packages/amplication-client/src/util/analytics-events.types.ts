@@ -69,6 +69,7 @@ export enum AnalyticsEventNames {
   // message broker
   PluginRepositoryErrorCreate = "pluginRepositoryErrorCreate",
   CreatePluginRepository = "createPluginRepository",
+  CreateComponent = "createComponent",
 
   // plugin repository
   MessageBrokerConnectedServicesTileClick = "messageBrokerConnectedServicesTileClick",
