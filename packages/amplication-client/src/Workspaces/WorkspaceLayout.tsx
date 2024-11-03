@@ -34,6 +34,7 @@ import ResponsiveContainer from "../Components/ResponsiveContainer";
 import { AssistantContextProvider } from "../Assistant/context/AssistantContext";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import classNames from "classnames";
+import useCustomPropertiesMap from "../CustomProperties/hooks/useCustomPropertiesMap";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -103,6 +104,7 @@ const WorkspaceLayout: React.FC<Props> = ({
     projectConfigurationResource,
     pluginRepositoryResource,
     handleSearchChange,
+    setPropertiesFilter: setResourcePropertiesFilter,
     loadingResources,
     errorResources,
     reloadResources,
@@ -126,7 +128,12 @@ const WorkspaceLayout: React.FC<Props> = ({
     createServiceFromTemplate,
     loadingCreateServiceFromTemplate,
     errorCreateServiceFromTemplate,
+    createComponent,
+    loadingCreateComponent,
+    errorCreateComponent,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
+
+  const { customPropertiesMap } = useCustomPropertiesMap();
 
   useEffect(() => {
     if (!currentProject?.id) return;
@@ -198,6 +205,7 @@ const WorkspaceLayout: React.FC<Props> = ({
         projectConfigurationResource,
         pluginRepositoryResource,
         handleSearchChange,
+        setResourcePropertiesFilter,
         loadingResources,
         reloadResources,
         errorResources,
@@ -236,6 +244,10 @@ const WorkspaceLayout: React.FC<Props> = ({
         createServiceFromTemplate,
         loadingCreateServiceFromTemplate,
         errorCreateServiceFromTemplate,
+        customPropertiesMap,
+        createComponent,
+        loadingCreateComponent,
+        errorCreateComponent,
       }}
     >
       <AssistantContextProvider>
