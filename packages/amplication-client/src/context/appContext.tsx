@@ -28,6 +28,7 @@ export interface AppContextInterface {
   projectConfigurationResource: models.Resource | undefined;
   pluginRepositoryResource: models.Resource | undefined;
   handleSearchChange: (searchResults: string) => void;
+  setResourcePropertiesFilter: (filters: models.JsonPathStringFilter) => void;
   loadingResources: boolean;
   reloadResources: () => void;
   errorResources: Error | undefined;
@@ -96,6 +97,7 @@ const initialContext: AppContextInterface = {
   projectConfigurationResource: undefined,
   pluginRepositoryResource: undefined,
   handleSearchChange: () => {},
+  setResourcePropertiesFilter: () => {},
   loadingResources: true,
   errorResources: undefined,
   reloadResources: () => {},

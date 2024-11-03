@@ -454,7 +454,6 @@ input CustomPropertyWhereInput {
   deletedAt: DateTimeFilter
   id: String
   name: StringFilter
-  resources: ResourceListRelationFilter
 }
 
 input DBSchemaImportCreateInput {
@@ -1262,6 +1261,17 @@ The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](
 """
 scalar JSONObject
 
+input JsonPathStringFilter {
+  matchAll: [JsonPathStringFilterItem!]!
+}
+
+input JsonPathStringFilterItem {
+  arrayContains: String
+  equals: String
+  path: String!
+  stringContains: String
+}
+
 input LoginInput {
   email: String!
   password: String!
@@ -2040,7 +2050,6 @@ input ProjectWhereInput {
   deletedAt: DateTimeFilter
   id: String
   name: StringFilter
-  resources: ResourceListRelationFilter
 }
 
 type PropertySelector {
@@ -2136,9 +2145,9 @@ type Query {
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
   resourceVersion(where: WhereUniqueInput!): ResourceVersion!
   resourceVersions(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): [ResourceVersion!]!
-  resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
+  resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
-  serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
+  serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
   serviceTopics(where: WhereUniqueInput!): ServiceTopics
   serviceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
   team(where: WhereUniqueInput!): Team
@@ -2237,7 +2246,7 @@ type Resource {
 }
 
 input ResourceCreateInput {
-  codeGenerator: EnumCodeGenerator!
+  codeGenerator: EnumCodeGenerator
   description: String!
   gitRepository: ConnectGitRepositoryInput
   name: String!
@@ -2272,12 +2281,6 @@ input ResourceCreateWithEntitiesInput {
 type ResourceCreateWithEntitiesResult {
   build: Build
   resource: Resource!
-}
-
-input ResourceListRelationFilter {
-  every: ResourceWhereInput
-  none: ResourceWhereInput
-  some: ResourceWhereInput
 }
 
 input ResourceOrderByInput {
@@ -2392,6 +2395,19 @@ input ResourceWhereInput {
   name: StringFilter
   project: ProjectWhereInput
   projectId: String
+  resourceType: EnumResourceTypeFilter
+  serviceTemplateId: String
+  updatedAt: DateTimeFilter
+}
+
+input ResourceWhereInputWithPropertiesFilter {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  id: String
+  name: StringFilter
+  project: ProjectWhereInput
+  projectId: String
+  properties: JsonPathStringFilter
   resourceType: EnumResourceTypeFilter
   serviceTemplateId: String
   updatedAt: DateTimeFilter
@@ -2608,7 +2624,6 @@ input TeamWhereInput {
   deletedAt: DateTimeFilter
   id: String
   name: StringFilter
-  resources: ResourceListRelationFilter
 }
 
 type Topic implements IBlock {

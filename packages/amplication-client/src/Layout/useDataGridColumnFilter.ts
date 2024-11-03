@@ -28,8 +28,22 @@ export default function useDataGridColumnFilter<T>(
         order: index,
       };
     });
+
+    const currentSavedColumns = JSON.parse(savedColumnData);
+
+    //merge the missing fields from currentSavedColumns to savedColumns
+    //to avoid losing the data when the columns for custom property are loaded
+    currentSavedColumns.forEach((currentSavedColumn) => {
+      const savedColumn = savedColumns.find(
+        (savedColumn) => savedColumn.key === currentSavedColumn.key
+      );
+      if (!savedColumn) {
+        savedColumns.push(currentSavedColumn);
+      }
+    });
+
     setSavedColumnData(JSON.stringify(savedColumns));
-  }, [columns, setSavedColumnData]);
+  }, [columns, savedColumnData, setSavedColumnData]);
 
   //load the data from local storage when the component mounts
   useEffect(() => {

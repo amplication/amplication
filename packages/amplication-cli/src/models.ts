@@ -468,7 +468,6 @@ export type CustomPropertyWhereInput = {
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
-  resources?: InputMaybe<ResourceListRelationFilter>;
 };
 
 export type DbSchemaImportCreateInput = {
@@ -1280,6 +1279,17 @@ export type Invitation = {
 
 export type InviteUserInput = {
   email: Scalars['String']['input'];
+};
+
+export type JsonPathStringFilter = {
+  matchAll: Array<JsonPathStringFilterItem>;
+};
+
+export type JsonPathStringFilterItem = {
+  arrayContains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  path: Scalars['String']['input'];
+  stringContains?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type LoginInput = {
@@ -2691,7 +2701,6 @@ export type ProjectWhereInput = {
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
-  resources?: InputMaybe<ResourceListRelationFilter>;
 };
 
 export type PropertySelector = {
@@ -3118,7 +3127,7 @@ export type QueryResourcesArgs = {
   orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ResourceWhereInput>;
+  where?: InputMaybe<ResourceWhereInputWithPropertiesFilter>;
 };
 
 
@@ -3131,7 +3140,7 @@ export type QueryServiceTemplatesArgs = {
   orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ResourceWhereInput>;
+  where?: InputMaybe<ResourceWhereInputWithPropertiesFilter>;
 };
 
 
@@ -3281,7 +3290,7 @@ export type ResourceEntitiesArgs = {
 };
 
 export type ResourceCreateInput = {
-  codeGenerator: EnumCodeGenerator;
+  codeGenerator?: InputMaybe<EnumCodeGenerator>;
   description: Scalars['String']['input'];
   gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String']['input'];
@@ -3316,12 +3325,6 @@ export type ResourceCreateWithEntitiesInput = {
 export type ResourceCreateWithEntitiesResult = {
   build?: Maybe<Build>;
   resource: Resource;
-};
-
-export type ResourceListRelationFilter = {
-  every?: InputMaybe<ResourceWhereInput>;
-  none?: InputMaybe<ResourceWhereInput>;
-  some?: InputMaybe<ResourceWhereInput>;
 };
 
 export type ResourceOrderByInput = {
@@ -3436,6 +3439,19 @@ export type ResourceWhereInput = {
   name?: InputMaybe<StringFilter>;
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']['input']>;
+  resourceType?: InputMaybe<EnumResourceTypeFilter>;
+  serviceTemplateId?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type ResourceWhereInputWithPropertiesFilter = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<StringFilter>;
+  project?: InputMaybe<ProjectWhereInput>;
+  projectId?: InputMaybe<Scalars['String']['input']>;
+  properties?: InputMaybe<JsonPathStringFilter>;
   resourceType?: InputMaybe<EnumResourceTypeFilter>;
   serviceTemplateId?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -3657,7 +3673,6 @@ export type TeamWhereInput = {
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
-  resources?: InputMaybe<ResourceListRelationFilter>;
 };
 
 export type Topic = IBlock & {

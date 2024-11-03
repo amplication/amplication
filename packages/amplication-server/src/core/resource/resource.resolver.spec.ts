@@ -32,6 +32,7 @@ import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
 import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 import { OwnershipService } from "../ownership/ownership.service";
 import { EnumOwnershipType } from "../ownership/dto/Ownership";
+import { ProjectService } from "../project/project.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -390,6 +391,12 @@ describe("ResourceResolver", () => {
             createService: createServiceMock,
             deleteResource: deleteResourceMock,
             updateResource: updateResourceMock,
+          })),
+        },
+        {
+          provide: ProjectService,
+          useClass: jest.fn(() => ({
+            findUnique: jest.fn(() => ({})),
           })),
         },
         {
