@@ -16,6 +16,7 @@ import { GET_PROJECTS } from "../queries/projectQueries";
 import { UPDATE_CODE_GENERATOR_VERSION } from "../../Resource/codeGeneratorVersionSettings/queries";
 import { CREATE_PLUGIN_REPOSITORY } from "../queries/pluginRepositoryQueries";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import { CREATE_COMPONENT } from "../queries/ComponentQueries";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -112,6 +113,9 @@ const useResources = (
   >(undefined);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const [propertiesFilter, setPropertiesFilter] =
+    useState<models.JsonPathStringFilter | null>(null);
+
   const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
     createGitRepositoryFullName(
       currentResource?.gitRepository?.gitOrganization?.provider,
@@ -134,11 +138,12 @@ const useResources = (
     variables: {
       where: {
         project: { id: currentProject?.id },
+        properties: propertiesFilter,
         name:
           searchPhrase !== ""
             ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
             : undefined,
-      },
+      } as models.ResourceWhereInputWithPropertiesFilter,
     },
     skip: !currentProject?.id,
   });
@@ -259,6 +264,27 @@ const useResources = (
   };
 
   const [
+    createComponentInternal,
+    { loading: loadingCreateComponent, error: errorCreateComponent },
+  ] = useMutation<{
+    createComponent: models.Resource;
+  }>(CREATE_COMPONENT);
+
+  const createComponent = (data: models.ResourceCreateInput) => {
+    trackEvent({
+      eventName: AnalyticsEventNames.CreateComponent,
+    });
+    createComponentInternal({ variables: { data: data } }).then((result) => {
+      result.data?.createComponent.id &&
+        reloadResources().then(() => {
+          history.push({
+            pathname: `${platformProjectBaseUrl}/${result.data?.createComponent.id}/settings/general`,
+          });
+        });
+    });
+  };
+
+  const [
     createBroker,
     { loading: loadingCreateMessageBroker, error: errorCreateMessageBroker },
   ] = useMutation<TCreateMessageBroker>(CREATE_MESSAGE_BROKER);
@@ -304,6 +330,7 @@ const useResources = (
       projectConfigurationResource?.gitRepository?.gitOrganization?.provider
     );
   }, [
+    createResourceMatch,
     resourceMatch,
     currentResource,
     projectConfigurationResource,
@@ -343,6 +370,7 @@ const useResources = (
       resource?.gitRepository?.gitOrganization?.provider
     );
   }, [
+    reloadResources,
     resourceMatch,
     resources,
     projectConfigurationResource,
@@ -412,6 +440,7 @@ const useResources = (
     projectConfigurationResource,
     pluginRepositoryResource,
     handleSearchChange,
+    setPropertiesFilter,
     loadingResources,
     errorResources,
     reloadResources,
@@ -435,6 +464,9 @@ const useResources = (
     createServiceFromTemplate,
     loadingCreateServiceFromTemplate,
     errorCreateServiceFromTemplate,
+    createComponent,
+    loadingCreateComponent,
+    errorCreateComponent,
   };
 };
 

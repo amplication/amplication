@@ -39,6 +39,7 @@ export const RESOURCE_TYPE_TO_RESOURCE_TYPE_GROUP: {
   [EnumResourceType.ProjectConfiguration]: EnumResourceTypeGroup.Services,
   [EnumResourceType.ServiceTemplate]: EnumResourceTypeGroup.Platform,
   [EnumResourceType.PluginRepository]: EnumResourceTypeGroup.Platform,
+  [EnumResourceType.Component]: EnumResourceTypeGroup.Services,
 };
 
 export const RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE: {

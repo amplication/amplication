@@ -14,15 +14,16 @@ type Props = {
 function CustomPropertyValueMultiSelect({ property, value }: Props) {
   const isArray = Array.isArray(value);
 
-  if (isArray) {
-    console.log(value);
-  }
   return !isArray ? (
     <CustomPropertyValueSelect property={property} value={value} />
   ) : (
     <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.Small}>
-      {(value as unknown as string[]).map((itemValue) => (
-        <CustomPropertyValueSelect property={property} value={itemValue} />
+      {(value as unknown as string[]).map((itemValue, index) => (
+        <CustomPropertyValueSelect
+          property={property}
+          value={itemValue}
+          key={index}
+        />
       ))}
     </FlexItem>
   );

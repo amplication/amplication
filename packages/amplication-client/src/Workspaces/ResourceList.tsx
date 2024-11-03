@@ -38,6 +38,7 @@ import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import NewServiceFromTemplateDialogWithUrlTrigger from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
 import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
 import CustomPropertyValue from "../CustomProperties/CustomPropertyValue";
+import { CustomPropertyFilters } from "../CustomProperties/CustomPropertyFilters";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
@@ -90,14 +91,20 @@ function ResourceList() {
     overrideIsPlatformConsole: true,
   });
 
-  const { resources, handleSearchChange, loadingResources, errorResources } =
-    useContext(AppContext);
+  const {
+    resources,
+    handleSearchChange,
+    setResourcePropertiesFilter,
+    loadingResources,
+    errorResources,
+  } = useContext(AppContext);
 
   const relevantResources = useMemo(() => {
     return resources.filter(
       (resource) =>
         resource.resourceType === models.EnumResourceType.Service ||
-        resource.resourceType === models.EnumResourceType.MessageBroker
+        resource.resourceType === models.EnumResourceType.MessageBroker ||
+        resource.resourceType === models.EnumResourceType.Component
     );
   }, [resources]);
 
@@ -152,6 +159,7 @@ function ResourceList() {
                 columns={columns}
                 onColumnsChanged={setColumns}
               />
+
               <ToggleView
                 values={[VIEW_CARDS, VIEW_GRID]}
                 selectedValue={viewMode}
@@ -178,6 +186,8 @@ function ResourceList() {
         }
       ></FlexItem>
       <HorizontalRule doubleSpacing />
+
+      <CustomPropertyFilters onChange={setResourcePropertiesFilter} />
 
       {isEmpty(relevantResources) && !loadingResources ? (
         <EmptyState
