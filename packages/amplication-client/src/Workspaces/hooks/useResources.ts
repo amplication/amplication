@@ -113,6 +113,9 @@ const useResources = (
   >(undefined);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const [propertiesFilter, setPropertiesFilter] =
+    useState<models.JsonPathStringFilter | null>(null);
+
   const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
     createGitRepositoryFullName(
       currentResource?.gitRepository?.gitOrganization?.provider,
@@ -135,11 +138,12 @@ const useResources = (
     variables: {
       where: {
         project: { id: currentProject?.id },
+        properties: propertiesFilter,
         name:
           searchPhrase !== ""
             ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
             : undefined,
-      },
+      } as models.ResourceWhereInputWithPropertiesFilter,
     },
     skip: !currentProject?.id,
   });
@@ -436,6 +440,7 @@ const useResources = (
     projectConfigurationResource,
     pluginRepositoryResource,
     handleSearchChange,
+    setPropertiesFilter,
     loadingResources,
     errorResources,
     reloadResources,
