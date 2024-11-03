@@ -550,7 +550,7 @@ export class ResourceService {
   }
 
   /**
-   * Create a resource of type "PluginRepository"
+   * Create a resource of type "Component"
    */
   async createComponent(
     args: CreateOneResourceArgs,
