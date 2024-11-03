@@ -78,6 +78,18 @@ export class PermissionsService {
       });
       return matching === 1;
     }
+    if (originType === AuthorizableOriginParameter.CustomPropertyId) {
+      const matching = await this.prisma.customProperty.count({
+        where: {
+          deletedAt: null,
+          id: originId,
+          workspace: {
+            id: workspace.id,
+          },
+        },
+      });
+      return matching === 1;
+    }
 
     if (originType === AuthorizableOriginParameter.ResourceId) {
       const matching = await this.prisma.resource.count({

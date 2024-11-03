@@ -405,6 +405,57 @@ input CreateGitRepositoryInput {
   resourceId: String
 }
 
+type CustomProperty {
+  createdAt: DateTime!
+  description: String
+  enabled: Boolean!
+  id: String!
+  key: String!
+  name: String!
+  options: [CustomPropertyOption!]
+  type: EnumCustomPropertyType!
+  updatedAt: DateTime!
+}
+
+input CustomPropertyCreateInput {
+  name: String!
+}
+
+type CustomPropertyOption {
+  color: String!
+  value: String!
+}
+
+input CustomPropertyOptionCreateInput {
+  customProperty: WhereParentIdInput!
+  value: String
+}
+
+input CustomPropertyOptionUpdateInput {
+  color: String!
+  value: String!
+}
+
+input CustomPropertyOrderByInput {
+  deletedAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+}
+
+input CustomPropertyUpdateInput {
+  description: String
+  enabled: Boolean
+  key: String
+  name: String
+  type: EnumCustomPropertyType
+}
+
+input CustomPropertyWhereInput {
+  deletedAt: DateTimeFilter
+  id: String
+  name: StringFilter
+}
+
 input DBSchemaImportCreateInput {
   resource: WhereParentIdInput!
   userActionType: EnumUserActionType!
@@ -805,6 +856,13 @@ enum EnumCommitStrategy {
   Specific
 }
 
+enum EnumCustomPropertyType {
+  Link
+  MultiSelect
+  Select
+  Text
+}
+
 enum EnumDataType {
   Boolean
   CreatedAt
@@ -990,6 +1048,7 @@ enum EnumPreviewAccountType {
 }
 
 enum EnumResourceType {
+  Component
   MessageBroker
   PluginRepository
   ProjectConfiguration
@@ -1201,6 +1260,17 @@ input InviteUserInput {
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
 scalar JSONObject
+
+input JsonPathStringFilter {
+  matchAll: [JsonPathStringFilterItem!]!
+}
+
+input JsonPathStringFilterItem {
+  arrayContains: String
+  equals: String
+  path: String!
+  stringContains: String
+}
 
 input LoginInput {
   email: String!
@@ -1484,6 +1554,9 @@ type Mutation {
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
+  createComponent(data: ResourceCreateInput!): Resource!
+  createCustomProperty(data: CustomPropertyCreateInput!): CustomProperty!
+  createCustomPropertyOption(data: CustomPropertyOptionCreateInput!): CustomPropertyOption!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
   createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
@@ -1515,6 +1588,8 @@ type Mutation {
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
+  deleteCustomProperty(where: WhereUniqueInput!): CustomProperty
+  deleteCustomPropertyOption(where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
   deleteEntity(where: WhereUniqueInput!): Entity
   deleteEntityField(where: WhereUniqueInput!): EntityField!
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
@@ -1563,6 +1638,8 @@ type Mutation {
   triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
+  updateCustomProperty(data: CustomPropertyUpdateInput!, where: WhereUniqueInput!): CustomProperty!
+  updateCustomPropertyOption(data: CustomPropertyOptionUpdateInput!, where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   updateEntityField(data: EntityFieldUpdateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
   updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
@@ -1973,7 +2050,6 @@ input ProjectWhereInput {
   deletedAt: DateTimeFilter
   id: String
   name: StringFilter
-  resources: ResourceListRelationFilter
 }
 
 type PropertySelector {
@@ -2028,6 +2104,8 @@ type Query {
   compareResourceVersions(where: CompareResourceVersionsWhereInput!): ResourceVersionsDiff!
   contactUsLink(where: WhereUniqueInput!): String
   currentWorkspace: Workspace
+  customProperties(orderBy: CustomPropertyOrderByInput, skip: Int, take: Int, where: CustomPropertyWhereInput): [CustomProperty!]!
+  customProperty(where: WhereUniqueInput!): CustomProperty
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!
   entity(where: WhereUniqueInput!): Entity
 
@@ -2067,9 +2145,9 @@ type Query {
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
   resourceVersion(where: WhereUniqueInput!): ResourceVersion!
   resourceVersions(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): [ResourceVersion!]!
-  resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
+  resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
-  serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
+  serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
   serviceTopics(where: WhereUniqueInput!): ServiceTopics
   serviceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
   team(where: WhereUniqueInput!): Team
@@ -2159,6 +2237,7 @@ type Resource {
   owner: Owner
   project: Project
   projectId: String
+  properties: JSONObject
   resourceType: EnumResourceType!
   serviceTemplate: Resource
   serviceTemplateVersion: String
@@ -2167,7 +2246,7 @@ type Resource {
 }
 
 input ResourceCreateInput {
-  codeGenerator: EnumCodeGenerator!
+  codeGenerator: EnumCodeGenerator
   description: String!
   gitRepository: ConnectGitRepositoryInput
   name: String!
@@ -2202,12 +2281,6 @@ input ResourceCreateWithEntitiesInput {
 type ResourceCreateWithEntitiesResult {
   build: Build
   resource: Resource!
-}
-
-input ResourceListRelationFilter {
-  every: ResourceWhereInput
-  none: ResourceWhereInput
-  some: ResourceWhereInput
 }
 
 input ResourceOrderByInput {
@@ -2270,6 +2343,7 @@ input ResourceUpdateInput {
   description: String
   gitRepositoryOverride: Boolean
   name: String
+  properties: JSONObject
 }
 
 type ResourceVersion {
@@ -2321,6 +2395,19 @@ input ResourceWhereInput {
   name: StringFilter
   project: ProjectWhereInput
   projectId: String
+  resourceType: EnumResourceTypeFilter
+  serviceTemplateId: String
+  updatedAt: DateTimeFilter
+}
+
+input ResourceWhereInputWithPropertiesFilter {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  id: String
+  name: StringFilter
+  project: ProjectWhereInput
+  projectId: String
+  properties: JsonPathStringFilter
   resourceType: EnumResourceTypeFilter
   serviceTemplateId: String
   updatedAt: DateTimeFilter
@@ -2504,6 +2591,7 @@ type Subscription {
 }
 
 type Team {
+  color: String
   createdAt: DateTime!
   description: String
   id: String!
@@ -2523,6 +2611,7 @@ input TeamOrderByInput {
 }
 
 input TeamUpdateInput {
+  color: String
   description: String
   name: String
 }
@@ -2535,7 +2624,6 @@ input TeamWhereInput {
   deletedAt: DateTimeFilter
   id: String
   name: StringFilter
-  resources: ResourceListRelationFilter
 }
 
 type Topic implements IBlock {
@@ -2642,6 +2730,11 @@ type UserRole {
   id: String!
   role: Role!
   updatedAt: DateTime!
+}
+
+input WhereCustomPropertyOptionUniqueInput {
+  customProperty: WhereUniqueInput!
+  value: String!
 }
 
 input WhereEnumMemberUniqueInput {

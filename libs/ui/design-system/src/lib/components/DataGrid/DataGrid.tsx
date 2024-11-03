@@ -41,6 +41,7 @@ export type Props<T> = Omit<
   onSortColumnsChange?: (sortColumns: DataGridSortColumn[]) => void;
   rows: T[];
   enableRowDetails?: boolean;
+  onColumnsReorder?: (sourceColumnKey: string, targetColumnKey: string) => void;
 };
 
 const SORT_DIRECTION_TO_DATA_GRID_SORT_ORDER: Record<
@@ -61,6 +62,7 @@ export function DataGrid<T>({
   columns,
   onSortColumnsChange,
   enableRowDetails,
+  onColumnsReorder,
   ...rest
 }: Props<T>) {
   const [sortColumns, setSortColumns] = useState<SortColumn[]>([]);
@@ -153,7 +155,11 @@ export function DataGrid<T>({
       style={{ maxHeight: "100%", height: "auto" }}
       rowHeight={rowHeight}
       onRowsChange={onRowsChange}
-      defaultColumnOptions={{}}
+      defaultColumnOptions={{
+        sortable: true,
+        resizable: true,
+        draggable: true,
+      }}
       rows={rows}
       onSortColumnsChange={handleSortColumnsChange}
       sortColumns={sortColumns}
@@ -161,6 +167,7 @@ export function DataGrid<T>({
       renderers={{
         renderSortStatus,
       }}
+      onColumnsReorder={onColumnsReorder}
       {...rest}
     />
   );

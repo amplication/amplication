@@ -32,7 +32,7 @@ export class ResourceCreateInput {
   gitRepository?: ConnectGitRepositoryInput;
 
   @Field(() => EnumCodeGenerator, {
-    nullable: false,
+    nullable: true,
   })
-  codeGenerator!: keyof typeof EnumCodeGenerator;
+  codeGenerator?: keyof typeof EnumCodeGenerator | null;
 }

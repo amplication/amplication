@@ -28,8 +28,8 @@ import {
 } from "../../prisma";
 import { EnumResourceType as AmplicationEnumResourceType } from "../resource/dto/EnumResourceType";
 
-import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { ActionService } from "../action/action.service";
 import { EnumActionLogLevel } from "../action/dto/EnumActionLogLevel";
@@ -38,6 +38,7 @@ import {
   DATA_TYPE_TO_DEFAULT_PROPERTIES,
   USER_ENTITY_NAME,
 } from "../entity/constants";
+import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
 import {
   CreateBulkEntitiesAndFieldsArgs,
   CreateBulkEntitiesInput,
@@ -69,16 +70,16 @@ import {
 } from "./dto";
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
-import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
 
-import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
-import { GitProviderService } from "../git/git.provider.service";
+import { jsonPathStringFilterToPrismaFilter } from "../../prisma/JsonPathStringFilterToPrismaFilter";
 import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings";
-import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
+import { GitProviderService } from "../git/git.provider.service";
+import { EnumOwnershipType, Ownership } from "../ownership/dto/Ownership";
+import { OwnershipService } from "../ownership/ownership.service";
 import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVersion";
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
-import { OwnershipService } from "../ownership/ownership.service";
-import { EnumOwnershipType, Ownership } from "../ownership/dto/Ownership";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -144,6 +145,7 @@ const RESOURCE_TYPE_TO_EVENT_TYPE: {
   [EnumResourceType.ProjectConfiguration]: EnumEventType.UnknownEvent,
   [EnumResourceType.PluginRepository]: EnumEventType.PluginRepositoryCreate,
   [EnumResourceType.ServiceTemplate]: EnumEventType.ServiceTemplateCreate,
+  [EnumResourceType.Component]: EnumEventType.ComponentCreate,
 };
 
 type CodeGeneratorName = "NodeJS" | "DotNET";
@@ -432,6 +434,8 @@ export class ResourceService {
     codeGenerator: keyof typeof EnumCodeGenerator,
     user: User
   ): Promise<string | null> {
+    if (!codeGenerator) return null;
+
     const blockEntitlement = await this.billingService.getBooleanEntitlement(
       user.workspace.id,
       BillingFeature.CodeGeneratorNodeJsOnly
@@ -538,6 +542,26 @@ export class ResourceService {
         data: {
           ...args.data,
           resourceType: EnumResourceType.PluginRepository,
+        },
+      },
+      user
+    );
+
+    return resource;
+  }
+
+  /**
+   * Create a resource of type "Component"
+   */
+  async createComponent(
+    args: CreateOneResourceArgs,
+    user: User
+  ): Promise<Resource> {
+    const resource = await this.createResource(
+      {
+        data: {
+          ...args.data,
+          resourceType: EnumResourceType.Component,
         },
       },
       user
@@ -1581,25 +1605,27 @@ export class ResourceService {
       );
     }
 
+    const { properties: whereProperties, ...whereElse } = where;
+    const wherePropertiesFilter = jsonPathStringFilterToPrismaFilter(
+      whereProperties,
+      "properties"
+    );
+
     return this.prisma.resource.findMany({
       ...args,
       where: {
-        ...where,
+        ...(whereElse as Prisma.ResourceWhereInput),
         id: resourceIds ? { in: resourceIds } : where.id,
         deletedAt: null,
         archived: { not: true },
+        ...wherePropertiesFilter,
       },
     });
   }
 
-  async resourcesByIds(
-    args: FindManyResourceArgs,
-    ids: string[]
-  ): Promise<Resource[]> {
+  async resourcesByIds(ids: string[]): Promise<Resource[]> {
     return this.prisma.resource.findMany({
-      ...args,
       where: {
-        ...args.where,
         id: { in: ids },
         deletedAt: null,
         archived: { not: true },
@@ -1617,7 +1643,6 @@ export class ResourceService {
     );
 
     const resources = this.resourcesByIds(
-      {},
       brokerServiceTopics.map((x) => x.resourceId)
     );
 
@@ -1860,12 +1885,6 @@ export class ResourceService {
     };
 
     return gitSettings;
-  }
-
-  async project(resourceId: string): Promise<Project> {
-    return this.projectService.findFirst({
-      where: { resources: { some: { id: resourceId } } },
-    });
   }
 
   async projectConfiguration(projectId: string): Promise<Resource | null> {

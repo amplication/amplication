@@ -1,0 +1,29 @@
+@import "../../style/index.scss";
+
+$width: 100px;
+
+.amp-color-picker {
+  width: $width;
+
+  &__button {
+    width: $width;
+  }
+
+  label {
+    @include label;
+    position: relative;
+  }
+
+  &__picker {
+    border: 1px solid var(--gray-70);
+    box-shadow: var(--menu-box-shadow);
+
+    label {
+      color: var(--gray-base) !important;
+    }
+  }
+
+  &__footer {
+    padding: 0 var(--default-spacing);
+  }
+}

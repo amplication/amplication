@@ -37,4 +37,9 @@ export class Team {
     nullable: true,
   })
   members?: User[];
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  color?: string;
 }
