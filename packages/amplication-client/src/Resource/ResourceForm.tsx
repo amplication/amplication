@@ -24,6 +24,7 @@ import {
   UPDATE_RESOURCE,
 } from "../Workspaces/queries/resourcesQueries";
 import { OwnerSelector } from "../Components/OwnerSelector";
+import ResourcePropertiesFields from "../CustomProperties/CustomPropertiesFormFields";
 
 type Props = {
   resourceId: string;
@@ -78,8 +79,8 @@ function ResourceForm({ resourceId }: Props) {
   );
 
   const handleSubmit = useCallback(
-    (data) => {
-      const { name, description } = data;
+    (data: models.Resource) => {
+      const { name, description, properties } = data;
       trackEvent({
         eventName: AnalyticsEventNames.ResourceInfoUpdate,
       });
@@ -88,6 +89,7 @@ function ResourceForm({ resourceId }: Props) {
           data: {
             name,
             description,
+            properties,
           },
           resourceId: resourceId,
         },
@@ -130,6 +132,8 @@ function ResourceForm({ resourceId }: Props) {
                   />
                 </Form>
                 <OwnerSelector resource={data.resource} />
+
+                <ResourcePropertiesFields />
               </>
             );
           }}

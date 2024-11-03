@@ -45,6 +45,13 @@ const ITEMS: CreateResourceButtonItemType[] = [
     route: "create-broker",
     info: "Create a message broker to facilitate communication between services",
   },
+
+  {
+    type: models.EnumResourceType.Component,
+    label: "Connect Component",
+    route: "create-component",
+    info: "Map an existing software component or add a new one to your project",
+  },
 ];
 
 type Props = {
@@ -76,7 +83,7 @@ const CreateResourceButton: React.FC<Props> = ({ servicesLength }) => {
         actualUsage={servicesLength}
         paidPlansExclusive={false}
       >
-        <SelectMenu title="Add Resource" buttonStyle={EnumButtonStyle.Primary}>
+        <SelectMenu title="Add Component" buttonStyle={EnumButtonStyle.Primary}>
           <SelectMenuModal align="right" withCaret>
             <SelectMenuList>
               {licensedItems.map((item, index) => (

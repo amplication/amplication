@@ -1,6 +1,7 @@
 import {
   EnumContentAlign,
   EnumFlexDirection,
+  EnumFlexItemMargin,
   FlexItem,
   Snackbar,
   TabContentTitle,
@@ -114,6 +115,7 @@ const CustomProperty = () => {
           />
         </>
       )}
+      <FlexItem margin={EnumFlexItemMargin.Both} />
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );

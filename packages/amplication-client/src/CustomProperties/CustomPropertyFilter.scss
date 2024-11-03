@@ -1,0 +1,11 @@
+@import "../style/index.scss";
+
+.custom-property-filter {
+  border: 1px solid var(--gray-70);
+  border-radius: var(--default-border-radius);
+  padding-left: var(--icon-spacing);
+
+  &__show-all {
+    padding-right: var(--icon-spacing);
+  }
+}

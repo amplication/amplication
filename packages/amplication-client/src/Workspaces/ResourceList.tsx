@@ -2,6 +2,7 @@ import {
   Button,
   CircularProgress,
   DataGrid,
+  DataGridColumn,
   DataGridColumnFilter,
   EnumButtonStyle,
   EnumContentAlign,
@@ -26,7 +27,7 @@ import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
-import { AppContext } from "../context/appContext";
+import { AppContext, useAppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
@@ -36,6 +37,8 @@ import ResourceListItem from "./ResourceListItem";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import NewServiceFromTemplateDialogWithUrlTrigger from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
 import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
+import CustomPropertyValue from "../CustomProperties/CustomPropertyValue";
+import { CustomPropertyFilters } from "../CustomProperties/CustomPropertyFilters";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
@@ -48,8 +51,39 @@ const COLUMNS_LOCAL_STORAGE_KEY = "resource-list-columns";
 function ResourceList() {
   const { refreshData } = useStiggContext();
   const [error, setError] = useState<Error | null>(null);
-  const { columns, setColumns } = useDataGridColumnFilter(
-    RESOURCE_LIST_COLUMNS,
+
+  const { customPropertiesMap } = useAppContext();
+
+  const columnsWithAllProps = useMemo<DataGridColumn<models.Resource>[]>(() => {
+    const propCols = Object.values(customPropertiesMap).map((property) => {
+      return {
+        key: property.key,
+        name: property.name,
+        resizable: true,
+        sortable: true,
+        hidden: false,
+        renderCell: (props) => {
+          return (
+            <CustomPropertyValue
+              propertyKey={property.key}
+              allValues={props.row.properties}
+            />
+          );
+        },
+        getValue: (row) => {
+          return row.properties ? row.properties[property.key] : "";
+        },
+      };
+    });
+
+    const lastCol = RESOURCE_LIST_COLUMNS[RESOURCE_LIST_COLUMNS.length - 1];
+    const otherCols = RESOURCE_LIST_COLUMNS.slice(0, -1);
+
+    return [...otherCols, ...propCols, lastCol];
+  }, [customPropertiesMap]);
+
+  const { columns, setColumns, onColumnsReorder } = useDataGridColumnFilter(
+    columnsWithAllProps,
     COLUMNS_LOCAL_STORAGE_KEY
   );
 
@@ -57,14 +91,20 @@ function ResourceList() {
     overrideIsPlatformConsole: true,
   });
 
-  const { resources, handleSearchChange, loadingResources, errorResources } =
-    useContext(AppContext);
+  const {
+    resources,
+    handleSearchChange,
+    setResourcePropertiesFilter,
+    loadingResources,
+    errorResources,
+  } = useContext(AppContext);
 
   const relevantResources = useMemo(() => {
     return resources.filter(
       (resource) =>
         resource.resourceType === models.EnumResourceType.Service ||
-        resource.resourceType === models.EnumResourceType.MessageBroker
+        resource.resourceType === models.EnumResourceType.MessageBroker ||
+        resource.resourceType === models.EnumResourceType.Component
     );
   }, [resources]);
 
@@ -119,6 +159,7 @@ function ResourceList() {
                 columns={columns}
                 onColumnsChanged={setColumns}
               />
+
               <ToggleView
                 values={[VIEW_CARDS, VIEW_GRID]}
                 selectedValue={viewMode}
@@ -146,6 +187,8 @@ function ResourceList() {
       ></FlexItem>
       <HorizontalRule doubleSpacing />
 
+      <CustomPropertyFilters onChange={setResourcePropertiesFilter} />
+
       {isEmpty(relevantResources) && !loadingResources ? (
         <EmptyState
           message="There are no resources to show"
@@ -155,7 +198,11 @@ function ResourceList() {
         <>
           {viewMode === VIEW_GRID ? (
             <div className={`${CLASS_NAME}__grid-container`}>
-              <DataGrid columns={columns} rows={relevantResources}></DataGrid>
+              <DataGrid
+                columns={columns}
+                rows={relevantResources}
+                onColumnsReorder={onColumnsReorder}
+              ></DataGrid>
             </div>
           ) : (
             <List>

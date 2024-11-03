@@ -41,7 +41,7 @@ export { SelectField } from "./components/SelectField/SelectField";
 
 export type { Props as SelectFieldProps } from "./components/SelectField/SelectField";
 
-export type { OptionItem } from "./components/types";
+export { OptionItem } from "./components/types";
 export { TextField } from "./components/TextField/TextField";
 
 export type { Props as TextFieldProps } from "./components/TextField/TextField";
@@ -309,3 +309,4 @@ export { ColorPicker } from "./components/ColorPicker/ColorPicker";
 
 export { ColorPickerField } from "./components/ColorPicker/ColorPickerField";
 export { useTagColorStyle } from "./components/ColorPicker/useTagColorStyle";
+export { Tag, Props as TagProps } from "./components/Tag/Tag";

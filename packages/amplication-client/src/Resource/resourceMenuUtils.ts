@@ -21,6 +21,7 @@ export type MenuItemLinks =
 export const resourceMenuLayout: {
   [key in EnumResourceType]: MenuItemLinks[];
 } = {
+  [EnumResourceType.Component]: ["plugins", "git", "techDebt", "settings"],
   [EnumResourceType.Service]: [
     "modules",
     "entities",

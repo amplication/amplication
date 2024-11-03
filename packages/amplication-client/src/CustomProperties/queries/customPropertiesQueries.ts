@@ -72,6 +72,18 @@ export const FIND_CUSTOM_PROPERTIES = gql`
   }
 `;
 
+export const GET_CUSTOM_PROPERTIES_MAP = gql`
+  ${CUSTOM_PROPERTY_FIELDS_FRAGMENT}
+  query customProperties(
+    $where: CustomPropertyWhereInput
+    $orderBy: CustomPropertyOrderByInput
+  ) {
+    customProperties(where: $where, orderBy: $orderBy) {
+      ...CustomPropertyFields
+    }
+  }
+`;
+
 export const CREATE_CUSTOM_PROPERTY_OPTION = gql`
   ${CUSTOM_PROPERTY_OPTION_FIELDS_FRAGMENT}
   mutation createCustomPropertyOption($data: CustomPropertyOptionCreateInput!) {
