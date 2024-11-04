@@ -97,8 +97,7 @@ export class ResourceVersionService {
       await this.outdatedVersionAlertService.triggerAlertsForTemplateVersion(
         resourceId,
         previousVersion?.version,
-        args.data.version,
-        userId
+        args.data.version
       );
     } else if (resource.resourceType === EnumResourceType.PluginRepository) {
       await this.checkForAlertsForNewPrivatePluginVersions(
@@ -163,8 +162,7 @@ export class ResourceVersionService {
         await this.outdatedVersionAlertService.triggerAlertsForNewPluginVersion(
           resource.projectId,
           targetSettings.pluginId,
-          latestNewVersion.version,
-          userId
+          latestNewVersion.version
         );
       }
     }

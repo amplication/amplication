@@ -18,6 +18,7 @@ import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
 import { encryptString } from "../../util/encryptionUtil";
 import { ProjectService } from "../project/project.service";
+import { WorkspaceService } from "../workspace/workspace.service";
 
 @Injectable()
 export class OutdatedVersionAlertService {
@@ -31,7 +32,9 @@ export class OutdatedVersionAlertService {
     private readonly kafkaProducerService: KafkaProducerService,
     private readonly configService: ConfigService,
     @Inject(forwardRef(() => ProjectService))
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    @Inject(forwardRef(() => WorkspaceService))
+    private readonly workspaceService: WorkspaceService
   ) {}
 
   /**
@@ -39,7 +42,10 @@ export class OutdatedVersionAlertService {
    * @returns the outdatedVersionAlert object that return after prisma.outdatedVersionAlert.create
    */
   async create(
-    args: CreateOutdatedVersionAlertArgs
+    args: CreateOutdatedVersionAlertArgs,
+    projectId: string,
+    alertInitiator: string,
+    users: User[]
   ): Promise<OutdatedVersionAlert> {
     //update all previous alerts for the same resource and type that are still in status "new" to be canceled
     await this.prisma.outdatedVersionAlert.updateMany({
@@ -61,6 +67,43 @@ export class OutdatedVersionAlertService {
         status: EnumOutdatedVersionAlertStatus.New,
       },
     });
+
+    const resource = await this.resourceService.resource({
+      where: { id: outdatedVersionAlert.resourceId },
+    });
+
+    const project = await this.projectService.findFirst({
+      where: { id: projectId },
+    });
+
+    for (const user of users) {
+      this.kafkaProducerService
+        .emitMessage(KAFKA_TOPICS.TECH_DEBT_CREATED_TOPIC, <
+          TechDebt.KafkaEvent
+        >{
+          key: {},
+          value: {
+            resourceId: resource.id,
+            resourceName: resource.name,
+            workspaceId: project.workspaceId,
+            projectId: resource.projectId,
+            createdAt: Date.now(),
+            techDebtId: outdatedVersionAlert.id,
+            envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
+            externalId: encryptString(user.id),
+            resourceType: resource.resourceType,
+            projectName: project.name,
+            alertType: outdatedVersionAlert.type,
+            alertInitiator: alertInitiator,
+          },
+        })
+        .catch((error) =>
+          this.logger.error(
+            `Failed to queue tech debt for service ${resource.id}`,
+            error
+          )
+        );
+    }
 
     return outdatedVersionAlert;
   }
@@ -111,8 +154,7 @@ export class OutdatedVersionAlertService {
   async triggerAlertsForTemplateVersion(
     templateResourceId: string,
     outdatedVersion: string,
-    latestVersion: string,
-    userId: string
+    latestVersion: string
   ) {
     const template = await this.resourceService.resource({
       where: {
@@ -132,13 +174,14 @@ export class OutdatedVersionAlertService {
       );
     }
 
-    const workspace = await this.resourceService.getResourceWorkspace(
-      templateResourceId
-    );
-
     const project = await this.projectService.findFirst({
       where: { id: template.projectId },
     });
+
+    const workspaceUsers = await this.workspaceService.findWorkspaceUsers({
+      where: { id: project.workspaceId },
+    });
+
     //find all services using this template
     const services = await this.resourceService.resources({
       where: {
@@ -158,45 +201,23 @@ export class OutdatedVersionAlertService {
             null
           );
 
-        const alert = await this.create({
-          data: {
-            resource: {
-              connect: {
-                id: service.id,
+        await this.create(
+          {
+            data: {
+              resource: {
+                connect: {
+                  id: service.id,
+                },
               },
+              type: EnumOutdatedVersionAlertType.TemplateVersion,
+              outdatedVersion: currentTemplateVersion.version,
+              latestVersion,
             },
-            type: EnumOutdatedVersionAlertType.TemplateVersion,
-            outdatedVersion: currentTemplateVersion.version,
-            latestVersion,
           },
-        });
-
-        this.kafkaProducerService
-          .emitMessage(KAFKA_TOPICS.TECH_DEBT_CREATED_TOPIC, <
-            TechDebt.KafkaEvent
-          >{
-            key: {},
-            value: {
-              resourceId: service.id,
-              resourceName: service.name,
-              workspaceId: workspace.id,
-              projectId: template.projectId,
-              createdAt: Date.now(),
-              techDebtId: alert.id,
-              envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
-              externalId: encryptString(userId),
-              resourceType: service.resourceType,
-              projectName: project.name,
-              alertType: alert.type,
-              alertInitiator: template.name,
-            },
-          })
-          .catch((error) =>
-            this.logger.error(
-              `Failed to queue tech debt for service ${service.id}`,
-              error
-            )
-          );
+          project.id,
+          template.name,
+          workspaceUsers
+        );
       }
     }
   }
@@ -212,8 +233,7 @@ export class OutdatedVersionAlertService {
   async triggerAlertsForNewPluginVersion(
     projectId: string,
     pluginId: string,
-    newVersion: string,
-    userId: string
+    newVersion: string
   ) {
     //get all plugin installations in the project with the pluginId
     const pluginInstallations =
@@ -232,56 +252,34 @@ export class OutdatedVersionAlertService {
       where: { id: projectId },
     });
 
+    const workspaceUsers = await this.workspaceService.findWorkspaceUsers({
+      where: { id: project.workspaceId },
+    });
+
     //create outdatedVersionAlert for each service
     for (const pluginInstallation of pluginInstallations) {
-      const alert = await this.create({
-        data: {
-          resource: {
-            connect: {
-              id: pluginInstallation.resourceId,
+      await this.create(
+        {
+          data: {
+            resource: {
+              connect: {
+                id: pluginInstallation.resourceId,
+              },
             },
-          },
-          block: {
-            connect: {
-              id: pluginInstallation.id,
+            block: {
+              connect: {
+                id: pluginInstallation.id,
+              },
             },
+            type: EnumOutdatedVersionAlertType.PluginVersion,
+            outdatedVersion: pluginInstallation.version,
+            latestVersion: newVersion,
           },
-          type: EnumOutdatedVersionAlertType.PluginVersion,
-          outdatedVersion: pluginInstallation.version,
-          latestVersion: newVersion,
         },
-      });
-
-      const resource = await this.resourceService.resource({
-        where: { id: alert.resourceId },
-      });
-
-      this.kafkaProducerService
-        .emitMessage(KAFKA_TOPICS.TECH_DEBT_CREATED_TOPIC, <
-          TechDebt.KafkaEvent
-        >{
-          key: {},
-          value: {
-            resourceId: pluginInstallation.resourceId,
-            resourceName: resource.name,
-            workspaceId: project.workspaceId,
-            projectId: projectId,
-            createdAt: Date.now(),
-            techDebtId: alert.id,
-            envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
-            externalId: encryptString(userId),
-            resourceType: resource.resourceType,
-            projectName: project.name,
-            alertType: alert.type,
-            alertInitiator: pluginInstallation.displayName,
-          },
-        })
-        .catch((error) =>
-          this.logger.error(
-            `Failed to queue tech debt for plugin ${pluginInstallation.id}`,
-            error
-          )
-        );
+        projectId,
+        pluginInstallation.displayName,
+        workspaceUsers
+      );
     }
   }
 

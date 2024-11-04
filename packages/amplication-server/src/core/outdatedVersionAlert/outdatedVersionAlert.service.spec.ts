@@ -1,6 +1,6 @@
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Project, Resource, Workspace } from "../../models";
+import { Project, Resource, User, Workspace } from "../../models";
 import { PrismaService } from "../../prisma/prisma.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { ResourceService } from "../resource/resource.service";
@@ -14,10 +14,10 @@ import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { ConfigService } from "@nestjs/config";
 import { OutdatedVersionAlert } from "./dto/OutdatedVersionAlert";
 import { TechDebt } from "@amplication/schema-registry";
+import { WorkspaceService } from "../workspace/workspace.service";
 
 const EXAMPLE_RESOURCE_ID = "EXAMPLE_RESOURCE_ID";
 const EXAMPLE_TEMPLATE_RESOURCE_ID = "EXAMPLE_TEMPLATE_RESOURCE_ID";
-const EXAMPLE_USER_ID = "EXAMPLE_USER_ID";
 
 const EXAMPLE_RESOURCE: Resource = {
   id: EXAMPLE_RESOURCE_ID,
@@ -51,6 +51,21 @@ const EXAMPLE_ALERT: OutdatedVersionAlert = {
   status: "Canceled",
 };
 
+const EXAMPLE_USERS: User[] = [
+  {
+    id: "ExampleUserId",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    isOwner: false,
+  },
+  {
+    id: "ExampleUserId2",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    isOwner: true,
+  },
+];
+
 const EXAMPLE_WORKSPACE: Workspace = {
   id: "ExampleWorkspaceId",
   name: "ExampleWorkspaceName",
@@ -67,6 +82,10 @@ const resourceServiceResourceMock = jest.fn(() => {
 
 const projectServiceProjectMock = jest.fn(() => {
   return EXAMPLE_PROJECT;
+});
+
+const workspaceServiceUsersMock = jest.fn(() => {
+  return EXAMPLE_USERS;
 });
 
 const resourceServiceGetServiceTemplateSettingsMock = jest.fn(
@@ -138,6 +157,12 @@ describe("OutdatedVersionAlertService", () => {
           },
         },
         {
+          provide: WorkspaceService,
+          useValue: {
+            findWorkspaceUsers: workspaceServiceUsersMock,
+          },
+        },
+        {
           provide: ConfigService,
           useValue: {
             get: jest.fn(),
@@ -172,8 +197,7 @@ describe("OutdatedVersionAlertService", () => {
       service.triggerAlertsForTemplateVersion(
         templateResourceId,
         outdatedVersion,
-        latestVersion,
-        EXAMPLE_USER_ID
+        latestVersion
       )
     ).rejects.toThrow(
       `Cannot trigger alerts. Resource with id ${templateResourceId} is not a template`
@@ -191,8 +215,7 @@ describe("OutdatedVersionAlertService", () => {
       service.triggerAlertsForTemplateVersion(
         templateResourceId,
         outdatedVersion,
-        latestVersion,
-        EXAMPLE_USER_ID
+        latestVersion
       )
     ).rejects.toThrow(
       `Cannot trigger alerts. Template with id ${templateResourceId} not found`
@@ -212,11 +235,10 @@ describe("OutdatedVersionAlertService", () => {
     await service.triggerAlertsForTemplateVersion(
       templateResourceId,
       outdatedVersion,
-      latestVersion,
-      EXAMPLE_USER_ID
+      latestVersion
     );
 
-    expect(resourceServiceResourceMock).toHaveBeenCalledTimes(1);
+    expect(resourceServiceResourceMock).toHaveBeenCalledTimes(2);
     expect(resourceServiceResourceMock).toHaveBeenCalledWith({
       where: {
         id: EXAMPLE_TEMPLATE_RESOURCE_ID,

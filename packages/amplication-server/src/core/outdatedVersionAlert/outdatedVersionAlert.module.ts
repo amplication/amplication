@@ -10,6 +10,7 @@ import { BlockModule } from "../block/block.module";
 import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
 import { KafkaModule } from "@amplication/util/nestjs/kafka";
 import { ProjectModule } from "../project/project.module";
+import { WorkspaceModule } from "../workspace/workspace.module";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ProjectModule } from "../project/project.module";
     PluginInstallationModule,
     KafkaModule,
     forwardRef(() => ProjectModule),
+    forwardRef(() => WorkspaceModule),
   ],
   providers: [OutdatedVersionAlertService, OutdatedVersionAlertResolver],
   exports: [OutdatedVersionAlertService, OutdatedVersionAlertResolver],
