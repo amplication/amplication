@@ -10,7 +10,7 @@ import { OutdatedVersionAlert } from "./dto/OutdatedVersionAlert";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { UpdateOutdatedVersionAlertArgs } from "./dto/UpdateOutdatedVersionAlertArgs";
-import { User } from "../../models";
+import { Resource, User } from "../../models";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { KAFKA_TOPICS, TechDebt } from "@amplication/schema-registry";
@@ -77,35 +77,55 @@ export class OutdatedVersionAlertService {
     });
 
     for (const user of users) {
-      this.kafkaProducerService
-        .emitMessage(KAFKA_TOPICS.TECH_DEBT_CREATED_TOPIC, <
-          TechDebt.KafkaEvent
-        >{
-          key: {},
-          value: {
-            resourceId: resource.id,
-            resourceName: resource.name,
-            workspaceId: project.workspaceId,
-            projectId: resource.projectId,
-            createdAt: Date.now(),
-            techDebtId: outdatedVersionAlert.id,
-            envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
-            externalId: encryptString(user.id),
-            resourceType: resource.resourceType,
-            projectName: project.name,
-            alertType: outdatedVersionAlert.type,
-            alertInitiator: alertInitiator,
-          },
-        })
-        .catch((error) =>
-          this.logger.error(
-            `Failed to queue tech debt for service ${resource.id}`,
-            error
-          )
-        );
+      await this.raiseNotifications(
+        resource,
+        project.id,
+        project.name,
+        project.workspaceId,
+        outdatedVersionAlert.id,
+        outdatedVersionAlert.type,
+        alertInitiator,
+        user.id
+      );
     }
 
     return outdatedVersionAlert;
+  }
+
+  async raiseNotifications(
+    resource: Resource,
+    projectId: string,
+    projectName: string,
+    workspaceId: string,
+    alertId: string,
+    alertType: EnumOutdatedVersionAlertType,
+    alertInitiator: string,
+    userId: string
+  ) {
+    this.kafkaProducerService
+      .emitMessage(KAFKA_TOPICS.TECH_DEBT_CREATED_TOPIC, <TechDebt.KafkaEvent>{
+        key: {},
+        value: {
+          resourceId: resource.id,
+          resourceName: resource.name,
+          workspaceId: workspaceId,
+          projectId: projectId,
+          createdAt: Date.now(),
+          techDebtId: alertId,
+          envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
+          externalId: encryptString(userId),
+          resourceType: resource.resourceType,
+          projectName: projectName,
+          alertType: alertType,
+          alertInitiator: alertInitiator,
+        },
+      })
+      .catch((error) =>
+        this.logger.error(
+          `Failed to queue tech debt for service ${resource.id}`,
+          error
+        )
+      );
   }
 
   async resolvesServiceTemplateUpdated({
