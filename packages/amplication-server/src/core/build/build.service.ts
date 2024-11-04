@@ -688,7 +688,9 @@ export class BuildService {
       if (privatePlugin.version !== "latest") {
         pluginsToDownload.push({
           pluginId: privatePlugin.pluginId,
-          pluginVersion: privatePlugin.version,
+          pluginVersion: privatePlugin.version.includes("dev")
+            ? null
+            : privatePlugin.version,
           requestedFullPackageName: `${privatePlugin.pluginId}@${privatePlugin.version}`,
         });
         continue;
