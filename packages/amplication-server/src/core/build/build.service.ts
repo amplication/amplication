@@ -702,7 +702,7 @@ export class BuildService {
 
       const sortedEnabledVersions = privatePluginBlock.versions
         .filter(
-          (version) => version.enabled && !version.version.includes("dev")
+          (version) => version.enabled && !version.version.includes("dev") //todo: move to const
         )
         .sort((a, b) => compareBuild(b.version, a.version));
 
