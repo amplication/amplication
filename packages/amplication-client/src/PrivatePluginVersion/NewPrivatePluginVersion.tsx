@@ -96,22 +96,13 @@ const NewPrivatePluginVersion = ({ privatePlugin, onVersionAdd }: Props) => {
             itemsAlign={EnumItemsAlign.Center}
             contentAlign={EnumContentAlign.Start}
             end={
-              <FlexItem direction={EnumFlexDirection.Row}>
-                <Button
-                  buttonStyle={EnumButtonStyle.Outline}
-                  onClick={() => handleSubmit(false)}
-                  disabled={loading}
-                >
-                  Add Version
-                </Button>
-                <Button
-                  buttonStyle={EnumButtonStyle.Outline}
-                  onClick={() => handleSubmit(true)}
-                  disabled={loading}
-                >
-                  Add Dev Version
-                </Button>
-              </FlexItem>
+              <Button
+                buttonStyle={EnumButtonStyle.Outline}
+                onClick={() => handleSubmit(false)}
+                disabled={loading}
+              >
+                Add Version
+              </Button>
             }
           >
             <Label text="New version" />
