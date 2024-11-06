@@ -10,7 +10,7 @@ import { OutdatedVersionAlert } from "./dto/OutdatedVersionAlert";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { UpdateOutdatedVersionAlertArgs } from "./dto/UpdateOutdatedVersionAlertArgs";
-import { Resource, User } from "../../models";
+import { User } from "../../models";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { KAFKA_TOPICS, TechDebt } from "@amplication/schema-registry";
@@ -43,9 +43,7 @@ export class OutdatedVersionAlertService {
    */
   async create(
     args: CreateOutdatedVersionAlertArgs,
-    projectId: string,
-    alertInitiator: string,
-    users: User[]
+    alertInitiator: string
   ): Promise<OutdatedVersionAlert> {
     //update all previous alerts for the same resource and type that are still in status "new" to be canceled
     await this.prisma.outdatedVersionAlert.updateMany({
@@ -68,64 +66,60 @@ export class OutdatedVersionAlertService {
       },
     });
 
-    const resource = await this.resourceService.resource({
-      where: { id: outdatedVersionAlert.resourceId },
-    });
-
-    const project = await this.projectService.findFirst({
-      where: { id: projectId },
-    });
-
-    for (const user of users) {
-      await this.raiseNotifications(
-        resource,
-        project.id,
-        project.name,
-        project.workspaceId,
-        outdatedVersionAlert.id,
-        outdatedVersionAlert.type,
-        alertInitiator,
-        user.id
-      );
-    }
+    await this.raiseNotifications(outdatedVersionAlert.id, alertInitiator);
 
     return outdatedVersionAlert;
   }
 
-  async raiseNotifications(
-    resource: Resource,
-    projectId: string,
-    projectName: string,
-    workspaceId: string,
-    alertId: string,
-    alertType: EnumOutdatedVersionAlertType,
-    alertInitiator: string,
-    userId: string
-  ) {
-    this.kafkaProducerService
-      .emitMessage(KAFKA_TOPICS.TECH_DEBT_CREATED_TOPIC, <TechDebt.KafkaEvent>{
-        key: {},
-        value: {
-          resourceId: resource.id,
-          resourceName: resource.name,
-          workspaceId: workspaceId,
-          projectId: projectId,
-          createdAt: Date.now(),
-          techDebtId: alertId,
-          envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
-          externalId: encryptString(userId),
-          resourceType: resource.resourceType,
-          projectName: projectName,
-          alertType: alertType,
-          alertInitiator: alertInitiator,
+  async raiseNotifications(alertId: string, alertInitiator: string) {
+    const alert = await this.prisma.outdatedVersionAlert.findFirst({
+      where: {
+        id: alertId,
+      },
+      include: {
+        resource: {
+          include: {
+            project: true,
+          },
         },
-      })
-      .catch((error) =>
-        this.logger.error(
-          `Failed to queue tech debt for service ${resource.id}`,
-          error
-        )
-      );
+      },
+    });
+
+    const { resource } = alert;
+    const { project } = resource;
+
+    const workspaceUsers = await this.workspaceService.findWorkspaceUsers({
+      where: { id: project.workspaceId },
+    });
+
+    for (const user of workspaceUsers) {
+      this.kafkaProducerService
+        .emitMessage(KAFKA_TOPICS.TECH_DEBT_CREATED_TOPIC, <
+          TechDebt.KafkaEvent
+        >{
+          key: {},
+          value: {
+            resourceId: resource.id,
+            resourceName: resource.name,
+            workspaceId: project.workspaceId,
+            projectId: project.id,
+            createdAt: Date.now(),
+            techDebtId: alertId,
+            envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
+            externalId: encryptString(user.id),
+            resourceType: resource.resourceType,
+            projectName: project.name,
+            alertType: alert.type,
+            alertInitiator: alertInitiator,
+          },
+        })
+        .catch((error) =>
+          this.logger.error(
+            `Failed to queue tech debt for service ${resource.id}`,
+            error
+          )
+        );
+    }
   }
 
   async resolvesServiceTemplateUpdated({
@@ -194,14 +188,6 @@ export class OutdatedVersionAlertService {
       );
     }
 
-    const project = await this.projectService.findFirst({
-      where: { id: template.projectId },
-    });
-
-    const workspaceUsers = await this.workspaceService.findWorkspaceUsers({
-      where: { id: project.workspaceId },
-    });
-
     //find all services using this template
     const services = await this.resourceService.resources({
       where: {
@@ -234,9 +220,7 @@ export class OutdatedVersionAlertService {
               latestVersion,
             },
           },
-          project.id,
-          template.name,
-          workspaceUsers
+          template.name
         );
       }
     }
@@ -268,14 +252,6 @@ export class OutdatedVersionAlertService {
         }
       );
 
-    const project = await this.projectService.findFirst({
-      where: { id: projectId },
-    });
-
-    const workspaceUsers = await this.workspaceService.findWorkspaceUsers({
-      where: { id: project.workspaceId },
-    });
-
     //create outdatedVersionAlert for each service
     for (const pluginInstallation of pluginInstallations) {
       await this.create(
@@ -296,9 +272,7 @@ export class OutdatedVersionAlertService {
             latestVersion: newVersion,
           },
         },
-        projectId,
-        pluginInstallation.displayName,
-        workspaceUsers
+        pluginInstallation.displayName
       );
     }
   }
