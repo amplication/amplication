@@ -29,6 +29,15 @@ const EXAMPLE_RESOURCE: Resource = {
   resourceType: EnumResourceType.Service,
   gitRepositoryOverride: false,
   licensed: true,
+  projectId: "exampleProjectId",
+  project: {
+    id: "exampleProjectId",
+    name: "exampleProject",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    useDemoRepo: false,
+    licensed: false,
+  },
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -49,6 +58,7 @@ const EXAMPLE_ALERT: OutdatedVersionAlert = {
   outdatedVersion: "",
   latestVersion: "",
   status: "Canceled",
+  resource: EXAMPLE_RESOURCE,
 };
 
 const EXAMPLE_USERS: User[] = [
@@ -123,6 +133,7 @@ describe("OutdatedVersionAlertService", () => {
             outdatedVersionAlert: {
               updateMany: prismaServiceOutdatedVersionAlertUpdateManyMock,
               create: prismaServiceOutdatedVersionAlertCreateMock,
+              findFirst: prismaServiceOutdatedVersionAlertCreateMock,
             },
           })),
         },
@@ -238,7 +249,7 @@ describe("OutdatedVersionAlertService", () => {
       latestVersion
     );
 
-    expect(resourceServiceResourceMock).toHaveBeenCalledTimes(2);
+    expect(resourceServiceResourceMock).toHaveBeenCalledTimes(1);
     expect(resourceServiceResourceMock).toHaveBeenCalledWith({
       where: {
         id: EXAMPLE_TEMPLATE_RESOURCE_ID,
@@ -280,7 +291,7 @@ describe("OutdatedVersionAlertService", () => {
     });
 
     expect(prismaServiceOutdatedVersionAlertCreateMock).toHaveBeenCalledTimes(
-      1
+      2
     );
     expect(prismaServiceOutdatedVersionAlertCreateMock).toHaveBeenCalledWith({
       data: {
