@@ -76,6 +76,11 @@ const NewPrivatePluginVersion = ({ privatePlugin, onVersionAdd }: Props) => {
     [createPrivatePluginVersion, newVersion, privatePlugin, onVersionAdd]
   );
 
+  const devVersion = useMemo(() => {
+    if (!privatePlugin) return [];
+    return privatePlugin.versions?.find((v) => v.version.includes("dev"));
+  }, [privatePlugin]);
+
   const errorMessage = formatError(error);
 
   return (
@@ -96,13 +101,24 @@ const NewPrivatePluginVersion = ({ privatePlugin, onVersionAdd }: Props) => {
             itemsAlign={EnumItemsAlign.Center}
             contentAlign={EnumContentAlign.Start}
             end={
-              <Button
-                buttonStyle={EnumButtonStyle.Outline}
-                onClick={() => handleSubmit(false)}
-                disabled={loading}
-              >
-                Add Version
-              </Button>
+              <FlexItem direction={EnumFlexDirection.Row}>
+                <Button
+                  buttonStyle={EnumButtonStyle.Outline}
+                  onClick={() => handleSubmit(false)}
+                  disabled={loading}
+                >
+                  Add Version
+                </Button>
+                {!devVersion && (
+                  <Button
+                    buttonStyle={EnumButtonStyle.Outline}
+                    onClick={() => handleSubmit(true)}
+                    disabled={loading}
+                  >
+                    Add Dev Version
+                  </Button>
+                )}
+              </FlexItem>
             }
           >
             <Label text="New version" />
