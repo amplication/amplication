@@ -5,6 +5,7 @@ export const TEAM_FIELDS_FRAGMENT = gql`
     id
     name
     description
+    color
     members {
       id
       account {

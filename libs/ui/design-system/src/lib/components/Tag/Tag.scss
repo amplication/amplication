@@ -1,0 +1,13 @@
+@import "../../style/index.scss";
+
+$vertical-spacing: 0px;
+$tag-border-radius: 2px;
+
+.amp-tag {
+  padding: $vertical-spacing var(--default-spacing);
+  border-radius: $tag-border-radius;
+  border-width: 1px;
+  border-style: solid;
+
+  font-size: var(--tag-font-size);
+}

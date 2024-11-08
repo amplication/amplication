@@ -1,21 +1,24 @@
-import React, { useCallback, useMemo } from "react";
-import { useField, ErrorMessage } from "formik";
-import { Icon } from "../Icon/Icon";
 import classNames from "classnames";
+import { ErrorMessage, useField } from "formik";
+import { useCallback, useMemo } from "react";
+import { Icon } from "../Icon/Icon";
 
 import Select, {
-  OptionProps,
   GroupBase,
   MultiValue,
+  MultiValueGenericProps,
+  OptionProps,
   SingleValue,
+  SingleValueProps,
 } from "react-select";
 import Creatable from "react-select/creatable";
-import { OptionItem } from "../types";
-import { LABEL_CLASS, LABEL_VALUE_CLASS } from "../constants";
+import { LABEL_CLASS } from "../constants";
 import { Props as InputToolTipProps } from "../InputTooltip/InputTooltip";
+import { OptionItem } from "../types";
 
-import "./SelectField.scss";
 import { Label } from "../Label/Label";
+import { Tag } from "../Tag/Tag";
+import "./SelectField.scss";
 
 export type Props = {
   label: string;
@@ -126,7 +129,11 @@ export const SelectField = ({
           />
         ) : (
           <Select
-            components={{ Option: CustomOption }}
+            components={{
+              Option: CustomOption,
+              MultiValueLabel: CustomMultiValueLabel,
+              SingleValue: CustomSingleValue,
+            }}
             className="select-field__container"
             classNamePrefix="select-field"
             {...field}
@@ -141,6 +148,41 @@ export const SelectField = ({
       </label>
       <ErrorMessage name={name} component="div" className="text-input__error" />
     </div>
+  );
+};
+
+const DEFAULT_TAG_COLOR = "transparent";
+const CustomMultiValueLabel = <
+  Option,
+  IsMulti extends boolean,
+  Group extends GroupBase<Option>
+>(
+  props: MultiValueGenericProps<Option, IsMulti, Group>
+) => {
+  const { data, innerProps } = props;
+
+  const color = (data as unknown as OptionItem).color || DEFAULT_TAG_COLOR;
+  const label = (data as unknown as OptionItem).label;
+
+  return <Tag {...innerProps} value={label} color={color} />;
+};
+
+const CustomSingleValue = <
+  Option,
+  IsMulti extends boolean,
+  Group extends GroupBase<Option>
+>(
+  props: SingleValueProps<Option, IsMulti, Group>
+) => {
+  const { data, innerProps } = props;
+
+  const color = (data as unknown as OptionItem).color;
+  const label = (data as unknown as OptionItem).label;
+
+  return color ? (
+    <Tag {...innerProps} value={label} color={color} />
+  ) : (
+    <div {...innerProps}>{label}</div>
   );
 };
 
@@ -164,6 +206,7 @@ const CustomOption = <
   } = props;
 
   const icon = (data as unknown as OptionItem).icon;
+  const color = (data as unknown as OptionItem).color;
 
   return (
     <div
@@ -180,8 +223,14 @@ const CustomOption = <
       aria-disabled={isDisabled}
       {...innerProps}
     >
-      {icon && <Icon icon={icon} />}
-      {children}
+      {color ? (
+        <Tag value={children} color={color} />
+      ) : (
+        <>
+          {icon && <Icon icon={icon} />}
+          {children}
+        </>
+      )}
     </div>
   );
 };

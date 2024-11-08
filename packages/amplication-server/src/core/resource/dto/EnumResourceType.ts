@@ -6,6 +6,7 @@ export enum EnumResourceType {
   MessageBroker = "MessageBroker",
   PluginRepository = "PluginRepository",
   ServiceTemplate = "ServiceTemplate",
+  Component = "Component",
 }
 
 registerEnumType(EnumResourceType, { name: "EnumResourceType" });

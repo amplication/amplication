@@ -33,6 +33,7 @@ export enum EnumEventType {
   ServiceTemplateCreate = "createServiceTemplate",
   CreateServiceFromTemplate = "createServiceFromTemplate",
   ResourceVersionCreate = "createResourceVersion",
+  ComponentCreate = "createComponent",
 
   //Import Prisma Schema
   ImportPrismaSchemaStart = "importPrismaSchemaStart",
@@ -58,4 +59,9 @@ export enum EnumEventType {
   TeamDelete = "TeamDelete",
   TeamAddMembers = "TeamAddMembers",
   TeamRemoveMembers = "TeamRemoveMembers",
+
+  //Teams
+  CustomPropertyCreate = "CustomPropertyCreate",
+  CustomPropertyUpdate = "CustomPropertyUpdate",
+  CustomPropertyDelete = "CustomPropertyDelete",
 }

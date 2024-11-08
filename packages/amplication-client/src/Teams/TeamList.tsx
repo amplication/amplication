@@ -21,6 +21,7 @@ import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import useTeams from "./hooks/useTeams";
 import NewTeam from "./NewTeam";
+import { TeamInfo } from "../Components/TeamInfo";
 
 const CLASS_NAME = "team-list";
 
@@ -103,7 +104,8 @@ export const TeamList = React.memo(({ selectFirst = false }: Props) => {
                 </Text>
               }
             >
-              <span>{team.name}</span>
+              <TeamInfo team={team} />
+              {/* <span>{team.name}</span> */}
             </FlexItem>
           </InnerTabLink>
         ))}

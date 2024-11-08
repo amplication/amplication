@@ -1,4 +1,9 @@
-import { Form, TextField } from "@amplication/ui/design-system";
+import {
+  ColorPicker,
+  ColorPickerField,
+  Form,
+  TextField,
+} from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import { omit } from "lodash";
 import { useMemo } from "react";
@@ -59,20 +64,34 @@ const TeamForm = ({ onSubmit, defaultValues }: Props) => {
   }, [defaultValues]);
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validate={(values: models.Team) => validate(values, FORM_SCHEMA)}
-      enableReinitialize
-      onSubmit={onSubmit}
-    >
-      <Form childrenAsBlocks>
-        <FormikAutoSave debounceMS={1000} />
+    <>
+      <Formik
+        initialValues={initialValues}
+        validate={(values: models.Team) => validate(values, FORM_SCHEMA)}
+        enableReinitialize
+        onSubmit={onSubmit}
+      >
+        <Form childrenAsBlocks>
+          <FormikAutoSave debounceMS={1000} />
 
-        <DisplayNameField name="name" label="Name" minLength={1} />
+          <DisplayNameField name="name" label="Name" minLength={1} />
 
-        <TextField name="description" label="Description" textarea rows={3} />
-      </Form>
-    </Formik>
+          <TextField name="description" label="Description" textarea rows={3} />
+        </Form>
+      </Formik>
+      <Formik
+        initialValues={initialValues}
+        validate={(values: models.Team) => validate(values, FORM_SCHEMA)}
+        enableReinitialize
+        onSubmit={onSubmit}
+      >
+        <Form childrenAsBlocks>
+          <FormikAutoSave debounceMS={0} />
+
+          <ColorPickerField name="color" label="Color" />
+        </Form>
+      </Formik>
+    </>
   );
 };
 

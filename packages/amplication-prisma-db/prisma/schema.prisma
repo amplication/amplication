@@ -47,6 +47,7 @@ model Workspace {
   projects                  Project[]
   AwsMarketplaceIntegration AwsMarketplaceIntegration?
   teams                     Team[]
+  customProperties          CustomProperty[]
 }
 
 model Project {
@@ -147,6 +148,7 @@ model Team {
   workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   deletedAt   DateTime?
   ownerships  Ownership[]
+  color       String?
 
   @@unique([workspaceId, name], map: "Team.workspaceId_name_unique")
 }
@@ -206,8 +208,10 @@ model Resource {
   outdatedVersionAlerts OutdatedVersionAlert[]
   ownershipId           String?
   ownership             Ownership?                   @relation(fields: [ownershipId], references: [id], onDelete: Cascade)
+  properties            Json?
 
   @@unique([projectId, name], map: "Resource.projectId_name_unique")
+  @@index([properties(ops: JsonbOps)], type: Gin)
 }
 
 model ResourceRole {
@@ -737,6 +741,7 @@ enum EnumResourceType {
   MessageBroker
   PluginRepository
   ServiceTemplate
+  Component
 }
 
 enum EnumGitProvider {
@@ -767,4 +772,29 @@ enum PreviewAccountType {
   None
   BreakingTheMonolith
   PreviewOnboarding
+}
+
+model CustomProperty {
+  id          String             @id @default(cuid())
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  deletedAt   DateTime?
+  name        String
+  key         String
+  description String?
+  enabled     Boolean            @default(true)
+  type        CustomPropertyType
+  workspaceId String
+  workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  options     Json?
+
+  @@unique([workspaceId, key], map: "CustomProperty.workspaceId_key_unique")
+  @@unique([workspaceId, name], map: "CustomProperty.workspaceId_name_unique")
+}
+
+enum CustomPropertyType {
+  Text
+  Link
+  Select
+  MultiSelect
 }
