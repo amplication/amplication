@@ -666,12 +666,47 @@ export class EntityService {
 
       try {
         if (existingEntities && existingEntities[name]) {
-          const entity = await this.entity({
+          const existingEntity = await this.entity({
             where: {
               id: existingEntities[name].id,
             },
           });
-          entities.push(entity);
+
+          //delete all existing fields that are not in the new schema
+          const existingFields = await this.getFields(
+            existingEntities[name].id,
+            {}
+          );
+
+          //filter out fields that are not FK holders
+          const existingFieldsNames = existingFields
+            .filter((field) => {
+              const skip =
+                field.dataType === EnumDataType.Lookup &&
+                (field.properties as unknown as types.Lookup).fkHolder !==
+                  field.permanentId;
+
+              return !skip;
+            })
+            .map((field) => field.name);
+
+          const newFields = entity.fields.map((field) => field.name);
+
+          const fieldsToDelete = existingFieldsNames.filter(
+            (field) => !newFields.includes(field)
+          );
+
+          for (const field of fieldsToDelete) {
+            await this.deleteField(
+              {
+                where: { id: existingEntities[name].fields[field].id },
+              },
+              user,
+              EnumRelatedFieldStrategy.Delete
+            );
+          }
+
+          entities.push(existingEntity);
         } else {
           const newEntity = await this.createOneEntity(
             {
