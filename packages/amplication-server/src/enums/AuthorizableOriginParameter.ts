@@ -26,4 +26,5 @@ export enum AuthorizableOriginParameter {
   UserActionId,
   OutdatedVersionAlertId,
   TeamId,
+  CustomPropertyId,
 }
