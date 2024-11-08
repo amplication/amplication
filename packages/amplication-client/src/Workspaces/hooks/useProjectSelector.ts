@@ -40,7 +40,8 @@ const useProjectSelector = (
     useState<models.Resource>();
   const {
     data: projectListData,
-    loading: loadingList,
+    loading: projectListLoading,
+    error: projectListError,
     refetch,
   } = useQuery<{
     projects: models.Project[];
@@ -93,14 +94,14 @@ const useProjectSelector = (
   }, []);
 
   useEffect(() => {
-    if (loadingList || !projectListData) return;
+    if (projectListLoading || !projectListData) return;
 
     const sortedProjects = [...projectListData.projects].sort((a, b) => {
       return Date.parse(b.createdAt) - Date.parse(a.createdAt);
     });
 
     setProjectList(sortedProjects);
-  }, [projectListData, loadingList]);
+  }, [projectListData, projectListLoading]);
 
   useEffect(() => {
     if (currentProject || project || !projectsList.length) return;
@@ -165,11 +166,13 @@ const useProjectSelector = (
           resource.resourceType === models.EnumResourceType.ProjectConfiguration
       )
     );
-  }, [project, projectRedirect, projectsList]);
+  }, [project, projectRedirect, projectsList, refetch, projectListData]);
 
   return {
     currentProject,
     projectsList,
+    projectListLoading,
+    projectListError,
     createProject,
     onNewProjectCompleted,
     currentProjectConfiguration,
