@@ -1,10 +1,10 @@
 import { TabItem } from "@amplication/ui/design-system";
 import React from "react";
 import { match } from "react-router-dom";
+import Catalog from "../Catalog/Catalog";
 import PageLayout from "../Layout/PageLayout";
 import useTabRoutes from "../Layout/useTabRoutes";
 import { AppRouteProps } from "../routes/routesUtil";
-import ResourceList from "./ResourceList";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -32,7 +32,7 @@ const WorkspacePage: React.FC<Props> = ({
       {match.isExact || currentRouteIsTab ? (
         <>
           <PageLayout className={moduleClass} tabs={tabItems}>
-            {match.isExact ? <ResourceList /> : tabRoutes}
+            {match.isExact ? <Catalog /> : tabRoutes}
           </PageLayout>
         </>
       ) : (
