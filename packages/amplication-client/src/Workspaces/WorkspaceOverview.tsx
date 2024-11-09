@@ -69,7 +69,7 @@ export const WorkspaceOverview = () => {
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
       <FlexItem
         itemsAlign={EnumItemsAlign.Center}
-        start={<TabContentTitle title="Workspace" />}
+        start={<TabContentTitle title="Workspace Projects" />}
         end={<AddNewProject projectsLength={projectsList.length} />}
         margin={EnumFlexItemMargin.None}
       />
@@ -113,7 +113,7 @@ export const WorkspaceOverview = () => {
                 icon="users"
                 buttonStyle={EnumButtonStyle.Text}
                 as={Link}
-                to={`/${currentWorkspace.id}/members`}
+                to={`/${currentWorkspace.id}/settings/members`}
               >
                 {membersCount} members
               </Button>

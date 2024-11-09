@@ -17,11 +17,7 @@ const useProjectSelector = (
   } | null = useRouteMatch<{ workspace: string }>(
     "/:workspace([A-Za-z0-9-]{20,})"
   );
-  const workspaceUtil = useRouteMatch([
-    "/:workspace([A-Za-z0-9-]{20,})/settings",
-    "/:workspace([A-Za-z0-9-]{20,})/members",
-    "/:workspace([A-Za-z0-9-]{20,})/purchase",
-  ]);
+
   const projectMatch: {
     params: { workspace: string; project: string };
   } | null = useRouteMatch<{ workspace: string; project: string }>([
@@ -126,7 +122,7 @@ const useProjectSelector = (
       });
     }
 
-    !!(!workspaceUtil && currentWorkspace?.id) &&
+    !!currentWorkspace?.id &&
       (isFromSignup || isSignupCookieExist) &&
       history.push(`/${currentWorkspace?.id}/${projectsList[0].id}/welcome`);
   }, [
@@ -138,7 +134,6 @@ const useProjectSelector = (
     projectRedirect,
     projectsList,
     workspace,
-    workspaceUtil,
   ]);
 
   useEffect(() => {
