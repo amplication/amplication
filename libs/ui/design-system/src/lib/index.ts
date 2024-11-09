@@ -100,7 +100,10 @@ export { TimeSince } from "./components/TimeSince/TimeSince";
 
 export type { Props as TimeSinceProps } from "./components/TimeSince/TimeSince";
 
-export { CircleBadge } from "./components/CircleBadge/CircleBadge";
+export {
+  CircleBadge,
+  EnumCircleBadgeStyle,
+} from "./components/CircleBadge/CircleBadge";
 
 export type { Props as CircleBadgeProps } from "./components/CircleBadge/CircleBadge";
 
@@ -274,10 +277,12 @@ export {
   DataGridSortColumn,
   DataGridSortOrder,
   ExpandableDataGridRow,
+  DataGridFilterProps,
 } from "./components/DataGrid/DataGrid";
 
 export { DataGridRowExpander } from "./components/DataGrid/DataGridRowExpander";
 export { DataGridColumnFilter } from "./components/DataGrid/DataGridColumnFilter";
+export { DataGridFilters } from "./components/DataGrid/DataGridFilters";
 
 export {
   ToggleView,
