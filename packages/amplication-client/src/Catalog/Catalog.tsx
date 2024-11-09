@@ -4,6 +4,7 @@ import {
   DataGrid,
   DataGridColumn,
   DataGridColumnFilter,
+  DataGridFilters,
   EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
@@ -16,7 +17,7 @@ import {
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
-import { isEmpty } from "lodash";
+import { filter, isEmpty } from "lodash";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import CreateResourceButton from "../Components/CreateResourceButton";
@@ -35,6 +36,7 @@ import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import "./Catalog.scss";
 import { RESOURCE_LIST_COLUMNS } from "./CatalogDataColumns";
 import useCatalog from "./hooks/useCatalog";
+import { CustomPropertyFilter } from "../CustomProperties/CustomPropertyFilter";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
@@ -51,6 +53,8 @@ function Catalog() {
         name: property.name,
         resizable: true,
         sortable: true,
+        filterable: true,
+        filter: CustomPropertyFilter,
         hidden: false,
         renderCell: (props) => {
           return (
@@ -83,8 +87,7 @@ function Catalog() {
     overrideIsPlatformConsole: true,
   });
 
-  const { catalog, loading, error, setPropertiesFilter, setSearchPhrase } =
-    useCatalog();
+  const { catalog, loading, error, setFilter, setSearchPhrase } = useCatalog();
 
   const servicesLength = useMemo(
     () =>
@@ -147,8 +150,7 @@ function Catalog() {
         }
       ></FlexItem>
       <HorizontalRule doubleSpacing />
-
-      <CustomPropertyFilters onChange={setPropertiesFilter} />
+      <DataGridFilters columns={columns} onChange={setFilter} />
 
       {isEmpty(catalog) && !loading ? (
         <EmptyState

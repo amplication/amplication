@@ -1,18 +1,14 @@
 import * as models from "../models";
 
-import { EnumTextStyle, Text } from "@amplication/ui/design-system";
-import { Link } from "react-router-dom";
-import "./ResourceNameLink.scss";
-import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import { useMemo } from "react";
+import DataGridLink from "../Components/DataGridLink";
 import { EnumResourceType } from "../models";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type Props = {
   resource: models.Resource;
 };
-
-const CLASS_NAME = "resource-name-link";
 
 function ResourceNameLink({ resource }: Props) {
   const { id, name, resourceType } = resource;
@@ -43,11 +39,7 @@ function ResourceNameLink({ resource }: Props) {
     }
   }, [baseUrl, projectBaseUrl, resourceType]);
 
-  return (
-    <Link className={CLASS_NAME} to={to}>
-      <Text textStyle={EnumTextStyle.Tag}>{name}</Text>
-    </Link>
-  );
+  return <DataGridLink to={to} text={name} />;
 }
 
 export default ResourceNameLink;

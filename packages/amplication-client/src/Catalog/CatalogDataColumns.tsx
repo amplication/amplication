@@ -15,6 +15,8 @@ import ResourceLastBuildVersion from "../Workspaces/ResourceLastBuildVersion";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import ResourcePendingChangesCount from "../Workspaces/ResourcePendingChangesCount";
 import ResourceOwner from "../Workspaces/ResourceOwner";
+import ProjectNameLink from "../Workspaces/ProjectNameLink";
+import { ProjectFilter } from "./ProjectFilter";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -39,6 +41,18 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     renderCell: (props) => {
       return <ResourceNameLink resource={props.row} />;
     },
+  },
+  {
+    key: "projectId",
+    name: "Project",
+    resizable: true,
+    sortable: true,
+    filterable: true,
+    filter: ProjectFilter,
+    renderCell: (props) => {
+      return <ProjectNameLink project={props.row.project} />;
+    },
+    getValue: (row) => row.project?.name ?? "",
   },
   {
     key: "owner",

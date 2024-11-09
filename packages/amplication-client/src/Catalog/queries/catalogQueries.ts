@@ -17,6 +17,10 @@ export const SEARCH_CATALOG = gql`
       licensed
       projectId
       properties
+      project {
+        id
+        name
+      }
       owner {
         ... on User {
           id

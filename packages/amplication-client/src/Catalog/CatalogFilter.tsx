@@ -1,6 +1,5 @@
 import {
   Button,
-  DataGridFilterProps,
   EnumGapSize,
   EnumItemsAlign,
   EnumTextColor,
@@ -15,30 +14,30 @@ import {
 } from "@amplication/ui/design-system";
 import { useMemo } from "react";
 import { EnumButtonStyle } from "../Components/Button";
-import { useAppContext } from "../context/appContext";
-import "./CustomPropertyFilter.scss";
-import CustomPropertyValueSelect from "./CustomPropertyValueSelect";
+import "./CatalogFilter.scss";
 
-const CLASS_NAME = "custom-property-filter";
+const CLASS_NAME = "catalog-filter";
 
-export const CustomPropertyFilter = ({
-  columnKey,
+type Props = {
+  filterKey: string;
+  filterLabel: string;
+  options: OptionItem[];
+  onChange: (filterKey: string, value: string) => void;
+  onRemove: (filterKey: string) => void;
+  selectedValue: string;
+};
+
+export const CatalogFilter = ({
+  filterKey,
+  filterLabel,
+  options,
   selectedValue,
   onChange,
   onRemove,
-}: DataGridFilterProps) => {
-  const { customPropertiesMap } = useAppContext();
-  const customProperty = customPropertiesMap[columnKey];
-
-  const options = useMemo(() => {
-    return customProperty.options.map(
-      (option): OptionItem => ({
-        value: option.value,
-        label: option.value,
-        color: option.color,
-      })
-    );
-  }, [customProperty.options]);
+}: Props) => {
+  const selectedItem = useMemo(() => {
+    return options.find((option) => option.value === selectedValue);
+  }, [options, selectedValue]);
 
   return (
     <div className={CLASS_NAME}>
@@ -46,7 +45,7 @@ export const CustomPropertyFilter = ({
         buttonStyle={EnumButtonStyle.Text}
         icon="close"
         onClick={() => {
-          onRemove(customProperty.key);
+          onRemove(filterKey);
         }}
       ></Button>
       <SelectMenu
@@ -56,15 +55,14 @@ export const CustomPropertyFilter = ({
               textColor={EnumTextColor.Black20}
               textStyle={EnumTextStyle.Tag}
             >
-              {customProperty.name}
+              {filterLabel}
             </Text>
-            {null === selectedValue ? (
+            {!selectedItem ? (
               <span className={`${CLASS_NAME}__show-all`}>All</span>
             ) : (
-              <CustomPropertyValueSelect
-                property={customProperty}
-                value={selectedValue}
-              />
+              <span className={`${CLASS_NAME}__show-all`}>
+                {selectedItem.label}
+              </span>
             )}
           </FlexItem>
         }
@@ -75,7 +73,7 @@ export const CustomPropertyFilter = ({
             <SelectMenuItem
               closeAfterSelectionChange
               selected={null === selectedValue}
-              onSelectionChange={() => onChange(customProperty.key, null)}
+              onSelectionChange={() => onChange(filterKey, null)}
             >
               All
             </SelectMenuItem>
@@ -84,14 +82,9 @@ export const CustomPropertyFilter = ({
                 closeAfterSelectionChange
                 key={option.value}
                 selected={option.value === selectedValue}
-                onSelectionChange={() =>
-                  onChange(customProperty.key, option.value)
-                }
+                onSelectionChange={() => onChange(filterKey, option.value)}
               >
-                <CustomPropertyValueSelect
-                  property={customProperty}
-                  value={option.value}
-                />
+                {option.label}
               </SelectMenuItem>
             ))}
           </SelectMenuList>
