@@ -7,7 +7,7 @@ import { Panel, Props as PanelProps } from "../Panel/Panel";
 import "./PanelCollapsible.scss";
 
 export type Props = {
-  onCollapseChange?: (open: boolean) => Record<string, unknown>;
+  onCollapseChange?: (open: boolean) => void;
   /**Whether the panel is initially open or not */
   initiallyOpen?: boolean;
   /**When true the user cannot collapse manually, and the collapse button is hidden  */
