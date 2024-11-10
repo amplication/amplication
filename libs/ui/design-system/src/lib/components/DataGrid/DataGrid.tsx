@@ -28,7 +28,7 @@ export type DataGridSortColumn = {
   [key: string]: DataGridSortOrder;
 };
 
-export type DataGridFilterProps = {
+export type DataGridRenderFilterProps = {
   key: string;
   columnKey: string;
   label: string;
@@ -42,7 +42,7 @@ export type DataGridColumn<T> = Column<T> & {
   hidden?: boolean;
   filterable?: boolean;
   name: string;
-  filter?: (props: DataGridFilterProps) => ReactNode;
+  renderFilter?: (props: DataGridRenderFilterProps) => ReactNode;
 };
 
 export type ExpandableDataGridRow<T> = T & {

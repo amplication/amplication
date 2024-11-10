@@ -1,6 +1,6 @@
 import {
   DataGridColumn,
-  DataGridFilterProps,
+  DataGridRenderFilterProps,
   EnumButtonStyle,
   EnumFlexDirection,
   EnumFlexItemMargin,
@@ -104,7 +104,7 @@ export function DataGridFilters<T>({ onChange, columns }: Props<T>) {
       className={CLASS_NAME}
     >
       {visibleFilters.map((key) => {
-        const columnFilter = columnsMap[key]?.filter;
+        const columnFilter = columnsMap[key]?.renderFilter;
 
         return (
           <Fragment key={key}>
@@ -167,8 +167,8 @@ export function DataGridFilters<T>({ onChange, columns }: Props<T>) {
   );
 }
 
-type FilterComponentProps = DataGridFilterProps & {
-  columnFilter: (props: DataGridFilterProps) => ReactNode;
+type FilterComponentProps = DataGridRenderFilterProps & {
+  columnFilter: (props: DataGridRenderFilterProps) => ReactNode;
 };
 
 // Separate component to avoid conditional hooks rendering
