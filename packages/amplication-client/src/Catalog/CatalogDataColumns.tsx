@@ -18,6 +18,7 @@ import ResourceOwner from "../Workspaces/ResourceOwner";
 import ProjectNameLink from "../Workspaces/ProjectNameLink";
 import { ProjectFilter } from "./ProjectFilter";
 import { ResourceTypeFilter } from "./ResourceTypeFilter";
+import { OwnerFilter } from "./OwnerFilter";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -58,10 +59,12 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     getValue: (row) => row.project?.name ?? "",
   },
   {
-    key: "owner",
+    key: "ownership",
     name: "Owner",
     resizable: true,
     sortable: true,
+    filterable: true,
+    renderFilter: OwnerFilter,
     renderCell: (props) => {
       return <ResourceOwner resource={props.row} />;
     },
