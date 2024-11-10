@@ -412,10 +412,7 @@ export function handleModelNamesCollision(
   let counter = 0;
 
   do {
-    isFormattedModelNameAlreadyTaken ||=
-      existingEntities.hasOwnProperty(newName);
-
-    isFormattedModelNameAlreadyTaken = modelList.some(
+    isFormattedModelNameAlreadyTaken ||= modelList.some(
       (modelFromList) => modelFromList.name === newName
     );
 
