@@ -55,22 +55,31 @@ const NewPrivatePluginVersion = ({ privatePlugin, onVersionAdd }: Props) => {
     }
   }, [latestVersion, version]);
 
-  const handleSubmit = useCallback(() => {
-    createPrivatePluginVersion({
-      variables: {
-        data: {
-          version: newVersion,
-          privatePlugin: { connect: { id: privatePlugin.id } },
+  const handleSubmit = useCallback(
+    (isDevVersion: boolean) => {
+      const nextVersion = isDevVersion ? `${newVersion}-dev` : newVersion;
+      createPrivatePluginVersion({
+        variables: {
+          data: {
+            version: nextVersion,
+            privatePlugin: { connect: { id: privatePlugin.id } },
+          },
         },
-      },
-    })
-      .catch(console.error)
-      .then(() => {
-        if (onVersionAdd) {
-          onVersionAdd(privatePlugin);
-        }
-      });
-  }, [createPrivatePluginVersion, newVersion, privatePlugin, onVersionAdd]);
+      })
+        .catch(console.error)
+        .then(() => {
+          if (onVersionAdd) {
+            onVersionAdd(privatePlugin);
+          }
+        });
+    },
+    [createPrivatePluginVersion, newVersion, privatePlugin, onVersionAdd]
+  );
+
+  const devVersion = useMemo(() => {
+    if (!privatePlugin) return [];
+    return privatePlugin.versions?.find((v) => v.version.includes("dev"));
+  }, [privatePlugin]);
 
   const errorMessage = formatError(error);
 
@@ -92,13 +101,24 @@ const NewPrivatePluginVersion = ({ privatePlugin, onVersionAdd }: Props) => {
             itemsAlign={EnumItemsAlign.Center}
             contentAlign={EnumContentAlign.Start}
             end={
-              <Button
-                buttonStyle={EnumButtonStyle.Outline}
-                onClick={handleSubmit}
-                disabled={loading}
-              >
-                Add Version
-              </Button>
+              <FlexItem direction={EnumFlexDirection.Row}>
+                <Button
+                  buttonStyle={EnumButtonStyle.Outline}
+                  onClick={() => handleSubmit(false)}
+                  disabled={loading}
+                >
+                  Add Version
+                </Button>
+                {!devVersion && (
+                  <Button
+                    buttonStyle={EnumButtonStyle.Outline}
+                    onClick={() => handleSubmit(true)}
+                    disabled={loading}
+                  >
+                    Add Dev Version
+                  </Button>
+                )}
+              </FlexItem>
             }
           >
             <Label text="New version" />

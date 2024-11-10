@@ -34,6 +34,8 @@ export type PrivatePluginBlockVersionSettings =
     versions: PrivatePluginVersion[];
   };
 
+export const PRIVATE_PLUGIN_DEV_VERSION = "0.0.1-dev";
+
 @Injectable()
 export class PrivatePluginService extends BlockTypeService<
   PrivatePlugin,
@@ -124,7 +126,19 @@ export class PrivatePluginService extends BlockTypeService<
   ): Promise<PrivatePlugin> {
     await this.validateLicense(user.workspace?.id);
 
-    return super.create(args, user);
+    const privatePlugin = await super.create(args, user);
+
+    await this.createVersion(
+      {
+        data: {
+          version: PRIVATE_PLUGIN_DEV_VERSION,
+          privatePlugin: { connect: { id: privatePlugin.id } },
+        },
+      },
+      user
+    );
+
+    return privatePlugin;
   }
 
   async validateLicense(workspaceId: string): Promise<void> {
