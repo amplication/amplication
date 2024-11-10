@@ -412,7 +412,7 @@ export function handleModelNamesCollision(
   let counter = 0;
 
   do {
-    isFormattedModelNameAlreadyTaken ||= modelList.some(
+    isFormattedModelNameAlreadyTaken = modelList.some(
       (modelFromList) => modelFromList.name === newName
     );
 
