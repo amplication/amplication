@@ -12,6 +12,13 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { UpdateOutdatedVersionAlertArgs } from "./dto/UpdateOutdatedVersionAlertArgs";
 import { User } from "../../models";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { KAFKA_TOPICS, TechDebt } from "@amplication/schema-registry";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
+import { encryptString } from "../../util/encryptionUtil";
+import { ProjectService } from "../project/project.service";
+import { WorkspaceService } from "../workspace/workspace.service";
 
 @Injectable()
 export class OutdatedVersionAlertService {
@@ -21,7 +28,13 @@ export class OutdatedVersionAlertService {
     private readonly resourceService: ResourceService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
-    private readonly pluginInstallationService: PluginInstallationService
+    private readonly pluginInstallationService: PluginInstallationService,
+    private readonly kafkaProducerService: KafkaProducerService,
+    private readonly configService: ConfigService,
+    @Inject(forwardRef(() => ProjectService))
+    private readonly projectService: ProjectService,
+    @Inject(forwardRef(() => WorkspaceService))
+    private readonly workspaceService: WorkspaceService
   ) {}
 
   /**
@@ -29,7 +42,8 @@ export class OutdatedVersionAlertService {
    * @returns the outdatedVersionAlert object that return after prisma.outdatedVersionAlert.create
    */
   async create(
-    args: CreateOutdatedVersionAlertArgs
+    args: CreateOutdatedVersionAlertArgs,
+    alertInitiator: string
   ): Promise<OutdatedVersionAlert> {
     //update all previous alerts for the same resource and type that are still in status "new" to be canceled
     await this.prisma.outdatedVersionAlert.updateMany({
@@ -52,7 +66,60 @@ export class OutdatedVersionAlertService {
       },
     });
 
+    await this.raiseNotifications(outdatedVersionAlert.id, alertInitiator);
+
     return outdatedVersionAlert;
+  }
+
+  async raiseNotifications(alertId: string, alertInitiator: string) {
+    const alert = await this.prisma.outdatedVersionAlert.findFirst({
+      where: {
+        id: alertId,
+      },
+      include: {
+        resource: {
+          include: {
+            project: true,
+          },
+        },
+      },
+    });
+
+    const { resource } = alert;
+    const { project } = resource;
+
+    const workspaceUsers = await this.workspaceService.findWorkspaceUsers({
+      where: { id: project.workspaceId },
+    });
+
+    for (const user of workspaceUsers) {
+      this.kafkaProducerService
+        .emitMessage(KAFKA_TOPICS.TECH_DEBT_CREATED_TOPIC, <
+          TechDebt.KafkaEvent
+        >{
+          key: {},
+          value: {
+            resourceId: resource.id,
+            resourceName: resource.name,
+            workspaceId: project.workspaceId,
+            projectId: project.id,
+            createdAt: Date.now(),
+            techDebtId: alertId,
+            envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
+            externalId: encryptString(user.id),
+            resourceType: resource.resourceType,
+            projectName: project.name,
+            alertType: alert.type,
+            alertInitiator: alertInitiator,
+          },
+        })
+        .catch((error) =>
+          this.logger.error(
+            `Failed to queue tech debt for service ${resource.id}`,
+            error
+          )
+        );
+    }
   }
 
   async resolvesServiceTemplateUpdated({
@@ -140,18 +207,21 @@ export class OutdatedVersionAlertService {
             null
           );
 
-        await this.create({
-          data: {
-            resource: {
-              connect: {
-                id: service.id,
+        await this.create(
+          {
+            data: {
+              resource: {
+                connect: {
+                  id: service.id,
+                },
               },
+              type: EnumOutdatedVersionAlertType.TemplateVersion,
+              outdatedVersion: currentTemplateVersion.version,
+              latestVersion,
             },
-            type: EnumOutdatedVersionAlertType.TemplateVersion,
-            outdatedVersion: currentTemplateVersion.version,
-            latestVersion,
           },
-        });
+          template.name
+        );
       }
     }
   }
@@ -184,23 +254,26 @@ export class OutdatedVersionAlertService {
 
     //create outdatedVersionAlert for each service
     for (const pluginInstallation of pluginInstallations) {
-      await this.create({
-        data: {
-          resource: {
-            connect: {
-              id: pluginInstallation.resourceId,
+      await this.create(
+        {
+          data: {
+            resource: {
+              connect: {
+                id: pluginInstallation.resourceId,
+              },
             },
-          },
-          block: {
-            connect: {
-              id: pluginInstallation.id,
+            block: {
+              connect: {
+                id: pluginInstallation.id,
+              },
             },
+            type: EnumOutdatedVersionAlertType.PluginVersion,
+            outdatedVersion: pluginInstallation.version,
+            latestVersion: newVersion,
           },
-          type: EnumOutdatedVersionAlertType.PluginVersion,
-          outdatedVersion: pluginInstallation.version,
-          latestVersion: newVersion,
         },
-      });
+        pluginInstallation.displayName
+      );
     }
   }
 
