@@ -2056,6 +2056,7 @@ input ProjectWhereInput {
   deletedAt: DateTimeFilter
   id: String
   name: StringFilter
+  platformIsPublic: BooleanFilter
 }
 
 type PropertySelector {
@@ -2120,6 +2121,7 @@ type Query {
   Get the changes to apply to the model in order to break a resource into microservices
   """
   finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
+  findProjectAvailableTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: WhereUniqueInput!): [Resource!]!
   getEvaluationInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!, timeGroup: EnumTimeGroup = Month): EvaluationInsights!
   getUsageInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!, timeGroup: EnumTimeGroup = Month): UsageInsightsResult!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!

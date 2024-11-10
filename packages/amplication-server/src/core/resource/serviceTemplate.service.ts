@@ -16,27 +16,32 @@ import {
 import { kebabCase } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { EnumBlockType } from "../../enums/EnumBlockType";
+import { PrismaService } from "../../prisma";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { BlockMergeOptions } from "../block/dto/BlockMergeOptions";
+import { BlockSettingsProperties } from "../block/types";
 import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
 import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ProjectService } from "../project/project.service";
 import { ResourceVersionsDiffBlock } from "../resourceVersion/dto/ResourceVersionsDiffBlock";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 import { TemplateCodeEngineVersion } from "../templateCodeEngineVersion/dto/TemplateCodeEngineVersion";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
-import { BlockSettingsProperties } from "../block/types";
+import { FindAvailableTemplatesForProjectArgs } from "./dto/FindAvailableTemplatesForProjectArgs";
 
 @Injectable()
 export class ServiceTemplateService {
   constructor(
+    private readonly prisma: PrismaService,
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly analyticsService: SegmentAnalyticsService,
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly logger: AmplicationLogger,
     private readonly resourceService: ResourceService,
     private readonly resourceVersionService: ResourceVersionService,
-    private readonly outdatedVersionAlertService: OutdatedVersionAlertService
+    private readonly outdatedVersionAlertService: OutdatedVersionAlertService,
+    private readonly projectService: ProjectService
   ) {}
 
   /**
@@ -76,6 +81,7 @@ export class ServiceTemplateService {
     return resource;
   }
 
+  //return the list of templates in the project
   async serviceTemplates(args: FindManyResourceArgs): Promise<Resource[]> {
     return this.resourceService.resources({
       ...args,
@@ -91,23 +97,75 @@ export class ServiceTemplateService {
   }
 
   /**
+   * Return the list of templates available for resources in the project,
+   * including the ones that are available from other public projects.
+   * Only returns templates that have versions (published templates)
+   * @param args
+   * @param user
+   * @returns
+   */
+
+  async availableServiceTemplatesForProject(
+    args: FindAvailableTemplatesForProjectArgs,
+    user: User
+  ): Promise<Resource[]> {
+    const workspaceId = user.workspace.id;
+
+    const publicProjects = await this.projectService.findProjects({
+      where: {
+        workspace: {
+          id: workspaceId,
+        },
+        platformIsPublic: {
+          equals: true,
+        },
+      },
+    });
+
+    return this.prisma.resource.findMany({
+      ...args,
+      where: {
+        projectId: {
+          in: [...publicProjects.map((project) => project.id), args.where.id],
+        },
+        deletedAt: null,
+        archived: { not: true },
+        resourceType: {
+          equals: EnumResourceType.ServiceTemplate,
+        },
+        resourceVersions: {
+          //only return templates that have versions
+          some: {},
+        },
+      },
+    });
+  }
+
+  /**
    * Create a resource of type "Service" from a Service Template
    */
   async createServiceFromTemplate(
     args: CreateServiceFromTemplateArgs,
     user: User
   ): Promise<Resource> {
-    const serviceTemplates = await this.resourceService.resources({
-      where: {
-        id: args.data.serviceTemplate.id,
-        resourceType: {
-          equals: EnumResourceType.ServiceTemplate,
+    const serviceTemplates = await this.availableServiceTemplatesForProject(
+      {
+        where: {
+          id: args.data.project.connect.id,
         },
-        projectId: args.data.project.connect.id, //make sure the service template is in the same project
       },
-    });
+      user
+    );
 
     if (!serviceTemplates || serviceTemplates.length === 0) {
+      throw new AmplicationError(`Service template not found`);
+    }
+    //check that the selected template belongs to the project and available for the user
+    if (
+      serviceTemplates.find(
+        (template) => template.id === args.data.serviceTemplate.id
+      ) === undefined
+    ) {
       throw new AmplicationError(`Service template not found`);
     }
 
