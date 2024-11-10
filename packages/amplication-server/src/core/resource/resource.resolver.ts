@@ -72,7 +72,10 @@ export class ResourceResolver {
     nullable: false,
   })
   @Roles("ORGANIZATION_ADMIN")
-  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "where.project.id")
+  @InjectContextValue(
+    InjectableOriginParameter.WorkspaceId,
+    "where.project.workspace.id"
+  )
   async resources(@Args() args: FindManyResourceArgs): Promise<Resource[]> {
     return this.resourceService.resources(args);
   }

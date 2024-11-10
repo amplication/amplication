@@ -1593,14 +1593,16 @@ export class ResourceService {
 
     let resourceIds: string[] = undefined;
     if (serviceTemplateId) {
-      if (!args.where?.project?.id) {
+      const workspaceId = args.where?.project?.workspace?.id;
+      if (!workspaceId) {
+        //workspace.id is expected to be injected in the resolver middleware. It may be missing in internal calls
         throw new Error(
-          "project.id is required when searching by serviceTemplateId"
+          "project.workspace.id is required when searching by serviceTemplateId"
         );
       }
 
       resourceIds = await this.serviceSettingsService.getServiceIdsByTemplateId(
-        args.where.project.id,
+        workspaceId,
         serviceTemplateId
       );
     }

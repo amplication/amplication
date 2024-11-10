@@ -122,7 +122,6 @@ const useServiceTemplate = (
     findResourcesByTemplateInternal({
       variables: {
         where: {
-          project: { id: currentProject?.id },
           serviceTemplateId: templateId,
         },
       },
