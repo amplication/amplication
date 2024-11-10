@@ -10,6 +10,7 @@ type Props = {
 function ServiceTemplateChip({ serviceTemplate }: Props) {
   const { baseUrl } = useResourceBaseUrl({
     overrideResourceId: serviceTemplate?.id,
+    overrideProjectId: serviceTemplate?.projectId,
     overrideIsPlatformConsole: true,
   });
 

@@ -420,8 +420,8 @@ const useResources = (
   const createServiceFromTemplate = (
     data: models.ServiceFromTemplateCreateInput
   ) => {
-    createServiceFromTemplateInternal({ variables: { data: data } }).then(
-      (result) => {
+    createServiceFromTemplateInternal({ variables: { data: data } })
+      .then((result) => {
         result.data?.createServiceFromTemplate.id &&
           reloadResources().then(() => {
             resourceRedirect(
@@ -430,8 +430,8 @@ const useResources = (
             result.data?.createServiceFromTemplate.id &&
               addBlock(result.data.createServiceFromTemplate.id);
           });
-      }
-    );
+      })
+      .catch(console.error);
   };
   // ***** end section Create Service From Template *****
 
