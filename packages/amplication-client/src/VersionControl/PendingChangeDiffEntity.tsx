@@ -92,7 +92,16 @@ function getEntityVersionYAML(data: TData | undefined): string {
   const entityVersions = data?.entity?.versions;
   if (!entityVersions || entityVersions.length === 0) return "";
 
-  return YAML.stringify(omitDeep(entityVersions[0], NON_COMPARABLE_PROPERTIES));
+  const versionWithSortedField = {
+    ...entityVersions[0],
+    fields: entityVersions[0].fields.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    ),
+  };
+
+  return YAML.stringify(
+    omitDeep(versionWithSortedField, NON_COMPARABLE_PROPERTIES)
+  );
 }
 
 export default PendingChangeDiffEntity;
