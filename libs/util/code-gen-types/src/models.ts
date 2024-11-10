@@ -2656,6 +2656,7 @@ export type Project = {
   id: Scalars['String']['output'];
   licensed: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  platformIsPublic?: Maybe<Scalars['Boolean']['output']>;
   resources?: Maybe<Array<Resource>>;
   updatedAt: Scalars['DateTime']['output'];
   useDemoRepo: Scalars['Boolean']['output'];
@@ -2699,7 +2700,7 @@ export type ProjectOrderByInput = {
 };
 
 export type ProjectUpdateInput = {
-  name?: InputMaybe<Scalars['String']['input']>;
+  platformIsPublic?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type ProjectWhereInput = {

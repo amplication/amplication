@@ -2005,6 +2005,7 @@ type Project {
   id: String!
   licensed: Boolean!
   name: String!
+  platformIsPublic: Boolean
   resources: [Resource!]
   updatedAt: DateTime!
   useDemoRepo: Boolean!
@@ -2048,7 +2049,7 @@ input ProjectOrderByInput {
 }
 
 input ProjectUpdateInput {
-  name: String
+  platformIsPublic: Boolean
 }
 
 input ProjectWhereInput {
