@@ -88,7 +88,12 @@ const useCatalog = () => {
 
     const otherFilterObject = Object.entries(otherFilters).reduce(
       (acc, [key, value]) => {
-        if (value) {
+        if (key === "resourceType" && value) {
+          const filter: models.EnumResourceTypeFilter = {
+            equals: value as models.EnumResourceType,
+          };
+          acc[key] = filter;
+        } else if (value) {
           acc[key] = value;
         }
         return acc;

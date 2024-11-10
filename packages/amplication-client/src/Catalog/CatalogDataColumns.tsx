@@ -17,12 +17,15 @@ import ResourcePendingChangesCount from "../Workspaces/ResourcePendingChangesCou
 import ResourceOwner from "../Workspaces/ResourceOwner";
 import ProjectNameLink from "../Workspaces/ProjectNameLink";
 import { ProjectFilter } from "./ProjectFilter";
+import { ResourceTypeFilter } from "./ResourceTypeFilter";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
     key: "resourceType",
     name: "Type",
     width: 60,
+    filterable: true,
+    renderFilter: ResourceTypeFilter,
     renderCell: (props) => {
       return (
         <ResourceCircleBadge
