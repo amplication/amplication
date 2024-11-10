@@ -17,13 +17,13 @@ import {
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
-import { filter, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
-import { CustomPropertyFilters } from "../CustomProperties/CustomPropertyFilters";
+import { CustomPropertyFilter } from "../CustomProperties/CustomPropertyFilter";
 import CustomPropertyValue from "../CustomProperties/CustomPropertyValue";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
@@ -36,7 +36,6 @@ import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import "./Catalog.scss";
 import { RESOURCE_LIST_COLUMNS } from "./CatalogDataColumns";
 import useCatalog from "./hooks/useCatalog";
-import { CustomPropertyFilter } from "../CustomProperties/CustomPropertyFilter";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
@@ -47,30 +46,32 @@ function Catalog() {
   const { customPropertiesMap, currentProject } = useAppContext();
 
   const columnsWithAllProps = useMemo<DataGridColumn<models.Resource>[]>(() => {
-    const propCols = Object.values(customPropertiesMap).map((property) => {
-      return {
-        key: property.key,
-        name: property.name,
-        resizable: true,
-        sortable: true,
-        filterable: true,
-        filter: CustomPropertyFilter,
-        hidden: false,
-        renderCell: (props) => {
-          return (
-            <CustomPropertyValue
-              propertyKey={property.key}
-              allValues={props.row.properties}
-            />
-          );
-        },
-        getValue: (row) => {
-          return row.properties && row.properties[property.key]
-            ? row.properties[property.key]
-            : "";
-        },
-      };
-    });
+    const propCols = Object.values(customPropertiesMap).map(
+      (property): DataGridColumn<models.Resource> => {
+        return {
+          key: property.key,
+          name: property.name,
+          resizable: true,
+          sortable: true,
+          filterable: true,
+          renderFilter: CustomPropertyFilter,
+          hidden: false,
+          renderCell: (props) => {
+            return (
+              <CustomPropertyValue
+                propertyKey={property.key}
+                allValues={props.row.properties}
+              />
+            );
+          },
+          getValue: (row) => {
+            return row.properties && row.properties[property.key]
+              ? row.properties[property.key]
+              : "";
+          },
+        };
+      }
+    );
 
     const lastCol = RESOURCE_LIST_COLUMNS[RESOURCE_LIST_COLUMNS.length - 1];
     const otherCols = RESOURCE_LIST_COLUMNS.slice(0, -1);

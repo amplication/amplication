@@ -1,6 +1,6 @@
 import {
   Button,
-  DataGridFilterProps,
+  DataGridRenderFilterProps,
   EnumGapSize,
   EnumItemsAlign,
   EnumTextColor,
@@ -26,7 +26,7 @@ export const CustomPropertyFilter = ({
   selectedValue,
   onChange,
   onRemove,
-}: DataGridFilterProps) => {
+}: DataGridRenderFilterProps) => {
   const { customPropertiesMap } = useAppContext();
   const customProperty = customPropertiesMap[columnKey];
 

@@ -1,7 +1,10 @@
-import { DataGridFilterProps, OptionItem } from "@amplication/ui/design-system";
+import {
+  DataGridFilter,
+  DataGridRenderFilterProps,
+  OptionItem,
+} from "@amplication/ui/design-system";
 import { useCallback, useMemo } from "react";
 import { useAppContext } from "../context/appContext";
-import { CatalogFilter } from "./CatalogFilter";
 
 export const ProjectFilter = ({
   selectedValue,
@@ -9,7 +12,7 @@ export const ProjectFilter = ({
   onChange,
   onRemove,
   columnKey,
-}: DataGridFilterProps) => {
+}: DataGridRenderFilterProps) => {
   const { projectsList } = useAppContext();
 
   const options = useMemo(() => {
@@ -34,7 +37,7 @@ export const ProjectFilter = ({
 
   return (
     <>
-      <CatalogFilter
+      <DataGridFilter
         filterKey={columnKey}
         filterLabel={label}
         options={options}

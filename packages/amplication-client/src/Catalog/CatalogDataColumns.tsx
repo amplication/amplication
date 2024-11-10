@@ -48,7 +48,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     resizable: true,
     sortable: true,
     filterable: true,
-    filter: ProjectFilter,
+    renderFilter: ProjectFilter,
     renderCell: (props) => {
       return <ProjectNameLink project={props.row.project} />;
     },
