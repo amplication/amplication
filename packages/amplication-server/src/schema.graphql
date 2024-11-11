@@ -1716,6 +1716,11 @@ type Ownership {
   owner: Owner!
 }
 
+input OwnershipWhereInput {
+  teamId: String
+  userId: String
+}
+
 type Package implements IBlock {
   blockType: EnumBlockType!
   createdAt: DateTime!
@@ -2000,6 +2005,7 @@ type Project {
   id: String!
   licensed: Boolean!
   name: String!
+  platformIsPublic: Boolean
   resources: [Resource!]
   updatedAt: DateTime!
   useDemoRepo: Boolean!
@@ -2043,7 +2049,7 @@ input ProjectOrderByInput {
 }
 
 input ProjectUpdateInput {
-  name: String
+  platformIsPublic: Boolean
 }
 
 input ProjectWhereInput {
@@ -2099,6 +2105,7 @@ type Query {
   blocks(orderBy: BlockOrderByInput, skip: Int, take: Int, where: BlockWhereInput): [Block!]!
   build(where: WhereUniqueInput!): Build!
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
+  catalog(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput!): [Commit!]
   compareResourceVersions(where: CompareResourceVersionsWhereInput!): ResourceVersionsDiff!
@@ -2393,6 +2400,7 @@ input ResourceWhereInput {
   description: StringFilter
   id: String
   name: StringFilter
+  ownership: OwnershipWhereInput
   project: ProjectWhereInput
   projectId: String
   resourceType: EnumResourceTypeFilter
@@ -2405,6 +2413,7 @@ input ResourceWhereInputWithPropertiesFilter {
   description: StringFilter
   id: String
   name: StringFilter
+  ownership: OwnershipWhereInput
   project: ProjectWhereInput
   projectId: String
   properties: JsonPathStringFilter

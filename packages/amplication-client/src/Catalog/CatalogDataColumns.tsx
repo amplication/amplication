@@ -15,12 +15,18 @@ import ResourceLastBuildVersion from "../Workspaces/ResourceLastBuildVersion";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import ResourcePendingChangesCount from "../Workspaces/ResourcePendingChangesCount";
 import ResourceOwner from "../Workspaces/ResourceOwner";
+import ProjectNameLink from "../Workspaces/ProjectNameLink";
+import { ProjectFilter } from "./ProjectFilter";
+import { ResourceTypeFilter } from "./ResourceTypeFilter";
+import { OwnerFilter } from "./OwnerFilter";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
     key: "resourceType",
     name: "Type",
     width: 60,
+    filterable: true,
+    renderFilter: ResourceTypeFilter,
     renderCell: (props) => {
       return (
         <ResourceCircleBadge
@@ -41,10 +47,24 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     },
   },
   {
-    key: "owner",
+    key: "projectId",
+    name: "Project",
+    resizable: true,
+    sortable: true,
+    filterable: true,
+    renderFilter: ProjectFilter,
+    renderCell: (props) => {
+      return <ProjectNameLink project={props.row.project} />;
+    },
+    getValue: (row) => row.project?.name ?? "",
+  },
+  {
+    key: "ownership",
     name: "Owner",
     resizable: true,
     sortable: true,
+    filterable: true,
+    renderFilter: OwnerFilter,
     renderCell: (props) => {
       return <ResourceOwner resource={props.row} />;
     },

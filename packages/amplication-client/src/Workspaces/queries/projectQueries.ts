@@ -9,6 +9,7 @@ export const GET_PROJECTS = gql`
       useDemoRepo
       demoRepoName
       licensed
+      platformIsPublic
       resources {
         id
         name
