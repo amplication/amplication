@@ -1,9 +1,9 @@
-import { useLazyQuery, useQuery } from "@apollo/client";
-import { useCallback, useEffect, useState } from "react";
+import { useQuery } from "@apollo/client";
+import { useEffect, useState } from "react";
 import * as models from "../../models";
 
-import { SEARCH_CATALOG } from "../queries/catalogQueries";
 import { useAppContext } from "../../context/appContext";
+import { SEARCH_CATALOG } from "../queries/catalogQueries";
 
 const useCatalog = () => {
   const { customPropertiesMap } = useAppContext();
@@ -52,7 +52,7 @@ const useCatalog = () => {
         }
         return acc;
       },
-      [{}, {}]
+      [{} as Record<string, string>, {} as Record<string, string>]
     );
 
     const filterList: models.JsonPathStringFilterItem[] = Object.keys(
@@ -91,6 +91,15 @@ const useCatalog = () => {
         if (key === "resourceType" && value) {
           const filter: models.EnumResourceTypeFilter = {
             equals: value as models.EnumResourceType,
+          };
+          acc[key] = filter;
+        } else if (key === "ownership" && value) {
+          const values = value.split(":");
+          if (values.length !== 2 || !values[0] || !values[1]) {
+            return acc;
+          }
+          const filter: models.OwnershipWhereInput = {
+            [values[0]]: values[1],
           };
           acc[key] = filter;
         } else if (value) {

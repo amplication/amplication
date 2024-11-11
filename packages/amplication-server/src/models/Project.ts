@@ -50,4 +50,7 @@ export class Project {
 
   @Field(() => Boolean, { nullable: false, defaultValue: true })
   licensed: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  platformIsPublic?: boolean;
 }
