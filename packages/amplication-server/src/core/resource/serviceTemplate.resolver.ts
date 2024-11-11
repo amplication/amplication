@@ -3,15 +3,16 @@ import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { Roles } from "../../decorators/roles.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
+import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Resource, User } from "../../models";
-import { ServiceTemplateService } from "./serviceTemplate.service";
-import { CreateServiceTemplateArgs } from "./dto/CreateServiceTemplateArgs";
 import { FindManyResourceArgs } from "./dto";
 import { CreateServiceFromTemplateArgs } from "./dto/CreateServiceFromTemplateArgs";
-import { FindOneArgs } from "../../dto";
+import { CreateServiceTemplateArgs } from "./dto/CreateServiceTemplateArgs";
+import { FindAvailableTemplatesForProjectArgs } from "./dto/FindAvailableTemplatesForProjectArgs";
+import { ServiceTemplateService } from "./serviceTemplate.service";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -41,6 +42,18 @@ export class ServiceTemplateResolver {
     @Args() args: FindManyResourceArgs
   ): Promise<Resource[]> {
     return this.service.serviceTemplates(args);
+  }
+
+  @Query(() => [Resource], {
+    nullable: false,
+  })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "where.id")
+  async availableTemplatesForProject(
+    @Args() args: FindAvailableTemplatesForProjectArgs,
+    @UserEntity() user: User
+  ): Promise<Resource[]> {
+    return this.service.availableServiceTemplatesForProject(args, user);
   }
 
   @Mutation(() => Resource, { nullable: false })

@@ -1,10 +1,10 @@
 import { TabItem } from "@amplication/ui/design-system";
 import React from "react";
 import { match } from "react-router-dom";
+import Catalog from "../Catalog/Catalog";
 import PageLayout from "../Layout/PageLayout";
 import useTabRoutes from "../Layout/useTabRoutes";
 import { AppRouteProps } from "../routes/routesUtil";
-import WorkspaceOverview from "./WorkspaceOverview";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -23,7 +23,7 @@ const WorkspacePage: React.FC<Props> = ({
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
   const tabItems: TabItem[] = [
-    { name: "Overview", to: match.url, exact: true },
+    { name: "Workspace Catalog", to: match.url, exact: true },
     ...tabs,
   ];
 
@@ -32,7 +32,7 @@ const WorkspacePage: React.FC<Props> = ({
       {match.isExact || currentRouteIsTab ? (
         <>
           <PageLayout className={moduleClass} tabs={tabItems}>
-            {match.isExact ? <WorkspaceOverview /> : tabRoutes}
+            {match.isExact ? <Catalog /> : tabRoutes}
           </PageLayout>
         </>
       ) : (

@@ -34,63 +34,74 @@ export const Routes: RouteDef[] = [
         exactPath: false,
         tabRoutes: [
           {
-            path: "/:workspace([A-Za-z0-9-]{20,})/members",
-            Component: lazy(() => import("../Workspaces/MemberList")),
+            path: "/:workspace([A-Za-z0-9-]{20,})/projects",
+            Component: lazy(() => import("../Workspaces/WorkspaceOverview")),
             moduleName: "",
-            displayName: "Members",
-            exactPath: true,
-            routes: [],
-            isAnalytics: true,
-          },
-          {
-            path: "/:workspace([A-Za-z0-9-]{20,})/teams",
-            Component: lazy(() => import("../Teams/TeamsPage")),
-            moduleName: "",
-            displayName: "Teams",
+            displayName: "Projects",
             exactPath: false,
-            routes: [
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/teams/:team([A-Za-z0-9-]{20,})",
-                Component: lazy(() => import("../Teams/Team")),
-                moduleName: "",
-                displayName: "Team",
-                exactPath: true,
-                routes: [],
-                isAnalytics: true,
-              },
-            ],
-            isAnalytics: true,
-          },
-          {
-            path: "/:workspace([A-Za-z0-9-]{20,})/properties",
-            Component: lazy(
-              () => import("../CustomProperties/CustomPropertiesPage")
-            ),
-            moduleName: "",
-            displayName: "Properties",
-            exactPath: false,
-            routes: [
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/properties/:property([A-Za-z0-9-]{20,})",
-                Component: lazy(
-                  () => import("../CustomProperties/CustomProperty")
-                ),
-                moduleName: "",
-                displayName: "Property",
-                exactPath: true,
-                routes: [],
-                isAnalytics: true,
-              },
-            ],
             isAnalytics: true,
           },
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/settings",
-            Component: lazy(() => import("../Workspaces/WorkspaceForm")),
+            Component: lazy(
+              () => import("../Workspaces/WorkspaceSettingsPage")
+            ),
             moduleName: "",
             displayName: "Settings",
-            exactPath: true,
-            routes: [],
+            exactPath: false,
+            tabRoutes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/settings/members",
+                Component: lazy(() => import("../Workspaces/MemberList")),
+                moduleName: "",
+                displayName: "Members",
+                exactPath: true,
+                routes: [],
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/settings/teams",
+                Component: lazy(() => import("../Teams/TeamsPage")),
+                moduleName: "",
+                displayName: "Teams",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/teams/:team([A-Za-z0-9-]{20,})",
+                    Component: lazy(() => import("../Teams/Team")),
+                    moduleName: "",
+                    displayName: "Team",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                ],
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/settings/properties",
+                Component: lazy(
+                  () => import("../CustomProperties/CustomPropertiesPage")
+                ),
+                moduleName: "",
+                displayName: "Catalog Properties",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/properties/:property([A-Za-z0-9-]{20,})",
+                    Component: lazy(
+                      () => import("../CustomProperties/CustomProperty")
+                    ),
+                    moduleName: "",
+                    displayName: "Property",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                ],
+                isAnalytics: true,
+              },
+            ],
             isAnalytics: true,
           },
         ],
@@ -108,7 +119,7 @@ export const Routes: RouteDef[] = [
                   () => import("../PrivatePlugins/PrivatePluginsPage")
                 ),
                 moduleName: "",
-                displayName: "Private Plugins",
+                displayName: "Plugin Repository",
                 routeTrackType: "",
                 exactPath: false,
                 routes: [
@@ -169,6 +180,31 @@ export const Routes: RouteDef[] = [
                 routeTrackType: "",
                 exactPath: false,
                 routes: [],
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/settings",
+                Component: lazy(
+                  () => import("../Project/ProjectPlatformSettingsPage")
+                ),
+                moduleName: "PlatformSettings",
+                displayName: "Settings",
+                moduleClass: "platform-settings",
+                routeTrackType: "",
+                exactPath: false,
+                isAnalytics: true,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/settings/access",
+                    Component: lazy(
+                      () => import("../Project/ProjectAccessForm")
+                    ),
+                    moduleName: "ProjectPlatformAccess",
+                    moduleClass: "",
+                    routeTrackType: "",
+                    exactPath: false,
+                    isAnalytics: true,
+                  },
+                ],
               },
             ],
             routes: [

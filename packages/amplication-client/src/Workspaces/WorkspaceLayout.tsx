@@ -72,6 +72,8 @@ const WorkspaceLayout: React.FC<Props> = ({
     currentProject,
     createProject,
     projectsList,
+    projectListError,
+    projectListLoading,
     onNewProjectCompleted,
     currentProjectConfiguration,
   } = useProjectSelector(authenticated, currentWorkspace);
@@ -198,6 +200,8 @@ const WorkspaceLayout: React.FC<Props> = ({
         loadingCreateNewWorkspace,
         currentProject,
         projectsList,
+        projectListError,
+        projectListLoading,
         setNewProject: createProject,
         onNewProjectCompleted,
         resources,

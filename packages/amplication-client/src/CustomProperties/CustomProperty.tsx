@@ -21,10 +21,10 @@ import CustomPropertyOptionList from "./CustomPropertyOptions/CustomPropertyOpti
 const CustomProperty = () => {
   const match = useRouteMatch<{
     customPropertyId: string;
-  }>(["/:workspace/properties/:customPropertyId"]);
+  }>(["/:workspace/settings/properties/:customPropertyId"]);
 
   const { currentWorkspace } = useAppContext();
-  const baseUrl = `/${currentWorkspace?.id}`;
+  const baseUrl = `/${currentWorkspace?.id}/settings`;
   const history = useHistory();
 
   const { customPropertyId } = match?.params ?? {};
