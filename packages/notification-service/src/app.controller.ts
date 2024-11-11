@@ -50,4 +50,14 @@ export class AppController {
     const messageTopic = context.getTopic();
     return this.appService.notificationService(message, messageTopic);
   }
+
+  @EventPattern("platform.internal.tech-debt.created.1")
+  notifyTechDebt(
+    @Payload() message: { [key: string]: any },
+    @Ctx() context: KafkaContext
+  ) {
+    // validate message
+    const messageTopic = context.getTopic();
+    return this.appService.notificationService(message, messageTopic);
+  }
 }
