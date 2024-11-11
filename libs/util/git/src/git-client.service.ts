@@ -158,9 +158,10 @@ export class GitClientService {
 
     const pluginsByGitRef = pluginsToDownload.reduce(
       (acc: { [key: string]: string[] }, plugin) => {
-        const versionKey = plugin.pluginVersion
-          ? `${plugin.pluginId}@${plugin.pluginVersion}`
-          : baseBranch; // no version means use the base branch, otherwise use the version (tag/branch)
+        const versionKey =
+          plugin.pluginVersion && !plugin.pluginVersion.includes("dev")
+            ? `${plugin.pluginId}@${plugin.pluginVersion}`
+            : baseBranch; // no version means use the base branch, otherwise use the version (tag/branch)
         if (!acc[versionKey]) {
           acc[versionKey] = [];
         }

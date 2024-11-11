@@ -14,10 +14,12 @@ import {
   Field,
   Model,
 } from "@mrleebo/prisma-ast";
-import { Mapper } from "./types";
+import { ExistingEntitiesWithFieldsMap, Mapper } from "./types";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { EnumActionLogLevel } from "../action/dto";
 import { ActionContext } from "../userAction/types";
+
+const EXAMPLE_MODEL = [{ name: "Model1" }] as unknown as Model;
 
 describe("schema-utils", () => {
   beforeEach(() => {
@@ -57,7 +59,12 @@ describe("schema-utils", () => {
       } as unknown as Field;
       const dataType = EnumDataType.SingleLineText;
 
-      const result = createOneEntityFieldCommonProperties(field, dataType);
+      const result = createOneEntityFieldCommonProperties(
+        field,
+        dataType,
+        EXAMPLE_MODEL,
+        {}
+      );
 
       expect(result).toEqual({
         permanentId: expect.any(String),
@@ -84,6 +91,8 @@ describe("schema-utils", () => {
       const result = createOneEntityFieldCommonProperties(
         field,
         dataType,
+        EXAMPLE_MODEL,
+        {},
         "mongodb"
       );
 
@@ -109,7 +118,12 @@ describe("schema-utils", () => {
       } as unknown as Field;
       const dataType = EnumDataType.SingleLineText;
 
-      const result = createOneEntityFieldCommonProperties(field, dataType);
+      const result = createOneEntityFieldCommonProperties(
+        field,
+        dataType,
+        EXAMPLE_MODEL,
+        {}
+      );
 
       expect(result.unique).toEqual(true);
     });
@@ -122,7 +136,12 @@ describe("schema-utils", () => {
       } as unknown as Field;
       const dataType = EnumDataType.SingleLineText;
 
-      const result = createOneEntityFieldCommonProperties(field, dataType);
+      const result = createOneEntityFieldCommonProperties(
+        field,
+        dataType,
+        EXAMPLE_MODEL,
+        {}
+      );
 
       expect(result.required).toEqual(false);
     });
@@ -135,7 +154,12 @@ describe("schema-utils", () => {
       } as unknown as Field;
       const dataType = EnumDataType.Id;
 
-      const result = createOneEntityFieldCommonProperties(field, dataType);
+      const result = createOneEntityFieldCommonProperties(
+        field,
+        dataType,
+        EXAMPLE_MODEL,
+        {}
+      );
 
       expect(result.searchable).toEqual(true);
     });
@@ -148,7 +172,12 @@ describe("schema-utils", () => {
       } as unknown as Field;
       const dataType = EnumDataType.SingleLineText;
 
-      const result = createOneEntityFieldCommonProperties(field, dataType);
+      const result = createOneEntityFieldCommonProperties(
+        field,
+        dataType,
+        EXAMPLE_MODEL,
+        {}
+      );
 
       expect(result.customAttributes).toEqual('@map("_id") @db.ObjectId');
     });
@@ -451,7 +480,17 @@ describe("schema-utils", () => {
       { name: "Model1" },
       { name: "Model2" },
     ] as unknown as Model[];
-    const existingEntities = [{ name: "Entity1" }, { name: "Entity2" }];
+    const existingEntities: ExistingEntitiesWithFieldsMap = {
+      ["Entity1"]: {
+        id: "Entity1",
+        fields: {},
+      },
+      ["Entity2"]: {
+        id: "Entity2",
+        fields: {},
+      },
+    };
+
     const mapper = {
       modelNames: {
         name1: { newName: "NewName1" },
@@ -479,14 +518,14 @@ describe("schema-utils", () => {
       expect(result).toBe("Model1Model");
     });
 
-    it("should return the name with suffix if the original name collides with existing entities", () => {
+    it("should return the original name without suffix if the original name exist with existing entities", () => {
       const result = handleModelNamesCollision(
         modelList,
         existingEntities,
         mapper,
         "Entity1"
       );
-      expect(result).toBe("Entity1Model");
+      expect(result).toBe("Entity1");
     });
 
     it("should return the name with suffix if the original name collides with names in the mapper", () => {

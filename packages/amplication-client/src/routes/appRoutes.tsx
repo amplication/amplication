@@ -62,6 +62,29 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
+            path: "/:workspace([A-Za-z0-9-]{20,})/properties",
+            Component: lazy(
+              () => import("../CustomProperties/CustomPropertiesPage")
+            ),
+            moduleName: "",
+            displayName: "Properties",
+            exactPath: false,
+            routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/properties/:property([A-Za-z0-9-]{20,})",
+                Component: lazy(
+                  () => import("../CustomProperties/CustomProperty")
+                ),
+                moduleName: "",
+                displayName: "Property",
+                exactPath: true,
+                routes: [],
+                isAnalytics: true,
+              },
+            ],
+            isAnalytics: true,
+          },
+          {
             path: "/:workspace([A-Za-z0-9-]{20,})/settings",
             Component: lazy(() => import("../Workspaces/WorkspaceForm")),
             moduleName: "",
@@ -359,6 +382,17 @@ export const Routes: RouteDef[] = [
                 ),
                 moduleName: "CreateMessageBroker",
                 moduleClass: "create-message-broker",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-component",
+                Component: lazy(
+                  () => import("../Resource/create-component/CreateComponent")
+                ),
+                moduleName: "CreateComponent",
+                moduleClass: "create-component",
                 routeTrackType: "",
                 exactPath: true,
                 isAnalytics: true,

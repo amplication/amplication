@@ -41,7 +41,7 @@ import {
   isValidIdFieldType,
   lookupField,
 } from "./helpers";
-import { ExistingEntitySelect, Mapper } from "./types";
+import { ExistingEntitiesWithFieldsMap, Mapper } from "./types";
 import { CreateBulkFieldsInput } from "../entity/entity.service";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { EnumActionLogLevel } from "../action/dto";
@@ -78,6 +78,8 @@ export function getDatasourceProviderFromSchema(schema: string): string | null {
 export function createOneEntityFieldCommonProperties(
   field: Field,
   fieldDataType: EnumDataType,
+  model: Model,
+  existingEntities: ExistingEntitiesWithFieldsMap,
   datasourceProvider = null
 ): CreateBulkFieldsInput {
   const fieldDisplayName =
@@ -100,8 +102,14 @@ export function createOneEntityFieldCommonProperties(
     .filter((attr) => attr !== "@default()")
     .join(" ");
 
+  let permanentId = cuid();
+
+  if (existingEntities[model.name]?.fields[field.name]) {
+    permanentId = existingEntities[model.name].fields[field.name].permanentId;
+  }
+
   return {
-    permanentId: cuid(),
+    permanentId,
     name: field.name,
     displayName: fieldDisplayName,
     dataType: fieldDataType,
@@ -394,7 +402,7 @@ export function findFkFieldNameOnAnnotatedField(field: Field): string {
 
 export function handleModelNamesCollision(
   modelList: Model[],
-  existingEntities: ExistingEntitySelect[],
+  existingEntities: ExistingEntitiesWithFieldsMap,
   mapper: Mapper,
   formattedModelName: string
 ): string {
@@ -406,10 +414,6 @@ export function handleModelNamesCollision(
   do {
     isFormattedModelNameAlreadyTaken = modelList.some(
       (modelFromList) => modelFromList.name === newName
-    );
-
-    isFormattedModelNameAlreadyTaken ||= existingEntities.some(
-      (existingEntity) => existingEntity.name === newName
     );
 
     isFormattedModelNameAlreadyTaken ||= Object.values(mapper.modelNames).some(

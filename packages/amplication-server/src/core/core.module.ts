@@ -36,6 +36,7 @@ import { PackageModule } from "./package/package.module";
 import { ResourceVersionModule } from "./resourceVersion/resourceVersion.module";
 import { OutdatedVersionAlertModule } from "./outdatedVersionAlert/outdatedVersionAlert.module";
 import { TeamModule } from "./team/team.module";
+import { CustomPropertyModule } from "./customProperty/customProperty.module";
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { TeamModule } from "./team/team.module";
     ResourceVersionModule,
     OutdatedVersionAlertModule,
     TeamModule,
+    CustomPropertyModule,
   ],
   exports: [
     AccountModule,
@@ -112,6 +114,7 @@ import { TeamModule } from "./team/team.module";
     ResourceVersionModule,
     OutdatedVersionAlertModule,
     TeamModule,
+    CustomPropertyModule,
   ],
 })
 export class CoreModule {}

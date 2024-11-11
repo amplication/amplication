@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { EnumBuildGitStatus, Prisma, PrismaService } from "../../prisma";
 import { orderBy } from "lodash";
 import * as CodeGenTypes from "@amplication/code-gen-types";
-import { ResourceRole, User } from "../../models";
+import { Resource, ResourceRole, User } from "../../models";
 import { Build } from "./dto/Build";
 import { CreateBuildArgs } from "./dto/CreateBuildArgs";
 import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
@@ -534,8 +534,12 @@ export class BuildService {
 
         logger.info("Preparing build generation message");
 
+        const resource = await this.resourceService.resource({
+          where: { id: resourceId },
+        });
+
         const dsgResourceData = await this.getDSGResourceData(
-          resourceId,
+          resource,
           buildId,
           buildVersion,
           user
@@ -695,7 +699,9 @@ export class BuildService {
       );
 
       const sortedEnabledVersions = privatePluginBlock.versions
-        .filter((version) => version.enabled)
+        .filter(
+          (version) => version.enabled && !version.version.includes("dev") //todo: move to const
+        )
         .sort((a, b) => compareBuild(b.version, a.version));
 
       const pluginVersion = sortedEnabledVersions[0];
@@ -1082,7 +1088,7 @@ export class BuildService {
     }
 
     const dSGResourceData = await this.getDSGResourceData(
-      build.resourceId,
+      resource,
       build.id,
       build.version,
       user
@@ -1315,19 +1321,13 @@ export class BuildService {
   }
 
   async getDSGResourceData(
-    resourceId: string,
+    resource: Resource,
     buildId: string,
     buildVersion: string,
     user: User,
     rootGeneration = true
   ): Promise<CodeGenTypes.DSGResourceData> {
-    const resources = await this.resourceService.resources({
-      where: {
-        project: { resources: { some: { id: resourceId } } },
-      },
-    });
-
-    const resource = resources.find(({ id }) => id === resourceId);
+    const resourceId = resource.id;
 
     const allPlugins = await this.pluginInstallationService.findMany({
       where: { resource: { id: resourceId } },
@@ -1364,26 +1364,36 @@ export class BuildService {
           )
         : undefined;
 
-    const otherResources = rootGeneration
-      ? await Promise.all(
-          resources
-            .filter(({ id }) => id !== resourceId)
-            .filter(
-              ({ resourceType }) =>
-                resourceType !== EnumResourceType.ProjectConfiguration &&
-                resourceType !== EnumResourceType.PluginRepository
+    let otherResources = undefined;
+
+    if (rootGeneration) {
+      const resources = await this.resourceService.resources({
+        where: {
+          project: { id: resource.projectId },
+        },
+      });
+
+      otherResources = await Promise.all(
+        resources
+          .filter(({ id }) => id !== resourceId)
+          .filter(
+            ({ resourceType }) =>
+              resourceType !== EnumResourceType.ProjectConfiguration &&
+              resourceType !== EnumResourceType.PluginRepository &&
+              resourceType !== EnumResourceType.ServiceTemplate &&
+              resourceType !== EnumResourceType.Component
+          )
+          .map((resource) =>
+            this.getDSGResourceData(
+              resource,
+              buildId,
+              buildVersion,
+              user,
+              false
             )
-            .map((resource) =>
-              this.getDSGResourceData(
-                resource.id,
-                buildId,
-                buildVersion,
-                user,
-                false
-              )
-            )
-        )
-      : undefined;
+          )
+      );
+    }
 
     const dsgResourceData = {
       entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],

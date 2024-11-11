@@ -136,7 +136,9 @@ const usePendingChanges = (
           ([type, typeChanges]) =>
             ({
               type,
-              typeChanges,
+              typeChanges: typeChanges.sort((a, b) =>
+                a.origin.displayName.localeCompare(b.origin.displayName)
+              ),
             } as PendingChangesByType)
         );
 

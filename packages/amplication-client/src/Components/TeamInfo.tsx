@@ -7,6 +7,7 @@ import {
   FlexItem,
   Text,
   UserAvatar,
+  useTagColorStyle,
 } from "@amplication/ui/design-system";
 import { Team } from "../models";
 import { Link } from "react-router-dom";
@@ -27,7 +28,7 @@ export const TeamInfo = ({ team, linkToTeam = false }: Props) => {
       direction={EnumFlexDirection.Row}
       itemsAlign={EnumItemsAlign.Center}
       gap={EnumGapSize.Default}
-      start={<UserAvatar firstName={team.name} />}
+      start={<UserAvatar firstName={team.name} color={team.color} />}
     >
       <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
         {team.name}
