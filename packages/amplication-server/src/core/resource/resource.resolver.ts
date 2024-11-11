@@ -43,6 +43,8 @@ import { OwnershipService } from "../ownership/ownership.service";
 import { Ownership } from "../ownership/dto/Ownership";
 import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
 import { ProjectService } from "../project/project.service";
+import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
+import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -72,6 +74,18 @@ export class ResourceResolver {
   @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "where.project.id")
   async resources(@Args() args: FindManyResourceArgs): Promise<Resource[]> {
+    return this.resourceService.resources(args);
+  }
+
+  @Query(() => [Resource], {
+    nullable: false,
+  })
+  @Roles("ORGANIZATION_ADMIN")
+  @InjectContextValue(
+    InjectableOriginParameter.WorkspaceId,
+    "where.project.workspace.id"
+  )
+  async catalog(@Args() args: FindManyResourceArgs): Promise<Resource[]> {
     return this.resourceService.resources(args);
   }
 

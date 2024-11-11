@@ -37,13 +37,13 @@ const ConsoleNavigationButton = () => {
   return (
     <Tabs tabsStyle={EnumTabsStyle.Header} className={CLASS_NAME}>
       <Tabs.Tab
-        name="Service Catalog"
+        name="Catalog"
         to={catalogBaseUrl}
         exact={false}
         icon={<Icon icon="code" size="small" />}
       />
       <Tabs.Tab
-        name="Platform Console"
+        name="Platform"
         to={platformBaseUrl}
         exact={false}
         icon={<Icon icon="grid" size="small" />}

@@ -119,7 +119,7 @@ export const Routes: RouteDef[] = [
                   () => import("../PrivatePlugins/PrivatePluginsPage")
                 ),
                 moduleName: "",
-                displayName: "Private Plugins",
+                displayName: "Plugin Repository",
                 routeTrackType: "",
                 exactPath: false,
                 routes: [
@@ -180,6 +180,31 @@ export const Routes: RouteDef[] = [
                 routeTrackType: "",
                 exactPath: false,
                 routes: [],
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/settings",
+                Component: lazy(
+                  () => import("../Project/ProjectPlatformSettingsPage")
+                ),
+                moduleName: "PlatformSettings",
+                displayName: "Settings",
+                moduleClass: "platform-settings",
+                routeTrackType: "",
+                exactPath: false,
+                isAnalytics: true,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/settings/access",
+                    Component: lazy(
+                      () => import("../Project/ProjectAccessForm")
+                    ),
+                    moduleName: "ProjectPlatformAccess",
+                    moduleClass: "",
+                    routeTrackType: "",
+                    exactPath: false,
+                    isAnalytics: true,
+                  },
+                ],
               },
             ],
             routes: [

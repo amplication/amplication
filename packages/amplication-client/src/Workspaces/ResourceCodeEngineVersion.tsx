@@ -17,7 +17,7 @@ import { CodeGeneratorVersionStrategy } from "../models";
 type Props = {
   version: string;
   codeGeneratorStrategy: CodeGeneratorVersionStrategy;
-  resourceId: string;
+  resource: models.Resource;
 };
 
 const STRATEGY_TO_ICON: {
@@ -48,11 +48,14 @@ const STRATEGY_TO_ICON: {
 function ResourceCodeEngineVersion({
   version,
   codeGeneratorStrategy,
-  resourceId,
+  resource,
 }: Props) {
   const validVersion = valid(version);
   const { baseUrl } = useResourceBaseUrl({
-    overrideResourceId: resourceId,
+    overrideResourceId: resource.id,
+    overrideProjectId: resource.projectId,
+    overrideIsPlatformConsole:
+      resource.resourceType === models.EnumResourceType.ServiceTemplate,
   });
 
   const url = `${baseUrl}/settings/code-generator-version`;

@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import "react-data-grid/lib/styles.css";
 
 import ReactDataGrid, {
@@ -22,9 +28,21 @@ export type DataGridSortColumn = {
   [key: string]: DataGridSortOrder;
 };
 
+export type DataGridRenderFilterProps = {
+  key: string;
+  columnKey: string;
+  label: string;
+  onChange: (key: string, filter: any) => void;
+  onRemove: (key: string) => void;
+  selectedValue: string | null;
+};
+
 export type DataGridColumn<T> = Column<T> & {
   getValue?: (row: T) => any;
   hidden?: boolean;
+  filterable?: boolean;
+  name: string;
+  renderFilter?: (props: DataGridRenderFilterProps) => ReactNode;
 };
 
 export type ExpandableDataGridRow<T> = T & {
