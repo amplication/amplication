@@ -4,6 +4,7 @@ import {
   DataGrid,
   DataGridColumn,
   DataGridColumnFilter,
+  DataGridFilters,
   EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
@@ -22,7 +23,7 @@ import { Link } from "react-router-dom";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
-import { CustomPropertyFilters } from "../CustomProperties/CustomPropertyFilters";
+import { CustomPropertyFilter } from "../CustomProperties/CustomPropertyFilter";
 import CustomPropertyValue from "../CustomProperties/CustomPropertyValue";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
@@ -45,28 +46,32 @@ function Catalog() {
   const { customPropertiesMap, currentProject } = useAppContext();
 
   const columnsWithAllProps = useMemo<DataGridColumn<models.Resource>[]>(() => {
-    const propCols = Object.values(customPropertiesMap).map((property) => {
-      return {
-        key: property.key,
-        name: property.name,
-        resizable: true,
-        sortable: true,
-        hidden: false,
-        renderCell: (props) => {
-          return (
-            <CustomPropertyValue
-              propertyKey={property.key}
-              allValues={props.row.properties}
-            />
-          );
-        },
-        getValue: (row) => {
-          return row.properties && row.properties[property.key]
-            ? row.properties[property.key]
-            : "";
-        },
-      };
-    });
+    const propCols = Object.values(customPropertiesMap).map(
+      (property): DataGridColumn<models.Resource> => {
+        return {
+          key: property.key,
+          name: property.name,
+          resizable: true,
+          sortable: true,
+          filterable: true,
+          renderFilter: CustomPropertyFilter,
+          hidden: false,
+          renderCell: (props) => {
+            return (
+              <CustomPropertyValue
+                propertyKey={property.key}
+                allValues={props.row.properties}
+              />
+            );
+          },
+          getValue: (row) => {
+            return row.properties && row.properties[property.key]
+              ? row.properties[property.key]
+              : "";
+          },
+        };
+      }
+    );
 
     const lastCol = RESOURCE_LIST_COLUMNS[RESOURCE_LIST_COLUMNS.length - 1];
     const otherCols = RESOURCE_LIST_COLUMNS.slice(0, -1);
@@ -83,8 +88,7 @@ function Catalog() {
     overrideIsPlatformConsole: true,
   });
 
-  const { catalog, loading, error, setPropertiesFilter, setSearchPhrase } =
-    useCatalog();
+  const { catalog, loading, error, setFilter, setSearchPhrase } = useCatalog();
 
   const servicesLength = useMemo(
     () =>
@@ -147,8 +151,7 @@ function Catalog() {
         }
       ></FlexItem>
       <HorizontalRule doubleSpacing />
-
-      <CustomPropertyFilters onChange={setPropertiesFilter} />
+      <DataGridFilters columns={columns} onChange={setFilter} />
 
       {isEmpty(catalog) && !loading ? (
         <EmptyState
