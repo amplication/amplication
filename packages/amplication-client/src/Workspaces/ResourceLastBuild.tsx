@@ -21,7 +21,10 @@ type Props = {
 function ResourceLastBuild({ resource, hideLabel }: Props) {
   const lastBuild = resource.builds[0];
 
-  const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: false });
+  const { baseUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: false,
+    overrideProjectId: resource.projectId,
+  });
 
   const innerElement = (
     <>

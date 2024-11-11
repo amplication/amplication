@@ -2,6 +2,7 @@ import { Field, InputType } from "@nestjs/graphql";
 import { BooleanFilter, DateTimeFilter, StringFilter } from "../../../dto";
 import { ProjectWhereInput } from "../../project/dto/ProjectWhereInput";
 import { EnumResourceTypeFilter } from "./EnumResourceTypeFilter";
+import { OwnershipWhereInput } from "../../ownership/dto/OwnershipWhereInput";
 
 @InputType({
   isAbstract: true,
@@ -45,6 +46,11 @@ export class ResourceWhereInput {
     nullable: true,
   })
   resourceType?: EnumResourceTypeFilter | null;
+
+  @Field(() => OwnershipWhereInput, {
+    nullable: true,
+  })
+  ownership?: OwnershipWhereInput | null;
 
   //do not expose to graphql
   deletedAt?: DateTimeFilter;

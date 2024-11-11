@@ -2370,6 +2370,11 @@ export type Ownership = {
   owner: Owner;
 };
 
+export type OwnershipWhereInput = {
+  teamId?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Package = IBlock & {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -2651,6 +2656,7 @@ export type Project = {
   id: Scalars['String']['output'];
   licensed: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  platformIsPublic?: Maybe<Scalars['Boolean']['output']>;
   resources?: Maybe<Array<Resource>>;
   updatedAt: Scalars['DateTime']['output'];
   useDemoRepo: Scalars['Boolean']['output'];
@@ -2694,7 +2700,7 @@ export type ProjectOrderByInput = {
 };
 
 export type ProjectUpdateInput = {
-  name?: InputMaybe<Scalars['String']['input']>;
+  platformIsPublic?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type ProjectWhereInput = {
@@ -2750,6 +2756,7 @@ export type Query = {
   blocks: Array<Block>;
   build: Build;
   builds: Array<Build>;
+  catalog: Array<Resource>;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
   compareResourceVersions: ResourceVersionsDiff;
@@ -2871,6 +2878,14 @@ export type QueryBuildsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<BuildWhereInput>;
+};
+
+
+export type QueryCatalogArgs = {
+  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ResourceWhereInputWithPropertiesFilter>;
 };
 
 
@@ -3437,6 +3452,7 @@ export type ResourceWhereInput = {
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
+  ownership?: InputMaybe<OwnershipWhereInput>;
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']['input']>;
   resourceType?: InputMaybe<EnumResourceTypeFilter>;
@@ -3449,6 +3465,7 @@ export type ResourceWhereInputWithPropertiesFilter = {
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
+  ownership?: InputMaybe<OwnershipWhereInput>;
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']['input']>;
   properties?: InputMaybe<JsonPathStringFilter>;
