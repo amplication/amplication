@@ -2710,6 +2710,7 @@ export type ProjectWhereInput = {
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
+  platformIsPublic?: InputMaybe<BooleanFilter>;
 };
 
 export type PropertySelector = {
@@ -2771,6 +2772,7 @@ export type Query = {
   entity?: Maybe<Entity>;
   /** Get the changes to apply to the model in order to break a resource into microservices */
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
+  findProjectAvailableTemplates: Array<Resource>;
   getEvaluationInsights: EvaluationInsights;
   getUsageInsights: UsageInsightsResult;
   gitGroups: PaginatedGitGroup;
@@ -2944,6 +2946,14 @@ export type QueryEntityArgs = {
 
 export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
   userActionId: Scalars['String']['input'];
+};
+
+
+export type QueryFindProjectAvailableTemplatesArgs = {
+  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where: WhereUniqueInput;
 };
 
 

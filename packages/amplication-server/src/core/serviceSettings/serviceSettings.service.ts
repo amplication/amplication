@@ -222,7 +222,7 @@ export class ServiceSettingsService {
   }
 
   async getServiceIdsByTemplateId(
-    projectId: string,
+    workspaceId: string,
     templateId: string
   ): Promise<string[]> {
     const blocks = await this.blockService.findManyByBlockTypeAndSettings(
@@ -232,7 +232,11 @@ export class ServiceSettingsService {
             deletedAt: null,
             archived: { not: true },
 
-            projectId,
+            project: {
+              workspace: {
+                id: workspaceId,
+              },
+            },
           },
         },
       },

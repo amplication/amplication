@@ -47,6 +47,7 @@ export const SEARCH_CATALOG = gql`
       serviceTemplate {
         id
         name
+        projectId
       }
       serviceTemplateVersion
       gitRepository {

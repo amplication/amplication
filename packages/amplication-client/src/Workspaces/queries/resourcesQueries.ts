@@ -81,6 +81,7 @@ export const GET_RESOURCES = gql`
       serviceTemplate {
         id
         name
+        projectId
       }
       serviceTemplateVersion
       gitRepository {
