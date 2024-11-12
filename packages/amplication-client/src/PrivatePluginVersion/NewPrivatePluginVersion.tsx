@@ -55,79 +55,59 @@ const NewPrivatePluginVersion = ({ privatePlugin, onVersionAdd }: Props) => {
     }
   }, [latestVersion, version]);
 
-  const handleSubmit = useCallback(
-    (isDevVersion: boolean) => {
-      const nextVersion = isDevVersion ? `${newVersion}-dev` : newVersion;
-      createPrivatePluginVersion({
-        variables: {
-          data: {
-            version: nextVersion,
-            privatePlugin: { connect: { id: privatePlugin.id } },
-          },
+  const handleSubmit = useCallback(() => {
+    createPrivatePluginVersion({
+      variables: {
+        data: {
+          version: newVersion,
+          privatePlugin: { connect: { id: privatePlugin.id } },
         },
-      })
-        .catch(console.error)
-        .then(() => {
-          if (onVersionAdd) {
-            onVersionAdd(privatePlugin);
-          }
-        });
-    },
-    [createPrivatePluginVersion, newVersion, privatePlugin, onVersionAdd]
-  );
-
-  const devVersion = useMemo(() => {
-    if (!privatePlugin) return [];
-    return privatePlugin.versions?.find((v) => v.version.includes("dev"));
-  }, [privatePlugin]);
+      },
+    })
+      .catch(console.error)
+      .then(() => {
+        if (onVersionAdd) {
+          onVersionAdd(privatePlugin);
+        }
+      });
+  }, [createPrivatePluginVersion, newVersion, privatePlugin, onVersionAdd]);
 
   const errorMessage = formatError(error);
 
   return (
-    <>
+    <Panel panelStyle={EnumPanelStyle.Surface} style={{ flex: 1 }}>
       <TabContentTitle title="Add New Version" />
-      <Panel panelStyle={EnumPanelStyle.Bordered}>
-        <FlexItem direction={EnumFlexDirection.Column} className={CLASS_NAME}>
-          <MultiStateToggle
-            className={`${CLASS_NAME}__toggle`}
-            label="Version"
-            name="version"
-            options={SEMVER_OPTIONS}
-            onChange={setVersion}
-            selectedValue={version}
-          />
-          <FlexItem
-            direction={EnumFlexDirection.Row}
-            itemsAlign={EnumItemsAlign.Center}
-            contentAlign={EnumContentAlign.Start}
-            end={
-              <FlexItem direction={EnumFlexDirection.Row}>
-                <Button
-                  buttonStyle={EnumButtonStyle.Outline}
-                  onClick={() => handleSubmit(false)}
-                  disabled={loading}
-                >
-                  Add Version
-                </Button>
-                {!devVersion && (
-                  <Button
-                    buttonStyle={EnumButtonStyle.Outline}
-                    onClick={() => handleSubmit(true)}
-                    disabled={loading}
-                  >
-                    Add Dev Version
-                  </Button>
-                )}
-              </FlexItem>
-            }
-          >
-            <Label text="New version" />
-            <VersionTag version={newVersion} />
-          </FlexItem>
-          <Snackbar open={Boolean(error)} message={errorMessage} />
+      <FlexItem direction={EnumFlexDirection.Column} className={CLASS_NAME}>
+        <MultiStateToggle
+          className={`${CLASS_NAME}__toggle`}
+          label="Version"
+          name="version"
+          options={SEMVER_OPTIONS}
+          onChange={setVersion}
+          selectedValue={version}
+        />
+        <FlexItem
+          direction={EnumFlexDirection.Row}
+          itemsAlign={EnumItemsAlign.Center}
+          contentAlign={EnumContentAlign.Start}
+          end={
+            <FlexItem direction={EnumFlexDirection.Row}>
+              <Button
+                buttonStyle={EnumButtonStyle.Outline}
+                onClick={() => handleSubmit()}
+                disabled={loading}
+              >
+                Add Version
+              </Button>
+            </FlexItem>
+          }
+        >
+          <Label text="New version" />
+          <VersionTag version={newVersion} />
         </FlexItem>
-      </Panel>
-    </>
+        <Snackbar open={Boolean(error)} message={errorMessage} />
+      </FlexItem>
+    </Panel>
   );
 };
 

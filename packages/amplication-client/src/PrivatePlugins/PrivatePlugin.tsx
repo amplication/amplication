@@ -37,8 +37,6 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
 
   const { privatePluginId } = match?.params ?? {};
   const {
-    currentWorkspace,
-    currentProject,
     addEntity,
     resetPendingChangesIndicator,
     setResetPendingChangesIndicator,
