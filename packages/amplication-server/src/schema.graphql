@@ -194,6 +194,39 @@ input BlockWhereInput {
   updatedAt: DateTimeFilter
 }
 
+type Blueprint {
+  createdAt: DateTime!
+  description: String
+  enabled: Boolean!
+  id: String!
+  key: String!
+  name: String!
+  updatedAt: DateTime!
+}
+
+input BlueprintCreateInput {
+  name: String!
+}
+
+input BlueprintOrderByInput {
+  deletedAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+}
+
+input BlueprintUpdateInput {
+  description: String
+  enabled: Boolean
+  key: String
+  name: String
+}
+
+input BlueprintWhereInput {
+  deletedAt: DateTimeFilter
+  id: String
+  name: StringFilter
+}
+
 input BooleanFilter {
   equals: Boolean
   not: Boolean
@@ -1554,6 +1587,7 @@ type Mutation {
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
+  createBlueprint(data: BlueprintCreateInput!): Blueprint!
   createComponent(data: ResourceCreateInput!): Resource!
   createCustomProperty(data: CustomPropertyCreateInput!): CustomProperty!
   createCustomPropertyOption(data: CustomPropertyOptionCreateInput!): CustomPropertyOption!
@@ -1588,6 +1622,7 @@ type Mutation {
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
+  deleteBlueprint(where: WhereUniqueInput!): Blueprint
   deleteCustomProperty(where: WhereUniqueInput!): CustomProperty
   deleteCustomPropertyOption(where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
   deleteEntity(where: WhereUniqueInput!): Entity
@@ -1637,6 +1672,7 @@ type Mutation {
   """
   triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
+  updateBlueprint(data: BlueprintUpdateInput!, where: WhereUniqueInput!): Blueprint!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateCustomProperty(data: CustomPropertyUpdateInput!, where: WhereUniqueInput!): CustomProperty!
   updateCustomPropertyOption(data: CustomPropertyOptionUpdateInput!, where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
@@ -2102,8 +2138,11 @@ type Query {
   action(where: WhereUniqueInput!): Action!
   availableDtosForResource(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
   availablePrivatePluginsForResource(orderBy: PrivatePluginOrderByInput, skip: Int, take: Int, where: PrivatePluginWhereInput): [PrivatePlugin!]!
+  availableTemplatesForProject(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: WhereUniqueInput!): [Resource!]!
   block(where: WhereUniqueInput!): Block!
   blocks(orderBy: BlockOrderByInput, skip: Int, take: Int, where: BlockWhereInput): [Block!]!
+  blueprint(where: WhereUniqueInput!): Blueprint
+  blueprints(orderBy: BlueprintOrderByInput, skip: Int, take: Int, where: BlueprintWhereInput): [Blueprint!]!
   build(where: WhereUniqueInput!): Build!
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
   catalog(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
@@ -2121,7 +2160,6 @@ type Query {
   Get the changes to apply to the model in order to break a resource into microservices
   """
   finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
-  findProjectAvailableTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: WhereUniqueInput!): [Resource!]!
   getEvaluationInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!, timeGroup: EnumTimeGroup = Month): EvaluationInsights!
   getUsageInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!, timeGroup: EnumTimeGroup = Month): UsageInsightsResult!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!

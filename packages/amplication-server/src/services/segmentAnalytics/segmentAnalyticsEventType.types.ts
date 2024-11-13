@@ -60,8 +60,13 @@ export enum EnumEventType {
   TeamAddMembers = "TeamAddMembers",
   TeamRemoveMembers = "TeamRemoveMembers",
 
-  //Teams
+  //Custom Properties
   CustomPropertyCreate = "CustomPropertyCreate",
   CustomPropertyUpdate = "CustomPropertyUpdate",
   CustomPropertyDelete = "CustomPropertyDelete",
+
+  //Blueprints
+  BlueprintCreate = "BlueprintCreate",
+  BlueprintUpdate = "BlueprintUpdate",
+  BlueprintDelete = "BlueprintDelete",
 }

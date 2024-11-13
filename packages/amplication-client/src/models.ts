@@ -222,6 +222,39 @@ export type BlockWhereInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
+export type Blueprint = {
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type BlueprintCreateInput = {
+  name: Scalars['String']['input'];
+};
+
+export type BlueprintOrderByInput = {
+  deletedAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+};
+
+export type BlueprintUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  key?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BlueprintWhereInput = {
+  deletedAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<StringFilter>;
+};
+
 export type BooleanFilter = {
   equals?: InputMaybe<Scalars['Boolean']['input']>;
   not?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1577,6 +1610,7 @@ export type Mutation = {
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
+  createBlueprint: Blueprint;
   createComponent: Resource;
   createCustomProperty: CustomProperty;
   createCustomPropertyOption: CustomPropertyOption;
@@ -1611,6 +1645,7 @@ export type Mutation = {
   createTopic: Topic;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
+  deleteBlueprint?: Maybe<Blueprint>;
   deleteCustomProperty?: Maybe<CustomProperty>;
   deleteCustomPropertyOption: CustomPropertyOption;
   deleteEntity?: Maybe<Entity>;
@@ -1657,6 +1692,7 @@ export type Mutation = {
   /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
   triggerBreakServiceIntoMicroservices?: Maybe<UserAction>;
   updateAccount: Account;
+  updateBlueprint: Blueprint;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateCustomProperty: CustomProperty;
   updateCustomPropertyOption: CustomPropertyOption;
@@ -1742,6 +1778,11 @@ export type MutationConnectResourceToProjectRepositoryArgs = {
 
 export type MutationCreateApiTokenArgs = {
   data: ApiTokenCreateInput;
+};
+
+
+export type MutationCreateBlueprintArgs = {
+  data: BlueprintCreateInput;
 };
 
 
@@ -1919,6 +1960,11 @@ export type MutationCreateWorkspaceArgs = {
 
 
 export type MutationDeleteApiTokenArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteBlueprintArgs = {
   where: WhereUniqueInput;
 };
 
@@ -2149,6 +2195,12 @@ export type MutationTriggerBreakServiceIntoMicroservicesArgs = {
 
 export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
+};
+
+
+export type MutationUpdateBlueprintArgs = {
+  data: BlueprintUpdateInput;
+  where: WhereUniqueInput;
 };
 
 
@@ -2756,8 +2808,11 @@ export type Query = {
   action: Action;
   availableDtosForResource: Array<ModuleDto>;
   availablePrivatePluginsForResource: Array<PrivatePlugin>;
+  availableTemplatesForProject: Array<Resource>;
   block: Block;
   blocks: Array<Block>;
+  blueprint?: Maybe<Blueprint>;
+  blueprints: Array<Blueprint>;
   build: Build;
   builds: Array<Build>;
   catalog: Array<Resource>;
@@ -2772,7 +2827,6 @@ export type Query = {
   entity?: Maybe<Entity>;
   /** Get the changes to apply to the model in order to break a resource into microservices */
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
-  findProjectAvailableTemplates: Array<Resource>;
   getEvaluationInsights: EvaluationInsights;
   getUsageInsights: UsageInsightsResult;
   gitGroups: PaginatedGitGroup;
@@ -2860,6 +2914,14 @@ export type QueryAvailablePrivatePluginsForResourceArgs = {
 };
 
 
+export type QueryAvailableTemplatesForProjectArgs = {
+  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where: WhereUniqueInput;
+};
+
+
 export type QueryBlockArgs = {
   where: WhereUniqueInput;
 };
@@ -2870,6 +2932,19 @@ export type QueryBlocksArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<BlockWhereInput>;
+};
+
+
+export type QueryBlueprintArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryBlueprintsArgs = {
+  orderBy?: InputMaybe<BlueprintOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<BlueprintWhereInput>;
 };
 
 
@@ -2946,14 +3021,6 @@ export type QueryEntityArgs = {
 
 export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
   userActionId: Scalars['String']['input'];
-};
-
-
-export type QueryFindProjectAvailableTemplatesArgs = {
-  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where: WhereUniqueInput;
 };
 
 
