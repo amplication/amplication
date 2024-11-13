@@ -18,6 +18,7 @@ function ResourceOwner({ resource }: Props) {
 
   const { baseUrl } = useResourceBaseUrl({
     overrideResourceId: id,
+    overrideProjectId: resource.projectId,
     overrideIsPlatformConsole: overrideIsPlatformConsole,
   });
 

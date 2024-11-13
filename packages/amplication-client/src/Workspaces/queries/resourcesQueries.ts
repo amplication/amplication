@@ -12,6 +12,7 @@ export const GET_RESOURCE = gql`
       githubLastMessage
       resourceType
       licensed
+      projectId
       properties
       owner {
         ... on User {
@@ -52,6 +53,7 @@ export const GET_RESOURCES = gql`
       codeGeneratorVersion
       codeGenerator
       licensed
+      projectId
       properties
       owner {
         ... on User {
@@ -79,6 +81,7 @@ export const GET_RESOURCES = gql`
       serviceTemplate {
         id
         name
+        projectId
       }
       serviceTemplateVersion
       gitRepository {

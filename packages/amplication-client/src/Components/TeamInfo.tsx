@@ -38,7 +38,7 @@ export const TeamInfo = ({ team, linkToTeam = false }: Props) => {
 
   return linkToTeam ? (
     <Link
-      to={`/${currentWorkspace?.id}/teams/${team.id}`}
+      to={`/${currentWorkspace?.id}/settings//teams/${team.id}`}
       className={CLASS_NAME}
     >
       {teamInfoElement}

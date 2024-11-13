@@ -1,5 +1,6 @@
 import {
   Button,
+  DataGridRenderFilterProps,
   EnumGapSize,
   EnumItemsAlign,
   EnumTextColor,
@@ -14,25 +15,21 @@ import {
 } from "@amplication/ui/design-system";
 import { useMemo } from "react";
 import { EnumButtonStyle } from "../Components/Button";
-import { CustomProperty } from "../models";
-import CustomPropertyValueSelect from "./CustomPropertyValueSelect";
+import { useAppContext } from "../context/appContext";
 import "./CustomPropertyFilter.scss";
+import CustomPropertyValueSelect from "./CustomPropertyValueSelect";
 
 const CLASS_NAME = "custom-property-filter";
 
-type Props = {
-  customProperty: CustomProperty;
-  onChange: (propertyKey: string, value: string) => void;
-  onRemove: (propertyKey: string) => void;
-  selectedValue: string;
-};
-
 export const CustomPropertyFilter = ({
-  customProperty,
+  columnKey,
   selectedValue,
   onChange,
   onRemove,
-}: Props) => {
+}: DataGridRenderFilterProps) => {
+  const { customPropertiesMap } = useAppContext();
+  const customProperty = customPropertiesMap[columnKey];
+
   const options = useMemo(() => {
     return customProperty.options.map(
       (option): OptionItem => ({

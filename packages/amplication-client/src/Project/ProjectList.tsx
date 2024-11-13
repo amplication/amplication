@@ -1,4 +1,5 @@
 import {
+  CircularProgress,
   EnumFlexItemMargin,
   EnumTextStyle,
   FlexItem,
@@ -13,15 +14,17 @@ import { ProjectListItem } from "./ProjectListItem";
 type Props = {
   projects: Project[] | null;
   workspaceId: string;
+  loading?: boolean;
 };
 
-export const ProjectList = ({ projects, workspaceId }: Props) => {
+export const ProjectList = ({ projects, workspaceId, loading }: Props) => {
   return (
     <>
       <FlexItem margin={EnumFlexItemMargin.Bottom}>
         <Text textStyle={EnumTextStyle.Tag}>
           {projects.length} {pluralize(projects.length, "Project", "Projects")}
         </Text>
+        {loading && <CircularProgress />}
       </FlexItem>
 
       <div className="project-list">
@@ -34,7 +37,11 @@ export const ProjectList = ({ projects, workspaceId }: Props) => {
             />
           ))
         ) : (
-          <ProjectEmptyState />
+          <>
+            <div />
+            <ProjectEmptyState />
+            <div />
+          </>
         )}
       </div>
     </>

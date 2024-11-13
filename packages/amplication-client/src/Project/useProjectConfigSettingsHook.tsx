@@ -43,6 +43,10 @@ const useProjectConfigSettingsHook = () => {
       },
     });
 
+  const [updateProject, { error: updateProjectError }] = useMutation<{
+    updateProject: models.Project;
+  }>(UPDATE_PROJECT, {});
+
   const handleSubmit = useCallback(
     (data: models.ProjectConfigurationSettings) => {
       const { baseDirectory } = data;
@@ -67,6 +71,8 @@ const useProjectConfigSettingsHook = () => {
     ProjectConfigurationUpdateError,
     projectConfigurationData,
     projectConfigurationError,
+    updateProject,
+    updateProjectError,
   };
 };
 
@@ -92,6 +98,15 @@ export const GET_PROJECT_CONFIG_SETTINGS = gql`
     projectConfigurationSettings(where: { id: $id }) {
       id
       baseDirectory
+    }
+  }
+`;
+
+export const UPDATE_PROJECT = gql`
+  mutation updateProject($data: ProjectUpdateInput!, $projectId: String!) {
+    updateProject(data: $data, where: { id: $projectId }) {
+      id
+      platformIsPublic
     }
   }
 `;

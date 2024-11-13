@@ -58,7 +58,7 @@ export const CustomPropertyList = React.memo(
   ({ selectFirst = false }: Props) => {
     const { currentWorkspace } = useAppContext();
 
-    const baseUrl = `/${currentWorkspace?.id}`;
+    const baseUrl = `/${currentWorkspace?.id}/settings`;
 
     const {
       setSearchPhrase,

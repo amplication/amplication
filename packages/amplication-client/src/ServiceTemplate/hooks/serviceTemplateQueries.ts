@@ -61,3 +61,34 @@ export const UPGRADE_SERVICE_TO_LATEST_TEMPLATE_VERSION = gql`
     }
   }
 `;
+
+export const GET_AVAILABLE_TEMPLATES_FOR_PROJECT = gql`
+  query availableTemplatesForProject($projectId: String!) {
+    availableTemplatesForProject(
+      where: { id: $projectId }
+      orderBy: [{ name: Asc }]
+    ) {
+      id
+      name
+      description
+      createdAt
+      updatedAt
+      resourceType
+      githubLastSync
+      gitRepositoryOverride
+      codeGeneratorStrategy
+      codeGeneratorVersion
+      codeGenerator
+      projectId
+      project {
+        id
+        name
+      }
+      version {
+        id
+        version
+        message
+      }
+    }
+  }
+`;

@@ -19,7 +19,7 @@ const CustomPropertiesPage: React.FC<Props> = ({
   const pageTitle = "Properties";
 
   const customPropertyMatch = useRouteMatch<{ customPropertyId: string }>([
-    "/:workspace/properties/:customPropertyId",
+    "/:workspace/settings/properties/:customPropertyId",
   ]);
 
   let customPropertyId = null;

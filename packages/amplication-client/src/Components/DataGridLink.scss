@@ -1,8 +1,9 @@
 @import "../style/index.scss";
 
-.resource-name-link {
+.data-grid-link {
   display: inline-block;
   width: 100%;
+
   &:hover {
     .amp-text {
       color: var(--theme-turquoise);
