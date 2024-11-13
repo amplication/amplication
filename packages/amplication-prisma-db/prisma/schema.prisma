@@ -191,6 +191,7 @@ model Blueprint {
   enabled     Boolean   @default(true)
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  color       String?
 
   //useEntitiesAndApis Boolean @default(false)
 

@@ -7,6 +7,7 @@ export const BLUEPRINT_FIELDS_FRAGMENT = gql`
     description
     key
     enabled
+    color
   }
 `;
 

@@ -26,6 +26,11 @@ export class Blueprint {
   })
   key!: string;
 
+  @Field(() => String, {
+    nullable: true,
+  })
+  color?: string;
+
   @Field(() => Boolean, {
     nullable: false,
   })

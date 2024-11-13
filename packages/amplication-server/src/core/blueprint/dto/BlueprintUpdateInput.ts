@@ -13,4 +13,7 @@ export class BlueprintUpdateInput {
 
   @Field(() => Boolean, { nullable: true })
   enabled?: boolean | undefined;
+
+  @Field(() => String, { nullable: true })
+  color?: string | undefined;
 }

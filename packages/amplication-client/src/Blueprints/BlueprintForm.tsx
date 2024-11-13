@@ -1,4 +1,8 @@
-import { Form, TextField } from "@amplication/ui/design-system";
+import {
+  ColorPickerField,
+  Form,
+  TextField,
+} from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import { omit } from "lodash";
 import { useMemo } from "react";
@@ -59,6 +63,7 @@ const BlueprintForm = ({ onSubmit, defaultValues }: Props) => {
           <TextField name="key" label="Key" />
 
           <OptionalDescriptionField name="description" label="Description" />
+          <ColorPickerField name="color" label="Color" />
         </Form>
       </Formik>
     </>
