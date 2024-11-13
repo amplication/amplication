@@ -16,7 +16,7 @@ export default function useDataGridColumnFilter<T>(
 
   const [savedColumnData, setSavedColumnData] = useLocalStorage(
     localStorageKey,
-    ""
+    "[]"
   );
 
   //save the data to local storage every time the columns change
