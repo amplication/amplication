@@ -8,15 +8,22 @@ type Props = {
 function ResourceLastBuildVersion({ resource }: Props) {
   const lastBuild = resource.builds[0];
 
-  if (!lastBuild) {
+  const { resourceType } = resource;
+
+  const version =
+    resourceType === models.EnumResourceType.ServiceTemplate
+      ? resource.codeGeneratorVersion
+      : lastBuild?.codeGeneratorVersion;
+
+  if (resourceType !== models.EnumResourceType.ServiceTemplate && !lastBuild) {
     return null;
   }
 
   return (
     <ResourceCodeEngineVersion
-      version={lastBuild?.codeGeneratorVersion}
+      version={version}
       codeGeneratorStrategy={resource.codeGeneratorStrategy}
-      resourceId={resource.id}
+      resource={resource}
     />
   );
 }

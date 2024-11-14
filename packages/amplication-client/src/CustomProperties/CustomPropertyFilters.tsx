@@ -1,11 +1,3 @@
-import { useCallback, useMemo, useState } from "react";
-import { useAppContext } from "../context/appContext";
-import {
-  EnumCustomPropertyType,
-  JsonPathStringFilter,
-  JsonPathStringFilterItem,
-} from "../models";
-import { CustomPropertyFilter } from "./CustomPropertyFilter";
 import {
   EnumButtonStyle,
   EnumFlexDirection,
@@ -21,8 +13,15 @@ import {
   SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
-import CustomPropertyValueSelect from "./CustomPropertyValueSelect";
-import { use } from "ast-types";
+import { useCallback, useMemo, useState } from "react";
+import { ProjectFilter } from "../Catalog/ProjectFilter";
+import { useAppContext } from "../context/appContext";
+import {
+  EnumCustomPropertyType,
+  JsonPathStringFilter,
+  JsonPathStringFilterItem,
+} from "../models";
+import { CustomPropertyFilter } from "./CustomPropertyFilter";
 
 const CLASS_NAME = "custom-property-filters";
 
@@ -153,7 +152,8 @@ export const CustomPropertyFilters = ({ onChange }: Props) => {
       {visibleFilters.map((key) => (
         <CustomPropertyFilter
           key={key}
-          customProperty={customPropertiesMap[key]}
+          label={customPropertiesMap[key].name}
+          columnKey={key}
           onChange={setFilter}
           onRemove={onRemoveFilter}
           selectedValue={filters[key]}

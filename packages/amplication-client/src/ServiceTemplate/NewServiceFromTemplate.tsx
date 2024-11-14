@@ -19,7 +19,7 @@ import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewServiceFromTemplate.scss";
-import useServiceTemplate from "./hooks/useServiceTemplate";
+import useAvailableServiceTemplates from "./hooks/useAvailableServiceTemplates";
 
 type CreateType = Omit<
   models.ServiceFromTemplateCreateInput,
@@ -63,14 +63,14 @@ const NewServiceFromTemplate = ({ serviceTemplateId, projectId }: Props) => {
     currentProject,
   } = useContext(AppContext);
 
-  const { publishedServiceTemplates } = useServiceTemplate(currentProject);
+  const { availableTemplates } = useAvailableServiceTemplates(currentProject);
 
   const options = useMemo(() => {
-    return publishedServiceTemplates.map((serviceTemplate) => ({
+    return availableTemplates.map((serviceTemplate) => ({
       value: serviceTemplate.id,
       label: serviceTemplate.name,
     }));
-  }, [publishedServiceTemplates]);
+  }, [availableTemplates]);
 
   const handleSubmit = useCallback(
     (data: CreateType) => {

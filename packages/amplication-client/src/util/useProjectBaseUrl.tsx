@@ -3,6 +3,7 @@ import { useMemo } from "react";
 
 type Props = {
   overrideIsPlatformConsole?: boolean | undefined;
+  overrideProjectId?: string;
 };
 
 // Get the base URL for a project with or without the platform console prefix
@@ -13,7 +14,7 @@ export const useProjectBaseUrl = (
   baseUrl: string;
   isPlatformConsole: boolean;
 } => {
-  const { overrideIsPlatformConsole } = props || {};
+  const { overrideIsPlatformConsole, overrideProjectId } = props || {};
 
   const match = useRouteMatch<{
     workspace: string;
@@ -21,6 +22,7 @@ export const useProjectBaseUrl = (
   }>([
     "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/",
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/",
+    "/:workspace([A-Za-z0-9-]{20,})/",
   ]);
 
   const results = useMemo(() => {
@@ -36,15 +38,17 @@ export const useProjectBaseUrl = (
         ? match?.path.includes("/platform/")
         : overrideIsPlatformConsole;
 
+    const projectId = overrideProjectId || match.params.project || "";
+
     const platformPath = isPlatformConsole ? "/platform" : "";
 
-    const baseUrl = `/${match.params.workspace}${platformPath}/${match.params.project}`;
+    const baseUrl = `/${match.params.workspace}${platformPath}/${projectId}`;
 
     return {
       baseUrl,
       isPlatformConsole,
     };
-  }, [match, overrideIsPlatformConsole]);
+  }, [match, overrideIsPlatformConsole, overrideProjectId]);
 
   return results;
 };

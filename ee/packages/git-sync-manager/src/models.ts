@@ -2376,6 +2376,11 @@ export type Ownership = {
   owner: Owner;
 };
 
+export type OwnershipWhereInput = {
+  teamId?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Package = IBlock & {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -2657,6 +2662,7 @@ export type Project = {
   id: Scalars['String']['output'];
   licensed: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  platformIsPublic?: Maybe<Scalars['Boolean']['output']>;
   resources?: Maybe<Array<Resource>>;
   updatedAt: Scalars['DateTime']['output'];
   useDemoRepo: Scalars['Boolean']['output'];
@@ -2700,13 +2706,14 @@ export type ProjectOrderByInput = {
 };
 
 export type ProjectUpdateInput = {
-  name?: InputMaybe<Scalars['String']['input']>;
+  platformIsPublic?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type ProjectWhereInput = {
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
+  platformIsPublic?: InputMaybe<BooleanFilter>;
 };
 
 export type PropertySelector = {
@@ -2756,6 +2763,7 @@ export type Query = {
   blocks: Array<Block>;
   build: Build;
   builds: Array<Build>;
+  catalog: Array<Resource>;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
   compareResourceVersions: ResourceVersionsDiff;
@@ -2767,6 +2775,7 @@ export type Query = {
   entity?: Maybe<Entity>;
   /** Get the changes to apply to the model in order to break a resource into microservices */
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
+  findProjectAvailableTemplates: Array<Resource>;
   getEvaluationInsights: EvaluationInsights;
   getUsageInsights: UsageInsightsResult;
   gitGroups: PaginatedGitGroup;
@@ -2880,6 +2889,14 @@ export type QueryBuildsArgs = {
 };
 
 
+export type QueryCatalogArgs = {
+  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ResourceWhereInputWithPropertiesFilter>;
+};
+
+
 export type QueryCommitArgs = {
   where: CommitWhereUniqueInput;
 };
@@ -2932,6 +2949,14 @@ export type QueryEntityArgs = {
 
 export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
   userActionId: Scalars['String']['input'];
+};
+
+
+export type QueryFindProjectAvailableTemplatesArgs = {
+  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where: WhereUniqueInput;
 };
 
 
@@ -3443,6 +3468,7 @@ export type ResourceWhereInput = {
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
+  ownership?: InputMaybe<OwnershipWhereInput>;
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']['input']>;
   resourceType?: InputMaybe<EnumResourceTypeFilter>;
@@ -3455,6 +3481,7 @@ export type ResourceWhereInputWithPropertiesFilter = {
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
+  ownership?: InputMaybe<OwnershipWhereInput>;
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']['input']>;
   properties?: InputMaybe<JsonPathStringFilter>;

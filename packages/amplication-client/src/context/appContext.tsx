@@ -18,6 +18,8 @@ export interface AppContextInterface {
   currentProject: models.Project | undefined;
   currentProjectConfiguration: models.Resource | undefined;
   projectsList: models.Project[];
+  projectListError: ApolloError | undefined;
+  projectListLoading: boolean;
   setNewProject: (data: models.ProjectCreateInput) => void;
   onNewProjectCompleted: (data: models.Project) => void;
   resources: models.Resource[];
@@ -90,6 +92,8 @@ const initialContext: AppContextInterface = {
   currentProject: undefined,
   currentProjectConfiguration: undefined,
   projectsList: [],
+  projectListError: undefined,
+  projectListLoading: false,
   setNewProject: () => {},
   onNewProjectCompleted: () => {},
   resources: [],
