@@ -1646,6 +1646,7 @@ export type Mutation = {
   removeMembersFromTeam: Team;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
+  scaffoldServiceFromTemplate: Resource;
   sendAssistantMessageWithStream: AssistantThread;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
@@ -2097,6 +2098,11 @@ export type MutationResendInvitationArgs = {
 
 export type MutationRevokeInvitationArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type MutationScaffoldServiceFromTemplateArgs = {
+  data: ScaffoldServiceFromTemplateInput;
 };
 
 
@@ -3493,6 +3499,12 @@ export enum Role {
   ProjectAdmin = 'ProjectAdmin',
   User = 'User'
 }
+
+export type ScaffoldServiceFromTemplateInput = {
+  name: Scalars['String']['input'];
+  project: WhereParentIdInput;
+  serviceTemplateName: Scalars['String']['input'];
+};
 
 export type SendAssistantMessageInput = {
   message: Scalars['String']['input'];
