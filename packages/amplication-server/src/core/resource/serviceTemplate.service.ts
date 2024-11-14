@@ -104,21 +104,27 @@ export class ServiceTemplateService {
   ): Promise<Resource> {
     const { name, serviceTemplateName, project } = args.data;
 
-    const serviceTemplates = await this.resourceService.resources({
-      where: {
-        name: { equals: serviceTemplateName },
-        resourceType: {
-          equals: EnumResourceType.ServiceTemplate,
+    const serviceTemplates = await this.availableServiceTemplatesForProject(
+      {
+        where: {
+          id: args.data.project.connect.id,
         },
-        projectId: project.connect.id,
       },
-    });
+      user
+    );
 
     if (!serviceTemplates || serviceTemplates.length === 0) {
       throw new AmplicationError(`Service template not found`);
     }
 
-    const template = serviceTemplates[0];
+    const template = serviceTemplates.find(
+      (template) => template.name === serviceTemplateName
+    );
+
+    //check that the selected template belongs to the project and available for the user
+    if (template === undefined) {
+      throw new AmplicationError(`Service template not found`);
+    }
 
     const newResource = await this.createServiceFromTemplate(
       {
