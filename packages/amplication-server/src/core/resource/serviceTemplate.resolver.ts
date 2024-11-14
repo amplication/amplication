@@ -12,6 +12,7 @@ import { CreateServiceTemplateArgs } from "./dto/CreateServiceTemplateArgs";
 import { FindManyResourceArgs } from "./dto";
 import { CreateServiceFromTemplateArgs } from "./dto/CreateServiceFromTemplateArgs";
 import { FindOneArgs } from "../../dto";
+import { ScaffoldServiceFromTemplateArgs } from "./dto/ScaffoldServiceFromTemplateArgs";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -58,6 +59,23 @@ export class ServiceTemplateResolver {
     @UserEntity() user: User
   ): Promise<Resource> {
     return this.service.createServiceFromTemplate(args, user);
+  }
+
+  @Mutation(() => Resource, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "data.project.connect.id"
+  )
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "data.serviceTemplate.id"
+  )
+  async scaffoldServiceFromTemplate(
+    @Args() args: ScaffoldServiceFromTemplateArgs,
+    @UserEntity() user: User
+  ): Promise<Resource> {
+    return this.service.scaffoldServiceFromTemplate(args, user);
   }
 
   @Mutation(() => Resource, { nullable: false })

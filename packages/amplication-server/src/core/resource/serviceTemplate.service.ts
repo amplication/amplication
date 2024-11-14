@@ -26,6 +26,9 @@ import { ResourceVersionService } from "../resourceVersion/resourceVersion.servi
 import { TemplateCodeEngineVersion } from "../templateCodeEngineVersion/dto/TemplateCodeEngineVersion";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { BlockSettingsProperties } from "../block/types";
+import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
+import { ProjectService } from "../project/project.service";
+import { ScaffoldServiceFromTemplateArgs } from "./dto/ScaffoldServiceFromTemplateArgs";
 
 @Injectable()
 export class ServiceTemplateService {
@@ -36,7 +39,8 @@ export class ServiceTemplateService {
     private readonly logger: AmplicationLogger,
     private readonly resourceService: ResourceService,
     private readonly resourceVersionService: ResourceVersionService,
-    private readonly outdatedVersionAlertService: OutdatedVersionAlertService
+    private readonly outdatedVersionAlertService: OutdatedVersionAlertService,
+    private readonly projectService: ProjectService
   ) {}
 
   /**
@@ -88,6 +92,65 @@ export class ServiceTemplateService {
         },
       },
     });
+  }
+
+  async scaffoldServiceFromTemplate(
+    args: ScaffoldServiceFromTemplateArgs,
+    user: User
+  ): Promise<Resource> {
+    const { name, serviceTemplateName, project } = args.data;
+
+    const serviceTemplates = await this.resourceService.resources({
+      where: {
+        name: { equals: serviceTemplateName },
+        resourceType: {
+          equals: EnumResourceType.ServiceTemplate,
+        },
+        projectId: project.connect.id,
+      },
+    });
+
+    if (!serviceTemplates || serviceTemplates.length === 0) {
+      throw new AmplicationError(`Service template not found`);
+    }
+
+    const template = serviceTemplates[0];
+
+    const newResource = await this.createServiceFromTemplate(
+      {
+        data: {
+          serviceTemplate: { id: template.id },
+          project: { connect: { id: project.connect.id } },
+          name,
+          description: "",
+        },
+      },
+      user
+    );
+
+    //commit new service
+
+    await this.projectService.commit(
+      {
+        data: {
+          resourceTypeGroup: EnumResourceTypeGroup.Services,
+          message: `commit new scaffold service: ${name}`,
+          project: {
+            connect: {
+              id: project.connect.id,
+            },
+          },
+          user: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+      },
+      user
+    );
+
+    return newResource;
   }
 
   /**
