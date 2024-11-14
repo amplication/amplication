@@ -34,7 +34,7 @@ export type PrivatePluginBlockVersionSettings =
     versions: PrivatePluginVersion[];
   };
 
-export const PRIVATE_PLUGIN_DEV_VERSION = "0.0.1-dev";
+export const PRIVATE_PLUGIN_DEV_VERSION = "@dev";
 
 @Injectable()
 export class PrivatePluginService extends BlockTypeService<
