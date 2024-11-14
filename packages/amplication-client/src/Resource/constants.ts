@@ -225,13 +225,19 @@ export function preparePluginRepositoryObject(
 }
 
 export function prepareComponentObject(
-  projectId: string
+  projectId: string,
+  blueprintId: string
 ): models.ResourceCreateInput {
   return {
     name: "Component",
     description: "",
     resourceType: models.EnumResourceType.Component,
     codeGenerator: null,
+    blueprint: {
+      connect: {
+        id: blueprintId,
+      },
+    },
     project: {
       connect: {
         id: projectId,
