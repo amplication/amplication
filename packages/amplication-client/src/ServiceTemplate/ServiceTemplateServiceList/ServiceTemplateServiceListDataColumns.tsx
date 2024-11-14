@@ -4,7 +4,7 @@ import {
   Text,
   VersionTag,
 } from "@amplication/ui/design-system";
-import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
+import ResourceTypeBadge from "../../Components/ResourceTypeBadge";
 import { Resource } from "../../models";
 import ResourceGitRepo from "../../Workspaces/ResourceGitRepo";
 import ResourceLastBuild from "../../Workspaces/ResourceLastBuild";
@@ -17,7 +17,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     name: "Type",
     width: 60,
     renderCell: (props) => {
-      return <ResourceCircleBadge type={props.row.resourceType} size="small" />;
+      return <ResourceTypeBadge resource={props.row} size="small" />;
     },
   },
   {

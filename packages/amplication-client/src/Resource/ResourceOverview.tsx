@@ -33,6 +33,7 @@ import { useResourceSummary } from "./hooks/useResourceSummary";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import ResourceOwner from "../Workspaces/ResourceOwner";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -116,14 +117,8 @@ const ResourceOverview = () => {
               gap={EnumGapSize.Small}
               itemsAlign={EnumItemsAlign.Center}
             >
-              <CircleBadge
-                size="large"
-                name={currentResource?.name || ""}
-                color={
-                  resourceThemeMap[currentResource?.resourceType].color ||
-                  "transparent"
-                }
-              />
+              <ResourceTypeBadge resource={currentResource} size="large" />
+
               <CodeGeneratorImage resource={currentResource} size="medium" />
             </FlexItem>
             <Text textStyle={EnumTextStyle.H3}>{currentResource?.name}</Text>

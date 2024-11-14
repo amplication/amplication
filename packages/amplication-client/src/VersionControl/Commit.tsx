@@ -16,6 +16,7 @@ import { Form, Formik } from "formik";
 import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory } from "react-router-dom";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 import { AppContext } from "../context/appContext";
 import {
   EnumCommitStrategy,
@@ -25,15 +26,14 @@ import {
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
-import "./Commit.scss";
-import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
-import useCommits from "./hooks/useCommits";
-import CreateCommitStrategyButtonItem from "./CreateCommitStrategyButtonItem";
-import "./CreateCommitStrategyButton.scss";
-import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
-import CommitButton from "./CommitButton";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
+import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
+import "./Commit.scss";
+import CommitButton from "./CommitButton";
+import "./CreateCommitStrategyButton.scss";
+import CreateCommitStrategyButtonItem from "./CreateCommitStrategyButtonItem";
+import useCommits from "./hooks/useCommits";
 
 const OPTIONS = [
   {
@@ -232,10 +232,7 @@ const Commit = ({
                 }}
               >
                 <FlexItem direction={EnumFlexDirection.Row}>
-                  <ResourceCircleBadge
-                    type={EnumResourceType.Service}
-                    size="small"
-                  />
+                  <ResourceTypeBadge resource={resource} size="small" />
                   {resource.name}
                 </FlexItem>
               </Button>

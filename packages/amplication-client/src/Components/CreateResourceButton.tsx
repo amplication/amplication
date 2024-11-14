@@ -96,7 +96,7 @@ const CreateResourceButton: React.FC<Props> = ({ servicesLength }) => {
   };
 
   const handleComponentClick = (blueprint: models.Blueprint) => {
-    const resource = prepareComponentObject(currentProject.id, blueprint.id);
+    const resource = prepareComponentObject(currentProject.id, blueprint);
     setLoading(true);
     createComponent(resource);
   };
