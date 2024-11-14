@@ -63,10 +63,6 @@ export class ServiceTemplateResolver {
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
   )
-  @AuthorizeContext(
-    AuthorizableOriginParameter.ResourceId,
-    "data.serviceTemplate.id"
-  )
   async createServiceFromTemplate(
     @Args() args: CreateServiceFromTemplateArgs,
     @UserEntity() user: User

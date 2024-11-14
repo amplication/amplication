@@ -31,6 +31,7 @@ import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 import { ScaffoldServiceFromTemplateArgs } from "./dto/ScaffoldServiceFromTemplateArgs";
 import { FindAvailableTemplatesForProjectArgs } from "./dto/FindAvailableTemplatesForProjectArgs";
+import { EnumCommitStrategy } from "./dto/EnumCommitStrategy";
 
 @Injectable()
 export class ServiceTemplateService {
@@ -150,6 +151,8 @@ export class ServiceTemplateService {
               id: project.connect.id,
             },
           },
+          commitStrategy: EnumCommitStrategy.Specific,
+          resourceIds: [newResource.id],
           user: {
             connect: {
               id: user.id,
