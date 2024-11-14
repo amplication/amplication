@@ -16,10 +16,10 @@ import TeamMemberList from "./TeamMemberList";
 const Team = () => {
   const match = useRouteMatch<{
     teamId: string;
-  }>(["/:workspace/teams/:teamId"]);
+  }>(["/:workspace/settings/teams/:teamId"]);
 
   const { currentWorkspace } = useAppContext();
-  const baseUrl = `/${currentWorkspace?.id}`;
+  const baseUrl = `/${currentWorkspace?.id}/settings`;
   const history = useHistory();
 
   const { teamId } = match?.params ?? {};

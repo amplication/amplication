@@ -12,40 +12,33 @@ import {
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
-  List,
   SearchField,
   Snackbar,
   Text,
-  ToggleView,
 } from "@amplication/ui/design-system";
 import { useStiggContext } from "@stigg/react-sdk";
 import { isEmpty } from "lodash";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import useLocalStorage from "react-use-localstorage";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
+import { CustomPropertyFilters } from "../CustomProperties/CustomPropertyFilters";
+import CustomPropertyValue from "../CustomProperties/CustomPropertyValue";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
+import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
+import NewServiceFromTemplateDialogWithUrlTrigger from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
 import { AppContext, useAppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import "./ResourceList.scss";
 import { RESOURCE_LIST_COLUMNS } from "./ResourceListDataColumns";
-import ResourceListItem from "./ResourceListItem";
-import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
-import NewServiceFromTemplateDialogWithUrlTrigger from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
-import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
-import CustomPropertyValue from "../CustomProperties/CustomPropertyValue";
-import { CustomPropertyFilters } from "../CustomProperties/CustomPropertyFilters";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";
-const LOCAL_STORAGE_KEY = "resource-list-view-mode";
 
-const VIEW_CARDS = "Cards";
-const VIEW_GRID = "Grid";
 const COLUMNS_LOCAL_STORAGE_KEY = "resource-list-columns";
 
 function ResourceList() {
@@ -110,11 +103,6 @@ function ResourceList() {
     );
   }, [resources]);
 
-  const [viewMode, setViewMode] = useLocalStorage(
-    LOCAL_STORAGE_KEY,
-    VIEW_CARDS
-  );
-
   const servicesLength = useMemo(() => {
     return relevantResources.filter(
       (resource) => resource.resourceType === models.EnumResourceType.Service
@@ -161,12 +149,6 @@ function ResourceList() {
                 columns={columns}
                 onColumnsChanged={setColumns}
               />
-
-              <ToggleView
-                values={[VIEW_CARDS, VIEW_GRID]}
-                selectedValue={viewMode}
-                onValueChange={(selectedValue) => setViewMode(selectedValue)}
-              />
               {loadingResources && <CircularProgress />}
             </FlexItem>
           </>
@@ -198,22 +180,13 @@ function ResourceList() {
         />
       ) : (
         <>
-          {viewMode === VIEW_GRID ? (
-            <div className={`${CLASS_NAME}__grid-container`}>
-              <DataGrid
-                columns={columns}
-                rows={relevantResources}
-                onColumnsReorder={onColumnsReorder}
-              ></DataGrid>
-            </div>
-          ) : (
-            <List>
-              {!loadingResources &&
-                relevantResources.map((resource) => (
-                  <ResourceListItem key={resource.id} resource={resource} />
-                ))}
-            </List>
-          )}
+          <div className={`${CLASS_NAME}__grid-container`}>
+            <DataGrid
+              columns={columns}
+              rows={relevantResources}
+              onColumnsReorder={onColumnsReorder}
+            ></DataGrid>
+          </div>
         </>
       )}
 

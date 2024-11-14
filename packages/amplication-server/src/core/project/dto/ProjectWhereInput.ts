@@ -1,6 +1,6 @@
 import { Field, InputType } from "@nestjs/graphql";
 import { WorkspaceWhereInput } from "../../workspace/dto";
-import { DateTimeFilter, StringFilter } from "../../../dto";
+import { BooleanFilter, DateTimeFilter, StringFilter } from "../../../dto";
 
 @InputType({
   isAbstract: true,
@@ -20,6 +20,11 @@ export class ProjectWhereInput {
     nullable: true,
   })
   name?: StringFilter | null;
+
+  @Field(() => BooleanFilter, {
+    nullable: true,
+  })
+  platformIsPublic?: BooleanFilter | null;
 
   workspace?: WorkspaceWhereInput | null;
 }

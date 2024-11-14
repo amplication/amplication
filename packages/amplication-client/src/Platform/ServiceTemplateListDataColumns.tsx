@@ -79,7 +79,7 @@ export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
         <ResourceCodeEngineVersion
           codeGeneratorStrategy={props.row.codeGeneratorStrategy}
           version={props.row.codeGeneratorVersion}
-          resourceId={props.row.id}
+          resource={props.row}
         />
       );
     },

@@ -17,11 +17,7 @@ const useProjectSelector = (
   } | null = useRouteMatch<{ workspace: string }>(
     "/:workspace([A-Za-z0-9-]{20,})"
   );
-  const workspaceUtil = useRouteMatch([
-    "/:workspace([A-Za-z0-9-]{20,})/settings",
-    "/:workspace([A-Za-z0-9-]{20,})/members",
-    "/:workspace([A-Za-z0-9-]{20,})/purchase",
-  ]);
+
   const projectMatch: {
     params: { workspace: string; project: string };
   } | null = useRouteMatch<{ workspace: string; project: string }>([
@@ -40,7 +36,8 @@ const useProjectSelector = (
     useState<models.Resource>();
   const {
     data: projectListData,
-    loading: loadingList,
+    loading: projectListLoading,
+    error: projectListError,
     refetch,
   } = useQuery<{
     projects: models.Project[];
@@ -93,14 +90,14 @@ const useProjectSelector = (
   }, []);
 
   useEffect(() => {
-    if (loadingList || !projectListData) return;
+    if (projectListLoading || !projectListData) return;
 
     const sortedProjects = [...projectListData.projects].sort((a, b) => {
       return Date.parse(b.createdAt) - Date.parse(a.createdAt);
     });
 
     setProjectList(sortedProjects);
-  }, [projectListData, loadingList]);
+  }, [projectListData, projectListLoading]);
 
   useEffect(() => {
     if (currentProject || project || !projectsList.length) return;
@@ -125,7 +122,7 @@ const useProjectSelector = (
       });
     }
 
-    !!(!workspaceUtil && currentWorkspace?.id) &&
+    !!currentWorkspace?.id &&
       (isFromSignup || isSignupCookieExist) &&
       history.push(`/${currentWorkspace?.id}/${projectsList[0].id}/welcome`);
   }, [
@@ -137,7 +134,6 @@ const useProjectSelector = (
     projectRedirect,
     projectsList,
     workspace,
-    workspaceUtil,
   ]);
 
   useEffect(() => {
@@ -165,11 +161,13 @@ const useProjectSelector = (
           resource.resourceType === models.EnumResourceType.ProjectConfiguration
       )
     );
-  }, [project, projectRedirect, projectsList]);
+  }, [project, projectRedirect, projectsList, refetch, projectListData]);
 
   return {
     currentProject,
     projectsList,
+    projectListLoading,
+    projectListError,
     createProject,
     onNewProjectCompleted,
     currentProjectConfiguration,

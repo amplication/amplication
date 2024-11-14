@@ -16,7 +16,7 @@ const TeamsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
   const pageTitle = "Teams";
 
   const teamMatch = useRouteMatch<{ teamId: string }>([
-    "/:workspace/teams/:teamId",
+    "/:workspace/settings/teams/:teamId",
   ]);
 
   let teamId = null;
