@@ -223,6 +223,7 @@ export type BlockWhereInput = {
 };
 
 export type Blueprint = {
+  color?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   enabled: Scalars['Boolean']['output'];
@@ -243,6 +244,7 @@ export type BlueprintOrderByInput = {
 };
 
 export type BlueprintUpdateInput = {
+  color?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   key?: InputMaybe<Scalars['String']['input']>;
@@ -3385,6 +3387,7 @@ export type ResourceEntitiesArgs = {
 };
 
 export type ResourceCreateInput = {
+  blueprint?: InputMaybe<WhereParentIdInput>;
   codeGenerator?: InputMaybe<EnumCodeGenerator>;
   description: Scalars['String']['input'];
   gitRepository?: InputMaybe<ConnectGitRepositoryInput>;

@@ -25,6 +25,9 @@ export class ResourceCreateInput {
   @Field(() => WhereParentIdInput, { nullable: false })
   project!: WhereParentIdInput;
 
+  @Field(() => WhereParentIdInput, { nullable: true })
+  blueprint?: WhereParentIdInput;
+
   @Field(() => ServiceSettingsUpdateInput, { nullable: true })
   serviceSettings?: ServiceSettingsUpdateInput;
 

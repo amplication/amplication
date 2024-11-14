@@ -195,6 +195,7 @@ input BlockWhereInput {
 }
 
 type Blueprint {
+  color: String
   createdAt: DateTime!
   description: String
   enabled: Boolean!
@@ -215,6 +216,7 @@ input BlueprintOrderByInput {
 }
 
 input BlueprintUpdateInput {
+  color: String
   description: String
   enabled: Boolean
   key: String
@@ -2293,6 +2295,7 @@ type Resource {
 }
 
 input ResourceCreateInput {
+  blueprint: WhereParentIdInput
   codeGenerator: EnumCodeGenerator
   description: String!
   gitRepository: ConnectGitRepositoryInput

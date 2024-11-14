@@ -557,6 +557,10 @@ export class ResourceService {
     args: CreateOneResourceArgs,
     user: User
   ): Promise<Resource> {
+    if (!args.data.blueprint) {
+      throw new AmplicationError("Component must use a blueprint");
+    }
+
     const resource = await this.createResource(
       {
         data: {
