@@ -3343,6 +3343,8 @@ export type RemoteGitRepository = {
 };
 
 export type Resource = {
+  blueprint?: Maybe<Blueprint>;
+  blueprintId?: Maybe<Scalars['String']['output']>;
   builds: Array<Build>;
   codeGenerator?: Maybe<EnumCodeGenerator>;
   codeGeneratorStrategy?: Maybe<CodeGeneratorVersionStrategy>;

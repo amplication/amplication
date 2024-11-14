@@ -2267,6 +2267,8 @@ type RemoteGitRepository {
 }
 
 type Resource {
+  blueprint: Blueprint
+  blueprintId: String
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
   codeGenerator: EnumCodeGenerator
   codeGeneratorStrategy: CodeGeneratorVersionStrategy

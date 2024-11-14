@@ -14,7 +14,7 @@ import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Resource, Entity, User, Project, Team } from "../../models";
+import { Resource, Entity, User, Project, Team, Blueprint } from "../../models";
 import { GitRepository } from "../../models/GitRepository";
 import { ResourceService, EntityService } from "..";
 import { BuildService } from "../build/build.service";
@@ -45,6 +45,7 @@ import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
 import { ProjectService } from "../project/project.service";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
 import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
+import { BlueprintService } from "../blueprint/blueprint.service";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -58,7 +59,8 @@ export class ResourceResolver {
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly resourceVersionService: ResourceVersionService,
     private readonly ownershipService: OwnershipService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly blueprintService: BlueprintService
   ) {}
 
   @Query(() => Resource, { nullable: true })
@@ -295,6 +297,19 @@ export class ResourceResolver {
     return this.resourceService.resource({
       where: {
         id: serviceTemplateVersion.serviceTemplateId,
+      },
+    });
+  }
+
+  @ResolveField(() => Blueprint, { nullable: true })
+  async blueprint(@Parent() resource: Resource): Promise<Blueprint> {
+    if (!resource.blueprintId) {
+      return null;
+    }
+
+    return this.blueprintService.blueprint({
+      where: {
+        id: resource.blueprintId,
       },
     });
   }
