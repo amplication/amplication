@@ -6,7 +6,7 @@ DSG (Data Service Generator) is the component responsible for the generation of 
 
 After creating new plugin on your local environment and build it locally, you can test it or continue developing it following this few steps:
 
-* run ```npx nx generate-example-input-json blueprint-generator``` . This command will create an input-example-json file under .amplication/generated-local-code/input.json
+* run ```npx nx generate-example-input-json generator-blueprints``` . This command will create an input-example-json file under .amplication/generated-local-code/input.json
 * add to this file under `pluginInstallations` key the details of you local plugin:
   ```
   {
@@ -21,7 +21,7 @@ After creating new plugin on your local environment and build it locally, you ca
 now your plugin should be part of the generated code flow.
 
 If you want to check the generated code you should run:
-`npx nx generate-local-code blueprint-generator`
+`npx nx generate-local-code generator-blueprints`
 This command will generate the code under .amplication/generate-local-code/generated
 
 If you want to debug the code you should run in debug mode: 
@@ -31,16 +31,16 @@ in order to debug your local plugin you should add `debugger` in your code and i
 
 ## Testing
 
-### Run blueprint-generator based on test data
+### Run generator-blueprints based on test data
 
 Generate an application according to the test data definitions. Once generated you can install its dependencies and start it with npm and spin a database with Docker.
 
 ```sh
-# Generate an example input used by blueprint-generator during the generation process
-npx nx generate-example-input-json blueprint-generator
+# Generate an example input used by generator-blueprints during the generation process
+npx nx generate-example-input-json generator-blueprints
 
 # Trigger the code generation process based on the example input
-npx nx generate-local-code blueprint-generator
+npx nx generate-local-code generator-blueprints
 ```
 
 ### E2E test data service application creation
@@ -48,5 +48,5 @@ npx nx generate-local-code blueprint-generator
 The test will generate code according to the test data definitions, run a Docker container with it, run a database docker container, and try to call the API endpoints. Make sure to build the library before executing it.
 
 ```
-npx nx e2e blueprint-generator
+npx nx e2e generator-blueprints
 ```

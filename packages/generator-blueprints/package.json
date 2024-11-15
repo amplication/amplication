@@ -2,7 +2,7 @@
   "name": "generator--blueprints",
   "version": "0.0.1",
   "scripts": {
-    "dsg:package:container": "./scripts/package-container.sh"
+    "bpg:package:container": "./scripts/package-container.sh"
   },
   "dependencies": {
     "@amplication/util-logging": "0.0.2",

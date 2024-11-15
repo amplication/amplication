@@ -1,5 +1,5 @@
 export default {
-  displayName: "blueprint-generator",
+  displayName: "generator-blueprints",
   preset: "../../jest.preset.js",
   globals: {},
   fakeTimers: {
@@ -18,7 +18,7 @@ export default {
     "^axios$": require.resolve("axios"),
   },
   transformIgnorePatterns: ["node_modules/(?!axios)"],
-  coverageDirectory: "../../coverage/packages/blueprint-generator",
+  coverageDirectory: "../../coverage/packages/generator-blueprints",
   coverageThreshold: {
     global: {
       branches: 87,

@@ -7,8 +7,8 @@ ARG GIT_SHA
 
 RUN apk add g++ make python3
 
-WORKDIR /workspace/packages/blueprint-generator
-COPY ./dist/packages/blueprint-generator .
+WORKDIR /workspace/packages/generator-blueprints
+COPY ./dist/packages/generator-blueprints .
 RUN npm i --omit-dev
 
 # Copy unpublished amplication libraries

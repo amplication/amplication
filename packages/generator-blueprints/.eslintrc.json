@@ -14,7 +14,7 @@
     "src/**/package-json/package.json"
   ],
   "parserOptions": {
-    "project": "packages/blueprint-generator/tsconfig.*?.json"
+    "project": "packages/generator-blueprint/tsconfig.*?.json"
   },
   "overrides": [
     {

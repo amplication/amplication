@@ -1,5 +1,5 @@
 export default {
-  displayName: "blueprint-generator",
+  displayName: "generator-blueprints",
   preset: "../../jest.preset.js",
   globals: {},
   moduleFileExtensions: ["js", "json", "ts"],
