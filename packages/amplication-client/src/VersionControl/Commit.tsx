@@ -118,7 +118,8 @@ const Commit = ({
     return resources.filter(
       (r) =>
         r.resourceType === EnumResourceType.Service ||
-        r.resourceType === EnumResourceType.MessageBroker
+        r.resourceType === EnumResourceType.MessageBroker ||
+        r.resourceType === EnumResourceType.Component
     );
   }, [resources]);
 
@@ -222,7 +223,11 @@ const Commit = ({
           itemsAlign={EnumItemsAlign.Start}
         >
           {commitableResources
-            .filter((r) => r.resourceType === EnumResourceType.Service)
+            .filter(
+              (r) =>
+                r.resourceType === EnumResourceType.Service ||
+                r.resourceType === EnumResourceType.Component
+            )
             .map((resource, index) => (
               <Button
                 key={index}
