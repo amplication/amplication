@@ -1660,6 +1660,7 @@ type Mutation {
   removeMembersFromTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
+  scaffoldServiceFromTemplate(data: ScaffoldServiceFromTemplateInput!): Resource!
   sendAssistantMessageWithStream(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
@@ -2472,6 +2473,12 @@ enum Role {
   OrganizationAdmin
   ProjectAdmin
   User
+}
+
+input ScaffoldServiceFromTemplateInput {
+  name: String!
+  project: WhereParentIdInput!
+  serviceTemplateName: String!
 }
 
 input SendAssistantMessageInput {
