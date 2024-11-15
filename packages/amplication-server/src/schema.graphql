@@ -877,6 +877,7 @@ input EnumBuildStatusFilter {
 }
 
 enum EnumCodeGenerator {
+  Blueprint
   DotNet
   NodeJs
 }

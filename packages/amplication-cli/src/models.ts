@@ -907,6 +907,7 @@ export type EnumBuildStatusFilter = {
 };
 
 export enum EnumCodeGenerator {
+  Blueprint = 'Blueprint',
   DotNet = 'DotNet',
   NodeJs = 'NodeJs'
 }
