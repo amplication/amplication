@@ -10,6 +10,7 @@ import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Resource, User } from "../../models";
 import { FindManyResourceArgs } from "./dto";
 import { CreateServiceFromTemplateArgs } from "./dto/CreateServiceFromTemplateArgs";
+import { ScaffoldServiceFromTemplateArgs } from "./dto/ScaffoldServiceFromTemplateArgs";
 import { CreateServiceTemplateArgs } from "./dto/CreateServiceTemplateArgs";
 import { FindAvailableTemplatesForProjectArgs } from "./dto/FindAvailableTemplatesForProjectArgs";
 import { ServiceTemplateService } from "./serviceTemplate.service";
@@ -62,15 +63,28 @@ export class ServiceTemplateResolver {
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
   )
-  @AuthorizeContext(
-    AuthorizableOriginParameter.ResourceId,
-    "data.serviceTemplate.id"
-  )
   async createServiceFromTemplate(
     @Args() args: CreateServiceFromTemplateArgs,
     @UserEntity() user: User
   ): Promise<Resource> {
     return this.service.createServiceFromTemplate(args, user);
+  }
+
+  @Mutation(() => Resource, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "data.project.connect.id"
+  )
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "data.serviceTemplate.id"
+  )
+  async scaffoldServiceFromTemplate(
+    @Args() args: ScaffoldServiceFromTemplateArgs,
+    @UserEntity() user: User
+  ): Promise<Resource> {
+    return this.service.scaffoldServiceFromTemplate(args, user);
   }
 
   @Mutation(() => Resource, { nullable: false })

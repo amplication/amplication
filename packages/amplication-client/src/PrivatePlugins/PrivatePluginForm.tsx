@@ -8,6 +8,7 @@ import { validate } from "../util/formikValidateJsonSchema";
 import FormikAutoSave from "../util/formikAutoSave";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
+import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 
 type Props = {
   onSubmit: (values: models.PrivatePlugin) => void;
@@ -75,7 +76,7 @@ const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
           options={availableCodeGenerators}
         />
 
-        <TextField name="description" label="Description" textarea rows={3} />
+        <OptionalDescriptionField name="description" label="Description" />
       </Form>
     </Formik>
   );
