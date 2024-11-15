@@ -1,10 +1,9 @@
 import {
   blueprintPluginEventsParams,
-  FileMap,
   blueprintTypes,
-  IFile,
+  FileMap,
 } from "@amplication/code-gen-types";
-import { AstNode, CodeBlock, CsharpSupport } from "@amplication/csharp-ast";
+import { AstNode } from "@amplication/csharp-ast";
 import DsgContext from "../dsg-context";
 import pluginWrapper from "../plugin-wrapper";
 
@@ -24,16 +23,21 @@ async function createBlueprintInternal(
   await context.logger.info("Creating blueprint...");
   const fileMap = new FileMap<AstNode>(context.logger);
 
-  const exampleCodeBlock: CodeBlock = CsharpSupport.codeblock({
-    code: "Hello, World!",
-  });
+  // const staticPath = "./src/utils";
 
-  const file: IFile<CodeBlock> = {
-    path: `example.txt`,
-    code: exampleCodeBlock,
-  };
+  // const staticFiles = await context.utils.importStaticFiles(staticPath, "./");
 
-  await fileMap.set(file);
+  // console.log({ staticFiles });
+
+  // for (const item of staticFiles.getAll()) {
+  //   const file: IFile<CodeBlock> = {
+  //     path: item.path,
+  //     code: new CodeBlock({
+  //       code: item.code,
+  //     }),
+  //   };
+  //   await fileMap.set(file);
+  // }
 
   return fileMap;
 }

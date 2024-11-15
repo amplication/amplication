@@ -17,7 +17,7 @@ export const mockedLogger: ILogger = {
   child: jest.fn(() => mockedLogger),
 };
 
-describe("createDataService", () => {
+describe("createBlueprint", () => {
   afterEach(async () => {
     jest.clearAllMocks();
     await rm(temporaryPluginInstallationPath, {
@@ -26,7 +26,7 @@ describe("createDataService", () => {
     });
   });
 
-  test("creates resource as expected", async () => {
+  test("generate blueprint code as expected", async () => {
     const files = await createDataService(
       TEST_DATA,
       mockedLogger,
@@ -35,24 +35,12 @@ describe("createDataService", () => {
 
     const pathToCode: {
       [k: string]: any;
-    } = [];
+    } = {};
 
     for await (const file of files.getAll()) {
       pathToCode[file.path] = file.code;
     }
 
-    console.log(pathToCode);
-
-    // const modulesToSnapshot = modules
-    //   .modules()
-    //   .filter((module) =>
-    //     MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
-    //       module.path.endsWith(extension)
-    //     )
-    //   );
-    // const pathToCode = Object.fromEntries(
-    //   modulesToSnapshot.map((module) => [module.path, module.code])
-    // );
     expect(pathToCode).toMatchSnapshot();
   });
 });
