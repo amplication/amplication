@@ -17,7 +17,7 @@ export const mockedLogger: ILogger = {
   child: jest.fn(() => mockedLogger),
 };
 
-xdescribe("createDataService", () => {
+describe("createDataService", () => {
   afterEach(async () => {
     jest.clearAllMocks();
     await rm(temporaryPluginInstallationPath, {
@@ -40,6 +40,9 @@ xdescribe("createDataService", () => {
     for await (const file of files.getAll()) {
       pathToCode[file.path] = file.code;
     }
+
+    console.log(pathToCode);
+
     // const modulesToSnapshot = modules
     //   .modules()
     //   .filter((module) =>

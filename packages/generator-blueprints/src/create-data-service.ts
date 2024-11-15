@@ -67,6 +67,8 @@ export async function createDataService(
     logger.debug("Creating blueprint...", { generateServer });
     await files.merge(await createBlueprint());
 
+    console.log(files.getAll());
+
     // This code normalizes the path of each module to always use Unix path separator.
     await context.logger.info(
       "Normalizing modules path to use Unix path separator"

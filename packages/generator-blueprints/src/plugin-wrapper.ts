@@ -1,27 +1,32 @@
-import { FileMap, dotnetTypes } from "@amplication/code-gen-types";
+import { FileMap, blueprintTypes } from "@amplication/code-gen-types";
 import util from "node:util";
 import DsgContext from "./dsg-context";
 import { AstNode } from "@amplication/csharp-ast";
 
 export type PluginWrapper = (
   func: (...args: any) => FileMap<AstNode> | Promise<FileMap<AstNode>>,
-  event: dotnetTypes.DotnetEventNames,
+  event: blueprintTypes.BlueprintEventNames,
   ...args: any
 ) => any;
 
 const beforeEventsPipe =
-  (...fns: dotnetTypes.PluginBeforeEvent<dotnetTypes.EventParams>[]) =>
-  (context: DsgContext, eventParams: dotnetTypes.EventParams) =>
+  (...fns: blueprintTypes.PluginBeforeEvent<blueprintTypes.EventParams>[]) =>
+  (context: DsgContext, eventParams: blueprintTypes.EventParams) =>
     fns.reduce(
       async (res, fn) => fn(context, await res),
       Promise.resolve(eventParams)
     );
 
 const afterEventsPipe =
-  (...fns: dotnetTypes.PluginAfterEvent<dotnetTypes.EventParams, AstNode>[]) =>
+  (
+    ...fns: blueprintTypes.PluginAfterEvent<
+      blueprintTypes.EventParams,
+      AstNode
+    >[]
+  ) =>
   (
     context: DsgContext,
-    eventParams: dotnetTypes.EventParams,
+    eventParams: blueprintTypes.EventParams,
     files: FileMap<AstNode>
   ) =>
     fns.reduce(

@@ -1,15 +1,15 @@
 import {
-  dotnetTypes,
-  dotnetPluginEventsTypes,
+  blueprintTypes,
+  blueprintPluginEventsTypes,
   PluginInstallation,
 } from "@amplication/code-gen-types";
 import { join } from "path";
 import { logger } from "@amplication/dsg-utils";
 import DsgContext from "./dsg-context";
 
-class EmptyPlugin implements dotnetTypes.AmplicationPlugin {
+class EmptyPlugin implements blueprintTypes.AmplicationPlugin {
   init?: (name: string, version: string) => void;
-  register: () => dotnetPluginEventsTypes.DotnetEvents = () => {
+  register: () => blueprintPluginEventsTypes.BlueprintEvents = () => {
     return {};
   };
 }
@@ -42,7 +42,7 @@ const getPrivatePluginPath = (pluginId: string) => {
 async function* getPluginFuncGenerator(
   pluginList: PluginInstallation[],
   pluginInstallationPath?: string
-): AsyncGenerator<new () => dotnetTypes.AmplicationPlugin> {
+): AsyncGenerator<new () => blueprintTypes.AmplicationPlugin> {
   const context = DsgContext.getInstance;
   try {
     const pluginListLength = pluginList.length;
@@ -98,10 +98,10 @@ async function getPlugin(
 const getAllPlugins = async (
   pluginList: PluginInstallation[],
   pluginInstallationPath?: string
-): Promise<dotnetPluginEventsTypes.DotnetEvents[]> => {
+): Promise<blueprintPluginEventsTypes.BlueprintEvents[]> => {
   if (!pluginList.length) return [];
 
-  const pluginFuncsArr: dotnetPluginEventsTypes.DotnetEvents[] = [];
+  const pluginFuncsArr: blueprintPluginEventsTypes.BlueprintEvents[] = [];
 
   for await (const pluginFunc of getPluginFuncGenerator(
     pluginList,
@@ -126,29 +126,31 @@ const getAllPlugins = async (
 const registerPlugins = async (
   pluginList: PluginInstallation[],
   pluginInstallationPath?: string
-): Promise<dotnetTypes.PluginMap> => {
-  const pluginMap: dotnetTypes.PluginMap = {};
+): Promise<blueprintTypes.PluginMap> => {
+  const pluginMap: blueprintTypes.PluginMap = {};
 
   const pluginFuncsArr = (await getAllPlugins(
     pluginList,
     pluginInstallationPath
-  )) as dotnetPluginEventsTypes.DotnetEvents[];
+  )) as blueprintPluginEventsTypes.BlueprintEvents[];
   if (!pluginFuncsArr.length) return {};
 
   pluginFuncsArr.reduce(
     (
       pluginContext: { [key: string]: any },
-      plugin: dotnetPluginEventsTypes.DotnetEvents
+      plugin: blueprintPluginEventsTypes.BlueprintEvents
     ) => {
       Object.keys(plugin).forEach((eventKey: string) => {
         if (!pluginMap.hasOwnProperty(eventKey))
-          pluginContext[eventKey as dotnetTypes.DotnetEventNames] = {
+          pluginContext[eventKey as blueprintTypes.BlueprintEventNames] = {
             before: [],
             after: [],
           };
 
         const { before, after } =
-          plugin[eventKey as keyof dotnetPluginEventsTypes.DotnetEvents] || {};
+          plugin[
+            eventKey as keyof blueprintPluginEventsTypes.BlueprintEvents
+          ] || {};
 
         functionsObject.includes(Object.prototype.toString.call(before)) &&
           pluginContext[eventKey].before.push(before);

@@ -13,7 +13,7 @@ import { readPluginStaticFiles } from "./utils/read-static-files";
 import { BuildLogger } from "@amplication/dsg-utils";
 import { AstNode } from "@amplication/csharp-ast";
 
-class DsgContext implements types.dotnetTypes.DsgContext {
+class DsgContext implements types.blueprintTypes.DsgContext {
   public appInfo!: types.AppInfo;
   public entities: types.Entity[] = [];
   public buildId: string;
@@ -22,12 +22,12 @@ class DsgContext implements types.dotnetTypes.DsgContext {
   public generateGrpc: boolean;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   public DTOs: types.DTOs = {};
-  public plugins: types.dotnetTypes.PluginMap = {};
+  public plugins: types.blueprintTypes.PluginMap = {};
   public entityActionsMap: types.EntityActionsMap = {};
   public moduleActionsAndDtoMap: ModuleActionsAndDtosMap;
 
   public readonly logger: IBuildLogger;
-  public utils: types.dotnetTypes.ContextUtil = {
+  public utils: types.blueprintTypes.ContextUtil = {
     skipDefaultBehavior: false,
     abortGeneration: (msg: string) => {
       this.utils.abortMessage = msg;
