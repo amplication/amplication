@@ -7,7 +7,7 @@ import { prepareContext } from "./prepare-context";
 import { createBlueprint } from "./blueprint/create-blueprint";
 import { ILogger } from "@amplication/util-logging";
 import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
-import { dynamicPackagesInstallations, logger } from "@amplication/dsg-utils";
+import { dynamicPackagesInstallations } from "@amplication/dsg-utils";
 import { AstNode } from "@amplication/csharp-ast";
 
 export async function createDataService(
@@ -54,20 +54,9 @@ export async function createDataService(
       buildId: dSGResourceData.buildId,
     });
 
-    const {
-      appInfo: {
-        settings: {
-          serverSettings: { generateServer },
-        },
-      },
-    } = context;
-
     const files = new FileMap<AstNode>(context.logger);
 
-    logger.debug("Creating blueprint...", { generateServer });
     await files.merge(await createBlueprint());
-
-    console.log(files.getAll());
 
     // This code normalizes the path of each module to always use Unix path separator.
     await context.logger.info(

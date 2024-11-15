@@ -88,7 +88,7 @@ export async function prepareContext(
     moduleContainers,
     moduleActions,
     moduleDtos,
-    context.appInfo.settings.serverSettings.generateGraphQL
+    context.appInfo.settings?.serverSettings?.generateGraphQL || false
   );
 
   context.entityActionsMap = prepareEntityActions(

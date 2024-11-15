@@ -1,15 +1,14 @@
 import { DSGResourceData, FileMap } from "@amplication/code-gen-types";
 import { AstNode, Writer } from "@amplication/csharp-ast";
-import { execFile } from "child_process";
+import {
+  BuildManagerNotifier,
+  getFileEncoding,
+  logger as internalLogger,
+} from "@amplication/dsg-utils";
 import { mkdir, readFile, writeFile } from "fs/promises";
-import path, { dirname, join } from "path";
+import { dirname, join } from "path";
 import { createDataService } from "./create-data-service";
 import DsgContext from "./dsg-context";
-import {
-  logger as internalLogger,
-  BuildManagerNotifier,
-} from "@amplication/dsg-utils";
-import { getFileEncoding } from "@amplication/dsg-utils";
 export const AMPLICATION_MODULES = "amplication_modules";
 
 async function readInputJson(filePath: string): Promise<DSGResourceData> {
@@ -51,52 +50,6 @@ async function writeModules(
   internalLogger.info(`Successfully wrote modules to ${destination}`);
 }
 
-const execFileAsync = (command, args, options) => {
-  return new Promise((resolve, reject) => {
-    execFile(command, args, options, (error, stdout, stderr) => {
-      if (error) {
-        reject({ error, stderr });
-      } else {
-        resolve(stdout);
-      }
-    });
-  });
-};
-
-async function externalFormatting(
-  context: DsgContext,
-  destination: string
-): Promise<void> {
-  const {
-    serverDirectories: { baseDirectory, srcDirectory },
-    logger,
-  } = context;
-
-  await logger.info(`Formatting the generated code...`);
-
-  const serverRootDirectory = path.join(destination, srcDirectory);
-  try {
-    await execFileAsync("dotnet", ["format", "--no-restore"], {
-      cwd: path.join(destination, baseDirectory),
-    });
-
-    await execFileAsync("dotnet", ["tool", "restore"], {
-      cwd: serverRootDirectory,
-    });
-
-    const executionResult = await execFileAsync("dotnet", ["csharpier", "."], {
-      cwd: serverRootDirectory,
-    });
-    const formatting = executionResult.toString().trim().replace(/\n/g, "");
-
-    formatting.startsWith("Warning")
-      ? await logger.warn(formatting)
-      : await logger.info(formatting);
-  } catch (error) {
-    await logger.error(`Failed to run csharpier`, null, null, error);
-  }
-}
-
 export const generateCodeByResourceData = async (
   resourceData: DSGResourceData,
   destination: string
@@ -110,10 +63,6 @@ export const generateCodeByResourceData = async (
 
     await writeModules(files, destination);
     const context = DsgContext.getInstance;
-
-    if (files.getAll()) {
-      await externalFormatting(context, destination);
-    }
 
     await context.logger.info("Code generation completed");
   } catch (error) {
