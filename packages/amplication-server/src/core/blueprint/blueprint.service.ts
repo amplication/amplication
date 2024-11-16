@@ -139,9 +139,6 @@ export class BlueprintService {
       );
     }
 
-    //todo: validate the relation key is unique
-    //todo: validate the relatedTo is a valid blueprint key
-
     let newOrUpdatedRelation: BlueprintRelation;
 
     if (!blueprint.relations) {
@@ -151,6 +148,35 @@ export class BlueprintService {
     const currentRelationIndex = blueprint.relations?.findIndex(
       (relation) => relation.key === args.where.relationKey
     );
+
+    const currentRelation = blueprint.relations[currentRelationIndex];
+
+    //validate the relatedTo is a valid blueprint key
+    if (args.data.relatedTo !== currentRelation?.relatedTo) {
+      const relatedToBlueprint = await this.blueprints({
+        where: {
+          key: {
+            equals: args.data.relatedTo,
+          },
+        },
+      });
+
+      if (!relatedToBlueprint) {
+        throw new AmplicationError(
+          `Related blueprint not found, key: ${args.data.relatedTo}`
+        );
+      }
+    }
+
+    // validate the relation key is unique
+    if (
+      args.data.key !== currentRelation?.key &&
+      blueprint.relations.some((relation) => relation.key === args.data.key)
+    ) {
+      throw new AmplicationError(
+        `Relation key must be unique, key: ${args.where.relationKey}`
+      );
+    }
 
     if (currentRelationIndex === -1) {
       newOrUpdatedRelation = {

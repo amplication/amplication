@@ -21,5 +21,10 @@ export class BlueprintWhereInput {
   })
   name?: StringFilter | null;
 
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  key?: StringFilter | null;
+
   workspace?: WorkspaceWhereInput | null;
 }

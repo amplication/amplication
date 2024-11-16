@@ -2,14 +2,17 @@ import {
   CircleBadge,
   CircularProgress,
   Dialog,
+  EnumFlexDirection,
   EnumFlexItemMargin,
   EnumItemsAlign,
+  EnumTextStyle,
   FlexItem,
   Icon,
   List,
   ListItem,
   Snackbar,
   TabContentTitle,
+  Text,
   Tooltip,
 } from "@amplication/ui/design-system";
 import React from "react";
@@ -103,6 +106,8 @@ const BlueprintRelationList = React.memo(
 
           {blueprint?.relations?.map((relation, index) => (
             <ListItem
+              direction={EnumFlexDirection.Row}
+              itemsAlign={EnumItemsAlign.Center}
               // end={
               //   <Button
               //     icon="trash_2"
@@ -128,7 +133,8 @@ const BlueprintRelationList = React.memo(
                 </Tooltip>
               }
             >
-              {relation.name}
+              <Text textStyle={EnumTextStyle.Normal}>{relation.name}</Text>
+              <Text textStyle={EnumTextStyle.Description}>{relation.key}</Text>
             </ListItem>
           ))}
         </List>
