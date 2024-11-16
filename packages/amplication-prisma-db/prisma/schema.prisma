@@ -659,6 +659,7 @@ enum EnumBlockType {
   PrivatePlugin
   Package
   CodeEngineVersion
+  Relation
 }
 
 enum ActionStepStatus {
