@@ -34,7 +34,7 @@ export type Props = {
 export const SelectField = ({
   label,
   name,
-  options,
+  options = [],
   isMulti,
   isClearable,
   isCreatable,
