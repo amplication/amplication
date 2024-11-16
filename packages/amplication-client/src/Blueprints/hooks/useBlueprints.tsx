@@ -86,6 +86,7 @@ const useBlueprints = (blueprintId?: string) => {
             const newBlueprintRef = cache.writeFragment({
               data: newBlueprint,
               fragment: BLUEPRINT_FIELDS_FRAGMENT,
+              fragmentName: "BlueprintFields",
             });
 
             if (
