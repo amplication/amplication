@@ -1,6 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Workspace } from "./Workspace";
-import { BluePrintRelation } from "./BluePrintRelation";
+import { BlueprintRelation } from "./BlueprintRelation";
 
 @ObjectType({
   isAbstract: true,
@@ -42,10 +42,10 @@ export class Blueprint {
   })
   description?: string;
 
-  @Field(() => [BluePrintRelation], {
+  @Field(() => [BlueprintRelation], {
     nullable: true,
   })
-  relations?: BluePrintRelation[] | null | undefined;
+  relations?: BlueprintRelation[] | null | undefined;
 
   workspace?: Workspace;
 

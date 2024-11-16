@@ -10,7 +10,7 @@ import { prepareDeletedItemName } from "../../util/softDelete";
 import { BlueprintCreateArgs } from "./dto/BlueprintCreateArgs";
 import { BlueprintFindManyArgs } from "./dto/BlueprintFindManyArgs";
 import { UpdateBlueprintArgs } from "./dto/UpdateBlueprintArgs";
-import { BluePrintRelation } from "../../models/BluePrintRelation";
+import { BlueprintRelation } from "../../models/BlueprintRelation";
 import { UpsertBlueprintRelationArgs } from "./dto/UpsertBlueprintRelationArgs";
 import { JsonArray } from "type-fest";
 
@@ -122,14 +122,14 @@ export class BlueprintService {
     return {
       ...record,
       relations: record.relations
-        ? (record.relations as unknown as BluePrintRelation[])
+        ? (record.relations as unknown as BlueprintRelation[])
         : null,
     };
   }
 
   async upsertRelation(
     args: UpsertBlueprintRelationArgs
-  ): Promise<BluePrintRelation> {
+  ): Promise<BlueprintRelation> {
     const blueprint = await this.blueprint({
       where: { id: args.where.blueprint.id },
     });
@@ -142,7 +142,7 @@ export class BlueprintService {
     //todo: validate the relation key is unique
     //todo: validate the relatedTo is a valid blueprint key
 
-    let newOrUpdatedRelation: BluePrintRelation;
+    let newOrUpdatedRelation: BlueprintRelation;
 
     const currentRelationIndex = blueprint.relations.findIndex(
       (relation) => relation.key === args.where.relationKey

@@ -194,15 +194,6 @@ input BlockWhereInput {
   updatedAt: DateTimeFilter
 }
 
-type BluePrintRelation {
-  allowMultiple: Boolean!
-  description: String
-  key: String!
-  name: String!
-  relatedTo: String!
-  required: Boolean!
-}
-
 type Blueprint {
   color: String
   createdAt: DateTime!
@@ -211,7 +202,7 @@ type Blueprint {
   id: String!
   key: String!
   name: String!
-  relations: [BluePrintRelation!]
+  relations: [BlueprintRelation!]
   updatedAt: DateTime!
 }
 
@@ -223,6 +214,15 @@ input BlueprintOrderByInput {
   deletedAt: SortOrder
   id: SortOrder
   name: SortOrder
+}
+
+type BlueprintRelation {
+  allowMultiple: Boolean!
+  description: String
+  key: String!
+  name: String!
+  relatedTo: String!
+  required: Boolean!
 }
 
 input BlueprintRelationUpsertInput {
@@ -1724,7 +1724,7 @@ type Mutation {
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
   upgradeServiceToLatestTemplateVersion(where: WhereUniqueInput!): Resource!
-  upsertBlueprintRelation(data: BlueprintRelationUpsertInput!, where: WhereBlueprintRelationUniqueInput!): BluePrintRelation!
+  upsertBlueprintRelation(data: BlueprintRelationUpsertInput!, where: WhereBlueprintRelationUniqueInput!): BlueprintRelation!
 }
 
 type OutdatedVersionAlert {

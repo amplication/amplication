@@ -14,7 +14,7 @@ import { BlueprintService } from "./blueprint.service";
 import { BlueprintCreateArgs } from "./dto/BlueprintCreateArgs";
 import { BlueprintFindManyArgs } from "./dto/BlueprintFindManyArgs";
 import { UpdateBlueprintArgs } from "./dto/UpdateBlueprintArgs";
-import { BluePrintRelation } from "../../models/BluePrintRelation";
+import { BlueprintRelation } from "../../models/BlueprintRelation";
 import { UpsertBlueprintRelationArgs } from "./dto/UpsertBlueprintRelationArgs";
 
 @Resolver(() => Blueprint)
@@ -67,7 +67,7 @@ export class BlueprintResolver {
     return this.blueprintService.updateBlueprint(args);
   }
 
-  @Mutation(() => BluePrintRelation, {
+  @Mutation(() => BlueprintRelation, {
     nullable: false,
   })
   @AuthorizeContext(
@@ -76,7 +76,7 @@ export class BlueprintResolver {
   )
   async upsertBlueprintRelation(
     @Args() args: UpsertBlueprintRelationArgs
-  ): Promise<BluePrintRelation> {
+  ): Promise<BlueprintRelation> {
     return this.blueprintService.upsertRelation(args);
   }
 }

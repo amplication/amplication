@@ -222,15 +222,6 @@ export type BlockWhereInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
-export type BluePrintRelation = {
-  allowMultiple: Scalars['Boolean']['output'];
-  description?: Maybe<Scalars['String']['output']>;
-  key: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-  relatedTo: Scalars['String']['output'];
-  required: Scalars['Boolean']['output'];
-};
-
 export type Blueprint = {
   color?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
@@ -239,7 +230,7 @@ export type Blueprint = {
   id: Scalars['String']['output'];
   key: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  relations?: Maybe<Array<BluePrintRelation>>;
+  relations?: Maybe<Array<BlueprintRelation>>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -251,6 +242,15 @@ export type BlueprintOrderByInput = {
   deletedAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
+};
+
+export type BlueprintRelation = {
+  allowMultiple: Scalars['Boolean']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  relatedTo: Scalars['String']['output'];
+  required: Scalars['Boolean']['output'];
 };
 
 export type BlueprintRelationUpsertInput = {
@@ -1744,7 +1744,7 @@ export type Mutation = {
   updateTopic: Topic;
   updateWorkspace?: Maybe<Workspace>;
   upgradeServiceToLatestTemplateVersion: Resource;
-  upsertBlueprintRelation: BluePrintRelation;
+  upsertBlueprintRelation: BlueprintRelation;
 };
 
 
