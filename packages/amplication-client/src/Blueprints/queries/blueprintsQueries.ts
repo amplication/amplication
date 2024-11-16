@@ -99,3 +99,12 @@ export const UPSERT_BLUEPRINT_RELATION = gql`
     }
   }
 `;
+
+export const DELETE_BLUEPRINT_RELATION = gql`
+  ${BLUEPRINT_RELATION_FIELDS_FRAGMENT}
+  mutation deleteBlueprintRelation($where: WhereBlueprintRelationUniqueInput!) {
+    deleteBlueprintRelation(where: $where) {
+      ...BlueprintRelationFields
+    }
+  }
+`;

@@ -5,6 +5,7 @@ import {
   BLUEPRINT_FIELDS_FRAGMENT,
   CREATE_BLUEPRINT,
   DELETE_BLUEPRINT,
+  DELETE_BLUEPRINT_RELATION,
   FIND_BLUEPRINTS,
   GET_BLUEPRINT,
   GET_BLUEPRINTS_MAP,
@@ -33,6 +34,10 @@ type TUpdateData = {
 
 type TUpsertRelationData = {
   upsertBlueprintRelation: models.BlueprintRelation;
+};
+
+type TDeleteRelationData = {
+  deleteBlueprintRelation: models.BlueprintRelation;
 };
 
 const NAME_FIELD = "name";
@@ -141,6 +146,16 @@ const useBlueprints = (blueprintId?: string) => {
   });
 
   const [
+    deleteBlueprintRelation,
+    {
+      error: deleteBlueprintRelationError,
+      loading: deleteBlueprintRelationLoading,
+    },
+  ] = useMutation<TDeleteRelationData>(DELETE_BLUEPRINT_RELATION, {
+    refetchQueries: [GET_BLUEPRINTS_MAP],
+  });
+
+  const [
     upsertBlueprintRelation,
     {
       error: upsertBlueprintRelationError,
@@ -173,6 +188,9 @@ const useBlueprints = (blueprintId?: string) => {
     upsertBlueprintRelation,
     upsertBlueprintRelationError,
     upsertBlueprintRelationLoading,
+    deleteBlueprintRelation,
+    deleteBlueprintRelationError,
+    deleteBlueprintRelationLoading,
   };
 };
 

@@ -1,7 +1,9 @@
 import {
+  Button,
   CircleBadge,
   CircularProgress,
   Dialog,
+  EnumButtonStyle,
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumItemsAlign,
@@ -15,13 +17,14 @@ import {
   Text,
   Tooltip,
 } from "@amplication/ui/design-system";
-import React from "react";
+import React, { useCallback } from "react";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import BlueprintRelationAddButton from "./BlueprintRelationAddButton";
 import useBlueprints from "./hooks/useBlueprints";
 import BlueprintRelationForm from "./BlueprintRelationForm";
 import useBlueprintsMap from "./hooks/useBlueprintsMap";
+import { BlueprintRelationDelete } from "./BlueprintRelationDelete";
 
 type Props = {
   blueprint: models.Blueprint;
@@ -108,15 +111,15 @@ const BlueprintRelationList = React.memo(
             <ListItem
               direction={EnumFlexDirection.Row}
               itemsAlign={EnumItemsAlign.Center}
-              // end={
-              //   <Button
-              //     icon="trash_2"
-              //     buttonStyle={EnumButtonStyle.Text}
-              //     onClick={() => {
-              //       handleRemoveMembers(relation.id);
-              //     }}
-              //   />
-              // }
+              end={
+                <BlueprintRelationDelete
+                  blueprint={blueprint}
+                  relation={relation}
+                  onDelete={() => {
+                    onRelationUpdated && onRelationUpdated(null);
+                  }}
+                />
+              }
               key={relation.key}
               onClick={() => setSelectedRelation(relation)}
               start={

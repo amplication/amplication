@@ -228,6 +228,7 @@ type BlueprintRelation {
 input BlueprintRelationUpsertInput {
   allowMultiple: Boolean!
   description: String
+  key: String!
   name: String!
   relatedTo: String!
   required: Boolean!
@@ -244,6 +245,7 @@ input BlueprintUpdateInput {
 input BlueprintWhereInput {
   deletedAt: DateTimeFilter
   id: String
+  key: StringFilter
   name: StringFilter
 }
 
@@ -1644,6 +1646,7 @@ type Mutation {
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
   deleteBlueprint(where: WhereUniqueInput!): Blueprint
+  deleteBlueprintRelation(where: WhereBlueprintRelationUniqueInput!): BlueprintRelation!
   deleteCustomProperty(where: WhereUniqueInput!): CustomProperty
   deleteCustomPropertyOption(where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
   deleteEntity(where: WhereUniqueInput!): Entity

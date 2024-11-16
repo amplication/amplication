@@ -13,6 +13,7 @@ import { UpdateBlueprintArgs } from "./dto/UpdateBlueprintArgs";
 import { BlueprintRelation } from "../../models/BlueprintRelation";
 import { UpsertBlueprintRelationArgs } from "./dto/UpsertBlueprintRelationArgs";
 import { JsonArray } from "type-fest";
+import { DeleteBlueprintRelationArgs } from "./dto/DeleteBlueprintRelationArgs";
 
 export const INVALID_BLUEPRINT_ID = "Invalid blueprintId";
 
@@ -206,5 +207,41 @@ export class BlueprintService {
     });
 
     return newOrUpdatedRelation;
+  }
+
+  async deleteRelation(
+    args: DeleteBlueprintRelationArgs
+  ): Promise<BlueprintRelation> {
+    const blueprint = await this.blueprint({
+      where: { id: args.where.blueprint.id },
+    });
+    if (!blueprint) {
+      throw new AmplicationError(
+        `Blueprint not found, ID: ${args.where.blueprint.id}`
+      );
+    }
+
+    const currentRelationIndex = blueprint.relations?.findIndex(
+      (relation) => relation.key === args.where.relationKey
+    );
+
+    if (currentRelationIndex === -1) {
+      throw new AmplicationError(
+        `Relation not found, key: ${args.where.relationKey}`
+      );
+    }
+
+    const [deleted] = blueprint.relations.splice(currentRelationIndex, 1);
+
+    await this.prisma.blueprint.update({
+      where: {
+        id: args.where.blueprint.id,
+      },
+      data: {
+        relations: blueprint.relations as unknown as JsonArray,
+      },
+    });
+
+    return deleted;
   }
 }

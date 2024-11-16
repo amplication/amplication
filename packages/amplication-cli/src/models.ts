@@ -253,6 +253,7 @@ export type BlueprintRelation = {
 export type BlueprintRelationUpsertInput = {
   allowMultiple: Scalars['Boolean']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
+  key: Scalars['String']['input'];
   name: Scalars['String']['input'];
   relatedTo: Scalars['String']['input'];
   required: Scalars['Boolean']['input'];
@@ -269,6 +270,7 @@ export type BlueprintUpdateInput = {
 export type BlueprintWhereInput = {
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
+  key?: InputMaybe<StringFilter>;
   name?: InputMaybe<StringFilter>;
 };
 
@@ -1664,6 +1666,7 @@ export type Mutation = {
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
   deleteBlueprint?: Maybe<Blueprint>;
+  deleteBlueprintRelation: BlueprintRelation;
   deleteCustomProperty?: Maybe<CustomProperty>;
   deleteCustomPropertyOption: CustomPropertyOption;
   deleteEntity?: Maybe<Entity>;
@@ -1986,6 +1989,11 @@ export type MutationDeleteApiTokenArgs = {
 
 export type MutationDeleteBlueprintArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteBlueprintRelationArgs = {
+  where: WhereBlueprintRelationUniqueInput;
 };
 
 
