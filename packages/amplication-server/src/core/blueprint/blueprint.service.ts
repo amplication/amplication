@@ -10,6 +10,9 @@ import { prepareDeletedItemName } from "../../util/softDelete";
 import { BlueprintCreateArgs } from "./dto/BlueprintCreateArgs";
 import { BlueprintFindManyArgs } from "./dto/BlueprintFindManyArgs";
 import { UpdateBlueprintArgs } from "./dto/UpdateBlueprintArgs";
+import { BluePrintRelation } from "../../models/BluePrintRelation";
+import { UpsertBlueprintRelationArgs } from "./dto/UpsertBlueprintRelationArgs";
+import { JsonArray } from "type-fest";
 
 export const INVALID_BLUEPRINT_ID = "Invalid blueprintId";
 
@@ -112,13 +115,64 @@ export class BlueprintService {
     return this.blueprintRecordToModel(blueprint);
   }
 
-  //we keep this for future json properties like blocks
   blueprintRecordToModel(record: PrismaBlueprint): Blueprint {
     if (!record) {
       return null;
     }
     return {
       ...record,
+      relations: record.relations
+        ? (record.relations as unknown as BluePrintRelation[])
+        : null,
     };
+  }
+
+  async upsertRelation(
+    args: UpsertBlueprintRelationArgs
+  ): Promise<BluePrintRelation> {
+    const blueprint = await this.blueprint({
+      where: { id: args.where.blueprint.id },
+    });
+    if (!blueprint) {
+      throw new AmplicationError(
+        `Blueprint not found, ID: ${args.where.blueprint.id}`
+      );
+    }
+
+    //todo: validate the relation key is unique
+    //todo: validate the relatedTo is a valid blueprint key
+
+    let newOrUpdatedRelation: BluePrintRelation;
+
+    const currentRelationIndex = blueprint.relations.findIndex(
+      (relation) => relation.key === args.where.relationKey
+    );
+
+    if (currentRelationIndex === -1) {
+      newOrUpdatedRelation = {
+        ...args.data,
+        key: args.where.relationKey,
+      };
+
+      blueprint.relations.push(newOrUpdatedRelation);
+    } else {
+      newOrUpdatedRelation = blueprint.relations[currentRelationIndex];
+
+      newOrUpdatedRelation = {
+        ...newOrUpdatedRelation,
+        ...args.data,
+      };
+    }
+
+    await this.prisma.blueprint.update({
+      where: {
+        id: args.where.blueprint.id,
+      },
+      data: {
+        relations: blueprint.relations as unknown as JsonArray,
+      },
+    });
+
+    return newOrUpdatedRelation;
   }
 }

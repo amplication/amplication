@@ -219,6 +219,15 @@ export type BlockWhereInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
+export type BluePrintRelation = {
+  allowMultiple: Scalars['Boolean']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  relatedTo: Scalars['String']['output'];
+  required: Scalars['Boolean']['output'];
+};
+
 export type Blueprint = {
   color?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
@@ -227,6 +236,7 @@ export type Blueprint = {
   id: Scalars['String']['output'];
   key: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  relations?: Maybe<Array<BluePrintRelation>>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -238,6 +248,14 @@ export type BlueprintOrderByInput = {
   deletedAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
+};
+
+export type BlueprintRelationUpsertInput = {
+  allowMultiple: Scalars['Boolean']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  relatedTo: Scalars['String']['input'];
+  required: Scalars['Boolean']['input'];
 };
 
 export type BlueprintUpdateInput = {
@@ -1723,6 +1741,7 @@ export type Mutation = {
   updateTopic: Topic;
   updateWorkspace?: Maybe<Workspace>;
   upgradeServiceToLatestTemplateVersion: Resource;
+  upsertBlueprintRelation: BluePrintRelation;
 };
 
 
@@ -2383,6 +2402,12 @@ export type MutationUpgradeServiceToLatestTemplateVersionArgs = {
   where: WhereUniqueInput;
 };
 
+
+export type MutationUpsertBlueprintRelationArgs = {
+  data: BlueprintRelationUpsertInput;
+  where: WhereBlueprintUniqueInput;
+};
+
 export type OutdatedVersionAlert = {
   block?: Maybe<Block>;
   blockId?: Maybe<Scalars['String']['output']>;
@@ -2631,6 +2656,7 @@ export type PluginSetOrderInput = {
 
 export type PrivatePlugin = IBlock & {
   blockType: EnumBlockType;
+  blueprints?: Maybe<Array<Scalars['String']['output']>>;
   codeGenerator: EnumCodeGenerator;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
@@ -2673,6 +2699,7 @@ export type PrivatePluginOrderByInput = {
 };
 
 export type PrivatePluginUpdateInput = {
+  blueprints?: InputMaybe<Array<Scalars['String']['input']>>;
   codeGenerator?: InputMaybe<EnumCodeGenerator>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
@@ -2700,6 +2727,7 @@ export type PrivatePluginVersionUpdateInput = {
 };
 
 export type PrivatePluginWhereInput = {
+  blue?: InputMaybe<EnumCodeGeneratorFilter>;
   codeGenerator?: InputMaybe<EnumCodeGeneratorFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
@@ -3888,6 +3916,11 @@ export type UserRole = {
   id: Scalars['String']['output'];
   role: Role;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type WhereBlueprintUniqueInput = {
+  blueprint: WhereUniqueInput;
+  relationKey: Scalars['String']['input'];
 };
 
 export type WhereCustomPropertyOptionUniqueInput = {

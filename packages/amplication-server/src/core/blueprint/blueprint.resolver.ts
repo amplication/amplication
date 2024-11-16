@@ -14,6 +14,8 @@ import { BlueprintService } from "./blueprint.service";
 import { BlueprintCreateArgs } from "./dto/BlueprintCreateArgs";
 import { BlueprintFindManyArgs } from "./dto/BlueprintFindManyArgs";
 import { UpdateBlueprintArgs } from "./dto/UpdateBlueprintArgs";
+import { BluePrintRelation } from "../../models/BluePrintRelation";
+import { UpsertBlueprintRelationArgs } from "./dto/UpsertBlueprintRelationArgs";
 
 @Resolver(() => Blueprint)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -63,5 +65,18 @@ export class BlueprintResolver {
   @AuthorizeContext(AuthorizableOriginParameter.BlueprintId, "where.id")
   async updateBlueprint(@Args() args: UpdateBlueprintArgs): Promise<Blueprint> {
     return this.blueprintService.updateBlueprint(args);
+  }
+
+  @Mutation(() => BluePrintRelation, {
+    nullable: false,
+  })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlueprintId,
+    "where.blueprint.id"
+  )
+  async upsertBlueprintRelation(
+    @Args() args: UpsertBlueprintRelationArgs
+  ): Promise<BluePrintRelation> {
+    return this.blueprintService.upsertRelation(args);
   }
 }
