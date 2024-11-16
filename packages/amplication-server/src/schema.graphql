@@ -194,6 +194,15 @@ input BlockWhereInput {
   updatedAt: DateTimeFilter
 }
 
+type BluePrintRelation {
+  allowMultiple: Boolean!
+  description: String
+  key: String!
+  name: String!
+  relatedTo: String!
+  required: Boolean!
+}
+
 type Blueprint {
   color: String
   createdAt: DateTime!
@@ -202,6 +211,7 @@ type Blueprint {
   id: String!
   key: String!
   name: String!
+  relations: [BluePrintRelation!]
   updatedAt: DateTime!
 }
 
@@ -213,6 +223,14 @@ input BlueprintOrderByInput {
   deletedAt: SortOrder
   id: SortOrder
   name: SortOrder
+}
+
+input BlueprintRelationUpsertInput {
+  allowMultiple: Boolean!
+  description: String
+  name: String!
+  relatedTo: String!
+  required: Boolean!
 }
 
 input BlueprintUpdateInput {
@@ -1706,6 +1724,7 @@ type Mutation {
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
   upgradeServiceToLatestTemplateVersion(where: WhereUniqueInput!): Resource!
+  upsertBlueprintRelation(data: BlueprintRelationUpsertInput!, where: WhereBlueprintRelationUniqueInput!): BluePrintRelation!
 }
 
 type OutdatedVersionAlert {
@@ -1959,6 +1978,7 @@ input PluginSetOrderInput {
 
 type PrivatePlugin implements IBlock {
   blockType: EnumBlockType!
+  blueprints: [String!]
   codeGenerator: EnumCodeGenerator!
   createdAt: DateTime!
   description: String
@@ -2001,6 +2021,7 @@ input PrivatePluginOrderByInput {
 }
 
 input PrivatePluginUpdateInput {
+  blueprints: [String!]
   codeGenerator: EnumCodeGenerator
   description: String
   displayName: String
@@ -2028,6 +2049,7 @@ input PrivatePluginVersionUpdateInput {
 }
 
 input PrivatePluginWhereInput {
+  blue: EnumCodeGeneratorFilter
   codeGenerator: EnumCodeGeneratorFilter
   createdAt: DateTimeFilter
   description: StringFilter
@@ -2792,6 +2814,11 @@ type UserRole {
   id: String!
   role: Role!
   updatedAt: DateTime!
+}
+
+input WhereBlueprintRelationUniqueInput {
+  blueprint: WhereUniqueInput!
+  relationKey: String!
 }
 
 input WhereCustomPropertyOptionUniqueInput {

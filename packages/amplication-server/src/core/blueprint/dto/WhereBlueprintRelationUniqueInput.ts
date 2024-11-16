@@ -4,7 +4,7 @@ import { WhereUniqueInput } from "../../../dto";
 @InputType({
   isAbstract: true,
 })
-export class WhereBlueprintUniqueInput {
+export class WhereBlueprintRelationUniqueInput {
   @Field(() => WhereUniqueInput, {
     nullable: false,
   })

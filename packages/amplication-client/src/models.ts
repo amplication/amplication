@@ -2408,7 +2408,7 @@ export type MutationUpgradeServiceToLatestTemplateVersionArgs = {
 
 export type MutationUpsertBlueprintRelationArgs = {
   data: BlueprintRelationUpsertInput;
-  where: WhereBlueprintUniqueInput;
+  where: WhereBlueprintRelationUniqueInput;
 };
 
 export type OutdatedVersionAlert = {
@@ -3921,7 +3921,7 @@ export type UserRole = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
-export type WhereBlueprintUniqueInput = {
+export type WhereBlueprintRelationUniqueInput = {
   blueprint: WhereUniqueInput;
   relationKey: Scalars['String']['input'];
 };
