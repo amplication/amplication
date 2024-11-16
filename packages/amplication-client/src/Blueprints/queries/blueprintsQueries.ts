@@ -1,6 +1,18 @@
 import { gql } from "@apollo/client";
 
+export const BLUEPRINT_RELATION_FIELDS_FRAGMENT = gql`
+  fragment BlueprintRelationFields on BlueprintRelation {
+    name
+    key
+    description
+    relatedTo
+    allowMultiple
+    required
+  }
+`;
+
 export const BLUEPRINT_FIELDS_FRAGMENT = gql`
+  ${BLUEPRINT_RELATION_FIELDS_FRAGMENT}
   fragment BlueprintFields on Blueprint {
     id
     name
@@ -8,6 +20,9 @@ export const BLUEPRINT_FIELDS_FRAGMENT = gql`
     key
     enabled
     color
+    relations {
+      ...BlueprintRelationFields
+    }
   }
 `;
 
@@ -69,6 +84,18 @@ export const GET_BLUEPRINTS_MAP = gql`
   ) {
     blueprints(where: $where, orderBy: $orderBy) {
       ...BlueprintFields
+    }
+  }
+`;
+
+export const UPSERT_BLUEPRINT_RELATION = gql`
+  ${BLUEPRINT_RELATION_FIELDS_FRAGMENT}
+  mutation upsertBlueprintRelation(
+    $data: BlueprintRelationUpsertInput!
+    $where: WhereBlueprintRelationUniqueInput!
+  ) {
+    upsertBlueprintRelation(data: $data, where: $where) {
+      ...BlueprintRelationFields
     }
   }
 `;

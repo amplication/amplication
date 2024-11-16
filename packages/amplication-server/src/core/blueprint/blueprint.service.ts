@@ -144,7 +144,11 @@ export class BlueprintService {
 
     let newOrUpdatedRelation: BlueprintRelation;
 
-    const currentRelationIndex = blueprint.relations.findIndex(
+    if (!blueprint.relations) {
+      blueprint.relations = [];
+    }
+
+    const currentRelationIndex = blueprint.relations?.findIndex(
       (relation) => relation.key === args.where.relationKey
     );
 
@@ -162,6 +166,8 @@ export class BlueprintService {
         ...newOrUpdatedRelation,
         ...args.data,
       };
+
+      blueprint.relations[currentRelationIndex] = newOrUpdatedRelation;
     }
 
     await this.prisma.blueprint.update({

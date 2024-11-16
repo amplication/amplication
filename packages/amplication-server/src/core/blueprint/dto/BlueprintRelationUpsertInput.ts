@@ -10,6 +10,11 @@ export class BlueprintRelationUpsertInput {
   name!: string;
 
   @Field(() => String, {
+    nullable: false,
+  })
+  key!: string;
+
+  @Field(() => String, {
     nullable: true,
   })
   description?: string;
@@ -17,15 +22,15 @@ export class BlueprintRelationUpsertInput {
   @Field(() => String, {
     nullable: false,
   })
-  relatedTo: string; //blueprint key
+  relatedTo!: string; //blueprint key
 
   @Field(() => Boolean, {
     nullable: false,
   })
-  allowMultiple: boolean;
+  allowMultiple!: boolean;
 
   @Field(() => Boolean, {
     nullable: false,
   })
-  required: boolean;
+  required!: boolean;
 }

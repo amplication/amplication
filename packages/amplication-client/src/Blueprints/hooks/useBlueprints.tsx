@@ -9,6 +9,7 @@ import {
   GET_BLUEPRINT,
   GET_BLUEPRINTS_MAP,
   UPDATE_BLUEPRINT,
+  UPSERT_BLUEPRINT_RELATION,
 } from "../queries/blueprintsQueries";
 
 type TDeleteData = {
@@ -26,9 +27,12 @@ type TGetData = {
 type TCreateData = {
   createBlueprint: models.Blueprint;
 };
-
 type TUpdateData = {
   updateBlueprint: models.Blueprint;
+};
+
+type TUpsertRelationData = {
+  upsertBlueprintRelation: models.BlueprintRelation;
 };
 
 const NAME_FIELD = "name";
@@ -136,6 +140,16 @@ const useBlueprints = (blueprintId?: string) => {
     refetchQueries: [GET_BLUEPRINTS_MAP],
   });
 
+  const [
+    upsertBlueprintRelation,
+    {
+      error: upsertBlueprintRelationError,
+      loading: upsertBlueprintRelationLoading,
+    },
+  ] = useMutation<TUpsertRelationData>(UPSERT_BLUEPRINT_RELATION, {
+    refetchQueries: [GET_BLUEPRINTS_MAP],
+  });
+
   return {
     deleteBlueprint,
     deleteBlueprintError,
@@ -156,6 +170,9 @@ const useBlueprints = (blueprintId?: string) => {
     updateBlueprintError,
     updateBlueprintLoading,
     setSearchPhrase,
+    upsertBlueprintRelation,
+    upsertBlueprintRelationError,
+    upsertBlueprintRelationLoading,
   };
 };
 

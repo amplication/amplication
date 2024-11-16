@@ -4,21 +4,24 @@ import useBlueprints from "./hooks/useBlueprints";
 import { EnumResourceType } from "../models";
 import { resourceThemeMap } from "../Resource/constants";
 
-type Props = Omit<SelectFieldProps, "options">;
+type Props = Omit<SelectFieldProps, "options"> & {
+  useKeyAsValue?: boolean;
+};
 
 const BlueprintSelectField = (props: Props) => {
   const { findBlueprintsData } = useBlueprints();
+  const { useKeyAsValue, ...rest } = props;
 
   const options = useMemo(() => {
     return findBlueprintsData?.blueprints.map((blueprint) => ({
-      value: blueprint.id,
+      value: useKeyAsValue ? blueprint.key : blueprint.id,
       label: blueprint.name,
       color:
         blueprint.color || resourceThemeMap[EnumResourceType.Component].color,
     }));
-  }, [findBlueprintsData]);
+  }, [findBlueprintsData?.blueprints, useKeyAsValue]);
 
-  return <SelectField {...props} options={options} />;
+  return <SelectField {...rest} options={options} />;
 };
 
 export default BlueprintSelectField;
