@@ -131,7 +131,7 @@ const BlueprintRelationList = React.memo(
                     color={blueprintsMap[relation.relatedTo]?.color}
                     size={"small"}
                   >
-                    <Icon icon={"hexagon"} size={"small"} />
+                    <Icon icon={"blueprint"} size={"small"} />
                   </CircleBadge>
                 </Tooltip>
               }
