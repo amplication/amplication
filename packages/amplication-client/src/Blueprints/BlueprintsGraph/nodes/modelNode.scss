@@ -3,18 +3,11 @@
 .model-node {
   overflow: hidden;
   border-radius: var(--default-border-radius);
-  background-color: var(--gray-full);
+  background-color: vaR(--gray-full);
   border: 1px solid var(--gray-70);
   padding: var(--default-spacing);
   box-sizing: border-box;
-
-  &--simple {
-    height: 60px;
-    .model-node__header {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-  }
+  border-top: 3px solid var(--gray-base);
 
   &--draggable {
     .model-node__header {
@@ -22,11 +15,6 @@
         color: var(--gray-base) !important;
       }
     }
-  }
-
-  &--selected {
-    background-color: var(--gray-90);
-    border-color: var(--gray-base);
   }
 
   &.model-with-pending-changes {
@@ -42,7 +30,7 @@
   }
 
   &__header {
-    border-bottom: $border-dark;
+    border-bottom: 1px solid var(--gray-base);
     padding-bottom: var(--default-spacing);
     display: flex;
     justify-content: space-between;
@@ -55,17 +43,27 @@
   }
 
   &__column_container {
-    padding: var(--default-spacing-small) 0;
+    padding-top: var(--default-spacing);
   }
   &__column_inner_container {
     display: flex;
     position: relative;
+
+    &:last-child > .model-node__column_display_name {
+      margin-bottom: 0;
+    }
   }
   &__column_display_name {
     align-items: center;
     display: flex;
     font-size: var(--normal-font-size);
     gap: var(--default-spacing-small);
+    width: 100%;
+    border: 1px solid var(--gray-70);
+    padding: var(--icon-spacing);
+    margin-bottom: var(--icon-spacing);
+    border-radius: var(--default-border-radius);
+
     &_datatype {
       color: var(--theme-blue);
       font-weight: 200;
@@ -80,19 +78,19 @@
   &__handle {
     &_left {
       left: -2px !important;
+      top: 23px !important;
       border-radius: 0 !important;
       border-width: 0 !important;
       width: 0.5rem !important;
-      height: 100% !important;
       background-color: transparent !important;
     }
 
     &_right {
       right: -2px !important;
+      top: 23px !important;
       border-radius: 0 !important;
       border-width: 0 !important;
       width: 0.5rem !important;
-      height: 100% !important;
       background-color: transparent !important;
     }
   }

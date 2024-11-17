@@ -12,13 +12,7 @@ type ModelProps = Omit<NodeProps, "data"> & {
 const CLASS_NAME = "model-node";
 
 const ModelNode: FC<ModelProps> = memo(({ id }) => {
-  return (
-    <ModelNodeBase
-      modelId={id}
-      includeModelHandles
-      className={`${CLASS_NAME}--simple`}
-    />
-  );
+  return <ModelNodeBase modelId={id} className={`${CLASS_NAME}--simple`} />;
 });
 ModelNode.displayName = "ModelNode";
 

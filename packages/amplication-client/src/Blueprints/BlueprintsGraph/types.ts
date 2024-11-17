@@ -33,7 +33,10 @@ export type groupContentCoords = {
 
 export type SimpleRelation = {
   source: string;
+  sourceKey: string;
   target: string;
+  targetKey: string;
+  key: string;
 };
 
 export type Relation = SimpleRelation;

@@ -1,4 +1,4 @@
-import "./ModelOrganizerToolbar.scss";
+import "./GraphToolbar.scss";
 
 import {
   EnumContentAlign,
@@ -12,17 +12,14 @@ import {
 import { useCallback } from "react";
 import { Node } from "./types";
 
-export const CLASS_NAME = "model-organizer-toolbar";
+export const CLASS_NAME = "graph-toolbar";
 
 type Props = {
   nodes: Node[];
   searchPhraseChanged: (searchPhrase: string) => void;
 };
 
-export default function ModelOrganizerToolbar({
-  nodes,
-  searchPhraseChanged,
-}: Props) {
+export default function GraphToolbar({ nodes, searchPhraseChanged }: Props) {
   const handleSearchPhraseChanged = useCallback(
     (searchPhrase: string) => {
       searchPhraseChanged(searchPhrase);
@@ -43,7 +40,7 @@ export default function ModelOrganizerToolbar({
           direction={EnumFlexDirection.Row}
         >
           <Tooltip
-            aria-label="search for service and entities. Results are highlighted"
+            aria-label="search for blueprints. Results are highlighted"
             noDelay
             direction="se"
           >

@@ -102,14 +102,6 @@ const Blueprint = () => {
       )}
 
       <FlexItem margin={EnumFlexItemMargin.Both} />
-      <div
-        style={{
-          width: "100%",
-          height: "80vh",
-        }}
-      >
-        <BlueprintGraph />
-      </div>
 
       <Snackbar open={hasError} message={errorMessage} />
     </>

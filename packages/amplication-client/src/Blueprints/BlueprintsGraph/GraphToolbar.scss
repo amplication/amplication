@@ -1,6 +1,11 @@
 @import "../../style/index.scss";
 
-.model-organizer-toolbar {
+.graph-toolbar {
+  position: absolute;
+  z-index: 1;
+  top: var(--icon-spacing);
+  left: var(--icon-spacing);
+
   &__divider {
     width: 1px;
     height: var(--default-button-height);

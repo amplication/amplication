@@ -110,7 +110,10 @@ export function nodesToSimpleEdges(nodes: Node[]) {
       if (relatedNode) {
         relations.push({
           source: blueprint.key,
+          sourceKey: relation.key,
           target: relation.relatedTo,
+          targetKey: relation.relatedTo,
+          key: relation.key,
         });
       }
     });
@@ -119,9 +122,9 @@ export function nodesToSimpleEdges(nodes: Node[]) {
   const edges = relations.map((relation) => ({
     source: relation.source,
     target: relation.target,
-    id: `${relation.source}-${relation.target}`,
-    sourceHandle: relation.source,
-    targetHandle: relation.target,
+    id: `${relation.source}-${relation.target}--${relation.key}`,
+    sourceHandle: `relation-handle-${relation.sourceKey}`,
+    targetHandle: `node-handle-${relation.targetKey}`,
     type: "relationSimple",
   }));
 

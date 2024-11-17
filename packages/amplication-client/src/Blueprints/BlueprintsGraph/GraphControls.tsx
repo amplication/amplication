@@ -1,15 +1,15 @@
 import { ReactFlowInstance } from "reactflow";
-import ModelOrganizerControl from "./ModelOrganizerControl";
-import "./ModelOrganizerControls.scss";
+import GraphControl from "./GraphControl";
+import "./GraphControls.scss";
 
-const CLASS_NAME = "model-organizer-controls";
+const CLASS_NAME = "graph-controls";
 
 type Props = {
   reactFlowInstance: ReactFlowInstance;
   onArrangeNodes: () => void;
 };
 
-export default function ModelOrganizerControls({
+export default function GraphControls({
   reactFlowInstance,
   onArrangeNodes,
 }: Props) {
@@ -17,17 +17,17 @@ export default function ModelOrganizerControls({
     <>
       {reactFlowInstance && (
         <div className={CLASS_NAME}>
-          <ModelOrganizerControl
+          <GraphControl
             tooltip="Reset Layout"
             icon="layers"
             onClick={onArrangeNodes}
           />
-          <ModelOrganizerControl
+          <GraphControl
             tooltip="Zoom In"
             icon="plus"
             onClick={reactFlowInstance.zoomIn}
           />
-          <ModelOrganizerControl
+          <GraphControl
             tooltip="Zoom Out"
             icon="minus"
             onClick={reactFlowInstance.zoomOut}

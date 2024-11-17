@@ -1,31 +1,32 @@
 import {
   Button,
-  CircleBadge,
   CircularProgress,
   Dialog,
   EnumButtonStyle,
   EnumFlexDirection,
   EnumFlexItemMargin,
+  EnumIconPosition,
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
-  Icon,
   List,
   ListItem,
+  Modal,
   Snackbar,
   TabContentTitle,
   Text,
-  Tooltip,
 } from "@amplication/ui/design-system";
-import React, { useCallback } from "react";
+import React, { useState } from "react";
 import * as models from "../models";
 import { formatError } from "../util/error";
-import BlueprintRelationAddButton from "./BlueprintRelationAddButton";
-import useBlueprints from "./hooks/useBlueprints";
-import BlueprintRelationForm from "./BlueprintRelationForm";
-import useBlueprintsMap from "./hooks/useBlueprintsMap";
-import { BlueprintRelationDelete } from "./BlueprintRelationDelete";
 import BlueprintCircleBadge from "./BlueprintCircleBadge";
+import BlueprintRelationAddButton from "./BlueprintRelationAddButton";
+import { BlueprintRelationDelete } from "./BlueprintRelationDelete";
+import BlueprintRelationForm from "./BlueprintRelationForm";
+import "./BlueprintRelationList.scss";
+import BlueprintGraph from "./BlueprintsGraph/BlueprintGraph";
+import useBlueprints from "./hooks/useBlueprints";
+import useBlueprintsMap from "./hooks/useBlueprintsMap";
 
 type Props = {
   blueprint: models.Blueprint;
@@ -39,6 +40,8 @@ const BlueprintRelationList = React.memo(
       upsertBlueprintRelationError,
       upsertBlueprintRelationLoading,
     } = useBlueprints(blueprint?.id);
+
+    const [graphIsOpen, setGraphIsOpen] = useState(false);
 
     const { blueprintsMap } = useBlueprintsMap();
 
@@ -94,10 +97,23 @@ const BlueprintRelationList = React.memo(
           itemsAlign={EnumItemsAlign.Center}
           end={
             blueprint && (
-              <BlueprintRelationAddButton
-                blueprint={blueprint}
-                onSubmit={handleSubmit}
-              />
+              <FlexItem
+                direction={EnumFlexDirection.Row}
+                itemsAlign={EnumItemsAlign.Center}
+              >
+                <BlueprintRelationAddButton
+                  blueprint={blueprint}
+                  onSubmit={handleSubmit}
+                />
+                <Button
+                  icon="relation"
+                  iconPosition={EnumIconPosition.Left}
+                  buttonStyle={EnumButtonStyle.Outline}
+                  onClick={() => setGraphIsOpen(true)}
+                >
+                  Show Graph
+                </Button>
+              </FlexItem>
             )
           }
         >
@@ -134,6 +150,17 @@ const BlueprintRelationList = React.memo(
             </ListItem>
           ))}
         </List>
+        {graphIsOpen && (
+          <Modal
+            css="blueprint-graph-modal"
+            onCloseEvent={() => setGraphIsOpen(false)}
+            open={graphIsOpen}
+            fullScreen
+            showCloseButton={true}
+          >
+            <BlueprintGraph />
+          </Modal>
+        )}
         <Snackbar
           open={Boolean(upsertBlueprintRelationError)}
           message={errorMessage}

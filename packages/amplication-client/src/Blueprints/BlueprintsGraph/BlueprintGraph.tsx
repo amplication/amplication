@@ -10,8 +10,8 @@ import {
 import "reactflow/dist/style.css";
 import useMessage from "../../util/useMessage";
 import "./BlueprintGraph.scss";
-import ModelOrganizerControls from "./ModelOrganizerControls";
-import ModelOrganizerToolbar from "./ModelOrganizerToolbar";
+import GraphControls from "./GraphControls";
+import GraphToolbar from "./GraphToolbar";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
 import useBlueprintGraph from "./hooks/useBlueprintGraph";
 import { applyAutoLayout } from "./layout";
@@ -27,7 +27,7 @@ const simpleNodeTypes = {
 };
 
 const edgeTypes = {
-  relation: simpleRelationEdge,
+  relationSimple: simpleRelationEdge,
 };
 
 export default function BlueprintGraph() {
@@ -107,13 +107,13 @@ export default function BlueprintGraph() {
       <>
         <div className={`${CLASS_NAME}__container`}>
           <div className={`${CLASS_NAME}__side_toolbar`}>
-            <ModelOrganizerControls
+            <GraphControls
               onArrangeNodes={onArrangeNodes}
               reactFlowInstance={reactFlowInstance}
             />
           </div>
           <div className={`${CLASS_NAME}__body`}>
-            <ModelOrganizerToolbar
+            <GraphToolbar
               nodes={nodes}
               searchPhraseChanged={searchPhraseChanged}
             />

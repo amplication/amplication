@@ -2,15 +2,22 @@ import { ReactElement, memo, useCallback, type FC } from "react";
 import { Handle, Position, useStore } from "reactflow";
 import "./modelNode.scss";
 
-import { EnumTextStyle, Text } from "@amplication/ui/design-system";
+import {
+  EnumFlexDirection,
+  EnumItemsAlign,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+  useTagColorStyle,
+} from "@amplication/ui/design-system";
 import classNames from "classnames";
 import * as models from "../../../models";
 import { Node, NodePayload } from "../types";
-import EntityContextMenuButton from "../../../Components/EntityContextMenuButton";
+import AddRelation from "./addRelation";
+import EditRelation from "./editRelation";
 
 type Props = {
   className?: string;
-  includeModelHandles?: boolean;
   modelId: string;
   renderContent?: (data: NodePayload<models.Blueprint>) => ReactElement;
 };
@@ -18,7 +25,7 @@ type Props = {
 const CLASS_NAME = "model-node";
 
 const ModelNodeBase: FC<Props> = memo(
-  ({ className, renderContent, includeModelHandles, modelId }) => {
+  ({ className, renderContent, modelId }) => {
     const sourceNode = useStore(
       useCallback(
         (store) => store.nodeInternals.get(modelId) as Node,
@@ -27,12 +34,13 @@ const ModelNodeBase: FC<Props> = memo(
     );
     const data = sourceNode?.data as NodePayload<models.Blueprint>;
 
-    const handleSelectRelatedNodesClicked = useCallback(() => {
-      data.selectRelatedNodes = !data.selectRelatedNodes;
-    }, [data]);
+    const { borderColor } = useTagColorStyle(data.payload.color);
 
     return (
       <div
+        style={{
+          borderTopColor: borderColor,
+        }}
         className={classNames(
           `${CLASS_NAME}`,
           className,
@@ -43,39 +51,74 @@ const ModelNodeBase: FC<Props> = memo(
         tabIndex={0}
         title={data.payload.description}
       >
-        {includeModelHandles && (
-          <Handle
-            className={`${CLASS_NAME}__handle_left`}
-            type="source"
-            id={data.payload.key}
-            position={Position.Left}
-            isConnectable={false}
-          />
-        )}
-
-        <div className={`${CLASS_NAME}__header`}>
+        <Handle
+          className={`${CLASS_NAME}__handle_left`}
+          type="source"
+          id={`node-handle-${data.payload.key}`}
+          position={Position.Left}
+          isConnectable={false}
+        />
+        <FlexItem
+          className={`${CLASS_NAME}__header`}
+          direction={EnumFlexDirection.Row}
+          itemsAlign={EnumItemsAlign.Center}
+          end={<AddRelation blueprint={data.payload} />}
+        >
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
             {data.payload.name}
           </Text>
-          {sourceNode?.draggable && (
-            <EntityContextMenuButton
-              onSelectRelatedEntities={handleSelectRelatedNodesClicked}
-            ></EntityContextMenuButton>
-          )}
+        </FlexItem>
+        <div className={`${CLASS_NAME}__column_container`}>
+          {data.payload.relations?.map((relation) => (
+            <Relation
+              relation={relation}
+              key={relation.key}
+              blueprint={data.payload}
+            />
+          ))}
         </div>
-        {includeModelHandles && (
-          <Handle
-            className={`${CLASS_NAME}__handle_right`}
-            type="target"
-            id={data.payload.key}
-            position={Position.Right}
-            isConnectable={false}
-          />
-        )}
+        <Handle
+          className={`${CLASS_NAME}__handle_right`}
+          type="source"
+          id={`node-handle-${data.payload.key}`}
+          position={Position.Right}
+          isConnectable={false}
+        />{" "}
         {renderContent && renderContent(data)}
       </div>
     );
   }
 );
+
+interface RelationProps {
+  blueprint: models.Blueprint;
+  relation: models.BlueprintRelation;
+}
+
+const Relation = memo(({ relation, blueprint }: RelationProps) => {
+  return (
+    <div key={relation.key} className={`${CLASS_NAME}__column_inner_container`}>
+      <Handle
+        className={`${CLASS_NAME}__handle_left`}
+        type="source"
+        id={`relation-handle-${relation.key}`}
+        position={Position.Left}
+        isConnectable={false}
+      />
+
+      <EditRelation blueprint={blueprint} relation={relation} />
+
+      <Handle
+        className={`${CLASS_NAME}__handle_right`}
+        type="source"
+        id={`relation-handle-${relation.key}`}
+        position={Position.Right}
+        isConnectable={false}
+      />
+    </div>
+  );
+});
+
+Relation.displayName = "Column";
 
 export default ModelNodeBase;
