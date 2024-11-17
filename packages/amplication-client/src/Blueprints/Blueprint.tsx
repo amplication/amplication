@@ -16,6 +16,7 @@ import BlueprintForm from "./BlueprintForm";
 import { DeleteBlueprint } from "./DeleteBlueprint";
 import { useAppContext } from "../context/appContext";
 import BlueprintRelationList from "./BlueprintRelationList";
+import BlueprintGraph from "./BlueprintsGraph/BlueprintGraph";
 
 const Blueprint = () => {
   const match = useRouteMatch<{
@@ -101,6 +102,15 @@ const Blueprint = () => {
       )}
 
       <FlexItem margin={EnumFlexItemMargin.Both} />
+      <div
+        style={{
+          width: "100%",
+          height: "80vh",
+        }}
+      >
+        <BlueprintGraph />
+      </div>
+
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );
