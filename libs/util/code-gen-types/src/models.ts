@@ -219,6 +219,60 @@ export type BlockWhereInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
+export type Blueprint = {
+  color?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  relations?: Maybe<Array<BlueprintRelation>>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type BlueprintCreateInput = {
+  name: Scalars['String']['input'];
+};
+
+export type BlueprintOrderByInput = {
+  deletedAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+};
+
+export type BlueprintRelation = {
+  allowMultiple: Scalars['Boolean']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  relatedTo: Scalars['String']['output'];
+  required: Scalars['Boolean']['output'];
+};
+
+export type BlueprintRelationUpsertInput = {
+  allowMultiple: Scalars['Boolean']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  key: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  relatedTo: Scalars['String']['input'];
+  required: Scalars['Boolean']['input'];
+};
+
+export type BlueprintUpdateInput = {
+  color?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  key?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BlueprintWhereInput = {
+  id?: InputMaybe<Scalars['String']['input']>;
+  key?: InputMaybe<StringFilter>;
+  name?: InputMaybe<StringFilter>;
+};
+
 export type BooleanFilter = {
   equals?: InputMaybe<Scalars['Boolean']['input']>;
   not?: InputMaybe<Scalars['Boolean']['input']>;
@@ -827,6 +881,7 @@ export enum EnumBlockType {
   PluginOrder = 'PluginOrder',
   PrivatePlugin = 'PrivatePlugin',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
+  Relation = 'Relation',
   ServiceSettings = 'ServiceSettings',
   ServiceTopics = 'ServiceTopics',
   Topic = 'Topic'
@@ -872,6 +927,7 @@ export type EnumBuildStatusFilter = {
 };
 
 export enum EnumCodeGenerator {
+  Blueprint = 'Blueprint',
   DotNet = 'DotNet',
   NodeJs = 'NodeJs'
 }
@@ -1574,6 +1630,7 @@ export type Mutation = {
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
+  createBlueprint: Blueprint;
   createComponent: Resource;
   createCustomProperty: CustomProperty;
   createCustomPropertyOption: CustomPropertyOption;
@@ -1597,6 +1654,7 @@ export type Mutation = {
   createPrivatePlugin: PrivatePlugin;
   createPrivatePluginVersion: PrivatePluginVersion;
   createProject: Project;
+  createRelation: Relation;
   createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
   createService: Resource;
@@ -1608,6 +1666,8 @@ export type Mutation = {
   createTopic: Topic;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
+  deleteBlueprint?: Maybe<Blueprint>;
+  deleteBlueprintRelation: BlueprintRelation;
   deleteCustomProperty?: Maybe<CustomProperty>;
   deleteCustomPropertyOption: CustomPropertyOption;
   deleteEntity?: Maybe<Entity>;
@@ -1624,6 +1684,7 @@ export type Mutation = {
   deletePluginInstallation: PluginInstallation;
   deletePrivatePlugin: PrivatePlugin;
   deleteProject?: Maybe<Project>;
+  deleteRelation: Relation;
   deleteResource?: Maybe<Resource>;
   deleteResourceRole?: Maybe<ResourceRole>;
   deleteServiceTopics: ServiceTopics;
@@ -1655,6 +1716,7 @@ export type Mutation = {
   /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
   triggerBreakServiceIntoMicroservices?: Maybe<UserAction>;
   updateAccount: Account;
+  updateBlueprint: Blueprint;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateCustomProperty: CustomProperty;
   updateCustomPropertyOption: CustomPropertyOption;
@@ -1676,7 +1738,9 @@ export type Mutation = {
   updatePrivatePluginVersion: PrivatePluginVersion;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
+  updateRelation: Relation;
   updateResource?: Maybe<Resource>;
+  updateResourceRelation: Array<Relation>;
   updateResourceRole?: Maybe<ResourceRole>;
   updateServiceSettings?: Maybe<ServiceSettings>;
   updateServiceTopics: ServiceTopics;
@@ -1684,6 +1748,7 @@ export type Mutation = {
   updateTopic: Topic;
   updateWorkspace?: Maybe<Workspace>;
   upgradeServiceToLatestTemplateVersion: Resource;
+  upsertBlueprintRelation: BlueprintRelation;
 };
 
 
@@ -1740,6 +1805,11 @@ export type MutationConnectResourceToProjectRepositoryArgs = {
 
 export type MutationCreateApiTokenArgs = {
   data: ApiTokenCreateInput;
+};
+
+
+export type MutationCreateBlueprintArgs = {
+  data: BlueprintCreateInput;
 };
 
 
@@ -1866,6 +1936,11 @@ export type MutationCreateProjectArgs = {
 };
 
 
+export type MutationCreateRelationArgs = {
+  data: RelationCreateInput;
+};
+
+
 export type MutationCreateRemoteGitRepositoryArgs = {
   data: CreateGitRepositoryBaseInput;
 };
@@ -1918,6 +1993,16 @@ export type MutationCreateWorkspaceArgs = {
 
 export type MutationDeleteApiTokenArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteBlueprintArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteBlueprintRelationArgs = {
+  where: WhereBlueprintRelationUniqueInput;
 };
 
 
@@ -1998,6 +2083,11 @@ export type MutationDeletePrivatePluginArgs = {
 
 
 export type MutationDeleteProjectArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteRelationArgs = {
   where: WhereUniqueInput;
 };
 
@@ -2155,6 +2245,12 @@ export type MutationUpdateAccountArgs = {
 };
 
 
+export type MutationUpdateBlueprintArgs = {
+  data: BlueprintUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationUpdateCodeGeneratorVersionArgs = {
   data: CodeGeneratorVersionUpdateInput;
   where: WhereUniqueInput;
@@ -2282,9 +2378,21 @@ export type MutationUpdateProjectConfigurationSettingsArgs = {
 };
 
 
+export type MutationUpdateRelationArgs = {
+  data: RelationUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationUpdateResourceArgs = {
   data: ResourceUpdateInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateResourceRelationArgs = {
+  data: ResourceRelationUpdateInput;
+  resource: WhereUniqueInput;
 };
 
 
@@ -2326,6 +2434,12 @@ export type MutationUpdateWorkspaceArgs = {
 
 export type MutationUpgradeServiceToLatestTemplateVersionArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type MutationUpsertBlueprintRelationArgs = {
+  data: BlueprintRelationUpsertInput;
+  where: WhereBlueprintRelationUniqueInput;
 };
 
 export type OutdatedVersionAlert = {
@@ -2576,6 +2690,7 @@ export type PluginSetOrderInput = {
 
 export type PrivatePlugin = IBlock & {
   blockType: EnumBlockType;
+  blueprints?: Maybe<Array<Scalars['String']['output']>>;
   codeGenerator: EnumCodeGenerator;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
@@ -2618,6 +2733,7 @@ export type PrivatePluginOrderByInput = {
 };
 
 export type PrivatePluginUpdateInput = {
+  blueprints?: InputMaybe<Array<Scalars['String']['input']>>;
   codeGenerator?: InputMaybe<EnumCodeGenerator>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
@@ -2645,6 +2761,7 @@ export type PrivatePluginVersionUpdateInput = {
 };
 
 export type PrivatePluginWhereInput = {
+  blue?: InputMaybe<EnumCodeGeneratorFilter>;
   codeGenerator?: InputMaybe<EnumCodeGeneratorFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
@@ -2759,8 +2876,11 @@ export type Query = {
   action: Action;
   availableDtosForResource: Array<ModuleDto>;
   availablePrivatePluginsForResource: Array<PrivatePlugin>;
+  availableTemplatesForProject: Array<Resource>;
   block: Block;
   blocks: Array<Block>;
+  blueprint?: Maybe<Blueprint>;
+  blueprints: Array<Blueprint>;
   build: Build;
   builds: Array<Build>;
   catalog: Array<Resource>;
@@ -2775,7 +2895,6 @@ export type Query = {
   entity?: Maybe<Entity>;
   /** Get the changes to apply to the model in order to break a resource into microservices */
   finalizeBreakServiceIntoMicroservices: BreakServiceToMicroservicesResult;
-  findProjectAvailableTemplates: Array<Resource>;
   getEvaluationInsights: EvaluationInsights;
   getUsageInsights: UsageInsightsResult;
   gitGroups: PaginatedGitGroup;
@@ -2802,6 +2921,8 @@ export type Query = {
   project?: Maybe<Project>;
   projectConfigurationSettings: ProjectConfigurationSettings;
   projects: Array<Project>;
+  relation?: Maybe<Relation>;
+  relations: Array<Relation>;
   remoteGitRepositories: RemoteGitRepos;
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
@@ -2863,6 +2984,14 @@ export type QueryAvailablePrivatePluginsForResourceArgs = {
 };
 
 
+export type QueryAvailableTemplatesForProjectArgs = {
+  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where: WhereUniqueInput;
+};
+
+
 export type QueryBlockArgs = {
   where: WhereUniqueInput;
 };
@@ -2873,6 +3002,19 @@ export type QueryBlocksArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<BlockWhereInput>;
+};
+
+
+export type QueryBlueprintArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryBlueprintsArgs = {
+  orderBy?: InputMaybe<BlueprintOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<BlueprintWhereInput>;
 };
 
 
@@ -2949,14 +3091,6 @@ export type QueryEntityArgs = {
 
 export type QueryFinalizeBreakServiceIntoMicroservicesArgs = {
   userActionId: Scalars['String']['input'];
-};
-
-
-export type QueryFindProjectAvailableTemplatesArgs = {
-  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where: WhereUniqueInput;
 };
 
 
@@ -3117,6 +3251,19 @@ export type QueryProjectsArgs = {
 };
 
 
+export type QueryRelationArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryRelationsArgs = {
+  orderBy?: InputMaybe<RelationOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RelationWhereInput>;
+};
+
+
 export type QueryRemoteGitRepositoriesArgs = {
   where: RemoteGitRepositoriesWhereUniqueInput;
 };
@@ -3250,6 +3397,62 @@ export type RedesignProjectNewService = {
   name: Scalars['String']['input'];
 };
 
+export type Relation = IBlock & {
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']['output']>;
+  lockedByUser?: Maybe<User>;
+  lockedByUserId?: Maybe<Scalars['String']['output']>;
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
+  relatedResources: Array<Scalars['String']['output']>;
+  relationKey: Scalars['String']['output'];
+  resourceId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  versionNumber: Scalars['Float']['output'];
+};
+
+export type RelationCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName: Scalars['String']['input'];
+  inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  parentBlock?: InputMaybe<WhereParentIdInput>;
+  relatedResources: Array<Scalars['String']['input']>;
+  relationKey: Scalars['String']['input'];
+  resource: WhereParentIdInput;
+};
+
+export type RelationOrderByInput = {
+  blockType?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
+  displayName?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type RelationUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  relatedResources: Array<Scalars['String']['input']>;
+};
+
+export type RelationWhereInput = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  displayName?: InputMaybe<StringFilter>;
+  id?: InputMaybe<StringFilter>;
+  parentBlock?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
 export type RemoteGitRepos = {
   pagination: Pagination;
   repos: Array<RemoteGitRepository>;
@@ -3277,6 +3480,8 @@ export type RemoteGitRepository = {
 };
 
 export type Resource = {
+  blueprint?: Maybe<Blueprint>;
+  blueprintId?: Maybe<Scalars['String']['output']>;
   builds: Array<Build>;
   codeGenerator?: Maybe<EnumCodeGenerator>;
   codeGeneratorStrategy?: Maybe<CodeGeneratorVersionStrategy>;
@@ -3297,6 +3502,7 @@ export type Resource = {
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;
   properties?: Maybe<Scalars['JSONObject']['output']>;
+  relations?: Maybe<Array<Relation>>;
   resourceType: EnumResourceType;
   serviceTemplate?: Maybe<Resource>;
   serviceTemplateVersion?: Maybe<Scalars['String']['output']>;
@@ -3321,6 +3527,7 @@ export type ResourceEntitiesArgs = {
 };
 
 export type ResourceCreateInput = {
+  blueprint?: InputMaybe<WhereParentIdInput>;
   codeGenerator?: InputMaybe<EnumCodeGenerator>;
   description: Scalars['String']['input'];
   gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
@@ -3365,6 +3572,11 @@ export type ResourceOrderByInput = {
   name?: InputMaybe<SortOrder>;
   resourceType?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type ResourceRelationUpdateInput = {
+  relatedResources: Array<Scalars['String']['input']>;
+  relationKey: Scalars['String']['input'];
 };
 
 export type ResourceRole = {
@@ -3464,6 +3676,8 @@ export type ResourceVersionsDiffBlock = {
 };
 
 export type ResourceWhereInput = {
+  blueprint?: InputMaybe<BlueprintWhereInput>;
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3477,6 +3691,8 @@ export type ResourceWhereInput = {
 };
 
 export type ResourceWhereInputWithPropertiesFilter = {
+  blueprint?: InputMaybe<BlueprintWhereInput>;
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3815,6 +4031,11 @@ export type UserRole = {
   id: Scalars['String']['output'];
   role: Role;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type WhereBlueprintRelationUniqueInput = {
+  blueprint: WhereUniqueInput;
+  relationKey: Scalars['String']['input'];
 };
 
 export type WhereCustomPropertyOptionUniqueInput = {

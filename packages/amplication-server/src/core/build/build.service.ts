@@ -314,8 +314,13 @@ export class BuildService {
     const resource = await this.resourceService.resource({
       where: { id: resourceId },
     });
-    if (resource.resourceType !== EnumResourceType.Service) {
-      logger.info("Code generation is supported only for services");
+    if (
+      resource.resourceType !== EnumResourceType.Service &&
+      resource.resourceType !== EnumResourceType.Component
+    ) {
+      logger.info(
+        "Code generation is supported only for services and blueprints"
+      );
       return;
     }
 
@@ -1087,13 +1092,15 @@ export class BuildService {
       return;
     }
 
-    const dSGResourceData = await this.getDSGResourceData(
-      resource,
-      build.id,
-      build.version,
-      user
-    );
-    const { resourceInfo } = dSGResourceData;
+    const serviceSettings =
+      resource.resourceType === EnumResourceType.Service
+        ? await this.serviceSettingsService.getServiceSettingsValues(
+            {
+              where: { id: resource.id },
+            },
+            user
+          )
+        : undefined;
 
     const project = await this.prisma.project.findUnique({
       where: {
@@ -1218,13 +1225,6 @@ export class BuildService {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GIT_STEP_START_LOG);
 
-          const smartGitSyncEntitlement = this.billingService.isBillingEnabled
-            ? await this.billingService.getBooleanEntitlement(
-                project.workspaceId,
-                BillingFeature.SmartGitSync
-              )
-            : false;
-
           const branchPerResourceEntitlement =
             await this.billingService.getBooleanEntitlement(
               project.workspaceId,
@@ -1238,13 +1238,10 @@ export class BuildService {
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             gitResourceMeta: {
-              adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
-              serverPath: resourceInfo.settings.serverSettings.serverPath,
+              adminUIPath: serviceSettings?.adminUISettings?.adminUIPath,
+              serverPath: serviceSettings?.serverSettings?.serverPath,
             },
-            pullRequestMode:
-              smartGitSyncEntitlement && smartGitSyncEntitlement.hasAccess
-                ? EnumPullRequestMode.Accumulative
-                : EnumPullRequestMode.Basic,
+            pullRequestMode: EnumPullRequestMode.Accumulative,
             isBranchPerResource:
               (branchPerResourceEntitlement &&
                 branchPerResourceEntitlement.hasAccess) ??
@@ -1367,22 +1364,28 @@ export class BuildService {
     let otherResources = undefined;
 
     if (rootGeneration) {
-      const resources = await this.resourceService.resources({
-        where: {
-          project: { id: resource.projectId },
-        },
-      });
+      let resources = [];
+      if (resource.resourceType === EnumResourceType.Component) {
+        resources = await this.resourceService.getRelatedResource(resourceId); // get all resources
+      } else {
+        resources = await this.resourceService.resources({
+          where: {
+            project: { id: resource.projectId },
+            resourceType: {
+              notIn: [
+                EnumResourceType.ProjectConfiguration,
+                EnumResourceType.PluginRepository,
+                EnumResourceType.ServiceTemplate,
+                EnumResourceType.Component,
+              ],
+            },
+          },
+        });
+      }
 
       otherResources = await Promise.all(
         resources
           .filter(({ id }) => id !== resourceId)
-          .filter(
-            ({ resourceType }) =>
-              resourceType !== EnumResourceType.ProjectConfiguration &&
-              resourceType !== EnumResourceType.PluginRepository &&
-              resourceType !== EnumResourceType.ServiceTemplate &&
-              resourceType !== EnumResourceType.Component
-          )
           .map((resource) =>
             this.getDSGResourceData(
               resource,

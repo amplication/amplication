@@ -27,4 +27,5 @@ export enum AuthorizableOriginParameter {
   OutdatedVersionAlertId,
   TeamId,
   CustomPropertyId,
+  BlueprintId,
 }
