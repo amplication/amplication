@@ -15,6 +15,7 @@ import useBlueprints from "./hooks/useBlueprints";
 import BlueprintForm from "./BlueprintForm";
 import { DeleteBlueprint } from "./DeleteBlueprint";
 import { useAppContext } from "../context/appContext";
+import BlueprintRelationList from "./BlueprintRelationList";
 
 const Blueprint = () => {
   const match = useRouteMatch<{
@@ -90,10 +91,13 @@ const Blueprint = () => {
         </FlexItem.FlexEnd>
       </FlexItem>
       {!loading && (
-        <BlueprintForm
-          onSubmit={handleSubmit}
-          defaultValues={data?.blueprint}
-        />
+        <>
+          <BlueprintForm
+            onSubmit={handleSubmit}
+            defaultValues={data?.blueprint}
+          />
+          <BlueprintRelationList blueprint={data?.blueprint} />
+        </>
       )}
 
       <FlexItem margin={EnumFlexItemMargin.Both} />

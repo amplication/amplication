@@ -1,3 +1,3 @@
-import { EventParams } from "../plugins.types";
+import { EventParams } from "./blueprint-plugins.types";
 
 export interface CreateBlueprintParams extends EventParams {}

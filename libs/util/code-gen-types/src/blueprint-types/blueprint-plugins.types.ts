@@ -1,3 +1,4 @@
+import { AstNode, CodeBlock } from "@amplication/csharp-ast";
 import type { Promisable } from "type-fest";
 import { BuildLogger } from "../build-logger";
 import {
@@ -9,7 +10,6 @@ import {
 } from "../code-gen-types";
 import { DSGResourceData } from "../dsg-resource-data";
 import { FileMap } from "../files";
-import { AstNode, Class } from "@amplication/csharp-ast";
 import { BlueprintEvents } from "./blueprint-plugin-events.types";
 
 export interface EventParams {}
@@ -27,7 +27,7 @@ export type PluginAfterEvent<T extends EventParams, F extends AstNode> = (
 
 export interface PluginEventType<
   T extends EventParams,
-  F extends AstNode = Class
+  F extends AstNode = CodeBlock
 > {
   before?: PluginBeforeEvent<T>;
   after?: PluginAfterEvent<T, F>;

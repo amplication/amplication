@@ -11,15 +11,17 @@ export class BlueprintWhereInput {
   })
   id?: string | null;
 
-  @Field(() => DateTimeFilter, {
-    nullable: true,
-  })
   deletedAt?: DateTimeFilter | null;
 
   @Field(() => StringFilter, {
     nullable: true,
   })
   name?: StringFilter | null;
+
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  key?: StringFilter | null;
 
   workspace?: WorkspaceWhereInput | null;
 }
