@@ -70,6 +70,7 @@ import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
 import { OwnershipService } from "../ownership/ownership.service";
 import { EnumOwnershipType } from "../ownership/dto/Ownership";
+import { RelationService } from "../relation/relation.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -667,6 +668,10 @@ describe("ResourceService", () => {
         },
         {
           provide: ActionService,
+          useClass: jest.fn(() => ({})),
+        },
+        {
+          provide: RelationService,
           useClass: jest.fn(() => ({})),
         },
         {
