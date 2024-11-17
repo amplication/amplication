@@ -5,10 +5,12 @@ import {
   BLUEPRINT_FIELDS_FRAGMENT,
   CREATE_BLUEPRINT,
   DELETE_BLUEPRINT,
+  DELETE_BLUEPRINT_RELATION,
   FIND_BLUEPRINTS,
   GET_BLUEPRINT,
   GET_BLUEPRINTS_MAP,
   UPDATE_BLUEPRINT,
+  UPSERT_BLUEPRINT_RELATION,
 } from "../queries/blueprintsQueries";
 
 type TDeleteData = {
@@ -26,9 +28,16 @@ type TGetData = {
 type TCreateData = {
   createBlueprint: models.Blueprint;
 };
-
 type TUpdateData = {
   updateBlueprint: models.Blueprint;
+};
+
+type TUpsertRelationData = {
+  upsertBlueprintRelation: models.BlueprintRelation;
+};
+
+type TDeleteRelationData = {
+  deleteBlueprintRelation: models.BlueprintRelation;
 };
 
 const NAME_FIELD = "name";
@@ -77,6 +86,7 @@ const useBlueprints = (blueprintId?: string) => {
             const newBlueprintRef = cache.writeFragment({
               data: newBlueprint,
               fragment: BLUEPRINT_FIELDS_FRAGMENT,
+              fragmentName: "BlueprintFields",
             });
 
             if (
@@ -136,6 +146,26 @@ const useBlueprints = (blueprintId?: string) => {
     refetchQueries: [GET_BLUEPRINTS_MAP],
   });
 
+  const [
+    deleteBlueprintRelation,
+    {
+      error: deleteBlueprintRelationError,
+      loading: deleteBlueprintRelationLoading,
+    },
+  ] = useMutation<TDeleteRelationData>(DELETE_BLUEPRINT_RELATION, {
+    refetchQueries: [GET_BLUEPRINTS_MAP],
+  });
+
+  const [
+    upsertBlueprintRelation,
+    {
+      error: upsertBlueprintRelationError,
+      loading: upsertBlueprintRelationLoading,
+    },
+  ] = useMutation<TUpsertRelationData>(UPSERT_BLUEPRINT_RELATION, {
+    refetchQueries: [GET_BLUEPRINTS_MAP],
+  });
+
   return {
     deleteBlueprint,
     deleteBlueprintError,
@@ -156,6 +186,12 @@ const useBlueprints = (blueprintId?: string) => {
     updateBlueprintError,
     updateBlueprintLoading,
     setSearchPhrase,
+    upsertBlueprintRelation,
+    upsertBlueprintRelationError,
+    upsertBlueprintRelationLoading,
+    deleteBlueprintRelation,
+    deleteBlueprintRelationError,
+    deleteBlueprintRelationLoading,
   };
 };
 

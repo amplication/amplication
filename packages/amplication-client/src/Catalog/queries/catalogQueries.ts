@@ -17,6 +17,11 @@ export const SEARCH_CATALOG = gql`
       licensed
       projectId
       properties
+      blueprint {
+        id
+        name
+        color
+      }
       project {
         id
         name

@@ -7,8 +7,8 @@ import { validate } from "../util/formikValidateJsonSchema";
 
 import FormikAutoSave from "../util/formikAutoSave";
 import { DisplayNameField } from "../Components/DisplayNameField";
-import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
+import BlueprintSelectField from "../Blueprints/BlueprintSelectField";
 
 type Props = {
   onSubmit: (values: models.PrivatePlugin) => void;
@@ -45,9 +45,22 @@ const FORM_SCHEMA = {
   },
 };
 
-const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
-  const { availableCodeGenerators } = useAvailableCodeGenerators();
+const CODE_GENERATORS = [
+  {
+    value: models.EnumCodeGenerator.DotNet,
+    label: ".NET",
+  },
+  {
+    value: models.EnumCodeGenerator.NodeJs,
+    label: "Node.js",
+  },
+  {
+    value: models.EnumCodeGenerator.Blueprint,
+    label: "Blueprints",
+  },
+];
 
+const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -66,18 +79,34 @@ const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
       enableReinitialize
       onSubmit={onSubmit}
     >
-      <Form childrenAsBlocks>
-        <FormikAutoSave debounceMS={1000} />
-        <TextField disabled label="Plugin Id" name="pluginId" />
-        <DisplayNameField name="displayName" label="Display Name" required />
-        <SelectField
-          name="codeGenerator"
-          label="Code Generator"
-          options={availableCodeGenerators}
-        />
+      {(formik) => {
+        return (
+          <Form childrenAsBlocks>
+            <FormikAutoSave debounceMS={1000} />
+            <TextField disabled label="Plugin Id" name="pluginId" />
+            <DisplayNameField
+              name="displayName"
+              label="Display Name"
+              required
+            />
+            <SelectField
+              name="codeGenerator"
+              label="Code Generator"
+              options={CODE_GENERATORS}
+            />
 
-        <OptionalDescriptionField name="description" label="Description" />
-      </Form>
+            {formik.values.codeGenerator ===
+              models.EnumCodeGenerator.Blueprint && (
+              <BlueprintSelectField
+                name="blueprints"
+                label="Available for Blueprints"
+                isMulti
+              />
+            )}
+            <OptionalDescriptionField name="description" label="Description" />
+          </Form>
+        );
+      }}
     </Formik>
   );
 };

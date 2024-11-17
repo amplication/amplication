@@ -27,4 +27,7 @@ export class PrivatePlugin extends IBlock {
     nullable: false,
   })
   versions: PrivatePluginVersion[];
+
+  @Field(() => [String], { nullable: true })
+  blueprints?: string[];
 }

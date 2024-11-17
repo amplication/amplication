@@ -13,7 +13,7 @@ import {
 import usePluginCatalog, { Plugin, PluginVersion } from "./usePluginCatalog";
 import usePrivatePlugin from "../../PrivatePlugins/hooks/usePrivatePlugin";
 import { LATEST_VERSION_TAG } from "../constant";
-import { compareBuild } from "semver";
+import { compareBuild, valid } from "semver";
 
 export interface SortedPluginInstallation extends models.PluginInstallation {
   categories?: string[];
@@ -110,7 +110,13 @@ const usePlugins = (
                 pluginId: privatePlugin.pluginId,
               },
               ...privatePlugin.versions
-                .sort((a, b) => compareBuild(b.version, a.version))
+                .sort((a, b) =>
+                  !valid(b.version)
+                    ? 1
+                    : !valid(a.version)
+                    ? -1
+                    : compareBuild(b.version, a.version)
+                )
                 .map((version) => ({
                   ...PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES,
                   ...version,

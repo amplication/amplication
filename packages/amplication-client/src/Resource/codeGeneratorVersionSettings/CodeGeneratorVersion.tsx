@@ -93,6 +93,7 @@ const CODE_GENERATOR_ENUM_TO_NAME: {
 } = {
   [models.EnumCodeGenerator.NodeJs]: "NodeJS",
   [models.EnumCodeGenerator.DotNet]: "DotNET",
+  [models.EnumCodeGenerator.Blueprint]: "Blueprint",
 };
 
 const CodeGeneratorVersion = () => {

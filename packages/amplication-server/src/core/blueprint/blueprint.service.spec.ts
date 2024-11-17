@@ -28,6 +28,7 @@ const EXAMPLE_BLUEPRINT: Blueprint = {
   workspaceId: EXAMPLE_WORKSPACE_ID,
   key: EXAMPLE_BLUEPRINT_KEY,
   enabled: true,
+  relations: null,
 };
 
 const prismaBlueprintUpdateMock = jest.fn(() => {
