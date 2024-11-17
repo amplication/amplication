@@ -8,6 +8,7 @@ import { Project } from "./Project";
 import { CodeGeneratorVersionStrategy } from "../core/resource/dto";
 import type { JsonValue } from "type-fest";
 import { GraphQLJSONObject } from "graphql-type-json";
+import { Blueprint } from "./Blueprint";
 
 @ObjectType({
   isAbstract: true,
@@ -111,4 +112,10 @@ export class Resource {
     nullable: true,
   })
   properties?: JsonValue;
+
+  @Field(() => Blueprint, { nullable: true })
+  blueprint?: Blueprint;
+
+  @Field(() => String, { nullable: true })
+  blueprintId?: string;
 }

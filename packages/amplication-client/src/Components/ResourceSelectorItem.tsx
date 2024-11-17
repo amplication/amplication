@@ -1,7 +1,6 @@
-import React from "react";
 import { Resource } from "../models";
 import "./CommitSelectorItem.scss";
-import ResourceCircleBadge from "./ResourceCircleBadge";
+import ResourceTypeBadge from "./ResourceTypeBadge";
 
 type Props = {
   resource: Resource | null;
@@ -13,7 +12,7 @@ export const ResourceSelectorItem = ({ resource }: Props) => {
     <div className={CLASS_NAME}>
       {resource ? (
         <>
-          <ResourceCircleBadge type={resource.resourceType} size={"xsmall"} />
+          <ResourceTypeBadge resource={resource} size={"xsmall"} />
           <div className={`${CLASS_NAME}__title`}>{resource?.name}</div>
         </>
       ) : (

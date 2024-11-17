@@ -34,7 +34,7 @@ export type Props = {
 export const SelectField = ({
   label,
   name,
-  options,
+  options = [],
   isMulti,
   isClearable,
   isCreatable,
@@ -151,7 +151,7 @@ export const SelectField = ({
   );
 };
 
-const DEFAULT_TAG_COLOR = "transparent";
+const DEFAULT_TAG_COLOR = "var(--gray-base)";
 const CustomMultiValueLabel = <
   Option,
   IsMulti extends boolean,

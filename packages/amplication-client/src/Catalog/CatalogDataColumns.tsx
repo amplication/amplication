@@ -19,6 +19,7 @@ import ProjectNameLink from "../Workspaces/ProjectNameLink";
 import { ProjectFilter } from "./ProjectFilter";
 import { ResourceTypeFilter } from "./ResourceTypeFilter";
 import { OwnerFilter } from "./OwnerFilter";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -29,11 +30,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     renderFilter: ResourceTypeFilter,
     renderCell: (props) => {
       return (
-        <ResourceCircleBadge
-          showTooltip
-          type={props.row.resourceType}
-          size="small"
-        />
+        <ResourceTypeBadge showTooltip resource={props.row} size="small" />
       );
     },
   },
