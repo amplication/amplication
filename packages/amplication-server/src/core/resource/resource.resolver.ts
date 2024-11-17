@@ -14,7 +14,7 @@ import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Resource, Entity, User, Project, Team } from "../../models";
+import { Resource, Entity, User, Project, Team, Blueprint } from "../../models";
 import { GitRepository } from "../../models/GitRepository";
 import { ResourceService, EntityService } from "..";
 import { BuildService } from "../build/build.service";
@@ -45,6 +45,9 @@ import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
 import { ProjectService } from "../project/project.service";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
 import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
+import { BlueprintService } from "../blueprint/blueprint.service";
+import { Relation } from "../relation/dto/Relation";
+import { RelationService } from "../relation/relation.service";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -58,7 +61,9 @@ export class ResourceResolver {
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly resourceVersionService: ResourceVersionService,
     private readonly ownershipService: OwnershipService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly blueprintService: BlueprintService,
+    private readonly relationService: RelationService
   ) {}
 
   @Query(() => Resource, { nullable: true })
@@ -299,6 +304,19 @@ export class ResourceResolver {
     });
   }
 
+  @ResolveField(() => Blueprint, { nullable: true })
+  async blueprint(@Parent() resource: Resource): Promise<Blueprint> {
+    if (!resource.blueprintId) {
+      return null;
+    }
+
+    return this.blueprintService.blueprint({
+      where: {
+        id: resource.blueprintId,
+      },
+    });
+  }
+
   @ResolveField(() => String, { nullable: true })
   async serviceTemplateVersion(
     @Parent() resource: Resource,
@@ -334,5 +352,20 @@ export class ResourceResolver {
 
     return (await this.ownershipService.getOwnership(resource.ownershipId))
       .owner;
+  }
+
+  @ResolveField(() => [Relation], { nullable: true })
+  async relations(@Parent() resource: Resource): Promise<Relation[]> {
+    if (!resource.id) {
+      return null;
+    }
+
+    return this.relationService.findMany({
+      where: {
+        resource: {
+          id: resource.id,
+        },
+      },
+    });
   }
 }

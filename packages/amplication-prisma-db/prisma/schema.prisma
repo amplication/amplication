@@ -181,19 +181,19 @@ model ApiToken {
 }
 
 model Blueprint {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   deletedAt   DateTime?
   name        String
   key         String
   description String?
-  enabled     Boolean   @default(true)
+  enabled     Boolean    @default(true)
   workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   color       String?
-
-  //useEntitiesAndApis Boolean @default(false)
+  resources   Resource[]
+  relations   Json?
 
   @@unique([workspaceId, key], map: "Blueprint.workspaceId_key_unique")
   @@unique([workspaceId, name], map: "Blueprint.workspaceId_name_unique")
@@ -230,6 +230,8 @@ model Resource {
   ownershipId           String?
   ownership             Ownership?                   @relation(fields: [ownershipId], references: [id], onDelete: Cascade)
   properties            Json?
+  blueprintId           String?
+  blueprint             Blueprint?                   @relation(fields: [blueprintId], references: [id], onDelete: NoAction, onUpdate: Cascade)
 
   @@unique([projectId, name], map: "Resource.projectId_name_unique")
   @@index([properties(ops: JsonbOps)], type: Gin)
@@ -657,6 +659,7 @@ enum EnumBlockType {
   PrivatePlugin
   Package
   CodeEngineVersion
+  Relation
 }
 
 enum ActionStepStatus {

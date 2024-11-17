@@ -5,7 +5,7 @@ import {
   SelectMenuItem,
 } from "@amplication/ui/design-system";
 import { Resource } from "../models";
-import ResourceCircleBadge from "./ResourceCircleBadge";
+import ResourceTypeBadge from "./ResourceTypeBadge";
 
 type props = {
   resource: Resource;
@@ -25,7 +25,7 @@ const RedesignResourceButtonItem = ({ resource, onSelectResource }: props) => {
           itemsAlign={EnumItemsAlign.Center}
           end={<Icon icon={"app-settings"} size="xsmall"></Icon>}
         >
-          <ResourceCircleBadge type={resource.resourceType} size="small" />
+          <ResourceTypeBadge resource={resource} size="small" />
           <span>{resource.name}</span>
         </FlexItem>
       </SelectMenuItem>

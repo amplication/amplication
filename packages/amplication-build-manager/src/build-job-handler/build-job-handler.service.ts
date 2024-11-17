@@ -1,4 +1,4 @@
-import { DSGResourceData } from "@amplication/code-gen-types";
+import { DSGResourceData, EnumResourceType } from "@amplication/code-gen-types";
 import { Injectable } from "@nestjs/common";
 import { cloneDeep } from "lodash";
 import {
@@ -38,23 +38,24 @@ export class BuildJobsHandlerService {
     codeGeneratorVersion: string
   ): Promise<ResourceTuple[]> {
     const shouldSplitBuild =
+      dsgResourceData.resourceType === EnumResourceType.Service &&
       codeGeneratorVersion !== "latest-local" &&
       this.codeGeneratorService.compareVersions(
         codeGeneratorVersion,
         this.minDsgVersionToSplitBuild
       ) >= 0;
 
-    const {
-      resourceInfo: {
-        settings: {
-          serverSettings: { generateServer },
-          adminUISettings: { generateAdminUI },
-        },
-      },
-    } = dsgResourceData;
-
     const jobs: ResourceTuple[] = [];
     if (shouldSplitBuild) {
+      const {
+        resourceInfo: {
+          settings: {
+            serverSettings: { generateServer },
+            adminUISettings: { generateAdminUI },
+          },
+        },
+      } = dsgResourceData;
+
       if (generateServer) {
         const serverDSGResourceData: DSGResourceData =
           cloneDeep(dsgResourceData);

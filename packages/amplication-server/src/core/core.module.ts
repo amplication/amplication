@@ -38,6 +38,7 @@ import { OutdatedVersionAlertModule } from "./outdatedVersionAlert/outdatedVersi
 import { TeamModule } from "./team/team.module";
 import { CustomPropertyModule } from "./customProperty/customProperty.module";
 import { BlueprintModule } from "./blueprint/blueprint.module";
+import { RelationModule } from "./relation/relation.module";
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { BlueprintModule } from "./blueprint/blueprint.module";
     TeamModule,
     CustomPropertyModule,
     BlueprintModule,
+    RelationModule,
   ],
   exports: [
     AccountModule,
@@ -118,6 +120,7 @@ import { BlueprintModule } from "./blueprint/blueprint.module";
     TeamModule,
     CustomPropertyModule,
     BlueprintModule,
+    RelationModule,
   ],
 })
 export class CoreModule {}
