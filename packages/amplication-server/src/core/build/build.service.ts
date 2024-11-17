@@ -314,8 +314,13 @@ export class BuildService {
     const resource = await this.resourceService.resource({
       where: { id: resourceId },
     });
-    if (resource.resourceType !== EnumResourceType.Service) {
-      logger.info("Code generation is supported only for services");
+    if (
+      resource.resourceType !== EnumResourceType.Service &&
+      resource.resourceType !== EnumResourceType.Component
+    ) {
+      logger.info(
+        "Code generation is supported only for services and blueprints"
+      );
       return;
     }
 
@@ -1218,13 +1223,6 @@ export class BuildService {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GIT_STEP_START_LOG);
 
-          const smartGitSyncEntitlement = this.billingService.isBillingEnabled
-            ? await this.billingService.getBooleanEntitlement(
-                project.workspaceId,
-                BillingFeature.SmartGitSync
-              )
-            : false;
-
           const branchPerResourceEntitlement =
             await this.billingService.getBooleanEntitlement(
               project.workspaceId,
@@ -1238,13 +1236,10 @@ export class BuildService {
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             gitResourceMeta: {
-              adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
-              serverPath: resourceInfo.settings.serverSettings.serverPath,
+              adminUIPath: resourceInfo.settings?.adminUISettings?.adminUIPath,
+              serverPath: resourceInfo.settings?.serverSettings?.serverPath,
             },
-            pullRequestMode:
-              smartGitSyncEntitlement && smartGitSyncEntitlement.hasAccess
-                ? EnumPullRequestMode.Accumulative
-                : EnumPullRequestMode.Basic,
+            pullRequestMode: EnumPullRequestMode.Accumulative,
             isBranchPerResource:
               (branchPerResourceEntitlement &&
                 branchPerResourceEntitlement.hasAccess) ??

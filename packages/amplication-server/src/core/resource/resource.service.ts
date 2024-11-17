@@ -148,7 +148,7 @@ const RESOURCE_TYPE_TO_EVENT_TYPE: {
   [EnumResourceType.Component]: EnumEventType.ComponentCreate,
 };
 
-type CodeGeneratorName = "NodeJS" | "DotNET";
+type CodeGeneratorName = "NodeJS" | "DotNET" | "Blueprint";
 
 const CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE: {
   [key in EnumCodeGenerator]: {
@@ -161,6 +161,10 @@ const CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE: {
     license: BillingFeature.CodeGeneratorDotNet,
   },
   [EnumCodeGenerator.NodeJs]: { codeGeneratorName: null, license: null },
+  [EnumCodeGenerator.Blueprint]: {
+    codeGeneratorName: "Blueprint",
+    license: null,
+  },
 };
 
 export const CODE_GENERATOR_NAME_TO_ENUM: {
@@ -170,6 +174,8 @@ export const CODE_GENERATOR_NAME_TO_ENUM: {
   NodeJS: EnumCodeGenerator.NodeJs,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   DotNET: EnumCodeGenerator.DotNet,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  Blueprint: EnumCodeGenerator.Blueprint,
 };
 
 @Injectable()
@@ -566,6 +572,7 @@ export class ResourceService {
         data: {
           ...args.data,
           resourceType: EnumResourceType.Component,
+          codeGenerator: EnumCodeGenerator.Blueprint,
         },
       },
       user
