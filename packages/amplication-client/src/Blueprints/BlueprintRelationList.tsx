@@ -25,6 +25,7 @@ import useBlueprints from "./hooks/useBlueprints";
 import BlueprintRelationForm from "./BlueprintRelationForm";
 import useBlueprintsMap from "./hooks/useBlueprintsMap";
 import { BlueprintRelationDelete } from "./BlueprintRelationDelete";
+import BlueprintCircleBadge from "./BlueprintCircleBadge";
 
 type Props = {
   blueprint: models.Blueprint;
@@ -123,17 +124,9 @@ const BlueprintRelationList = React.memo(
               key={relation.key}
               onClick={() => setSelectedRelation(relation)}
               start={
-                <Tooltip
-                  title={blueprintsMap[relation.relatedTo]?.name}
-                  direction="ne"
-                >
-                  <CircleBadge
-                    color={blueprintsMap[relation.relatedTo]?.color}
-                    size={"small"}
-                  >
-                    <Icon icon={"hexagon"} size={"small"} />
-                  </CircleBadge>
-                </Tooltip>
+                <BlueprintCircleBadge
+                  blueprint={blueprintsMap[relation.relatedTo]}
+                />
               }
             >
               <Text textStyle={EnumTextStyle.Normal}>{relation.name}</Text>

@@ -1,4 +1,3 @@
-import { PluginInstallation } from "@amplication/code-gen-types";
 import {
   MSSQL_PLUGIN_ID,
   MSSQL_PLUGIN_NPM,
@@ -7,16 +6,10 @@ import {
 } from "./defaultPlugins";
 
 describe("prepareDefaultPlugins", () => {
-  it("should return default plugins if no plugins are installed", () => {
+  it("should not return default plugins even if no plugins are installed", () => {
     const result = prepareDefaultPlugins([]);
 
-    expect(result).toEqual([
-      expect.objectContaining(<PluginInstallation>{
-        pluginId: MSSQL_PLUGIN_ID,
-        npm: MSSQL_PLUGIN_NPM,
-        version: "latest",
-      }),
-    ]);
+    expect(result).toEqual([]);
   });
 
   it("should return installed plugins if they are part of the default plugin category", () => {

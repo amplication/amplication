@@ -11,9 +11,6 @@ export class BlueprintWhereInput {
   })
   id?: string | null;
 
-  @Field(() => DateTimeFilter, {
-    nullable: true,
-  })
   deletedAt?: DateTimeFilter | null;
 
   @Field(() => StringFilter, {

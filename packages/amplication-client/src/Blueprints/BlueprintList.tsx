@@ -99,7 +99,7 @@ export const BlueprintList = React.memo(({ selectFirst = false }: Props) => {
       >
         {data?.blueprints?.map((blueprint) => (
           <InnerTabLink
-            icon={"hexagon"}
+            icon={"blueprint"}
             to={`${baseUrl}/blueprints/${blueprint.id}`}
             key={blueprint.id}
           >
