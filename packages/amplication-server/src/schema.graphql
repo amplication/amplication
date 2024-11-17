@@ -243,7 +243,6 @@ input BlueprintUpdateInput {
 }
 
 input BlueprintWhereInput {
-  deletedAt: DateTimeFilter
   id: String
   key: StringFilter
   name: StringFilter
@@ -1724,6 +1723,7 @@ type Mutation {
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   updateRelation(data: RelationUpdateInput!, where: WhereUniqueInput!): Relation!
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
+  updateResourceRelation(data: ResourceRelationUpdateInput!, resource: WhereUniqueInput!): [Relation!]!
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
@@ -2284,7 +2284,7 @@ type Relation implements IBlock {
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
   parentBlockId: String
-  relatedResources: String!
+  relatedResources: [String!]!
   relationKey: String!
   resourceId: String
   updatedAt: DateTime!
@@ -2297,7 +2297,7 @@ input RelationCreateInput {
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
   parentBlock: WhereParentIdInput
-  relatedResources: String!
+  relatedResources: [String!]!
   relationKey: String!
   resource: WhereParentIdInput!
 }
@@ -2314,7 +2314,7 @@ input RelationOrderByInput {
 input RelationUpdateInput {
   description: String
   displayName: String
-  relatedResources: String!
+  relatedResources: [String!]!
 }
 
 input RelationWhereInput {
@@ -2434,6 +2434,11 @@ input ResourceOrderByInput {
   updatedAt: SortOrder
 }
 
+input ResourceRelationUpdateInput {
+  relatedResources: [String!]!
+  relationKey: String!
+}
+
 type ResourceRole {
   createdAt: DateTime!
   description: String
@@ -2531,6 +2536,8 @@ type ResourceVersionsDiffBlock {
 }
 
 input ResourceWhereInput {
+  blueprint: BlueprintWhereInput
+  blueprintId: String
   createdAt: DateTimeFilter
   description: StringFilter
   id: String
@@ -2544,6 +2551,8 @@ input ResourceWhereInput {
 }
 
 input ResourceWhereInputWithPropertiesFilter {
+  blueprint: BlueprintWhereInput
+  blueprintId: String
   createdAt: DateTimeFilter
   description: StringFilter
   id: String

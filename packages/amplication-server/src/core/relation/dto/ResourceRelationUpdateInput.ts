@@ -1,10 +1,9 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { BlockCreateInput } from "../../block/dto/BlockCreateInput";
 
 @InputType({
   isAbstract: true,
 })
-export class RelationCreateInput extends BlockCreateInput {
+export class ResourceRelationUpdateInput {
   @Field(() => String, {
     nullable: false,
   })

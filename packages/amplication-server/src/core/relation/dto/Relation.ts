@@ -11,7 +11,7 @@ export class Relation extends IBlock {
   })
   relationKey!: string;
 
-  @Field(() => String, {
+  @Field(() => [String], {
     nullable: false,
   })
   relatedResources!: string[];

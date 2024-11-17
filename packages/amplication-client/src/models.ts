@@ -271,7 +271,6 @@ export type BlueprintUpdateInput = {
 };
 
 export type BlueprintWhereInput = {
-  deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   key?: InputMaybe<StringFilter>;
   name?: InputMaybe<StringFilter>;
@@ -1744,6 +1743,7 @@ export type Mutation = {
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
   updateRelation: Relation;
   updateResource?: Maybe<Resource>;
+  updateResourceRelation: Array<Relation>;
   updateResourceRole?: Maybe<ResourceRole>;
   updateServiceSettings?: Maybe<ServiceSettings>;
   updateServiceTopics: ServiceTopics;
@@ -2390,6 +2390,12 @@ export type MutationUpdateRelationArgs = {
 export type MutationUpdateResourceArgs = {
   data: ResourceUpdateInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateResourceRelationArgs = {
+  data: ResourceRelationUpdateInput;
+  resource: WhereUniqueInput;
 };
 
 
@@ -3407,7 +3413,7 @@ export type Relation = IBlock & {
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['String']['output']>;
-  relatedResources: Scalars['String']['output'];
+  relatedResources: Array<Scalars['String']['output']>;
   relationKey: Scalars['String']['output'];
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
@@ -3420,7 +3426,7 @@ export type RelationCreateInput = {
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  relatedResources: Scalars['String']['input'];
+  relatedResources: Array<Scalars['String']['input']>;
   relationKey: Scalars['String']['input'];
   resource: WhereParentIdInput;
 };
@@ -3437,7 +3443,7 @@ export type RelationOrderByInput = {
 export type RelationUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
-  relatedResources: Scalars['String']['input'];
+  relatedResources: Array<Scalars['String']['input']>;
 };
 
 export type RelationWhereInput = {
@@ -3571,6 +3577,11 @@ export type ResourceOrderByInput = {
   updatedAt?: InputMaybe<SortOrder>;
 };
 
+export type ResourceRelationUpdateInput = {
+  relatedResources: Array<Scalars['String']['input']>;
+  relationKey: Scalars['String']['input'];
+};
+
 export type ResourceRole = {
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
@@ -3668,6 +3679,8 @@ export type ResourceVersionsDiffBlock = {
 };
 
 export type ResourceWhereInput = {
+  blueprint?: InputMaybe<BlueprintWhereInput>;
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3681,6 +3694,8 @@ export type ResourceWhereInput = {
 };
 
 export type ResourceWhereInputWithPropertiesFilter = {
+  blueprint?: InputMaybe<BlueprintWhereInput>;
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;

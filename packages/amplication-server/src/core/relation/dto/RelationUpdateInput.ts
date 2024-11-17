@@ -5,7 +5,7 @@ import { BlockUpdateInput } from "../../block/dto/BlockUpdateInput";
   isAbstract: true,
 })
 export class RelationUpdateInput extends BlockUpdateInput {
-  @Field(() => String, {
+  @Field(() => [String], {
     nullable: false,
   })
   relatedResources!: string[];
