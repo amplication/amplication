@@ -68,14 +68,6 @@
         "jestConfig": "packages/generator-blueprints/jest.config.ts"
       }
     },
-    "e2e": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/packages/generator-blueprints"],
-      "options": {
-        "jestConfig": "packages/generator-blueprints/jest.e2e.config.ts",
-        "passWithNoTests": false
-      }
-    },
     "generate-example-input-json": {
       "executor": "nx:run-commands",
       "options": {
