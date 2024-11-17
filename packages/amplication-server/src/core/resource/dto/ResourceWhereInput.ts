@@ -3,6 +3,7 @@ import { BooleanFilter, DateTimeFilter, StringFilter } from "../../../dto";
 import { ProjectWhereInput } from "../../project/dto/ProjectWhereInput";
 import { EnumResourceTypeFilter } from "./EnumResourceTypeFilter";
 import { OwnershipWhereInput } from "../../ownership/dto/OwnershipWhereInput";
+import { BlueprintWhereInput } from "../../blueprint/dto/BlueprintWhereInput";
 
 @InputType({
   isAbstract: true,
@@ -51,6 +52,14 @@ export class ResourceWhereInput {
     nullable: true,
   })
   ownership?: OwnershipWhereInput | null;
+
+  @Field(() => String, { nullable: true })
+  blueprintId?: string | null;
+
+  @Field(() => BlueprintWhereInput, {
+    nullable: true,
+  })
+  blueprint?: BlueprintWhereInput | null;
 
   //do not expose to graphql
   deletedAt?: DateTimeFilter;

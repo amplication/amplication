@@ -10,23 +10,7 @@ type DefaultPlugin = {
   defaultCategoryPlugin: PluginInstallation;
 };
 
-const defaultPlugins: DefaultPlugin[] = [
-  {
-    categoryPluginIds: [
-      POSTGRESQL_PLUGIN_ID,
-      MYSQL_PLUGIN_ID,
-      MONGO_PLUGIN_ID,
-      MSSQL_PLUGIN_ID,
-    ],
-    defaultCategoryPlugin: {
-      id: "placeholder-id",
-      pluginId: MSSQL_PLUGIN_ID,
-      npm: MSSQL_PLUGIN_NPM,
-      enabled: true,
-      version: "latest",
-    },
-  },
-];
+const defaultPlugins: DefaultPlugin[] = [];
 
 export function prepareDefaultPlugins(
   installedPlugins: PluginInstallation[]

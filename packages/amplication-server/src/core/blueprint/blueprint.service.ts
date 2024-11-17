@@ -10,6 +10,10 @@ import { prepareDeletedItemName } from "../../util/softDelete";
 import { BlueprintCreateArgs } from "./dto/BlueprintCreateArgs";
 import { BlueprintFindManyArgs } from "./dto/BlueprintFindManyArgs";
 import { UpdateBlueprintArgs } from "./dto/UpdateBlueprintArgs";
+import { BlueprintRelation } from "../../models/BlueprintRelation";
+import { UpsertBlueprintRelationArgs } from "./dto/UpsertBlueprintRelationArgs";
+import { JsonArray } from "type-fest";
+import { DeleteBlueprintRelationArgs } from "./dto/DeleteBlueprintRelationArgs";
 
 export const INVALID_BLUEPRINT_ID = "Invalid blueprintId";
 
@@ -112,13 +116,132 @@ export class BlueprintService {
     return this.blueprintRecordToModel(blueprint);
   }
 
-  //we keep this for future json properties like blocks
   blueprintRecordToModel(record: PrismaBlueprint): Blueprint {
     if (!record) {
       return null;
     }
     return {
       ...record,
+      relations: record.relations
+        ? (record.relations as unknown as BlueprintRelation[])
+        : null,
     };
+  }
+
+  async upsertRelation(
+    args: UpsertBlueprintRelationArgs
+  ): Promise<BlueprintRelation> {
+    const blueprint = await this.blueprint({
+      where: { id: args.where.blueprint.id },
+    });
+    if (!blueprint) {
+      throw new AmplicationError(
+        `Blueprint not found, ID: ${args.where.blueprint.id}`
+      );
+    }
+
+    let newOrUpdatedRelation: BlueprintRelation;
+
+    if (!blueprint.relations) {
+      blueprint.relations = [];
+    }
+
+    const currentRelationIndex = blueprint.relations?.findIndex(
+      (relation) => relation.key === args.where.relationKey
+    );
+
+    const currentRelation = blueprint.relations[currentRelationIndex];
+
+    //validate the relatedTo is a valid blueprint key
+    if (args.data.relatedTo !== currentRelation?.relatedTo) {
+      const relatedToBlueprint = await this.blueprints({
+        where: {
+          key: {
+            equals: args.data.relatedTo,
+          },
+        },
+      });
+
+      if (!relatedToBlueprint) {
+        throw new AmplicationError(
+          `Related blueprint not found, key: ${args.data.relatedTo}`
+        );
+      }
+    }
+
+    // validate the relation key is unique
+    if (
+      args.data.key !== currentRelation?.key &&
+      blueprint.relations.some((relation) => relation.key === args.data.key)
+    ) {
+      throw new AmplicationError(
+        `Relation key must be unique, key: ${args.where.relationKey}`
+      );
+    }
+
+    if (currentRelationIndex === -1) {
+      newOrUpdatedRelation = {
+        ...args.data,
+        key: args.where.relationKey,
+      };
+
+      blueprint.relations.push(newOrUpdatedRelation);
+    } else {
+      newOrUpdatedRelation = blueprint.relations[currentRelationIndex];
+
+      newOrUpdatedRelation = {
+        ...newOrUpdatedRelation,
+        ...args.data,
+      };
+
+      blueprint.relations[currentRelationIndex] = newOrUpdatedRelation;
+    }
+
+    await this.prisma.blueprint.update({
+      where: {
+        id: args.where.blueprint.id,
+      },
+      data: {
+        relations: blueprint.relations as unknown as JsonArray,
+      },
+    });
+
+    return newOrUpdatedRelation;
+  }
+
+  async deleteRelation(
+    args: DeleteBlueprintRelationArgs
+  ): Promise<BlueprintRelation> {
+    const blueprint = await this.blueprint({
+      where: { id: args.where.blueprint.id },
+    });
+    if (!blueprint) {
+      throw new AmplicationError(
+        `Blueprint not found, ID: ${args.where.blueprint.id}`
+      );
+    }
+
+    const currentRelationIndex = blueprint.relations?.findIndex(
+      (relation) => relation.key === args.where.relationKey
+    );
+
+    if (currentRelationIndex === -1) {
+      throw new AmplicationError(
+        `Relation not found, key: ${args.where.relationKey}`
+      );
+    }
+
+    const [deleted] = blueprint.relations.splice(currentRelationIndex, 1);
+
+    await this.prisma.blueprint.update({
+      where: {
+        id: args.where.blueprint.id,
+      },
+      data: {
+        relations: blueprint.relations as unknown as JsonArray,
+      },
+    });
+
+    return deleted;
   }
 }

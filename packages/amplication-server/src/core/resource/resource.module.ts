@@ -31,6 +31,7 @@ import { OutdatedVersionAlertModule } from "../outdatedVersionAlert/outdatedVers
 import { TemplateCodeEngineVersionModule } from "../templateCodeEngineVersion/templateCodeEngineVersion.module";
 import { OwnershipModule } from "../ownership/ownership.module";
 import { BlueprintModule } from "../blueprint/blueprint.module";
+import { RelationModule } from "../relation/relation.module";
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { BlueprintModule } from "../blueprint/blueprint.module";
     TemplateCodeEngineVersionModule,
     OwnershipModule,
     BlueprintModule,
+    RelationModule,
   ],
   providers: [
     ResourceService,

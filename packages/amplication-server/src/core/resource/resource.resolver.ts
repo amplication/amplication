@@ -46,6 +46,8 @@ import { ProjectService } from "../project/project.service";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
 import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
 import { BlueprintService } from "../blueprint/blueprint.service";
+import { Relation } from "../relation/dto/Relation";
+import { RelationService } from "../relation/relation.service";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -60,7 +62,8 @@ export class ResourceResolver {
     private readonly resourceVersionService: ResourceVersionService,
     private readonly ownershipService: OwnershipService,
     private readonly projectService: ProjectService,
-    private readonly blueprintService: BlueprintService
+    private readonly blueprintService: BlueprintService,
+    private readonly relationService: RelationService
   ) {}
 
   @Query(() => Resource, { nullable: true })
@@ -349,5 +352,20 @@ export class ResourceResolver {
 
     return (await this.ownershipService.getOwnership(resource.ownershipId))
       .owner;
+  }
+
+  @ResolveField(() => [Relation], { nullable: true })
+  async relations(@Parent() resource: Resource): Promise<Relation[]> {
+    if (!resource.id) {
+      return null;
+    }
+
+    return this.relationService.findMany({
+      where: {
+        resource: {
+          id: resource.id,
+        },
+      },
+    });
   }
 }
