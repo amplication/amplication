@@ -165,6 +165,13 @@ export const PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP = {
         type: "Code Engine Version",
         pluralTypeName: "Code Engine Version",
       },
+      [models.EnumBlockType.Relation]: {
+        relativeUrl: ``,
+        icon: "relation",
+        displayName: "Relation",
+        type: "Relation",
+        pluralTypeName: "Relations",
+      },
     };
     return blockTypeMap[(change as models.Block).blockType];
   },

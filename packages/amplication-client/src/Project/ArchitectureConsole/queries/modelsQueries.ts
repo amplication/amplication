@@ -14,6 +14,11 @@ export const GET_RESOURCES = gql`
       name
       description
       resourceType
+      blueprint {
+        id
+        name
+        color
+      }
       project {
         id
       }

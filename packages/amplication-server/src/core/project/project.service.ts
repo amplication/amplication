@@ -546,7 +546,9 @@ export class ProjectService {
       const promises = resourcesToBuild
         .filter(
           //filter out resources that are not services
-          (resource) => resource.resourceType === EnumResourceType.Service
+          (resource) =>
+            resource.resourceType === EnumResourceType.Service ||
+            resource.resourceType === EnumResourceType.Component
         )
         .map((resource: Resource) => {
           this.logger.debug("Creating build for resource", {

@@ -1,0 +1,151 @@
+{
+  "name": "generator-blueprints",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/generator-blueprints/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/packages/generator-blueprints",
+        "main": "packages/generator-blueprints/src/main.ts",
+        "tsConfig": "packages/generator-blueprints/tsconfig.app.json",
+        "assets": [
+          "**/*.template.env",
+          "packages/generator-blueprints/src/**/package.json",
+          {
+            "glob": "**/*.template.(ts|env|json|yml)",
+            "input": "packages/generator-blueprints/src/server",
+            "output": "src/server"
+          },
+          {
+            "glob": "**/*.db.template.(yml)",
+            "input": "packages/generator-blueprints/src/server",
+            "output": "src/server"
+          },
+          {
+            "glob": "static/**",
+            "input": "packages/generator-blueprints/src/server",
+            "output": "src/server"
+          },
+          {
+            "glob": "**/*.template.(ts|tsx|html|env|json)",
+            "input": "packages/generator-blueprints/src/admin",
+            "output": "src/admin"
+          },
+          {
+            "glob": "static/**",
+            "input": "packages/generator-blueprints/src/admin",
+            "output": "src/admin"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/generator-blueprints/src/**/*",
+          "packages/generator-blueprints/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/generator-blueprints"],
+      "options": {
+        "jestConfig": "packages/generator-blueprints/jest.config.ts"
+      }
+    },
+    "generate-example-input-json": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./scripts/create-input-json.ts",
+        "cwd": "packages/generator-blueprints",
+        "envFile": "packages/generator-blueprints/.env"
+      }
+    },
+    "generate-local-code": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rimraf ../../.amplication/generate-local-code/generated",
+          "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts"
+        ],
+        "parallel": false,
+        "cwd": "packages/generator-blueprints",
+        "envFile": "packages/generator-blueprints/.env"
+      }
+    },
+    "generate-local-code-docker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rimraf ./.amplication/generate-local-code/generated",
+          "docker run --rm --env-file=packages/generator-blueprints/.env --env BUILD_OUTPUT_PATH=/generate-local-code/generated --env BUILD_SPEC_PATH=/generate-local-code/input.json -v $(pwd)/.amplication/generate-local-code:/generate-local-code amplication/generator-blueprints:latest node ./src/main.js"
+        ],
+        "parallel": false,
+        "envFile": "packages/generator-blueprints/.env"
+      },
+      "dependsOn": ["package:container"]
+    },
+    "update-snapshot": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/tests/__snapshots__"],
+      "options": {
+        "commands": [
+          "jest --collectCoverage=false -u src/tests/*.spec.ts ",
+          "jest --collectCoverage=false -u src/tests/server"
+        ],
+        "parallel": false,
+        "cwd": "packages/generator-blueprints"
+      }
+    },
+    "update-one-snapshot": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/tests/__snapshots__"],
+      "options": {
+        "commands": [
+          "jest --collectCoverage=false -u src/tests/create-data-service.spec.ts "
+        ],
+        "parallel": false,
+        "cwd": "packages/generator-blueprints"
+      }
+    },
+    "package:container": {
+      "executor": "nx:run-script",
+      "dependsOn": ["build"],
+      "options": {
+        "script": "bpg:package:container"
+      }
+    },
+    "internal:package:container": {
+      "executor": "@nx-tools/nx-container:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/generator-blueprints:latest"],
+        "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        },
+        "dev": {
+          "file": "packages/generator-blueprints/Dockerfile.dev"
+        }
+      }
+    }
+  },
+  "tags": []
+}

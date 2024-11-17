@@ -128,7 +128,7 @@ export const PrivatePluginList = React.memo(
                 </>
               }
             >
-              <span>{codeGenerator} </span>&nbsp; Plugins
+              <span>{`${codeGenerator}`} Plugins</span>
             </CollapsibleListItem>
           ))}
 

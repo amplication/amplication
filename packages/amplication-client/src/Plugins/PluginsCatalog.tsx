@@ -98,7 +98,11 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   }, [canUsePrivatePlugins, loadPrivatePluginsCatalog]);
 
   const filteredCatalog = useMemo(() => {
-    if (category === "undefined") return Object.values(pluginCatalog);
+    if (category === "undefined")
+      return [
+        ...Object.values(pluginCatalog),
+        ...Object.values(privatePluginCatalog),
+      ];
 
     if (category === PRIVATE_PLUGINS_CATEGORY)
       return Object.values(privatePluginCatalog);
@@ -155,19 +159,12 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
             settings: settings,
             configurations: configurations,
             resource: { connect: { id: resource } },
-            isPrivate: category === PRIVATE_PLUGINS_CATEGORY,
+            isPrivate: privatePluginCatalog[pluginId] ? true : false,
           },
         },
       }).catch(console.error);
     },
-    [
-      createPluginInstallation,
-      setConfirmInstall,
-      resource,
-      userEntity,
-      setPluginInstallationData,
-      category,
-    ]
+    [userEntity, createPluginInstallation, resource, privatePluginCatalog]
   );
 
   const handleDismissInstall = useCallback(() => {

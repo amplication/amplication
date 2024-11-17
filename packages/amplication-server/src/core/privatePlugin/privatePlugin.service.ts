@@ -21,6 +21,7 @@ import { PrivatePluginVersion } from "./dto/PrivatePluginVersion";
 import { UpdatePrivatePluginVersionArgs } from "./dto/UpdatePrivatePluginVersionArgs";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 import { BlockSettingsProperties } from "../block/types";
+import { JsonFilter } from "../../dto/JsonFilter";
 
 const DEFAULT_PRIVATE_PLUGIN_VERSION: Omit<PrivatePluginVersion, "version"> = {
   deprecated: false,
@@ -71,7 +72,24 @@ export class PrivatePluginService extends BlockTypeService<
       return [];
     }
 
-    return await this.findMany(
+    const filter: JsonFilter[] = [
+      {
+        path: ["codeGenerator"],
+        equals:
+          CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
+          EnumCodeGenerator.NodeJs,
+      },
+    ];
+
+    if (resource.blueprintId) {
+      filter.push({
+        path: ["blueprints"],
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        array_contains: resource.blueprintId,
+      });
+    }
+
+    return this.findManyBySettings(
       {
         ...args,
         where: {
@@ -83,14 +101,10 @@ export class PrivatePluginService extends BlockTypeService<
             },
             projectId: resource.projectId,
           },
-          codeGenerator: {
-            equals:
-              CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
-              EnumCodeGenerator.NodeJs,
-          },
         },
       },
-      undefined,
+      filter,
+      "AND",
       true
     );
   }
