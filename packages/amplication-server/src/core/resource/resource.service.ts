@@ -80,6 +80,7 @@ import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVe
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
+import { RelationService } from "../relation/relation.service";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -198,7 +199,8 @@ export class ResourceService {
     private readonly userActionService: UserActionService,
     private readonly gitProviderService: GitProviderService,
     private readonly templateCodeEngineVersionService: TemplateCodeEngineVersionService,
-    private readonly ownershipService: OwnershipService
+    private readonly ownershipService: OwnershipService,
+    private readonly relationService: RelationService
   ) {}
 
   async createProjectConfiguration(
@@ -2026,5 +2028,21 @@ export class ResourceService {
 
       return ownerShip;
     }
+  }
+
+  async getRelatedResource(resourceId: string): Promise<Resource[]> {
+    const relations = await this.relationService.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+
+    const resourceIds = Array.from(
+      new Set(relations.flatMap((relation) => relation.relatedResources))
+    );
+
+    return this.resourcesByIds(resourceIds);
   }
 }
