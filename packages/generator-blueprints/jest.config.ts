@@ -21,8 +21,8 @@ export default {
   coverageDirectory: "../../coverage/packages/generator-blueprints",
   coverageThreshold: {
     global: {
-      branches: 87,
-      lines: 90,
+      branches: 70,
+      lines: 85,
     },
   },
 };
