@@ -62,11 +62,7 @@ const ITEMS: CreateResourceButtonItemType[] = [
   },
 ];
 
-type Props = {
-  servicesLength: number;
-};
-
-const CreateResourceButton: React.FC<Props> = ({ servicesLength }) => {
+const CreateResourceButton: React.FC = () => {
   const { stigg } = useStiggContext();
   const history = useHistory();
   const [loading, setLoading] = React.useState(false);
@@ -116,7 +112,6 @@ const CreateResourceButton: React.FC<Props> = ({ servicesLength }) => {
         featureId={BillingFeature.Services}
         entitlementType={EntitlementType.Metered}
         limitationText="You have reached the maximum number of services allowed. "
-        actualUsage={servicesLength}
         paidPlansExclusive={false}
       >
         <SelectMenu

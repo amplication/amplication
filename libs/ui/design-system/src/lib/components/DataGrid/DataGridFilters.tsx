@@ -15,16 +15,28 @@ import {
   SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
-import { Fragment, ReactNode, useCallback, useMemo, useState } from "react";
+import {
+  Fragment,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 const CLASS_NAME = "data-grid-filters";
 
 type Props<T> = {
   onChange: (filters: Record<string, string | null> | null) => void;
   columns: DataGridColumn<T>[];
+  fixedFilters?: Record<string, string>;
 };
 
-export function DataGridFilters<T>({ onChange, columns }: Props<T>) {
+export function DataGridFilters<T>({
+  onChange,
+  columns,
+  fixedFilters = {},
+}: Props<T>) {
   //the selected values for each filter
   const [selectedValues, setSelectedValues] = useState<
     Record<string, string | null>
@@ -66,6 +78,10 @@ export function DataGridFilters<T>({ onChange, columns }: Props<T>) {
 
   const onRemoveFilter = useCallback(
     (propertyKey: string) => {
+      if (fixedFilters[propertyKey]) {
+        return;
+      }
+
       setVisibleFilters((prevFilters) =>
         prevFilters.filter((key) => key !== propertyKey)
       );
@@ -81,12 +97,28 @@ export function DataGridFilters<T>({ onChange, columns }: Props<T>) {
     [onChange]
   );
 
+  useEffect(() => {
+    if (Object.keys(fixedFilters).length === 0) {
+      return;
+    }
+
+    setVisibleFilters(Object.keys(fixedFilters));
+    setSelectedValues((prevValues) => {
+      onChange(fixedFilters);
+
+      return fixedFilters;
+    });
+  }, []);
+
   //get the filterable properties that are not currently visible for the "add filter" menu
   const filterableColumns = useMemo(() => {
     return columns.filter(
-      (column) => column.filterable && !visibleFilters.includes(column.key)
+      (column) =>
+        column.filterable &&
+        !visibleFilters.includes(column.key) &&
+        !fixedFilters[column.key]
     );
-  }, [columns, visibleFilters]);
+  }, [columns, fixedFilters, visibleFilters]);
 
   const columnsMap = useMemo(() => {
     return columns.reduce((acc, column) => {
@@ -117,6 +149,7 @@ export function DataGridFilters<T>({ onChange, columns }: Props<T>) {
                 selectedValue={selectedValues[key]}
                 onChange={setFilter}
                 onRemove={onRemoveFilter}
+                disabled={!!fixedFilters[key]}
               />
             ) : (
               <Text
@@ -180,6 +213,7 @@ const FilterComponent = ({
   selectedValue,
   onChange,
   onRemove,
+  disabled,
 }: FilterComponentProps) => {
   return (
     <Fragment key={key}>
@@ -190,6 +224,7 @@ const FilterComponent = ({
         selectedValue,
         onChange,
         onRemove,
+        disabled,
       })}
     </Fragment>
   );
