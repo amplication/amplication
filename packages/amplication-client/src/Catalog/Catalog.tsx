@@ -18,7 +18,7 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
@@ -37,8 +37,8 @@ import "./Catalog.scss";
 import { RESOURCE_LIST_COLUMNS } from "./CatalogDataColumns";
 import useCatalog from "./hooks/useCatalog";
 
-const CLASS_NAME = "resource-list";
-const PAGE_TITLE = "Project Overview";
+const CLASS_NAME = "catalog";
+const PAGE_TITLE = "Catalog";
 
 const COLUMNS_LOCAL_STORAGE_KEY = "resource-list-columns";
 
@@ -88,7 +88,8 @@ function Catalog() {
     overrideIsPlatformConsole: true,
   });
 
-  const { catalog, loading, error, setFilter, setSearchPhrase } = useCatalog();
+  const { catalog, loading, error, setFilter, setSearchPhrase, pagination } =
+    useCatalog();
 
   const servicesLength = useMemo(
     () =>
@@ -100,6 +101,10 @@ function Catalog() {
 
   const errorMessage = formatError(error);
 
+  const handleLoadMore = useCallback(() => {
+    pagination.triggerLoadMore();
+  }, [pagination]);
+
   return (
     <PageContent
       className={CLASS_NAME}
@@ -107,68 +112,71 @@ function Catalog() {
       pageWidth={EnumPageWidth.Full}
     >
       <NewServiceFromTemplateDialogWithUrlTrigger />
-      <FlexItem
-        itemsAlign={EnumItemsAlign.Center}
-        contentAlign={EnumContentAlign.Start}
-        start={
-          <>
-            <FlexItem
-              gap={EnumGapSize.Large}
-              itemsAlign={EnumItemsAlign.Center}
-            >
-              <Text textStyle={EnumTextStyle.Tag}>
-                {catalog.length} {pluralize(catalog.length, "Item", "Items")}
-              </Text>
-              <SearchField
-                label="search"
-                placeholder="search"
-                onChange={setSearchPhrase}
-              />
-              <DataGridColumnFilter
-                columns={columns}
-                onColumnsChanged={setColumns}
-              />
-              {loading && <CircularProgress />}
-            </FlexItem>
-          </>
-        }
-        end={
-          currentProject && (
-            <>
+      <div className={`${CLASS_NAME}__wrapper`}>
+        <div className={`${CLASS_NAME}__header`}>
+          <FlexItem
+            itemsAlign={EnumItemsAlign.Center}
+            contentAlign={EnumContentAlign.Start}
+            start={
+              <>
+                <FlexItem
+                  gap={EnumGapSize.Large}
+                  itemsAlign={EnumItemsAlign.Center}
+                >
+                  <Text textStyle={EnumTextStyle.Tag}>
+                    {pagination.recordCount}{" "}
+                    {pluralize(pagination.recordCount, "Item", "Items")}
+                  </Text>
+                  <SearchField
+                    label="search"
+                    placeholder="search"
+                    onChange={setSearchPhrase}
+                  />
+                  <DataGridColumnFilter
+                    columns={columns}
+                    onColumnsChanged={setColumns}
+                  />
+                  {loading && <CircularProgress />}
+                </FlexItem>
+              </>
+            }
+            end={
               <FlexItem
                 itemsAlign={EnumItemsAlign.Center}
                 direction={EnumFlexDirection.Row}
               >
-                <Link to={`${platformProjectBaseUrl}`}>
-                  <Button buttonStyle={EnumButtonStyle.Outline}>
-                    View Templates
-                  </Button>
-                </Link>
-                <CreateResourceButton servicesLength={servicesLength} />
+                {currentProject && (
+                  <>
+                    <Link to={`${platformProjectBaseUrl}`}>
+                      <Button buttonStyle={EnumButtonStyle.Outline}>
+                        View Templates
+                      </Button>
+                    </Link>
+                    <CreateResourceButton servicesLength={servicesLength} />
+                  </>
+                )}
               </FlexItem>
-            </>
-          )
-        }
-      ></FlexItem>
-      <HorizontalRule doubleSpacing />
-      <DataGridFilters columns={columns} onChange={setFilter} />
-
-      {isEmpty(catalog) && !loading ? (
-        <EmptyState
-          message="There are no items to show with the current filters"
-          image={EnumImages.AddResource}
-        />
-      ) : (
-        <>
-          <div className={`${CLASS_NAME}__grid-container`}>
+            }
+          ></FlexItem>
+          <HorizontalRule doubleSpacing />
+          <DataGridFilters columns={columns} onChange={setFilter} />
+        </div>
+        <div className={`${CLASS_NAME}__grid-container`}>
+          {isEmpty(catalog) && !loading ? (
+            <EmptyState
+              message="There are no items to show with the current filters"
+              image={EnumImages.AddResource}
+            />
+          ) : (
             <DataGrid
               columns={columns}
               rows={catalog}
               onColumnsReorder={onColumnsReorder}
+              onScrollToBottom={handleLoadMore}
             ></DataGrid>
-          </div>
-        </>
-      )}
+          )}
+        </div>
+      </div>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>

@@ -17,6 +17,7 @@ import { TechDebt } from "@amplication/schema-registry";
 import { WorkspaceService } from "../workspace/workspace.service";
 
 const EXAMPLE_RESOURCE_ID = "EXAMPLE_RESOURCE_ID";
+const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
 const EXAMPLE_TEMPLATE_RESOURCE_ID = "EXAMPLE_TEMPLATE_RESOURCE_ID";
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -47,6 +48,7 @@ const EXAMPLE_PROJECT: Project = {
   updatedAt: new Date(),
   useDemoRepo: false,
   licensed: false,
+  workspaceId: EXAMPLE_WORKSPACE_ID,
 };
 
 const EXAMPLE_ALERT: OutdatedVersionAlert = {
@@ -159,6 +161,7 @@ describe("OutdatedVersionAlertService", () => {
           provide: ProjectService,
           useValue: {
             findFirst: projectServiceProjectMock,
+            findUnique: projectServiceProjectMock,
           },
         },
         {
@@ -261,7 +264,9 @@ describe("OutdatedVersionAlertService", () => {
       where: {
         serviceTemplateId: EXAMPLE_TEMPLATE_RESOURCE_ID,
         project: {
-          id: EXAMPLE_RESOURCE.projectId,
+          workspace: {
+            id: EXAMPLE_WORKSPACE_ID,
+          },
         },
       },
     });

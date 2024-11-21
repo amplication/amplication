@@ -81,6 +81,7 @@ import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/t
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 import { RelationService } from "../relation/relation.service";
+import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -1601,7 +1602,9 @@ export class ResourceService {
     });
   }
 
-  async resources(args: FindManyResourceArgs): Promise<Resource[]> {
+  private async prepareResourceFindManyArgsForQuery(
+    args: FindManyResourceArgs
+  ): Promise<Prisma.ResourceFindManyArgs> {
     const { serviceTemplateId, ...where } = args.where;
 
     let resourceIds: string[] = undefined;
@@ -1626,7 +1629,7 @@ export class ResourceService {
       "properties"
     );
 
-    return this.prisma.resource.findMany({
+    return {
       ...args,
       where: {
         ...(whereElse as Prisma.ResourceWhereInput),
@@ -1635,7 +1638,32 @@ export class ResourceService {
         archived: { not: true },
         ...wherePropertiesFilter,
       },
-    });
+    };
+  }
+
+  async searchResourcesWithCount(
+    args: FindManyResourceArgs
+  ): Promise<PaginatedResourceQueryResult> {
+    const preparedArgs = await this.prepareResourceFindManyArgsForQuery(args);
+
+    const [count, resources] = await Promise.all([
+      this.prisma.resource.count({
+        where: preparedArgs.where,
+      }),
+
+      this.prisma.resource.findMany(preparedArgs),
+    ]);
+
+    return {
+      totalCount: count,
+      data: resources,
+    };
+  }
+
+  async resources(args: FindManyResourceArgs): Promise<Resource[]> {
+    const preparedArgs = await this.prepareResourceFindManyArgsForQuery(args);
+
+    return this.prisma.resource.findMany(preparedArgs);
   }
 
   async resourcesByIds(ids: string[]): Promise<Resource[]> {
