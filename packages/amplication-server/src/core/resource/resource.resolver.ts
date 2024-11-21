@@ -48,6 +48,7 @@ import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter
 import { BlueprintService } from "../blueprint/blueprint.service";
 import { Relation } from "../relation/dto/Relation";
 import { RelationService } from "../relation/relation.service";
+import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -85,7 +86,7 @@ export class ResourceResolver {
     return this.resourceService.resources(args);
   }
 
-  @Query(() => [Resource], {
+  @Query(() => PaginatedResourceQueryResult, {
     nullable: false,
   })
   @Roles("ORGANIZATION_ADMIN")
@@ -93,8 +94,10 @@ export class ResourceResolver {
     InjectableOriginParameter.WorkspaceId,
     "where.project.workspace.id"
   )
-  async catalog(@Args() args: FindManyResourceArgs): Promise<Resource[]> {
-    return this.resourceService.resources(args);
+  async catalog(
+    @Args() args: FindManyResourceArgs
+  ): Promise<PaginatedResourceQueryResult> {
+    return this.resourceService.searchResourcesWithCount(args);
   }
 
   @Query(() => [Resource], {
