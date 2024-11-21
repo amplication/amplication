@@ -99,7 +99,6 @@ $tabs-width: 300px;
     box-sizing: border-box;
     margin-top: var(--double-spacing);
     margin-bottom: var(--double-spacing);
-    padding-top: var(--default-spacing);
     min-height: calc(100% - (var(--double-spacing) * 2));
     height: 1px; //this is needed to allow the main content to grow
   }
