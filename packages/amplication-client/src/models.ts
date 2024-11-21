@@ -1743,7 +1743,7 @@ export type Mutation = {
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
   updateRelation: Relation;
   updateResource?: Maybe<Resource>;
-  updateResourceRelation: Array<Relation>;
+  updateResourceRelation: Relation;
   updateResourceRole?: Maybe<ResourceRole>;
   updateServiceSettings?: Maybe<ServiceSettings>;
   updateServiceTopics: ServiceTopics;
@@ -2564,6 +2564,11 @@ export type PaginatedGitGroup = {
   total: Scalars['Float']['output'];
 };
 
+export type PaginatedResourceQueryResult = {
+  data?: Maybe<Array<Resource>>;
+  totalCount: Scalars['Int']['output'];
+};
+
 export type Pagination = {
   page: Scalars['Float']['output'];
   perPage: Scalars['Float']['output'];
@@ -2886,7 +2891,7 @@ export type Query = {
   blueprints: Array<Blueprint>;
   build: Build;
   builds: Array<Build>;
-  catalog: Array<Resource>;
+  catalog: PaginatedResourceQueryResult;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
   compareResourceVersions: ResourceVersionsDiff;

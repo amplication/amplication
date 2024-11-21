@@ -1723,7 +1723,7 @@ type Mutation {
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   updateRelation(data: RelationUpdateInput!, where: WhereUniqueInput!): Relation!
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
-  updateResourceRelation(data: ResourceRelationUpdateInput!, resource: WhereUniqueInput!): [Relation!]!
+  updateResourceRelation(data: ResourceRelationUpdateInput!, resource: WhereUniqueInput!): Relation!
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
@@ -1854,6 +1854,11 @@ type PaginatedGitGroup {
 
   """Total number of groups"""
   total: Float!
+}
+
+type PaginatedResourceQueryResult {
+  data: [Resource!]
+  totalCount: Int!
 }
 
 type Pagination {
@@ -2178,7 +2183,7 @@ type Query {
   blueprints(orderBy: BlueprintOrderByInput, skip: Int, take: Int, where: BlueprintWhereInput): [Blueprint!]!
   build(where: WhereUniqueInput!): Build!
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
-  catalog(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
+  catalog(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): PaginatedResourceQueryResult!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput!): [Commit!]
   compareResourceVersions(where: CompareResourceVersionsWhereInput!): ResourceVersionsDiff!

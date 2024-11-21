@@ -1,7 +1,14 @@
 @import "../style/index.scss";
 
 .catalog {
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
   &__grid-container {
-    height: calc(100% - 80px);
+    flex: 1;
+    overflow: hidden;
   }
 }
