@@ -4,11 +4,23 @@ import * as models from "../../models";
 
 import { useAppContext } from "../../context/appContext";
 import { SEARCH_CATALOG } from "../queries/catalogQueries";
+import { useQueryPagination } from "../../util/useQueryPagination";
+
+type CatalogResults = {
+  catalog: models.PaginatedResourceQueryResult;
+};
 
 const useCatalog = () => {
   const { customPropertiesMap } = useAppContext();
 
-  const [catalog, setCatalog] = useState<models.Resource[]>([]);
+  const {
+    pagination,
+    queryPaginationParams,
+    currentPageData,
+    setCurrentPageData,
+    setMeta,
+  } = useQueryPagination<models.Resource>();
+
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [propertiesFilter, setPropertiesFilter] =
     useState<models.JsonPathStringFilter | null>(null);
@@ -20,10 +32,9 @@ const useCatalog = () => {
     data: catalogData,
     loading,
     error,
-  } = useQuery<{
-    catalog: models.Resource[];
-  }>(SEARCH_CATALOG, {
+  } = useQuery<CatalogResults>(SEARCH_CATALOG, {
     variables: {
+      ...queryPaginationParams,
       where: {
         ...queryFilters,
         properties: propertiesFilter ?? undefined,
@@ -37,9 +48,10 @@ const useCatalog = () => {
 
   useEffect(() => {
     if (catalogData) {
-      setCatalog(catalogData.catalog);
+      setCurrentPageData(catalogData.catalog.data);
+      setMeta({ count: catalogData.catalog.totalCount });
     }
-  }, [catalogData]);
+  }, [catalogData, setCurrentPageData, setMeta]);
 
   const setFilter = useCallback(
     (filters: Record<string, string>) => {
@@ -118,11 +130,12 @@ const useCatalog = () => {
   );
 
   return {
-    catalog: catalog || [],
+    catalog: currentPageData || [],
     loading,
     error,
     setSearchPhrase,
     setFilter,
+    pagination,
   };
 };
 

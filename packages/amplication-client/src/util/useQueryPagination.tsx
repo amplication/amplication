@@ -1,12 +1,20 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MetaQueryPayload } from "../models";
 
-export function useQueryPagination<T>() {
+type Props = {
+  onLoadMore?: () => void;
+};
+
+export function useQueryPagination<T>(props?: Props) {
+  const { onLoadMore } = props || {};
+
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(30);
+  const [pageSize, setPageSize] = useState<number>(20);
 
   const [currentPageData, setCurrentPageData] = useState<T[]>([]);
   const [meta, setMeta] = useState<MetaQueryPayload>({ count: 0 });
+
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   const queryPaginationParams = {
     take: pageSize,
@@ -14,6 +22,30 @@ export function useQueryPagination<T>() {
   };
 
   const pageCount = meta.count > 0 ? Math.ceil(meta.count / pageSize) : 1;
+
+  const triggerLoadMore = useCallback(() => {
+    if (isLoadingMore) {
+      return;
+    }
+
+    if (pageNumber < pageCount) {
+      setPageNumber(pageNumber + 1);
+      onLoadMore && onLoadMore();
+      setIsLoadingMore(true);
+    }
+  }, [isLoadingMore, onLoadMore, pageCount, pageNumber]);
+
+  const setCurrentPageDataInternal = useCallback((data: T[]) => {
+    setIsLoadingMore((loadMore) => {
+      if (loadMore) {
+        setCurrentPageData((prevData) => [...prevData, ...data]);
+        return false;
+      } else {
+        setCurrentPageData(data);
+        return false;
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (pageNumber > pageCount) {
@@ -29,9 +61,10 @@ export function useQueryPagination<T>() {
       setPageSize,
       pageCount,
       recordCount: meta.count,
+      triggerLoadMore,
     },
     queryPaginationParams,
-    setCurrentPageData,
+    setCurrentPageData: setCurrentPageDataInternal,
     currentPageData,
     setMeta,
   };
