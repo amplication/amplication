@@ -25,6 +25,7 @@ type Props = {
   onChange: (filterKey: string, value: string | null) => void;
   onRemove: (filterKey: string) => void;
   selectedValue: string;
+  disabled?: boolean;
 };
 
 export const DataGridFilter = ({
@@ -34,6 +35,7 @@ export const DataGridFilter = ({
   selectedValue,
   onChange,
   onRemove,
+  disabled,
 }: Props) => {
   const selectedItem = useMemo(() => {
     return options.find((option) => option.value === selectedValue);
@@ -41,14 +43,18 @@ export const DataGridFilter = ({
 
   return (
     <div className={CLASS_NAME}>
-      <Button
-        buttonStyle={EnumButtonStyle.Text}
-        icon="close"
-        onClick={() => {
-          onRemove(filterKey);
-        }}
-      ></Button>
+      {!disabled && (
+        <Button
+          className={`${CLASS_NAME}__remove`}
+          buttonStyle={EnumButtonStyle.Text}
+          icon="close"
+          onClick={() => {
+            onRemove(filterKey);
+          }}
+        ></Button>
+      )}
       <SelectMenu
+        disabled={disabled}
         open
         title={
           <FlexItem gap={EnumGapSize.Small} itemsAlign={EnumItemsAlign.Center}>

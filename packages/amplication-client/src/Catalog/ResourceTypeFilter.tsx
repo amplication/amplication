@@ -19,6 +19,7 @@ export const ResourceTypeFilter = ({
   onChange,
   onRemove,
   columnKey,
+  disabled,
 }: DataGridRenderFilterProps) => {
   return (
     <>
@@ -29,6 +30,7 @@ export const ResourceTypeFilter = ({
         selectedValue={selectedValue}
         onChange={onChange}
         onRemove={onRemove}
+        disabled={disabled}
       />
     </>
   );
