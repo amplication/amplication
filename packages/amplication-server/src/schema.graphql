@@ -1992,10 +1992,12 @@ type PrivatePlugin implements IBlock {
   blockType: EnumBlockType!
   blueprints: [String!]
   codeGenerator: EnumCodeGenerator!
+  color: String
   createdAt: DateTime!
   description: String
   displayName: String!
   enabled: Boolean!
+  icon: String
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
@@ -2035,9 +2037,11 @@ input PrivatePluginOrderByInput {
 input PrivatePluginUpdateInput {
   blueprints: [String!]
   codeGenerator: EnumCodeGenerator
+  color: String
   description: String
   displayName: String
   enabled: Boolean!
+  icon: String
 }
 
 type PrivatePluginVersion {
