@@ -47,3 +47,8 @@ $icon-font-size-xlarge: 32px;
     font-size: $icon-font-size-xlarge;
   }
 }
+
+.amp-icon--family-custom {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "amplication-custom-icon" !important;
+}

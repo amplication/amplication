@@ -2,6 +2,7 @@ import React from "react";
 import * as ReactDOM from "react-dom/client";
 
 import "@amplication/ui/design-system/icons";
+import "@amplication/ui/design-system/custom-icons";
 import "@amplication/ui/design-system/style/variables";
 import { ApolloProvider } from "@apollo/client";
 import { QueryClient, QueryClientProvider } from "react-query";
