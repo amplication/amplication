@@ -1,0 +1,11 @@
+@font-face {
+  font-family: "amplication-custom-icon";
+  src: url("./amplication-custom-icons.eot");
+  src: url("./amplication-custom-icons.eot#iefix") format("embedded-opentype"),
+    url("./amplication-custom-icons.ttf") format("truetype"),
+    url("./amplication-custom-icons.woff") format("woff"),
+    url("./amplication-custom-icons.svg#amplicationcustomicon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
