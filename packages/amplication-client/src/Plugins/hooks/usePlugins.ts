@@ -103,6 +103,9 @@ const usePlugins = (
               ? privatePlugin.displayName
               : `${privatePlugin.displayName} (Disabled)`,
             description: privatePlugin.description,
+            icon: privatePlugin.icon,
+            color: privatePlugin.color,
+            isPrivate: true,
             versions: [
               {
                 ...PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES,

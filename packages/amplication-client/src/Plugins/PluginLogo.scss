@@ -5,8 +5,9 @@ $logo-size: 44px;
 .plugin-logo {
   width: $logo-size;
   height: $logo-size;
-  background-color: var(--gray-40);
+  background-color: var(--gray-full);
   border-radius: var(--default-border-radius);
+  border: 1px solid var(--border-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,5 +15,8 @@ $logo-size: 44px;
   img {
     max-height: 100%;
     max-width: 100%;
+  }
+  .amp-icon {
+    color: var(--gray-base);
   }
 }
