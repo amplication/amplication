@@ -2697,10 +2697,12 @@ export type PrivatePlugin = IBlock & {
   blockType: EnumBlockType;
   blueprints?: Maybe<Array<Scalars['String']['output']>>;
   codeGenerator: EnumCodeGenerator;
+  color?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
   enabled: Scalars['Boolean']['output'];
+  icon?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2740,9 +2742,11 @@ export type PrivatePluginOrderByInput = {
 export type PrivatePluginUpdateInput = {
   blueprints?: InputMaybe<Array<Scalars['String']['input']>>;
   codeGenerator?: InputMaybe<EnumCodeGenerator>;
+  color?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   enabled: Scalars['Boolean']['input'];
+  icon?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PrivatePluginVersion = {

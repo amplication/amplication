@@ -2,6 +2,7 @@ import {
   CircularProgress,
   CollapsibleListItem,
   EnabledIndicator,
+  EnumIconFamily,
   EnumItemsAlign,
   FlexItem,
   HorizontalRule,
@@ -13,14 +14,13 @@ import {
 import { isEmpty } from "lodash";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import InnerTabLink from "../Layout/InnerTabLink";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import NewPrivatePlugin from "./NewPrivatePlugin";
 import "./PrivatePluginList.scss";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
-import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 const CLASS_NAME = "private-plugin-list";
 
@@ -110,7 +110,10 @@ export const PrivatePluginList = React.memo(
                     {privatePlugins.map((privatePlugin) => (
                       <VerticalNavigationItem
                         key={privatePlugin.id}
-                        icon="plugin"
+                        icon={privatePlugin.icon ?? "plugin"}
+                        iconFamily={
+                          privatePlugin.icon ? EnumIconFamily.Custom : undefined
+                        }
                         to={`${baseUrl}/private-plugins/${privatePlugin.id}`}
                       >
                         <FlexItem

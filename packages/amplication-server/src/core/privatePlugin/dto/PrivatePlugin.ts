@@ -30,4 +30,10 @@ export class PrivatePlugin extends IBlock {
 
   @Field(() => [String], { nullable: true })
   blueprints?: string[];
+
+  @Field(() => String, { nullable: true })
+  icon?: string;
+
+  @Field(() => String, { nullable: true })
+  color?: string;
 }
