@@ -1,13 +1,20 @@
-import { List, TabContentTitle } from "@amplication/ui/design-system";
+import {
+  EnumContentAlign,
+  EnumItemsAlign,
+  FlexItem,
+  List,
+  TabContentTitle,
+} from "@amplication/ui/design-system";
 import React, { useCallback, useMemo } from "react";
 import * as models from "../models";
 import PrivatePluginVersion from "./PrivatePluginVersion";
 import NewPrivatePluginVersion from "./NewPrivatePluginVersion";
-import { compareBuild } from "semver";
+import { compareBuild, valid } from "semver";
+import PrivatePluginDevVersion from "./PrivatePluginDevVersion";
 
 type Props = {
   privatePlugin: models.PrivatePlugin;
-  onVersionAdd?: (member: models.PrivatePlugin) => void;
+  onVersionAdd?: (plugin: models.PrivatePlugin) => void;
 };
 const PrivatePluginVersionList = React.memo(
   ({ privatePlugin, onVersionAdd }: Props) => {
@@ -17,23 +24,40 @@ const PrivatePluginVersionList = React.memo(
 
     const sortedVersions = useMemo(() => {
       if (!privatePlugin) return [];
-      return privatePlugin.versions?.sort((a, b) =>
-        compareBuild(b.version, a.version)
-      );
+
+      return privatePlugin.versions
+        ?.filter((x) => !x.version.includes("dev"))
+        .sort((a, b) =>
+          !valid(b.version)
+            ? 1
+            : !valid(a.version)
+            ? -1
+            : compareBuild(b.version, a.version)
+        );
     }, [privatePlugin]);
 
     return (
       <>
-        <NewPrivatePluginVersion
-          privatePlugin={privatePlugin}
-          onVersionAdd={onVersionAdd}
-        />
         <TabContentTitle title="Versions" />
+
+        <FlexItem
+          itemsAlign={EnumItemsAlign.Stretch}
+          contentAlign={EnumContentAlign.Space}
+        >
+          <NewPrivatePluginVersion
+            privatePlugin={privatePlugin}
+            onVersionAdd={onVersionAdd}
+          />
+          <PrivatePluginDevVersion
+            privatePlugin={privatePlugin}
+            onChange={onVersionAdd}
+          />
+        </FlexItem>
 
         <List>
           {sortedVersions?.map((version, index) => (
             <PrivatePluginVersion
-              key={index}
+              key={version.version}
               privatePlugin={privatePlugin}
               privatePluginVersion={version}
               onVersionChanged={onVersionChanged}

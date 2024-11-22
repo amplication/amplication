@@ -274,14 +274,20 @@ const useResources = (
     trackEvent({
       eventName: AnalyticsEventNames.CreateComponent,
     });
-    createComponentInternal({ variables: { data: data } }).then((result) => {
-      result.data?.createComponent.id &&
-        reloadResources().then(() => {
-          history.push({
-            pathname: `${platformProjectBaseUrl}/${result.data?.createComponent.id}/settings/general`,
+    createComponentInternal({
+      variables: {
+        data,
+      },
+    })
+      .then((result) => {
+        result.data?.createComponent.id &&
+          reloadResources().then(() => {
+            history.push({
+              pathname: `${projectBaseUrl}/${result.data?.createComponent.id}/settings/general`,
+            });
           });
-        });
-    });
+      })
+      .catch(console.error);
   };
 
   const [

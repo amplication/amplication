@@ -12,6 +12,11 @@ export const GET_RESOURCE = gql`
       githubLastMessage
       resourceType
       licensed
+      blueprint {
+        id
+        name
+        color
+      }
       projectId
       properties
       owner {
@@ -53,6 +58,11 @@ export const GET_RESOURCES = gql`
       codeGeneratorVersion
       codeGenerator
       licensed
+      blueprint {
+        id
+        name
+        color
+      }
       projectId
       properties
       owner {

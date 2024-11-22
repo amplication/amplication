@@ -1,0 +1,14 @@
+@import "../style/index.scss";
+
+.catalog-grid {
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  &__grid-container {
+    flex: 1;
+    overflow: hidden;
+  }
+}

@@ -6,6 +6,13 @@
   display: flex;
   align-items: center;
   gap: var(--icon-spacing);
+  padding-left: var(--icon-spacing);
+
+  &__remove {
+    .amp-icon {
+      padding-left: 0;
+    }
+  }
 
   &__show-all {
     padding-right: var(--icon-spacing);

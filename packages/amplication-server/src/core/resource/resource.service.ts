@@ -80,6 +80,8 @@ import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVe
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
+import { RelationService } from "../relation/relation.service";
+import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -148,7 +150,7 @@ const RESOURCE_TYPE_TO_EVENT_TYPE: {
   [EnumResourceType.Component]: EnumEventType.ComponentCreate,
 };
 
-type CodeGeneratorName = "NodeJS" | "DotNET";
+type CodeGeneratorName = "NodeJS" | "DotNET" | "Blueprint";
 
 const CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE: {
   [key in EnumCodeGenerator]: {
@@ -161,6 +163,10 @@ const CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE: {
     license: BillingFeature.CodeGeneratorDotNet,
   },
   [EnumCodeGenerator.NodeJs]: { codeGeneratorName: null, license: null },
+  [EnumCodeGenerator.Blueprint]: {
+    codeGeneratorName: "Blueprint",
+    license: null,
+  },
 };
 
 export const CODE_GENERATOR_NAME_TO_ENUM: {
@@ -170,6 +176,8 @@ export const CODE_GENERATOR_NAME_TO_ENUM: {
   NodeJS: EnumCodeGenerator.NodeJs,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   DotNET: EnumCodeGenerator.DotNet,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  Blueprint: EnumCodeGenerator.Blueprint,
 };
 
 @Injectable()
@@ -192,7 +200,8 @@ export class ResourceService {
     private readonly userActionService: UserActionService,
     private readonly gitProviderService: GitProviderService,
     private readonly templateCodeEngineVersionService: TemplateCodeEngineVersionService,
-    private readonly ownershipService: OwnershipService
+    private readonly ownershipService: OwnershipService,
+    private readonly relationService: RelationService
   ) {}
 
   async createProjectConfiguration(
@@ -557,11 +566,16 @@ export class ResourceService {
     args: CreateOneResourceArgs,
     user: User
   ): Promise<Resource> {
+    if (!args.data.blueprint) {
+      throw new AmplicationError("Component must use a blueprint");
+    }
+
     const resource = await this.createResource(
       {
         data: {
           ...args.data,
           resourceType: EnumResourceType.Component,
+          codeGenerator: EnumCodeGenerator.Blueprint,
         },
       },
       user
@@ -1588,7 +1602,9 @@ export class ResourceService {
     });
   }
 
-  async resources(args: FindManyResourceArgs): Promise<Resource[]> {
+  private async prepareResourceFindManyArgsForQuery(
+    args: FindManyResourceArgs
+  ): Promise<Prisma.ResourceFindManyArgs> {
     const { serviceTemplateId, ...where } = args.where;
 
     let resourceIds: string[] = undefined;
@@ -1613,7 +1629,7 @@ export class ResourceService {
       "properties"
     );
 
-    return this.prisma.resource.findMany({
+    return {
       ...args,
       where: {
         ...(whereElse as Prisma.ResourceWhereInput),
@@ -1622,7 +1638,32 @@ export class ResourceService {
         archived: { not: true },
         ...wherePropertiesFilter,
       },
-    });
+    };
+  }
+
+  async searchResourcesWithCount(
+    args: FindManyResourceArgs
+  ): Promise<PaginatedResourceQueryResult> {
+    const preparedArgs = await this.prepareResourceFindManyArgsForQuery(args);
+
+    const [count, resources] = await Promise.all([
+      this.prisma.resource.count({
+        where: preparedArgs.where,
+      }),
+
+      this.prisma.resource.findMany(preparedArgs),
+    ]);
+
+    return {
+      totalCount: count,
+      data: resources,
+    };
+  }
+
+  async resources(args: FindManyResourceArgs): Promise<Resource[]> {
+    const preparedArgs = await this.prepareResourceFindManyArgsForQuery(args);
+
+    return this.prisma.resource.findMany(preparedArgs);
   }
 
   async resourcesByIds(ids: string[]): Promise<Resource[]> {
@@ -2015,5 +2056,21 @@ export class ResourceService {
 
       return ownerShip;
     }
+  }
+
+  async getRelatedResource(resourceId: string): Promise<Resource[]> {
+    const relations = await this.relationService.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+
+    const resourceIds = Array.from(
+      new Set(relations.flatMap((relation) => relation.relatedResources))
+    );
+
+    return this.resourcesByIds(resourceIds);
   }
 }

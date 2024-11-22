@@ -5,7 +5,7 @@ import {
   VersionTag,
 } from "@amplication/ui/design-system";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 import { EnumResourceType, Resource } from "../models";
 import ServiceTemplateChip from "../Platform/ServiceTemplateChip";
 import DeleteResourceButton from "./DeleteResourceButton";
@@ -13,8 +13,8 @@ import ResourceGitRepo from "./ResourceGitRepo";
 import ResourceLastBuild from "./ResourceLastBuild";
 import ResourceLastBuildVersion from "./ResourceLastBuildVersion";
 import ResourceNameLink from "./ResourceNameLink";
-import ResourcePendingChangesCount from "./ResourcePendingChangesCount";
 import ResourceOwner from "./ResourceOwner";
+import ResourcePendingChangesCount from "./ResourcePendingChangesCount";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -22,7 +22,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     name: "Type",
     width: 60,
     renderCell: (props) => {
-      return <ResourceCircleBadge type={props.row.resourceType} size="small" />;
+      return <ResourceTypeBadge resource={props.row} size="small" />;
     },
   },
   {
