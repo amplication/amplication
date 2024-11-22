@@ -18,6 +18,7 @@ export type Props = {
   className?: string;
   color?: EnumTextColor;
   family?: EnumIconFamily;
+  style?: React.CSSProperties;
 };
 
 const CLASS_NAME = "amp-icon";
@@ -27,6 +28,7 @@ export function Icon({
   size,
   className,
   color,
+  style,
   family = EnumIconFamily.System,
 }: Props) {
   const colorStyle = color && { color: `var(--${color})` };
@@ -34,6 +36,7 @@ export function Icon({
   return (
     <i
       style={{
+        ...style,
         ...colorStyle,
       }}
       className={classNames(

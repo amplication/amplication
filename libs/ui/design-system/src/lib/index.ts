@@ -316,3 +316,4 @@ export { Tag, Props as TagProps } from "./components/Tag/Tag";
 
 export { IconPicker } from "./components/IconPicker/IconPicker";
 export { IconPickerField } from "./components/IconPicker/IconPickerField";
+export { EnumIconFamily } from "./components/Icon/Icon";
