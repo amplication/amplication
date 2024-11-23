@@ -124,6 +124,12 @@ const useCatalog = () => {
         {}
       );
 
+      if (!otherFilterObject.hasOwnProperty("resourceType")) {
+        otherFilterObject["resourceType"] = {
+          not: models.EnumResourceType.ProjectConfiguration,
+        };
+      }
+
       setQueryFilter(otherFilterObject);
     },
     [customPropertiesMap]
