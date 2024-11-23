@@ -114,6 +114,7 @@ export class GitClientService {
   }: DownloadPrivatePluginsArgs): Promise<{
     pluginPaths: string[];
     pluginVersions: string[];
+    cleanupPaths: string[];
   }> {
     const gitRepoDir = normalize(
       join(
@@ -207,6 +208,7 @@ export class GitClientService {
     return {
       pluginPaths,
       pluginVersions,
+      cleanupPaths: [gitRepoDir],
     };
   }
 

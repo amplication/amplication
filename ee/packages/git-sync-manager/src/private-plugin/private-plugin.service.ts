@@ -1,20 +1,22 @@
-import {
-  GitClientService,
-  GitProvidersConfiguration,
-} from "@amplication/util/git";
-import { Env } from "../env";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Inject, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
 import {
   DownloadPrivatePluginsRequest,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
-import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
-import { copy, pathExists } from "fs-extra";
-import { join } from "path";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import {
+  GitClientService,
+  GitProvidersConfiguration,
+} from "@amplication/util/git";
 import { LogLevel } from "@amplication/util/logging";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { copy, pathExists } from "fs-extra";
+import { existsSync } from "node:fs";
+import { rm } from "node:fs/promises";
+import { join } from "path";
+import { Env } from "../env";
 
 @Traceable()
 @Injectable()
@@ -113,8 +115,11 @@ export class PrivatePluginService {
         },
       }
     );
-    const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
-    const { pluginPaths, pluginVersions } =
+    const cloneDirPath = join(
+      this.configService.get<string>(Env.CLONES_FOLDER),
+      "private-plugins"
+    );
+    const { pluginPaths, pluginVersions, cleanupPaths } =
       await gitClientService.downloadPrivatePlugins({
         owner,
         repositoryName: repo,
@@ -139,6 +144,8 @@ export class PrivatePluginService {
       resourceId,
       buildId
     );
+    await this.cleanupPluginsDir(cleanupPaths);
+
     return { pluginPaths: newPluginPaths };
   }
 
@@ -169,5 +176,24 @@ export class PrivatePluginService {
     }
 
     return { newPluginPaths };
+  }
+  async cleanupPluginsDir(cleanupPaths: string[]): Promise<void> {
+    for (const path of cleanupPaths) {
+      if (existsSync(path)) {
+        await rm(path, {
+          recursive: true,
+          force: true,
+          maxRetries: 3,
+        }).catch((error) => {
+          this.logger.error(
+            `Failed to delete private plugins repository dir`,
+            error,
+            {
+              repositoryDir: path,
+            }
+          );
+        });
+      }
+    }
   }
 }
