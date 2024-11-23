@@ -10,6 +10,10 @@ type CatalogResults = {
   catalog: models.PaginatedResourceQueryResult;
 };
 
+const DEFAULT_PROJECT_TYPE_FILTER: models.EnumResourceTypeFilter = {
+  not: models.EnumResourceType.ProjectConfiguration,
+};
+
 const useCatalog = () => {
   const { customPropertiesMap } = useAppContext();
 
@@ -25,8 +29,11 @@ const useCatalog = () => {
   const [propertiesFilter, setPropertiesFilter] =
     useState<models.JsonPathStringFilter | null>(null);
 
-  const [queryFilters, setQueryFilter] =
-    useState<Partial<models.ResourceWhereInputWithPropertiesFilter>>(null);
+  const [queryFilters, setQueryFilter] = useState<
+    Partial<models.ResourceWhereInputWithPropertiesFilter>
+  >({
+    resourceType: DEFAULT_PROJECT_TYPE_FILTER,
+  });
 
   const {
     data: catalogData,
@@ -125,9 +132,7 @@ const useCatalog = () => {
       );
 
       if (!otherFilterObject.hasOwnProperty("resourceType")) {
-        otherFilterObject["resourceType"] = {
-          not: models.EnumResourceType.ProjectConfiguration,
-        };
+        otherFilterObject["resourceType"] = DEFAULT_PROJECT_TYPE_FILTER;
       }
 
       setQueryFilter(otherFilterObject);
