@@ -47,7 +47,7 @@
     },
     {
       "type": "node",
-      "name": "Attach Amplication PR service",
+      "name": "Attach Amplication Git Sync Manager",
       "request": "attach",
       "sourceMaps": true,
       "port": 7001
