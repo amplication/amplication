@@ -22,6 +22,7 @@ import { UpdatePrivatePluginVersionArgs } from "./dto/UpdatePrivatePluginVersion
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 import { BlockSettingsProperties } from "../block/types";
 import { JsonFilter } from "../../dto/JsonFilter";
+import { ProjectService } from "../project/project.service";
 
 const DEFAULT_PRIVATE_PLUGIN_VERSION: Omit<PrivatePluginVersion, "version"> = {
   deprecated: false,
@@ -52,25 +53,49 @@ export class PrivatePluginService extends BlockTypeService<
     protected readonly logger: AmplicationLogger,
     protected readonly billingService: BillingService,
     @Inject(forwardRef(() => ResourceService))
-    protected readonly resourceService: ResourceService
+    protected readonly resourceService: ResourceService,
+    @Inject(forwardRef(() => ProjectService))
+    protected readonly projectService: ProjectService
   ) {
     super(blockService, logger);
   }
 
-  //return all private plugins in the resource's project
+  //return all private plugins in the resource's project, and other public projects in the workspace
   //disabled plugins can be used for setup - but should not be used in build time
   async availablePrivatePluginsForResource(
     args: FindManyPrivatePluginArgs
   ): Promise<PrivatePlugin[]> {
-    const resource = await this.resourceService.resource({
-      where: {
-        id: args.where?.resource.id,
+    const resource = await this.resourceService.resource(
+      {
+        where: {
+          id: args.where?.resource.id,
+        },
       },
-    });
+      {
+        project: true,
+      }
+    );
 
     if (!resource) {
       return [];
     }
+
+    const workspaceId = resource.project?.workspaceId;
+
+    if (!resource) {
+      return [];
+    }
+
+    const publicProjects = await this.projectService.findProjects({
+      where: {
+        workspace: {
+          id: workspaceId,
+        },
+        platformIsPublic: {
+          equals: true,
+        },
+      },
+    });
 
     const filter: JsonFilter[] = [
       {
@@ -99,7 +124,13 @@ export class PrivatePluginService extends BlockTypeService<
             archived: {
               not: true,
             },
-            projectId: resource.projectId,
+
+            projectId: {
+              in: [
+                ...publicProjects.map((project) => project.id),
+                resource.projectId,
+              ],
+            },
           },
         },
       },
