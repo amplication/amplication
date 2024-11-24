@@ -82,6 +82,7 @@ import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 import { RelationService } from "../relation/relation.service";
 import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
+import { ResourceInclude } from "./dto/ResourceInclude";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -1592,13 +1593,17 @@ export class ResourceService {
     };
   }
 
-  async resource(args: FindOneArgs): Promise<Resource | null> {
+  async resource(
+    args: FindOneArgs,
+    include?: ResourceInclude | undefined
+  ): Promise<Resource | null> {
     return this.prisma.resource.findFirst({
       where: {
         id: args.where.id,
         deletedAt: null,
         archived: { not: true },
       },
+      include,
     });
   }
 
