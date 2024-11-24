@@ -38,7 +38,7 @@ export class ResourceWhereInput {
   project?: ProjectWhereInput | null;
 
   @Field(() => String, { nullable: true })
-  projectId?: string | null;
+  projectId?: string | StringFilter | null;
 
   @Field(() => String, { nullable: true })
   serviceTemplateId?: string | null;
