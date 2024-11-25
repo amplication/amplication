@@ -47,7 +47,7 @@ jobs:
         id: check-tag
         run: |
           DSG_VERSION=v$(cat $DSG_PACKAGE_JSON  | jq -r '.version')
-          NEW_TAG=dsg/${{ inputs.version }}
+          NEW_TAG=bpg/${{ inputs.version }}
           echo "🏷️ NEW_TAG=$NEW_TAG (based on $DSG_PACKAGE_JSON DSG_VERSION=$DSG_VERSION)"
 
           if [[ "${{ inputs.version }}" == "$DSG_VERSION" ]]; then
