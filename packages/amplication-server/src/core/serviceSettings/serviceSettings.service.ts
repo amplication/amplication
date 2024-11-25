@@ -1,21 +1,25 @@
-import { Injectable, Inject } from "@nestjs/common";
-import { ServiceSettings, UpdateServiceSettingsArgs } from "./dto";
+import { Injectable } from "@nestjs/common";
+import { cloneDeep, merge } from "lodash";
 import { FindOneArgs } from "../../dto";
-import { BlockService } from "../block/block.service";
 import { EnumBlockType } from "../../enums/EnumBlockType";
-import { DEFAULT_SERVICE_SETTINGS, ServiceSettingsValues } from "./constants";
 import { User } from "../../models";
+import { PrismaService } from "../../prisma";
+import { BlockService } from "../block/block.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { DEFAULT_SERVICE_SETTINGS, ServiceSettingsValues } from "./constants";
+import { ServiceSettings, UpdateServiceSettingsArgs } from "./dto";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
 import { ServiceSettingsUpdateInput } from "./dto/ServiceSettingsUpdateInput";
-import { cloneDeep, merge } from "lodash";
 
 export const isStringBool = (val: string | boolean): boolean =>
   typeof val === "boolean" || typeof val === "string";
 
 @Injectable()
 export class ServiceSettingsService {
-  @Inject()
-  private readonly blockService: BlockService;
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly blockService: BlockService
+  ) {}
 
   async getServiceSettingsValues(
     args: FindOneArgs,
@@ -56,6 +60,19 @@ export class ServiceSettingsService {
       );
 
     if (!serviceSettings) {
+      const resource = await this.prisma.resource.findUnique({
+        where: {
+          id: args.where.id,
+        },
+      });
+
+      if (
+        resource.resourceType !== EnumResourceType.Service &&
+        resource.resourceType !== EnumResourceType.ServiceTemplate
+      ) {
+        return null;
+      }
+
       // create default service settings will also set the server settings > generateServer to true
       serviceSettings = await this.createDefaultServiceSettings(
         args.where.id,

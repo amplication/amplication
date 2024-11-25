@@ -3,15 +3,18 @@ import {
   DataGridRenderFilterProps,
 } from "@amplication/ui/design-system";
 import { resourceThemeMap } from "../Resource/constants";
+import { EnumResourceType } from "../models";
 
-const OPTIONS = Object.keys(resourceThemeMap).map((key) => {
-  const theme = resourceThemeMap[key];
-  return {
-    value: key,
-    label: theme.name,
-    color: theme.color,
-  };
-});
+const OPTIONS = Object.keys(resourceThemeMap)
+  .filter((type) => type !== EnumResourceType.ProjectConfiguration)
+  .map((key) => {
+    const theme = resourceThemeMap[key];
+    return {
+      value: key,
+      label: theme.name,
+      color: theme.color,
+    };
+  });
 
 export const ResourceTypeFilter = ({
   selectedValue,
@@ -19,6 +22,7 @@ export const ResourceTypeFilter = ({
   onChange,
   onRemove,
   columnKey,
+  disabled,
 }: DataGridRenderFilterProps) => {
   return (
     <>
@@ -29,6 +33,7 @@ export const ResourceTypeFilter = ({
         selectedValue={selectedValue}
         onChange={onChange}
         onRemove={onRemove}
+        disabled={disabled}
       />
     </>
   );

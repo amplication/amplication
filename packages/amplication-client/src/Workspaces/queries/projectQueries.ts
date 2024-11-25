@@ -86,6 +86,11 @@ export const GET_PENDING_CHANGES_STATUS = gql`
         name
         resourceType
         licensed
+        blueprint {
+          id
+          name
+          color
+        }
         version {
           id
           version

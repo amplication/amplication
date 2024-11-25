@@ -1,4 +1,11 @@
-import { Toggle } from "@amplication/ui/design-system";
+import {
+  EnumItemsAlign,
+  EnumPanelStyle,
+  FlexItem,
+  HorizontalRule,
+  Panel,
+  Toggle,
+} from "@amplication/ui/design-system";
 import { FormikProps } from "formik";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/appContext";
@@ -86,16 +93,22 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
 
   return (
     <div className={CLASS_NAME}>
-      <ProjectConfigurationGitSettings
-        isOverride={isOverride}
-        showProjectSettingsLink={false}
-      />
+      <Panel panelStyle={EnumPanelStyle.Surface}>
+        <FlexItem itemsAlign={EnumItemsAlign.Center}>
+          <Toggle
+            label="Override default settings"
+            onValueChange={handleToggleChange}
+            checked={isOverride}
+          />
+        </FlexItem>
+      </Panel>
 
-      <Toggle
-        label="Override default settings"
-        onValueChange={handleToggleChange}
-        checked={isOverride}
-      />
+      {!isOverride && (
+        <ProjectConfigurationGitSettings
+          isOverride={isOverride}
+          showProjectSettingsLink={false}
+        />
+      )}
 
       {isOverride && (
         <AuthWithGitProvider

@@ -9,6 +9,7 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import PageContent from "../../Layout/PageContent";
 import { AppContext } from "../../context/appContext";
 import {
+  EnumCommitStrategy,
   EnumGitOrganizationType,
   EnumGitProvider,
   EnumResourceType,
@@ -98,6 +99,7 @@ const SyncWithGithubPage: React.FC = () => {
       project: { connect: { id: currentProject?.id } },
       bypassLimitations: false,
       resourceTypeGroup: EnumResourceTypeGroup.Services, //because we push to git, this will always be services
+      commitStrategy: EnumCommitStrategy.AllWithPendingChanges,
     });
     setOpenPr(false);
   }, [commitChanges, currentProject]);

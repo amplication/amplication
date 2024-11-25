@@ -29,6 +29,8 @@ export type Plugin = {
   type: string;
   taggedVersions: { [tag: string]: string };
   versions: PluginVersion[];
+  isPrivate?: boolean;
+  color?: string;
 };
 
 const usePluginCatalog = (codeGenerator: models.EnumCodeGenerator) => {

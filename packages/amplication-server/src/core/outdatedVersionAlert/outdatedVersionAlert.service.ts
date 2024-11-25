@@ -188,12 +188,20 @@ export class OutdatedVersionAlertService {
       );
     }
 
+    const project = await this.projectService.findUnique({
+      where: {
+        id: template.projectId,
+      },
+    });
+
     //find all services using this template
     const services = await this.resourceService.resources({
       where: {
         serviceTemplateId: templateResourceId,
         project: {
-          id: template.projectId,
+          workspace: {
+            id: project.workspaceId,
+          },
         },
       },
     });

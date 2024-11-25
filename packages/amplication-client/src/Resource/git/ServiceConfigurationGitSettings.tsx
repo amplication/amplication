@@ -1,4 +1,12 @@
-import { HorizontalRule, Toggle } from "@amplication/ui/design-system";
+import {
+  EnumItemsAlign,
+  EnumPanelStyle,
+  FlexItem,
+  HorizontalRule,
+  Panel,
+  TabContentTitle,
+  Toggle,
+} from "@amplication/ui/design-system";
 import { useMutation } from "@apollo/client";
 import React, { useCallback, useState } from "react";
 import {
@@ -101,13 +109,21 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
 
   return (
     <div className={CLASS_NAME}>
-      <ProjectConfigurationGitSettings isOverride={isOverride} />
-      <HorizontalRule doubleSpacing />
-      <Toggle
-        label="Override default settings"
-        onValueChange={handleToggleChange}
-        checked={isOverride}
-      />
+      <TabContentTitle title="Sync with Git Provider" />
+
+      <Panel panelStyle={EnumPanelStyle.Surface}>
+        <FlexItem itemsAlign={EnumItemsAlign.Center}>
+          <Toggle
+            label="Override project settings"
+            onValueChange={handleToggleChange}
+            checked={isOverride}
+          />
+        </FlexItem>
+      </Panel>
+
+      {!isOverride && (
+        <ProjectConfigurationGitSettings isOverride={isOverride} />
+      )}
 
       {isOverride && (
         <>

@@ -8,6 +8,9 @@ export const PRIVATE_PLUGINS_FIELDS_FRAGMENT = gql`
     description
     enabled
     codeGenerator
+    blueprints
+    icon
+    color
     versions {
       version
       deprecated

@@ -2,13 +2,24 @@ import React, { useMemo } from "react";
 import { Formik } from "formik";
 import { omit } from "lodash";
 import * as models from "../models";
-import { TextField, Form, SelectField } from "@amplication/ui/design-system";
+import {
+  TextField,
+  Form,
+  SelectField,
+  IconPickerField,
+  ColorPickerField,
+  EnumFlexDirection,
+  FlexItem,
+  EnumGapSize,
+} from "@amplication/ui/design-system";
 import { validate } from "../util/formikValidateJsonSchema";
 
 import FormikAutoSave from "../util/formikAutoSave";
 import { DisplayNameField } from "../Components/DisplayNameField";
-import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
+import BlueprintSelectField from "../Blueprints/BlueprintSelectField";
+import { PluginLogo } from "../Plugins/PluginLogo";
+import { Plugin } from "../Plugins/hooks/usePluginCatalog";
 
 type Props = {
   onSubmit: (values: models.PrivatePlugin) => void;
@@ -45,9 +56,22 @@ const FORM_SCHEMA = {
   },
 };
 
-const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
-  const { availableCodeGenerators } = useAvailableCodeGenerators();
+const CODE_GENERATORS = [
+  {
+    value: models.EnumCodeGenerator.DotNet,
+    label: ".NET",
+  },
+  {
+    value: models.EnumCodeGenerator.NodeJs,
+    label: "Node.js",
+  },
+  {
+    value: models.EnumCodeGenerator.Blueprint,
+    label: "Blueprints",
+  },
+];
 
+const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -66,20 +90,77 @@ const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
       enableReinitialize
       onSubmit={onSubmit}
     >
-      <Form childrenAsBlocks>
-        <FormikAutoSave debounceMS={1000} />
-        <TextField disabled label="Plugin Id" name="pluginId" />
-        <DisplayNameField name="displayName" label="Display Name" required />
-        <SelectField
-          name="codeGenerator"
-          label="Code Generator"
-          options={availableCodeGenerators}
-        />
+      {(formik) => {
+        return (
+          <Form childrenAsBlocks>
+            <FormikAutoSave debounceMS={1000} />
+            <TextField disabled label="Plugin Id" name="pluginId" />
+            <DisplayNameField
+              name="displayName"
+              label="Display Name"
+              required
+            />
+            <div>
+              <FlexItem
+                direction={EnumFlexDirection.Row}
+                gap={EnumGapSize.Large}
+              >
+                <PluginLogoPreview privatePlugin={formik.values} />
+                <IconPickerField name="icon" label="icon" />
+                <ColorPickerField name="color" label="color" />
+              </FlexItem>
+            </div>
 
-        <OptionalDescriptionField name="description" label="Description" />
-      </Form>
+            <SelectField
+              name="codeGenerator"
+              label="Code Generator"
+              options={CODE_GENERATORS}
+            />
+
+            {formik.values.codeGenerator ===
+              models.EnumCodeGenerator.Blueprint && (
+              <BlueprintSelectField
+                name="blueprints"
+                label="Available for Blueprints"
+                isMulti
+              />
+            )}
+            <OptionalDescriptionField name="description" label="Description" />
+          </Form>
+        );
+      }}
     </Formik>
   );
 };
 
 export default PrivatePluginForm;
+
+const PluginLogoPreview = ({
+  privatePlugin,
+}: {
+  privatePlugin: models.PrivatePlugin;
+}) => {
+  const plugin: Plugin = {
+    id: privatePlugin.pluginId,
+    pluginId: privatePlugin.pluginId,
+    name: privatePlugin.displayName,
+    description: privatePlugin.description,
+    icon: privatePlugin.icon,
+    color: privatePlugin.color,
+    repo: "",
+    npm: "",
+    github: "",
+    website: "",
+    categories: [],
+    type: "",
+    taggedVersions: {},
+    versions: [],
+    isPrivate: true,
+  };
+
+  return (
+    <FlexItem.FlexStart>
+      <PluginLogo plugin={plugin} iconSize="xlarge" />
+    </FlexItem.FlexStart>
+  );
+};

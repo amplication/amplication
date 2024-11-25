@@ -146,12 +146,17 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       }
     }
 
-    if (shouldPoll) {
+    if (shouldPoll && currentProjectId) {
       getLastCommitStartPolling(POLL_INTERVAL);
     } else {
       getLastCommitStopPolling();
     }
-  }, [getLastCommitStopPolling, getLastCommitStartPolling, lastCommit]);
+  }, [
+    getLastCommitStopPolling,
+    getLastCommitStartPolling,
+    lastCommit,
+    currentProjectId,
+  ]);
 
   //cleanup polling
   useEffect(() => {

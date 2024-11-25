@@ -104,15 +104,16 @@ const CommitButton = ({
 
     onCommitChanges && onCommitChanges();
   }, [
-    onCommitSpecificService,
-    commitStrategy,
+    resourceTypeGroup,
     hasPendingChanges,
     hasMultipleServices,
+    onCommitSpecificService,
     commitChanges,
-    currentProject,
     commitMessage,
+    currentProject?.id,
     onCommitChanges,
-    resourceTypeGroup,
+    history,
+    platformBaseUrl,
   ]);
 
   const isLimitationError = commitChangesLimitationError !== undefined ?? false;
@@ -141,7 +142,7 @@ const CommitButton = ({
           }}
           disabled={!hasPendingChanges || commitChangesLoading}
         >
-          Publish New Version
+          Publish Changes
         </Button>
       )
     ) : commitBtnType === CommitBtnType.JumboButton ? (

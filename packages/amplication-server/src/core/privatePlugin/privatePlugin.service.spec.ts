@@ -13,6 +13,7 @@ import { PrivatePluginVersion } from "./dto/PrivatePluginVersion";
 import { EnumBlockType } from "@amplication/code-gen-types";
 import { CreatePrivatePluginArgs } from "./dto/CreatePrivatePluginArgs";
 import { AmplicationError } from "../../errors/AmplicationError";
+import { ProjectService } from "../project/project.service";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
@@ -140,6 +141,12 @@ describe("PrivatePluginService", () => {
         {
           provide: BillingService,
           useValue: {},
+        },
+        {
+          provide: ProjectService,
+          useValue: {
+            findProjects: jest.fn(() => []),
+          },
         },
 
         MockedAmplicationLoggerProvider,
