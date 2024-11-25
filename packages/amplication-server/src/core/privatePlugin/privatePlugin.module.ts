@@ -6,6 +6,7 @@ import { PermissionsModule } from "../permissions/permissions.module";
 import { ResourceModule } from "../resource/resource.module";
 import { UserModule } from "../user/user.module";
 import { BillingModule } from "../billing/billing.module";
+import { ProjectModule } from "../project/project.module";
 @Module({
   imports: [
     UserModule,
@@ -13,6 +14,7 @@ import { BillingModule } from "../billing/billing.module";
     BlockModule,
     forwardRef(() => ResourceModule),
     PermissionsModule,
+    forwardRef(() => ProjectModule),
   ],
   providers: [PrivatePluginService, PrivatePluginResolver],
   exports: [PrivatePluginService, PrivatePluginResolver],
