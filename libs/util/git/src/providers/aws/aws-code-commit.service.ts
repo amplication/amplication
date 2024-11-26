@@ -26,6 +26,7 @@ import {
   EnumGitOrganizationType,
   getFolderContentArgs,
   GitFolderContent,
+  GitFolderContentItem,
 } from "../../types";
 import {
   CodeCommitClient,
@@ -41,6 +42,7 @@ import {
   PullRequest as AwsPullRequest,
   GetPullRequestCommandOutput,
   GetPullRequestCommand,
+  GetFolderCommand,
 } from "@aws-sdk/client-codecommit";
 import { NotImplementedError } from "../../utils/custom-error";
 import { parse } from "node:path";
@@ -78,8 +80,51 @@ export class AwsCodeCommitService implements GitProvider {
       logger: this.logger,
     });
   }
-  getFolderContent(args: getFolderContentArgs): Promise<GitFolderContent> {
-    throw new Error("Method not implemented.");
+
+  async getFolderContent({
+    repositoryName,
+    path,
+    ref,
+  }: getFolderContentArgs): Promise<GitFolderContent> {
+    try {
+      const command = new GetFolderCommand({
+        repositoryName,
+        folderPath: path || "/",
+        commitSpecifier: ref || undefined,
+      });
+      const response = await this.awsClient.send(command);
+      const content: GitFolderContentItem[] = [];
+
+      // Add subFolders
+      if (response.subFolders) {
+        response.subFolders.forEach((folder) => {
+          content.push({
+            name: folder.absolutePath?.split("/").pop() || "",
+            path: folder.absolutePath || "",
+            type: "Dir",
+          });
+        });
+      }
+
+      // Add files
+      if (response.files) {
+        response.files.forEach((file) => {
+          content.push({
+            name: file.absolutePath?.split("/").pop() || "",
+            path: file.absolutePath || "",
+            type: "File",
+          });
+        });
+      }
+
+      return { content };
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch folder contents for ${repositoryName}/${path}`,
+        error
+      );
+      throw error;
+    }
   }
 
   private isRequiredValid<T>(

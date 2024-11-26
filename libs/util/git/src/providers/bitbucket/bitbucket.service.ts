@@ -28,6 +28,7 @@ import {
   OAuthProviderOrganizationProperties,
   getFolderContentArgs,
   GitFolderContent,
+  GitFolderContentItem,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
@@ -84,8 +85,80 @@ export class BitBucketService implements GitProvider {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
   }
-  getFolderContent(args: getFolderContentArgs): Promise<GitFolderContent> {
-    throw new Error("Method not implemented.");
+
+  async getFolderContent({
+    owner,
+    repositoryName,
+    path,
+    ref,
+    repositoryGroupName,
+  }: getFolderContentArgs): Promise<GitFolderContent> {
+    if (!repositoryGroupName) {
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
+    }
+
+    await this.refreshAccessTokenIfNeeded();
+
+    let gitReference: string;
+
+    try {
+      if (!ref) {
+        // Default to the repository's default branch
+        const repo = await this.getRepository({
+          owner,
+          repositoryName,
+          groupName: repositoryGroupName,
+        });
+        gitReference = repo.defaultBranch;
+      } else {
+        gitReference = ref;
+      }
+
+      // Use getFileMetaRequest to fetch the directory contents
+      const fileResponse = await getFileMetaRequest(
+        repositoryGroupName,
+        repositoryName,
+        gitReference,
+        path,
+        this.auth.accessToken
+      );
+
+      // Check if the response is a directory
+      if ((fileResponse as PaginatedTreeEntry).values) {
+        const paginatedResponse = fileResponse as PaginatedTreeEntry;
+        const content = paginatedResponse.values.map((item) => {
+          const name = item.path.split("/").pop() || "";
+          let type: GitFolderContentItem["type"];
+
+          switch (item.type) {
+            case "commit_file":
+              type = "File";
+              break;
+            case "commit_directory":
+              type = "Dir";
+              break;
+            default:
+              type = "Other";
+          }
+
+          return {
+            name,
+            path: item.path,
+            type,
+          };
+        });
+        return { content };
+      } else {
+        throw new Error("The specified path is not a directory");
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch folder contents for ${repositoryGroupName}/${repositoryName}/${path}`,
+        error
+      );
+      throw error;
+    }
   }
 
   async init(): Promise<void> {
