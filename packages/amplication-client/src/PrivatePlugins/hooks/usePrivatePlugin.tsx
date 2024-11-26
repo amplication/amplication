@@ -6,6 +6,7 @@ import {
   CREATE_PRIVATE_PLUGIN,
   DELETE_PRIVATE_PLUGIN,
   GET_AVAILABLE_PRIVATE_PLUGINS_FOR_RESOURCE,
+  GET_PLUGIN_REPOSITORY_REMOTE_PLUGINS,
   GET_PRIVATE_PLUGIN,
   GET_PRIVATE_PLUGINS,
   PRIVATE_PLUGINS_FIELDS_FRAGMENT,
@@ -37,6 +38,10 @@ const usePrivatePlugin = (resourceId: string) => {
   const [privatePluginsByCodeGenerator, setPrivatePluginsByCodeGenerator] =
     useState<Record<string, models.PrivatePlugin[]> | null>(null);
 
+  const [privatePlugins, setPrivatePlugins] = useState<models.PrivatePlugin[]>(
+    []
+  );
+
   const [
     getAvailablePrivatePluginsForResourceInternal,
     {
@@ -66,10 +71,7 @@ const usePrivatePlugin = (resourceId: string) => {
 
   const [
     getPrivatePluginsInternal,
-    {
-      loading: getPrivatePluginsByCodeGeneratorLoading,
-      error: getPrivatePluginsByCodeGeneratorError,
-    },
+    { loading: loadPrivatePluginsLoading, error: loadPrivatePluginsError },
   ] = useLazyQuery<TGetPluginsData>(GET_PRIVATE_PLUGINS, {
     notifyOnNetworkStatusChange: true,
     onCompleted: (data) => {
@@ -86,10 +88,11 @@ const usePrivatePlugin = (resourceId: string) => {
       );
 
       setPrivatePluginsByCodeGenerator(pluginsByCodeGenerator);
+      setPrivatePlugins(data.privatePlugins);
     },
   });
 
-  const getPrivatePluginsByCodeGenerator = useCallback(
+  const loadPrivatePlugins = useCallback(
     (searchPhrase: string) => {
       getPrivatePluginsInternal({
         variables: {
@@ -198,6 +201,18 @@ const usePrivatePlugin = (resourceId: string) => {
       refetchQueries: [GET_PRIVATE_PLUGINS],
     });
 
+  const [
+    getPluginRepositoryRemotePlugins,
+    {
+      data: pluginRepositoryRemotePluginsData,
+      loading: pluginRepositoryRemotePluginsLoading,
+      error: pluginRepositoryRemotePluginsError,
+      refetch: pluginRepositoryRemotePluginsRefetch,
+    },
+  ] = useLazyQuery<{
+    pluginRepositoryRemotePlugins: models.GitFolderContent;
+  }>(GET_PLUGIN_REPOSITORY_REMOTE_PLUGINS);
+
   return {
     getAvailablePrivatePluginsForResource,
     getAvailablePrivatePluginsForResourceData,
@@ -213,12 +228,18 @@ const usePrivatePlugin = (resourceId: string) => {
     createPrivatePlugin,
     createPrivatePluginError,
     createPrivatePluginLoading,
-    getPrivatePluginsByCodeGenerator,
-    getPrivatePluginsByCodeGeneratorData: privatePluginsByCodeGenerator,
-    getPrivatePluginsByCodeGeneratorLoading,
-    getPrivatePluginsByCodeGeneratorError,
+    loadPrivatePlugins,
+    privatePluginsByCodeGenerator,
+    privatePlugins,
+    loadPrivatePluginsLoading,
+    loadPrivatePluginsError,
     deletePrivatePlugin,
     deletePrivatePluginError,
+    getPluginRepositoryRemotePlugins,
+    pluginRepositoryRemotePluginsData,
+    pluginRepositoryRemotePluginsLoading,
+    pluginRepositoryRemotePluginsError,
+    pluginRepositoryRemotePluginsRefetch,
   };
 };
 
