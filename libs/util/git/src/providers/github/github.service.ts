@@ -338,13 +338,6 @@ export class GithubService implements GitProvider {
     ref,
   }: getFolderContentArgs): Promise<GitFolderContent> {
     try {
-      console.log({
-        owner,
-        repositoryName,
-        path,
-        ref,
-      });
-
       // Fetch the contents of the directory
       const response = await this.octokit.rest.repos.getContent({
         owner,
@@ -353,8 +346,6 @@ export class GithubService implements GitProvider {
         ref: ref ?? undefined,
       });
 
-      console.log({ response });
-
       // Check if the response is an array (directory contents)
       if (Array.isArray(response.data)) {
         const content = response.data.map((item) => ({
@@ -362,7 +353,6 @@ export class GithubService implements GitProvider {
           path: item.path,
           type: DIRECTORY_ITEM_TYPE_TO_GIT_FOLDER_CONTENT_ITEM_TYPE[item.type],
         }));
-        console.log({ content });
         return { content };
       }
 
