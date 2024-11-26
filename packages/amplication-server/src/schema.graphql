@@ -963,6 +963,12 @@ enum EnumEntityPermissionType {
   Public
 }
 
+enum EnumGitFolderContentItemType {
+  Dir
+  File
+  Other
+}
+
 enum EnumGitOrganizationType {
   Organization
   User
@@ -1189,6 +1195,16 @@ type EvaluationInsights {
   costSaved: Int!
   loc: Int!
   timeSaved: Int!
+}
+
+type GitFolderContent {
+  content: [GitFolderContentItem!]!
+}
+
+type GitFolderContentItem {
+  name: String!
+  path: String!
+  type: EnumGitFolderContentItemType!
 }
 
 input GitGetInstallationUrlInput {
@@ -2223,6 +2239,7 @@ type Query {
   pluginInstallation(where: WhereUniqueInput!): PluginInstallation
   pluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
+  pluginRepositoryRemotePlugins(where: WhereUniqueInput!): GitFolderContent!
   privatePlugin(where: WhereUniqueInput!): PrivatePlugin
   privatePlugins(orderBy: PrivatePluginOrderByInput, skip: Int, take: Int, where: PrivatePluginWhereInput): [PrivatePlugin!]!
   project(where: WhereUniqueInput!): Project

@@ -24,6 +24,8 @@ import { PrivatePluginVersion } from "./dto/PrivatePluginVersion";
 import { UpdatePrivatePluginVersionArgs } from "./dto/UpdatePrivatePluginVersionArgs";
 import { User } from "../../models";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+import { FindOneArgs } from "../../dto";
+import { GitFolderContent } from "../git/dto/objects/GitFolderContent";
 
 @Resolver(() => PrivatePlugin)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -50,6 +52,15 @@ export class PrivatePluginResolver extends BlockTypeResolver(
     @Args() args: FindManyPrivatePluginArgs
   ): Promise<PrivatePlugin[]> {
     return this.service.availablePrivatePluginsForResource(args);
+  }
+
+  @Query(() => GitFolderContent)
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @UseGuards(GqlAuthGuard)
+  async pluginRepositoryRemotePlugins(
+    @Args() args: FindOneArgs
+  ): Promise<GitFolderContent> {
+    return this.service.getPrivatePluginListFromRemoteRepository(args.where);
   }
 
   @Mutation(() => PrivatePluginVersion, {

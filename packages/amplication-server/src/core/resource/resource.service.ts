@@ -1846,7 +1846,7 @@ export class ResourceService {
     });
   }
 
-  async gitRepository(resourceId: string): Promise<GitRepository | null> {
+  async gitRepository(resourceId: string) {
     if (!resourceId) return;
     return (
       await this.prisma.resource.findUnique({

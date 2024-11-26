@@ -996,6 +996,12 @@ export enum EnumEntityPermissionType {
   Public = 'Public'
 }
 
+export enum EnumGitFolderContentItemType {
+  Dir = 'Dir',
+  File = 'File',
+  Other = 'Other'
+}
+
 export enum EnumGitOrganizationType {
   Organization = 'Organization',
   User = 'User'
@@ -1222,6 +1228,16 @@ export type EvaluationInsights = {
   costSaved: Scalars['Int']['output'];
   loc: Scalars['Int']['output'];
   timeSaved: Scalars['Int']['output'];
+};
+
+export type GitFolderContent = {
+  content: Array<GitFolderContentItem>;
+};
+
+export type GitFolderContentItem = {
+  name: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+  type: EnumGitFolderContentItemType;
 };
 
 export type GitGetInstallationUrlInput = {
@@ -2928,6 +2944,7 @@ export type Query = {
   pluginInstallation?: Maybe<PluginInstallation>;
   pluginInstallations: Array<PluginInstallation>;
   pluginOrder: PluginOrder;
+  pluginRepositoryRemotePlugins: GitFolderContent;
   privatePlugin?: Maybe<PrivatePlugin>;
   privatePlugins: Array<PrivatePlugin>;
   project?: Maybe<Project>;
@@ -3228,6 +3245,11 @@ export type QueryPluginInstallationsArgs = {
 
 
 export type QueryPluginOrderArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryPluginRepositoryRemotePluginsArgs = {
   where: WhereUniqueInput;
 };
 
