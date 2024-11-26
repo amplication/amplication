@@ -26,6 +26,8 @@ import {
   BitBucketConfiguration,
   Bot,
   OAuthProviderOrganizationProperties,
+  getFolderContentArgs,
+  GitFolderContent,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
@@ -81,6 +83,9 @@ export class BitBucketService implements GitProvider {
 
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+  }
+  getFolderContent(args: getFolderContentArgs): Promise<GitFolderContent> {
+    throw new Error("Method not implemented.");
   }
 
   async init(): Promise<void> {

@@ -176,6 +176,16 @@ export interface GitFile {
   content: string;
 }
 
+export interface GitFolderContent {
+  content: GitFolderContentItem[];
+}
+
+export interface GitFolderContentItem {
+  name: string;
+  path: string;
+  type: "Dir" | "File" | "Other";
+}
+
 export interface GitResourceMeta {
   serverPath: string;
   adminUIPath: string;
@@ -198,6 +208,14 @@ export interface CreateRepositoryArgs {
 export interface GetRepositoriesArgs {
   pagination: Pagination;
   groupName?: string;
+}
+
+export interface getFolderContentArgs {
+  owner: string;
+  repositoryName: string;
+  repositoryGroupName?: string;
+  path: string;
+  ref?: string;
 }
 
 export interface GetFileArgs {

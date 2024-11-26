@@ -24,6 +24,8 @@ import {
   Bot,
   AwsCodeCommitProviderOrganizationProperties,
   EnumGitOrganizationType,
+  getFolderContentArgs,
+  GitFolderContent,
 } from "../../types";
 import {
   CodeCommitClient,
@@ -75,6 +77,9 @@ export class AwsCodeCommitService implements GitProvider {
       region: this.awsRegion,
       logger: this.logger,
     });
+  }
+  getFolderContent(args: getFolderContentArgs): Promise<GitFolderContent> {
+    throw new Error("Method not implemented.");
   }
 
   private isRequiredValid<T>(
