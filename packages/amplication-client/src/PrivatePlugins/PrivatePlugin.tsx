@@ -1,28 +1,23 @@
+import {
+  EnumContentAlign,
+  EnumFlexDirection,
+  FlexItem,
+  HorizontalRule,
+  Snackbar,
+  TabContentTitle,
+  Toggle,
+} from "@amplication/ui/design-system";
 import { useCallback, useContext, useEffect } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { AppContext } from "../context/appContext";
-import { formatError } from "../util/error";
-import PrivatePluginForm from "./PrivatePluginForm";
+import PrivatePluginVersionList from "../PrivatePluginVersion/PrivatePluginVersionList";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { DeletePrivatePlugin } from "./DeletePrivatePlugins";
-import {
-  Snackbar,
-  HorizontalRule,
-  FlexItem,
-  TabContentTitle,
-  EnumFlexDirection,
-  EnumContentAlign,
-  Toggle,
-  Panel,
-  EnumPanelStyle,
-  Text,
-  EnumTextStyle,
-  EnumTextColor,
-} from "@amplication/ui/design-system";
-import usePrivatePlugin from "./hooks/usePrivatePlugin";
+import { formatError } from "../util/error";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
-import PrivatePluginVersionList from "../PrivatePluginVersion/PrivatePluginVersionList";
+import { DeletePrivatePlugin } from "./DeletePrivatePlugins";
+import usePrivatePlugin from "./hooks/usePrivatePlugin";
+import PrivatePluginForm from "./PrivatePluginForm";
 
 type Props = {
   pluginRepositoryResourceId: string;
@@ -137,19 +132,6 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
-      <Panel panelStyle={EnumPanelStyle.Bordered}>
-        <Text
-          textStyle={EnumTextStyle.Description}
-          textColor={EnumTextColor.ThemeOrange}
-        >
-          The plugin must be located in the connected git repository, in a
-          folder named "plugins" and in a subfolder with the plugin ID.
-        </Text>
-        <br />
-        <Text textStyle={EnumTextStyle.Description}>
-          e.g. './plugins/private-aws-terraform/'
-        </Text>
-      </Panel>
 
       <HorizontalRule />
       {!loading && (

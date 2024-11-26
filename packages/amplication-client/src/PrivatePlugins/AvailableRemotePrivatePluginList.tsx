@@ -1,33 +1,37 @@
 import {
+  Button,
   CircularProgress,
-  CollapsibleListItem,
-  ConfirmationDialog,
+  EnumButtonStyle,
+  EnumFlexDirection,
+  EnumFlexItemMargin,
   EnumItemsAlign,
+  EnumTextColor,
+  EnumTextStyle,
   FlexItem,
+  List,
+  ListItem,
   Snackbar,
-  Tooltip,
-  VerticalNavigation,
+  Text,
 } from "@amplication/ui/design-system";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useAppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
+import { pluralize } from "../util/pluralize";
 import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
 
 const CLASS_NAME = "private-plugin-list";
-const CONFIRM_BUTTON = { label: "Add" };
-const DISMISS_BUTTON = { label: "Dismiss" };
 
 type Props = {
   pluginRepositoryResource: models.Resource;
   onPrivatePluginAdd?: (privatePlugin: models.PrivatePlugin) => void;
+  onDismiss: () => void;
 };
 
 export const AvailableRemotePrivatePluginList = React.memo(
-  ({ pluginRepositoryResource, onPrivatePluginAdd }: Props) => {
+  ({ pluginRepositoryResource, onPrivatePluginAdd, onDismiss }: Props) => {
     const { addEntity } = useAppContext();
-    const [createPluginId, setCreatePluginId] = useState<string | null>(null);
 
     const {
       privatePlugins,
@@ -88,10 +92,6 @@ export const AvailableRemotePrivatePluginList = React.memo(
       );
     }, [privatePlugins, remotePluginsData?.pluginRepositoryRemotePlugins]);
 
-    const handleCreatePlugin = useCallback((pluginId: string) => {
-      setCreatePluginId(pluginId);
-    }, []);
-
     const codeGenerator = useMemo(() => {
       //if privatePluginsByCodeGenerator has only one key, return it
       if (
@@ -118,7 +118,6 @@ export const AvailableRemotePrivatePluginList = React.memo(
           },
         })
           .then((result) => {
-            setCreatePluginId(null);
             if (onPrivatePluginAdd) {
               onPrivatePluginAdd(result.data.createPrivatePlugin);
             }
@@ -139,60 +138,84 @@ export const AvailableRemotePrivatePluginList = React.memo(
       return null;
     }
 
+    const availableRemotePluginCount = availableRemotePlugin?.length || 0;
+
     return (
       <>
-        <ConfirmationDialog
-          isOpen={createPluginId !== null}
-          title={`Add plugin '${createPluginId}' ?`}
-          confirmButton={CONFIRM_BUTTON}
-          dismissButton={DISMISS_BUTTON}
-          message={<div>Confirm to Register the plugin in this project </div>}
-          onConfirm={() => {
-            handleSubmit(createPluginId);
-          }}
-          onDismiss={() => {
-            setCreatePluginId(null);
-          }}
-        />
         <div className={CLASS_NAME}>
-          <CollapsibleListItem
-            initiallyExpanded={false}
-            icon={"git_branch"}
-            expandable
-            onExpand={remotePluginsRefetch}
-            childItems={
-              <>
-                <VerticalNavigation>
-                  {availableRemotePlugin &&
-                    availableRemotePlugin.map((remotePlugin) => (
-                      <CollapsibleListItem
-                        onExpand={() => {
-                          handleCreatePlugin(remotePlugin.name);
-                        }}
-                        key={remotePlugin.path}
-                        icon={"plugin"}
-                      >
-                        <FlexItem
-                          itemsAlign={EnumItemsAlign.Center}
-                          singeChildWithEllipsis
-                        >
-                          {remotePlugin.name}
-                        </FlexItem>
-                      </CollapsibleListItem>
-                    ))}
-                </VerticalNavigation>
-              </>
+          <FlexItem
+            direction={EnumFlexDirection.Row}
+            itemsAlign={EnumItemsAlign.Center}
+            margin={EnumFlexItemMargin.Bottom}
+            end={
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                icon="refresh_cw"
+                onClick={() => {
+                  remotePluginsRefetch();
+                }}
+              />
             }
           >
-            <Tooltip title="These are the plugins available in the repository that have not been added to your project yet.">
-              <span>
-                Available Plugins ({availableRemotePlugin?.length || 0})
-              </span>
-            </Tooltip>
-          </CollapsibleListItem>
+            <Text textStyle={EnumTextStyle.Description}>
+              {`${availableRemotePluginCount} available ${pluralize(
+                availableRemotePluginCount,
+                "plugin",
+                "plugins"
+              )}`}
+            </Text>
+          </FlexItem>
+
+          <List>
+            {availableRemotePluginCount === 0 && (
+              <ListItem>
+                <Text textStyle={EnumTextStyle.Description}>
+                  No new plugins found in the repository.
+                </Text>
+                <Text
+                  textStyle={EnumTextStyle.Description}
+                  textColor={EnumTextColor.White}
+                >
+                  To add a plugin, ensure it's located in the plugins folder
+                  within a subfolder matching its ID <br />
+                  e.g., ./plugins/private-aws-terraform/
+                </Text>
+              </ListItem>
+            )}
+
+            {availableRemotePlugin &&
+              availableRemotePlugin.map((remotePlugin) => (
+                <ListItem
+                  onClick={() => {
+                    handleSubmit(remotePlugin.name);
+                  }}
+                  key={remotePlugin.path}
+                >
+                  <FlexItem
+                    itemsAlign={EnumItemsAlign.Center}
+                    singeChildWithEllipsis
+                  >
+                    {remotePlugin.name}
+                  </FlexItem>
+                </ListItem>
+              ))}
+          </List>
 
           {remotePluginsLoading && <CircularProgress />}
-
+          <FlexItem
+            margin={EnumFlexItemMargin.Top}
+            itemsAlign={EnumItemsAlign.Center}
+            end={
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                onClick={() => {
+                  onDismiss();
+                }}
+              >
+                Close
+              </Button>
+            }
+          ></FlexItem>
           <Snackbar open={hasError} message={errorMessage} />
         </div>
       </>

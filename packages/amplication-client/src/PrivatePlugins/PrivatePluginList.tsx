@@ -1,11 +1,14 @@
 import {
+  Button,
   CircularProgress,
   CollapsibleListItem,
   EnabledIndicator,
+  EnumButtonStyle,
   EnumIconFamily,
+  EnumIconPosition,
   EnumItemsAlign,
   FlexItem,
-  HorizontalRule,
+  NavigationHeader,
   SearchField,
   Snackbar,
   VerticalNavigation,
@@ -18,9 +21,9 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
-import { AvailableRemotePrivatePluginList } from "./AvailableRemotePrivatePluginList";
-import "./PrivatePluginList.scss";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
+import { NewPrivatePlugin } from "./NewPrivatePlugin";
+import "./PrivatePluginList.scss";
 
 const CLASS_NAME = "private-plugin-list";
 
@@ -92,16 +95,27 @@ export const PrivatePluginList = React.memo(
       });
     }, [getPluginRepositoryRemotePlugins, pluginRepositoryResource]);
 
+    const goToGitSettings = useCallback(() => {
+      history.push(`${baseUrl}/private-plugins/git-settings`);
+    }, [history, baseUrl]);
+
     return (
       <div className={CLASS_NAME}>
-        <VerticalNavigationItem
-          icon="git_branch"
-          to={`${baseUrl}/private-plugins/git-settings`}
-        >
-          <FlexItem itemsAlign={EnumItemsAlign.Center}>Git Settings</FlexItem>
-        </VerticalNavigationItem>
+        <NavigationHeader>
+          <Button
+            buttonStyle={EnumButtonStyle.Text}
+            icon="git_branch"
+            iconPosition={EnumIconPosition.Left}
+            onClick={goToGitSettings}
+          >
+            Git Settings
+          </Button>
 
-        <HorizontalRule />
+          <NewPrivatePlugin
+            onPrivatePluginAdd={handlePrivatePluginChange}
+            pluginRepositoryResource={pluginRepositoryResource}
+          />
+        </NavigationHeader>
 
         <SearchField
           label="search"
@@ -153,12 +167,6 @@ export const PrivatePluginList = React.memo(
           )}
 
         {loading && <CircularProgress />}
-
-        <HorizontalRule />
-        <AvailableRemotePrivatePluginList
-          pluginRepositoryResource={pluginRepositoryResource}
-          onPrivatePluginAdd={handlePrivatePluginChange}
-        />
 
         <Snackbar open={hasError} message={errorMessage} />
       </div>
