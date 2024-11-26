@@ -18,7 +18,7 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
-import NewPrivatePlugin from "./NewPrivatePlugin";
+import { AvailableRemotePrivatePluginList } from "./AvailableRemotePrivatePluginList";
 import "./PrivatePluginList.scss";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
 
@@ -36,10 +36,11 @@ export const PrivatePluginList = React.memo(
     const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: true });
 
     const {
-      getPrivatePluginsByCodeGeneratorData: data,
-      getPrivatePluginsByCodeGenerator,
-      getPrivatePluginsByCodeGeneratorError: error,
-      getPrivatePluginsByCodeGeneratorLoading: loading,
+      privatePluginsByCodeGenerator,
+      loadPrivatePlugins,
+      loadPrivatePluginsError: error,
+      loadPrivatePluginsLoading: loading,
+      getPluginRepositoryRemotePlugins,
     } = usePrivatePlugin(pluginRepositoryResource?.id);
 
     const handleSearchChange = useCallback(
@@ -48,8 +49,9 @@ export const PrivatePluginList = React.memo(
       },
       [setSearchPhrase]
     );
-    const history = useHistory();
 
+    const history = useHistory();
+    const hasError = Boolean(error);
     const errorMessage = formatError(error);
 
     const handlePrivatePluginChange = useCallback(
@@ -61,8 +63,8 @@ export const PrivatePluginList = React.memo(
     );
 
     useEffect(() => {
-      if (selectFirst && data) {
-        const firstCodeGenerator = data[0];
+      if (selectFirst && privatePluginsByCodeGenerator) {
+        const firstCodeGenerator = privatePluginsByCodeGenerator[0];
         if (isEmpty(firstCodeGenerator) || firstCodeGenerator.length === 0) {
           return;
         }
@@ -71,11 +73,24 @@ export const PrivatePluginList = React.memo(
         const fieldUrl = `${baseUrl}/private-plugins/${privatePlugin.id}`;
         history.push(fieldUrl);
       }
-    }, [data, selectFirst, history, baseUrl]);
+    }, [privatePluginsByCodeGenerator, selectFirst, history, baseUrl]);
 
     useEffect(() => {
-      getPrivatePluginsByCodeGenerator(searchPhrase);
-    }, [getPrivatePluginsByCodeGenerator, searchPhrase]);
+      loadPrivatePlugins(searchPhrase);
+    }, [loadPrivatePlugins, searchPhrase]);
+
+    useEffect(() => {
+      if (!pluginRepositoryResource) {
+        return;
+      }
+      getPluginRepositoryRemotePlugins({
+        variables: {
+          where: {
+            id: pluginRepositoryResource.id,
+          },
+        },
+      });
+    }, [getPluginRepositoryRemotePlugins, pluginRepositoryResource]);
 
     return (
       <div className={CLASS_NAME}>
@@ -86,10 +101,6 @@ export const PrivatePluginList = React.memo(
           <FlexItem itemsAlign={EnumItemsAlign.Center}>Git Settings</FlexItem>
         </VerticalNavigationItem>
 
-        <NewPrivatePlugin
-          onPrivatePluginAdd={handlePrivatePluginChange}
-          resourceId={pluginRepositoryResource?.id}
-        />
         <HorizontalRule />
 
         <SearchField
@@ -98,46 +109,58 @@ export const PrivatePluginList = React.memo(
           onChange={handleSearchChange}
         />
 
-        {data &&
-          Object.entries(data).map(([codeGenerator, privatePlugins]) => (
-            <CollapsibleListItem
-              initiallyExpanded
-              icon={"code"}
-              expandable
-              childItems={
-                <>
-                  <VerticalNavigation>
-                    {privatePlugins.map((privatePlugin) => (
-                      <VerticalNavigationItem
-                        key={privatePlugin.id}
-                        icon={privatePlugin.icon ?? "plugin"}
-                        iconFamily={
-                          privatePlugin.icon ? EnumIconFamily.Custom : undefined
-                        }
-                        to={`${baseUrl}/private-plugins/${privatePlugin.id}`}
-                      >
-                        <FlexItem
-                          itemsAlign={EnumItemsAlign.Center}
-                          end={
-                            <EnabledIndicator enabled={privatePlugin.enabled} />
+        {privatePluginsByCodeGenerator &&
+          Object.entries(privatePluginsByCodeGenerator).map(
+            ([codeGenerator, privatePlugins]) => (
+              <CollapsibleListItem
+                initiallyExpanded
+                icon={"code"}
+                expandable
+                childItems={
+                  <>
+                    <VerticalNavigation>
+                      {privatePlugins.map((privatePlugin) => (
+                        <VerticalNavigationItem
+                          key={privatePlugin.id}
+                          icon={privatePlugin.icon ?? "plugin"}
+                          iconFamily={
+                            privatePlugin.icon
+                              ? EnumIconFamily.Custom
+                              : undefined
                           }
-                          singeChildWithEllipsis
+                          to={`${baseUrl}/private-plugins/${privatePlugin.id}`}
                         >
-                          {privatePlugin.displayName}
-                        </FlexItem>
-                      </VerticalNavigationItem>
-                    ))}
-                  </VerticalNavigation>
-                </>
-              }
-            >
-              <span>{`${codeGenerator}`} Plugins</span>
-            </CollapsibleListItem>
-          ))}
+                          <FlexItem
+                            itemsAlign={EnumItemsAlign.Center}
+                            end={
+                              <EnabledIndicator
+                                enabled={privatePlugin.enabled}
+                              />
+                            }
+                            singeChildWithEllipsis
+                          >
+                            {privatePlugin.displayName}
+                          </FlexItem>
+                        </VerticalNavigationItem>
+                      ))}
+                    </VerticalNavigation>
+                  </>
+                }
+              >
+                <span>{`${codeGenerator}`} Plugins</span>
+              </CollapsibleListItem>
+            )
+          )}
 
         {loading && <CircularProgress />}
 
-        <Snackbar open={Boolean(error)} message={errorMessage} />
+        <HorizontalRule />
+        <AvailableRemotePrivatePluginList
+          pluginRepositoryResource={pluginRepositoryResource}
+          onPrivatePluginAdd={handlePrivatePluginChange}
+        />
+
+        <Snackbar open={hasError} message={errorMessage} />
       </div>
     );
   }
