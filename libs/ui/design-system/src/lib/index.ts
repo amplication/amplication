@@ -264,6 +264,7 @@ export { JumboButton } from "./components/JumboButton/JumboButton";
 
 export { NavigationFilter } from "./components/NavigationFilter/NavigationFilter";
 export { NavigationFilterItem } from "./components/NavigationFilter/NavigationFilterItem";
+export { NavigationHeader } from "./components/NavigationHeader/NavigationHeader";
 
 export type { Props as NavigationFilterItemProps } from "./components/NavigationFilter/NavigationFilterItem";
 

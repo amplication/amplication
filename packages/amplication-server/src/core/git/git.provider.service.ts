@@ -52,6 +52,7 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import { ProjectService } from "../project/project.service";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
 import { UpdateGitRepositoryArgs } from "./dto/args/UpdateGitRepositoryArgs";
+import { GitFolderContent } from "./dto/objects/GitFolderContent";
 
 @Traceable()
 @Injectable()
@@ -156,6 +157,31 @@ export class GitProviderService {
       this.gitProvidersConfiguration,
       this.logger
     );
+  }
+
+  async getGitFolderContentForResourceRepo(args: {
+    resourceId: string;
+    path: string;
+  }): Promise<GitFolderContent> {
+    const gitRepository = await this.resourceService.gitRepository(
+      args.resourceId
+    );
+
+    if (isEmpty(gitRepository)) {
+      throw new AmplicationError(INVALID_RESOURCE_ID);
+    }
+
+    const gitClientService = await this.createGitClient(
+      gitRepository.gitOrganization
+    );
+
+    return gitClientService.getFolderContent({
+      owner: gitRepository.gitOrganization.name,
+      repositoryName: gitRepository.name,
+      repositoryGroupName: gitRepository.groupName,
+      ref: gitRepository.baseBranchName,
+      path: args.path,
+    });
   }
 
   async getReposOfOrganization(

@@ -47,6 +47,7 @@ export const IconPicker: React.FC<Props> = ({
                 <Button
                   buttonStyle={EnumButtonStyle.Text}
                   onClick={() => handleChange(iconName)}
+                  key={iconName}
                 >
                   <Icon
                     key={iconName}

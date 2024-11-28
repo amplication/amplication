@@ -64,6 +64,7 @@ describe("GitClientService", () => {
   const deleteGitOrganizationMock = jest.fn();
   const getOrganizationMock = jest.fn();
   const getFileMock = jest.fn();
+  const getFolderContentMock = jest.fn();
   const createPullRequestFromFilesMock = jest.fn();
   const getPullRequestMock = jest.fn();
   const createPullRequestMock = jest.fn();
@@ -84,6 +85,7 @@ describe("GitClientService", () => {
     deleteGitOrganization: deleteGitOrganizationMock,
     getOrganization: getOrganizationMock,
     getFile: getFileMock,
+    getFolderContent: getFolderContentMock,
     createPullRequestFromFiles: createPullRequestFromFilesMock,
     getPullRequest: getPullRequestMock,
     createPullRequest: createPullRequestMock,

@@ -21,6 +21,8 @@ import {
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
+  getFolderContentArgs,
+  GitFolderContent,
 } from "./types";
 
 export interface GitProvider {
@@ -43,6 +45,8 @@ export interface GitProvider {
   deleteGitOrganization(): Promise<boolean>;
   getOrganization(): Promise<RemoteGitOrganization>;
   getFile(file: GetFileArgs): Promise<GitFile | null>;
+  getFolderContent(args: getFolderContentArgs): Promise<GitFolderContent>;
+
   createPullRequestFromFiles: (
     createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ) => Promise<string>;

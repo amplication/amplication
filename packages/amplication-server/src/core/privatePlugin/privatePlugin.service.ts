@@ -22,6 +22,10 @@ import { UpdatePrivatePluginVersionArgs } from "./dto/UpdatePrivatePluginVersion
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 import { BlockSettingsProperties } from "../block/types";
 import { JsonFilter } from "../../dto/JsonFilter";
+import { WhereUniqueInput } from "../../dto";
+import { GitProviderService } from "../git/git.provider.service";
+import { EnumGitFolderContentItemType } from "../git/dto/objects/EnumGitFolderContentItemType";
+import { GitFolderContent } from "../git/dto/objects/GitFolderContent";
 import { ProjectService } from "../project/project.service";
 
 const DEFAULT_PRIVATE_PLUGIN_VERSION: Omit<PrivatePluginVersion, "version"> = {
@@ -30,6 +34,8 @@ const DEFAULT_PRIVATE_PLUGIN_VERSION: Omit<PrivatePluginVersion, "version"> = {
   settings: null,
   configurations: null,
 };
+
+const REMOTE_GIT_PLUGIN_PATH = "plugins";
 
 export type PrivatePluginBlockVersionSettings =
   BlockSettingsProperties<PrivatePlugin> & {
@@ -54,6 +60,7 @@ export class PrivatePluginService extends BlockTypeService<
     protected readonly billingService: BillingService,
     @Inject(forwardRef(() => ResourceService))
     protected readonly resourceService: ResourceService,
+    protected readonly gitProviderService: GitProviderService,
     @Inject(forwardRef(() => ProjectService))
     protected readonly projectService: ProjectService
   ) {
@@ -283,5 +290,21 @@ export class PrivatePluginService extends BlockTypeService<
     );
 
     return updatedVersion;
+  }
+
+  async getPrivatePluginListFromRemoteRepository(
+    resource: WhereUniqueInput
+  ): Promise<GitFolderContent> {
+    const folderContent =
+      await this.gitProviderService.getGitFolderContentForResourceRepo({
+        resourceId: resource.id,
+        path: REMOTE_GIT_PLUGIN_PATH,
+      });
+
+    return {
+      content: folderContent.content.filter(
+        (item) => item.type === EnumGitFolderContentItemType.Dir.toString()
+      ),
+    };
   }
 }

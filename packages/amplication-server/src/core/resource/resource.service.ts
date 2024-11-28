@@ -20,12 +20,7 @@ import { QueryMode } from "../../enums/QueryMode";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { Entity, GitOrganization, Project, Resource, User } from "../../models";
-import {
-  EnumResourceType,
-  GitRepository,
-  Prisma,
-  PrismaService,
-} from "../../prisma";
+import { EnumResourceType, Prisma, PrismaService } from "../../prisma";
 import { EnumResourceType as AmplicationEnumResourceType } from "../resource/dto/EnumResourceType";
 
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
@@ -71,17 +66,17 @@ import {
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
 
+import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
 import { jsonPathStringFilterToPrismaFilter } from "../../prisma/JsonPathStringFilterToPrismaFilter";
 import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings";
 import { GitProviderService } from "../git/git.provider.service";
 import { EnumOwnershipType, Ownership } from "../ownership/dto/Ownership";
 import { OwnershipService } from "../ownership/ownership.service";
+import { RelationService } from "../relation/relation.service";
 import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVersion";
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
-import { RelationService } from "../relation/relation.service";
-import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
 import { ResourceInclude } from "./dto/ResourceInclude";
 
 const USER_RESOURCE_ROLE = {
@@ -1851,7 +1846,7 @@ export class ResourceService {
     });
   }
 
-  async gitRepository(resourceId: string): Promise<GitRepository | null> {
+  async gitRepository(resourceId: string) {
     if (!resourceId) return;
     return (
       await this.prisma.resource.findUnique({
