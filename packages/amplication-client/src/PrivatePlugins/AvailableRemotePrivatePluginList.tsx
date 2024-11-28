@@ -187,7 +187,7 @@ export const AvailableRemotePrivatePluginList = React.memo(
               >
                 {remotePluginsLoading ? (
                   <>
-                    <CircularProgress />
+                    <CircularProgress size={16} />
                   </>
                 ) : (
                   <>
