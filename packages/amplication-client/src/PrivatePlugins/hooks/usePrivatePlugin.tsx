@@ -211,7 +211,9 @@ const usePrivatePlugin = (resourceId: string) => {
     },
   ] = useLazyQuery<{
     pluginRepositoryRemotePlugins: models.GitFolderContent;
-  }>(GET_PLUGIN_REPOSITORY_REMOTE_PLUGINS);
+  }>(GET_PLUGIN_REPOSITORY_REMOTE_PLUGINS, {
+    notifyOnNetworkStatusChange: true,
+  });
 
   return {
     getAvailablePrivatePluginsForResource,

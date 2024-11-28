@@ -4,19 +4,25 @@ import {
   EnumButtonStyle,
   EnumFlexDirection,
   EnumFlexItemMargin,
+  EnumGapSize,
   EnumItemsAlign,
+  EnumPanelStyle,
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
+  Icon,
   List,
   ListItem,
+  Panel,
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useAppContext } from "../context/appContext";
 import * as models from "../models";
+import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 import { formatError } from "../util/error";
+import { getGitRepositoryDetails } from "../util/git-repository-details";
 import { pluralize } from "../util/pluralize";
 import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
@@ -32,6 +38,15 @@ type Props = {
 export const AvailableRemotePrivatePluginList = React.memo(
   ({ pluginRepositoryResource, onPrivatePluginAdd, onDismiss }: Props) => {
     const { addEntity } = useAppContext();
+
+    const gitRepositoryDetails = getGitRepositoryDetails({
+      organization: pluginRepositoryResource.gitRepository?.gitOrganization,
+      repositoryName: pluginRepositoryResource.gitRepository?.name,
+      groupName: pluginRepositoryResource?.gitRepository?.groupName,
+    });
+
+    const gitProvider =
+      pluginRepositoryResource.gitRepository?.gitOrganization.provider;
 
     const {
       privatePlugins,
@@ -143,18 +158,43 @@ export const AvailableRemotePrivatePluginList = React.memo(
     return (
       <>
         <div className={CLASS_NAME}>
+          <Panel panelStyle={EnumPanelStyle.Bordered}>
+            <Text
+              textStyle={EnumTextStyle.Description}
+              textColor={EnumTextColor.White}
+            >
+              To add a plugin, it must be located in the connected git
+              repository, in a folder named "plugins".
+            </Text>
+            <br />
+            <Text textStyle={EnumTextStyle.Description}>
+              e.g. '{gitRepositoryDetails.repositoryFullName}
+              /plugins/private-aws-terraform/'
+            </Text>
+          </Panel>
+
           <FlexItem
             direction={EnumFlexDirection.Row}
             itemsAlign={EnumItemsAlign.Center}
             margin={EnumFlexItemMargin.Bottom}
             end={
               <Button
-                buttonStyle={EnumButtonStyle.Text}
-                icon="refresh_cw"
+                buttonStyle={EnumButtonStyle.Outline}
                 onClick={() => {
                   remotePluginsRefetch();
                 }}
-              />
+                disabled={remotePluginsLoading}
+              >
+                {remotePluginsLoading ? (
+                  <>
+                    <CircularProgress />
+                  </>
+                ) : (
+                  <>
+                    <Icon icon="refresh_cw" />
+                  </>
+                )}
+              </Button>
             }
           >
             <Text textStyle={EnumTextStyle.Description}>
@@ -169,16 +209,11 @@ export const AvailableRemotePrivatePluginList = React.memo(
           <List>
             {availableRemotePluginCount === 0 && (
               <ListItem>
-                <Text textStyle={EnumTextStyle.Description}>
-                  No new plugins found in the repository.
-                </Text>
                 <Text
                   textStyle={EnumTextStyle.Description}
-                  textColor={EnumTextColor.White}
+                  textColor={EnumTextColor.ThemeOrange}
                 >
-                  To add a plugin, ensure it's located in the plugins folder
-                  within a subfolder matching its ID <br />
-                  e.g., ./plugins/private-aws-terraform/
+                  No new plugins found in the repository.
                 </Text>
               </ListItem>
             )}
@@ -201,7 +236,6 @@ export const AvailableRemotePrivatePluginList = React.memo(
               ))}
           </List>
 
-          {remotePluginsLoading && <CircularProgress />}
           <FlexItem
             margin={EnumFlexItemMargin.Top}
             itemsAlign={EnumItemsAlign.Center}
@@ -215,7 +249,19 @@ export const AvailableRemotePrivatePluginList = React.memo(
                 Close
               </Button>
             }
-          ></FlexItem>
+          >
+            <a href={gitRepositoryDetails.repositoryUrl} target="github_repo">
+              <Text textStyle={EnumTextStyle.Description}>
+                <FlexItem
+                  itemsAlign={EnumItemsAlign.Center}
+                  gap={EnumGapSize.Small}
+                >
+                  <Icon icon={gitProviderIconMap[gitProvider]} />
+                  Open git repository
+                </FlexItem>
+              </Text>
+            </a>
+          </FlexItem>
           <Snackbar open={hasError} message={errorMessage} />
         </div>
       </>
