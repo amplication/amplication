@@ -178,6 +178,8 @@ export class PrivatePluginService extends BlockTypeService<
   ): Promise<PrivatePlugin> {
     await this.validateLicense(user.workspace?.id);
 
+    await this.validatePluginId(user.workspace?.id, args.data.pluginId);
+
     const privatePlugin = await super.create(args, user);
 
     await this.createVersion(
@@ -191,6 +193,35 @@ export class PrivatePluginService extends BlockTypeService<
     );
 
     return privatePlugin;
+  }
+
+  async validatePluginId(workspaceId: string, pluginId: string): Promise<void> {
+    const filter = {
+      path: ["pluginId"],
+      equals: pluginId,
+    };
+
+    const existingPlugins = await this.findManyBySettings(
+      {
+        where: {
+          resource: {
+            project: {
+              workspace: {
+                id: workspaceId,
+              },
+            },
+          },
+        },
+      },
+      filter,
+      undefined
+    );
+
+    if (existingPlugins.length > 0) {
+      throw new AmplicationError(
+        `A plugin with the same ID already exists in the workspace. Plugin IDs must be unique across all projects in the workspace.`
+      );
+    }
   }
 
   async validateLicense(workspaceId: string): Promise<void> {
