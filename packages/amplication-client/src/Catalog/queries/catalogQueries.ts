@@ -79,45 +79,12 @@ export const SEARCH_CATALOG = gql`
             useGroupingForRepositories
           }
         }
-        entities {
-          id
-          name
-        }
         builds(orderBy: { createdAt: Desc }, take: 1) {
           id
           version
           createdAt
           status
           codeGeneratorVersion
-          commit {
-            user {
-              account {
-                id
-                lastName
-                firstName
-                email
-              }
-            }
-          }
-          action {
-            id
-            createdAt
-            steps {
-              id
-              name
-              createdAt
-              message
-              status
-              completedAt
-              logs {
-                id
-                createdAt
-                message
-                meta
-                level
-              }
-            }
-          }
         }
       }
     }
