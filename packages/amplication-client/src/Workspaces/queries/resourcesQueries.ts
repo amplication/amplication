@@ -117,35 +117,6 @@ export const GET_RESOURCES = gql`
         createdAt
         status
         codeGeneratorVersion
-        commit {
-          user {
-            account {
-              id
-              lastName
-              firstName
-              email
-            }
-          }
-        }
-        action {
-          id
-          createdAt
-          steps {
-            id
-            name
-            createdAt
-            message
-            status
-            completedAt
-            logs {
-              id
-              createdAt
-              message
-              meta
-              level
-            }
-          }
-        }
       }
     }
   }
@@ -178,25 +149,6 @@ export const CREATE_SERVICE_WITH_ENTITIES = gql`
         id
         version
         status
-        action {
-          id
-          createdAt
-          steps {
-            id
-            name
-            createdAt
-            message
-            status
-            completedAt
-            logs {
-              id
-              createdAt
-              message
-              meta
-              level
-            }
-          }
-        }
       }
     }
   }
