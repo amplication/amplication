@@ -309,6 +309,7 @@ export type Build = {
   action?: Maybe<Action>;
   actionId: Scalars['String']['output'];
   archiveURI?: Maybe<Scalars['String']['output']>;
+  buildPlugins: Array<BuildPlugin>;
   codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   commit?: Maybe<Commit>;
   commitId: Scalars['String']['output'];
@@ -334,6 +335,16 @@ export type BuildOrderByInput = {
   status?: InputMaybe<SortOrder>;
   userId?: InputMaybe<SortOrder>;
   version?: InputMaybe<SortOrder>;
+};
+
+export type BuildPlugin = {
+  build?: Maybe<Build>;
+  buildId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  packageName: Scalars['String']['output'];
+  packageVersion: Scalars['String']['output'];
+  requestedFullPackageName: Scalars['String']['output'];
 };
 
 export type BuildWhereInput = {
