@@ -18,8 +18,7 @@ import { formatError } from "../util/error";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import "./NewPrivatePluginVersion.scss";
 import usePrivatePluginVersion from "./hooks/usePrivatePluginVersion";
-
-const DEV_VERSION = "@dev";
+import { DEV_VERSION_TAG } from "../Plugins/constant";
 
 type Props = {
   privatePlugin: models.PrivatePlugin;
@@ -47,7 +46,7 @@ const PrivatePluginDevVersion = ({ privatePlugin, onChange }: Props) => {
         createPrivatePluginVersion({
           variables: {
             data: {
-              version: DEV_VERSION,
+              version: DEV_VERSION_TAG,
               privatePlugin: { connect: { id: privatePlugin.id } },
             },
           },
