@@ -5,7 +5,6 @@ import { PluginServiceBase } from "./base/plugin.service.base";
 import { GitPluginService } from "./github-plugin.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { PluginUpdateInput } from "./base/PluginUpdateInput";
-import { CategoryUpdateInput } from "src/category/base/CategoryUpdateInput";
 import { PluginCreateInput } from "./base/PluginCreateInput";
 import { CategoryCreateInput } from "src/category/base/CategoryCreateInput";
 
@@ -15,7 +14,6 @@ interface PluginsDataObj {
   categories: {
     categoryMap: { [key: string]: number };
     data: CategoryCreateInput[];
-    categoryUpdate: PrismaPromise<CategoryUpdateInput>[];
   };
 }
 
@@ -30,7 +28,7 @@ export class PluginService extends PluginServiceBase {
   }
 
   /**
-   * main service that trigger gitPluginService and return plugin list. It creates the plugins into DB
+   * main service that trigger gitPluginService and return plugin list. It creates the plugins and categories into DB
    * @returns Plugin[]
    */
   async processCatalogPlugins(): Promise<Plugin[]> {
@@ -61,13 +59,6 @@ export class PluginService extends PluginServiceBase {
             const categoryData: CategoryCreateInput = { name: category };
             pluginsDataObj.categories.categoryMap[category] = 1;
             pluginsDataObj.categories.data.push(categoryData);
-            const categoryUpdate = this.prisma.category.update({
-              where: {
-                name: category,
-              },
-              data: categoryData,
-            });
-            pluginsDataObj.categories.categoryUpdate.push(categoryUpdate);
           });
 
           return pluginsDataObj;
@@ -78,7 +69,6 @@ export class PluginService extends PluginServiceBase {
           categories: {
             categoryMap: {},
             data: [],
-            categoryUpdate: [],
           },
         }
       );
@@ -96,10 +86,6 @@ export class PluginService extends PluginServiceBase {
         data: pluginsAndCategories.categories.data,
         skipDuplicates: true,
       });
-
-      await this.prisma.$transaction(
-        pluginsAndCategories.categories.categoryUpdate
-      );
 
       this.logger.debug("createdCategories", createdCategories);
 
