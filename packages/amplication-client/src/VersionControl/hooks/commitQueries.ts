@@ -118,6 +118,20 @@ export const GET_COMMITS = gql`
   }
 `;
 
+export const GET_LAST_COMMIT = gql`
+  ${COMMIT_FIELDS_FRAGMENT}
+  query lastCommits($projectId: String!) {
+    commits(
+      where: { project: { id: $projectId }, resourceTypeGroup: Services }
+      skip: 0
+      take: 1
+      orderBy: { createdAt: Desc }
+    ) {
+      ...CommitFields
+    }
+  }
+`;
+
 export const GET_COMMIT = gql`
   ${COMMIT_FIELDS_FRAGMENT}
   query Commit($commitId: String!) {
