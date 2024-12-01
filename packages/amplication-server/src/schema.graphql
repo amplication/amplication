@@ -283,6 +283,7 @@ type Build {
   action: Action
   actionId: String!
   archiveURI: String
+  buildPlugins: [BuildPlugin!]!
   codeGeneratorVersion: String
   commit: Commit
   commitId: String!
@@ -308,6 +309,16 @@ input BuildOrderByInput {
   status: SortOrder
   userId: SortOrder
   version: SortOrder
+}
+
+type BuildPlugin {
+  build: Build
+  buildId: String!
+  createdAt: DateTime!
+  id: String!
+  packageName: String!
+  packageVersion: String!
+  requestedFullPackageName: String!
 }
 
 input BuildWhereInput {
