@@ -7,6 +7,10 @@ import {
   SelectMenuModal,
   SelectMenuList,
   SelectMenuItem,
+  FlexItem,
+  EnumItemsAlign,
+  EnumFlexDirection,
+  EnumGapSize,
 } from "@amplication/ui/design-system";
 import { JsonFormatting, isValidJSON } from "@amplication/util/json";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
@@ -231,7 +235,16 @@ const InstalledPluginSettings: React.FC<Props> = ({
                               handleSelectVersion(pluginVersion);
                             }}
                           >
-                            {pluginVersion.version}
+                            <FlexItem
+                              direction={EnumFlexDirection.Row}
+                              itemsAlign={EnumItemsAlign.Center}
+                              gap={EnumGapSize.Small}
+                            >
+                              <span>{pluginVersion.version} </span>
+                              <span>
+                                {pluginVersion.deprecated ? "(deprecated)" : ""}
+                              </span>
+                            </FlexItem>
                           </SelectMenuItem>
                         )
                       )}
