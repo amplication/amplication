@@ -17,7 +17,7 @@ import { useCallback, useContext } from "react";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
-import PageContent from "../Layout/PageContent";
+import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import useOutdatedVersionAlerts from "./hooks/useOutdatedVersionAlerts";
@@ -61,7 +61,11 @@ function OutdatedVersionAlertList() {
   );
 
   return (
-    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+    <PageContent
+      className={CLASS_NAME}
+      pageTitle={PAGE_TITLE}
+      pageWidth={EnumPageWidth.Full}
+    >
       <FlexItem
         itemsAlign={EnumItemsAlign.Center}
         contentAlign={EnumContentAlign.Start}
