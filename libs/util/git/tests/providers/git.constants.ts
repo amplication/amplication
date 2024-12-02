@@ -25,7 +25,6 @@ export const TEST_GIT_REMOTE_ORGANIZATION: RemoteGitOrganization = {
 export const TEST_GIT_REPOS: RemoteGitRepos = {
   repos: [
     {
-      admin: true,
       fullName: "tupe12334/ofek",
       name: "ofek",
       private: true,
@@ -33,7 +32,6 @@ export const TEST_GIT_REPOS: RemoteGitRepos = {
       defaultBranch: "main",
     },
     {
-      admin: false,
       fullName: "tupe12334/test",
       name: "test",
       private: true,
@@ -49,7 +47,6 @@ export const TEST_GIT_REPOS: RemoteGitRepos = {
 };
 
 export const TEST_GIT_REPO: RemoteGitRepository = {
-  admin: true,
   fullName: "tupe12334/repo",
   name: "repo",
   private: false,

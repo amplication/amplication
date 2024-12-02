@@ -172,7 +172,6 @@ export class AwsCodeCommitService implements GitProvider {
 
     if (this.isRequiredValid(repositoryMetadata)) {
       return {
-        admin: false,
         defaultBranch: repositoryMetadata.defaultBranch ?? "main",
         fullName: repositoryMetadata.repositoryName,
         name: repositoryMetadata.repositoryName,
@@ -205,7 +204,6 @@ export class AwsCodeCommitService implements GitProvider {
         .map((repository) => {
           if (this.isRequiredValid(repository)) {
             return {
-              admin: false,
               defaultBranch: "",
               fullName: repository.repositoryName,
               name: repository.repositoryName,
@@ -241,7 +239,6 @@ export class AwsCodeCommitService implements GitProvider {
 
     if (this.isRequiredValid(repositoryMetadata)) {
       return {
-        admin: false,
         defaultBranch: repositoryMetadata.defaultBranch,
         fullName: repositoryMetadata.repositoryName,
         name: repositoryMetadata.repositoryName,

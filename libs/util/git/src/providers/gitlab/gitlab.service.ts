@@ -200,19 +200,24 @@ export class GitLabService implements GitProvider {
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
     await this.refreshAccessTokenIfNeeded();
-    const groups = await this.gitlab.Groups.all();
-    const gitGroups = groups.map((group) => ({
-      id: group.id.toString(),
-      displayName: group.fullName,
-      name: group.name,
-      path: group.path,
-      fullPath: group.fullPath,
-    }));
+
+    const namespaces = await this.gitlab.Namespaces.all<true, "offset">({
+      showExpanded: true,
+
+      perPage: 100,
+    });
+    const gitGroups = namespaces.data
+      .filter((namespace) => namespace.kind === "group")
+      .map((namespace) => ({
+        id: namespace.id.toString(),
+        displayName: namespace.fullPath,
+        name: namespace.fullPath,
+      }));
     this.logger.info("GitLabService getGitGroups");
     return {
-      total: groups.length,
+      total: namespaces.paginationInfo.total,
       page: 1,
-      pageSize: groups.length,
+      pageSize: namespaces.paginationInfo.perPage,
       next: "",
       previous: "",
       groups: gitGroups,
@@ -251,9 +256,6 @@ export class GitLabService implements GitProvider {
       url: project.webUrl,
       private: project.visibility === "private",
       fullName: project.pathWithNamespace,
-      admin:
-        project.permissions.projectAccess?.accessLevel >= 40 || // Maintainer level
-        project.permissions.groupAccess?.accessLevel >= 40,
       groupName,
       defaultBranch: project.defaultBranch,
     };
@@ -274,18 +276,17 @@ export class GitLabService implements GitProvider {
 
     await this.refreshAccessTokenIfNeeded();
 
-    const user = await this.gitlab.Users.showCurrentUser();
+    //const user = await this.gitlab.Users.showCurrentUser();
 
     //get all projects for the user
-    const projects = await this.gitlab.Users.allProjects<true, "offset">(
-      user.id.toString(),
-      {
-        showExpanded: true,
-        perPage,
-        page,
-        search: groupName,
-      }
-    );
+    const projects = await this.gitlab.Projects.all<true, "offset">({
+      showExpanded: true,
+      membership: true,
+      perPage,
+      page,
+      search: groupName,
+      searchNamespaces: true,
+    });
 
     // const projects = await this.gitlab.Projects.all<true, "offset">({
     //   showExpanded: true,
@@ -301,10 +302,7 @@ export class GitLabService implements GitProvider {
       name: project.name,
       url: project.webUrl,
       private: project.visibility === "private",
-      fullName: `${project.pathWithNamespace}/${project.name}`,
-      admin:
-        project.permissions.projectAccess?.accessLevel >= 40 || // Maintainer level
-        project.permissions.groupAccess?.accessLevel >= 40,
+      fullName: `${project.pathWithNamespace}`,
       groupName: project.pathWithNamespace,
       defaultBranch: project.defaultBranch,
     }));
@@ -333,10 +331,16 @@ export class GitLabService implements GitProvider {
 
     const visibility = isPrivate ? "private" : "public";
 
+    const namespace = await this.gitlab.Namespaces.show(groupName);
+    if (!namespace) {
+      this.logger.error(`Group ${groupName} not found`);
+      throw new CustomError(`Group ${groupName} not found`);
+    }
+
     const project = await this.gitlab.Projects.create({
       name: repositoryName,
-      path: groupName,
       visibility: visibility,
+      namespaceId: namespace.id,
     });
 
     return {
@@ -344,9 +348,6 @@ export class GitLabService implements GitProvider {
       url: project.webUrl,
       private: project.visibility === "private",
       fullName: project.pathWithNamespace,
-      admin:
-        project.permissions.projectAccess?.accessLevel >= 40 ||
-        project.permissions.groupAccess?.accessLevel >= 40,
       groupName,
       defaultBranch: project.defaultBranch,
     };

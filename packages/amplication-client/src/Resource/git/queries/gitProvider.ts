@@ -84,7 +84,6 @@ export const FIND_GIT_REPOS = gql`
         url
         private
         fullName
-        admin
         groupName
       }
       total

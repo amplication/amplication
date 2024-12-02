@@ -171,7 +171,6 @@ export class GithubService implements GitProvider {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions?.admin || false,
       defaultBranch: repo.default_branch,
     }));
   }
@@ -195,7 +194,6 @@ export class GithubService implements GitProvider {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin,
     }));
 
     return {
@@ -236,11 +234,10 @@ export class GithubService implements GitProvider {
       url,
     };
     if (!permissions) {
-      return { ...baseRepository, admin: false };
+      return { ...baseRepository };
     }
     const { admin } = permissions;
     return {
-      admin,
       defaultBranch,
       fullName,
       name,
@@ -288,7 +285,6 @@ export class GithubService implements GitProvider {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions?.admin || false,
       defaultBranch: repo.default_branch,
     };
   }

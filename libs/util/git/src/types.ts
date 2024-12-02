@@ -152,7 +152,6 @@ export interface RemoteGitRepository {
   url: string | null;
   private: boolean | null;
   fullName: string | null;
-  admin: boolean | null;
   defaultBranch: string;
   groupName?: string | null;
 }

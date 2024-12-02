@@ -2383,7 +2383,6 @@ input RemoteGitRepositoriesWhereUniqueInput {
 }
 
 type RemoteGitRepository {
-  admin: Boolean!
   defaultBranch: String!
   fullName: String!
   groupName: String

@@ -3515,7 +3515,6 @@ export type RemoteGitRepositoriesWhereUniqueInput = {
 };
 
 export type RemoteGitRepository = {
-  admin: Scalars['Boolean']['output'];
   defaultBranch: Scalars['String']['output'];
   fullName: Scalars['String']['output'];
   groupName?: Maybe<Scalars['String']['output']>;
