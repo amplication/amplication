@@ -231,7 +231,7 @@
     "@storybook/addon-controls": "7.4.6",
     "@storybook/addon-essentials": "7.4.6",
     "@storybook/addon-interactions": "^7.2.1",
-    "@storybook/core-server": "7.4.6",
+    "@storybook/core-server": "8.4.6",
     "@storybook/jest": "~0.1.0",
     "@storybook/react": "7.6.20",
     "@storybook/react-vite": "^7.4.6",
