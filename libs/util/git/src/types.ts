@@ -22,6 +22,12 @@ export interface BitBucketConfiguration {
   clientSecret: string;
 }
 
+export interface GitLabConfiguration {
+  clientId: string;
+  clientSecret: string;
+  redirectUri: string;
+}
+
 export interface GitHubConfiguration {
   clientId: string;
   clientSecret: string;
@@ -33,6 +39,7 @@ export interface GitHubConfiguration {
 export interface GitProvidersConfiguration {
   gitHubConfiguration: GitHubConfiguration;
   bitBucketConfiguration: BitBucketConfiguration;
+  gitLabConfiguration: GitLabConfiguration;
 }
 export type GitProviderProperties =
   | GitHubProviderOrganizationProperties

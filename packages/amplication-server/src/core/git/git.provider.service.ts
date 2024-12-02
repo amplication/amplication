@@ -77,6 +77,11 @@ export class GitProviderService {
     const bitbucketClientSecret = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_SECRET
     );
+    const gitLabClientId = this.configService.get<string>(Env.GITLAB_CLIENT_ID);
+    const gitLabClientSecret = this.configService.get<string>(
+      Env.GITLAB_CLIENT_SECRET
+    );
+
     const githubClientId = this.configService.get<string>(
       Env.GITHUB_APP_CLIENT_ID
     );
@@ -91,6 +96,8 @@ export class GitProviderService {
       Env.GITHUB_APP_INSTALLATION_URL
     );
 
+    const redirectUri = this.configService.get<string>(Env.CLIENT_HOST);
+
     this.gitProvidersConfiguration = {
       gitHubConfiguration: {
         clientId: githubClientId,
@@ -102,6 +109,11 @@ export class GitProviderService {
       bitBucketConfiguration: {
         clientId: bitbucketClientId,
         clientSecret: bitbucketClientSecret,
+      },
+      gitLabConfiguration: {
+        clientId: gitLabClientId,
+        clientSecret: gitLabClientSecret,
+        redirectUri: `${redirectUri}/gitlab-auth-app/callback`,
       },
     };
   }
@@ -139,6 +151,19 @@ export class GitProviderService {
         installationId: null,
       };
     } else if (provider === EnumGitProvider.Bitbucket) {
+      providerOrganizationProperties = <OAuthProviderOrganizationProperties>{
+        links: null,
+        username: null,
+        useGroupingForRepositories: null,
+        uuid: null,
+        displayName: null,
+        accessToken: null,
+        refreshToken: null,
+        tokenType: null,
+        expiresAt: null,
+        scopes: null,
+      };
+    } else if (provider === EnumGitProvider.GitLab) {
       providerOrganizationProperties = <OAuthProviderOrganizationProperties>{
         links: null,
         username: null,
@@ -650,61 +675,70 @@ export class GitProviderService {
         "In order to connect Bitbucket service should upgrade its plan"
       );
 
-    const gitClientService = await this.createGitClientWithoutProperties(
-      gitProvider
-    );
+    try {
+      const gitClientService = await this.createGitClientWithoutProperties(
+        gitProvider
+      );
 
-    const oAuthTokens = await gitClientService.getOAuthTokens(code);
+      const oAuthTokens = await gitClientService.getOAuthTokens(code);
 
-    const currentUserData = await gitClientService.getCurrentOAuthUser(
-      oAuthTokens.accessToken
-    );
+      const currentUserData = await gitClientService.getCurrentOAuthUser(
+        oAuthTokens.accessToken
+      );
 
-    const providerOrganizationProperties: OAuthProviderOrganizationProperties =
-      { ...oAuthTokens, ...currentUserData };
+      const providerOrganizationProperties: OAuthProviderOrganizationProperties =
+        { ...oAuthTokens, ...currentUserData };
 
-    this.logger.info("server: completeOAuth2Flow");
+      this.logger.info("server: completeOAuth2Flow");
 
-    await this.projectService.disableDemoRepoForAllWorkspaceProjects(
-      workspaceId
-    );
+      await this.projectService.disableDemoRepoForAllWorkspaceProjects(
+        workspaceId
+      );
 
-    const gitOrganization = await this.prisma.gitOrganization.upsert({
-      where: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        provider_installationId: {
-          provider: gitProvider,
-          installationId: currentUserData.uuid,
-        },
-      },
-      create: {
-        provider: gitProvider,
-        installationId: currentUserData.uuid,
-        name: currentUserData.username,
-        type: EnumGitOrganizationType.Organization,
-        useGroupingForRepositories: currentUserData.useGroupingForRepositories,
-        workspace: {
-          connect: {
-            id: workspaceId,
+      const gitOrganization = await this.prisma.gitOrganization.upsert({
+        where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          provider_installationId: {
+            provider: gitProvider,
+            installationId: currentUserData.uuid,
           },
         },
-        providerProperties: providerOrganizationProperties as any,
-      },
-      update: {
-        name: currentUserData.username,
-        providerProperties: providerOrganizationProperties as any,
-      },
-    });
+        create: {
+          provider: gitProvider,
+          installationId: currentUserData.uuid,
+          name: currentUserData.username,
+          type: EnumGitOrganizationType.Organization,
+          useGroupingForRepositories:
+            currentUserData.useGroupingForRepositories,
+          workspace: {
+            connect: {
+              id: workspaceId,
+            },
+          },
+          providerProperties: providerOrganizationProperties as any,
+        },
+        update: {
+          name: currentUserData.username,
+          providerProperties: providerOrganizationProperties as any,
+        },
+      });
 
-    await this.analytics.trackWithContext({
-      properties: {
-        provider: gitProvider,
-        gitOrgType: gitOrganization?.type,
-      },
-      event: EnumEventType.GitHubAuthResourceComplete,
-    });
+      await this.analytics.trackWithContext({
+        properties: {
+          provider: gitProvider,
+          gitOrgType: gitOrganization?.type,
+        },
+        event: EnumEventType.GitHubAuthResourceComplete,
+      });
 
-    return gitOrganization;
+      return gitOrganization;
+    } catch (error) {
+      this.logger.error("Failed to complete OAuth2 flow", error, {
+        className: GitProviderService.name,
+        args,
+      });
+      return null;
+    }
   }
 
   async getGitGroups(args: GitGroupArgs): Promise<PaginatedGitGroup> {

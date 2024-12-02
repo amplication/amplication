@@ -35,6 +35,11 @@ export class PrivatePluginService {
     const bitbucketClientSecret = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_SECRET
     );
+    const gitLabClientId = this.configService.get<string>(Env.GITLAB_CLIENT_ID);
+    const gitLabClientSecret = this.configService.get<string>(
+      Env.GITLAB_CLIENT_SECRET
+    );
+
     const githubClientId = this.configService.get<string>(
       Env.GITHUB_APP_CLIENT_ID
     );
@@ -60,6 +65,11 @@ export class PrivatePluginService {
       bitBucketConfiguration: {
         clientId: bitbucketClientId,
         clientSecret: bitbucketClientSecret,
+      },
+      gitLabConfiguration: {
+        clientId: gitLabClientId,
+        clientSecret: gitLabClientSecret,
+        redirectUri: "NOT_SUPPORTED", //redirect URI is not used from the git sync manager
       },
     };
   }

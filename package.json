@@ -41,6 +41,7 @@
     "@codebrew/nestjs-storage": "^0.1.7",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.11.0",
+    "@gitbeaker/rest": "^41.3.0",
     "@graphql-codegen/typescript-operations": "^4.0.1",
     "@graphql-codegen/typescript-react-apollo": "^3.3.7",
     "@monaco-editor/react": "^4.5.1",
