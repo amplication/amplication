@@ -3,15 +3,11 @@ import { gql } from "@apollo/client";
 export const SEARCH_CATALOG = gql`
   query searchCatalog(
     $where: ResourceWhereInputWithPropertiesFilter
+    $orderBy: [ResourceOrderByInput!]
     $take: Int
     $skip: Int
   ) {
-    catalog(
-      where: $where
-      take: $take
-      skip: $skip
-      orderBy: [{ createdAt: Desc }]
-    ) {
+    catalog(where: $where, take: $take, skip: $skip, orderBy: $orderBy) {
       totalCount
       data {
         id

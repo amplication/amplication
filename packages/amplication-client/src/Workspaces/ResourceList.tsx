@@ -1,7 +1,7 @@
 import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import { Link } from "react-router-dom";
 import CatalogGrid from "../Catalog/CatalogGrid";
-import CreateResourceButton from "../Components/CreateResourceButton";
+import CreateResourceButton from "../Resource/create-resource-dialog/CreateResourceButton";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import NewServiceFromTemplateDialogWithUrlTrigger from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
