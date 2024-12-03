@@ -42,7 +42,7 @@ import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
 import { ValidationError } from "../../errors/ValidationError";
 
 const GIT_REPOSITORY_EXIST =
-  "Git Repository already connected to an other Resource";
+  "The resource is already connected to a Git Repository";
 const INVALID_GIT_REPOSITORY_ID = "Git Repository does not exist";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";

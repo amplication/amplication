@@ -61,6 +61,8 @@ const createGitRepositoryFullName = (
       return `${gitRepository.groupName}/${gitRepository.name}`;
     case models.EnumGitProvider.AwsCodeCommit:
       return `${gitRepository.name}`;
+    case models.EnumGitProvider.GitLab:
+      return `${gitRepository.groupName}/${gitRepository.name}`;
   }
 };
 

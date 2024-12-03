@@ -3,6 +3,7 @@ import { EnumGitProvider, GitOrganization } from "../models";
 
 const GITHUB_URL = "https://github.com";
 const BITBUCKET_URL = "https://bitbucket.org";
+const GITLAB_URL = "https://gitlab.com";
 
 type GitRepositoryDetails = {
   repositoryFullName: string | null;
@@ -52,10 +53,11 @@ export function getGitRepositoryDetails({
     repositoryFullName = `${organizationName}/${repositoryName}`;
   }
 
-  const gitRepositoryUrlMap = {
+  const gitRepositoryUrlMap: { [key in EnumGitProvider]: string } = {
     [EnumGitProvider.Github]: `${GITHUB_URL}/${repositoryFullName}`,
     [EnumGitProvider.Bitbucket]: `${BITBUCKET_URL}/${repositoryFullName}`,
     [EnumGitProvider.AwsCodeCommit]: `https://console.aws.amazon.com/codesuite/codecommit/repositories/${repositoryFullName}/browse`,
+    [EnumGitProvider.GitLab]: `${GITLAB_URL}/${repositoryFullName}`,
   };
 
   return {

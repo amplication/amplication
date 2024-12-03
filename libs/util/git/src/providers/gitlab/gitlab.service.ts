@@ -1,4 +1,6 @@
 import { Gitlab } from "@gitbeaker/rest";
+import { GitbeakerRequestError } from "@gitbeaker/requester-utils";
+
 import axios from "axios";
 import { ILogger } from "@amplication/util/logging";
 import { GitProvider } from "../../git-provider.interface";
@@ -146,37 +148,45 @@ export class GitLabService implements GitProvider {
       return this.auth;
     }
 
-    const response = await axios.post("https://gitlab.com/oauth/token", null, {
-      params: {
-        client_id: this.clientId,
-        client_secret: this.clientSecret,
-        refresh_token: this.auth.refreshToken,
-        grant_type: "refresh_token",
-      },
-    });
+    try {
+      const response = await axios.post(
+        "https://gitlab.com/oauth/token",
+        null,
+        {
+          params: {
+            client_id: this.clientId,
+            client_secret: this.clientSecret,
+            refresh_token: this.auth.refreshToken,
+            grant_type: "refresh_token",
+          },
+        }
+      );
 
-    const {
-      access_token,
-      refresh_token,
-      token_type,
-      expires_in,
-      scope,
-      created_at,
-    } = response.data;
+      const {
+        access_token,
+        refresh_token,
+        token_type,
+        expires_in,
+        scope,
+        created_at,
+      } = response.data;
 
-    this.auth.accessToken = access_token;
-    this.auth.refreshToken = refresh_token;
-    this.auth.tokenType = token_type;
-    this.auth.scopes = scope.split(" ");
-    this.auth.expiresAt = created_at * 1000 + expires_in * 1000;
+      this.auth.accessToken = access_token;
+      this.auth.refreshToken = refresh_token;
+      this.auth.tokenType = token_type;
+      this.auth.scopes = scope.split(" ");
+      this.auth.expiresAt = created_at * 1000 + expires_in * 1000;
 
-    this.gitlab = new Gitlab({
-      oauthToken: this.auth.accessToken,
-    });
+      this.gitlab = new Gitlab({
+        oauthToken: this.auth.accessToken,
+      });
 
-    this.logger.info("GitLabService: Refreshed OAuth tokens");
+      this.logger.info("GitLabService: Refreshed OAuth tokens");
 
-    return this.auth;
+      return this.auth;
+    } catch (error) {
+      throw new CustomError("Failed to refresh token");
+    }
   }
 
   async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
@@ -288,22 +298,13 @@ export class GitLabService implements GitProvider {
       searchNamespaces: true,
     });
 
-    // const projects = await this.gitlab.Projects.all<true, "offset">({
-    //   showExpanded: true,
-    //   owned: false,
-    //   search: groupName,
-    //   searchNamespaces: true,
-    //   perPage,
-    //   page,
-    // });
-
     const gitRepos = projects.data.map((project) => ({
       id: project.id.toString(),
       name: project.name,
       url: project.webUrl,
       private: project.visibility === "private",
       fullName: `${project.pathWithNamespace}`,
-      groupName: project.pathWithNamespace,
+      groupName: project.namespace.fullPath,
       defaultBranch: project.defaultBranch,
     }));
 
@@ -412,7 +413,10 @@ export class GitLabService implements GitProvider {
         path,
       };
     } catch (error) {
-      if (error.response && error.response.status === 404) {
+      if (
+        error instanceof GitbeakerRequestError &&
+        error.cause?.response.status === 404
+      ) {
         return null;
       }
       throw error;
@@ -577,7 +581,10 @@ export class GitLabService implements GitProvider {
         sha: branch.commit.id,
       };
     } catch (error) {
-      if (error.response && error.response.status === 404) {
+      if (
+        error instanceof GitbeakerRequestError &&
+        error.cause?.response.status === 404
+      ) {
         return null;
       }
       throw error;
