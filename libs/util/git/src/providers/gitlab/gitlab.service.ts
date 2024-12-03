@@ -251,11 +251,6 @@ export class GitLabService implements GitProvider {
   ): Promise<RemoteGitRepository> {
     const { groupName, repositoryName } = getRepositoryArgs;
 
-    if (!groupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
-
     await this.refreshAccessTokenIfNeeded();
 
     const projectPath = `${groupName}/${repositoryName}`;
@@ -278,11 +273,6 @@ export class GitLabService implements GitProvider {
       groupName,
       pagination: { perPage, page },
     } = getRepositoriesArgs;
-
-    if (!groupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
 
     await this.refreshAccessTokenIfNeeded();
 
@@ -323,14 +313,14 @@ export class GitLabService implements GitProvider {
   ): Promise<RemoteGitRepository> {
     const { groupName, repositoryName, isPrivate } = createRepositoryArgs;
 
-    if (!groupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
-
     await this.refreshAccessTokenIfNeeded();
 
     const visibility = isPrivate ? "private" : "public";
+
+    if (!groupName) {
+      this.logger.error("Group name is required");
+      throw new CustomError("Group name is required");
+    }
 
     const namespace = await this.gitlab.Namespaces.show(groupName);
     if (!namespace) {
@@ -380,11 +370,6 @@ export class GitLabService implements GitProvider {
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
     const { repositoryName, path, ref, repositoryGroupName } = file;
 
-    if (!repositoryGroupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
-
     await this.refreshAccessTokenIfNeeded();
 
     const gitReference = await this.getBaseOrDefaultBranch(
@@ -429,11 +414,6 @@ export class GitLabService implements GitProvider {
     ref,
     repositoryGroupName,
   }: getFolderContentArgs): Promise<GitFolderContent> {
-    if (!repositoryGroupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
-
     await this.refreshAccessTokenIfNeeded();
 
     const projectPath = `${repositoryGroupName}/${repositoryName}`;
@@ -496,11 +476,6 @@ export class GitLabService implements GitProvider {
     const { repositoryName, branchName, repositoryGroupName } =
       getPullRequestArgs;
 
-    if (!repositoryGroupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
-
     await this.refreshAccessTokenIfNeeded();
 
     const projectId = `${repositoryGroupName}/${repositoryName}`;
@@ -533,12 +508,11 @@ export class GitLabService implements GitProvider {
       repositoryGroupName,
     } = createPullRequestArgs;
 
-    if (!repositoryGroupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
-
     await this.refreshAccessTokenIfNeeded();
+
+    if (!repositoryGroupName) {
+      throw new CustomError("Base branch name is required");
+    }
 
     const projectId = `${repositoryGroupName}/${repositoryName}`;
     const targetRef = await this.getBaseOrDefaultBranch(
@@ -565,11 +539,6 @@ export class GitLabService implements GitProvider {
 
   async getBranch(args: GetBranchArgs): Promise<Branch | null> {
     const { repositoryName, branchName, repositoryGroupName } = args;
-
-    if (!repositoryGroupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
 
     await this.refreshAccessTokenIfNeeded();
 
@@ -600,11 +569,6 @@ export class GitLabService implements GitProvider {
       repositoryGroupName,
     } = args;
 
-    if (!repositoryGroupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
-
     await this.refreshAccessTokenIfNeeded();
 
     const projectId = `${repositoryGroupName}/${repositoryName}`;
@@ -629,11 +593,6 @@ export class GitLabService implements GitProvider {
   async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit | null> {
     const { repositoryName, branchName, repositoryGroupName } = args;
 
-    if (!repositoryGroupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
-
     await this.refreshAccessTokenIfNeeded();
 
     const projectId = `${repositoryGroupName}/${repositoryName}`;
@@ -655,11 +614,6 @@ export class GitLabService implements GitProvider {
 
   async getCloneUrl(args: CloneUrlArgs): Promise<string> {
     const { repositoryName, repositoryGroupName } = args;
-
-    if (!repositoryGroupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
 
     await this.refreshAccessTokenIfNeeded();
 
@@ -686,11 +640,6 @@ export class GitLabService implements GitProvider {
         repositoryGroupName,
       },
     } = args;
-
-    if (!repositoryGroupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
 
     await this.refreshAccessTokenIfNeeded();
 

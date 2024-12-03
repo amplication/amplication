@@ -405,4 +405,159 @@ describe("GitLabService", () => {
       },
     });
   });
+
+  it("should handle error when getting repository", async () => {
+    gitbeakerMock.Projects.show.mockRejectedValueOnce(new Error("Not Found"));
+    await expect(
+      service.getRepository({
+        groupName: "group1",
+        repositoryName: "repo1",
+        owner: "testUser",
+      })
+    ).rejects.toThrow("Not Found");
+  });
+
+  it("should handle error when creating repository", async () => {
+    gitbeakerMock.Projects.create.mockRejectedValueOnce(new Error("Conflict"));
+    await expect(
+      service.createRepository({
+        groupName: "group1",
+        repositoryName: "repo1",
+        isPrivate: false,
+        gitOrganization: {
+          name: "testOrg",
+          type: EnumGitOrganizationType.Organization,
+          useGroupingForRepositories: true,
+        },
+        owner: "testUser",
+      })
+    ).rejects.toThrow("Conflict");
+  });
+
+  it("should handle error when getting file", async () => {
+    gitbeakerMock.RepositoryFiles.show.mockRejectedValueOnce(
+      new Error("Not Found")
+    );
+    await expect(
+      service.getFile({
+        repositoryName: "repo1",
+        path: "README.md",
+        ref: "main",
+        repositoryGroupName: "group1",
+        owner: "testUser",
+      })
+    ).rejects.toThrow("Not Found");
+  });
+
+  it("should handle error when getting folder content", async () => {
+    gitbeakerMock.Repositories.allRepositoryTrees.mockRejectedValueOnce(
+      new Error("Not Found")
+    );
+    await expect(
+      service.getFolderContent({
+        repositoryName: "repo1",
+        path: "src",
+        ref: "main",
+        repositoryGroupName: "group1",
+        owner: "testUser",
+      })
+    ).rejects.toThrow("Not Found");
+  });
+
+  it("should handle error when creating pull request", async () => {
+    gitbeakerMock.MergeRequests.create.mockRejectedValueOnce(
+      new Error("Conflict")
+    );
+    await expect(
+      service.createPullRequest({
+        repositoryName: "repo1",
+        branchName: "feature-branch",
+        baseBranchName: "main",
+        pullRequestTitle: "New Feature",
+        pullRequestBody: "Description of the new feature",
+        repositoryGroupName: "group1",
+        owner: "testUser",
+      })
+    ).rejects.toThrow("Conflict");
+  });
+
+  it("should handle error when getting pull request", async () => {
+    gitbeakerMock.MergeRequests.all.mockRejectedValueOnce(
+      new Error("Not Found")
+    );
+    await expect(
+      service.getPullRequest({
+        repositoryName: "repo1",
+        branchName: "feature-branch",
+        repositoryGroupName: "group1",
+        owner: "testUser",
+      })
+    ).rejects.toThrow("Not Found");
+  });
+
+  it("should handle error when creating branch", async () => {
+    gitbeakerMock.Branches.create.mockRejectedValueOnce(new Error("Conflict"));
+    await expect(
+      service.createBranch({
+        repositoryName: "repo1",
+        branchName: "new-branch",
+        baseBranchName: "main",
+        repositoryGroupName: "group1",
+        owner: "testUser",
+        pointingSha: "sha",
+      })
+    ).rejects.toThrow("Conflict");
+  });
+
+  it("should handle error when getting branch", async () => {
+    gitbeakerMock.Branches.show.mockRejectedValueOnce(new Error("Not Found"));
+    await expect(
+      service.getBranch({
+        repositoryName: "repo1",
+        branchName: "main",
+        repositoryGroupName: "group1",
+        owner: "testUser",
+      })
+    ).rejects.toThrow("Not Found");
+  });
+
+  it("should handle error when getting first commit on branch", async () => {
+    gitbeakerMock.Commits.all.mockRejectedValueOnce(new Error("Not Found"));
+    await expect(
+      service.getFirstCommitOnBranch({
+        repositoryName: "repo1",
+        branchName: "main",
+        repositoryGroupName: "group1",
+        owner: "testUser",
+      })
+    ).rejects.toThrow("Not Found");
+  });
+
+  it("should handle error when getting clone URL", async () => {
+    gitbeakerMock.Projects.show.mockRejectedValueOnce(new Error("Not Found"));
+    await expect(
+      service.getCloneUrl({
+        repositoryName: "repo1",
+        repositoryGroupName: "group1",
+        owner: "testUser",
+      })
+    ).rejects.toThrow("Not Found");
+  });
+
+  it("should handle error when creating pull request comment", async () => {
+    gitbeakerMock.MergeRequestNotes.create.mockRejectedValueOnce(
+      new Error("Not Found")
+    );
+    await expect(
+      service.createPullRequestComment({
+        data: { body: "Nice work!" },
+        where: {
+          repositoryName: "repo1",
+          issueNumber: 1,
+          repositoryGroupName: "group1",
+          owner: "testUser",
+        },
+      })
+    ).rejects.toThrow("Not Found");
+  });
 });
