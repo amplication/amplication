@@ -372,6 +372,10 @@ export class GitLabService implements GitProvider {
 
     await this.refreshAccessTokenIfNeeded();
 
+    if (!repositoryGroupName) {
+      throw new CustomError("Group name is required");
+    }
+
     const gitReference = await this.getBaseOrDefaultBranch(
       repositoryGroupName,
       repositoryName,
@@ -415,6 +419,10 @@ export class GitLabService implements GitProvider {
     repositoryGroupName,
   }: getFolderContentArgs): Promise<GitFolderContent> {
     await this.refreshAccessTokenIfNeeded();
+
+    if (!repositoryGroupName) {
+      throw new CustomError("Group name is required");
+    }
 
     const projectPath = `${repositoryGroupName}/${repositoryName}`;
     const gitReference = await this.getBaseOrDefaultBranch(
@@ -570,6 +578,10 @@ export class GitLabService implements GitProvider {
     } = args;
 
     await this.refreshAccessTokenIfNeeded();
+
+    if (!repositoryGroupName) {
+      throw new CustomError("Group name is required");
+    }
 
     const projectId = `${repositoryGroupName}/${repositoryName}`;
     const targetRef = await this.getBaseOrDefaultBranch(
