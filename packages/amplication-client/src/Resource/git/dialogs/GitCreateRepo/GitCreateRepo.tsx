@@ -81,7 +81,7 @@ export default function GitCreateRepo({
         : { ...data, name: processGitRepositoryName(data.name) };
       onCreateGitRepository(inputData);
     },
-    [repositoryGroup]
+    [onCreateGitRepository, processGitRepositoryName, repositoryGroup]
   );
 
   return (
