@@ -81,6 +81,14 @@ export class AwsCodeCommitService implements GitProvider {
     });
   }
 
+  getAuthData(): Promise<OAuthTokens | null> {
+    return Promise.resolve(null);
+  }
+
+  isAuthDataRefreshed(): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
   async getFolderContent({
     repositoryName,
     path,

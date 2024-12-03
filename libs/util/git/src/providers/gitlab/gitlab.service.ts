@@ -46,6 +46,7 @@ export class GitLabService implements GitProvider {
   public readonly domain = "gitlab.com";
   private logger: ILogger;
   private gitlab: InstanceType<typeof Gitlab<true>>;
+  private isTokenRefreshed = false;
 
   constructor(
     private readonly providerOrganizationProperties: OAuthProviderOrganizationProperties,
@@ -80,6 +81,12 @@ export class GitLabService implements GitProvider {
       oauthToken: this.auth.accessToken,
       camelize: true,
     });
+  }
+  getAuthData(): Promise<OAuthTokens> {
+    return Promise.resolve(this.auth);
+  }
+  isAuthDataRefreshed(): Promise<boolean> {
+    return Promise.resolve(this.isTokenRefreshed);
   }
 
   async init(): Promise<void> {
@@ -158,6 +165,7 @@ export class GitLabService implements GitProvider {
             client_secret: this.clientSecret,
             refresh_token: this.auth.refreshToken,
             grant_type: "refresh_token",
+            redirectUri: this.redirectUri,
           },
         }
       );
@@ -176,6 +184,7 @@ export class GitLabService implements GitProvider {
       this.auth.tokenType = token_type;
       this.auth.scopes = scope.split(" ");
       this.auth.expiresAt = created_at * 1000 + expires_in * 1000;
+      this.isTokenRefreshed = true;
 
       this.gitlab = new Gitlab({
         oauthToken: this.auth.accessToken,

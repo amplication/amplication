@@ -200,13 +200,18 @@ export class GitProviderService {
       gitRepository.gitOrganization
     );
 
-    return gitClientService.getFolderContent({
-      owner: gitRepository.gitOrganization.name,
-      repositoryName: gitRepository.name,
-      repositoryGroupName: gitRepository.groupName,
-      ref: gitRepository.baseBranchName,
-      path: args.path,
-    });
+    return this.executeAndUpdateGitProviderProperties(
+      () =>
+        gitClientService.getFolderContent({
+          owner: gitRepository.gitOrganization.name,
+          repositoryName: gitRepository.name,
+          repositoryGroupName: gitRepository.groupName,
+          ref: gitRepository.baseBranchName,
+          path: args.path,
+        }),
+      gitRepository.gitOrganization,
+      gitClientService
+    );
   }
 
   async getReposOfOrganization(
@@ -227,7 +232,12 @@ export class GitProviderService {
     };
 
     const gitClientService = await this.createGitClient(organization);
-    return gitClientService.getRepositories(repositoriesArgs);
+
+    return this.executeAndUpdateGitProviderProperties(
+      () => gitClientService.getRepositories(repositoriesArgs),
+      organization,
+      gitClientService
+    );
   }
 
   async connectGitRepository(
@@ -278,8 +288,10 @@ export class GitProviderService {
 
     const gitClientService = await this.createGitClient(organization);
 
-    const remoteRepository = await gitClientService.createRepository(
-      repository
+    const remoteRepository = await this.executeAndUpdateGitProviderProperties(
+      () => gitClientService.createRepository(repository),
+      organization,
+      gitClientService
     );
 
     if (!remoteRepository) {
@@ -658,6 +670,41 @@ export class GitProviderService {
     );
   }
 
+  //this function is used to update the provider properties of the git organization
+  //it should wrap each operation, in order to keep the provider properties up to date
+  async executeAndUpdateGitProviderProperties<T>(
+    operation: () => Promise<T>,
+    gitOrganization: GitOrganization,
+    client: GitClientService
+  ): Promise<T> {
+    const result = await operation();
+
+    const { providerProperties } = gitOrganization;
+
+    if (!(await client.isAuthDataRefreshed())) {
+      return result;
+    }
+
+    const updateAuth = await client.getAuthData();
+
+    const updatedProviderProperties = {
+      ...(providerProperties as unknown as GitProviderProperties),
+      ...updateAuth,
+    };
+
+    await this.prisma.gitOrganization.update({
+      where: {
+        id: gitOrganization.id,
+      },
+
+      data: {
+        providerProperties: updatedProviderProperties as any,
+      },
+    });
+
+    return result;
+  }
+
   async completeOAuth2Flow(
     args: CompleteGitOAuth2FlowArgs,
     currentUser: User
@@ -735,7 +782,11 @@ export class GitProviderService {
 
     const gitClientService = await this.createGitClient(organization);
 
-    return await gitClientService.getGitGroups();
+    return await this.executeAndUpdateGitProviderProperties(
+      () => gitClientService.getGitGroups(),
+      organization,
+      gitClientService
+    );
   }
 
   async deleteGitOrganization(
@@ -749,7 +800,12 @@ export class GitProviderService {
       },
     });
     const gitClientService = await this.createGitClient(organization);
-    const isDelete = await gitClientService.deleteGitOrganization();
+    const isDelete = await this.executeAndUpdateGitProviderProperties(
+      () => gitClientService.deleteGitOrganization(),
+      organization,
+      gitClientService
+    );
+
     if (isDelete) {
       await this.prisma.gitOrganization.delete({
         where: {

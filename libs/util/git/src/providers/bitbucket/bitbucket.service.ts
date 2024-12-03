@@ -60,6 +60,7 @@ export class BitBucketService implements GitProvider {
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
   private logger: ILogger;
+  private isTokenRefreshed = false;
 
   constructor(
     providerOrganizationProperties: OAuthProviderOrganizationProperties,
@@ -84,6 +85,13 @@ export class BitBucketService implements GitProvider {
 
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+  }
+
+  getAuthData(): Promise<OAuthTokens> {
+    return Promise.resolve(this.auth);
+  }
+  isAuthDataRefreshed(): Promise<boolean> {
+    return Promise.resolve(this.isTokenRefreshed);
   }
 
   async getFolderContent({
@@ -217,6 +225,7 @@ export class BitBucketService implements GitProvider {
 
     this.logger.info("BitBucketService: refreshAccessTokenIfNeeded");
     this.auth.accessToken = newOAuthTokens.access_token;
+    this.isTokenRefreshed = true;
 
     return {
       accessToken: newOAuthTokens.access_token,

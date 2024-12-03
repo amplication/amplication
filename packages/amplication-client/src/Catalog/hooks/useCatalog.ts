@@ -42,7 +42,7 @@ const useCatalog = () => {
     error,
   } = useQuery<CatalogResults>(SEARCH_CATALOG, {
     variables: {
-      orderBy: sorting.orderBy,
+      //orderBy: sorting.orderBy,
       ...queryPaginationParams,
       where: {
         ...queryFilters,

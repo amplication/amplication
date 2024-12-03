@@ -4,7 +4,7 @@ import {
   DataGridColumn,
   DataGridColumnFilter,
   DataGridFilters,
-  DataGridSortColumn,
+  //DataGridSortColumn,
   EnumContentAlign,
   EnumFlexDirection,
   EnumGapSize,
@@ -88,7 +88,7 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
     setFilter,
     setSearchPhrase,
     pagination,
-    sorting,
+    //sorting,
   } = useCatalog();
 
   const errorMessage = formatError(error);
@@ -97,19 +97,19 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
     pagination.triggerLoadMore();
   }, [pagination]);
 
-  const onSortColumnsChange = useCallback(
-    (sortColumns: DataGridSortColumn[]) => {
-      pagination.setPageNumber(1);
-      const [sortColumn] = sortColumns;
-      if (!sortColumn) {
-        sorting.setOrderBy(undefined);
-        return;
-      }
+  // const onSortColumnsChange = useCallback(
+  //   (sortColumns: DataGridSortColumn[]) => {
+  //     pagination.setPageNumber(1);
+  //     const [sortColumn] = sortColumns;
+  //     if (!sortColumn) {
+  //       sorting.setOrderBy(undefined);
+  //       return;
+  //     }
 
-      sorting.setOrderBy([sortColumn]);
-    },
-    [sorting, pagination]
-  );
+  //     sorting.setOrderBy([sortColumn]);
+  //   },
+  //   [sorting, pagination]
+  // );
 
   return (
     <div className={`${CLASS_NAME}__wrapper`}>
@@ -168,8 +168,8 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
             rows={catalog}
             onColumnsReorder={onColumnsReorder}
             onScrollToBottom={handleLoadMore}
-            onSortColumnsChange={onSortColumnsChange}
-            clientSideSort={false}
+            // onSortColumnsChange={onSortColumnsChange}
+            // clientSideSort={false}
           ></DataGrid>
         )}
       </div>

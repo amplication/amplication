@@ -77,6 +77,14 @@ export class GithubService implements GitProvider {
     private readonly logger: ILogger
   ) {}
 
+  getAuthData(): Promise<OAuthTokens | null> {
+    return Promise.resolve(null);
+  }
+
+  isAuthDataRefreshed(): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
   async init(): Promise<void> {
     const {
       appId,
