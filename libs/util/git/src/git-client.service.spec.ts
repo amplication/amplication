@@ -3,7 +3,7 @@ import { ILogger } from "@amplication/util/logging";
 import { GitCli } from "./providers/git-cli";
 import { GitFactory } from "./git-factory";
 import { GitProvider } from "./git-provider.interface";
-import { Bot, EnumGitProvider } from "./types";
+import { Bot, EnumGitProvider, OAuthTokens } from "./types";
 
 jest.mock("./providers/git-cli");
 jest.mock("simple-git");
@@ -72,6 +72,7 @@ describe("GitClientService", () => {
   const createBranchMock = jest.fn();
   const getCloneUrlMock = jest.fn();
   const createPullRequestCommentMock = jest.fn();
+
   const gitProviderMock: GitProvider = {
     getAmplicationBotIdentity: amplicationBotIdentityMock,
     init: initMock,
@@ -93,6 +94,8 @@ describe("GitClientService", () => {
     createBranch: createBranchMock,
     getCloneUrl: getCloneUrlMock,
     createPullRequestComment: createPullRequestCommentMock,
+    getAuthData: jest.fn(),
+    isAuthDataRefreshed: jest.fn(),
     name: EnumGitProvider.Github,
     domain: "",
   };
