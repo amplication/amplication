@@ -8,6 +8,7 @@ export class Env {
 
   static readonly GITLAB_CLIENT_ID = "GITLAB_CLIENT_ID";
   static readonly GITLAB_CLIENT_SECRET = "GITLAB_CLIENT_SECRET";
+  static readonly GITLAB_REDIRECT_URI = "GITLAB_REDIRECT_URI";
 
   static readonly GITHUB_APP_CLIENT_ID = "GITHUB_APP_CLIENT_ID";
   static readonly GITHUB_APP_CLIENT_SECRET = "GITHUB_APP_CLIENT_SECRET";

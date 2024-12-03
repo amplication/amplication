@@ -39,6 +39,9 @@ export class PrivatePluginService {
     const gitLabClientSecret = this.configService.get<string>(
       Env.GITLAB_CLIENT_SECRET
     );
+    const gitLabRedirectUri = this.configService.get<string>(
+      Env.GITLAB_REDIRECT_URI
+    );
 
     const githubClientId = this.configService.get<string>(
       Env.GITHUB_APP_CLIENT_ID
@@ -69,7 +72,7 @@ export class PrivatePluginService {
       gitLabConfiguration: {
         clientId: gitLabClientId,
         clientSecret: gitLabClientSecret,
-        redirectUri: "NOT_SUPPORTED", //redirect URI is not used from the git sync manager
+        redirectUri: gitLabRedirectUri,
       },
     };
   }

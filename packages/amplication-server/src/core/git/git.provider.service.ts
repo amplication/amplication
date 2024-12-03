@@ -81,6 +81,9 @@ export class GitProviderService {
     const gitLabClientSecret = this.configService.get<string>(
       Env.GITLAB_CLIENT_SECRET
     );
+    const gitLabRedirectUri = this.configService.get<string>(
+      Env.GITLAB_REDIRECT_URI
+    );
 
     const githubClientId = this.configService.get<string>(
       Env.GITHUB_APP_CLIENT_ID
@@ -95,8 +98,6 @@ export class GitProviderService {
     const githubAppInstallationUrl = this.configService.get<string>(
       Env.GITHUB_APP_INSTALLATION_URL
     );
-
-    const redirectUri = this.configService.get<string>(Env.CLIENT_HOST);
 
     this.gitProvidersConfiguration = {
       gitHubConfiguration: {
@@ -113,7 +114,7 @@ export class GitProviderService {
       gitLabConfiguration: {
         clientId: gitLabClientId,
         clientSecret: gitLabClientSecret,
-        redirectUri: `${redirectUri}/gitlab-auth-app/callback`,
+        redirectUri: gitLabRedirectUri,
       },
     };
   }
