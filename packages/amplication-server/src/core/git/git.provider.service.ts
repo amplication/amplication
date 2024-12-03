@@ -733,11 +733,7 @@ export class GitProviderService {
 
       return gitOrganization;
     } catch (error) {
-      this.logger.error("Failed to complete OAuth2 flow", error, {
-        className: GitProviderService.name,
-        args,
-      });
-      return null;
+      throw new AmplicationError("Failed to complete OAuth2 flow");
     }
   }
 

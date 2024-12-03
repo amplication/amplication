@@ -149,16 +149,7 @@ export class GitResolver {
     @UserEntity() currentUser: User,
     @Args() args: CompleteGitOAuth2FlowArgs
   ): Promise<GitOrganization> {
-    try {
-      const result = await this.gitService.completeOAuth2Flow(
-        args,
-        currentUser
-      );
-      return result;
-    } catch (error) {
-      console.error("Error completing git OAuth2 flow", error);
-      return null;
-    }
+    return await this.gitService.completeOAuth2Flow(args, currentUser);
   }
 
   @Query(() => PaginatedGitGroup)
