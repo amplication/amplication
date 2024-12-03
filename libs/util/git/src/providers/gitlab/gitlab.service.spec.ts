@@ -1,10 +1,44 @@
 import { ILogger } from "@amplication/util/logging";
 import axios from "axios";
 import {
+  EnumGitOrganizationType,
   GitLabConfiguration,
   OAuthProviderOrganizationProperties,
 } from "../../types";
 import { GitLabService } from "./gitlab.service";
+import { Camelize, ProjectSchema } from "@gitbeaker/rest";
+
+const SAMPLE_PROJECT_1: Partial<Camelize<ProjectSchema>> = {
+  id: 1,
+  name: "repo1",
+  pathWithNamespace: "group1/repo1",
+  httpUrlToRepo: "https://gitlab.com/group1/repo1.git",
+  namespace: {
+    id: 1,
+    name: "group1",
+    kind: "group",
+    path: "",
+    fullPath: "",
+    avatarUrl: "",
+    webUrl: "",
+  },
+};
+
+const SAMPLE_PROJECT_2: Partial<Camelize<ProjectSchema>> = {
+  id: 2,
+  name: "repo2",
+  pathWithNamespace: "group1/repo2",
+  httpUrlToRepo: "https://gitlab.com/group1/repo2.git",
+  namespace: {
+    id: 1,
+    name: "group1",
+    kind: "group",
+    path: "",
+    fullPath: "",
+    avatarUrl: "",
+    webUrl: "",
+  },
+};
 
 const gitbeakerMock = {
   Users: {
@@ -25,6 +59,92 @@ const gitbeakerMock = {
         perPage: 10,
       },
     }),
+    show: jest.fn().mockResolvedValue({
+      id: 1,
+      full_path: "group1",
+      kind: "group",
+    }),
+  },
+  RepositoryFiles: {
+    show: jest.fn().mockResolvedValue({
+      file_name: "README.md",
+      content: "file content",
+    }),
+  },
+  Repositories: {
+    allRepositoryTrees: jest.fn().mockResolvedValue([
+      {
+        id: 1,
+        name: "file1",
+        type: "blob",
+        path: "src/file1",
+      },
+      {
+        id: 2,
+        name: "file2",
+        type: "blob",
+        path: "src/file2",
+      },
+    ]),
+  },
+  Commits: {
+    all: jest.fn().mockResolvedValue([
+      {
+        id: "sha",
+        short_id: "sha",
+        created_at: "2021-01-01T00:00:00.000Z",
+        parent_ids: [],
+        title: "Initial commit",
+        message: "Initial commit",
+        author_name: "Author",
+        author_email: "author@example.com",
+        authored_date: "2021-01-01T00:00:00.000Z",
+        committer_name: "Committer",
+        committer_email: "committer@example.com",
+        committed_date: "2021-01-01T00:00:00.000Z",
+      },
+    ]),
+  },
+  Projects: {
+    create: jest.fn().mockResolvedValue(SAMPLE_PROJECT_1),
+    show: jest.fn().mockResolvedValue(SAMPLE_PROJECT_1),
+    all: jest.fn().mockResolvedValue({
+      paginationInfo: {
+        total: 100,
+        perPage: 10,
+        page: 1,
+      },
+      data: [SAMPLE_PROJECT_1, SAMPLE_PROJECT_2],
+    }),
+  },
+  Branches: {
+    create: jest.fn().mockResolvedValue({
+      name: "new-branch",
+      commit: {
+        id: "sha",
+      },
+    }),
+    show: jest.fn().mockResolvedValue({
+      name: "main",
+      commit: {
+        id: "sha",
+      },
+    }),
+  },
+  MergeRequestNotes: {
+    create: jest.fn().mockResolvedValue({}),
+  },
+  MergeRequests: {
+    create: jest.fn().mockResolvedValue({
+      webUrl: "http://gitlab.com/group1/repo1/merge_requests/1",
+      iid: 1,
+    }),
+    all: jest.fn().mockResolvedValue([
+      {
+        webUrl: "http://gitlab.com/group1/repo1/merge_requests/1",
+        iid: 1,
+      },
+    ]),
   },
 };
 
@@ -154,5 +274,135 @@ describe("GitLabService", () => {
     expect(logger.info).toHaveBeenCalledWith("GitLabService getOrganization");
   });
 
-  // Add more tests for other methods as needed
+  it("should get repository", async () => {
+    const repository = await service.getRepository({
+      groupName: "group1",
+      repositoryName: "repo1",
+      owner: "testUser",
+    });
+    expect(repository.name).toBe("repo1");
+    expect(repository.groupName).toBe("group1");
+  });
+
+  it("should get repositories", async () => {
+    const repositories = await service.getRepositories({
+      groupName: "group1",
+      pagination: { perPage: 10, page: 1 },
+    });
+    expect(repositories.repos.length).toBeGreaterThan(0);
+  });
+
+  it("should create repository", async () => {
+    const repository = await service.createRepository({
+      groupName: "group1",
+      repositoryName: "repo1",
+      isPrivate: false,
+      gitOrganization: {
+        name: "testOrg",
+        type: EnumGitOrganizationType.Organization,
+        useGroupingForRepositories: true,
+      },
+      owner: "testUser",
+    });
+    expect(repository.name).toBe("repo1");
+  });
+
+  it("should get file", async () => {
+    const file = await service.getFile({
+      repositoryName: "repo1",
+      path: "README.md",
+      ref: "main",
+      repositoryGroupName: "group1",
+      owner: "testUser",
+    });
+    expect(file?.name).toBe("README.md");
+    expect(logger.info).toHaveBeenCalledWith("GitLabService getFile");
+  });
+
+  it("should get folder content", async () => {
+    const folderContent = await service.getFolderContent({
+      repositoryName: "repo1",
+      path: "src",
+      ref: "main",
+      repositoryGroupName: "group1",
+      owner: "testUser",
+    });
+    expect(folderContent.content.length).toBeGreaterThan(0);
+  });
+
+  it("should create pull request", async () => {
+    const pullRequest = await service.createPullRequest({
+      repositoryName: "repo1",
+      branchName: "feature-branch",
+      baseBranchName: "main",
+      pullRequestTitle: "New Feature",
+      pullRequestBody: "Description of the new feature",
+      repositoryGroupName: "group1",
+      owner: "testUser",
+    });
+    expect(pullRequest?.url).toContain("merge_requests");
+  });
+
+  it("should get pull request", async () => {
+    const pullRequest = await service.getPullRequest({
+      repositoryName: "repo1",
+      branchName: "feature-branch",
+      repositoryGroupName: "group1",
+      owner: "testUser",
+    });
+    expect(pullRequest?.url).toContain("merge_requests");
+  });
+
+  it("should create branch", async () => {
+    const branch = await service.createBranch({
+      repositoryName: "repo1",
+      branchName: "new-branch",
+      baseBranchName: "main",
+      repositoryGroupName: "group1",
+      owner: "testUser",
+      pointingSha: "sha",
+    });
+    expect(branch.name).toBe("new-branch");
+  });
+
+  it("should get branch", async () => {
+    const branch = await service.getBranch({
+      repositoryName: "repo1",
+      branchName: "main",
+      repositoryGroupName: "group1",
+      owner: "testUser",
+    });
+    expect(branch?.name).toBe("main");
+  });
+
+  it("should get first commit on branch", async () => {
+    const commit = await service.getFirstCommitOnBranch({
+      repositoryName: "repo1",
+      branchName: "main",
+      repositoryGroupName: "group1",
+      owner: "testUser",
+    });
+    expect(commit?.sha).toBeDefined();
+  });
+
+  it("should get clone URL", async () => {
+    const cloneUrl = await service.getCloneUrl({
+      repositoryName: "repo1",
+      repositoryGroupName: "group1",
+      owner: "testUser",
+    });
+    expect(cloneUrl).toContain("oauth2");
+  });
+
+  it("should create pull request comment", async () => {
+    await service.createPullRequestComment({
+      data: { body: "Nice work!" },
+      where: {
+        repositoryName: "repo1",
+        issueNumber: 1,
+        repositoryGroupName: "group1",
+        owner: "testUser",
+      },
+    });
+  });
 });
