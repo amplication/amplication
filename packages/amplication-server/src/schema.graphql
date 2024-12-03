@@ -1278,6 +1278,12 @@ input GitOrganizationCreateInputGitHub {
   installationId: String!
 }
 
+input GitOrganizationOrderByInput {
+  id: SortOrder
+  name: SortOrder
+  provider: SortOrder
+}
+
 input GitOrganizationWhereInput {
   id: String
 }
@@ -1291,6 +1297,15 @@ type GitRepository {
   id: String!
   name: String!
   updatedAt: DateTime
+}
+
+input GitRepositoryOrderByInput {
+  baseBranchName: SortOrder
+  gitOrganization: GitOrganizationOrderByInput
+  gitOrganizationId: SortOrder
+  groupName: SortOrder
+  id: SortOrder
+  name: SortOrder
 }
 
 input GitRepositoryUpdateInput {
@@ -2464,8 +2479,10 @@ type ResourceCreateWithEntitiesResult {
 input ResourceOrderByInput {
   createdAt: SortOrder
   description: SortOrder
+  gitRepository: GitRepositoryOrderByInput
   id: SortOrder
   name: SortOrder
+  project: ProjectOrderByInput
   resourceType: SortOrder
   updatedAt: SortOrder
 }

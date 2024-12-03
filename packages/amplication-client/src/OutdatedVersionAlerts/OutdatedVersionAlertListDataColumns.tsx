@@ -44,7 +44,6 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Created",
     resizable: true,
     sortable: true,
-    width: 100,
     renderCell: (props) => {
       return <TimeSince time={new Date(props.row.createdAt)} />;
     },
@@ -54,7 +53,6 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Alert Type",
     resizable: true,
     sortable: true,
-    width: 150,
     renderCell: (props) => {
       return <OutdatedVersionAlertType type={props.row.type} />;
     },
@@ -78,7 +76,6 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Outdated Version",
     resizable: true,
     sortable: true,
-    width: 200,
     renderCell: (props) => {
       return (
         <VersionTag
@@ -93,7 +90,6 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Latest Version",
     resizable: true,
     sortable: true,
-    width: 200,
     renderCell: (props) => {
       return (
         <VersionTag
@@ -109,7 +105,6 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Status",
     resizable: true,
     sortable: true,
-    width: 200,
     renderCell: (props) => {
       return <OutdatedVersionAlertStatus status={props.row.status} />;
     },
@@ -120,7 +115,6 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Action",
     resizable: false,
     sortable: false,
-    width: 100,
     renderCell: (props) => {
       return <AlertLink alert={props.row} />;
     },
