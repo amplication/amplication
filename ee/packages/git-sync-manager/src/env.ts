@@ -6,6 +6,9 @@ export class Env {
   static readonly BITBUCKET_CLIENT_ID = "BITBUCKET_CLIENT_ID";
   static readonly BITBUCKET_CLIENT_SECRET = "BITBUCKET_CLIENT_SECRET";
 
+  static readonly GITLAB_CLIENT_ID = "GITLAB_CLIENT_ID";
+  static readonly GITLAB_CLIENT_SECRET = "GITLAB_CLIENT_SECRET";
+
   static readonly GITHUB_APP_CLIENT_ID = "GITHUB_APP_CLIENT_ID";
   static readonly GITHUB_APP_CLIENT_SECRET = "GITHUB_APP_CLIENT_SECRET";
   static readonly GITHUB_APP_APP_ID = "GITHUB_APP_APP_ID";

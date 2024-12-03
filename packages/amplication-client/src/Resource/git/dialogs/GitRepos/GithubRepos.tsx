@@ -9,6 +9,8 @@ import {
   HorizontalRule,
   EnumHorizontalRuleStyle,
   Label,
+  Text,
+  EnumTextStyle,
 } from "@amplication/ui/design-system";
 
 import { NetworkStatus, useQuery, useLazyQuery } from "@apollo/client";
@@ -23,7 +25,7 @@ import {
 import { formatError } from "../../../../util/error";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
-import { GitSelectMenu } from "../../select/GitSelectMenu";
+import { GitSelectGroup } from "../../select/GitSelectMenu";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 import { FIND_GIT_REPOS, GET_GROUPS } from "../../queries/gitProvider";
 
@@ -160,11 +162,8 @@ function GitRepos({
       {gitOrganization.useGroupingForRepositories && (
         <>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
-          <Label
-            className={`${CLASS_NAME}__change-label`}
-            text="Change workspace"
-          />
-          <GitSelectMenu
+
+          <GitSelectGroup
             gitProvider={gitProvider}
             selectedItem={repositoryGroup}
             items={gitGroups}

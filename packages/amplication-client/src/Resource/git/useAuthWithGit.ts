@@ -184,6 +184,10 @@ const useGitHook: UseGitHook = ({
     [connectSelectGitRepository, resource?.id, handleAfterRepoConnected]
   );
 
+  const closeCreateNewRepo = useCallback(() => {
+    setCreateNewRepoOpen(false);
+  }, [setCreateNewRepoOpen]);
+
   const handleRepoCreated = useCallback(
     (data: GitRepositoryCreatedData) => {
       connectGitRepository({
@@ -214,11 +218,13 @@ const useGitHook: UseGitHook = ({
       });
     },
     [
+      connectGitRepository,
+      gitOrganization,
+      resource,
+      trackEvent,
+      closeCreateNewRepo,
       gitRepositoryCreatedCb,
       gitRepositorySelected,
-      setGitRepositorySelectedData,
-      setCreateNewRepoOpen,
-      gitOrganization,
     ]
   );
 
@@ -231,7 +237,6 @@ const useGitHook: UseGitHook = ({
     [
       setGitOrganization,
       gitRepositorySelectedData,
-      gitRepositoryDisconnectedCb,
       gitRepositoryDisconnectedCb,
       setGitRepositorySelectedData,
     ]
@@ -256,10 +261,6 @@ const useGitHook: UseGitHook = ({
 
   const openCreateNewRepo = useCallback(() => {
     setCreateNewRepoOpen(true);
-  }, [setCreateNewRepoOpen]);
-
-  const closeCreateNewRepo = useCallback(() => {
-    setCreateNewRepoOpen(false);
   }, [setCreateNewRepoOpen]);
 
   return {

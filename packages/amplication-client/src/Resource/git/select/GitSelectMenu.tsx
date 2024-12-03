@@ -1,17 +1,19 @@
 import {
   EnumButtonStyle,
+  EnumFlexItemMargin,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
+  Text,
 } from "@amplication/ui/design-system";
 import { GitSelectMenuItemContent } from "./GitSelectMenuItemContent";
 
-import "./GitSelectMenu.scss";
 import { EnumGitProvider } from "../../../models";
 import { gitLogoMap } from "../git-provider-icon-map";
-
-const CLASS_NAME = "git-select-menu";
 
 export type Props = {
   selectedItem: any;
@@ -20,48 +22,63 @@ export type Props = {
   gitProvider: EnumGitProvider;
 };
 
-export const GitSelectMenu = ({
+export const GitSelectGroup = ({
   selectedItem,
   items,
   onSelect,
   gitProvider,
 }: Props) => {
   return (
-    <SelectMenu
-      title={
-        selectedItem && (
-          <GitSelectMenuItemContent
-            logo={gitLogoMap[gitProvider]}
-            name={selectedItem.name}
-          />
-        )
-      }
-      buttonStyle={EnumButtonStyle.Text}
-      className={CLASS_NAME}
-      icon="chevron_down"
-    >
-      <SelectMenuModal className={`${CLASS_NAME}__menu`}>
-        <SelectMenuList className={`${CLASS_NAME}__list`}>
-          <>
-            {items?.map((item) => (
-              <SelectMenuItem
-                className={`${CLASS_NAME}__item`}
-                closeAfterSelectionChange
-                selected={selectedItem?.id === item.id}
-                key={item.id}
-                onSelectionChange={() => {
-                  onSelect(item);
-                }}
-              >
+    <>
+      {items && items.length === 0 ? (
+        <FlexItem margin={EnumFlexItemMargin.Bottom}>
+          <Text
+            textStyle={EnumTextStyle.Description}
+            textColor={EnumTextColor.ThemeOrange}
+          >
+            No groups found in the organization. You need to create at least one
+            group in the organization.
+          </Text>
+        </FlexItem>
+      ) : (
+        <>
+          <Text textStyle={EnumTextStyle.Description}>Select Group</Text>
+          <SelectMenu
+            title={
+              selectedItem && (
                 <GitSelectMenuItemContent
                   logo={gitLogoMap[gitProvider]}
-                  name={item.name}
+                  name={selectedItem.name}
                 />
-              </SelectMenuItem>
-            ))}
-          </>
-        </SelectMenuList>
-      </SelectMenuModal>
-    </SelectMenu>
+              )
+            }
+            buttonStyle={EnumButtonStyle.Outline}
+            icon="chevron_down"
+          >
+            <SelectMenuModal>
+              <SelectMenuList>
+                <>
+                  {items?.map((item) => (
+                    <SelectMenuItem
+                      closeAfterSelectionChange
+                      selected={selectedItem?.id === item.id}
+                      key={item.id}
+                      onSelectionChange={() => {
+                        onSelect(item);
+                      }}
+                    >
+                      <GitSelectMenuItemContent
+                        logo={gitLogoMap[gitProvider]}
+                        name={item.name}
+                      />
+                    </SelectMenuItem>
+                  ))}
+                </>
+              </SelectMenuList>
+            </SelectMenuModal>
+          </SelectMenu>
+        </>
+      )}
+    </>
   );
 };
