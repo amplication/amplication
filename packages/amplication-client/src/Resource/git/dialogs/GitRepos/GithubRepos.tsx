@@ -1,33 +1,30 @@
 import {
   CircularProgress,
-  Snackbar,
-  Tooltip,
+  EnumHorizontalRuleStyle,
+  HorizontalRule,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
-  HorizontalRule,
-  EnumHorizontalRuleStyle,
-  Label,
-  Text,
-  EnumTextStyle,
+  Snackbar,
+  Tooltip,
 } from "@amplication/ui/design-system";
 
-import { NetworkStatus, useQuery, useLazyQuery } from "@apollo/client";
-import React, { useCallback, useEffect, useState } from "react";
+import { NetworkStatus, useLazyQuery, useQuery } from "@apollo/client";
+import { useCallback, useEffect, useState } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import {
-  EnumGitProvider,
-  RemoteGitRepository,
-  RemoteGitRepos,
   EnumGitOrganizationType,
+  EnumGitProvider,
+  RemoteGitRepos,
+  RemoteGitRepository,
 } from "../../../../models";
 import { formatError } from "../../../../util/error";
-import GitRepoItem from "./GitRepoItem/GitRepoItem";
-import "./GitRepos.scss";
+import { FIND_GIT_REPOS, GET_GROUPS } from "../../queries/gitProvider";
 import { GitSelectGroup } from "../../select/GitSelectMenu";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
-import { FIND_GIT_REPOS, GET_GROUPS } from "../../queries/gitProvider";
+import GitRepoItem from "./GitRepoItem/GitRepoItem";
+import "./GitRepos.scss";
 
 const CLASS_NAME = "git-repos";
 const MAX_ITEMS_PER_PAGE = 10;
@@ -69,7 +66,7 @@ function GitRepos({
 }: Props) {
   const [page, setPage] = useState(1);
 
-  const { data: gitGroupsData } = useQuery(GET_GROUPS, {
+  const { data: gitGroupsData, error: gitGroupsError } = useQuery(GET_GROUPS, {
     variables: {
       organizationId: gitOrganization.id,
     },
@@ -84,7 +81,7 @@ function GitRepos({
     if (!repositoryGroup && gitGroups && gitGroups.length > 0) {
       setRepositoryGroup(gitGroups[0]);
     }
-  }, [gitGroups]);
+  }, [gitGroups, repositoryGroup]);
 
   const [
     getRepos,
@@ -122,7 +119,7 @@ function GitRepos({
         },
       });
     }
-  }, [getRepos, repositoryGroup, page]);
+  }, [gitOrganization, repositoryGroup, getRepos, page]);
 
   useEffect(() => {
     getReposFunc();
@@ -139,7 +136,7 @@ function GitRepos({
         srcType,
       });
     },
-    [gitOrganization.id, onGitRepositoryConnected]
+    [gitOrganization, onGitRepositoryConnected, srcType]
   );
   const handleRefresh = useCallback(() => {
     refetch();
@@ -155,7 +152,7 @@ function GitRepos({
     if (pages && pages > 1) setNumberOfPages(pages);
   }, [data]);
 
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(error) || formatError(gitGroupsError);
 
   return (
     <div className={CLASS_NAME}>
@@ -266,7 +263,10 @@ function GitRepos({
             onSelectRepo={handleRepoSelected}
           />
         ))}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar
+        open={Boolean(error) || Boolean(gitGroupsError)}
+        message={errorMessage}
+      />
     </div>
   );
 }
