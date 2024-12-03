@@ -664,17 +664,6 @@ export class GitProviderService {
   ): Promise<GitOrganization> {
     const { code, gitProvider, workspaceId } = args.data;
 
-    const bitbucketEntitlement = this.billingService.isBillingEnabled
-      ? await this.billingService.getBooleanEntitlement(
-          workspaceId,
-          BillingFeature.Bitbucket
-        )
-      : false;
-    if (!bitbucketEntitlement)
-      throw new AmplicationError(
-        "In order to connect Bitbucket service should upgrade its plan"
-      );
-
     try {
       const gitClientService = await this.createGitClientWithoutProperties(
         gitProvider
